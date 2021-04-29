@@ -394,6 +394,7 @@ _brew_bottle() {
       --only-json-tab
       --quiet
       --root-url
+      --root-url-using
       --skip-relocation
       --verbose
       --write
@@ -1482,6 +1483,7 @@ _brew_pr_pull() {
       --quiet
       --resolve
       --root-url
+      --root-url-using
       --tap
       --verbose
       --warn-on-upload-failure
@@ -1509,6 +1511,7 @@ _brew_pr_upload() {
       --no-publish
       --quiet
       --root-url
+      --root-url-using
       --verbose
       --warn-on-upload-failure
       "

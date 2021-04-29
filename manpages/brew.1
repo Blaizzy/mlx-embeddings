@@ -1141,6 +1141,10 @@ Specify a committer name and email in \fBgit\fR\'s standard author format\.
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
+.TP
+\fB\-\-root\-url\-using\fR
+Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default\.
+.
 .SS "\fBbump\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
 .
@@ -1676,6 +1680,10 @@ Target tap repository (default: \fBhomebrew/core\fR)\.
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
 .
 .TP
+\fB\-\-root\-url\-using\fR
+Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default\.
+.
+.TP
 \fB\-\-bintray\-mirror\fR
 Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: \fBmirror\fR)\.
 .
@@ -1729,6 +1737,10 @@ Upload to the specified GitHub organisation\'s GitHub Packages (default: \fBhome
 .TP
 \fB\-\-root\-url\fR
 Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew\'s default\.
+.
+.TP
+\fB\-\-root\-url\-using\fR
+Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default\.
 .
 .SS "\fBprof\fR [\fI\-\-stackprof\fR] \fIcommand\fR [\.\.\.]"
 Run Homebrew with a Ruby profiler\. For example, \fBbrew prof readall\fR\.
