@@ -657,7 +657,7 @@ module Homebrew
           bottle_collector_tag = bottle.collector[tag]
           next false if bottle_collector_tag.blank?
 
-          old_bottle_spec_collector_tag = old_bottle_spec.collector[tag][tag]
+          old_bottle_spec_collector_tag = old_bottle_spec.collector[tag]
           next false if old_bottle_spec_collector_tag.blank?
 
           next false if bottle_collector_tag[:cellar] != old_bottle_spec_collector_tag[:cellar]
