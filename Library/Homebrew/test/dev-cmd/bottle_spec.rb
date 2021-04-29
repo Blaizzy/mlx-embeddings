@@ -273,25 +273,6 @@ describe "brew bottle" do
       EOS
     end
 
-    it "fails to add the bottle block to a formula that has no bottle block when using --keep-old" do
-      core_tap.path.cd do
-        system "git", "init"
-        setup_test_formula("testball")
-        system "git", "add", "--all"
-        system "git", "commit", "-m", "testball 0.1"
-      end
-
-      expect {
-        brew "bottle",
-             "--merge",
-             "--write",
-             "--keep-old",
-             "#{TEST_TMPDIR}/testball-1.0.arm64_big_sur.bottle.json",
-             "#{TEST_TMPDIR}/testball-1.0.big_sur.bottle.json",
-             "#{TEST_TMPDIR}/testball-1.0.catalina.bottle.json"
-      }.to output("Error: `--keep-old` was passed but there was no existing bottle block!\n").to_stderr
-    end
-
     it "updates the bottle block in a formula that already has a bottle block (old format) when using --keep-old" do
       core_tap.path.cd do
         system "git", "init"

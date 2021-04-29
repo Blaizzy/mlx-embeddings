@@ -717,10 +717,7 @@ module Homebrew
 
   def old_checksums(formula, formula_ast, bottle_hash, args:)
     bottle_node = formula_ast.bottle_block
-    if bottle_node.nil?
-      odie "`--keep-old` was passed but there was no existing bottle block!" if args.keep_old?
-      return
-    end
+    return if bottle_node.nil?
     return [] unless args.keep_old?
 
     old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
