@@ -45,7 +45,7 @@ class FormulaVersions
 
     yield @formula_at_revision[rev] ||= begin
       contents = file_contents_at_revision(rev)
-      nostdout { Formulary.from_contents(name, path, contents) }
+      nostdout { Formulary.from_contents(name, path, contents, ignore_errors: true) }
     end
   rescue *IGNORED_EXCEPTIONS => e
     # We rescue these so that we can skip bad versions and
