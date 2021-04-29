@@ -457,6 +457,7 @@ _brew_bottle() {
     '--only-json-tab[When passed with `--json`, the tab will be written to the JSON file but not the bottle]' \
     '--quiet[Make some output more quiet]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
+    '--root-url-using[Use the specified download strategy class for downloading the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--skip-relocation[Do not check if the bottle can be marked as relocatable]' \
     '--verbose[Make some output more verbose]' \
     '--write[Write changes to the formula file. A new commit will be generated unless `--no-commit` is passed]' \
@@ -1309,6 +1310,7 @@ _brew_pr_pull() {
     '--quiet[Make some output more quiet]' \
     '--resolve[When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
+    '--root-url-using[Use the specified download strategy class for downloading the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--verbose[Make some output more verbose]' \
     '--warn-on-upload-failure[Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed]' \
@@ -1330,6 +1332,7 @@ _brew_pr_upload() {
     '--no-publish[Apply the bottle commit and upload the bottles, but don'\''t publish them]' \
     '--quiet[Make some output more quiet]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
+    '--root-url-using[Use the specified download strategy class for downloading the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--verbose[Make some output more verbose]' \
     '--warn-on-upload-failure[Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed]'
 }

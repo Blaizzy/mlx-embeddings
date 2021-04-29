@@ -826,6 +826,8 @@ value, while `--no-rebuild` will remove it.
   Specify a committer name and email in `git`'s standard author format.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
+* `--root-url-using`:
+  Use the specified download strategy class for downloading the bottle's URL instead of Homebrew's default.
 
 ### `bump` [*`options`*] [*`formula`*|*`cask`* ...]
 
@@ -1189,6 +1191,8 @@ Requires write access to the repository.
   Target tap repository (default: `homebrew/core`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
+* `--root-url-using`:
+  Use the specified download strategy class for downloading the bottle's URL instead of Homebrew's default.
 * `--bintray-mirror`:
   Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`).
 * `--workflows`:
@@ -1220,6 +1224,8 @@ Apply the bottle commit and publish bottles to a host.
   Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
+* `--root-url-using`:
+  Use the specified download strategy class for downloading the bottle's URL instead of Homebrew's default.
 
 ### `prof` [*`--stackprof`*] *`command`* [...]
 
