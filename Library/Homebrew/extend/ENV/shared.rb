@@ -50,6 +50,7 @@ module SharedEnvExtension
     reset
   end
   private :setup_build_environment
+  alias generic_shared_setup_build_environment setup_build_environment
 
   sig { void }
   def reset

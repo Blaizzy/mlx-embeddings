@@ -60,6 +60,17 @@ module OS
       version >= "12"
     end
 
+    sig { returns(String) }
+    def preferred_perl_version
+      if version >= :big_sur
+        "5.30"
+      elsif version == :catalina
+        "5.28"
+      else
+        "5.18"
+      end
+    end
+
     def languages
       return @languages if @languages
 
