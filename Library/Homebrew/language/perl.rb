@@ -12,7 +12,7 @@ module Language
 
       def detected_perl_shebang(formula = self)
         perl_path = if formula.uses_from_macos_elements&.include? "perl"
-          "/usr/bin/perl"
+          "/usr/bin/perl#{MacOS.preferred_perl_version}"
         elsif formula.deps.map(&:name).include? "perl"
           Formula["perl"].opt_bin/"perl"
         else
