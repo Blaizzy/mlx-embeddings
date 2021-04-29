@@ -36,7 +36,7 @@ class Tab < OpenStruct
       "compiler"                => compiler,
       "stdlib"                  => stdlib,
       "aliases"                 => formula.aliases,
-      "runtime_dependencies"    => Tab.runtime_deps_hash(runtime_deps),
+      "runtime_dependencies"    => Tab.runtime_deps_hash(formula, runtime_deps),
       "arch"                    => Hardware::CPU.arch,
       "source"                  => {
         "path"         => formula.specified_path.to_s,
@@ -210,10 +210,14 @@ class Tab < OpenStruct
     new(attributes)
   end
 
-  def self.runtime_deps_hash(deps)
+  def self.runtime_deps_hash(formula, deps)
     deps.map do |dep|
       f = dep.to_formula
-      { "full_name" => f.full_name, "version" => f.version.to_s }
+      {
+        "full_name"         => f.full_name,
+        "version"           => f.version.to_s,
+        "declared_directly" => formula.deps.include?(dep),
+      }
     end
   end
 

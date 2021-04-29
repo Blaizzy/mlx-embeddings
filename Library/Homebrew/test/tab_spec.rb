@@ -137,13 +137,14 @@ describe Tab do
 
   specify "::runtime_deps_hash" do
     runtime_deps = [Dependency.new("foo")]
-    stub_formula_loader formula("foo") { url "foo-1.0" }
-    runtime_deps_hash = described_class.runtime_deps_hash(runtime_deps)
+    foo = formula("foo") { url "foo-1.0" }
+    stub_formula_loader foo
+    runtime_deps_hash = described_class.runtime_deps_hash(foo, runtime_deps)
     tab = described_class.new
     tab.homebrew_version = "1.1.6"
     tab.runtime_dependencies = runtime_deps_hash
     expect(tab.runtime_dependencies).to eql(
-      [{ "full_name" => "foo", "version" => "1.0" }],
+      [{ "full_name" => "foo", "version" => "1.0", "declared_directly" => false }],
     )
   end
 
@@ -268,8 +269,8 @@ describe Tab do
       tab = described_class.create(f, compiler, stdlib)
 
       runtime_dependencies = [
-        { "full_name" => "bar", "version" => "2.0" },
-        { "full_name" => "user/repo/from_tap", "version" => "1.0" },
+        { "full_name" => "bar", "version" => "2.0", "declared_directly" => true },
+        { "full_name" => "user/repo/from_tap", "version" => "1.0", "declared_directly" => true },
       ]
       expect(tab.runtime_dependencies).to eq(runtime_dependencies)
 
