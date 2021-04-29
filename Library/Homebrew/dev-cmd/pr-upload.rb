@@ -41,7 +41,7 @@ module Homebrew
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       flag   "--root-url-using=",
-             description: "Use the specified download strategy for the root_url in the generated DSL via `using:' arg"
+             description: "Use the specified download strategy class for downloading the bottle's URL instead of Homebrew's default."
 
       named_args :none
     end
