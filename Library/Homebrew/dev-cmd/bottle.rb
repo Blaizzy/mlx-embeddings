@@ -654,9 +654,15 @@ module Homebrew
                              bottle.rebuild  != old_bottle_spec.rebuild &&
                              bottle.root_url == old_bottle_spec.root_url
         bottle.collector.keys.all? do |tag|
-          next false if bottle.collector[tag][:cellar] != old_bottle_spec.collector[tag][:cellar]
+          bottle_collector_tag = bottle.collector[tag]
+          next false if bottle_collector_tag.blank?
 
-          bottle.collector[tag][:checksum].hexdigest == old_bottle_spec.collector[tag][:checksum].hexdigest
+          old_bottle_spec_collector_tag = old_bottle_spec.collector[tag][tag]
+          next false if old_bottle_spec_collector_tag.blank?
+
+          next false if bottle_collector_tag[:cellar] != old_bottle_spec_collector_tag[:cellar]
+
+          bottle_collector_tag[:checksum].hexdigest == old_bottle_spec_collector_tag[:checksum].hexdigest
         end
       end
 
