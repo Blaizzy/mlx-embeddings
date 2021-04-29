@@ -40,6 +40,9 @@ module Homebrew
              description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
+      flag   "--root-url-using=",
+             description: "Use the specified download strategy class for downloading the bottle's URL instead of "\
+                          "Homebrew's default."
 
       named_args :none
     end
@@ -114,6 +117,7 @@ module Homebrew
     bottle_args << "--root-url=#{args.root_url}" if args.root_url
     bottle_args << "--committer=#{args.committer}" if args.committer
     bottle_args << "--no-commit" if args.no_commit?
+    bottle_args << "--root-url-using=#{args.root_url_using}" if args.root_url_using
     bottle_args += json_files
 
     if args.dry_run?

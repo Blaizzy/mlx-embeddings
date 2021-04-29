@@ -624,6 +624,39 @@ describe "brew bottle" do
         end
       end
     end
+
+    describe "::bottle_output" do
+      it "includes a custom root_url" do
+        bottle = BottleSpecification.new
+        bottle.root_url("https://example.com")
+        bottle.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
+
+        expect(homebrew.bottle_output(bottle, nil)).to eq(
+          <<~RUBY.indent(2),
+            bottle do
+              root_url "https://example.com"
+              sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+            end
+          RUBY
+        )
+      end
+
+      it "includes download strategy for custom root_url" do
+        bottle = BottleSpecification.new
+        bottle.root_url("https://example.com")
+        bottle.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
+
+        expect(homebrew.bottle_output(bottle, "ExampleStrategy")).to eq(
+          <<~RUBY.indent(2),
+            bottle do
+              root_url "https://example.com",
+                using: ExampleStrategy
+              sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+            end
+          RUBY
+        )
+      end
+    end
   end
 end
 
@@ -636,7 +669,7 @@ def stub_hash(parameters)
             "path":"#{parameters[:path]}"
          },
          "bottle":{
-            "root_url":"#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}",
+            "root_url":"#{parameters[:root_url] || HOMEBREW_BOTTLE_DEFAULT_DOMAIN}",
             "prefix":"/usr/local",
             "cellar":"#{parameters[:cellar]}",
             "rebuild":0,
