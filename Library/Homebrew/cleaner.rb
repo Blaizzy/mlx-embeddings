@@ -32,6 +32,8 @@ class Cleaner
     info_dir_file = @f.info/"dir"
     observe_file_removal info_dir_file if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
 
+    rewrite_shebangs
+
     prune
   end
 
@@ -115,6 +117,24 @@ class Cleaner
           odebug "Fixing #{path} permissions from #{old_perms.to_s(8)} to #{perms.to_s(8)}" if perms != old_perms
         end
         path.chmod perms
+      end
+    end
+  end
+
+  def rewrite_shebangs
+    require "language/perl"
+    require "utils/shebang"
+
+    basepath = @f.prefix.realpath
+    basepath.find do |path|
+      Find.prune if @f.skip_clean? path
+
+      next if path.directory? || path.symlink?
+
+      begin
+        Utils::Shebang.rewrite_shebang Language::Perl::Shebang.detected_perl_shebang(@f), path
+      rescue ShebangDetectionError
+        break
       end
     end
   end
