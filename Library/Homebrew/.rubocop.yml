@@ -18,6 +18,8 @@ Metrics/AbcSize:
 Metrics/BlockLength:
   Max: 100
   Exclude:
+    # TODO: extract more of the bottling logic
+    - "dev-cmd/bottle.rb"
     - "test/**/*"
 Metrics/BlockNesting:
   Max: 5
@@ -33,8 +35,10 @@ Metrics/PerceivedComplexity:
 Metrics/MethodLength:
   Max: 260
 Metrics/ModuleLength:
-  Max: 610
+  Max: 500
   Exclude:
+    # TODO: extract more of the bottling logic
+    - "dev-cmd/bottle.rb"
     - "test/**/*"
 
 Naming/PredicateName:
