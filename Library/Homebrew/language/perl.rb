@@ -16,7 +16,7 @@ module Language
         elsif formula.deps.map(&:name).include? "perl"
           Formula["perl"].opt_bin/"perl"
         else
-          raise "Cannot detect Perl shebang: formula does not depend on Perl."
+          raise ShebangDetectionError.new("Perl", "formula does not depend on Perl")
         end
 
         Utils::Shebang::RewriteInfo.new(

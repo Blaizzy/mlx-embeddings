@@ -105,8 +105,10 @@ module Language
       def detected_python_shebang(formula = self)
         python_deps = formula.deps.map(&:name).grep(/^python(@.*)?$/)
 
-        raise "Cannot detect Python shebang: formula does not depend on Python." if python_deps.empty?
-        raise "Cannot detect Python shebang: formula has multiple Python dependencies." if python_deps.length > 1
+        raise ShebangDetectionError.new("Python", "formula does not depend on Python") if python_deps.empty?
+        if python_deps.length > 1
+          raise ShebangDetectionError.new("Python", "formula has multiple Python dependencies")
+        end
 
         python_shebang_rewrite_info(Formula[python_deps.first].opt_bin/"python3")
       end
