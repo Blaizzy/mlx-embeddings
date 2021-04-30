@@ -90,7 +90,10 @@ module Homebrew
   def bottle
     args = bottle_args.parse
 
-    return merge(args: args) if args.merge?
+    if args.merge?
+      Homebrew.install_bundler_gems!
+      return merge(args: args)
+    end
 
     ensure_relocation_formulae_installed! unless args.skip_relocation?
     args.named.to_resolved_formulae(uniq: false).each do |f|
@@ -718,9 +721,7 @@ module Homebrew
 
       next if no_bottle_changes
 
-      Homebrew.install_bundler_gems!
       require "utils/ast"
-
       formula_ast = Utils::AST::FormulaAST.new(path.read)
       checksums = old_checksums(formula, formula_ast, bottle_hash, args: args)
       update_or_add = checksums.nil? ? "add" : "update"

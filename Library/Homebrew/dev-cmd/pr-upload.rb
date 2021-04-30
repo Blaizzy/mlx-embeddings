@@ -146,6 +146,10 @@ module Homebrew
 
     check_bottled_formulae!(bottles_hash)
 
+    # This will be run by `brew bottle` and `brew audit` later so run it first
+    # to not start spamming during normal output.
+    Homebrew.install_bundler_gems!
+
     safe_system HOMEBREW_BREW_FILE, *bottle_args
 
     json_files = Dir["*.bottle.json"]
