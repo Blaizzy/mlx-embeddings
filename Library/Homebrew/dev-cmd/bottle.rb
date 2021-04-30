@@ -334,9 +334,8 @@ module Homebrew
     else
       ohai "Determining #{f.full_name} bottle rebuild..."
       versions = FormulaVersions.new(f)
-      rebuilds = versions.bottle_version_map("origin/master")[f.pkg_version]
-      rebuilds.pop if rebuilds.last.to_i.positive?
-      rebuilds.empty? ? 0 : rebuilds.max.to_i + 1
+      rebuilds = versions.most_recent_rebuild_for_pkg_version("origin/master", f.pkg_version)
+      rebuilds ? rebuilds.to_i + 1 : 0
     end
 
     filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)
