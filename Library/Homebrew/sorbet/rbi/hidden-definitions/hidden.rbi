@@ -9684,6 +9684,8 @@ module IRB
 
   def self.load_modules(); end
 
+  def self.parse_opts(argv: T.unsafe(nil)); end
+
   def self.rc_file(ext=T.unsafe(nil)); end
 
   def self.rc_file_generators(); end
