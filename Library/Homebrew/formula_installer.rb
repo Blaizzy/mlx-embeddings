@@ -302,7 +302,11 @@ class FormulaInstaller
         invalid_arch_dependencies << "#{dep} was built for #{tab.arch}"
       end
 
-      pinned_unsatisfied_deps << dep if dep.to_formula.pinned? && !dep.satisfied?(inherited_options_for(dep))
+      next unless dep.to_formula.pinned?
+      next if dep.satisfied?(inherited_options_for(dep))
+      next if dep.build? && pour_bottle?
+
+      pinned_unsatisfied_deps << dep
     end
 
     if invalid_arch_dependencies.present?
