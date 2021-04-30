@@ -333,9 +333,21 @@ module Homebrew
       f.bottle_specification.rebuild
     else
       ohai "Determining #{f.full_name} bottle rebuild..."
-      versions = FormulaVersions.new(f)
-      rebuilds = versions.most_recent_rebuild_for_pkg_version("origin/master", f.pkg_version)
-      rebuilds ? rebuilds.to_i + 1 : 0
+      FormulaVersions.new(f).formula_at_revision("origin/HEAD") do |prev_f|
+        if f.pkg_version == prev_f.pkg_version
+          prev_f.bottle_specification.rebuild + 1
+        else
+          if f.pkg_version < prev_f.pkg_version
+            opoo <<~EOS
+              Current package version for #{f.full_name} (`#{f.pkg_version}') is lower than version at
+              origin/HEAD (`#{prev_f.pkg_version}').
+
+              Defaulting to no rebuild number, but you may wish to verify this.
+            EOS
+          end
+          0
+        end
+      end
     end
 
     filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)
