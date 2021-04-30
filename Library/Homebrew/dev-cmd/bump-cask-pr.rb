@@ -60,6 +60,10 @@ module Homebrew
   def bump_cask_pr
     args = bump_cask_pr_args.parse
 
+    # This will be run by `brew style` later so run it first to not start
+    # spamming during normal output.
+    Homebrew.install_bundler_gems!
+
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
     ENV["PATH"] = ENV["HOMEBREW_PATH"]

@@ -147,6 +147,10 @@ module Homebrew
     formula_spec = formula.stable
     odie "#{formula}: no stable specification found!" if formula_spec.blank?
 
+    # This will be run by `brew audit` later so run it first to not start
+    # spamming during normal output.
+    Homebrew.install_bundler_gems!
+
     tap_remote_repo, remote, remote_branch, previous_branch = use_correct_linux_tap(formula, args: args)
     check_open_pull_requests(formula, tap_remote_repo, args: args)
 
