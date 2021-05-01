@@ -114,6 +114,20 @@ describe Caveats do
         expect(caveats).to include(f.plist_manual)
       end
 
+      it "gives information about service" do
+        f = formula do
+          url "foo-1.0"
+          service do
+            run [bin/"php", "test"]
+          end
+        end
+        caveats = described_class.new(f).caveats
+
+        expect(f.service?).to eq(true)
+        expect(caveats).to include("#{f.bin}/php test")
+        expect(caveats).to include("background service")
+      end
+
       it "warns about brew failing under tmux" do
         f = formula do
           url "foo-1.0"
