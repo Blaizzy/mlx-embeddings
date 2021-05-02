@@ -180,13 +180,14 @@ module Homebrew
       <<~COMPLETION
         _brew_#{Commands.method_name command}() {
           local cur="${COMP_WORDS[COMP_CWORD]}"
-          case "$cur" in
+          case "${cur}" in
             -*)
               __brewcomp "
               #{command_options(command).keys.sort.join("\n      ")}
               "
               return
               ;;
+            *)
           esac#{named_completion_string}
         }
       COMPLETION

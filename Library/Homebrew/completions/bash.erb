@@ -15,7 +15,7 @@
 
 __brewcomp_words_include() {
   local i=1
-  while [[ "$i" -lt "$COMP_CWORD" ]]
+  while [[ "${i}" -lt "${COMP_CWORD}" ]]
   do
     if [[ "${COMP_WORDS[i]}" = "$1" ]]
     then
@@ -30,12 +30,12 @@ __brewcomp_words_include() {
 __brewcomp_prev() {
   local idx="$((COMP_CWORD - 1))"
   local prv="${COMP_WORDS[idx]}"
-  while [[ "$prv" = -* ]]
+  while [[ "${prv}" = -* ]]
   do
     (( idx-- ))
     prv="${COMP_WORDS[idx]}"
   done
-  echo "$prv"
+  echo "${prv}"
 }
 
 __brewcomp() {
@@ -46,12 +46,12 @@ __brewcomp() {
 
   for s in $1
   do
-    __brewcomp_words_include "$s" && continue
-    list="$list$s$sep"
+    __brewcomp_words_include "${s}" && continue
+    list="${list}${s}${sep}"
   done
 
-  IFS="$sep"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$list" -- "$cur")
+  IFS="${sep}"
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${list}" -- "${cur}")
 }
 
 # Don't use __brewcomp() in any of the __brew_complete_foo functions, as
@@ -60,56 +60,56 @@ __brew_complete_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local formulae
   formulae="$(brew formulae)"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$formulae" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${formulae}" -- "${cur}")
 }
 
 __brew_complete_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local casks
   casks="$(brew casks)"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$casks" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${casks}" -- "${cur}")
 }
 
 __brew_complete_installed_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local installed_formulae
   installed_formulae="$(command ls "$(brew --cellar)" 2>/dev/null)"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$installed_formulae" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${installed_formulae}" -- "${cur}")
 }
 
 __brew_complete_installed_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local installed_casks
   installed_casks="$(command ls "$(brew --caskroom)" 2>/dev/null)"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$installed_casks" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${installed_casks}" -- "${cur}")
 }
 
 __brew_complete_outdated_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_formulae
   outdated_formulae="$(brew outdated --formula --quiet)"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$outdated_formulae" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${outdated_formulae}" -- "${cur}")
 }
 
 __brew_complete_outdated_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_casks
   outdated_casks="$(brew outdated --cask --quiet)"
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$outdated_casks" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${outdated_casks}" -- "${cur}")
 }
 
 __brew_complete_tapped() {
   local dir taps taplib
   taplib="$(brew --repository)/Library/Taps"
 
-  for dir in "$taplib"/*/*
+  for dir in "${taplib}"/*/*
   do
-    [[ -d "$dir" ]] || continue
+    [[ -d "${dir}" ]] || continue
     dir="${dir#${taplib}/}"
     dir="${dir/homebrew-/}"
-    taps="$taps $dir"
+    taps="${taps} ${dir}"
   done
-  __brewcomp "$taps"
+  __brewcomp "${taps}"
 }
 
 __brew_complete_commands() {
@@ -118,13 +118,13 @@ __brew_complete_commands() {
   HOMEBREW_CACHE=$(brew --cache)
   HOMEBREW_REPOSITORY=$(brew --repo)
   # Do not auto-complete "*instal" or "*uninstal" aliases for "*install" commands.
-  if [[ -f "$HOMEBREW_CACHE/all_commands_list.txt" ]]
+  if [[ -f "${HOMEBREW_CACHE}/all_commands_list.txt" ]]
   then
-    cmds="$(< "$HOMEBREW_CACHE/all_commands_list.txt" \grep -v instal$)"
+    cmds="$(< "${HOMEBREW_CACHE}/all_commands_list.txt" \grep -v instal$)"
   else
-    cmds="$(< "$HOMEBREW_REPOSITORY/completions/internal_commands_list.txt" \grep -v instal$)"
+    cmds="$(< "${HOMEBREW_REPOSITORY}/completions/internal_commands_list.txt" \grep -v instal$)"
   fi
-  while read -r line; do COMPREPLY+=("$line"); done < <(compgen -W "$cmds" -- "$cur")
+  while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${cmds}" -- "${cur}")
 }
 
 # compopt is only available in newer versions of bash
