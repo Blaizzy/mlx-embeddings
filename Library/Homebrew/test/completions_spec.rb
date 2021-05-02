@@ -245,7 +245,7 @@ describe Homebrew::Completions do
         expect(completion).to eq <<~COMPLETION
           _brew_missing() {
             local cur="${COMP_WORDS[COMP_CWORD]}"
-            case "$cur" in
+            case "${cur}" in
               -*)
                 __brewcomp "
                 --debug
@@ -256,6 +256,7 @@ describe Homebrew::Completions do
                 "
                 return
                 ;;
+              *)
             esac
             __brew_complete_formulae
           }
@@ -267,7 +268,7 @@ describe Homebrew::Completions do
         expect(completion).to eq <<~COMPLETION
           _brew_update() {
             local cur="${COMP_WORDS[COMP_CWORD]}"
-            case "$cur" in
+            case "${cur}" in
               -*)
                 __brewcomp "
                 --debug
@@ -279,6 +280,7 @@ describe Homebrew::Completions do
                 "
                 return
                 ;;
+              *)
             esac
           }
         COMPLETION
