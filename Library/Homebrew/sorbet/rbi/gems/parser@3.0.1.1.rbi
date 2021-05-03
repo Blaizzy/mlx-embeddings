@@ -1236,6 +1236,7 @@ class Parser::Source::Comment
 
   class << self
     def associate(ast, comments); end
+    def associate_by_identity(ast, comments); end
     def associate_locations(ast, comments); end
   end
 end
@@ -1244,6 +1245,7 @@ class Parser::Source::Comment::Associator
   def initialize(ast, comments); end
 
   def associate; end
+  def associate_by_identity; end
   def associate_locations; end
   def skip_directives; end
   def skip_directives=(_arg0); end
