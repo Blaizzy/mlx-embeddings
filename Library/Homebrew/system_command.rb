@@ -178,6 +178,9 @@ class SystemCommand
     end
   end
 
+  class ProcessTerminatedInterrupt < StandardError; end
+  private_constant :ProcessTerminatedInterrupt
+
   sig { params(block: T.proc.params(type: Symbol, line: String).void).void }
   def each_output_line(&block)
     executable, *args = command
@@ -196,9 +199,23 @@ class SystemCommand
 
     write_input_to(raw_stdin)
     raw_stdin.close_write
-    each_line_from [raw_stdout, raw_stderr], &block
+
+    line_thread = Thread.new do
+      Thread.handle_interrupt(ProcessTerminatedInterrupt => :never) do
+        each_line_from [raw_stdout, raw_stderr], &block
+      end
+    rescue ProcessTerminatedInterrupt
+      nil
+    end
+    Thread.pass
+
+    end_time = Time.now + @timeout if @timeout
+    raise Timeout::Error if raw_wait_thr.join(end_time&.remaining).nil?
 
     @status = raw_wait_thr.value
+
+    line_thread.raise ProcessTerminatedInterrupt.new
+    line_thread.join
   rescue Interrupt
     Process.kill("INT", pid) if pid && !sudo?
     raise Interrupt
@@ -214,21 +231,29 @@ class SystemCommand
 
   sig { params(sources: T::Array[IO], _block: T.proc.params(type: Symbol, line: String).void).void }
   def each_line_from(sources, &_block)
-    end_time = Time.now + @timeout if @timeout
-
     sources = {
       sources[0] => :stdout,
       sources[1] => :stderr,
     }
 
-    loop do
-      readable_sources, = IO.select(sources.keys, [], [], end_time&.remaining!)
-      raise Timeout::Error if readable_sources.nil?
+    pending_interrupt = T.let(false, T::Boolean)
+
+    until pending_interrupt
+      readable_sources = T.let([], T::Array[IO])
+      begin
+        Thread.handle_interrupt(ProcessTerminatedInterrupt => :on_blocking) do
+          readable_sources = T.must(IO.select(sources.keys)).fetch(0)
+        end
+      rescue ProcessTerminatedInterrupt
+        readable_sources = sources.keys
+        pending_interrupt = true
+      end
 
       break if readable_sources.none? do |source|
-        line = source.readline_nonblock || ""
-        yield(sources.fetch(source), line)
-        true
+        loop do
+          line = source.readline_nonblock || ""
+          yield(sources.fetch(source), line)
+        end
       rescue EOFError
         source.close_read
         sources.delete(source)
