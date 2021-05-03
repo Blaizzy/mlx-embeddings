@@ -87,6 +87,7 @@ module Homebrew
         end
       end
 
+      path.dirname.mkpath
       path.write ERB.new(template, trim_mode: ">").result(binding)
     end
 

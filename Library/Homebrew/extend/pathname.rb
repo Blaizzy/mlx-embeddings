@@ -165,19 +165,6 @@ class Pathname
   end
   private :install_symlink_p
 
-  # @private
-  alias old_write write
-
-  # We assume this pathname object is a file, obviously.
-  sig { params(content: String, offset: Integer, open_args: T::Hash[Symbol, T.untyped]).returns(Integer) }
-  def write(content, offset = 0, open_args = {})
-    raise "Will not overwrite #{self}" if exist?
-
-    dirname.mkpath
-
-    old_write(content, offset, open_args)
-  end
-
   # Only appends to a file that is already created.
   sig { params(content: String, open_args: T.untyped).void }
   def append_lines(content, **open_args)
@@ -420,6 +407,7 @@ class Pathname
     ).returns(Integer)
   }
   def write_jar_script(target_jar, script_name, java_opts = "", java_version: nil)
+    mkpath
     (self/script_name).write <<~EOS
       #!/bin/bash
       export JAVA_HOME="#{Language::Java.overridable_java_home_env(java_version)[:JAVA_HOME]}"

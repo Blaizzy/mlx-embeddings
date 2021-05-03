@@ -348,6 +348,7 @@ describe Tab do
     end
 
     it "can create a Tab for a Formula with an outdated Kegs" do
+      f.prefix.mkpath
       f_tab_path.write f_tab_content
 
       f2 = formula { url "foo-2.0" }

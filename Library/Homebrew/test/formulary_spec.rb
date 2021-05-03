@@ -57,6 +57,7 @@ describe Formulary do
 
   describe "::factory" do
     before do
+      formula_path.dirname.mkpath
       formula_path.write formula_content
     end
 
@@ -194,6 +195,7 @@ describe Formulary do
       end
 
       it "raises an error if a Formula is in multiple Taps" do
+        another_tap.path.mkpath
         (another_tap.path/"#{formula_name}.rb").write formula_content
 
         expect {
