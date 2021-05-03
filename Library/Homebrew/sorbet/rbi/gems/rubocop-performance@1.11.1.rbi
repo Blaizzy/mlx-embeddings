@@ -437,6 +437,10 @@ class RuboCop::Cop::Performance::MapCompact < ::RuboCop::Cop::Base
 
   def map_compact(param0 = T.unsafe(nil)); end
   def on_send(node); end
+
+  private
+
+  def compact_method_range(compact_node); end
 end
 
 RuboCop::Cop::Performance::MapCompact::MSG = T.let(T.unsafe(nil), String)
