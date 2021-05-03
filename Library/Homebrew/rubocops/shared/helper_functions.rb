@@ -54,7 +54,7 @@ module RuboCop
       end
 
       # Returns the string representation if node is of type str(plain) or dstr(interpolated) or const.
-      def string_content(node)
+      def string_content(node, strip_dynamic: false)
         case node.type
         when :str
           node.str_content
@@ -62,7 +62,7 @@ module RuboCop
           content = ""
           node.each_child_node(:str, :begin) do |child|
             content += if child.begin_type?
-              child.source
+              strip_dynamic ? "" : child.source
             else
               child.str_content
             end
