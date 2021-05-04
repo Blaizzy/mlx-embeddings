@@ -1480,6 +1480,13 @@ Overwrite the destination formula if it already exists\.
 .SS "\fBformula\fR \fIformula\fR [\.\.\.]"
 Display the path where \fIformula\fR is located\.
 .
+.SS "\fBgenerate\-man\-completions\fR [\fI\-\-fail\-if\-not\-changed\fR]"
+Generate Homebrew\'s manpages\.
+.
+.TP
+\fB\-\-fail\-if\-not\-changed\fR
+Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
+.
 .SS "\fBinstall\-bundler\-gems\fR"
 Install Homebrew\'s Bundler gems\.
 .
@@ -1550,13 +1557,6 @@ Only check formulae\.
 .TP
 \fB\-\-cask\fR
 Only check casks\.
-.
-.SS "\fBman\fR [\fI\-\-fail\-if\-not\-changed\fR]"
-Generate Homebrew\'s manpages\.
-.
-.TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
 .SS "\fBpr\-automerge\fR [\fIoptions\fR]"
 Find pull requests that can be automatically merged using \fBbrew pr\-publish\fR\.

@@ -162,6 +162,7 @@ __brew_internal_commands() {
     'fetch:Download a bottle (if available) or source packages for formulae and binaries for casks'
     'formula:Display the path where formula is located'
     'formulae:List all locally installable formulae including short names'
+    'generate-man-completions:Generate Homebrew'\''s manpages'
     'gist-logs:Upload logs for a failed build of formula to a new Gist'
     'home:Open a formula or cask'\''s homepage in a browser, or open Homebrew'\''s own homepage if no argument is provided'
     'info:Display brief statistics for your Homebrew installation'
@@ -829,6 +830,16 @@ _brew_formula() {
     '--verbose[Make some output more verbose]' \
     - formula \
     '*::formula:__brew_formulae'
+}
+
+# brew generate-man-completions
+_brew_generate_man_completions() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--fail-if-not-changed[Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
 }
 
 # brew gist-logs

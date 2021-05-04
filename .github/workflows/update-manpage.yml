@@ -56,7 +56,7 @@ jobs:
             brew update-maintainers
           fi
 
-          if brew man --fail-if-not-changed; then
+          if brew generate-man-completions --fail-if-not-changed; then
             git add "$GITHUB_WORKSPACE/README.md" \
                     "$GITHUB_WORKSPACE/docs/Manpage.md" \
                     "$GITHUB_WORKSPACE/manpages/brew.1" \
