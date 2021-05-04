@@ -1020,21 +1020,27 @@ class FormulaInstaller
       return
     end
 
-    plist = if formula.service?
+    if formula.service?
+      service_path = formula.systemd_service_path
+      service_path.atomic_write(formula.service.to_systemd_unit)
+      service_path.chmod 0644
+    end
+
+    service = if formula.service?
       formula.service.to_plist
     elsif formula.plist
       formula.plist
     end
 
-    return unless plist
+    return unless service
 
     plist_path = formula.plist_path
-    plist_path.atomic_write(plist)
+    plist_path.atomic_write(service)
     plist_path.chmod 0644
     log = formula.var/"log"
-    log.mkpath if plist.include? log.to_s
+    log.mkpath if service.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
-    ofail "Failed to install plist file"
+    ofail "Failed to install service files"
     odebug e, e.backtrace
   end
 
