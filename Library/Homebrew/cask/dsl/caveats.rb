@@ -114,7 +114,7 @@ module Cask
             #{@cask} requires Java. You can install the latest version with:
               brew install --cask adoptopenjdk
           EOS
-        elsif java_version.include?("11") || java_version.include?("+")
+        elsif java_version.include?("+")
           <<~EOS
             #{@cask} requires Java #{java_version}. You can install the latest version with:
               brew install --cask adoptopenjdk
