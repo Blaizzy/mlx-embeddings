@@ -30,8 +30,9 @@ class FormulaVersions
 
   def rev_list(branch)
     repository.cd do
-      Utils.popen_read("git", "rev-list", "--abbrev-commit", "--remove-empty", "--first-parent", branch, "--",
-                       entry_name) do |io|
+      rev_list_cmd = ["git", "rev-list", "--abbrev-commit", "--remove-empty"]
+      rev_list_cmd << "--first-parent" unless repository == CoreTap.instance.path
+      Utils.popen_read(*rev_list_cmd, branch, "--", entry_name) do |io|
         yield io.readline.chomp until io.eof?
       end
     end
