@@ -1548,14 +1548,16 @@ to send a notification when the autoupdate process has finished successfully.
 <br>Prints the current status of this tool.
 
 `brew autoupdate version`
-<br>Output this tool's current version.
+<br>Output this tool's current version, and a short changelog.
 
 * `--upgrade`:
   Automatically upgrade your installed formulae. If the Caskroom exists locally Casks will be upgraded as well. Must be passed with `start`.
 * `--cleanup`:
   Automatically clean brew's cache and logs. Must be passed with `start`.
 * `--enable-notification`:
-  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed & found. Note that currently a new experimental notifier runs automatically on macOS Big Sur, without requiring any external dependencies. Must be passed with `start`.
+  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed & found. Note that currently a new experimental notifier runs automatically on macOS Catalina and newer, without requiring any external dependencies. Must be passed with `start`.
+* `--immediate`:
+  Starts the autoupdate command immediately, instead of waiting for one interval (24 hours by default) to pass first. Must be passed with `start`.
 
 ### `bundle` [*`subcommand`*]
 
