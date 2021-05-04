@@ -337,14 +337,6 @@ module Homebrew
         if f.pkg_version == upstream_f.pkg_version
           upstream_f.bottle_specification.rebuild + 1
         else
-          if f.pkg_version < upstream_f.pkg_version
-            opoo <<~EOS
-              Current package version for #{f.full_name} (`#{f.pkg_version}') is lower than version at
-              origin/HEAD (`#{upstream_f.pkg_version}').
-
-              Defaulting to no rebuild number, but you may wish to verify this.
-            EOS
-          end
           0
         end
       end
