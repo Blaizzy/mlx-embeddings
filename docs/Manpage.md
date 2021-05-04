@@ -1061,7 +1061,7 @@ Display the path where *`formula`* is located.
 
 ### `generate-man-completions` [*`--fail-if-not-changed`*]
 
-Generate Homebrew's manpages.
+Generate Homebrew's manpages and shell completions.
 
 * `--fail-if-not-changed`:
   Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).

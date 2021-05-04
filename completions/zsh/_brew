@@ -162,7 +162,7 @@ __brew_internal_commands() {
     'fetch:Download a bottle (if available) or source packages for formulae and binaries for casks'
     'formula:Display the path where formula is located'
     'formulae:List all locally installable formulae including short names'
-    'generate-man-completions:Generate Homebrew'\''s manpages'
+    'generate-man-completions:Generate Homebrew'\''s manpages and shell completions'
     'gist-logs:Upload logs for a failed build of formula to a new Gist'
     'home:Open a formula or cask'\''s homepage in a browser, or open Homebrew'\''s own homepage if no argument is provided'
     'info:Display brief statistics for your Homebrew installation'
