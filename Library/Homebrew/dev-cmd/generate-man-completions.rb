@@ -20,7 +20,7 @@ module Homebrew
   def generate_man_completions_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Generate Homebrew's manpages.
+        Generate Homebrew's manpages and shell completions.
       EOS
       switch "--fail-if-not-changed",
              description: "Return a failing status code if no changes are detected in the manpage outputs. "\
