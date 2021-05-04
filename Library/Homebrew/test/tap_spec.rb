@@ -23,6 +23,7 @@ describe Tap do
   end
 
   def setup_tap_files
+    formula_file.dirname.mkpath
     formula_file.write <<~RUBY
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tar.gz"
@@ -41,6 +42,8 @@ describe Tap do
     JSON
 
     %w[audit_exceptions style_exceptions].each do |exceptions_directory|
+      (path/exceptions_directory).mkpath
+
       (path/"#{exceptions_directory}/formula_list.json").write <<~JSON
         [ "foo", "bar" ]
       JSON
@@ -516,6 +519,7 @@ describe Tap do
     specify "files" do
       path = Tap::TAP_DIRECTORY/"homebrew/homebrew-core"
       formula_file = core_tap.formula_dir/"foo.rb"
+      core_tap.formula_dir.mkpath
       formula_file.write <<~RUBY
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tar.gz"
@@ -531,6 +535,7 @@ describe Tap do
         style_exceptions/formula_hash.json
         pypi_formula_mappings.json
       ].each do |file|
+        (path/file).dirname.mkpath
         (path/file).write formula_list_file_json
       end
 

@@ -63,19 +63,6 @@ describe Pathname do
     end
   end
 
-  describe "#write" do
-    it "creates a file and writes to it" do
-      expect(file).not_to exist
-      file.write("CONTENT")
-      expect(File.read(file)).to eq("CONTENT")
-    end
-
-    it "raises an error if the file already exists" do
-      touch file
-      expect { file.write("CONTENT") }.to raise_error(RuntimeError)
-    end
-  end
-
   describe "#append_lines" do
     it "appends lines to a file" do
       touch file

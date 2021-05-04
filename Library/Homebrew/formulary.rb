@@ -47,6 +47,20 @@ module Formulary
     super
   end
 
+  # @private
+  module PathnameWriteMkpath
+    refine Pathname do
+      def write(content, offset = nil, **open_args)
+        raise "Will not overwrite #{self}" if exist? && !offset && !open_args[:mode]&.match?(/^a\+?$/)
+
+        dirname.mkpath
+
+        super
+      end
+    end
+  end
+
+  using PathnameWriteMkpath
   def self.load_formula(name, path, contents, namespace, flags:, ignore_errors:)
     raise "Formula loading disabled by HOMEBREW_DISABLE_LOAD_FORMULA!" if Homebrew::EnvConfig.disable_load_formula?
 

@@ -833,6 +833,7 @@ module Homebrew
       let(:formula_path) { tap_path/formula_subpath }
 
       before do
+        origin_formula_path.dirname.mkpath
         origin_formula_path.write <<~RUBY
           class Foo#{foo_version} < Formula
             url "https://brew.sh/foo-1.0.tar.gz"

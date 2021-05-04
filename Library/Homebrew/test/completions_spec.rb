@@ -27,11 +27,16 @@ describe Homebrew::Completions do
 
   context "when linking or unlinking completions" do
     def setup_completions(external:)
-      (internal_path/"completions/bash/foo_internal").write "#foo completions"
+      internal_bash_completion = internal_path/"completions/bash"
+      external_bash_completion = external_path/"completions/bash"
+
+      internal_bash_completion.mkpath
+      (internal_bash_completion/"foo_internal").write "#foo completions"
       if external
-        (external_path/"completions/bash/foo_external").write "#foo completions"
-      elsif (external_path/"completions/bash/foo_external").exist?
-        (external_path/"completions/bash/foo_external").delete
+        external_bash_completion.mkpath
+        (external_bash_completion/"foo_external").write "#foo completions"
+      elsif (external_bash_completion/"foo_external").exist?
+        (external_bash_completion/"foo_external").delete
       end
     end
 
