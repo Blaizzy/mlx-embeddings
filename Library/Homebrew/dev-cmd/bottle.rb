@@ -333,10 +333,13 @@ module Homebrew
       f.bottle_specification.rebuild
     else
       ohai "Determining #{f.full_name} bottle rebuild..."
-      versions = FormulaVersions.new(f)
-      rebuilds = versions.bottle_version_map("origin/master")[f.pkg_version]
-      rebuilds.pop if rebuilds.last.to_i.positive?
-      rebuilds.empty? ? 0 : rebuilds.max.to_i + 1
+      FormulaVersions.new(f).formula_at_revision("origin/HEAD") do |upstream_f|
+        if f.pkg_version == upstream_f.pkg_version
+          upstream_f.bottle_specification.rebuild + 1
+        else
+          0
+        end
+      end
     end
 
     filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)

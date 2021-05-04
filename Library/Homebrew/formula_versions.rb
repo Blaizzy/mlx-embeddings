@@ -30,7 +30,9 @@ class FormulaVersions
 
   def rev_list(branch)
     repository.cd do
-      Utils.popen_read("git", "rev-list", "--abbrev-commit", "--remove-empty", branch, "--", entry_name) do |io|
+      rev_list_cmd = ["git", "rev-list", "--abbrev-commit", "--remove-empty"]
+      rev_list_cmd << "--first-parent" if repository != CoreTap.instance.path
+      Utils.popen_read(*rev_list_cmd, branch, "--", entry_name) do |io|
         yield io.readline.chomp until io.eof?
       end
     end
@@ -55,23 +57,5 @@ class FormulaVersions
     nil
   ensure
     Homebrew.raise_deprecation_exceptions = false
-  end
-
-  def bottle_version_map(branch)
-    map = Hash.new { |h, k| h[k] = [] }
-
-    versions_seen = 0
-    rev_list(branch) do |rev|
-      formula_at_revision(rev) do |f|
-        bottle = f.bottle_specification
-        map[f.pkg_version] << bottle.rebuild unless bottle.checksums.empty?
-        versions_seen = (map.keys + [f.pkg_version]).uniq.length
-      end
-      return map if versions_seen > MAX_VERSIONS_DEPTH
-    rescue MacOSVersionError => e
-      odebug "#{e} in #{name} at revision #{rev}"
-      break
-    end
-    map
   end
 end
