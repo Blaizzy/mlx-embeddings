@@ -911,6 +911,23 @@ _brew_formula() {
   __brew_complete_formulae
 }
 
+_brew_generate_man_completions() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --fail-if-not-changed
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *)
+  esac
+}
+
 _brew_gist_logs() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2439,6 +2456,7 @@ _brew() {
     extract) _brew_extract ;;
     fetch) _brew_fetch ;;
     formula) _brew_formula ;;
+    generate-man-completions) _brew_generate_man_completions ;;
     gist-logs) _brew_gist_logs ;;
     home) _brew_home ;;
     homepage) _brew_homepage ;;

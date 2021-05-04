@@ -1059,6 +1059,13 @@ a formula from a tap that is not `homebrew/core` use its fully-qualified form of
 
 Display the path where *`formula`* is located.
 
+### `generate-man-completions` [*`--fail-if-not-changed`*]
+
+Generate Homebrew's manpages.
+
+* `--fail-if-not-changed`:
+  Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
+
 ### `install-bundler-gems`
 
 Install Homebrew's Bundler gems.
@@ -1110,13 +1117,6 @@ casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
   Only check formulae.
 * `--cask`:
   Only check casks.
-
-### `man` [*`--fail-if-not-changed`*]
-
-Generate Homebrew's manpages.
-
-* `--fail-if-not-changed`:
-  Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 
 ### `pr-automerge` [*`options`*]
 
@@ -1548,14 +1548,16 @@ to send a notification when the autoupdate process has finished successfully.
 <br>Prints the current status of this tool.
 
 `brew autoupdate version`
-<br>Output this tool's current version.
+<br>Output this tool's current version, and a short changelog.
 
 * `--upgrade`:
   Automatically upgrade your installed formulae. If the Caskroom exists locally Casks will be upgraded as well. Must be passed with `start`.
 * `--cleanup`:
   Automatically clean brew's cache and logs. Must be passed with `start`.
 * `--enable-notification`:
-  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed & found. Note that currently a new experimental notifier runs automatically on macOS Big Sur, without requiring any external dependencies. Must be passed with `start`.
+  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed & found. Note that currently a new experimental notifier runs automatically on macOS Catalina and newer, without requiring any external dependencies. Must be passed with `start`.
+* `--immediate`:
+  Starts the autoupdate command immediately, instead of waiting for one interval (24 hours by default) to pass first. Must be passed with `start`.
 
 ### `bundle` [*`subcommand`*]
 

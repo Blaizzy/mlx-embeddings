@@ -39,6 +39,7 @@ extract
 fetch
 formula
 formulae
+generate-man-completions
 gist-logs
 help
 home

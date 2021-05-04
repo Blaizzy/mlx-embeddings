@@ -671,6 +671,14 @@ __fish_brew_complete_arg 'formula' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 
+__fish_brew_complete_cmd 'generate-man-completions' 'Generate Homebrew\'s manpages'
+__fish_brew_complete_arg 'generate-man-completions' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'generate-man-completions' -l fail-if-not-changed -d 'Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)'
+__fish_brew_complete_arg 'generate-man-completions' -l help -d 'Show this message'
+__fish_brew_complete_arg 'generate-man-completions' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'generate-man-completions' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'gist-logs' 'Upload logs for a failed build of formula to a new Gist'
 __fish_brew_complete_arg 'gist-logs' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'gist-logs' -l help -d 'Show this message'
