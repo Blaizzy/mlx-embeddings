@@ -20,9 +20,9 @@ module Language
         end
 
         Utils::Shebang::RewriteInfo.new(
-          %r{^#! ?/usr/bin/(env )?perl$},
-          20, # the length of "#! /usr/bin/env perl"
-          perl_path,
+          %r{^#! ?/usr/bin/(?:env )?perl( |$)},
+          21, # the length of "#! /usr/bin/env perl "
+          "#{perl_path}\\1",
         )
       end
     end

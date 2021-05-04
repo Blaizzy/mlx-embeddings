@@ -96,9 +96,9 @@ module Language
       # @private
       def python_shebang_rewrite_info(python_path)
         Utils::Shebang::RewriteInfo.new(
-          %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)?$},
-          28, # the length of "#! /usr/bin/env pythonx.yyy$"
-          python_path,
+          %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)},
+          28, # the length of "#! /usr/bin/env pythonx.yyy "
+          "#{python_path}\\1",
         )
       end
 

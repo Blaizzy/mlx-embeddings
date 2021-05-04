@@ -79,8 +79,8 @@ class Keg
     end
     relocation.add_replacement_pair(:library, HOMEBREW_LIBRARY.to_s, LIBRARY_PLACEHOLDER)
     relocation.add_replacement_pair(:perl,
-                                    %r{\A#!(/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)$}o,
-                                    "#!#{PERL_PLACEHOLDER}")
+                                    %r{\A#!(?:/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)( |$)}o,
+                                    "#!#{PERL_PLACEHOLDER}\\1")
     relocation
   end
   alias generic_prepare_relocation_to_placeholders prepare_relocation_to_placeholders
