@@ -260,6 +260,7 @@ class GitHubPackages
 
     root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
+    root.mkpath
 
     if keep_old
       download(user, token, skopeo, image_uri, root, dry_run: dry_run)
