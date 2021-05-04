@@ -6,10 +6,7 @@ class Caveats
 
   def plist_caveats
     s = []
-    if !f.plist && !f.service? && !keg&.plist_installed?
-      caveat = "#{s.join("\n")}\n" if s.present?
-      return caveat
-    end
+    return if !f.plist && !f.service? && !keg&.plist_installed?
 
     plist_domain = f.plist_path.basename(".plist")
 
