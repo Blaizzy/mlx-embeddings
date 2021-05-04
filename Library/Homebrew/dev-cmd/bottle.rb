@@ -333,14 +333,14 @@ module Homebrew
       f.bottle_specification.rebuild
     else
       ohai "Determining #{f.full_name} bottle rebuild..."
-      FormulaVersions.new(f).formula_at_revision("origin/HEAD") do |prev_f|
-        if f.pkg_version == prev_f.pkg_version
-          prev_f.bottle_specification.rebuild + 1
+      FormulaVersions.new(f).formula_at_revision("origin/HEAD") do |upstream_f|
+        if f.pkg_version == upstream_f.pkg_version
+          upstream_f.bottle_specification.rebuild + 1
         else
-          if f.pkg_version < prev_f.pkg_version
+          if f.pkg_version < upstream_f.pkg_version
             opoo <<~EOS
               Current package version for #{f.full_name} (`#{f.pkg_version}') is lower than version at
-              origin/HEAD (`#{prev_f.pkg_version}').
+              origin/HEAD (`#{upstream_f.pkg_version}').
 
               Defaulting to no rebuild number, but you may wish to verify this.
             EOS
