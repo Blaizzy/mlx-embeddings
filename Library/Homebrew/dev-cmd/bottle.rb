@@ -341,6 +341,8 @@ module Homebrew
         end
       end
     end
+    # FormulaVersions#formula_at_revision returns nil for new formulae
+    rebuild ||= 0
 
     filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)
     local_filename = filename.to_s
