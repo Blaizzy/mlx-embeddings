@@ -231,30 +231,34 @@ describe FormulaInstaller do
       installer = described_class.new(formula)
       expect {
         installer.install_service
-      }.not_to output(/Error: Failed to install plist file/).to_stderr
+      }.not_to output(/Error: Failed to install service files/).to_stderr
 
       expect(path).to exist
     end
 
     it "works if service is set" do
       formula = Testball.new
-      path = formula.plist_path
+      plist_path = formula.plist_path
+      service_path = formula.systemd_service_path
       service = Homebrew::Service.new(formula)
       formula.prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
-      expect(formula).to receive(:service?).twice.and_return(true)
-      expect(formula).to receive(:service).and_return(service)
+      expect(formula).to receive(:service?).exactly(3).and_return(true)
+      expect(formula).to receive(:service).twice.and_return(service)
       expect(formula).to receive(:plist_path).and_call_original
+      expect(formula).to receive(:systemd_service_path).and_call_original
 
       expect(service).to receive(:to_plist).and_return("plist")
+      expect(service).to receive(:to_systemd_unit).and_return("unit")
 
       installer = described_class.new(formula)
       expect {
         installer.install_service
-      }.not_to output(/Error: Failed to install plist file/).to_stderr
+      }.not_to output(/Error: Failed to install service files/).to_stderr
 
-      expect(path).to exist
+      expect(plist_path).to exist
+      expect(service_path).to exist
     end
 
     it "returns without definition" do
@@ -263,13 +267,14 @@ describe FormulaInstaller do
       formula.prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
-      expect(formula).to receive(:service?).twice.and_return(nil)
+      expect(formula).to receive(:service?).exactly(3).and_return(nil)
       expect(formula).not_to receive(:plist_path)
+      expect(formula).not_to receive(:to_systemd_unit)
 
       installer = described_class.new(formula)
       expect {
         installer.install_service
-      }.not_to output(/Error: Failed to install plist file/).to_stderr
+      }.not_to output(/Error: Failed to install service files/).to_stderr
 
       expect(path).not_to exist
     end
