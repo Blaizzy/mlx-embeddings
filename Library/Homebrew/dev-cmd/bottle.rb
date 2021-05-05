@@ -339,7 +339,7 @@ module Homebrew
         else
           0
         end
-      end
+      end || 0
     end
 
     filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)
