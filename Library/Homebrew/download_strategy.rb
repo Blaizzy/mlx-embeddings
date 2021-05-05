@@ -776,18 +776,10 @@ end
 #
 # @api public
 class GitDownloadStrategy < VCSDownloadStrategy
-  SHALLOW_CLONE_ALLOWLIST = [
-    %r{git://},
-    %r{https://github\.com},
-    %r{http://git\.sv\.gnu\.org},
-    %r{http://llvm\.org},
-  ].freeze
-
   def initialize(url, name, version, **meta)
     super
     @ref_type ||= :branch
     @ref ||= "master"
-    @shallow = meta.fetch(:shallow, true)
   end
 
   # @see AbstractDownloadStrategy#source_modified_time
@@ -827,16 +819,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
     update_submodules(timeout: timeout) if submodules?
   end
 
-  def shallow_clone?
-    @shallow && support_depth?
-  end
-
   def shallow_dir?
     (git_dir/"shallow").exist?
-  end
-
-  def support_depth?
-    @ref_type != :revision && SHALLOW_CLONE_ALLOWLIST.any? { |regex| @url =~ regex }
   end
 
   def git_dir
@@ -865,7 +849,6 @@ class GitDownloadStrategy < VCSDownloadStrategy
   sig { returns(T::Array[String]) }
   def clone_args
     args = %w[clone]
-    args << "--depth" << "1" if shallow_clone?
 
     case @ref_type
     when :branch, :tag
@@ -902,7 +885,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
   def update_repo(timeout: nil)
     return if @ref_type != :branch && ref?
 
-    if !shallow_clone? && shallow_dir?
+    # Convert any shallow clone to full clone
+    if shallow_dir?
       command! "git",
                args:    ["fetch", "origin", "--unshallow"],
                chdir:   cached_location,
