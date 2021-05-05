@@ -34,6 +34,22 @@ class Keg
     raise
   end
 
+  def change_rpath(old, new, file)
+    return if old == new
+
+    @require_relocation = true
+    odebug "Changing rpath in #{file}\n  from #{old}\n    to #{new}"
+    MachO::Tools.change_rpath(file, old, new, strict: false)
+    apply_ad_hoc_signature(file)
+  rescue MachO::MachOError
+    onoe <<~EOS
+      Failed changing rpath in #{file}
+        from #{old}
+          to #{new}
+    EOS
+    raise
+  end
+
   def apply_ad_hoc_signature(file)
     return if MacOS.version < :big_sur
     return unless Hardware::CPU.arm?
