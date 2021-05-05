@@ -15,14 +15,15 @@ test_ruby() {
 
 # HOMEBREW_MACOS is set by brew.sh
 # HOMEBREW_PATH is set by global.rb
-# shellcheck disable=SC2154
+# SC2230 falsely flags `which -a`
+# shellcheck disable=SC2154,SC2230
 find_ruby() {
   if [[ -n "${HOMEBREW_MACOS}" ]]
   then
     echo "/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
   else
     IFS=$'\n' # Do word splitting on new lines only
-    for ruby_exec in $(command -v -a ruby 2>/dev/null) $(PATH=${HOMEBREW_PATH} command -v -a ruby 2>/dev/null)
+    for ruby_exec in $(which -a ruby 2>/dev/null) $(PATH=${HOMEBREW_PATH} which -a ruby 2>/dev/null)
     do
       if test_ruby "${ruby_exec}"; then
         echo "${ruby_exec}"
