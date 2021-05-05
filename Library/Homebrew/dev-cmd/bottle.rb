@@ -10,6 +10,7 @@ require "cli/parser"
 require "utils/inreplace"
 require "erb"
 require "archive"
+require "zlib"
 
 BOTTLE_ERB = <<-EOS
   bottle do
@@ -29,6 +30,7 @@ BOTTLE_ERB = <<-EOS
 EOS
 
 MAXIMUM_STRING_MATCHES = 100
+GZIP_BUFFER_SIZE = 64 * 1024
 
 module Homebrew
   extend T::Sig
@@ -440,9 +442,14 @@ module Homebrew
           mv tar_path, relocatable_tar_path
           # Use gzip, faster to compress than bzip2, faster to uncompress than bzip2
           # or an uncompressed tarball (and more bandwidth friendly).
-          safe_system "gzip", "-f", relocatable_tar_path
+          gz = Zlib::GzipWriter.open(bottle_path)
+          gz.mtime = tab.source_modified_time
+          gz.orig_name = relocatable_tar_path
+          File.open(relocatable_tar_path, "rb") do |tarfile|
+            gz.write(tarfile.read(GZIP_BUFFER_SIZE)) until tarfile.eof?
+          end
+          gz.close
           sudo_purge
-          mv "#{relocatable_tar_path}.gz", bottle_path
         end
 
         ohai "Detecting if #{local_filename} is relocatable..." if bottle_path.size > 1 * 1024 * 1024
