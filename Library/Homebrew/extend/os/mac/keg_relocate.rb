@@ -38,10 +38,10 @@ class Keg
 
         if ENV["HOMEBREW_RELOCATE_RPATHS"]
           each_rpath_for(file) do |old_name|
-            if old_name.start_with? relocation.old_cellar
-              new_name = old_name.sub(relocation.old_cellar, relocation.new_cellar)
+            new_name = if old_name.start_with? relocation.old_cellar
+              old_name.sub(relocation.old_cellar, relocation.new_cellar)
             elsif old_name.start_with? relocation.old_prefix
-              new_name = old_name.sub(relocation.old_prefix, relocation.new_prefix)
+              old_name.sub(relocation.old_prefix, relocation.new_prefix)
             end
 
             change_rpath(old_name, new_name, file) if new_name
@@ -125,7 +125,7 @@ class Keg
 
   def each_rpath_for(file, &block)
     rpaths = file.rpaths
-    rpaths.reject! { |fn| fn =~ /^@(loader|executable)_path/ }
+                 .reject { |fn| fn =~ /^@(loader|executable)_path/ }
     rpaths.each(&block)
   end
 
