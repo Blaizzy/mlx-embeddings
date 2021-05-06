@@ -1882,12 +1882,10 @@ _brew_tap() {
       __brewcomp "
       --debug
       --force-auto-update
-      --full
       --help
       --list-pinned
       --quiet
       --repair
-      --shallow
       --verbose
       "
       return
