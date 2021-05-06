@@ -244,9 +244,8 @@ class Tap
   # @param clone_target [String] If passed, it will be used as the clone remote.
   # @param force_auto_update [Boolean, nil] If present, whether to override the
   #   logic that skips non-GitHub repositories during auto-updates.
-  # @param full_clone [Boolean] If set as true, full clone will be used. If unset/nil, means "no change".
   # @param quiet [Boolean] If set, suppress all output.
-  def install(full_clone: true, quiet: false, clone_target: nil, force_auto_update: nil)
+  def install(quiet: false, clone_target: nil, force_auto_update: nil)
     require "descriptions"
     require "readall"
 
@@ -270,11 +269,13 @@ class Tap
     if installed?
       unless force_auto_update.nil?
         config["forceautoupdate"] = force_auto_update
-        return if !full_clone || !shallow?
+        return
       end
 
-      $stderr.ohai "Unshallowing #{name}" unless quiet
-      args = %w[fetch --unshallow]
+      $stderr.ohai "Unshallowing #{name}" if shallow? && !quiet
+      args = %w[fetch]
+      # Git throws an error when attempting to unshallow a full clone
+      args << "--unshallow" if shallow?
       args << "-q" if quiet
       path.cd { safe_system "git", *args }
       return
@@ -288,7 +289,6 @@ class Tap
     # Override possible user configs like:
     #   git config --global clone.defaultRemoteName notorigin
     args << "--origin=origin"
-    args << "--depth=1" unless full_clone
     args << "-q" if quiet
 
     begin
