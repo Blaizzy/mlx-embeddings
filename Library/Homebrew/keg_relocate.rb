@@ -11,6 +11,8 @@ class Keg
   class Relocation
     extend T::Sig
 
+    RELOCATABLE_PATH_REGEX_PREFIX = /(?<![a-zA-Z0-9])/.freeze
+
     def initialize
       @replacement_map = {}
     end
@@ -22,7 +24,7 @@ class Keg
 
     sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String).void }
     def add_replacement_pair(key, old_value, new_value)
-      @replacement_map[key] = [old_value, new_value]
+      @replacement_map[key] = [path_replacement_regex(old_value), new_value]
     end
 
     sig { params(key: Symbol).returns(T::Array[T.any(String, Regexp)]) }
@@ -44,6 +46,12 @@ class Keg
         any_changed ||= changed
       end
       any_changed
+    end
+
+    sig { params(text: T.any(String, Regexp)).returns(Regexp) }
+    def self.path_replacement_regex(value)
+      value = Regexp.escape(value) if value.is_a? String
+      Regexp.new(RELOCATABLE_PATH_REGEX_PREFIX.source + Regexp.escape(value))
     end
   end
 
