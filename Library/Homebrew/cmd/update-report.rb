@@ -169,7 +169,7 @@ module Homebrew
     link_completions_manpages_and_docs
     Tap.each(&:link_completions_and_manpages)
 
-    failed_fetch_dirs = ENV["HOMEBREW_FAILED_FETCH_DIRS"]&.split("\n")
+    failed_fetch_dirs = ENV["HOMEBREW_MISSING_REMOTE_REF_DIRS"]&.split("\n")
     if failed_fetch_dirs.present?
       failed_fetch_taps = failed_fetch_dirs.map { |dir| Tap.from_path(dir) }
 
