@@ -220,7 +220,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
         system "git", "clone", "--shared", system_tap_path, tap.path
         system "git", "-C", tap.path, "checkout", "master"
       else
-        tap.install(full_clone: false, quiet: true)
+        tap.install(quiet: true)
       end
     end
   end
