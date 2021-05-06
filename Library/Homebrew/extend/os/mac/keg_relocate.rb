@@ -35,6 +35,18 @@ class Keg
 
           change_install_name(old_name, new_name, file) if new_name
         end
+
+        if ENV["HOMEBREW_RELOCATE_RPATHS"]
+          each_rpath_for(file) do |old_name|
+            new_name = if old_name.start_with? relocation.old_cellar
+              old_name.sub(relocation.old_cellar, relocation.new_cellar)
+            elsif old_name.start_with? relocation.old_prefix
+              old_name.sub(relocation.old_prefix, relocation.new_prefix)
+            end
+
+            change_rpath(old_name, new_name, file) if new_name
+          end
+        end
       end
     end
   end
@@ -109,6 +121,12 @@ class Keg
     dylibs.reject! { |fn| fn =~ /^@(loader|executable)_path/ }
     dylibs.reject! { |fn| fn =~ /^@rpath/ } unless ENV["HOMEBREW_RELOCATE_METAVARS"]
     dylibs.each(&block)
+  end
+
+  def each_rpath_for(file, &block)
+    rpaths = file.rpaths
+                 .reject { |fn| fn =~ /^@(loader|executable)_path/ }
+    rpaths.each(&block)
   end
 
   def dylib_id_for(file)
