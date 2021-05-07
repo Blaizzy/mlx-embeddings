@@ -60,7 +60,7 @@ module Homebrew
         opoo "`brew tap --full` is now a no-op!"
         # odeprecated "`brew tap --full`"
       end
-      
+
       if args.shallow?
         opoo "`brew tap --shallow` is now a no-op!"
         # odeprecated "`brew tap --shallow`"
