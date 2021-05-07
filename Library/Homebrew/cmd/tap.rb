@@ -58,6 +58,7 @@ module Homebrew
     else
       if args.full?
         opoo "`brew tap --full` is now a no-op!"
+        # TODO: (3.2) Uncomment the following line and remove the `opoo` above
         # odeprecated "`brew tap --full`"
       end
 
