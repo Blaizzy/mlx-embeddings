@@ -27,7 +27,6 @@ module Homebrew
         assumptions, so taps can be cloned from places other than GitHub and
         using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
       EOS
-      # odeprecated "brew tap --full"
       switch "--full",
               description: "Convert a shallow clone to a full clone without untapping. Taps are only cloned as "\
                            "shallow clones if `--shallow` was originally passed."
