@@ -64,6 +64,7 @@ module Homebrew
 
       if args.shallow?
         opoo "`brew tap --shallow` is now a no-op!"
+        # TODO: (3.2) Uncomment the following line and remove the `opoo` above
         # odeprecated "`brew tap --shallow`"
       end
 
