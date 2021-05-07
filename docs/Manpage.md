@@ -536,6 +536,10 @@ simplifies but also limits. This two-argument command makes no
 assumptions, so taps can be cloned from places other than GitHub and
 using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
 
+* `--full`:
+  Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed.
+* `--shallow`:
+  Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.
 * `--force-auto-update`:
   Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons).
 * `--repair`:
