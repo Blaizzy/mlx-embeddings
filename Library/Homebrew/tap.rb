@@ -737,8 +737,6 @@ class CoreTap < Tap
 
   # CoreTap never allows shallow clones (on request from GitHub).
   def install(quiet: false, clone_target: nil, force_auto_update: nil)
-    raise "Shallow clones are not supported for homebrew-core!" unless full_clone
-
     remote = Homebrew::EnvConfig.core_git_remote
     if remote != default_remote
       $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote URL."
