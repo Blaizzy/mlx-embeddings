@@ -53,22 +53,6 @@ describe Cask::Cmd::Uninstall, :cask do
     expect(transmission.config.appdir.join("Caffeine.app")).not_to exist
   end
 
-  it "calls `uninstall` before removing artifacts" do
-    cask = Cask::CaskLoader.load(cask_path("with-uninstall-script-app"))
-
-    Cask::Installer.new(cask).install
-
-    expect(cask).to be_installed
-    expect(cask.config.appdir.join("MyFancyApp.app")).to exist
-
-    expect {
-      described_class.run("with-uninstall-script-app")
-    }.not_to raise_error
-
-    expect(cask).not_to be_installed
-    expect(cask.config.appdir.join("MyFancyApp.app")).not_to exist
-  end
-
   it "can uninstall Casks when the uninstall script is missing, but only when using `--force`" do
     cask = Cask::CaskLoader.load(cask_path("with-uninstall-script-app"))
 
@@ -88,30 +72,6 @@ describe Cask::Cmd::Uninstall, :cask do
     }.not_to raise_error
 
     expect(cask).not_to be_installed
-  end
-
-  context "when Casks use script path with `~` as `HOME`" do
-    let(:home_dir) { mktmpdir }
-    let(:app) { Pathname.new("#{home_dir}/MyFancyApp.app") }
-    let(:cask) { Cask::CaskLoader.load(cask_path("with-uninstall-script-user-relative")) }
-
-    before do
-      ENV["HOME"] = home_dir
-    end
-
-    it "can still uninstall them" do
-      Cask::Installer.new(cask).install
-
-      expect(cask).to be_installed
-      expect(app).to exist
-
-      expect {
-        described_class.run("with-uninstall-script-user-relative")
-      }.not_to raise_error
-
-      expect(cask).not_to be_installed
-      expect(app).not_to exist
-    end
   end
 
   describe "when multiple versions of a cask are installed" do
