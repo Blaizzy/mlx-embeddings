@@ -58,6 +58,16 @@ module Homebrew
     elsif args.no_named?
       puts Tap.names
     else
+      if args.full?
+        opoo "`brew tap --full` is now a no-op!"
+        # odeprecated "`brew tap --full`"
+      end
+      
+      if args.shallow?
+        opoo "`brew tap --shallow` is now a no-op!"
+        # odeprecated "`brew tap --shallow`"
+      end
+
       tap = Tap.fetch(args.named.first)
       begin
         tap.install clone_target:      args.named.second,
