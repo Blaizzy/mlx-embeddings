@@ -56,18 +56,23 @@ module Homebrew
     elsif args.no_named?
       puts Tap.names
     else
-      full_clone = if args.full?
-        true
-      else
-        !args.shallow?
+      if args.full?
+        opoo "`brew tap --full` is now a no-op!"
+        # TODO: (3.2) Uncomment the following line and remove the `opoo` above
+        # odeprecated "`brew tap --full`"
       end
-      odebug "Tapping as #{full_clone ? "full" : "shallow"} clone"
+
+      if args.shallow?
+        opoo "`brew tap --shallow` is now a no-op!"
+        # TODO: (3.2) Uncomment the following line and remove the `opoo` above
+        # odeprecated "`brew tap --shallow`"
+      end
+
       tap = Tap.fetch(args.named.first)
       begin
         tap.install clone_target:      args.named.second,
                     force_auto_update: force_auto_update?(args: args),
-                    quiet:             args.quiet?,
-                    full_clone:        full_clone
+                    quiet:             args.quiet?
       rescue TapRemoteMismatchError => e
         odie e
       rescue TapAlreadyTappedError

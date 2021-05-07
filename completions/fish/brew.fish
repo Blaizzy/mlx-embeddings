@@ -1266,12 +1266,10 @@ __fish_brew_complete_arg 'style; and not __fish_seen_argument -l formula -l form
 __fish_brew_complete_cmd 'tap' 'Tap a formula repository'
 __fish_brew_complete_arg 'tap' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'tap' -l force-auto-update -d 'Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons)'
-__fish_brew_complete_arg 'tap' -l full -d 'Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed'
 __fish_brew_complete_arg 'tap' -l help -d 'Show this message'
 __fish_brew_complete_arg 'tap' -l list-pinned -d 'List all pinned taps'
 __fish_brew_complete_arg 'tap' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'tap' -l repair -d 'Migrate tapped formulae from symlink-based to directory-based structure'
-__fish_brew_complete_arg 'tap' -l shallow -d 'Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration'
 __fish_brew_complete_arg 'tap' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'tap' -a '(__fish_brew_suggest_taps_installed)'
 

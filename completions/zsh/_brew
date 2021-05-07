@@ -1557,12 +1557,10 @@ _brew_tap() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--force-auto-update[Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons)]' \
-    '--full[Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed]' \
     '--help[Show this message]' \
     '--list-pinned[List all pinned taps]' \
     '--quiet[Make some output more quiet]' \
     '--repair[Migrate tapped formulae from symlink-based to directory-based structure]' \
-    '--shallow[Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration]' \
     '--verbose[Make some output more verbose]' \
     - tap \
     '*::tap:__brew_any_tap'
