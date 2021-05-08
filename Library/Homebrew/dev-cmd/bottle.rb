@@ -149,26 +149,34 @@ module Homebrew
         until io.eof?
           str = io.readline.chomp
           next if ignores.any? { |i| i =~ str }
-          next unless str.include? string
+          next unless str.match? Keg.relocatable_path_regex(string)
 
           offset, match = str.split(" ", 2)
-          next if linked_libraries.include? match # Don't bother reporting a string if it was found by otool
 
-          # Do not report matches to files that do not exist.
-          next unless File.exist? match
+          # Some binaries contain strings with lists of files
+          # e.g. `/usr/local/lib/foo:/usr/local/share/foo:/usr/lib/foo`
+          # Each item in the list should be checked separately
+          match.split(":").each do |sub_match|
+            # Not all items in the list may be matches
+            next unless sub_match.match? Keg.relocatable_path_regex(string)
+            next if linked_libraries.include? sub_match # Don't bother reporting a string if it was found by otool
 
-          # Do not report matches to build dependencies.
-          if formula_and_runtime_deps_names.present?
-            begin
-              keg_name = Keg.for(Pathname.new(match)).name
-              next unless formula_and_runtime_deps_names.include? keg_name
-            rescue NotAKegError
-              nil
+            # Do not report matches to files that do not exist.
+            next unless File.exist? sub_match
+
+            # Do not report matches to build dependencies.
+            if formula_and_runtime_deps_names.present?
+              begin
+                keg_name = Keg.for(Pathname.new(sub_match)).name
+                next unless formula_and_runtime_deps_names.include? keg_name
+              rescue NotAKegError
+                nil
+              end
             end
-          end
 
-          result = true
-          text_matches << [match, offset]
+            result = true
+            text_matches << [match, offset] unless text_matches.any? { |text| text.last == offset }
+          end
         end
       end
 
