@@ -66,7 +66,7 @@ describe GitHub do
   end
 
   describe "::get_artifact_url", :needs_network do
-    it "fails to find a nonexistant workflow" do
+    it "fails to find a nonexistent workflow" do
       expect {
         described_class.get_artifact_url(
           described_class.get_workflow_run("Homebrew", "homebrew-core", 1),

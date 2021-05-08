@@ -93,7 +93,7 @@ describe PyPI do
         expect(package_with_version.pypi_info).to eq ["snakemake", old_package_url, old_package_checksum, "5.28.0"]
       end
 
-      it "gets pypi info from a package name with overriden version" do
+      it "gets pypi info from a package name with overridden version" do
         expected_result = ["snakemake", package_url, package_checksum, "5.29.0"]
         expect(package_with_version.pypi_info(version: "5.29.0")).to eq expected_result
       end
@@ -107,7 +107,7 @@ describe PyPI do
         expect(package_from_url.pypi_info).to eq ["snakemake", package_url, package_checksum, "5.29.0"]
       end
 
-      it "gets pypi info from a url with overriden version" do
+      it "gets pypi info from a url with overridden version" do
         expected_result = ["snakemake", old_package_url, old_package_checksum, "5.28.0"]
         expect(package_from_url.pypi_info(version: "5.28.0")).to eq expected_result
       end

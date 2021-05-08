@@ -317,7 +317,7 @@ module Homebrew
           next
         end
 
-        # If we've specifed --prune don't do the (expensive) .stale? check.
+        # If we've specified --prune don't do the (expensive) .stale? check.
         cleanup_path(path) { path.unlink } if !prune? && path.stale?(scrub: scrub?)
       end
 

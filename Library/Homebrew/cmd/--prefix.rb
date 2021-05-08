@@ -46,7 +46,7 @@ module Homebrew
       prefixes = formulae.map do |f|
         next nil if args.installed? && !f.opt_prefix.exist?
 
-        # this case wil be short-circuited by brew.sh logic for a single formula
+        # this case will be short-circuited by brew.sh logic for a single formula
         f.opt_prefix
       end.compact
       puts prefixes

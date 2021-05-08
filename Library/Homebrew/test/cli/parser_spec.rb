@@ -375,14 +375,14 @@ describe Homebrew::CLI::Parser do
       expect(parser.generate_help_text).to match(/This command does something/)
     end
 
-    it "allows the usage banner to be overriden" do
+    it "allows the usage banner to be overridden" do
       parser = described_class.new do
         usage_banner "`test` [foo] <bar>"
       end
       expect(parser.generate_help_text).to match(/test \[foo\] bar/)
     end
 
-    it "allows a usage banner and a description to be overriden" do
+    it "allows a usage banner and a description to be overridden" do
       parser = described_class.new do
         usage_banner "`test` [foo] <bar>"
         description <<~EOS
