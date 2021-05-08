@@ -31,6 +31,10 @@ EOS
 
 MAXIMUM_STRING_MATCHES = 100
 
+ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
+  %r{#{HOMEBREW_LIBRARY}/Homebrew/os/(mac|linux)/pkgconfig},
+].freeze
+
 module Homebrew
   extend T::Sig
 
@@ -479,7 +483,7 @@ module Homebrew
         else
           HOMEBREW_REPOSITORY
         end.to_s
-        if keg_contain?(repository_reference, keg, ignores, args: args)
+        if keg_contain?(repository_reference, keg, ignores + ALLOWABLE_HOMEBREW_REPOSITORY_LINKS, args: args)
           odie "Bottle contains non-relocatable reference to #{repository_reference}!"
         end
 
