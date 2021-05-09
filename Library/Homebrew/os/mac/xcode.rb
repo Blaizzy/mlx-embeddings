@@ -20,7 +20,7 @@ module OS
       # This may be a beta version for a beta macOS.
       sig { params(macos: MacOS::Version).returns(String) }
       def latest_version(macos: MacOS.version)
-        latest_stable = "12.4"
+        latest_stable = "12.5"
         case macos
         when "11" then latest_stable
         when "10.15" then "12.4"
@@ -201,25 +201,30 @@ module OS
 
       sig { returns(String) }
       def detect_version_from_clang_version
-        return "dunno" if DevelopmentTools.clang_version.null?
+        version = DevelopmentTools.clang_version
+
+        return "dunno" if version.null?
 
         # This logic provides a fake Xcode version based on the
         # installed CLT version. This is useful as they are packaged
         # simultaneously so workarounds need to apply to both based on their
         # comparable version.
-        case (DevelopmentTools.clang_version.to_f * 10).to_i
-        when 0       then "dunno"
-        when 60      then "6.0"
-        when 61      then "6.1"
-        when 70      then "7.0"
-        when 73      then "7.3"
-        when 80      then "8.0"
-        when 81      then "8.3"
-        when 90      then "9.2"
-        when 91      then "9.4"
-        when 100     then "10.3"
-        when 110     then "11.5"
-        else              "12.0"
+        case version
+        when "6.0.0"  then "6.2"
+        when "6.1.0"  then "6.4"
+        when "7.0.0"  then "7.1"
+        when "7.0.2"  then "7.2.1"
+        when "7.3.0"  then "7.3.1"
+        when "8.0.0"  then "8.2.1"
+        when "8.1.0"  then "8.3.3"
+        when "9.0.0"  then "9.2"
+        when "9.1.0"  then "9.4.1"
+        when "10.0.0" then "10.1"
+        when "10.0.1" then "10.3"
+        when "11.0.0" then "11.3.1"
+        when "11.0.3" then "11.7"
+        when "12.0.0" then "12.4"
+        else               "12.5"
         end
       end
 
@@ -308,7 +313,8 @@ module OS
       sig { returns(String) }
       def latest_clang_version
         case MacOS.version
-        when "11", "10.15" then "1200.0.32.29"
+        when "11"    then "1205.0.22.9"
+        when "10.15" then "1200.0.32.29"
         when "10.14" then "1100.0.33.17"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
