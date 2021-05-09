@@ -261,6 +261,9 @@ module Superenv
   sig { returns(String) }
   def determine_optflags
     Hardware::CPU.optimization_flags.fetch(effective_arch)
+  rescue KeyError
+    odebug "Building a bottle for custom architecture (#{effective_arch})..."
+    Hardware::CPU.arch_flag(effective_arch)
   end
 
   sig { returns(String) }
