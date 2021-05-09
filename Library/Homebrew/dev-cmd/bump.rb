@@ -53,7 +53,7 @@ module Homebrew
 
     limit = args.limit.to_i if args.limit.present?
 
-    if formulae_and_casks
+    if formulae_and_casks.present?
       Livecheck.load_other_tap_strategies(formulae_and_casks)
 
       ambiguous_casks = []
