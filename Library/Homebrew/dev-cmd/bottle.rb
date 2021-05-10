@@ -153,7 +153,9 @@ module Homebrew
         until io.eof?
           str = io.readline.chomp
           next if ignores.any? { |i| i =~ str }
-          next unless str.match? Keg.relocatable_path_regex(string)
+
+          path_regex = Keg::Relocation.path_regex(string)
+          next unless str.match? path_regex
 
           offset, match = str.split(" ", 2)
 
@@ -162,7 +164,7 @@ module Homebrew
           # Each item in the list should be checked separately
           match.split(":").each do |sub_match|
             # Not all items in the list may be matches
-            next unless sub_match.match? Keg.relocatable_path_regex(string)
+            next unless sub_match.match? path_regex
             next if linked_libraries.include? sub_match # Don't bother reporting a string if it was found by otool
 
             # Do not report matches to files that do not exist.

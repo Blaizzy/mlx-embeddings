@@ -24,7 +24,7 @@ class Keg
 
     sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String).void }
     def add_replacement_pair(key, old_value, new_value)
-      @replacement_map[key] = [path_replacement_regex(old_value), new_value]
+      @replacement_map[key] = [self.class.path_regex(old_value), new_value]
     end
 
     sig { params(key: Symbol).returns(T::Array[T.any(String, Regexp)]) }
@@ -48,10 +48,15 @@ class Keg
       any_changed
     end
 
-    sig { params(text: T.any(String, Regexp)).returns(Regexp) }
-    def self.path_replacement_regex(value)
-      value = Regexp.escape(value) if value.is_a? String
-      Regexp.new(RELOCATABLE_PATH_REGEX_PREFIX.source + Regexp.escape(value))
+    sig { params(value: T.any(String, Regexp)).returns(Regexp) }
+    def self.path_regex(value)
+      value = case value
+      when String
+        Regexp.escape(value)
+      when Regexp
+        value.source
+      end
+      Regexp.new(RELOCATABLE_PATH_REGEX_PREFIX.source + value)
     end
   end
 
