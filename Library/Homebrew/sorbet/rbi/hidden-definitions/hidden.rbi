@@ -11344,6 +11344,10 @@ class MiniPortile
 end
 
 class MiniPortile
+  def self.mingw?(); end
+
+  def self.mswin?(); end
+
   def self.windows?(); end
 end
 
