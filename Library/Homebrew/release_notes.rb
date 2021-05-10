@@ -19,8 +19,13 @@ module ReleaseNotes
     ).lines.grep(/Merge pull request/)
 
     log_output.map! do |s|
-      s.gsub(%r{.*Merge pull request #(\d+) from ([^/]+)/[^>]*(>>)*},
-             "https://github.com/Homebrew/brew/pull/\\1 (@\\2)")
+      matches = s.match(%r{.*Merge pull request #(?<pr>\d+) from (?<user>[^/]+)/[^>]*>> - (?<body>.*)})
+      body = if matches[:body].empty?
+        s.gsub(/.*(Merge pull request .*) >> - .*/, "\\1").chomp
+      else
+        matches[:body]
+      end
+      "https://github.com/Homebrew/brew/pull/#{matches[:pr]} (@#{matches[:user]}) - #{body}\n"
     end
 
     if markdown

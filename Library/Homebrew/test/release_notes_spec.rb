@@ -12,12 +12,15 @@ describe ReleaseNotes do
       system "git", "commit", "--allow-empty", "-m", "Merge pull request #1 from Homebrew/fix", "-m", "Do something"
       system "git", "commit", "--allow-empty", "-m", "make a change"
       system "git", "commit", "--allow-empty", "-m", "Merge pull request #2 from User/fix", "-m", "Do something else"
+      system "git", "commit", "--allow-empty", "-m", "another change"
+      system "git", "commit", "--allow-empty", "-m", "Merge pull request #3 from User/another_change"
     end
   end
 
   describe ".generate_release_notes" do
     it "generates release notes" do
       expect(described_class.generate_release_notes("release-notes-testing", "HEAD")).to eq <<~NOTES
+        https://github.com/Homebrew/brew/pull/3 (@User) - Merge pull request #3 from User/another_change
         https://github.com/Homebrew/brew/pull/2 (@User) - Do something else
         https://github.com/Homebrew/brew/pull/1 (@Homebrew) - Do something
       NOTES
@@ -25,6 +28,7 @@ describe ReleaseNotes do
 
     it "generates markdown release notes" do
       expect(described_class.generate_release_notes("release-notes-testing", "HEAD", markdown: true)).to eq <<~NOTES
+        - [Merge pull request #3 from User/another_change](https://github.com/Homebrew/brew/pull/3) (@User)
         - [Do something else](https://github.com/Homebrew/brew/pull/2) (@User)
         - [Do something](https://github.com/Homebrew/brew/pull/1) (@Homebrew)
       NOTES
