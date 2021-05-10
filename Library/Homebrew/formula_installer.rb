@@ -395,10 +395,6 @@ class FormulaInstaller
 
     return if only_deps?
 
-    if build_bottle? && (arch = @bottle_arch) && Hardware::CPU.optimization_flags.exclude?(arch.to_sym)
-      raise CannotInstallFormulaError, "Unrecognized architecture for --bottle-arch: #{arch}"
-    end
-
     formula.deprecated_flags.each do |deprecated_option|
       old_flag = deprecated_option.old_flag
       new_flag = deprecated_option.current_flag
