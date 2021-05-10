@@ -19,34 +19,21 @@ class Keg
   undef relocate_dynamic_linkage
 
   def relocate_dynamic_linkage(relocation)
-    old_prefix, new_prefix = relocation.replacement_pair_for(:prefix)
-    old_cellar, new_cellar = relocation.replacement_pair_for(:cellar)
-
     mach_o_files.each do |file|
       file.ensure_writable do
         if file.dylib?
-          id = dylib_id_for(file).sub(old_prefix, new_prefix)
-          change_dylib_id(id, file)
+          id = relocated_name_for(dylib_id_for(file), relocation)
+          change_dylib_id(id, file) if id
         end
 
         each_install_name_for(file) do |old_name|
-          if old_name.start_with? old_cellar
-            new_name = old_name.sub(old_cellar, new_cellar)
-          elsif old_name.start_with? old_prefix
-            new_name = old_name.sub(old_prefix, new_prefix)
-          end
-
+          new_name = relocated_name_for(old_name, relocation)
           change_install_name(old_name, new_name, file) if new_name
         end
 
         if ENV["HOMEBREW_RELOCATE_RPATHS"]
           each_rpath_for(file) do |old_name|
-            new_name = if old_name.start_with? old_cellar
-              old_name.sub(old_cellar, new_cellar)
-            elsif old_name.start_with? old_prefix
-              old_name.sub(old_prefix, new_prefix)
-            end
-
+            new_name = relocated_name_for(old_name, relocation)
             change_rpath(old_name, new_name, file) if new_name
           end
         end
@@ -138,6 +125,17 @@ class Keg
     basename = File.basename(file.dylib_id)
     relative_dirname = file.dirname.relative_path_from(path)
     (opt_record/relative_dirname/basename).to_s
+  end
+
+  def relocated_name_for(old_name, relocation)
+    old_prefix, new_prefix = relocation.replacement_pair_for(:prefix)
+    old_cellar, new_cellar = relocation.replacement_pair_for(:cellar)
+
+    if old_name.start_with? old_cellar
+      old_name.sub(old_cellar, new_cellar)
+    elsif old_name.start_with? old_prefix
+      old_name.sub(old_prefix, new_prefix)
+    end
   end
 
   # Matches framework references like `XXX.framework/Versions/YYY/XXX` and
