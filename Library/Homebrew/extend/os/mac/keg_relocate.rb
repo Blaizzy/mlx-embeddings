@@ -19,18 +19,21 @@ class Keg
   undef relocate_dynamic_linkage
 
   def relocate_dynamic_linkage(relocation)
+    old_prefix, new_prefix = relocation.replacement_pair_for(:prefix)
+    old_cellar, new_cellar = relocation.replacement_pair_for(:cellar)
+
     mach_o_files.each do |file|
       file.ensure_writable do
         if file.dylib?
-          id = dylib_id_for(file).sub(relocation.old_prefix, relocation.new_prefix)
+          id = dylib_id_for(file).sub(old_prefix, new_prefix)
           change_dylib_id(id, file)
         end
 
         each_install_name_for(file) do |old_name|
-          if old_name.start_with? relocation.old_cellar
-            new_name = old_name.sub(relocation.old_cellar, relocation.new_cellar)
-          elsif old_name.start_with? relocation.old_prefix
-            new_name = old_name.sub(relocation.old_prefix, relocation.new_prefix)
+          if old_name.start_with? old_cellar
+            new_name = old_name.sub(old_cellar, new_cellar)
+          elsif old_name.start_with? old_prefix
+            new_name = old_name.sub(old_prefix, new_prefix)
           end
 
           change_install_name(old_name, new_name, file) if new_name
@@ -38,10 +41,10 @@ class Keg
 
         if ENV["HOMEBREW_RELOCATE_RPATHS"]
           each_rpath_for(file) do |old_name|
-            new_name = if old_name.start_with? relocation.old_cellar
-              old_name.sub(relocation.old_cellar, relocation.new_cellar)
-            elsif old_name.start_with? relocation.old_prefix
-              old_name.sub(relocation.old_prefix, relocation.new_prefix)
+            new_name = if old_name.start_with? old_cellar
+              old_name.sub(old_cellar, new_cellar)
+            elsif old_name.start_with? old_prefix
+              old_name.sub(old_prefix, new_prefix)
             end
 
             change_rpath(old_name, new_name, file) if new_name
@@ -170,6 +173,25 @@ class Keg
     end
 
     mach_o_files
+  end
+
+  def prepare_relocation_to_locations
+    relocation = generic_prepare_relocation_to_locations
+
+    brewed_perl = runtime_dependencies&.any? { |dep| dep["full_name"] == "perl" && dep["declared_directly"] }
+    perl_path = if brewed_perl
+      "#{HOMEBREW_PREFIX}/opt/perl/bin/perl"
+    else
+      perl_version = if tab["built_on"].present?
+        tab["built_on"]["preferred_perl"]
+      else
+        MacOS.preferred_perl_version
+      end
+      "/usr/bin/perl#{perl_version}"
+    end
+    relocation.add_replacement_pair(:perl, PERL_PLACEHOLDER, perl_path)
+
+    relocation
   end
 
   def recursive_fgrep_args

@@ -729,3 +729,10 @@ class MacOSVersionError < RuntimeError
     super "unknown or unsupported macOS version: #{version.inspect}"
   end
 end
+
+# Raised when `detected_perl_shebang` etc cannot detect the shebang.
+class ShebangDetectionError < RuntimeError
+  def initialize(type, reason)
+    super "Cannot detect #{type} shebang: #{reason}."
+  end
+end

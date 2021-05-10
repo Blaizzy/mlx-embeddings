@@ -6,12 +6,44 @@ class Keg
   CELLAR_PLACEHOLDER = "@@HOMEBREW_CELLAR@@"
   REPOSITORY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@"
   LIBRARY_PLACEHOLDER = "@@HOMEBREW_LIBRARY@@"
+  PERL_PLACEHOLDER = "@@HOMEBREW_PERL@@"
 
-  Relocation = Struct.new(:old_prefix, :old_cellar, :old_repository, :old_library,
-                          :new_prefix, :new_cellar, :new_repository, :new_library) do
-    # Use keyword args instead of positional args for initialization.
-    def initialize(**kwargs)
-      super(*members.map { |k| kwargs[k] })
+  class Relocation
+    extend T::Sig
+
+    def initialize
+      @replacement_map = {}
+    end
+
+    def freeze
+      @replacement_map.freeze
+      super
+    end
+
+    sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String).void }
+    def add_replacement_pair(key, old_value, new_value)
+      @replacement_map[key] = [old_value, new_value]
+    end
+
+    sig { params(key: Symbol).returns(T::Array[T.any(String, Regexp)]) }
+    def replacement_pair_for(key)
+      @replacement_map.fetch(key)
+    end
+
+    sig { params(text: String).void }
+    def replace_text(text)
+      replacements = @replacement_map.values.to_h
+
+      sorted_keys = replacements.keys.sort_by do |key|
+        key.is_a?(String) ? key.length : 999
+      end.reverse
+
+      any_changed = false
+      sorted_keys.each do |key|
+        changed = text.gsub!(key, replacements[key])
+        any_changed ||= changed
+      end
+      any_changed
     end
   end
 
@@ -36,32 +68,42 @@ class Keg
     []
   end
 
+  def prepare_relocation_to_placeholders
+    relocation = Relocation.new
+    relocation.add_replacement_pair(:prefix, HOMEBREW_PREFIX.to_s, PREFIX_PLACEHOLDER)
+    relocation.add_replacement_pair(:cellar, HOMEBREW_CELLAR.to_s, CELLAR_PLACEHOLDER)
+    # when HOMEBREW_PREFIX == HOMEBREW_REPOSITORY we should use HOMEBREW_PREFIX for all relocations to avoid
+    # being unable to differentiate between them.
+    if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
+      relocation.add_replacement_pair(:repository, HOMEBREW_REPOSITORY.to_s, REPOSITORY_PLACEHOLDER)
+    end
+    relocation.add_replacement_pair(:library, HOMEBREW_LIBRARY.to_s, LIBRARY_PLACEHOLDER)
+    relocation.add_replacement_pair(:perl,
+                                    %r{\A#!(?:/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)( |$)}o,
+                                    "#!#{PERL_PLACEHOLDER}\\1")
+    relocation
+  end
+  alias generic_prepare_relocation_to_placeholders prepare_relocation_to_placeholders
+
   def replace_locations_with_placeholders
-    relocation = Relocation.new(
-      old_prefix:     HOMEBREW_PREFIX.to_s,
-      old_cellar:     HOMEBREW_CELLAR.to_s,
-      new_prefix:     PREFIX_PLACEHOLDER,
-      new_cellar:     CELLAR_PLACEHOLDER,
-      old_repository: HOMEBREW_REPOSITORY.to_s,
-      new_repository: REPOSITORY_PLACEHOLDER,
-      old_library:    HOMEBREW_LIBRARY.to_s,
-      new_library:    LIBRARY_PLACEHOLDER,
-    )
+    relocation = prepare_relocation_to_placeholders.freeze
     relocate_dynamic_linkage(relocation)
     replace_text_in_files(relocation)
   end
 
+  def prepare_relocation_to_locations
+    relocation = Relocation.new
+    relocation.add_replacement_pair(:prefix, PREFIX_PLACEHOLDER, HOMEBREW_PREFIX.to_s)
+    relocation.add_replacement_pair(:cellar, CELLAR_PLACEHOLDER, HOMEBREW_CELLAR.to_s)
+    relocation.add_replacement_pair(:repository, REPOSITORY_PLACEHOLDER, HOMEBREW_REPOSITORY.to_s)
+    relocation.add_replacement_pair(:library, LIBRARY_PLACEHOLDER, HOMEBREW_LIBRARY.to_s)
+    relocation.add_replacement_pair(:perl, PERL_PLACEHOLDER, "#{HOMEBREW_PREFIX}/opt/perl/bin/perl")
+    relocation
+  end
+  alias generic_prepare_relocation_to_locations prepare_relocation_to_locations
+
   def replace_placeholders_with_locations(files, skip_linkage: false)
-    relocation = Relocation.new(
-      old_prefix:     PREFIX_PLACEHOLDER,
-      old_cellar:     CELLAR_PLACEHOLDER,
-      old_repository: REPOSITORY_PLACEHOLDER,
-      old_library:    LIBRARY_PLACEHOLDER,
-      new_prefix:     HOMEBREW_PREFIX.to_s,
-      new_cellar:     HOMEBREW_CELLAR.to_s,
-      new_repository: HOMEBREW_REPOSITORY.to_s,
-      new_library:    HOMEBREW_LIBRARY.to_s,
-    )
+    relocation = prepare_relocation_to_locations.freeze
     relocate_dynamic_linkage(relocation) unless skip_linkage
     replace_text_in_files(relocation, files: files)
   end
@@ -73,16 +115,7 @@ class Keg
     files.map(&path.method(:join)).group_by { |f| f.stat.ino }.each_value do |first, *rest|
       s = first.open("rb", &:read)
 
-      replacements = {
-        relocation.old_prefix  => relocation.new_prefix,
-        relocation.old_cellar  => relocation.new_cellar,
-        relocation.old_library => relocation.new_library,
-      }.compact
-      # when HOMEBREW_PREFIX == HOMEBREW_REPOSITORY we should use HOMEBREW_PREFIX for all relocations to avoid
-      # being unable to differentiate between them.
-      replacements[relocation.old_repository] = relocation.new_repository if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
-      changed = s.gsub!(Regexp.union(replacements.keys.sort_by(&:length).reverse), replacements)
-      next unless changed
+      next unless relocation.replace_text(s)
 
       changed_files += [first, *rest].map { |file| file.relative_path_from(path) }
 

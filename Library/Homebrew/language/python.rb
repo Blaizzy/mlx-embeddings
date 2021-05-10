@@ -96,17 +96,19 @@ module Language
       # @private
       def python_shebang_rewrite_info(python_path)
         Utils::Shebang::RewriteInfo.new(
-          %r{^#! ?/usr/bin/(env )?python([23](\.\d{1,2})?)?$},
-          28, # the length of "#! /usr/bin/env pythonx.yyy$"
-          python_path,
+          %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)},
+          28, # the length of "#! /usr/bin/env pythonx.yyy "
+          "#{python_path}\\1",
         )
       end
 
       def detected_python_shebang(formula = self)
         python_deps = formula.deps.map(&:name).grep(/^python(@.*)?$/)
 
-        raise "Cannot detect Python shebang: formula does not depend on Python." if python_deps.empty?
-        raise "Cannot detect Python shebang: formula has multiple Python dependencies." if python_deps.length > 1
+        raise ShebangDetectionError.new("Python", "formula does not depend on Python") if python_deps.empty?
+        if python_deps.length > 1
+          raise ShebangDetectionError.new("Python", "formula has multiple Python dependencies")
+        end
 
         python_shebang_rewrite_info(Formula[python_deps.first].opt_bin/"python3")
       end
