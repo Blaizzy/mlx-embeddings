@@ -204,6 +204,8 @@ class SystemCommand
       Thread.handle_interrupt(ProcessTerminatedInterrupt => :never) do
         each_line_from [raw_stdout, raw_stderr], &block
       end
+      # Handle race conditions with interrupts
+      Thread.current.report_on_exception = false
     rescue ProcessTerminatedInterrupt
       nil
     end
