@@ -64,8 +64,6 @@ module OS
     def preferred_perl_version
       if version >= :big_sur
         "5.30"
-      elsif version == :catalina
-        "5.28"
       else
         "5.18"
       end
