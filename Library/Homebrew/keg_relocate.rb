@@ -248,12 +248,11 @@ class Keg
 
   def self.text_matches_in_file(file, string, ignores, linked_libraries, formula_and_runtime_deps_names)
     text_matches = []
+    path_regex = Relocation.path_regex(string)
     Utils.popen_read("strings", "-t", "x", "-", file.to_s) do |io|
       until io.eof?
         str = io.readline.chomp
         next if ignores.any? { |i| i =~ str }
-
-        path_regex = Relocation.path_regex(string)
         next unless str.match? path_regex
 
         offset, match = str.split(" ", 2)
