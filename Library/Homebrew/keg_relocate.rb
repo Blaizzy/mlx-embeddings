@@ -34,7 +34,7 @@ class Keg
     end
 
     def start_with_old_value?(key, text)
-      text.match?(/^#{@replacement_map.fetch(key)}/)
+      text.match?(/^#{@replacement_map.fetch(key).first}/)
     end
 
     sig { params(text: String).void }
