@@ -9726,9 +9726,8 @@ class Keg::DirectoryNotWritableError
 end
 
 class Keg::Relocation
-  def self.[](*_); end
-
-  def self.members(); end
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Keg
