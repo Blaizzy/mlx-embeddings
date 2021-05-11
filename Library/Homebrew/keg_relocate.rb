@@ -22,14 +22,19 @@ class Keg
       super
     end
 
-    sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String).void }
-    def add_replacement_pair(key, old_value, new_value)
-      @replacement_map[key] = [self.class.path_regex(old_value), new_value]
+    sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String, path: T::Boolean).void }
+    def add_replacement_pair(key, old_value, new_value, path: false)
+      old_value = self.class.path_regex(old_value) if path
+      @replacement_map[key] = [old_value, new_value]
     end
 
     sig { params(key: Symbol).returns(T::Array[T.any(String, Regexp)]) }
     def replacement_pair_for(key)
       @replacement_map.fetch(key)
+    end
+
+    def start_with_old_value?(key, text)
+      text.match?(/^#{@replacement_map.fetch(key)}/)
     end
 
     sig { params(text: String).void }
@@ -83,14 +88,14 @@ class Keg
 
   def prepare_relocation_to_placeholders
     relocation = Relocation.new
-    relocation.add_replacement_pair(:prefix, HOMEBREW_PREFIX.to_s, PREFIX_PLACEHOLDER)
-    relocation.add_replacement_pair(:cellar, HOMEBREW_CELLAR.to_s, CELLAR_PLACEHOLDER)
+    relocation.add_replacement_pair(:prefix, HOMEBREW_PREFIX.to_s, PREFIX_PLACEHOLDER, path: true)
+    relocation.add_replacement_pair(:cellar, HOMEBREW_CELLAR.to_s, CELLAR_PLACEHOLDER, path: true)
     # when HOMEBREW_PREFIX == HOMEBREW_REPOSITORY we should use HOMEBREW_PREFIX for all relocations to avoid
     # being unable to differentiate between them.
     if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
-      relocation.add_replacement_pair(:repository, HOMEBREW_REPOSITORY.to_s, REPOSITORY_PLACEHOLDER)
+      relocation.add_replacement_pair(:repository, HOMEBREW_REPOSITORY.to_s, REPOSITORY_PLACEHOLDER, path: true)
     end
-    relocation.add_replacement_pair(:library, HOMEBREW_LIBRARY.to_s, LIBRARY_PLACEHOLDER)
+    relocation.add_replacement_pair(:library, HOMEBREW_LIBRARY.to_s, LIBRARY_PLACEHOLDER, path: true)
     relocation.add_replacement_pair(:perl,
                                     %r{\A#!(?:/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)( |$)}o,
                                     "#!#{PERL_PLACEHOLDER}\\1")
