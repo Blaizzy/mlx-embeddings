@@ -33,10 +33,6 @@ class Keg
       @replacement_map.fetch(key)
     end
 
-    def start_with_old_value?(key, text)
-      text.match?(/^#{@replacement_map.fetch(key).first}/)
-    end
-
     sig { params(text: String).void }
     def replace_text(text)
       replacements = @replacement_map.values.to_h

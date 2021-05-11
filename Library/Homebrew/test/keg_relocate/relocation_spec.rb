@@ -59,17 +59,6 @@ describe Keg::Relocation do
     REPLACED
   end
 
-  specify "#start_with_old_value?" do
-    relocation = setup_relocation
-
-    expect(relocation.start_with_old_value?(:prefix, "#{HOMEBREW_PREFIX}/foo")).to be true
-    expect(relocation.start_with_old_value?(:prefix, "foo#{HOMEBREW_PREFIX}/bar")).to be false
-    expect(relocation.start_with_old_value?(:cellar, "#{HOMEBREW_CELLAR}/foo")).to be true
-    expect(relocation.start_with_old_value?(:cellar, "foo#{HOMEBREW_CELLAR}/bar")).to be false
-    expect(relocation.start_with_old_value?(:repository_placeholder, "@@HOMEBREW_REPOSITORY@@/foo")).to be true
-    expect(relocation.start_with_old_value?(:library_placeholder, "foo@@HOMEBREW_LIBRARY@@/bar")).to be false
-  end
-
   specify "::path_regex" do
     expect(described_class.path_regex(prefix)).to eq escaped_prefix
     expect(described_class.path_regex("foo.bar")).to eq(/(?<![a-zA-Z0-9])foo\.bar/)
