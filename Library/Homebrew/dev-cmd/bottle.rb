@@ -146,45 +146,8 @@ module Homebrew
         end
       end
 
-      text_matches = []
-
-      # Use strings to search through the file for each string
-      Utils.popen_read("strings", "-t", "x", "-", file.to_s) do |io|
-        until io.eof?
-          str = io.readline.chomp
-          next if ignores.any? { |i| i =~ str }
-
-          path_regex = Keg::Relocation.path_regex(string)
-          next unless str.match? path_regex
-
-          offset, match = str.split(" ", 2)
-
-          # Some binaries contain strings with lists of files
-          # e.g. `/usr/local/lib/foo:/usr/local/share/foo:/usr/lib/foo`
-          # Each item in the list should be checked separately
-          match.split(":").each do |sub_match|
-            # Not all items in the list may be matches
-            next unless sub_match.match? path_regex
-            next if linked_libraries.include? sub_match # Don't bother reporting a string if it was found by otool
-
-            # Do not report matches to files that do not exist.
-            next unless File.exist? sub_match
-
-            # Do not report matches to build dependencies.
-            if formula_and_runtime_deps_names.present?
-              begin
-                keg_name = Keg.for(Pathname.new(sub_match)).name
-                next unless formula_and_runtime_deps_names.include? keg_name
-              rescue NotAKegError
-                nil
-              end
-            end
-
-            result = true
-            text_matches << [match, offset] unless text_matches.any? { |text| text.last == offset }
-          end
-        end
-      end
+      text_matches = Keg.text_matches_in_file(file, string, ignores, linked_libraries, formula_and_runtime_deps_names)
+      result = true if text_matches.any?
 
       next if !args.verbose? || text_matches.empty?
 
