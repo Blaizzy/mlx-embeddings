@@ -1142,21 +1142,9 @@ class FormulaInstaller
       downloader.stage
     end
 
-    keg = Keg.new(formula.prefix)
     Tab.clear_cache
 
-    tab = if (tab_attributes = formula.bottle_tab_attributes.presence)
-      Tab.from_file_content(tab_attributes.to_json, keg/Tab::FILENAME)
-    else
-      Tab.for_keg(keg)
-    end
-
-    skip_linkage = formula.bottle_specification.skip_relocation?
-    # TODO: Remove `with_env` when bottles are built with RPATH relocation enabled
-    # https://github.com/Homebrew/brew/issues/11329
-    with_env(HOMEBREW_RELOCATE_RPATHS: "1") do
-      keg.replace_placeholders_with_locations tab.changed_files, skip_linkage: skip_linkage
-    end
+    tab = Utils::Bottles.load_tab(formula)
 
     # fill in missing/outdated parts of the tab
     # keep in sync with Tab#to_bottle_json
@@ -1175,6 +1163,14 @@ class FormulaInstaller
     tab.source["tap_git_head"] = formula.tap&.git_head
     tab.tap = formula.tap
     tab.write
+
+    keg = Keg.new(formula.prefix)
+    skip_linkage = formula.bottle_specification.skip_relocation?
+    # TODO: Remove `with_env` when bottles are built with RPATH relocation enabled
+    # https://github.com/Homebrew/brew/issues/11329
+    with_env(HOMEBREW_RELOCATE_RPATHS: "1") do
+      keg.replace_placeholders_with_locations tab.changed_files, skip_linkage: skip_linkage
+    end
   end
 
   sig { params(output: T.nilable(String)).void }
