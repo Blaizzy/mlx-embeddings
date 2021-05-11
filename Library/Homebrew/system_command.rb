@@ -200,23 +200,26 @@ class SystemCommand
     write_input_to(raw_stdin)
     raw_stdin.close_write
 
+    thread_ready_queue = Queue.new
+    thread_done_queue = Queue.new
     line_thread = Thread.new do
       Thread.handle_interrupt(ProcessTerminatedInterrupt => :never) do
+        thread_ready_queue << true
         each_line_from [raw_stdout, raw_stderr], &block
       end
-      # Handle race conditions with interrupts
-      Thread.current.report_on_exception = false
+      thread_done_queue.pop
     rescue ProcessTerminatedInterrupt
       nil
     end
-    Thread.pass
 
     end_time = Time.now + @timeout if @timeout
     raise Timeout::Error if raw_wait_thr.join(end_time&.remaining).nil?
 
     @status = raw_wait_thr.value
 
+    thread_ready_queue.pop
     line_thread.raise ProcessTerminatedInterrupt.new
+    thread_done_queue << true
     line_thread.join
   rescue Interrupt
     Process.kill("INT", pid) if pid && !sudo?
