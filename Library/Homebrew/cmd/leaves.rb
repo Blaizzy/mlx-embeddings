@@ -20,6 +20,8 @@ module Homebrew
       switch "-p", "--installed-as-dependency",
              description: "Only list leaves that were installed as dependencies."
 
+      conflicts "--installed-on-request", "--installed-as-dependency"
+
       named_args :none
     end
   end
