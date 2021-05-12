@@ -93,6 +93,12 @@ module Cask
           end
         end
 
+        manual_installer_casks = outdated_casks.select do |cask|
+          cask.artifacts.any?(Artifact::Installer::ManualInstaller)
+        end
+
+        outdated_casks -= manual_installer_casks
+
         return false if outdated_casks.empty?
 
         if casks.empty? && !greedy
