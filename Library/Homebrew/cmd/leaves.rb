@@ -40,6 +40,8 @@ module Homebrew
     leaves_list.select!(&:installed_on_request?) if args.installed_on_request?
     leaves_list.select!(&:installed_as_dependency?) if args.installed_as_dependency?
 
-    leaves_list.map(&:full_name).sort.each(&method(:puts))
+    leaves_list.map(&:full_name)
+               .sort
+               .each(&method(:puts))
   end
 end
