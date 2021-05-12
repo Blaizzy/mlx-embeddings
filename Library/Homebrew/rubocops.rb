@@ -12,6 +12,7 @@ require "rubocop-rails"
 require "rubocop-rspec"
 require "rubocop-sorbet"
 
+require "rubocops/io_read"
 require "rubocops/shell_commands"
 
 require "rubocops/formula_desc"

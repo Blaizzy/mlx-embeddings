@@ -54,6 +54,10 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
+# enable all Homebrew custom cops
+Homebrew:
+  Enabled: true
+
 # makes DSL usage ugly.
 Layout/SpaceBeforeBrackets:
   Exclude:
