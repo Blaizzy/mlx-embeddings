@@ -13,7 +13,6 @@ require "patch"
 require "compilers"
 require "os/mac/version"
 require "extend/on_os"
-require "bintray"
 
 class SoftwareSpec
   extend T::Sig
@@ -461,8 +460,6 @@ class BottleSpecification
     if var.nil?
       @root_url ||= if (github_packages_url = GitHubPackages.root_url_if_match(Homebrew::EnvConfig.bottle_domain))
         github_packages_url
-      elsif Homebrew::EnvConfig.bottle_domain.match?(::Bintray::URL_REGEX)
-        "#{Homebrew::EnvConfig.bottle_domain}/#{Utils::Bottles::Bintray.repository(tap)}"
       else
         Homebrew::EnvConfig.bottle_domain
       end

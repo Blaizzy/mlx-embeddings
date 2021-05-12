@@ -177,7 +177,7 @@ __brew_internal_commands() {
     'log:Show the `git log` for formula, or show the log for the Homebrew repository if no formula is provided'
     'man:Generate Homebrew'\''s manpages'
     'migrate:Migrate renamed packages to new names, where formula are old names of packages'
-    'mirror:Reupload the stable URL of a formula to Bintray for use as a mirror'
+    'mirror:Reupload the stable URL of a formula for use as a mirror'
     'missing:Check the given formula kegs for missing dependencies'
     'options:Show install options specific to formula'
     'outdated:List installed casks and formulae that have an updated version available'
@@ -721,7 +721,7 @@ _brew_dispatch_build_bottle() {
     '(--linux)--macos[Version of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
-    '--upload[Upload built bottles to Bintray]' \
+    '--upload[Upload built bottles]' \
     '--verbose[Make some output more verbose]' \
     '--workflow[Dispatch specified workflow (default: `dispatch-build-bottle.yml`)]' \
     - formula \
@@ -1191,15 +1191,10 @@ _brew_migrate() {
 # brew mirror
 _brew_mirror() {
   _arguments \
-    '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
-    '--bintray-repo[Upload to the specified Bintray repository (default: `mirror`)]' \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
-    '--no-publish[Upload to Bintray, but don'\''t publish]' \
     '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]' \
-    - formula \
-    '*::formula:__brew_formulae'
+    '--verbose[Make some output more verbose]'
 }
 
 # brew missing
@@ -1301,11 +1296,9 @@ _brew_pr_publish() {
 # brew pr-pull
 _brew_pr_pull() {
   _arguments \
-    '(--bintray-org)--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
+    '--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--artifact[Download artifacts with the specified name (default: `bottles`)]' \
     '(--clean)--autosquash[Automatically reformat and reword commits in the pull request to our preferred format]' \
-    '--bintray-mirror[Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`)]' \
-    '(--archive-item)--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--branch-okay[Do not warn if pulling to a branch besides the repository default (useful for testing)]' \
     '(--autosquash)--clean[Do not amend the commits from pull requests]' \
     '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
@@ -1332,7 +1325,6 @@ _brew_pr_pull() {
 _brew_pr_upload() {
   _arguments \
     '--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
-    '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \

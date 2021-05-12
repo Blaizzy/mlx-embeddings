@@ -10,7 +10,6 @@ require "cli/parser"
 require "utils/inreplace"
 require "erb"
 require "archive"
-require "bintray"
 
 BOTTLE_ERB = <<-EOS
   bottle do
@@ -583,15 +582,6 @@ module Homebrew
         },
       },
     }
-
-    if bottle.root_url.match?(::Bintray::URL_REGEX) ||
-       # TODO: given the naming: ideally the Internet Archive uploader wouldn't use this.
-       bottle.root_url.start_with?("#{::Archive::URL_PREFIX}/")
-      json[f.full_name]["bintray"] = {
-        "package"    => Utils::Bottles::Bintray.package(f.name),
-        "repository" => Utils::Bottles::Bintray.repository(tap),
-      }
-    end
 
     puts "Writing #{filename.json}" if args.verbose?
     json_path = Pathname(filename.json)

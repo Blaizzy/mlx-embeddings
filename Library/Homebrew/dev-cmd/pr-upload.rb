@@ -3,7 +3,6 @@
 
 require "cli/parser"
 require "archive"
-require "bintray"
 require "github_packages"
 require "github_releases"
 
@@ -34,8 +33,6 @@ module Homebrew
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--archive-item=",
              description: "Upload to the specified Internet Archive item (default: `homebrew`)."
-      flag   "--bintray-org=",
-             description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--github-org=",
              description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
       flag   "--root-url=",
@@ -62,12 +59,6 @@ module Homebrew
   def internet_archive?(bottles_hash)
     @internet_archive ||= bottles_hash.values.all? do |bottle_hash|
       bottle_hash["bottle"]["root_url"].start_with? "#{Archive::URL_PREFIX}/"
-    end
-  end
-
-  def bintray?(bottles_hash)
-    @bintray ||= bottles_hash.values.all? do |bottle_hash|
-      bottle_hash["bottle"]["root_url"].match? Bintray::URL_REGEX
     end
   end
 
@@ -126,8 +117,6 @@ module Homebrew
         nil
       elsif internet_archive?(bottles_hash)
         "Internet Archive"
-      elsif bintray?(bottles_hash)
-        "Bintray"
       elsif github_releases?(bottles_hash)
         "GitHub Releases"
       else
@@ -176,14 +165,6 @@ module Homebrew
       archive = Archive.new(item: archive_item)
       archive.upload_bottles(bottles_hash,
                              warn_on_error: args.warn_on_upload_failure?)
-    elsif bintray?(bottles_hash)
-      odeprecated "brew pr-upload for Bintray (Bintray will be shut down on 1st May 2021)"
-
-      bintray_org = args.bintray_org || "homebrew"
-      bintray = Bintray.new(org: bintray_org)
-      bintray.upload_bottles(bottles_hash,
-                             publish_package: !args.no_publish?,
-                             warn_on_error:   args.warn_on_upload_failure?)
     elsif github_releases?(bottles_hash)
       github_releases = GitHubReleases.new
       github_releases.upload_bottles(bottles_hash)

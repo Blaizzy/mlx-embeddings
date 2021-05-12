@@ -87,7 +87,7 @@ fetch() {
     curl_args[${#curl_args[*]}]="-q"
   fi
 
-  # Authorization is needed for GitHub Packages but harmless on Bintray/GitHub Releases
+  # Authorization is needed for GitHub Packages but harmless on GitHub Releases
   curl_args+=(
     --fail
     --remote-time
@@ -145,8 +145,7 @@ Failed to download ${VENDOR_URL} and ${VENDOR_URL2}!
 
 Do not file an issue on GitHub about this; you will need to figure out for
 yourself what issue with your internet connection restricts your access to
-both Bintray (used for Homebrew bottles/binary packages) and GitHub
-(used for Homebrew updates).
+GitHub (used for Homebrew updates and binary packages).
 EOS
     fi
 
