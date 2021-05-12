@@ -3,13 +3,13 @@
 
 require "pathname"
 
-HOMEBREW_LIBRARY_PATH = Pathname(__dir__).realpath.freeze
+HOMEBREW_LIBRARY_PATH = Pathname(__dir__).parent.realpath.freeze
 
-require_relative "utils/gems"
+require_relative "../utils/gems"
 Homebrew.setup_gem_environment!(setup_path: false)
 
 $LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
-require_relative "vendor/bundle/bundler/setup"
+require_relative "../vendor/bundle/bundler/setup"
 $LOAD_PATH.uniq!
 
 # Block any gem loading by bypassing rubygem's `require`.
@@ -21,5 +21,3 @@ if Kernel.private_method_defined?(:gem_original_require)
   Kernel.send(:define_method, :require, Kernel.instance_method(:gem_original_require))
   Kernel.send(:private, :require)
 end
-
-require_relative "homebrew_bootsnap"

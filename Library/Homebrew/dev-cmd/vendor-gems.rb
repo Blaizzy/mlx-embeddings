@@ -29,6 +29,8 @@ module Homebrew
 
     Homebrew.install_bundler!
 
+    ENV["BUNDLE_WITH"] = "sorbet"
+
     ohai "cd #{HOMEBREW_LIBRARY_PATH}"
     HOMEBREW_LIBRARY_PATH.cd do
       if args.update

@@ -8,6 +8,7 @@ Style/Documentation:
     - "cask/macos.rb"
     - "cli/args.rb"
     - "cli/parser.rb"
+    - "default_prefix.rb"
     - "global.rb"
     - "keg_relocate.rb"
     - "os/linux/global.rb"

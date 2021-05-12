@@ -51,7 +51,7 @@ module Homebrew
 
     args = typecheck_args.parse
 
-    Homebrew.install_bundler_gems!
+    Homebrew.install_bundler_gems!(groups: ["sorbet"])
 
     HOMEBREW_LIBRARY_PATH.cd do
       if args.update?

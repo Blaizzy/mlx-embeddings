@@ -12,9 +12,6 @@ class MissingEnvironmentVariables < RuntimeError; end
 #
 # @api private
 module EnvVar
-  extend T::Sig
-
-  sig { params(env: String).returns(String) }
   def self.[](env)
     raise MissingEnvironmentVariables, "#{env} was not exported!" unless ENV[env]
 
@@ -22,15 +19,11 @@ module EnvVar
   end
 end
 
-require "extend/git_repository"
-
 # Where we link under
 HOMEBREW_PREFIX = Pathname(EnvVar["HOMEBREW_PREFIX"]).freeze
 
 # Where `.git` is found
-HOMEBREW_REPOSITORY = Pathname(EnvVar["HOMEBREW_REPOSITORY"])
-                      .extend(GitRepositoryExtension)
-                      .freeze
+HOMEBREW_REPOSITORY = Pathname(EnvVar["HOMEBREW_REPOSITORY"]).freeze
 
 # Where we store most of Homebrew, taps, and various metadata
 HOMEBREW_LIBRARY = Pathname(EnvVar["HOMEBREW_LIBRARY"]).freeze

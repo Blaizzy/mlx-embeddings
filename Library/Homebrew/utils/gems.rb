@@ -52,7 +52,7 @@ module Homebrew
 
   def setup_gem_environment!(gem_home: nil, gem_bindir: nil, setup_path: true)
     # Match where our bundler gems are.
-    gem_home ||= "#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
+    gem_home ||= "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
     Gem.paths = {
       "GEM_HOME" => gem_home,
       "GEM_PATH" => gem_home,
@@ -128,23 +128,34 @@ module Homebrew
     )
   end
 
-  def install_bundler_gems!(only_warn_on_failure: false, setup_path: true)
+  def install_bundler_gems!(only_warn_on_failure: false, setup_path: true, groups: [])
     old_path = ENV["PATH"]
     old_gem_path = ENV["GEM_PATH"]
     old_gem_home = ENV["GEM_HOME"]
     old_bundle_gemfile = ENV["BUNDLE_GEMFILE"]
+    old_bundle_with = ENV["BUNDLE_WITH"]
 
     install_bundler!
 
+    require "settings"
+
+    # Combine the passed groups with the ones stored in settings
+    groups |= (Homebrew::Settings.read(:gemgroups)&.split(";") || [])
+    groups.sort!
+
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
-    @bundle_installed ||= begin
+    ENV["BUNDLE_WITH"] = groups.join(" ")
+
+    if @bundle_installed_groups != groups
       bundle = File.join(find_in_path("bundle"), "bundle")
       bundle_check_output = `#{bundle} check 2>&1`
       bundle_check_failed = !$CHILD_STATUS.success?
 
       # for some reason sometimes the exit code lies so check the output too.
-      if bundle_check_failed || bundle_check_output.include?("Install missing gems")
-        unless system bundle, "install"
+      bundle_installed = if bundle_check_failed || bundle_check_output.include?("Install missing gems")
+        if system bundle, "install"
+          true
+        else
           message = <<~EOS
             failed to run `#{bundle} install`!
           EOS
@@ -153,9 +164,15 @@ module Homebrew
           else
             odie_if_defined message
           end
+          false
         end
       else
         true
+      end
+
+      if bundle_installed
+        Homebrew::Settings.write(:gemgroups, groups.join(";"))
+        @bundle_installed_groups = groups
       end
     end
 
@@ -167,6 +184,7 @@ module Homebrew
       ENV["GEM_PATH"] = old_gem_path
       ENV["GEM_HOME"] = old_gem_home
       ENV["BUNDLE_GEMFILE"] = old_bundle_gemfile
+      ENV["BUNDLE_WITH"] = old_bundle_with
     end
   end
 end

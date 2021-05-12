@@ -1,26 +1,25 @@
 # typed: true
 # frozen_string_literal: true
 
-require "system_command"
+require "utils/popen"
 
 module Homebrew
   # Helper functions for reading and writing settings.
   #
   # @api private
   module Settings
-    extend T::Sig
-    include SystemCommand::Mixin
-
     module_function
 
-    sig { params(setting: T.any(String, Symbol), repo: Pathname).returns(T.nilable(String)) }
     def read(setting, repo: HOMEBREW_REPOSITORY)
       return unless (repo/".git/config").exist?
 
-      system_command("git", args: ["config", "--get", "homebrew.#{setting}"], chdir: repo).stdout.chomp.presence
+      value = Utils.popen_read("git", "-C", repo.to_s, "config", "--get", "homebrew.#{setting}").chomp
+
+      return if value.strip.empty?
+
+      value
     end
 
-    sig { params(setting: T.any(String, Symbol), value: T.any(String, T::Boolean), repo: Pathname).void }
     def write(setting, value, repo: HOMEBREW_REPOSITORY)
       return unless (repo/".git/config").exist?
 
@@ -28,16 +27,15 @@ module Homebrew
 
       return if read(setting, repo: repo) == value
 
-      system_command! "git", args: ["config", "--replace-all", "homebrew.#{setting}", value], chdir: repo
+      Kernel.system("git", "-C", repo.to_s, "config", "--replace-all", "homebrew.#{setting}", value, exception: true)
     end
 
-    sig { params(setting: T.any(String, Symbol), repo: Pathname).void }
     def delete(setting, repo: HOMEBREW_REPOSITORY)
       return unless (repo/".git/config").exist?
 
       return if read(setting, repo: repo).blank?
 
-      system_command! "git", args: ["config", "--unset-all", "homebrew.#{setting}"], chdir: repo
+      Kernel.system("git", "-C", repo.to_s, "config", "--unset-all", "homebrew.#{setting}", exception: true)
     end
   end
 end
