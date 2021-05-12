@@ -22,8 +22,8 @@ class Keg
     mach_o_files.each do |file|
       file.ensure_writable do
         if file.dylib?
-          id = relocated_name_for(dylib_id_for(file), relocation)
-          change_dylib_id(id, file) if id
+          id = relocated_name_for(file.dylib_id, relocation)
+          change_dylib_id(id, file)
         end
 
         each_install_name_for(file) do |old_name|
