@@ -37,17 +37,8 @@ module Homebrew
 
     leaves_list = Formula.installed_formulae_with_no_dependents
 
-    if args.installed_on_request?
-      leaves_list.select! do |l|
-        installed_on_request?(l)
-      end
-    end
-
-    if args.installed_as_dependency?
-      leaves_list.select! do |l|
-        installed_as_dependency?(l)
-      end
-    end
+    leaves_list.select!(&:installed_on_request?) if args.installed_on_request?
+    leaves_list.select!(&:installed_as_dependency?) if args.installed_as_dependency?
 
     leaves_list.map(&:full_name).sort.each(&method(:puts))
   end
