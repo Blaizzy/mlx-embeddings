@@ -44,4 +44,27 @@ describe "brew leaves" do
         .and be_a_success
     end
   end
+
+  context "when there are installed formulae with dependencies", :integration_test do
+    it "prints leaves installed as dependencies with --installed-as-dependency" do
+      setup_test_formula "testball"
+      install_test_formula "testball1", 'depends_on "testball"'
+
+      expect { brew "leaves", "--installed-as-dependency" }
+        .to output("testball\n").to_stdout
+        .and not_to_output.to_stderr
+        .and be_a_success
+    end
+  end
+
+  context "when there are installed formulae without dependencies", :integration_test do
+    it "prints leaves installed on request with --installed-on-request" do
+      install_test_formula "testball"
+
+      expect { brew "leaves", "--installed-on-request" }
+        .to output("testball\n").to_stdout
+        .and not_to_output.to_stderr
+        .and be_a_success
+    end
+  end
 end
