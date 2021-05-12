@@ -313,9 +313,14 @@ the installed formulae or, every 30 days, for all formulae.
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 
-### `leaves`
+### `leaves` [*`--installed-on-request`*] [*`--installed-as-dependency`*]
 
 List installed formulae that are not dependencies of another installed formula.
+
+* `-r`, `--installed-on-request`:
+  Only list leaves that were manually installed.
+* `-p`, `--installed-as-dependency`:
+  Only list leaves that were installed as dependencies.
 
 ### `link`, `ln` [*`options`*] *`installed_formula`* [...]
 

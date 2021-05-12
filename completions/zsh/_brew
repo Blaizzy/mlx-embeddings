@@ -1037,6 +1037,8 @@ _brew_leaves() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
+    '(--installed-on-request)--installed-as-dependency[Only list leaves that were installed as dependencies]' \
+    '(--installed-as-dependency)--installed-on-request[Only list leaves that were manually installed]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
 }

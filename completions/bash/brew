@@ -1170,6 +1170,8 @@ _brew_leaves() {
       __brewcomp "
       --debug
       --help
+      --installed-as-dependency
+      --installed-on-request
       --quiet
       --verbose
       "
