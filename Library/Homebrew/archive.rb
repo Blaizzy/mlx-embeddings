@@ -130,8 +130,14 @@ class Archive
            warn_on_error: T.nilable(T::Boolean)).void
   }
   def upload_bottles(bottles_hash, warn_on_error: false)
-    bottles_hash.each do |_formula_name, bottle_hash|
-      directory = bottle_hash["bintray"]["repository"]
+    bottles_hash.each do |formula_full_name, bottle_hash|
+      _, formula_tap_repo, = formula_full_name.split("/")
+      directory = if formula_tap_repo
+        "bottles-#{tap.repo}"
+      else
+        "bottles"
+      end
+
       bottle_count = bottle_hash["bottle"]["tags"].length
 
       bottle_hash["bottle"]["tags"].each_value do |tag_hash|

@@ -24,7 +24,7 @@ module Homebrew
       flag   "--workflow=",
              description: "Dispatch specified workflow (default: `dispatch-build-bottle.yml`)."
       switch "--upload",
-             description: "Upload built bottles to Bintray."
+             description: "Upload built bottles."
       switch "--linux",
              description: "Dispatch bottle for Linux (using GitHub runners)."
 

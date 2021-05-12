@@ -2893,11 +2893,6 @@ class Binding
   def irb(); end
 end
 
-class Bintray
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Bootsnap
   def bundler?(); end
   VERSION = ::T.let(nil, ::T.untyped)
@@ -8160,10 +8155,6 @@ module Homebrew::EnvConfig
   def self.bat?(); end
 
   def self.bat_config_path(); end
-
-  def self.bintray_key(); end
-
-  def self.bintray_user(); end
 
   def self.bootsnap?(); end
 

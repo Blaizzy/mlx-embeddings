@@ -215,24 +215,6 @@ module Utils
       end
     end
 
-    # Helper functions for bottles hosted on Bintray.
-    module Bintray
-      def self.package(formula_name)
-        package_name = formula_name.to_s.dup
-        package_name.tr!("+", "x")
-        package_name.sub!(/(.)@(\d)/, "\\1:\\2") # Handle foo@1.2 style formulae.
-        package_name
-      end
-
-      def self.repository(tap = nil)
-        if tap.nil? || tap.core_tap?
-          "bottles"
-        else
-          "bottles-#{tap.repo}"
-        end
-      end
-    end
-
     # Collector for bottle specifications.
     class Collector
       extend T::Sig

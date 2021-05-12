@@ -55,8 +55,6 @@ module Homebrew
              description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--archive-item=",
              description: "Upload to the specified Internet Archive item (default: `homebrew`)."
-      flag   "--bintray-org=",
-             description: "Upload to the specified Bintray organisation (default: `homebrew`)."
       flag   "--tap=",
              description: "Target tap repository (default: `homebrew/core`)."
       flag   "--root-url=",
@@ -64,9 +62,6 @@ module Homebrew
       flag   "--root-url-using=",
              description: "Use the specified download strategy class for downloading the bottle's URL instead of "\
                           "Homebrew's default."
-      flag   "--bintray-mirror=",
-             description: "Use the specified Bintray repository to automatically mirror stable URLs "\
-                          "defined in the formulae (default: `mirror`)."
       comma_array "--workflows=",
                   description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). "\
                                "Can be a comma-separated list to include multiple workflows."
@@ -74,7 +69,6 @@ module Homebrew
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
       conflicts "--clean", "--autosquash"
-      conflicts "--archive-item", "--bintray-org"
 
       named_args :pull_request, min: 1
     end
@@ -308,26 +302,6 @@ module Homebrew
     end
   end
 
-  def mirror_formulae(tap, original_commit, org:, repo:, args:, publish: true)
-    changed_formulae(tap, original_commit).select do |f|
-      stable_urls = [f.stable.url] + f.stable.mirrors
-      stable_urls.grep(%r{^https://dl.bintray.com/#{org}/#{repo}/}) do |mirror_url|
-        if args.dry_run?
-          puts "brew mirror #{f.full_name}"
-        else
-          odebug "Mirroring #{mirror_url}"
-          mirror_args = ["mirror", f.full_name]
-          mirror_args << "--debug" if args.debug?
-          mirror_args << "--verbose" if args.verbose?
-          mirror_args << "--bintray-org=#{org}" if org
-          mirror_args << "--bintray-repo=#{repo}" if repo
-          mirror_args << "--no-publish" unless publish
-          system HOMEBREW_BREW_FILE, *mirror_args
-        end
-      end
-    end
-  end
-
   def changed_formulae(tap, original_commit)
     if Homebrew::EnvConfig.disable_load_formula?
       opoo "Can't check if updated bottles are necessary as formula loading is disabled!"
@@ -368,8 +342,6 @@ module Homebrew
     workflows = args.workflows.presence || ["tests.yml"]
     artifact = args.artifact || "bottles"
     archive_item = args.archive_item
-    bintray_org = args.bintray_org || "homebrew"
-    mirror_repo = args.bintray_mirror || "mirror"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
     Utils::Git.set_name_email!(committer: args.committer.blank?)
@@ -403,12 +375,6 @@ module Homebrew
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
             signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
-
-            unless args.no_upload?
-              mirror_formulae(tap, original_commit,
-                              org: bintray_org, repo: mirror_repo, publish: !args.no_publish?,
-                              args: args)
-            end
           end
 
           unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
@@ -447,11 +413,7 @@ module Homebrew
           upload_args << "--committer=#{args.committer}" if args.committer
           upload_args << "--root-url=#{args.root_url}" if args.root_url
           upload_args << "--root-url-using=#{args.root_url_using}" if args.root_url_using
-          upload_args << if archive_item.present?
-            "--archive-item=#{archive_item}"
-          else
-            "--bintray-org=#{bintray_org}"
-          end
+          upload_args << "--archive-item=#{archive_item}" if archive_item.present?
           safe_system HOMEBREW_BREW_FILE, *upload_args
         end
       end

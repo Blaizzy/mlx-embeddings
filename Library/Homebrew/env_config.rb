@@ -33,12 +33,6 @@ module Homebrew
         description:  "Use this as the `bat` configuration file.",
         default_text: "`$HOME/.bat/config`.",
       },
-      HOMEBREW_BINTRAY_KEY:                   {
-        description: "Use this API key when accessing the Bintray API (where bottles are stored).",
-      },
-      HOMEBREW_BINTRAY_USER:                  {
-        description: "Use this username when accessing the Bintray API (where bottles are stored).",
-      },
       HOMEBREW_BOOTSNAP:                      {
         description: "If set, use Bootsnap to speed up repeated `brew` calls. "\
                      "A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).",

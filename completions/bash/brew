@@ -1383,11 +1383,8 @@ _brew_mirror() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --bintray-org
-      --bintray-repo
       --debug
       --help
-      --no-publish
       --quiet
       --verbose
       "
@@ -1395,7 +1392,6 @@ _brew_mirror() {
       ;;
     *)
   esac
-  __brew_complete_formulae
 }
 
 _brew_missing() {
@@ -1545,8 +1541,6 @@ _brew_pr_pull() {
       --archive-item
       --artifact
       --autosquash
-      --bintray-mirror
-      --bintray-org
       --branch-okay
       --clean
       --committer
@@ -1580,7 +1574,6 @@ _brew_pr_upload() {
     -*)
       __brewcomp "
       --archive-item
-      --bintray-org
       --committer
       --debug
       --dry-run

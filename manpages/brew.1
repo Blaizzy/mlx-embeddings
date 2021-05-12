@@ -1449,7 +1449,7 @@ Dispatch specified workflow (default: \fBdispatch\-build\-bottle\.yml\fR)\.
 .
 .TP
 \fB\-\-upload\fR
-Upload built bottles to Bintray\.
+Upload built bottles\.
 .
 .TP
 \fB\-\-linux\fR
@@ -1668,10 +1668,6 @@ Download artifacts with the specified name (default: \fBbottles\fR)\.
 Upload to the specified Internet Archive item (default: \fBhomebrew\fR)\.
 .
 .TP
-\fB\-\-bintray\-org\fR
-Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
-.
-.TP
 \fB\-\-tap\fR
 Target tap repository (default: \fBhomebrew/core\fR)\.
 .
@@ -1682,10 +1678,6 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 .TP
 \fB\-\-root\-url\-using\fR
 Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default\.
-.
-.TP
-\fB\-\-bintray\-mirror\fR
-Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: \fBmirror\fR)\.
 .
 .TP
 \fB\-\-workflows\fR
@@ -1725,10 +1717,6 @@ Specify a committer name and email in \fBgit\fR\'s standard author format\.
 .TP
 \fB\-\-archive\-item\fR
 Upload to the specified Internet Archive item (default: \fBhomebrew\fR)\.
-.
-.TP
-\fB\-\-bintray\-org\fR
-Upload to the specified Bintray organisation (default: \fBhomebrew\fR)\.
 .
 .TP
 \fB\-\-github\-org\fR
@@ -2517,18 +2505,6 @@ Use this as the \fBbat\fR configuration file\.
 .
 .IP
 \fIDefault:\fR \fB$HOME/\.bat/config\fR\.
-.
-.TP
-\fBHOMEBREW_BINTRAY_KEY\fR
-.
-.br
-Use this API key when accessing the Bintray API (where bottles are stored)\.
-.
-.TP
-\fBHOMEBREW_BINTRAY_USER\fR
-.
-.br
-Use this username when accessing the Bintray API (where bottles are stored)\.
 .
 .TP
 \fBHOMEBREW_BOOTSNAP\fR

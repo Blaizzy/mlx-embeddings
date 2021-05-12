@@ -680,10 +680,6 @@ def stub_hash(parameters)
                   "sha256":"#{parameters[:sha256]}"
                }
             }
-         },
-         "bintray":{
-            "package":"#{parameters[:name]}",
-            "repository":"bottles"
          }
       }
     }

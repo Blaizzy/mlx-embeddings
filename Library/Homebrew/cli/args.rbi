@@ -184,11 +184,6 @@ module Homebrew
       def workflow; end
 
       sig { returns(T.nilable(String)) }
-      def bintray_org; end
-
-      sig { returns(T.nilable(String)) }
-      def bintray_repo; end
-      sig { returns(T.nilable(String)) }
       def package_name; end
 
       sig { returns(T.nilable(String)) }
