@@ -424,8 +424,16 @@ Disable/enable quarantining of downloads (default: enabled)\.
 \fB\-\-skip\-cask\-deps\fR
 Skip installing cask dependencies\.
 .
-.SS "\fBleaves\fR"
+.SS "\fBleaves\fR [\fI\-\-installed\-on\-request\fR] [\fI\-\-installed\-as\-dependency\fR]"
 List installed formulae that are not dependencies of another installed formula\.
+.
+.TP
+\fB\-r\fR, \fB\-\-installed\-on\-request\fR
+Only list leaves that were manually installed\.
+.
+.TP
+\fB\-p\fR, \fB\-\-installed\-as\-dependency\fR
+Only list leaves that were installed as dependencies\.
 .
 .SS "\fBlink\fR, \fBln\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
 Symlink all of \fIformula\fR\'s installed files into Homebrew\'s prefix\. This is done automatically when you install formulae but can be useful for DIY installations\.

@@ -845,6 +845,8 @@ __fish_brew_complete_arg 'irb' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_cmd 'leaves' 'List installed formulae that are not dependencies of another installed formula'
 __fish_brew_complete_arg 'leaves' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'leaves' -l help -d 'Show this message'
+__fish_brew_complete_arg 'leaves' -l installed-as-dependency -d 'Only list leaves that were installed as dependencies'
+__fish_brew_complete_arg 'leaves' -l installed-on-request -d 'Only list leaves that were manually installed'
 __fish_brew_complete_arg 'leaves' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'leaves' -l verbose -d 'Make some output more verbose'
 
