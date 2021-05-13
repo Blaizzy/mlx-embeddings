@@ -55,6 +55,14 @@ class Keg
           new_name = fixed_name(file, bad_name)
           change_install_name(bad_name, new_name, file) unless new_name == bad_name
         end
+
+        each_linkage_for(file, :rpaths) do |bad_name|
+          # Strip rpaths rooted in the build directory
+          next if !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
+                  !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s)
+
+          delete_rpath(bad_name, file)
+        end
       end
     end
 

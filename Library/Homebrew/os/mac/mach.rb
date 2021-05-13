@@ -10,7 +10,7 @@ require "os/mac/architecture_list"
 module MachOShim
   extend Forwardable
 
-  delegate [:dylib_id, :rpaths, :delete_rpath] => :macho
+  delegate [:dylib_id, :rpaths] => :macho
 
   def macho
     @macho ||= MachO.open(to_s)
