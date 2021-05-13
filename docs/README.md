@@ -61,6 +61,7 @@
 - [Maintainers: Avoiding Burnout](Maintainers-Avoiding-Burnout.md)
 
 - [Maintainer Guidelines](Maintainer-Guidelines.md)
+- [`brew` Maintainer Guide](Brew-Maintainer-Guide.md)
 - [Core Maintainer Guide](Core-Maintainer-Guide.md)
 - [Linux Maintainer Guide](Linux-Maintainer-Guide.md)
 - [Cask Maintainer Guide](Cask-Maintainer-Guide.md)

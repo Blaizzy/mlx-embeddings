@@ -7,123 +7,37 @@ definitely not a beginner’s guide.
 
 Maybe you were looking for the [Formula Cookbook](Formula-Cookbook.md)?
 
-This document is current practice. If you wish to change or discuss any of the below: open a PR to suggest a change.
+## Overview
+
+All Homebrew maintainers are encouraged to contribute to all parts of the project,
+but there are four main teams that maintainers tend to be a part of:
+
+- `brew` maintainers: this team maintains the [`Homebrew/brew`](https://github.com/Homebrew/brew) repository.
+  See the [`brew` Maintainer Guide](Brew-Maintainer-Guide.md) for more details about being a `brew` maintainer.
+- Core maintainers: this team maintains the [`Homebrew/homebrew-core`](https://github.com/Homebrew/homebrew-core)
+  repository. See the [Core Maintainer Guide](Core-Maintainer-Guide.md) for more details about being a core maintainer.
+- Linux maintainers: this team maintains the [`Homebrew/linuxbrew-core`](https://github.com/Homebrew/linuxbrew-core)
+  repository. See the [Linux Maintainer Guide](Linux-Maintainer-Guide.md) for more details about being a Linux maintainer.
+- Cask maintainers: this team maintains the [`Homebrew/homebrew-cask`](https://github.com/Homebrew/homebrew-cask),
+  [`Homebrew/homebrew-cask-drivers`](https://github.com/Homebrew/homebrew-cask-drivers),
+  [`Homebrew/homebrew-cask-fonts`](https://github.com/Homebrew/homebrew-cask-fonts) and
+  [`Homebrew/homebrew-cask-versions`](https://github.com/Homebrew/homebrew-cask-versions) repositories.
+  See the [Cask Maintainer Guide](Cask-Maintainer-Guide.md) for more details about being a cask maintainer.
+
+These documents are meant to serve as guiding principles. As a maintainer, you can make a call to either
+request changes from a contributor or help them out based on their comfort and previous contributions.
+Remember, as a team we [Prioritise Maintainers Over Users](Maintainers-Avoiding-Burnout.md) to avoid
+burnout. If you wish to change or discuss any of the guidelines: open a PR to suggest a change.
 
 ## Mission
 
 Homebrew aims to be the missing package manager for macOS (and Linux). Its primary goal is to be useful to as many people as possible, while remaining maintainable to a professional, high standard by a small group of volunteers. Where possible and sensible, it should seek to use features of macOS to blend in with the macOS and Apple ecosystems. On Linux and Windows, it should seek to be as self-contained as possible.
-
-## Quick checklist
-
-This is all that really matters:
-
-- Ensure the name seems reasonable.
-- Add aliases.
-- Ensure it uses `keg_only :provided_by_macos` if it already comes with macOS.
-- Ensure it is not a library that can be installed with
-  [gem](https://en.wikipedia.org/wiki/RubyGems),
-  [cpan](https://en.wikipedia.org/wiki/Cpan) or
-  [pip](https://pip.pypa.io/en/stable/).
-- Ensure that any dependencies are accurate and minimal. We don't need to
-  support every possible optional feature for the software.
-- When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See [below](#how-to-merge-without-bottles) for more details.
-- Use `brew pr-publish` or `brew pr-pull` otherwise, which adds messages to auto-close pull requests and pull bottles built by the Brew Test Bot.
-- Thank people for contributing.
-
-Checking dependencies is important, because they will probably stick around
-forever. Nobody really checks if they are necessary or not.
-
-Depend on as little stuff as possible. Disable X11 functionality if possible.
-For example, we build Wireshark, but not the heavy GUI.
-
-For [some formulae](https://github.com/Homebrew/homebrew-core/search?q=%22homebrew%2Fmirror%22&unscoped_q=%22homebrew%2Fmirror%22),
-we mirror the tarballs to our own BinTray automatically as part of the
-bottle publish CI run.
-
-Homebrew is about Unix software. Stuff that builds to an `.app` should
-be in Homebrew Cask instead.
-
-### Naming
-
-The name is the strictest item, because avoiding a later name change is
-desirable.
-
-Choose a name that’s the most common name for the project.
-For example, we initially chose `objective-caml` but we should have chosen `ocaml`.
-Choose what people say to each other when talking about the project.
-
-Add other names as aliases as symlinks in `Aliases` in the tap root. Ensure the
-name referenced on the homepage is one of these, as it may be different and have
-underscores and hyphens and so on.
-
-We now accept versioned formulae as long as they [meet the requirements](Versions.md).
-
-### Merging, rebasing, cherry-picking
-
-Merging should be done in the `Homebrew/brew` repository to preserve history and GPG commit signing.
-
-PRs modifying formulae that don't need bottles or making changes that don't
-require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows.
-See the [table below](#how-to-merge-without-bottles) for more details.
-
-Otherwise, you should use `brew pr-pull` (or `rebase`/`cherry-pick` contributions).
-
-Don’t `rebase` until you finally `push`. Once `master` is pushed, you can’t
-`rebase`: **you’re a maintainer now!**
-
-Cherry-picking changes the date of the commit, which kind of sucks.
-
-Don’t `merge` unclean branches. So if someone is still learning `git` and
-their branch is filled with nonsensical merges, then `rebase` and squash
-the commits. Our main branch history should be useful to other people,
-not confusing.
-
-Here’s a flowchart for managing a PR which is ready to merge:
-
-![Flowchart for managing pull requests](assets/img/docs/managing-pull-requests.drawio.svg)
-
-#### How to merge without bottles
-
-Here are guidelines about when to use squash & merge versus rebase & merge. These options should only be used with PRs where bottles are not needed or affected.
-
-| | PR modified a single formula | PR modifies multiple formulae |
-|---|---|---|
-| **Commits look good** | rebase & merge _or_ squash & merge | rebase & merge |
-| **Commits need work** | squash & merge | manually merge using the command line |
-
-### Testing
-
-We need to at least check that it builds. Use the [Brew Test Bot](Brew-Test-Bot.md) for this.
-
-Verify the formula works if possible. If you can’t tell (e.g. if it’s a
-library) trust the original contributor, it worked for them, so chances are it
-is fine. If you aren’t an expert in the tool in question, you can’t really
-gauge if the formula installed the program correctly. At some point an expert
-will come along, cry blue murder that it doesn’t work, and fix it. This is how
-open source works. Ideally, request a `test do` block to test that
-functionality is consistently available.
-
-If the formula uses a repository, then the `url` parameter should have a
-tag or revision. `url`s have versions and are stable (not yet
-implemented!).
-
-Don't merge any formula updates with failing `brew test`s. If a `test do` block
-is failing it needs to be fixed. This may involve replacing more involved tests
-with those that are more reliable. This is fine: false positives are better than
-false negatives as we don't want to teach maintainers to merge red PRs. If the
-test failure is believed to be due to a bug in Homebrew/brew or the CI system,
-that bug must be fixed, or worked around in the formula to yield a passing test,
-before the PR can be merged.
 
 ## Common “gotchas”
 
 1. [Ensure you have set your username and email address properly](https://help.github.com/articles/setting-your-email-in-git/)
 2. Sign off cherry-picks if you amended them (use `git -s`)
 3. If the commit fixes a bug, use “Fixes \#104” syntax to close the bug report and link to the commit
-
-### Duplicates
-
-We now accept stuff that comes with macOS as long as it uses `keg_only :provided_by_macos` to be keg-only by default.
 
 ### Add comments
 
@@ -142,21 +56,6 @@ Whitespace corrections (to Ruby standard etc.) are allowed (in fact this
 is a good opportunity to do it) provided the line itself has some kind
 of modification that is not whitespace in it. But be careful about
 making changes to inline patches—make sure they still apply.
-
-### Adding or updating formulae
-
-Only one maintainer is necessary to approve and merge the addition of a new or updated formula which passes CI. However, if the formula addition or update proves controversial the maintainer who adds it will be expected to answer requests and fix problems that arise with it in future.
-
-### Removing formulae
-
-Formulae that:
-
-- work on at least 2/3 of our supported macOS versions in the default Homebrew prefix
-- do not require patches rejected by upstream to work
-- do not have known security vulnerabilities or CVEs for the version we package
-- are shown to be still installed by users in our analytics with a `BuildError` rate of <25%
-
-should not be removed from Homebrew. The exception to this rule are [versioned formulae](Versions.md) for which there are higher standards of usage and a maximum number of versions for a given formula.
 
 ### Closing issues/PRs
 
@@ -178,7 +77,7 @@ PRs that are an "enhancement" to existing functionality i.e. not a fix to an ope
 
 If a maintainer is on holiday/vacation/sick during this time and leaves comments after they are back: please treat post-merge PR comments and feedback as you would left within the time period and follow-up with another PR to address their requests (if agreed).
 
-The vast majority of Homebrew/homebrew-core PRs are bug fixes or version bumps so can be self-merged once CI has completed.
+The vast majority of `Homebrew/homebrew-core` PRs are bug fixes or version bumps so can be self-merged once CI has completed.
 
 ## Communication
 
