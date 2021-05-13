@@ -32,6 +32,10 @@ EOS
 MAXIMUM_STRING_MATCHES = 100
 GZIP_BUFFER_SIZE = 64 * 1024
 
+ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
+  %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Homebrew/os/(mac|linux)/pkgconfig},
+].freeze
+
 module Homebrew
   extend T::Sig
 
@@ -143,35 +147,8 @@ module Homebrew
         end
       end
 
-      text_matches = []
-
-      # Use strings to search through the file for each string
-      Utils.popen_read("strings", "-t", "x", "-", file.to_s) do |io|
-        until io.eof?
-          str = io.readline.chomp
-          next if ignores.any? { |i| i =~ str }
-          next unless str.include? string
-
-          offset, match = str.split(" ", 2)
-          next if linked_libraries.include? match # Don't bother reporting a string if it was found by otool
-
-          # Do not report matches to files that do not exist.
-          next unless File.exist? match
-
-          # Do not report matches to build dependencies.
-          if formula_and_runtime_deps_names.present?
-            begin
-              keg_name = Keg.for(Pathname.new(match)).name
-              next unless formula_and_runtime_deps_names.include? keg_name
-            rescue NotAKegError
-              nil
-            end
-          end
-
-          result = true
-          text_matches << [match, offset]
-        end
-      end
+      text_matches = Keg.text_matches_in_file(file, string, ignores, linked_libraries, formula_and_runtime_deps_names)
+      result = true if text_matches.any?
 
       next if !args.verbose? || text_matches.empty?
 
@@ -477,7 +454,7 @@ module Homebrew
         else
           HOMEBREW_REPOSITORY
         end.to_s
-        if keg_contain?(repository_reference, keg, ignores, args: args)
+        if keg_contain?(repository_reference, keg, ignores + ALLOWABLE_HOMEBREW_REPOSITORY_LINKS, args: args)
           odie "Bottle contains non-relocatable reference to #{repository_reference}!"
         end
 

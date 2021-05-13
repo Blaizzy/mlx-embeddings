@@ -11,6 +11,8 @@ class Keg
   class Relocation
     extend T::Sig
 
+    RELOCATABLE_PATH_REGEX_PREFIX = /(?<![a-zA-Z0-9])/.freeze
+
     def initialize
       @replacement_map = {}
     end
@@ -20,8 +22,9 @@ class Keg
       super
     end
 
-    sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String).void }
-    def add_replacement_pair(key, old_value, new_value)
+    sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String, path: T::Boolean).void }
+    def add_replacement_pair(key, old_value, new_value, path: false)
+      old_value = self.class.path_to_regex(old_value) if path
       @replacement_map[key] = [old_value, new_value]
     end
 
@@ -44,6 +47,17 @@ class Keg
         any_changed ||= changed
       end
       any_changed
+    end
+
+    sig { params(path: T.any(String, Regexp)).returns(Regexp) }
+    def self.path_to_regex(path)
+      path = case path
+      when String
+        Regexp.escape(path)
+      when Regexp
+        path.source
+      end
+      Regexp.new(RELOCATABLE_PATH_REGEX_PREFIX.source + path)
     end
   end
 
@@ -70,14 +84,14 @@ class Keg
 
   def prepare_relocation_to_placeholders
     relocation = Relocation.new
-    relocation.add_replacement_pair(:prefix, HOMEBREW_PREFIX.to_s, PREFIX_PLACEHOLDER)
-    relocation.add_replacement_pair(:cellar, HOMEBREW_CELLAR.to_s, CELLAR_PLACEHOLDER)
+    relocation.add_replacement_pair(:prefix, HOMEBREW_PREFIX.to_s, PREFIX_PLACEHOLDER, path: true)
+    relocation.add_replacement_pair(:cellar, HOMEBREW_CELLAR.to_s, CELLAR_PLACEHOLDER, path: true)
     # when HOMEBREW_PREFIX == HOMEBREW_REPOSITORY we should use HOMEBREW_PREFIX for all relocations to avoid
     # being unable to differentiate between them.
     if HOMEBREW_PREFIX != HOMEBREW_REPOSITORY
-      relocation.add_replacement_pair(:repository, HOMEBREW_REPOSITORY.to_s, REPOSITORY_PLACEHOLDER)
+      relocation.add_replacement_pair(:repository, HOMEBREW_REPOSITORY.to_s, REPOSITORY_PLACEHOLDER, path: true)
     end
-    relocation.add_replacement_pair(:library, HOMEBREW_LIBRARY.to_s, LIBRARY_PLACEHOLDER)
+    relocation.add_replacement_pair(:library, HOMEBREW_LIBRARY.to_s, LIBRARY_PLACEHOLDER, path: true)
     relocation.add_replacement_pair(:perl,
                                     %r{\A#!(?:/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)( |$)}o,
                                     "#!#{PERL_PLACEHOLDER}\\1")
@@ -226,6 +240,45 @@ class Keg
     end
 
     symlink_files
+  end
+
+  def self.text_matches_in_file(file, string, ignores, linked_libraries, formula_and_runtime_deps_names)
+    text_matches = []
+    path_regex = Relocation.path_to_regex(string)
+    Utils.popen_read("strings", "-t", "x", "-", file.to_s) do |io|
+      until io.eof?
+        str = io.readline.chomp
+        next if ignores.any? { |i| i =~ str }
+        next unless str.match? path_regex
+
+        offset, match = str.split(" ", 2)
+
+        # Some binaries contain strings with lists of files
+        # e.g. `/usr/local/lib/foo:/usr/local/share/foo:/usr/lib/foo`
+        # Each item in the list should be checked separately
+        match.split(":").each do |sub_match|
+          # Not all items in the list may be matches
+          next unless sub_match.match? path_regex
+          next if linked_libraries.include? sub_match # Don't bother reporting a string if it was found by otool
+
+          # Do not report matches to files that do not exist.
+          next unless File.exist? sub_match
+
+          # Do not report matches to build dependencies.
+          if formula_and_runtime_deps_names.present?
+            begin
+              keg_name = Keg.for(Pathname.new(sub_match)).name
+              next unless formula_and_runtime_deps_names.include? keg_name
+            rescue NotAKegError
+              nil
+            end
+          end
+
+          text_matches << [match, offset] unless text_matches.any? { |text| text.last == offset }
+        end
+      end
+    end
+    text_matches
   end
 
   def self.file_linked_libraries(_file, _string)
