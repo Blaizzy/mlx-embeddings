@@ -118,6 +118,13 @@ module Utils
       result
     end
 
+    def parse_headers(headers)
+      headers.split("\n").to_h do |h|
+        partitioned = h.partition(": ")
+        [partitioned.first, partitioned.last]
+      end
+    end
+
     def curl_download(*args, to: nil, try_partial: true, **options)
       destination = Pathname(to)
       destination.dirname.mkpath
