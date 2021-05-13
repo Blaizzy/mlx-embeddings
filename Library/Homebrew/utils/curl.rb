@@ -130,23 +130,22 @@ module Utils
       destination.dirname.mkpath
 
       if try_partial
-        range_stdout = curl_output("--location", "--range", "0-1",
-                                   "--dump-header", "-",
-                                   "--write-out", "%\{http_code}",
+        range_stdout = curl_output("--location", "--dump-header", "-",
                                    "--head", *args, **options).stdout
-        headers, _, http_status = range_stdout.partition("\r\n\r\n")
+        headers = parse_headers(range_stdout.split("\r\n\r\n").first)
 
-        supports_partial_download = http_status.to_i == 206 # Partial Content
-        if supports_partial_download &&
+        # Any value for `accept-ranges` other than none indicates that the server supports range requests.
+        # Its absence indicates no support.
+        supports_partial = headers["accept-ranges"] && headers["accept-ranges"] != "none"
+
+        if supports_partial &&
            destination.exist? &&
-           destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)&.[](1)&.to_i
+           destination.size == headers["content-length"].to_i
           return # We've already downloaded all the bytes
         end
-      else
-        supports_partial_download = false
       end
 
-      continue_at = if destination.exist? && supports_partial_download
+      continue_at = if destination.exist? && supports_partial
         "-"
       else
         0
