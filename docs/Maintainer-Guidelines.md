@@ -5,7 +5,7 @@ access** to Homebrew’s repository and help merge the contributions of
 others. You may find what is written here interesting, but it’s
 definitely not a beginner’s guide.
 
-Maybe you were looking for the [Formula Cookbook](Formula-Cookbook.md)?
+Maybe you were looking for the [Formula Cookbook](Formula-Cookbook.md) or [Cask Cookbook](Cask-Cookbook.md)?
 
 ## Overview
 
