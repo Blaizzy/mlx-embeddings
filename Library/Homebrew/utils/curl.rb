@@ -134,7 +134,7 @@ module Utils
                                    "--head", *args, **options).stdout
         headers = parse_headers(range_stdout.split("\r\n\r\n").first)
 
-        # Any value for `accept-ranges` other than none indicates that the server supports range requests.
+        # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
         # Its absence indicates no support.
         supports_partial = headers["accept-ranges"] && headers["accept-ranges"] != "none"
 
@@ -145,15 +145,12 @@ module Utils
         end
       end
 
-      continue_at = if destination.exist? && supports_partial
-        "-"
-      else
-        0
-      end
 
-      curl(
-        "--location", "--remote-time", "--continue-at", continue_at.to_s, "--output", destination, *args, **options
-      )
+      args += ["--location", "--remote-time", "--output", destination]
+      # continue-at shouldn't be used with servers that don't support partial requests.
+      args += ["--continue-at", "-"] if destination.exist? && supports_partial
+
+      curl(*args, **options)
     end
 
     def curl_output(*args, **options)
