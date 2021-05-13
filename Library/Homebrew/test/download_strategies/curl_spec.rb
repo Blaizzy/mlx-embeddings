@@ -23,9 +23,10 @@ describe CurlDownloadStrategy do
 
     it "calls curl with default arguments" do
       expect(strategy).to receive(:curl).with(
+        # example.com supports partial requests.
+        "--continue-at", "-",
         "--location",
         "--remote-time",
-        "--continue-at", "0",
         "--output", an_instance_of(Pathname),
         url,
         an_instance_of(Hash)
