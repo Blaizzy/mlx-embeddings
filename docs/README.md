@@ -59,14 +59,16 @@
 
 - [New Maintainer Checklist](New-Maintainer-Checklist.md)
 - [Maintainers: Avoiding Burnout](Maintainers-Avoiding-Burnout.md)
+
 - [Maintainer Guidelines](Maintainer-Guidelines.md)
-- [Homebrew/linuxbrew-core Maintainer Guide](Homebrew-linuxbrew-core-Maintainer-Guide.md)
+- [Core Maintainer Guide](Core-Maintainer-Guide.md)
+- [Linux Maintainer Guide](Linux-Maintainer-Guide.md)
+- [Cask Maintainer Guide](Cask-Maintainer-Guide.md)
+
 - [Brew Test Bot For Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
 - [Releases](Releases.md)
 - [Developer/Internal API Documentation](https://rubydoc.brew.sh)
-- [Homebrew/homebrew-core merge checklist](Homebrew-homebrew-core-Merge-Checklist.md)
-- [Cask Maintainer Guide](Cask-Maintainer-Guide.md)
 
 ## Governance
 

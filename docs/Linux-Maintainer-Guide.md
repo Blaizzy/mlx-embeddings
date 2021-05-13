@@ -1,4 +1,4 @@
-# Homebrew/linuxbrew-core Maintainer Guide
+# Linux Maintainer Guide
 
 ## Merging formulae updates from Homebrew/homebrew-core
 
