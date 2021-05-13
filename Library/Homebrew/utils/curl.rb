@@ -118,15 +118,15 @@ module Utils
       result
     end
 
-    def curl_download(*args, to: nil, partial: true, **options)
+    def curl_download(*args, to: nil, try_partial: true, **options)
       destination = Pathname(to)
       destination.dirname.mkpath
 
-      if partial
+      if try_partial
         range_stdout = curl_output("--location", "--range", "0-1",
                                    "--dump-header", "-",
                                    "--write-out", "%\{http_code}",
-                                   "--output", "/dev/null", *args, **options).stdout
+                                   "--head", *args, **options).stdout
         headers, _, http_status = range_stdout.partition("\r\n\r\n")
 
         supports_partial_download = http_status.to_i == 206 # Partial Content
