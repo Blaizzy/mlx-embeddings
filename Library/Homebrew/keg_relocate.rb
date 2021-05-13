@@ -24,7 +24,7 @@ class Keg
 
     sig { params(key: Symbol, old_value: T.any(String, Regexp), new_value: String, path: T::Boolean).void }
     def add_replacement_pair(key, old_value, new_value, path: false)
-      old_value = self.class.path_regex(old_value) if path
+      old_value = self.class.path_to_regex(old_value) if path
       @replacement_map[key] = [old_value, new_value]
     end
 
@@ -49,15 +49,15 @@ class Keg
       any_changed
     end
 
-    sig { params(value: T.any(String, Regexp)).returns(Regexp) }
-    def self.path_regex(value)
-      value = case value
+    sig { params(path: T.any(String, Regexp)).returns(Regexp) }
+    def self.path_to_regex(path)
+      path = case path
       when String
-        Regexp.escape(value)
+        Regexp.escape(path)
       when Regexp
-        value.source
+        path.source
       end
-      Regexp.new(RELOCATABLE_PATH_REGEX_PREFIX.source + value)
+      Regexp.new(RELOCATABLE_PATH_REGEX_PREFIX.source + path)
     end
   end
 
@@ -244,7 +244,7 @@ class Keg
 
   def self.text_matches_in_file(file, string, ignores, linked_libraries, formula_and_runtime_deps_names)
     text_matches = []
-    path_regex = Relocation.path_regex(string)
+    path_regex = Relocation.path_to_regex(string)
     Utils.popen_read("strings", "-t", "x", "-", file.to_s) do |io|
       until io.eof?
         str = io.readline.chomp

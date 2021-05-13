@@ -32,7 +32,7 @@ EOS
 MAXIMUM_STRING_MATCHES = 100
 
 ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
-  %r{#{HOMEBREW_LIBRARY}/Homebrew/os/(mac|linux)/pkgconfig},
+  %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Homebrew/os/(mac|linux)/pkgconfig},
 ].freeze
 
 module Homebrew

@@ -59,10 +59,10 @@ describe Keg::Relocation do
     REPLACED
   end
 
-  specify "::path_regex" do
-    expect(described_class.path_regex(prefix)).to eq escaped_prefix
-    expect(described_class.path_regex("foo.bar")).to eq(/(?<![a-zA-Z0-9])foo\.bar/)
-    expect(described_class.path_regex(/#{cellar}/o)).to eq escaped_cellar
-    expect(described_class.path_regex(/foo.bar/)).to eq(/(?<![a-zA-Z0-9])foo.bar/)
+  specify "::path_to_regex" do
+    expect(described_class.path_to_regex(prefix)).to eq escaped_prefix
+    expect(described_class.path_to_regex("foo.bar")).to eq(/(?<![a-zA-Z0-9])foo\.bar/)
+    expect(described_class.path_to_regex(/#{cellar}/o)).to eq escaped_cellar
+    expect(described_class.path_to_regex(/foo.bar/)).to eq(/(?<![a-zA-Z0-9])foo.bar/)
   end
 end

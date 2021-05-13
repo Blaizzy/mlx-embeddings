@@ -131,10 +131,9 @@ class Keg
     old_prefix, new_prefix = relocation.replacement_pair_for(:prefix)
     old_cellar, new_cellar = relocation.replacement_pair_for(:cellar)
 
-    case old_name
-    when /^#{old_cellar}/
+    if old_name.start_with? old_cellar
       old_name.sub(old_cellar, new_cellar)
-    when /^#{old_prefix}/
+    elsif old_name.start_with? old_prefix
       old_name.sub(old_prefix, new_prefix)
     end
   end
