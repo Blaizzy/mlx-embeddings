@@ -71,32 +71,6 @@ describe RuboCop::Cop::FormulaAudit::Text do
       RUBY
     end
 
-    it "reports an offense if xcodebuild is called without SYMROOT" do
-      expect_offense(<<~RUBY)
-        class Foo < Formula
-          url "https://brew.sh/foo-1.0.tgz"
-          homepage "https://brew.sh"
-
-          def install
-            xcodebuild "-project", "meow.xcodeproject"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ xcodebuild should be passed an explicit \"SYMROOT\"
-          end
-        end
-      RUBY
-
-      expect_offense(<<~RUBY)
-        class Foo < Formula
-          url "https://brew.sh/foo-1.0.tgz"
-          homepage "https://brew.sh"
-
-          def install
-            xcodebuild
-            ^^^^^^^^^^ xcodebuild should be passed an explicit \"SYMROOT\"
-          end
-        end
-      RUBY
-    end
-
     it "reports an offense if `go get` is executed" do
       expect_offense(<<~RUBY)
         class Foo < Formula

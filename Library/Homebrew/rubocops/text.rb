@@ -53,12 +53,6 @@ module RuboCop
             problem "\"Formula.factory(name)\" is deprecated in favor of \"Formula[name]\""
           end
 
-          find_every_method_call_by_name(body_node, :xcodebuild).each do |m|
-            next if parameters_passed?(m, /SYMROOT=/)
-
-            problem 'xcodebuild should be passed an explicit "SYMROOT"'
-          end
-
           find_method_with_args(body_node, :system, "xcodebuild") do
             problem %q(use "xcodebuild *args" instead of "system 'xcodebuild', *args")
           end
