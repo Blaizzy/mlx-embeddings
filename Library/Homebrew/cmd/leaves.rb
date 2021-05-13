@@ -26,12 +26,12 @@ module Homebrew
     end
   end
 
-  def installed_on_request?(leaf)
-    Tab.for_keg(leaf.any_installed_keg).installed_on_request
+  def installed_on_request?(formula)
+    Tab.for_keg(formula.any_installed_keg).installed_on_request
   end
 
-  def installed_as_dependency?(leaf)
-    Tab.for_keg(leaf.any_installed_keg).installed_as_dependency
+  def installed_as_dependency?(formula)
+    Tab.for_keg(formula.any_installed_keg).installed_as_dependency
   end
 
   def leaves
