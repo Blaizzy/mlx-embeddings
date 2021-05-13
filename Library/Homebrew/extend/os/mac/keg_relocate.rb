@@ -26,13 +26,13 @@ class Keg
           change_dylib_id(id, file)
         end
 
-        each_install_name_for(file) do |old_name|
+        each_linkage_for(file, :dynamically_linked_libraries) do |old_name|
           new_name = relocated_name_for(old_name, relocation)
           change_install_name(old_name, new_name, file) if new_name
         end
 
         if ENV["HOMEBREW_RELOCATE_RPATHS"]
-          each_rpath_for(file) do |old_name|
+          each_linkage_for(file, :rpaths) do |old_name|
             new_name = relocated_name_for(old_name, relocation)
             change_rpath(old_name, new_name, file) if new_name
           end
@@ -46,7 +46,7 @@ class Keg
       file.ensure_writable do
         change_dylib_id(dylib_id_for(file), file) if file.dylib?
 
-        each_install_name_for(file) do |bad_name|
+        each_linkage_for(file, :dynamically_linked_libraries) do |bad_name|
           # Don't fix absolute paths unless they are rooted in the build directory
           next if bad_name.start_with?("/") &&
                   !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
@@ -55,31 +55,10 @@ class Keg
           new_name = fixed_name(file, bad_name)
           change_install_name(bad_name, new_name, file) unless new_name == bad_name
         end
-
-        # If none of the install names reference RPATH(s), then we can safely
-        # remove all RPATHs from the file.
-        if ENV["HOMEBREW_RELOCATE_METAVARS"] &&
-           file.dynamically_linked_libraries.none? { |lib| lib.start_with?("@rpath") }
-          # NOTE: This could probably be made more efficient by reverse-sorting
-          # the RPATHs by offset and calling MachOFile#delete_command
-          # with repopulate: false.
-          file.rpaths.each { |r| file.delete_rpath(r) }
-        end
       end
     end
 
     generic_fix_dynamic_linkage
-  end
-
-  def expand_rpath(file, bad_name)
-    suffix = bad_name.sub(/^@rpath/, "")
-
-    file.rpaths.each do |rpath|
-      return rpath/suffix if (rpath/suffix).exist?
-    end
-
-    opoo "Could not find library #{bad_name} for #{file}"
-    bad_name
   end
 
   # If file is a dylib or bundle itself, look for the dylib named by
@@ -96,8 +75,6 @@ class Keg
       "#{lib}/#{bad_name}"
     elsif file.mach_o_executable? && (libexec/"lib"/bad_name).exist?
       "#{libexec}/lib/#{bad_name}"
-    elsif bad_name.start_with?("@rpath") && ENV["HOMEBREW_RELOCATE_METAVARS"]
-      expand_rpath file, bad_name
     elsif (abs_name = find_dylib(bad_name)) && abs_name.exist?
       abs_name.to_s
     else
@@ -106,17 +83,11 @@ class Keg
     end
   end
 
-  def each_install_name_for(file, &block)
-    dylibs = file.dynamically_linked_libraries
-    dylibs.reject! { |fn| fn =~ /^@(loader|executable)_path/ }
-    dylibs.reject! { |fn| fn =~ /^@rpath/ } unless ENV["HOMEBREW_RELOCATE_METAVARS"]
-    dylibs.each(&block)
-  end
-
-  def each_rpath_for(file, &block)
-    rpaths = file.rpaths
-                 .reject { |fn| fn =~ /^@(loader|executable)_path/ }
-    rpaths.each(&block)
+  def each_linkage_for(file, linkage_type, &block)
+    links = file.method(linkage_type)
+                .call
+                .reject { |fn| fn =~ /^@(loader_|executable_|r)path/ }
+    links.each(&block)
   end
 
   def dylib_id_for(file)
