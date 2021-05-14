@@ -291,6 +291,9 @@ class Tap
     args << "--origin=origin"
     args << "-q" if quiet
 
+    # Override user-set default template
+    args << "--template="
+
     begin
       safe_system "git", *args
       if !Readall.valid_tap?(self, aliases: true) && !Homebrew::EnvConfig.developer?
