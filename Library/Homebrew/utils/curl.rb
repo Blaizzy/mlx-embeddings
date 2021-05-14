@@ -138,7 +138,7 @@ module Utils
 
         # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
         # Its absence indicates no support.
-        supports_partial = headers.key? "accept-ranges" && headers["accept-ranges"] != "none"
+        supports_partial = headers.key?("accept-ranges") && headers["accept-ranges"] != "none"
 
         if supports_partial &&
            destination.exist? &&
