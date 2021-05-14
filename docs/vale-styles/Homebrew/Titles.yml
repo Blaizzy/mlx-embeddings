@@ -7,6 +7,8 @@ style: AP
 exceptions:
   - brew(1)
   - macOS
+  - Homebrew/brew
   - Homebrew/homebrew-core
   - Homebrew/linuxbrew-core
+  - Homebrew/homebrew-cask
   - (or Linux)
