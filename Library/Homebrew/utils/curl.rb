@@ -122,7 +122,7 @@ module Utils
       return {} unless headers
 
       # Skip status code
-      headers.split("\r\n")[2..].to_h { |h| h.split(": ") }
+      headers.split("\r\n")[1..].to_h { |h| h.split(": ") }
     end
 
     def curl_download(*args, to: nil, try_partial: true, **options)
@@ -130,8 +130,7 @@ module Utils
       destination.dirname.mkpath
 
       if try_partial
-        range_stdout = curl_output("--location", "--dump-header", "-",
-                                   "--head", *args, **options).stdout
+        range_stdout = curl_output("--location", "--head", *args, **options).stdout
         headers = parse_headers(range_stdout.split("\r\n\r\n").first)
 
         # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
