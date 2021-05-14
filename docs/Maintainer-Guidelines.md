@@ -13,16 +13,19 @@ All Homebrew maintainers are encouraged to contribute to all parts of the projec
 but there are four main teams that maintainers tend to be a part of:
 
 - `brew` maintainers: this team maintains the [`Homebrew/brew`](https://github.com/Homebrew/brew) repository.
-  See the [`brew` Maintainer Guide](Brew-Maintainer-Guide.md) for more details about being a `brew` maintainer.
+  See the [Homebrew/brew Maintainer Guide](Homebrew-brew-Maintainer-Guide.md) for more details about being a `brew` maintainer.
 - Core maintainers: this team maintains the [`Homebrew/homebrew-core`](https://github.com/Homebrew/homebrew-core)
-  repository. See the [Core Maintainer Guide](Homebrew-homebrew-core-Merge-Checklist.md) for more details about being a core maintainer.
+  repository. See the [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Merge-Checklist.md)
+  for more details about being a core maintainer.
 - Linux maintainers: this team maintains the [`Homebrew/linuxbrew-core`](https://github.com/Homebrew/linuxbrew-core)
-  repository. See the [Linux Maintainer Guide](Linux-Maintainer-Guide.md) for more details about being a Linux maintainer.
+  repository. See the [Homebrew/linuxbrew-core Maintainer Guide](Homebrew-linuxbrew-core-Maintainer-Guide.md)
+  for more details about being a Linux maintainer.
 - Cask maintainers: this team maintains the [`Homebrew/homebrew-cask`](https://github.com/Homebrew/homebrew-cask),
   [`Homebrew/homebrew-cask-drivers`](https://github.com/Homebrew/homebrew-cask-drivers),
   [`Homebrew/homebrew-cask-fonts`](https://github.com/Homebrew/homebrew-cask-fonts) and
   [`Homebrew/homebrew-cask-versions`](https://github.com/Homebrew/homebrew-cask-versions) repositories.
-  See the [Cask Maintainer Guide](Cask-Maintainer-Guide.md) for more details about being a cask maintainer.
+  See the [Homebrew/homebrew-cask Maintainer Guide](Homebrew-homebrew-cask-Maintainer-Guide.md)
+  for more details about being a cask maintainer.
 
 These documents are meant to serve as guiding principles. As a maintainer, you can make a call to either
 request changes from a contributor or help them out based on their comfort and previous contributions.

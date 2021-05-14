@@ -1,4 +1,4 @@
-# Cask Maintainer Guide
+# Homebrew/homebrew-cask Maintainer Guide
 
 This guide is intended to help maintainers effectively maintain the cask repositories.
 It is meant to be used in conjunction with the more generic [Maintainer Guidelines](Maintainer-Guidelines.md).
@@ -14,7 +14,7 @@ This guide applies to all four of the cask repositories:
 
 Here is a list of the most common situations that arise in PRs and how to handle them:
 
-- The `version` and `sha256` both change (keeping the same format): Merge
+- The `version` and `sha256` both change (keeping the same format): Merge.
 - Only the `sha256` changes: Merge unless the version needs to be updated as well.
   It’s not uncommon for upstream vendors to update versions in-place.
 - `livecheck` is updated: Use your best judgement and try to make sure that the changes
@@ -31,11 +31,12 @@ Note that unlike in formulae, casks do not consider the `sha256` stanza as meani
 
 ### Approvals
 
-In general, PRs in the cask repositories should have at least one approval from a maintainer
-before being merged.
+PRs in the cask repositories should must have at least one approval
+from a user with write access before they can be merged.
 
-If desired, a maintainer can self-approve one of their PRs using the
-`self-approve` GitHub Actions workflow to satisfy this requirement. To trigger a self-approval, navigate to the
+Ideally, this approval will come from another maintainer. If necessary, however, a maintainer
+can self-approve one of their PRs using the `self-approve` GitHub Actions workflow to satisfy
+this requirement. To trigger a self-approval, navigate to the
 ["Self-approve a Pull Request" section of the Actions tab](https://github.com/Homebrew/homebrew-cask/actions/workflows/self-approve.yml),
 click on "Run workflow", enter the PR number and click "Run workflow".
 

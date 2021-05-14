@@ -1,11 +1,11 @@
-# `brew` Maintainer Guide
+# Homebrew/brew Maintainer Guide
 
 This document describes a few components of the `Homebrew/brew` repository that are useful for maintainers to
 be aware of, but don't necessarily need to appear in documentation for most users and contributors.
 
 ## Reviewing PRs
 
-Using `gh repo checkout NUMBER` is a super easy way to check out a PR branch using the GitHub CLI.
+Using `gh pr checkout NUMBER` is a super easy way to check out a PR branch using the GitHub CLI.
 
 When reviewing, choose the "comment" type for reviews when the PR isn't quite ready to be merged.
 Use the "approve" type when you feel that the PR is in a good state to be merged, even if there are
@@ -95,4 +95,4 @@ merged. These follow-up PRs can be merged immediately if the changes seem correc
 An update can be requested manually by triggering the workflow from the
 [Update maintainers, manpage and completions](https://github.com/Homebrew/brew/actions/workflows/update-man-completions.yml)
 section under the "Actions" tab. Click on the "Run workflow" dropdown and then the "Run workflow" button.
-A PR will be opened shorty if there are any changes.
+A PR will be opened shortly if there are any changes.

@@ -1,4 +1,4 @@
-# Core Maintainer Guide
+# Homebrew/homebrew-core Maintainer Guide
 
 ## Quick merge checklist
 
@@ -23,10 +23,6 @@ forever. Nobody really checks if they are necessary or not.
 Depend on as little stuff as possible. Disable X11 functionality if possible.
 For example, we build Wireshark, but not the heavy GUI.
 
-For [some formulae](https://github.com/Homebrew/homebrew-core/search?q=%22homebrew%2Fmirror%22&unscoped_q=%22homebrew%2Fmirror%22),
-we mirror the tarballs to our own BinTray automatically as part of the
-bottle publish CI run.
-
 Homebrew is about Unix software. Stuff that builds to an `.app` should
 be in Homebrew Cask instead.
 
@@ -38,6 +34,9 @@ desirable.
 Choose a name that’s the most common name for the project.
 For example, we initially chose `objective-caml` but we should have chosen `ocaml`.
 Choose what people say to each other when talking about the project.
+
+Formulae that are also packaged by other package managers (e.g. Debian, Ubuntu) should be
+named consistently (subject to minor differences due to Homebrew formula naming conventions).
 
 Add other names as aliases as symlinks in `Aliases` in the tap root. Ensure the
 name referenced on the homepage is one of these, as it may be different and have
@@ -116,6 +115,9 @@ Formulae that:
 - are shown to be still installed by users in our analytics with a `BuildError` rate of <25%
 
 should not be removed from Homebrew. The exception to this rule are [versioned formulae](Versions.md) for which there are higher standards of usage and a maximum number of versions for a given formula.
+
+For more information about deprecating, disabling and removing formulae, see the
+[Deprecating, Disabling, and Removing Formulae page](Deprecating-Disabling-and-Removing-Formulae.md)
 
 ## Detailed merge checklist
 
