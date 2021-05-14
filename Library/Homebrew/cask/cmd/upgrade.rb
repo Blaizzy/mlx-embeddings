@@ -97,6 +97,11 @@ module Cask
           cask.artifacts.any?(Artifact::Installer::ManualInstaller)
         end
 
+        if manual_installer_casks.present?
+          ofail "Not upgrading #{manual_installer_casks.count} casks because they was install manually"
+          puts manual_installer_casks.map(&:to_s)
+        end
+
         outdated_casks -= manual_installer_casks
 
         return false if outdated_casks.empty?
