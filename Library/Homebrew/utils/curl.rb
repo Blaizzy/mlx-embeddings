@@ -119,7 +119,7 @@ module Utils
     end
 
     def parse_headers(headers)
-      return {} unless headers
+      return {} if headers.blank?
 
       # Skip status code
       headers.split("\r\n")[1..].to_h do |h|
