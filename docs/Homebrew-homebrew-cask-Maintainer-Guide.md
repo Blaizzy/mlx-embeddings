@@ -12,7 +12,7 @@ This guide applies to all four of the cask repositories:
 
 ## Common Situations
 
-Here is a list of the most common situations that arise in PRs and how to handle them:
+Here is a list of the most common situations that arise in cask PRs and how to handle them:
 
 - The `version` and `sha256` both change (keeping the same format): Merge.
 - Only the `sha256` changes: Merge unless the version needs to be updated as well.
@@ -25,18 +25,19 @@ Here is a list of the most common situations that arise in PRs and how to handle
 
 If in doubt, ask another cask maintainer on GitHub or Slack.
 
-Note that unlike in formulae, casks do not consider the `sha256` stanza as meaningful security measure as maintainers cannot realistically check them for authenticity. Casks download from upstream; if a malicious actor compromised a URL, they could just as well compromise a version and make it look like an update.
+Note that unlike formulae, casks do not consider the `sha256` stanza to be a meaningful security measure
+as maintainers cannot realistically check them for authenticity. Casks download from upstream; if a malicious
+actor compromised a URL, they could just as well compromise a version and make it look like an update.
 
 ## Merging
 
 ### Approvals
 
-PRs in the cask repositories should must have at least one approval
-from a user with write access before they can be merged.
-
-Ideally, this approval will come from another maintainer. If necessary, however, a maintainer
-can self-approve one of their PRs using the `self-approve` GitHub Actions workflow to satisfy
-this requirement. To trigger a self-approval, navigate to the
+Most PRs in the cask repositories are simple version bumps that don't necessarily need
+another maintainer's approval. However, GitHub will not allow a PR to be merged without
+at least one approving review. To bypass this requirement if necessary, a maintainer
+can self-approve one of their PRs using the `self-approve` GitHub Actions workflow to
+satisfy this requirement. To trigger a self-approval, navigate to the
 ["Self-approve a Pull Request" section of the Actions tab](https://github.com/Homebrew/homebrew-cask/actions/workflows/self-approve.yml),
 click on "Run workflow", enter the PR number and click "Run workflow".
 

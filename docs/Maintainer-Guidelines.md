@@ -80,7 +80,7 @@ PRs that are an "enhancement" to existing functionality i.e. not a fix to an ope
 
 If a maintainer is on holiday/vacation/sick during this time and leaves comments after they are back: please treat post-merge PR comments and feedback as you would left within the time period and follow-up with another PR to address their requests (if agreed).
 
-The vast majority of `Homebrew/homebrew-core` PRs are bug fixes or version bumps so can be self-merged once CI has completed.
+The vast majority of `Homebrew/homebrew-core` PRs are bug fixes or version bumps which can be self-merged once CI has completed.
 
 ## Communication
 

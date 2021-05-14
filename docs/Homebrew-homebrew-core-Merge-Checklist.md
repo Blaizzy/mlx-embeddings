@@ -72,7 +72,7 @@ Only one maintainer is necessary to approve and merge the addition of a new or u
 
 Here are guidelines about when to use squash & merge versus rebase & merge. These options should only be used with PRs where bottles are not needed or affected.
 
-| | PR modified a single formula | PR modifies multiple formulae |
+| | PR modifies a single formula | PR modifies multiple formulae |
 |---|---|---|
 | **Commits look good** | rebase & merge _or_ squash & merge | rebase & merge |
 | **Commits need work** | squash & merge | manually merge using the command line |
@@ -117,13 +117,13 @@ Formulae that:
 should not be removed from Homebrew. The exception to this rule are [versioned formulae](Versions.md) for which there are higher standards of usage and a maximum number of versions for a given formula.
 
 For more information about deprecating, disabling and removing formulae, see the
-[Deprecating, Disabling, and Removing Formulae page](Deprecating-Disabling-and-Removing-Formulae.md)
+[Deprecating, Disabling, and Removing Formulae page](Deprecating-Disabling-and-Removing-Formulae.md).
 
 ## Detailed merge checklist
 
 The following checklist is intended to help maintainers decide on
 whether to merge, request changes or close a PR. It also brings more
-transparency for contributors in addition to
+transparency for contributors in addition to the
 [Acceptable Formulae](Acceptable-Formulae.md) requirements.
 
 - previously opened active PRs, as we would like to be fair to contributors who came first

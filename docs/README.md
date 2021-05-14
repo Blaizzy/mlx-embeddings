@@ -61,10 +61,10 @@
 - [Maintainers: Avoiding Burnout](Maintainers-Avoiding-Burnout.md)
 
 - [Maintainer Guidelines](Maintainer-Guidelines.md)
-- [`brew` Maintainer Guide](Brew-Maintainer-Guide.md)
-- [Core Maintainer Guide](Homebrew-homebrew-core-Merge-Checklist.md)
-- [Linux Maintainer Guide](Linux-Maintainer-Guide.md)
-- [Cask Maintainer Guide](Cask-Maintainer-Guide.md)
+- [Homebrew/brew Maintainer Guide](Homebrew-brew-Maintainer-Guide.md)
+- [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Merge-Checklist.md)
+- [Homebrew/linuxbrew-core Maintainer Guide](Homebrew-linuxbrew-core-Maintainer-Guide.md)
+- [Homebrew/homebrew-cask Maintainer Guide](Homebrew-homebrew-cask-Maintainer-Guide.md)
 
 - [Brew Test Bot For Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
