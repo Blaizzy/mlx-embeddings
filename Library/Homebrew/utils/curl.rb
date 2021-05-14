@@ -146,7 +146,7 @@ module Utils
 
       args = ["--location", "--remote-time", "--output", destination, *args]
       # continue-at shouldn't be used with servers that don't support partial requests.
-      args = ["--continue-at", "-"] + args if destination.exist? && supports_partial
+      args = ["--continue-at", "-", *args] if destination.exist? && supports_partial
 
       curl(*args, **options)
     end
