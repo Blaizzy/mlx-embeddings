@@ -121,10 +121,8 @@ module Utils
     def parse_headers(headers)
       return {} unless headers
 
-      headers.split("\n").to_h do |h|
-        partitioned = h.partition(": ")
-        [partitioned.first, partitioned.last]
-      end
+      # Skip status code
+      headers.split("\r\n")[2..].to_h { |h| h.split(": ") }
     end
 
     def curl_download(*args, to: nil, try_partial: true, **options)
