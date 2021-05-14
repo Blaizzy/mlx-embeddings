@@ -122,7 +122,10 @@ module Utils
       return {} unless headers
 
       # Skip status code
-      headers.split("\r\n")[1..].to_h { |h| h.split(": ") }
+      headers.split("\r\n")[1..].to_h do |h|
+        name, content = h.split(": ")
+        [name.downcase, content]
+      end
     end
 
     def curl_download(*args, to: nil, try_partial: true, **options)
