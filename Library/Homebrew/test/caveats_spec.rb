@@ -135,7 +135,7 @@ describe Caveats do
             "plist_test.plist"
           end
         end
-        ENV["TMUX"] = "1"
+        ENV["HOMEBREW_TMUX"] = "1"
         allow(Homebrew).to receive(:_system).with("/usr/bin/pbpaste").and_return(false)
         caveats = described_class.new(f).caveats
 
