@@ -98,11 +98,11 @@ module Cask
         end
 
         if manual_installer_casks.present?
-          ofail "Not upgrading #{manual_installer_casks.count} casks because they was install manually"
+          count = manual_installer_casks.count
+          ofail "Not upgrading #{count} `installer manual` #{"cask".pluralize(count)}."
           puts manual_installer_casks.map(&:to_s)
+          outdated_casks -= manual_installer_casks
         end
-
-        outdated_casks -= manual_installer_casks
 
         return false if outdated_casks.empty?
 
