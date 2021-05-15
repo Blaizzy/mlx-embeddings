@@ -34,8 +34,8 @@ module SPDX
 
   def download_latest_license_data!(to: DATA_PATH)
     data_url = "https://raw.githubusercontent.com/spdx/license-list-data/#{latest_tag}/json/"
-    curl_download("#{data_url}licenses.json", to: to/"spdx_licenses.json", partial: false)
-    curl_download("#{data_url}exceptions.json", to: to/"spdx_exceptions.json", partial: false)
+    curl_download("#{data_url}licenses.json", to: to/"spdx_licenses.json", try_partial: false)
+    curl_download("#{data_url}exceptions.json", to: to/"spdx_exceptions.json", try_partial: false)
   end
 
   def parse_license_expression(license_expression)

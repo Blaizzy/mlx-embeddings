@@ -118,36 +118,40 @@ module Utils
       result
     end
 
-    def curl_download(*args, to: nil, partial: true, **options)
+    def parse_headers(headers)
+      return {} if headers.blank?
+
+      # Skip status code
+      headers.split("\r\n")[1..].to_h do |h|
+        name, content = h.split(": ")
+        [name.downcase, content]
+      end
+    end
+
+    def curl_download(*args, to: nil, try_partial: true, **options)
       destination = Pathname(to)
       destination.dirname.mkpath
 
-      if partial
-        range_stdout = curl_output("--location", "--range", "0-1",
-                                   "--dump-header", "-",
-                                   "--write-out", "%\{http_code}",
-                                   "--output", "/dev/null", *args, **options).stdout
-        headers, _, http_status = range_stdout.partition("\r\n\r\n")
+      if try_partial
+        range_stdout = curl_output("--location", "--head", *args, **options).stdout
+        headers = parse_headers(range_stdout.split("\r\n\r\n").first)
 
-        supports_partial_download = http_status.to_i == 206 # Partial Content
-        if supports_partial_download &&
+        # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
+        # Its absence indicates no support.
+        supports_partial = headers.key?("accept-ranges") && headers["accept-ranges"] != "none"
+
+        if supports_partial &&
            destination.exist? &&
-           destination.size == %r{^.*Content-Range: bytes \d+-\d+/(\d+)\r\n.*$}m.match(headers)&.[](1)&.to_i
+           destination.size == headers["content-length"].to_i
           return # We've already downloaded all the bytes
         end
-      else
-        supports_partial_download = false
       end
 
-      continue_at = if destination.exist? && supports_partial_download
-        "-"
-      else
-        0
-      end
+      args = ["--location", "--remote-time", "--output", destination, *args]
+      # continue-at shouldn't be used with servers that don't support partial requests.
+      args = ["--continue-at", "-", *args] if destination.exist? && supports_partial
 
-      curl(
-        "--location", "--remote-time", "--continue-at", continue_at.to_s, "--output", destination, *args, **options
-      )
+      curl(*args, **options)
     end
 
     def curl_output(*args, **options)
