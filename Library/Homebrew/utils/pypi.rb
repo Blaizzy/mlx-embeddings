@@ -212,7 +212,7 @@ module PyPI
     odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
-    command = [Formula["pipgrip"].bin/"pipgrip", "--json", "--no-cache-dir", *input_packages.map(&:to_s)]
+    command = [Formula["pipgrip"].opt_bin/"pipgrip", "--json", "--no-cache-dir", *input_packages.map(&:to_s)]
     pipgrip_output = Utils.popen_read(*command)
     unless $CHILD_STATUS.success?
       odie <<~EOS
