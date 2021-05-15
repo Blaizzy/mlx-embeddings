@@ -995,6 +995,31 @@ describe Formula do
 
       expect(f).to pour_bottle
     end
+
+    it "returns false when set with a symbol" do
+      f = formula "foo" do
+        url "foo-1.0"
+
+        pour_bottle? :default_prefix_required
+      end
+
+      # Homebrew::DEFAULT_PREFIX is still /usr/local or /opt/homebrew
+      # and HOMEBREW_PREFIX is a temporary test directory
+      expect(f).not_to pour_bottle
+    end
+
+    it "returns true when set with a symbol" do
+      # Ensure that prefix matches the default
+      stub_const "Homebrew::DEFAULT_PREFIX", HOMEBREW_PREFIX.to_s
+
+      f = formula "foo" do
+        url "foo-1.0"
+
+        pour_bottle? :default_prefix_required
+      end
+
+      expect(f).to pour_bottle
+    end
   end
 
   describe "alias changes" do
