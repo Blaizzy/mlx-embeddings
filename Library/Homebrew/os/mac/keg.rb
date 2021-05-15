@@ -50,6 +50,17 @@ class Keg
     raise
   end
 
+  def delete_rpath(rpath, file)
+    odebug "Deleting rpath #{rpath} in #{file}"
+    MachO::Tools.delete_rpath(file, rpath, strict: false)
+    apply_ad_hoc_signature(file)
+  rescue MachO::MachOError
+    onoe <<~EOS
+      Failed deleting rpath #{rpath} in #{file}
+    EOS
+    raise
+  end
+
   def apply_ad_hoc_signature(file)
     return if MacOS.version < :big_sur
     return unless Hardware::CPU.arm?
