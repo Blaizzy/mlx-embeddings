@@ -132,7 +132,7 @@ GEM
       rubocop-ast (>= 1.1.0)
     rubocop-sorbet (0.6.1)
       rubocop
-    ruby-macho (2.5.0)
+    ruby-macho (2.5.1)
     ruby-progressbar (1.11.0)
     rubyntlm (0.6.3)
     simplecov (0.21.2)
