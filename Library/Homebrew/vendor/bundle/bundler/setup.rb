@@ -84,7 +84,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-performance-1
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-rails-2.10.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-rspec-2.3.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-sorbet-0.6.1/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-macho-2.5.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-macho-2.5.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-html-0.12.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov_json_formatter-0.1.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-0.21.2/lib"

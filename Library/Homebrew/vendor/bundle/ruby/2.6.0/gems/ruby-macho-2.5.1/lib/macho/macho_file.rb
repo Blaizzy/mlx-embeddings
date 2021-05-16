@@ -418,11 +418,8 @@ module MachO
       rpath_cmds = command(:LC_RPATH).select { |r| r.path.to_s == path }
       raise RpathUnknownError, path if rpath_cmds.empty?
 
-      # delete the commands in reverse order, offset descending. this
-      # allows us to defer (expensive) field population until the very end
-      rpath_cmds.reverse_each { |cmd| delete_command(cmd, :repopulate => false) }
-
-      populate_fields
+      # delete the commands in reverse order, offset descending.
+      rpath_cmds.reverse_each { |cmd| delete_command(cmd) }
     end
 
     # Write all Mach-O data to the given filename.

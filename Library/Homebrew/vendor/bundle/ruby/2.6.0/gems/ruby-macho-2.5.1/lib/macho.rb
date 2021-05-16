@@ -16,7 +16,7 @@ require_relative "macho/tools"
 # The primary namespace for ruby-macho.
 module MachO
   # release version
-  VERSION = "2.5.0"
+  VERSION = "2.5.1"
 
   # Opens the given filename as a MachOFile or FatFile, depending on its magic.
   # @param filename [String] the file being opened
