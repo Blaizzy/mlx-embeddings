@@ -93,6 +93,17 @@ module Cask
           end
         end
 
+        manual_installer_casks = outdated_casks.select do |cask|
+          cask.artifacts.any?(Artifact::Installer::ManualInstaller)
+        end
+
+        if manual_installer_casks.present?
+          count = manual_installer_casks.count
+          ofail "Not upgrading #{count} `installer manual` #{"cask".pluralize(count)}."
+          puts manual_installer_casks.map(&:to_s)
+          outdated_casks -= manual_installer_casks
+        end
+
         return false if outdated_casks.empty?
 
         if casks.empty? && !greedy
