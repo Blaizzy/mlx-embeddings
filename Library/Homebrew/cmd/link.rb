@@ -27,7 +27,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Allow keg-only formulae to be linked."
       switch "--HEAD",
-             description: "If it is installed, link the HEAD version."
+             description: "Link the HEAD version of the formula if it is installed."
 
       named_args :installed_formula, min: 1
     end
