@@ -26,6 +26,8 @@ module Homebrew
                           "`brew link --overwrite` without actually linking or deleting any files."
       switch "-f", "--force",
              description: "Allow keg-only formulae to be linked."
+      switch "--HEAD",
+             description: "If it is installed, link the HEAD version."
 
       named_args :installed_formula, min: 1
     end
@@ -40,16 +42,15 @@ module Homebrew
       verbose:   args.verbose?,
     }
 
-    args.named.to_kegs.each do |keg|
+    args.named.to_formulae_and_casks(only: :formula, method: :kegs).freeze.each do |keg|
+      head = keg.version.head?
+      next unless args.HEAD? == head
+
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?
         opoo "Already linked: #{keg}"
-        name_and_flag = if keg_only
-          "--force #{keg.name}"
-        else
-          keg.name
-        end
+        name_and_flag = "#{"--HEAD " if head}#{"--force " if keg_only}#{keg.name}"
         puts <<~EOS
           To relink:
             brew unlink #{keg.name} && brew link #{name_and_flag}
