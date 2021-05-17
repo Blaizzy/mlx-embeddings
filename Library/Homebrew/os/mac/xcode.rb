@@ -304,8 +304,8 @@ module OS
             sudo xcode-select --install
 
           Alternatively, manually download them from:
-            #{Formatter.url("https://developer.apple.com/download/more/")}.
-          Check the latest available version for your system on:
+            #{Formatter.url("https://developer.apple.com/download/more/")}
+          after checking the latest available version for your system on:
             #{Formatter.url("https://developer.apple.com/support/xcode/#minimum-requirements")}.
         EOS
       end
