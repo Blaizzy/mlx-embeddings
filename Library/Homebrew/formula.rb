@@ -2920,21 +2920,12 @@ class Formula
     # the {Formula} will be built from source and `reason` will be printed.
     #
     # Alternatively, a preset reason can be passed as a symbol:
-    # <pre>pour_bottle? :default_prefix_required</pre>
-    # <pre>pour_bottle? :clt_required</pre>
-    def pour_bottle?(requirement = nil, &block)
+    # <pre>pour_bottle? reason: :clt_required</pre>
+    def pour_bottle?(reason: nil, &block)
       @pour_bottle_check = PourBottleCheck.new(self)
 
-      block ||= case requirement
-      when :default_prefix_required
-        lambda do |_|
-          T.cast(self, PourBottleCheck).reason(+<<~EOS)
-            The bottle needs to be installed into #{Homebrew::DEFAULT_PREFIX}.
-          EOS
-          T.cast(self, PourBottleCheck).satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
-        end
-      when :clt_required
-        lambda do |_|
+      if reason == :clt_required
+        block = lambda do |_|
           on_macos do
             T.cast(self, PourBottleCheck).reason(+<<~EOS)
               The bottle needs the Apple Command Line Tools to be installed.

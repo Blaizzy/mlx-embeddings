@@ -997,26 +997,26 @@ describe Formula do
     end
 
     it "returns false when set with a symbol" do
-      # Ensure that prefix does not match the default
-      stub_const "Homebrew::DEFAULT_PREFIX", "foo"
+      # Pretend CLT is not installed
+      allow(MacOS::CLT).to receive(:installed?).and_return(false)
 
       f = formula "foo" do
         url "foo-1.0"
 
-        pour_bottle? :default_prefix_required
+        pour_bottle? reason: :clt_required
       end
 
       expect(f).not_to pour_bottle
     end
 
     it "returns true when set with a symbol" do
-      # Ensure that prefix matches the default
-      stub_const "Homebrew::DEFAULT_PREFIX", HOMEBREW_PREFIX.to_s
+      # Pretend CLT is installed
+      allow(MacOS::CLT).to receive(:installed?).and_return(true)
 
       f = formula "foo" do
         url "foo-1.0"
 
-        pour_bottle? :default_prefix_required
+        pour_bottle? reason: :clt_required
       end
 
       expect(f).to pour_bottle
