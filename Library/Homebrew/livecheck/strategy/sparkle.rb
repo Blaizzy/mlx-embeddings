@@ -75,7 +75,7 @@ module Homebrew
             version ||= (item > "version").first&.text&.strip
 
             title = (item > "title").first&.text&.strip
-            pub_date = (item > "pubDate").first&.text&.strip&.yield_self { |d| Time.parse(d) }
+            pub_date = (item > "pubDate").first&.text&.strip&.yield_self { |d| Time.parse(d) } || Time.new(0)
 
             if (match = title&.match(/(\d+(?:\.\d+)*)\s*(\([^)]+\))?\Z/))
               short_version ||= match[1]
