@@ -995,6 +995,65 @@ describe Formula do
 
       expect(f).to pour_bottle
     end
+
+    it "returns false with `reason: :clt_required` on macOS", :needs_macos do
+      # Pretend CLT is not installed
+      allow(MacOS::CLT).to receive(:installed?).and_return(false)
+
+      f = formula "foo" do
+        url "foo-1.0"
+
+        pour_bottle? reason: :clt_required
+      end
+
+      expect(f).not_to pour_bottle
+    end
+
+    it "returns true with `reason: :clt_required` on macOS", :needs_macos do
+      # Pretend CLT is installed
+      allow(MacOS::CLT).to receive(:installed?).and_return(true)
+
+      f = formula "foo" do
+        url "foo-1.0"
+
+        pour_bottle? reason: :clt_required
+      end
+
+      expect(f).to pour_bottle
+    end
+
+    it "returns true with `reason: :clt_required` on Linux", :needs_linux do
+      f = formula "foo" do
+        url "foo-1.0"
+
+        pour_bottle? reason: :clt_required
+      end
+
+      expect(f).to pour_bottle
+    end
+
+    it "throws an error if passed both a symbol and a block" do
+      expect do
+        formula "foo" do
+          url "foo-1.0"
+
+          pour_bottle? reason: :clt_required do
+            reason "true reason"
+            satisfy { true }
+          end
+        end
+      end.to raise_error(ArgumentError, "Do not pass both a reason and a block to `pour_bottle?`")
+    end
+
+    it "throws an error if passed an invalid symbol" do
+      expect do
+        formula "foo" do
+          url "foo-1.0"
+
+          pour_bottle? reason: :foo
+        end
+      end.to raise_error(ArgumentError, "Invalid `pour_bottle?` reason")
+    end
   end
 
   describe "alias changes" do

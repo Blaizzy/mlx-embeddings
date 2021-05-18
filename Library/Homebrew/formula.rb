@@ -2918,8 +2918,32 @@ class Formula
     #
     # If `satisfy` returns `false` then a bottle will not be used and instead
     # the {Formula} will be built from source and `reason` will be printed.
-    def pour_bottle?(&block)
+    #
+    # Alternatively, a preset reason can be passed as a symbol:
+    # <pre>pour_bottle? reason: :clt_required</pre>
+    def pour_bottle?(reason: nil, &block)
       @pour_bottle_check = PourBottleCheck.new(self)
+
+      if reason.present? && block.present?
+        raise ArgumentError, "Do not pass both a reason and a block to `pour_bottle?`"
+      end
+
+      block ||= case reason
+      when :clt_required
+        lambda do |_|
+          on_macos do
+            T.cast(self, PourBottleCheck).reason(+<<~EOS)
+              The bottle needs the Apple Command Line Tools to be installed.
+                You can install them, if desired, with:
+                  xcode-select --install
+            EOS
+            T.cast(self, PourBottleCheck).satisfy { MacOS::CLT.installed? }
+          end
+        end
+      else
+        raise ArgumentError, "Invalid `pour_bottle?` reason" if reason.present?
+      end
+
       @pour_bottle_check.instance_eval(&block)
     end
 
