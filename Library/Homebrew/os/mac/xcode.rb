@@ -305,6 +305,7 @@ module OS
 
           Alternatively, manually download them from:
             #{Formatter.url("https://developer.apple.com/download/more/")}.
+          You should download the Command Line Tools for Xcode #{MacOS::Xcode.latest_version}.
         EOS
       end
 
