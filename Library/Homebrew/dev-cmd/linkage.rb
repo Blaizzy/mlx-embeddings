@@ -35,10 +35,10 @@ module Homebrew
     args = linkage_args.parse
 
     CacheStoreDatabase.use(:linkage) do |db|
-      kegs = if args.named.to_kegs.empty?
+      kegs = if args.named.to_keg.empty?
         Formula.installed.map(&:any_installed_keg).reject(&:nil?)
       else
-        args.named.to_kegs
+        args.named.to_keg
       end
       kegs.each do |keg|
         ohai "Checking #{keg.name} linkage" if kegs.size > 1
