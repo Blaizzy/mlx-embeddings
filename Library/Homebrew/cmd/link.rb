@@ -42,15 +42,18 @@ module Homebrew
       verbose:   args.verbose?,
     }
 
-    args.named.to_formulae_and_casks(only: :formula, method: :kegs).freeze.each do |keg|
-      head = keg.version.head?
-      next if args.HEAD? != head
+    kegs = if args.HEAD?
+      args.named.to_kegs.filter { |keg| keg.version.head? }
+    else
+      args.named.to_keg
+    end
 
+    kegs.freeze.each do |keg|
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?
         opoo "Already linked: #{keg}"
-        name_and_flag = "#{"--HEAD " if head}#{"--force " if keg_only}#{keg.name}"
+        name_and_flag = "#{"--HEAD " if args.HEAD?}#{"--force " if keg_only}#{keg.name}"
         puts <<~EOS
           To relink:
             brew unlink #{keg.name} && brew link #{name_and_flag}
