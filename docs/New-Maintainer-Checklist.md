@@ -26,28 +26,24 @@ contribute to Homebrew, but we will ask you to step down as a maintainer.
 
 A few requests:
 
-- Please make pull requests on any changes to Homebrew/brew code or any
-  non-trivial (e.g. not a test or audit improvement or version bump) changes
-  to formulae code and don't merge them unless you get at least one approval
+- Please make pull requests for any changes in the Homebrew repositories (instead
+  of committing directly) and don't merge them unless you get at least one approval
   and passing tests.
-- In Homebrew/brew, close pull requests using GitHub's "Merge pull request"
-  button in "Create a merge commit" mode.
-- In Homebrew/homebrew-core, use `brew pr-publish` to close pull requests
-  that require new bottles or change multiple formulae. Note that an approving
-  review on a pull request for an existing formula will trigger this automatically.
-  If commits need to be amended use `brew pr-pull` instead. Let these commands
-  auto-close issues whenever possible (it may take up to 5 minutes). If in doubt,
-  check with e.g. Fork.app that you've not accidentally added merge commits.
-  If bottles are unnecessary, use GitHub's "Merge pull request" button in
-  "Squash and merge" mode for a single formula change.
+- Please review the Maintainer Guidelines at https://docs.brew.sh/Maintainer-Guidelines
+- Please review the team-specific guides for whichever teams you will be a part of.
+  Here are links to these guides:
+    - Homebrew/brew: https://docs.brew.sh/Homebrew-brew-Maintainer-Guide
+    - Homebrew/homebrew-core: https://docs.brew.sh/Homebrew-homebrew-core-Maintainer-Guide
+    - Homebrew/linuxbrew-core: https://docs.brew.sh/Homebrew-linuxbrew-core-Maintainer-Guide
+    - Homebrew/homebrew-cask: https://docs.brew.sh/Homebrew-homebrew-cask-Maintainer-Guide
 - Still create your branches on your fork rather than in the main repository.
   Note GitHub's UI will create edits and reverts on the main repository if you
   make edits or click "Revert" on the Homebrew/brew repository rather than your
   own fork.
 - If still in doubt please ask for help and we'll help you out.
 - Please read:
-    - https://docs.brew.sh/Brew-Test-Bot-For-Core-Contributors
     - https://docs.brew.sh/Maintainer-Guidelines
+    - the team-specific guides linked above and in the maintainer guidelines
     - anything else you haven't read on https://docs.brew.sh
 
 How does that sound?
