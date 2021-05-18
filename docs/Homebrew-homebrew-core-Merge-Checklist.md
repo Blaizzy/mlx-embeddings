@@ -13,7 +13,8 @@ A detailed checklist can be found [below](#detailed-merge-checklist). This is al
   [pip](https://pip.pypa.io/en/stable/).
 - Ensure that any dependencies are accurate and minimal. We don't need to
   support every possible optional feature for the software.
-- When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See [below](#how-to-merge-without-bottles) for more details.
+- When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See the ["How to merge without bottles" section below](#how-to-merge-without-bottles)
+for more details.
 - Use `brew pr-publish` or `brew pr-pull` otherwise, which adds messages to auto-close pull requests and pull bottles built by the Brew Test Bot.
 - Thank people for contributing.
 
@@ -26,25 +27,11 @@ For example, we build Wireshark, but not the heavy GUI.
 Homebrew is about Unix software. Stuff that builds to an `.app` should
 be in Homebrew Cask instead.
 
-## Naming
-
-The name is the strictest item, because avoiding a later name change is
-desirable.
-
-Choose a name that’s the most common name for the project.
-For example, we initially chose `objective-caml` but we should have chosen `ocaml`.
-Choose what people say to each other when talking about the project.
-
-Formulae that are also packaged by other package managers (e.g. Debian, Ubuntu) should be
-named consistently (subject to minor differences due to Homebrew formula naming conventions).
-
-Add other names as aliases as symlinks in `Aliases` in the tap root. Ensure the
-name referenced on the homepage is one of these, as it may be different and have
-underscores and hyphens and so on.
-
-We now accept versioned formulae as long as they [meet the requirements](Versions.md).
-
 ## Merging, rebasing, cherry-picking
+
+In most cases, you can simply approve a PR and an automatic merge (with bottles)
+will be performed by [@BrewTestBot](https://github.com/BrewTestBot).
+See [Brew Test Bot For Core Contributors](Brew-Test-Bot-For-Core-Contributors.md) for more information.
 
 PRs modifying formulae that don't need bottles or making changes that don't
 require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows.
@@ -70,12 +57,30 @@ Only one maintainer is necessary to approve and merge the addition of a new or u
 
 ### How to merge without bottles
 
-Here are guidelines about when to use squash & merge versus rebase & merge. These options should only be used with PRs where bottles are not needed or affected.
+Here are guidelines about when to use squash & merge versus rebase & merge. These options should only be used with PRs where bottles are not affected.
 
 | | PR modifies a single formula | PR modifies multiple formulae |
 |---|---|---|
 | **Commits look good** | rebase & merge _or_ squash & merge | rebase & merge |
 | **Commits need work** | squash & merge | manually merge using the command line |
+
+## Naming
+
+The name is the strictest item, because avoiding a later name change is
+desirable.
+
+Choose a name that’s the most common name for the project.
+For example, we initially chose `objective-caml` but we should have chosen `ocaml`.
+Choose what people say to each other when talking about the project.
+
+Formulae that are also packaged by other package managers (e.g. Debian, Ubuntu) should be
+named consistently (subject to minor differences due to Homebrew formula naming conventions).
+
+Add other names as aliases as symlinks in `Aliases` in the tap root. Ensure the
+name referenced on the homepage is one of these, as it may be different and have
+underscores and hyphens and so on.
+
+We now accept versioned formulae as long as they [meet the requirements](Versions.md).
 
 ## Testing
 

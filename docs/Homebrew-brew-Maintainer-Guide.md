@@ -13,41 +13,41 @@ When reviewing a PR, use "comment", "approve", or "request changes" when submitt
 - Approve: if you feel that the PR is in a good state to be merged, even if there are
   non-blocking changes you'd like to be made
 - Request changes: if you feel strongly that the PR is likely to cause a problem for users or
-  have a genuine reason to oppose the PR.
+  have another reason to oppose the PR.
 
 ## Merging PRs
 
-Merging should be done using the standard Merge button in the `Homebrew/brew` repository to preserve history and GPG commit signing. The Squash and Merge and Rebase and Merge buttons are disabled.
+Merging is be done using the standard Merge button in the `Homebrew/brew` repository to preserve
+history and GPG commit signing. The Squash and Merge and Rebase and Merge buttons are disabled.
 
 PRs must meet the following conditions to be merged:
 
-- Have at least one maintainer (or `BrewTestBot`) approval. See [below](#automatic-approvals)
-  for more details about how `BrewTestBot` approves PRs.
+- Have at least one maintainer (or [@BrewTestBot](https://github.com/BrewTestBot)) approval.
+  See the ["Automatic approvals" section below](#automatic-approvals).
+  for more details about how [@BrewTestBot](https://github.com/BrewTestBot) approves PRs.
 - Have passing CI. This is a _mandatory_ step. PRs with failing CI should _never_ be merged.
-  See [below](#ci) for more information about `Homebrew/brew` CI.
+  See the ["CI" section below](#ci) for more information about `Homebrew/brew` CI.
 
-If possible, PRs should also have:
-
-- Linear commit history (i.e. no merge commits in PR branches).
-- GPG-signed commits (see the private `ops` repository for instructions on setting this up).
+If possible, PRs should also have GPG-signed commits (see the private `ops` repository for
+instructions on setting this up).
 
 ## Automatic approvals
 
-To ensure that each PR has the opportunity to be seen and reviewed by any other maintainers who wish
+To ensure that non-urgent PRs have the opportunity to be seen and reviewed by any other maintainers who wish
 to take a look, all PRs require an approval before they can be merged. However, not every PR is
 reviewed by another maintainer, and some PRs are urgent enough that they need to be merged without
 an approval by another maintainer.
 
 As a compromise between always needing a review and allowing maintainers to merge PRs they deem ready,
 the `Triage` CI job will ensure that PRs cannot be merged until they've been open for 24 hours
-(only counting hours that occur during the business week). After the triage period has expired, the
-CI job will show up as "passed" and `BrewTestBot` will approve the PR, allowing it to be merged.
-This gives all maintainers a reasonable opportunity to review every PR, but won't block any PR for lack
-of reviews.
+(only counting hours that occur Monday to Friday). After the triage period has expired, the
+CI job will show up as "passed" and [@BrewTestBot](https://github.com/BrewTestBot) will approve the PR,
+allowing it to be merged. This gives all maintainers a reasonable opportunity to review every PR,
+but won't block any PR for lack of reviews.
 
 If the PR is urgent enough that it is necessary to bypass that 24 hour window, the `critical` label
-can be applied to the PR. When this label is applied, the `Triage` CI job will immediately be
-successful and `BrewTestBot` will approve the PR.
+should be applied to the PR. When this label is applied, the `Triage` CI job will immediately be
+successful and [@BrewTestBot](https://github.com/BrewTestBot) will approve the PR.
 
 ## CI
 
@@ -62,7 +62,7 @@ There are many checks that run on every PR. The following is a quick list of the
 - `Triage / review`: This verifies that the PR has been open for long enough.
   See [above](#automatic-approvals) for more information about automatic approvals.
 - `codecov/patch` and `codecov/project`: These show the Codecov report for the PR.
-  See [below](#brew-tests-and-codecov) for more info about Codecov.
+  See the ["`brew tests` and Codecov" section below](#brew-tests-and-codecov) for more info about Codecov.
 - `CI / vendored gems (Linux)`: This checks whether there was a change to the vendored gems on Linux that needs to be
   committed to the PR branch.
 - `CI / test default formula (Linux)`: This runs `brew test-bot` on Linux to ensure it still works as expected.
@@ -71,10 +71,13 @@ There are many checks that run on every PR. The following is a quick list of the
 - `CI / tap syntax (Linux)`: This runs `brew style` and `brew audit` on all official taps
   (note that although this has Linux in its name, it does check `Homebrew/homebrew-core`,
   `Homebrew/linuxbrew-core` and all cask repos).
-- `CI / docker`: This builds and deploys a new Homebrew docker image.
-- `CI / test everything (macOS)`: This runs `brew tests` on macOS.
+- `CI / docker`: This builds and deploys a new Homebrew Docker image.
+- `CI / test everything (macOS)`: This runs several checks on macOS including `brew tests`, `brew update-tests`,
+  `brew test-bot --only-formulae --test-default-formula`, `brew readall` and `brew doctor`.
 - `CI / tests (no-compatibility mode)`, `CI / tests (generic OS)` and `CI / tests (Linux)`: These run
   `brew tests` with various options on Linux.
+
+_Note that this list is non-exhaustive and can change over time._
 
 ### `brew tests` and Codecov
 
@@ -93,8 +96,8 @@ but this should be avoided if possible.
 
 Homebrew's manpages and shell completions are generated automatically by the `brew generate-man-completions` command.
 Contributors are welcome to run this command and commit the changes in a PR, but they don't have to. If they don't,
-a follow-up PR to make the necessary changes will be opened automatically by `BrewTestBot` once the original PR is
-merged. These follow-up PRs can be merged immediately if the changes seem correct.
+a follow-up PR to make the necessary changes will be opened automatically by [@BrewTestBot](https://github.com/BrewTestBot)
+once the original PR is merged. These follow-up PRs can be merged immediately if the changes seem correct.
 
 An update can be requested manually by triggering the workflow from the
 [Update maintainers, manpage and completions](https://github.com/Homebrew/brew/actions/workflows/update-man-completions.yml)

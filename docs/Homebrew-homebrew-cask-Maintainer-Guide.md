@@ -17,6 +17,7 @@ Here is a list of the most common situations that arise in cask PRs and how to h
 - The `version` and `sha256` both change (keeping the same format): Merge.
 - Only the `sha256` changes: Merge unless the version needs to be updated as well.
   It’s not uncommon for upstream vendors to update versions in-place.
+  However, be wary for times when e.g. upstream could have been hacked.
 - `livecheck` is updated: Use your best judgement and try to make sure that the changes
   follow the [`livecheck` guidelines](Brew-Livecheck.md).
 - Only the `version` changes or the `version` format changes: Use your best judgement and
@@ -27,21 +28,9 @@ If in doubt, ask another cask maintainer on GitHub or Slack.
 
 Note that unlike formulae, casks do not consider the `sha256` stanza to be a meaningful security measure
 as maintainers cannot realistically check them for authenticity. Casks download from upstream; if a malicious
-actor compromised a URL, they could just as well compromise a version and make it look like an update.
+actor compromised a URL, they could potentially compromise a version and make it look like an update.
 
 ## Merging
-
-### Approvals
-
-Most PRs in the cask repositories are simple version bumps that don't necessarily need
-another maintainer's approval. However, GitHub will not allow a PR to be merged without
-at least one approving review. To bypass this requirement if necessary, a maintainer
-can self-approve one of their PRs using the `self-approve` GitHub Actions workflow to
-satisfy this requirement. To trigger a self-approval, navigate to the
-["Self-approve a Pull Request" section of the Actions tab](https://github.com/Homebrew/homebrew-cask/actions/workflows/self-approve.yml),
-click on "Run workflow", enter the PR number and click "Run workflow".
-
-### Merge Types
 
 In general, using GitHub's Squash and Merge button is the best way to merge a PR. This can be used when
 the PR modifies only one cask, regardless of the number of commits or whether the commit message
