@@ -167,7 +167,7 @@ module Cask
     sig { params(quiet: T.nilable(T::Boolean), timeout: T.nilable(T.any(Integer, Float))).returns(Pathname) }
     def download(quiet: nil, timeout: nil)
       @download ||= downloader.fetch(quiet: quiet, verify_download_integrity: @verify_download_integrity,
-timeout: timeout)
+                                     timeout: timeout)
     end
 
     def verify_has_sha

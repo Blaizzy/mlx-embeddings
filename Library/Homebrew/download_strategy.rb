@@ -714,7 +714,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
 
   sig {
     params(target: Pathname, url: String, revision: T.nilable(String), ignore_externals: T::Boolean,
-   timeout: T.nilable(Time)).void
+           timeout: T.nilable(Time)).void
   }
   def fetch_repo(target, url, revision = nil, ignore_externals: false, timeout: nil)
     # Use "svn update" when the repository already exists locally.
