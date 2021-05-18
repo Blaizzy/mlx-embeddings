@@ -303,7 +303,7 @@ The [`find-appcast`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/develop
 
 | key             | value       |
 | --------------- | ----------- |
-| `must_contain:` | a custom string for `brew audit --appcast {{cask_file}}` to check against. |
+| `must_contain:` | a custom string for `brew audit --appcast <cask_file>` to check against. |
 
 Sometimes a `version` doesn’t match a string on the webpage, in which case we tweak what to search for. Example: if `version` is `6.26.1440` and the appcast’s contents only show `6.24`, the check for “is `version` in the appcast feed” will fail. With `must_contain`, the check is told to “look for this string instead of `version`”. In the example, `must_contain: version.major_minor` is saying “look for `6.24`”, making the check succeed.
 
@@ -362,7 +362,7 @@ When `caveats` is a string, it is evaluated at compile time. The following metho
 | `version`          | the Cask version
 | `homepage`         | the Cask homepage
 | `caskroom_path`    | the containing directory for all staged Casks, typically `/usr/local/Caskroom` (only available with block form)
-| `staged_path`      | the staged location for this Cask, including version number: `/usr/local/Caskroom/{{token}}/{{version}}` (only available with block form)
+| `staged_path`      | the staged location for this Cask, including version number: `/usr/local/Caskroom/<token>/<version>` (only available with block form)
 
 Example:
 
@@ -1142,21 +1142,21 @@ SourceForge and OSDN (formerly `SourceForge.JP`) projects are common ways to dis
 We prefer URLs of this format:
 
 ```
-https://downloads.sourceforge.net/{{project_name}}/{{filename}}.{{ext}}
+https://downloads.sourceforge.net/<project_name>/<filename>.<ext>
 ```
 
 Or, if it’s from [OSDN](https://osdn.jp/):
 
 ```
-http://{{subdomain}}.osdn.jp/{{project_name}}/{{release_id}}/{{filename}}.{{ext}}
+http://<subdomain>.osdn.jp/<project_name>/<release_id>/<filename>.<ext>
 ```
 
-`{{subdomain}}` is typically of the form `dl` or `{{user}}.dl`.
+`<subdomain>` is typically of the form `dl` or `<user>.dl`.
 
 If these formats are not available, and the application is macOS-exclusive (otherwise a command-line download defaults to the Windows version) we prefer the use of this format:
 
 ```
-https://sourceforge.net/projects/{{project_name}}/files/latest/download
+https://sourceforge.net/projects/<project_name>/files/latest/download
 ```
 
 #### Some Providers Block Command-line Downloads
