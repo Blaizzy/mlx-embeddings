@@ -44,7 +44,7 @@ module Homebrew
 
     args.named.to_formulae_and_casks(only: :formula, method: :kegs).freeze.each do |keg|
       head = keg.version.head?
-      next unless args.HEAD? == head
+      next if args.HEAD? != head
 
       keg_only = Formulary.keg_only?(keg.rack)
 
