@@ -54,7 +54,6 @@ Thanks for all your work so far!
 If they accept, follow a few steps to get them set up:
 
 - Invite them to the [**@Homebrew/maintainers** team](https://github.com/orgs/Homebrew/teams/maintainers) (or any relevant [subteams](https://github.com/orgs/Homebrew/teams/maintainers/teams)) to give them write access to relevant repositories (but don't make them owners). They will need to enable [GitHub's Two Factor Authentication](https://help.github.com/articles/about-two-factor-authentication/).
-- Invite them to the [`homebrew-maintainers` private maintainers mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-maintainers/members/add).
 - Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
 - Ask them to disable SMS as a 2FA device or fallback on their GitHub account in favour of using one of the other authentication methods.
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
@@ -62,7 +61,6 @@ If they accept, follow a few steps to get them set up:
 
 If they are interested in doing system administration work:
 
-- Invite them to the [`homebrew-ops` private operations mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-ops/members/add).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
 - Optionally: make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people) if they need to access organisation-wide settings (like GitHub Actions organisation shared runners).
 
