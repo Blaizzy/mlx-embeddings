@@ -60,7 +60,7 @@ There are many checks that run on every PR. The following is a quick list of the
   any new/changed dependencies. See [Type Checking With Sorbet](Typechecking.md) for more information about RBI files
   and typechecking.
 - `Triage / review`: This verifies that the PR has been open for long enough.
-  See [above](#automatic-approvals) for more information about automatic approvals.
+  See the ["Automatic approvals" section above](#automatic-approvals) for more information about automatic approvals.
 - `codecov/patch` and `codecov/project`: These show the Codecov report for the PR.
   See the ["`brew tests` and Codecov" section below](#brew-tests-and-codecov) for more info about Codecov.
 - `CI / vendored gems (Linux)`: This checks whether there was a change to the vendored gems on Linux that needs to be
