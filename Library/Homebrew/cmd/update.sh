@@ -444,6 +444,8 @@ EOS
     QUIET_ARGS=()
   fi
 
+  # HOMEBREW_CURLRC isn't misspelt here
+  # shellcheck disable=SC2153
   if [[ -z "${HOMEBREW_CURLRC}" ]]
   then
     CURL_DISABLE_CURLRC_ARGS=(-q)

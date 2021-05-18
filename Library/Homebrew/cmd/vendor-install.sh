@@ -82,6 +82,8 @@ fetch() {
   curl_args=()
 
   # do not load .curlrc unless requested (must be the first argument)
+  # HOMEBREW_CURLRC isn't misspelt here
+  # shellcheck disable=SC2153
   if [[ -z "${HOMEBREW_CURLRC}" ]]
   then
     curl_args[${#curl_args[*]}]="-q"
