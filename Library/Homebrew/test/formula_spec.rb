@@ -996,7 +996,7 @@ describe Formula do
       expect(f).to pour_bottle
     end
 
-    it "returns false when set with a symbol" do
+    it "returns false with `reason: :clt_required` on macOS", :needs_macos do
       # Pretend CLT is not installed
       allow(MacOS::CLT).to receive(:installed?).and_return(false)
 
@@ -1009,10 +1009,20 @@ describe Formula do
       expect(f).not_to pour_bottle
     end
 
-    it "returns true when set with a symbol" do
+    it "returns true with `reason: :clt_required` on macOS", :needs_macos do
       # Pretend CLT is installed
       allow(MacOS::CLT).to receive(:installed?).and_return(true)
 
+      f = formula "foo" do
+        url "foo-1.0"
+
+        pour_bottle? reason: :clt_required
+      end
+
+      expect(f).to pour_bottle
+    end
+
+    it "returns true with `reason: :clt_required` on Linux", :needs_linux do
       f = formula "foo" do
         url "foo-1.0"
 
