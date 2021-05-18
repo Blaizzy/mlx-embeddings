@@ -17,7 +17,7 @@ When reviewing a PR, use "comment", "approve", or "request changes" when submitt
 
 ## Merging PRs
 
-Merging is be done using the standard Merge button in the `Homebrew/brew` repository to preserve
+Merging is done using the standard Merge button in the `Homebrew/brew` repository to preserve
 history and GPG commit signing. The Squash and Merge and Rebase and Merge buttons are disabled.
 
 PRs must meet the following conditions to be merged:
