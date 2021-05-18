@@ -303,7 +303,7 @@ The [`find-appcast`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/develop
 
 | key             | value       |
 | --------------- | ----------- |
-| `must_contain:` | a custom string for `brew audit --appcast <cask_file>` to check against. |
+| `must_contain:` | a custom string for `brew audit --appcast <cask>` to check against. |
 
 Sometimes a `version` doesn’t match a string on the webpage, in which case we tweak what to search for. Example: if `version` is `6.26.1440` and the appcast’s contents only show `6.24`, the check for “is `version` in the appcast feed” will fail. With `must_contain`, the check is told to “look for this string instead of `version`”. In the example, `must_contain: version.major_minor` is saying “look for `6.24`”, making the check succeed.
 
