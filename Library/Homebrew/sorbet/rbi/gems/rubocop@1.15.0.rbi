@@ -943,6 +943,7 @@ module RuboCop::Cop::CheckLineBreakable
   def extract_first_element_over_column_limit(node, elements, max); end
   def process_args(args); end
   def safe_to_ignore?(node); end
+  def shift_elements_for_heredoc_arg(node, elements, index); end
   def within_column_limit?(element, max, line); end
 end
 
@@ -1450,6 +1451,7 @@ module RuboCop::Cop::FrozenStringLiteral
 
   def frozen_string_literal_comment_exists?; end
   def frozen_string_literal_specified?; end
+  def frozen_string_literals_disabled?; end
   def frozen_string_literals_enabled?; end
   def leading_comment_lines; end
 
@@ -1866,9 +1868,10 @@ class RuboCop::Cop::Layout::ArgumentAlignment < ::RuboCop::Cop::Base
   private
 
   def autocorrect(corrector, node); end
-  def base_column(node, args); end
+  def base_column(node, first_argument); end
   def fixed_indentation?; end
   def message(_node); end
+  def multiple_arguments?(node, first_argument); end
   def target_method_lineno(node); end
 end
 
@@ -2669,12 +2672,14 @@ class RuboCop::Cop::Layout::FirstHashElementIndentation < ::RuboCop::Cop::Base
 
   private
 
+  def argument_alignment_config; end
   def autocorrect(corrector, node); end
   def base_description(left_parenthesis); end
   def brace_alignment_style; end
   def check(hash_node, left_parenthesis); end
   def check_based_on_longest_key(hash_node, left_brace, left_parenthesis); end
   def check_right_brace(right_brace, left_brace, left_parenthesis); end
+  def enforce_first_argument_with_fixed_indentation?; end
   def message(base_description); end
   def message_for_right_brace(left_parenthesis); end
   def separator_style?(first_pair); end
@@ -2753,12 +2758,14 @@ class RuboCop::Cop::Layout::HashAlignment < ::RuboCop::Cop::Base
   def alignment_for(pair); end
   def alignment_for_colons; end
   def alignment_for_hash_rockets; end
+  def argument_alignment_config; end
   def check_delta(delta, node:, alignment:); end
   def check_pairs(node); end
   def correct_key_value(corrector, delta, key, value, separator); end
   def correct_no_value(corrector, key_delta, key); end
   def correct_node(corrector, node, delta); end
   def double_splat?(node); end
+  def enforce_first_argument_with_fixed_indentation?; end
   def good_alignment?(column_deltas); end
   def ignore_hash_argument?(node); end
   def new_alignment(key); end
@@ -4375,6 +4382,7 @@ class RuboCop::Cop::Lint::EmptyBlock < ::RuboCop::Cop::Base
   def allow_comment?(node); end
   def allow_empty_lambdas?; end
   def comment_disables_cop?(comment); end
+  def lambda_or_proc?(node); end
 end
 
 RuboCop::Cop::Lint::EmptyBlock::MSG = T.let(T.unsafe(nil), String)
@@ -7585,6 +7593,7 @@ class RuboCop::Cop::Style::ClassAndModuleChildren < ::RuboCop::Cop::Base
   def compact_identifier_name(node); end
   def compact_node(corrector, node); end
   def compact_node_name?(node); end
+  def compact_replacement(node); end
   def indent_width; end
   def leading_spaces(node); end
   def needs_compacting?(body); end
@@ -8225,6 +8234,7 @@ class RuboCop::Cop::Style::EmptyLiteral < ::RuboCop::Cop::Base
   def correction(node); end
   def enforce_double_quotes?; end
   def first_argument_unparenthesized?(node); end
+  def frozen_strings?; end
   def offense_array_node?(node); end
   def offense_hash_node?(node); end
   def offense_message(node); end
@@ -9681,6 +9691,10 @@ class RuboCop::Cop::Style::NilLambda < ::RuboCop::Cop::Base
 
   def nil_return?(param0 = T.unsafe(nil)); end
   def on_block(node); end
+
+  private
+
+  def autocorrect(corrector, node); end
 end
 
 RuboCop::Cop::Style::NilLambda::MSG = T.let(T.unsafe(nil), String)
@@ -11291,6 +11305,18 @@ RuboCop::Cop::Style::TernaryParentheses::NON_COMPLEX_TYPES = T.let(T.unsafe(nil)
 
 RuboCop::Cop::Style::TernaryParentheses::VARIABLE_TYPES = T.let(T.unsafe(nil), Set)
 
+class RuboCop::Cop::Style::TopLevelMethodDefinition < ::RuboCop::Cop::Base
+  def define_method_block?(param0 = T.unsafe(nil)); end
+  def on_block(node); end
+  def on_def(node); end
+  def on_defs(node); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::Style::TopLevelMethodDefinition::MSG = T.let(T.unsafe(nil), String)
+
+RuboCop::Cop::Style::TopLevelMethodDefinition::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Style::TrailingBodyOnClass < ::RuboCop::Cop::Base
   include(::RuboCop::Cop::Alignment)
   include(::RuboCop::Cop::TrailingBody)
@@ -12576,6 +12602,7 @@ end
 class RuboCop::Formatter::JUnitFormatter < ::RuboCop::Formatter::BaseFormatter
   def initialize(output, options = T.unsafe(nil)); end
 
+  def add_testcase_element_to_testsuite_element(file, target_offenses, cop); end
   def classname_attribute_value(file); end
   def file_finished(file, offenses); end
   def finished(_inspected_files); end
@@ -12585,6 +12612,7 @@ class RuboCop::Formatter::JUnitFormatter < ::RuboCop::Formatter::BaseFormatter
   private
 
   def add_failure_to(testcase, offenses, cop_name); end
+  def reset_count; end
 end
 
 class RuboCop::Formatter::OffenseCountFormatter < ::RuboCop::Formatter::BaseFormatter
@@ -12855,7 +12883,7 @@ class RuboCop::OptionsValidator
   def initialize(options); end
 
   def boolean_or_empty_cache?; end
-  def disable_parallel_when_invalid_combo; end
+  def disable_parallel_when_invalid_option_combo; end
   def display_only_fail_level_offenses_with_autocorrect?; end
   def except_syntax?; end
   def incompatible_options; end
@@ -12867,7 +12895,6 @@ class RuboCop::OptionsValidator
   def validate_cop_options; end
   def validate_display_only_failed; end
   def validate_exclude_limit_option; end
-  def validate_parallel; end
 
   class << self
     def validate_cop_list(names); end
