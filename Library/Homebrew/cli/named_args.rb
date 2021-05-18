@@ -220,6 +220,18 @@ module Homebrew
         end
       end
 
+      sig { returns(T::Array[Keg]) }
+      def to_kegs
+        @to_kegs ||= begin
+          to_formulae_and_casks(only: :formula, method: :kegs).freeze
+        rescue NoSuchKegError => e
+          if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
+            $stderr.puts reason
+          end
+          raise e
+        end
+      end
+
       sig {
         params(only: T.nilable(Symbol), ignore_unavailable: T.nilable(T::Boolean), all_kegs: T.nilable(T::Boolean))
           .returns([T::Array[Keg], T::Array[Cask::Cask]])
