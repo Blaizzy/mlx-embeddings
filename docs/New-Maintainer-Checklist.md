@@ -26,28 +26,24 @@ contribute to Homebrew, but we will ask you to step down as a maintainer.
 
 A few requests:
 
-- Please make pull requests on any changes to Homebrew/brew code or any
-  non-trivial (e.g. not a test or audit improvement or version bump) changes
-  to formulae code and don't merge them unless you get at least one approval
+- Please make pull requests for any changes in the Homebrew repositories (instead
+  of committing directly) and don't merge them unless you get at least one approval
   and passing tests.
-- In Homebrew/brew, close pull requests using GitHub's "Merge pull request"
-  button in "Create a merge commit" mode.
-- In Homebrew/homebrew-core, use `brew pr-publish` to close pull requests
-  that require new bottles or change multiple formulae. Note that an approving
-  review on a pull request for an existing formula will trigger this automatically.
-  If commits need to be amended use `brew pr-pull` instead. Let these commands
-  auto-close issues whenever possible (it may take up to 5 minutes). If in doubt,
-  check with e.g. Fork.app that you've not accidentally added merge commits.
-  If bottles are unnecessary, use GitHub's "Merge pull request" button in
-  "Squash and merge" mode for a single formula change.
+- Please review the Maintainer Guidelines at https://docs.brew.sh/Maintainer-Guidelines
+- Please review the team-specific guides for whichever teams you will be a part of.
+  Here are links to these guides:
+    - Homebrew/brew: https://docs.brew.sh/Homebrew-brew-Maintainer-Guide
+    - Homebrew/homebrew-core: https://docs.brew.sh/Homebrew-homebrew-core-Maintainer-Guide
+    - Homebrew/linuxbrew-core: https://docs.brew.sh/Homebrew-linuxbrew-core-Maintainer-Guide
+    - Homebrew/homebrew-cask: https://docs.brew.sh/Homebrew-homebrew-cask-Maintainer-Guide
 - Still create your branches on your fork rather than in the main repository.
   Note GitHub's UI will create edits and reverts on the main repository if you
   make edits or click "Revert" on the Homebrew/brew repository rather than your
   own fork.
 - If still in doubt please ask for help and we'll help you out.
 - Please read:
-    - https://docs.brew.sh/Brew-Test-Bot-For-Core-Contributors
     - https://docs.brew.sh/Maintainer-Guidelines
+    - the team-specific guides linked above and in the maintainer guidelines
     - anything else you haven't read on https://docs.brew.sh
 
 How does that sound?
@@ -58,7 +54,6 @@ Thanks for all your work so far!
 If they accept, follow a few steps to get them set up:
 
 - Invite them to the [**@Homebrew/maintainers** team](https://github.com/orgs/Homebrew/teams/maintainers) (or any relevant [subteams](https://github.com/orgs/Homebrew/teams/maintainers/teams)) to give them write access to relevant repositories (but don't make them owners). They will need to enable [GitHub's Two Factor Authentication](https://help.github.com/articles/about-two-factor-authentication/).
-- Invite them to the [`homebrew-maintainers` private maintainers mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-maintainers/members/add).
 - Invite them to the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
 - Ask them to disable SMS as a 2FA device or fallback on their GitHub account in favour of using one of the other authentication methods.
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
@@ -66,7 +61,6 @@ If they accept, follow a few steps to get them set up:
 
 If they are interested in doing system administration work:
 
-- Invite them to the [`homebrew-ops` private operations mailing list](https://lists.sfconservancy.org/mailman/admin/homebrew-ops/members/add).
 - Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people).
 - Optionally: make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people) if they need to access organisation-wide settings (like GitHub Actions organisation shared runners).
 
