@@ -1521,6 +1521,7 @@ _brew_pr_publish() {
     -*)
       __brewcomp "
       --autosquash
+      --branch
       --debug
       --help
       --message

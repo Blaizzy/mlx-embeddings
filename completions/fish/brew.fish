@@ -1043,6 +1043,7 @@ __fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must
 
 __fish_brew_complete_cmd 'pr-publish' 'Publish bottles for a pull request with GitHub Actions'
 __fish_brew_complete_arg 'pr-publish' -l autosquash -d 'If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format'
+__fish_brew_complete_arg 'pr-publish' -l branch -d 'Branch to publish to (default: `master`)'
 __fish_brew_complete_arg 'pr-publish' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-publish' -l help -d 'Show this message'
 __fish_brew_complete_arg 'pr-publish' -l message -d 'Message to include when autosquashing revision bumps, deletions, and rebuilds'
