@@ -410,13 +410,14 @@ Three commands are provided for displaying informational messages to the user:
 * `opoo` for warning messages
 * `odie` for error messages and immediately exiting
 
-In particular, when a test needs to be performed before installation use `odie` to bail out gracefully. For example:
+Use `odie` when you need to exit a formula gracefully for any reason. For example:
 
 ```ruby
-if build.with?("qt") && build.with?("qt5")
-  odie "Options --with-qt and --with-qt5 are mutually exclusive."
+if build.head?
+  lib_jar = Dir["cfr-*-SNAPSHOT.jar"]
+  doc_jar = Dir["cfr-*-SNAPSHOT-javadoc.jar"]
+  odie "Unexpected number of artifacts!" if (lib_jar.length != 1) || (doc_jar.length != 1)
 end
-system "make", "install"
 ```
 
 ### `bin.install "foo"`
