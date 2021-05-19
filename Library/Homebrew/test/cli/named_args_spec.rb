@@ -176,18 +176,18 @@ describe Homebrew::CLI::NamedArgs do
     end
   end
 
-  describe "#to_keg" do
+  describe "#to_default_kegs" do
     before do
       (HOMEBREW_CELLAR/"foo/1.0").mkpath
       (HOMEBREW_CELLAR/"bar/1.0").mkpath
     end
 
     it "resolves kegs with #resolve_keg" do
-      expect(described_class.new("foo", "bar").to_keg.map(&:name)).to eq ["foo", "bar"]
+      expect(described_class.new("foo", "bar").to_default_kegs.map(&:name)).to eq ["foo", "bar"]
     end
 
     it "when there are no matching kegs returns an array of Kegs" do
-      expect(described_class.new.to_keg).to be_empty
+      expect(described_class.new.to_default_kegs).to be_empty
     end
   end
 

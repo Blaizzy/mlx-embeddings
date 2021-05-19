@@ -129,9 +129,9 @@ module Homebrew
         safe_system "ls", *ls_args, Cask::Caskroom.path
       end
     elsif args.verbose? || !$stdout.tty?
-      system_command! "find", args: args.named.to_keg.map(&:to_s) + %w[-not -type d -print], print_stdout: true
+      system_command! "find", args: args.named.to_default_kegs.map(&:to_s) + %w[-not -type d -print], print_stdout: true
     else
-      args.named.to_keg.each { |keg| PrettyListing.new keg }
+      args.named.to_default_kegs.each { |keg| PrettyListing.new keg }
     end
   end
 

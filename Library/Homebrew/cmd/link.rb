@@ -45,7 +45,7 @@ module Homebrew
     kegs = if args.HEAD?
       args.named.to_kegs.filter { |keg| keg.version.head? }
     else
-      args.named.to_keg
+      args.named.to_default_kegs
     end
 
     kegs.freeze.each do |keg|
