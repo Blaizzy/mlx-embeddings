@@ -29,9 +29,13 @@ be in Homebrew Cask instead.
 
 ## Merging, rebasing, cherry-picking
 
-In most cases, you can simply approve a PR and an automatic merge (with bottles)
-will be performed by [@BrewTestBot](https://github.com/BrewTestBot).
+For most PRs that make formula modifications, you can simply approve the PR and an automatic
+merge (with bottles) will be performed by [@BrewTestBot](https://github.com/BrewTestBot).
 See [Brew Test Bot For Core Contributors](Brew-Test-Bot-For-Core-Contributors.md) for more information.
+
+Certain PRs may not be merged automatically by [@BrewTestBot](https://github.com/BrewTestBot),
+even after they've been approved. This includes PRs with the `new formula`, `automerge-skip`,
+and `linux-only` labels. To trigger a merge for these PRs, run `brew pr-publish`.
 
 PRs modifying formulae that don't need bottles or making changes that don't
 require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows.
