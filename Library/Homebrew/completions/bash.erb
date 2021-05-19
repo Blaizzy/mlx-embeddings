@@ -138,32 +138,32 @@ _brew() {
   local i=1 cmd
 
   # find the subcommand
-  while [[ "$i" -lt "$COMP_CWORD" ]]
+  while [[ "${i}" -lt "${COMP_CWORD}" ]]
   do
     local s="${COMP_WORDS[i]}"
-    case "$s" in
+    case "${s}" in
       --*)
-        cmd="$s"
+        cmd="${s}"
         break
         ;;
       -*)
         ;;
       *)
-        cmd="$s"
+        cmd="${s}"
         break
         ;;
     esac
     (( i++ ))
   done
 
-  if [[ "$i" -eq "$COMP_CWORD" ]]
+  if [[ "${i}" -eq "${COMP_CWORD}" ]]
   then
     __brew_complete_commands
     return
   fi
 
   # subcommands have their own completion functions
-  case "$cmd" in
+  case "${cmd}" in
     <%= function_mappings.join("\n    ").concat("\n") %>
     *) ;;
   esac
