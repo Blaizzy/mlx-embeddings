@@ -62,7 +62,7 @@
 
 - [Maintainer Guidelines](Maintainer-Guidelines.md)
 - [Homebrew/brew Maintainer Guide](Homebrew-brew-Maintainer-Guide.md)
-- [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Merge-Checklist.md)
+- [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Maintainer-Guide.md)
 - [Homebrew/linuxbrew-core Maintainer Guide](Homebrew-linuxbrew-core-Maintainer-Guide.md)
 - [Homebrew/homebrew-cask Maintainer Guide](Homebrew-homebrew-cask-Maintainer-Guide.md)
 
