@@ -99,7 +99,7 @@ module Homebrew
             when :resolve
               resolve_formula(name)
             when :default_kegs
-              resolve_keg(name)
+              resolve_default_keg(name)
             when :kegs
               _, kegs = resolve_kegs(name)
               kegs
@@ -294,7 +294,7 @@ module Homebrew
         [rack, kegs]
       end
 
-      def resolve_keg(name)
+      def resolve_default_keg(name)
         rack, kegs = resolve_kegs(name)
 
         linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename

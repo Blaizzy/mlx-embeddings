@@ -182,7 +182,7 @@ describe Homebrew::CLI::NamedArgs do
       (HOMEBREW_CELLAR/"bar/1.0").mkpath
     end
 
-    it "resolves kegs with #resolve_keg" do
+    it "resolves kegs with #resolve_default_keg" do
       expect(described_class.new("foo", "bar").to_default_kegs.map(&:name)).to eq ["foo", "bar"]
     end
 
