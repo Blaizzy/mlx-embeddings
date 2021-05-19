@@ -760,6 +760,8 @@ class FormulaInstaller
 
     audit_installed if Homebrew::EnvConfig.developer?
 
+    return if !installed_on_request? || installed_as_dependency?
+
     caveats = Caveats.new(formula)
 
     return if caveats.empty?
