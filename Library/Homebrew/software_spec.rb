@@ -347,8 +347,20 @@ class Bottle
   end
 
   def fetch_tab
+    return if github_packages_manifest_resource.blank?
+
     # a checksum is used later identifying the correct tab but we do not have the checksum for the manifest/tab
-    github_packages_manifest_resource&.fetch(verify_download_integrity: false)
+    github_packages_manifest_resource.fetch(verify_download_integrity: false)
+
+    begin
+      JSON.parse(github_packages_manifest_resource.cached_download.read)
+    rescue JSON::ParserError
+      raise DownloadError.new(
+        github_packages_manifest_resource,
+        RuntimeError.new("The downloaded GitHub Packages manifest was corrupted or modified (it is not valid JSON):"\
+                         "\n#{github_packages_manifest_resource.cached_download}"),
+      )
+    end
   rescue DownloadError
     raise unless fallback_on_error
 
@@ -363,7 +375,8 @@ class Bottle
     json = begin
       JSON.parse(manifest_json)
     rescue JSON::ParserError
-      raise ArgumentError, "Couldn't parse manifest JSON."
+      raise "The downloaded GitHub Packages manifest was corrupted or modified (it is not valid JSON): "\
+            "\n#{github_packages_manifest_resource.cached_download}"
     end
 
     manifests = json["manifests"]
