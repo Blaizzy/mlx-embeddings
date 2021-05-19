@@ -1149,6 +1149,8 @@ Requires write access to the repository.
 
 * `--autosquash`:
   If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format.
+* `--branch`:
+  Branch to publish to (default: `master`).
 * `--message`:
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--tap`:

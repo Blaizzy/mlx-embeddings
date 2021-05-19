@@ -1286,6 +1286,7 @@ _brew_pr_automerge() {
 _brew_pr_publish() {
   _arguments \
     '--autosquash[If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format]' \
+    '--branch[Branch to publish to (default: `master`)]' \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
