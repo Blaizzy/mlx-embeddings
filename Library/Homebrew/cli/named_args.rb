@@ -98,7 +98,7 @@ module Homebrew
               Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
             when :resolve
               resolve_formula(name)
-            when :keg
+            when :default_kegs
               resolve_keg(name)
             when :kegs
               _, kegs = resolve_kegs(name)
@@ -211,7 +211,7 @@ module Homebrew
       sig { returns(T::Array[Keg]) }
       def to_default_kegs
         @to_default_kegs ||= begin
-          to_formulae_and_casks(only: :formula, method: :keg).freeze
+          to_formulae_and_casks(only: :formula, method: :default_kegs).freeze
         rescue NoSuchKegError => e
           if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
             $stderr.puts reason
@@ -237,7 +237,7 @@ module Homebrew
           .returns([T::Array[Keg], T::Array[Cask::Cask]])
       }
       def to_kegs_to_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, all_kegs: nil)
-        method = all_kegs ? :kegs : :keg
+        method = all_kegs ? :kegs : :default_kegs
         @to_kegs_to_casks ||= {}
         @to_kegs_to_casks[method] ||=
           to_formulae_and_casks(only: only, ignore_unavailable: ignore_unavailable, method: method)
