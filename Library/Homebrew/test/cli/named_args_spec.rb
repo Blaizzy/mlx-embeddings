@@ -188,7 +188,7 @@ describe Homebrew::CLI::NamedArgs do
     end
 
     it "resolves kegs with multiple versions with #resolve_keg" do
-      expect(described_class.new("foo").to_kegs.map(&->(k) { k.version.version })).to eq ["1.0", "2.0"]
+      expect(described_class.new("foo").to_kegs.map { |k| k.version.version }).to eq ["1.0", "2.0"]
     end
 
     it "when there are no matching kegs returns an empty array" do
