@@ -191,7 +191,7 @@ describe Homebrew::CLI::NamedArgs do
       expect(described_class.new("foo").to_kegs.map(&->(k) { k.version.version })).to eq ["1.0", "2.0"]
     end
 
-    it "when there are no matching kegs returns an array of Kegs" do
+    it "when there are no matching kegs returns an empty array" do
       expect(described_class.new.to_kegs).to be_empty
     end
   end
