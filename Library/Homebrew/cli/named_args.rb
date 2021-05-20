@@ -98,8 +98,10 @@ module Homebrew
               Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
             when :resolve
               resolve_formula(name)
-            # odeprecated "`method: :keg`"
             when :keg, :default_kegs
+              # TODO: (3.2) Uncomment the following
+              # odeprecated "`load_formula_or_cask` with `method: :keg`",
+              #             "`load_formula_or_cask` with `method: :default_kegs`"
               resolve_default_keg(name)
             when :kegs
               _, kegs = resolve_kegs(name)
