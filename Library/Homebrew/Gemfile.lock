@@ -153,7 +153,7 @@ GEM
       sorbet (~> 0.5.5)
       sorbet-runtime
       thor (>= 0.19.2)
-    tapioca (0.4.21)
+    tapioca (0.4.22)
       bundler (>= 1.17.3)
       parlour (>= 2.1.0)
       pry (>= 0.12.2)
