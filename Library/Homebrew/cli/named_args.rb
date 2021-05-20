@@ -227,7 +227,7 @@ module Homebrew
 
       sig { returns(T::Array[Keg]) }
       def to_latest_kegs
-        @to_default_kegs ||= begin
+        @to_latest_kegs ||= begin
           to_formulae_and_casks(only: :formula, method: :latest_kegs).freeze
         rescue NoSuchKegError => e
           if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
