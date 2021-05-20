@@ -68,7 +68,13 @@ A full example:
 
 ```ruby
 pour_bottle? do
-  reason "The bottle needs the Xcode CLT to be installed."
-  satisfy { MacOS::CLT.installed? }
+  reason "The bottle needs to be installed into #{Homebrew::DEFAULT_PREFIX}."
+  satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
 end
+```
+
+Commonly used `pour_bottle?` conditions can be added as preset symbols to the `pour_bottle?` method, allowing them to be specified like this:
+
+```ruby
+pour_bottle? only_if: :clt_installed
 ```

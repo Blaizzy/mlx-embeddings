@@ -2920,7 +2920,7 @@ class Formula
     # the {Formula} will be built from source and `reason` will be printed.
     #
     # Alternatively, a preset reason can be passed as a symbol:
-    # <pre>pour_bottle? only_if: :clt</pre>
+    # <pre>pour_bottle? only_if: :clt_installed</pre>
     def pour_bottle?(only_if: nil, &block)
       @pour_bottle_check = PourBottleCheck.new(self)
 
