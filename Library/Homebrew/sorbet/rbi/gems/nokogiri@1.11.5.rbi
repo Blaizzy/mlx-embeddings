@@ -581,6 +581,8 @@ Nokogiri::LIBXML_ICONV_ENABLED = T.let(T.unsafe(nil), TrueClass)
 
 Nokogiri::LIBXML_LOADED_VERSION = T.let(T.unsafe(nil), String)
 
+Nokogiri::LIBXML_MEMORY_MANAGEMENT = T.let(T.unsafe(nil), String)
+
 Nokogiri::LIBXSLT_COMPILED_VERSION = T.let(T.unsafe(nil), String)
 
 Nokogiri::LIBXSLT_LOADED_VERSION = T.let(T.unsafe(nil), String)
