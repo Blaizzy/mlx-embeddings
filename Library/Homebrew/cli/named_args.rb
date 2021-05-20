@@ -98,6 +98,8 @@ module Homebrew
               Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
             when :resolve
               resolve_formula(name)
+            when :latest_kegs
+              resolve_latest_keg(name)
             when :keg, :default_kegs
               # TODO: (3.2) Uncomment the following
               # odeprecated "`load_formula_or_cask` with `method: :keg`",
@@ -224,6 +226,18 @@ module Homebrew
       end
 
       sig { returns(T::Array[Keg]) }
+      def to_latest_kegs
+        @to_default_kegs ||= begin
+          to_formulae_and_casks(only: :formula, method: :latest_kegs).freeze
+        rescue NoSuchKegError => e
+          if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
+            $stderr.puts reason
+          end
+          raise e
+        end
+      end
+
+      sig { returns(T::Array[Keg]) }
       def to_kegs
         @to_kegs ||= begin
           to_formulae_and_casks(only: :formula, method: :kegs).freeze
@@ -295,6 +309,15 @@ module Homebrew
         raise NoSuchKegError, rack.basename if kegs.none?
 
         [rack, kegs]
+      end
+
+      def resolve_latest_keg(name)
+        _, kegs = resolve_kegs(name)
+
+        # Return head keg if it is the only installed keg
+        return kegs if kegs.length == 1
+
+        kegs.reject { |k| k.version.head? }.max_by(&:version)
       end
 
       def resolve_default_keg(name)
