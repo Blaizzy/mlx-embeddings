@@ -314,7 +314,7 @@ module Homebrew
       def resolve_latest_keg(name)
         _, kegs = resolve_kegs(name)
 
-        # Return head keg if it is the only installed keg
+        # Return keg if it is the only installed keg
         return kegs if kegs.length == 1
 
         kegs.reject { |k| k.version.head? }.max_by(&:version)
