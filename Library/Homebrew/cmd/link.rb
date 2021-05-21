@@ -43,19 +43,33 @@ module Homebrew
     }
 
     kegs = if args.HEAD?
-      args.named.to_kegs.filter { |keg| keg.version.head? }
+      args.named.to_kegs.group_by(&:name).transform_values do |v|
+        v.find do |keg|
+          keg.version.head?
+        end
+      end
     else
-      args.named.to_latest_kegs
+      args.named.to_latest_kegs.group_by(&:name).transform_values(&:first)
     end
 
-    kegs.freeze.each do |keg|
+    kegs.freeze.each do |name, keg|
+      # Catch if no HEAD keg is installed
+      if keg.nil? && args.HEAD?
+        opoo <<~EOS
+          No HEAD keg installed for #{name}
+          To install, run:
+            brew install --HEAD #{name}
+        EOS
+        next
+      end
+
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?
         opoo "Already linked: #{keg}"
         name_and_flag = "#{"--HEAD " if args.HEAD?}#{"--force " if keg_only}#{keg.name}"
         puts <<~EOS
-          To relink:
+          To relink, run:
             brew unlink #{keg.name} && brew link #{name_and_flag}
         EOS
         next
