@@ -2920,16 +2920,16 @@ class Formula
     # the {Formula} will be built from source and `reason` will be printed.
     #
     # Alternatively, a preset reason can be passed as a symbol:
-    # <pre>pour_bottle? reason: :clt_required</pre>
-    def pour_bottle?(reason: nil, &block)
+    # <pre>pour_bottle? only_if: :clt_installed</pre>
+    def pour_bottle?(only_if: nil, &block)
       @pour_bottle_check = PourBottleCheck.new(self)
 
-      if reason.present? && block.present?
-        raise ArgumentError, "Do not pass both a reason and a block to `pour_bottle?`"
+      if only_if.present? && block.present?
+        raise ArgumentError, "Do not pass both a preset condition and a block to `pour_bottle?`"
       end
 
-      block ||= case reason
-      when :clt_required
+      block ||= case only_if
+      when :clt_installed
         lambda do |_|
           on_macos do
             T.cast(self, PourBottleCheck).reason(+<<~EOS)
@@ -2941,7 +2941,7 @@ class Formula
           end
         end
       else
-        raise ArgumentError, "Invalid `pour_bottle?` reason" if reason.present?
+        raise ArgumentError, "Invalid preset `pour_bottle?` condition" if only_if.present?
       end
 
       @pour_bottle_check.instance_eval(&block)
