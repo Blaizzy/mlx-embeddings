@@ -57,6 +57,7 @@ module Homebrew
 
         sig { params(content: String).returns(T.nilable(Item)) }
         def self.item_from_content(content)
+          Homebrew.install_bundler_gems!
           require "nokogiri"
 
           xml = Nokogiri::XML(content)
