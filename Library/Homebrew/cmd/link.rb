@@ -54,11 +54,11 @@ module Homebrew
 
     kegs.freeze.each do |name, keg|
       # Catch if no HEAD keg is installed
-      if keg.nil? && args.HEAD?
+      if keg.nil?
         opoo <<~EOS
-          No HEAD keg installed for #{name}
+          No #{"HEAD " if args.HEAD?}keg installed for #{name}
           To install, run:
-            brew install --HEAD #{name}
+            brew install #{"--HEAD " if args.HEAD?}#{name}
         EOS
         next
       end
