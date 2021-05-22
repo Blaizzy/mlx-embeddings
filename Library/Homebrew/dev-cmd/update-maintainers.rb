@@ -3,7 +3,7 @@
 
 require "cli/parser"
 require "utils/github"
-require "dev-cmd/man"
+require "dev-cmd/generate-man-completions"
 
 module Homebrew
   extend T::Sig
