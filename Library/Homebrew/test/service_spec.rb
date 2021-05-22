@@ -69,7 +69,7 @@ describe Homebrew::Service do
       f.class.service do
         run [opt_bin/"beanstalkd", "test"]
         run_type :immediate
-        environment_variables PATH: std_service_path_env, FOO: "BAR"
+        environment_variables PATH: std_service_path_env, FOO: "BAR", ETC_DIR: etc/"beanstalkd"
         error_log_path var/"log/beanstalkd.error.log"
         log_path var/"log/beanstalkd.log"
         input_path var/"in/beanstalkd"
@@ -88,6 +88,8 @@ describe Homebrew::Service do
         <dict>
         \t<key>EnvironmentVariables</key>
         \t<dict>
+        \t\t<key>ETC_DIR</key>
+        \t\t<string>#{HOMEBREW_PREFIX}/etc/beanstalkd</string>
         \t\t<key>FOO</key>
         \t\t<string>BAR</string>
         \t\t<key>PATH</key>

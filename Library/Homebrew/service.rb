@@ -135,13 +135,11 @@ module Homebrew
       end
     end
 
-    sig { params(variables: T.nilable(T::Hash[String, String])).returns(T.nilable(T::Hash[String, String])) }
+    sig { params(variables: T::Hash[String, String]).returns(T.nilable(T::Hash[String, String])) }
     def environment_variables(variables = {})
       case T.unsafe(variables)
-      when nil
-        @environment_variables
       when Hash
-        @environment_variables = variables
+        @environment_variables = variables.transform_values(&:to_s)
       else
         raise TypeError, "Service#environment_variables expects a hash"
       end
