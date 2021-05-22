@@ -155,7 +155,7 @@ class Caveats
     return if !f.plist_manual && !f.service?
 
     command = if f.service?
-      f.service.command.join(" ")
+      f.service.manual_command
     else
       f.plist_manual
     end
