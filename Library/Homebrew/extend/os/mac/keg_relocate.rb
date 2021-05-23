@@ -157,7 +157,7 @@ class Keg
     relocation = generic_prepare_relocation_to_locations
 
     brewed_perl = runtime_dependencies&.any? { |dep| dep["full_name"] == "perl" && dep["declared_directly"] }
-    perl_path = if brewed_perl
+    perl_path = if brewed_perl || name == "perl"
       "#{HOMEBREW_PREFIX}/opt/perl/bin/perl"
     else
       perl_version = if tab["built_on"].present?
