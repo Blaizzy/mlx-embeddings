@@ -679,10 +679,16 @@ module Homebrew
 
         message = nil
 
-        {
+        taps = {
           "Homebrew/brew"          => HOMEBREW_REPOSITORY,
           "Homebrew/homebrew-core" => CoreTap.instance.path,
-        }.each do |name, path|
+        }
+
+        if Pathname.new("#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask").exist?
+          taps["Homebrew/homebrew-cask"] = Pathname.new("#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask")
+        end
+
+        taps.each do |name, path|
           status = path.cd do
             `git status --untracked-files=all --porcelain 2>/dev/null`
           end
