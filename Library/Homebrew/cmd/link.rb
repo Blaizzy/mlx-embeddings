@@ -43,26 +43,22 @@ module Homebrew
     }
 
     kegs = if args.HEAD?
-      args.named.to_kegs.group_by(&:name).transform_values do |v|
-        v.find do |keg|
-          keg.version.head?
+      args.named.to_kegs.group_by(&:name).map do |name, resolved_kegs|
+        head_keg = resolved_kegs.find { |keg| keg.version.head? }
+        if head_keg.blank?
+          opoo <<~EOS
+            No HEAD keg installed for #{name}
+            To install, run:
+              brew install --HEAD #{name}
+          EOS
         end
-      end
+        head_keg
+      end.reject(&:blank?)
     else
-      args.named.to_latest_kegs.group_by(&:name).transform_values(&:first)
+      args.named.to_latest_kegs
     end
 
-    kegs.freeze.each do |name, keg|
-      # Catch if no HEAD keg is installed
-      if keg.nil?
-        opoo <<~EOS
-          No #{"HEAD " if args.HEAD?}keg installed for #{name}
-          To install, run:
-            brew install #{"--HEAD " if args.HEAD?}#{name}
-        EOS
-        next
-      end
-
+    kegs.freeze.each do |keg|
       keg_only = Formulary.keg_only?(keg.rack)
 
       if keg.linked?
