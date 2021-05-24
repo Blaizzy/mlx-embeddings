@@ -55,7 +55,7 @@ module Homebrew
       when String, Pathname
         @root_dir = path.to_s
       else
-        raise TypeError, "Service#root_dir expects a String"
+        raise TypeError, "Service#root_dir expects a String or Pathname"
       end
     end
 
@@ -67,7 +67,7 @@ module Homebrew
       when String, Pathname
         @input_path = path.to_s
       else
-        raise TypeError, "Service#input_path expects a String"
+        raise TypeError, "Service#input_path expects a String or Pathname"
       end
     end
 
