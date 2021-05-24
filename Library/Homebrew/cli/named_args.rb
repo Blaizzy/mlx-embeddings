@@ -100,12 +100,10 @@ module Homebrew
               resolve_formula(name)
             when :latest_kegs
               resolve_latest_keg(name)
-            when :keg
+            when :keg, :default_kegs
               # TODO: (3.2) Uncomment the following
               # odeprecated "`load_formula_or_cask` with `method: :keg`",
               #             "`load_formula_or_cask` with `method: :default_kegs`"
-              resolve_default_keg(name)
-            when :default_kegs
               resolve_default_keg(name)
             when :kegs
               _, kegs = resolve_kegs(name)
