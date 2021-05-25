@@ -322,7 +322,8 @@ module Homebrew
     installed_formulae.each do |f|
       Migrator.migrate_if_needed(f, force: args.force?)
       install_formula(f, args: args)
-      Cleanup.install_formula_clean!(f)
+      # Don't uninstall older keg(s) if installing HEAD keg(s).
+      Cleanup.install_formula_clean!(f) unless args.HEAD?
     end
 
     Upgrade.check_installed_dependents(
