@@ -226,10 +226,7 @@ module Homebrew
       options << "StandardInput=file:#{@input_path}" if @input_path.present?
       options << "StandardOutput=append:#{@log_path}" if @log_path.present?
       options << "StandardError=append:#{@error_log_path}" if @error_log_path.present?
-      if @environment_variables.present?
-        list = @environment_variables.map { |k, v| "#{k}=#{v}" }
-                                     .each { |value| options << "Environment=\"#{value}\"" }
-      end
+      options += @environment_variables.map { |k, v| "Environment=\"#{k}=#{v}\"" } if @environment_variables.present?
 
       unit + options.join("\n")
     end
