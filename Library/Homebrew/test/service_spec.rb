@@ -32,12 +32,44 @@ describe Homebrew::Service do
     end
   end
 
+  describe "#manual_command" do
+    it "returns valid manual_command" do
+      f.class.service do
+        run "#{HOMEBREW_PREFIX}/bin/beanstalkd"
+        run_type :immediate
+        environment_variables PATH: std_service_path_env, ETC_DIR: etc/"beanstalkd"
+        error_log_path var/"log/beanstalkd.error.log"
+        log_path var/"log/beanstalkd.log"
+        working_dir var
+        keep_alive true
+      end
+
+      path = f.service.manual_command
+      expect(path).to eq("ETC_DIR=\"#{HOMEBREW_PREFIX}/etc/beanstalkd\" #{HOMEBREW_PREFIX}/bin/beanstalkd")
+    end
+
+    it "returns valid manual_command without variables" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :immediate
+        environment_variables PATH: std_service_path_env
+        error_log_path var/"log/beanstalkd.error.log"
+        log_path var/"log/beanstalkd.log"
+        working_dir var
+        keep_alive true
+      end
+
+      path = f.service.manual_command
+      expect(path).to eq("#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd")
+    end
+  end
+
   describe "#to_plist" do
     it "returns valid plist" do
       f.class.service do
         run [opt_bin/"beanstalkd", "test"]
         run_type :immediate
-        environment_variables PATH: std_service_path_env
+        environment_variables PATH: std_service_path_env, FOO: "BAR"
         error_log_path var/"log/beanstalkd.error.log"
         log_path var/"log/beanstalkd.log"
         input_path var/"in/beanstalkd"
@@ -56,6 +88,8 @@ describe Homebrew::Service do
         <dict>
         \t<key>EnvironmentVariables</key>
         \t<dict>
+        \t\t<key>FOO</key>
+        \t\t<string>BAR</string>
         \t\t<key>PATH</key>
         \t\t<string>#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string>
         \t</dict>
@@ -122,7 +156,7 @@ describe Homebrew::Service do
       f.class.service do
         run [opt_bin/"beanstalkd", "test"]
         run_type :immediate
-        environment_variables PATH: std_service_path_env
+        environment_variables PATH: std_service_path_env, FOO: "BAR"
         error_log_path var/"log/beanstalkd.error.log"
         log_path var/"log/beanstalkd.log"
         input_path var/"in/beanstalkd"
@@ -150,6 +184,7 @@ describe Homebrew::Service do
         StandardOutput=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.log
         StandardError=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.error.log
         Environment=\"PATH=#{std_path}\"
+        Environment=\"FOO=BAR\"
       EOS
       expect(unit).to eq(unit_expect.strip)
     end

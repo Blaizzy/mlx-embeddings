@@ -172,6 +172,16 @@ module Homebrew
       @run.map(&:to_s)
     end
 
+    sig { returns(String) }
+    def manual_command
+      instance_eval(&@service_block)
+      vars = @environment_variables.except(:PATH)
+                                   .map { |k, v| "#{k}=\"#{v}\"" }
+
+      out = vars + command
+      out.join(" ")
+    end
+
     # Returns a `String` plist.
     # @return [String]
     sig { returns(String) }
@@ -216,10 +226,7 @@ module Homebrew
       options << "StandardInput=file:#{@input_path}" if @input_path.present?
       options << "StandardOutput=append:#{@log_path}" if @log_path.present?
       options << "StandardError=append:#{@error_log_path}" if @error_log_path.present?
-      if @environment_variables.present?
-        list = @environment_variables.map { |k, v| "#{k}=#{v}" }.join("&")
-        options << "Environment=\"#{list}\""
-      end
+      options += @environment_variables.map { |k, v| "Environment=\"#{k}=#{v}\"" } if @environment_variables.present?
 
       unit + options.join("\n")
     end
