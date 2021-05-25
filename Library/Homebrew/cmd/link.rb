@@ -45,15 +45,14 @@ module Homebrew
     kegs = if args.HEAD?
       args.named.to_kegs.group_by(&:name).map do |name, resolved_kegs|
         head_keg = resolved_kegs.find { |keg| keg.version.head? }
-        if head_keg.blank?
-          opoo <<~EOS
-            No HEAD keg installed for #{name}
-            To install, run:
-              brew install --HEAD #{name}
-          EOS
-        end
-        head_keg
-      end.reject(&:blank?)
+        next head_keg if head_keg.present?
+
+        opoo <<~EOS
+          No HEAD keg installed for #{name}
+          To install, run:
+            brew install --HEAD #{name}
+        EOS
+      end.compact
     else
       args.named.to_latest_kegs
     end
