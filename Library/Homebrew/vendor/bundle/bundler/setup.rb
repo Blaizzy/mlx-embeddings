@@ -92,5 +92,5 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-cobertura-1
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-stub-0.2.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/thor-1.1.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/spoom-1.0.9/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tapioca-0.4.22/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tapioca-0.4.23/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/warning-1.2.0/lib"
