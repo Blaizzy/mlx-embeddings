@@ -852,6 +852,7 @@ __fish_brew_complete_arg 'leaves' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'link' 'Symlink all of formula\'s installed files into Homebrew\'s prefix'
+__fish_brew_complete_arg 'link' -l HEAD -d 'Link the HEAD version of the formula if it is installed'
 __fish_brew_complete_arg 'link' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'link' -l dry-run -d 'List files which would be linked or deleted by `brew link --overwrite` without actually linking or deleting any files'
 __fish_brew_complete_arg 'link' -l force -d 'Allow keg-only formulae to be linked'
@@ -910,6 +911,7 @@ __fish_brew_complete_arg 'livecheck; and not __fish_seen_argument -l formula -l 
 
 
 __fish_brew_complete_cmd 'ln' 'Symlink all of formula\'s installed files into Homebrew\'s prefix'
+__fish_brew_complete_arg 'ln' -l HEAD -d 'Link the HEAD version of the formula if it is installed'
 __fish_brew_complete_arg 'ln' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'ln' -l dry-run -d 'List files which would be linked or deleted by `brew link --overwrite` without actually linking or deleting any files'
 __fish_brew_complete_arg 'ln' -l force -d 'Allow keg-only formulae to be linked'

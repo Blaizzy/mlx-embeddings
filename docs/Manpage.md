@@ -334,6 +334,8 @@ installations.
   List files which would be linked or deleted by `brew link --overwrite` without actually linking or deleting any files.
 * `-f`, `--force`:
   Allow keg-only formulae to be linked.
+* `--HEAD`:
+  Link the HEAD version of the formula if it is installed.
 
 ### `list`, `ls` [*`options`*] [*`installed_formula`*|*`installed_cask`* ...]
 
