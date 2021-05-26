@@ -98,8 +98,13 @@ module Homebrew
               Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
             when :resolve
               resolve_formula(name)
-            when :keg
-              resolve_keg(name)
+            when :latest_kegs
+              resolve_latest_keg(name)
+            when :keg, :default_kegs
+              # TODO: (3.2) Uncomment the following
+              # odeprecated "`load_formula_or_cask` with `method: :keg`",
+              #             "`load_formula_or_cask` with `method: :default_kegs`"
+              resolve_default_keg(name)
             when :kegs
               _, kegs = resolve_kegs(name)
               kegs
@@ -209,9 +214,33 @@ module Homebrew
       end
 
       sig { returns(T::Array[Keg]) }
+      def to_default_kegs
+        @to_default_kegs ||= begin
+          to_formulae_and_casks(only: :formula, method: :default_kegs).freeze
+        rescue NoSuchKegError => e
+          if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
+            $stderr.puts reason
+          end
+          raise e
+        end
+      end
+
+      sig { returns(T::Array[Keg]) }
+      def to_latest_kegs
+        @to_latest_kegs ||= begin
+          to_formulae_and_casks(only: :formula, method: :latest_kegs).freeze
+        rescue NoSuchKegError => e
+          if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
+            $stderr.puts reason
+          end
+          raise e
+        end
+      end
+
+      sig { returns(T::Array[Keg]) }
       def to_kegs
         @to_kegs ||= begin
-          to_formulae_and_casks(only: :formula, method: :keg).freeze
+          to_formulae_and_casks(only: :formula, method: :kegs).freeze
         rescue NoSuchKegError => e
           if (reason = MissingFormula.suggest_command(e.name, "uninstall"))
             $stderr.puts reason
@@ -225,7 +254,7 @@ module Homebrew
           .returns([T::Array[Keg], T::Array[Cask::Cask]])
       }
       def to_kegs_to_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, all_kegs: nil)
-        method = all_kegs ? :kegs : :keg
+        method = all_kegs ? :kegs : :default_kegs
         @to_kegs_to_casks ||= {}
         @to_kegs_to_casks[method] ||=
           to_formulae_and_casks(only: only, ignore_unavailable: ignore_unavailable, method: method)
@@ -282,7 +311,16 @@ module Homebrew
         [rack, kegs]
       end
 
-      def resolve_keg(name)
+      def resolve_latest_keg(name)
+        _, kegs = resolve_kegs(name)
+
+        # Return keg if it is the only installed keg
+        return kegs if kegs.length == 1
+
+        kegs.reject { |k| k.version.head? }.max_by(&:version)
+      end
+
+      def resolve_default_keg(name)
         rack, kegs = resolve_kegs(name)
 
         linked_keg_ref = HOMEBREW_LINKED_KEGS/rack.basename
