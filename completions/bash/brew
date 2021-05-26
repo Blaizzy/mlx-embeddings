@@ -1186,6 +1186,7 @@ _brew_link() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --HEAD
       --debug
       --dry-run
       --force
@@ -1280,6 +1281,7 @@ _brew_ln() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --HEAD
       --debug
       --dry-run
       --force

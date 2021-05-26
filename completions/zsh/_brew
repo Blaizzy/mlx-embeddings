@@ -1046,6 +1046,7 @@ _brew_leaves() {
 # brew link
 _brew_link() {
   _arguments \
+    '--HEAD[Link the HEAD version of the formula if it is installed]' \
     '--debug[Display any debugging information]' \
     '--dry-run[List files which would be linked or deleted by `brew link --overwrite` without actually linking or deleting any files]' \
     '--force[Allow keg-only formulae to be linked]' \
@@ -1118,6 +1119,7 @@ _brew_livecheck() {
 # brew ln
 _brew_ln() {
   _arguments \
+    '--HEAD[Link the HEAD version of the formula if it is installed]' \
     '--debug[Display any debugging information]' \
     '--dry-run[List files which would be linked or deleted by `brew link --overwrite` without actually linking or deleting any files]' \
     '--force[Allow keg-only formulae to be linked]' \
