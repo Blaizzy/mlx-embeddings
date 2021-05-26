@@ -202,7 +202,7 @@ module Homebrew
     # Remove bottle blocks, they won't work.
     result.sub!(/  bottle do.+?end\n\n/m, "") if destination_tap != source_tap
 
-    path = destination_tap.path/"Formula/#{name}@#{version}.rb"
+    path = destination_tap.path/"Formula/#{name}@#{version.to_s.downcase}.rb"
     if path.exist?
       unless args.force?
         odie <<~EOS
