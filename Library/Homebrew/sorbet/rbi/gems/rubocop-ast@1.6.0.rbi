@@ -4,11 +4,273 @@
 
 # typed: true
 
-module RuboCop
+class AST::Node
+  def initialize(type, children = T.unsafe(nil), properties = T.unsafe(nil)); end
+
+  def +(array); end
+  def <<(element); end
+  def ==(other); end
+  def append(element); end
+  def children; end
+  def clone; end
+  def concat(array); end
+  def deconstruct; end
+  def dup; end
+  def eql?(other); end
+  def hash; end
+  def inspect(indent = T.unsafe(nil)); end
+  def to_a; end
+  def to_ast; end
+  def to_s(indent = T.unsafe(nil)); end
+  def to_sexp(indent = T.unsafe(nil)); end
+  def to_sexp_array; end
+  def type; end
+  def updated(type = T.unsafe(nil), children = T.unsafe(nil), properties = T.unsafe(nil)); end
+
+  protected
+
+  def assign_properties(properties); end
+  def fancy_type; end
+
+  private
+
+  def original_dup; end
 end
 
+class Parser::AST::Node < ::AST::Node
+  def assign_properties(properties); end
+  def loc; end
+  def location; end
+end
+
+class Parser::Builders::Default
+  def initialize; end
+
+  def __ENCODING__(__ENCODING__t); end
+  def __FILE__(__FILE__t); end
+  def __LINE__(__LINE__t); end
+  def accessible(node); end
+  def alias(alias_t, to, from); end
+  def arg(name_t); end
+  def arg_expr(expr); end
+  def args(begin_t, args, end_t, check_args = T.unsafe(nil)); end
+  def array(begin_t, elements, end_t); end
+  def array_pattern(lbrack_t, elements, rbrack_t); end
+  def assign(lhs, eql_t, rhs); end
+  def assignable(node); end
+  def associate(begin_t, pairs, end_t); end
+  def attr_asgn(receiver, dot_t, selector_t); end
+  def back_ref(token); end
+  def begin(begin_t, body, end_t); end
+  def begin_body(compound_stmt, rescue_bodies = T.unsafe(nil), else_t = T.unsafe(nil), else_ = T.unsafe(nil), ensure_t = T.unsafe(nil), ensure_ = T.unsafe(nil)); end
+  def begin_keyword(begin_t, body, end_t); end
+  def binary_op(receiver, operator_t, arg); end
+  def block(method_call, begin_t, args, body, end_t); end
+  def block_pass(amper_t, arg); end
+  def blockarg(amper_t, name_t); end
+  def blockarg_expr(amper_t, expr); end
+  def call_lambda(lambda_t); end
+  def call_method(receiver, dot_t, selector_t, lparen_t = T.unsafe(nil), args = T.unsafe(nil), rparen_t = T.unsafe(nil)); end
+  def call_type_for_dot(dot_t); end
+  def case(case_t, expr, when_bodies, else_t, else_body, end_t); end
+  def case_match(case_t, expr, in_bodies, else_t, else_body, end_t); end
+  def character(char_t); end
+  def complex(complex_t); end
+  def compstmt(statements); end
+  def condition(cond_t, cond, then_t, if_true, else_t, if_false, end_t); end
+  def condition_mod(if_true, if_false, cond_t, cond); end
+  def const(name_t); end
+  def const_fetch(scope, t_colon2, name_t); end
+  def const_global(t_colon3, name_t); end
+  def const_op_assignable(node); end
+  def const_pattern(const, ldelim_t, pattern, rdelim_t); end
+  def cvar(token); end
+  def dedent_string(node, dedent_level); end
+  def def_class(class_t, name, lt_t, superclass, body, end_t); end
+  def def_endless_method(def_t, name_t, args, assignment_t, body); end
+  def def_endless_singleton(def_t, definee, dot_t, name_t, args, assignment_t, body); end
+  def def_method(def_t, name_t, args, body, end_t); end
+  def def_module(module_t, name, body, end_t); end
+  def def_sclass(class_t, lshft_t, expr, body, end_t); end
+  def def_singleton(def_t, definee, dot_t, name_t, args, body, end_t); end
+  def emit_file_line_as_literals; end
+  def emit_file_line_as_literals=(_arg0); end
+  def false(false_t); end
+  def find_pattern(lbrack_t, elements, rbrack_t); end
+  def float(float_t); end
+  def for(for_t, iterator, in_t, iteratee, do_t, body, end_t); end
+  def forward_arg(dots_t); end
+  def forward_only_args(begin_t, dots_t, end_t); end
+  def forwarded_args(dots_t); end
+  def gvar(token); end
+  def hash_pattern(lbrace_t, kwargs, rbrace_t); end
+  def ident(token); end
+  def if_guard(if_t, if_body); end
+  def in_match(lhs, in_t, rhs); end
+  def in_pattern(in_t, pattern, guard, then_t, body); end
+  def index(receiver, lbrack_t, indexes, rbrack_t); end
+  def index_asgn(receiver, lbrack_t, indexes, rbrack_t); end
+  def integer(integer_t); end
+  def ivar(token); end
+  def keyword_cmd(type, keyword_t, lparen_t = T.unsafe(nil), args = T.unsafe(nil), rparen_t = T.unsafe(nil)); end
+  def kwarg(name_t); end
+  def kwnilarg(dstar_t, nil_t); end
+  def kwoptarg(name_t, value); end
+  def kwrestarg(dstar_t, name_t = T.unsafe(nil)); end
+  def kwsplat(dstar_t, arg); end
+  def logical_op(type, lhs, op_t, rhs); end
+  def loop(type, keyword_t, cond, do_t, body, end_t); end
+  def loop_mod(type, body, keyword_t, cond); end
+  def match_alt(left, pipe_t, right); end
+  def match_as(value, assoc_t, as); end
+  def match_hash_var(name_t); end
+  def match_hash_var_from_str(begin_t, strings, end_t); end
+  def match_label(label_type, label); end
+  def match_nil_pattern(dstar_t, nil_t); end
+  def match_op(receiver, match_t, arg); end
+  def match_pair(label_type, label, value); end
+  def match_pattern(lhs, match_t, rhs); end
+  def match_pattern_p(lhs, match_t, rhs); end
+  def match_rest(star_t, name_t = T.unsafe(nil)); end
+  def match_var(name_t); end
+  def match_with_trailing_comma(match, comma_t); end
+  def multi_assign(lhs, eql_t, rhs); end
+  def multi_lhs(begin_t, items, end_t); end
+  def nil(nil_t); end
+  def not_op(not_t, begin_t = T.unsafe(nil), receiver = T.unsafe(nil), end_t = T.unsafe(nil)); end
+  def nth_ref(token); end
+  def numargs(max_numparam); end
+  def objc_kwarg(kwname_t, assoc_t, name_t); end
+  def objc_restarg(star_t, name = T.unsafe(nil)); end
+  def objc_varargs(pair, rest_of_varargs); end
+  def op_assign(lhs, op_t, rhs); end
+  def optarg(name_t, eql_t, value); end
+  def pair(key, assoc_t, value); end
+  def pair_keyword(key_t, value); end
+  def pair_list_18(list); end
+  def pair_quoted(begin_t, parts, end_t, value); end
+  def parser; end
+  def parser=(_arg0); end
+  def pin(pin_t, var); end
+  def postexe(postexe_t, lbrace_t, compstmt, rbrace_t); end
+  def preexe(preexe_t, lbrace_t, compstmt, rbrace_t); end
+  def procarg0(arg); end
+  def range_exclusive(lhs, dot3_t, rhs); end
+  def range_inclusive(lhs, dot2_t, rhs); end
+  def rational(rational_t); end
+  def regexp_compose(begin_t, parts, end_t, options); end
+  def regexp_options(regopt_t); end
+  def rescue_body(rescue_t, exc_list, assoc_t, exc_var, then_t, compound_stmt); end
+  def restarg(star_t, name_t = T.unsafe(nil)); end
+  def restarg_expr(star_t, expr = T.unsafe(nil)); end
+  def self(token); end
+  def shadowarg(name_t); end
+  def splat(star_t, arg = T.unsafe(nil)); end
+  def string(string_t); end
+  def string_compose(begin_t, parts, end_t); end
+  def string_internal(string_t); end
+  def symbol(symbol_t); end
+  def symbol_compose(begin_t, parts, end_t); end
+  def symbol_internal(symbol_t); end
+  def symbols_compose(begin_t, parts, end_t); end
+  def ternary(cond, question_t, if_true, colon_t, if_false); end
+  def true(true_t); end
+  def unary_num(unary_t, numeric); end
+  def unary_op(op_t, receiver); end
+  def undef_method(undef_t, names); end
+  def unless_guard(unless_t, unless_body); end
+  def when(when_t, patterns, then_t, body); end
+  def word(parts); end
+  def words_compose(begin_t, parts, end_t); end
+  def xstring_compose(begin_t, parts, end_t); end
+
+  private
+
+  def arg_name_collides?(this_name, that_name); end
+  def arg_prefix_map(op_t, name_t = T.unsafe(nil)); end
+  def binary_op_map(left_e, op_t, right_e); end
+  def block_map(receiver_l, begin_t, end_t); end
+  def check_assignment_to_numparam(name, loc); end
+  def check_condition(cond); end
+  def check_duplicate_arg(this_arg, map = T.unsafe(nil)); end
+  def check_duplicate_args(args, map = T.unsafe(nil)); end
+  def check_duplicate_pattern_key(name, loc); end
+  def check_duplicate_pattern_variable(name, loc); end
+  def check_lvar_name(name, loc); end
+  def check_reserved_for_numparam(name, loc); end
+  def collapse_string_parts?(parts); end
+  def collection_map(begin_t, parts, end_t); end
+  def condition_map(keyword_t, cond_e, begin_t, body_e, else_t, else_e, end_t); end
+  def constant_map(scope, colon2_t, name_t); end
+  def definition_map(keyword_t, operator_t, name_t, end_t); end
+  def delimited_string_map(string_t); end
+  def diagnostic(type, reason, arguments, location, highlights = T.unsafe(nil)); end
+  def eh_keyword_map(compstmt_e, keyword_t, body_es, else_t, else_e); end
+  def endless_definition_map(keyword_t, operator_t, name_t, assignment_t, body_e); end
+  def expr_map(loc); end
+  def for_map(keyword_t, in_t, begin_t, end_t); end
+  def guard_map(keyword_t, guard_body_e); end
+  def index_map(receiver_e, lbrack_t, rbrack_t); end
+  def join_exprs(left_expr, right_expr); end
+  def keyword_map(keyword_t, begin_t, args, end_t); end
+  def keyword_mod_map(pre_e, keyword_t, post_e); end
+  def kwarg_map(name_t, value_e = T.unsafe(nil)); end
+  def kwargs?(node); end
+  def loc(token); end
+  def module_definition_map(keyword_t, name_e, operator_t, end_t); end
+  def n(type, children, source_map); end
+  def n0(type, source_map); end
+  def numeric(kind, token); end
+  def pair_keyword_map(key_t, value_e); end
+  def pair_quoted_map(begin_t, end_t, value_e); end
+  def prefix_string_map(symbol); end
+  def range_map(start_e, op_t, end_e); end
+  def regexp_map(begin_t, end_t, options_e); end
+  def rescue_body_map(keyword_t, exc_list_e, assoc_t, exc_var_e, then_t, compstmt_e); end
+  def rewrite_hash_args_to_kwargs(args); end
+  def send_binary_op_map(lhs_e, selector_t, rhs_e); end
+  def send_index_map(receiver_e, lbrack_t, rbrack_t); end
+  def send_map(receiver_e, dot_t, selector_t, begin_t = T.unsafe(nil), args = T.unsafe(nil), end_t = T.unsafe(nil)); end
+  def send_unary_op_map(selector_t, arg_e); end
+  def static_regexp(parts, options); end
+  def static_regexp_node(node); end
+  def static_string(nodes); end
+  def string_map(begin_t, parts, end_t); end
+  def string_value(token); end
+  def ternary_map(begin_e, question_t, mid_e, colon_t, end_e); end
+  def token_map(token); end
+  def unary_op_map(op_t, arg_e = T.unsafe(nil)); end
+  def unquoted_map(token); end
+  def validate_definee(definee); end
+  def value(token); end
+  def var_send_map(variable_e); end
+  def variable_map(name_t); end
+
+  class << self
+    def emit_arg_inside_procarg0; end
+    def emit_arg_inside_procarg0=(_arg0); end
+    def emit_encoding; end
+    def emit_encoding=(_arg0); end
+    def emit_forward_arg; end
+    def emit_forward_arg=(_arg0); end
+    def emit_index; end
+    def emit_index=(_arg0); end
+    def emit_kwargs; end
+    def emit_kwargs=(_arg0); end
+    def emit_lambda; end
+    def emit_lambda=(_arg0); end
+    def emit_match_pattern; end
+    def emit_match_pattern=(_arg0); end
+    def emit_procarg0; end
+    def emit_procarg0=(_arg0); end
+    def modernize; end
+  end
+end
+
+module RuboCop; end
+
 module RuboCop::AST
-  extend(::RuboCop::AST::RuboCopCompatibility)
+  extend ::RuboCop::AST::RuboCopCompatibility
 end
 
 class RuboCop::AST::AliasNode < ::RuboCop::AST::Node
@@ -17,8 +279,8 @@ class RuboCop::AST::AliasNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::AndNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::BinaryOperatorNode)
-  include(::RuboCop::AST::PredicateOperatorNode)
+  include ::RuboCop::AST::BinaryOperatorNode
+  include ::RuboCop::AST::PredicateOperatorNode
 
   def alternate_operator; end
   def inverse_operator; end
@@ -31,7 +293,7 @@ class RuboCop::AST::ArgNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::ArgsNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::CollectionNode)
+  include ::RuboCop::AST::CollectionNode
 
   def argument_list; end
   def empty_and_without_delimiters?; end
@@ -45,6 +307,8 @@ class RuboCop::AST::ArrayNode < ::RuboCop::AST::Node
   def values; end
 end
 
+RuboCop::AST::ArrayNode::PERCENT_LITERAL_TYPES = T.let(T.unsafe(nil), Hash)
+
 module RuboCop::AST::BasicLiteralNode
   def value; end
 end
@@ -56,7 +320,7 @@ module RuboCop::AST::BinaryOperatorNode
 end
 
 class RuboCop::AST::BlockNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::MethodIdentifierPredicates)
+  include ::RuboCop::AST::MethodIdentifierPredicates
 
   def argument_list; end
   def arguments; end
@@ -79,9 +343,11 @@ class RuboCop::AST::BlockNode < ::RuboCop::AST::Node
   def numbered_arguments; end
 end
 
+RuboCop::AST::BlockNode::VOID_CONTEXT_METHODS = T.let(T.unsafe(nil), Array)
+
 class RuboCop::AST::BreakNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::WrappedArguments)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::WrappedArguments
 end
 
 class RuboCop::AST::Builder < ::Parser::Builders::Default
@@ -96,7 +362,7 @@ end
 RuboCop::AST::Builder::NODE_MAP = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::AST::CaseMatchNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ConditionalNode)
+  include ::RuboCop::AST::ConditionalNode
 
   def each_in_pattern(&block); end
   def else?; end
@@ -106,7 +372,7 @@ class RuboCop::AST::CaseMatchNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::CaseNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ConditionalNode)
+  include ::RuboCop::AST::ConditionalNode
 
   def branches; end
   def each_when(&block); end
@@ -123,7 +389,7 @@ class RuboCop::AST::ClassNode < ::RuboCop::AST::Node
 end
 
 module RuboCop::AST::CollectionNode
-  extend(::Forwardable)
+  extend ::Forwardable
 
   def &(*args, &block); end
   def *(*args, &block); end
@@ -258,6 +524,8 @@ module RuboCop::AST::CollectionNode
   def |(*args, &block); end
 end
 
+RuboCop::AST::CollectionNode::ARRAY_METHODS = T.let(T.unsafe(nil), Array)
+
 module RuboCop::AST::ConditionalNode
   def body; end
   def condition; end
@@ -276,8 +544,8 @@ class RuboCop::AST::ConstNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::DefNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::MethodIdentifierPredicates
 
   def argument_forwarding?; end
   def arguments; end
@@ -289,9 +557,9 @@ class RuboCop::AST::DefNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::DefinedNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def arguments; end
   def node_parts; end
@@ -317,19 +585,17 @@ class RuboCop::AST::EnsureNode < ::RuboCop::AST::Node
   def body; end
 end
 
-module RuboCop::AST::Ext
-end
+module RuboCop::AST::Ext; end
 
 module RuboCop::AST::Ext::Range
   def line_span(exclude_end: T.unsafe(nil)); end
 end
 
-module RuboCop::AST::Ext::RangeMinMax
-end
+module RuboCop::AST::Ext::RangeMinMax; end
 
 class RuboCop::AST::FloatNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::BasicLiteralNode)
-  include(::RuboCop::AST::NumericNode)
+  include ::RuboCop::AST::BasicLiteralNode
+  include ::RuboCop::AST::NumericNode
 end
 
 class RuboCop::AST::ForNode < ::RuboCop::AST::Node
@@ -342,7 +608,7 @@ class RuboCop::AST::ForNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::ForwardArgsNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::CollectionNode)
+  include ::RuboCop::AST::CollectionNode
 
   def to_a; end
 end
@@ -354,6 +620,22 @@ module RuboCop::AST::HashElementNode
   def same_line?(other); end
   def value; end
   def value_delta(other); end
+end
+
+class RuboCop::AST::HashElementNode::HashElementDelta
+  def initialize(first, second); end
+
+  def delimiter_delta; end
+  def key_delta(alignment = T.unsafe(nil)); end
+  def value_delta; end
+
+  private
+
+  def delta(first, second, alignment = T.unsafe(nil)); end
+  def first; end
+  def keyword_splat?; end
+  def second; end
+  def valid_argument_types?; end
 end
 
 class RuboCop::AST::HashNode < ::RuboCop::AST::Node
@@ -370,8 +652,8 @@ class RuboCop::AST::HashNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::IfNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ConditionalNode)
-  include(::RuboCop::AST::ModifierNode)
+  include ::RuboCop::AST::ConditionalNode
+  include ::RuboCop::AST::ModifierNode
 
   def branches; end
   def each_branch(&block); end
@@ -390,11 +672,17 @@ class RuboCop::AST::IfNode < ::RuboCop::AST::Node
   def unless?; end
 end
 
+class RuboCop::AST::InPatternNode < ::RuboCop::AST::Node
+  def body; end
+  def branch_index; end
+  def then?; end
+end
+
 class RuboCop::AST::IndexNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::RestArguments)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::RestArguments
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def assignment_method?; end
   def attribute_accessor?; end
@@ -406,10 +694,10 @@ class RuboCop::AST::IndexNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::IndexasgnNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::RestArguments)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::RestArguments
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def assignment_method?; end
   def attribute_accessor?; end
@@ -421,12 +709,12 @@ class RuboCop::AST::IndexasgnNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::IntNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::BasicLiteralNode)
-  include(::RuboCop::AST::NumericNode)
+  include ::RuboCop::AST::BasicLiteralNode
+  include ::RuboCop::AST::NumericNode
 end
 
 class RuboCop::AST::KeywordSplatNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::HashElementNode)
+  include ::RuboCop::AST::HashElementNode
 
   def colon?; end
   def hash_rocket?; end
@@ -434,11 +722,13 @@ class RuboCop::AST::KeywordSplatNode < ::RuboCop::AST::Node
   def operator; end
 end
 
+RuboCop::AST::KeywordSplatNode::DOUBLE_SPLAT = T.let(T.unsafe(nil), String)
+
 class RuboCop::AST::LambdaNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::RestArguments)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::RestArguments
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def assignment_method?; end
   def attribute_accessor?; end
@@ -453,8 +743,8 @@ class RuboCop::AST::LambdaNode < ::RuboCop::AST::Node
 end
 
 module RuboCop::AST::MethodDispatchNode
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  extend(::RuboCop::AST::NodePattern::Macros)
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  extend ::RuboCop::AST::NodePattern::Macros
 
   def access_modifier?; end
   def adjacent_def_modifier?(param0 = T.unsafe(nil)); end
@@ -486,6 +776,9 @@ module RuboCop::AST::MethodDispatchNode
   def unary_operation?; end
 end
 
+RuboCop::AST::MethodDispatchNode::ARITHMETIC_OPERATORS = T.let(T.unsafe(nil), Array)
+RuboCop::AST::MethodDispatchNode::SPECIAL_MODIFIERS = T.let(T.unsafe(nil), Array)
+
 module RuboCop::AST::MethodIdentifierPredicates
   def assignment_method?; end
   def bang_method?; end
@@ -509,6 +802,16 @@ module RuboCop::AST::MethodIdentifierPredicates
   def self_receiver?; end
 end
 
+RuboCop::AST::MethodIdentifierPredicates::ENUMERABLE_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::ENUMERATOR_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::NONMUTATING_ARRAY_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::NONMUTATING_BINARY_OPERATOR_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::NONMUTATING_HASH_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::NONMUTATING_OPERATOR_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::NONMUTATING_STRING_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::NONMUTATING_UNARY_OPERATOR_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::MethodIdentifierPredicates::OPERATOR_METHODS = T.let(T.unsafe(nil), Set)
+
 module RuboCop::AST::ModifierNode
   def modifier_form?; end
 end
@@ -519,15 +822,15 @@ class RuboCop::AST::ModuleNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::NextNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::WrappedArguments)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::WrappedArguments
 end
 
 class RuboCop::AST::Node < ::Parser::AST::Node
-  include(::RuboCop::AST::Sexp)
-  include(::RuboCop::AST::Descendence)
-  include(::RuboCop::RSpec::Node)
-  extend(::RuboCop::AST::NodePattern::Macros)
+  include ::RuboCop::AST::Sexp
+  include ::RuboCop::AST::Descendence
+  include ::RuboCop::RSpec::Node
+  extend ::RuboCop::AST::NodePattern::Macros
 
   def initialize(type, children = T.unsafe(nil), properties = T.unsafe(nil)); end
 
@@ -754,50 +1057,32 @@ class RuboCop::AST::Node < ::Parser::AST::Node
 end
 
 RuboCop::AST::Node::ARGUMENT_TYPES = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::ASSIGNMENTS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::BASIC_CONDITIONALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::BASIC_LITERALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::COMPARISON_OPERATORS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::COMPOSITE_LITERALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::CONDITIONALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::EQUALS_ASSIGNMENTS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::FALSEY_LITERALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::IMMUTABLE_LITERALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::KEYWORDS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::LITERALS = T.let(T.unsafe(nil), Set)
-
+RuboCop::AST::Node::LITERAL_RECURSIVE_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::Node::LITERAL_RECURSIVE_TYPES = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Node::LOOP_TYPES = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::MUTABLE_LITERALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::OPERATOR_KEYWORDS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::POST_CONDITION_LOOP_TYPES = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::REFERENCES = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::SHORTHAND_ASSIGNMENTS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::SPECIAL_KEYWORDS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::TRUTHY_LITERALS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::Node::VARIABLES = T.let(T.unsafe(nil), Set)
 
 class RuboCop::AST::NodePattern
-  include(::RuboCop::AST::NodePattern::MethodDefiner)
-  extend(::Forwardable)
+  include ::RuboCop::AST::NodePattern::MethodDefiner
+  extend ::Forwardable
 
   def initialize(str, compiler: T.unsafe(nil)); end
 
@@ -850,7 +1135,7 @@ class RuboCop::AST::NodePattern::Comment
 end
 
 class RuboCop::AST::NodePattern::Compiler
-  extend(::Forwardable)
+  extend ::Forwardable
 
   def initialize; end
 
@@ -877,7 +1162,6 @@ class RuboCop::AST::NodePattern::Compiler
 end
 
 class RuboCop::AST::NodePattern::Compiler::AtomSubcompiler < ::RuboCop::AST::NodePattern::Compiler::Subcompiler
-
   private
 
   def visit_const; end
@@ -928,7 +1212,6 @@ class RuboCop::AST::NodePattern::Compiler::Debug::Colorizer
 end
 
 RuboCop::AST::NodePattern::Compiler::Debug::Colorizer::COLOR_SCHEME = T.let(T.unsafe(nil), Hash)
-
 RuboCop::AST::NodePattern::Compiler::Debug::Colorizer::Compiler = RuboCop::AST::NodePattern::Compiler::Debug
 
 class RuboCop::AST::NodePattern::Compiler::Debug::Colorizer::Result < ::Struct
@@ -968,11 +1251,11 @@ module RuboCop::AST::NodePattern::Compiler::Debug::InstrumentationSubcompiler
 end
 
 class RuboCop::AST::NodePattern::Compiler::Debug::NodePatternSubcompiler < ::RuboCop::AST::NodePattern::Compiler::NodePatternSubcompiler
-  include(::RuboCop::AST::NodePattern::Compiler::Debug::InstrumentationSubcompiler)
+  include ::RuboCop::AST::NodePattern::Compiler::Debug::InstrumentationSubcompiler
 end
 
 class RuboCop::AST::NodePattern::Compiler::Debug::SequenceSubcompiler < ::RuboCop::AST::NodePattern::Compiler::SequenceSubcompiler
-  include(::RuboCop::AST::NodePattern::Compiler::Debug::InstrumentationSubcompiler)
+  include ::RuboCop::AST::NodePattern::Compiler::Debug::InstrumentationSubcompiler
 end
 
 class RuboCop::AST::NodePattern::Compiler::Debug::Trace
@@ -1057,6 +1340,7 @@ class RuboCop::AST::NodePattern::Compiler::SequenceSubcompiler < ::RuboCop::AST:
 end
 
 RuboCop::AST::NodePattern::Compiler::SequenceSubcompiler::DELTA = T.let(T.unsafe(nil), Integer)
+RuboCop::AST::NodePattern::Compiler::SequenceSubcompiler::POSITIVE = T.let(T.unsafe(nil), Proc)
 
 class RuboCop::AST::NodePattern::Compiler::Subcompiler
   def initialize(compiler); end
@@ -1076,8 +1360,7 @@ class RuboCop::AST::NodePattern::Compiler::Subcompiler
   end
 end
 
-class RuboCop::AST::NodePattern::Invalid < ::StandardError
-end
+class RuboCop::AST::NodePattern::Invalid < ::StandardError; end
 
 class RuboCop::AST::NodePattern::Lexer < ::RuboCop::AST::NodePattern::LexerRex
   def initialize(source); end
@@ -1096,6 +1379,7 @@ class RuboCop::AST::NodePattern::Lexer < ::RuboCop::AST::NodePattern::LexerRex
 end
 
 RuboCop::AST::NodePattern::Lexer::Error = RuboCop::AST::NodePattern::LexerRex::ScanError
+RuboCop::AST::NodePattern::Lexer::REGEXP_OPTIONS = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::AST::NodePattern::LexerRex
   def action; end
@@ -1115,24 +1399,14 @@ class RuboCop::AST::NodePattern::LexerRex
 end
 
 RuboCop::AST::NodePattern::LexerRex::CALL = T.let(T.unsafe(nil), Regexp)
-
 RuboCop::AST::NodePattern::LexerRex::CONST_NAME = T.let(T.unsafe(nil), Regexp)
-
 RuboCop::AST::NodePattern::LexerRex::IDENTIFIER = T.let(T.unsafe(nil), Regexp)
-
-class RuboCop::AST::NodePattern::LexerRex::LexerError < ::StandardError
-end
-
+class RuboCop::AST::NodePattern::LexerRex::LexerError < ::StandardError; end
 RuboCop::AST::NodePattern::LexerRex::NODE_TYPE = T.let(T.unsafe(nil), Regexp)
-
 RuboCop::AST::NodePattern::LexerRex::REGEXP = T.let(T.unsafe(nil), Regexp)
-
 RuboCop::AST::NodePattern::LexerRex::REGEXP_BODY = T.let(T.unsafe(nil), Regexp)
-
 RuboCop::AST::NodePattern::LexerRex::SYMBOL_NAME = T.let(T.unsafe(nil), Regexp)
-
-class RuboCop::AST::NodePattern::LexerRex::ScanError < ::RuboCop::AST::NodePattern::LexerRex::LexerError
-end
+class RuboCop::AST::NodePattern::LexerRex::ScanError < ::RuboCop::AST::NodePattern::LexerRex::LexerError; end
 
 module RuboCop::AST::NodePattern::Macros
   def def_node_matcher(method_name, pattern_str, **keyword_defaults); end
@@ -1162,8 +1436,8 @@ module RuboCop::AST::NodePattern::MethodDefiner
 end
 
 class RuboCop::AST::NodePattern::Node < ::Parser::AST::Node
-  include(::RuboCop::AST::Descendence)
-  extend(::Forwardable)
+  include ::RuboCop::AST::Descendence
+  extend ::Forwardable
 
   def arity; end
   def arity_range; end
@@ -1179,13 +1453,15 @@ class RuboCop::AST::NodePattern::Node < ::Parser::AST::Node
 end
 
 class RuboCop::AST::NodePattern::Node::AnyOrder < ::RuboCop::AST::NodePattern::Node
-  include(::RuboCop::AST::NodePattern::Node::ForbidInSeqHead)
+  include ::RuboCop::AST::NodePattern::Node::ForbidInSeqHead
 
   def arity; end
   def ends_with_rest?; end
   def rest_node; end
   def term_nodes; end
 end
+
+RuboCop::AST::NodePattern::Node::AnyOrder::ARITIES = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::AST::NodePattern::Node::Capture < ::RuboCop::AST::NodePattern::Node
   def arity(*args, &block); end
@@ -1200,8 +1476,9 @@ module RuboCop::AST::NodePattern::Node::ForbidInSeqHead
 end
 
 RuboCop::AST::NodePattern::Node::FunctionCall = RuboCop::AST::NodePattern::Node::Predicate
-
+RuboCop::AST::NodePattern::Node::INT_TO_RANGE = T.let(T.unsafe(nil), Hash)
 RuboCop::AST::NodePattern::Node::MAP = T.let(T.unsafe(nil), Hash)
+RuboCop::AST::NodePattern::Node::MATCHES_WITHIN_SET = T.let(T.unsafe(nil), Set)
 
 class RuboCop::AST::NodePattern::Node::Predicate < ::RuboCop::AST::NodePattern::Node
   def arg_list; end
@@ -1209,7 +1486,7 @@ class RuboCop::AST::NodePattern::Node::Predicate < ::RuboCop::AST::NodePattern::
 end
 
 class RuboCop::AST::NodePattern::Node::Repetition < ::RuboCop::AST::NodePattern::Node
-  include(::RuboCop::AST::NodePattern::Node::ForbidInSeqHead)
+  include ::RuboCop::AST::NodePattern::Node::ForbidInSeqHead
 
   def arity; end
   def operator; end
@@ -1223,14 +1500,16 @@ class RuboCop::AST::NodePattern::Node::Rest < ::RuboCop::AST::NodePattern::Node
   def rest?; end
 end
 
+RuboCop::AST::NodePattern::Node::Rest::ARITY = T.let(T.unsafe(nil), Range)
+
 class RuboCop::AST::NodePattern::Node::Sequence < ::RuboCop::AST::NodePattern::Node
-  include(::RuboCop::AST::NodePattern::Node::ForbidInSeqHead)
+  include ::RuboCop::AST::NodePattern::Node::ForbidInSeqHead
 
   def initialize(type, children = T.unsafe(nil), properties = T.unsafe(nil)); end
 end
 
 class RuboCop::AST::NodePattern::Node::Subsequence < ::RuboCop::AST::NodePattern::Node
-  include(::RuboCop::AST::NodePattern::Node::ForbidInSeqHead)
+  include ::RuboCop::AST::NodePattern::Node::ForbidInSeqHead
 
   def arity; end
   def in_sequence_head; end
@@ -1242,7 +1521,7 @@ class RuboCop::AST::NodePattern::Node::Union < ::RuboCop::AST::NodePattern::Node
 end
 
 class RuboCop::AST::NodePattern::Parser < ::Racc::Parser
-  extend(::Forwardable)
+  extend ::Forwardable
 
   def initialize(builder = T.unsafe(nil)); end
 
@@ -1297,11 +1576,8 @@ class RuboCop::AST::NodePattern::Parser < ::Racc::Parser
 end
 
 RuboCop::AST::NodePattern::Parser::Builder = RuboCop::AST::NodePattern::Builder
-
 RuboCop::AST::NodePattern::Parser::Lexer = RuboCop::AST::NodePattern::Lexer
-
 RuboCop::AST::NodePattern::Parser::Racc_arg = T.let(T.unsafe(nil), Array)
-
 RuboCop::AST::NodePattern::Parser::Racc_token_to_s_table = T.let(T.unsafe(nil), Array)
 
 class RuboCop::AST::NodePattern::Parser::WithMeta < ::RuboCop::AST::NodePattern::Parser
@@ -1342,301 +1618,163 @@ module RuboCop::AST::NodePattern::Sets
 end
 
 RuboCop::AST::NodePattern::Sets::MAX = T.let(T.unsafe(nil), Integer)
-
 RuboCop::AST::NodePattern::Sets::REGISTRY = T.let(T.unsafe(nil), Hash)
-
 RuboCop::AST::NodePattern::Sets::SET_0_1 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_0_1_2 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_10_10 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_1_1 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_1_2 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ABSTRACT_OVERRIDE_OVERRIDABLE_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ADD_DEPENDENCY_ADD_RUNTIME_DEPENDENCY_ADD_DEVELOPMENT_DEPENDENCY = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_AFTER_ACTION_APPEND_AFTER_ACTION_APPEND_AROUND_ACTION_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ALL_CONTEXT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_AND_RETURN_AND_RAISE_AND_THROW_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ANY_ALL_NORETURN_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_AP_P_PP_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR_ATTR = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_BACKGROUND_SCENARIO_XSCENARIO_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_BEFORE_AFTER = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_BELONGS_TO_HAS_ONE_HAS_MANY_HAS_AND_BELONGS_TO_MANY = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_BE_EQ_EQL_EQUAL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_BE_TRUTHY_BE_FALSEY_BE_FALSY_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_BINWRITE_SYSWRITE_WRITE_WRITE_NONBLOCK = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CALLER_CALLER_LOCATIONS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CALL_RUN = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CAPTURE2_CAPTURE2E_CAPTURE3_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CIPHER_DIGEST = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CLASS_EVAL_INSTANCE_EVAL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CLASS_EVAL_MODULE_EVAL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE_STRUCT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CONSTANTIZE_CONSTANTS_CONST_GET = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CONTEXT_SHARED_CONTEXT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_COUNT_LENGTH_SIZE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CREATED_AT_UPDATED_AT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_CREATED_AT_UPDATED_AT_2 = T.let(T.unsafe(nil), Set)
-
+RuboCop::AST::NodePattern::Sets::SET_DEFINE_METHOD = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_DEFINE_METHOD_DEFINE_SINGLETON_METHOD = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_DESCRIBE_FEATURE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_DOUBLE_SPY = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_DOWNCASE_UPCASE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_EACH_EXAMPLE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_EACH_WITH_INDEX_WITH_INDEX = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_EACH_WITH_OBJECT_WITH_OBJECT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ENUMERATOR_RATIONAL_COMPLEX_THREAD = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ESCAPE_ENCODE_UNESCAPE_DECODE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_EXACTLY_AT_LEAST_AT_MOST = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_EXECUTE_REMOVE_BELONGS_TO = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_EXPECT_ALLOW = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_FACTORYGIRL_FACTORYBOT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_FIRST_LAST__ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_FIRST_TAKE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_FIXNUM_BIGNUM = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_FLATTEN_FLATTEN = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_FORMAT_SPRINTF_PRINTF = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_GEMCUTTER_RUBYGEMS_RUBYFORGE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_GET_POST_PUT_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_GSUB_GSUB = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_GSUB_GSUB_SUB_SUB = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_HAS_MANY_HAS_ONE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_HAS_MANY_HAS_ONE_BELONGS_TO = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_INCLUDE_EXTEND_PREPEND = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_INCLUDE_MEMBER = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_INSERT_INSERT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_INSTANCE_EVAL_CLASS_EVAL_MODULE_EVAL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_INSTANCE_EXEC_CLASS_EXEC_MODULE_EXEC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_IO_FILE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_IS_EXPECTED_SHOULD_SHOULD_NOT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_KEYS_VALUES = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_KEY_HAS_KEY_FETCH_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_LAST_FIRST = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_LENGTH_SIZE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_LOAD_RESTORE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_MAP_COLLECT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_MATCH_MATCH = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_MATCH__MATCH = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_NEW_COMPILE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_NEW_OPEN = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_NIL_ = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ONLY_EXCEPT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PIPELINE_PIPELINE_R_PIPELINE_RW_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED_PUBLIC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PROC_LAMBDA = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PROP_CONST = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PUBLIC_CONSTANT_PRIVATE_CONSTANT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_PUBLIC_PROTECTED_PRIVATE_MODULE_FUNCTION = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RAISE_ERROR_RAISE_EXCEPTION = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RAISE_FAIL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RAISE_FAIL_THROW_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RECEIVE_HAVE_RECEIVED = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RECEIVE_MESSAGE_CHAIN_STUB_CHAIN = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RECEIVE_RECEIVE_MESSAGES_RECEIVE_MESSAGE_CHAIN_HAVE_RECEIVED = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RECEIVE_RECEIVE_MESSAGE_CHAIN = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_REDUCE_INJECT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_REFERER_REFERRER = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_REJECT_REJECT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RENDER_REDIRECT_TO = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_REQUIRE_REQUIRE_RELATIVE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_RETURNING_UNIQUE_BY = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SELECT_FILTER_FIND_ALL_REJECT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SELECT_SELECT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SEND_PUBLIC_SEND___SEND__ = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SHOULD_SHOULD_NOT = T.let(T.unsafe(nil), Set)
-
-RuboCop::AST::NodePattern::Sets::SET_SINCE_FROM_NOW_AFTER_ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SKIP_AFTER_ACTION_SKIP_AROUND_ACTION_SKIP_BEFORE_ACTION_SKIP_ACTION_CALLBACK = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SKIP_PENDING = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SORT_BY_SORT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SORT_MIN_MAX = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SPAWN_SYSTEM = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SPRINTF_FORMAT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_START_WITH_END_WITH = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_START_WITH_STARTS_WITH_END_WITH_ENDS_WITH = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_STRUCT_CLASS = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_SUCC_PRED_NEXT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TEMPFILE_STRINGIO = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TO_ENUM_ENUM_FOR = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TO_I_TO_F_TO_C = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TRANSLATE_LOCALIZE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TRUE_FALSE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TRY_TRY = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_TYPE_TEMPLATE_TYPE_MEMBER = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_UNIQ_DISTINCT = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET_ZERO_POSITIVE_NEGATIVE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET__ = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET__AT_SLICE = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET__EQUAL_EQL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET__GLOB = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___ = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___2 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___3 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___4 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___5 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___6 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___7 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___8 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___EQL = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET___METHOD_____CALLEE__ = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET____ = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET____ETC = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET____ETC_2 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::Sets::SET____ETC_3 = T.let(T.unsafe(nil), Set)
-
 RuboCop::AST::NodePattern::VAR = T.let(T.unsafe(nil), String)
 
 module RuboCop::AST::NumericNode
   def sign?; end
 end
 
+RuboCop::AST::NumericNode::SIGN_REGEX = T.let(T.unsafe(nil), Regexp)
+
 class RuboCop::AST::OrNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::BinaryOperatorNode)
-  include(::RuboCop::AST::PredicateOperatorNode)
+  include ::RuboCop::AST::BinaryOperatorNode
+  include ::RuboCop::AST::PredicateOperatorNode
 
   def alternate_operator; end
   def inverse_operator; end
 end
 
 class RuboCop::AST::PairNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::HashElementNode)
+  include ::RuboCop::AST::HashElementNode
 
   def colon?; end
   def delimiter(*deprecated, with_spacing: T.unsafe(nil)); end
@@ -1644,6 +1782,11 @@ class RuboCop::AST::PairNode < ::RuboCop::AST::Node
   def inverse_delimiter(*deprecated, with_spacing: T.unsafe(nil)); end
   def value_on_new_line?; end
 end
+
+RuboCop::AST::PairNode::COLON = T.let(T.unsafe(nil), String)
+RuboCop::AST::PairNode::HASH_ROCKET = T.let(T.unsafe(nil), String)
+RuboCop::AST::PairNode::SPACED_COLON = T.let(T.unsafe(nil), String)
+RuboCop::AST::PairNode::SPACED_HASH_ROCKET = T.let(T.unsafe(nil), String)
 
 module RuboCop::AST::ParameterizedNode
   def arguments?; end
@@ -1656,7 +1799,7 @@ module RuboCop::AST::ParameterizedNode
 end
 
 module RuboCop::AST::ParameterizedNode::RestArguments
-  include(::RuboCop::AST::ParameterizedNode)
+  include ::RuboCop::AST::ParameterizedNode
 
   def arguments; end
   def arguments?; end
@@ -1665,7 +1808,7 @@ module RuboCop::AST::ParameterizedNode::RestArguments
 end
 
 module RuboCop::AST::ParameterizedNode::WrappedArguments
-  include(::RuboCop::AST::ParameterizedNode)
+  include ::RuboCop::AST::ParameterizedNode
 
   def arguments; end
 end
@@ -1676,12 +1819,17 @@ module RuboCop::AST::PredicateOperatorNode
   def semantic_operator?; end
 end
 
+RuboCop::AST::PredicateOperatorNode::LOGICAL_AND = T.let(T.unsafe(nil), String)
+RuboCop::AST::PredicateOperatorNode::LOGICAL_OR = T.let(T.unsafe(nil), String)
+RuboCop::AST::PredicateOperatorNode::SEMANTIC_AND = T.let(T.unsafe(nil), String)
+RuboCop::AST::PredicateOperatorNode::SEMANTIC_OR = T.let(T.unsafe(nil), String)
+
 class RuboCop::AST::Procarg0Node < ::RuboCop::AST::ArgNode
   def name; end
 end
 
 class RuboCop::AST::ProcessedSource
-  include(::RuboCop::Ext::ProcessedSource)
+  include ::RuboCop::Ext::ProcessedSource
 
   def initialize(source, ruby_version, path = T.unsafe(nil)); end
 
@@ -1737,6 +1885,7 @@ class RuboCop::AST::ProcessedSource
   end
 end
 
+RuboCop::AST::ProcessedSource::INVALID_LEVELS = T.let(T.unsafe(nil), Array)
 RuboCop::AST::ProcessedSource::STRING_SOURCE_NAME = T.let(T.unsafe(nil), String)
 
 class RuboCop::AST::RangeNode < ::RuboCop::AST::Node
@@ -1745,7 +1894,7 @@ class RuboCop::AST::RangeNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::RegexpNode < ::RuboCop::AST::Node
-  include(::RuboCop::Ext::RegexpNode)
+  include ::RuboCop::Ext::RegexpNode
 
   def content; end
   def delimiter?(char); end
@@ -1767,6 +1916,8 @@ class RuboCop::AST::RegexpNode < ::RuboCop::AST::Node
   def regopt_include?(option); end
 end
 
+RuboCop::AST::RegexpNode::OPTIONS = T.let(T.unsafe(nil), Hash)
+
 class RuboCop::AST::ResbodyNode < ::RuboCop::AST::Node
   def body; end
   def branch_index; end
@@ -1783,8 +1934,8 @@ class RuboCop::AST::RescueNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::ReturnNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::WrappedArguments)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::WrappedArguments
 end
 
 module RuboCop::AST::RuboCopCompatibility
@@ -1799,10 +1950,10 @@ class RuboCop::AST::SelfClassNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::SendNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::ParameterizedNode::RestArguments)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::ParameterizedNode::RestArguments
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def attribute_accessor?(param0 = T.unsafe(nil)); end
 
@@ -1816,22 +1967,22 @@ module RuboCop::AST::Sexp
 end
 
 class RuboCop::AST::StrNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::BasicLiteralNode)
+  include ::RuboCop::AST::BasicLiteralNode
 
   def heredoc?; end
 end
 
 class RuboCop::AST::SuperNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def arguments; end
   def node_parts; end
 end
 
 class RuboCop::AST::SymbolNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::BasicLiteralNode)
+  include ::RuboCop::AST::BasicLiteralNode
 end
 
 class RuboCop::AST::Token
@@ -1869,6 +2020,8 @@ class RuboCop::AST::Token
 end
 
 module RuboCop::AST::Traversal
+  extend ::RuboCop::AST::Traversal::CallbackCompiler
+
   def on_(node); end
   def on___ENCODING__(node); end
   def on___FILE__(node); end
@@ -2000,23 +2153,28 @@ module RuboCop::AST::Traversal
   def walk(node); end
 end
 
-class RuboCop::AST::Traversal::DebugError < ::RuntimeError
+module RuboCop::AST::Traversal::CallbackCompiler
+  def arity_check(range); end
+  def body(signature, prelude); end
+  def def_callback(type, *signature, arity: T.unsafe(nil), arity_check: T.unsafe(nil), body: T.unsafe(nil)); end
 end
 
+RuboCop::AST::Traversal::CallbackCompiler::SEND = T.let(T.unsafe(nil), String)
+RuboCop::AST::Traversal::CallbackCompiler::TEMPLATE = T.let(T.unsafe(nil), Hash)
+class RuboCop::AST::Traversal::DebugError < ::RuntimeError; end
+RuboCop::AST::Traversal::NO_CHILD_NODES = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Traversal::TYPE_TO_METHOD = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::AST::UntilNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ConditionalNode)
-  include(::RuboCop::AST::ModifierNode)
+  include ::RuboCop::AST::ConditionalNode
+  include ::RuboCop::AST::ModifierNode
 
   def do?; end
   def inverse_keyword; end
   def keyword; end
 end
 
-module RuboCop::AST::Version
-end
-
+module RuboCop::AST::Version; end
 RuboCop::AST::Version::STRING = T.let(T.unsafe(nil), String)
 
 class RuboCop::AST::WhenNode < ::RuboCop::AST::Node
@@ -2028,8 +2186,8 @@ class RuboCop::AST::WhenNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::WhileNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ConditionalNode)
-  include(::RuboCop::AST::ModifierNode)
+  include ::RuboCop::AST::ConditionalNode
+  include ::RuboCop::AST::ModifierNode
 
   def do?; end
   def inverse_keyword; end
@@ -2037,20 +2195,14 @@ class RuboCop::AST::WhileNode < ::RuboCop::AST::Node
 end
 
 class RuboCop::AST::YieldNode < ::RuboCop::AST::Node
-  include(::RuboCop::AST::ParameterizedNode)
-  include(::RuboCop::AST::MethodIdentifierPredicates)
-  include(::RuboCop::AST::MethodDispatchNode)
+  include ::RuboCop::AST::ParameterizedNode
+  include ::RuboCop::AST::MethodIdentifierPredicates
+  include ::RuboCop::AST::MethodDispatchNode
 
   def arguments; end
   def node_parts; end
 end
 
 RuboCop::NodePattern = RuboCop::AST::NodePattern
-
 RuboCop::ProcessedSource = RuboCop::AST::ProcessedSource
-
 RuboCop::Token = RuboCop::AST::Token
-
-RuboCop::AST::Traversal::CallbackCompiler::SEND = T.let(T.unsafe(nil), String)
-
-RuboCop::AST::Traversal::CallbackCompiler::TEMPLATE = T.let(T.unsafe(nil), Hash)
