@@ -684,8 +684,9 @@ module Homebrew
           "Homebrew/homebrew-core" => CoreTap.instance.path,
         }
 
-        if Pathname.new("#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask").exist?
-          taps["Homebrew/homebrew-cask"] = Pathname.new("#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask")
+        %w[cask cask-drivers cask-fonts cask-versions].each do |tap|
+          cask_tap = Tap.fetch "homebrew", tap
+          taps[cask_tap.full_name] = cask_tap.path if cask_tap.installed?
         end
 
         taps.each do |name, path|
