@@ -120,10 +120,12 @@ module Homebrew
     end
 
     def audit_formula_name
+      name = formula.name
+
+      problem "Formula name '#{name}' must not contain uppercase letters." if name != name.downcase
+
       return unless @strict
       return unless @core_tap
-
-      name = formula.name
 
       problem "'#{name}' is not allowed in homebrew/core." if MissingFormula.disallowed_reason(name)
 
