@@ -2181,8 +2181,10 @@ class Formula
   def eligible_kegs_for_cleanup(quiet: false)
     eligible_for_cleanup = []
     if latest_version_installed?
-      eligible_kegs = if head? && (head_prefix = latest_head_prefix)
-        installed_kegs - [Keg.new(head_prefix)]
+      eligible_kegs = if head?
+        # Remove latest head and stable kegs
+        head, stable = installed_kegs.partition { |k| k.version.head? }
+        head.sort_by(&:version).slice(0...-1) + stable.sort_by(&:version).slice(0...-1)
       else
         installed_kegs.select do |keg|
           tab = Tab.for_keg(keg)
