@@ -928,20 +928,17 @@ describe Formula do
         head("foo")
       end
 
-      stable_prefix = f.latest_installed_prefix
-      stable_prefix.mkpath
-
-      [["000000_1", 1], ["111111", 2], ["111111_1", 2]].each do |pkg_version_suffix, stamp|
-        prefix = f.prefix("HEAD-#{pkg_version_suffix}")
+      ["0.0.1", "0.0.2", "0.1", "HEAD-000000", "HEAD-111111", "HEAD-111111_1"].each do |version|
+        prefix = f.prefix(version)
         prefix.mkpath
         tab = Tab.empty
         tab.tabfile = prefix/Tab::FILENAME
-        tab.source_modified_time = stamp
+        tab.source_modified_time = 1
         tab.write
       end
 
-      eligible_kegs = f.installed_kegs - [Keg.new(f.prefix("HEAD-111111_1"))]
-      expect(f.eligible_kegs_for_cleanup).to eq(eligible_kegs)
+      eligible_kegs = f.installed_kegs - [Keg.new(f.prefix("HEAD-111111_1")), Keg.new(f.prefix("0.1"))]
+      expect(f.eligible_kegs_for_cleanup.sort_by(&:version)).to eq(eligible_kegs.sort_by(&:version))
     end
   end
 
