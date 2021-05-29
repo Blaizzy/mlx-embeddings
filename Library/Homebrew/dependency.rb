@@ -96,7 +96,7 @@ class Dependency
 
       if cache_key.present?
         cache[cache_key] ||= {}
-        return cache[cache_key][dependent.full_name].dup if cache[cache_key][dependent.full_name]
+        return cache[cache_key][cache_id dependent].dup if cache[cache_key][cache_id dependent]
       end
 
       expanded_deps = []
@@ -122,7 +122,7 @@ class Dependency
       end
 
       expanded_deps = merge_repeats(expanded_deps)
-      cache[cache_key][dependent.full_name] = expanded_deps.dup if cache_key.present?
+      cache[cache_key][cache_id dependent] = expanded_deps.dup if cache_key.present?
       expanded_deps
     ensure
       @expand_stack.pop
@@ -169,6 +169,10 @@ class Dependency
     end
 
     private
+
+    def cache_id(dependent)
+      "#{dependent.full_name}_#{dependent.class}"
+    end
 
     def merge_tags(deps)
       other_tags = deps.flat_map(&:option_tags).uniq
