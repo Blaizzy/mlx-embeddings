@@ -12,8 +12,14 @@ module Homebrew
       #
       # * `https://download.gnome.org/sources/example/1.2/example-1.2.3.tar.xz`
       #
-      # The default regex restricts matching to filenames containing a version
-      # with an even-numbered minor below 90, as these are stable releases.
+      # For the new GNOME versioning scheme used with GNOME 40 and newer, the
+      # strategy matches all versions with a numeric minor (and micro if
+      # present). This excludes versions like `40.alpha`, `40.beta` and `40.rc`
+      # which are development releases.
+      #
+      # For the older GNOME versioning scheme used with major versions 3 and
+      # below, only those filenames containing a version with an even-numbered
+      # minor below 90 are matched, as these are stable releases.
       #
       # @api public
       class Gnome
@@ -55,19 +61,23 @@ module Homebrew
 
           page_url = "https://download.gnome.org/sources/#{match[:package_name]}/cache.json"
 
-          # GNOME archive files seem to use a standard filename format, so we
-          # count on the delimiter between the package name and numeric version
-          # being a hyphen and the file being a tarball.
-          #
-          # The `([0-8]\d*?)?[02468]` part of the regex is intended to restrict
-          # matching to versions with an even-numbered minor, as these are
-          # stable releases. This also excludes x.90+ versions, which are
-          # development versions. See: https://www.gnome.org/gnome-3/source/
-          #
-          # Example regex: `/example-(\d+\.([0-8]\d*?)?[02468](?:\.\d+)*?)\.t/i`
-          regex ||= /#{Regexp.escape(match[:package_name])}-(\d+\.([0-8]\d*?)?[02468](?:\.\d+)*?)\.t/i
+          if regex.blank?
+            # GNOME archive files seem to use a standard filename format, so we
+            # count on the delimiter between the package name and numeric
+            # version being a hyphen and the file being a tarball.
+            regex = /#{Regexp.escape(match[:package_name])}-(\d+(?:\.\d+)+)\.t/i
+            version_data = PageMatch.find_versions(page_url, regex, cask: cask, &block)
 
-          PageMatch.find_versions(page_url, regex, cask: cask, &block)
+            # Before GNOME 40, versions have a major equal to or less than 3.
+            # Stable versions have an even-numbered minor less than 90.
+            version_data[:matches].select! do |_, version|
+              (version.major <= 3 && version.minor.to_i.even? && version.minor < 90) || (version.major >= 40)
+            end
+
+            version_data
+          else
+            PageMatch.find_versions(page_url, regex, cask: cask, &block)
+          end
         end
       end
     end
