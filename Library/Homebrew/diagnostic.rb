@@ -679,17 +679,17 @@ module Homebrew
 
         message = nil
 
-        taps = {
+        repos = {
           "Homebrew/brew"          => HOMEBREW_REPOSITORY,
           "Homebrew/homebrew-core" => CoreTap.instance.path,
         }
 
         %w[cask cask-drivers cask-fonts cask-versions].each do |tap|
           cask_tap = Tap.fetch "homebrew", tap
-          taps[cask_tap.full_name] = cask_tap.path if cask_tap.installed?
+          repos[cask_tap.full_name] = cask_tap.path if cask_tap.installed?
         end
 
-        taps.each do |name, path|
+        repos.each do |name, path|
           status = path.cd do
             `git status --untracked-files=all --porcelain 2>/dev/null`
           end
