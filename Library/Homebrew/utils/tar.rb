@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "system_command"
+
 module Utils
   # Helper functions for interacting with tar files.
   #
@@ -26,9 +28,9 @@ module Utils
 
         path = Pathname.new(path)
         return unless TAR_FILE_EXTENSIONS.include? path.extname
-        return if Utils.popen_read(executable, "--list", "--file", path).match?(%r{/.*\.})
 
-        odie "#{path} is not a valid tar file!"
+        stdout, _, status = system_command(executable, args: ["--list", "--file", path], print_stderr: false)
+        odie "#{path} is not a valid tar file!" if !status.success? || stdout.blank?
       end
 
       def clear_executable_cache
