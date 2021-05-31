@@ -8,6 +8,7 @@ class LinkageChecker
   SYSTEM_LIBRARY_ALLOWLIST = %w[
     ld-linux-x86-64.so.2
     libanl.so.1
+    libatomic.so.1
     libc.so.6
     libcrypt.so.1
     libdl.so.2
