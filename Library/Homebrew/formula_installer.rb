@@ -404,7 +404,7 @@ class FormulaInstaller
     options = display_options(formula).join(" ")
     oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip if show_header?
 
-    unless formula.tap&.private?
+    if formula.tap&.installed? && !formula.tap&.private?
       action = "#{formula.full_name} #{options}".strip
       Utils::Analytics.report_event("install", action)
 
@@ -1163,7 +1163,7 @@ class FormulaInstaller
     tab.source["versions"]["stable"] = formula.stable.version.to_s
     tab.source["versions"]["version_scheme"] = formula.version_scheme
     tab.source["path"] = formula.specified_path.to_s
-    tab.source["tap_git_head"] = formula.tap&.git_head
+    tab.source["tap_git_revision"] = formula.tap&.installed? ? formula.tap&.git_head : nil
     tab.tap = formula.tap
     tab.write
 
