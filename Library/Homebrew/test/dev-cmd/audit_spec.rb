@@ -488,6 +488,32 @@ module Homebrew
       end
     end
 
+    describe "#audit_formula_name" do
+      specify "no issue" do
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true, strict: true
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+            homepage "https://brew.sh"
+          end
+        RUBY
+
+        fa.audit_formula_name
+        expect(fa.problems).to be_empty
+      end
+
+      specify "uppercase formula name" do
+        fa = formula_auditor "Foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/Foo-1.0.tgz"
+            homepage "https://brew.sh"
+          end
+        RUBY
+
+        fa.audit_formula_name
+        expect(fa.problems.first[:message]).to match "must not contain uppercase letters"
+      end
+    end
+
     describe "#check_service_command" do
       specify "Not installed" do
         fa = formula_auditor "foo", <<~RUBY
