@@ -12,14 +12,16 @@ module Homebrew
       #
       # * `https://download.gnome.org/sources/example/1.2/example-1.2.3.tar.xz`
       #
-      # For the new GNOME versioning scheme used with GNOME 40 and newer, the
-      # strategy matches all versions with a numeric minor (and micro if
-      # present). This excludes versions like `40.alpha`, `40.beta` and `40.rc`
-      # which are development releases.
+      # Before version 40, GNOME used a versioning scheme where unstable
+      # releases were indicated with a minor that's 90+ or odd. The newer
+      # version scheme uses trailing alpha/beta/rc text to identify unstable
+      # versions (e.g., `40.alpha`).
       #
-      # For the older GNOME versioning scheme used with major versions 3 and
-      # below, only those filenames containing a version with an even-numbered
-      # minor below 90 are matched, as these are stable releases.
+      # When a regex isn't provided in a `livecheck` block, this strategy uses
+      # a default regex that matches versions that don't include trailing text
+      # after the numeric version (e.g., `40.0` instead of `40.alpha`, etc.)
+      # and it selectively filters out unstable versions below 40 using the
+      # older scheme.
       #
       # @api public
       class Gnome
@@ -68,10 +70,10 @@ module Homebrew
             regex = /#{Regexp.escape(match[:package_name])}-(\d+(?:\.\d+)+)\.t/i
             version_data = PageMatch.find_versions(page_url, regex, cask: cask, &block)
 
-            # Before GNOME 40, versions have a major equal to or less than 3.
-            # Stable versions have an even-numbered minor less than 90.
-            version_data[:matches].select! do |_, version|
-              (version.major <= 3 && version.minor.to_i.even? && version.minor < 90) || (version.major >= 40)
+            # Filter out unstable versions using the old version scheme where
+            # the major version is below 40.
+            version_data[:matches].reject! do |_, version|
+              version.major < 40 && (version.minor >= 90 || version.minor.to_i.odd?)
             end
 
             version_data
