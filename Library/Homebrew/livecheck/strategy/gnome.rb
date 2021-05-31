@@ -12,16 +12,16 @@ module Homebrew
       #
       # * `https://download.gnome.org/sources/example/1.2/example-1.2.3.tar.xz`
       #
-      # Before version 40, GNOME used a versioning scheme where unstable
-      # releases were indicated with a minor that's 90+ or odd. The newer
-      # version scheme uses trailing alpha/beta/rc text to identify unstable
-      # versions (e.g., `40.alpha`).
+      # Before version 40, GNOME used a version scheme where unstable releases
+      # were indicated with a minor that's 90+ or odd. The newer version scheme
+      # uses trailing alpha/beta/rc text to identify unstable versions
+      # (e.g., `40.alpha`).
       #
-      # When a regex isn't provided in a `livecheck` block, this strategy uses
-      # a default regex that matches versions that don't include trailing text
-      # after the numeric version (e.g., `40.0` instead of `40.alpha`, etc.)
-      # and it selectively filters out unstable versions below 40 using the
-      # older scheme.
+      # When a regex isn't provided in a `livecheck` block, the strategy uses
+      # a default regex that matches versions which don't include trailing text
+      # after the numeric version (e.g., `40.0` instead of `40.alpha`) and it
+      # selectively filters out unstable versions below 40 using the rules for
+      # the older version scheme.
       #
       # @api public
       class Gnome
