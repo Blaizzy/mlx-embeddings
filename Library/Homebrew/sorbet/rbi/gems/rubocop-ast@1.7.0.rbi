@@ -675,6 +675,7 @@ end
 class RuboCop::AST::InPatternNode < ::RuboCop::AST::Node
   def body; end
   def branch_index; end
+  def pattern; end
   def then?; end
 end
 
@@ -757,7 +758,8 @@ module RuboCop::AST::MethodDispatchNode
   def block_node; end
   def command?(name); end
   def const_receiver?; end
-  def def_modifier?; end
+  def def_modifier(node = T.unsafe(nil)); end
+  def def_modifier?(node = T.unsafe(nil)); end
   def dot?; end
   def double_colon?; end
   def implicit_call?; end
