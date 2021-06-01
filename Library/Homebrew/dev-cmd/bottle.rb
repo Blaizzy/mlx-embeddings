@@ -312,7 +312,7 @@ module Homebrew
     else
       ohai "Determining #{f.full_name} bottle rebuild..."
       FormulaVersions.new(f).formula_at_revision("origin/HEAD") do |upstream_f|
-        if f.pkg_version == upstream_f.pkg_version
+        if f.pkg_version == upstream_f.pkg_version && !upstream_f.bottle_unneeded?
           upstream_f.bottle_specification.rebuild + 1
         else
           0
