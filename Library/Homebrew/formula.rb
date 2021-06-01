@@ -1461,8 +1461,6 @@ class Formula
   sig { returns(T::Array[String]) }
   def std_cmake_args
     args = %W[
-      -DCMAKE_C_FLAGS_RELEASE=-DNDEBUG
-      -DCMAKE_CXX_FLAGS_RELEASE=-DNDEBUG
       -DCMAKE_INSTALL_PREFIX=#{prefix}
       -DCMAKE_INSTALL_LIBDIR=lib
       -DCMAKE_BUILD_TYPE=Release
