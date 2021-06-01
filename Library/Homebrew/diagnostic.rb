@@ -147,25 +147,23 @@ module Homebrew
         end
       end
 
-      def broken_tap_msg(tap)
-        <<~EOS
-          #{tap.full_name} was not tapped properly.
-          To fix:
-            rm -rf "#{tap.path}"
-            brew tap #{tap.name}
-        EOS
-      end
-
       def broken_tap(tap)
         return unless Utils::Git.available?
         return unless HOMEBREW_REPOSITORY.git?
 
-        return broken_tap_msg(tap) if tap.remote.blank?
+        message = <<~EOS
+          #{tap.full_name} was not tapped properly! Run:
+            rm -rf "#{tap.path}"
+            brew tap #{tap.name}
+        EOS
+
+        return message if tap.remote.blank?
 
         tap_head = tap.git_head
-        return broken_tap_msg(tap) if tap_head.blank?
+        return message if tap_head.blank?
+        return if tap_head != HOMEBREW_REPOSITORY.git_head
 
-        return broken_tap_msg(tap) if tap_head == HOMEBREW_REPOSITORY.git_head
+        message
       end
 
       def check_for_installed_developer_tools
