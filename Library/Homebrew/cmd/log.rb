@@ -74,7 +74,7 @@ module Homebrew
     git_args << "--patch" if args.patch?
     git_args << "--stat" if args.stat?
     git_args << "--oneline" if args.oneline?
-    git_args << "-1" if args.public_send(:'1?')
+    git_args << "-1" if args.public_send(:"1?")
     git_args << "--max-count" << args.max_count if args.max_count
     git_args += ["--follow", "--", path] if path.present?
     system "git", "log", *git_args

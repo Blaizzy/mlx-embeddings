@@ -90,7 +90,7 @@ module Homebrew
       unless args.cask?
         formula_names = args.no_named? ? Formula.installed : args.named.to_resolved_formulae
         full_formula_names = formula_names.map(&:full_name).sort(&tap_and_name_comparison)
-        full_formula_names = Formatter.columns(full_formula_names) unless args.public_send(:'1?')
+        full_formula_names = Formatter.columns(full_formula_names) unless args.public_send(:"1?")
         puts full_formula_names if full_formula_names.present?
       end
       if args.cask? || (!args.formula? && args.no_named?)
@@ -100,7 +100,7 @@ module Homebrew
           args.named.to_formulae_and_casks(only: :cask, method: :resolve)
         end
         full_cask_names = cask_names.map(&:full_name).sort(&tap_and_name_comparison)
-        full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:'1?')
+        full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:"1?")
         puts full_cask_names if full_cask_names.present?
       end
     elsif args.cask?
@@ -111,7 +111,7 @@ module Homebrew
       ENV["CLICOLOR"] = nil
 
       ls_args = []
-      ls_args << "-1" if args.public_send(:'1?')
+      ls_args << "-1" if args.public_send(:"1?")
       ls_args << "-l" if args.l?
       ls_args << "-r" if args.r?
       ls_args << "-t" if args.t?
@@ -168,7 +168,7 @@ module Homebrew
   def list_casks(args:)
     Cask::Cmd::List.list_casks(
       *args.named.to_casks,
-      one:       args.public_send(:'1?'),
+      one:       args.public_send(:"1?"),
       full_name: args.full_name?,
       versions:  args.versions?,
     )
