@@ -353,6 +353,17 @@ module Homebrew
               "which allows them to use our Linux bottles, which were compiled against system Glibc on CI."
     end
 
+    ELASTICSEARCH_KIBANA_RELICENSED_VERSION = "7.11"
+
+    def audit_elasticsearch_kibana
+      return if formula.name != "elasticsearch" && formula.name != "kibana"
+      return unless @core_tap
+      return if formula.version < Version.new(ELASTICSEARCH_KIBANA_RELICENSED_VERSION)
+
+      problem "Elasticsearch and Kibana were relicensed to a non-open-source license from version 7.11. " \
+              "They must not be upgraded to version 7.11 or newer."
+    end
+
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap
