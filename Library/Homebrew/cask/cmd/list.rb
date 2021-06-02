@@ -29,7 +29,7 @@ module Cask
         self.class.list_casks(
           *casks,
           json:      args.json?,
-          one:       args.public_send(:'1?'),
+          one:       args.public_send(:"1?"),
           full_name: args.full_name?,
           versions:  args.versions?,
         )
