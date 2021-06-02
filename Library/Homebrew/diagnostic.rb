@@ -147,6 +147,25 @@ module Homebrew
         end
       end
 
+      def broken_tap(tap)
+        return unless Utils::Git.available?
+        return unless HOMEBREW_REPOSITORY.git?
+
+        message = <<~EOS
+          #{tap.full_name} was not tapped properly! Run:
+            rm -rf "#{tap.path}"
+            brew tap #{tap.name}
+        EOS
+
+        return message if tap.remote.blank?
+
+        tap_head = tap.git_head
+        return message if tap_head.blank?
+        return if tap_head != HOMEBREW_REPOSITORY.git_head
+
+        message
+      end
+
       def check_for_installed_developer_tools
         return if DevelopmentTools.installed?
 
@@ -558,15 +577,16 @@ module Homebrew
         examine_git_origin(HOMEBREW_REPOSITORY, Homebrew::EnvConfig.brew_git_remote)
       end
 
-      def check_coretap_git_origin
-        examine_git_origin(CoreTap.instance.path, Homebrew::EnvConfig.core_git_remote)
+      def check_coretap_integrity
+        coretap = CoreTap.instance
+        broken_tap(coretap) || examine_git_origin(coretap.path, Homebrew::EnvConfig.core_git_remote)
       end
 
-      def check_casktap_git_origin
+      def check_casktap_integrity
         default_cask_tap = Tap.default_cask_tap
         return unless default_cask_tap.installed?
 
-        examine_git_origin(default_cask_tap.path, default_cask_tap.remote)
+        broken_tap(default_cask_tap) || examine_git_origin(default_cask_tap.path, default_cask_tap.remote)
       end
 
       sig { returns(T.nilable(String)) }
