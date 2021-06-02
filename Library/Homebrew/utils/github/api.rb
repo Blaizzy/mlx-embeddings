@@ -255,7 +255,7 @@ module GitHub
 
     def open_graphql(query, scopes: [].freeze)
       data = { query: query }
-      result = open_rest("https://api.github.com/graphql", scopes: scopes, data: data, request_method: "POST")
+      result = open_rest("#{API_URL}/graphql", scopes: scopes, data: data, request_method: "POST")
 
       if result["errors"].present?
         raise Error, result["errors"].map { |e|
