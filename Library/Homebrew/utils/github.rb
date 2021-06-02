@@ -37,13 +37,13 @@ module GitHub
   end
 
   def create_gist(files, description, private:)
-    url = "https://api.github.com/gists"
+    url = "#{API_URL}/gists"
     data = { "public" => !private, "files" => files, "description" => description }
     API.open_rest(url, data: data, scopes: CREATE_GIST_SCOPES)["html_url"]
   end
 
   def create_issue(repo, title, body)
-    url = "https://api.github.com/repos/#{repo}/issues"
+    url = "#{API_URL}/repos/#{repo}/issues"
     data = { "title" => title, "body" => body }
     API.open_rest(url, data: data, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
   end
