@@ -40,7 +40,7 @@ module Homebrew
       end
 
       ohai "bundle install --standalone"
-      safe_system "bundle", "install", "--standalone"
+      safe_system_redirect_stdout_to_stderr "bundle", "install", "--standalone"
 
       ohai "bundle pristine"
       safe_system "bundle", "pristine"
