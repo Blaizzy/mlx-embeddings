@@ -871,6 +871,25 @@ describe Formula do
     expect(h["versions"]["bottle"]).to be_truthy
   end
 
+  specify "#to_bottle_hash" do
+    f1 = formula "foo" do
+      url "foo-1.0"
+
+      bottle do
+        sha256 cellar: :any, Utils::Bottles.tag.to_sym => TEST_SHA256
+        sha256 cellar: :any, foo:                         TEST_SHA256
+      end
+    end
+
+    h = f1.to_bottle_hash
+
+    expect(h).to be_a(Hash)
+    expect(h["bottles"].keys).to eq [Utils::Bottles.tag.to_s, "x86_64_foo"]
+    expect(h["bottles"][Utils::Bottles.tag.to_s].keys).to eq ["url", "sha256"]
+    expect(h["bottles"][Utils::Bottles.tag.to_s]["sha256"]).to eq TEST_SHA256
+    expect(h["dependencies"]).to eq []
+  end
+
   describe "#eligible_kegs_for_cleanup" do
     it "returns Kegs eligible for cleanup" do
       f1 = Class.new(Testball) do

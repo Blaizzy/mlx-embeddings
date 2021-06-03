@@ -1908,6 +1908,27 @@ class Formula
     hsh
   end
 
+  # @api private
+  # Generate a hash to be used to install a formula from a JSON file
+  def to_bottle_hash(top_level: true)
+    bottle = bottle_hash
+
+    bottles = bottle["files"].map do |tag, file|
+      info = {
+        "url"    => file["url"],
+        "sha256" => file["sha256"],
+      }
+      [tag.to_s, info]
+    end.to_h
+
+    return bottles unless top_level
+
+    {
+      "bottles"      => bottles,
+      "dependencies" => deps.map { |dep| dep.to_formula.to_bottle_hash(top_level: false) },
+    }
+  end
+
   # Returns the bottle information for a formula
   def bottle_hash
     bottle_spec = stable.bottle_specification
