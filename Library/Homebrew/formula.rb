@@ -1925,7 +1925,7 @@ class Formula
 
     {
       "bottles"      => bottles,
-      "dependencies" => deps.map { |dep| dep.to_formula.to_bottle_hash(top_level: false) },
+      "dependencies" => declared_runtime_dependencies.map { |dep| dep.to_formula.to_bottle_hash(top_level: false) },
     }
   end
 
