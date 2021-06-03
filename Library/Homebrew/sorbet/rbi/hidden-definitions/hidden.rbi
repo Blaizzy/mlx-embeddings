@@ -12818,6 +12818,31 @@ module OpenSSL::SSL
   TLS1_VERSION = ::T.let(nil, ::T.untyped)
 end
 
+class OpenSSL::SSL::SSLContext
+  def add_certificate(*_); end
+
+  def alpn_protocols(); end
+
+  def alpn_protocols=(alpn_protocols); end
+
+  def alpn_select_cb(); end
+
+  def alpn_select_cb=(alpn_select_cb); end
+
+  def enable_fallback_scsv(); end
+
+  def max_version=(version); end
+
+  def min_version=(version); end
+  DEFAULT_TMP_DH_CALLBACK = ::T.let(nil, ::T.untyped)
+end
+
+class OpenSSL::SSL::SSLSocket
+  def alpn_protocol(); end
+
+  def tmp_key(); end
+end
+
 module OpenSSL::X509
   V_FLAG_NO_CHECK_TIME = ::T.let(nil, ::T.untyped)
   V_FLAG_TRUSTED_FIRST = ::T.let(nil, ::T.untyped)
