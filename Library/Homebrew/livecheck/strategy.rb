@@ -20,6 +20,56 @@ module Homebrew
       # are ignored.
       DEFAULT_PRIORITY = 5
 
+      # cURL's default `--connect-timeout` value can be up to two minutes, so
+      # we need to use a more reasonable duration (in seconds) to avoid a
+      # lengthy wait when a connection can't be established.
+      CURL_CONNECT_TIMEOUT = 10
+
+      # cURL does not set a default `--max-time` value, so we provide a value
+      # to ensure cURL will time out in a reasonable amount of time.
+      CURL_MAX_TIME = CURL_CONNECT_TIMEOUT + 5
+
+      # The `curl` process will sometimes hang indefinitely (despite setting
+      # the `--max-time` argument) and it needs to be quit for livecheck to
+      # continue. This value is used to set the `timeout` argument on
+      # `Utils::Curl` method calls in `Strategy`.
+      CURL_PROCESS_TIMEOUT = CURL_MAX_TIME + 5
+
+      # Baseline `curl` arguments used in `Strategy` methods.
+      DEFAULT_CURL_ARGS = [
+        # Follow redirections to handle mirrors, relocations, etc.
+        "--location",
+        "--connect-timeout", CURL_CONNECT_TIMEOUT,
+        "--max-time", CURL_MAX_TIME
+      ].freeze
+
+      # `curl` arguments used in `Strategy#page_headers` method.
+      PAGE_HEADERS_CURL_ARGS = ([
+        # We only need the response head (not the body)
+        "--head",
+        # Some servers may not allow a HEAD request, so we use GET
+        "--request", "GET",
+        "--silent"
+      ] + DEFAULT_CURL_ARGS).freeze
+
+      # `curl` arguments used in `Strategy#page_content` method.
+      PAGE_CONTENT_CURL_ARGS = ([
+        "--compressed",
+        # Include HTTP response headers in output, so we can identify the
+        # final URL after any redirections
+        "--include",
+      ] + DEFAULT_CURL_ARGS).freeze
+
+      # Baseline `curl` options used in `Strategy` methods.
+      DEFAULT_CURL_OPTIONS = {
+        print_stdout: false,
+        print_stderr: false,
+        debug:        false,
+        verbose:      false,
+        timeout:      CURL_PROCESS_TIMEOUT,
+        retry:        false,
+      }.freeze
+
       # HTTP response head(s) and body are typically separated by a double
       # `CRLF` (whereas HTTP header lines are separated by a single `CRLF`).
       # In rare cases, this can also be a double newline (`\n\n`).
@@ -27,7 +77,10 @@ module Homebrew
 
       # The `#strategies` method expects `Strategy` constants to be strategies,
       # so constants we create need to be private for this to work properly.
-      private_constant :DEFAULT_PRIORITY, :HTTP_HEAD_BODY_SEPARATOR
+      private_constant :DEFAULT_PRIORITY, :CURL_CONNECT_TIMEOUT, :CURL_MAX_TIME,
+                       :CURL_PROCESS_TIMEOUT, :DEFAULT_CURL_ARGS,
+                       :PAGE_HEADERS_CURL_ARGS, :PAGE_CONTENT_CURL_ARGS,
+                       :DEFAULT_CURL_OPTIONS, :HTTP_HEAD_BODY_SEPARATOR
 
       # Creates and/or returns a `@strategies` `Hash`, which maps a snake
       # case strategy name symbol (e.g. `:page_match`) to the associated
@@ -95,21 +148,10 @@ module Homebrew
         headers = []
 
         [:default, :browser].each do |user_agent|
-          args = [
-            "--head",                 # Only work with the response headers
-            "--request", "GET",       # Use a GET request (instead of HEAD)
-            "--silent",               # Silent mode
-            "--location",             # Follow redirects
-            "--connect-timeout", "5", # Max time allowed for connection (secs)
-            "--max-time", "10"        # Max time allowed for transfer (secs)
-          ]
-
           stdout, _, status = curl_with_workarounds(
-            *args, url,
-            print_stdout: false, print_stderr: false,
-            debug: false, verbose: false,
-            user_agent: user_agent, timeout: 20,
-            retry: false
+            *PAGE_HEADERS_CURL_ARGS, url,
+            **DEFAULT_CURL_OPTIONS,
+            user_agent: user_agent
           )
 
           while stdout.match?(/\AHTTP.*\r$/)
@@ -137,25 +179,9 @@ module Homebrew
       def self.page_content(url)
         original_url = url
 
-        args = curl_args(
-          "--compressed",
-          # Include HTTP response headers in output, so we can identify the
-          # final URL after any redirections
-          "--include",
-          # Follow redirections to handle mirrors, relocations, etc.
-          "--location",
-          # cURL's default timeout can be up to two minutes, so we need to
-          # set our own timeout settings to avoid a lengthy wait
-          "--connect-timeout", "10",
-          "--max-time", "15"
-        )
-
         stdout, stderr, status = curl_with_workarounds(
-          *args, url,
-          print_stdout: false, print_stderr: false,
-          debug: false, verbose: false,
-          user_agent: :default, timeout: 20,
-          retry: false
+          *PAGE_CONTENT_CURL_ARGS, url,
+          **DEFAULT_CURL_OPTIONS
         )
 
         unless status.success?
