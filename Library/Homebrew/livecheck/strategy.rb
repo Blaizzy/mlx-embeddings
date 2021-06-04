@@ -19,7 +19,15 @@ module Homebrew
       # the middle of this range. Strategies with a priority of 0 (or lower)
       # are ignored.
       DEFAULT_PRIORITY = 5
-      private_constant :DEFAULT_PRIORITY
+
+      # HTTP response head(s) and body are typically separated by a double
+      # `CRLF` (whereas HTTP header lines are separated by a single `CRLF`).
+      # In rare cases, this can also be a double newline (`\n\n`).
+      HTTP_HEAD_BODY_SEPARATOR = "\r\n\r\n"
+
+      # The `#strategies` method expects `Strategy` constants to be strategies,
+      # so constants we create need to be private for this to work properly.
+      private_constant :DEFAULT_PRIORITY, :HTTP_HEAD_BODY_SEPARATOR
 
       # Creates and/or returns a `@strategies` `Hash`, which maps a snake
       # case strategy name symbol (e.g. `:page_match`) to the associated
@@ -166,11 +174,11 @@ module Homebrew
         max_iterations = 5
         iterations = 0
         output = output.lstrip
-        while output.match?(%r{\AHTTP/[\d.]+ \d+}) && output.include?("\r\n\r\n")
+        while output.match?(%r{\AHTTP/[\d.]+ \d+}) && output.include?(HTTP_HEAD_BODY_SEPARATOR)
           iterations += 1
           raise "Too many redirects (max = #{max_iterations})" if iterations > max_iterations
 
-          head_text, _, output = output.partition("\r\n\r\n")
+          head_text, _, output = output.partition(HTTP_HEAD_BODY_SEPARATOR)
           output = output.lstrip
 
           location = head_text[/^Location:\s*(.*)$/i, 1]
