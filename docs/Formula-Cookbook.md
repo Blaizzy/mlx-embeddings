@@ -8,7 +8,7 @@ A *formula* is a package definition written in Ruby. It can be created with `bre
 |----------------|------------------------------------------------------------|-----------------------------------------------------------------|
 | **Formula**    | The package definition                                     | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/foo.rb` |
 | **Keg**        | The installation prefix of a **Formula**                   | `/usr/local/Cellar/foo/0.1`                                     |
-| **opt prefix** | A symlink to the active version of a **Keg**               | `/usr/local/opt/foo `                                           |
+| **opt prefix** | A symlink to the active version of a **Keg**               | `/usr/local/opt/foo`                                            |
 | **Cellar**     | All **Kegs** are installed here                            | `/usr/local/Cellar`                                             |
 | **Tap**        | A Git repository of **Formulae** and/or commands | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core`   |
 | **Bottle**     | Pre-built **Keg** used instead of building from source     | `qt-4.8.4.catalina.bottle.tar.gz`                              |

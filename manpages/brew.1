@@ -2988,6 +2988,38 @@ export http_proxy=http://$USER:$PASSWORD@$HOST:$PORT
 .
 .IP "" 0
 .
+.SH "TERMINOLOGY"
+\fBFormula\fR
+    The package definition (e\.g\. \fB/usr/local/Homebrew/Library/Taps/homebrew/homebrew\-core/Formula/foo\.rb\fR)
+.
+.P
+\fBKeg\fR
+    The installation prefix of a \fBFormula\fR (e\.g\. \fB/usr/local/Cellar/foo/0\.1\fR)
+.
+.P
+\fBopt prefix\fR
+    A symlink to the active version of a \fBKeg\fR (e\.g\. \fB/usr/local/opt/foo\fR)
+.
+.P
+\fBCellar\fR
+    All \fBKegs\fR are installed here (e\.g\. \fB/usr/local/Cellar\fR)
+.
+.P
+\fBTap\fR
+    A Git repository of \fBFormulae\fR and/or commands (e\.g\. \fB/usr/local/Homebrew/Library/Taps/homebrew/homebrew\-core\fR)
+.
+.P
+\fBBottle\fR
+    Pre\-built \fBKeg\fR used instead of building from source (e\.g\. \fBqt\-4\.8\.4\.catalina\.bottle\.tar\.gz\fR)
+.
+.P
+\fBCask\fR
+    An extension of Homebrew to install macOS native apps (e\.g\. \fB/Applications/MacDown\.app/Contents/SharedSupport/bin/macdown\fR)
+.
+.P
+\fBBrew Bundle\fR: An extension of Homebrew to describe dependencies (e\.g\. \fBbrew \'myservice\', restart_service
+    true\fR)
+.
 .SH "SEE ALSO"
 Homebrew Documentation: \fIhttps://docs\.brew\.sh\fR
 .
