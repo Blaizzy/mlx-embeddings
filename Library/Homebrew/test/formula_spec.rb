@@ -886,8 +886,7 @@ describe Formula do
     expect(h).to be_a(Hash)
     expect(h["name"]).to eq "foo"
     expect(h["bottles"].keys).to eq [Utils::Bottles.tag.to_s, "x86_64_foo"]
-    expect(h["bottles"][Utils::Bottles.tag.to_s].keys).to eq ["url", "sha256"]
-    expect(h["bottles"][Utils::Bottles.tag.to_s]["sha256"]).to eq TEST_SHA256
+    expect(h["bottles"][Utils::Bottles.tag.to_s].keys).to eq ["url"]
     expect(h["dependencies"]).to eq []
   end
 
