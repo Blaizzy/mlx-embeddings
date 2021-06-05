@@ -50,6 +50,9 @@ module Homebrew
              description: "Print a JSON representation. Currently the default value for <version> is `v1` for "\
                           "<formula>. For <formula> and <cask> use `v2`. See the docs for examples of using the "\
                           "JSON output: <https://docs.brew.sh/Querying-Brew>"
+      switch "--bottle",
+             depends_on:  "--json",
+             description: "Output information about the bottles for <formula> and its dependencies."
       switch "--installed",
              depends_on:  "--json",
              description: "Print JSON of formulae that are currently installed."
@@ -65,6 +68,10 @@ module Homebrew
 
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
+
+      %w[--cask --analytics --github].each do |conflict|
+        conflicts "--bottle", conflict
+      end
 
       named_args [:formula, :cask]
     end
@@ -184,7 +191,11 @@ module Homebrew
         args.named.to_formulae
       end
 
-      formulae.map(&:to_hash)
+      if args.bottle?
+        formulae.map(&:to_recursive_bottle_hash)
+      else
+        formulae.map(&:to_hash)
+      end
     when :v2
       formulae, casks = if args.all?
         [Formula.sort, Cask::Cask.to_a.sort_by(&:full_name)]
@@ -194,10 +205,14 @@ module Homebrew
         args.named.to_formulae_to_casks
       end
 
-      {
-        "formulae" => formulae.map(&:to_hash),
-        "casks"    => casks.map(&:to_h),
-      }
+      if args.bottle?
+        { "formulae" => formulae.map(&:to_recursive_bottle_hash) }
+      else
+        {
+          "formulae" => formulae.map(&:to_hash),
+          "casks"    => casks.map(&:to_h),
+        }
+      end
     else
       raise
     end

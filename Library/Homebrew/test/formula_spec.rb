@@ -871,7 +871,7 @@ describe Formula do
     expect(h["versions"]["bottle"]).to be_truthy
   end
 
-  specify "#to_bottle_hash" do
+  specify "#to_recursive_bottle_hash" do
     f1 = formula "foo" do
       url "foo-1.0"
 
@@ -881,9 +881,10 @@ describe Formula do
       end
     end
 
-    h = f1.to_bottle_hash
+    h = f1.to_recursive_bottle_hash
 
     expect(h).to be_a(Hash)
+    expect(h["name"]).to eq "foo"
     expect(h["bottles"].keys).to eq [Utils::Bottles.tag.to_s, "x86_64_foo"]
     expect(h["bottles"][Utils::Bottles.tag.to_s].keys).to eq ["url", "sha256"]
     expect(h["bottles"][Utils::Bottles.tag.to_s]["sha256"]).to eq TEST_SHA256

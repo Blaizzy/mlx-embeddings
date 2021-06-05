@@ -1910,7 +1910,7 @@ class Formula
 
   # @api private
   # Generate a hash to be used to install a formula from a JSON file
-  def to_bottle_hash(top_level: true)
+  def to_recursive_bottle_hash(top_level: true)
     bottle = bottle_hash
 
     bottles = bottle["files"].map do |tag, file|
@@ -1923,9 +1923,14 @@ class Formula
 
     return bottles unless top_level
 
+    dependencies = declared_runtime_dependencies.map do |dep|
+      dep.to_formula.to_recursive_bottle_hash(top_level: false)
+    end
+
     {
+      "name"         => name,
       "bottles"      => bottles,
-      "dependencies" => declared_runtime_dependencies.map { |dep| dep.to_formula.to_bottle_hash(top_level: false) },
+      "dependencies" => dependencies,
     }
   end
 
