@@ -417,6 +417,14 @@ class Version
     # e.g. ruby-1.9.1-p243
     StemParser.new(/[_-](#{NUMERIC_WITH_DOTS}-(?:p|rc|RC)?\d+)#{CONTENT_SUFFIX}?$/),
 
+    # Hyphenated versions without software-name prefix (e.g. brew-)
+    # e.g. v0.0.8-12.tar.gz
+    # e.g. 3.3.04-1.tar.gz
+    # e.g. v2.1-20210510.tar.gz
+    # e.g. 2020.11.11-3.tar.gz
+    # e.g. v3.6.6-0.2
+    StemParser.new(/^v?(#{NUMERIC_WITH_DOTS}(?:-#{NUMERIC_WITH_OPTIONAL_DOTS})+)/),
+
     # URL with no extension
     # e.g. https://waf.io/waf-1.8.12
     # e.g. https://codeload.github.com/gsamokovarov/jump/tar.gz/v0.7.1
