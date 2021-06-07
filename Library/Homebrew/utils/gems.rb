@@ -144,9 +144,7 @@ module Homebrew
 
       # for some reason sometimes the exit code lies so check the output too.
       if bundle_check_failed || bundle_check_output.include?("Install missing gems")
-        begin
-          safe_system_redirect_stdout_to_stderr bundle, "install"
-        rescue ErrorDuringExecution
+        unless system bundle, "install"
           message = <<~EOS
             failed to run `#{bundle} install`!
           EOS
