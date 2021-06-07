@@ -245,6 +245,8 @@ If a *`formula`* or *`cask`* is provided, show summary of information about it.
   Open the GitHub source page for *`formula`* in a browser. To view formula history locally: `brew log -p` *`formula`*
 * `--json`:
   Print a JSON representation. Currently the default value for *`version`* is `v1` for *`formula`*. For *`formula`* and *`cask`* use `v2`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
+* `--bottle`:
+  Output information about the bottles for *`formula`* and its dependencies.
 * `--installed`:
   Print JSON of formulae that are currently installed.
 * `--all`:

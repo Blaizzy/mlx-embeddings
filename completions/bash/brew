@@ -298,6 +298,7 @@ _brew_abv() {
       __brewcomp "
       --all
       --analytics
+      --bottle
       --cask
       --category
       --days
@@ -995,6 +996,7 @@ _brew_info() {
       __brewcomp "
       --all
       --analytics
+      --bottle
       --cask
       --category
       --days
