@@ -28,6 +28,24 @@ Homebrew is the easiest and most flexible way to install the UNIX tools Apple
 didn't include with macOS. It can also install software not packaged for your
 Linux distribution to your home directory without requiring `sudo`.
 
+## TERMINOLOGY
+
+**Formula**: The package definition
+
+**Cask**: An extension of Homebrew to install macOS native apps
+
+**Keg**: The installation prefix of a **Formula**
+
+**Keg-only**: A **Formula** is **Keg-only** if it is not linked into the Homebrew prefix
+
+**Cellar**: All **Kegs** are installed here
+
+**Caskroom**: All **Casks** are installed here
+
+**Tap**: A Git repository of **Formulae** and/or commands
+
+**Bottle**: Pre-built **Keg** used instead of building from source
+
 ## ESSENTIAL COMMANDS
 
 For the full command list, see the [COMMANDS](#commands) section.
@@ -136,10 +154,6 @@ For example, to use an unauthenticated HTTP or SOCKS5 proxy:
 And for an authenticated HTTP proxy:
 
     export http_proxy=http://$USER:$PASSWORD@$HOST:$PORT
-
-## TERMINOLOGY
-
-<%= terminology %>
 
 ## SEE ALSO
 

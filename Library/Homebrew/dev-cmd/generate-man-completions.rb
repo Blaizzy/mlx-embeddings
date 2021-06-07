@@ -67,7 +67,6 @@ module Homebrew
       generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet))
     variables[:global_cask_options] = global_cask_options_manpage
     variables[:global_options] = global_options_manpage
-    variables[:terminology] = terminology_manpage
     variables[:environment_variables] = env_vars_manpage
 
     readme = HOMEBREW_REPOSITORY/"README.md"
@@ -228,22 +227,6 @@ module Homebrew
       generate_option_doc(short, long, desc)
     end
     lines.join("\n")
-  end
-
-  sig { returns(String) }
-  def terminology_manpage
-    formula_cookbook_text = (HOMEBREW_REPOSITORY/"docs/Formula-Cookbook.md").read.split("\n")
-
-    start_term = "## Homebrew terminology"
-    start_index = formula_cookbook_text.index(start_term) + 4 # Skip ahead to the table contents
-    end_index = formula_cookbook_text.index "## An introduction"
-    formula_cookbook_text[start_index...end_index].map do |item|
-      next "" unless item.include? "|"
-
-      term, definition, example = item.split("|").map(&:strip)[1..]
-      definition.gsub!(/\[(.*)\]\(.*\)/, '\1')
-      "#{term}: #{definition} (e.g. #{example})"
-    end.join("\n\n")
   end
 
   sig { returns(String) }

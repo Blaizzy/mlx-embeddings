@@ -12,6 +12,24 @@ Homebrew is the easiest and most flexible way to install the UNIX tools Apple
 didn't include with macOS. It can also install software not packaged for your
 Linux distribution to your home directory without requiring `sudo`.
 
+## TERMINOLOGY
+
+**Formula**: The package definition
+
+**Cask**: An extension of Homebrew to install macOS native apps
+
+**Keg**: The installation prefix of a **Formula**
+
+**Keg-only**: A **Formula** is **Keg-only** if it is not linked into the Homebrew prefix
+
+**Cellar**: All **Kegs** are installed here
+
+**Caskroom**: All **Casks** are installed here
+
+**Tap**: A Git repository of **Formulae** and/or commands
+
+**Bottle**: Pre-built **Keg** used instead of building from source
+
 ## ESSENTIAL COMMANDS
 
 For the full command list, see the [COMMANDS](#commands) section.
@@ -2052,24 +2070,6 @@ And for an authenticated HTTP proxy:
 
     export http_proxy=http://$USER:$PASSWORD@$HOST:$PORT
 
-## TERMINOLOGY
-
-**Formula**: The package definition (e.g. `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/foo.rb`)
-
-**Keg**: The installation prefix of a **Formula** (e.g. `/usr/local/Cellar/foo/0.1`)
-
-**opt prefix**: A symlink to the active version of a **Keg** (e.g. `/usr/local/opt/foo`)
-
-**Cellar**: All **Kegs** are installed here (e.g. `/usr/local/Cellar`)
-
-**Tap**: A Git repository of **Formulae** and/or commands (e.g. `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core`)
-
-**Bottle**: Pre-built **Keg** used instead of building from source (e.g. `qt-4.8.4.catalina.bottle.tar.gz`)
-
-**Cask**: An extension of Homebrew to install macOS native apps (e.g. `/Applications/MacDown.app/Contents/SharedSupport/bin/macdown`)
-
-**Brew Bundle**: An extension of Homebrew to describe dependencies (e.g. `brew 'myservice', restart_service: true`)
-
 ## SEE ALSO
 
 Homebrew Documentation: <https://docs.brew.sh>
@@ -2107,6 +2107,7 @@ See our issues on GitHub:
 
 [SYNOPSIS]: #SYNOPSIS "SYNOPSIS"
 [DESCRIPTION]: #DESCRIPTION "DESCRIPTION"
+[TERMINOLOGY]: #TERMINOLOGY "TERMINOLOGY"
 [ESSENTIAL COMMANDS]: #ESSENTIAL-COMMANDS "ESSENTIAL COMMANDS"
 [COMMANDS]: #COMMANDS "COMMANDS"
 [DEVELOPER COMMANDS]: #DEVELOPER-COMMANDS "DEVELOPER COMMANDS"
@@ -2118,7 +2119,6 @@ See our issues on GitHub:
 [SPECIFYING CASKS]: #SPECIFYING-CASKS "SPECIFYING CASKS"
 [ENVIRONMENT]: #ENVIRONMENT "ENVIRONMENT"
 [USING HOMEBREW BEHIND A PROXY]: #USING-HOMEBREW-BEHIND-A-PROXY "USING HOMEBREW BEHIND A PROXY"
-[TERMINOLOGY]: #TERMINOLOGY "TERMINOLOGY"
 [SEE ALSO]: #SEE-ALSO "SEE ALSO"
 [AUTHORS]: #AUTHORS "AUTHORS"
 [BUGS]: #BUGS "BUGS"
