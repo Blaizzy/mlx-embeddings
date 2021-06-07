@@ -212,13 +212,24 @@ class Cmd
       args << "-Wl,-multiply_defined,suppress"
     when "-undefineddynamic_lookup"
       args << "-Wl,-undefined,dynamic_lookup"
-    when /^-isysroot/, /^--sysroot/
+    when /^-isysroot=/, /^--sysroot=/
       if mac?
-        sdk = enum.next
+        sdk = arg.split("=")[1..-1].join("=")
+        # We set the sysroot for macOS SDKs
+        args << arg unless sdk.downcase.include? "osx"
+      else
+        args << arg
+      end
+    when /^-isysroot(.+)?/, /^--sysroot(.+)?/
+      # Support both "-isysrootfoo" and "-isysroot foo" (two arguments)
+      sdk = chuzzle(Regexp.last_match(1))
+      if mac?
+        sdk ||= enum.next
         # We set the sysroot for macOS SDKs
         args << "-isysroot#{sdk}" unless sdk.downcase.include? "osx"
       else
-        args << arg << enum.next
+        args << arg
+        args << enum.next unless sdk
       end
     when "-dylib"
       args << "-Wl,#{arg}"
