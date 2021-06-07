@@ -14,6 +14,11 @@ Sorbet/BindingConstantWithoutTypeAlias:
   Enabled: true
   VersionAdded: 0.2.0
 
+Sorbet/CallbackConditionalsBinding:
+  Description: 'Ensures callback conditionals are bound to the right type.'
+  Enabled: true
+  VersionAdded: 0.7.0
+
 Sorbet/CheckedTrueInSignature:
   Description: 'Disallows the usage of `checked(true)` in signatures.'
   Enabled: true
@@ -42,7 +47,7 @@ Sorbet/FalseSigil:
   Description: 'All files must be at least at strictness `false`.'
   Enabled: true
   VersionAdded: 0.3.3
-  SuggestedStrictness: true
+  SuggestedStrictness: "false"
   Include:
   - "**/*.rb"
   - "**/*.rbi"
@@ -60,6 +65,13 @@ Sorbet/ForbidExtendTSigHelpersInShims:
   Include:
   - "**/*.rbi"
 
+Sorbet/ForbidRBIOutsideOfSorbetDir:
+  Description: 'Forbids RBI files outside of the sorbet/ directory.'
+  Enabled: true
+  VersionAdded: 0.6.1
+  Include:
+  - "**/*.rbi"
+
 Sorbet/ForbidIncludeConstLiteral:
   Description: 'Forbids include of non-literal constants.'
   Enabled: false
@@ -74,6 +86,12 @@ Sorbet/ForbidSuperclassConstLiteral:
   Exclude:
   - db/migrate/*.rb
 
+Sorbet/ForbidTUnsafe:
+  Description: 'Forbid usage of T.unsafe.'
+  Enabled: false
+  VersionAdded: 0.7.0
+  VersionChanged: 0.7.0
+
 Sorbet/ForbidUntypedStructProps:
   Description: >-
                   Disallows use of `T.untyped` or `T.nilable(T.untyped)` as a
@@ -84,11 +102,14 @@ Sorbet/ForbidUntypedStructProps:
 Sorbet/HasSigil:
   Description: 'Makes the Sorbet typed sigil mandatory in all files.'
   Enabled: false
+  SuggestedStrictness: "false"
+  MinimumStrictness: "false"
   VersionAdded: 0.3.3
 
 Sorbet/IgnoreSigil:
   Description: 'All files must be at least at strictness `ignore`.'
   Enabled: false
+  SuggestedStrictness: "ignore"
   VersionAdded: 0.3.3
 
 Sorbet/KeywordArgumentOrdering:
@@ -131,19 +152,25 @@ Sorbet/SingleLineRbiClassModuleDefinitions:
 Sorbet/StrictSigil:
   Description: 'All files must be at least at strictness `strict`.'
   Enabled: false
+  SuggestedStrictness: "strict"
   VersionAdded: 0.3.3
 
 Sorbet/StrongSigil:
   Description: 'All files must be at least at strictness `strong`.'
   Enabled: false
+  SuggestedStrictness: "strong"
   VersionAdded: 0.3.3
 
 Sorbet/TrueSigil:
   Description: 'All files must be at least at strictness `true`.'
   Enabled: false
+  SuggestedStrictness: "true"
   VersionAdded: 0.3.3
 
 Sorbet/ValidSigil:
   Description: 'All files must have a valid sigil.'
   Enabled: true
+  RequireSigilOnAllFiles: false
+  SuggestedStrictness: "false"
+  MinimumStrictness: "false"
   VersionAdded: 0.3.3
