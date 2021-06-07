@@ -1556,7 +1556,6 @@ _brew_pr_pull() {
       --keep-old
       --message
       --no-commit
-      --no-publish
       --no-upload
       --quiet
       --resolve
@@ -1586,7 +1585,6 @@ _brew_pr_upload() {
       --help
       --keep-old
       --no-commit
-      --no-publish
       --quiet
       --root-url
       --root-url-using
