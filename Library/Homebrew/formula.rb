@@ -1908,6 +1908,30 @@ class Formula
     hsh
   end
 
+  # @api private
+  # Generate a hash to be used to install a formula from a JSON file
+  def to_recursive_bottle_hash(top_level: true)
+    bottle = bottle_hash
+
+    bottles = bottle["files"].map do |tag, file|
+      info = { "url" => file["url"] }
+      info["sha256"] = file["sha256"] if tap.name != "homebrew/core"
+      [tag.to_s, info]
+    end.to_h
+
+    return bottles unless top_level
+
+    dependencies = declared_runtime_dependencies.map do |dep|
+      dep.to_formula.to_recursive_bottle_hash(top_level: false)
+    end
+
+    {
+      "name"         => name,
+      "bottles"      => bottles,
+      "dependencies" => dependencies,
+    }
+  end
+
   # Returns the bottle information for a formula
   def bottle_hash
     bottle_spec = stable.bottle_specification
