@@ -1915,7 +1915,7 @@ class Formula
 
     bottles = bottle["files"].map do |tag, file|
       info = { "url" => file["url"] }
-      info["sha256"] = file["sha256"] unless tap.name == "homebrew/core"
+      info["sha256"] = file["sha256"] if tap.name != "homebrew/core"
       [tag.to_s, info]
     end.to_h
 
