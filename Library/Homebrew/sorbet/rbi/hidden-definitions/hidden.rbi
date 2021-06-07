@@ -6213,14 +6213,6 @@ class CompilerSelector
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Concurrent::Promises::AbstractEventFuture
-  include ::Concurrent::Promises::InternalStates
-end
-
-module Concurrent::Promises::Resolvable
-  include ::Concurrent::Promises::InternalStates
-end
-
 class Concurrent::RubyThreadPoolExecutor
   DEFAULT_SYNCHRONOUS = ::T.let(nil, ::T.untyped)
 end
