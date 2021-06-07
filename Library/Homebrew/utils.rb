@@ -332,19 +332,6 @@ module Kernel
     end
   end
 
-  # Redirects stdout to stderr, throws exception on command failure.
-  def safe_system_redirect_stdout_to_stderr(cmd, *args)
-    return if Homebrew._system(cmd, *args) do
-      # Redirect stdout stream to stderr stream. This is useful to prevent
-      # subprocesses from writing to stdout and interfering with the intended
-      # output, e.g. when running a brew command with `--json` for programs
-      # automating brew commands.
-      $stdout.reopen($stderr)
-    end
-
-    raise ErrorDuringExecution.new([cmd, *args], status: $CHILD_STATUS)
-  end
-
   def which(cmd, path = ENV["PATH"])
     PATH.new(path).each do |p|
       begin
