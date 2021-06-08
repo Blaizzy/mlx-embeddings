@@ -1316,8 +1316,7 @@ _brew_pr_pull() {
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
     '--no-commit[Do not generate a new commit before uploading]' \
-    '--no-publish[Download the bottles, apply the bottle commit and upload the bottles, but don'\''t publish them]' \
-    '--no-upload[Download the bottles and apply the bottle commit, but don'\''t upload]' \
+    '--no-upload[Download the bottles but don'\''t upload them]' \
     '--quiet[Make some output more quiet]' \
     '--resolve[When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
@@ -1339,7 +1338,6 @@ _brew_pr_upload() {
     '--help[Show this message]' \
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '--no-commit[Do not generate a new commit before uploading]' \
-    '--no-publish[Apply the bottle commit and upload the bottles, but don'\''t publish them]' \
     '--quiet[Make some output more quiet]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--root-url-using[Use the specified download strategy class for downloading the bottle'\''s URL instead of Homebrew'\''s default]' \
