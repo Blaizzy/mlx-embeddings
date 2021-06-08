@@ -14,21 +14,25 @@ Linux distribution to your home directory without requiring `sudo`.
 
 ## TERMINOLOGY
 
-**Formula**: The package definition
+**formula**: Homebrew package definition built from upstream sources
 
-**Cask**: An extension of Homebrew to install macOS native apps
+**cask**: Homebrew package definition that installs macOS native applications
 
-**Keg**: The installation prefix of a **Formula**
+**keg**: installation destination directory of a given **formula** version e.g. `/usr/local/Cellar/foo/0.1`
 
-**Keg-only**: A **Formula** is **Keg-only** if it is not linked into the Homebrew prefix
+**rack**: directory containing one or more versioned kegs e.g. `/usr/local/Cellar/foo`
 
-**Cellar**: All **Kegs** are installed here
+**keg-only**: a **formula** is **keg-only** if it is not symlinked into Homebrew's prefix (e.g. `/usr/local`)
 
-**Caskroom**: All **Casks** are installed here
+**cellar**: directory containing one or more named **racks** e.g. `/usr/local/Cellar`
 
-**Tap**: A Git repository of **Formulae** and/or commands
+**Caskroom**: directory containing one or more named **casks** e.g. `/usr/local/Caskroom`
 
-**Bottle**: Pre-built **Keg** used instead of building from source
+**external command**: `brew` subcommand defined outside of the Homebrew/brew GitHub repository
+
+**tap**: directory (and usually Git repository) of **formulae**, **casks** and/or **external commands**
+
+**bottle**: pre-built **keg** poured into the **cellar**/**rack** instead of building from upstream sources
 
 ## ESSENTIAL COMMANDS
 
