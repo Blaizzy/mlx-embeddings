@@ -95,6 +95,7 @@ module Homebrew
             - run: brew test-bot --only-setup
 
             - run: brew test-bot --only-tap-syntax
+              if: matrix.os == 'macos-latest'
 
             - run: brew test-bot --only-formulae
               if: github.event_name == 'pull_request'
