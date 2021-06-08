@@ -14,6 +14,7 @@ module OS
       extend T::Sig
 
       SYMBOLS = {
+        monterey:    "12",
         big_sur:     "11",
         catalina:    "10.15",
         mojave:      "10.14",
