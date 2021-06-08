@@ -175,6 +175,9 @@ describe Homebrew::Service do
         [Unit]
         Description=Homebrew generated unit for formula_name
 
+        [Install]
+        WantedBy=multi-user.target
+
         [Service]
         Type=simple
         ExecStart=#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd test
@@ -201,6 +204,9 @@ describe Homebrew::Service do
       unit_expect = <<~EOS
         [Unit]
         Description=Homebrew generated unit for formula_name
+
+        [Install]
+        WantedBy=multi-user.target
 
         [Service]
         Type=simple

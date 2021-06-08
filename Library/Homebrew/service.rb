@@ -211,6 +211,9 @@ module Homebrew
         [Unit]
         Description=Homebrew generated unit for #{@formula.name}
 
+        [Install]
+        WantedBy=multi-user.target
+
         [Service]
         Type=simple
         ExecStart=#{command.join(" ")}
