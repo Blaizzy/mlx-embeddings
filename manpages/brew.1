@@ -15,6 +15,46 @@
 .SH "DESCRIPTION"
 Homebrew is the easiest and most flexible way to install the UNIX tools Apple didn\'t include with macOS\. It can also install software not packaged for your Linux distribution to your home directory without requiring \fBsudo\fR\.
 .
+.SH "TERMINOLOGY"
+\fBformula\fR
+    Homebrew package definition built from upstream sources
+.
+.P
+\fBcask\fR
+    Homebrew package definition that installs macOS native applications
+.
+.P
+\fBkeg\fR
+    installation destination directory of a given \fBformula\fR version e\.g\. \fB/usr/local/Cellar/foo/0\.1\fR
+.
+.P
+\fBrack\fR
+    directory containing one or more versioned kegs e\.g\. \fB/usr/local/Cellar/foo\fR
+.
+.P
+\fBkeg\-only\fR
+    a \fBformula\fR is \fBkeg\-only\fR if it is not symlinked into Homebrew\'s prefix (e\.g\. \fB/usr/local\fR)
+.
+.P
+\fBcellar\fR
+    directory containing one or more named \fBracks\fR e\.g\. \fB/usr/local/Cellar\fR
+.
+.P
+\fBCaskroom\fR
+    directory containing one or more named \fBcasks\fR e\.g\. \fB/usr/local/Caskroom\fR
+.
+.P
+\fBexternal command\fR
+    \fBbrew\fR subcommand defined outside of the Homebrew/brew GitHub repository
+.
+.P
+\fBtap\fR
+    directory (and usually Git repository) of \fBformulae\fR, \fBcasks\fR and/or \fBexternal commands\fR
+.
+.P
+\fBbottle\fR
+    pre\-built \fBkeg\fR poured into the \fBcellar\fR/\fBrack\fR instead of building from upstream sources
+.
 .SH "ESSENTIAL COMMANDS"
 For the full command list, see the \fICOMMANDS\fR section\.
 .

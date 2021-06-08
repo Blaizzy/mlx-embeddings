@@ -12,6 +12,28 @@ Homebrew is the easiest and most flexible way to install the UNIX tools Apple
 didn't include with macOS. It can also install software not packaged for your
 Linux distribution to your home directory without requiring `sudo`.
 
+## TERMINOLOGY
+
+**formula**: Homebrew package definition built from upstream sources
+
+**cask**: Homebrew package definition that installs macOS native applications
+
+**keg**: installation destination directory of a given **formula** version e.g. `/usr/local/Cellar/foo/0.1`
+
+**rack**: directory containing one or more versioned kegs e.g. `/usr/local/Cellar/foo`
+
+**keg-only**: a **formula** is **keg-only** if it is not symlinked into Homebrew's prefix (e.g. `/usr/local`)
+
+**cellar**: directory containing one or more named **racks** e.g. `/usr/local/Cellar`
+
+**Caskroom**: directory containing one or more named **casks** e.g. `/usr/local/Caskroom`
+
+**external command**: `brew` subcommand defined outside of the Homebrew/brew GitHub repository
+
+**tap**: directory (and usually Git repository) of **formulae**, **casks** and/or **external commands**
+
+**bottle**: pre-built **keg** poured into the **cellar**/**rack** instead of building from upstream sources
+
 ## ESSENTIAL COMMANDS
 
 For the full command list, see the [COMMANDS](#commands) section.
@@ -2087,6 +2109,7 @@ See our issues on GitHub:
 
 [SYNOPSIS]: #SYNOPSIS "SYNOPSIS"
 [DESCRIPTION]: #DESCRIPTION "DESCRIPTION"
+[TERMINOLOGY]: #TERMINOLOGY "TERMINOLOGY"
 [ESSENTIAL COMMANDS]: #ESSENTIAL-COMMANDS "ESSENTIAL COMMANDS"
 [COMMANDS]: #COMMANDS "COMMANDS"
 [DEVELOPER COMMANDS]: #DEVELOPER-COMMANDS "DEVELOPER COMMANDS"
