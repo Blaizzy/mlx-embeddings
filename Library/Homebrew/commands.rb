@@ -176,9 +176,11 @@ module Commands
     return if path.blank?
 
     if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
-      cmd_parser.processed_options.map do |short, long, _, desc|
+      cmd_parser.processed_options.map do |short, long, _, desc, hidden|
+        next if hidden
+
         [long || short, desc]
-      end
+      end.compact
     else
       options = []
       comment_lines = path.read.lines.grep(/^#:/)

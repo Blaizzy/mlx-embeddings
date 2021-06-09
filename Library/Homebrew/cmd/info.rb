@@ -52,7 +52,8 @@ module Homebrew
                           "JSON output: <https://docs.brew.sh/Querying-Brew>"
       switch "--bottle",
              depends_on:  "--json",
-             description: "Output information about the bottles for <formula> and its dependencies."
+             description: "Output information about the bottles for <formula> and its dependencies.",
+             hidden:      true
       switch "--installed",
              depends_on:  "--json",
              description: "Print JSON of formulae that are currently installed."
