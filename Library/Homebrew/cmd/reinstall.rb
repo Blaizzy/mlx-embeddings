@@ -57,6 +57,9 @@ module Homebrew
           env:         :display_install_times,
           description: "Print install times for each formula at the end of the run.",
         }],
+        [:switch, "-g", "--git", {
+          description: "Create a Git repository, useful for creating patches to the software.",
+        }],
       ].each do |options|
         send(*options)
         conflicts "--cask", options[-2]
@@ -108,6 +111,7 @@ module Homebrew
         debug:                      args.debug?,
         quiet:                      args.quiet?,
         verbose:                    args.verbose?,
+        git:                        args.git?,
       )
       Cleanup.install_formula_clean!(formula)
     end
