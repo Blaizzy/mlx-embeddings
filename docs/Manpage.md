@@ -1679,6 +1679,8 @@ Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 [`sudo`] `brew services cleanup`
 <br>Remove all unused services.
 
+* `--file`:
+  Use the plist file from this location to start or run the service.
 * `--all`:
   Run *`subcommand`* on all services.
 
