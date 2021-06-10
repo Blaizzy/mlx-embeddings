@@ -351,7 +351,12 @@ class FormulaInstaller
       message = <<~EOS
         #{formula.name} #{formula.linked_version} is already installed
       EOS
-      if only_deps?
+      if Homebrew::EnvConfig.no_install_upgrade? && formula.outdated? && !formula.head?
+        message += <<~EOS
+          To upgrade to #{formula.pkg_version}, run:
+            brew upgrade #{formula.full_name}
+        EOS
+      elsif only_deps?
         message = nil
       else
         # some other version is already installed *and* linked

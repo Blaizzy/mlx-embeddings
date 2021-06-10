@@ -257,6 +257,10 @@ module Homebrew
                      "`HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days.",
         boolean:     true,
       },
+      HOMEBREW_NO_INSTALL_UPGRADE:            {
+        description: "If set, `brew install` will not automatically upgrade installed and out of date formulae",
+        boolean:     true,
+      },
       HOMEBREW_PRY:                           {
         description: "If set, use Pry for the `brew irb` command.",
         boolean:     true,
