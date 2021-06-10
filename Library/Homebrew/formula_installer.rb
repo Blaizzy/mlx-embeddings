@@ -1074,8 +1074,13 @@ class FormulaInstaller
       -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
       --
       #{HOMEBREW_LIBRARY_PATH}/postinstall.rb
-      #{formula.path}
     ]
+
+    args << if formula.local_bottle_path.present?
+      formula.prefix/".brew/#{formula.name}.rb"
+    else
+      formula.path
+    end
 
     Utils.safe_fork do
       if Sandbox.available?
