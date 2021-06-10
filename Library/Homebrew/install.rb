@@ -118,7 +118,7 @@ module Homebrew
       end
       prefix_installed = f.prefix.exist? && !f.prefix.children.empty?
 
-      if f.keg_only? && f.any_version_installed? && f.optlinked? && force
+      if f.keg_only? && f.any_version_installed? && f.optlinked? && !force
         # keg-only install is only possible when no other version is
         # linked to opt, because installing without any warnings can break
         # dependencies. Therefore before performing other checks we need to be
@@ -132,7 +132,7 @@ module Homebrew
           EOS
         elsif only_dependencies
           return true
-        elsif quiet
+        elsif !quiet
           opoo <<~EOS
             #{f.full_name} #{f.pkg_version} is already installed and up-to-date.
             To reinstall #{f.pkg_version}, run:
@@ -196,7 +196,7 @@ module Homebrew
           "#{msg}."
         end
         opoo msg if msg
-      elsif f.migration_needed? && force
+      elsif f.migration_needed? && !force
         # Check if the formula we try to install is the same as installed
         # but not migrated one. If --force is passed then install anyway.
         opoo <<~EOS
