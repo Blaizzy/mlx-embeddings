@@ -769,7 +769,7 @@ class FormulaInstaller
 
     @show_summary_heading = true
     ohai "Caveats", caveats.to_s
-    Homebrew.messages.record_caveats(formula, caveats)
+    Homebrew.messages.record_caveats(formula.name, caveats)
   end
 
   sig { void }
