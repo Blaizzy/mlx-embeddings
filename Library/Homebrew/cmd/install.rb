@@ -187,132 +187,15 @@ module Homebrew
       raise BuildFlagsError.new(build_flags, bottled: formulae.all?(&:bottled?)) if build_flags.present?
     end
 
-    installed_formulae = []
-
-    formulae.each do |f|
-      # head-only without --HEAD is an error
-      if !args.HEAD? && f.stable.nil?
-        odie <<~EOS
-          #{f.full_name} is a head-only formula.
-          To install it, run:
-            brew install --HEAD #{f.full_name}
-        EOS
-      end
-
-      # --HEAD, fail with no head defined
-      odie "No head is defined for #{f.full_name}" if args.HEAD? && f.head.nil?
-
-      installed_head_version = f.latest_head_version
-      if installed_head_version &&
-         !f.head_version_outdated?(installed_head_version, fetch_head: args.fetch_HEAD?)
-        new_head_installed = true
-      end
-      prefix_installed = f.prefix.exist? && !f.prefix.children.empty?
-
-      if f.keg_only? && f.any_version_installed? && f.optlinked? && !args.force?
-        # keg-only install is only possible when no other version is
-        # linked to opt, because installing without any warnings can break
-        # dependencies. Therefore before performing other checks we need to be
-        # sure --force flag is passed.
-        if f.outdated?
-          optlinked_version = Keg.for(f.opt_prefix).version
-          onoe <<~EOS
-            #{f.full_name} #{optlinked_version} is already installed.
-            To upgrade to #{f.version}, run:
-              brew upgrade #{f.full_name}
-          EOS
-        elsif args.only_dependencies?
-          installed_formulae << f
-        elsif !args.quiet?
-          opoo <<~EOS
-            #{f.full_name} #{f.pkg_version} is already installed and up-to-date.
-            To reinstall #{f.pkg_version}, run:
-              brew reinstall #{f.name}
-          EOS
-        end
-      elsif (args.HEAD? && new_head_installed) || prefix_installed
-        # After we're sure that --force flag is passed for linked to opt
-        # keg-only we need to be sure that the version we're attempting to
-        # install is not already installed.
-
-        installed_version = if args.HEAD?
-          f.latest_head_version
-        else
-          f.pkg_version
-        end
-
-        msg = "#{f.full_name} #{installed_version} is already installed"
-        linked_not_equals_installed = f.linked_version != installed_version
-        if f.linked? && linked_not_equals_installed
-          msg = if args.quiet?
-            nil
-          else
-            <<~EOS
-              #{msg}.
-              The currently linked version is: #{f.linked_version}
-            EOS
-          end
-        elsif !f.linked? || f.keg_only?
-          msg = <<~EOS
-            #{msg}, it's just not linked.
-            To link this version, run:
-              brew link #{f}
-          EOS
-        elsif args.only_dependencies?
-          msg = nil
-          installed_formulae << f
-        else
-          msg = if args.quiet?
-            nil
-          else
-            <<~EOS
-              #{msg} and up-to-date.
-              To reinstall #{f.pkg_version}, run:
-                brew reinstall #{f.name}
-            EOS
-          end
-        end
-        opoo msg if msg
-      elsif !f.any_version_installed? && (old_formula = f.old_installed_formulae.first)
-        msg = "#{old_formula.full_name} #{old_formula.any_installed_version} already installed"
-        msg = if !old_formula.linked? && !old_formula.keg_only?
-          <<~EOS
-            #{msg}, it's just not linked.
-            To link this version, run:
-              brew link #{old_formula.full_name}
-          EOS
-        elsif args.quiet?
-          nil
-        else
-          "#{msg}."
-        end
-        opoo msg if msg
-      elsif f.migration_needed? && !args.force?
-        # Check if the formula we try to install is the same as installed
-        # but not migrated one. If --force is passed then install anyway.
-        opoo <<~EOS
-          #{f.oldname} is already installed, it's just not migrated.
-          To migrate this formula, run:
-            brew migrate #{f}
-          Or to force-install it, run:
-            brew install #{f} --force
-        EOS
-      else
-        # If none of the above is true and the formula is linked, then
-        # FormulaInstaller will handle this case.
-        installed_formulae << f
-      end
-
-      # Even if we don't install this formula mark it as no longer just
-      # installed as a dependency.
-      next unless f.opt_prefix.directory?
-
-      keg = Keg.new(f.opt_prefix.resolved_path)
-      tab = Tab.for_keg(keg)
-      unless tab.installed_on_request
-        tab.installed_on_request = true
-        tab.write
-      end
+    installed_formulae = formulae.select do |f|
+      Install.install_formula?(
+        f,
+        head:              args.HEAD?,
+        fetch_head:        args.fetch_HEAD?,
+        only_dependencies: args.only_dependencies?,
+        force:             args.force?,
+        quiet:             args.quiet?,
+      )
     end
 
     return if installed_formulae.empty?
@@ -321,7 +204,24 @@ module Homebrew
 
     installed_formulae.each do |f|
       Migrator.migrate_if_needed(f, force: args.force?)
-      install_formula(f, args: args)
+      Install.install_formula(
+        f,
+        build_bottle:               args.build_bottle?,
+        force_bottle:               args.force_bottle?,
+        bottle_arch:                args.bottle_arch,
+        ignore_deps:                args.ignore_dependencies?,
+        only_deps:                  args.only_dependencies?,
+        include_test_formulae:      args.include_test_formulae,
+        build_from_source_formulae: args.build_from_source_formulae,
+        cc:                         args.cc,
+        git:                        args.git?,
+        interactive:                args.interactive?,
+        keep_tmp:                   args.keep_tmp?,
+        force:                      args.force?,
+        debug:                      args.debug?,
+        quiet:                      args.quiet?,
+        verbose:                    args.verbose?,
+      )
       Cleanup.install_formula_clean!(f)
     end
 
@@ -390,42 +290,5 @@ module Homebrew
       puts Formatter.columns(taps_search_results)
       puts "To install one of them, run (for example):\n  brew install #{taps_search_results.first}"
     end
-  end
-
-  def install_formula(f, args:)
-    f.print_tap_action
-    build_options = f.build
-
-    fi = FormulaInstaller.new(
-      f,
-      **{
-        options:                    build_options.used_options,
-        build_bottle:               args.build_bottle?,
-        force_bottle:               args.force_bottle?,
-        bottle_arch:                args.bottle_arch,
-        ignore_deps:                args.ignore_dependencies?,
-        only_deps:                  args.only_dependencies?,
-        include_test_formulae:      args.include_test_formulae,
-        build_from_source_formulae: args.build_from_source_formulae,
-        cc:                         args.cc,
-        git:                        args.git?,
-        interactive:                args.interactive?,
-        keep_tmp:                   args.keep_tmp?,
-        force:                      args.force?,
-        debug:                      args.debug?,
-        quiet:                      args.quiet?,
-        verbose:                    args.verbose?,
-      }.compact,
-    )
-    fi.prelude
-    fi.fetch
-    fi.install
-    fi.finish
-  rescue FormulaInstallationAlreadyAttemptedError
-    # We already attempted to install f as part of the dependency tree of
-    # another formula. In that case, don't generate an error, just move on.
-    nil
-  rescue CannotInstallFormulaError => e
-    ofail e.message
   end
 end
