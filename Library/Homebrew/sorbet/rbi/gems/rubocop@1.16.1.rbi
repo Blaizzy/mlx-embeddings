@@ -10044,6 +10044,7 @@ class RuboCop::Cop::Style::QuotedSymbols < ::RuboCop::Cop::Base
   def alternative_style; end
   def autocorrect(corrector, node); end
   def correct_quotes(str); end
+  def hash_colon_key?(node); end
   def quoted?(sym_node); end
   def style; end
   def wrong_quotes?(node); end
@@ -10452,15 +10453,19 @@ class RuboCop::Cop::Style::RedundantSelf < ::RuboCop::Cop::Base
   def on_blockarg(node); end
   def on_def(node); end
   def on_defs(node); end
+  def on_if(node); end
   def on_lvasgn(node); end
   def on_masgn(node); end
   def on_op_asgn(node); end
   def on_or_asgn(node); end
   def on_send(node); end
+  def on_until(node); end
+  def on_while(node); end
 
   private
 
   def add_lhs_to_local_variables_scopes(rhs, lhs); end
+  def add_masgn_lhs_variables(rhs, lhs); end
   def add_scope(node, local_variables = T.unsafe(nil)); end
   def allow_self(node); end
   def allowed_send_node?(node); end
