@@ -396,6 +396,20 @@ module Homebrew
     f.print_tap_action
     build_options = f.build
 
+    if f.outdated? && !f.head?
+      formulae = [f] + f.old_installed_formulae
+      version_upgrade = "#{f.linked_version} -> #{f.pkg_version}"
+
+      oh1 <<~EOS
+        #{f.name} #{f.linked_version} is installed and out of date
+          Upgrading #{Formatter.identifier(f.name)} #{version_upgrade}
+      EOS
+      outdated_kegs = formulae.map(&:linked_keg)
+                              .select(&:directory?)
+                              .map { |k| Keg.new(k.resolved_path) }
+      linked_kegs = outdated_kegs.select(&:linked?)
+    end
+
     fi = FormulaInstaller.new(
       f,
       **{
@@ -419,6 +433,9 @@ module Homebrew
     )
     fi.prelude
     fi.fetch
+
+    outdated_kegs.each(&:unlink) if outdated_kegs.present?
+
     fi.install
     fi.finish
   rescue FormulaInstallationAlreadyAttemptedError
@@ -427,5 +444,12 @@ module Homebrew
     nil
   rescue CannotInstallFormulaError => e
     ofail e.message
+  ensure
+    begin
+      # Re-link kegs if upgrade fails
+      linked_kegs.each(&:link) unless formula.latest_version_installed?
+    rescue
+      nil
+    end
   end
 end
