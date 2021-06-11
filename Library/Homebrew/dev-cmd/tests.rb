@@ -39,15 +39,17 @@ module Homebrew
   def tests
     args = tests_args.parse
 
-    Homebrew.install_bundler_gems!
+    Homebrew.install_bundler_gems!(groups: ["sorbet"])
 
     require "byebug" if args.byebug?
 
     HOMEBREW_LIBRARY_PATH.cd do
       # Cleanup any unwanted user configuration.
-      allowed_test_env = [
-        "HOMEBREW_GITHUB_API_TOKEN",
-        "HOMEBREW_TEMP",
+      allowed_test_env = %w[
+        HOMEBREW_GITHUB_API_TOKEN
+        HOMEBREW_CACHE
+        HOMEBREW_LOGS
+        HOMEBREW_TEMP
       ]
       Homebrew::EnvConfig::ENVS.keys.map(&:to_s).each do |env|
         next if allowed_test_env.include?(env)

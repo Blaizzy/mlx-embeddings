@@ -24,7 +24,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Install shellcheck
         run: brew install shellcheck
@@ -60,7 +60,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems
+        run: brew install-bundler-gems --groups=sorbet
 
       - run: brew doctor
 
@@ -152,7 +152,7 @@ jobs:
       # Can't cache this because we need to check that it doesn't fail the
       # "uncommitted RubyGems" step with a cold cache.
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Check for uncommitted RubyGems
         run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
@@ -206,7 +206,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Create parallel test log directory
         run: mkdir tests
@@ -265,7 +265,7 @@ jobs:
       # Can't cache this because we need to check that it doesn't fail the
       # "uncommitted RubyGems" step with a cold cache.
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Check for uncommitted RubyGems
         run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby

@@ -1,21 +1,15 @@
 # typed: false
 # frozen_string_literal: true
 
-require_relative "load_path"
+require_relative "startup"
 
 require "English"
 require "fileutils"
 require "json"
 require "json/add/exception"
-require "pathname"
 require "ostruct"
 require "pp"
 require "forwardable"
-
-require "rbconfig"
-
-RUBY_PATH = Pathname.new(RbConfig.ruby).freeze
-RUBY_BIN = RUBY_PATH.dirname.freeze
 
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
@@ -72,26 +66,14 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.freeze
 
-require "utils/sorbet"
-
 require "env_config"
 require "compat/early" unless Homebrew::EnvConfig.no_compat?
 require "os"
 require "messages"
+require "default_prefix"
 
 module Homebrew
   extend FileUtils
-
-  remove_const :DEFAULT_PREFIX if defined?(DEFAULT_PREFIX)
-  remove_const :DEFAULT_REPOSITORY if defined?(DEFAULT_REPOSITORY)
-
-  DEFAULT_PREFIX, DEFAULT_REPOSITORY = if OS.mac? && Hardware::CPU.arm?
-    [HOMEBREW_MACOS_ARM_DEFAULT_PREFIX, HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY]
-  elsif OS.linux? && !EnvConfig.force_homebrew_on_linux?
-    [HOMEBREW_LINUX_DEFAULT_PREFIX, HOMEBREW_LINUX_DEFAULT_REPOSITORY]
-  else
-    [HOMEBREW_DEFAULT_PREFIX, HOMEBREW_DEFAULT_REPOSITORY]
-  end.freeze
 
   DEFAULT_CELLAR = "#{DEFAULT_PREFIX}/Cellar"
   DEFAULT_MACOS_CELLAR = "#{HOMEBREW_DEFAULT_PREFIX}/Cellar"
@@ -124,8 +106,8 @@ module Homebrew
   end
 end
 
-require "config"
 require "context"
+require "extend/git_repository"
 require "extend/pathname"
 require "extend/predicable"
 require "extend/module"

@@ -275,6 +275,9 @@ module Homebrew
 
       sig { returns(T.nilable(String)) }
       def screen_saverdir; end
+
+      sig { returns(T.nilable(T::Array[String])) }
+      def groups; end
     end
   end
 end
