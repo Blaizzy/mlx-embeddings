@@ -258,7 +258,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_UPGRADE:            {
-        description: "If set, `brew install` will not automatically upgrade installed and out of date formulae",
+        description: "If set, `brew install` will not automatically upgrade installed but outdated formulae",
         boolean:     true,
       },
       HOMEBREW_PRY:                           {
