@@ -396,7 +396,7 @@ module Homebrew
     f.print_tap_action
     build_options = f.build
 
-    if f.outdated? && !f.head?
+    if !Homebrew::EnvConfig.no_install_upgrade? && f.outdated? && !f.head?
       formulae = [f] + f.old_installed_formulae
       version_upgrade = "#{f.linked_version} -> #{f.pkg_version}"
 
