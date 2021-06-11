@@ -215,12 +215,16 @@ module Homebrew
         # dependencies. Therefore before performing other checks we need to be
         # sure --force flag is passed.
         if f.outdated?
-          optlinked_version = Keg.for(f.opt_prefix).version
-          onoe <<~EOS
-            #{f.full_name} #{optlinked_version} is already installed.
-            To upgrade to #{f.version}, run:
-              brew upgrade #{f.full_name}
-          EOS
+          if Homebrew::EnvConfig.no_install_upgrade?
+            optlinked_version = Keg.for(f.opt_prefix).version
+            onoe <<~EOS
+              #{f.full_name} #{optlinked_version} is already installed.
+              To upgrade to #{f.version}, run:
+                brew upgrade #{f.full_name}
+            EOS
+          else
+            installed_formulae << f
+          end
         elsif args.only_dependencies?
           installed_formulae << f
         elsif !args.quiet?
