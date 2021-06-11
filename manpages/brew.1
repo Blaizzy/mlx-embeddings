@@ -1539,8 +1539,12 @@ Generate Homebrew\'s manpages and shell completions\.
 \fB\-\-fail\-if\-not\-changed\fR
 Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
-.SS "\fBinstall\-bundler\-gems\fR"
+.SS "\fBinstall\-bundler\-gems\fR [\fI\-\-groups\fR\fB=\fR]"
 Install Homebrew\'s Bundler gems\.
+.
+.TP
+\fB\-\-groups\fR
+Installs the specified comma\-separated list of gem groups (default: last used)\.
 .
 .SS "\fBirb\fR [\fI\-\-examples\fR] [\fI\-\-pry\fR]"
 Enter the interactive Homebrew Ruby shell\.

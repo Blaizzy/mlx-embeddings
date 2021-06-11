@@ -1095,9 +1095,12 @@ Generate Homebrew's manpages and shell completions.
 * `--fail-if-not-changed`:
   Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 
-### `install-bundler-gems`
+### `install-bundler-gems` [*`--groups`*`=`]
 
 Install Homebrew's Bundler gems.
+
+* `--groups`:
+  Installs the specified comma-separated list of gem groups (default: last used).
 
 ### `irb` [*`--examples`*] [*`--pry`*]
 

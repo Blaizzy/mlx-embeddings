@@ -1016,6 +1016,7 @@ _brew_install() {
 _brew_install_bundler_gems() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--groups[Installs the specified comma-separated list of gem groups (default: last used)]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
