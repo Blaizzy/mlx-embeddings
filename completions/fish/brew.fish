@@ -828,6 +828,7 @@ __fish_brew_complete_arg 'install; and not __fish_seen_argument -l formula -l fo
 
 __fish_brew_complete_cmd 'install-bundler-gems' 'Install Homebrew\'s Bundler gems'
 __fish_brew_complete_arg 'install-bundler-gems' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'install-bundler-gems' -l groups -d 'Installs the specified comma-separated list of gem groups (default: last used)'
 __fish_brew_complete_arg 'install-bundler-gems' -l help -d 'Show this message'
 __fish_brew_complete_arg 'install-bundler-gems' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'install-bundler-gems' -l verbose -d 'Make some output more verbose'

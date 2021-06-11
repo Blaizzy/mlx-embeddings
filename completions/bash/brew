@@ -1135,6 +1135,7 @@ _brew_install_bundler_gems() {
     -*)
       __brewcomp "
       --debug
+      --groups
       --help
       --quiet
       --verbose
