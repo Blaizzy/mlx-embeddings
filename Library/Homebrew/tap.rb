@@ -734,6 +734,7 @@ class CoreTap < Tap
 
   def self.ensure_installed!
     return if instance.installed?
+    return if ENV["HOMEBREW_UNTAP_HOMEBREW_CORE"]
 
     safe_system HOMEBREW_BREW_FILE, "tap", instance.name
   end
@@ -748,9 +749,11 @@ class CoreTap < Tap
   end
 
   # @private
-  sig { void }
-  def uninstall
-    raise "Tap#uninstall is not available for CoreTap"
+  sig { params(manual: T::Boolean).void }
+  def uninstall(manual: false)
+    raise "Tap#uninstall is not available for CoreTap" unless ENV["HOMEBREW_UNTAP_HOMEBREW_CORE"]
+
+    super
   end
 
   # @private

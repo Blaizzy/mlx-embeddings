@@ -207,6 +207,7 @@ module Homebrew
 
   def install_core_tap_if_necessary
     return if ENV["HOMEBREW_UPDATE_TEST"]
+    return if ENV["HOMEBREW_UNTAP_HOMEBREW_CORE"]
 
     core_tap = CoreTap.instance
     return if core_tap.installed?

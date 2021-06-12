@@ -221,6 +221,13 @@ class TapFormulaUnavailableError < FormulaUnavailableError
   end
 end
 
+# Raised when a formula in a the core tap is unavailable.
+class CoreTapFormulaUnavailableError < TapFormulaUnavailableError
+  def initialize(name)
+    super CoreTap.instance, name
+  end
+end
+
 # Raised when a formula in a specific tap does not contain a formula class.
 class TapFormulaClassUnavailableError < TapFormulaUnavailableError
   include FormulaClassUnavailableErrorModule

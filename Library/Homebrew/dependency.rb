@@ -46,6 +46,15 @@ class Dependency
     formula
   end
 
+  def unavailable_core_formula?
+    to_formula
+    false
+  rescue CoreTapFormulaUnavailableError
+    true
+  rescue
+    false
+  end
+
   def installed?
     to_formula.latest_version_installed?
   end
@@ -130,6 +139,8 @@ class Dependency
 
     def action(dependent, dep, &block)
       catch(:action) do
+        prune if dep.unavailable_core_formula?
+
         if block
           yield dependent, dep
         elsif dep.optional? || dep.recommended?

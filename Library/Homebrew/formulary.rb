@@ -361,6 +361,10 @@ module Formulary
     end
 
     def get_formula(*)
+      if !CoreTap.instance.installed? && ENV["HOMEBREW_UNTAP_HOMEBREW_CORE"]
+        raise CoreTapFormulaUnavailableError, name
+      end
+
       raise FormulaUnavailableError, name
     end
   end
