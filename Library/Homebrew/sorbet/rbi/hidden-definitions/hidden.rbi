@@ -6991,11 +6991,6 @@ class Enumerator::Generator
   def initialize(*_); end
 end
 
-module EnvVar
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Errno::EAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -8388,11 +8383,6 @@ module Homebrew::Livecheck::Strategy
 end
 
 class Homebrew::Service
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::Settings
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -12636,8 +12626,8 @@ end
 class Object
   include ::Minitest::Expectations
   include ::ActiveSupport::Tryable
-  include ::SystemCommand::Mixin
   include ::Utils::Curl
+  include ::SystemCommand::Mixin
   include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
