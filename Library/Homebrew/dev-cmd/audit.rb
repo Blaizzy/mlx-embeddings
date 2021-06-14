@@ -204,6 +204,7 @@ module Homebrew
     cask_results = if audit_casks.empty?
       {}
     else
+      require "cask/cmd/abstract_command"
       require "cask/cmd/audit"
 
       Cask::Cmd::Audit.audit_casks(

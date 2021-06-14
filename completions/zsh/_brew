@@ -372,7 +372,6 @@ _brew_abv() {
   _arguments \
     '(--installed)--all[Print JSON of all available formulae]' \
     '(--bottle)--analytics[List global Homebrew analytics data or, if specified, installation and build error data for formula (provided neither `HOMEBREW_NO_ANALYTICS` nor `HOMEBREW_NO_GITHUB_API` are set)]' \
-    '(--cask --analytics --github)--bottle[Output information about the bottles for formula and its dependencies]' \
     '--category[Which type of analytics data to retrieve. The value for category must be `install`, `install-on-request` or `build-error`; `cask-install` or `os-version` may be specified if formula is not. The default is `install`]' \
     '--days[How many days of analytics data to retrieve. The value for days must be `30`, `90` or `365`. The default is `30`]' \
     '--debug[Display any debugging information]' \
@@ -892,7 +891,6 @@ _brew_info() {
   _arguments \
     '(--installed)--all[Print JSON of all available formulae]' \
     '(--bottle)--analytics[List global Homebrew analytics data or, if specified, installation and build error data for formula (provided neither `HOMEBREW_NO_ANALYTICS` nor `HOMEBREW_NO_GITHUB_API` are set)]' \
-    '(--cask --analytics --github)--bottle[Output information about the bottles for formula and its dependencies]' \
     '--category[Which type of analytics data to retrieve. The value for category must be `install`, `install-on-request` or `build-error`; `cask-install` or `os-version` may be specified if formula is not. The default is `install`]' \
     '--days[How many days of analytics data to retrieve. The value for days must be `30`, `90` or `365`. The default is `30`]' \
     '--debug[Display any debugging information]' \
@@ -1018,6 +1016,7 @@ _brew_install() {
 _brew_install_bundler_gems() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--groups[Installs the specified comma-separated list of gem groups (default: last used)]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'

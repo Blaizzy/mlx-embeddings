@@ -13,16 +13,19 @@ gem "rspec", require: false
 gem "rspec-github", require: false
 gem "rspec-its", require: false
 gem "rspec-retry", require: false
-gem "rspec-sorbet", require: false
 gem "rspec-wait", require: false
 gem "rubocop", require: false
 gem "rubocop-ast", require: false
 gem "simplecov", require: false
 gem "simplecov-cobertura", require: false
-gem "sorbet", require: false
-gem "sorbet-runtime", require: false
-gem "tapioca", require: false
 gem "warning", require: false
+
+group :sorbet, optional: true do
+  gem "rspec-sorbet", require: false
+  gem "sorbet", require: false
+  gem "sorbet-runtime", require: false
+  gem "tapioca", require: false
+end
 
 # vendored gems
 gem "activesupport"

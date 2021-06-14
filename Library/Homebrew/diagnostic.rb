@@ -149,7 +149,9 @@ module Homebrew
 
       def broken_tap(tap)
         return unless Utils::Git.available?
-        return unless HOMEBREW_REPOSITORY.git?
+
+        repo = HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
+        return unless repo.git?
 
         message = <<~EOS
           #{tap.full_name} was not tapped properly! Run:
@@ -161,7 +163,7 @@ module Homebrew
 
         tap_head = tap.git_head
         return message if tap_head.blank?
-        return if tap_head != HOMEBREW_REPOSITORY.git_head
+        return if tap_head != repo.git_head
 
         message
       end
@@ -574,7 +576,8 @@ module Homebrew
       end
 
       def check_brew_git_origin
-        examine_git_origin(HOMEBREW_REPOSITORY, Homebrew::EnvConfig.brew_git_remote)
+        repo = HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
+        examine_git_origin(repo, Homebrew::EnvConfig.brew_git_remote)
       end
 
       def check_coretap_integrity

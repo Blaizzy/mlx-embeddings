@@ -1919,17 +1919,19 @@ class Formula
       [tag.to_s, info]
     end.to_h
 
-    return bottles unless top_level
+    hash = {
+      "name"        => name,
+      "pkg_version" => pkg_version,
+      "rebuild"     => bottle["rebuild"],
+      "bottles"     => bottles,
+    }
 
-    dependencies = declared_runtime_dependencies.map do |dep|
+    return hash unless top_level
+
+    hash["dependencies"] = declared_runtime_dependencies.map do |dep|
       dep.to_formula.to_recursive_bottle_hash(top_level: false)
     end
-
-    {
-      "name"         => name,
-      "bottles"      => bottles,
-      "dependencies" => dependencies,
-    }
+    hash
   end
 
   # Returns the bottle information for a formula

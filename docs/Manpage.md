@@ -267,8 +267,6 @@ If a *`formula`* or *`cask`* is provided, show summary of information about it.
   Open the GitHub source page for *`formula`* in a browser. To view formula history locally: `brew log -p` *`formula`*
 * `--json`:
   Print a JSON representation. Currently the default value for *`version`* is `v1` for *`formula`*. For *`formula`* and *`cask`* use `v2`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
-* `--bottle`:
-  Output information about the bottles for *`formula`* and its dependencies.
 * `--installed`:
   Print JSON of formulae that are currently installed.
 * `--all`:
@@ -1097,9 +1095,12 @@ Generate Homebrew's manpages and shell completions.
 * `--fail-if-not-changed`:
   Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 
-### `install-bundler-gems`
+### `install-bundler-gems` [*`--groups`*`=`]
 
 Install Homebrew's Bundler gems.
+
+* `--groups`:
+  Installs the specified comma-separated list of gem groups (default: last used).
 
 ### `irb` [*`--examples`*] [*`--pry`*]
 
@@ -1681,6 +1682,8 @@ Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 [`sudo`] `brew services cleanup`
 <br>Remove all unused services.
 
+* `--file`:
+  Use the plist file from this location to start or run the service.
 * `--all`:
   Run *`subcommand`* on all services.
 

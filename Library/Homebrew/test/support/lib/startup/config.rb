@@ -3,8 +3,6 @@
 
 raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
 
-require "pathname"
-
 HOMEBREW_BREW_FILE = Pathname.new(ENV["HOMEBREW_BREW_FILE"]).freeze
 
 TEST_TMPDIR = ENV.fetch("HOMEBREW_TEST_TMPDIR") do |k|
@@ -23,11 +21,9 @@ HOMEBREW_SHIMS_PATH = (HOMEBREW_LIBRARY_PATH/"shims").freeze
 # Where external data that has been incorporated into Homebrew is stored
 HOMEBREW_DATA_PATH = (HOMEBREW_LIBRARY_PATH/"data").freeze
 
-require "extend/git_repository"
-
 # Paths redirected to a temporary directory and wiped at the end of the test run
 HOMEBREW_PREFIX        = (Pathname(TEST_TMPDIR)/"prefix").freeze
-HOMEBREW_REPOSITORY    = HOMEBREW_PREFIX.dup.extend(GitRepositoryExtension).freeze
+HOMEBREW_REPOSITORY    = HOMEBREW_PREFIX.dup.freeze
 HOMEBREW_LIBRARY       = (HOMEBREW_REPOSITORY/"Library").freeze
 HOMEBREW_CACHE         = (HOMEBREW_PREFIX.parent/"cache").freeze
 HOMEBREW_CACHE_FORMULA = (HOMEBREW_PREFIX.parent/"formula_cache").freeze
@@ -52,12 +48,3 @@ PATCH_B_SHA256 = "57958271bb802a59452d0816e0670d16c8b70bdf6530bcf6f78726489ad89b
 
 TEST_SHA1   = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
 TEST_SHA256 = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-
-# For testing's sake always assume the default prefix
-module Homebrew
-  remove_const :DEFAULT_PREFIX if defined?(DEFAULT_PREFIX)
-  DEFAULT_PREFIX = HOMEBREW_PREFIX.to_s.freeze
-
-  remove_const :DEFAULT_REPOSITORY if defined?(DEFAULT_REPOSITORY)
-  DEFAULT_REPOSITORY = HOMEBREW_REPOSITORY.to_s.freeze
-end

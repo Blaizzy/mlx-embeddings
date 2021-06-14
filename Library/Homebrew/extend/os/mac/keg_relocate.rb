@@ -159,13 +159,16 @@ class Keg
     brewed_perl = runtime_dependencies&.any? { |dep| dep["full_name"] == "perl" && dep["declared_directly"] }
     perl_path = if brewed_perl || name == "perl"
       "#{HOMEBREW_PREFIX}/opt/perl/bin/perl"
+    elsif tab["built_on"].present?
+      perl_path = "/usr/bin/perl#{tab["built_on"]["preferred_perl"]}"
+
+      # For `:all` bottles, we could have built this bottle with a Perl we don't have.
+      # Such bottles typically don't have strict version requirements.
+      perl_path = "/usr/bin/perl#{MacOS.preferred_perl_version}" unless File.exist?(perl_path)
+
+      perl_path
     else
-      perl_version = if tab["built_on"].present?
-        tab["built_on"]["preferred_perl"]
-      else
-        MacOS.preferred_perl_version
-      end
-      "/usr/bin/perl#{perl_version}"
+      "/usr/bin/perl#{MacOS.preferred_perl_version}"
     end
     relocation.add_replacement_pair(:perl, PERL_PLACEHOLDER, perl_path)
 

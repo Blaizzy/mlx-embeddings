@@ -6991,11 +6991,6 @@ class Enumerator::Generator
   def initialize(*_); end
 end
 
-module EnvVar
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Errno::EAUTH
   Errno = ::T.let(nil, ::T.untyped)
 end
@@ -8388,11 +8383,6 @@ module Homebrew::Livecheck::Strategy
 end
 
 class Homebrew::Service
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::Settings
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -12636,8 +12626,8 @@ end
 class Object
   include ::Minitest::Expectations
   include ::ActiveSupport::Tryable
-  include ::SystemCommand::Mixin
   include ::Utils::Curl
+  include ::SystemCommand::Mixin
   include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
@@ -12662,6 +12652,7 @@ class Object
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
   FORMULA_COMPONENT_PRECEDENCE_LIST = ::T.let(nil, ::T.untyped)
+  HIDDEN_DESC_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLES_EXTNAME_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
   HOMEBREW_BREW_DEFAULT_GIT_REMOTE = ::T.let(nil, ::T.untyped)
@@ -26802,6 +26793,7 @@ end
 module RuboCop::AST::NodePattern::Sets
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
+  SET_EQL_EQ_BE = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)

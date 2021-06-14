@@ -343,10 +343,6 @@ Open the GitHub source page for \fIformula\fR in a browser\. To view formula his
 Print a JSON representation\. Currently the default value for \fIversion\fR is \fBv1\fR for \fIformula\fR\. For \fIformula\fR and \fIcask\fR use \fBv2\fR\. See the docs for examples of using the JSON output: \fIhttps://docs\.brew\.sh/Querying\-Brew\fR
 .
 .TP
-\fB\-\-bottle\fR
-Output information about the bottles for \fIformula\fR and its dependencies\.
-.
-.TP
 \fB\-\-installed\fR
 Print JSON of formulae that are currently installed\.
 .
@@ -1543,8 +1539,12 @@ Generate Homebrew\'s manpages and shell completions\.
 \fB\-\-fail\-if\-not\-changed\fR
 Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
-.SS "\fBinstall\-bundler\-gems\fR"
+.SS "\fBinstall\-bundler\-gems\fR [\fI\-\-groups\fR\fB=\fR]"
 Install Homebrew\'s Bundler gems\.
+.
+.TP
+\fB\-\-groups\fR
+Installs the specified comma\-separated list of gem groups (default: last used)\.
 .
 .SS "\fBirb\fR [\fI\-\-examples\fR] [\fI\-\-pry\fR]"
 Enter the interactive Homebrew Ruby shell\.
@@ -2352,6 +2352,10 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
 .P
 [\fBsudo\fR] \fBbrew services cleanup\fR
     Remove all unused services\.
+.
+.TP
+\fB\-\-file\fR
+Use the plist file from this location to start or run the service\.
 .
 .TP
 \fB\-\-all\fR

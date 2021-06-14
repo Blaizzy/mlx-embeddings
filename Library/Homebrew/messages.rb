@@ -15,8 +15,8 @@ class Messages
     @install_times = []
   end
 
-  def record_caveats(f, caveats)
-    @caveats.push(formula: f.name, caveats: caveats)
+  def record_caveats(package, caveats)
+    @caveats.push(package: package, caveats: caveats)
   end
 
   def formula_installed(f, elapsed_time)
@@ -36,7 +36,7 @@ class Messages
 
     oh1 "Caveats"
     @caveats.each do |c|
-      ohai c[:formula], c[:caveats]
+      ohai c[:package], c[:caveats]
     end
   end
 

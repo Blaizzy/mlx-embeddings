@@ -172,7 +172,9 @@ module Homebrew
 
   def cmd_parser_manpage_lines(cmd_parser)
     lines = [format_usage_banner(cmd_parser.usage_banner_text)]
-    lines += cmd_parser.processed_options.map do |short, long, _, desc|
+    lines += cmd_parser.processed_options.map do |short, long, _, desc, hidden|
+      next if hidden
+
       if long.present?
         next if Homebrew::CLI::Parser.global_options.include?([short, long, desc])
         next if Homebrew::CLI::Parser.global_cask_options.any? do |_, option, description:, **|
@@ -181,7 +183,7 @@ module Homebrew
       end
 
       generate_option_doc(short, long, desc)
-    end.reject(&:blank?)
+    end.compact
     lines
   end
 
