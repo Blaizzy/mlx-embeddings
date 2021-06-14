@@ -213,12 +213,12 @@ describe Formulary do
 
     it "maps a reference to a new Formula" do
       expect {
-        described_class.factory("foo")
+        described_class.factory("formula-to-map")
       }.to raise_error(FormulaUnavailableError)
 
-      described_class.map "foo", to: formula_name
+      described_class.map "formula-to-map", to: formula_name
 
-      expect(described_class.factory("foo")).to be_kind_of(Formula)
+      expect(described_class.factory("formula-to-map")).to be_kind_of(Formula)
     end
   end
 
