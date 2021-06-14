@@ -255,7 +255,7 @@ module Homebrew
 
         oh1 <<~EOS
           #{f.name} #{f.linked_version} is installed and outdated
-            Upgrading #{Formatted.identifier(f.name)} #{version_upgrade}
+            Upgrading #{Formatter.identifier(f.name)} #{version_upgrade}
         EOS
         outdated_kegs = outdated_formulae.map(&:linked_keg).select(&:directory?).map { |k| Keg.new(k.resolved_path) }
         linked_kegs = outdated_kegs.select(&:linked?)
@@ -295,7 +295,11 @@ module Homebrew
       ofail e.message
     ensure
       # Re-link kegs if upgrade fails
-      linked_kegs.each(&:link) unless f.latest_version_installed?
+      begin
+        linked_kegs.each(&:link) unless f.latest_version_installed?
+        rescue
+          nil
+      end
     end
   end
 end
