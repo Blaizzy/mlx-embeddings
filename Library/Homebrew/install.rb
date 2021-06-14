@@ -296,7 +296,7 @@ module Homebrew
     ensure
       # Re-link kegs if upgrade fails
       begin
-        linked_kegs.each(&:link) unless f.latest_version_installed?
+        linked_kegs.each(&:link) if linked_kegs.present? && !f.latest_version_installed?
         rescue
           nil
       end
