@@ -254,7 +254,7 @@ module Homebrew
         version_upgrade = "#{f.linked_version} -> #{f.pkg_version}"
 
         oh1 <<~EOS
-          #{f.name} #{f.linked_version} is installed and outdated
+          #{f.name} #{f.linked_version} is installed but outdated
             Upgrading #{Formatter.identifier(f.name)} #{version_upgrade}
         EOS
         outdated_kegs = outdated_formulae.map(&:linked_keg).select(&:directory?).map { |k| Keg.new(k.resolved_path) }
