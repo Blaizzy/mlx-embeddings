@@ -395,6 +395,8 @@ module Formulary
   )
     raise ArgumentError, "Formulae must have a ref!" unless ref
 
+    ref = @ref_mappings[ref] if @ref_mappings.present? && @ref_mappings.key?(ref)
+
     cache_key = "#{ref}-#{spec}-#{alias_path}-#{from}"
     if factory_cached? && cache[:formulary_factory] &&
        cache[:formulary_factory][cache_key]
@@ -409,6 +411,19 @@ module Formulary
       cache[:formulary_factory][cache_key] ||= formula
     end
     formula
+  end
+
+  # Register a reference mapping. This mapping will be used by {Formulary::factory}
+  # to allow certain references to be substituted for another string before
+  # being retrived. For example, to map `foo` to the `bar` formula:
+  # <pre>Formulary.map "foo", to: "bar"
+  # Formulary.factory "bar" # returns the bar formula
+  # </pre>
+  # @param ref the string to map.
+  # @param :to the target reference to which `ref` should be mapped.
+  def self.map(ref, to:)
+    @ref_mappings ||= {}
+    @ref_mappings[ref] = to
   end
 
   # Return a {Formula} instance for the given rack.

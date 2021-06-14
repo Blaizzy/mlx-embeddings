@@ -205,6 +205,23 @@ describe Formulary do
     end
   end
 
+  describe "::map" do
+    before do
+      formula_path.dirname.mkpath
+      formula_path.write formula_content
+    end
+
+    it "maps a reference to a new Formula" do
+      expect {
+        described_class.factory("foo")
+      }.to raise_error(FormulaUnavailableError)
+
+      described_class.map "foo", to: formula_name
+
+      expect(described_class.factory("foo")).to be_kind_of(Formula)
+    end
+  end
+
   specify "::from_contents" do
     expect(described_class.from_contents(formula_name, formula_path, formula_content)).to be_kind_of(Formula)
   end
