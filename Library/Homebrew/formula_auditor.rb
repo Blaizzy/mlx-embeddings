@@ -315,7 +315,14 @@ module Homebrew
 
     def audit_conflicts
       formula.conflicts.each do |c|
-        Formulary.factory(c.name)
+        conflicting_formula = Formulary.factory(c.name)
+        problem "Formula should not conflict with itself" if formula == conflicting_formula
+
+        # Use Formula instead of FormulaConflict to be able correctly handle renamed formulae and aliases
+        reverse_conflicts = conflicting_formula.conflicts.map { |rc| Formulary.factory(rc.name) }
+        if reverse_conflicts.exclude? formula
+          problem "Formula #{conflicting_formula.name} should also have a conflict declared with #{formula.name}"
+        end
       rescue TapFormulaUnavailableError
         # Don't complain about missing cross-tap conflicts.
         next
