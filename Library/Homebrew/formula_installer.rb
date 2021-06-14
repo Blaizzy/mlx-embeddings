@@ -1076,10 +1076,30 @@ class FormulaInstaller
       #{HOMEBREW_LIBRARY_PATH}/postinstall.rb
     ]
 
-    args << if formula.local_bottle_path.present?
-      formula.prefix/".brew/#{formula.name}.rb"
-    else
-      formula.path
+    keg_formula_path = formula.opt_prefix/".brew/#{formula.name}.rb"
+    tap_formula_path = formula.path
+
+    # Use the formula from the keg if:
+    # * Installing from a local bottle, or
+    # * The formula doesn't exist in the tap (or the tap isn't installed), or
+    # * The formula in the tap has a different pkg_version.
+    # In all other cases, including if the formula from the keg is unreadable
+    # (third-party taps may `require` some of their own libraries), use the
+    # formula from the tap.
+    args << begin
+      keg_formula = Formulary.factory(keg_formula_path)
+      tap_formula = Formulary.factory(tap_formula_path) if tap_formula_path.exist?
+      other_version_installed = (keg_formula.pkg_version != tap_formula&.pkg_version)
+
+      if formula.local_bottle_path.present? ||
+         !tap_formula_path.exist? ||
+         other_version_installed
+        keg_formula_path
+      else
+        tap_formula_path
+      end
+    rescue FormulaUnreadableError
+      tap_formula_path
     end
 
     Utils.safe_fork do
