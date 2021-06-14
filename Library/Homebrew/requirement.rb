@@ -142,8 +142,8 @@ class Requirement
 
   def infer_name
     klass = self.class.name || self.class.to_s
-    klass.sub!(/(Dependency|Requirement)$/, "")
-    klass.sub!(/^(\w+::)*/, "")
+    klass = klass.sub(/(Dependency|Requirement)$/, "")
+    klass = klass.sub(/^(\w+::)*/, "")
     return klass.downcase if klass.present?
 
     return @cask if @cask.present?
