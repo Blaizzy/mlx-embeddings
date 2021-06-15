@@ -205,7 +205,7 @@ describe Formulary do
     end
   end
 
-  describe "::map" do
+  describe "::map_name_to_bottle" do
     before do
       formula_path.dirname.mkpath
       formula_path.write formula_content
@@ -216,7 +216,7 @@ describe Formulary do
         described_class.factory("formula-to-map")
       }.to raise_error(FormulaUnavailableError)
 
-      described_class.map "formula-to-map", to: formula_name
+      described_class.map_name_to_bottle "formula-to-map", formula_path
 
       expect(described_class.factory("formula-to-map")).to be_kind_of(Formula)
     end

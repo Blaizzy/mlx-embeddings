@@ -395,7 +395,7 @@ module Formulary
   )
     raise ArgumentError, "Formulae must have a ref!" unless ref
 
-    ref = @ref_mappings[ref] if @ref_mappings.present? && @ref_mappings.key?(ref)
+    ref = @name_mappings[ref] if @name_mappings.present? && @name_mappings.key?(ref)
 
     cache_key = "#{ref}-#{spec}-#{alias_path}-#{from}"
     if factory_cached? && cache[:formulary_factory] &&
@@ -413,17 +413,18 @@ module Formulary
     formula
   end
 
-  # Register a reference mapping. This mapping will be used by {Formulary::factory}
-  # to allow certain references to be substituted for another string before
-  # being retrived. For example, to map `foo` to the `bar` formula:
-  # <pre>Formulary.map "foo", to: "bar"
-  # Formulary.factory "bar" # returns the bar formula
+  # Map a formula name to a bottle archive. This mapping will be used by {Formulary::factory}
+  # to allow formulae to be loaded automatically from their bottle archive without
+  # needing to exist in a tap or be passed as a complete filepath. For example,
+  # to map `foo` to the `hello` formula from its bottle archive:
+  # <pre>Formulary.map_name_to_bottle "foo", HOMEBREW_CACHE/"hello--2.10"
+  # Formulary.factory "foo" # returns the hello formula from the bottle archive
   # </pre>
-  # @param ref the string to map.
-  # @param :to the target reference to which `ref` should be mapped.
-  def self.map(ref, to:)
-    @ref_mappings ||= {}
-    @ref_mappings[ref] = to
+  # @param name the string to map.
+  # @param bottle a path pointing to the target bottle archive.
+  def self.map_name_to_bottle(name, bottle)
+    @name_mappings ||= {}
+    @name_mappings[name] = bottle.realpath
   end
 
   # Return a {Formula} instance for the given rack.
