@@ -424,7 +424,7 @@ module Formulary
   # @param bottle a path pointing to the target bottle archive.
   def self.map_name_to_bottle(name, bottle)
     @name_mappings ||= {}
-    @name_mappings[name] = bottle.realpath
+    @name_mappings[name] = Pathname(bottle).realpath
   end
 
   # Return a {Formula} instance for the given rack.
