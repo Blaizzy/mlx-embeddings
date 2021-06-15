@@ -1139,5 +1139,58 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
     end
+
+    describe "#audit_conflicts" do
+      specify "it warns when conflicting with non-existing formula" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+
+            conflicts_with "bar"
+          end
+        RUBY
+
+        fa.audit_conflicts
+
+        expect(fa.problems.first[:message])
+          .to match("Can't find conflicting formula \"bar\"")
+      end
+
+      specify "it warns when conflicting with itself" do
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+
+            conflicts_with "#{dir}/foo.rb"
+          end
+        RUBY
+
+        fa.audit_conflicts
+
+        expect(fa.problems.first[:message])
+          .to match("Formula should not conflict with itself")
+      end
+
+      specify "it warns when another formula does not have a symmetric conflict" do
+        formula_auditor "bar", <<~RUBY
+          class Bar < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+          end
+        RUBY
+
+        fa = formula_auditor "foo", <<~RUBY
+          class Foo < Formula
+            url "https://brew.sh/foo-1.0.tgz"
+
+            conflicts_with "#{dir}/bar.rb"
+          end
+        RUBY
+
+        fa.audit_conflicts
+
+        expect(fa.problems.first[:message])
+          .to match("Formula bar should also have a conflict declared with foo")
+      end
+    end
   end
 end
