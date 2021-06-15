@@ -270,10 +270,29 @@ module Homebrew
         verbose:                    verbose,
       )
 
-      if !Homebrew::EnvConfig.no_install_upgrade? && f.outdated? && !f.head?
-        kegs = Upgrade.outdated_kegs(f)
-        linked_kegs = kegs.select(&:linked?)
-        Upgrade.print_upgrade_message(f, fi.options)
+      if f.linked_keg.directory?
+        if Homebrew::EnvConfig.no_install_upgrade?
+          message = <<~EOS
+            #{f.name} #{f.linked_version} is already installed
+          EOS
+          message += if f.outdated? && !f.head?
+            <<~EOS
+              To upgrade to #{f.pkg_version}, run:
+                brew upgrade #{f.full_name}
+            EOS
+          else
+            <<~EOS
+              To install #{f.pkg_version}, first run:
+                brew unlink #{f.name}
+            EOS
+          end
+          raise CannotInstallFormulaError, message unless only_deps
+        elsif f.outdated? && !f.head?
+          puts "#{f.name} #{f.linked_version} is installed but outdated"
+          kegs = Upgrade.outdated_kegs(f)
+          linked_kegs = kegs.select(&:linked?)
+          Upgrade.print_upgrade_message(f, fi.options)
+        end
       end
 
       fi.prelude
