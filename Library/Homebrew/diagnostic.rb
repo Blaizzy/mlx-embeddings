@@ -877,12 +877,12 @@ module Homebrew
       end
 
       def check_deleted_formula
-        kegs = Keg.all
-        deleted_formulae = []
-        kegs.each do |keg|
-          keg_name = keg.name
-          deleted_formulae << keg_name if Formulary.tap_paths(keg_name).blank?
-        end
+        keg_names = Keg.all.map(&:name).uniq
+
+        deleted_formulae = keg_names.map do |keg_name|
+          keg_name if Formulary.tap_paths(keg_name).blank?
+        end.compact
+
         return if deleted_formulae.blank?
 
         <<~EOS
