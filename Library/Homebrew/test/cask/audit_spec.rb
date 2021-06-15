@@ -411,6 +411,35 @@ describe Cask::Audit, :cask do
       end
     end
 
+    describe "livecheck should be skipped" do
+      let(:online) { true }
+      let(:message) { /Version '[^']*' differs from '[^']*' retrieved by livecheck\./ }
+
+      context "when the Cask has a livecheck block using skip" do
+        let(:cask_token) { "livecheck/livecheck-skip" }
+
+        it { is_expected.not_to fail_with(message) }
+      end
+
+      context "when the Cask is discontinued" do
+        let(:cask_token) { "livecheck/discontinued" }
+
+        it { is_expected.not_to fail_with(message) }
+      end
+
+      context "when version is :latest" do
+        let(:cask_token) { "livecheck/version-latest" }
+
+        it { is_expected.not_to fail_with(message) }
+      end
+
+      context "when url is unversioned" do
+        let(:cask_token) { "livecheck/url-unversioned" }
+
+        it { is_expected.not_to fail_with(message) }
+      end
+    end
+
     describe "when the Cask stanza requires uninstall" do
       let(:message) { "installer and pkg stanzas require an uninstall stanza" }
 

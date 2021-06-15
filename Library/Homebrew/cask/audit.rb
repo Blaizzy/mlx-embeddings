@@ -552,8 +552,10 @@ module Cask
 
     def check_livecheck_version
       return unless appcast?
-      return :skip if cask.livecheck.skip?
-      return :latest if cask.version.latest?
+
+      # Respect cask skip conditions (e.g. discontinued, latest, unversioned)
+      skip_info = Homebrew::Livecheck::SkipConditions.skip_information(cask)
+      return :skip if skip_info.present?
 
       latest_version = Homebrew::Livecheck.latest_version(cask)&.fetch(:latest)
       if cask.version.to_s == latest_version.to_s
