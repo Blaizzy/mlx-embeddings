@@ -5,6 +5,7 @@ require "diagnostic"
 require "fileutils"
 require "hardware"
 require "development_tools"
+require "upgrade"
 
 module Homebrew
   # Helper module for performing (pre-)install checks.
@@ -249,20 +250,6 @@ module Homebrew
       f.print_tap_action
       build_options = f.build
 
-      if !Homebrew::EnvConfig.no_install_upgrade? && f.outdated? && !f.head?
-        outdated_formulae = [f, *f.old_installed_formulae]
-        version_upgrade = "#{f.linked_version} -> #{f.pkg_version}"
-
-        oh1 <<~EOS
-          #{f.name} #{f.linked_version} is installed but outdated
-            Upgrading #{Formatter.identifier(f.name)} #{version_upgrade}
-        EOS
-        outdated_kegs = outdated_formulae.map(&:linked_keg)
-                                         .select(&:directory?)
-                                         .map { |k| Keg.new(k.resolved_path) }
-        linked_kegs = outdated_kegs.select(&:linked?)
-      end
-
       fi = FormulaInstaller.new(
         f,
         options:                    build_options.used_options,
@@ -282,10 +269,17 @@ module Homebrew
         quiet:                      quiet,
         verbose:                    verbose,
       )
+
+      if !Homebrew::EnvConfig.no_install_upgrade? && f.outdated? && !f.head?
+        kegs = Upgrade.outdated_kegs(f)
+        linked_kegs = kegs.select(&:linked?)
+        Upgrade.print_upgrade_message(f, fi.options)
+      end
+
       fi.prelude
       fi.fetch
 
-      outdated_kegs.each(&:unlink) if outdated_kegs.present?
+      kegs.each(&:unlink) if kegs.present?
 
       fi.install
       fi.finish
