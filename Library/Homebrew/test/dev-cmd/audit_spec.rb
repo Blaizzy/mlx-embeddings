@@ -1142,7 +1142,7 @@ module Homebrew
 
     describe "#audit_conflicts" do
       specify "it warns when conflicting with non-existing formula" do
-        fa = formula_auditor "foo", <<~RUBY
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
 
@@ -1157,7 +1157,7 @@ module Homebrew
       end
 
       specify "it warns when conflicting with itself" do
-        fa = formula_auditor "foo", <<~RUBY
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
 
@@ -1172,13 +1172,13 @@ module Homebrew
       end
 
       specify "it warns when another formula does not have a symmetric conflict" do
-        formula_auditor "bar", <<~RUBY
+        formula_auditor "bar", <<~RUBY, core_tap: true
           class Bar < Formula
             url "https://brew.sh/foo-1.0.tgz"
           end
         RUBY
 
-        fa = formula_auditor "foo", <<~RUBY
+        fa = formula_auditor "foo", <<~RUBY, core_tap: true
           class Foo < Formula
             url "https://brew.sh/foo-1.0.tgz"
 

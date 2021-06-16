@@ -318,9 +318,24 @@ module Homebrew
         conflicting_formula = Formulary.factory(c.name)
         problem "Formula should not conflict with itself" if formula == conflicting_formula
 
-        # Use Formula instead of FormulaConflict to be able correctly handle renamed formulae and aliases
-        reverse_conflicts = conflicting_formula.conflicts.map { |rc| Formulary.factory(rc.name) }
-        if reverse_conflicts.exclude? formula
+        next unless @core_tap
+
+        if CoreTap.instance.formula_renames.key?(c.name) || Formula.aliases.include?(c.name)
+          problem "Formula conflict should be declared using " \
+                  "canonical name (#{conflicting_formula.name}) instead of #{c.name}"
+        end
+
+        rev_conflict_found = false
+        conflicting_formula.conflicts.each do |rc|
+          rc_formula = Formulary.factory(rc.name)
+          if CoreTap.instance.formula_renames.key?(rc.name) || Formula.aliases.include?(rc.name)
+            problem "Formula #{conflicting_formula.name} conflict should be declared using " \
+                    "canonical name (#{rc_formula.name}) instead of #{rc.name}"
+          end
+
+          rev_conflict_found ||= rc_formula == formula
+        end
+        unless rev_conflict_found
           problem "Formula #{conflicting_formula.name} should also have a conflict declared with #{formula.name}"
         end
       rescue TapFormulaUnavailableError
