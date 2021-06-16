@@ -78,7 +78,7 @@ jobs:
         run: brew style --display-cop-names homebrew/core
 
       - name: Run brew audit --skip-style on all taps
-        run: brew audit --skip-style --display-failures-only
+        run: brew audit --skip-style --except=version --display-failures-only
 
       - name: Set up all Homebrew taps
         run: |
@@ -112,7 +112,7 @@ jobs:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
 
       - name: Run brew audit --skip-style on homebrew-core
-        run: brew audit --skip-style --tap=homebrew/core
+        run: brew audit --skip-style --except=version --tap=homebrew/core
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
 

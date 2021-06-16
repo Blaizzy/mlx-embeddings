@@ -500,7 +500,10 @@ module Homebrew
         spec_name = name.downcase.to_sym
         next unless (spec = formula.send(spec_name))
 
-        ra = ResourceAuditor.new(spec, spec_name, online: @online, strict: @strict).audit
+        ra = ResourceAuditor.new(
+          spec, spec_name,
+          online: @online, strict: @strict, only: @only, except: @except
+        ).audit
         ra.problems.each do |message|
           problem "#{name}: #{message}"
         end
@@ -508,7 +511,10 @@ module Homebrew
         spec.resources.each_value do |resource|
           problem "Resource name should be different from the formula name" if resource.name == formula.name
 
-          ra = ResourceAuditor.new(resource, spec_name, online: @online, strict: @strict).audit
+          ra = ResourceAuditor.new(
+            resource, spec_name,
+            online: @online, strict: @strict, only: @only, except: @except
+          ).audit
           ra.problems.each do |message|
             problem "#{name} resource #{resource.name.inspect}: #{message}"
           end
@@ -746,11 +752,9 @@ module Homebrew
 
       methods.map(&:to_s).grep(/^audit_/).each do |audit_method_name|
         name = audit_method_name.delete_prefix("audit_")
-        if only_audits
-          next unless only_audits.include?(name)
-        elsif except_audits
-          next if except_audits.include?(name)
-        end
+        next if only_audits&.exclude?(name)
+        next if except_audits&.include?(name)
+
         send(audit_method_name)
       end
     end
