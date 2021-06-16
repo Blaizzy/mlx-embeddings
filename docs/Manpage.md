@@ -2005,6 +2005,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_NO_INSTALL_CLEANUP`
   <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every `HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days.
 
+- `HOMEBREW_NO_INSTALL_UPGRADE`
+  <br>If set, `brew install` will not automatically upgrade installed but outdated formulae
+
 - `HOMEBREW_PRY`
   <br>If set, use Pry for the `brew irb` command.
 
