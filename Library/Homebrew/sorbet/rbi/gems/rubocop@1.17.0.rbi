@@ -2332,6 +2332,7 @@ RuboCop::Cop::Layout::DefEndAlignment::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Layout::DotPosition < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
+  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_csend(node); end
@@ -2409,8 +2410,8 @@ class RuboCop::Cop::Layout::EmptyLineAfterGuardClause < ::RuboCop::Cop::Base
   def correct_style?(node); end
   def heredoc?(node); end
   def heredoc_line(node, heredoc_node); end
-  def last_argument_is_heredoc?(node); end
   def last_heredoc_argument(node); end
+  def last_heredoc_argument_node(node); end
   def next_line_empty?(line); end
   def next_line_empty_or_enable_directive_comment?(line); end
   def next_line_enable_directive_comment?(line); end
@@ -3085,6 +3086,7 @@ class RuboCop::Cop::Layout::IndentationWidth < ::RuboCop::Cop::Base
   def access_modifier?(param0 = T.unsafe(nil)); end
   def on_block(node); end
   def on_case(case_node); end
+  def on_case_match(case_match); end
   def on_class(node); end
   def on_csend(node); end
   def on_def(node); end
@@ -3424,21 +3426,22 @@ end
 RuboCop::Cop::Layout::ParameterAlignment::ALIGN_PARAMS_MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Layout::ParameterAlignment::FIXED_INDENT_MSG = T.let(T.unsafe(nil), String)
 
-class RuboCop::Cop::Layout::RedundantLineBreak < ::RuboCop::Cop::Cop
+class RuboCop::Cop::Layout::RedundantLineBreak < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::CheckAssignment
+  extend ::RuboCop::Cop::AutoCorrector
 
-  def autocorrect(node); end
-  def check_assignment(node, _rhs); end
   def on_send(node); end
 
   private
 
+  def check_assignment(node, _rhs); end
   def comment_within?(node); end
   def configured_to_not_be_inspected?(node); end
   def convertible_block?(node); end
   def max_line_length; end
   def offense?(node); end
   def other_cop_takes_precedence?(node); end
+  def register_offense(node); end
   def single_line_block_chain_enabled?; end
   def suitable_as_single_line?(node); end
   def to_single_line(source); end
@@ -3606,6 +3609,8 @@ class RuboCop::Cop::Layout::SpaceAroundKeyword < ::RuboCop::Cop::Base
   def on_if_guard(node); end
   def on_in_pattern(node); end
   def on_kwbegin(node); end
+  def on_match_pattern(node); end
+  def on_match_pattern_p(node); end
   def on_next(node); end
   def on_or(node); end
   def on_postexe(node); end
@@ -3686,6 +3691,7 @@ class RuboCop::Cop::Layout::SpaceAroundOperators < ::RuboCop::Cop::Base
   def on_ivasgn(node); end
   def on_lvasgn(node); end
   def on_masgn(node); end
+  def on_match_pattern(node); end
   def on_op_asgn(node); end
   def on_or(node); end
   def on_or_asgn(node); end
@@ -4812,6 +4818,7 @@ class RuboCop::Cop::Lint::LiteralAsCondition < ::RuboCop::Cop::Base
 
   def message(node); end
   def on_case(case_node); end
+  def on_case_match(case_match_node); end
   def on_if(node); end
   def on_send(node); end
   def on_until(node); end
@@ -4880,7 +4887,10 @@ class RuboCop::Cop::Lint::MissingCopEnableDirective < ::RuboCop::Cop::Base
 
   private
 
-  def message(max_range:, cop:); end
+  def department_enabled?(cop, comment); end
+  def each_missing_enable; end
+  def max_range; end
+  def message(cop, comment, type = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Lint::MissingCopEnableDirective::MSG = T.let(T.unsafe(nil), String)
@@ -5183,28 +5193,40 @@ class RuboCop::Cop::Lint::RedundantCopDisableDirective < ::RuboCop::Cop::Base
 
   private
 
+  def add_department_marker(department); end
   def add_offense_for_entire_comment(comment, cops); end
   def add_offense_for_some_cops(comment, cops); end
   def add_offenses(redundant_cops); end
   def all_cop_names; end
   def all_disabled?(comment); end
   def comment_range_with_surrounding_space(directive_comment_range, line_comment_range); end
+  def cop_disabled_line_ranges; end
   def cop_range(comment, cop); end
+  def department_disabled?(cop, comment); end
+  def department_marker?(department); end
   def describe(cop); end
   def directive_count(comment); end
   def directive_range_in_list(range, ranges); end
-  def each_already_disabled(line_ranges, disabled_ranges); end
-  def each_line_range(line_ranges, disabled_ranges, offenses, cop); end
-  def each_redundant_disable(cop_disabled_line_ranges, offenses, &block); end
+  def disabled_ranges; end
+  def each_already_disabled(cop, line_ranges); end
+  def each_line_range(cop, line_ranges); end
+  def each_redundant_disable(&block); end
   def ends_its_line?(range); end
-  def find_redundant(comment, offenses, cop, line_range, next_line_range); end
-  def ignore_offense?(disabled_ranges, line_range); end
+  def find_redundant_all(range, next_range); end
+  def find_redundant_cop(cop, range); end
+  def find_redundant_department(cop, range); end
+  def followed_ranges?(range, next_range); end
+  def ignore_offense?(line_range); end
   def matching_range(haystack, needle); end
+  def message(cop_names); end
   def previous_line_blank?(range); end
+  def range_with_offense?(range, offenses = T.unsafe(nil)); end
+  def remove_department_marker(department); end
   def trailing_range?(ranges, range); end
 end
 
 RuboCop::Cop::Lint::RedundantCopDisableDirective::COP_NAME = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Lint::RedundantCopDisableDirective::DEPARTMENT_MARKER = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Lint::RedundantCopEnableDirective < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -5218,6 +5240,7 @@ class RuboCop::Cop::Lint::RedundantCopEnableDirective < ::RuboCop::Cop::Base
   def all_or_name(name); end
   def comment_start(comment); end
   def cop_name_indention(comment, name); end
+  def department?(directive, name); end
   def range_of_offense(comment, name); end
   def range_to_remove(begin_pos, end_pos, comment); end
   def range_with_comma(comment, name); end
@@ -8724,6 +8747,7 @@ class RuboCop::Cop::Style::IdenticalConditionalBranches < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_case(node); end
+  def on_case_match(node); end
   def on_if(node); end
 
   private
@@ -10565,6 +10589,7 @@ class RuboCop::Cop::Style::RegexpLiteral < ::RuboCop::Cop::Base
   def inner_slash_for(opening_delimiter); end
   def inner_slash_indices(node); end
   def node_body(node, include_begin_nodes: T.unsafe(nil)); end
+  def omit_parentheses_style?(node); end
   def preferred_delimiters; end
   def slash_literal?(node); end
 end
@@ -12130,26 +12155,36 @@ end
 RuboCop::Cop::VisibilityHelp::VISIBILITY_SCOPES = T.let(T.unsafe(nil), Array)
 
 class RuboCop::DirectiveComment
-  def initialize(comment); end
+  def initialize(comment, cop_registry = T.unsafe(nil)); end
 
   def all_cops?; end
   def comment; end
   def cop_names; end
+  def cop_registry; end
   def cops; end
+  def department_names; end
+  def directive_count; end
   def disabled?; end
+  def disabled_all?; end
   def enabled?; end
   def enabled_all?; end
+  def in_directive_department?(cop); end
   def line_number; end
   def match?(cop_names); end
   def match_captures; end
   def mode; end
+  def overridden_by_department?(cop); end
   def range; end
   def single_line?; end
 
   private
 
   def all_cop_names; end
+  def cop_names_for_department(department); end
+  def department?(name); end
+  def exclude_redundant_directive_cop(cops); end
   def parsed_cop_names; end
+  def splitted_cops_string; end
 
   class << self
     def before_comment(line); end
@@ -12160,7 +12195,8 @@ RuboCop::DirectiveComment::COPS_PATTERN = T.let(T.unsafe(nil), String)
 RuboCop::DirectiveComment::COP_NAMES_PATTERN = T.let(T.unsafe(nil), String)
 RuboCop::DirectiveComment::COP_NAME_PATTERN = T.let(T.unsafe(nil), String)
 RuboCop::DirectiveComment::DIRECTIVE_COMMENT_REGEXP = T.let(T.unsafe(nil), Regexp)
-RuboCop::DirectiveComment::REDUNDANT_COP = T.let(T.unsafe(nil), String)
+RuboCop::DirectiveComment::REDUNDANT_DIRECTIVE_COP = T.let(T.unsafe(nil), String)
+RuboCop::DirectiveComment::REDUNDANT_DIRECTIVE_COP_DEPARTMENT = T.let(T.unsafe(nil), String)
 class RuboCop::Error < ::StandardError; end
 
 class RuboCop::ErrorWithAnalyzedFileLocation < ::RuboCop::Error
@@ -12781,6 +12817,7 @@ class RuboCop::RemoteConfig
   def cache_path; end
   def cache_path_exists?; end
   def cache_path_expired?; end
+  def cloned_url; end
   def generate_request(uri); end
   def handle_response(response, limit, &block); end
   def request(uri = T.unsafe(nil), limit = T.unsafe(nil), &block); end
