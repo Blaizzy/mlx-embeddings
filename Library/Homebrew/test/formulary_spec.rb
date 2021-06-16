@@ -205,7 +205,7 @@ describe Formulary do
     end
   end
 
-  describe "::map_name_to_bottle" do
+  describe "::map_formula_name_to_local_bottle_path" do
     before do
       formula_path.dirname.mkpath
       formula_path.write formula_content
@@ -216,7 +216,13 @@ describe Formulary do
         described_class.factory("formula-to-map")
       }.to raise_error(FormulaUnavailableError)
 
-      described_class.map_name_to_bottle "formula-to-map", formula_path
+      ENV["HOMEBREW_BOTTLE_JSON"] = nil
+      expect {
+        described_class.map_formula_name_to_local_bottle_path "formula-to-map", formula_path
+      }.to raise_error(UsageError, /HOMEBREW_BOTTLE_JSON not set/)
+
+      ENV["HOMEBREW_BOTTLE_JSON"] = "1"
+      described_class.map_formula_name_to_local_bottle_path "formula-to-map", formula_path
 
       expect(described_class.factory("formula-to-map")).to be_kind_of(Formula)
     end
