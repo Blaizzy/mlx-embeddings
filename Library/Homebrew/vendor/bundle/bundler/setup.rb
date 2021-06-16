@@ -86,7 +86,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-rspec-2.4.0/l
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-sorbet-0.6.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-macho-2.5.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-html-0.12.3/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov_json_formatter-0.1.2/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov_json_formatter-0.1.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-0.21.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-cobertura-1.4.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-stub-0.2.0/lib"
