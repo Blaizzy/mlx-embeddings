@@ -365,7 +365,7 @@ class Pathname
       target = Pathname.new(target) # allow pathnames or strings
       join(target.basename).write <<~SH
         #!/bin/bash
-        exec "#{target}" "$@"
+        exec "#{Utils.shortened_brew_path(target)}" "$@"
       SH
     end
   end
@@ -381,7 +381,7 @@ class Pathname
     dirname.mkpath
     write <<~SH
       #!/bin/bash
-      #{env_export}exec "#{target}" #{args} "$@"
+      #{env_export}exec "#{Utils.shortened_brew_path(target)}" #{args} "$@"
     SH
   end
 
@@ -410,7 +410,7 @@ class Pathname
     mkpath
     (self/script_name).write <<~EOS
       #!/bin/bash
-      export JAVA_HOME="#{Language::Java.overridable_java_home_env(java_version)[:JAVA_HOME]}"
+      export JAVA_HOME="#{Language::Java.overridable_short_java_home_env(java_version)[:JAVA_HOME]}"
       exec "${JAVA_HOME}/bin/java" #{java_opts} -jar "#{target_jar}" "$@"
     EOS
   end
