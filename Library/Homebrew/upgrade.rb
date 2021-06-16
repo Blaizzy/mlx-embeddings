@@ -64,6 +64,24 @@ module Homebrew
       end
     end
 
+    def outdated_kegs(formula)
+      [formula, *formula.old_installed_formulae].map(&:linked_keg)
+                                                .select(&:directory?)
+                                                .map { |k| Keg.new(k.resolved_path) }
+    end
+
+    def print_upgrade_message(formula, fi_options)
+      version_upgrade = if formula.optlinked?
+        "#{Keg.new(formula.opt_prefix).version} -> #{formula.pkg_version}"
+      else
+        "-> #{formula.pkg_version}"
+      end
+      oh1 <<~EOS
+        Upgrading #{Formatter.identifier(formula.full_specified_name)}
+          #{version_upgrade} #{fi_options.to_a.join(" ")}
+      EOS
+    end
+
     def upgrade_formula(
       formula,
       flags:,
@@ -83,11 +101,8 @@ module Homebrew
         keg_was_linked = keg.linked?
       end
 
-      formulae_maybe_with_kegs = [formula] + formula.old_installed_formulae
-      outdated_kegs = formulae_maybe_with_kegs.map(&:linked_keg)
-                                              .select(&:directory?)
-                                              .map { |k| Keg.new(k.resolved_path) }
-      linked_kegs = outdated_kegs.select(&:linked?)
+      kegs = outdated_kegs(formula)
+      linked_kegs = kegs.select(&:linked?)
 
       if formula.opt_prefix.directory?
         keg = Keg.new(formula.opt_prefix.resolved_path)
@@ -118,13 +133,7 @@ module Homebrew
         }.compact,
       )
 
-      upgrade_version = if formula.optlinked?
-        "#{Keg.new(formula.opt_prefix).version} -> #{formula.pkg_version}"
-      else
-        "-> #{formula.pkg_version}"
-      end
-      oh1 "Upgrading #{Formatter.identifier(formula.full_specified_name)} " \
-          "#{upgrade_version} #{fi.options.to_a.join(" ")}"
+      print_upgrade_message(formula, fi.options)
 
       fi.prelude
       fi.fetch
@@ -132,7 +141,7 @@ module Homebrew
       # first we unlink the currently active keg for this formula otherwise it is
       # possible for the existing build to interfere with the build we are about to
       # do! Seriously, it happens!
-      outdated_kegs.each(&:unlink)
+      kegs.each(&:unlink)
 
       fi.install
       fi.finish

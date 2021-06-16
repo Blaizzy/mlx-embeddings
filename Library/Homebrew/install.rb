@@ -5,6 +5,7 @@ require "diagnostic"
 require "fileutils"
 require "hardware"
 require "development_tools"
+require "upgrade"
 
 module Homebrew
   # Helper module for performing (pre-)install checks.
@@ -124,6 +125,8 @@ module Homebrew
         # dependencies. Therefore before performing other checks we need to be
         # sure --force flag is passed.
         if f.outdated?
+          return true unless Homebrew::EnvConfig.no_install_upgrade?
+
           optlinked_version = Keg.for(f.opt_prefix).version
           onoe <<~EOS
             #{f.full_name} #{optlinked_version} is already installed.
@@ -266,8 +269,37 @@ module Homebrew
         quiet:                      quiet,
         verbose:                    verbose,
       )
+
+      if f.linked_keg.directory?
+        if Homebrew::EnvConfig.no_install_upgrade?
+          message = <<~EOS
+            #{f.name} #{f.linked_version} is already installed
+          EOS
+          message += if f.outdated? && !f.head?
+            <<~EOS
+              To upgrade to #{f.pkg_version}, run:
+                brew upgrade #{f.full_name}
+            EOS
+          else
+            <<~EOS
+              To install #{f.pkg_version}, first run:
+                brew unlink #{f.name}
+            EOS
+          end
+          raise CannotInstallFormulaError, message unless only_deps
+        elsif f.outdated? && !f.head?
+          puts "#{f.name} #{f.linked_version} is installed but outdated"
+          kegs = Upgrade.outdated_kegs(f)
+          linked_kegs = kegs.select(&:linked?)
+          Upgrade.print_upgrade_message(f, fi.options)
+        end
+      end
+
       fi.prelude
       fi.fetch
+
+      kegs.each(&:unlink) if kegs.present?
+
       fi.install
       fi.finish
     rescue FormulaInstallationAlreadyAttemptedError
@@ -276,6 +308,13 @@ module Homebrew
       nil
     rescue CannotInstallFormulaError => e
       ofail e.message
+    ensure
+      # Re-link kegs if upgrade fails
+      begin
+        linked_kegs.each(&:link) if linked_kegs.present? && !f.latest_version_installed?
+        rescue
+          nil
+      end
     end
   end
 end

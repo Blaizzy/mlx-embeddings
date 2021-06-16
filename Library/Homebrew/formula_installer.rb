@@ -344,30 +344,6 @@ class FormulaInstaller
       Homebrew::Install.perform_build_from_source_checks
     end
 
-    # not in initialize so upgrade can unlink the active keg before calling this
-    # function but after instantiating this class so that it can avoid having to
-    # relink the active keg if possible (because it is slow).
-    if formula.linked_keg.directory?
-      message = <<~EOS
-        #{formula.name} #{formula.linked_version} is already installed
-      EOS
-      if formula.outdated? && !formula.head?
-        message += <<~EOS
-          To upgrade to #{formula.pkg_version}, run:
-            brew upgrade #{formula.full_name}
-        EOS
-      elsif only_deps?
-        message = nil
-      else
-        # some other version is already installed *and* linked
-        message += <<~EOS
-          To install #{formula.pkg_version}, first run:
-            brew unlink #{formula.name}
-        EOS
-      end
-      raise CannotInstallFormulaError, message if message
-    end
-
     # Warn if a more recent version of this formula is available in the tap.
     begin
       if formula.pkg_version < (v = Formulary.factory(formula.full_name, force_bottle: force_bottle?).pkg_version)

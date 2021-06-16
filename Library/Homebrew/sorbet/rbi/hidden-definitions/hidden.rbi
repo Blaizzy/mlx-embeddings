@@ -8233,6 +8233,8 @@ module Homebrew::EnvConfig
 
   def self.no_install_cleanup?(); end
 
+  def self.no_install_upgrade?(); end
+
   def self.no_installed_dependents_check?(); end
 
   def self.no_proxy(); end
