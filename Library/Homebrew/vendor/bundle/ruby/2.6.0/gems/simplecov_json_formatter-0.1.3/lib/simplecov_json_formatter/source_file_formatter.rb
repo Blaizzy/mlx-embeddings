@@ -4,6 +4,7 @@ module SimpleCovJSONFormatter
   class SourceFileFormatter
     def initialize(source_file)
       @source_file = source_file
+      @line_coverage = nil
     end
 
     def format
@@ -17,7 +18,7 @@ module SimpleCovJSONFormatter
     private
 
     def line_coverage
-      @line_coverage || {
+      @line_coverage ||= {
         lines: lines
       }
     end
