@@ -487,7 +487,16 @@ module Homebrew
           #{HOMEBREW_PREFIX}/bin #{HOMEBREW_PREFIX}/sbin
           /Applications/Server.app/Contents/ServerRoot/usr/bin
           /Applications/Server.app/Contents/ServerRoot/usr/sbin
-        ].map(&:downcase)
+        ]
+        if OS.mac? && Hardware::CPU.physical_cpu_arm64?
+          allowlist += %W[
+            #{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}/bin
+            #{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}/sbin
+            #{HOMEBREW_DEFAULT_PREFIX}/bin
+            #{HOMEBREW_DEFAULT_PREFIX}/sbin
+          ]
+        end
+        allowlist.map!(&:downcase)
 
         paths.each do |p|
           next if allowlist.include?(p.downcase) || !File.directory?(p)

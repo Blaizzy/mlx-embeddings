@@ -316,10 +316,18 @@ module Homebrew
         end
 
         if gettext&.linked_keg&.directory?
-          homebrew_owned = @found.all? do |path|
-            Pathname.new(path).realpath.to_s.start_with? "#{HOMEBREW_CELLAR}/gettext"
+          allowlist = ["#{HOMEBREW_CELLAR}/gettext"]
+          if Hardware::CPU.physical_cpu_arm64?
+            allowlist += %W[
+              #{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}/Cellar/gettext
+              #{HOMEBREW_DEFAULT_PREFIX}/Cellar/gettext
+            ]
           end
-          return if homebrew_owned
+
+          return if @found.all? do |path|
+            realpath = Pathname.new(path).realpath.to_s
+            allowlist.any? { |rack| realpath.start_with?(rack) }
+          end
         end
 
         inject_file_list @found, <<~EOS
