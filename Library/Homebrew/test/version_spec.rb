@@ -479,6 +479,12 @@ describe Version do
     specify "version internal dash" do
       expect(described_class.create("1.1-2"))
         .to be_detected_from("https://brew.sh/foo-arse-1.1-2.tar.gz")
+      expect(described_class.create("3.3.04-1"))
+        .to be_detected_from("https://brew.sh/3.3.04-1.tar.gz")
+      expect(described_class.create("1.2-20200102"))
+        .to be_detected_from("https://brew.sh/v1.2-20200102.tar.gz")
+      expect(described_class.create("3.6.6-0.2"))
+        .to be_detected_from("https://brew.sh/v3.6.6-0.2.tar.gz")
     end
 
     specify "version single digit" do
