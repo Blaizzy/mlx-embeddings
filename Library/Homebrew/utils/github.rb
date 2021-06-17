@@ -498,7 +498,7 @@ module GitHub
         ohai "git checkout --no-track -b #{branch} #{remote}/#{remote_branch}"
         ohai "git commit --no-edit --verbose --message='#{commit_message}'" \
              " -- #{changed_files.join(" ")}"
-        ohai "git push --set-upstream $HUB_REMOTE #{branch}:#{branch}"
+        ohai "git push --set-upstream #{remote_url} #{branch}:#{branch}"
         ohai "git checkout --quiet #{previous_branch}"
         ohai "create pull request with GitHub API (base branch: #{remote_branch})"
       else
