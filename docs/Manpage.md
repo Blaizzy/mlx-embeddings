@@ -1717,16 +1717,12 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Print test step output in real time. Has the side effect of passing output as raw bytes instead of re-encoding in UTF-8.
 * `--test-default-formula`:
   Use a default testing formula when not building a tap and no other formulae are specified.
-* `--bintray-org`:
-  Upload bottles to the given Bintray organisation.
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 * `--git-name`:
   Set the Git author/committer names to the given name.
 * `--git-email`:
   Set the Git author/committer email to the given email.
-* `--ci-upload`:
-  Use the Homebrew CI bottle upload options.
 * `--publish`:
   Publish the uploaded bottles.
 * `--skip-recursive-dependents`:
