@@ -24,13 +24,6 @@ module Homebrew
   end
 
   def man
-    odeprecated "`brew man`", "`brew generate-man-completions`"
-
-    args = man_args.parse
-    cmd = ["generate-man-completions"]
-    cmd << "--fail-if-not-changed" if args.fail_if_not_changed?
-
-    brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path
-    system ENV["HOMEBREW_RUBY_PATH"], brew_rb, *cmd
+    odisabled "`brew man`", "`brew generate-man-completions`"
   end
 end

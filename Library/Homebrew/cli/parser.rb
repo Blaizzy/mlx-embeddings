@@ -406,18 +406,6 @@ module Homebrew
         end
       end
 
-      def max_named(_count)
-        odisabled "`max_named`", "`named_args max:`"
-      end
-
-      def min_named(_count_or_type)
-        odisabled "`min_named`", "`named_args min:`"
-      end
-
-      def named(_count_or_type)
-        odisabled "`named`", "`named_args`"
-      end
-
       sig { void }
       def hide_from_man_page!
         @hide_from_man_page = true

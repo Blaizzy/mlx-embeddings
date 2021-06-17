@@ -81,10 +81,6 @@ module Hardware
         end
       end
 
-      def universal_archs
-        odisabled "Hardware::CPU.universal_archs"
-      end
-
       sig { returns(Symbol) }
       def type
         case RUBY_PLATFORM

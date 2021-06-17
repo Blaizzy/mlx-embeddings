@@ -12,7 +12,6 @@ Style/Documentation:
     - "global.rb"
     - "keg_relocate.rb"
     - "os/linux/global.rb"
-    - "os/mac/architecture_list.rb"
     - "os/mac/global.rb"
     - "os/mac/keg.rb"
     - "reinstall.rb"
