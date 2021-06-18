@@ -1056,9 +1056,11 @@ class FormulaInstaller
     # * Installing from a local bottle, or
     # * The formula doesn't exist in the tap (or the tap isn't installed), or
     # * The formula in the tap has a different pkg_version.
+    #
     # In all other cases, including if the formula from the keg is unreadable
-    # (third-party taps may `require` some of their own libraries), use the
-    # formula from the tap.
+    # (third-party taps may `require` some of their own libraries) or if there
+    # is no formula present in the keg (as is the case with old bottles), use
+    # the formula from the tap.
     formula_path = begin
       keg_formula_path = formula.opt_prefix/".brew/#{formula.name}.rb"
       tap_formula_path = formula.path
@@ -1073,7 +1075,7 @@ class FormulaInstaller
       else
         tap_formula_path
       end
-    rescue FormulaUnreadableError
+    rescue FormulaUnavailableError, FormulaUnreadableError
       tap_formula_path
     end
 
