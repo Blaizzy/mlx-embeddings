@@ -1139,5 +1139,60 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
     end
+
+    describe "#audit_conflicts" do
+      before do
+        # We don't really test FormulaTextAuditor here
+        allow(File).to receive(:open).and_return("")
+      end
+
+      specify "it warns when conflicting with non-existing formula" do
+        foo = formula("foo") do
+          url "https://brew.sh/bar-1.0.tgz"
+
+          conflicts_with "bar"
+        end
+
+        fa = described_class.new foo
+        fa.audit_conflicts
+
+        expect(fa.problems.first[:message])
+          .to match("Can't find conflicting formula \"bar\"")
+      end
+
+      specify "it warns when conflicting with itself" do
+        foo = formula("foo") do
+          url "https://brew.sh/bar-1.0.tgz"
+
+          conflicts_with "foo"
+        end
+        stub_formula_loader foo
+
+        fa = described_class.new foo
+        fa.audit_conflicts
+
+        expect(fa.problems.first[:message])
+          .to match("Formula should not conflict with itself")
+      end
+
+      specify "it warns when another formula does not have a symmetric conflict" do
+        foo = formula("foo") do
+          url "https://brew.sh/foo-1.0.tgz"
+        end
+        stub_formula_loader foo
+
+        bar = formula("bar") do
+          url "https://brew.sh/bar-1.0.tgz"
+
+          conflicts_with "foo"
+        end
+
+        fa = described_class.new bar
+        fa.audit_conflicts
+
+        expect(fa.problems.first[:message])
+          .to match("Formula foo should also have a conflict declared with bar")
+      end
+    end
   end
 end
