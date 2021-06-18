@@ -511,7 +511,7 @@ reinstalled formulae or, every 30 days, for all formulae.
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 
-### `search`, `-S` [*`options`*] [*`text`*|`/`*`regex`*`/` ...]
+### `search`, `-S` [*`options`*] *`text`*|`/`*`regex`*`/` [...]
 
 Perform a substring search of cask tokens and formula names for *`text`*. If *`text`*
 is flanked by slashes, it is interpreted as a regular expression.

@@ -177,7 +177,6 @@ __brew_internal_commands() {
     'log:Show the `git log` for formula, or show the log for the Homebrew repository if no formula is provided'
     'man:Generate Homebrew'\''s manpages'
     'migrate:Migrate renamed packages to new names, where formula are old names of packages'
-    'mirror:Reupload the stable URL of a formula for use as a mirror'
     'missing:Check the given formula kegs for missing dependencies'
     'options:Show install options specific to formula'
     'outdated:List installed casks and formulae that have an updated version available'
@@ -191,7 +190,6 @@ __brew_internal_commands() {
     'readall:Import all items from the specified tap, or from all installed taps if none is provided'
     'reinstall:Uninstall and then reinstall a formula or cask using the same options it was originally installed with, plus any appended options specific to a formula'
     'release:Create a new draft Homebrew/brew release with the appropriate version number and release notes'
-    'release-notes:Print the merged pull requests on Homebrew/brew between two Git refs'
     'rubocop:Installs, configures and runs Homebrew'\''s `rubocop`'
     'ruby:Run a Ruby instance with Homebrew'\''s libraries loaded'
     'search:Perform a substring search of cask tokens and formula names for text'
@@ -1193,15 +1191,6 @@ _brew_migrate() {
     '*::installed_formula:__brew_installed_formulae'
 }
 
-# brew mirror
-_brew_mirror() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
-}
-
 # brew missing
 _brew_missing() {
   _arguments \
@@ -1418,16 +1407,6 @@ _brew_release() {
     '--help[Show this message]' \
     '(--minor)--major[Create a major release]' \
     '(--major)--minor[Create a minor release]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
-}
-
-# brew release-notes
-_brew_release_notes() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--markdown[Print as a Markdown list]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
 }

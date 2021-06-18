@@ -58,7 +58,6 @@ log
 ls
 man
 migrate
-mirror
 missing
 options
 outdated
@@ -72,7 +71,6 @@ prof
 readall
 reinstall
 release
-release-notes
 remove
 rm
 rubocop

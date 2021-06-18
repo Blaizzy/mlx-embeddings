@@ -972,13 +972,6 @@ __fish_brew_complete_arg 'migrate' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'migrate' -a '(__fish_brew_suggest_formulae_installed)'
 
 
-__fish_brew_complete_cmd 'mirror' 'Reupload the stable URL of a formula for use as a mirror'
-__fish_brew_complete_arg 'mirror' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'mirror' -l help -d 'Show this message'
-__fish_brew_complete_arg 'mirror' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'mirror' -l verbose -d 'Make some output more verbose'
-
-
 __fish_brew_complete_cmd 'missing' 'Check the given formula kegs for missing dependencies'
 __fish_brew_complete_arg 'missing' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'missing' -l help -d 'Show this message'
@@ -1161,14 +1154,6 @@ __fish_brew_complete_arg 'release' -l major -d 'Create a major release'
 __fish_brew_complete_arg 'release' -l minor -d 'Create a minor release'
 __fish_brew_complete_arg 'release' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'release' -l verbose -d 'Make some output more verbose'
-
-
-__fish_brew_complete_cmd 'release-notes' 'Print the merged pull requests on Homebrew/brew between two Git refs'
-__fish_brew_complete_arg 'release-notes' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'release-notes' -l help -d 'Show this message'
-__fish_brew_complete_arg 'release-notes' -l markdown -d 'Print as a Markdown list'
-__fish_brew_complete_arg 'release-notes' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'release-notes' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'remove' 'Uninstall a formula or cask'
