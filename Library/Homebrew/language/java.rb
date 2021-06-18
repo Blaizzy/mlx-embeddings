@@ -36,25 +36,12 @@ module Language
     end
     private_class_method :java_home_shell
 
-    def self.short_java_home_shell(version = nil)
-      Utils.shortened_brew_path(java_home(version))
-    end
-    private_class_method :short_java_home_shell
-
     def self.java_home_env(version = nil)
       { JAVA_HOME: java_home_shell(version) }
     end
 
-    def self.short_java_home_env(version = nil)
-      { JAVA_HOME: short_java_home_shell(version) }
-    end
-
     def self.overridable_java_home_env(version = nil)
       { JAVA_HOME: "${JAVA_HOME:-#{java_home_shell(version)}}" }
-    end
-
-    def self.overridable_short_java_home_env(version = nil)
-      { JAVA_HOME: "${JAVA_HOME:-#{short_java_home_shell(version)}}" }
     end
   end
 end
