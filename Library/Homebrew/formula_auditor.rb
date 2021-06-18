@@ -314,13 +314,14 @@ module Homebrew
     end
 
     def audit_conflicts
+      tap = formula.tap
       formula.conflicts.each do |c|
         conflicting_formula = Formulary.factory(c.name)
+        next if tap != conflicting_formula.tap
+
         problem "Formula should not conflict with itself" if formula == conflicting_formula
 
-        next unless @core_tap
-
-        if CoreTap.instance.formula_renames.key?(c.name) || Formula.aliases.include?(c.name)
+        if tap.formula_renames.key?(c.name) || tap.aliases.include?(c.name)
           problem "Formula conflict should be declared using " \
                   "canonical name (#{conflicting_formula.name}) instead of #{c.name}"
         end
@@ -328,7 +329,7 @@ module Homebrew
         rev_conflict_found = false
         conflicting_formula.conflicts.each do |rc|
           rc_formula = Formulary.factory(rc.name)
-          if CoreTap.instance.formula_renames.key?(rc.name) || Formula.aliases.include?(rc.name)
+          if tap.formula_renames.key?(rc.name) || tap.aliases.include?(rc.name)
             problem "Formula #{conflicting_formula.name} conflict should be declared using " \
                     "canonical name (#{rc_formula.name}) instead of #{rc.name}"
           end

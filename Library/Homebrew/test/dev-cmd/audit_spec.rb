@@ -58,13 +58,20 @@ module Homebrew
   end
 
   describe FormulaAuditor do
-    def formula_auditor(name, text, options = {})
-      path = Pathname.new "#{dir}/#{name}.rb"
-      path.open("w") do |f|
-        f.write text
+    def formula_auditor(name_or_formula, text = nil, options = {})
+      formula = case name_or_formula
+      when String
+        path = Pathname.new "#{dir}/#{name_or_formula}.rb"
+        path.open("w") do |f|
+          f.write text
+        end
+
+        Formulary.factory(path)
+      when Formula
+        name_or_formula
       end
 
-      described_class.new(Formulary.factory(path), options)
+      described_class.new(formula, options)
     end
 
     let(:dir) { mktmpdir }
@@ -1141,15 +1148,18 @@ module Homebrew
     end
 
     describe "#audit_conflicts" do
+      before do
+        allow(File).to receive(:open).and_return("")
+      end
+
       specify "it warns when conflicting with non-existing formula" do
-        fa = formula_auditor "foo", <<~RUBY, core_tap: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
+        foo = formula("foo") do
+          url "https://brew.sh/bar-1.0.tgz"
 
-            conflicts_with "bar"
-          end
-        RUBY
+          conflicts_with "bar"
+        end
 
+        fa = formula_auditor foo
         fa.audit_conflicts
 
         expect(fa.problems.first[:message])
@@ -1157,14 +1167,14 @@ module Homebrew
       end
 
       specify "it warns when conflicting with itself" do
-        fa = formula_auditor "foo", <<~RUBY, core_tap: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
+        foo = formula("foo") do
+          url "https://brew.sh/bar-1.0.tgz"
 
-            conflicts_with "#{dir}/foo.rb"
-          end
-        RUBY
+          conflicts_with "foo"
+        end
+        stub_formula_loader foo
 
+        fa = formula_auditor foo
         fa.audit_conflicts
 
         expect(fa.problems.first[:message])
@@ -1172,24 +1182,22 @@ module Homebrew
       end
 
       specify "it warns when another formula does not have a symmetric conflict" do
-        formula_auditor "bar", <<~RUBY, core_tap: true
-          class Bar < Formula
-            url "https://brew.sh/foo-1.0.tgz"
-          end
-        RUBY
+        foo = formula("foo") do
+          url "https://brew.sh/foo-1.0.tgz"
+        end
+        stub_formula_loader foo
 
-        fa = formula_auditor "foo", <<~RUBY, core_tap: true
-          class Foo < Formula
-            url "https://brew.sh/foo-1.0.tgz"
+        bar = formula("bar") do
+          url "https://brew.sh/bar-1.0.tgz"
 
-            conflicts_with "#{dir}/bar.rb"
-          end
-        RUBY
+          conflicts_with "foo"
+        end
 
+        fa = formula_auditor bar
         fa.audit_conflicts
 
         expect(fa.problems.first[:message])
-          .to match("Formula bar should also have a conflict declared with foo")
+          .to match("Formula foo should also have a conflict declared with bar")
       end
     end
   end
