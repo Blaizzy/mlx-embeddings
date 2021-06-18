@@ -361,6 +361,8 @@ module Formulary
     end
 
     def get_formula(*)
+      raise CoreTapFormulaUnavailableError, name if !CoreTap.instance.installed? && ENV["HOMEBREW_JSON_CORE"].present?
+
       raise FormulaUnavailableError, name
     end
   end
@@ -395,7 +397,7 @@ module Formulary
   )
     raise ArgumentError, "Formulae must have a ref!" unless ref
 
-    if ENV["HOMEBREW_BOTTLE_JSON"].present? &&
+    if ENV["HOMEBREW_JSON_CORE"].present? &&
        @formula_name_local_bottle_path_map.present? &&
        @formula_name_local_bottle_path_map.key?(ref)
       ref = @formula_name_local_bottle_path_map[ref]
@@ -427,9 +429,7 @@ module Formulary
   # @param formula_name the formula name string to map.
   # @param local_bottle_path a path pointing to the target bottle archive.
   def self.map_formula_name_to_local_bottle_path(formula_name, local_bottle_path)
-    if ENV["HOMEBREW_BOTTLE_JSON"].blank?
-      raise UsageError, "HOMEBREW_BOTTLE_JSON not set but required for #{__method__}!"
-    end
+    raise UsageError, "HOMEBREW_JSON_CORE not set but required for #{__method__}!" if ENV["HOMEBREW_JSON_CORE"].blank?
 
     @formula_name_local_bottle_path_map ||= {}
     @formula_name_local_bottle_path_map[formula_name] = Pathname(local_bottle_path).realpath

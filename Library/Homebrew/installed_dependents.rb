@@ -50,7 +50,8 @@ module InstalledDependents
       when Formula
         dependent.missing_dependencies(hide: keg_names)
       when Cask::Cask
-        CaskDependent.new(dependent).runtime_dependencies.map(&:to_formula)
+        # When checking for cask dependents, we don't care about missing dependencies
+        CaskDependent.new(dependent).runtime_dependencies(ignore_missing: true).map(&:to_formula)
       end
 
       required_kegs = required.map do |f|

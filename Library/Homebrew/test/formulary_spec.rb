@@ -216,12 +216,12 @@ describe Formulary do
         described_class.factory("formula-to-map")
       }.to raise_error(FormulaUnavailableError)
 
-      ENV["HOMEBREW_BOTTLE_JSON"] = nil
+      ENV["HOMEBREW_JSON_CORE"] = nil
       expect {
         described_class.map_formula_name_to_local_bottle_path "formula-to-map", formula_path
-      }.to raise_error(UsageError, /HOMEBREW_BOTTLE_JSON not set/)
+      }.to raise_error(UsageError, /HOMEBREW_JSON_CORE not set/)
 
-      ENV["HOMEBREW_BOTTLE_JSON"] = "1"
+      ENV["HOMEBREW_JSON_CORE"] = "1"
       described_class.map_formula_name_to_local_bottle_path "formula-to-map", formula_path
 
       expect(described_class.factory("formula-to-map")).to be_kind_of(Formula)
