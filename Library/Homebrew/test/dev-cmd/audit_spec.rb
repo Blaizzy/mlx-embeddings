@@ -58,20 +58,13 @@ module Homebrew
   end
 
   describe FormulaAuditor do
-    def formula_auditor(name_or_formula, text = nil, options = {})
-      formula = case name_or_formula
-      when String
-        path = Pathname.new "#{dir}/#{name_or_formula}.rb"
-        path.open("w") do |f|
-          f.write text
-        end
-
-        Formulary.factory(path)
-      when Formula
-        name_or_formula
+    def formula_auditor(name, text, options = {})
+      path = Pathname.new "#{dir}/#{name}.rb"
+      path.open("w") do |f|
+        f.write text
       end
 
-      described_class.new(formula, options)
+      described_class.new(Formulary.factory(path), options)
     end
 
     let(:dir) { mktmpdir }
@@ -1149,6 +1142,7 @@ module Homebrew
 
     describe "#audit_conflicts" do
       before do
+        # We don't really test FormulaTextAuditor here
         allow(File).to receive(:open).and_return("")
       end
 
@@ -1159,7 +1153,7 @@ module Homebrew
           conflicts_with "bar"
         end
 
-        fa = formula_auditor foo
+        fa = described_class.new foo
         fa.audit_conflicts
 
         expect(fa.problems.first[:message])
@@ -1174,7 +1168,7 @@ module Homebrew
         end
         stub_formula_loader foo
 
-        fa = formula_auditor foo
+        fa = described_class.new foo
         fa.audit_conflicts
 
         expect(fa.problems.first[:message])
@@ -1193,7 +1187,7 @@ module Homebrew
           conflicts_with "foo"
         end
 
-        fa = formula_auditor bar
+        fa = described_class.new bar
         fa.audit_conflicts
 
         expect(fa.problems.first[:message])
