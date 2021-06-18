@@ -1383,22 +1383,6 @@ _brew_migrate() {
   __brew_complete_installed_formulae
 }
 
-_brew_mirror() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "${cur}" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-    *)
-  esac
-}
-
 _brew_missing() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -1691,23 +1675,6 @@ _brew_release() {
       --help
       --major
       --minor
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-    *)
-  esac
-}
-
-_brew_release_notes() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "${cur}" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --markdown
       --quiet
       --verbose
       "
@@ -2472,7 +2439,6 @@ _brew() {
     ls) _brew_ls ;;
     man) _brew_man ;;
     migrate) _brew_migrate ;;
-    mirror) _brew_mirror ;;
     missing) _brew_missing ;;
     options) _brew_options ;;
     outdated) _brew_outdated ;;
@@ -2486,7 +2452,6 @@ _brew() {
     readall) _brew_readall ;;
     reinstall) _brew_reinstall ;;
     release) _brew_release ;;
-    release-notes) _brew_release_notes ;;
     remove) _brew_remove ;;
     rm) _brew_rm ;;
     ruby) _brew_ruby ;;
