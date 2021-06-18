@@ -19,14 +19,6 @@ describe Language::Java do
     end
   end
 
-  let(:expected_short_home) do
-    if OS.mac?
-      "$(brew --prefix)/opt/openjdk/libexec/openjdk.jdk/Contents/Home"
-    else
-      "$(brew --prefix)/opt/openjdk/libexec"
-    end
-  end
-
   before do
     allow(Formula).to receive(:[]).and_return(f)
     allow(f).to receive(:any_version_installed?).and_return(true)
@@ -57,18 +49,6 @@ describe Language::Java do
     end
   end
 
-  describe "::short_java_home_env" do
-    it "returns short java_home path if version specified" do
-      short_java_home_env = described_class.short_java_home_env("1.8+")
-      expect(short_java_home_env[:JAVA_HOME]).to eql(expected_short_home)
-    end
-
-    it "returns short java_home path if version is not specified" do
-      short_java_home_env = described_class.short_java_home_env
-      expect(short_java_home_env[:JAVA_HOME]).to eql(expected_short_home)
-    end
-  end
-
   describe "::overridable_java_home_env" do
     it "returns java_home path if version specified" do
       overridable_java_home_env = described_class.overridable_java_home_env("1.8+")
@@ -78,18 +58,6 @@ describe Language::Java do
     it "returns java_home path if version is not specified" do
       overridable_java_home_env = described_class.overridable_java_home_env
       expect(overridable_java_home_env[:JAVA_HOME]).to eql("${JAVA_HOME:-#{expected_home}}")
-    end
-  end
-
-  describe "::overridable_short_java_home_env" do
-    it "returns short java_home path if version specified" do
-      overridable_short_java_home_env = described_class.overridable_short_java_home_env("1.8+")
-      expect(overridable_short_java_home_env[:JAVA_HOME]).to eql("${JAVA_HOME:-#{expected_short_home}}")
-    end
-
-    it "returns short java_home path if version is not specified" do
-      overridable_short_java_home_env = described_class.overridable_short_java_home_env
-      expect(overridable_short_java_home_env[:JAVA_HOME]).to eql("${JAVA_HOME:-#{expected_short_home}}")
     end
   end
 end
