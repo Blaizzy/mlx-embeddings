@@ -60,8 +60,7 @@ module Homebrew
       conflicts "--open", "--closed"
       conflicts(*package_manager_switches)
 
-      # TODO: (3.2) Add `min: 1` the `named_args` once `brew search --cask` is removed
-      named_args :text_or_regex
+      named_args :text_or_regex, min: 1
     end
   end
 
@@ -72,12 +71,6 @@ module Homebrew
       _, url = package_manager
       exec_browser url.call(URI.encode_www_form_component(args.named.join(" ")))
       return
-    end
-
-    if args.no_named?
-      odisabled "`brew search --cask` with no arguments to output casks", "`brew casks`" if args.cask?
-
-      raise UsageError, "This command requires at least 1 text or regex argument."
     end
 
     query = args.named.join(" ")

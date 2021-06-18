@@ -491,7 +491,7 @@ class BottleSpecification
 
   def cellar(val = nil)
     if val.present?
-      odeprecated(
+      odisabled(
         "`cellar` in a bottle block",
         "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
       )
@@ -552,7 +552,7 @@ class BottleSpecification
       end
 
       if digest && tag
-        odeprecated(
+        odisabled(
           '`sha256 "digest" => :tag` in a bottle block',
           '`brew style --fix` on the formula to update the style or use `sha256 tag: "digest"`',
         )

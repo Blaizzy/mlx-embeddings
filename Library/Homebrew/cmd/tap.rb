@@ -56,17 +56,9 @@ module Homebrew
     elsif args.no_named?
       puts Tap.names
     else
-      if args.full?
-        opoo "`brew tap --full` is now a no-op!"
-        # TODO: (3.2) Uncomment the following line and remove the `opoo` above
-        # odeprecated "`brew tap --full`"
-      end
+      odeprecated "`brew tap --full`" if args.full?
 
-      if args.shallow?
-        opoo "`brew tap --shallow` is now a no-op!"
-        # TODO: (3.2) Uncomment the following line and remove the `opoo` above
-        # odeprecated "`brew tap --shallow`"
-      end
+      odeprecated "`brew tap --shallow`" if args.shallow?
 
       tap = Tap.fetch(args.named.first)
       begin

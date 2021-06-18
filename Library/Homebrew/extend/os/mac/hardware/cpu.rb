@@ -6,7 +6,7 @@ require "macho"
 module Hardware
   class CPU
     class << self
-      undef type, family, universal_archs, features, sse4?
+      undef type, family, features, sse4?
 
       # These methods use info spewed out by sysctl.
       # Look in <mach/machine.h> for decoding info.
@@ -29,16 +29,6 @@ module Hardware
         else
           :dunno
         end
-      end
-
-      # Returns an array that's been extended with {ArchitectureListExtension},
-      # which provides helpers like `#as_arch_flags`.
-      def universal_archs
-        # Amazingly, this order (64, then 32) matters. It shouldn't, but it
-        # does. GCC (some versions? some systems?) can blow up if the other
-        # order is used.
-        # https://superuser.com/questions/740563/gcc-4-8-on-macos-fails-depending-on-arch-order
-        [arch_64_bit, arch_32_bit].extend ArchitectureListExtension
       end
 
       # True when running under an Intel-based shell via Rosetta 2 on an
