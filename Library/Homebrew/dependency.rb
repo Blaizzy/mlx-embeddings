@@ -98,7 +98,7 @@ class Dependency
     # the list.
     # The default filter, which is applied when a block is not given, omits
     # optionals and recommendeds based on what the dependent has asked for
-    def expand(dependent, deps = dependent.deps, cache_key: nil, &block)
+    def expand(dependent, deps = dependent.deps, cache_key: nil, ignore_missing: false, &block)
       # Keep track dependencies to avoid infinite cyclic dependency recursion.
       @expand_stack ||= []
       @expand_stack.push dependent.name
@@ -113,19 +113,19 @@ class Dependency
       deps.each do |dep|
         next if dependent.name == dep.name
 
-        case action(dependent, dep, &block)
+        case action(dependent, dep, ignore_missing: ignore_missing, &block)
         when :prune
           next
         when :skip
           next if @expand_stack.include? dep.name
 
-          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, &block))
+          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, ignore_missing: ignore_missing, &block))
         when :keep_but_prune_recursive_deps
           expanded_deps << dep
         else
           next if @expand_stack.include? dep.name
 
-          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, &block))
+          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, ignore_missing: ignore_missing, &block))
           expanded_deps << dep
         end
       end
@@ -137,9 +137,9 @@ class Dependency
       @expand_stack.pop
     end
 
-    def action(dependent, dep, &block)
+    def action(dependent, dep, ignore_missing: false, &block)
       catch(:action) do
-        prune if dep.unavailable_core_formula?
+        prune if ignore_missing && dep.unavailable_core_formula?
 
         if block
           yield dependent, dep
