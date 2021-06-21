@@ -14,6 +14,7 @@
 /Library/Homebrew/test/.gem
 /Library/Homebrew/test/.subversion
 /Library/Homebrew/test/coverage
+/Library/Homebrew/test/junit
 /Library/Homebrew/test/fs_leak_log
 /Library/Homebrew/vendor/portable-ruby
 /Library/Taps
@@ -133,6 +134,7 @@
 **/vendor/bundle/ruby/*/gems/rspec-*/
 **/vendor/bundle/ruby/*/gems/rspec-core-*/
 **/vendor/bundle/ruby/*/gems/rspec-expectations-*/
+**/vendor/bundle/ruby/*/gems/rspec_junit_formatter-*/
 **/vendor/bundle/ruby/*/gems/rspec-its-*/
 **/vendor/bundle/ruby/*/gems/rspec-mocks-*/
 **/vendor/bundle/ruby/*/gems/rspec-retry-*/
