@@ -14,27 +14,17 @@ module ReleaseNotes
       .returns(String)
   }
   def generate_release_notes(start_ref, end_ref, markdown: false)
-    log_output = Utils.popen_read(
+    Utils.popen_read(
       "git", "-C", HOMEBREW_REPOSITORY, "log", "--pretty=format:'%s >> - %b%n'", "#{start_ref}..#{end_ref}"
-    ).lines.grep(/Merge pull request/)
-
-    log_output.map! do |s|
+    ).lines.map do |s|
       matches = s.match(%r{.*Merge pull request #(?<pr>\d+) from (?<user>[^/]+)/[^>]*>> - (?<body>.*)})
-      body = if matches[:body].empty?
-        s.gsub(/.*(Merge pull request .*) >> - .*/, "\\1").chomp
-      else
-        matches[:body]
-      end
-      "https://github.com/Homebrew/brew/pull/#{matches[:pr]} (@#{matches[:user]}) - #{body}\n"
-    end
+      next if matches.blank?
+      next if matches[:user] == "Homebrew"
 
-    if markdown
-      log_output.map! do |s|
-        /(.*\d)+ \(@(.+)\) - (.*)/ =~ s
-        "- [#{Regexp.last_match(3)}](#{Regexp.last_match(1)}) (@#{Regexp.last_match(2)})\n"
-      end
-    end
+      body = matches[:body].presence
+      body ||= s.gsub(/.*(Merge pull request .*) >> - .*/, "\\1").chomp
 
-    log_output.join
+      "- [#{body}](https://github.com/Homebrew/brew/pull/#{matches[:pr]}) (@#{matches[:user]})\n"
+    end.compact.join
   end
 end

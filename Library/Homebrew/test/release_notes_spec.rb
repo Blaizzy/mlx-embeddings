@@ -18,19 +18,10 @@ describe ReleaseNotes do
   end
 
   describe ".generate_release_notes" do
-    it "generates release notes" do
-      expect(described_class.generate_release_notes("release-notes-testing", "HEAD")).to eq <<~NOTES
-        https://github.com/Homebrew/brew/pull/3 (@User) - Merge pull request #3 from User/another_change
-        https://github.com/Homebrew/brew/pull/2 (@User) - Do something else
-        https://github.com/Homebrew/brew/pull/1 (@Homebrew) - Do something
-      NOTES
-    end
-
     it "generates markdown release notes" do
-      expect(described_class.generate_release_notes("release-notes-testing", "HEAD", markdown: true)).to eq <<~NOTES
+      expect(described_class.generate_release_notes("release-notes-testing", "HEAD")).to eq <<~NOTES
         - [Merge pull request #3 from User/another_change](https://github.com/Homebrew/brew/pull/3) (@User)
         - [Do something else](https://github.com/Homebrew/brew/pull/2) (@User)
-        - [Do something](https://github.com/Homebrew/brew/pull/1) (@Homebrew)
       NOTES
     end
   end
