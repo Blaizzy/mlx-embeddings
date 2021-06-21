@@ -83,6 +83,16 @@ Rails/ActiveSupportAliases:
   Enabled: true
   VersionAdded: '0.48'
 
+Rails/AddColumnIndex:
+  Description: >-
+    Rails migrations don't make use of a given `index` key, but also
+    doesn't given an error when it's used, so it makes it seem like an
+    index might be used.
+  Enabled: pending
+  VersionAdded: '2.11'
+  Include:
+    - db/migrate/*.rb
+
 Rails/AfterCommitOverride:
   Description: >-
                   This cop enforces that there is only one call to `after_commit`
@@ -193,7 +203,7 @@ Rails/Date:
                   such as Date.today, Date.current etc.
   Enabled: true
   VersionAdded: '0.30'
-  VersionChanged: '0.33'
+  VersionChanged: '2.11'
   # The value `strict` disallows usage of `Date.today`, `Date.current`,
   # `Date#to_time` etc.
   # The value `flexible` allows usage of `Date.current`, `Date.yesterday`, etc
@@ -203,6 +213,7 @@ Rails/Date:
   SupportedStyles:
     - strict
     - flexible
+  AllowToTime: true
 
 Rails/DefaultScope:
   Description: 'Avoid use of `default_scope`.'
@@ -240,6 +251,12 @@ Rails/DynamicFindBy:
   AllowedReceivers:
     - Gem::Specification
 
+Rails/EagerEvaluationLogMessage:
+  Description: 'Checks that blocks are used for interpolated strings passed to `Rails.logger.debug`.'
+  Reference: 'https://guides.rubyonrails.org/debugging_rails_applications.html#impact-of-logs-on-performance'
+  Enabled: pending
+  VersionAdded: '2.11'
+
 Rails/EnumHash:
   Description: 'Prefer hash syntax over array syntax when defining enums.'
   StyleGuide: 'https://rails.rubystyle.guide#enums'
@@ -262,8 +279,10 @@ Rails/EnvironmentComparison:
 
 Rails/EnvironmentVariableAccess:
   Description: 'Do not access `ENV` directly after initialization.'
-  Enabled: pending
+  # TODO: Set to `pending` status in RuboCop Rails 2 series when migration doc will be written.
+  Enabled: false
   VersionAdded: '2.10'
+  VersionChanged: '2.11'
   Include:
     - app/**/*.rb
     - lib/**/*.rb
@@ -286,6 +305,11 @@ Rails/Exit:
   Exclude:
     - lib/**/*.rake
 
+Rails/ExpandedDateRange:
+  Description: 'Checks for expanded date range.'
+  Enabled: pending
+  VersionAdded: '2.11'
+
 Rails/FilePath:
   Description: 'Use `Rails.root.join` for file path joining.'
   Enabled: true
@@ -301,6 +325,8 @@ Rails/FindBy:
   StyleGuide: 'https://rails.rubystyle.guide#find_by'
   Enabled: true
   VersionAdded: '0.30'
+  VersionChanged: '2.11'
+  IgnoreWhereFirst: true
   Include:
     - app/models/**/*.rb
 
@@ -362,10 +388,19 @@ Rails/HttpStatus:
   Description: 'Enforces use of symbolic or numeric value to define HTTP status.'
   Enabled: true
   VersionAdded: '0.54'
+  VersionChanged: '2.11'
   EnforcedStyle: symbolic
   SupportedStyles:
     - numeric
     - symbolic
+
+Rails/I18nLocaleAssignment:
+  Description: 'Prefer the usage of `I18n.with_locale` instead of manually updating `I18n.locale` value.'
+  Enabled: 'pending'
+  VersionAdded: '2.11'
+  Include:
+    - spec/**/*.rb
+    - test/**/*.rb
 
 Rails/IgnoredSkipActionFilterOption:
   Description: 'Checks that `if` and `only` (or `except`) are not used together as options of `skip_*` action filter.'
@@ -783,6 +818,13 @@ Rails/UnknownEnv:
     - development
     - test
     - production
+
+Rails/UnusedIgnoredColumns:
+  Description: 'Remove a column that does not exist from `ignored_columns`.'
+  Enabled: pending
+  VersionAdded: '2.11'
+  Include:
+    - app/models/**/*.rb
 
 Rails/Validation:
   Description: 'Use validates :attribute, hash of validations.'
