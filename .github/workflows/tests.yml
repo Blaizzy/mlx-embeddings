@@ -320,3 +320,13 @@ jobs:
       - run: brew test-bot --only-formulae --test-default-formula
 
       - uses: codecov/codecov-action@29386c70ef20e286228c72b668a06fd0e8399192
+
+      - name: Upload test results to BuildPulse for flaky test detection
+        if: '!cancelled()' # Run this step even when the tests fail. Skip if the workflow is cancelled.
+        env:
+          BUILDPULSE_ACCESS_KEY_ID: ${{ secrets.BUILDPULSE_ACCESS_KEY_ID }}
+          BUILDPULSE_SECRET_ACCESS_KEY: ${{ secrets.BUILDPULSE_SECRET_ACCESS_KEY }}
+        run: |
+          curl -fsSL https://github.com/buildpulse/test-reporter/releases/latest/download/test-reporter-darwin-amd64 > ./buildpulse-test-reporter
+          chmod +x ./buildpulse-test-reporter
+          ./buildpulse-test-reporter submit Library/Homebrew/test/junit --account-id 1503512 --repository-id 53238813
