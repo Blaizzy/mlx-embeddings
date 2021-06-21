@@ -482,10 +482,13 @@ module GitHub
       changed_files += additional_files if additional_files.present?
 
       if args.dry_run? || (args.write? && !args.commit?)
-        unless args.no_fork?
+        if args.no_fork?
+          remote_url = Utils.popen_read("git", "remote", "get-url", "--push", "origin").chomp
+        else
           fork_message = "try to fork repository with GitHub API" \
                          "#{" into `#{args.fork_org}` organization" if args.fork_org}"
           ohai fork_message
+          remote_url = "FORK_URL"
         end
         ohai "git fetch --unshallow origin" if shallow
         ohai "git add #{changed_files.join(" ")}"
