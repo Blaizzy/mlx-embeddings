@@ -1043,7 +1043,7 @@ module Homebrew
       end
 
       def all
-        methods.map(&:to_s).grep(/^check_/)
+        methods.map(&:to_s).grep(/^check_/).sort
       end
 
       def cask_checks
