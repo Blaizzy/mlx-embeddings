@@ -38,7 +38,7 @@ module Homebrew
     checks = Diagnostic::Checks.new(verbose: args.verbose?)
 
     if args.list_checks?
-      puts checks.all.sort
+      puts checks.all
       return
     end
 
@@ -47,7 +47,7 @@ module Homebrew
         check_for_broken_symlinks
         check_missing_deps
       ]
-      methods = (checks.all.sort - slow_checks) + slow_checks
+      methods = (checks.all - slow_checks) + slow_checks
       methods -= checks.cask_checks if Cask::Caskroom.casks.blank?
     else
       methods = args.named
