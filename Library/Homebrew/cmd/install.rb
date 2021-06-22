@@ -268,7 +268,6 @@ module Homebrew
       puts "To install one of them, run (for example):\n  brew install #{formulae_search_results.first}"
     end
 
-    ofail e.message
     if (reason = MissingFormula.reason(e.name))
       $stderr.puts reason
       return
