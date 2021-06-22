@@ -71,7 +71,7 @@ module Homebrew
       latest_major_minor_version = "#{latest_version.major}.#{latest_version.minor.to_i}.0"
       ohai "Release notes since #{latest_major_minor_version} for #{new_version} blog post:"
       # release notes without username suffix or dependabot bumps
-      puts ReleaseNotes.generate_release_notes(latest_major_minor_version, "origin/HEAD", markdown: true)
+      puts ReleaseNotes.generate_release_notes(latest_major_minor_version, "origin/HEAD")
                        .lines
                        .reject { |l| l.include?(" (@Homebrew)") }
                        .map { |l| l.gsub(/ \(@[\w-]+\)$/, "") }
@@ -85,7 +85,7 @@ module Homebrew
     else
       ""
     end
-    release_notes += ReleaseNotes.generate_release_notes latest_version, "origin/HEAD", markdown: true
+    release_notes += ReleaseNotes.generate_release_notes latest_version, "origin/HEAD"
 
     begin
       release = GitHub.create_or_update_release "Homebrew", "brew", new_version, body: release_notes, draft: true
