@@ -322,7 +322,9 @@ jobs:
       - uses: codecov/codecov-action@29386c70ef20e286228c72b668a06fd0e8399192
 
       - name: Upload test results to BuildPulse for flaky test detection
-        if: '!cancelled()' # Run this step even when the tests fail. Skip if the workflow is cancelled.
+        # Only run this step for PRs where where we have access to secrets.
+        # Run this step even when the tests fail. Skip if the workflow is cancelled.
+        if: github.event.pull_request.head.repo.full_name == github.repository && !cancelled()
         env:
           BUILDPULSE_ACCESS_KEY_ID: ${{ secrets.BUILDPULSE_ACCESS_KEY_ID }}
           BUILDPULSE_SECRET_ACCESS_KEY: ${{ secrets.BUILDPULSE_SECRET_ACCESS_KEY }}
