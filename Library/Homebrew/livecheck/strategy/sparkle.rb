@@ -75,7 +75,12 @@ module Homebrew
             version ||= (item > "version").first&.text&.strip
 
             title = (item > "title").first&.text&.strip
-            pub_date = (item > "pubDate").first&.text&.strip&.presence&.yield_self { |d| Time.parse(d) }
+            pub_date = (item > "pubDate").first&.text&.strip&.presence&.yield_self do |date_string|
+              Time.parse(date_string)
+            rescue ArgumentError
+              # Omit unparseable strings (e.g. non-English dates)
+              nil
+            end
 
             if (match = title&.match(/(\d+(?:\.\d+)*)\s*(\([^)]+\))?\Z/))
               short_version ||= match[1]
