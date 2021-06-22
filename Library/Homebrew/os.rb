@@ -43,8 +43,8 @@ module OS
   if OS.mac?
     require "os/mac"
     # Don't tell people to report issues on unsupported configurations.
-    if !OS::Mac.prerelease? &&
-       !OS::Mac.outdated_release? &&
+    if !OS::Mac.version.prerelease? &&
+       !OS::Mac.version.outdated_release? &&
        ARGV.none? { |v| v.start_with?("--cc=") } &&
        ENV["HOMEBREW_PREFIX"] == "/usr/local"
       ISSUES_URL = "https://docs.brew.sh/Troubleshooting"

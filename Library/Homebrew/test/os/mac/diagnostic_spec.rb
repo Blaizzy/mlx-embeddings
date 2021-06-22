@@ -12,7 +12,8 @@ describe Homebrew::Diagnostic::Checks do
     macos_version = OS::Mac::Version.new("10.14")
     allow(OS::Mac).to receive(:version).and_return(macos_version)
     allow(OS::Mac).to receive(:full_version).and_return(macos_version)
-    allow(OS::Mac).to receive(:prerelease?).and_return(true)
+    allow(OS::Mac.version).to receive(:outdated_release?).and_return(false)
+    allow(OS::Mac.version).to receive(:prerelease?).and_return(true)
 
     expect(checks.check_for_unsupported_macos)
       .to match("We do not provide support for this pre-release version.")

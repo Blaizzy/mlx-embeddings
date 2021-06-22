@@ -246,7 +246,7 @@ class FormulaInstaller
       # check fails)
       elsif !Homebrew::EnvConfig.developer? &&
             (!installed_as_dependency? || !formula.any_version_installed?) &&
-            (!OS.mac? || !OS::Mac.outdated_release?)
+            (!OS.mac? || !OS::Mac.version.outdated_release?)
         <<~EOS
           #{formula}: no bottle available!
         EOS

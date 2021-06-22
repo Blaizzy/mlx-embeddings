@@ -19,7 +19,9 @@ module Utils
       def find_matching_tag(tag, no_older_versions: false)
         # Used primarily by developers testing beta macOS releases.
         if no_older_versions ||
-           (OS::Mac.prerelease? && Homebrew::EnvConfig.developer? && Homebrew::EnvConfig.skip_or_later_bottles?)
+           (OS::Mac.version.prerelease? &&
+            Homebrew::EnvConfig.developer? &&
+            Homebrew::EnvConfig.skip_or_later_bottles?)
           generic_find_matching_tag(tag)
         else
           generic_find_matching_tag(tag) ||
