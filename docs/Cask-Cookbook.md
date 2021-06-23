@@ -281,7 +281,7 @@ The value of the `appcast` stanza is a string, holding the URL for an appcast wh
 
 Note: The [`livecheck` stanza](#stanza-livecheck) should be preferred in most cases, as it allows casks to be updated automatically.
 
-The main casks repo only accepts submissions for stable versions of software (and [documented exceptions](https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/development/adding_a_cask.md#but-there-is-no-stable-version)), but it still gets pull requests for unstable versions. By checking the submitted `version` against the contents of an appcast, we can better detect these invalid cases.
+The main casks repo only accepts submissions for stable versions of software (and [documented exceptions](https://docs.brew.sh/Acceptable-Casks#but-there-is-no-stable-version)), but it still gets pull requests for unstable versions. By checking the submitted `version` against the contents of an appcast, we can better detect these invalid cases.
 
 Example: [`atom.rb`](https://github.com/Homebrew/homebrew-cask/blob/645dbb8228ec2f1f217ed1431e188687aac13ca5/Casks/atom.rb#L7)
 
@@ -1115,7 +1115,7 @@ When the hostnames of `url` and `homepage` differ, the discrepancy should be doc
 
 This must be added so a user auditing the cask knows the URL was verified by the Homebrew Cask team as the one provided by the vendor, even though it may look unofficial. It is our responsibility as Homebrew Cask maintainers to verify both the `url` and `homepage` information when first added (or subsequently modified, apart from versioning).
 
-The parameter doesn’t mean you should trust the source blindly, but we only approve casks in which users can easily verify its authenticity with basic means, such as checking the official homepage or public repository. Occasionally, slightly more elaborate techniques may be used, such as inspecting an [`appcast`](#stanza-appcast) we established as official. Cases where such quick verifications aren’t possible (e.g. when the download URL is behind a registration wall) are [treated in a stricter manner](https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/development/adding_a_cask.md#unofficial-vendorless-and-walled-builds).
+The parameter doesn’t mean you should trust the source blindly, but we only approve casks in which users can easily verify its authenticity with basic means, such as checking the official homepage or public repository. Occasionally, slightly more elaborate techniques may be used, such as inspecting an [`appcast`](#stanza-appcast) we established as official. Cases where such quick verifications aren’t possible (e.g. when the download URL is behind a registration wall) are [treated in a stricter manner](https://docs.brew.sh/Acceptable-Casks#unofficial-vendorless-and-walled-builds).
 
 #### Difficulty Finding a URL
 

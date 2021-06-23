@@ -305,7 +305,7 @@ module Cask
       add_error "Casks with `version :latest` should not use `auto_updates`."
     end
 
-    LIVECHECK_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/livecheck.md"
+    LIVECHECK_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#stanza-livecheck"
 
     def check_hosting_with_livecheck(livecheck_result:)
       return if block_url_offline? || cask.appcast || cask.livecheckable?
@@ -341,7 +341,7 @@ module Cask
       check_download_url_format
     end
 
-    SOURCEFORGE_OSDN_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/stanzas/url.md#sourceforgeosdn-urls"
+    SOURCEFORGE_OSDN_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#sourceforgeosdn-urls"
 
     def check_download_url_format
       odebug "Auditing URL format"
@@ -426,7 +426,7 @@ module Cask
       cask.url.from_block?
     end
 
-    VERIFIED_URL_REFERENCE_URL = "https://github.com/Homebrew/homebrew-cask/blob/master/doc/cask_language_reference/stanzas/url.md#when-url-and-homepage-hostnames-differ-add-verified"
+    VERIFIED_URL_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#when-url-and-homepage-hostnames-differ-add-verified"
 
     def check_unnecessary_verified
       return if block_url_offline?

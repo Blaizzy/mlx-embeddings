@@ -39,11 +39,11 @@ Cask/NoDslVersion:
   Enabled: true
 
 Cask/StanzaGrouping:
-  Description: "Ensure that cask stanzas are grouped correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order"
+  Description: "Ensure that cask stanzas are grouped correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
   Enabled: true
 
 Cask/StanzaOrder:
-  Description: "Ensure that cask stanzas are sorted correctly. More info at https://github.com/Homebrew/homebrew-cask/blob/HEAD/doc/cask_language_reference/readme.md#stanza-order"
+  Description: "Ensure that cask stanzas are sorted correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
   Enabled: true
 
 # enable all formulae audits
