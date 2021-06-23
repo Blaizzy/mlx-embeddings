@@ -329,6 +329,5 @@ jobs:
           BUILDPULSE_ACCESS_KEY_ID: ${{ secrets.BUILDPULSE_ACCESS_KEY_ID }}
           BUILDPULSE_SECRET_ACCESS_KEY: ${{ secrets.BUILDPULSE_SECRET_ACCESS_KEY }}
         run: |
-          curl -fsSL https://github.com/buildpulse/test-reporter/releases/latest/download/test-reporter-darwin-amd64 > ./buildpulse-test-reporter
-          chmod +x ./buildpulse-test-reporter
-          ./buildpulse-test-reporter submit Library/Homebrew/test/junit --account-id 1503512 --repository-id 53238813
+          brew install buildpulse-test-reporter
+          buildpulse-test-reporter submit Library/Homebrew/test/junit --account-id 1503512 --repository-id 53238813
