@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "bundle_version"
-require_relative "page_match"
 
 module Homebrew
   module Livecheck
@@ -57,25 +56,50 @@ module Homebrew
 
         sig { params(content: String).returns(T.nilable(Item)) }
         def self.item_from_content(content)
-          Homebrew.install_bundler_gems!
-          require "nokogiri"
+          require "rexml/document"
 
-          xml = Nokogiri::XML(content)
-          xml.remove_namespaces!
+          parsing_tries = 0
+          xml = begin
+            REXML::Document.new(content)
+          rescue REXML::UndefinedNamespaceException => e
+            undefined_prefix = e.to_s[/Undefined prefix ([^ ]+) found/i, 1]
+            raise if undefined_prefix.blank?
 
-          items = xml.xpath("//rss//channel//item").map do |item|
-            enclosure = (item > "enclosure").first
+            # Only retry parsing once after removing prefix from content
+            parsing_tries += 1
+            raise if parsing_tries > 1
 
-            url = enclosure&.attr("url")
-            short_version = enclosure&.attr("shortVersionString")
-            version = enclosure&.attr("version")
+            # When an XML document contains a prefix without a corresponding
+            # namespace, it's necessary to remove the the prefix from the
+            # content to be able to successfully parse it using REXML
+            content = content.gsub(%r{(</?| )#{Regexp.escape(undefined_prefix)}:}, '\1')
+            retry
+          end
 
-            url ||= (item > "link").first&.text
-            short_version ||= (item > "shortVersionString").first&.text&.strip
-            version ||= (item > "version").first&.text&.strip
+          # Remove prefixes, so we can reliably identify elements and attributes
+          xml.root&.each_recursive do |node|
+            node.prefix = ""
+            node.attributes.each_attribute do |attribute|
+              attribute.prefix = ""
+            end
+          end
 
-            title = (item > "title").first&.text&.strip
-            pub_date = (item > "pubDate").first&.text&.strip&.presence&.yield_self do |date_string|
+          items = xml.get_elements("//rss//channel//item").map do |item|
+            enclosure = item.elements["enclosure"]
+
+            if enclosure
+              url = enclosure["url"]
+              short_version = enclosure["shortVersionString"]
+              version = enclosure["version"]
+              os = enclosure["os"]
+            end
+
+            url ||= item.elements["link"]&.text
+            short_version ||= item.elements["shortVersionString"]&.text&.strip
+            version ||= item.elements["version"]&.text&.strip
+
+            title = item.elements["title"]&.text&.strip
+            pub_date = item.elements["pubDate"]&.text&.strip&.presence&.yield_self do |date_string|
               Time.parse(date_string)
             rescue ArgumentError
               # Omit unparseable strings (e.g. non-English dates)
@@ -89,7 +113,7 @@ module Homebrew
 
             bundle_version = BundleVersion.new(short_version, version) if short_version || version
 
-            next if (os = enclosure&.attr("os")) && os != "osx"
+            next if os && os != "osx"
 
             data = {
               title:          title,
