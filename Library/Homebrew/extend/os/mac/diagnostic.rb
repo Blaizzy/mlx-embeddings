@@ -107,9 +107,9 @@ module Homebrew
         return if Homebrew::EnvConfig.developer?
 
         who = +"We"
-        what = if OS::Mac.prerelease?
+        what = if OS::Mac.version.prerelease?
           "pre-release version"
-        elsif OS::Mac.outdated_release?
+        elsif OS::Mac.version.outdated_release?
           who << " (and Apple)"
           "old version"
         end
@@ -139,7 +139,7 @@ module Homebrew
           #{MacOS::Xcode.update_instructions}
         EOS
 
-        if OS::Mac.prerelease?
+        if OS::Mac.version.prerelease?
           current_path = Utils.popen_read("/usr/bin/xcode-select", "-p")
           message += <<~EOS
             If #{MacOS::Xcode.latest_version} is installed, you may need to:
@@ -199,7 +199,7 @@ module Homebrew
 
       def check_ruby_version
         return if RUBY_VERSION == HOMEBREW_REQUIRED_RUBY_VERSION
-        return if Homebrew::EnvConfig.developer? && OS::Mac.prerelease?
+        return if Homebrew::EnvConfig.developer? && OS::Mac.version.prerelease?
 
         <<~EOS
           Ruby version #{RUBY_VERSION} is unsupported on #{MacOS.version}. Homebrew

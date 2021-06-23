@@ -46,20 +46,6 @@ module OS
     end
     private :latest_sdk_version
 
-    def outdated_release?
-      # TODO: bump version when new macOS is released and also update
-      # references in docs/Installation.md and
-      # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      version < "10.14"
-    end
-
-    def prerelease?
-      # TODO: bump version when new macOS is released or announced
-      # and also update references in docs/Installation.md and
-      # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      version >= "12"
-    end
-
     sig { returns(String) }
     def preferred_perl_version
       if version >= :big_sur
