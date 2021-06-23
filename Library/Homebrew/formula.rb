@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cache_store"
+require "did_you_mean"
 require "formula_support"
 require "lock_file"
 require "formula_pin"
@@ -1669,6 +1670,13 @@ class Formula
   # @private
   def self.core_alias_reverse_table
     CoreTap.instance.alias_reverse_table
+  end
+
+  # Returns a list of approximately matching formula names, but not the complete match
+  # @private
+  def self.fuzzy_search(name)
+    @spell_checker ||= DidYouMean::SpellChecker.new(dictionary: Set.new(names + full_names).to_a)
+    @spell_checker.correct(name)
   end
 
   def self.[](name)

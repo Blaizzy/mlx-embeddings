@@ -20,6 +20,7 @@ GEM
       highline (~> 2.0.0)
     concurrent-ruby (1.1.9)
     connection_pool (2.2.5)
+    did_you_mean (1.5.0)
     diff-lcs (1.4.4)
     docile (1.4.0)
     domain_name (0.5.20190701)
@@ -183,6 +184,7 @@ DEPENDENCIES
   bootsnap
   byebug
   concurrent-ruby
+  did_you_mean
   mechanize
   minitest
   nokogiri

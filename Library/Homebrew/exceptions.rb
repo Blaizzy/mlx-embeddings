@@ -92,8 +92,16 @@ class FormulaOrCaskUnavailableError < RuntimeError
   end
 
   sig { returns(String) }
+  def did_you_mean
+    similar_formula_names = Formula.fuzzy_search(name)
+    return "" if similar_formula_names.blank?
+
+    "Did you mean #{similar_formula_names.to_sentence two_words_connector: " or ", last_word_connector: " or "}?"
+  end
+
+  sig { returns(String) }
   def to_s
-    "No available formula or cask with the name \"#{name}\"."
+    "No available formula or cask with the name \"#{name}\". #{did_you_mean}".strip
   end
 end
 
@@ -129,7 +137,7 @@ class FormulaUnavailableError < FormulaOrCaskUnavailableError
 
   sig { returns(String) }
   def to_s
-    "No available formula with the name \"#{name}\"#{dependent_s}."
+    "No available formula with the name \"#{name}\"#{dependent_s}. #{did_you_mean}".strip
   end
 end
 

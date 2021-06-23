@@ -127,6 +127,7 @@ class Tap
     @style_exceptions = nil
     @pypi_formula_mappings = nil
     @config = nil
+    @spell_checker = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
   end
 
