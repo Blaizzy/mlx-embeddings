@@ -12,6 +12,7 @@ gem "ronn", require: false
 gem "rspec", require: false
 gem "rspec-github", require: false
 gem "rspec-its", require: false
+gem "rspec_junit_formatter", require: false
 gem "rspec-retry", require: false
 gem "rspec-wait", require: false
 gem "rubocop", require: false

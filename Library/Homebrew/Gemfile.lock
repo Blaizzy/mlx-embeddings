@@ -109,6 +109,8 @@ GEM
     rspec-support (3.10.2)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
+    rspec_junit_formatter (0.4.1)
+      rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (1.17.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
@@ -194,6 +196,7 @@ DEPENDENCIES
   rspec-retry
   rspec-sorbet
   rspec-wait
+  rspec_junit_formatter
   rubocop
   rubocop-ast
   rubocop-performance

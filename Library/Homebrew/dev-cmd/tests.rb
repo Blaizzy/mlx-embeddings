@@ -111,6 +111,7 @@ module Homebrew
       else
         "#{HOMEBREW_CACHE}/#{parallel_rspec_log_name}"
       end
+      ENV["PARALLEL_RSPEC_LOG_PATH"] = parallel_rspec_log_path
 
       parallel_args = if ENV["CI"]
         %W[
@@ -133,12 +134,7 @@ module Homebrew
         --seed #{seed}
         --color
         --require spec_helper
-        --format NoSeedProgressFormatter
-        --format ParallelTests::RSpec::RuntimeLogger
-        --out #{parallel_rspec_log_path}
       ]
-
-      bundle_args << "--format" << "RSpec::Github::Formatter" if ENV["GITHUB_ACTIONS"]
 
       unless OS.mac?
         bundle_args << "--tag" << "~needs_macos" << "--tag" << "~cask"
