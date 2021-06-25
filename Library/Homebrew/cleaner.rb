@@ -29,8 +29,10 @@ class Cleaner
     [@f.bin, @f.sbin, @f.lib].each { |d| clean_dir(d) if d.exist? }
 
     # Get rid of any info 'dir' files, so they don't conflict at the link stage
-    info_dir_file = @f.info/"dir"
-    observe_file_removal info_dir_file if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
+    Dir.glob(@f.info/"**/dir").each do |f|
+      info_dir_file = Pathname(f)
+      observe_file_removal info_dir_file if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
+    end
 
     rewrite_shebangs
 
