@@ -27,8 +27,12 @@ module Homebrew
              description: "Upload built bottles."
       switch "--linux",
              description: "Dispatch bottle for Linux (using GitHub runners)."
+      switch "--linux-self-hosted",
+             description: "Dispatch bottle for Linux (using self-hosted runner)."
+      switch "--wheezy",
+             description: "Use Debian Wheezy container for building the bottle on Linux."
 
-      conflicts "--macos", "--linux"
+      conflicts "--macos", "--linux", "--linux-self-hosted"
       named_args :formula, min: 1
     end
   end
@@ -45,7 +49,7 @@ module Homebrew
     # TODO: remove when core taps are merged
     repo.gsub!("linux", "home") unless args.tap
 
-    if (macos = args.macos)
+    runner = if (macos = args.macos)
       # We accept runner name syntax (11-arm64) or bottle syntax (arm64_big_sur)
       os, arch = macos.yield_self do |s|
         tag = Utils::Bottles::Tag.from_symbol(s.to_sym)
@@ -55,33 +59,33 @@ module Homebrew
         [MacOS::Version.new(os), arch&.to_sym]
       end
 
-      macos_label = if arch.present? && arch != :x86_64
+      if arch.present? && arch != :x86_64
         "#{os}-#{arch}"
       else
         os.to_s
       end
-
-      dispatching_for = "macOS #{macos_label}"
-    elsif T.unsafe(args).linux?
-      workflow = args.workflow || "linux-#{workflow}"
-      dispatching_for = "Linux"
+    elsif args.linux?
+      "ubuntu-latest"
+    elsif args.linux_self_hosted?
+      "linux-self-hosted-1"
     else
-      raise UsageError, "Must specify --macos or --linux option"
+      raise UsageError, "Must specify --macos or --linux or --linux-self-hosted option"
     end
 
     args.named.to_resolved_formulae.each do |formula|
       # Required inputs
       inputs = {
+        runner:  runner,
         formula: formula.name,
       }
 
       # Optional inputs
       # These cannot be passed as nil to GitHub API
-      inputs[:macos] = macos_label if args.macos
       inputs[:issue] = args.issue if args.issue
       inputs[:upload] = args.upload?.to_s if args.upload?
+      inputs[:wheezy] = args.wheezy?.to_s if args.wheezy?
 
-      ohai "Dispatching #{tap} bottling request of formula \"#{formula.name}\" for #{dispatching_for}"
+      ohai "Dispatching #{tap} bottling request of formula \"#{formula.name}\" for #{runner}"
       GitHub.workflow_dispatch_event(user, repo, workflow, ref, inputs)
     end
   end
