@@ -1269,7 +1269,18 @@ class Formula
         staging.retain! if interactive || debug?
         raise
       ensure
-        cp Dir["config.log", "CMakeCache.txt"], logs
+        %w[
+          config.log
+          CMakeCache.txt
+          CMakeOutput.log
+          CMakeError.log
+        ].each do |logfile|
+          Dir["**/#{logfile}"].each do |logpath|
+            destdir = logs/File.dirname(logpath)
+            mkdir_p destdir
+            cp logpath, destdir
+          end
+        end
       end
     end
   ensure
