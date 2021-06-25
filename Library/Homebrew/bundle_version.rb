@@ -30,15 +30,15 @@ module Homebrew
 
     sig { params(package_info_path: Pathname).returns(T.nilable(T.attached_class)) }
     def self.from_package_info(package_info_path)
-      Homebrew.install_bundler_gems!
-      require "nokogiri"
+      require "rexml/document"
 
-      xml = Nokogiri::XML(package_info_path.read)
+      xml = REXML::Document.new(package_info_path.read)
 
-      bundle_id = xml.xpath("//pkg-info//bundle-version//bundle").first&.attr("id")
-      return unless bundle_id
+      bundle_version_bundle = xml.get_elements("//pkg-info//bundle-version//bundle").first
+      bundle_id = bundle_version_bundle["id"] if bundle_version_bundle
+      return if bundle_id.blank?
 
-      bundle = xml.xpath("//pkg-info//bundle").find { |b| b["id"] == bundle_id }
+      bundle = xml.get_elements("//pkg-info//bundle").find { |b| b["id"] == bundle_id }
       return unless bundle
 
       short_version = bundle["CFBundleShortVersionString"]
