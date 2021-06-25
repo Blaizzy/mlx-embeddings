@@ -754,11 +754,13 @@ _brew_dispatch_build_bottle() {
       --help
       --issue
       --linux
+      --linux-self-hosted
       --macos
       --quiet
       --tap
       --upload
       --verbose
+      --wheezy
       --workflow
       "
       return

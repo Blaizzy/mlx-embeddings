@@ -715,12 +715,14 @@ _brew_dispatch_build_bottle() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--issue[If specified, post a comment to this issue number if the job fails]' \
-    '(--macos)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
-    '(--linux)--macos[Version of macOS the bottle should be built for]' \
+    '(--macos --linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
+    '(--macos --linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
+    '(--linux --linux-self-hosted)--macos[Version of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--upload[Upload built bottles]' \
     '--verbose[Make some output more verbose]' \
+    '--wheezy[Use Debian Wheezy container for building the bottle on Linux]' \
     '--workflow[Dispatch specified workflow (default: `dispatch-build-bottle.yml`)]' \
     - formula \
     '*::formula:__brew_formulae'
