@@ -97,6 +97,15 @@ module Homebrew
       def upload?; end
 
       sig { returns(T::Boolean) }
+      def linux?; end
+
+      sig { returns(T::Boolean) }
+      def linux_self_hosted?; end
+
+      sig { returns(T::Boolean) }
+      def wheezy?; end
+
+      sig { returns(T::Boolean) }
       def total?; end
 
       sig { returns(T::Boolean) }
