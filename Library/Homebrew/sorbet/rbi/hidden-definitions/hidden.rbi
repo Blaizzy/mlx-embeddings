@@ -6695,6 +6695,143 @@ class DevelopmentTools
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class DidYouMean::ClassNameChecker
+  def class_name(); end
+
+  def class_names(); end
+
+  def corrections(); end
+
+  def initialize(exception); end
+
+  def scopes(); end
+end
+
+module DidYouMean::Correctable
+  def corrections(); end
+
+  def original_message(); end
+
+  def spell_checker(); end
+
+  def to_s(); end
+end
+
+module DidYouMean::Jaro
+  def self.distance(str1, str2); end
+end
+
+module DidYouMean::JaroWinkler
+  def self.distance(str1, str2); end
+end
+
+class DidYouMean::KeyErrorChecker
+  def corrections(); end
+
+  def initialize(key_error); end
+end
+
+class DidYouMean::KeyErrorChecker
+end
+
+module DidYouMean::Levenshtein
+  def self.distance(str1, str2); end
+
+  def self.min3(a, b, c); end
+end
+
+class DidYouMean::MethodNameChecker
+  def corrections(); end
+
+  def initialize(exception); end
+
+  def method_name(); end
+
+  def method_names(); end
+
+  def names_to_exclude(); end
+
+  def receiver(); end
+  RB_RESERVED_WORDS = ::T.let(nil, ::T.untyped)
+end
+
+class DidYouMean::NullChecker
+  def corrections(); end
+
+  def initialize(*_); end
+end
+
+class DidYouMean::PlainFormatter
+  def message_for(corrections); end
+end
+
+class DidYouMean::PlainFormatter
+end
+
+class DidYouMean::RequirePathChecker
+  def corrections(); end
+
+  def initialize(exception); end
+
+  def path(); end
+end
+
+class DidYouMean::RequirePathChecker
+  def self.requireables(); end
+end
+
+class DidYouMean::TreeSpellChecker
+  def augment(); end
+
+  def correct(input); end
+
+  def dictionary(); end
+
+  def dictionary_without_leaves(); end
+
+  def dimensions(); end
+
+  def find_leaves(path); end
+
+  def initialize(dictionary:, separator: T.unsafe(nil), augment: T.unsafe(nil)); end
+
+  def plausible_dimensions(input); end
+
+  def possible_paths(states); end
+
+  def separator(); end
+
+  def tree_depth(); end
+end
+
+class DidYouMean::TreeSpellChecker
+end
+
+class DidYouMean::VariableNameChecker
+  def corrections(); end
+
+  def cvar_names(); end
+
+  def initialize(exception); end
+
+  def ivar_names(); end
+
+  def lvar_names(); end
+
+  def method_names(); end
+
+  def name(); end
+  RB_RESERVED_WORDS = ::T.let(nil, ::T.untyped)
+end
+
+module DidYouMean
+  def self.correct_error(error_class, spell_checker); end
+
+  def self.formatter(); end
+
+  def self.formatter=(formatter); end
+end
+
 class Dir
   def children(); end
 
@@ -9739,6 +9876,10 @@ module Kernel
   def self.require(path); end
 end
 
+class KeyError
+  include ::DidYouMean::Correctable
+end
+
 module Language::Node
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -12348,6 +12489,7 @@ module NKF
 end
 
 class NameError
+  include ::DidYouMean::Correctable
   def missing_name(); end
 
   def missing_name?(name); end
@@ -12389,6 +12531,8 @@ end
 class Net::HTTPAlreadyReported
 end
 
+Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
+
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 class Net::HTTPEarlyHints
@@ -12400,13 +12544,9 @@ end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
 
-class Net::HTTPInformation
-end
+Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPInformationCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPInformation
-end
+Net::HTTPInformationCode = Net::HTTPInformation
 
 class Net::HTTPLoopDetected
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -12454,6 +12594,8 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
+Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
+
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -12462,17 +12604,15 @@ Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
 
+Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
+
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-class Net::HTTPSuccess
-end
+Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPSuccess
-end
+Net::HTTPSuccessCode = Net::HTTPSuccess
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -24607,6 +24747,21 @@ module RSpec
   def self.xdescribe(*args, &example_group_block); end
 end
 
+class RSpecJUnitFormatter
+  def dump_summary(notification); end
+
+  def stop(notification); end
+  DISCOURAGED_REGEXP = ::T.let(nil, ::T.untyped)
+  DISCOURAGED_REPLACEMENTS = ::T.let(nil, ::T.untyped)
+  ILLEGAL_REGEXP = ::T.let(nil, ::T.untyped)
+  ILLEGAL_REPLACEMENT = ::T.let(nil, ::T.untyped)
+  STRIP_DIFF_COLORS_BLOCK_REGEXP = ::T.let(nil, ::T.untyped)
+  STRIP_DIFF_COLORS_CODES_REGEXP = ::T.let(nil, ::T.untyped)
+end
+
+class RSpecJUnitFormatter
+end
+
 module Racc
   Racc_No_Extensions = ::T.let(nil, ::T.untyped)
 end
@@ -26741,6 +26896,8 @@ module Ronn
 
   def self.version(); end
 end
+
+RspecJunitFormatter = RSpecJUnitFormatter
 
 module RuboCop::AST::CollectionNode
   def compact_blank(*args, &block); end
