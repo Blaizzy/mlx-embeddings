@@ -91,10 +91,11 @@ module Superenv
     # g - Enable "-stdlib=libc++" for clang.
     # h - Enable "-stdlib=libstdc++" for clang.
     # K - Don't strip -arch <arch>, -m32, or -m64
+    # d - Don't strip -march=<target>. Use only in formulae that
+    #     have runtime detection of CPU features.
     # w - Pass -no_weak_imports to the linker
     #
     # These flags will also be present:
-    # s - apply fix for sed's Unicode support
     # a - apply fix for apr-1-config path
   end
   alias generic_setup_build_environment setup_build_environment
@@ -312,6 +313,11 @@ module Superenv
   sig { void }
   def permit_arch_flags
     append_to_cccfg "K"
+  end
+
+  sig { void }
+  def runtime_cpu_detection
+    append_to_cccfg "d"
   end
 
   sig { void }
