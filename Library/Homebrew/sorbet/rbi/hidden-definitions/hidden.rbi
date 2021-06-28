@@ -127,7 +127,7 @@ class ActiveSupport::Cache::FileStore
   include ::ActiveSupport::Cache::Strategy::LocalCache
   def cache_path(); end
 
-  def initialize(cache_path, options=T.unsafe(nil)); end
+  def initialize(cache_path, **options); end
   DIR_FORMATTER = ::T.let(nil, ::T.untyped)
   FILENAME_MAX_SIZE = ::T.let(nil, ::T.untyped)
   FILEPATH_MAX_SIZE = ::T.let(nil, ::T.untyped)
@@ -482,6 +482,36 @@ module ActiveSupport::Concern
   def self.extended(base); end
 end
 
+module ActiveSupport::Concurrency
+end
+
+class ActiveSupport::Concurrency::ShareLock
+  include ::MonitorMixin
+  def exclusive(purpose: T.unsafe(nil), compatible: T.unsafe(nil), after_compatible: T.unsafe(nil), no_wait: T.unsafe(nil)); end
+
+  def initialize(); end
+
+  def raw_state(); end
+
+  def sharing(); end
+
+  def start_exclusive(purpose: T.unsafe(nil), compatible: T.unsafe(nil), no_wait: T.unsafe(nil)); end
+
+  def start_sharing(); end
+
+  def stop_exclusive(compatible: T.unsafe(nil)); end
+
+  def stop_sharing(); end
+
+  def yield_shares(purpose: T.unsafe(nil), compatible: T.unsafe(nil), block_share: T.unsafe(nil)); end
+end
+
+class ActiveSupport::Concurrency::ShareLock
+end
+
+module ActiveSupport::Concurrency
+end
+
 module ActiveSupport::Configurable
   def config(); end
 end
@@ -532,6 +562,14 @@ class ActiveSupport::CurrentAttributes
   def _reset_callbacks(); end
 
   def _run_reset_callbacks(&block); end
+
+  def attributes(); end
+
+  def attributes=(attributes); end
+
+  def reset(); end
+
+  def set(set_attributes); end
 end
 
 class ActiveSupport::CurrentAttributes
@@ -553,9 +591,17 @@ class ActiveSupport::CurrentAttributes
 
   def self.before_reset(&block); end
 
+  def self.clear_all(); end
+
   def self.instance(); end
 
+  def self.reset(*args, &block); end
+
+  def self.reset_all(); end
+
   def self.resets(&block); end
+
+  def self.set(*args, &block); end
 end
 
 module ActiveSupport::Dependencies
@@ -12489,7 +12535,6 @@ module NKF
 end
 
 class NameError
-  include ::DidYouMean::Correctable
   def missing_name(); end
 
   def missing_name?(name); end
@@ -12610,9 +12655,13 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
+class Net::HTTPSuccess
+end
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -12762,11 +12811,11 @@ module OS
 end
 
 class Object
-  include ::Minitest::Expectations
+  include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::Tryable
+  include ::Minitest::Expectations
   include ::Utils::Curl
   include ::SystemCommand::Mixin
-  include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
   def acts_like?(duck); end
@@ -19145,6 +19194,8 @@ module RSpec::Core::HashImitatable
 
   def any?(*args, &block); end
 
+  def assert_valid_keys(*args, &block); end
+
   def assoc(*args, &block); end
 
   def chain(*args, &block); end
@@ -19178,6 +19229,18 @@ module RSpec::Core::HashImitatable
   def deep_merge(*args, &block); end
 
   def deep_merge!(*args, &block); end
+
+  def deep_stringify_keys(*args, &block); end
+
+  def deep_stringify_keys!(*args, &block); end
+
+  def deep_symbolize_keys(*args, &block); end
+
+  def deep_symbolize_keys!(*args, &block); end
+
+  def deep_transform_keys(*args, &block); end
+
+  def deep_transform_keys!(*args, &block); end
 
   def default(*args, &block); end
 
@@ -19361,7 +19424,15 @@ module RSpec::Core::HashImitatable
 
   def store(*args, &block); end
 
+  def stringify_keys(*args, &block); end
+
+  def stringify_keys!(*args, &block); end
+
   def sum(*args, &block); end
+
+  def symbolize_keys(*args, &block); end
+
+  def symbolize_keys!(*args, &block); end
 
   def take(*args, &block); end
 
@@ -19374,6 +19445,10 @@ module RSpec::Core::HashImitatable
   def to_hash(*args, &block); end
 
   def to_msgpack(*args, &block); end
+
+  def to_options(*args, &block); end
+
+  def to_options!(*args, &block); end
 
   def to_plist(*args, &block); end
 
@@ -26922,7 +26997,15 @@ module RuboCop::AST::CollectionNode
 
   def pluck(*args, &block); end
 
+  def to_default_s(*args, &block); end
+
+  def to_formatted_s(*args, &block); end
+
   def to_msgpack(*args, &block); end
+
+  def to_sentence(*args, &block); end
+
+  def to_xml(*args, &block); end
 
   def without(*args, &block); end
 end
@@ -29704,7 +29787,7 @@ end
 class Time
   def self.===(other); end
 
-  def self.at_with_coercion(*args, **kwargs); end
+  def self.at_with_coercion(*args); end
 
   def self.at_without_coercion(*_); end
 
@@ -29786,10 +29869,6 @@ module Tty
   def self.yellow(); end
 end
 
-module URI
-  include ::URI::RFC2396_REGEXP
-end
-
 class URI::FTP
   def buffer_open(buf, proxy, options); end
 end
@@ -29799,18 +29878,7 @@ class URI::FTP
 end
 
 class URI::File
-  def check_password(user); end
-
-  def check_user(user); end
-
-  def check_userinfo(user); end
-
-  def set_userinfo(v); end
-  COMPONENT = ::T.let(nil, ::T.untyped)
   DEFAULT_PORT = ::T.let(nil, ::T.untyped)
-end
-
-class URI::File
 end
 
 class URI::HTTP
@@ -29855,10 +29923,6 @@ class URI::MailTo
   def initialize(*arg); end
 end
 
-URI::Parser = URI::RFC2396_Parser
-
-URI::REGEXP = URI::RFC2396_REGEXP
-
 class URI::RFC2396_Parser
   def initialize(opts=T.unsafe(nil)); end
 end
@@ -29879,7 +29943,6 @@ module URI::Util
 end
 
 module URI
-  extend ::URI::Escape
   def self.get_encoding(label); end
 end
 
