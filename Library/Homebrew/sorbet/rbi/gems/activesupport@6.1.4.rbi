@@ -5,11 +5,15 @@
 # typed: false
 
 module ActiveSupport
-  extend(::ActiveSupport::LazyLoadHooks)
+  extend ::ActiveSupport::LazyLoadHooks
+end
+
+module ActiveSupport::BigDecimalWithDefaultFormat
+  def to_s(format = T.unsafe(nil)); end
 end
 
 module ActiveSupport::Inflector
-  extend(::ActiveSupport::Inflector)
+  extend ::ActiveSupport::Inflector
 
   def camelize(term, uppercase_first_letter = T.unsafe(nil)); end
   def classify(table_name); end
@@ -81,6 +85,55 @@ class ActiveSupport::Inflector::Inflections::Uncountables < ::Array
   def to_regex(string); end
 end
 
+module ActiveSupport::JSON
+  class << self
+    def decode(json); end
+    def encode(value, options = T.unsafe(nil)); end
+    def parse_error; end
+
+    private
+
+    def convert_dates_from(data); end
+  end
+end
+
+ActiveSupport::JSON::DATETIME_REGEX = T.let(T.unsafe(nil), Regexp)
+ActiveSupport::JSON::DATE_REGEX = T.let(T.unsafe(nil), Regexp)
+
+module ActiveSupport::JSON::Encoding
+  class << self
+    def escape_html_entities_in_json; end
+    def escape_html_entities_in_json=(_arg0); end
+    def json_encoder; end
+    def json_encoder=(_arg0); end
+    def time_precision; end
+    def time_precision=(_arg0); end
+    def use_standard_json_time_format; end
+    def use_standard_json_time_format=(_arg0); end
+  end
+end
+
+class ActiveSupport::JSON::Encoding::JSONGemEncoder
+  def initialize(options = T.unsafe(nil)); end
+
+  def encode(value); end
+  def options; end
+
+  private
+
+  def jsonify(value); end
+  def stringify(jsonified); end
+end
+
+ActiveSupport::JSON::Encoding::JSONGemEncoder::ESCAPED_CHARS = T.let(T.unsafe(nil), Hash)
+ActiveSupport::JSON::Encoding::JSONGemEncoder::ESCAPE_REGEX_WITHOUT_HTML_ENTITIES = T.let(T.unsafe(nil), Regexp)
+ActiveSupport::JSON::Encoding::JSONGemEncoder::ESCAPE_REGEX_WITH_HTML_ENTITIES = T.let(T.unsafe(nil), Regexp)
+
+class ActiveSupport::JSON::Encoding::JSONGemEncoder::EscapedString < ::String
+  def to_json(*_arg0); end
+  def to_s; end
+end
+
 module ActiveSupport::LazyLoadHooks
   def on_load(name, options = T.unsafe(nil), &block); end
   def run_load_hooks(name, base = T.unsafe(nil)); end
@@ -103,7 +156,7 @@ module ActiveSupport::Multibyte
 end
 
 class ActiveSupport::Multibyte::Chars
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(string); end
 
@@ -136,7 +189,7 @@ class ActiveSupport::Multibyte::Chars
 end
 
 module ActiveSupport::Multibyte::Unicode
-  extend(::ActiveSupport::Multibyte::Unicode)
+  extend ::ActiveSupport::Multibyte::Unicode
 
   def compose(codepoints); end
   def decompose(type, codepoints); end
@@ -151,53 +204,8 @@ end
 
 ActiveSupport::Multibyte::Unicode::UNICODE_VERSION = T.let(T.unsafe(nil), String)
 
-module ActiveSupport::BigDecimalWithDefaultFormat
-  def to_s(format = T.unsafe(nil)); end
-end
-
-module ActiveSupport::JSON
-  class << self
-    def decode(json); end
-    def encode(value, options = T.unsafe(nil)); end
-    def parse_error; end
-
-    private
-
-    def convert_dates_from(data); end
-  end
-end
-
-ActiveSupport::JSON::DATETIME_REGEX = T.let(T.unsafe(nil), Regexp)
-
-ActiveSupport::JSON::DATE_REGEX = T.let(T.unsafe(nil), Regexp)
-
-module ActiveSupport::JSON::Encoding
-  class << self
-    def escape_html_entities_in_json; end
-    def escape_html_entities_in_json=(_arg0); end
-    def json_encoder; end
-    def json_encoder=(_arg0); end
-    def time_precision; end
-    def time_precision=(_arg0); end
-    def use_standard_json_time_format; end
-    def use_standard_json_time_format=(_arg0); end
-  end
-end
-
-class ActiveSupport::JSON::Encoding::JSONGemEncoder
-  def initialize(options = T.unsafe(nil)); end
-
-  def encode(value); end
-  def options; end
-
-  private
-
-  def jsonify(value); end
-  def stringify(jsonified); end
-end
-
 class ActiveSupport::TimeZone
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(name, utc_offset = T.unsafe(nil), tzinfo = T.unsafe(nil)); end
 
@@ -251,32 +259,33 @@ class ActiveSupport::TimeZone
 end
 
 ActiveSupport::TimeZone::MAPPING = T.let(T.unsafe(nil), Hash)
+ActiveSupport::TimeZone::UTC_OFFSET_WITHOUT_COLON = T.let(T.unsafe(nil), String)
+ActiveSupport::TimeZone::UTC_OFFSET_WITH_COLON = T.let(T.unsafe(nil), String)
 
 module ActiveSupport::ToJsonWithActiveSupportEncoder
   def to_json(options = T.unsafe(nil)); end
 end
 
 class Array
-  include(::Enumerable)
-  include(::JSON::Ext::Generator::GeneratorMethods::Array)
-  include(::Plist::Emit)
+  include ::Enumerable
+  include ::JSON::Ext::Generator::GeneratorMethods::Array
+  include ::Plist::Emit
 
   def as_json(options = T.unsafe(nil)); end
 end
 
 class BigDecimal < ::Numeric
-  include(::ActiveSupport::BigDecimalWithDefaultFormat)
+  include ::ActiveSupport::BigDecimalWithDefaultFormat
 
   def as_json(options = T.unsafe(nil)); end
 end
 
 BigDecimal::EXCEPTION_NaN = T.let(T.unsafe(nil), Integer)
-
 BigDecimal::VERSION = T.let(T.unsafe(nil), String)
 
 class Date
-  include(::Comparable)
-  include(::DateAndTime::Zones)
+  include ::Comparable
+  include ::DateAndTime::Zones
 
   def as_json(options = T.unsafe(nil)); end
   def inspect; end
@@ -288,9 +297,7 @@ class Date
 end
 
 Date::DATE_FORMATS = T.let(T.unsafe(nil), Hash)
-
-module DateAndTime
-end
+module DateAndTime; end
 
 module DateAndTime::Zones
   def in_time_zone(zone = T.unsafe(nil)); end
@@ -369,22 +376,22 @@ class Exception
 end
 
 class FalseClass
-  include(::JSON::Ext::Generator::GeneratorMethods::FalseClass)
+  include ::JSON::Ext::Generator::GeneratorMethods::FalseClass
 
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
 end
 
 class Float < ::Numeric
-  include(::JSON::Ext::Generator::GeneratorMethods::Float)
+  include ::JSON::Ext::Generator::GeneratorMethods::Float
 
   def as_json(options = T.unsafe(nil)); end
 end
 
 class Hash
-  include(::Enumerable)
-  include(::JSON::Ext::Generator::GeneratorMethods::Hash)
-  include(::Plist::Emit)
+  include ::Enumerable
+  include ::JSON::Ext::Generator::GeneratorMethods::Hash
+  include ::Plist::Emit
 
   def as_json(options = T.unsafe(nil)); end
   def deep_merge(other_hash, &block); end
@@ -396,18 +403,33 @@ class Hash
 end
 
 class IO
-  include(::Enumerable)
-  include(::File::Constants)
+  include ::Enumerable
+  include ::File::Constants
 
   def as_json(options = T.unsafe(nil)); end
 end
 
-IO::EWOULDBLOCKWaitReadable = IO::EAGAINWaitReadable
+class IO::EAGAINWaitReadable < ::Errno::EAGAIN
+  include ::IO::WaitReadable
+end
 
+class IO::EAGAINWaitWritable < ::Errno::EAGAIN
+  include ::IO::WaitWritable
+end
+
+class IO::EINPROGRESSWaitReadable < ::Errno::EINPROGRESS
+  include ::IO::WaitReadable
+end
+
+class IO::EINPROGRESSWaitWritable < ::Errno::EINPROGRESS
+  include ::IO::WaitWritable
+end
+
+IO::EWOULDBLOCKWaitReadable = IO::EAGAINWaitReadable
 IO::EWOULDBLOCKWaitWritable = IO::EAGAINWaitWritable
 
 class IPAddr
-  include(::Comparable)
+  include ::Comparable
 
   def as_json(options = T.unsafe(nil)); end
 end
@@ -428,33 +450,33 @@ class Module
 end
 
 Module::DELEGATION_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
-
 Module::DELEGATION_RESERVED_METHOD_NAMES = T.let(T.unsafe(nil), Set)
-
-class Module::DelegationError < ::NoMethodError
-end
-
+class Module::DelegationError < ::NoMethodError; end
 Module::RUBY_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
 
+class NameError < ::StandardError
+  include ::DidYouMean::Correctable
+end
+
 class NilClass
-  include(::JSON::Ext::Generator::GeneratorMethods::NilClass)
+  include ::JSON::Ext::Generator::GeneratorMethods::NilClass
 
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
 end
 
 class Numeric
-  include(::Comparable)
+  include ::Comparable
 
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
 end
 
 class Object < ::BasicObject
-  include(::ActiveSupport::ToJsonWithActiveSupportEncoder)
-  include(::Kernel)
-  include(::JSON::Ext::Generator::GeneratorMethods::Object)
-  include(::PP::ObjectMixin)
+  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
+  include ::Kernel
+  include ::JSON::Ext::Generator::GeneratorMethods::Object
+  include ::PP::ObjectMixin
 
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
@@ -473,7 +495,7 @@ class Process::Status
 end
 
 class Range
-  include(::Enumerable)
+  include ::Enumerable
 
   def as_json(options = T.unsafe(nil)); end
 end
@@ -517,11 +539,11 @@ class Regexp::Token < ::Struct
 end
 
 class String
-  include(::Comparable)
-  include(::JSON::Ext::Generator::GeneratorMethods::String)
-  include(::Colorize::InstanceMethods)
-  extend(::JSON::Ext::Generator::GeneratorMethods::String::Extend)
-  extend(::Colorize::ClassMethods)
+  include ::Comparable
+  include ::JSON::Ext::Generator::GeneratorMethods::String
+  include ::Colorize::InstanceMethods
+  extend ::JSON::Ext::Generator::GeneratorMethods::String::Extend
+  extend ::Colorize::ClassMethods
 
   def acts_like_string?; end
   def as_json(options = T.unsafe(nil)); end
@@ -549,30 +571,29 @@ class String
   def titlecase(keep_id_suffix: T.unsafe(nil)); end
   def titleize(keep_id_suffix: T.unsafe(nil)); end
   def to(position); end
+
+  sig { returns(String) }
   def underscore; end
+
   def upcase_first; end
 end
 
 String::BLANK_RE = T.let(T.unsafe(nil), Regexp)
-
 String::ENCODED_BLANKS = T.let(T.unsafe(nil), Concurrent::Map)
 
 class Struct
-  include(::Enumerable)
+  include ::Enumerable
 
   def as_json(options = T.unsafe(nil)); end
 end
 
 Struct::Group = Etc::Group
-
 Struct::HTMLElementDescription = Struct
-
 Struct::Passwd = Etc::Passwd
-
 Struct::Tms = Process::Tms
 
 class Symbol
-  include(::Comparable)
+  include ::Comparable
 
   def as_json(options = T.unsafe(nil)); end
   def end_with?(*suffixes); end
@@ -582,7 +603,7 @@ class Symbol
 end
 
 class Time
-  include(::Comparable)
+  include ::Comparable
 
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
@@ -594,15 +615,44 @@ end
 Time::DATE_FORMATS = T.let(T.unsafe(nil), Hash)
 
 class TrueClass
-  include(::JSON::Ext::Generator::GeneratorMethods::TrueClass)
+  include ::JSON::Ext::Generator::GeneratorMethods::TrueClass
 
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
 end
 
+module URI
+  include ::URI::RFC2396_REGEXP
+  extend ::URI::Escape
+end
+
+class URI::File < ::URI::Generic
+  def check_password(user); end
+  def check_user(user); end
+  def check_userinfo(user); end
+  def set_host(v); end
+  def set_password(v); end
+  def set_port(v); end
+  def set_user(v); end
+  def set_userinfo(v); end
+
+  class << self
+    def build(args); end
+  end
+end
+
+URI::File::COMPONENT = T.let(T.unsafe(nil), Array)
+
 class URI::Generic
-  include(::URI::RFC2396_REGEXP)
-  include(::URI)
+  include ::URI::RFC2396_REGEXP
+  include ::URI
 
   def as_json(options = T.unsafe(nil)); end
+end
+
+URI::Parser = URI::RFC2396_Parser
+URI::REGEXP = URI::RFC2396_REGEXP
+
+class URI::RFC2396_Parser
+  include ::URI::RFC2396_REGEXP
 end
