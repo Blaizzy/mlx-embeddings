@@ -117,12 +117,12 @@ module Homebrew
 
             if (minimum_system_version = item.elements["minimumSystemVersion"]&.text&.gsub(/\A\D+|\D+\z/, ""))
               macos_minimum_system_version = begin
-                MacOS::Version.new(minimum_system_version).strip_patch
+                OS::Mac::Version.new(minimum_system_version).strip_patch
               rescue MacOSVersionError
                 nil
               end
 
-              next if MacOS.version < macos_minimum_system_version
+              next if macos_minimum_system_version&.prerelease?
             end
 
             data = {
