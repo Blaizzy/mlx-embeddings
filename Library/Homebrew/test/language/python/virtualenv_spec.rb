@@ -15,7 +15,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
   describe "#create" do
     it "creates a venv" do
-      expect(formula).to receive(:system).with("python", "-m", "venv", dir)
+      expect(formula).to receive(:system).with("python", "-m", "venv", "--system-site-packages", dir)
       virtualenv.create
     end
   end
