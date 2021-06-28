@@ -655,6 +655,7 @@ class RuboCop::Cop::Rails::FindBy < ::RuboCop::Cop::Base
 
   def autocorrect(corrector, node); end
   def ignore_where_first?; end
+  def where_method?(receiver); end
 end
 
 RuboCop::Cop::Rails::FindBy::MSG = T.let(T.unsafe(nil), String)
