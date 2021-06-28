@@ -115,6 +115,16 @@ module Homebrew
 
             next if os && os != "osx"
 
+            if (minimum_system_version = item.elements["minimumSystemVersion"]&.text&.gsub(/\A\D+|\D+\z/, ""))
+              macos_minimum_system_version = begin
+                OS::Mac::Version.new(minimum_system_version).strip_patch
+              rescue MacOSVersionError
+                nil
+              end
+
+              next if macos_minimum_system_version&.prerelease?
+            end
+
             data = {
               title:          title,
               pub_date:       pub_date || Time.new(0),
