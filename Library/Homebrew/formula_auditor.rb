@@ -438,13 +438,16 @@ module Homebrew
 
     def audit_bottle_disabled
       return unless formula.bottle_disabled?
-      return if formula.bottle_unneeded?
 
-      problem "Unrecognized bottle modifier" unless formula.bottle_disable_reason.valid?
-
-      return unless @core_tap
-
-      problem "Formulae in homebrew/core should not use `bottle :disabled`"
+      if !formula.bottle_disable_reason.valid?
+        problem "Unrecognized bottle modifier"
+      elsif @core_tap
+        if formula.bottle_unneeded?
+          problem "Formulae in homebrew/core should not use `bottle :unneeded`"
+        else
+          problem "Formulae in homebrew/core should not use `bottle :disabled`"
+        end
+      end
     end
 
     def audit_github_repository_archived
