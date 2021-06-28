@@ -115,7 +115,7 @@ module Homebrew
 
             next if os && os != "osx"
 
-            if OS.mac? && (minimum_system_version = (item > "minimumSystemVersion").first&.text&.strip)
+            if (minimum_system_version = item.elements["minimumSystemVersion"]&.text&.gsub(/\A\D+|\D+\z/, ""))
               macos_minimum_system_version = begin
                 MacOS::Version.new(minimum_system_version).strip_patch
               rescue MacOSVersionError
