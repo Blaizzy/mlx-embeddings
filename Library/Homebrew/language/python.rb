@@ -218,7 +218,7 @@ module Language
         def create
           return if (@venv_root/"bin/python").exist?
 
-          @formula.system @python, "-m", "venv", @venv_root
+          @formula.system @python, "-m", "venv", "--system-site-packages", @venv_root
 
           # Robustify symlinks to survive python patch upgrades
           @venv_root.find do |f|
