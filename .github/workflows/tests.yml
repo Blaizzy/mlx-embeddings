@@ -311,11 +311,24 @@ jobs:
           restore-keys: ${{ runner.os }}-parallel_runtime_rspec-
 
       - name: Run brew tests
-        run: brew tests --online --coverage
+        run: |
+          # Retry multiple times when using BuildPulse to detect and submit
+          # flakiness (because rspec-retry is disabled).
+          if [ -n "$HOMEBREW_BUILDPULSE_ACCESS_KEY_ID" ]; then
+            brew tests --online --coverage || \
+            brew tests --online --coverage || \
+            brew tests --online --coverage
+          else
+            brew tests --online --coverage
+          fi
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # These cannot be queried at the macOS level on GitHub Actions.
           HOMEBREW_LANGUAGES: en-GB
+          HOMEBREW_BUILDPULSE_ACCESS_KEY_ID: ${{ secrets.BUILDPULSE_ACCESS_KEY_ID }}
+          HOMEBREW_BUILDPULSE_SECRET_ACCESS_KEY: ${{ secrets.BUILDPULSE_SECRET_ACCESS_KEY }}
+          HOMEBREW_BUILDPULSE_ACCOUNT_ID: 1503512
+          HOMEBREW_BUILDPULSE_REPOSITORY_ID: 53238813
 
       - run: brew test-bot --only-formulae --test-default-formula
 
