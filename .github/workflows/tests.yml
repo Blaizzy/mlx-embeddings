@@ -333,14 +333,3 @@ jobs:
       - run: brew test-bot --only-formulae --test-default-formula
 
       - uses: codecov/codecov-action@29386c70ef20e286228c72b668a06fd0e8399192
-
-      - name: Upload test results to BuildPulse for flaky test detection
-        # Only run this step for non-PR pushes or PRs where where we have access to secrets.
-        # Run this step even when the tests fail. Skip if the workflow is cancelled.
-        if: (github.event.pull_request == null || github.event.pull_request.head.repo.full_name == github.repository) && !cancelled()
-        env:
-          BUILDPULSE_ACCESS_KEY_ID: ${{ secrets.BUILDPULSE_ACCESS_KEY_ID }}
-          BUILDPULSE_SECRET_ACCESS_KEY: ${{ secrets.BUILDPULSE_SECRET_ACCESS_KEY }}
-        run: |
-          brew install buildpulse-test-reporter
-          buildpulse-test-reporter submit Library/Homebrew/test/junit --account-id 1503512 --repository-id 53238813

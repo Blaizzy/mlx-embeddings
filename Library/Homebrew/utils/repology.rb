@@ -15,26 +15,30 @@ module Repology
   MAX_PAGINATION = 15
   private_constant :MAX_PAGINATION
 
-  def query_api(last_package_in_response = "", repository:)
-    last_package_in_response += "/" if last_package_in_response.present?
-    url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
+  def query_api(_last_package_in_response = "", repository:)
+    {}
+    # TODO: uncomment (and remove lines above) when we have a fix for Repology
+    # `curl` issues
+    # last_package_in_response += "/" if last_package_in_response.present?
+    # url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
 
-    output, _errors, _status = curl_output(url.to_s)
-    JSON.parse(output)
+    # output, _errors, _status = curl_output(url.to_s)
+    # JSON.parse(output)
   end
 
   def single_package_query(name, repository:)
-    url = "https://repology.org/tools/project-by?repo=#{repository}&" \
-          "name_type=srcname&target_page=api_v1_project&name=#{name}"
+    # TODO: uncomment when we have a fix for Repology `curl` issues
+    # url = "https://repology.org/tools/project-by?repo=#{repository}&" \
+    #       "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
-    output, _errors, _status = curl_output("--location", url.to_s)
+    # output, _errors, _status = curl_output("--location", url.to_s)
 
-    begin
-      data = JSON.parse(output)
-      { name => data }
-    rescue
-      nil
-    end
+    # begin
+    #   data = JSON.parse(output)
+    #   { name => data }
+    # rescue
+    #   nil
+    # end
   end
 
   def parse_api_response(limit = nil, repository:)
