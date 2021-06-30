@@ -38,6 +38,9 @@ module Homebrew
       switch "--greedy",
              description: "Print outdated casks with `auto_updates` or `version :latest`."
 
+      switch "--skip-unversioned",
+             description: "Print outdated casks with `auto_updates` but no `version :latest`."
+
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
 
@@ -116,7 +119,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        puts c.outdated_info(args.greedy?, verbose?, false)
+        puts c.outdated_info(args.greedy?, verbose?, false, args.skip_unversioned?)
       end
     end
   end
@@ -191,7 +194,7 @@ module Homebrew
       if formula_or_cask.is_a?(Formula)
         formula_or_cask.outdated?(fetch_head: args.fetch_HEAD?)
       else
-        formula_or_cask.outdated?(greedy: args.greedy?)
+        formula_or_cask.outdated?(greedy: args.greedy?, skip_unversioned: args.skip_unversioned?)
       end
     end
   end
