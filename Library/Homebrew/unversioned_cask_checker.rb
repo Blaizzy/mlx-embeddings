@@ -176,13 +176,13 @@ module Homebrew
 
             distribution_path = extract_dir/"Distribution"
             if distribution_path.exist?
-              Homebrew.install_bundler_gems!
-              require "nokogiri"
+              require "rexml/document"
 
-              xml = Nokogiri::XML(distribution_path.read)
+              xml = REXML::Document.new(distribution_path.read)
 
-              product_version = xml.xpath("//installer-gui-script//product").first&.attr("version")
-              return product_version if product_version
+              product = xml.get_elements("//installer-gui-script//product").first
+              product_version = product["version"] if product
+              return product_version if product_version.present?
             end
 
             opoo "#{pkg_path.basename} contains multiple packages: #{packages}" if packages.count != 1
