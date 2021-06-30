@@ -2,11 +2,13 @@
 
 source "https://rubygems.org"
 
+# disallowed gems (should not be used)
+# * nokogiri - use rexml instead for XML parsing
+
 # installed gems (should all be require: false)
 gem "bootsnap", require: false
 gem "byebug", require: false
 gem "minitest", require: false
-gem "nokogiri", require: false
 gem "parallel_tests", require: false
 gem "ronn", require: false
 gem "rspec", require: false
