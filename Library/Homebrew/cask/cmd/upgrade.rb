@@ -21,7 +21,7 @@ module Cask
         }],
         [:switch, "--skip-unversioned", {
           description: "Skip casks with `version :latest`.",
-        }]
+        }],
       ].freeze
 
       sig { returns(Homebrew::CLI::Parser) }
@@ -43,32 +43,32 @@ module Cask
         verbose = ($stdout.tty? || args.verbose?) && !args.quiet?
         self.class.upgrade_casks(
           *casks,
-          force:          args.force?,
-          greedy:         args.greedy?,
+          force:            args.force?,
+          greedy:           args.greedy?,
           skip_unversioned: args.skip_unversioned?,
-          dry_run:        args.dry_run?,
-          binaries:       args.binaries?,
-          quarantine:     args.quarantine?,
-          require_sha:    args.require_sha?,
-          skip_cask_deps: args.skip_cask_deps?,
-          verbose:        verbose,
-          args:           args,
+          dry_run:          args.dry_run?,
+          binaries:         args.binaries?,
+          quarantine:       args.quarantine?,
+          require_sha:      args.require_sha?,
+          skip_cask_deps:   args.skip_cask_deps?,
+          verbose:          verbose,
+          args:             args,
         )
       end
 
       sig {
         params(
-          casks:          Cask,
-          args:           Homebrew::CLI::Args,
-          force:          T.nilable(T::Boolean),
-          greedy:         T.nilable(T::Boolean),
+          casks:            Cask,
+          args:             Homebrew::CLI::Args,
+          force:            T.nilable(T::Boolean),
+          greedy:           T.nilable(T::Boolean),
           skip_unversioned: T.nilable(T::Boolean),
-          dry_run:        T.nilable(T::Boolean),
-          skip_cask_deps: T.nilable(T::Boolean),
-          verbose:        T.nilable(T::Boolean),
-          binaries:       T.nilable(T::Boolean),
-          quarantine:     T.nilable(T::Boolean),
-          require_sha:    T.nilable(T::Boolean),
+          dry_run:          T.nilable(T::Boolean),
+          skip_cask_deps:   T.nilable(T::Boolean),
+          verbose:          T.nilable(T::Boolean),
+          binaries:         T.nilable(T::Boolean),
+          quarantine:       T.nilable(T::Boolean),
+          require_sha:      T.nilable(T::Boolean),
         ).returns(T::Boolean)
       }
       def self.upgrade_casks(
