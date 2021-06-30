@@ -50,14 +50,18 @@ module Homebrew
 
     unless Formula["buildpulse-test-reporter"].any_version_installed?
       ohai "Installing `buildpulse-test-reporter` for reporting test flakiness..."
-      safe_system HOMEBREW_BREW_FILE, "install", "buildpulse-test-reporter"
+      with_env(HOMEBREW_NO_AUTO_UPDATE: "1", HOMEBREW_NO_BOOTSNAP: "1") do
+        safe_system HOMEBREW_BREW_FILE, "install", "buildpulse-test-reporter"
+      end
     end
 
     ENV["BUILDPULSE_ACCESS_KEY_ID"] = ENV["HOMEBREW_BUILDPULSE_ACCESS_KEY_ID"]
     ENV["BUILDPULSE_SECRET_ACCESS_KEY"] = ENV["HOMEBREW_BUILDPULSE_SECRET_ACCESS_KEY"]
 
+    ohai "Sending test results to BuildPulse"
+
     safe_system Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
-                "submit", "Library/Homebrew/test/junit",
+                "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
                 "--account-id", ENV["HOMEBREW_BUILDPULSE_ACCOUNT_ID"],
                 "--repository-id", ENV["HOMEBREW_BUILDPULSE_REPOSITORY_ID"]
   end
@@ -182,7 +186,10 @@ module Homebrew
 
       # Submit test flakiness information using BuildPulse
       # BUILDPULSE used in spec_helper.rb
-      ENV["BUILDPULSE"] = "1" if use_buildpulse?
+      if use_buildpulse?
+        ENV["BUILDPULSE"] = "1"
+        ohai "Running tests with BuildPulse-friendly settings"
+      end
 
       if parallel
         system "bundle", "exec", "parallel_rspec", *parallel_args, "--", *bundle_args, "--", *files
