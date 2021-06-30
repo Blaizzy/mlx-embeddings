@@ -187,7 +187,6 @@ DEPENDENCIES
   did_you_mean
   mechanize
   minitest
-  nokogiri
   parallel_tests
   patchelf
   plist
