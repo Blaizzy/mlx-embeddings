@@ -1639,6 +1639,7 @@ _brew_reinstall() {
       --force
       --force-bottle
       --formula
+      --git
       --help
       --input-methoddir
       --interactive

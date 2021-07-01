@@ -1374,6 +1374,7 @@ _brew_reinstall() {
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install without checking for previously installed keg-only or non-migrated versions]' \
     '(--cask --build-from-source)--force-bottle[Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation]' \
+    '(--cask)--git[Create a Git repository, useful for creating patches to the software]' \
     '--help[Show this message]' \
     '(--formula)--input-methoddir[Target location for Input Methods (default: `~/Library/Input Methods`)]' \
     '(--cask)--interactive[Download and patch formula, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package]' \
@@ -1398,7 +1399,7 @@ _brew_reinstall() {
     '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--formulae --build-from-source --interactive --force-bottle --keep-tmp --display-times)--cask[Treat all named arguments as casks]' \
+    '(--formulae --build-from-source --interactive --force-bottle --keep-tmp --display-times --git)--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
 }
 

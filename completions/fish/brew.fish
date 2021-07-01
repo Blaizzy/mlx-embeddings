@@ -1125,6 +1125,7 @@ __fish_brew_complete_arg 'reinstall' -l fontdir -d 'Target location for Fonts (d
 __fish_brew_complete_arg 'reinstall' -l force -d 'Install without checking for previously installed keg-only or non-migrated versions'
 __fish_brew_complete_arg 'reinstall' -l force-bottle -d 'Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation'
 __fish_brew_complete_arg 'reinstall' -l formula -d 'Treat all named arguments as formulae'
+__fish_brew_complete_arg 'reinstall' -l git -d 'Create a Git repository, useful for creating patches to the software'
 __fish_brew_complete_arg 'reinstall' -l help -d 'Show this message'
 __fish_brew_complete_arg 'reinstall' -l input-methoddir -d 'Target location for Input Methods (default: `~/Library/Input Methods`)'
 __fish_brew_complete_arg 'reinstall' -l interactive -d 'Download and patch formula, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package'
