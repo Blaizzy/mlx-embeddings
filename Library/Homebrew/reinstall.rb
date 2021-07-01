@@ -19,7 +19,8 @@ module Homebrew
     force: false,
     debug: false,
     quiet: false,
-    verbose: false
+    verbose: false,
+    git: false
   )
     if formula.opt_prefix.directory?
       keg = Keg.new(formula.opt_prefix.resolved_path)
@@ -44,6 +45,7 @@ module Homebrew
         build_bottle:               tab&.built_bottle?,
         force_bottle:               force_bottle,
         build_from_source_formulae: build_from_source_formulae,
+        git:                        git,
         interactive:                interactive,
         keep_tmp:                   keep_tmp,
         force:                      force,
