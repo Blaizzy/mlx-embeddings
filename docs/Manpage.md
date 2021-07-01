@@ -500,6 +500,8 @@ reinstalled formulae or, every 30 days, for all formulae.
   Retain the temporary files created during installation.
 * `--display-times`:
   Print install times for each formula at the end of the run.
+* `-g`, `--git`:
+  Create a Git repository, useful for creating patches to the software.
 * `--cask`:
   Treat all named arguments as casks.
 * `--[no-]binaries`:
