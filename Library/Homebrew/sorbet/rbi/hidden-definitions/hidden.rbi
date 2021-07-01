@@ -11437,83 +11437,6 @@ class Migrator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class MiniPortile
-  def activate(); end
-
-  def apply_patch(patch_file); end
-
-  def compile(); end
-
-  def configure(); end
-
-  def configure_options(); end
-
-  def configure_options=(configure_options); end
-
-  def configured?(); end
-
-  def cook(); end
-
-  def download(); end
-
-  def downloaded?(); end
-
-  def extract(); end
-
-  def files(); end
-
-  def files=(files); end
-
-  def host(); end
-
-  def host=(host); end
-
-  def initialize(name, version); end
-
-  def install(); end
-
-  def installed?(); end
-
-  def logger(); end
-
-  def logger=(logger); end
-
-  def name(); end
-
-  def original_host(); end
-
-  def patch(); end
-
-  def patch_files(); end
-
-  def patch_files=(patch_files); end
-
-  def path(); end
-
-  def target(); end
-
-  def target=(target); end
-
-  def version(); end
-  KEYRING_NAME = ::T.let(nil, ::T.untyped)
-  TAR_EXECUTABLES = ::T.let(nil, ::T.untyped)
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-class MiniPortile
-  def self.mingw?(); end
-
-  def self.mswin?(); end
-
-  def self.windows?(); end
-end
-
-class MiniPortileCMake
-end
-
-class MiniPortileCMake
-end
-
 MiniTest = Minitest
 
 module Minitest
@@ -13046,58 +12969,6 @@ end
 
 module OpenSSL
   def self.fips_mode(); end
-end
-
-class OpenURI::Buffer
-  def <<(str); end
-
-  def io(); end
-
-  def size(); end
-  StringMax = ::T.let(nil, ::T.untyped)
-end
-
-class OpenURI::Buffer
-end
-
-class OpenURI::HTTPError
-  def initialize(message, io); end
-end
-
-class OpenURI::HTTPRedirect
-  def initialize(message, io, uri); end
-end
-
-module OpenURI::Meta
-  def content_type_parse(); end
-
-  def meta_add_field(name, value); end
-
-  def meta_add_field2(name, values); end
-
-  def meta_setup_encoding(); end
-  RE_LWS = ::T.let(nil, ::T.untyped)
-  RE_PARAMETERS = ::T.let(nil, ::T.untyped)
-  RE_QUOTED_STRING = ::T.let(nil, ::T.untyped)
-  RE_TOKEN = ::T.let(nil, ::T.untyped)
-end
-
-module OpenURI::Meta
-  def self.init(obj, src=T.unsafe(nil)); end
-end
-
-module OpenURI
-  def self.check_options(options); end
-
-  def self.open_http(buf, target, proxy, options); end
-
-  def self.open_loop(uri, options); end
-
-  def self.open_uri(name, *rest); end
-
-  def self.redirectable?(uri1, uri2); end
-
-  def self.scan_open_optional_arguments(*rest); end
 end
 
 class Option
@@ -29870,19 +29741,11 @@ module Tty
 end
 
 class URI::FTP
-  def buffer_open(buf, proxy, options); end
-end
-
-class URI::FTP
   def self.new2(user, password, host, port, path, typecode=T.unsafe(nil), arg_check=T.unsafe(nil)); end
 end
 
 class URI::File
   DEFAULT_PORT = ::T.let(nil, ::T.untyped)
-end
-
-class URI::HTTP
-  def buffer_open(buf, proxy, options); end
 end
 
 class URI::LDAP
