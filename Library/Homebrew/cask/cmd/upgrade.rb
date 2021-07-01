@@ -19,8 +19,11 @@ module Cask
         [:switch, "--greedy", {
           description: "Also include casks with `auto_updates true` or `version :latest`.",
         }],
-        [:switch, "--skip-unversioned", {
-          description: "Skip casks with `version :latest`.",
+        [:switch, "--greedy-latest", {
+          description: "Also include casks with `version :latest`.",
+        }],
+        [:switch, "--greedy-auto-updates", {
+          description: "Also include casks with `auto_updates true`.",
         }],
       ].freeze
 
@@ -45,7 +48,8 @@ module Cask
           *casks,
           force:            args.force?,
           greedy:           args.greedy?,
-          skip_unversioned: args.skip_unversioned?,
+          greedy_latest: args.greedy_latest,
+          greedy_auto_updates: args.greedy_auto_updates,
           dry_run:          args.dry_run?,
           binaries:         args.binaries?,
           quarantine:       args.quarantine?,
@@ -62,7 +66,8 @@ module Cask
           args:             Homebrew::CLI::Args,
           force:            T.nilable(T::Boolean),
           greedy:           T.nilable(T::Boolean),
-          skip_unversioned: T.nilable(T::Boolean),
+          greedy_latest: T.nilable(T::Boolean),
+          greedy_auto_updates: T.nilabel(T::Boolean),
           dry_run:          T.nilable(T::Boolean),
           skip_cask_deps:   T.nilable(T::Boolean),
           verbose:          T.nilable(T::Boolean),
@@ -76,7 +81,8 @@ module Cask
         args:,
         force: false,
         greedy: false,
-        skip_unversioned: false,
+        greedy_latest: false,
+        greedy_auto_updates: false,
         dry_run: false,
         skip_cask_deps: false,
         verbose: false,
@@ -89,7 +95,7 @@ module Cask
 
         outdated_casks = if casks.empty?
           Caskroom.casks(config: Config.from_args(args)).select do |cask|
-            cask.outdated?(greedy: greedy, skip_unversioned: args.skip_unversioned?)
+            cask.outdated?(greedy: greedy, greedy_latest: args.greedy_latest?, greedy_auto_updates: args.greedy_auto_updates?)
           end
         else
           casks.select do |cask|
