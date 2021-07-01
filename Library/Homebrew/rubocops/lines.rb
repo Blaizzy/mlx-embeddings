@@ -540,6 +540,13 @@ module RuboCop
             problem "macOS has been 64-bit only since 10.6 so ENV.universal_binary is deprecated."
           end
 
+          find_instance_method_call(body_node, "ENV", :runtime_cpu_detection) do
+            next if tap_style_exception? :runtime_cpu_detection_allowlist
+
+            problem "Formulae should be verified as having support for runtime hardware detection before " \
+                    "using ENV.runtime_cpu_detection."
+          end
+
           find_every_method_call_by_name(body_node, :depends_on).each do |method|
             next unless method_called?(method, :new)
 
