@@ -46,34 +46,34 @@ module Cask
         verbose = ($stdout.tty? || args.verbose?) && !args.quiet?
         self.class.upgrade_casks(
           *casks,
-          force:            args.force?,
-          greedy:           args.greedy?,
-          greedy_latest: args.greedy_latest,
+          force:               args.force?,
+          greedy:              args.greedy?,
+          greedy_latest:       args.greedy_latest,
           greedy_auto_updates: args.greedy_auto_updates,
-          dry_run:          args.dry_run?,
-          binaries:         args.binaries?,
-          quarantine:       args.quarantine?,
-          require_sha:      args.require_sha?,
-          skip_cask_deps:   args.skip_cask_deps?,
-          verbose:          verbose,
-          args:             args,
+          dry_run:             args.dry_run?,
+          binaries:            args.binaries?,
+          quarantine:          args.quarantine?,
+          require_sha:         args.require_sha?,
+          skip_cask_deps:      args.skip_cask_deps?,
+          verbose:             verbose,
+          args:                args,
         )
       end
 
       sig {
         params(
-          casks:            Cask,
-          args:             Homebrew::CLI::Args,
-          force:            T.nilable(T::Boolean),
-          greedy:           T.nilable(T::Boolean),
-          greedy_latest: T.nilable(T::Boolean),
+          casks:               Cask,
+          args:                Homebrew::CLI::Args,
+          force:               T.nilable(T::Boolean),
+          greedy:              T.nilable(T::Boolean),
+          greedy_latest:       T.nilable(T::Boolean),
           greedy_auto_updates: T.nilabel(T::Boolean),
-          dry_run:          T.nilable(T::Boolean),
-          skip_cask_deps:   T.nilable(T::Boolean),
-          verbose:          T.nilable(T::Boolean),
-          binaries:         T.nilable(T::Boolean),
-          quarantine:       T.nilable(T::Boolean),
-          require_sha:      T.nilable(T::Boolean),
+          dry_run:             T.nilable(T::Boolean),
+          skip_cask_deps:      T.nilable(T::Boolean),
+          verbose:             T.nilable(T::Boolean),
+          binaries:            T.nilable(T::Boolean),
+          quarantine:          T.nilable(T::Boolean),
+          require_sha:         T.nilable(T::Boolean),
         ).returns(T::Boolean)
       }
       def self.upgrade_casks(
@@ -95,7 +95,8 @@ module Cask
 
         outdated_casks = if casks.empty?
           Caskroom.casks(config: Config.from_args(args)).select do |cask|
-            cask.outdated?(greedy: greedy, greedy_latest: args.greedy_latest?, greedy_auto_updates: args.greedy_auto_updates?)
+            cask.outdated?(greedy: greedy, greedy_latest: args.greedy_latest?,
+                           greedy_auto_updates: args.greedy_auto_updates?)
           end
         else
           casks.select do |cask|

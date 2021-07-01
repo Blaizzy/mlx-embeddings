@@ -114,7 +114,8 @@ module Cask
     end
 
     def outdated?(greedy: false, greedy_latest: false, greedy_auto_updates: false)
-      !outdated_versions(greedy: greedy, greedy_latest: greedy_latest, greedy_auto_updates: greedy_auto_updates).empty?
+      !outdated_versions(greedy: greedy, greedy_latest: greedy_latest,
+                         greedy_auto_updates: greedy_auto_updates).empty?
     end
 
     def outdated_versions(greedy: false, greedy_latest: false, greedy_auto_updates: false)
@@ -144,7 +145,8 @@ module Cask
     def outdated_info(greedy, verbose, json, greedy_latest, greedy_auto_updates)
       return token if !verbose && !json
 
-      installed_versions = outdated_versions(greedy: greedy, greedy_latest: greedy_latest, greedy_auto_updates: greedy_auto_updates).join(", ")
+      installed_versions = outdated_versions(greedy: greedy, greedy_latest: greedy_latest,
+                                             greedy_auto_updates: greedy_auto_updates).join(", ")
 
       if json
         {
