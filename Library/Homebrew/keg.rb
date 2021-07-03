@@ -452,7 +452,7 @@ class Keg
            /^ocaml/,
            /^perl5/,
            "php",
-           /^python[23]\.\d/,
+           /^python[23]\.\d+/,
            /^R/,
            /^ruby/
         :mkpath
