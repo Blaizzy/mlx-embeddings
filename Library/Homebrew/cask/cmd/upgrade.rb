@@ -48,8 +48,8 @@ module Cask
           *casks,
           force:               args.force?,
           greedy:              args.greedy?,
-          greedy_latest:       args.greedy_latest,
-          greedy_auto_updates: args.greedy_auto_updates,
+          greedy_latest:       args.greedy_latest?,
+          greedy_auto_updates: args.greedy_auto_updates?,
           dry_run:             args.dry_run?,
           binaries:            args.binaries?,
           quarantine:          args.quarantine?,
@@ -67,7 +67,7 @@ module Cask
           force:               T.nilable(T::Boolean),
           greedy:              T.nilable(T::Boolean),
           greedy_latest:       T.nilable(T::Boolean),
-          greedy_auto_updates: T.nilabel(T::Boolean),
+          greedy_auto_updates: T.nilable(T::Boolean),
           dry_run:             T.nilable(T::Boolean),
           skip_cask_deps:      T.nilable(T::Boolean),
           verbose:             T.nilable(T::Boolean),
@@ -120,7 +120,9 @@ module Cask
         return false if outdated_casks.empty?
 
         if casks.empty? && !greedy
-          ohai "Casks with 'auto_updates' or 'version :latest' will not be upgraded; pass `--greedy` to upgrade them."
+          ohai "Casks with 'auto_updates true' or 'version :latest' will not be upgraded; pass `--greedy` to upgrade them." if !args.greedy_auto_updates? && !args.greedy_latest?
+          ohai "Casks with 'version :latest' will not be upgraded; pass `--greedy-latest` to upgrade them." if args.greedy_auto_updates? && !args.greedy_latest?
+          ohai "Casks with 'auto_updates true' will not be upgraded; pass `--greedy-auto-updates` to upgrade them." if !args.greedy_auto_updates? && args.greedy_latest?
         end
 
         verb = dry_run ? "Would upgrade" : "Upgrading"
