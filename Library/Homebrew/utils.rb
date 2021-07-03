@@ -4,6 +4,7 @@
 require "time"
 
 require "utils/analytics"
+require "utils/bottle_api"
 require "utils/curl"
 require "utils/fork"
 require "utils/formatter"

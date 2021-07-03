@@ -1325,6 +1325,11 @@ class Formula
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
       current_version = T.let(false, T::Boolean)
+      latest_version = if tap.present?
+        pkg_version
+      else
+        Utils::BottleAPI.latest_pkg_version name
+      end
 
       installed_kegs.each do |keg|
         all_kegs << keg
@@ -1332,8 +1337,8 @@ class Formula
         next if version.head?
 
         tab = Tab.for_keg(keg)
-        next if version_scheme > tab.version_scheme && pkg_version != version
-        next if version_scheme == tab.version_scheme && pkg_version > version
+        next if version_scheme > tab.version_scheme && latest_version != version
+        next if version_scheme == tab.version_scheme && latest_version > version
 
         # don't consider this keg current if there's a newer formula available
         next if follow_installed_alias? && new_formula_available?

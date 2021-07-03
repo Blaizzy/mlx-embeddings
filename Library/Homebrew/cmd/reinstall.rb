@@ -84,6 +84,19 @@ module Homebrew
   def reinstall
     args = reinstall_args.parse
 
+    if ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed?
+      args.named.each do |name|
+        formula = Formulary.factory(name)
+        next unless formula.any_version_installed?
+        next if formula.tap.present? && !formula.tap.installed?
+        next unless Utils::BottleAPI.bottle_available?(name)
+
+        Utils::BottleAPI.download_bottles(name)
+      rescue FormulaUnavailableError
+        next
+      end
+    end
+
     formulae, casks = args.named.to_formulae_and_casks(method: :resolve)
                           .partition { |o| o.is_a?(Formula) }
 

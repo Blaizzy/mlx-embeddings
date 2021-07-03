@@ -97,8 +97,10 @@ module Homebrew
           elsif f.head? && outdated_kegs.any? { |k| k.version.to_s == f.pkg_version.to_s }
             # There is a newer HEAD but the version number has not changed.
             "latest HEAD"
-          else
+          elsif f.tap.present?
             f.pkg_version.to_s
+          else
+            Utils::BottleAPI.latest_pkg_version(f.name).to_s
           end
 
           outdated_versions = outdated_kegs.group_by { |keg| Formulary.from_keg(keg).full_name }
