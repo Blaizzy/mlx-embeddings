@@ -121,7 +121,8 @@ module Cask
 
         if casks.empty? && !greedy
           if !args.greedy_auto_updates? && !args.greedy_latest?
-            ohai "Casks with 'auto_updates true' or 'version :latest' will not be upgraded; pass `--greedy` to upgrade them."
+            ohai "Casks with 'auto_updates true' or 'version :latest'
+            will not be upgraded; pass `--greedy` to upgrade them."
           end
           if args.greedy_auto_updates? && !args.greedy_latest?
             ohai "Casks with 'version :latest' will not be upgraded; pass `--greedy-latest` to upgrade them."

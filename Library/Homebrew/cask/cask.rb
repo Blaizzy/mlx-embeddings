@@ -122,9 +122,7 @@ module Cask
       # special case: tap version is not available
       return [] if version.nil?
 
-      if greedy || greedy_latest && greedy_auto_updates
-        return versions if version.latest?
-      elsif greedy_auto_updates && auto_updates
+      if greedy || greedy_latest && greedy_auto_updates || greedy_auto_updates && auto_updates
         return versions if version.latest?
       elsif greedy_latest && version.latest?
         return versions
