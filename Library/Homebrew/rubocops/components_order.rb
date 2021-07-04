@@ -110,7 +110,16 @@ module RuboCop
         end
 
         def check_on_os_block_content(component_precedence_list, on_os_block)
-          on_os_allowed_methods = %w[depends_on patch resource deprecate! disable! conflicts_with keg_only]
+          on_os_allowed_methods = %w[
+            depends_on
+            patch
+            resource
+            deprecate!
+            disable!
+            conflicts_with
+            keg_only
+            ignore_missing_libraries
+          ]
           _, offensive_node = check_order(component_precedence_list, on_os_block.body)
           component_problem(*offensive_node) if offensive_node
           child_nodes = on_os_block.body.begin_type? ? on_os_block.body.child_nodes : [on_os_block.body]
