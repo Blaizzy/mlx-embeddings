@@ -29,7 +29,7 @@ module Homebrew
              description: "Dispatch bottle for Linux (using GitHub runners)."
       switch "--linux-self-hosted",
              description: "Dispatch bottle for Linux (using self-hosted runner)."
-      switch "--wheezy",
+      switch "--linux-wheezy",
              description: "Use Debian Wheezy container for building the bottle on Linux."
 
       conflicts "--macos", "--linux", "--linux-self-hosted"
@@ -83,7 +83,7 @@ module Homebrew
       # These cannot be passed as nil to GitHub API
       inputs[:issue] = args.issue if args.issue
       inputs[:upload] = args.upload?.to_s if args.upload?
-      inputs[:wheezy] = args.wheezy?.to_s if args.wheezy?
+      inputs[:wheezy] = args.linux_wheezy?.to_s if args.linux_wheezy?
 
       ohai "Dispatching #{tap} bottling request of formula \"#{formula.name}\" for #{runner}"
       GitHub.workflow_dispatch_event(user, repo, workflow, ref, inputs)
