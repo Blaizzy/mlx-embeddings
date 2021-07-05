@@ -4,8 +4,7 @@
 
 # typed: true
 
-module Addressable
-end
+module Addressable; end
 
 module Addressable::IDNA
   class << self
@@ -26,6 +25,7 @@ module Addressable::IDNA
     def punycode_delimiter?(codepoint); end
     def punycode_encode(unicode); end
     def punycode_encode_digit(d); end
+    def ucs4_to_utf8(char, buffer); end
     def unicode_compose(unpacked); end
     def unicode_compose_pair(ch_one, ch_two); end
     def unicode_decompose(unpacked); end
@@ -36,80 +36,41 @@ module Addressable::IDNA
 end
 
 Addressable::IDNA::ACE_MAX_LENGTH = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::ACE_PREFIX = T.let(T.unsafe(nil), String)
-
 Addressable::IDNA::COMPOSITION_TABLE = T.let(T.unsafe(nil), Hash)
-
 Addressable::IDNA::HANGUL_LBASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_LCOUNT = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_NCOUNT = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_SBASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_SCOUNT = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_TBASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_TCOUNT = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_VBASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::HANGUL_VCOUNT = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_BASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_DAMP = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_DELIMITER = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_INITIAL_BIAS = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_INITIAL_N = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_MAXINT = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_PRINT_ASCII = T.let(T.unsafe(nil), String)
-
 Addressable::IDNA::PUNYCODE_SKEW = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_TMAX = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::PUNYCODE_TMIN = T.let(T.unsafe(nil), Integer)
-
-class Addressable::IDNA::PunycodeBadInput < ::StandardError
-end
-
-class Addressable::IDNA::PunycodeBigOutput < ::StandardError
-end
-
-class Addressable::IDNA::PunycodeOverflow < ::StandardError
-end
-
+class Addressable::IDNA::PunycodeBadInput < ::StandardError; end
+class Addressable::IDNA::PunycodeBigOutput < ::StandardError; end
+class Addressable::IDNA::PunycodeOverflow < ::StandardError; end
 Addressable::IDNA::UNICODE_DATA = T.let(T.unsafe(nil), Hash)
-
 Addressable::IDNA::UNICODE_DATA_CANONICAL = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_DATA_COMBINING_CLASS = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_DATA_COMPATIBILITY = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_DATA_EXCLUSION = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_DATA_LOWERCASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_DATA_TITLECASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_DATA_UPPERCASE = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_MAX_LENGTH = T.let(T.unsafe(nil), Integer)
-
 Addressable::IDNA::UNICODE_TABLE = T.let(T.unsafe(nil), String)
-
 Addressable::IDNA::UTF8_REGEX = T.let(T.unsafe(nil), Regexp)
-
 Addressable::IDNA::UTF8_REGEX_MULTIBYTE = T.let(T.unsafe(nil), Regexp)
 
 class Addressable::URI
@@ -203,6 +164,7 @@ class Addressable::URI
     def encode(uri, return_type = T.unsafe(nil)); end
     def encode_component(component, character_class = T.unsafe(nil), upcase_encoded = T.unsafe(nil)); end
     def escape(uri, return_type = T.unsafe(nil)); end
+    def escape_component(component, character_class = T.unsafe(nil), upcase_encoded = T.unsafe(nil)); end
     def form_encode(form_values, sort = T.unsafe(nil)); end
     def form_unencode(encoded_value); end
     def heuristic_parse(uri, hints = T.unsafe(nil)); end
@@ -220,71 +182,43 @@ class Addressable::URI
   end
 end
 
-module Addressable::URI::CharacterClasses
-end
-
+module Addressable::URI::CharacterClasses; end
 Addressable::URI::CharacterClasses::ALPHA = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::AUTHORITY = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::DIGIT = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::FRAGMENT = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::GEN_DELIMS = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::HOST = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::PATH = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::PCHAR = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::QUERY = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::RESERVED = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::SCHEME = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::SUB_DELIMS = T.let(T.unsafe(nil), String)
-
 Addressable::URI::CharacterClasses::UNRESERVED = T.let(T.unsafe(nil), String)
-
 Addressable::URI::EMPTY_STR = T.let(T.unsafe(nil), String)
-
-class Addressable::URI::InvalidURIError < ::StandardError
-end
-
+class Addressable::URI::InvalidURIError < ::StandardError; end
 Addressable::URI::NORMPATH = T.let(T.unsafe(nil), Regexp)
-
+module Addressable::URI::NormalizeCharacterClasses; end
+Addressable::URI::NormalizeCharacterClasses::FRAGMENT = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::NormalizeCharacterClasses::HOST = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::NormalizeCharacterClasses::PCHAR = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::NormalizeCharacterClasses::QUERY = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::NormalizeCharacterClasses::SCHEME = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::NormalizeCharacterClasses::UNRESERVED = T.let(T.unsafe(nil), Regexp)
 Addressable::URI::PARENT = T.let(T.unsafe(nil), String)
-
 Addressable::URI::PORT_MAPPING = T.let(T.unsafe(nil), Hash)
-
 Addressable::URI::RULE_2A = T.let(T.unsafe(nil), Regexp)
-
 Addressable::URI::RULE_2B_2C = T.let(T.unsafe(nil), Regexp)
-
 Addressable::URI::RULE_2D = T.let(T.unsafe(nil), Regexp)
-
 Addressable::URI::RULE_PREFIXED_PARENT = T.let(T.unsafe(nil), Regexp)
-
 Addressable::URI::SELF_REF = T.let(T.unsafe(nil), String)
-
 Addressable::URI::SEQUENCE_ENCODING_TABLE = T.let(T.unsafe(nil), Hash)
-
 Addressable::URI::SEQUENCE_UPCASED_PERCENT_ENCODING_TABLE = T.let(T.unsafe(nil), Hash)
-
 Addressable::URI::SLASH = T.let(T.unsafe(nil), String)
-
 Addressable::URI::URIREGEX = T.let(T.unsafe(nil), Regexp)
-
-module Addressable::VERSION
-end
-
+module Addressable::VERSION; end
 Addressable::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
-
 Addressable::VERSION::MINOR = T.let(T.unsafe(nil), Integer)
-
 Addressable::VERSION::STRING = T.let(T.unsafe(nil), String)
-
 Addressable::VERSION::TINY = T.let(T.unsafe(nil), Integer)

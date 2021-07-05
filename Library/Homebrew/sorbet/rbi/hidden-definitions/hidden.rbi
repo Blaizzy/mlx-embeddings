@@ -2740,8 +2740,6 @@ class Addressable::Template
 
   def extract(uri, processor=T.unsafe(nil)); end
 
-  def generate(params=T.unsafe(nil), recall=T.unsafe(nil), options=T.unsafe(nil)); end
-
   def initialize(pattern); end
 
   def keys(); end
@@ -12578,13 +12576,9 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-class Net::HTTPSuccess
-end
+Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPSuccess
-end
+Net::HTTPSuccessCode = Net::HTTPSuccess
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
