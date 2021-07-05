@@ -307,10 +307,9 @@ module FormulaCellarChecks
     end
 
     keg = Keg.new(formula.prefix)
-    has_cpuid_instruction = keg.binary_executable_or_library_files.any? do |file|
+    return if keg.binary_executable_or_library_files.any? do |file|
       cpuid_instruction?(file, objdump)
     end
-    return if has_cpuid_instruction
 
     "No `cpuid` instruction detected. #{formula} should not use `ENV.runtime_cpu_detection`."
   end
@@ -355,8 +354,8 @@ module FormulaCellarChecks
     has_cpuid_instruction = false
     Utils.popen_read(objdump, "--disassemble", file) do |io|
       until io.eof?
-        instruction = io.readline.split("\t")[@instruction_column_index[objdump]]&.chomp
-        has_cpuid_instruction = instruction.match?(/^cpuid(\s+|$)/) if instruction
+        instruction = io.readline.split("\t")[@instruction_column_index[objdump]]&.strip
+        has_cpuid_instruction = instruction == "cpuid" if instruction.present?
         break if has_cpuid_instruction
       end
     end
