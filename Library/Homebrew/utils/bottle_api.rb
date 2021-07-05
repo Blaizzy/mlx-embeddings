@@ -46,6 +46,9 @@ module Utils
         output = Utils::Curl.curl_output("--fail", FORMULAE_BREW_SH_VERSIONS_API_URL)
         JSON.parse(output.stdout)
       end
+
+      return unless @formula_versions.key? name
+
       PkgVersion.new(@formula_versions[name]["version"], @formula_versions[name]["revision"])
     end
 

@@ -1328,7 +1328,7 @@ class Formula
       latest_version = if tap.present?
         pkg_version
       else
-        Utils::BottleAPI.latest_pkg_version name
+        Utils::BottleAPI.latest_pkg_version(name) || pkg_version
       end
 
       installed_kegs.each do |keg|

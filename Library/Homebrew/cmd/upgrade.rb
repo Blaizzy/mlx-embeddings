@@ -161,7 +161,7 @@ module Homebrew
 
     if ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed?
       formulae_to_install.map! do |formula|
-        next formula if formula.tap.present? && formula.tap.installed?
+        next formula if formula.tap.present?
         next formula unless Utils::BottleAPI.bottle_available?(formula.name)
 
         Utils::BottleAPI.fetch_bottles(formula.name)

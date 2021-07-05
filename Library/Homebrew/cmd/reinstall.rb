@@ -88,7 +88,7 @@ module Homebrew
       args.named.each do |name|
         formula = Formulary.factory(name)
         next unless formula.any_version_installed?
-        next if formula.tap.present? && !formula.tap.installed?
+        next if formula.tap.present?
         next unless Utils::BottleAPI.bottle_available?(name)
 
         Utils::BottleAPI.fetch_bottles(name)

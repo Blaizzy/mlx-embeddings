@@ -100,7 +100,7 @@ module Homebrew
           elsif f.tap.present?
             f.pkg_version.to_s
           else
-            Utils::BottleAPI.latest_pkg_version(f.name).to_s
+            Utils::BottleAPI.latest_pkg_version(f.name)&.to_s || f.pkg_version.to_s
           end
 
           outdated_versions = outdated_kegs.group_by { |keg| Formulary.from_keg(keg).full_name }
