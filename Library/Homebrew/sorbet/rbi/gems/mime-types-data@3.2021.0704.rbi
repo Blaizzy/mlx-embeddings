@@ -4,12 +4,11 @@
 
 # typed: true
 
-module MIME
-end
+module MIME; end
 
 class MIME::Types
-  include(::Enumerable)
-  extend(::Enumerable)
+  include ::Enumerable
+  extend ::Enumerable
 
   def initialize; end
 
@@ -68,11 +67,7 @@ class MIME::Types::Cache < ::Struct
   end
 end
 
-module MIME::Types::Data
-end
-
+module MIME::Types::Data; end
 MIME::Types::Data::PATH = T.let(T.unsafe(nil), String)
-
 MIME::Types::Data::VERSION = T.let(T.unsafe(nil), String)
-
 MIME::Types::VERSION = T.let(T.unsafe(nil), String)
