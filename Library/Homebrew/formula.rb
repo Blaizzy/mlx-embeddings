@@ -29,6 +29,7 @@ require "mktemp"
 require "find"
 require "utils/spdx"
 require "extend/on_os"
+require "bottle_api"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
@@ -1328,7 +1329,7 @@ class Formula
       latest_version = if tap.present?
         pkg_version
       else
-        Utils::BottleAPI.latest_pkg_version(name) || pkg_version
+        BottleAPI.latest_pkg_version(name) || pkg_version
       end
 
       installed_kegs.each do |keg|

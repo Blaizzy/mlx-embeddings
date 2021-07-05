@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "delegate"
-
+require "bottle_api"
 require "cli/args"
 
 module Homebrew
@@ -124,8 +124,8 @@ module Homebrew
             unreadable_error ||= e
           rescue NoSuchKegError, FormulaUnavailableError => e
             if load_from_json && ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed? &&
-               Utils::BottleAPI.bottle_available?(name)
-              Utils::BottleAPI.fetch_bottles(name)
+               BottleAPI.bottle_available?(name)
+              BottleAPI.fetch_bottles(name)
               retry
             end
 
