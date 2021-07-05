@@ -298,19 +298,17 @@ module FormulaCellarChecks
     objdump ||= Formula["binutils"].opt_bin/"objdump" if Formula["binutils"].any_version_installed?
     objdump ||= which("objdump")
     objdump ||= which("objdump", ENV["HOMEBREW_PATH"])
-    objdump ||= begin
-      # If the system provides no `objdump`, install binutils instead of llvm since
-      # binutils is smaller and has fewer dependencies.
-      ohai "Installing `binutils` for `cpuid` instruction check..."
-      safe_system HOMEBREW_BREW_FILE, "install", "binutils"
-      Formula["binutils"].opt_bin/"objdump"
+
+    unless objdump
+      return <<~EOS
+        No `objdump` found, so cannot check for a `cpuid` instruction. Install `objdump` with
+          brew install binutils
+      EOS
     end
 
     keg = Keg.new(formula.prefix)
-    has_cpuid_instruction = false
-    keg.binary_executable_or_library_files.each do |file|
-      has_cpuid_instruction = cpuid_instruction?(file, objdump)
-      break if has_cpuid_instruction
+    has_cpuid_instruction = keg.binary_executable_or_library_files.any? do |file|
+      cpuid_instruction?(file, objdump)
     end
     return if has_cpuid_instruction
 
@@ -347,10 +345,18 @@ module FormulaCellarChecks
   end
 
   def cpuid_instruction?(file, objdump = "objdump")
+    @instruction_column_index ||= {}
+    @instruction_column_index[objdump] ||= if Utils.popen_read(objdump, "--version").include? "LLVM"
+      1 # `llvm-objdump` or macOS `objdump`
+    else
+      2 # GNU binutils `objdump`
+    end
+
     has_cpuid_instruction = false
     Utils.popen_read(objdump, "--disassemble", file) do |io|
       until io.eof?
-        has_cpuid_instruction = io.readline.include? "cpuid"
+        instruction = io.readline.split("\t")[@instruction_column_index[objdump]]&.chomp
+        has_cpuid_instruction = instruction.match?(/^cpuid(\s+|$)/) if instruction
         break if has_cpuid_instruction
       end
     end
