@@ -19,7 +19,7 @@ module Utils
     end.freeze
 
     FORMULAE_BREW_SH_VERSIONS_API_URL = if OS.mac?
-      "https://formulae.brew.sh/api/versions.json"
+      "https://formulae.brew.sh/api/versions-formulae.json"
     else
       "https://formulae.brew.sh/api/versions-linux.json"
     end.freeze
@@ -58,11 +58,11 @@ module Utils
     end
 
     sig { params(name: String).void }
-    def download_bottles(name)
+    def fetch_bottles(name)
       hash = fetch(name)
       bottle_tag = Utils::Bottles.tag.to_s
 
-      odie "No bottle availabe for current OS" unless hash["bottles"].key? bottle_tag
+      odie "No bottle available for current OS" unless hash["bottles"].key? bottle_tag
 
       download_bottle(hash, bottle_tag)
 

@@ -91,7 +91,7 @@ module Homebrew
         next if formula.tap.present? && !formula.tap.installed?
         next unless Utils::BottleAPI.bottle_available?(name)
 
-        Utils::BottleAPI.download_bottles(name)
+        Utils::BottleAPI.fetch_bottles(name)
       rescue FormulaUnavailableError
         next
       end

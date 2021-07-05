@@ -125,7 +125,7 @@ module Homebrew
           rescue NoSuchKegError, FormulaUnavailableError => e
             if load_from_json && ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed? &&
                Utils::BottleAPI.bottle_available?(name)
-              Utils::BottleAPI.download_bottles(name)
+              Utils::BottleAPI.fetch_bottles(name)
               retry
             end
 
