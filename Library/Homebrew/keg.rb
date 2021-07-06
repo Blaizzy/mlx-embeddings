@@ -525,6 +525,10 @@ class Keg
     find { |pn| FileUtils.rm_rf pn if pn.basename.to_s == "__pycache__" }
   end
 
+  def binary_executable_or_library_files
+    elf_files
+  end
+
   private
 
   def resolve_any_conflicts(dst, dry_run: false, verbose: false, overwrite: false)

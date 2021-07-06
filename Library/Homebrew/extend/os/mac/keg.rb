@@ -19,4 +19,10 @@ class Keg
     GENERIC_MUST_BE_WRITABLE_DIRECTORIES +
     [HOMEBREW_PREFIX/"Frameworks"]
   ).sort.uniq.freeze
+
+  undef binary_executable_or_library_files
+
+  def binary_executable_or_library_files
+    mach_o_files
+  end
 end
