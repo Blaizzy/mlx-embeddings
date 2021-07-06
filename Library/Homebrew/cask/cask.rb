@@ -102,11 +102,11 @@ module Cask
 
     def installed_caskfile
       installed_version = timestamped_versions.last
-      metadata_master_container_path.join(*installed_version, "Casks", "#{token}.rb")
+      metadata_main_container_path.join(*installed_version, "Casks", "#{token}.rb")
     end
 
     def config_path
-      metadata_master_container_path/"config.json"
+      metadata_main_container_path/"config.json"
     end
 
     def caskroom_path

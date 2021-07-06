@@ -538,7 +538,7 @@ module Cask
 
         @cask.metadata_versioned_path.rmdir_if_possible
       end
-      @cask.metadata_master_container_path.rmdir_if_possible unless upgrade?
+      @cask.metadata_main_container_path.rmdir_if_possible unless upgrade?
 
       # toplevel staged distribution
       @cask.caskroom_path.rmdir_if_possible unless upgrade?
