@@ -74,7 +74,7 @@ module Homebrew
           description: "Install testing dependencies required to run `brew test` <formula>.",
         }],
         [:switch, "--HEAD", {
-          description: "If <formula> defines it, install the HEAD version, aka. master, trunk, unstable.",
+          description: "If <formula> defines it, install the HEAD version, aka. main, trunk, unstable, master.",
         }],
         [:switch, "--fetch-HEAD", {
           description: "Fetch the upstream repository to detect if the HEAD installation of the " \
