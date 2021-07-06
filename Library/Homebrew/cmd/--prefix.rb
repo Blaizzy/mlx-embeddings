@@ -74,6 +74,7 @@ module Homebrew
     lib/gio/*
     lib/node_modules/*
     lib/python[23].[0-9]/*
+    lib/python3.[0-9][0-9]/*
     lib/pypy/*
     lib/pypy3/*
     lib/ruby/gems/[12].*
