@@ -1326,10 +1326,10 @@ class Formula
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
       current_version = T.let(false, T::Boolean)
-      latest_version = if tap.present?
-        pkg_version
-      else
+      latest_version = if tap.blank? && ENV["HOMEBREW_JSON_CORE"].present?
         BottleAPI.latest_pkg_version(name) || pkg_version
+      else
+        pkg_version
       end
 
       installed_kegs.each do |keg|
