@@ -13162,10 +13162,6 @@ class Parlour::TypedObject
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Parlour::Types
-  TypeLike = ::T.let(nil, ::T.untyped)
-end
-
 class Parlour::Types::Proc::Parameter
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
