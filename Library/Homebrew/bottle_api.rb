@@ -48,7 +48,9 @@ module BottleAPI
 
     return unless @formula_versions.key? name
 
-    PkgVersion.new(@formula_versions[name]["version"], @formula_versions[name]["revision"])
+    version = Version.new(@formula_versions[name]["version"])
+    revision = @formula_versions[name]["revision"]
+    PkgVersion.new(version, revision)
   end
 
   sig { params(name: String).returns(T::Boolean) }
