@@ -51,7 +51,7 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
     let(:expected_offenses) do
       [{
         message:  "'https://foo.brew.sh' must have a slash "\
-                 "after the domain.",
+                  "after the domain.",
         severity: :convention,
         line:     2,
         column:   11,
