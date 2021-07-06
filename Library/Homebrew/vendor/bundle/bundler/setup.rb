@@ -55,7 +55,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parallel_tests-3.7.0/
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parser-3.0.1.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rainbow-3.0.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-0.5.6274/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parlour-6.0.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parlour-6.0.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/patchelf-1.3.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/plist-3.6.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/pry-0.14.1/lib"
