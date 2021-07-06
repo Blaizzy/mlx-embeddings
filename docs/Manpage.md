@@ -1063,7 +1063,7 @@ Build bottles for these formulae with GitHub Actions.
   Dispatch bottle for Linux (using GitHub runners).
 * `--linux-self-hosted`:
   Dispatch bottle for Linux (using self-hosted runner).
-* `--wheezy`:
+* `--linux-wheezy`:
   Use Debian Wheezy container for building the bottle on Linux.
 
 ### `edit` [*`--formula`*] [*`--cask`*] [*`formula`*|*`cask`* ...]

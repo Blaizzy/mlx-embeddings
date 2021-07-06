@@ -755,12 +755,12 @@ _brew_dispatch_build_bottle() {
       --issue
       --linux
       --linux-self-hosted
+      --linux-wheezy
       --macos
       --quiet
       --tap
       --upload
       --verbose
-      --wheezy
       --workflow
       "
       return
