@@ -1551,6 +1551,18 @@ class Formula
     "@loader_path/../lib"
   end
 
+  # Creates a new `Time` object for use in the formula as the build time.
+  #
+  # @see https://www.rubydoc.info/stdlib/time/Time Time
+  sig { returns(Time) }
+  def time
+    if ENV["SOURCE_DATE_EPOCH"].present?
+      Time.at(ENV["SOURCE_DATE_EPOCH"].to_i).utc
+    else
+      Time.now.utc
+    end
+  end
+
   # an array of all core {Formula} names
   # @private
   def self.core_names
