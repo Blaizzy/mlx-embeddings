@@ -103,7 +103,7 @@ module Homebrew
       def linux_self_hosted?; end
 
       sig { returns(T::Boolean) }
-      def wheezy?; end
+      def linux_wheezy?; end
 
       sig { returns(T::Boolean) }
       def total?; end
