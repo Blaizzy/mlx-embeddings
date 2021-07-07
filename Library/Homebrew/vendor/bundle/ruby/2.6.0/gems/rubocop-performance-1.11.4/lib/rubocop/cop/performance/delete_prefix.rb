@@ -7,6 +7,7 @@ module RuboCop
       #
       # This cop identifies places where `gsub(/\Aprefix/, '')` and `sub(/\Aprefix/, '')`
       # can be replaced by `delete_prefix('prefix')`.
+      # It is marked as unsafe by default because `Pathname` has `sub` but not `delete_prefix`.
       #
       # This cop has `SafeMultiline` configuration option that `true` by default because
       # `^prefix` is unsafe as it will behave incompatible with `delete_prefix`
@@ -66,7 +67,7 @@ module RuboCop
 
         def on_send(node)
           return unless (receiver, bad_method, regexp_str, replace_string = delete_prefix_candidate?(node))
-          return unless replace_string.blank?
+          return unless replace_string.empty?
 
           good_method = PREFERRED_METHODS[bad_method]
 
