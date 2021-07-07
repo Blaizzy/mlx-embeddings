@@ -31,6 +31,11 @@ module Homebrew
       @apps ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::App) }
     end
 
+    sig { returns(T::Array[Cask::Artifact::Qlplugin]) }
+    def qlplugins
+      @qlplugins ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Qlplugin) }
+    end
+
     sig { returns(T::Array[Cask::Artifact::Pkg]) }
     def pkgs
       @pkgs ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Pkg) }
@@ -78,8 +83,18 @@ module Homebrew
 
         installer.extract_primary_container(to: dir)
 
-        info_plist_paths = apps.flat_map do |app|
-          top_level_info_plists(Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist")).sort
+        info_plist_paths = []
+
+        apps.flat_map do |app|
+          top_level_info_plists(Pathname.glob(dir/"**"/app.source.basename/"Contents"/"Info.plist"))
+            .sort
+            .each {|match| info_plist_paths.push(match)}
+        end
+
+        qlplugins.flat_map do |qlplugin|
+          top_level_info_plists(Pathname.glob(dir/"**"/qlplugin.source.basename/"Contents"/"Info.plist"))
+            .sort
+            .each {|match| info_plist_paths.push(match)}
         end
 
         info_plist_paths.each(&parse_info_plist)
