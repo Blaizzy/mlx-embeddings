@@ -1743,6 +1743,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Only run the tap syntax check step.
 * `--only-formulae`:
   Only run the formulae steps.
+* `--only-formulae-detect`:
+  Only run the formulae detection steps.
 * `--only-cleanup-after`:
   Only run the post-cleanup step. Needs `--cleanup`.
 
