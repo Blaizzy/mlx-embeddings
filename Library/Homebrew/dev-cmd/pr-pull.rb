@@ -291,7 +291,10 @@ module Homebrew
 
   def formulae_need_bottles?(tap, original_commit, user, repo, pr, args:)
     return if args.dry_run?
-    return false if GitHub.pull_request_labels(user, repo, pr).include? "CI-syntax-only"
+
+    labels = GitHub.pull_request_labels(user, repo, pr)
+
+    return false if labels.include?("CI-syntax-only") || labels.include?("CI-no-bottles")
 
     changed_formulae(tap, original_commit).any? do |f|
       !f.bottle_unneeded? && !f.bottle_disabled?
