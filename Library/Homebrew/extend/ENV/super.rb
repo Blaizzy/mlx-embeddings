@@ -338,6 +338,7 @@ module Superenv
   end
 
   # rubocop: disable Naming/MethodName
+  # Fixes style error `Naming/MethodName: Use snake_case for method names.`
   sig { params(block: T.nilable(T.proc.void)).void }
   def O0(&block)
     if block
