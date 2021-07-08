@@ -149,7 +149,7 @@ function __fish_brew_suggest_commands -d "Lists all commands names, including al
     end
 end
 
-function __fish_brew_suggest_diagnostic_checks -d "List available diagnostic checks"
+function __fish_brew_suggest_diagnostic_check -d "List available diagnostic checks"
     brew doctor --list-checks
 end
 
