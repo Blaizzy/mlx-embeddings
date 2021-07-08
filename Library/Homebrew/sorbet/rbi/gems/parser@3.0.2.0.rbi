@@ -4,17 +4,58 @@
 
 # typed: true
 
+class AST::Node
+  def initialize(type, children = T.unsafe(nil), properties = T.unsafe(nil)); end
+
+  def +(array); end
+  def <<(element); end
+  def ==(other); end
+  def append(element); end
+  def children; end
+  def clone; end
+  def concat(array); end
+  def deconstruct; end
+  def dup; end
+  def eql?(other); end
+  def hash; end
+  def inspect(indent = T.unsafe(nil)); end
+  def to_a; end
+  def to_ast; end
+  def to_s(indent = T.unsafe(nil)); end
+  def to_sexp(indent = T.unsafe(nil)); end
+  def to_sexp_array; end
+  def type; end
+  def updated(type = T.unsafe(nil), children = T.unsafe(nil), properties = T.unsafe(nil)); end
+
+  protected
+
+  def assign_properties(properties); end
+  def fancy_type; end
+
+  private
+
+  def original_dup; end
+end
+
+class AST::Processor
+  include ::AST::Processor::Mixin
+end
+
+module AST::Processor::Mixin
+  def handler_missing(node); end
+  def process(node); end
+  def process_all(nodes); end
+end
+
 module Parser
   class << self
-
     private
 
     def warn_syntax_deviation(feature, version); end
   end
 end
 
-module Parser::AST
-end
+module Parser::AST; end
 
 class Parser::AST::Node < ::AST::Node
   def assign_properties(properties); end
@@ -176,8 +217,7 @@ class Parser::Base < ::Racc::Parser
   end
 end
 
-module Parser::Builders
-end
+module Parser::Builders; end
 
 class Parser::Builders::Default
   def initialize; end
@@ -403,8 +443,7 @@ class Parser::Builders::Default
   end
 end
 
-class Parser::ClobberingError < ::RuntimeError
-end
+class Parser::ClobberingError < ::RuntimeError; end
 
 class Parser::Context
   def initialize; end
@@ -624,13 +663,9 @@ class Parser::Lexer::Dedenter
 end
 
 Parser::Lexer::Dedenter::TAB_WIDTH = T.let(T.unsafe(nil), Integer)
-
 Parser::Lexer::ESCAPES = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::KEYWORDS = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::KEYWORDS_BEGIN = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::LEX_STATES = T.let(T.unsafe(nil), Hash)
 
 class Parser::Lexer::Literal
@@ -670,13 +705,9 @@ class Parser::Lexer::Literal
 end
 
 Parser::Lexer::Literal::DELIMITERS = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::Literal::TYPES = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::PUNCTUATION = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::PUNCTUATION_BEGIN = T.let(T.unsafe(nil), Hash)
-
 Parser::Lexer::REGEXP_META_CHARACTERS = T.let(T.unsafe(nil), Regexp)
 
 class Parser::Lexer::StackState
@@ -720,13 +751,11 @@ module Parser::Messages
   end
 end
 
-module Parser::Meta
-end
-
+module Parser::Meta; end
 Parser::Meta::NODE_TYPES = T.let(T.unsafe(nil), Set)
 
 class Parser::Rewriter < ::Parser::AST::Processor
-  extend(::Parser::Deprecation)
+  extend ::Parser::Deprecation
 
   def initialize(*_arg0); end
 
@@ -1181,11 +1210,8 @@ class Parser::Ruby26 < ::Parser::Base
 end
 
 Parser::Ruby26::Racc_arg = T.let(T.unsafe(nil), Array)
-
 Parser::Ruby26::Racc_token_to_s_table = T.let(T.unsafe(nil), Array)
-
-module Parser::Source
-end
+module Parser::Source; end
 
 class Parser::Source::Buffer
   def initialize(name, first_line = T.unsafe(nil), source: T.unsafe(nil)); end
@@ -1266,7 +1292,6 @@ class Parser::Source::Comment::Associator
 end
 
 Parser::Source::Comment::Associator::MAGIC_COMMENT_RE = T.let(T.unsafe(nil), Regexp)
-
 Parser::Source::Comment::Associator::POSTFIX_TYPES = T.let(T.unsafe(nil), Set)
 
 class Parser::Source::Map
@@ -1436,8 +1461,8 @@ class Parser::Source::Map::Variable < ::Parser::Source::Map
 end
 
 class Parser::Source::Range
-  include(::Comparable)
-  include(::RuboCop::AST::Ext::Range)
+  include ::Comparable
+  include ::RuboCop::AST::Ext::Range
 
   def initialize(source_buffer, begin_pos, end_pos); end
 
@@ -1478,7 +1503,7 @@ class Parser::Source::Range
 end
 
 class Parser::Source::Rewriter
-  extend(::Parser::Deprecation)
+  extend ::Parser::Deprecation
 
   def initialize(source_buffer); end
 
@@ -1522,7 +1547,7 @@ class Parser::Source::Rewriter
 end
 
 class Parser::Source::Rewriter::Action
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(range, replacement = T.unsafe(nil), allow_multiple_insertions = T.unsafe(nil), order = T.unsafe(nil)); end
 
@@ -1538,7 +1563,7 @@ end
 Parser::Source::Rewriter::DEPRECATION_WARNING = T.let(T.unsafe(nil), String)
 
 class Parser::Source::TreeRewriter
-  extend(::Parser::Deprecation)
+  extend ::Parser::Deprecation
 
   def initialize(source_buffer, crossing_deletions: T.unsafe(nil), different_replacements: T.unsafe(nil), swallowed_insertions: T.unsafe(nil)); end
 
@@ -1610,7 +1635,6 @@ class Parser::Source::TreeRewriter::Action
 end
 
 Parser::Source::TreeRewriter::DEPRECATION_WARNING = T.let(T.unsafe(nil), String)
-
 Parser::Source::TreeRewriter::POLICY_TO_LEVEL = T.let(T.unsafe(nil), Hash)
 
 class Parser::StaticEnvironment
