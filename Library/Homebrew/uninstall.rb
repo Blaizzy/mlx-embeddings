@@ -137,7 +137,7 @@ module Homebrew
 
       def are_required_by_deps
         "#{"is".pluralize(reqs.count)} required by #{deps.to_sentence}, " \
-        "which #{"is".pluralize(deps.count)} currently installed"
+          "which #{"is".pluralize(deps.count)} currently installed"
       end
     end
 

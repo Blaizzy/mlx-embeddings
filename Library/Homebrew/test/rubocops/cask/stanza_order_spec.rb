@@ -110,7 +110,7 @@ describe RuboCop::Cop::Cask::StanzaOrder do
         line:     3,
         column:   2,
         source:   "uninstall :quit => 'com.example.foo',\n" \
-                "            :kext => 'com.example.foo.kext'",
+                  "            :kext => 'com.example.foo.kext'",
       }, {
         message:  "`version` stanza out of order",
         severity: :convention,

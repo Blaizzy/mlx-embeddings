@@ -195,7 +195,7 @@ module PyPI
       input_packages.each do |existing_package|
         if existing_package.same_package?(extra_package) && existing_package.version != extra_package.version
           odie "Conflicting versions specified for the `#{extra_package.name}` package: "\
-                "#{existing_package.version}, #{extra_package.version}"
+               "#{existing_package.version}, #{extra_package.version}"
         end
       end
 

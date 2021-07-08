@@ -84,6 +84,25 @@ Naming/HeredocDelimiterNaming:
   ForbiddenDelimiters:
     - END, EOD, EOF
 
+Naming/InclusiveLanguage:
+  CheckStrings: true
+  FlaggedTerms:
+    # TODO: If possible, make this stricter.
+    slave:
+      AllowedRegex:
+        - "gitslave"   # Used in formula `gitslave`
+        - "log_slave"  # Used in formula `ssdb`
+        - "ssdb_slave" # Used in formula `ssdb`
+        - "var_slave"  # Used in formula `ssdb`
+        - "patches/13_fix_scope_for_show_slave_status_data.patch" # Used in formula `mytop`
+    blacklist:
+      AllowedRegex:
+        - "--listBlacklist" # Used in formula `xmlsectool`
+    whitelist:
+      AllowedRegex:
+        - "--error-white-list" # For an option passed to `srb` in dev-cmd/typecheck.rb
+        - "--repo-whitelist"   # Used in formula `atlantis`
+
 Naming/MethodName:
   IgnoredPatterns:
     - '\A(fetch_)?HEAD\?\Z'

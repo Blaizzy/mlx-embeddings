@@ -275,7 +275,7 @@ module Formulary
     def load_file(flags:, ignore_errors:)
       if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url
         raise UsageError, "Installation of #{formula_name} from a GitHub commit URL is unsupported! " \
-                  "`brew extract #{formula_name}` to a stable tap on GitHub instead."
+                          "`brew extract #{formula_name}` to a stable tap on GitHub instead."
       elsif url.match?(%r{^(https?|ftp)://})
         raise UsageError, "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! ",
               "`brew extract` or `brew create` and `brew tap-new` to create a "\

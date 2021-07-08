@@ -205,8 +205,8 @@ module RuboCop
           return if tap_style_exception? :components_order_exceptions
 
           problem "`#{format_component(c1)}` (line #{line_number(c1)}) " \
-            "should be put before `#{format_component(c2)}` " \
-            "(line #{line_number(c2)})" do |corrector|
+                  "should be put before `#{format_component(c2)}` " \
+                  "(line #{line_number(c2)})" do |corrector|
             reorder_components(corrector, c1, c2)
           end
         end
