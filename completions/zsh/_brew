@@ -911,7 +911,7 @@ _brew_info() {
 # brew instal
 _brew_instal() {
   _arguments \
-    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. master, trunk, unstable]' \
+    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. main, trunk, unstable, master]' \
     '(--formula)--appdir[Target location for Applications (default: `/Applications`)]' \
     '(--formula)--audio-unit-plugindir[Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)]' \
     '(--formula)--binaries[Disable/enable linking of helper executables (default: enabled)]' \
@@ -963,7 +963,7 @@ _brew_instal() {
 # brew install
 _brew_install() {
   _arguments \
-    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. master, trunk, unstable]' \
+    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. main, trunk, unstable, master]' \
     '(--formula)--appdir[Target location for Applications (default: `/Applications`)]' \
     '(--formula)--audio-unit-plugindir[Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)]' \
     '(--formula)--binaries[Disable/enable linking of helper executables (default: enabled)]' \
