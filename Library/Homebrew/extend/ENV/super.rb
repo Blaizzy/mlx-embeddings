@@ -337,15 +337,25 @@ module Superenv
     append_to_cccfg "O"
   end
 
-  %w[O1 O0].each do |opt|
-    define_method opt do |&block|
-      if T.must(block)
-        with_env(HOMEBREW_OPTIMIZATION_LEVEL: opt) { block.call }
-      else
-        send(:[]=, "HOMEBREW_OPTIMIZATION_LEVEL", opt)
-      end
+  # rubocop: disable Naming/MethodName
+  sig { params(block: T.nilable(T.proc.void)).void }
+  def O0(&block)
+    if block
+      with_env(HOMEBREW_OPTIMIZATION_LEVEL: "O0", &block)
+    else
+      self["HOMEBREW_OPTIMIZATION_LEVEL"] = "O0"
     end
   end
+
+  sig { params(block: T.nilable(T.proc.void)).void }
+  def O1(&block)
+    if block
+      with_env(HOMEBREW_OPTIMIZATION_LEVEL: "O1", &block)
+    else
+      self["HOMEBREW_OPTIMIZATION_LEVEL"] = "O1"
+    end
+  end
+  # rubocop: enable Naming/MethodName
 end
 
 require "extend/os/extend/ENV/super"
