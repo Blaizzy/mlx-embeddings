@@ -339,7 +339,7 @@ module Superenv
 
   %w[O1 O0].each do |opt|
     define_method opt do |&block|
-      if block
+      if T.must(block)
         with_env(HOMEBREW_OPTIMIZATION_LEVEL: opt) { block.call }
       else
         send(:[]=, "HOMEBREW_OPTIMIZATION_LEVEL", opt)
