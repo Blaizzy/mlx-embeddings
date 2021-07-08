@@ -345,10 +345,15 @@ module FormulaCellarChecks
 
   def cpuid_instruction?(file, objdump = "objdump")
     @instruction_column_index ||= {}
-    @instruction_column_index[objdump] ||= if Utils.popen_read(objdump, "--version").include? "LLVM"
-      1 # `llvm-objdump` or macOS `objdump`
-    else
-      2 # GNU binutils `objdump`
+    @instruction_column_index[objdump] ||= begin
+      objdump_version = Utils.popen_read(objdump, "--version")
+
+      if (objdump_version.match?(/^Apple LLVM/) && MacOS.version <= :mojave) ||
+         objdump_version.exclude?("LLVM")
+        2 # Mojave `objdump` or GNU Binutils `objdump`
+      else
+        1 # `llvm-objdump` or Catalina+ `objdump`
+      end
     end
 
     has_cpuid_instruction = false
