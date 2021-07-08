@@ -309,7 +309,7 @@ the installed formulae or, every 30 days, for all formulae.
 * `--include-test`:
   Install testing dependencies required to run `brew test` *`formula`*.
 * `--HEAD`:
-  If *`formula`* defines it, install the HEAD version, aka. master, trunk, unstable.
+  If *`formula`* defines it, install the HEAD version, aka. main, trunk, unstable, master.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--keep-tmp`:

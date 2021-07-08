@@ -733,7 +733,7 @@ __fish_brew_complete_arg 'info; and not __fish_seen_argument -l formula -l formu
 
 
 __fish_brew_complete_cmd 'instal' 'Install a formula or cask'
-__fish_brew_complete_arg 'instal' -l HEAD -d 'If formula defines it, install the HEAD version, aka. master, trunk, unstable'
+__fish_brew_complete_arg 'instal' -l HEAD -d 'If formula defines it, install the HEAD version, aka. main, trunk, unstable, master'
 __fish_brew_complete_arg 'instal' -l appdir -d 'Target location for Applications (default: `/Applications`)'
 __fish_brew_complete_arg 'instal' -l audio-unit-plugindir -d 'Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)'
 __fish_brew_complete_arg 'instal' -l binaries -d 'Disable/enable linking of helper executables (default: enabled)'
@@ -781,7 +781,7 @@ __fish_brew_complete_arg 'instal; and not __fish_seen_argument -l formula -l for
 
 
 __fish_brew_complete_cmd 'install' 'Install a formula or cask'
-__fish_brew_complete_arg 'install' -l HEAD -d 'If formula defines it, install the HEAD version, aka. master, trunk, unstable'
+__fish_brew_complete_arg 'install' -l HEAD -d 'If formula defines it, install the HEAD version, aka. main, trunk, unstable, master'
 __fish_brew_complete_arg 'install' -l appdir -d 'Target location for Applications (default: `/Applications`)'
 __fish_brew_complete_arg 'install' -l audio-unit-plugindir -d 'Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)'
 __fish_brew_complete_arg 'install' -l binaries -d 'Disable/enable linking of helper executables (default: enabled)'
