@@ -52,7 +52,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/method_source-1.0.0/l
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/mustache-1.1.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parallel-1.20.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parallel_tests-3.7.0/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parser-3.0.1.1/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parser-3.0.2.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rainbow-3.0.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-0.5.6274/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parlour-6.0.1/lib"
