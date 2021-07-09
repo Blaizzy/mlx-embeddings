@@ -67,7 +67,8 @@ module Homebrew
         if args.suggest_typed?
           result = system_command(
             "bundle",
-            args:         ["exec", "--", "srb", "tc", "--suggest-typed", "--typed=strict", "--error-white-list=7022"],
+            args:         ["exec", "--", "srb", "tc", "--suggest-typed", "--typed=strict",
+                           "--isolate-error-code=7022"],
             print_stderr: false,
           )
 
