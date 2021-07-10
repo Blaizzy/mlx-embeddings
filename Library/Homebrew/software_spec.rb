@@ -299,14 +299,19 @@ class Bottle
   def_delegators :resource, :url, :verify_download_integrity
   def_delegators :resource, :cached_download
 
-  def initialize(formula, spec)
+  def initialize(formula, spec, tag = nil)
     @name = formula.name
     @resource = Resource.new
     @resource.owner = formula
     @resource.specs[:bottle] = true
     @spec = spec
 
-    checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag)
+    bottle_tag = if tag.present?
+      Utils::Bottles::Tag.from_symbol(tag)
+    else
+      Utils::Bottles.tag
+    end
+    checksum, tag, cellar = spec.checksum_for(bottle_tag)
 
     @prefix = spec.prefix
     @tag = tag
