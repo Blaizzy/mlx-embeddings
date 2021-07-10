@@ -98,9 +98,6 @@ Naming/InclusiveLanguage:
     blacklist:
       AllowedRegex:
         - "--listBlacklist" # Used in formula `xmlsectool`
-    whitelist:
-      AllowedRegex:
-        - "--repo-whitelist" # Used in formula `atlantis`
 
 Naming/MethodName:
   IgnoredPatterns:
