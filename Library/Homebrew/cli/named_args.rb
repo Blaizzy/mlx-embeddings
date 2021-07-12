@@ -45,18 +45,18 @@ module Homebrew
       # the formula and prints a warning unless `only` is specified.
       sig {
         params(
-          only:               T.nilable(Symbol),
-          ignore_unavailable: T.nilable(T::Boolean),
-          method:             T.nilable(Symbol),
-          uniq:               T::Boolean,
-          load_from_json:     T::Boolean,
+          only:                     T.nilable(Symbol),
+          ignore_unavailable:       T.nilable(T::Boolean),
+          method:                   T.nilable(Symbol),
+          uniq:                     T::Boolean,
+          prefer_loading_from_json: T::Boolean,
         ).returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
       }
       def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil, uniq: true,
-                                load_from_json: false)
+                                prefer_loading_from_json: false)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
-          load_formula_or_cask(name, only: only, method: method, load_from_json: load_from_json)
+          load_formula_or_cask(name, only: only, method: method, prefer_loading_from_json: prefer_loading_from_json)
         rescue FormulaUnreadableError, FormulaClassUnavailableError,
                TapFormulaUnreadableError, TapFormulaClassUnavailableError,
                Cask::CaskUnreadableError
@@ -90,10 +90,14 @@ module Homebrew
         end.uniq.freeze
       end
 
-      def load_formula_or_cask(name, only: nil, method: nil, load_from_json: false)
+      def load_formula_or_cask(name, only: nil, method: nil, prefer_loading_from_json: false)
         unreadable_error = nil
 
         if only != :cask
+          if prefer_loading_from_json && ENV["HOMEBREW_JSON_CORE"].present? && BottleAPI.bottle_available?(name)
+            BottleAPI.fetch_bottles(name)
+          end
+
           begin
             formula = case method
             when nil, :factory
@@ -123,12 +127,6 @@ module Homebrew
             # The formula was found, but there's a problem with its implementation
             unreadable_error ||= e
           rescue NoSuchKegError, FormulaUnavailableError => e
-            if load_from_json && ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed? &&
-               BottleAPI.bottle_available?(name)
-              BottleAPI.fetch_bottles(name)
-              retry
-            end
-
             raise e if only == :formula
           end
         end

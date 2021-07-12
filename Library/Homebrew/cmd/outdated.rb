@@ -92,14 +92,14 @@ module Homebrew
         if verbose?
           outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
-          current_version = if f.alias_changed? && !f.latest_formula.latest_version_installed?
+          current_version = if ENV["HOMEBREW_JSON_CORE"].present? && (f.core_formula? || f.tap.blank?)
+            BottleAPI.latest_pkg_version(f.name)&.to_s || f.pkg_version.to_s
+          elsif f.alias_changed? && !f.latest_formula.latest_version_installed?
             latest = f.latest_formula
             "#{latest.name} (#{latest.pkg_version})"
           elsif f.head? && outdated_kegs.any? { |k| k.version.to_s == f.pkg_version.to_s }
             # There is a newer HEAD but the version number has not changed.
             "latest HEAD"
-          elsif f.tap.blank? && ENV["HOMEBREW_JSON_CORE"].present?
-            BottleAPI.latest_pkg_version(f.name)&.to_s || f.pkg_version.to_s
           else
             f.pkg_version.to_s
           end

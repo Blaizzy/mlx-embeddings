@@ -85,11 +85,11 @@ module Homebrew
   def reinstall
     args = reinstall_args.parse
 
-    if ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed?
+    if ENV["HOMEBREW_JSON_CORE"].present?
       args.named.each do |name|
         formula = Formulary.factory(name)
         next unless formula.any_version_installed?
-        next if formula.tap.present?
+        next if formula.tap.present? && !formula.core_formula?
         next unless BottleAPI.bottle_available?(name)
 
         BottleAPI.fetch_bottles(name)

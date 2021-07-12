@@ -1326,7 +1326,7 @@ class Formula
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
       current_version = T.let(false, T::Boolean)
-      latest_version = if tap.blank? && ENV["HOMEBREW_JSON_CORE"].present?
+      latest_version = if ENV["HOMEBREW_JSON_CORE"].present? && (core_formula? || tap.blank?)
         BottleAPI.latest_pkg_version(name) || pkg_version
       else
         pkg_version

@@ -160,9 +160,9 @@ module Homebrew
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
 
-    if ENV["HOMEBREW_JSON_CORE"].present? && !CoreTap.instance.installed?
+    if ENV["HOMEBREW_JSON_CORE"].present?
       formulae_to_install.map! do |formula|
-        next formula if formula.tap.present?
+        next formula if formula.tap.present? && !formula.core_formula?
         next formula unless BottleAPI.bottle_available?(formula.name)
 
         BottleAPI.fetch_bottles(formula.name)
