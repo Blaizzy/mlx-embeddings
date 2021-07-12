@@ -98,10 +98,6 @@ Naming/InclusiveLanguage:
     blacklist:
       AllowedRegex:
         - "--listBlacklist" # Used in formula `xmlsectool`
-    whitelist:
-      AllowedRegex:
-        - "--error-white-list" # For an option passed to `srb` in dev-cmd/typecheck.rb
-        - "--repo-whitelist"   # Used in formula `atlantis`
 
 Naming/MethodName:
   IgnoredPatterns:
