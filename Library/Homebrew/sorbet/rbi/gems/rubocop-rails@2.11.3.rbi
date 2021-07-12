@@ -17,6 +17,7 @@ module RuboCop::Cop::ActiveRecordHelper
   def foreign_key_of(belongs_to); end
   def in_where?(node); end
   def inherit_active_record_base?(node); end
+  def polymorphic?(belongs_to); end
   def resolve_relation_into_column(name:, class_node:, table:); end
   def schema; end
   def table_name(class_node); end
@@ -144,8 +145,6 @@ class RuboCop::Cop::Rails::ActiveRecordCallbacksOrder < ::RuboCop::Cop::Base
   def defined_callbacks(class_node); end
   def end_position_for(node); end
   def inline_comment?(comment); end
-  def left_siblings_of(node); end
-  def siblings_of(node); end
   def source_range_with_comment(node); end
   def start_line_position(node); end
 end
@@ -1212,10 +1211,8 @@ class RuboCop::Cop::Rails::RedundantAllowNil < ::RuboCop::Cop::Base
   private
 
   def find_allow_nil_and_allow_blank(node); end
-  def next_sibling(node); end
   def node_beg(node); end
   def node_end(node); end
-  def previous_sibling(node); end
   def register_offense(allow_nil, message); end
 end
 
