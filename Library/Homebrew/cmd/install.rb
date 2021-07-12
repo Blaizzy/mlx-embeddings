@@ -253,6 +253,7 @@ module Homebrew
       return
     end
 
+    opoo e
     ohai "Searching for similarly named formulae..."
     formulae_search_results = search_formulae(e.name)
     case formulae_search_results.length
