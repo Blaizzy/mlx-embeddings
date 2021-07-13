@@ -8,6 +8,7 @@ require "upgrade"
 require "cask/cmd"
 require "cask/utils"
 require "cask/macos"
+require "bottle_api"
 
 module Homebrew
   extend T::Sig
@@ -157,6 +158,18 @@ module Homebrew
     if !pinned.empty? && !args.ignore_pinned?
       ofail "Not upgrading #{pinned.count} pinned #{"package".pluralize(pinned.count)}:"
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
+    end
+
+    if ENV["HOMEBREW_JSON_CORE"].present?
+      formulae_to_install.map! do |formula|
+        next formula if formula.tap.present? && !formula.core_formula?
+        next formula unless BottleAPI.bottle_available?(formula.name)
+
+        BottleAPI.fetch_bottles(formula.name)
+        Formulary.factory(formula.name)
+      rescue FormulaUnavailableError
+        formula
+      end
     end
 
     if formulae_to_install.empty?
