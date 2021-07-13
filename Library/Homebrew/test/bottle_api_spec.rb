@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 describe BottleAPI do
+  before do
+    ENV["HOMEBREW_JSON_CORE"] = "1"
+  end
+
   let(:bottle_json) {
     <<~EOS
       {
