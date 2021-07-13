@@ -393,10 +393,7 @@ module Homebrew
 
       if formula.keg_only?
         return if formula.keg_only_reason.versioned_formula?
-        if formula.name.start_with?("openssl", "libressl") &&
-           formula.keg_only_reason.by_macos?
-          return
-        end
+        return if formula.name.start_with?("openssl", "libressl") && formula.keg_only_reason.by_macos?
       end
 
       return if tap_audit_exception :versioned_keg_only_allowlist, formula.name
