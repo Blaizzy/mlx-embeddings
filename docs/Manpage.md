@@ -202,6 +202,8 @@ an issue; just ignore this.
 Download a bottle (if available) or source packages for *`formula`*e
 and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 
+* `--bottle-tag`:
+  Download a bottle for given tag.
 * `--HEAD`:
   Fetch HEAD version instead of stable version.
 * `-f`, `--force`:

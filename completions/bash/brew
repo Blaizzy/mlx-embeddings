@@ -873,6 +873,7 @@ _brew_fetch() {
     -*)
       __brewcomp "
       --HEAD
+      --bottle-tag
       --build-bottle
       --build-from-source
       --cask
