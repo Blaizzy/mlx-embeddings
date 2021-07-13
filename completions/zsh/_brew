@@ -801,12 +801,13 @@ _brew_extract() {
 _brew_fetch() {
   _arguments \
     '(--cask)--HEAD[Fetch HEAD version instead of stable version]' \
-    '(--build-from-source --force-bottle --cask)--build-bottle[Download source packages (for eventual bottling) rather than a bottle]' \
-    '(--build-bottle --force-bottle)--build-from-source[Download source packages rather than a bottle]' \
+    '(--build-from-source --build-bottle --force-bottle --cask)--bottle-tag[Download a bottle for given tag]' \
+    '(--build-from-source --force-bottle --bottle-tag --cask)--build-bottle[Download source packages (for eventual bottling) rather than a bottle]' \
+    '(--build-bottle --force-bottle --bottle-tag)--build-from-source[Download source packages rather than a bottle]' \
     '--debug[Display any debugging information]' \
     '(--cask)--deps[Also download dependencies for any listed formula]' \
     '--force[Remove a previously cached version and re-fetch]' \
-    '(--build-from-source --build-bottle --cask)--force-bottle[Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation]' \
+    '(--build-from-source --build-bottle --bottle-tag --cask)--force-bottle[Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation]' \
     '--help[Show this message]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
@@ -817,7 +818,7 @@ _brew_fetch() {
     '(--cask)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--HEAD --deps --s --build-bottle --force-bottle --formula)--cask[Treat all named arguments as casks]' \
+    '(--HEAD --deps --s --build-bottle --force-bottle --bottle-tag --formula)--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
 }
 
