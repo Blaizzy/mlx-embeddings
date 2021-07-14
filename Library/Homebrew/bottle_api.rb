@@ -71,6 +71,14 @@ module BottleAPI
     download_bottle(hash, bottle_tag)
 
     hash["dependencies"].each do |dep_hash|
+      existing_formula = begin
+        Formulary.factory dep_hash["name"]
+      rescue FormulaUnavailableError
+        nil
+      end
+
+      next if existing_formula.present? && existing_formula.latest_version_installed?
+
       download_bottle(dep_hash, bottle_tag)
     end
   end
