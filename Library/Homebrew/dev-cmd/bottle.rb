@@ -399,6 +399,8 @@ module Homebrew
         keg.find do |file|
           # Set the times for reproducible bottles.
           if file.symlink?
+            # Need to make symlink permissions consistent on macOS and Linux
+            system "chmod", "-h", "0777", file if OS.mac?
             File.lutime(tab.source_modified_time, tab.source_modified_time, file)
           else
             file.utime(tab.source_modified_time, tab.source_modified_time)
