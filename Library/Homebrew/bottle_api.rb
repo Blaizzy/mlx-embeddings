@@ -74,6 +74,7 @@ module BottleAPI
       existing_formula = begin
         Formulary.factory dep_hash["name"]
       rescue FormulaUnavailableError
+        # The formula might not exist if it's not installed and homebrew/core isn't tapped
         nil
       end
 
