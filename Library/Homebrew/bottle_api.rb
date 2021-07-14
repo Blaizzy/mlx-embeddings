@@ -66,7 +66,7 @@ module BottleAPI
     hash = fetch(name)
     bottle_tag = Utils::Bottles.tag.to_s
 
-    odie "No bottle available for current OS" unless hash["bottles"].key? bottle_tag
+    odie "No bottle available for current OS" if !hash["bottles"].key?(bottle_tag) && !hash["bottles"].key?("all")
 
     download_bottle(hash, bottle_tag)
 
@@ -94,6 +94,7 @@ module BottleAPI
   sig { params(hash: Hash, tag: Symbol).void }
   def download_bottle(hash, tag)
     bottle = hash["bottles"][tag]
+    bottle ||= hash["bottles"]["all"]
     return if bottle.blank?
 
     sha256 = bottle["sha256"] || checksum_from_url(bottle["url"])
