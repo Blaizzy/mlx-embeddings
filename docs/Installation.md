@@ -3,10 +3,10 @@
 Instructions for a supported install of Homebrew are on the [homepage](https://brew.sh).
 
 This script installs Homebrew to its preferred prefix (`/usr/local`
-for macOS Intel, `/opt/homebrew` for Apple Silicon) so that
+for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux) so that
 [you don’t need sudo](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you
 `brew install`. It is a careful script; it can be run even if you have stuff
-installed in `/usr/local` already. It tells you exactly what it will do before
+installed in the preferred prefix already. It tells you exactly what it will do before
 it does it too. You have to confirm everything it will do before it starts.
 
 ## macOS Requirements
@@ -44,8 +44,7 @@ Just extract (or `git clone`) Homebrew wherever you want. Just avoid:
 * `/tmp` subdirectories because Homebrew gets upset.
 * `/sw` and `/opt/local` because build scripts get confused when Homebrew is there instead of Fink or MacPorts, respectively.
 
-However do yourself a favour and install to `/usr/local` on macOS Intel, `/opt/homebrew` on macOS ARM,
-and `/home/linuxbrew/.linuxbrew` on Linux. Some things may
+However do yourself a favour and use the installer to install to the default prefix. Some things may
 not build when installed elsewhere. One of the reasons Homebrew just
 works relative to the competition is **because** we recommend installing
 here. *Pick another prefix at your peril!*
@@ -56,7 +55,7 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar 
 
 ### Multiple installations
 
-Create a Homebrew installation wherever you extract the tarball. Whichever `brew` command is called is where the packages will be installed. You can use this as you see fit, e.g. a system set of libs in `/usr/local` and tweaked formulae for development in `~/homebrew`.
+Create a Homebrew installation wherever you extract the tarball. Whichever `brew` command is called is where the packages will be installed. You can use this as you see fit, e.g. a system set of libs in the default prefix and tweaked formulae for development in `~/homebrew`.
 
 ## Uninstallation
 

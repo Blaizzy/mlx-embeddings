@@ -54,8 +54,8 @@ Homebrew doesn't support arbitrary mixing and matching of formula versions, so e
 
 Which is usually: `~/Library/Caches/Homebrew`
 
-## My Mac `.app`s don’t find `/usr/local/bin` utilities!
-GUI apps on macOS don’t have `/usr/local/bin` in their `PATH` by default. If you're on Mountain Lion or later, you can fix this by running `sudo launchctl config user path "/usr/local/bin:$PATH"` and then rebooting, as documented in `man launchctl`. Note that this sets the launchctl `PATH` for *all users*. For earlier versions of macOS, see [this page](https://developer.apple.com/legacy/library/qa/qa1067/_index.html).
+## My Mac `.app`s don’t find Homebrew utilities!
+GUI apps on macOS don’t have Homebrew's prefix in their `PATH` by default. If you're on Mountain Lion or later, you can fix this by running `sudo launchctl config user path "$(brew --prefix)/bin:$PATH"` and then rebooting, as documented in `man launchctl`. Note that this sets the launchctl `PATH` for *all users*. For earlier versions of macOS, see [this page](https://developer.apple.com/legacy/library/qa/qa1067/_index.html).
 
 ## How do I contribute to Homebrew?
 Read our [contribution guidelines](https://github.com/Homebrew/brew/blob/HEAD/CONTRIBUTING.md#contributing-to-homebrew).
@@ -74,8 +74,8 @@ will use a bottled version of the formula, but
 * The `--build-from-source` option is invoked.
 * The machine is not running a supported version of macOS as all
 bottled builds are generated only for supported macOS versions.
-* Homebrew is installed to a prefix other than the standard
-`/usr/local` (although some bottles support this).
+* Homebrew is installed to a prefix other than the default
+(although some bottles support this).
 
 We aim to bottle everything.
 
@@ -90,24 +90,11 @@ hub pull someone_else
 
 ## Why should I install Homebrew in the default location?
 
-Homebrew's pre-built binary packages (known as [bottles](Bottles.md)) of many packages can only be used if you install in the default installation prefix, otherwise they have to be built from source. Building from source takes a long time, is prone to fail, and is not supported. Do yourself a favour and install to the default prefix so that you can use our pre-built binary packages. The default prefix is `/usr/local` for macOS on Intel, `/opt/homebrew` for macOS on ARM, and `/home/linuxbrew/.linuxbrew` for Linux. *Pick another prefix at your peril!*
+Homebrew's pre-built binary packages (known as [bottles](Bottles.md)) of many packages can only be used if you install in the default installation prefix, otherwise they have to be built from source. Building from source takes a long time, is prone to fail, and is not supported. Do yourself a favour and install to the default prefix so that you can use our pre-built binary packages. The default prefix is `/usr/local` for macOS on Intel, `/opt/homebrew` for macOS on Apple Silicon/ARM, and `/home/linuxbrew/.linuxbrew` for Linux. *Pick another prefix at your peril!*
 
-## Why does Homebrew prefer I install to `/usr/local`?
+## Why is the default installation prefix `/opt/homebrew` on Apple Silicon?
 
-1.  **It’s easier**<br>`/usr/local/bin` is already in your
-    `PATH`.
-2.  **It’s easier**<br>Tons of build scripts break if their dependencies
-    aren’t in either `/usr` or `/usr/local`. We
-    fix this for Homebrew formulae (although we don’t always test for
-    it), but you’ll find that many RubyGems and Python setup scripts
-    break which is something outside our control.
-3.  **It’s safe**<br>Apple has assigned this directory for non-system utilities. This means
-    there are no files in `/usr/local` by default, so there
-    is no need to worry about messing up existing or system tools.
-
-**If you plan to install gems that depend on formulae then save yourself a bunch of hassle and install to `/usr/local`!**
-
-It is not always straightforward to tell `gem` to look in non-standard directories for headers and libraries. If you choose `/usr/local`, many things will "just work".
+The prefix `/opt/homebrew` was chosen to allow `/opt/homebrew` Apple Silicon and `/usr/local` Rosetta 2 installation to coexist and both use bottles.
 
 ## Why is the default installation prefix `/home/linuxbrew/.linuxbrew` on Linux?
 
@@ -154,29 +141,6 @@ into a debugging shell.
 If you want your new formula to be part of `homebrew/core` or want
 to learn more about writing formulae, then please read the [Formula Cookbook](Formula-Cookbook.md).
 
-## Can I install my own stuff to `/usr/local`?
-Yes, `brew` is designed to not get in your way so you can use it how you
-like.
-
-Install your own stuff, but be aware that if you install common
-libraries like libexpat yourself, it may cause trouble when trying to
-build certain Homebrew formula. As a result `brew doctor` will warn you
-about this.
-
-Thus it’s probably better to install your own stuff to the Cellar and
-then `brew link` it. Like so:
-
-```sh
-$ cd foo-0.1
-$ brew diy
-./configure --prefix=/usr/local/Cellar/foo/0.1
-$ ./configure --prefix=/usr/local/Cellar/foo/0.1
-[snip]
-$ make && make install
-$ brew link foo
-Linking /usr/local/Cellar/foo/0.1… 17 symlinks created
-```
-
 ## Why was a formula deleted or disabled?
 Use `brew log <formula>` to find out! Likely because it had [unresolved issues](Acceptable-Formulae.md) and/or [our analytics](Analytics.md) identified it was not widely used.
 
@@ -186,7 +150,7 @@ For disabled and deprecated formulae, running `brew info <formula>` will also pr
 Homebrew's creator @mxcl was too concerned with the beer theme and didn't consider that the project may actually prove popular. By the time Max realised that it was popular, it was too late. However, today, the first Google hit for "homebrew" is not beer related 😉
 
 ## What does "keg-only" mean?
-It means the formula is installed only into the Cellar and is not linked into `/usr/local`. This means most tools will not find it. You can see why a formula was installed as keg-only, and instructions to include it in your `PATH`, by running `brew info <formula>`.
+It means the formula is installed only into the Cellar and is not linked into the default prefix. This means most tools will not find it. You can see why a formula was installed as keg-only, and instructions to include it in your `PATH`, by running `brew info <formula>`.
 
 You can still link in the formula if you need to with `brew link <formula>`, though this can cause unexpected behaviour if you are shadowing macOS software.
 

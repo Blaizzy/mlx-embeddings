@@ -8,7 +8,7 @@ As an example:
 
 *OpenSSL isn’t symlinked into my `PATH` and non-Homebrew builds can’t find it!*
 
-This is because Homebrew keeps it locked inside its individual prefix, rather than symlinking to the publicly-available location, usually `/usr/local`.
+This is because Homebrew keeps it locked inside its individual prefix, rather than symlinking to the publicly-available location.
 
 ## Advice on potential workarounds
 
