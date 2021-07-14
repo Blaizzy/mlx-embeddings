@@ -21,13 +21,13 @@ module Commands
     "uninstal"    => "uninstall",
     "rm"          => "uninstall",
     "remove"      => "uninstall",
-    "configure"   => "diy",
     "abv"         => "info",
     "dr"          => "doctor",
     "--repo"      => "--repository",
     "environment" => "--env",
     "--config"    => "config",
     "-v"          => "--version",
+    "lc"          => "livecheck",
     "tc"          => "typecheck",
   }.freeze
 
