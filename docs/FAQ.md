@@ -94,7 +94,7 @@ Homebrew's pre-built binary packages (known as [bottles](Bottles.md)) of many pa
 
 ## Why is the default installation prefix `/opt/homebrew` on Apple Silicon?
 
-The prefix `/opt/homebrew` was chosen to allow `/opt/homebrew` Apple Silicon and `/usr/local` Rosetta 2 installation to coexist and both use bottles.
+The prefix `/opt/homebrew` was chosen to allow installations in `/opt/homebrew` for Apple Silicon and `/usr/local` for Rosetta 2 to coexist and use bottles.
 
 ## Why is the default installation prefix `/home/linuxbrew/.linuxbrew` on Linux?
 
