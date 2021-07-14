@@ -184,6 +184,18 @@ first search, making that search slower than subsequent ones.
 * `-d`, `--description`:
   Search just descriptions for *`text`*. If *`text`* is flanked by slashes, it is interpreted as a regular expression.
 
+### `developer` [*`subcommand`*]
+
+Control Homebrew's developer mode. When developer mode is enabled,
+`brew update` will update Homebrew to the latest commit on the `master`
+branch instead of the latest stable version.
+
+`brew developer` [`state`]
+<br>Display the current state of Homebrew's developer mode.
+
+`brew developer` (`on`|`off`)
+<br>Turn Homebrew's developer mode on or off respectively.
+
 ### `doctor`, `dr` [*`--list-checks`*] [*`--audit-debug`*] [*`diagnostic_check`* ...]
 
 Check your system for potential problems. Will exit with a non-zero status

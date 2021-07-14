@@ -229,6 +229,17 @@ Search just names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is in
 \fB\-d\fR, \fB\-\-description\fR
 Search just descriptions for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
 .
+.SS "\fBdeveloper\fR [\fIsubcommand\fR]"
+Control Homebrew\'s developer mode\. When developer mode is enabled, \fBbrew update\fR will update Homebrew to the latest commit on the \fBmaster\fR branch instead of the latest stable version\.
+.
+.P
+\fBbrew developer\fR [\fBstate\fR]
+    Display the current state of Homebrew\'s developer mode\.
+.
+.P
+\fBbrew developer\fR (\fBon\fR|\fBoff\fR)
+    Turn Homebrew\'s developer mode on or off respectively\.
+.
 .SS "\fBdoctor\fR, \fBdr\fR [\fI\-\-list\-checks\fR] [\fI\-\-audit\-debug\fR] [\fIdiagnostic_check\fR \.\.\.]"
 Check your system for potential problems\. Will exit with a non\-zero status if any potential problems are found\. Please note that these warnings are just used to help the Homebrew maintainers with debugging if you file an issue\. If everything you use Homebrew for is working fine: please don\'t worry or file an issue; just ignore this\.
 .

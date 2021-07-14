@@ -577,6 +577,16 @@ __fish_brew_complete_arg 'desc' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'desc' -a '(__fish_brew_suggest_formulae_all)'
 
 
+__fish_brew_complete_cmd 'developer' 'Control Homebrew\'s developer mode'
+__fish_brew_complete_sub_cmd 'developer' 'state'
+__fish_brew_complete_sub_cmd 'developer' 'on'
+__fish_brew_complete_sub_cmd 'developer' 'off'
+__fish_brew_complete_arg 'developer' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'developer' -l help -d 'Show this message'
+__fish_brew_complete_arg 'developer' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'developer' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'dispatch-build-bottle' 'Build bottles for these formulae with GitHub Actions'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l help -d 'Show this message'

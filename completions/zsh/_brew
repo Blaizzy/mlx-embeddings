@@ -155,6 +155,7 @@ __brew_internal_commands() {
     'create:Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
     'deps:Show dependencies for formula'
     'desc:Display formula'\''s name and one-line description'
+    'developer:Control Homebrew'\''s developer mode'
     'dispatch-build-bottle:Build bottles for these formulae with GitHub Actions'
     'doctor:Check your system for potential problems'
     'edit:Open a formula or cask in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the Homebrew repository for editing if no formula is provided'
@@ -707,6 +708,17 @@ _brew_desc() {
     '--verbose[Make some output more verbose]' \
     - formula \
     '*::formula:__brew_formulae'
+}
+
+# brew developer
+_brew_developer() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]' \
+    - subcommand \
+    '*::subcommand:(state on off)'
 }
 
 # brew dispatch-build-bottle
