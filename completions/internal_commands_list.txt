@@ -26,7 +26,6 @@ command
 commands
 completions
 config
-configure
 create
 deps
 desc
@@ -48,6 +47,7 @@ info
 install
 install-bundler-gems
 irb
+lc
 leaves
 link
 linkage

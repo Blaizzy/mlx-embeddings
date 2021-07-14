@@ -22,13 +22,13 @@ __brew_list_aliases() {
     uninstal uninstall
     rm uninstall
     remove uninstall
-    configure diy
     abv info
     dr doctor
     '--repo' '--repository'
     environment '--env'
     '--config' config
     '-v' '--version'
+    lc livecheck
     tc typecheck
   )
   echo "${aliases}"
@@ -1032,6 +1032,27 @@ _brew_irb() {
     '--pry[Use Pry instead of IRB. Implied if `HOMEBREW_PRY` is set]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
+}
+
+# brew lc
+_brew_lc() {
+  _arguments \
+    '(--tap --installed)--all[Check all available formulae/casks]' \
+    '(--json)--debug[Display any debugging information]' \
+    '--full-name[Print formulae/casks with fully-qualified names]' \
+    '--help[Show this message]' \
+    '(--tap --all)--installed[Check formulae/casks that are currently installed]' \
+    '(--debug)--json[Output information in JSON format]' \
+    '--newer-only[Show the latest version only if it'\''s newer than the formula/cask]' \
+    '--quiet[Suppress warnings, don'\''t print a progress bar for JSON output]' \
+    '(--all --installed)--tap[Check formulae/casks within the given tap, specified as user`/`repo]' \
+    '--verbose[Make some output more verbose]' \
+    - formula \
+    '(--cask)--formula[Only check formulae]' \
+    '*::formula:__brew_formulae' \
+    - cask \
+    '(--formula)--cask[Only check casks]' \
+    '*::cask:__brew_casks'
 }
 
 # brew leaves
