@@ -253,10 +253,7 @@ module Homebrew
       s += " (bottled)" if bottle_exists
       specs << s
     elsif (stable = f.stable)
-      latest_version = BottleAPI.latest_pkg_version(f.name).version if ENV["HOMEBREW_JSON_CORE"].present?
-      latest_version ||= stable.version
-
-      s = "stable #{latest_version}"
+      s = "stable #{stable.version}"
       s += " (bottled)" if stable.bottled? && f.pour_bottle?
       specs << s
     end
