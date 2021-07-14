@@ -94,6 +94,6 @@ Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy
 
 [![Software Freedom Conservancy](https://sfconservancy.org/img/conservancy_64x64.png)](https://sfconservancy.org)
 
-Homebrew is generously supported by [Substack](https://github.com/substackinc), [GitHub](https://github.com/githubsponsors), [Randy Reddig](https://github.com/ydnar), [embark-studios](https://github.com/embark-studios), [Realist.ai](https://github.com/RealistAI) and many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
+Homebrew is generously supported by [Substack](https://github.com/substackinc), [Randy Reddig](https://github.com/ydnar), [embark-studios](https://github.com/embark-studios), [CodeCrafters](https://github.com/codecrafters-io) and many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
 
-[![Substack](https://github.com/substackinc.png?size=64)](https://github.com/substackinc)[![GitHub](https://github.com/githubsponsors.png?size=64)](https://github.com/githubsponsors)
+[![Substack](https://github.com/substackinc.png?size=64)](https://github.com/substackinc)
