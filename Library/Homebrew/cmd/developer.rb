@@ -14,7 +14,7 @@ module Homebrew
       description <<~EOS
         Control Homebrew's developer mode. When developer mode is enabled,
         `brew update` will update Homebrew to the latest commit on the `master`
-        branch instead of the latest stable version.
+        branch instead of the latest stable version along with some other behaviour changes.
 
         `brew developer` [`state`]:
         Display the current state of Homebrew's developer mode.
@@ -33,7 +33,7 @@ module Homebrew
     case args.named.first
     when nil, "state"
       if Homebrew::EnvConfig.developer?
-        puts "Developer mode is enabled because #{Tty.bold}HOMEBREW_DEVELOPER#{Tty.reset} it set."
+        puts "Developer mode is enabled because #{Tty.bold}HOMEBREW_DEVELOPER#{Tty.reset} is set."
       elsif Homebrew::Settings.read("devcmdrun") == "true"
         puts "Developer mode is enabled."
       else
