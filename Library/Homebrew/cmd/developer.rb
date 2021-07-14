@@ -30,10 +30,17 @@ module Homebrew
   def developer
     args = developer_args.parse
 
+    env_vars = []
+    env_vars << "HOMEBREW_DEVELOPER" if Homebrew::EnvConfig.developer?
+    env_vars << "HOMEBREW_UPDATE_TO_TAG" if Homebrew::EnvConfig.update_to_tag?
+    env_vars.map! do |var|
+      "#{Tty.bold}#{var}#{Tty.reset}"
+    end
+
     case args.named.first
     when nil, "state"
-      if Homebrew::EnvConfig.developer?
-        puts "Developer mode is enabled because #{Tty.bold}HOMEBREW_DEVELOPER#{Tty.reset} is set."
+      if env_vars.any?
+        puts "Developer mode is enabled because #{env_vars.to_sentence} #{"is".pluralize(env_vars.count)} set."
       elsif Homebrew::Settings.read("devcmdrun") == "true"
         puts "Developer mode is enabled."
       else
@@ -43,8 +50,8 @@ module Homebrew
       Homebrew::Settings.write "devcmdrun", true
     when "off"
       Homebrew::Settings.delete "devcmdrun"
-      if Homebrew::EnvConfig.developer?
-        puts "To fully disable developer mode, you must unset #{Tty.bold}HOMEBREW_DEVELOPER#{Tty.reset}."
+      if env_vars.any?
+        puts "To fully disable developer mode, you must unset #{env_vars.to_sentence}."
       end
     else
       raise UsageError, "unknown subcommand: #{args.named.first}"
