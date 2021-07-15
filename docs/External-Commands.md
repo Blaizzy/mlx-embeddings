@@ -26,38 +26,16 @@ An executable script for a command named `extcmd` should be named `brew-extcmd`.
 | Variable               | Description                                                                                                                                                                 |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `HOMEBREW_CACHE`       | Where Homebrew caches downloaded tarballs to, by default `~/Library/Caches/Homebrew`.                                                                                       |
+| `HOMEBREW_PREFIX`      | Where Homebrew installs software. `/usr/local` by default for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux.                    |
 | `HOMEBREW_CELLAR`      | The location of the Homebrew Cellar, where software is staged. This will be `HOMEBREW_PREFIX/Cellar` if that directory exists, or `HOMEBREW_REPOSITORY/Cellar` otherwise.   |
 | `HOMEBREW_LIBRARY_PATH`| The directory containing Homebrew’s own application code.                                                                                                                   |
-| `HOMEBREW_PREFIX`      | Where Homebrew installs software. This is always the grandparent directory of the `brew` executable, `/usr/local` by default.                                               |
-| `HOMEBREW_REPOSITORY`  | If installed from a Git clone, the repository directory (i.e. where Homebrew’s `.git` directory lives).                                                                       |
+| `HOMEBREW_REPOSITORY`  | The Git repository directory (i.e. where Homebrew’s `.git` directory lives). Usually either the same as `HOMEBREW_PREFIX` or a `Homebrew` subdirectory`.                    |
 
 ## Providing `--help`
 
 All internal and external Homebrew commands can provide styled `--help` output by using lines starting with `#:` (a comment then `:` character in both Bash and Ruby) which are then output by `--help`.
 
 For example, see the [header of `brew-services.rb`](https://github.com/Homebrew/homebrew-services/blob/a58a1fe9145de4e50e1cbfb5b0e8a30087826393/cmd/brew-services.rb#L1-L23) which is output with `brew services --help`.
-
-## Homebrew organisation external commands
-
-### homebrew-command-not-found
-Ubuntu's `command-not-found equivalent` for Homebrew.
-See the [`README`](https://github.com/Homebrew/homebrew-command-not-found/blob/HEAD/README.md) for more info and usage.
-
-Install using:
-
-```sh
-brew tap homebrew/command-not-found
-```
-
-### homebrew-aliases
-Allows you to alias your Homebrew commands.
-See the [`README`](https://github.com/Homebrew/homebrew-aliases/blob/HEAD/README.md) for more info and usage.
-
-Install using:
-
-```sh
-brew tap homebrew/aliases
-```
 
 ## Unofficial external commands
 These commands have been contributed by Homebrew users but are not included in the main Homebrew organisation, nor are they installed by the installer script. You can install them manually, as outlined above.

@@ -23,7 +23,7 @@ is probably safer than changing the group ownership of the directory.
 Habit maybe?
 
 One reason is executables go in `/usr/local/bin`. Usually this isn’t a
-writable location. But if you installed Homebrew as we recommend,
+writable location. But if you installed Homebrew as we recommend on macOS Intel,
 `/usr/local` will be writable without sudo. So now you are good to
 install the development tools you need without risking the use of sudo.
 

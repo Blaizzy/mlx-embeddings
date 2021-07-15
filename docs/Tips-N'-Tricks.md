@@ -5,21 +5,15 @@
 The supported method of installing specific versions of
 some formulae is to see if there is a versioned formula (e.g. `gcc@7`) available. If the version you’re looking for isn’t available, consider using `brew extract`.
 
-## Quickly remove something from `/usr/local`
+## Quickly remove something from Homebrew's prefix
 
 ```sh
 brew unlink <formula>
 ```
 
-This can be useful if a package can't build against the version of something you have linked into `/usr/local`.
+This can be useful if a package can't build against the version of something you have linked into Homebrew's prefix.
 
 And of course, you can simply `brew link <formula>` again afterwards!
-
-## Install into Homebrew without formulae
-
-```sh
-./configure --prefix=/usr/local/Cellar/foo/1.2 && make && make install && brew link foo
-```
 
 ## Pre-downloading a file for a formula
 Sometimes it's faster to download a file via means other than those
