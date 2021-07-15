@@ -51,11 +51,7 @@ module InstalledDependents
         dependent.missing_dependencies(hide: keg_names)
       when Cask::Cask
         # When checking for cask dependents, we don't care about missing or build dependencies
-        CaskDependent.new(dependent)
-                     .runtime_dependencies(ignore_missing: true)
-                     .reject do |dependency|
-          dependency.tags.include?(:build)
-        end.map(&:to_formula)
+        CaskDependent.new(dependent).runtime_dependencies(ignore_missing: true).map(&:to_formula)
       end
 
       required_kegs = required.map do |f|

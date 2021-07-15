@@ -16,7 +16,9 @@ class CaskDependent
   end
 
   def runtime_dependencies(ignore_missing: false)
-    recursive_dependencies ignore_missing: ignore_missing
+    recursive_dependencies(ignore_missing: ignore_missing).select do |dependency|
+      dependency.tags.blank?
+    end
   end
 
   def deps
