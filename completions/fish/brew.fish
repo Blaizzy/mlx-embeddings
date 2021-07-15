@@ -846,6 +846,23 @@ __fish_brew_complete_arg 'irb' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'irb' -l verbose -d 'Make some output more verbose'
 
 
+__fish_brew_complete_cmd 'lc' 'Check for newer versions of formulae and/or casks from upstream'
+__fish_brew_complete_arg 'lc' -l all -d 'Check all available formulae/casks'
+__fish_brew_complete_arg 'lc' -l cask -d 'Only check casks'
+__fish_brew_complete_arg 'lc' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'lc' -l formula -d 'Only check formulae'
+__fish_brew_complete_arg 'lc' -l full-name -d 'Print formulae/casks with fully-qualified names'
+__fish_brew_complete_arg 'lc' -l help -d 'Show this message'
+__fish_brew_complete_arg 'lc' -l installed -d 'Check formulae/casks that are currently installed'
+__fish_brew_complete_arg 'lc' -l json -d 'Output information in JSON format'
+__fish_brew_complete_arg 'lc' -l newer-only -d 'Show the latest version only if it\'s newer than the formula/cask'
+__fish_brew_complete_arg 'lc' -l quiet -d 'Suppress warnings, don\'t print a progress bar for JSON output'
+__fish_brew_complete_arg 'lc' -l tap -d 'Check formulae/casks within the given tap, specified as user`/`repo'
+__fish_brew_complete_arg 'lc' -l verbose -d 'Make some output more verbose'
+__fish_brew_complete_arg 'lc; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
+__fish_brew_complete_arg 'lc; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
+
+
 __fish_brew_complete_cmd 'leaves' 'List installed formulae that are not dependencies of another installed formula'
 __fish_brew_complete_arg 'leaves' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'leaves' -l help -d 'Show this message'
