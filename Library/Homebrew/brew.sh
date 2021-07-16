@@ -647,7 +647,7 @@ then
   then
     if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]]
     then
-      message="$(bold ${HOMEBREW_COMMAND}) is a developer command, so
+      message="$(bold "${HOMEBREW_COMMAND}") is a developer command, so
 Homebrew's developer mode has been automatically turned on.
 To turn developer mode off, run $(bold "brew developer off")
 "

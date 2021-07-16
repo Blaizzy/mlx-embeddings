@@ -50,9 +50,7 @@ module Homebrew
       Homebrew::Settings.write "devcmdrun", true
     when "off"
       Homebrew::Settings.delete "devcmdrun"
-      if env_vars.any?
-        puts "To fully disable developer mode, you must unset #{env_vars.to_sentence}."
-      end
+      puts "To fully disable developer mode, you must unset #{env_vars.to_sentence}." if env_vars.any?
     else
       raise UsageError, "unknown subcommand: #{args.named.first}"
     end

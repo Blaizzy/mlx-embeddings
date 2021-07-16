@@ -188,7 +188,7 @@ first search, making that search slower than subsequent ones.
 
 Control Homebrew's developer mode. When developer mode is enabled,
 `brew update` will update Homebrew to the latest commit on the `master`
-branch instead of the latest stable version.
+branch instead of the latest stable version along with some other behaviour changes.
 
 `brew developer` [`state`]
 <br>Display the current state of Homebrew's developer mode.
