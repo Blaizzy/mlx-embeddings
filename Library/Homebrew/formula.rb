@@ -520,8 +520,8 @@ class Formula
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present?
-      prefix BottleAPI.latest_pkg_version(name)
+    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present? && (latest_pkg_version = BottleAPI.latest_pkg_version(name))
+      prefix latest_pkg_version
     else
       latest_installed_prefix
     end
