@@ -471,7 +471,7 @@ EOS
      [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
   then
     safe_cd "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
-    echo "HOMEBREW_CORE_GIT_REMOTE set: using ${HOMEBREW_CORE_GIT_REMOTE} for Homebrew/brew Git remote."
+    echo "HOMEBREW_CORE_GIT_REMOTE set: using ${HOMEBREW_CORE_GIT_REMOTE} for Homebrew/core Git remote."
     git remote set-url origin "${HOMEBREW_CORE_GIT_REMOTE}"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force origin refs/heads/master:refs/remotes/origin/master
@@ -498,6 +498,12 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
+    if [[ -n "${HOMEBREW_JSON_CORE}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
+       [[ "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
+    then
+      continue
+    fi
+
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
@@ -639,6 +645,14 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
+    # HOMEBREW_UPDATE_PREINSTALL wasn't modified in subshell.
+    # shellcheck disable=SC2031
+    if [[ -n "${HOMEBREW_JSON_CORE}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
+       [[ "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
+    then
+      continue
+    fi
+
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
