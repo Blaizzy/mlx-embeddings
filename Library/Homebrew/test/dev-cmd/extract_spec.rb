@@ -14,9 +14,17 @@ describe "brew extract" do
       core_tap = CoreTap.new
       core_tap.path.cd do
         system "git", "init"
-        formula_file = setup_test_formula "testball"
+        # Start with deprecated bottle syntax
+        setup_test_formula "testball", bottle_block: <<~EOS
+
+          bottle do
+            cellar :any
+          end
+        EOS
         system "git", "add", "--all"
         system "git", "commit", "-m", "testball 0.1"
+        # Replace with a valid formula for the next version
+        formula_file = setup_test_formula "testball"
         contents = File.read(formula_file)
         contents.gsub!("testball-0.1", "testball-0.2")
         File.write(formula_file, contents)
