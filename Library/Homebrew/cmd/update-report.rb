@@ -102,7 +102,7 @@ module Homebrew
     updated_taps = []
     Tap.each do |tap|
       next unless tap.git?
-      next if tap.core_tap? && ENV["HOMEBREW_JSON_CORE"].present?
+      next if tap.core_tap? && ENV["HOMEBREW_JSON_CORE"].present? && args.preinstall?
 
       begin
         reporter = Reporter.new(tap)
