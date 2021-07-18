@@ -21,7 +21,7 @@ module GitHub
         #{ALL_SCOPES_URL}
       #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
   EOS
-  GITHUB_PERSONAL_ACCESS_TOKEN_REGEX = /^(?:[a-f0-9]{40}|ghp_\w{36,251})$/.freeze
+  GITHUB_PERSONAL_ACCESS_TOKEN_REGEX = /^(?:[a-f0-9]{40}|gh[po]_\w{36,251})$/.freeze
 
   # Helper functions to access the GitHub API.
   #
