@@ -314,6 +314,22 @@ module FormulaCellarChecks
     "No `cpuid` instruction detected. #{formula} should not use `ENV.runtime_cpu_detection`."
   end
 
+  def check_binary_arches(formula)
+    return unless formula.prefix.directory?
+
+    keg = Keg.new(formula.prefix)
+    mismatches = keg.binary_executable_or_library_files.reject do |file|
+      file.arch == Hardware::CPU.arch
+    end
+    return if mismatches.empty?
+
+    <<~EOS
+      Binaries built for a non-native architecture were installed into #{formula}'s prefix.
+      The offending files are:
+        #{mismatches * "\n        "}
+    EOS
+  end
+
   def audit_installed
     @new_formula ||= false
 
@@ -334,6 +350,7 @@ module FormulaCellarChecks
     problem_if_output(check_plist(formula.prefix, formula.plist))
     problem_if_output(check_python_symlinks(formula.name, formula.keg_only?))
     problem_if_output(check_cpuid_instruction(formula))
+    problem_if_output(check_binary_arches(formula))
   end
   alias generic_audit_installed audit_installed
 

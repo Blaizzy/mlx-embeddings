@@ -29,7 +29,7 @@ module MachOShim
 
       machos.each do |m|
         arch = case m.cputype
-        when :x86_64, :i386, :ppc64 then m.cputype
+        when :x86_64, :i386, :ppc64, :arm64, :arm then m.cputype
         when :ppc then :ppc7400
         else :dunno
         end
