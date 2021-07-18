@@ -316,6 +316,8 @@ module FormulaCellarChecks
 
   def check_binary_arches(formula)
     return unless formula.prefix.directory?
+    # There is no `binary_executable_or_library_files` method for the generic OS
+    return if !OS.mac? && !OS.linux?
 
     keg = Keg.new(formula.prefix)
     mismatches = keg.binary_executable_or_library_files.reject do |file|
