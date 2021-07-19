@@ -1000,7 +1000,7 @@ module Homebrew
       end
 
       def check_cask_xattr
-        result = system_command "/usr/bin/xattr", args: [ "-h" ]
+        result = system_command "/usr/bin/xattr", args: ["-h"]
 
         return if result.status.success?
 

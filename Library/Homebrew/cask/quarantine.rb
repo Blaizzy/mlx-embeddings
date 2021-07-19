@@ -31,7 +31,7 @@ module Cask
     def check_quarantine_support
       odebug "Checking quarantine support"
 
-      if !system_command(xattr, args:[ "-h" ], print_stderr: false).success?
+      if !system_command(xattr, args: ["-h"], print_stderr: false).success?
         odebug "There's no working version of `xattr` on this system."
         :xattr_broken
       elsif swift.nil?
