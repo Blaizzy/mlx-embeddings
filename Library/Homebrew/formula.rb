@@ -3016,6 +3016,15 @@ class Formula
             T.cast(self, PourBottleCheck).satisfy { MacOS::CLT.installed? }
           end
         end
+      when :default_prefix
+        lambda do |_|
+          on_macos do
+            T.cast(self, PourBottleCheck).reason(+<<~EOS)
+              The bottle needs to be installed into #{Homebrew::DEFAULT_PREFIX}.
+            EOS
+            T.cast(self, PourBottleCheck).satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
+          end
+        end
       else
         raise ArgumentError, "Invalid preset `pour_bottle?` condition" if only_if.present?
       end
