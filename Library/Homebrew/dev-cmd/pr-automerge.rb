@@ -31,7 +31,7 @@ module Homebrew
              description: "Instruct `brew pr-publish` to automatically reformat and reword commits "\
                           "in the pull request to our preferred format."
       switch "--no-autosquash",
-             description: "Instruct `brew pr-publish` to skip automatically reformattin and rewording commits "\
+             description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits "\
                           "in the pull request to the preferred format."
       switch "--ignore-failures",
              description: "Include pull requests that have failing status checks."
