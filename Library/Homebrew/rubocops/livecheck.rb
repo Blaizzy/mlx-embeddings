@@ -50,6 +50,10 @@ module RuboCop
           skip = find_every_method_call_by_name(livecheck_node, :skip).first
           return if skip.present?
 
+          formula_node = find_every_method_call_by_name(livecheck_node, :formula).first
+          cask_node = find_every_method_call_by_name(livecheck_node, :cask).first
+          return if formula_node.present? || cask_node.present?
+
           livecheck_url = find_every_method_call_by_name(livecheck_node, :url).first
           return if livecheck_url.present?
 
