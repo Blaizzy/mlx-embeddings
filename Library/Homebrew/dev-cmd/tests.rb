@@ -87,7 +87,7 @@ module Homebrew
         ENV.delete(env)
       end
 
-      ENV["HOMEBREW_TEST"] = "1"
+      ENV["HOMEBREW_NO_DEV_CMD_MESSAGE"] = "1"
       ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
       ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
       ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?

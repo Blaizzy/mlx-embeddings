@@ -93,7 +93,7 @@ begin
     internal_cmd ||= begin
       internal_dev_cmd = Commands.valid_internal_dev_cmd?(cmd)
       if internal_dev_cmd && !Homebrew::EnvConfig.developer?
-        if ENV["HOMEBREW_DEV_CMD_RUN"].blank? && ENV["HOMEBREW_TEST"].blank?
+        if ENV["HOMEBREW_DEV_CMD_RUN"].blank? && !Homebrew::EnvConfig.no_dev_cmd_message?
           opoo <<~MESSAGE
             #{Tty.bold}#{cmd}#{Tty.reset} is a developer command, so
             Homebrew's developer mode has been automatically turned on.

@@ -645,7 +645,7 @@ elif [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]]
 then
   if [[ -z "${HOMEBREW_DEVELOPER}" ]]
   then
-    if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]] && [[ -z "${HOMEBREW_TEST}" ]]
+    if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]] && [[ -z "${HOMEBREW_NO_DEV_CMD_MESSAGE}" ]]
     then
       message="$(bold "${HOMEBREW_COMMAND}") is a developer command, so
 Homebrew's developer mode has been automatically turned on.
