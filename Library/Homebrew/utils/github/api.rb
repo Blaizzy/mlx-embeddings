@@ -50,7 +50,7 @@ module GitHub
         @github_message = github_message
         super <<~EOS
           GitHub API Error: #{github_message}
-          Try again in #{pretty_ratelimit_reset(reset)}#{!API.credentials ? ", or:\n" + CREATE_GITHUB_PAT_MESSAGE : ""}
+          Try again in #{pretty_ratelimit_reset(reset)}#{API.credentials ? "" : ", or:\n#{CREATE_GITHUB_PAT_MESSAGE}"}
         EOS
       end
 
