@@ -68,7 +68,11 @@ module Homebrew
         def self.find_versions(url, regex, cask: nil, &block)
           match = url.match(URL_MATCH_REGEX)
 
-          page_url = "https://sourceforge.net/projects/#{match[:project_name]}/rss"
+          page_url = if url.match?(%r{/rss(?:/?$|\?)})
+            url
+          else
+            "https://sourceforge.net/projects/#{match[:project_name]}/rss"
+          end
 
           # It may be possible to improve the default regex but there's quite a
           # bit of variation between projects and it can be challenging to
