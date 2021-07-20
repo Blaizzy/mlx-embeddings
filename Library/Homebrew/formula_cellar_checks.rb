@@ -330,9 +330,10 @@ module FormulaCellarChecks
     end
     mismatches -= compatible_universal_binaries
 
-    universal_binaries_expected = true
     universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
       tap_audit_exception(:universal_binary_allowlist, formula.name)
+    else
+      true
     end
     return if mismatches.empty? && universal_binaries_expected
 
