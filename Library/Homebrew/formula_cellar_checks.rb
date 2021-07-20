@@ -330,13 +330,15 @@ module FormulaCellarChecks
     end
     mismatches -= compatible_universal_binaries
 
-    universal_binaries_expected =
-      formula.tap.present? && tap_audit_exception(:universal_binary_allowlist, formula.name)
+    universal_binaries_expected = true
+    universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
+      tap_audit_exception(:universal_binary_allowlist, formula.name)
+    end
     return if mismatches.empty? && universal_binaries_expected
 
     s = ""
 
-    unless mismatches.empty?
+    if mismatches.any?
       s += <<~EOS
         Binaries built for an incompatible architecture were installed into #{formula}'s prefix.
         The offending files are:
@@ -344,7 +346,7 @@ module FormulaCellarChecks
       EOS
     end
 
-    if !compatible_universal_binaries.empty? && !universal_binaries_expected
+    if compatible_universal_binaries.any? && !universal_binaries_expected
       s += <<~EOS
         Unexpected universal binaries were found.
         The offending files are:
