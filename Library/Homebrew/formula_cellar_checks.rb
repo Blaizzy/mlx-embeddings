@@ -323,14 +323,15 @@ module FormulaCellarChecks
     mismatches = keg.binary_executable_or_library_files.reject do |file|
       file.arch == Hardware::CPU.arch
     end
+    return if mismatches.empty?
 
     compatible_universal_binaries = mismatches.select do |file|
       file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
     end
     mismatches -= compatible_universal_binaries
 
-    return if mismatches.empty? && compatible_universal_binaries.empty?
-    return if mismatches.empty? && tap_audit_exception(:universal_binary_allowlist, formula.name)
+    universal_binaries_expected = tap_audit_exception(:universal_binary_allowlist, formula.name)
+    return if mismatches.empty? && universal_binaries_expected
 
     s = ""
 
@@ -342,7 +343,7 @@ module FormulaCellarChecks
       EOS
     end
 
-    unless compatible_universal_binaries.empty?
+    if !compatible_universal_binaries.empty? && !universal_binaries_expected
       s += <<~EOS
         Unexpected universal binaries were found.
         The offending files are:
