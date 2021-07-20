@@ -15,7 +15,8 @@ module Homebrew
   extend Search
 
   PACKAGE_MANAGERS = {
-    macports: ->(query) { "https://www.macports.org/ports.php?by=name&substr=#{query}" },
+    repology: ->(query) { "https://repology.org/projects/?search=#{query}" },
+    macports: ->(query) { "https://ports.macports.org/search/?q=#{query}" },
     fink:     ->(query) { "https://pdb.finkproject.org/pdb/browse.php?summary=#{query}" },
     opensuse: ->(query) { "https://software.opensuse.org/search?q=#{query}" },
     fedora:   ->(query) { "https://apps.fedoraproject.org/packages/s/#{query}" },
@@ -53,7 +54,7 @@ module Homebrew
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
         switch s,
-               description: "Search for <text> in the given package manager's list."
+               description: "Search for <text> in the given database's or package manager's list."
       end
 
       conflicts "--desc", "--pull-request"
