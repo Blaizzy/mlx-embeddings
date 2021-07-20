@@ -282,6 +282,7 @@ _brew__s() {
       --opensuse
       --pull-request
       --quiet
+      --repology
       --ubuntu
       --verbose
       "
@@ -1798,6 +1799,7 @@ _brew_search() {
       --opensuse
       --pull-request
       --quiet
+      --repology
       --ubuntu
       --verbose
       "
