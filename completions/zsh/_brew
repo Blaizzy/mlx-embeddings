@@ -1290,6 +1290,7 @@ _brew_pr_automerge() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--ignore-failures[Include pull requests that have failing status checks]' \
+    '--no-autosquash[Instruct `brew pr-publish` to skip automatically reformatting and rewording commits in the pull request to the preferred format]' \
     '--publish[Run `brew pr-publish` on matching pull requests]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
@@ -1307,6 +1308,7 @@ _brew_pr_publish() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
+    '--no-autosquash[Skip automatically reformatting and rewording commits in the pull request to the preferred format, even if supported on the target tap]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--verbose[Make some output more verbose]' \
