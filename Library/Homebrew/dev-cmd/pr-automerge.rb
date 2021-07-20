@@ -76,7 +76,7 @@ module Homebrew
 
     publish_args = ["pr-publish"]
     publish_args << "--tap=#{tap}" if tap
-    publish_args << "--autosquash" unless args.no_autosquash?
+    publish_args << "--no-autosquash" if args.no_autosquash?
     if args.publish?
       safe_system HOMEBREW_BREW_FILE, *publish_args, *pr_urls
     else
