@@ -48,7 +48,7 @@ module GitHub
     class RateLimitExceededError < Error
       def initialize(reset, github_message)
         @github_message = github_message
-        new_pat_message = API.credentials ? "" : ", or:\n#{CREATE_GITHUB_PAT_MESSAGE}"
+        new_pat_message = ", or:\n#{CREATE_GITHUB_PAT_MESSAGE}" if API.credentials.blank?
         super <<~EOS
           GitHub API Error: #{github_message}
           Try again in #{pretty_ratelimit_reset(reset)}#{new_pat_message}
