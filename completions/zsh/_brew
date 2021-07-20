@@ -349,20 +349,20 @@ _brew__s() {
   _arguments \
     '--cask[Search online and locally for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
-    '(--repology --macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given database]' \
     '--debug[Display any debugging information]' \
     '(--pull-request)--desc[Search for formulae with a description matching text and casks with a name matching text]' \
-    '(--repology --macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given database'\''s or package manager'\''s list]' \
-    '(--repology --macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given database]' \
+    '(--repology --macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given database]' \
     '--formula[Search online and locally for formulae]' \
     '--help[Show this message]' \
-    '(--repology --fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given database]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \
-    '(--repology --macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given database]' \
     '(--desc)--pull-request[Search for GitHub pull requests containing text]' \
     '--quiet[Make some output more quiet]' \
-    '(--macports --fink --opensuse --fedora --debian --ubuntu)--repology[Search for text in the given database'\''s or package manager'\''s list]' \
-    '(--repology --macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--macports --fink --opensuse --fedora --debian --ubuntu)--repology[Search for text in the given database]' \
+    '(--repology --macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given database]' \
     '--verbose[Make some output more verbose]'
 }
 
@@ -1491,20 +1491,20 @@ _brew_search() {
   _arguments \
     '--cask[Search online and locally for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
-    '(--repology --macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given database]' \
     '--debug[Display any debugging information]' \
     '(--pull-request)--desc[Search for formulae with a description matching text and casks with a name matching text]' \
-    '(--repology --macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given database'\''s or package manager'\''s list]' \
-    '(--repology --macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given database]' \
+    '(--repology --macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given database]' \
     '--formula[Search online and locally for formulae]' \
     '--help[Show this message]' \
-    '(--repology --fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given database]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \
-    '(--repology --macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--repology --macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given database]' \
     '(--desc)--pull-request[Search for GitHub pull requests containing text]' \
     '--quiet[Make some output more quiet]' \
-    '(--macports --fink --opensuse --fedora --debian --ubuntu)--repology[Search for text in the given database'\''s or package manager'\''s list]' \
-    '(--repology --macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given database'\''s or package manager'\''s list]' \
+    '(--macports --fink --opensuse --fedora --debian --ubuntu)--repology[Search for text in the given database]' \
+    '(--repology --macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given database]' \
     '--verbose[Make some output more verbose]'
 }
 
