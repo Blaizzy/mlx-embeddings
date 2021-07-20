@@ -19,6 +19,9 @@ module Homebrew
       switch "--autosquash",
              description: "If supported on the target tap, automatically reformat and reword commits "\
                           "in the pull request to our preferred format."
+      switch "--no-autosquash",
+             description: "Skip automatically reformatting and rewording commits in the pull request "\
+                          "to the preferred format, even if supported on the target tap."
       flag   "--branch=",
              description: "Branch to publish to (default: `master`)."
       flag   "--message=",
@@ -40,8 +43,10 @@ module Homebrew
     workflow = args.workflow || "publish-commit-bottles.yml"
     ref = args.branch || "master"
 
+    odeprecated "`brew pr-publish --autosquash`", "`brew pr-publish`" if args.autosquash?
+
     extra_args = []
-    extra_args << "--autosquash" if args.autosquash?
+    extra_args << "--autosquash" unless args.no_autosquash?
     extra_args << "--message='#{args.message}'" if args.message.presence
     dispatch_args = extra_args.join " "
 
