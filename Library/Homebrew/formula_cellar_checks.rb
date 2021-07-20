@@ -323,13 +323,34 @@ module FormulaCellarChecks
     mismatches = keg.binary_executable_or_library_files.reject do |file|
       file.arch == Hardware::CPU.arch
     end
-    return if mismatches.empty?
 
-    <<~EOS
-      Binaries built for a non-native architecture were installed into #{formula}'s prefix.
-      The offending files are:
-        #{mismatches * "\n        "}
-    EOS
+    compatible_universal_binaries = mismatches.select do |file|
+      file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
+    end
+    mismatches -= compatible_universal_binaries
+
+    return if mismatches.empty? && compatible_universal_binaries.empty?
+    return if mismatches.empty? && tap_audit_exception(:universal_binary_allowlist, formula.name)
+
+    s = ""
+
+    unless mismatches.empty?
+      s += <<~EOS
+        Binaries built for an incompatible architecture were installed into #{formula}'s prefix.
+        The offending files are:
+          #{mismatches * "\n  "}
+      EOS
+    end
+
+    unless compatible_universal_binaries.empty?
+      s += <<~EOS
+        Unexpected universal binaries were found.
+        The offending files are:
+          #{compatible_universal_binaries * "\n  "}
+      EOS
+    end
+
+    s
   end
 
   def audit_installed
