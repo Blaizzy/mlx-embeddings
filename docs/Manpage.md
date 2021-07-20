@@ -533,18 +533,20 @@ The search for *`text`* is extended online to `homebrew/core` and `homebrew/cask
   Search for only open GitHub pull requests.
 * `--closed`:
   Search for only closed GitHub pull requests.
+* `--repology`:
+  Search for *`text`* in the given database's or package manager's list.
 * `--macports`:
-  Search for *`text`* in the given package manager's list.
+  Search for *`text`* in the given database's or package manager's list.
 * `--fink`:
-  Search for *`text`* in the given package manager's list.
+  Search for *`text`* in the given database's or package manager's list.
 * `--opensuse`:
-  Search for *`text`* in the given package manager's list.
+  Search for *`text`* in the given database's or package manager's list.
 * `--fedora`:
-  Search for *`text`* in the given package manager's list.
+  Search for *`text`* in the given database's or package manager's list.
 * `--debian`:
-  Search for *`text`* in the given package manager's list.
+  Search for *`text`* in the given database's or package manager's list.
 * `--ubuntu`:
-  Search for *`text`* in the given package manager's list.
+  Search for *`text`* in the given database's or package manager's list.
 
 ### `shellenv`
 
