@@ -66,7 +66,9 @@ module BottleAPI
     hash = fetch(name)
     bottle_tag = Utils::Bottles.tag.to_s
 
-    odie "No bottle available for current OS" if !hash["bottles"].key?(bottle_tag) && !hash["bottles"].key?("all")
+    if !hash["bottles"].key?(bottle_tag) && !hash["bottles"].key?("all")
+      odie "No bottle available for #{name} on the current OS"
+    end
 
     download_bottle(hash, bottle_tag)
 
