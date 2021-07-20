@@ -83,6 +83,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       "HOMEBREW_INTEGRATION_TEST" => command_id_from_args(args),
       "HOMEBREW_TEST_TMPDIR"      => TEST_TMPDIR,
       "HOMEBREW_DEVELOPER"        => ENV["HOMEBREW_DEVELOPER"],
+      "HOMEBREW_DEV_CMD_RUN"      => "true",
       "GEM_HOME"                  => nil,
     )
 

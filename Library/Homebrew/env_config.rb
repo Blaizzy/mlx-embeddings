@@ -235,10 +235,6 @@ module Homebrew
         description: "If set, disable all use of legacy compatibility code.",
         boolean:     true,
       },
-      HOMEBREW_NO_DEV_CMD_MESSAGE:            {
-        description: "If set, do not display a warning message when running a developer command for the first time.",
-        boolean:     true,
-      },
       HOMEBREW_NO_EMOJI:                      {
         description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build." \
                      "\n\n    *Note:* Will only try to print emoji on OS X Lion or newer.",
