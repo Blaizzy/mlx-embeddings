@@ -54,7 +54,7 @@ module Homebrew
       package_manager_switches = PACKAGE_MANAGERS.keys.map { |name| "--#{name}" }
       package_manager_switches.each do |s|
         switch s,
-               description: "Search for <text> in the given database's or package manager's list."
+               description: "Search for <text> in the given database."
       end
 
       conflicts "--desc", "--pull-request"
