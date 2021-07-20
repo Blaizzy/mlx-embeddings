@@ -339,7 +339,7 @@ module FormulaCellarChecks
 
     s = ""
 
-    if mismatches.any?
+    if mismatches.present?
       s += <<~EOS
         Binaries built for an incompatible architecture were installed into #{formula}'s prefix.
         The offending files are:
@@ -347,7 +347,7 @@ module FormulaCellarChecks
       EOS
     end
 
-    if compatible_universal_binaries.any? && !universal_binaries_expected
+    if compatible_universal_binaries.present? && !universal_binaries_expected
       s += <<~EOS
         Unexpected universal binaries were found.
         The offending files are:
