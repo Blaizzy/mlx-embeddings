@@ -226,6 +226,6 @@ module Homebrew
     contents = Utils::Git.last_revision_of_file(repo, file, before_commit: rev)
     contents.gsub!("@url=", "url ")
     contents.gsub!("require 'brewkit'", "require 'formula'")
-    with_monkey_patch { Formulary.from_contents(name, file, contents) }
+    with_monkey_patch { Formulary.from_contents(name, file, contents, ignore_errors: true) }
   end
 end
