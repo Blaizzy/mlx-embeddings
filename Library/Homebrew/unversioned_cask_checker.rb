@@ -88,7 +88,7 @@ module Homebrew
 
         installer.extract_primary_container(to: dir)
 
-        info_plist_paths = (apps.concat(qlplugins)).flat_map do |artifact|
+        info_plist_paths = apps.concat(qlplugins).flat_map do |artifact|
           top_level_info_plists(Pathname.glob(dir/"**"/artifact.source.basename/"Contents"/"Info.plist")).sort
         end
 
