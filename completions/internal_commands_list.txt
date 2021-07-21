@@ -29,6 +29,7 @@ config
 create
 deps
 desc
+developer
 dispatch-build-bottle
 doctor
 dr

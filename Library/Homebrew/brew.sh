@@ -81,6 +81,30 @@ ohai() {
   fi
 }
 
+opoo() {
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  then
+    echo -ne "\\033[4;33mWarning\\033[0m: " >&2 # highlight Warning with underline and yellow color
+  else
+    echo -n "Warning: " >&2
+  fi
+  if [[ $# -eq 0 ]]
+  then
+    cat >&2
+  else
+    echo "$*" >&2
+  fi
+}
+
+bold() {
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  then
+    echo -e "\\033[1m""$*""\\033[0m"
+  else
+    echo "$*"
+  fi
+}
+
 onoe() {
   if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
   then
@@ -621,6 +645,15 @@ elif [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]]
 then
   if [[ -z "${HOMEBREW_DEVELOPER}" ]]
   then
+    if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]]
+    then
+      message="$(bold "${HOMEBREW_COMMAND}") is a developer command, so
+Homebrew's developer mode has been automatically turned on.
+To turn developer mode off, run $(bold "brew developer off")
+"
+      opoo "${message}"
+    fi
+
     git config --file="${HOMEBREW_GIT_CONFIG_FILE}" --replace-all homebrew.devcmdrun true 2>/dev/null
     export HOMEBREW_DEV_CMD_RUN="1"
   fi

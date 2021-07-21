@@ -746,6 +746,23 @@ _brew_desc() {
   __brew_complete_formulae
 }
 
+_brew_developer() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *)
+  esac
+  __brewcomp "state on off"
+}
+
 _brew_dispatch_build_bottle() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2446,6 +2463,7 @@ _brew() {
     create) _brew_create ;;
     deps) _brew_deps ;;
     desc) _brew_desc ;;
+    developer) _brew_developer ;;
     dispatch-build-bottle) _brew_dispatch_build_bottle ;;
     doctor) _brew_doctor ;;
     dr) _brew_dr ;;
