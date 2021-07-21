@@ -1196,6 +1196,12 @@ class FormulaInstaller
     super
   end
 
+  # This is a stub for calls made to this method at install time.
+  # Exceptions are correctly identified when doing `brew audit`.
+  def tap_audit_exception(*)
+    true
+  end
+
   def self.locked
     @locked ||= []
   end
