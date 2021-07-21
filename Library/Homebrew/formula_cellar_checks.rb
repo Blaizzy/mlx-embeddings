@@ -325,10 +325,9 @@ module FormulaCellarChecks
     end
     return if mismatches.empty?
 
-    compatible_universal_binaries = mismatches.select do |file|
+    compatible_universal_binaries, mismatches = mismatches.partition do |file|
       file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
     end
-    mismatches -= compatible_universal_binaries
 
     universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
       tap_audit_exception(:universal_binary_allowlist, formula.name)
