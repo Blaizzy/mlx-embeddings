@@ -325,11 +325,36 @@ module FormulaCellarChecks
     end
     return if mismatches.empty?
 
-    <<~EOS
-      Binaries built for a non-native architecture were installed into #{formula}'s prefix.
-      The offending files are:
-        #{mismatches * "\n        "}
-    EOS
+    compatible_universal_binaries, mismatches = mismatches.partition do |file|
+      file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
+    end
+
+    universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
+      tap_audit_exception(:universal_binary_allowlist, formula.name)
+    else
+      true
+    end
+    return if mismatches.empty? && universal_binaries_expected
+
+    s = ""
+
+    if mismatches.present?
+      s += <<~EOS
+        Binaries built for an incompatible architecture were installed into #{formula}'s prefix.
+        The offending files are:
+          #{mismatches * "\n  "}
+      EOS
+    end
+
+    if compatible_universal_binaries.present? && !universal_binaries_expected
+      s += <<~EOS
+        Unexpected universal binaries were found.
+        The offending files are:
+          #{compatible_universal_binaries * "\n  "}
+      EOS
+    end
+
+    s
   end
 
   def audit_installed
