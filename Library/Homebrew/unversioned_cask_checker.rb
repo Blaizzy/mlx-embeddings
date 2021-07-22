@@ -122,8 +122,8 @@ module Homebrew
 
     sig { returns(T.nilable(String)) }
     def guess_cask_version
-      if apps.empty? && pkgs.empty?
-        opoo "Cask #{cask} does not contain any apps or PKG installers."
+      if apps.empty? && pkgs.empty? && qlplugins.empty?
+        opoo "Cask #{cask} does not contain any apps, qlplugins or PKG installers."
         return
       end
 
