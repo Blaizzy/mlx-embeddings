@@ -412,7 +412,7 @@ else
 
   # This is set by the user environment.
   # shellcheck disable=SC2154
-  if [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" && -n "${HOMEBREW_ON_DEBIAN7}" ]]
+  if [[ -n "${HOMEBREW_ON_DEBIAN7}" ]]
   then
     # Special version for our debian 7 docker container used to build patchelf and binutils
     HOMEBREW_MINIMUM_CURL_VERSION="7.25.0"
