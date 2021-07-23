@@ -125,18 +125,17 @@ module Homebrew
     end
 
     def audit_head_branch
-      return if !@online || !@strict || spec_name != :head || !Utils::Git.remote_exists?(url)
+      return unless @online
+      return unless @strict
+      return unless spec_name == :head
+      return unless Utils::Git.remote_exists?(url)
 
       branch = Utils.popen_read("git", "ls-remote", "--symref", url, "HEAD")
                     .match(%r{ref: refs/heads/(.*?)\s+HEAD})[1]
 
-      return if branch == "master" && specs[:branch].blank? || branch == specs[:branch]
+      return if branch == specs[:branch]
 
-      if branch == "master"
-        problem "Remove `branch: \"#{specs[:branch]}\"`"
-      else
-        problem "Use `branch: \"#{branch}\"` to specify the correct default branch"
-      end
+      problem "Use `branch: \"#{branch}\"` to specify the default branch"
     end
 
     def problem(text)
