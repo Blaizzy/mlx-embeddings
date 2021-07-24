@@ -1582,6 +1582,10 @@ class Formula
     end
   end
 
+  # Replaces a universal binary with its native slice.
+  #
+  # If called with no parameters, does this with all compatible
+  # universal binaries in a {Formula}'s {Keg}.
   sig { params(targets: T.nilable(T.any(Pathname, String))).void }
   def deuniversalize_machos(*targets)
     if targets.blank?
@@ -1590,10 +1594,23 @@ class Formula
       end
     end
 
-    targets.each do |t|
-      macho = MachO::FatFile.new(t)
+    targets.each { |t| extract_slice_from(Pathname.new(t), Hardware::CPU.arch) }
+  end
+
+  # @private
+  sig { params(file: Pathname, arch: T.nilable(Symbol)).void }
+  def extract_slice_from(file, arch = Hardware::CPU.arch)
+    odebug "Extracting #{arch} slice from #{file}"
+    file.ensure_writable do
+      macho = MachO::FatFile.new(file)
       native_slice = macho.extract(Hardware::CPU.arch)
-      native_slice.write t
+      native_slice.write file
+    rescue MachO::MachOBinaryError
+      onoe "#{file} is not a universal binary"
+      raise
+    rescue NoMethodError
+      onoe "#{file} does not contain an #{arch} slice"
+      raise
     end
   end
 
