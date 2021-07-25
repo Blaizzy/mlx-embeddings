@@ -7,10 +7,12 @@ require "cask/cask_loader"
 module Homebrew
   module Search
     module Extension
-      def search_descriptions(string_or_regex)
+      def search_descriptions(string_or_regex, args)
         super
 
         puts
+
+        return if args.formula?
 
         ohai "Casks"
         Cask::Cask.to_a.extend(Searchable)

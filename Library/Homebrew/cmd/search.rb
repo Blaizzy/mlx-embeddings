@@ -78,7 +78,7 @@ module Homebrew
     string_or_regex = query_regexp(query)
 
     if args.desc?
-      search_descriptions(string_or_regex)
+      search_descriptions(string_or_regex, args)
     elsif args.pull_request?
       only = if args.open? && !args.closed?
         "open"

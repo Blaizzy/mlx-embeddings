@@ -19,7 +19,9 @@ module Homebrew
       raise "#{query} is not a valid regex."
     end
 
-    def search_descriptions(string_or_regex)
+    def search_descriptions(string_or_regex, args)
+      return if args.cask?
+
       ohai "Formulae"
       CacheStoreDatabase.use(:descriptions) do |db|
         cache_store = DescriptionCacheStore.new(db)
