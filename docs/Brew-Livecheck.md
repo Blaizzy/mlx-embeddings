@@ -96,6 +96,18 @@ end
 
 If tags include the software name as a prefix (e.g. `example-1.2.3`), it's easy to modify the regex accordingly: `/^example[._-]v?(\d+(?:\.\d+)+)$/i`
 
+### Referenced formula/cask
+
+A formula/cask can use the same check as another by using `formula` or `cask`.
+
+```ruby
+livecheck do
+  formula "another-formula"
+end
+```
+
+The referenced formula/cask should be in the same tap, as a reference to a formula/cask from another tap will generate an error if the user doesn't already have it tapped.
+
 ### `strategy` blocks
 
 If the upstream version format needs to be manipulated to match the formula/cask format, a `strategy` block can be used instead of a `regex`.
