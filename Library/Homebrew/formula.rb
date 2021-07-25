@@ -1594,12 +1594,12 @@ class Formula
       end
     end
 
-    targets.each { |t| extract_slice_from(Pathname.new(t), Hardware::CPU.arch) }
+    targets.each { |t| extract_macho_slice_from(Pathname.new(t), Hardware::CPU.arch) }
   end
 
   # @private
   sig { params(file: Pathname, arch: T.nilable(Symbol)).void }
-  def extract_slice_from(file, arch = Hardware::CPU.arch)
+  def extract_macho_slice_from(file, arch = Hardware::CPU.arch)
     odebug "Extracting #{arch} slice from #{file}"
     file.ensure_writable do
       macho = MachO::FatFile.new(file)
