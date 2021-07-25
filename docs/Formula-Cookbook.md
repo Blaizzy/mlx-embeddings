@@ -110,8 +110,6 @@ You’re now at a new prompt with the tarball extracted to a temporary sandbox.
 
 Check the package’s `README`. Does the package install with `./configure`, `cmake`, or something else? Delete the commented out `cmake` lines if the package uses `./configure`.
 
-If no compilation is involved and there are no `:build` dependencies, add the line `bottle :unneeded` since bottles are unnecessary in this case. Otherwise, a `bottle` block will be added by Homebrew's CI upon merging the formula's pull-request.
-
 ### Check for dependencies
 
 The `README` probably tells you about dependencies and Homebrew or macOS probably already has them. You can check for Homebrew dependencies with `brew search`. Some common dependencies that macOS comes with:
