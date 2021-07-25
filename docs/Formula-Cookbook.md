@@ -255,7 +255,7 @@ For Python formulae, running `brew update-python-resources <formula>` will autom
 ### Install the formula
 
 ```sh
-brew install --verbose --debug foo
+brew install --build-from-source --verbose --debug foo
 ```
 
 `--debug` will ask you to open an interactive shell if the build fails so you can try to figure out what went wrong.

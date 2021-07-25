@@ -58,9 +58,9 @@ To make a new branch and submit it for review, create a GitHub pull request with
 5. Test your changes by running the following, and ensure they all pass without issue. For changed formulae, make sure you do the `brew audit` step while your changed formula is installed.
     ```sh
     brew tests
-    brew install --build-from-source <CHANGED_FORMULA>
+    brew install --build-from-source --verbose --debug <CHANGED_FORMULA>
     brew test <CHANGED_FORMULA>
-    brew audit --strict <CHANGED_FORMULA>
+    brew audit --strict --online <CHANGED_FORMULA>
     ```
 6. [Make a separate commit](Formula-Cookbook.md#commit) for each changed formula with `git add` and `git commit`.
   * Please note that our preferred commit message format for simple version updates is "`<FORMULA_NAME> <NEW_VERSION>`", e.g. "`source-highlight 3.1.8`".
