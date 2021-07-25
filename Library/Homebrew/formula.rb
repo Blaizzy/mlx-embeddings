@@ -1605,6 +1605,7 @@ class Formula
       macho = MachO::FatFile.new(file)
       native_slice = macho.extract(Hardware::CPU.arch)
       native_slice.write file
+      MachO.codesign! file if Hardware::CPU.arm?
     rescue MachO::MachOBinaryError
       onoe "#{file} is not a universal binary"
       raise
