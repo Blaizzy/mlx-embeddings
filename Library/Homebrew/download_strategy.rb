@@ -449,7 +449,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     return @resolved_info_cache[url] if @resolved_info_cache.include?(url)
 
     if (domain = Homebrew::EnvConfig.artifact_domain)
-      url = url.sub(%r{^((ht|f)tps?://)?}, "#{domain.chomp("/")}/")
+      url = url.sub(%r{^((ht|f)tps?://ghcr.io/)?}, "#{domain.chomp("/")}/")
     end
 
     out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s, timeout: timeout)
@@ -528,6 +528,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   def _curl_args
     args = []
 
+    args += ["-L"] if Homebrew::EnvConfig.artifact_domain
+
     args += ["-b", meta.fetch(:cookies).map { |k, v| "#{k}=#{v}" }.join(";")] if meta.key?(:cookies)
 
     args += ["-e", meta.fetch(:referer)] if meta.key?(:referer)
@@ -564,7 +566,8 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    meta[:headers] << ["Authorization: Bearer QQ=="]
+    token = ENV.fetch("HOMEBREW_REGISTRY_ACCESS_TOKEN", "QQ==")
+    meta[:headers] << ["Authorization: Bearer #{token}"]
     super(url, name, version, meta)
   end
 
