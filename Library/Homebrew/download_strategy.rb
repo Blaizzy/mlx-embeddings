@@ -524,7 +524,11 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       raise CurlDownloadStrategyError, url
     end
 
-    curl_download resolved_url, to: temporary_path, timeout: timeout
+    _curl_download resolved_url, temporary_path, timeout
+  end
+
+  def _curl_download(resolved_url, to, timeout)
+    curl_download resolved_url, to: to, timeout: timeout
   end
 
   # Curl options to be always passed to curl,
@@ -556,6 +560,19 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   def curl(*args, **options)
     args << "--connect-timeout" << "15" unless mirrors.empty?
     super(*_curl_args, *args, **_curl_opts, **command_output_options, **options)
+  end
+end
+
+# Strategy for downloading a file using homebrew's curl.
+#
+# @api public
+class HomebrewCurlDownloadStrategy < CurlDownloadStrategy
+  private
+
+  def _curl_download(resolved_url, to, timeout)
+    raise HomebrewCurlDownloadStrategyError, url unless Formula["curl"].any_version_installed?
+
+    curl_download resolved_url, to: to, timeout: timeout, use_homebrew_curl: true
   end
 end
 
@@ -1368,6 +1385,7 @@ class DownloadStrategyDetector
     when :bzr                    then BazaarDownloadStrategy
     when :svn                    then SubversionDownloadStrategy
     when :curl                   then CurlDownloadStrategy
+    when :homebrew_curl          then HomebrewCurlDownloadStrategy
     when :cvs                    then CVSDownloadStrategy
     when :post                   then CurlPostDownloadStrategy
     when :fossil                 then FossilDownloadStrategy

@@ -63,6 +63,10 @@ class DependencyCollector
     Dependency.new("git", tags)
   end
 
+  def brewed_curl_dep_if_needed(tags)
+    Dependency.new("curl", tags)
+  end
+
   def subversion_dep_if_needed(tags)
     return if Utils::Svn.available?
 
@@ -139,7 +143,10 @@ class DependencyCollector
     tags << :build << :test
     strategy = spec.download_strategy
 
-    if strategy <= CurlDownloadStrategy
+    if strategy <= HomebrewCurlDownloadStrategy
+      brewed_curl_dep_if_needed(tags)
+      parse_url_spec(spec.url, tags)
+    elsif strategy <= CurlDownloadStrategy
       parse_url_spec(spec.url, tags)
     elsif strategy <= GitDownloadStrategy
       git_dep_if_needed(tags)

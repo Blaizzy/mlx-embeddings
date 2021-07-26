@@ -531,7 +531,8 @@ module Homebrew
 
         ra = ResourceAuditor.new(
           spec, spec_name,
-          online: @online, strict: @strict, only: @only, except: except
+          online: @online, strict: @strict, only: @only, except: except,
+          use_homebrew_curl: spec.using == :homebrew_curl
         ).audit
         ra.problems.each do |message|
           problem "#{name}: #{message}"
