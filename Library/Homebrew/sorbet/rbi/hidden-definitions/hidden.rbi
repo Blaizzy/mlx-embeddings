@@ -3027,6 +3027,8 @@ module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
 
   def []=(*args, &block); end
 
+  def append(*entries); end
+
   def clear(*args, &block); end
 
   def collect!(*args, &block); end
@@ -3052,6 +3054,8 @@ module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
   def map!(*args, &block); end
 
   def pop(*args, &block); end
+
+  def prepend(*entries); end
 
   def push(*entries); end
 
