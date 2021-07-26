@@ -566,8 +566,8 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    token = ENV.fetch("HOMEBREW_REGISTRY_ACCESS_TOKEN", "QQ==")
-    meta[:headers] << ["Authorization: Bearer #{token}"]
+    token = Homebrew::EnvConfig.artifact_domain ? ENV.fetch("HOMEBREW_REGISTRY_ACCESS_TOKEN", "") : "QQ=="
+    meta[:headers] << ["Authorization: Bearer #{token}"] unless token.empty?
     super(url, name, version, meta)
   end
 
