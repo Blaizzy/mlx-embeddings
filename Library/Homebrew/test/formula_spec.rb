@@ -701,31 +701,52 @@ describe Formula do
     end
   end
 
-  specify "#service" do
-    f = formula do
-      url "https://brew.sh/test-1.0.tbz"
-    end
-
-    f.class.service do
-      run [opt_bin/"beanstalkd"]
-      run_type :immediate
-      error_log_path var/"log/beanstalkd.error.log"
-      log_path var/"log/beanstalkd.log"
-      working_dir var
-      keep_alive true
-    end
-    expect(f.service).not_to eq(nil)
-  end
-
-  specify "service uses simple run" do
-    f = formula do
-      url "https://brew.sh/test-1.0.tbz"
-      service do
-        run opt_bin/"beanstalkd"
+  describe "#service" do
+    specify "no service defined" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
       end
+
+      expect(f.service).to eq(nil)
     end
 
-    expect(f.service).not_to eq(nil)
+    specify "service complicated" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+      end
+
+      f.class.service do
+        run [opt_bin/"beanstalkd"]
+        run_type :immediate
+        error_log_path var/"log/beanstalkd.error.log"
+        log_path var/"log/beanstalkd.log"
+        working_dir var
+        keep_alive true
+      end
+      expect(f.service).not_to eq(nil)
+    end
+
+    specify "service uses simple run" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+        service do
+          run opt_bin/"beanstalkd"
+        end
+      end
+
+      expect(f.service).not_to eq(nil)
+    end
+
+    specify "service helpers return data" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+      end
+
+      expect(f.plist_name).to eq("homebrew.mxcl.formula_name")
+      expect(f.service_name).to eq("homebrew.formula_name")
+      expect(f.plist_path).to eq(HOMEBREW_PREFIX/"opt/formula_name/homebrew.mxcl.formula_name.plist")
+      expect(f.systemd_service_path).to eq(HOMEBREW_PREFIX/"opt/formula_name/homebrew.formula_name.service")
+    end
   end
 
   specify "dependencies" do

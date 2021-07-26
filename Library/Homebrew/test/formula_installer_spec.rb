@@ -223,7 +223,7 @@ describe FormulaInstaller do
     it "works if plist is set" do
       formula = Testball.new
       path = formula.plist_path
-      formula.prefix.mkpath
+      formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).twice.and_return("PLIST")
       expect(formula).to receive(:plist_path).and_call_original
@@ -241,7 +241,7 @@ describe FormulaInstaller do
       plist_path = formula.plist_path
       service_path = formula.systemd_service_path
       service = Homebrew::Service.new(formula)
-      formula.prefix.mkpath
+      formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
@@ -264,7 +264,7 @@ describe FormulaInstaller do
     it "returns without definition" do
       formula = Testball.new
       path = formula.plist_path
-      formula.prefix.mkpath
+      formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(nil)
@@ -282,7 +282,7 @@ describe FormulaInstaller do
     it "errors with duplicate definition" do
       formula = Testball.new
       path = formula.plist_path
-      formula.prefix.mkpath
+      formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return("plist")
       expect(formula).to receive(:service?).and_return(true)
