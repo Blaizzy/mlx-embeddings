@@ -170,9 +170,8 @@ module Homebrew
         description: "Use this GitHub personal access token when accessing the GitHub Packages Registry "\
                      "(where bottles may be stored).",
       },
-      HOMEBREW_REGISTRY_ACCESS_TOKEN:         {
-        description: "Use this bearer token for authenticating with a private registry proxying GitHub "\
-                     "Packages Registry.",
+      HOMEBREW_DOCKER_REGISTRY_TOKEN:         {
+        description: "Use this bearer token for authenticating with a Docker registry proxying GitHub Packages.",
       },
       HOMEBREW_GITHUB_PACKAGES_USER:          {
         description: "Use this username when accessing the GitHub Packages Registry (where bottles may be stored).",

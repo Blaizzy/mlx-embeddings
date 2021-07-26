@@ -388,7 +388,9 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       ohai "Downloading #{url}"
 
-      resolved_url, _, url_time, = resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
+      resolved_url, _, url_time, _, is_redirection =
+        resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
+      meta[:headers].delete_if { |header| header[0].start_with?("Authorization") } if is_redirection
 
       fresh = if cached_location.exist? && url_time
         url_time <= cached_location.mtime
@@ -449,7 +451,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     return @resolved_info_cache[url] if @resolved_info_cache.include?(url)
 
     if (domain = Homebrew::EnvConfig.artifact_domain)
-      url = url.sub(%r{^((ht|f)tps?://ghcr.io/)?}, "#{domain.chomp("/")}/")
+      url = url.sub(%r{^(https?://#{GitHubPackages::URL_DOMAIN}/)?}o, "#{domain.chomp("/")}/")
     end
 
     out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s, timeout: timeout)
@@ -507,8 +509,9 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
            .last
 
     basename = filenames.last || parse_basename(redirect_url)
+    is_redirection = url != redirect_url
 
-    @resolved_info_cache[url] = [redirect_url, basename, time, file_size]
+    @resolved_info_cache[url] = [redirect_url, basename, time, file_size, is_redirection]
   end
 
   def _fetch(url:, resolved_url:, timeout:)
@@ -527,8 +530,6 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   # with raw head calls (`curl --head`) or with actual `fetch`.
   def _curl_args
     args = []
-
-    args += ["-L"] if Homebrew::EnvConfig.artifact_domain
 
     args += ["-b", meta.fetch(:cookies).map { |k, v| "#{k}=#{v}" }.join(";")] if meta.key?(:cookies)
 
@@ -566,8 +567,9 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    token = Homebrew::EnvConfig.artifact_domain ? ENV.fetch("HOMEBREW_REGISTRY_ACCESS_TOKEN", "") : "QQ=="
-    meta[:headers] << ["Authorization: Bearer #{token}"] unless token.empty?
+    token = Homebrew::EnvConfig.docker_registry_token
+    token ||= "QQ=="
+    meta[:headers] << ["Authorization: Bearer #{token}"] if token.present?
     super(url, name, version, meta)
   end
 
