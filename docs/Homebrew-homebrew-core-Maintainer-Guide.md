@@ -169,7 +169,6 @@ transparency for contributors in addition to the
     ```
     - make sure it is one commit per revision bump
 - if CI is green and...
-  - formula `bottle :unneeded`, you can merge it through GitHub UI
   - bottles need to be pulled, and...
     - the commits are correct, don't need changes, and BrewTestBot can merge it (doesn't have the label `automerge-skip`): approve the PR to trigger an automatic merge (use `brew pr-publish $PR_ID` to trigger manually in case of a new formula)
     - the commits are correct and don't need changes, but BrewTestBot can't merge it (has the label `automerge-skip`), use `brew pr-publish $PR_ID`
