@@ -58,7 +58,7 @@ To make a new branch and submit it for review, create a GitHub pull request with
 5. Test your changes by running the following, and ensure they all pass without issue. For changed formulae, make sure you do the `brew audit` step while your changed formula is installed.
     ```sh
     brew tests
-    brew install --build-from-source --verbose --debug <CHANGED_FORMULA>
+    brew install --build-from-source <CHANGED_FORMULA>
     brew test <CHANGED_FORMULA>
     brew audit --strict --online <CHANGED_FORMULA>
     ```
