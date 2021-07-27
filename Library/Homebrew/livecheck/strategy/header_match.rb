@@ -24,6 +24,9 @@ module Homebrew
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
+        # The header fields to check when a `strategy` block isn't provided.
+        DEFAULT_HEADERS_TO_CHECK = ["content-disposition", "location"].freeze
+
         # Whether the strategy can be applied to the provided URL.
         # The strategy will technically match any HTTP URL but is
         # only usable with a `livecheck` block containing a regex
@@ -62,23 +65,17 @@ module Homebrew
             end
           else
             value = nil
+            DEFAULT_HEADERS_TO_CHECK.each do |header_name|
+              header_value = merged_headers[header_name]
+              next if header_value.blank?
 
-            if (filename = merged_headers["content-disposition"])
               if regex
-                value ||= filename[regex, 1]
+                value = header_value[regex, 1]
               else
-                v = Version.parse(filename, detected_from_url: true)
-                value ||= v.to_s unless v.null?
+                v = Version.parse(header_value, detected_from_url: true)
+                value = v.to_s unless v.null?
               end
-            end
-
-            if (location = merged_headers["location"])
-              if regex
-                value ||= location[regex, 1]
-              else
-                v = Version.parse(location, detected_from_url: true)
-                value ||= v.to_s unless v.null?
-              end
+              break if value.present?
             end
 
             value
