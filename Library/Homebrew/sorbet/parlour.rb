@@ -1,5 +1,5 @@
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require_relative "../warnings"
 Warnings.ignore :parser_syntax do
@@ -7,19 +7,21 @@ Warnings.ignore :parser_syntax do
 end
 
 module Homebrew
+  # Parlour type signature generator helper class for Homebrew.
   module Parlour
     extend T::Sig
 
-    ROOT_DIR = T.let(Pathname(__dir__).parent.realpath.freeze, Pathname)
+    ROOT_DIR = T.let(Pathname(__dir__).parent.realpath.freeze, Pathname).freeze
 
     sig { returns(T::Array[Parser::AST::Node]) }
     def self.ast_list
-      @@ast_list ||= begin
+      @ast_list ||= begin
         ast_list = []
         parser = Parser::CurrentRuby.new
+        prune_dirs = %w[sorbet shims test vendor].freeze
 
         ROOT_DIR.find do |path|
-          Find.prune if path.directory? && %w[sorbet shims test vendor].any? { |subdir| path == ROOT_DIR/subdir }
+          Find.prune if path.directory? && prune_dirs.any? { |subdir| path == ROOT_DIR/subdir }
 
           Find.prune if path.file? && path.extname != ".rb"
 

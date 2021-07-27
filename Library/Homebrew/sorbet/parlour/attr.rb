@@ -1,6 +1,7 @@
-# frozen_string_literal: true
 # typed: strict
+# frozen_string_literal: true
 
+# Parlour type signature generator plugin for Homebrew DSL attributes.
 class Attr < Parlour::Plugin
   sig { override.params(root: Parlour::RbiGenerator::Namespace).void }
   def generate(root)
@@ -13,7 +14,7 @@ class Attr < Parlour::Plugin
 
   sig { override.returns(T.nilable(String)) }
   def strictness
-    return "strict"
+    "strict"
   end
 
   private
@@ -32,7 +33,7 @@ class Attr < Parlour::Plugin
 
     traverse_module_name(node).join("::")
   end
-    
+
   sig { params(node: Parser::AST::Node).returns(T::Array[T.untyped]) }
   def find_custom_attr(node)
     tree = T.let([], T::Array[T.untyped])
@@ -46,15 +47,16 @@ class Attr < Parlour::Plugin
     elsif node.type == :sclass
       subtree = find_custom_attr(node.children[1])
       return tree if subtree.empty?
-      
+
       tree << [:sclass, subtree]
     elsif node.type == :class || node.type == :module
       element = []
-      if node.type == :class
+      case node.type
+      when :class
         element << :class
         element << extract_module_name(children.shift)
         element << extract_module_name(children.shift)
-      elsif node.type == :module
+      when :module
         element << :module
         element << extract_module_name(children.shift)
       end
@@ -69,7 +71,7 @@ class Attr < Parlour::Plugin
       tree << element
     elsif node.type == :send && children.shift.nil?
       method_name = children.shift
-      if method_name == :attr_rw || method_name == :attr_predicate
+      if [:attr_rw, :attr_predicate].include?(method_name)
         children.each do |name_node|
           tree << [method_name, name_node.children.first.to_s]
         end
@@ -96,7 +98,7 @@ class Attr < Parlour::Plugin
         name = node.shift
         name = "self.#{name}" if sclass
         namespace.create_method(name, parameters: [
-          Parlour::RbiGenerator::Parameter.new("arg", type: "T.untyped", default: "T.unsafe(nil)")
+          Parlour::RbiGenerator::Parameter.new("arg", type: "T.untyped", default: "T.unsafe(nil)"),
         ], return_type: "T.untyped")
       when :attr_predicate
         name = node.shift

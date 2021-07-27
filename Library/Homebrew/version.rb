@@ -39,6 +39,7 @@ class Version
       when /\A#{PostToken::PATTERN}\z/o    then PostToken
       when /\A#{NumericToken::PATTERN}\z/o then NumericToken
       when /\A#{StringToken::PATTERN}\z/o  then StringToken
+      else raise "Cannot find a matching token pattern"
       end.new(val)
     end
 
