@@ -38,18 +38,6 @@ module Homebrew
                      "A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).",
         boolean:     true,
       },
-      HOMEBREW_BOTTLE_DOMAIN:                 {
-        description:  "Use this URL as the download mirror for bottles. " \
-                      "If bottles at that URL are temporarily unavailable, " \
-                      "the default bottle domain will be used as a fallback mirror. " \
-                      "For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to " \
-                      "download from the prefix `http://localhost:8080/`. " \
-                      "If bottles are not available at `HOMEBREW_BOTTLE_DOMAIN` " \
-                      "they will be downloaded from the default bottle domain.",
-        default_text: "macOS: `https://ghcr.io/v2/homebrew/core`, " \
-                      "Linux: `https://ghcr.io/v2/linuxbrew/core`.",
-        default:      HOMEBREW_BOTTLE_DEFAULT_DOMAIN,
-      },
       HOMEBREW_BREW_GIT_REMOTE:               {
         description: "Use this URL as the Homebrew/brew `git`(1) remote.",
         default:     HOMEBREW_BREW_DEFAULT_GIT_REMOTE,

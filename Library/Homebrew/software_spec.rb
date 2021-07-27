@@ -297,7 +297,7 @@ class Bottle
   attr_reader :name, :resource, :prefix, :cellar, :rebuild
 
   def_delegators :resource, :url, :verify_download_integrity
-  def_delegators :resource, :cached_download
+  def_delegators :resource, :cached_download, :fetch
 
   def initialize(formula, spec, tag = nil)
     @name = formula.name
@@ -322,15 +322,6 @@ class Bottle
     @resource.checksum = checksum
 
     root_url(spec.root_url, spec.root_url_specs)
-  end
-
-  def fetch(verify_download_integrity: true)
-    @resource.fetch(verify_download_integrity: verify_download_integrity)
-  rescue DownloadError
-    raise unless fallback_on_error
-
-    fetch_tab
-    retry
   end
 
   def clear_cache
@@ -436,19 +427,6 @@ class Bottle
     specs
   end
 
-  def fallback_on_error
-    # Use the default bottle domain as a fallback mirror
-    if @resource.url.start_with?(Homebrew::EnvConfig.bottle_domain) &&
-       Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
-      opoo "Bottle missing, falling back to the default domain..."
-      root_url(HOMEBREW_BOTTLE_DEFAULT_DOMAIN)
-      @github_packages_manifest_resource = nil
-      true
-    else
-      false
-    end
-  end
-
   def root_url(val = nil, specs = {})
     return @root_url if val.nil?
 
@@ -479,11 +457,7 @@ class BottleSpecification
 
   def root_url(var = nil, specs = {})
     if var.nil?
-      @root_url ||= if (github_packages_url = GitHubPackages.root_url_if_match(Homebrew::EnvConfig.bottle_domain))
-        github_packages_url
-      else
-        Homebrew::EnvConfig.bottle_domain
-      end
+      @root_url ||= HOMEBREW_BOTTLE_DEFAULT_DOMAIN
     else
       @root_url = if (github_packages_url = GitHubPackages.root_url_if_match(var))
         github_packages_url
