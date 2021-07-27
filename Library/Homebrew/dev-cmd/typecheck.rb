@@ -61,6 +61,7 @@ module Homebrew
 
         ohai "Updating Tapioca RBI files..."
         system "bundle", "exec", "tapioca", "sync", "--exclude", *excluded_gems
+        system "bundle", "exec", "parlour"
         system "bundle", "exec", "srb", "rbi", "hidden-definitions"
         system "bundle", "exec", "srb", "rbi", "todo"
 

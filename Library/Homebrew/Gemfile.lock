@@ -188,6 +188,7 @@ DEPENDENCIES
   mechanize
   minitest
   parallel_tests
+  parlour
   patchelf
   plist
   ronn
