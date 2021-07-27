@@ -103,7 +103,7 @@ module Homebrew
             when String
               match_data[:matches][value] = Version.new(value)
             when Array
-              value.each do |tag|
+              value.compact.uniq.each do |tag|
                 match_data[:matches][tag] = Version.new(tag)
               end
             when nil
