@@ -45,13 +45,24 @@ module Homebrew
         # @param regex [Regexp] a regex used for matching versions in the
         #   content
         # @return [Array]
+        sig {
+          params(
+            content: String,
+            regex:   Regexp,
+            block:   T.nilable(
+              T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
+            ),
+          ).returns(T::Array[String])
+        }
         def self.page_matches(content, regex, &block)
           if block
             case (value = block.call(content, regex))
             when String
               return [value]
             when Array
-              return value
+              return value.compact.uniq
+            when nil
+              return []
             else
               raise TypeError, "Return value of `strategy :page_match` block must be a string or array of strings."
             end
@@ -61,10 +72,10 @@ module Homebrew
             case match
             when String
               match
-            else
+            when Array
               match.first
             end
-          end.uniq
+          end.compact.uniq
         end
 
         # Checks the content at the URL for new versions, using the provided
@@ -78,10 +89,12 @@ module Homebrew
         sig {
           params(
             url:              String,
-            regex:            T.nilable(Regexp),
+            regex:            Regexp,
             cask:             T.nilable(Cask::Cask),
             provided_content: T.nilable(String),
-            block:            T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+            block:            T.nilable(
+              T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
+            ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask: nil, provided_content: nil, &block)

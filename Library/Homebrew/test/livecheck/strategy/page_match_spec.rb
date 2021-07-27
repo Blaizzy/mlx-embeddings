@@ -72,8 +72,12 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
     end
 
     it "finds matching text in page content using a strategy block" do
-      expect(page_match.page_matches(page_content, regex) { |content| content.scan(regex).map(&:first).uniq })
+      expect(page_match.page_matches(page_content, regex) { |content, regex| content.scan(regex).map(&:first).uniq })
         .to eq(page_content_matches)
+    end
+
+    it "allows a nil return from a strategy block" do
+      expect(page_match.page_matches(page_content, regex) { next }).to eq([])
     end
   end
 
