@@ -390,7 +390,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       resolved_url, _, url_time, _, is_redirection =
         resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
-      meta[:headers].delete_if { |header| header[0].start_with?("Authorization") } if is_redirection
+      # Authorization is no longer valid after redirects
+      meta[:headers].delete_if { |header| header.first&.start_with?("Authorization") } if is_redirection
 
       fresh = if cached_location.exist? && url_time
         url_time <= cached_location.mtime
