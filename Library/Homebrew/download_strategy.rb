@@ -388,7 +388,10 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       ohai "Downloading #{url}"
 
-      resolved_url, _, url_time, = resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
+      resolved_url, _, url_time, _, is_redirection =
+        resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
+      # Authorization is no longer valid after redirects
+      meta[:headers].delete_if { |header| header.first&.start_with?("Authorization") } if is_redirection
 
       fresh = if cached_location.exist? && url_time
         url_time <= cached_location.mtime
@@ -449,7 +452,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     return @resolved_info_cache[url] if @resolved_info_cache.include?(url)
 
     if (domain = Homebrew::EnvConfig.artifact_domain)
-      url = url.sub(%r{^((ht|f)tps?://)?}, "#{domain.chomp("/")}/")
+      url = url.sub(%r{^(https?://#{GitHubPackages::URL_DOMAIN}/)?}o, "#{domain.chomp("/")}/")
     end
 
     out, _, status= curl_output("--location", "--silent", "--head", "--request", "GET", url.to_s, timeout: timeout)
@@ -507,8 +510,9 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
            .last
 
     basename = filenames.last || parse_basename(redirect_url)
+    is_redirection = url != redirect_url
 
-    @resolved_info_cache[url] = [redirect_url, basename, time, file_size]
+    @resolved_info_cache[url] = [redirect_url, basename, time, file_size, is_redirection]
   end
 
   def _fetch(url:, resolved_url:, timeout:)
@@ -564,7 +568,9 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    meta[:headers] << ["Authorization: Bearer QQ=="]
+    token = Homebrew::EnvConfig.docker_registry_token
+    token ||= "QQ=="
+    meta[:headers] << ["Authorization: Bearer #{token}"] if token.present?
     super(url, name, version, meta)
   end
 
