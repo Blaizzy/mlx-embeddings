@@ -1981,6 +1981,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_GITHUB_PACKAGES_TOKEN`
   <br>Use this GitHub personal access token when accessing the GitHub Packages Registry (where bottles may be stored).
 
+- `HOMEBREW_DOCKER_REGISTRY_TOKEN`
+  <br>Use this bearer token for authenticating with a Docker registry proxying GitHub Packages.
+
 - `HOMEBREW_GITHUB_PACKAGES_USER`
   <br>Use this username when accessing the GitHub Packages Registry (where bottles may be stored).
 
