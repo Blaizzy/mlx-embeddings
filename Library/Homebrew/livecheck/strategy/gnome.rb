@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -45,6 +45,32 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Extracts information from a provided URL and uses it to generate
+        # various input values used by the strategy to check for new versions.
+        # Some of these values act as defaults and can be overridden in a
+        # `livecheck` block.
+        #
+        # @param url [String] the URL used to generate values
+        # @return [Hash]
+        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
+        def self.generate_input_values(url)
+          values = {}
+
+          match = url.match(URL_MATCH_REGEX)
+          return values if match.blank?
+
+          values[:url] = "https://download.gnome.org/sources/#{match[:package_name]}/cache.json"
+
+          regex_name = Regexp.escape(T.must(match[:package_name])).gsub("\\-", "-")
+
+          # GNOME archive files seem to use a standard filename format, so we
+          # count on the delimiter between the package name and numeric
+          # version being a hyphen and the file being a tarball.
+          values[:regex] = /#{regex_name}-(\d+(?:\.\d+)+)\.t/i
+
+          values
+        end
+
         # Generates a URL and regex (if one isn't provided) and passes them
         # to {PageMatch.find_versions} to identify versions in the content.
         #
@@ -62,27 +88,24 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **unused, &block)
-          match = url.match(URL_MATCH_REGEX)
+          generated = generate_input_values(url)
 
-          page_url = "https://download.gnome.org/sources/#{match[:package_name]}/cache.json"
+          version_data = T.unsafe(PageMatch).find_versions(
+            url:   generated[:url],
+            regex: regex || generated[:regex],
+            **unused,
+            &block
+          )
 
           if regex.blank?
-            # GNOME archive files seem to use a standard filename format, so we
-            # count on the delimiter between the package name and numeric
-            # version being a hyphen and the file being a tarball.
-            regex = /#{Regexp.escape(match[:package_name])}-(\d+(?:\.\d+)+)\.t/i
-            version_data = PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
-
             # Filter out unstable versions using the old version scheme where
             # the major version is below 40.
             version_data[:matches].reject! do |_, version|
               version.major < 40 && (version.minor >= 90 || version.minor.to_i.odd?)
             end
-
-            version_data
-          else
-            PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
           end
+
+          version_data
         end
       end
     end

@@ -30,8 +30,8 @@ module Homebrew
         # lowest to highest).
         PRIORITY = 8
 
-        # The default regex used to naively identify numeric versions from tags
-        # when a regex isn't provided.
+        # The default regex used to naively identify versions from tags when a
+        # regex isn't provided.
         DEFAULT_REGEX = /\D*(.+)/.freeze
 
         # Whether the strategy can be applied to the provided URL.

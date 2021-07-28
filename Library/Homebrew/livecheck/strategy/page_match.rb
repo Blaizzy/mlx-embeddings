@@ -90,6 +90,7 @@ module Homebrew
         }
         def self.find_versions(url:, regex:, provided_content: nil, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
+          return match_data if url.blank? || regex.blank?
 
           content = if provided_content.is_a?(String)
             match_data[:cached] = true

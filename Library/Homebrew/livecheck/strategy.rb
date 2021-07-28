@@ -75,6 +75,9 @@ module Homebrew
       # In rare cases, this can also be a double newline (`\n\n`).
       HTTP_HEAD_BODY_SEPARATOR = "\r\n\r\n"
 
+      # A regex used to identify a tarball extension at the end of a string.
+      TARBALL_EXTENSION_REGEX = /\.t(?:ar\..+|[a-z0-9]+)$/i.freeze
+
       # An error message to use when a `strategy` block returns a value of
       # an inappropriate type.
       INVALID_BLOCK_RETURN_VALUE_MSG = "Return value of a strategy block must be a string or array of strings."

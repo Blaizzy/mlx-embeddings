@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -52,6 +52,35 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Extracts information from a provided URL and uses it to generate
+        # various input values used by the strategy to check for new versions.
+        # Some of these values act as defaults and can be overridden in a
+        # `livecheck` block.
+        #
+        # @param url [String] the URL used to generate values
+        # @return [Hash]
+        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
+        def self.generate_input_values(url)
+          values = {}
+
+          match = url.match(URL_MATCH_REGEX)
+          return values if match.blank?
+
+          # Don't generate a URL if the URL already points to the RSS feed
+          unless url.match?(%r{/rss(?:/?$|\?)})
+            values[:url] = "https://sourceforge.net/projects/#{match[:project_name]}/rss"
+          end
+
+          regex_name = Regexp.escape(T.must(match[:project_name])).gsub("\\-", "-")
+
+          # It may be possible to improve the generated regex but there's quite
+          # a bit of variation between projects and it can be challenging to
+          # create something that works for most URLs.
+          values[:regex] = %r{url=.*?/#{regex_name}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
+
+          values
+        end
+
         # Generates a URL and regex (if one isn't provided) and passes them
         # to {PageMatch.find_versions} to identify versions in the content.
         #
@@ -69,20 +98,14 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **unused, &block)
-          match = url.match(URL_MATCH_REGEX)
+          generated = generate_input_values(url)
 
-          page_url = if url.match?(%r{/rss(?:/?$|\?)})
-            url
-          else
-            "https://sourceforge.net/projects/#{match[:project_name]}/rss"
-          end
-
-          # It may be possible to improve the default regex but there's quite a
-          # bit of variation between projects and it can be challenging to
-          # create something that works for most URLs.
-          regex ||= %r{url=.*?/#{Regexp.escape(match[:project_name])}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
-
-          PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
+          T.unsafe(PageMatch).find_versions(
+            url:   generated[:url] || url,
+            regex: regex || generated[:regex],
+            **unused,
+            &block
+          )
         end
       end
     end

@@ -6,16 +6,67 @@ require "livecheck/strategy/xorg"
 describe Homebrew::Livecheck::Strategy::Xorg do
   subject(:xorg) { described_class }
 
-  let(:xorg_url) { "https://www.x.org/archive/individual/app/abc-1.2.3.tar.bz2" }
+  let(:xorg_urls) {
+    {
+      app:     "https://www.x.org/archive/individual/app/abc-1.2.3.tar.bz2",
+      font:    "https://www.x.org/archive/individual/font/abc-1.2.3.tar.bz2",
+      lib:     "https://www.x.org/archive/individual/lib/libabc-1.2.3.tar.bz2",
+      ftp_lib: "https://ftp.x.org/archive/individual/lib/libabc-1.2.3.tar.bz2",
+      pub_doc: "https://www.x.org/pub/individual/doc/abc-1.2.3.tar.bz2",
+    }
+  }
   let(:non_xorg_url) { "https://brew.sh/test" }
+
+  let(:generated) {
+    {
+      app:     {
+        url:   "https://www.x.org/archive/individual/app/",
+        regex: /href=.*?abc[._-]v?(\d+(?:\.\d+)+)\.t/i,
+      },
+      font:    {
+        url:   "https://www.x.org/archive/individual/font/",
+        regex: /href=.*?abc[._-]v?(\d+(?:\.\d+)+)\.t/i,
+      },
+      lib:     {
+        url:   "https://www.x.org/archive/individual/lib/",
+        regex: /href=.*?libabc[._-]v?(\d+(?:\.\d+)+)\.t/i,
+      },
+      ftp_lib: {
+        url:   "https://ftp.x.org/archive/individual/lib/",
+        regex: /href=.*?libabc[._-]v?(\d+(?:\.\d+)+)\.t/i,
+      },
+      pub_doc: {
+        url:   "https://www.x.org/archive/individual/doc/",
+        regex: /href=.*?abc[._-]v?(\d+(?:\.\d+)+)\.t/i,
+      },
+    }
+  }
 
   describe "::match?" do
     it "returns true for an X.Org URL" do
-      expect(xorg.match?(xorg_url)).to be true
+      expect(xorg.match?(xorg_urls[:app])).to be true
+      expect(xorg.match?(xorg_urls[:font])).to be true
+      expect(xorg.match?(xorg_urls[:lib])).to be true
+      expect(xorg.match?(xorg_urls[:ftp_lib])).to be true
+      expect(xorg.match?(xorg_urls[:pub_doc])).to be true
     end
 
     it "returns false for a non-X.Org URL" do
       expect(xorg.match?(non_xorg_url)).to be false
+    end
+  end
+
+  describe "::generate_input_values" do
+    it "returns a hash containing url and regex for an X.org URL" do
+      expect(xorg.generate_input_values(xorg_urls[:app])).to eq(generated[:app])
+      expect(xorg.generate_input_values(xorg_urls[:font])).to eq(generated[:font])
+      expect(xorg.generate_input_values(xorg_urls[:lib])).to eq(generated[:lib])
+      expect(xorg.generate_input_values(xorg_urls[:ftp_lib])).to eq(generated[:ftp_lib])
+      expect(xorg.generate_input_values(xorg_urls[:pub_doc])).to eq(generated[:pub_doc])
+    end
+
+    it "returns an empty hash for a non-X.org URL" do
+      expect(xorg.generate_input_values(non_xorg_url)).to eq({})
     end
   end
 end

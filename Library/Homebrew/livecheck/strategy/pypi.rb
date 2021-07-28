@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -46,6 +46,36 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Extracts information from a provided URL and uses it to generate
+        # various input values used by the strategy to check for new versions.
+        # Some of these values act as defaults and can be overridden in a
+        # `livecheck` block.
+        #
+        # @param url [String] the URL used to generate values
+        # @return [Hash]
+        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
+        def self.generate_input_values(url)
+          values = {}
+
+          match = File.basename(url).match(FILENAME_REGEX)
+          return values if match.blank?
+
+          # It's not technically necessary to have the `#files` fragment at the
+          # end of the URL but it makes the debug output a bit more useful.
+          values[:url] = "https://pypi.org/project/#{T.must(match[:package_name]).gsub(/%20|_/, "-")}/#files"
+
+          # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
+          suffix = T.must(match[:suffix]).sub(Strategy::TARBALL_EXTENSION_REGEX, "\.t")
+          regex_suffix = Regexp.escape(suffix).gsub("\\-", "-")
+
+          # Example regex: `%r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)\.t}i`
+          regex_name = Regexp.escape(T.must(match[:package_name])).gsub("\\-", "-")
+          values[:regex] =
+            %r{href=.*?/packages.*?/#{regex_name}[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)#{regex_suffix}}i
+
+          values
+        end
+
         # Generates a URL and regex (if one isn't provided) and passes them
         # to {PageMatch.find_versions} to identify versions in the content.
         #
@@ -63,21 +93,9 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **unused, &block)
-          match = File.basename(url).match(FILENAME_REGEX)
+          generated = generate_input_values(url)
 
-          # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          suffix = match[:suffix].sub(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
-
-          # It's not technically necessary to have the `#files` fragment at the
-          # end of the URL but it makes the debug output a bit more useful.
-          page_url = "https://pypi.org/project/#{match[:package_name].gsub(/%20|_/, "-")}/#files"
-
-          # Example regex: `%r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)\.t}i`
-          re_package_name = Regexp.escape(match[:package_name])
-          re_suffix = Regexp.escape(suffix)
-          regex ||= %r{href=.*?/packages.*?/#{re_package_name}[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)#{re_suffix}}i
-
-          PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
+          T.unsafe(PageMatch).find_versions(url: generated[:url], regex: regex || generated[:regex], **unused, &block)
         end
       end
     end
