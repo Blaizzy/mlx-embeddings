@@ -261,7 +261,7 @@ class Pathname
     else
       false
     end
-  rescue Errno::EACCES, Errno::ENOENT, Errno::EBUSY
+  rescue Errno::EACCES, Errno::ENOENT, Errno::EBUSY, Errno::EPERM
     false
   end
 
