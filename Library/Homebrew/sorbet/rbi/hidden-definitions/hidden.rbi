@@ -8361,6 +8361,8 @@ module Homebrew::EnvConfig
 
   def self.display_install_times?(); end
 
+  def self.docker_registry_token(); end
+
   def self.editor(); end
 
   def self.fail_log_lines(); end
