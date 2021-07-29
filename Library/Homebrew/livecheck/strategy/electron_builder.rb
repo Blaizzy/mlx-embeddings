@@ -19,7 +19,7 @@ module Homebrew
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{^https?://.+/.+\.ya?ml$}i.freeze
+        URL_MATCH_REGEX = %r{^https?://.+/[^/]+\.ya?ml(?:\?[^/?]+)?$}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
