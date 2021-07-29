@@ -297,7 +297,7 @@ There are a few different ways the `appcast` can be determined:
 
 * An appcast can be any URL hosted by the app’s developer that changes every time a new release is out or that contains the version number of the current release (e.g. a download HTML page). Webpages that only change on new version releases are preferred, as are sites that do not contain previous version strings (i.e. avoid changelog pages if the download page contains the current version number but not older ones). Example: [`razorsql.rb`](https://github.com/Homebrew/homebrew-cask/blob/645dbb8228ec2f1f217ed1431e188687aac13ca5/Casks/razorsql.rb#L6)
 
-The [`find-appcast`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/developer/bin/find-appcast) script is able to identify some of these, as well as `electron-builder` appcasts which are trickier to find by hand. Run it with `"$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/find-appcast" '</path/to/software.app>'`.
+The [`find-appcast`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/developer/bin/find-appcast) script is able to identify some of these, as well as `electron-builder` appcasts which are trickier to find by hand. Run it with `"$(brew --repository homebrew/cask)/developer/bin/find-appcast" '</path/to/software.app>'`.
 
 #### Parameters
 
@@ -925,13 +925,13 @@ This is the most useful uninstall key. `pkgutil:` is often sufficient to complet
 IDs for the most recently-installed packages can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_recent_pkg_ids"
+$ "$(brew --repository homebrew/cask)/developer/bin/list_recent_pkg_ids"
 ```
 
 `pkgutil:` also accepts a regular expression match against multiple package IDs. The regular expressions are somewhat nonstandard. To test a `pkgutil:` regular expression against currently-installed packages, use the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_pkg_ids_by_regexp" <regular-expression>
+$ "$(brew --repository homebrew/cask)/developer/bin/list_pkg_ids_by_regexp" <regular-expression>
 ```
 
 #### List Files Associated With a pkg Id
@@ -949,13 +949,13 @@ Listing the associated files can help you assess whether the package included an
 IDs for currently loaded `launchctl` jobs can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_loaded_launchjob_ids"
+$ "$(brew --repository homebrew/cask)/developer/bin/list_loaded_launchjob_ids"
 ```
 
 IDs for all installed `launchctl` jobs can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_installed_launchjob_ids"
+$ "$(brew --repository homebrew/cask)/developer/bin/list_installed_launchjob_ids"
 ```
 
 #### `uninstall` Key `quit:`
@@ -963,13 +963,13 @@ $ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_i
 Bundle IDs for currently running Applications can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_running_app_ids"
+$ "$(brew --repository homebrew/cask)/developer/bin/list_running_app_ids"
 ```
 
 Bundle IDs inside an Application bundle on disk can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_ids_in_app" '/path/to/application.app'
+$ "$(brew --repository homebrew/cask)/developer/bin/list_ids_in_app" '/path/to/application.app'
 ```
 
 #### `uninstall` Key `signal:`
@@ -1005,7 +1005,7 @@ Unlike `quit:` directives, Unix signals originate from the current user, not fro
 Login items associated with an Application bundle on disk can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_login_items_for_app" '/path/to/application.app'
+$ "$(brew --repository homebrew/cask)/developer/bin/list_login_items_for_app" '/path/to/application.app'
 ```
 
 Note that you will likely need to have opened the app at least once for any login items to be present.
@@ -1015,13 +1015,13 @@ Note that you will likely need to have opened the app at least once for any logi
 IDs for currently loaded kernel extensions can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_loaded_kext_ids"
+$ "$(brew --repository homebrew/cask)/developer/bin/list_loaded_kext_ids"
 ```
 
 IDs inside a kext bundle you have located on disk can be listed using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_id_in_kext" '/path/to/name.kext'
+$ "$(brew --repository homebrew/cask)/developer/bin/list_id_in_kext" '/path/to/name.kext'
 ```
 
 #### `uninstall` Key `script:`
@@ -1060,19 +1060,19 @@ Advanced users may wish to work with a `pkg` file manually, without having the p
 A list of files which may be installed from a `pkg` can be extracted using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_payload_in_pkg" '/path/to/my.pkg'
+$ "$(brew --repository homebrew/cask)/developer/bin/list_payload_in_pkg" '/path/to/my.pkg'
 ```
 
 Candidate application names helpful for determining the name of a Cask may be extracted from a `pkg` file using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_apps_in_pkg" '/path/to/my.pkg'
+$ "$(brew --repository homebrew/cask)/developer/bin/list_apps_in_pkg" '/path/to/my.pkg'
 ```
 
 Candidate package IDs which may be useful in a `pkgutil:` key may be extracted from a `pkg` file using the command:
 
 ```bash
-$ "$(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_ids_in_pkg" '/path/to/my.pkg'
+$ "$(brew --repository homebrew/cask)/developer/bin/list_ids_in_pkg" '/path/to/my.pkg'
 ```
 
 A fully manual method for finding bundle ids in a package file follows:
@@ -1122,7 +1122,7 @@ The parameter doesn’t mean you should trust the source blindly, but we only ap
 Web browsers may obscure the direct `url` download location for a variety of reasons. Homebrew Cask supplies a script which can read extended file attributes to extract the actual source URL for most files downloaded by a browser on macOS. The script usually emits multiple candidate URLs; you may have to test each of them:
 
 ```bash
-$ $(brew --repository)/Library/Taps/homebrew/homebrew-cask/developer/bin/list_url_attributes_on_file <file>
+$ $(brew --repository homebrew/cask)/developer/bin/list_url_attributes_on_file <file>
 ```
 
 #### Subversion URLs

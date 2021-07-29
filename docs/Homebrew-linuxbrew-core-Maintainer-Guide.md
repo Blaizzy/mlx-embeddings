@@ -44,7 +44,7 @@ variable, or let `hub fork` add a remote for you.
 
 ```bash
 brew install hub
-cd $(brew --repo homebrew/core)
+cd $(brew --repository homebrew/core)
 git remote add homebrew https://github.com/Homebrew/homebrew-core.git
 hub fork --remote-name=$HOMEBREW_GITHUB_USER
 ```
