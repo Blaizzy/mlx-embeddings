@@ -8331,6 +8331,8 @@ module Homebrew::EnvConfig
 
   def self.bootsnap?(); end
 
+  def self.bottle_domain(); end
+
   def self.brew_git_remote(); end
 
   def self.browser(); end
