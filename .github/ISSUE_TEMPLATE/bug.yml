@@ -11,6 +11,9 @@ body:
       label: "`brew config` output"
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: If you are using `HOMEBREW_BOTTLE_DOMAIN` or `HOMEBREW_ARTIFACT_DOMAIN` to configure Homebrew mirrors, please first try unsetting those variables. If this bug is related to mirror sites themselves, please report the bug to the respective mirror sites. See https://github.com/Homebrew/discussions/discussions/1917 for more information.
   - type: textarea
     attributes:
       render: shell
