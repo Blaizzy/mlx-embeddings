@@ -25,7 +25,7 @@ body:
           required: true
         - label: I have resolved all warnings from `brew doctor` and that did not fix my problem.
           required: true
-        - label: I have unset `HOMEBREW_{BOTTLE,ARTIFACT}_DOMAIN` and `HOMEBREW_{BREW,CORE}_GIT_REMOTE` to use official upstreams when reporting this bug.
+        - label: I have unset `HOMEBREW_{BOTTLE,ARTIFACT}_DOMAIN` and `HOMEBREW_{BREW,CORE}_GIT_REMOTE` and am still able to reproduce this issue.
           required: true
   - type: markdown
     attributes:
