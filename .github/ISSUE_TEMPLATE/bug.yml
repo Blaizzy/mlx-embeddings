@@ -29,7 +29,7 @@ body:
           required: true
   - type: markdown
     attributes:
-      value: If this bug is related to mirror sites, please refer to https://github.com/Homebrew/discussions/discussions/1917 for more information, and report bugs to respective mirror maintainers.
+      value: If this bug is related to mirror sites, please refer to [this disucssion](https://github.com/Homebrew/discussions/discussions/1917) for more information, and report bugs to respective mirror maintainers.
   - type: textarea
     attributes:
       label: What were you trying to do (and why)?
