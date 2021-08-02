@@ -2089,7 +2089,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, verbose output will print a `.` no more than once a minute. This can be useful to avoid long-running Homebrew commands being killed due to no output.
 
 - `HOMEBREW_SHELLENV_SET`
-  <br>If set, `brew shellenv` skips export statements for paths.
+  <br>A colon separated list of brew prefixes. If it is set and contains the current brew prefix, `brew shellenv` skips export statements for paths.
 
 - `all_proxy`
   <br>Use this SOCKS5 proxy for `curl`(1), `git`(1) and `svn`(1) when downloading through Homebrew.

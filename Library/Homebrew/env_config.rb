@@ -306,8 +306,8 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_SHELLENV_SET:                  {
-        description: "If set, `brew shellenv` skips export statements for paths.",
-        boolean:     true,
+        description: "A colon separated list of brew prefixes. If it is set and contains the current brew prefix, " \
+                     "`brew shellenv` skips export statements for paths.",
       },
       all_proxy:                              {
         description: "Use this SOCKS5 proxy for `curl`(1), `git`(1) and `svn`(1) when downloading through Homebrew.",
