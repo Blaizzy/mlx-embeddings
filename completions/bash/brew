@@ -1479,6 +1479,8 @@ _brew_outdated() {
       --fetch-HEAD
       --formula
       --greedy
+      --greedy-auto-updates
+      --greedy-latest
       --help
       --json
       --quiet
@@ -2333,6 +2335,8 @@ _brew_upgrade() {
       --force-bottle
       --formula
       --greedy
+      --greedy-auto-updates
+      --greedy-latest
       --help
       --ignore-pinned
       --input-methoddir

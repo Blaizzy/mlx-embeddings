@@ -640,7 +640,15 @@ Fetch the upstream repository to detect if the HEAD installation of the formula 
 .
 .TP
 \fB\-\-greedy\fR
-Print outdated casks with \fBauto_updates\fR or \fBversion :latest\fR\.
+Print outdated casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
+.
+.TP
+\fB\-\-greedy\-latest\fR
+Print outdated casks including those with \fBversion :latest\fR\.
+.
+.TP
+\fB\-\-greedy\-auto\-updates\fR
+Print outdated casks including those with \fBauto_updates true\fR\.
 .
 .SS "\fBpin\fR \fIinstalled_formula\fR [\.\.\.]"
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
@@ -970,6 +978,14 @@ Skip installing cask dependencies\.
 .TP
 \fB\-\-greedy\fR
 Also include casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
+.
+.TP
+\fB\-\-greedy\-latest\fR
+Also include casks with \fBversion :latest\fR\.
+.
+.TP
+\fB\-\-greedy\-auto\-updates\fR
+Also include casks with \fBauto_updates true\fR\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Show formulae and casks that specify \fIformula\fR as a dependency; that is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
