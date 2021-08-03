@@ -784,7 +784,7 @@ Search for \fItext\fR in the given database\.
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
-The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. The variable \fBHOMEBREW_SHELLENV_SET\fR will be exported to avoid adding duplicate entries to the environment variables\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
+The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. The variables and \fBHOMEBREW_SHELLENV_PREFIX\fR and \fBHOMEBREW_SHELLENV_SET\fR will be exported to avoid adding duplicate entries to the environment variables\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
 .
 .SS "\fBtap\fR [\fIoptions\fR] [\fIuser\fR\fB/\fR\fIrepo\fR] [\fIURL\fR]"
 Tap a formula repository\.
@@ -3040,10 +3040,16 @@ If set, always assume \fB\-\-debug\fR when running commands\.
 If set, verbose output will print a \fB\.\fR no more than once a minute\. This can be useful to avoid long\-running Homebrew commands being killed due to no output\.
 .
 .TP
+\fBHOMEBREW_SHELLENV_PREFIX\fR
+.
+.br
+The lastest Homebrew prefix initialized by \fBbrew shellenv\fR\. If it is equal to the current Homebrew prefix, \fBbrew shellenv\fR will skip all export statements\.
+.
+.TP
 \fBHOMEBREW_SHELLENV_SET\fR
 .
 .br
-A colon separated list of brew prefixes\. If it is set and contains the current brew prefix, \fBbrew shellenv\fR skips export statements for paths\.
+A colon separated list of Homebrew prefixes\. If it is set and contains the current Homebrew prefix, \fBbrew shellenv\fR will skip export statements for paths\.
 .
 .TP
 \fBall_proxy\fR
