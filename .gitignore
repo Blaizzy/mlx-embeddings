@@ -194,5 +194,7 @@
 # Unignore tests' bundle config
 !/Library/Homebrew/test/.bundle/config
 
-# Unignore vscode configuration
+# Unignore editor configuration
+!/.sublime
+/.sublime/homebrew.sublime-workspace
 !/.vscode
