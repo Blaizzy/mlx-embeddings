@@ -24,6 +24,9 @@ module Homebrew
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
+        # The header fields to check when a `strategy` block isn't provided.
+        DEFAULT_HEADERS_TO_CHECK = ["content-disposition", "location"].freeze
+
         # Whether the strategy can be applied to the provided URL.
         # The strategy will technically match any HTTP URL but is
         # only usable with a `livecheck` block containing a regex
@@ -40,8 +43,7 @@ module Homebrew
             url:   String,
             regex: T.nilable(Regexp),
             cask:  T.nilable(Cask::Cask),
-            block: T.nilable(T.proc.params(arg0: T::Hash[String, String])
-            .returns(T.any(T::Array[String], String))),
+            block: T.nilable(T.proc.params(arg0: T::Hash[String, String]).returns(T.nilable(String))),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask: nil, &block)
@@ -52,31 +54,34 @@ module Homebrew
           # Merge the headers from all responses into one hash
           merged_headers = headers.reduce(&:merge)
 
-          if block
-            match = yield merged_headers, regex
+          version = if block
+            case (value = block.call(merged_headers, regex))
+            when String
+              value
+            when nil
+              return match_data
+            else
+              raise TypeError, "Return value of `strategy :header_match` block must be a string."
+            end
           else
-            match = nil
+            value = nil
+            DEFAULT_HEADERS_TO_CHECK.each do |header_name|
+              header_value = merged_headers[header_name]
+              next if header_value.blank?
 
-            if (filename = merged_headers["content-disposition"])
               if regex
-                match ||= filename[regex, 1]
+                value = header_value[regex, 1]
               else
-                v = Version.parse(filename, detected_from_url: true)
-                match ||= v.to_s unless v.null?
+                v = Version.parse(header_value, detected_from_url: true)
+                value = v.to_s unless v.null?
               end
+              break if value.present?
             end
 
-            if (location = merged_headers["location"])
-              if regex
-                match ||= location[regex, 1]
-              else
-                v = Version.parse(location, detected_from_url: true)
-                match ||= v.to_s unless v.null?
-              end
-            end
+            value
           end
 
-          match_data[:matches][match] = Version.new(match) if match
+          match_data[:matches][version] = Version.new(version) if version
 
           match_data
         end

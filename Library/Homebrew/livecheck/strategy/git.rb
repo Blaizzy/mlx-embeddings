@@ -81,8 +81,9 @@ module Homebrew
             url:   String,
             regex: T.nilable(Regexp),
             cask:  T.nilable(Cask::Cask),
-            block: T.nilable(T.proc.params(arg0: T::Array[String])
-            .returns(T.any(T::Array[String], String))),
+            block: T.nilable(
+              T.proc.params(arg0: T::Array[String]).returns(T.any(String, T::Array[String], NilClass)),
+            ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask: nil, &block)
@@ -102,9 +103,11 @@ module Homebrew
             when String
               match_data[:matches][value] = Version.new(value)
             when Array
-              value.each do |tag|
+              value.compact.uniq.each do |tag|
                 match_data[:matches][tag] = Version.new(tag)
               end
+            when nil
+              return match_data
             else
               raise TypeError, "Return value of `strategy :git` block must be a string or array of strings."
             end
