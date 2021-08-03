@@ -14,7 +14,7 @@ module ReleaseNotes
       .returns(String)
   }
   def generate_release_notes(start_ref, end_ref, markdown: false)
-    Utils.popen_read(
+    Utils.safe_popen_read(
       "git", "-C", HOMEBREW_REPOSITORY, "log", "--pretty=format:'%s >> - %b%n'", "#{start_ref}..#{end_ref}"
     ).lines.map do |s|
       matches = s.match(%r{.*Merge pull request #(?<pr>\d+) from (?<user>[^/]+)/[^>]*>> - (?<body>.*)})
