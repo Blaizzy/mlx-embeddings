@@ -29,9 +29,11 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && localedef -i en_US -f UTF-8 en_US.UTF-8 \
   && useradd -m -s /bin/bash linuxbrew \
-  && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
+  && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
+  && su - linuxbrew -c 'mkdir ~/.linuxbrew'
 
-COPY . /home/linuxbrew/.linuxbrew/Homebrew
+USER linuxbrew
+COPY --chown=linuxbrew:linuxbrew . /home/linuxbrew/.linuxbrew/Homebrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
 WORKDIR /home/linuxbrew
 
