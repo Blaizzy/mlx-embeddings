@@ -465,7 +465,11 @@ information is displayed in interactive shells, and suppressed otherwise.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
-  Print outdated casks with `auto_updates` or `version :latest`.
+  Print outdated casks with `auto_updates true` or `version :latest`.
+* `--greedy-latest`:
+  Print outdated casks including those with `version :latest`.
+* `--greedy-auto-updates`:
+  Print outdated casks including those with `auto_updates true`.
 
 ### `pin` *`installed_formula`* [...]
 
@@ -703,6 +707,10 @@ upgraded formulae or, every 30 days, for all formulae.
   Skip installing cask dependencies.
 * `--greedy`:
   Also include casks with `auto_updates true` or `version :latest`.
+* `--greedy-latest`:
+  Also include casks with `version :latest`.
+* `--greedy-auto-updates`:
+  Also include casks with `auto_updates true`.
 
 ### `uses` [*`options`*] *`formula`* [...]
 
