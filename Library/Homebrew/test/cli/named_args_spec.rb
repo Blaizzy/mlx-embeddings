@@ -223,12 +223,14 @@ describe Homebrew::CLI::NamedArgs do
       (HOMEBREW_CELLAR/"foo/1.0").mkpath
       (HOMEBREW_CELLAR/"foo/2.0").mkpath
       (HOMEBREW_CELLAR/"bar/1.0").mkpath
+      (HOMEBREW_CELLAR/"baz/HEAD-1").mkpath
+      (HOMEBREW_CELLAR/"baz/HEAD-2").mkpath
     end
 
     it "resolves the latest kegs with #resolve_latest_keg" do
-      latest_kegs = described_class.new("foo", "bar").to_latest_kegs
-      expect(latest_kegs.map(&:name)).to eq ["foo", "bar"]
-      expect(latest_kegs.map { |k| k.version.version.to_s }).to eq ["2.0", "1.0"]
+      latest_kegs = described_class.new("foo", "bar", "baz").to_latest_kegs
+      expect(latest_kegs.map(&:name)).to eq ["foo", "bar", "baz"]
+      expect(latest_kegs.map { |k| k.version.version.to_s }).to eq ["2.0", "1.0", "HEAD-1"]
     end
 
     it "when there are no matching kegs returns an empty array" do
