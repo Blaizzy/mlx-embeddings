@@ -150,8 +150,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        c.outdated_info(args.greedy?, verbose?, true, greedy_latest:       args.greedy_latest?,
-                                                      greedy_auto_updates: args.greedy_auto_updates?)
+        c.outdated_info(args.greedy?, verbose?, true, args.greedy_latest?, args.greedy_auto_updates?)
       end
     end
   end
