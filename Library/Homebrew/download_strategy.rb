@@ -568,8 +568,7 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    token = Homebrew::EnvConfig.docker_registry_token
-    token ||= "QQ=="
+    token = Homebrew::EnvConfig.artifact_domain ? Homebrew::EnvConfig.docker_registry_token : "QQ=="
     meta[:headers] << ["Authorization: Bearer #{token}"] if token.present?
     super(url, name, version, meta)
   end
