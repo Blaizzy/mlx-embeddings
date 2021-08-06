@@ -4,10 +4,6 @@
 require "api"
 
 describe Homebrew::API::Bottle do
-  before do
-    ENV["HOMEBREW_JSON_CORE"] = "1"
-  end
-
   let(:bottle_json) {
     <<~EOS
       {
@@ -68,6 +64,7 @@ describe Homebrew::API::Bottle do
 
   describe "::fetch_bottles" do
     before do
+      ENV["HOMEBREW_JSON_CORE"] = "1"
       allow(described_class).to receive(:fetch).and_return bottle_hash
     end
 
