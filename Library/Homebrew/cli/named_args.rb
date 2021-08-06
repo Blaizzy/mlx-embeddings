@@ -45,18 +45,18 @@ module Homebrew
       # the formula and prints a warning unless `only` is specified.
       sig {
         params(
-          only:                     T.nilable(Symbol),
-          ignore_unavailable:       T.nilable(T::Boolean),
-          method:                   T.nilable(Symbol),
-          uniq:                     T::Boolean,
-          prefer_loading_from_json: T::Boolean,
+          only:                    T.nilable(Symbol),
+          ignore_unavailable:      T.nilable(T::Boolean),
+          method:                  T.nilable(Symbol),
+          uniq:                    T::Boolean,
+          prefer_loading_from_api: T::Boolean,
         ).returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
       }
       def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil, uniq: true,
-                                prefer_loading_from_json: false)
+                                prefer_loading_from_api: false)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
-          load_formula_or_cask(name, only: only, method: method, prefer_loading_from_json: prefer_loading_from_json)
+          load_formula_or_cask(name, only: only, method: method, prefer_loading_from_api: prefer_loading_from_api)
         rescue FormulaUnreadableError, FormulaClassUnavailableError,
                TapFormulaUnreadableError, TapFormulaClassUnavailableError,
                Cask::CaskUnreadableError
@@ -90,11 +90,11 @@ module Homebrew
         end.uniq.freeze
       end
 
-      def load_formula_or_cask(name, only: nil, method: nil, prefer_loading_from_json: false)
+      def load_formula_or_cask(name, only: nil, method: nil, prefer_loading_from_api: false)
         unreadable_error = nil
 
         if only != :cask
-          if prefer_loading_from_json && ENV["HOMEBREW_JSON_CORE"].present? &&
+          if prefer_loading_from_api && ENV["HOMEBREW_JSON_CORE"].present? &&
              Homebrew::API::Bottle.available?(name)
             Homebrew::API::Bottle.fetch_bottles(name)
           end
@@ -133,9 +133,14 @@ module Homebrew
         end
 
         if only != :formula
+          if prefer_loading_from_api && ENV["HOMEBREW_JSON_CORE"].present? &&
+             Homebrew::API::CaskSource.available?(name)
+            contents = Homebrew::API::CaskSource.fetch(name)
+          end
+
           begin
             config = Cask::Config.from_args(@parent) if @cask_options
-            cask = Cask::CaskLoader.load(name, config: config)
+            cask = Cask::CaskLoader.load(contents || name, config: config)
 
             if unreadable_error.present?
               onoe <<~EOS
