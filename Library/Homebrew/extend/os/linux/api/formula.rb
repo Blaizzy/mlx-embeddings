@@ -5,7 +5,6 @@ module Homebrew
   module API
     module Formula
       class << self
-        sig { returns(String) }
         def formula_api_path
           return generic_formula_api_path if Homebrew::EnvConfig.force_homebrew_on_linux?
 

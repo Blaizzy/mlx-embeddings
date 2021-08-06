@@ -5,7 +5,6 @@ module Homebrew
   module API
     module Bottle
       class << self
-        sig { returns(String) }
         def bottle_api_path
           return generic_bottle_api_path if Homebrew::EnvConfig.force_homebrew_on_linux?
 
