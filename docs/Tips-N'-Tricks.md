@@ -16,6 +16,7 @@ This can be useful if a package can't build against the version of something you
 And of course, you can simply `brew link <formula>` again afterwards!
 
 ## Pre-downloading a file for a formula
+
 Sometimes it's faster to download a file via means other than those
 strategies that are available as part of Homebrew. For example,
 Erlang provides a torrent that'll let you download at 4–5× the normal
@@ -80,10 +81,12 @@ In Sublime Text 2/3, you can use Package Control to install
 which adds highlighting for inline patches.
 
 ### Vim
+
 [brew.vim](https://github.com/xu-cheng/brew.vim) adds highlighting to
 inline patches in Vim.
 
 ### Emacs
+
 [homebrew-mode](https://github.com/dunn/homebrew-mode) provides syntax
 highlighting for inline patches as well as a number of helper functions
 for editing formula files.
@@ -92,6 +95,7 @@ for editing formula files.
 for emacs shell-mode and eshell-mode.
 
 ### Atom
+
 [language-homebrew-formula](https://atom.io/packages/language-homebrew-formula)
 adds highlighting and diff support (with the
 [language-diff](https://atom.io/packages/language-diff) plugin).
