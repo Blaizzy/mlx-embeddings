@@ -5,7 +5,7 @@ require "github_packages"
 
 module Homebrew
   module API
-    # Helper functions for using the Bottle JSON API.
+    # Helper functions for using the bottle JSON API.
     #
     # @api private
     module Bottle

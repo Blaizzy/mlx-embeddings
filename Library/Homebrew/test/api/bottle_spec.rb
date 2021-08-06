@@ -4,10 +4,6 @@
 require "api"
 
 describe Homebrew::API::Bottle do
-  # before do
-  #   ENV["HOMEBREW_JSON_CORE"] = "1"
-  # end
-
   let(:bottle_json) {
     <<~EOS
       {
