@@ -1,10 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-describe BottleAPI do
-  before do
-    ENV["HOMEBREW_JSON_CORE"] = "1"
-  end
+require "api"
+
+describe Homebrew::API::Bottle do
+  # before do
+  #   ENV["HOMEBREW_JSON_CORE"] = "1"
+  # end
 
   let(:bottle_json) {
     <<~EOS
@@ -28,14 +30,6 @@ describe BottleAPI do
     EOS
   }
   let(:bottle_hash) { JSON.parse(bottle_json) }
-  let(:versions_json) {
-    <<~EOS
-      {
-        "foo":{"version":"1.2.3","revision":0},
-        "bar":{"version":"1.2","revision":4}
-      }
-    EOS
-  }
 
   def mock_curl_output(stdout: "", success: true)
     curl_output = OpenStruct.new(stdout: stdout, success?: success)
@@ -51,7 +45,7 @@ describe BottleAPI do
 
     it "raises an error if the formula does not exist" do
       mock_curl_output success: false
-      expect { described_class.fetch("bar") }.to raise_error(ArgumentError, /No JSON file found/)
+      expect { described_class.fetch("bar") }.to raise_error(ArgumentError, /No file found/)
     end
 
     it "raises an error if the bottle JSON is invalid" do
@@ -60,35 +54,15 @@ describe BottleAPI do
     end
   end
 
-  describe "::latest_pkg_version" do
-    it "returns the expected `PkgVersion` when the revision is 0" do
-      mock_curl_output stdout: versions_json
-      pkg_version = described_class.latest_pkg_version("foo")
-      expect(pkg_version.to_s).to eq "1.2.3"
-    end
-
-    it "returns the expected `PkgVersion` when the revision is not 0" do
-      mock_curl_output stdout: versions_json
-      pkg_version = described_class.latest_pkg_version("bar")
-      expect(pkg_version.to_s).to eq "1.2_4"
-    end
-
-    it "returns `nil` when the formula is not in the JSON file" do
-      mock_curl_output stdout: versions_json
-      pkg_version = described_class.latest_pkg_version("baz")
-      expect(pkg_version).to be_nil
-    end
-  end
-
-  describe "::bottle_available?" do
+  describe "::available?" do
     it "returns `true` if `fetch` succeeds" do
       allow(described_class).to receive(:fetch)
-      expect(described_class.bottle_available?("foo")).to eq true
+      expect(described_class.available?("foo")).to eq true
     end
 
     it "returns `false` if `fetch` fails" do
       allow(described_class).to receive(:fetch).and_raise ArgumentError
-      expect(described_class.bottle_available?("foo")).to eq false
+      expect(described_class.available?("foo")).to eq false
     end
   end
 

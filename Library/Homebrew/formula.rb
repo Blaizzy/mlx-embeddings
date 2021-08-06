@@ -29,7 +29,7 @@ require "mktemp"
 require "find"
 require "utils/spdx"
 require "extend/on_os"
-require "bottle_api"
+require "api"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
@@ -520,7 +520,8 @@ class Formula
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present? && (latest_pkg_version = BottleAPI.latest_pkg_version(name))
+    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present? &&
+                       (latest_pkg_version = Homebrew::API::Versions.latest_formula_version(name))
       prefix latest_pkg_version
     else
       latest_installed_prefix
@@ -1340,7 +1341,7 @@ class Formula
       all_kegs = []
       current_version = T.let(false, T::Boolean)
       latest_version = if ENV["HOMEBREW_JSON_CORE"].present? && (core_formula? || tap.blank?)
-        BottleAPI.latest_pkg_version(name) || pkg_version
+        Homebrew::API::Versions.latest_formula_version(name) || pkg_version
       else
         pkg_version
       end
