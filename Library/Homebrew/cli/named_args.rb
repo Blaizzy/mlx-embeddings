@@ -324,11 +324,11 @@ module Homebrew
         # Return keg if it is the only installed keg
         return kegs if kegs.length == 1
 
-        eligible_kegs = kegs.reject { |k| k.version.head? }
-        # Use HEAD kegs if there are no stable kegs
-        eligible_kegs = kegs if eligible_kegs.blank?
+        stable_kegs = kegs.reject { |k| k.version.head? }
 
-        eligible_kegs.max_by(&:version)
+        return kegs.max_by { |keg| Tab.for_keg(keg).source_modified_time } if stable_kegs.blank?
+
+        stable_kegs.max_by(&:version)
       end
 
       def resolve_default_keg(name)
