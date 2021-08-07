@@ -223,7 +223,7 @@ describe Homebrew::CLI::NamedArgs do
       (HOMEBREW_CELLAR/"foo/1.0").mkpath
       (HOMEBREW_CELLAR/"foo/2.0").mkpath
       (HOMEBREW_CELLAR/"bar/1.0").mkpath
-      head1 = (HOMEBREW_CELLAR/"baz/HEAD-1").mkpath
+      (HOMEBREW_CELLAR/"baz/HEAD-1").mkpath
       head2 = HOMEBREW_CELLAR/"baz/HEAD-2"
       head2.mkpath
       (head2/"INSTALL_RECEIPT.json").write (TEST_FIXTURE_DIR/"receipt.json").read
