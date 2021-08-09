@@ -14,15 +14,9 @@ describe Homebrew::API do
   end
 
   describe "::fetch" do
-    it "fetches a text file" do
-      mock_curl_output stdout: text
-      fetched_text = described_class.fetch("foo.txt")
-      expect(fetched_text).to eq text
-    end
-
     it "fetches a JSON file" do
       mock_curl_output stdout: json
-      fetched_json = described_class.fetch("foo.json", json: true)
+      fetched_json = described_class.fetch("foo.json")
       expect(fetched_json).to eq json_hash
     end
 
@@ -33,7 +27,7 @@ describe Homebrew::API do
 
     it "raises an error if the JSON file is invalid" do
       mock_curl_output stdout: text
-      expect { described_class.fetch("baz.txt", json: true) }.to raise_error(ArgumentError, /Invalid JSON file/)
+      expect { described_class.fetch("baz.txt") }.to raise_error(ArgumentError, /Invalid JSON file/)
     end
   end
 end
