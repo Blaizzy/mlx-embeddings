@@ -13,17 +13,17 @@ module Homebrew
 
       def formulae
         # The result is cached by Homebrew::API.fetch
-        Homebrew::API.fetch "versions-formulae.json", json: true
+        Homebrew::API.fetch "versions-formulae.json"
       end
 
       def linux
         # The result is cached by Homebrew::API.fetch
-        Homebrew::API.fetch "versions-linux.json", json: true
+        Homebrew::API.fetch "versions-linux.json"
       end
 
       def casks
         # The result is cached by Homebrew::API.fetch
-        Homebrew::API.fetch "versions-casks.json", json: true
+        Homebrew::API.fetch "versions-casks.json"
       end
 
       sig { params(name: String).returns(T.nilable(PkgVersion)) }

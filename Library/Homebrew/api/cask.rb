@@ -13,7 +13,7 @@ module Homebrew
 
       sig { params(name: String).returns(Hash) }
       def fetch(name)
-        Homebrew::API.fetch "cask/#{name}.json", json: true
+        Homebrew::API.fetch "cask/#{name}.json"
       end
     end
   end

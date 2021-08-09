@@ -19,7 +19,7 @@ module Homebrew
 
       sig { params(category: String, days: T.any(Integer, String)).returns(Hash) }
       def fetch(category, days)
-        Homebrew::API.fetch "#{analytics_api_path}/#{category}/#{days}d.json", json: true
+        Homebrew::API.fetch "#{analytics_api_path}/#{category}/#{days}d.json"
       end
     end
   end

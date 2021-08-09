@@ -23,7 +23,7 @@ module Homebrew
 
       sig { params(name: String).returns(Hash) }
       def fetch(name)
-        Homebrew::API.fetch "#{bottle_api_path}/#{name}.json", json: true
+        Homebrew::API.fetch "#{bottle_api_path}/#{name}.json"
       end
 
       sig { params(name: String).returns(T::Boolean) }
