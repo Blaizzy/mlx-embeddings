@@ -1869,6 +1869,7 @@ class RuboCop::AST::ProcessedSource
   def preceding_line(token); end
   def raw_source; end
   def ruby_version; end
+  def sorted_tokens; end
   def start_with?(string); end
   def tokens; end
   def tokens_within(range_or_node); end
@@ -1882,7 +1883,6 @@ class RuboCop::AST::ProcessedSource
   def last_token_index(range_or_node); end
   def parse(source, ruby_version); end
   def parser_class(ruby_version); end
-  def sorted_tokens; end
   def source_range(range_or_node); end
   def tokenize(parser); end
 
