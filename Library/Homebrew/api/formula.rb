@@ -7,19 +7,19 @@ module Homebrew
     #
     # @api private
     module Formula
-      extend T::Sig
+      class << self
+        extend T::Sig
 
-      module_function
+        sig { returns(String) }
+        def formula_api_path
+          "formula"
+        end
+        alias generic_formula_api_path formula_api_path
 
-      sig { returns(String) }
-      def formula_api_path
-        "formula"
-      end
-      alias generic_formula_api_path formula_api_path
-
-      sig { params(name: String).returns(Hash) }
-      def fetch(name)
-        Homebrew::API.fetch "#{formula_api_path}/#{name}.json"
+        sig { params(name: String).returns(Hash) }
+        def fetch(name)
+          Homebrew::API.fetch "#{formula_api_path}/#{name}.json"
+        end
       end
     end
   end

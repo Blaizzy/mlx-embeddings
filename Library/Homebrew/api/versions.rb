@@ -7,45 +7,45 @@ module Homebrew
     #
     # @api private
     module Versions
-      extend T::Sig
+      class << self
+        extend T::Sig
 
-      module_function
-
-      def formulae
-        # The result is cached by Homebrew::API.fetch
-        Homebrew::API.fetch "versions-formulae.json"
-      end
-
-      def linux
-        # The result is cached by Homebrew::API.fetch
-        Homebrew::API.fetch "versions-linux.json"
-      end
-
-      def casks
-        # The result is cached by Homebrew::API.fetch
-        Homebrew::API.fetch "versions-casks.json"
-      end
-
-      sig { params(name: String).returns(T.nilable(PkgVersion)) }
-      def latest_formula_version(name)
-        versions = if OS.mac? || Homebrew::EnvConfig.force_homebrew_on_linux?
-          formulae
-        else
-          linux
+        def formulae
+          # The result is cached by Homebrew::API.fetch
+          Homebrew::API.fetch "versions-formulae.json"
         end
 
-        return unless versions.key? name
+        def linux
+          # The result is cached by Homebrew::API.fetch
+          Homebrew::API.fetch "versions-linux.json"
+        end
 
-        version = Version.new(versions[name]["version"])
-        revision = versions[name]["revision"]
-        PkgVersion.new(version, revision)
-      end
+        def casks
+          # The result is cached by Homebrew::API.fetch
+          Homebrew::API.fetch "versions-casks.json"
+        end
 
-      sig { params(token: String).returns(T.nilable(Version)) }
-      def latest_cask_version(token)
-        return unless casks.key? token
+        sig { params(name: String).returns(T.nilable(PkgVersion)) }
+        def latest_formula_version(name)
+          versions = if OS.mac? || Homebrew::EnvConfig.force_homebrew_on_linux?
+            formulae
+          else
+            linux
+          end
 
-        Version.new(casks[token]["version"])
+          return unless versions.key? name
+
+          version = Version.new(versions[name]["version"])
+          revision = versions[name]["revision"]
+          PkgVersion.new(version, revision)
+        end
+
+        sig { params(token: String).returns(T.nilable(Version)) }
+        def latest_cask_version(token)
+          return unless casks.key? token
+
+          Version.new(casks[token]["version"])
+        end
       end
     end
   end

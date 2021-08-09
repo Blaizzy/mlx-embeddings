@@ -190,7 +190,7 @@ module Utils
       def formula_output(f, args:)
         return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
 
-        json = Homebrew::API::Formula.fetch f
+        json = Homebrew::API::Formula.fetch f.name
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json, args: args)
@@ -202,7 +202,7 @@ module Utils
       def cask_output(cask, args:)
         return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
 
-        json = Homebrew::API::Cask.fetch cask
+        json = Homebrew::API::Cask.fetch cask.token
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json, args: args)
