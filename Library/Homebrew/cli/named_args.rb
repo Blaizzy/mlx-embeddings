@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "delegate"
-require "bottle_api"
+require "api"
 require "cli/args"
 
 module Homebrew
@@ -94,8 +94,9 @@ module Homebrew
         unreadable_error = nil
 
         if only != :cask
-          if prefer_loading_from_json && ENV["HOMEBREW_JSON_CORE"].present? && BottleAPI.bottle_available?(name)
-            BottleAPI.fetch_bottles(name)
+          if prefer_loading_from_json && ENV["HOMEBREW_JSON_CORE"].present? &&
+             Homebrew::API::Bottle.available?(name)
+            Homebrew::API::Bottle.fetch_bottles(name)
           end
 
           begin
