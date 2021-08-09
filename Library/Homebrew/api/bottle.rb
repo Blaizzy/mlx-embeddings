@@ -66,7 +66,7 @@ module Homebrew
           match[:sha256]
         end
 
-        sig { params(hash: Hash, tag: Symbol).void }
+        sig { params(hash: Hash, tag: String).void }
         def download_bottle(hash, tag)
           bottle = hash["bottles"][tag]
           bottle ||= hash["bottles"]["all"]
