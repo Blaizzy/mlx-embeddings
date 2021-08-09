@@ -56,9 +56,11 @@ module Homebrew
 
       # Cache demodulized strategy names, to avoid repeating this work
       @livecheck_strategy_names = {}
-      Strategy.constants.sort.each do |strategy_symbol|
-        strategy = Strategy.const_get(strategy_symbol)
-        @livecheck_strategy_names[strategy] = strategy.name.demodulize
+      Strategy.constants.sort.each do |const_symbol|
+        constant = Strategy.const_get(const_symbol)
+        next unless constant.is_a?(Class)
+
+        @livecheck_strategy_names[constant] = T.must(constant.name).demodulize
       end
       @livecheck_strategy_names.freeze
     end

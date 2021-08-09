@@ -75,13 +75,6 @@ module Homebrew
       # In rare cases, this can also be a double newline (`\n\n`).
       HTTP_HEAD_BODY_SEPARATOR = "\r\n\r\n"
 
-      # The `#strategies` method expects `Strategy` constants to be strategies,
-      # so constants we create need to be private for this to work properly.
-      private_constant :DEFAULT_PRIORITY, :CURL_CONNECT_TIMEOUT, :CURL_MAX_TIME,
-                       :CURL_PROCESS_TIMEOUT, :DEFAULT_CURL_ARGS,
-                       :PAGE_HEADERS_CURL_ARGS, :PAGE_CONTENT_CURL_ARGS,
-                       :DEFAULT_CURL_OPTIONS, :HTTP_HEAD_BODY_SEPARATOR
-
       # Creates and/or returns a `@strategies` `Hash`, which maps a snake
       # case strategy name symbol (e.g. `:page_match`) to the associated
       # {Strategy}.
@@ -93,10 +86,12 @@ module Homebrew
         return @strategies if defined? @strategies
 
         @strategies = {}
-        constants.sort.each do |strategy_symbol|
-          key = strategy_symbol.to_s.underscore.to_sym
-          strategy = const_get(strategy_symbol)
-          @strategies[key] = strategy
+        Strategy.constants.sort.each do |const_symbol|
+          constant = Strategy.const_get(const_symbol)
+          next unless constant.is_a?(Class)
+
+          key = const_symbol.to_s.underscore.to_sym
+          @strategies[key] = constant
         end
         @strategies
       end
