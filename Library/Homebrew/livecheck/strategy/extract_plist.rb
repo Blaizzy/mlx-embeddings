@@ -3,7 +3,6 @@
 
 require "bundle_version"
 require "unversioned_cask_checker"
-require_relative "page_match"
 
 module Homebrew
   module Livecheck
