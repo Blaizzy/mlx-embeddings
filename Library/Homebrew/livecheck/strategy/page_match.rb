@@ -54,19 +54,8 @@ module Homebrew
             ),
           ).returns(T::Array[String])
         }
-        def self.page_matches(content, regex, &block)
-          if block
-            case (value = block.call(content, regex))
-            when String
-              return [value]
-            when Array
-              return value.compact.uniq
-            when nil
-              return []
-            else
-              raise TypeError, "Return value of `strategy :page_match` block must be a string or array of strings."
-            end
-          end
+        def self.versions_from_content(content, regex, &block)
+          return Strategy.handle_block_return(block.call(content, regex)) if block
 
           content.scan(regex).map do |match|
             case match
@@ -109,7 +98,7 @@ module Homebrew
           end
           return match_data if content.blank?
 
-          page_matches(content, regex, &block).each do |match_text|
+          versions_from_content(content, regex, &block).each do |match_text|
             match_data[:matches][match_text] = Version.new(match_text)
           end
 

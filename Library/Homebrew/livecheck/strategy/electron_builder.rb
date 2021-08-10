@@ -30,34 +30,28 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
-        # Extract version information from page content.
+        # Parses YAML text and identifies versions in it.
         #
-        # @param content [String] the content to check
-        # @return [String]
+        # @param content [String] the YAML text to parse and check
+        # @return [Array]
         sig {
           params(
             content: String,
-            block:   T.nilable(T.proc.params(arg0: T::Hash[String, T.untyped]).returns(T.nilable(String))),
-          ).returns(T.nilable(String))
+            block:   T.nilable(
+              T.proc.params(arg0: T::Hash[String, T.untyped]).returns(T.any(String, T::Array[String], NilClass)),
+            ),
+          ).returns(T::Array[String])
         }
-        def self.version_from_content(content, &block)
+        def self.versions_from_content(content, &block)
           require "yaml"
 
           yaml = YAML.safe_load(content)
-          return if yaml.blank?
+          return [] if yaml.blank?
 
-          if block
-            case (value = block.call(yaml))
-            when String
-              return value
-            when nil
-              return
-            else
-              raise TypeError, "Return value of `strategy :electron_builder` block must be a string."
-            end
-          end
+          return Strategy.handle_block_return(block.call(yaml)) if block
 
-          yaml["version"]
+          version = yaml["version"]
+          version.present? ? [version] : []
         end
 
         # Checks the content at the URL for new versions.
@@ -81,8 +75,9 @@ module Homebrew
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)
 
-          version = version_from_content(content, &block)
-          match_data[:matches][version] = Version.new(version) if version
+          versions_from_content(content, &block).each do |version_text|
+            match_data[:matches][version_text] = Version.new(version_text)
+          end
 
           match_data
         end

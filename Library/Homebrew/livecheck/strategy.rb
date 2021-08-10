@@ -75,6 +75,10 @@ module Homebrew
       # In rare cases, this can also be a double newline (`\n\n`).
       HTTP_HEAD_BODY_SEPARATOR = "\r\n\r\n"
 
+      # An error message to use when a `strategy` block returns a value of
+      # an inappropriate type.
+      INVALID_BLOCK_RETURN_VALUE_MSG = "Return value of a strategy block must be a string or array of strings."
+
       # Creates and/or returns a `@strategies` `Hash`, which maps a snake
       # case strategy name symbol (e.g. `:page_match`) to the associated
       # {Strategy}.
@@ -217,6 +221,25 @@ module Homebrew
         {
           messages: [error_msg.presence || "cURL failed without an error"],
         }
+      end
+
+      # Handles the return value from a `strategy` block in a `livecheck`
+      # block.
+      #
+      # @param value [] the return value from a `strategy` block
+      # @return [Array]
+      sig { params(value: T.untyped).returns(T::Array[String]) }
+      def self.handle_block_return(value)
+        case value
+        when String
+          [value]
+        when Array
+          value.compact.uniq
+        when nil
+          []
+        else
+          raise TypeError, INVALID_BLOCK_RETURN_VALUE_MSG
+        end
       end
     end
   end

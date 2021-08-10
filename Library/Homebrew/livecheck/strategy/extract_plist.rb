@@ -50,13 +50,37 @@ module Homebrew
           delegate short_version: :bundle_version
         end
 
-        # Checks the content at the URL for new versions.
+        # Identify versions from `Item`s produced using
+        # {UnversionedCaskChecker} version information.
+        #
+        # @param items [Hash] a hash of `Item`s containing version information
+        # @return [Array]
+        sig {
+          params(
+            items: T::Hash[String, Item],
+            block: T.nilable(
+              T.proc.params(arg0: T::Hash[String, Item]).returns(T.any(String, T::Array[String], NilClass)),
+            ),
+          ).returns(T::Array[String])
+        }
+        def self.versions_from_items(items, &block)
+          return Strategy.handle_block_return(block.call(items)) if block
+
+          items.map do |_key, item|
+            item.bundle_version.nice_version
+          end.compact.uniq
+        end
+
+        # Uses {UnversionedCaskChecker} on the provided cask to identify
+        # versions from `plist` files.
         sig {
           params(
             url:   String,
             regex: T.nilable(Regexp),
             cask:  Cask::Cask,
-            block: T.nilable(T.proc.params(arg0: T::Hash[String, Item]).returns(T.nilable(String))),
+            block: T.nilable(
+              T.proc.params(arg0: T::Hash[String, Item]).returns(T.any(String, T::Array[String], NilClass)),
+            ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask:, &block)
@@ -66,22 +90,10 @@ module Homebrew
           match_data = { matches: {}, regex: regex, url: url }
 
           unversioned_cask_checker = UnversionedCaskChecker.new(cask)
-          versions = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
+          items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
 
-          if block
-            case (value = block.call(versions))
-            when String
-              match_data[:matches][value] = Version.new(value)
-            when nil
-              return match_data
-            else
-              raise TypeError, "Return value of `strategy :extract_plist` block must be a string."
-            end
-          elsif versions.any?
-            versions.each_value do |item|
-              version = item.bundle_version.nice_version
-              match_data[:matches][version] = Version.new(version)
-            end
+          versions_from_items(items, &block).each do |version_text|
+            match_data[:matches][version_text] = Version.new(version_text)
           end
 
           match_data

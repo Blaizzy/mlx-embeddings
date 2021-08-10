@@ -138,6 +138,26 @@ module Homebrew
           items.max_by { |item| [item.pub_date, item.bundle_version] }
         end
 
+        # Identify versions from content
+        #
+        # @param content [String] the content to pull version information from
+        # @return [Array]
+        sig {
+          params(
+            content: String,
+            block:   T.nilable(T.proc.params(arg0: Item).returns(T.any(String, T::Array[String], NilClass))),
+          ).returns(T::Array[String])
+        }
+        def self.versions_from_content(content, &block)
+          item = item_from_content(content)
+          return [] if item.blank?
+
+          return Strategy.handle_block_return(block.call(item)) if block
+
+          version = item.bundle_version&.nice_version
+          version.present? ? [version] : []
+        end
+
         # Checks the content at the URL for new versions.
         sig {
           params(
@@ -155,21 +175,8 @@ module Homebrew
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)
 
-          if (item = item_from_content(content))
-            version = if block
-              case (value = block.call(item))
-              when String
-                value
-              when nil
-                return match_data
-              else
-                raise TypeError, "Return value of `strategy :sparkle` block must be a string."
-              end
-            else
-              item.bundle_version&.nice_version
-            end
-
-            match_data[:matches][version] = Version.new(version) if version
+          versions_from_content(content, &block).each do |version_text|
+            match_data[:matches][version_text] = Version.new(version_text)
           end
 
           match_data

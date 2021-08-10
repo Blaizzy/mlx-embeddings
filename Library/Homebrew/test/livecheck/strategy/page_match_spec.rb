@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require "livecheck/strategy/page_match"
+require "livecheck/strategy"
 
 describe Homebrew::Livecheck::Strategy::PageMatch do
   subject(:page_match) { described_class }
@@ -9,7 +9,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
   let(:url) { "https://brew.sh/blog/" }
   let(:regex) { %r{href=.*?/homebrew[._-]v?(\d+(?:\.\d+)+)/?["' >]}i }
 
-  let(:page_content) {
+  let(:content) {
     <<~EOS
       <!DOCTYPE html>
       <html>
@@ -35,7 +35,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
     EOS
   }
 
-  let(:page_content_matches) { ["2.6.0", "2.5.0", "2.4.0", "2.3.0", "2.2.0", "2.1.0", "2.0.0", "1.9.0"] }
+  let(:content_matches) { ["2.6.0", "2.5.0", "2.4.0", "2.3.0", "2.2.0", "2.1.0", "2.0.0", "1.9.0"] }
 
   let(:find_versions_return_hash) {
     {
@@ -66,24 +66,41 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
     end
   end
 
-  describe "::page_matches" do
-    it "finds matching text in page content using a regex" do
-      expect(page_match.page_matches(page_content, regex)).to eq(page_content_matches)
+  describe "::versions_from_content" do
+    it "returns an empty array if content is blank" do
+      expect(page_match.versions_from_content("", regex)).to eq([])
     end
 
-    it "finds matching text in page content using a strategy block" do
-      expect(page_match.page_matches(page_content, regex) { |content, regex| content.scan(regex).map(&:first).uniq })
-        .to eq(page_content_matches)
+    it "returns an array of version strings when given content" do
+      expect(page_match.versions_from_content(content, regex)).to eq(content_matches)
+
+      # Regexes should use a capture group around the version but a regex
+      # without one should still be handled
+      expect(page_match.versions_from_content(content, /\d+(?:\.\d+)+/i)).to eq(content_matches)
     end
 
-    it "allows a nil return from a strategy block" do
-      expect(page_match.page_matches(page_content, regex) { next }).to eq([])
+    it "returns an array of version strings when given content and a block" do
+      # Returning a string from block
+      expect(page_match.versions_from_content(content, regex) { "1.2.3" }).to eq(["1.2.3"])
+
+      # Returning an array of strings from block
+      expect(page_match.versions_from_content(content, regex) { |page, regex| page.scan(regex).map(&:first) })
+        .to eq(content_matches)
+    end
+
+    it "allows a nil return from a block" do
+      expect(page_match.versions_from_content(content, regex) { next }).to eq([])
+    end
+
+    it "errors on an invalid return type from a block" do
+      expect { page_match.versions_from_content(content, regex) { 123 } }
+        .to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
     end
   end
 
   describe "::find_versions?" do
     it "finds versions in provided_content" do
-      expect(page_match.find_versions(url, regex, provided_content: page_content))
+      expect(page_match.find_versions(url, regex, provided_content: content))
         .to eq(find_versions_cached_return_hash)
     end
   end

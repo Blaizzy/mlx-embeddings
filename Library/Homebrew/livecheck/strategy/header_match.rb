@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require_relative "page_match"
@@ -36,6 +36,39 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Identify versions from HTTP headers.
+        #
+        # @param headers [Hash] a hash of HTTP headers to check for versions
+        # @param regex [Regexp, nil] a regex to use to identify versions
+        # @return [Array]
+        sig {
+          params(
+            headers: T::Hash[String, String],
+            regex:   T.nilable(Regexp),
+            block:   T.nilable(
+              T.proc.params(
+                arg0: T::Hash[String, String],
+                arg1: T.nilable(Regexp),
+              ).returns(T.any(String, T::Array[String], NilClass)),
+            ),
+          ).returns(T::Array[String])
+        }
+        def self.versions_from_headers(headers, regex = nil, &block)
+          return Strategy.handle_block_return(block.call(headers, regex)) if block
+
+          DEFAULT_HEADERS_TO_CHECK.map do |header_name|
+            header_value = headers[header_name]
+            next if header_value.blank?
+
+            if regex
+              header_value[regex, 1]
+            else
+              v = Version.parse(header_value, detected_from_url: true)
+              v.null? ? nil : v.to_s
+            end
+          end.compact.uniq
+        end
+
         # Checks the final URL for new versions after following all redirections,
         # using the provided regex for matching.
         sig {
@@ -43,7 +76,9 @@ module Homebrew
             url:   String,
             regex: T.nilable(Regexp),
             cask:  T.nilable(Cask::Cask),
-            block: T.nilable(T.proc.params(arg0: T::Hash[String, String]).returns(T.nilable(String))),
+            block: T.nilable(
+              T.proc.params(arg0: T::Hash[String, String], arg1: T.nilable(Regexp)).returns(T.nilable(String)),
+            ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask: nil, &block)
@@ -53,35 +88,11 @@ module Homebrew
 
           # Merge the headers from all responses into one hash
           merged_headers = headers.reduce(&:merge)
+          return match_data if merged_headers.blank?
 
-          version = if block
-            case (value = block.call(merged_headers, regex))
-            when String
-              value
-            when nil
-              return match_data
-            else
-              raise TypeError, "Return value of `strategy :header_match` block must be a string."
-            end
-          else
-            value = nil
-            DEFAULT_HEADERS_TO_CHECK.each do |header_name|
-              header_value = merged_headers[header_name]
-              next if header_value.blank?
-
-              if regex
-                value = header_value[regex, 1]
-              else
-                v = Version.parse(header_value, detected_from_url: true)
-                value = v.to_s unless v.null?
-              end
-              break if value.present?
-            end
-
-            value
+          versions_from_headers(merged_headers, regex, &block).each do |version_text|
+            match_data[:matches][version_text] = Version.new(version_text)
           end
-
-          match_data[:matches][version] = Version.new(version) if version
 
           match_data
         end
