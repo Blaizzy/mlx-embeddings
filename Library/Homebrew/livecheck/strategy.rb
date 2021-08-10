@@ -14,7 +14,7 @@ module Homebrew
 
       module_function
 
-      # Strategy priorities informally range from 1 to 10, where 10 is the
+      # {Strategy} priorities informally range from 1 to 10, where 10 is the
       # highest priority. 5 is the default priority because it's roughly in
       # the middle of this range. Strategies with a priority of 0 (or lower)
       # are ignored.
@@ -32,10 +32,10 @@ module Homebrew
       # The `curl` process will sometimes hang indefinitely (despite setting
       # the `--max-time` argument) and it needs to be quit for livecheck to
       # continue. This value is used to set the `timeout` argument on
-      # `Utils::Curl` method calls in `Strategy`.
+      # `Utils::Curl` method calls in {Strategy}.
       CURL_PROCESS_TIMEOUT = CURL_MAX_TIME + 5
 
-      # Baseline `curl` arguments used in `Strategy` methods.
+      # Baseline `curl` arguments used in {Strategy} methods.
       DEFAULT_CURL_ARGS = [
         # Follow redirections to handle mirrors, relocations, etc.
         "--location",
@@ -60,7 +60,7 @@ module Homebrew
         "--include",
       ] + DEFAULT_CURL_ARGS).freeze
 
-      # Baseline `curl` options used in `Strategy` methods.
+      # Baseline `curl` options used in {Strategy} methods.
       DEFAULT_CURL_OPTIONS = {
         print_stdout: false,
         print_stderr: false,
@@ -81,7 +81,7 @@ module Homebrew
 
       # Creates and/or returns a `@strategies` `Hash`, which maps a snake
       # case strategy name symbol (e.g. `:page_match`) to the associated
-      # {Strategy}.
+      # strategy.
       #
       # At present, this should only be called after tap strategies have been
       # loaded, otherwise livecheck won't be able to use them.
@@ -102,12 +102,12 @@ module Homebrew
       end
       private_class_method :strategies
 
-      # Returns the {Strategy} that corresponds to the provided `Symbol` (or
-      # `nil` if there is no matching {Strategy}).
+      # Returns the strategy that corresponds to the provided `Symbol` (or
+      # `nil` if there is no matching strategy).
       #
-      # @param symbol [Symbol] the strategy name in snake case as a `Symbol`
-      #   (e.g. `:page_match`)
-      # @return [Strategy, nil]
+      # @param symbol [Symbol, nil] the strategy name in snake case as a
+      #   `Symbol` (e.g. `:page_match`)
+      # @return [Class, nil]
       sig { params(symbol: T.nilable(Symbol)).returns(T.nilable(T.untyped)) }
       def from_symbol(symbol)
         strategies[symbol] if symbol.present?
@@ -116,10 +116,14 @@ module Homebrew
       # Returns an array of strategies that apply to the provided URL.
       #
       # @param url [String] the URL to check for matching strategies
-      # @param livecheck_strategy [Symbol] a {Strategy} symbol from the
+      # @param livecheck_strategy [Symbol] a strategy symbol from the
+      #   `livecheck` block
+      # @param url_provided [Boolean] whether a url is provided in the
       #   `livecheck` block
       # @param regex_provided [Boolean] whether a regex is provided in the
       #   `livecheck` block
+      # @param block_provided [Boolean] whether a `strategy` block is provided
+      #   in the `livecheck` block
       # @return [Array]
       sig {
         params(
@@ -154,6 +158,12 @@ module Homebrew
         end
       end
 
+      # Collects HTTP response headers, starting with the provided URL.
+      # Redirections will be followed and all the response headers are
+      # collected into an array of hashes.
+      #
+      # @param url [String] the URL to fetch
+      # @return [Array]
       sig { params(url: String).returns(T::Array[T::Hash[String, String]]) }
       def self.page_headers(url)
         headers = []

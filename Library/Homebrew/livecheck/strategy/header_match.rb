@@ -9,16 +9,17 @@ module Homebrew
       # The {HeaderMatch} strategy follows all URL redirections and scans
       # the resulting headers for matching text using the provided regex.
       #
+      # This strategy is not applied automatically and it's necessary to use
+      # `strategy :header_match` in a `livecheck` block to apply it.
+      #
       # @api private
       class HeaderMatch
         extend T::Sig
 
         NICE_NAME = "Header match"
 
-        # A priority of zero causes livecheck to skip the strategy. We only
-        # apply {HeaderMatch} using `strategy :header_match` in a `livecheck`
-        # block, as we can't automatically determine when this can be
-        # successfully applied to a URL.
+        # A priority of zero causes livecheck to skip the strategy. We do this
+        # for {HeaderMatch} so we can selectively apply it when appropriate.
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
@@ -28,9 +29,9 @@ module Homebrew
         DEFAULT_HEADERS_TO_CHECK = ["content-disposition", "location"].freeze
 
         # Whether the strategy can be applied to the provided URL.
-        # The strategy will technically match any HTTP URL but is
-        # only usable with a `livecheck` block containing a regex
-        # or block.
+        #
+        # @param url [String] the URL to match against
+        # @return [Boolean]
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
           URL_MATCH_REGEX.match?(url)
@@ -39,7 +40,7 @@ module Homebrew
         # Identify versions from HTTP headers.
         #
         # @param headers [Hash] a hash of HTTP headers to check for versions
-        # @param regex [Regexp, nil] a regex to use to identify versions
+        # @param regex [Regexp, nil] a regex for matching versions
         # @return [Array]
         sig {
           params(
@@ -71,6 +72,10 @@ module Homebrew
 
         # Checks the final URL for new versions after following all redirections,
         # using the provided regex for matching.
+        #
+        # @param url [String] the URL to fetch
+        # @param regex [Regexp, nil] a regex used for matching versions
+        # @return [Hash]
         sig {
           params(
             url:   String,

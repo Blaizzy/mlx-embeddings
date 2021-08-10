@@ -11,9 +11,8 @@ module Homebrew
       # strategies apply to a given URL. Though {PageMatch} will technically
       # match any HTTP URL, the strategy also requires a regex to function.
       #
-      # The {find_versions} method is also used within other
-      # strategies, to handle the process of identifying version text in
-      # content.
+      # The {find_versions} method is also used within other strategies,
+      # to handle the process of identifying version text in content.
       #
       # @api public
       class PageMatch
@@ -22,16 +21,19 @@ module Homebrew
         NICE_NAME = "Page match"
 
         # A priority of zero causes livecheck to skip the strategy. We do this
-        # for PageMatch so we can selectively apply the strategy only when a
-        # regex is provided in a `livecheck` block.
+        # for {PageMatch} so we can selectively apply it only when a regex is
+        # provided in a `livecheck` block.
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
-        # PageMatch will technically match any HTTP URL but is only
+        # {PageMatch} will technically match any HTTP URL but is only
         # usable with a `livecheck` block containing a regex.
+        #
+        # @param url [String] the URL to match against
+        # @return [Boolean]
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
           URL_MATCH_REGEX.match?(url)
@@ -71,8 +73,8 @@ module Homebrew
         # regex for matching.
         #
         # @param url [String] the URL of the content to check
-        # @param regex [Regexp] a regex used for matching versions in content
-        # @param provided_content [String] page content to use in place of
+        # @param regex [Regexp] a regex used for matching versions
+        # @param provided_content [String, nil] page content to use in place of
         #   fetching via Strategy#page_content
         # @return [Hash]
         sig {

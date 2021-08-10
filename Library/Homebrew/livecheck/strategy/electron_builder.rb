@@ -7,6 +7,9 @@ module Homebrew
       # The {ElectronBuilder} strategy fetches content at a URL and parses
       # it as an electron-builder appcast in YAML format.
       #
+      # This strategy is not applied automatically and it's necessary to use
+      # `strategy :electron_builder` in a `livecheck` block to apply it.
+      #
       # @api private
       class ElectronBuilder
         extend T::Sig
@@ -14,8 +17,7 @@ module Homebrew
         NICE_NAME = "electron-builder"
 
         # A priority of zero causes livecheck to skip the strategy. We do this
-        # for {ElectronBuilder} so we can selectively apply the strategy using
-        # `strategy :electron_builder` in a `livecheck` block.
+        # for {ElectronBuilder} so we can selectively apply it when appropriate.
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
@@ -54,10 +56,10 @@ module Homebrew
           version.present? ? [version] : []
         end
 
-        # Checks the content at the URL for new versions.
+        # Checks the YAML content at the URL for new versions.
         #
         # @param url [String] the URL of the content to check
-        # @param regex [Regexp] a regex used for matching versions in content
+        # @param regex [Regexp, nil] a regex used for matching versions
         # @return [Hash]
         sig {
           params(

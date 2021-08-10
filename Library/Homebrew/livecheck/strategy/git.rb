@@ -118,7 +118,7 @@ module Homebrew
         # strings and parses the remaining text as a {Version}.
         #
         # @param url [String] the URL of the Git repository to check
-        # @param regex [Regexp] the regex to use for matching versions
+        # @param regex [Regexp, nil] a regex used for matching versions
         # @return [Hash]
         sig {
           params(
