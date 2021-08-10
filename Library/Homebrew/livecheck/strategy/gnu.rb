@@ -44,6 +44,7 @@ module Homebrew
         #
         # @param url [String] the URL to match against
         # @return [Boolean]
+        sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
           URL_MATCH_REGEX.match?(url) && url.exclude?("savannah.")
         end

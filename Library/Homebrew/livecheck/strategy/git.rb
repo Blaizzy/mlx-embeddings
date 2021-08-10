@@ -50,6 +50,7 @@ module Homebrew
         # @param url [String] the URL of the Git repository to check
         # @param regex [Regexp] the regex to use for filtering tags
         # @return [Hash]
+        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
         def self.tag_info(url, regex = nil)
           # Open3#capture3 is used here because we need to capture stderr
           # output and handle it in an appropriate manner. Alternatives like

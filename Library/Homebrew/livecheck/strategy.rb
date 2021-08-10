@@ -86,6 +86,7 @@ module Homebrew
       # At present, this should only be called after tap strategies have been
       # loaded, otherwise livecheck won't be able to use them.
       # @return [Hash]
+      sig { returns(T::Hash[Symbol, T.untyped]) }
       def strategies
         return @strategies if defined? @strategies
 
@@ -107,8 +108,9 @@ module Homebrew
       # @param symbol [Symbol] the strategy name in snake case as a `Symbol`
       #   (e.g. `:page_match`)
       # @return [Strategy, nil]
+      sig { params(symbol: T.nilable(Symbol)).returns(T.nilable(T.untyped)) }
       def from_symbol(symbol)
-        strategies[symbol]
+        strategies[symbol] if symbol.present?
       end
 
       # Returns an array of strategies that apply to the provided URL.
@@ -119,7 +121,16 @@ module Homebrew
       # @param regex_provided [Boolean] whether a regex is provided in the
       #   `livecheck` block
       # @return [Array]
-      def from_url(url, livecheck_strategy: nil, url_provided: nil, regex_provided: nil, block_provided: nil)
+      sig {
+        params(
+          url:                String,
+          livecheck_strategy: T.nilable(Symbol),
+          url_provided:       T::Boolean,
+          regex_provided:     T::Boolean,
+          block_provided:     T::Boolean,
+        ).returns(T::Array[T.untyped])
+      }
+      def from_url(url, livecheck_strategy: nil, url_provided: false, regex_provided: false, block_provided: false)
         usable_strategies = strategies.values.select do |strategy|
           if strategy == PageMatch
             # Only treat the `PageMatch` strategy as usable if a regex is
@@ -143,6 +154,7 @@ module Homebrew
         end
       end
 
+      sig { params(url: String).returns(T::Array[T::Hash[String, String]]) }
       def self.page_headers(url)
         headers = []
 
