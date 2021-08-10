@@ -6,8 +6,8 @@ require "livecheck/strategy"
 describe Homebrew::Livecheck::Strategy::ElectronBuilder do
   subject(:electron_builder) { described_class }
 
-  let(:valid_url) { "https://www.example.com/example/latest-mac.yml" }
-  let(:invalid_url) { "https://brew.sh/test" }
+  let(:yaml_url) { "https://www.example.com/example/latest-mac.yml" }
+  let(:non_yaml_url) { "https://brew.sh/test" }
 
   let(:electron_builder_yaml) {
     <<~EOS
@@ -29,12 +29,12 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
   let(:versions) { ["1.2.3"] }
 
   describe "::match?" do
-    it "returns true for any URL pointing to a YAML file" do
-      expect(electron_builder.match?(valid_url)).to be true
+    it "returns true for a YAML file URL" do
+      expect(electron_builder.match?(yaml_url)).to be true
     end
 
-    it "returns false for a URL not pointing to a YAML file" do
-      expect(electron_builder.match?(invalid_url)).to be false
+    it "returns false for non-YAML URL" do
+      expect(electron_builder.match?(non_yaml_url)).to be false
     end
   end
 

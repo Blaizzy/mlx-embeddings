@@ -11,15 +11,15 @@ describe Homebrew::Livecheck::Strategy::Gnu do
   let(:non_gnu_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a non-Savannah GNU URL" do
+    it "returns true for a [non-Savannah] GNU URL" do
       expect(gnu.match?(gnu_url)).to be true
     end
 
-    it "returns false if the argument provided is a Savannah GNU URL" do
+    it "returns false for a Savannah GNU URL" do
       expect(gnu.match?(savannah_gnu_url)).to be false
     end
 
-    it "returns false if the argument provided is not a GNU URL" do
+    it "returns false for a non-GNU URL (not nongnu.org)" do
       expect(gnu.match?(non_gnu_url)).to be false
     end
   end

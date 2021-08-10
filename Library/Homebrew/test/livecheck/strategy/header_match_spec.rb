@@ -6,7 +6,8 @@ require "livecheck/strategy"
 describe Homebrew::Livecheck::Strategy::HeaderMatch do
   subject(:header_match) { described_class }
 
-  let(:url) { "https://www.example.com/" }
+  let(:http_url) { "https://brew.sh/blog/" }
+  let(:non_http_url) { "ftp://brew.sh/" }
 
   let(:versions) {
     versions = {
@@ -47,8 +48,12 @@ describe Homebrew::Livecheck::Strategy::HeaderMatch do
   }
 
   describe "::match?" do
-    it "returns true for any URL" do
-      expect(header_match.match?(url)).to be true
+    it "returns true for an HTTP URL" do
+      expect(header_match.match?(http_url)).to be true
+    end
+
+    it "returns false for a non-HTTP URL" do
+      expect(header_match.match?(non_http_url)).to be false
     end
   end
 

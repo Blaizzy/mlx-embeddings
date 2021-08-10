@@ -10,11 +10,11 @@ describe Homebrew::Livecheck::Strategy::Launchpad do
   let(:non_launchpad_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a Launchpad URL" do
+    it "returns true for a Launchpad URL" do
       expect(launchpad.match?(launchpad_url)).to be true
     end
 
-    it "returns false if the argument provided is not a Launchpad URL" do
+    it "returns false for a non-Launchpad URL" do
       expect(launchpad.match?(non_launchpad_url)).to be false
     end
   end

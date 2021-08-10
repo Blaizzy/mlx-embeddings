@@ -7,7 +7,8 @@ require "bundle_version"
 describe Homebrew::Livecheck::Strategy::Sparkle do
   subject(:sparkle) { described_class }
 
-  let(:url) { "https://www.example.com/example/appcast.xml" }
+  let(:appcast_url) { "https://www.example.com/example/appcast.xml" }
+  let(:non_http_url) { "ftp://brew.sh/" }
 
   let(:appcast_data) {
     {
@@ -25,7 +26,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
       <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
         <channel>
           <title>Example Changelog</title>
-          <link>#{url}</link>
+          <link>#{appcast_url}</link>
           <description>Most recent changes with links to updates.</description>
           <language>en</language>
           <item>
@@ -52,8 +53,12 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   let(:versions) { [item.bundle_version.nice_version] }
 
   describe "::match?" do
-    it "returns true for any URL" do
-      expect(sparkle.match?(url)).to be true
+    it "returns true for an HTTP URL" do
+      expect(sparkle.match?(appcast_url)).to be true
+    end
+
+    it "returns false for a non-HTTP URL" do
+      expect(sparkle.match?(non_http_url)).to be false
     end
   end
 

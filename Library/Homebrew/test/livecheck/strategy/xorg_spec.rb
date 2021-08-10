@@ -10,11 +10,11 @@ describe Homebrew::Livecheck::Strategy::Xorg do
   let(:non_xorg_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is an X.Org URL" do
+    it "returns true for an X.Org URL" do
       expect(xorg.match?(xorg_url)).to be true
     end
 
-    it "returns false if the argument provided is not an X.Org URL" do
+    it "returns false for a non-X.Org URL" do
       expect(xorg.match?(non_xorg_url)).to be false
     end
   end

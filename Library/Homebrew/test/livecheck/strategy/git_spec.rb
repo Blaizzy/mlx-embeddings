@@ -39,11 +39,11 @@ describe Homebrew::Livecheck::Strategy::Git do
   end
 
   describe "::match?" do
-    it "returns true if the argument provided is a Git repository" do
+    it "returns true for a Git repository URL" do
       expect(git.match?(git_url)).to be true
     end
 
-    it "returns false if the argument provided is not a Git repository" do
+    it "returns false for a non-Git URL" do
       expect(git.match?(non_git_url)).to be false
     end
   end

@@ -10,11 +10,11 @@ describe Homebrew::Livecheck::Strategy::Apache do
   let(:non_apache_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is an Apache URL" do
+    it "returns true for an Apache URL" do
       expect(apache.match?(apache_url)).to be true
     end
 
-    it "returns false if the argument provided is not an Apache URL" do
+    it "returns false for a non-Apache URL" do
       expect(apache.match?(non_apache_url)).to be false
     end
   end

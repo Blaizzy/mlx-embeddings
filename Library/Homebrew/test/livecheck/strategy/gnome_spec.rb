@@ -10,11 +10,11 @@ describe Homebrew::Livecheck::Strategy::Gnome do
   let(:non_gnome_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a GNOME URL" do
+    it "returns true for a GNOME URL" do
       expect(gnome.match?(gnome_url)).to be true
     end
 
-    it "returns false if the argument provided is not a GNOME URL" do
+    it "returns false for a non-GNOME URL" do
       expect(gnome.match?(non_gnome_url)).to be false
     end
   end

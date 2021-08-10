@@ -6,7 +6,9 @@ require "livecheck/strategy"
 describe Homebrew::Livecheck::Strategy::PageMatch do
   subject(:page_match) { described_class }
 
-  let(:url) { "https://brew.sh/blog/" }
+  let(:http_url) { "https://brew.sh/blog/" }
+  let(:non_http_url) { "ftp://brew.sh/" }
+
   let(:regex) { %r{href=.*?/homebrew[._-]v?(\d+(?:\.\d+)+)/?["' >]}i }
 
   let(:content) {
@@ -50,7 +52,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
         "1.9.0" => Version.new("1.9.0"),
       },
       regex:   regex,
-      url:     url,
+      url:     http_url,
     }
   }
 
@@ -61,8 +63,12 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
   }
 
   describe "::match?" do
-    it "returns true for any URL" do
-      expect(page_match.match?(url)).to be true
+    it "returns true for an HTTP URL" do
+      expect(page_match.match?(http_url)).to be true
+    end
+
+    it "returns false for a non-HTTP URL" do
+      expect(page_match.match?(non_http_url)).to be false
     end
   end
 
@@ -100,7 +106,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
 
   describe "::find_versions?" do
     it "finds versions in provided_content" do
-      expect(page_match.find_versions(url, regex, provided_content: content))
+      expect(page_match.find_versions(http_url, regex, provided_content: content))
         .to eq(find_versions_cached_return_hash)
     end
   end
