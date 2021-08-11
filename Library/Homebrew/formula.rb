@@ -1480,7 +1480,7 @@ class Formula
   end
 
   # Standard parameters for cargo builds.
-  sig { params(root: String, path: String).returns(T::Array[T.any(String, Pathname)]) }
+  sig { params(root: T.any(String, Pathname), path: String).returns(T::Array[T.any(String, Pathname)]) }
   def std_cargo_args(root: prefix, path: ".")
     ["--locked", "--root", root, "--path", path]
   end
@@ -1490,13 +1490,19 @@ class Formula
   # Setting `CMAKE_FIND_FRAMEWORK` to "LAST" tells CMake to search for our
   # libraries before trying to utilize Frameworks, many of which will be from
   # 3rd party installs.
-  sig { returns(T::Array[String]) }
-  def std_cmake_args
+  sig {
+    params(
+      install_prefix: T.any(String, Pathname),
+      install_libdir: String,
+      find_framework: String,
+    ).returns(T::Array[String])
+  }
+  def std_cmake_args(install_prefix: prefix, install_libdir: "lib", find_framework: "LAST")
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{prefix}
-      -DCMAKE_INSTALL_LIBDIR=lib
+      -DCMAKE_INSTALL_PREFIX=#{install_prefix}
+      -DCMAKE_INSTALL_LIBDIR=#{install_libdir}
       -DCMAKE_BUILD_TYPE=Release
-      -DCMAKE_FIND_FRAMEWORK=LAST
+      -DCMAKE_FIND_FRAMEWORK=#{find_framework}
       -DCMAKE_VERBOSE_MAKEFILE=ON
       -Wno-dev
       -DBUILD_TESTING=OFF
