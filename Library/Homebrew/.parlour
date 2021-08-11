@@ -1,0 +1,10 @@
+parser: false
+
+output_file:
+  rbi: sorbet/rbi/parlour.rbi
+
+relative_requires:
+  - sorbet/parlour.rb
+
+plugins:
+  Attr: {}

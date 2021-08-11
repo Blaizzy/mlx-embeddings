@@ -24,6 +24,7 @@ gem "simplecov-cobertura", require: false
 gem "warning", require: false
 
 group :sorbet, optional: true do
+  gem "parlour", require: false
   gem "rspec-sorbet", require: false
   gem "sorbet", require: false
   gem "sorbet-runtime", require: false

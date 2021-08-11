@@ -68,7 +68,7 @@ module Homebrew
 
       def build_from_source_formulae
         if build_from_source? || self[:HEAD?] || self[:build_bottle?]
-          named.to_formulae_and_casks.select { |f| f.is_a?(Formula) }.map(&:full_name)
+          named.to_formulae.map(&:full_name)
         else
           []
         end
