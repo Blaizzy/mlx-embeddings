@@ -1414,8 +1414,6 @@ Run Homebrew's unit and integration tests.
 
 Check for typechecking errors using Sorbet.
 
-Not (yet) working on Apple Silicon.
-
 * `--fix`:
   Automatically fix type errors.
 * `-q`, `--quiet`:
