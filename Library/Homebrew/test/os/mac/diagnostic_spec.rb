@@ -47,6 +47,8 @@ describe Homebrew::Diagnostic::Checks do
     before do
       allow(DevelopmentTools).to receive(:installed?).and_return(true)
       allow(OS::Mac).to receive(:version).and_return(macos_version)
+      allow(OS::Mac::CLT).to receive(:below_minimum_version?).and_return(false)
+      allow(OS::Mac::Xcode).to receive(:below_minimum_version?).and_return(false)
     end
 
     it "doesn't trigger when SDK root is not needed" do
