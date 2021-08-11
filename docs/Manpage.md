@@ -465,7 +465,11 @@ information is displayed in interactive shells, and suppressed otherwise.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
-  Print outdated casks with `auto_updates` or `version :latest`.
+  Print outdated casks with `auto_updates true` or `version :latest`.
+* `--greedy-latest`:
+  Print outdated casks including those with `version :latest`.
+* `--greedy-auto-updates`:
+  Print outdated casks including those with `auto_updates true`.
 
 ### `pin` *`installed_formula`* [...]
 
@@ -565,6 +569,7 @@ The search for *`text`* is extended online to `homebrew/core` and `homebrew/cask
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
+The variable `HOMEBREW_SHELLENV_PREFIX` will be exported to avoid adding duplicate entries to the environment variables.
 Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 ### `tap` [*`options`*] [*`user`*`/`*`repo`*] [*`URL`*]
@@ -703,6 +708,10 @@ upgraded formulae or, every 30 days, for all formulae.
   Skip installing cask dependencies.
 * `--greedy`:
   Also include casks with `auto_updates true` or `version :latest`.
+* `--greedy-latest`:
+  Also include casks with `version :latest`.
+* `--greedy-auto-updates`:
+  Also include casks with `auto_updates true`.
 
 ### `uses` [*`options`*] *`formula`* [...]
 
@@ -1980,6 +1989,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_GITHUB_PACKAGES_TOKEN`
   <br>Use this GitHub personal access token when accessing the GitHub Packages Registry (where bottles may be stored).
+
+- `HOMEBREW_DOCKER_REGISTRY_TOKEN`
+  <br>Use this bearer token for authenticating with a Docker registry proxying GitHub Packages.
 
 - `HOMEBREW_GITHUB_PACKAGES_USER`
   <br>Use this username when accessing the GitHub Packages Registry (where bottles may be stored).

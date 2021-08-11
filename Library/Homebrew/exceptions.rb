@@ -561,7 +561,7 @@ class BuildFlagsError < RuntimeError
       The following #{flag_text}:
         #{flags.join(", ")}
       #{require_text} building tools, but none are installed.
-      #{DevelopmentTools.installation_instructions}#{bottle_text}
+      #{DevelopmentTools.installation_instructions} #{bottle_text}
     EOS
 
     super message

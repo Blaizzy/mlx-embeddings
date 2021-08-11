@@ -15,7 +15,7 @@ class GitHubPackages
   URL_DOMAIN = "ghcr.io"
   URL_PREFIX = "https://#{URL_DOMAIN}/v2/"
   DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
-  private_constant :URL_DOMAIN
+  public_constant :URL_DOMAIN
   private_constant :URL_PREFIX
   private_constant :DOCKER_PREFIX
 

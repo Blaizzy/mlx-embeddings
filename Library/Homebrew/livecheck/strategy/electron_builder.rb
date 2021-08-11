@@ -19,7 +19,7 @@ module Homebrew
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{^https?://.+/.+\.ya?ml$}i.freeze
+        URL_MATCH_REGEX = %r{^https?://.+/[^/]+\.ya?ml(?:\?[^/?]+)?$}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -37,19 +37,24 @@ module Homebrew
         sig {
           params(
             content: String,
-            block:   T.nilable(T.proc.params(arg0: Hash).returns(String)),
+            block:   T.nilable(T.proc.params(arg0: T::Hash[String, T.untyped]).returns(T.nilable(String))),
           ).returns(T.nilable(String))
         }
         def self.version_from_content(content, &block)
           require "yaml"
 
-          return unless (yaml = YAML.safe_load(content))
+          yaml = YAML.safe_load(content)
+          return if yaml.blank?
 
           if block
-            value = block.call(yaml)
-            return value if value.is_a?(String)
-
-            raise TypeError, "Return value of `strategy :electron_builder` block must be a string."
+            case (value = block.call(yaml))
+            when String
+              return value
+            when nil
+              return
+            else
+              raise TypeError, "Return value of `strategy :electron_builder` block must be a string."
+            end
           end
 
           yaml["version"]
@@ -65,7 +70,7 @@ module Homebrew
             url:   String,
             regex: T.nilable(Regexp),
             cask:  T.nilable(Cask::Cask),
-            block: T.nilable(T.proc.params(arg0: Hash).returns(String)),
+            block: T.nilable(T.proc.params(arg0: T::Hash[String, T.untyped]).returns(T.nilable(String))),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask: nil, &block)

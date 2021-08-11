@@ -12,7 +12,7 @@ require "cask/cmd"
 require "cask/utils"
 require "cask/macos"
 require "upgrade"
-require "bottle_api"
+require "api"
 
 module Homebrew
   extend T::Sig
@@ -90,9 +90,9 @@ module Homebrew
         formula = Formulary.factory(name)
         next unless formula.any_version_installed?
         next if formula.tap.present? && !formula.core_formula?
-        next unless BottleAPI.bottle_available?(name)
+        next unless Homebrew::API::Bottle.available?(name)
 
-        BottleAPI.fetch_bottles(name)
+        Homebrew::API::Bottle.fetch_bottles(name)
       rescue FormulaUnavailableError
         next
       end

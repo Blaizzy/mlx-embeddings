@@ -67,7 +67,9 @@ module Homebrew
             url:   String,
             regex: T.nilable(Regexp),
             cask:  T.nilable(Cask::Cask),
-            block: T.nilable(T.proc.params(arg0: String).returns(T.any(T::Array[String], String))),
+            block: T.nilable(
+              T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
+            ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask: nil, &block)

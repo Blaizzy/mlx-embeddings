@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "delegate"
-require "bottle_api"
+require "api"
 require "cli/args"
 
 module Homebrew
@@ -94,8 +94,9 @@ module Homebrew
         unreadable_error = nil
 
         if only != :cask
-          if prefer_loading_from_json && ENV["HOMEBREW_JSON_CORE"].present? && BottleAPI.bottle_available?(name)
-            BottleAPI.fetch_bottles(name)
+          if prefer_loading_from_json && ENV["HOMEBREW_JSON_CORE"].present? &&
+             Homebrew::API::Bottle.available?(name)
+            Homebrew::API::Bottle.fetch_bottles(name)
           end
 
           begin
@@ -324,7 +325,11 @@ module Homebrew
         # Return keg if it is the only installed keg
         return kegs if kegs.length == 1
 
-        kegs.reject { |k| k.version.head? }.max_by(&:version)
+        stable_kegs = kegs.reject { |k| k.version.head? }
+
+        return kegs.max_by { |keg| Tab.for_keg(keg).source_modified_time } if stable_kegs.blank?
+
+        stable_kegs.max_by(&:version)
       end
 
       def resolve_default_keg(name)

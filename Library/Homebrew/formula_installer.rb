@@ -754,10 +754,10 @@ class FormulaInstaller
 
     ohai "Finishing up" if verbose?
 
-    install_service
-
     keg = Keg.new(formula.prefix)
     link(keg)
+
+    install_service
 
     fix_dynamic_linkage(keg) if !@poured_bottle || !formula.bottle_specification.skip_relocation?
 

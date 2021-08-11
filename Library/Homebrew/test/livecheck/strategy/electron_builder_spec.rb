@@ -54,5 +54,14 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
 
       expect(version).to eq "1.2.4"
     end
+
+    it "allows a nil return from a strategy block" do
+      expect(electron_builder.version_from_content(electron_builder_yaml) { next }).to eq(nil)
+    end
+
+    it "errors on an invalid return type from a strategy block" do
+      expect { electron_builder.version_from_content(electron_builder_yaml) { 123 } }
+        .to raise_error(TypeError, "Return value of `strategy :electron_builder` block must be a string.")
+    end
   end
 end

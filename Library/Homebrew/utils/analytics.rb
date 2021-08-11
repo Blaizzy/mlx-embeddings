@@ -4,6 +4,7 @@
 require "context"
 require "erb"
 require "settings"
+require "api"
 
 module Utils
   # Helper module for fetching and reporting analytics data.
@@ -129,7 +130,12 @@ module Utils
       def output(args:, filter: nil)
         days = args.days || "30"
         category = args.category || "install"
-        json = formulae_brew_sh_json("analytics/#{category}/#{days}d.json")
+        begin
+          json = Homebrew::API::Analytics.fetch category, days
+        rescue ArgumentError
+          # Ignore failed API requests
+          return
+        end
         return if json.blank? || json["items"].blank?
 
         os_version = category == "os-version"
@@ -182,17 +188,27 @@ module Utils
       end
 
       def formula_output(f, args:)
-        json = formulae_brew_sh_json("#{formula_path}/#{f}.json")
+        return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
+
+        json = Homebrew::API::Formula.fetch f.name
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json, args: args)
+      rescue ArgumentError
+        # Ignore failed API requests
+        nil
       end
 
       def cask_output(cask, args:)
-        json = formulae_brew_sh_json("#{cask_path}/#{cask}.json")
+        return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
+
+        json = Homebrew::API::Cask.fetch cask.token
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json, args: args)
+      rescue ArgumentError
+        # Ignore failed API requests
+        nil
       end
 
       sig { returns(String) }
@@ -317,41 +333,12 @@ module Utils
         Homebrew::Settings.read(key) == "true"
       end
 
-      def formulae_brew_sh_json(endpoint)
-        return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
-
-        output, = curl_output("--max-time", "5",
-                              "https://formulae.brew.sh/api/#{endpoint}")
-        return if output.blank?
-
-        JSON.parse(output)
-      rescue JSON::ParserError
-        nil
-      end
-
       def format_count(count)
         count.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
       end
 
       def format_percent(percent)
         format("%<percent>.2f", percent: percent)
-      end
-
-      sig { returns(String) }
-      def formula_path
-        "formula"
-      end
-      alias generic_formula_path formula_path
-
-      sig { returns(String) }
-      def analytics_path
-        "analytics"
-      end
-      alias generic_analytics_path analytics_path
-
-      sig { returns(String) }
-      def cask_path
-        "cask"
       end
     end
   end

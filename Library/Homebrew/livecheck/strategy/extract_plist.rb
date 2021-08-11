@@ -56,7 +56,7 @@ module Homebrew
             url:   String,
             regex: T.nilable(Regexp),
             cask:  Cask::Cask,
-            block: T.nilable(T.proc.params(arg0: T::Hash[String, Item]).returns(String)),
+            block: T.nilable(T.proc.params(arg0: T::Hash[String, Item]).returns(T.nilable(String))),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url, regex, cask:, &block)
@@ -69,13 +69,14 @@ module Homebrew
           versions = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
 
           if block
-            match = block.call(versions)
-
-            unless T.unsafe(match).is_a?(String)
+            case (value = block.call(versions))
+            when String
+              match_data[:matches][value] = Version.new(value)
+            when nil
+              return match_data
+            else
               raise TypeError, "Return value of `strategy :extract_plist` block must be a string."
             end
-
-            match_data[:matches][match] = Version.new(match) if match
           elsif versions.any?
             versions.each_value do |item|
               version = item.bundle_version.nice_version

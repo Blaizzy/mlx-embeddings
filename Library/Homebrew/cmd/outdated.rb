@@ -6,7 +6,7 @@ require "keg"
 require "cli/parser"
 require "cask/cmd"
 require "cask/caskroom"
-require "bottle_api"
+require "api"
 
 module Homebrew
   extend T::Sig
@@ -37,7 +37,13 @@ module Homebrew
                           "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                           "updates when a new stable or development version has been released."
       switch "--greedy",
-             description: "Print outdated casks with `auto_updates` or `version :latest`."
+             description: "Print outdated casks with `auto_updates true` or `version :latest`."
+
+      switch "--greedy-latest",
+             description: "Print outdated casks including those with `version :latest`."
+
+      switch "--greedy-auto-updates",
+             description: "Print outdated casks including those with `auto_updates true`."
 
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
@@ -93,7 +99,7 @@ module Homebrew
           outdated_kegs = f.outdated_kegs(fetch_head: args.fetch_HEAD?)
 
           current_version = if ENV["HOMEBREW_JSON_CORE"].present? && (f.core_formula? || f.tap.blank?)
-            BottleAPI.latest_pkg_version(f.name)&.to_s || f.pkg_version.to_s
+            Homebrew::API::Versions.latest_formula_version(f.name)&.to_s || f.pkg_version.to_s
           elsif f.alias_changed? && !f.latest_formula.latest_version_installed?
             latest = f.latest_formula
             "#{latest.name} (#{latest.pkg_version})"
@@ -119,7 +125,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        puts c.outdated_info(args.greedy?, verbose?, false)
+        puts c.outdated_info(args.greedy?, verbose?, false, args.greedy_latest?, args.greedy_auto_updates?)
       end
     end
   end
@@ -144,7 +150,7 @@ module Homebrew
       else
         c = formula_or_cask
 
-        c.outdated_info(args.greedy?, verbose?, true)
+        c.outdated_info(args.greedy?, verbose?, true, args.greedy_latest?, args.greedy_auto_updates?)
       end
     end
   end
@@ -194,7 +200,8 @@ module Homebrew
       if formula_or_cask.is_a?(Formula)
         formula_or_cask.outdated?(fetch_head: args.fetch_HEAD?)
       else
-        formula_or_cask.outdated?(greedy: args.greedy?)
+        formula_or_cask.outdated?(greedy: args.greedy?, greedy_latest: args.greedy_latest?,
+                                  greedy_auto_updates: args.greedy_auto_updates?)
       end
     end
   end

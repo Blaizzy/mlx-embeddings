@@ -29,7 +29,7 @@ require "mktemp"
 require "find"
 require "utils/spdx"
 require "extend/on_os"
-require "bottle_api"
+require "api"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
@@ -520,7 +520,8 @@ class Formula
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present? && (latest_pkg_version = BottleAPI.latest_pkg_version(name))
+    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present? &&
+                       (latest_pkg_version = Homebrew::API::Versions.latest_formula_version(name))
       prefix latest_pkg_version
     else
       latest_installed_prefix
@@ -986,13 +987,13 @@ class Formula
   # The generated launchd {.plist} file path.
   sig { returns(Pathname) }
   def plist_path
-    prefix/"#{plist_name}.plist"
+    opt_prefix/"#{plist_name}.plist"
   end
 
   # The generated systemd {.service} file path.
   sig { returns(Pathname) }
   def systemd_service_path
-    prefix/"#{service_name}.service"
+    opt_prefix/"#{service_name}.service"
   end
 
   # The service specification of the software.
@@ -1340,7 +1341,7 @@ class Formula
       all_kegs = []
       current_version = T.let(false, T::Boolean)
       latest_version = if ENV["HOMEBREW_JSON_CORE"].present? && (core_formula? || tap.blank?)
-        BottleAPI.latest_pkg_version(name) || pkg_version
+        Homebrew::API::Versions.latest_formula_version(name) || pkg_version
       else
         pkg_version
       end
@@ -1479,7 +1480,7 @@ class Formula
   end
 
   # Standard parameters for cargo builds.
-  sig { params(root: String, path: String).returns(T::Array[T.any(String, Pathname)]) }
+  sig { params(root: T.any(String, Pathname), path: String).returns(T::Array[T.any(String, Pathname)]) }
   def std_cargo_args(root: prefix, path: ".")
     ["--locked", "--root", root, "--path", path]
   end
@@ -1489,13 +1490,19 @@ class Formula
   # Setting `CMAKE_FIND_FRAMEWORK` to "LAST" tells CMake to search for our
   # libraries before trying to utilize Frameworks, many of which will be from
   # 3rd party installs.
-  sig { returns(T::Array[String]) }
-  def std_cmake_args
+  sig {
+    params(
+      install_prefix: T.any(String, Pathname),
+      install_libdir: String,
+      find_framework: String,
+    ).returns(T::Array[String])
+  }
+  def std_cmake_args(install_prefix: prefix, install_libdir: "lib", find_framework: "LAST")
     args = %W[
-      -DCMAKE_INSTALL_PREFIX=#{prefix}
-      -DCMAKE_INSTALL_LIBDIR=lib
+      -DCMAKE_INSTALL_PREFIX=#{install_prefix}
+      -DCMAKE_INSTALL_LIBDIR=#{install_libdir}
       -DCMAKE_BUILD_TYPE=Release
-      -DCMAKE_FIND_FRAMEWORK=LAST
+      -DCMAKE_FIND_FRAMEWORK=#{find_framework}
       -DCMAKE_VERBOSE_MAKEFILE=ON
       -Wno-dev
       -DBUILD_TESTING=OFF
