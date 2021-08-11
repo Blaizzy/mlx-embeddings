@@ -338,9 +338,12 @@ module FormulaCellarChecks
     end
     return if mismatches.empty? && universal_binaries_expected
 
+    mismatches_expected = formula.tap.blank? || tap_audit_exception(:mismatched_binary_allowlist, formula.name)
+    return if compatible_universal_binaries.empty? && mismatches_expected
+
     s = ""
 
-    if mismatches.present?
+    if mismatches.present? && !mismatches_expected
       s += <<~EOS
         Binaries built for a non-native architecture were installed into #{formula}'s prefix.
         The offending files are:
