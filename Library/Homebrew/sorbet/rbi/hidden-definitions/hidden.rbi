@@ -30665,6 +30665,7 @@ end
 
 module Spoom::Cli::Helper
   extend ::T::Sig
+  extend ::T::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end

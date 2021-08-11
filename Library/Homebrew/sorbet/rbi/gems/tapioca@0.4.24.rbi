@@ -1615,7 +1615,7 @@ class Tapioca::RBI::Rewriters::SortNodes < ::Tapioca::RBI::Visitor
   private
 
   sig { params(kind: Tapioca::RBI::Group::Kind).returns(Integer) }
-  def kind_rank(kind); end
+  def group_rank(kind); end
 
   sig { params(node: Tapioca::RBI::Node).returns(T.nilable(String)) }
   def node_name(node); end
