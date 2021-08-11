@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 if ENV["HOMEBREW_STACKPROF"]
-  require_relative "utils/gems"
-  Homebrew.setup_gem_environment!
   require "stackprof"
   StackProf.start(mode: :wall, raw: true)
 end
