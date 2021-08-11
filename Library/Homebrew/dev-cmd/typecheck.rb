@@ -104,8 +104,9 @@ module Homebrew
 
       srb_exec = %w[bundle exec srb tc]
 
-      # TODO: comment explaining why?
-      srb_exec << "--suppress-error-code" << "5061"
+      # As-of Sorbet 0.5.9030 there's a lot of complaints about superclass/class
+      # relationships in RSpec (that we don't control)
+      srb_exec << "--suppress-error-code" << "5067"
 
       srb_exec << "--quiet" if args.quiet?
 
