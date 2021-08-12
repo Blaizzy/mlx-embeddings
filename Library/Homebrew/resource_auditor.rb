@@ -127,7 +127,7 @@ module Homebrew
     def audit_head_branch
       return unless @online
       return unless @strict
-      return unless spec_name == :head
+      return if spec_name != :head
       return unless Utils::Git.remote_exists?(url)
 
       branch = Utils.popen_read("git", "ls-remote", "--symref", url, "HEAD")
