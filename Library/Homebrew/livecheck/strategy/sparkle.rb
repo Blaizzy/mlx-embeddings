@@ -9,23 +9,24 @@ module Homebrew
       # The {Sparkle} strategy fetches content at a URL and parses
       # it as a Sparkle appcast in XML format.
       #
+      # This strategy is not applied automatically and it's necessary to use
+      # `strategy :sparkle` in a `livecheck` block to apply it.
+      #
       # @api private
       class Sparkle
         extend T::Sig
 
-        # A priority of zero causes livecheck to skip the strategy. We only
-        # apply {Sparkle} using `strategy :sparkle` in a `livecheck` block,
-        # as we can't automatically determine when this can be successfully
-        # applied to a URL without fetching the content.
+        # A priority of zero causes livecheck to skip the strategy. We do this
+        # for {Sparkle} so we can selectively apply it when appropriate.
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
-        # The strategy will technically match any HTTP URL but is
-        # only usable with a `livecheck` block containing a regex
-        # or block.
+        #
+        # @param url [String] the URL to match against
+        # @return [Boolean]
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
           URL_MATCH_REGEX.match?(url)
@@ -54,6 +55,10 @@ module Homebrew
           delegate short_version: :bundle_version
         end
 
+        # Identify version information from a Sparkle appcast.
+        #
+        # @param content [String] the text of the Sparkle appcast
+        # @return [Item, nil]
         sig { params(content: String).returns(T.nilable(Item)) }
         def self.item_from_content(content)
           require "rexml/document"
@@ -138,6 +143,26 @@ module Homebrew
           items.max_by { |item| [item.pub_date, item.bundle_version] }
         end
 
+        # Identify versions from content
+        #
+        # @param content [String] the content to pull version information from
+        # @return [Array]
+        sig {
+          params(
+            content: String,
+            block:   T.nilable(T.proc.params(arg0: Item).returns(T.any(String, T::Array[String], NilClass))),
+          ).returns(T::Array[String])
+        }
+        def self.versions_from_content(content, &block)
+          item = item_from_content(content)
+          return [] if item.blank?
+
+          return Strategy.handle_block_return(block.call(item)) if block
+
+          version = item.bundle_version&.nice_version
+          version.present? ? [version] : []
+        end
+
         # Checks the content at the URL for new versions.
         sig {
           params(
@@ -155,21 +180,8 @@ module Homebrew
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)
 
-          if (item = item_from_content(content))
-            version = if block
-              case (value = block.call(item))
-              when String
-                value
-              when nil
-                return match_data
-              else
-                raise TypeError, "Return value of `strategy :sparkle` block must be a string."
-              end
-            else
-              item.bundle_version&.nice_version
-            end
-
-            match_data[:matches][version] = Version.new(version) if version
+          versions_from_content(content, &block).each do |version_text|
+            match_data[:matches][version_text] = Version.new(version_text)
           end
 
           match_data

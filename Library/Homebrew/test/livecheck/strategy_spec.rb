@@ -30,4 +30,20 @@ describe Homebrew::Livecheck::Strategy do
       end
     end
   end
+
+  describe "::handle_block_return" do
+    it "returns an array of version strings when given a valid value" do
+      expect(strategy.handle_block_return("1.2.3")).to eq(["1.2.3"])
+      expect(strategy.handle_block_return(["1.2.3", "1.2.4"])).to eq(["1.2.3", "1.2.4"])
+    end
+
+    it "returns an empty array when given a nil value" do
+      expect(strategy.handle_block_return(nil)).to eq([])
+    end
+
+    it "errors when given an invalid value" do
+      expect { strategy.handle_block_return(123) }
+        .to raise_error(TypeError, strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
+    end
+  end
 end

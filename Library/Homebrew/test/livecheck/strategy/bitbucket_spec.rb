@@ -10,11 +10,11 @@ describe Homebrew::Livecheck::Strategy::Bitbucket do
   let(:non_bitbucket_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a Bitbucket URL" do
+    it "returns true for a Bitbucket URL" do
       expect(bitbucket.match?(bitbucket_url)).to be true
     end
 
-    it "returns false if the argument provided is not a Bitbucket URL" do
+    it "returns false for a non-Bitbucket URL" do
       expect(bitbucket.match?(non_bitbucket_url)).to be false
     end
   end

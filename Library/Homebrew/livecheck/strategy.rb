@@ -14,7 +14,7 @@ module Homebrew
 
       module_function
 
-      # Strategy priorities informally range from 1 to 10, where 10 is the
+      # {Strategy} priorities informally range from 1 to 10, where 10 is the
       # highest priority. 5 is the default priority because it's roughly in
       # the middle of this range. Strategies with a priority of 0 (or lower)
       # are ignored.
@@ -32,10 +32,10 @@ module Homebrew
       # The `curl` process will sometimes hang indefinitely (despite setting
       # the `--max-time` argument) and it needs to be quit for livecheck to
       # continue. This value is used to set the `timeout` argument on
-      # `Utils::Curl` method calls in `Strategy`.
+      # `Utils::Curl` method calls in {Strategy}.
       CURL_PROCESS_TIMEOUT = CURL_MAX_TIME + 5
 
-      # Baseline `curl` arguments used in `Strategy` methods.
+      # Baseline `curl` arguments used in {Strategy} methods.
       DEFAULT_CURL_ARGS = [
         # Follow redirections to handle mirrors, relocations, etc.
         "--location",
@@ -60,7 +60,7 @@ module Homebrew
         "--include",
       ] + DEFAULT_CURL_ARGS).freeze
 
-      # Baseline `curl` options used in `Strategy` methods.
+      # Baseline `curl` options used in {Strategy} methods.
       DEFAULT_CURL_OPTIONS = {
         print_stdout: false,
         print_stderr: false,
@@ -75,52 +75,66 @@ module Homebrew
       # In rare cases, this can also be a double newline (`\n\n`).
       HTTP_HEAD_BODY_SEPARATOR = "\r\n\r\n"
 
-      # The `#strategies` method expects `Strategy` constants to be strategies,
-      # so constants we create need to be private for this to work properly.
-      private_constant :DEFAULT_PRIORITY, :CURL_CONNECT_TIMEOUT, :CURL_MAX_TIME,
-                       :CURL_PROCESS_TIMEOUT, :DEFAULT_CURL_ARGS,
-                       :PAGE_HEADERS_CURL_ARGS, :PAGE_CONTENT_CURL_ARGS,
-                       :DEFAULT_CURL_OPTIONS, :HTTP_HEAD_BODY_SEPARATOR
+      # An error message to use when a `strategy` block returns a value of
+      # an inappropriate type.
+      INVALID_BLOCK_RETURN_VALUE_MSG = "Return value of a strategy block must be a string or array of strings."
 
       # Creates and/or returns a `@strategies` `Hash`, which maps a snake
       # case strategy name symbol (e.g. `:page_match`) to the associated
-      # {Strategy}.
+      # strategy.
       #
       # At present, this should only be called after tap strategies have been
       # loaded, otherwise livecheck won't be able to use them.
       # @return [Hash]
+      sig { returns(T::Hash[Symbol, T.untyped]) }
       def strategies
         return @strategies if defined? @strategies
 
         @strategies = {}
-        constants.sort.each do |strategy_symbol|
-          key = strategy_symbol.to_s.underscore.to_sym
-          strategy = const_get(strategy_symbol)
-          @strategies[key] = strategy
+        Strategy.constants.sort.each do |const_symbol|
+          constant = Strategy.const_get(const_symbol)
+          next unless constant.is_a?(Class)
+
+          key = const_symbol.to_s.underscore.to_sym
+          @strategies[key] = constant
         end
         @strategies
       end
       private_class_method :strategies
 
-      # Returns the {Strategy} that corresponds to the provided `Symbol` (or
-      # `nil` if there is no matching {Strategy}).
+      # Returns the strategy that corresponds to the provided `Symbol` (or
+      # `nil` if there is no matching strategy).
       #
-      # @param symbol [Symbol] the strategy name in snake case as a `Symbol`
-      #   (e.g. `:page_match`)
-      # @return [Strategy, nil]
+      # @param symbol [Symbol, nil] the strategy name in snake case as a
+      #   `Symbol` (e.g. `:page_match`)
+      # @return [Class, nil]
+      sig { params(symbol: T.nilable(Symbol)).returns(T.nilable(T.untyped)) }
       def from_symbol(symbol)
-        strategies[symbol]
+        strategies[symbol] if symbol.present?
       end
 
       # Returns an array of strategies that apply to the provided URL.
       #
       # @param url [String] the URL to check for matching strategies
-      # @param livecheck_strategy [Symbol] a {Strategy} symbol from the
+      # @param livecheck_strategy [Symbol] a strategy symbol from the
+      #   `livecheck` block
+      # @param url_provided [Boolean] whether a url is provided in the
       #   `livecheck` block
       # @param regex_provided [Boolean] whether a regex is provided in the
       #   `livecheck` block
+      # @param block_provided [Boolean] whether a `strategy` block is provided
+      #   in the `livecheck` block
       # @return [Array]
-      def from_url(url, livecheck_strategy: nil, url_provided: nil, regex_provided: nil, block_provided: nil)
+      sig {
+        params(
+          url:                String,
+          livecheck_strategy: T.nilable(Symbol),
+          url_provided:       T::Boolean,
+          regex_provided:     T::Boolean,
+          block_provided:     T::Boolean,
+        ).returns(T::Array[T.untyped])
+      }
+      def from_url(url, livecheck_strategy: nil, url_provided: false, regex_provided: false, block_provided: false)
         usable_strategies = strategies.values.select do |strategy|
           if strategy == PageMatch
             # Only treat the `PageMatch` strategy as usable if a regex is
@@ -144,6 +158,13 @@ module Homebrew
         end
       end
 
+      # Collects HTTP response headers, starting with the provided URL.
+      # Redirections will be followed and all the response headers are
+      # collected into an array of hashes.
+      #
+      # @param url [String] the URL to fetch
+      # @return [Array]
+      sig { params(url: String).returns(T::Array[T::Hash[String, String]]) }
       def self.page_headers(url)
         headers = []
 
@@ -222,6 +243,25 @@ module Homebrew
         {
           messages: [error_msg.presence || "cURL failed without an error"],
         }
+      end
+
+      # Handles the return value from a `strategy` block in a `livecheck`
+      # block.
+      #
+      # @param value [] the return value from a `strategy` block
+      # @return [Array]
+      sig { params(value: T.untyped).returns(T::Array[String]) }
+      def self.handle_block_return(value)
+        case value
+        when String
+          [value]
+        when Array
+          value.compact.uniq
+        when nil
+          []
+        else
+          raise TypeError, INVALID_BLOCK_RETURN_VALUE_MSG
+        end
       end
     end
   end

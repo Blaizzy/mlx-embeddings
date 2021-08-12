@@ -11,12 +11,12 @@ describe Homebrew::Livecheck::Strategy::Cpan do
   let(:non_cpan_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a CPAN URL" do
+    it "returns true for a CPAN URL" do
       expect(cpan.match?(cpan_url_no_subdirectory)).to be true
       expect(cpan.match?(cpan_url_with_subdirectory)).to be true
     end
 
-    it "returns false if the argument provided is not a CPAN URL" do
+    it "returns false for a non-CPAN URL" do
       expect(cpan.match?(non_cpan_url)).to be false
     end
   end

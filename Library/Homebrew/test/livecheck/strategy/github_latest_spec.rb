@@ -14,19 +14,19 @@ describe Homebrew::Livecheck::Strategy::GithubLatest do
   let(:non_github_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a GitHub release artifact URL" do
+    it "returns true for a GitHub release artifact URL" do
       expect(github_latest.match?(github_release_artifact_url)).to be true
     end
 
-    it "returns true if the argument provided is a GitHub tag archive URL" do
+    it "returns true for a GitHub tag archive URL" do
       expect(github_latest.match?(github_tag_archive_url)).to be true
     end
 
-    it "returns true if the argument provided is a GitHub repository upload URL" do
+    it "returns true for a GitHub repository upload URL" do
       expect(github_latest.match?(github_repository_upload_url)).to be true
     end
 
-    it "returns false if the argument provided is not a GitHub URL" do
+    it "returns false for a non-GitHub URL" do
       expect(github_latest.match?(non_github_url)).to be false
     end
   end

@@ -1,13 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
-require "livecheck/strategy/electron_builder"
+require "livecheck/strategy"
 
 describe Homebrew::Livecheck::Strategy::ElectronBuilder do
   subject(:electron_builder) { described_class }
 
-  let(:valid_url) { "https://www.example.com/example/latest-mac.yml" }
-  let(:invalid_url) { "https://brew.sh/test" }
+  let(:yaml_url) { "https://www.example.com/example/latest-mac.yml" }
+  let(:non_yaml_url) { "https://brew.sh/test" }
 
   let(:electron_builder_yaml) {
     <<~EOS
@@ -26,42 +26,46 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
     EOS
   }
 
+  let(:versions) { ["1.2.3"] }
+
   describe "::match?" do
-    it "returns true for any URL pointing to a YAML file" do
-      expect(electron_builder.match?(valid_url)).to be true
+    it "returns true for a YAML file URL" do
+      expect(electron_builder.match?(yaml_url)).to be true
     end
 
-    it "returns false for a URL not pointing to a YAML file" do
-      expect(electron_builder.match?(invalid_url)).to be false
+    it "returns false for non-YAML URL" do
+      expect(electron_builder.match?(non_yaml_url)).to be false
     end
   end
 
-  describe "::version_from_content" do
-    let(:version_from_electron_builder_yaml) { electron_builder.version_from_content(electron_builder_yaml) }
-
-    it "returns nil if content is blank" do
-      expect(electron_builder.version_from_content("")).to be nil
+  describe "::versions_from_content" do
+    it "returns an empty array if content is blank" do
+      expect(electron_builder.versions_from_content("")).to eq([])
     end
 
-    it "returns a version string when given YAML data" do
-      expect(version_from_electron_builder_yaml).to be_a(String)
+    it "returns an array of version strings when given YAML text" do
+      expect(electron_builder.versions_from_content(electron_builder_yaml)).to eq(versions)
     end
 
-    it "returns a version string when given YAML data and a block" do
-      version = electron_builder.version_from_content(electron_builder_yaml) do |yaml|
-        yaml["version"].sub("3", "4")
-      end
+    it "returns an array of version strings when given YAML text and a block" do
+      # Returning a string from block
+      expect(
+        electron_builder.versions_from_content(electron_builder_yaml) do |yaml|
+          yaml["version"].sub("3", "4")
+        end,
+      ).to eq(["1.2.4"])
 
-      expect(version).to eq "1.2.4"
+      # Returning an array of strings from block
+      expect(electron_builder.versions_from_content(electron_builder_yaml) { versions }).to eq(versions)
     end
 
-    it "allows a nil return from a strategy block" do
-      expect(electron_builder.version_from_content(electron_builder_yaml) { next }).to eq(nil)
+    it "allows a nil return from a block" do
+      expect(electron_builder.versions_from_content(electron_builder_yaml) { next }).to eq([])
     end
 
-    it "errors on an invalid return type from a strategy block" do
-      expect { electron_builder.version_from_content(electron_builder_yaml) { 123 } }
-        .to raise_error(TypeError, "Return value of `strategy :electron_builder` block must be a string.")
+    it "errors on an invalid return type from a block" do
+      expect { electron_builder.versions_from_content(electron_builder_yaml) { 123 } }
+        .to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
     end
   end
 end

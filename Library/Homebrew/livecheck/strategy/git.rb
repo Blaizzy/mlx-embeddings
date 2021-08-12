@@ -30,6 +30,19 @@ module Homebrew
         # lowest to highest).
         PRIORITY = 8
 
+        # The default regex used to naively identify numeric versions from tags
+        # when a regex isn't provided.
+        DEFAULT_REGEX = /\D*(.+)/.freeze
+
+        # Whether the strategy can be applied to the provided URL.
+        #
+        # @param url [String] the URL to match against
+        # @return [Boolean]
+        sig { params(url: String).returns(T::Boolean) }
+        def self.match?(url)
+          (DownloadStrategyDetector.detect(url) <= GitDownloadStrategy) == true
+        end
+
         # Fetches a remote Git repository's tags using `git ls-remote --tags`
         # and parses the command's output. If a regex is provided, it will be
         # used to filter out any tags that don't match it.
@@ -37,6 +50,7 @@ module Homebrew
         # @param url [String] the URL of the Git repository to check
         # @param regex [Regexp] the regex to use for filtering tags
         # @return [Hash]
+        sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
         def self.tag_info(url, regex = nil)
           # Open3#capture3 is used here because we need to capture stderr
           # output and handle it in an appropriate manner. Alternatives like
@@ -61,12 +75,42 @@ module Homebrew
           tags_data
         end
 
-        # Whether the strategy can be applied to the provided URL.
+        # Identify versions from tag strings using a provided regex or the
+        # `DEFAULT_REGEX`. The regex is expected to use a capture group around
+        # the version text.
         #
-        # @param url [String] the URL to match against
-        # @return [Boolean]
-        def self.match?(url)
-          (DownloadStrategyDetector.detect(url) <= GitDownloadStrategy) == true
+        # @param tags [Array] the tags to identify versions from
+        # @param regex [Regexp, nil] a regex to identify versions
+        # @return [Array]
+        sig {
+          params(
+            tags:  T::Array[String],
+            regex: T.nilable(Regexp),
+            block: T.nilable(
+              T.proc.params(arg0: T::Array[String], arg1: T.nilable(Regexp))
+                .returns(T.any(String, T::Array[String], NilClass)),
+            ),
+          ).returns(T::Array[String])
+        }
+        def self.versions_from_tags(tags, regex = nil, &block)
+          return Strategy.handle_block_return(block.call(tags, regex || DEFAULT_REGEX)) if block
+
+          tags_only_debian = tags.all? { |tag| tag.start_with?("debian/") }
+
+          tags.map do |tag|
+            # Skip tag if it has a 'debian/' prefix and upstream does not do
+            # only 'debian/' prefixed tags
+            next if tag =~ %r{^debian/} && !tags_only_debian
+
+            if regex
+              # Use the first capture group (the version)
+              tag.scan(regex).first&.first
+            else
+              # Remove non-digits from the start of the tag and use that as the
+              # version text
+              tag[DEFAULT_REGEX, 1]
+            end
+          end.compact.uniq
         end
 
         # Checks the Git tags for new versions. When a regex isn't provided,
@@ -74,7 +118,7 @@ module Homebrew
         # strings and parses the remaining text as a {Version}.
         #
         # @param url [String] the URL of the Git repository to check
-        # @param regex [Regexp] the regex to use for matching versions
+        # @param regex [Regexp, nil] a regex used for matching versions
         # @return [Hash]
         sig {
           params(
@@ -82,54 +126,26 @@ module Homebrew
             regex: T.nilable(Regexp),
             cask:  T.nilable(Cask::Cask),
             block: T.nilable(
-              T.proc.params(arg0: T::Array[String]).returns(T.any(String, T::Array[String], NilClass)),
+              T.proc.params(arg0: T::Array[String], arg1: T.nilable(Regexp))
+                .returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
+        def self.find_versions(url, regex = nil, cask: nil, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           tags_data = tag_info(url, regex)
+          tags = tags_data[:tags]
 
           if tags_data.key?(:messages)
             match_data[:messages] = tags_data[:messages]
-            return match_data if tags_data[:tags].blank?
+            return match_data if tags.blank?
           end
 
-          tags_only_debian = tags_data[:tags].all? { |tag| tag.start_with?("debian/") }
-
-          if block
-            case (value = block.call(tags_data[:tags], regex))
-            when String
-              match_data[:matches][value] = Version.new(value)
-            when Array
-              value.compact.uniq.each do |tag|
-                match_data[:matches][tag] = Version.new(tag)
-              end
-            when nil
-              return match_data
-            else
-              raise TypeError, "Return value of `strategy :git` block must be a string or array of strings."
-            end
-
-            return match_data
-          end
-
-          tags_data[:tags].each do |tag|
-            # Skip tag if it has a 'debian/' prefix and upstream does not do
-            # only 'debian/' prefixed tags
-            next if tag =~ %r{^debian/} && !tags_only_debian
-
-            captures = regex.is_a?(Regexp) ? tag.scan(regex) : []
-            tag_cleaned = if captures[0].is_a?(Array)
-              captures[0][0] # Use the first capture group (the version)
-            else
-              tag[/\D*(.*)/, 1] # Remove non-digits from the start of the tag
-            end
-
-            match_data[:matches][tag] = Version.new(tag_cleaned)
+          versions_from_tags(tags, regex, &block).each do |version_text|
+            match_data[:matches][version_text] = Version.new(version_text)
           rescue TypeError
-            nil
+            next
           end
 
           match_data

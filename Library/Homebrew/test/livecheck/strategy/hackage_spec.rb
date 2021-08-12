@@ -11,12 +11,12 @@ describe Homebrew::Livecheck::Strategy::Hackage do
   let(:non_hackage_url) { "https://brew.sh/test" }
 
   describe "::match?" do
-    it "returns true if the argument provided is a Hackage URL" do
+    it "returns true for a Hackage URL" do
       expect(hackage.match?(hackage_url)).to be true
       expect(hackage.match?(hackage_downloads_url)).to be true
     end
 
-    it "returns false if the argument provided is not a Hackage URL" do
+    it "returns false for a non-Hackage URL" do
       expect(hackage.match?(non_hackage_url)).to be false
     end
   end
