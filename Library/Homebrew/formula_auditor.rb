@@ -523,9 +523,15 @@ module Homebrew
         spec_name = name.downcase.to_sym
         next unless (spec = formula.send(spec_name))
 
+        except = @except.to_a
+        if spec_name == :head &&
+           tap_audit_exception(:head_non_default_branch_allowlist, formula.name, spec.specs[:branch])
+          except << "head_branch"
+        end
+
         ra = ResourceAuditor.new(
           spec, spec_name,
-          online: @online, strict: @strict, only: @only, except: @except
+          online: @online, strict: @strict, only: @only, except: except
         ).audit
         ra.problems.each do |message|
           problem "#{name}: #{message}"
