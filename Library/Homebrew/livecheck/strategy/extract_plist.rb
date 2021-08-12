@@ -77,21 +77,23 @@ module Homebrew
 
         # Uses {UnversionedCaskChecker} on the provided cask to identify
         # versions from `plist` files.
+        #
+        # @param cask [Cask::Cask] the cask to check for version information
+        # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  Cask::Cask,
-            block: T.nilable(
+            cask:   Cask::Cask,
+            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:  T.nilable(
               T.proc.params(arg0: T::Hash[String, Item]).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask:, &block)
-          raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if regex
+        def self.find_versions(cask:, **unused, &block)
+          raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if unused[:regex]
           raise ArgumentError, "The #{T.must(name).demodulize} strategy only supports casks." unless T.unsafe(cask)
 
-          match_data = { matches: {}, regex: regex, url: url }
+          match_data = { matches: {} }
 
           unversioned_cask_checker = UnversionedCaskChecker.new(cask)
           items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }

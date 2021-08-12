@@ -122,16 +122,16 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(
+            url:     String,
+            regex:   T.nilable(Regexp),
+            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:   T.nilable(
               T.proc.params(arg0: T::Array[String], arg1: T.nilable(Regexp))
                 .returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex = nil, cask: nil, &block)
+        def self.find_versions(url:, regex: nil, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           tags_data = tag_info(url, regex)

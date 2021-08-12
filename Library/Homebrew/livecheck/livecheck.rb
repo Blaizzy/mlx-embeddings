@@ -640,13 +640,12 @@ module Homebrew
 
         next if strategy.blank?
 
-        strategy_data = begin
-          strategy.find_versions(url, livecheck_regex, cask: cask, &livecheck_strategy_block)
-        rescue ArgumentError => e
-          raise unless e.message.include?("unknown keyword: cask")
-
-          odisabled "`def self.find_versions` in `#{strategy}` without a `cask` parameter"
-        end
+        strategy_data = strategy.find_versions(
+          url:   url,
+          regex: livecheck_regex,
+          cask:  cask,
+          &livecheck_strategy_block
+        )
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]
@@ -711,7 +710,9 @@ module Homebrew
           version_info[:meta][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
           version_info[:meta][:url][:original] = original_url
           version_info[:meta][:url][:processed] = url if url != original_url
-          version_info[:meta][:url][:strategy] = strategy_data[:url] if strategy_data[:url] != url
+          if strategy_data[:url].present? && strategy_data[:url] != url
+            version_info[:meta][:url][:strategy] = strategy_data[:url]
+          end
           version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
 
           version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil

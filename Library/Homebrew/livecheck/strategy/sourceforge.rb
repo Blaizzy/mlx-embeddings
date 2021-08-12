@@ -60,15 +60,15 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(
+            url:    String,
+            regex:  T.nilable(Regexp),
+            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:  T.nilable(
               T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
+        def self.find_versions(url:, regex: nil, **unused, &block)
           match = url.match(URL_MATCH_REGEX)
 
           page_url = if url.match?(%r{/rss(?:/?$|\?)})
@@ -82,7 +82,7 @@ module Homebrew
           # create something that works for most URLs.
           regex ||= %r{url=.*?/#{Regexp.escape(match[:project_name])}/files/.*?[-_/](\d+(?:[-.]\d+)+)[-_/%.]}i
 
-          PageMatch.find_versions(page_url, regex, cask: cask, &block)
+          PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
         end
       end
     end

@@ -83,15 +83,15 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(
+            url:    String,
+            regex:  T.nilable(Regexp),
+            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:  T.nilable(
               T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
+        def self.find_versions(url:, regex: nil, **unused, &block)
           file_name = File.basename(url)
           match = file_name.match(FILENAME_REGEX)
 
@@ -105,7 +105,13 @@ module Homebrew
 
           # Use the cached page content to avoid duplicate fetches
           cached_content = @page_data[page_url]
-          match_data = PageMatch.find_versions(page_url, regex, provided_content: cached_content, cask: cask, &block)
+          match_data = PageMatch.find_versions(
+            url:              page_url,
+            regex:            regex,
+            provided_content: cached_content,
+            **unused,
+            &block
+          )
 
           # Cache any new page content
           @page_data[page_url] = match_data[:content] if match_data[:content].present?

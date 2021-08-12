@@ -59,20 +59,18 @@ module Homebrew
         # Checks the YAML content at the URL for new versions.
         #
         # @param url [String] the URL of the content to check
-        # @param regex [Regexp, nil] a regex used for matching versions
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(T.proc.params(arg0: T::Hash[String, T.untyped]).returns(T.nilable(String))),
+            url:    String,
+            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:  T.nilable(T.proc.params(arg0: T::Hash[String, T.untyped]).returns(T.nilable(String))),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
-          raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if regex
+        def self.find_versions(url:, **unused, &block)
+          raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if unused[:regex]
 
-          match_data = { matches: {}, regex: regex, url: url }
+          match_data = { matches: {}, url: url }
 
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)

@@ -54,15 +54,15 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(
+            url:    String,
+            regex:  T.nilable(Regexp),
+            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:  T.nilable(
               T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
+        def self.find_versions(url:, regex: nil, **unused, &block)
           match = File.basename(url).match(FILENAME_REGEX)
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
@@ -77,7 +77,7 @@ module Homebrew
           re_suffix = Regexp.escape(suffix)
           regex ||= %r{href=.*?/packages.*?/#{re_package_name}[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)#{re_suffix}}i
 
-          PageMatch.find_versions(page_url, regex, cask: cask, &block)
+          PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
         end
       end
     end
