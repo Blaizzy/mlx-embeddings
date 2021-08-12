@@ -329,8 +329,8 @@ module Homebrew
 
         if stable_kegs.blank?
           return kegs.max_by do |keg|
-                   [Tab.for_keg(keg).source_modified_time, keg.version.revision]
-                 end
+            [Tab.for_keg(keg).source_modified_time, keg.version.revision]
+          end
         end
 
         stable_kegs.max_by(&:version)
