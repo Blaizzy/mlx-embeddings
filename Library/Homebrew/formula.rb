@@ -2002,7 +2002,7 @@ class Formula
     bottle_spec.collector.each_key do |os|
       collector_os = bottle_spec.collector[os]
       os_cellar = collector_os[:cellar]
-      os_cellar = os_cellar.is_a?(Symbol) ? os_cellar.inspect : os_cellar
+      os_cellar = os_cellar.inspect if os_cellar.is_a?(Symbol)
 
       checksum = collector_os[:checksum].hexdigest
       filename = Bottle::Filename.create(self, os, bottle_spec.rebuild)

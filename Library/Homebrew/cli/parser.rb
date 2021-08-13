@@ -161,11 +161,7 @@ module Homebrew
         end
         @parser.public_send(method, *names, *wrap_option_desc(description)) do |value|
           odisabled "the `#{names.first}` switch", replacement unless replacement.nil?
-          value = if names.any? { |name| name.start_with?("--[no-]") }
-            value
-          else
-            true
-          end
+          value = true if names.none? { |name| name.start_with?("--[no-]") }
 
           set_switch(*names, value: value, from: :args)
         end
