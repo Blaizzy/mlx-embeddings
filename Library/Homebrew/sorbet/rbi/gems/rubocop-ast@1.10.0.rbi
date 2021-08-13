@@ -278,6 +278,10 @@ class RuboCop::AST::AliasNode < ::RuboCop::AST::Node
   def old_identifier; end
 end
 
+class RuboCop::AST::AndAsgnNode < ::RuboCop::AST::OpAsgnNode
+  def operator; end
+end
+
 class RuboCop::AST::AndNode < ::RuboCop::AST::Node
   include ::RuboCop::AST::BinaryOperatorNode
   include ::RuboCop::AST::PredicateOperatorNode
@@ -308,6 +312,11 @@ class RuboCop::AST::ArrayNode < ::RuboCop::AST::Node
 end
 
 RuboCop::AST::ArrayNode::PERCENT_LITERAL_TYPES = T.let(T.unsafe(nil), Hash)
+
+class RuboCop::AST::AsgnNode < ::RuboCop::AST::Node
+  def expression; end
+  def name; end
+end
 
 module RuboCop::AST::BasicLiteralNode
   def value; end
@@ -381,6 +390,12 @@ class RuboCop::AST::CaseNode < ::RuboCop::AST::Node
   def else_branch; end
   def keyword; end
   def when_branches; end
+end
+
+class RuboCop::AST::CasgnNode < ::RuboCop::AST::Node
+  def expression; end
+  def name; end
+  def namespace; end
 end
 
 class RuboCop::AST::ClassNode < ::RuboCop::AST::Node
@@ -1770,6 +1785,17 @@ module RuboCop::AST::NumericNode
 end
 
 RuboCop::AST::NumericNode::SIGN_REGEX = T.let(T.unsafe(nil), Regexp)
+
+class RuboCop::AST::OpAsgnNode < ::RuboCop::AST::Node
+  def assignment_node; end
+  def expression; end
+  def name; end
+  def operator; end
+end
+
+class RuboCop::AST::OrAsgnNode < ::RuboCop::AST::OpAsgnNode
+  def operator; end
+end
 
 class RuboCop::AST::OrNode < ::RuboCop::AST::Node
   include ::RuboCop::AST::BinaryOperatorNode
