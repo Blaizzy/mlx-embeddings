@@ -484,7 +484,7 @@ module Homebrew
         T.absurd(formula_or_cask)
       end
 
-      urls.compact
+      urls.compact.uniq
     end
 
     # Preprocesses and returns the URL used by livecheck.
@@ -609,24 +609,16 @@ module Homebrew
         end
       end
 
+      checked_urls = []
       # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
-        if debug
-          puts
-          if livecheck_url.is_a?(Symbol)
-            # This assumes the URL symbol will fit within the available space
-            puts "URL (#{livecheck_url}):".ljust(18, " ") + original_url
-          else
-            puts "URL:              #{original_url}"
-          end
-        end
-
         # Only preprocess the URL when it's appropriate
         url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
           original_url
         else
           preprocess_url(original_url)
         end
+        next if checked_urls.include?(url)
 
         strategies = Strategy.from_url(
           url,
@@ -639,6 +631,13 @@ module Homebrew
         strategy_name = livecheck_strategy_names[strategy]
 
         if debug
+          puts
+          if livecheck_url.is_a?(Symbol)
+            # This assumes the URL symbol will fit within the available space
+            puts "URL (#{livecheck_url}):".ljust(18, " ") + original_url
+          else
+            puts "URL:              #{original_url}"
+          end
           puts "URL (processed):  #{url}" if url != original_url
           if strategies.present? && verbose
             puts "Strategies:       #{strategies.map { |s| livecheck_strategy_names[s] }.join(", ")}"
@@ -674,6 +673,7 @@ module Homebrew
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]
+        checked_urls << url
 
         if messages.is_a?(Array) && match_version_map.blank?
           puts messages unless json
