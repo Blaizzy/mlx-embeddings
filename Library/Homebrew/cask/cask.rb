@@ -20,7 +20,7 @@ module Cask
     extend Searchable
     include Metadata
 
-    attr_reader :token, :sourcefile_path, :config, :default_config
+    attr_reader :token, :sourcefile_path, :source, :config, :default_config
 
     def self.each(&block)
       return to_enum unless block
@@ -38,9 +38,10 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, tap: nil, config: nil, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
+      @source = source
       @tap = tap
       @block = block
 
