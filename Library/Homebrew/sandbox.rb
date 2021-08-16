@@ -103,15 +103,15 @@ class Sandbox
     ensure
       seatbelt.unlink
       sleep 0.1 # wait for a bit to let syslog catch up the latest events.
-      syslog_args = %W[
-        -F $((Time)(local))\ $(Sender)[$(PID)]:\ $(Message)
-        -k Time ge #{@start.to_i}
-        -k Message S deny
-        -k Sender kernel
-        -o
-        -k Time ge #{@start.to_i}
-        -k Message S deny
-        -k Sender sandboxd
+      syslog_args = [
+        "-F", "$((Time)(local)) $(Sender)[$(PID)]: $(Message)",
+        "-k", "Time", "ge", @start.to_i.to_s,
+        "-k", "Message", "S", "deny",
+        "-k", "Sender", "kernel",
+        "-o",
+        "-k", "Time", "ge", @start.to_i.to_s,
+        "-k", "Message", "S", "deny",
+        "-k", "Sender", "sandboxd"
       ]
       logs = Utils.popen_read("syslog", *syslog_args)
 

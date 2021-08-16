@@ -90,10 +90,10 @@ Naming/InclusiveLanguage:
     # TODO: If possible, make this stricter.
     slave:
       AllowedRegex:
-        - "gitslave"   # Used in formula `gitslave`
-        - "log_slave"  # Used in formula `ssdb`
+        - "gitslave" # Used in formula `gitslave`
+        - "log_slave" # Used in formula `ssdb`
         - "ssdb_slave" # Used in formula `ssdb`
-        - "var_slave"  # Used in formula `ssdb`
+        - "var_slave" # Used in formula `ssdb`
         - "patches/13_fix_scope_for_show_slave_status_data.patch" # Used in formula `mytop`
     blacklist:
       AllowedRegex:
@@ -246,6 +246,11 @@ Layout/ArgumentAlignment:
 # this is a bit less "floaty"
 Layout/CaseIndentation:
   EnforcedStyle: end
+
+# Need to allow #: for external commands.
+Layout/LeadingCommentSpace:
+  Exclude:
+    - "Taps/*/*/cmd/*.rb"
 
 # this is a bit less "floaty"
 Layout/EndAlignment:
