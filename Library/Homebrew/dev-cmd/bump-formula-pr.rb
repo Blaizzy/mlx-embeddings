@@ -87,7 +87,9 @@ module Homebrew
   def use_correct_linux_tap(formula, args:)
     default_origin_branch = formula.tap.path.git_origin_branch
 
-    return formula.tap.remote_repo, "origin", default_origin_branch, "-" if !OS.linux? || !formula.tap.core_tap?
+    if !OS.linux? || !formula.tap.core_tap? || Homebrew::EnvConfig.force_homebrew_on_linux?
+      return formula.tap.remote_repo, "origin", default_origin_branch, "-"
+    end
 
     tap_remote_repo = formula.tap.full_name.gsub("linuxbrew", "homebrew")
     homebrew_core_url = "https://github.com/#{tap_remote_repo}"
