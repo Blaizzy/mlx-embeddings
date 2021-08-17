@@ -13,3 +13,6 @@ contact_links:
   - name: New issue on Homebrew/linuxbrew-core
     url: https://github.com/Homebrew/linuxbrew-core/issues/new/choose
     about: On Linux? Having a `brew` problem with a `brew install` or `brew upgrade` of a single formula/package? Report it to Homebrew/linuxbrew-core (the Linux core tap/repository).
+  - name: Get help from Homebrew mirror maintainers
+    url: https://github.com/Homebrew/discussions/discussions/1917
+    about: Slow download speed? Homebrew mirror not working as expected? Please take a look at the mirror list and contact respective mirror maintainers.
