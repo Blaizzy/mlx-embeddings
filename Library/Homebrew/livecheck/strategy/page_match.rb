@@ -81,14 +81,14 @@ module Homebrew
           params(
             url:              String,
             regex:            Regexp,
-            cask:             T.nilable(Cask::Cask),
             provided_content: T.nilable(String),
+            _unused:          T.nilable(T::Hash[Symbol, T.untyped]),
             block:            T.nilable(
               T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, provided_content: nil, &block)
+        def self.find_versions(url:, regex:, provided_content: nil, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           content = if provided_content.is_a?(String)

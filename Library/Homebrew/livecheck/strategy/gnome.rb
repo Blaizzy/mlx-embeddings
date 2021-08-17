@@ -53,15 +53,15 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(
+            url:    String,
+            regex:  T.nilable(Regexp),
+            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:  T.nilable(
               T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
+        def self.find_versions(url:, regex: nil, **unused, &block)
           match = url.match(URL_MATCH_REGEX)
 
           page_url = "https://download.gnome.org/sources/#{match[:package_name]}/cache.json"
@@ -71,7 +71,7 @@ module Homebrew
             # count on the delimiter between the package name and numeric
             # version being a hyphen and the file being a tarball.
             regex = /#{Regexp.escape(match[:package_name])}-(\d+(?:\.\d+)+)\.t/i
-            version_data = PageMatch.find_versions(page_url, regex, cask: cask, &block)
+            version_data = PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
 
             # Filter out unstable versions using the old version scheme where
             # the major version is below 40.
@@ -81,7 +81,7 @@ module Homebrew
 
             version_data
           else
-            PageMatch.find_versions(page_url, regex, cask: cask, &block)
+            PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
           end
         end
       end

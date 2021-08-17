@@ -76,15 +76,15 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:   String,
-            regex: T.nilable(Regexp),
-            cask:  T.nilable(Cask::Cask),
-            block: T.nilable(
+            url:     String,
+            regex:   T.nilable(Regexp),
+            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:   T.nilable(
               T.proc.params(arg0: T::Hash[String, String], arg1: T.nilable(Regexp)).returns(T.nilable(String)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url, regex, cask: nil, &block)
+        def self.find_versions(url:, regex: nil, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           headers = Strategy.page_headers(url)
