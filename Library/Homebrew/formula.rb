@@ -1588,6 +1588,7 @@ class Formula
   # universal binaries in a {Formula}'s {Keg}.
   sig { params(targets: T.nilable(T.any(Pathname, String))).void }
   def deuniversalize_machos(*targets)
+    targets = nil if targets.blank?
     targets ||= any_installed_keg.mach_o_files.select do |file|
       file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
     end
