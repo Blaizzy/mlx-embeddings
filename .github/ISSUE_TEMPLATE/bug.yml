@@ -25,11 +25,6 @@ body:
           required: true
         - label: I have resolved all warnings from `brew doctor` and that did not fix my problem.
           required: true
-        - label: I have not set `HOMEBREW_BOTTLE_DOMAIN`, `HOMEBREW_ARTIFACT_DOMAIN`, `HOMEBREW_BREW_GIT_REMOTE`, or `HOMEBREW_CORE_GIT_REMOTE` and am still able to reproduce this issue.
-          required: true
-  - type: markdown
-    attributes:
-      value: If this bug is related to mirror sites, please refer to [this disucssion](https://github.com/Homebrew/discussions/discussions/1917) for more information, and report bugs to respective mirror maintainers.
   - type: textarea
     attributes:
       label: What were you trying to do (and why)?
