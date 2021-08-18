@@ -48,4 +48,6 @@ RUN cd /home/linuxbrew/.linuxbrew \
   && brew cleanup \
   && { git -C /home/linuxbrew/.linuxbrew/Homebrew config --unset gc.auto; true; } \
   && { git -C /home/linuxbrew/.linuxbrew/Homebrew config --unset homebrew.devcmdrun; true; } \
-  && rm -rf ~/.cache
+  && rm -rf ~/.cache \
+  && chown -R linuxbrew: /home/linuxbrew/.linuxbrew \
+  && chmod -R g+w,o-w /home/linuxbrew/.linuxbrew
