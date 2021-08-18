@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -49,6 +49,42 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Extracts information from a provided URL and uses it to generate
+        # various input values used by the strategy to check for new versions.
+        # Some of these values act as defaults and can be overridden in a
+        # `livecheck` block.
+        #
+        # @param url [String] the URL used to generate values
+        # @return [Hash]
+        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
+        def self.generate_input_values(url)
+          values = {}
+
+          match = url.match(URL_MATCH_REGEX)
+          return values if match.blank?
+
+          # `/get/` archives are Git tag snapshots, so we need to check that tab
+          # instead of the main `/downloads/` page
+          values[:url] = if match[:dl_type] == "get"
+            "https://bitbucket.org/#{match[:path]}/downloads/?tab=tags"
+          else
+            "https://bitbucket.org/#{match[:path]}/downloads/"
+          end
+
+          regex_prefix = Regexp.escape(T.must(match[:prefix])).gsub("\\-", "-")
+
+          # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
+          suffix = T.must(match[:suffix]).sub(Strategy::TARBALL_EXTENSION_REGEX, "\.t")
+          regex_suffix = Regexp.escape(suffix).gsub("\\-", "-")
+
+          # Example regexes:
+          # * `/href=.*?v?(\d+(?:\.\d+)+)\.t/i`
+          # * `/href=.*?example-v?(\d+(?:\.\d+)+)\.t/i`
+          values[:regex] = /href=.*?#{regex_prefix}v?(\d+(?:\.\d+)+)#{regex_suffix}/i
+
+          values
+        end
+
         # Generates a URL and regex (if one isn't provided) and passes them
         # to {PageMatch.find_versions} to identify versions in the content.
         #
@@ -66,25 +102,9 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **unused, &block)
-          match = url.match(URL_MATCH_REGEX)
+          generated = generate_input_values(url)
 
-          # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          suffix = match[:suffix].sub(/\.t(?:ar\..+|[a-z0-9]+)$/i, "\.t")
-
-          # `/get/` archives are Git tag snapshots, so we need to check that tab
-          # instead of the main `/downloads/` page
-          page_url = if match[:dl_type] == "get"
-            "https://bitbucket.org/#{match[:path]}/downloads/?tab=tags"
-          else
-            "https://bitbucket.org/#{match[:path]}/downloads/"
-          end
-
-          # Example regexes:
-          # * `/href=.*?v?(\d+(?:\.\d+)+)\.t/i`
-          # * `/href=.*?example-v?(\d+(?:\.\d+)+)\.t/i`
-          regex ||= /href=.*?#{Regexp.escape(match[:prefix])}v?(\d+(?:\.\d+)+)#{Regexp.escape(suffix)}/i
-
-          PageMatch.find_versions(url: page_url, regex: regex, **unused, &block)
+          T.unsafe(PageMatch).find_versions(url: generated[:url], regex: regex || generated[:regex], **unused, &block)
         end
       end
     end
