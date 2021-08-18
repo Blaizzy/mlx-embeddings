@@ -14,7 +14,9 @@ module Utils
 
     module_function
 
-    def curl_executable
+    def curl_executable(use_homebrew_curl: false)
+      return Formula["curl"].opt_bin/"curl" if use_homebrew_curl
+
       @curl ||= [
         ENV["HOMEBREW_CURL"],
         which("curl"),
@@ -63,7 +65,8 @@ module Utils
 
     def curl_with_workarounds(
       *args,
-      secrets: nil, print_stdout: nil, print_stderr: nil, debug: nil, verbose: nil, env: {}, timeout: nil, **options
+      secrets: nil, print_stdout: nil, print_stderr: nil, debug: nil,
+      verbose: nil, env: {}, timeout: nil, use_homebrew_curl: false, **options
     )
       end_time = Time.now + timeout if timeout
 
@@ -77,7 +80,7 @@ module Utils
 
       # SSL_CERT_FILE can be incorrectly set by users or portable-ruby and screw
       # with SSL downloads so unset it here.
-      result = system_command curl_executable,
+      result = system_command curl_executable(use_homebrew_curl: use_homebrew_curl),
                               args:    curl_args(*args, **options),
                               env:     { "SSL_CERT_FILE" => nil }.merge(env),
                               timeout: end_time&.remaining,
@@ -173,7 +176,7 @@ module Utils
     end
 
     def curl_check_http_content(url, url_type, specs: {}, user_agents: [:default],
-                                check_content: false, strict: false)
+                                check_content: false, strict: false, use_homebrew_curl: false)
       return unless url.start_with? "http"
 
       secure_url = url.sub(/\Ahttp:/, "https:")
@@ -183,7 +186,7 @@ module Utils
         user_agents.each do |user_agent|
           secure_details = begin
             curl_http_content_headers_and_checksum(secure_url, specs: specs, hash_needed: true,
-                                                   user_agent: user_agent)
+                                                   user_agent: user_agent, use_homebrew_curl: use_homebrew_curl)
           rescue Timeout::Error
             next
           end
@@ -199,7 +202,8 @@ module Utils
       details = nil
       user_agents.each do |user_agent|
         details =
-          curl_http_content_headers_and_checksum(url, specs: specs, hash_needed: hash_needed, user_agent: user_agent)
+          curl_http_content_headers_and_checksum(url, specs: specs, hash_needed: hash_needed,
+                                                 user_agent: user_agent, use_homebrew_curl: use_homebrew_curl)
         break if http_status_ok?(details[:status])
       end
 
@@ -264,7 +268,8 @@ module Utils
       "The #{url_type} #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
     end
 
-    def curl_http_content_headers_and_checksum(url, specs: {}, hash_needed: false, user_agent: :default)
+    def curl_http_content_headers_and_checksum(url, specs: {}, hash_needed: false,
+                                               user_agent: :default, use_homebrew_curl: false)
       file = Tempfile.new.tap(&:close)
 
       specs = specs.flat_map { |option, argument| ["--#{option.to_s.tr("_", "-")}", argument] }
@@ -272,7 +277,7 @@ module Utils
       output, _, status = curl_output(
         *specs, "--dump-header", "-", "--output", file.path, "--location",
         "--connect-timeout", "15", "--max-time", max_time, "--retry-max-time", max_time, url,
-        user_agent: user_agent
+        user_agent: user_agent, use_homebrew_curl: use_homebrew_curl
       )
 
       status_code = :unknown

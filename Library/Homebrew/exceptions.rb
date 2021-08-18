@@ -602,6 +602,13 @@ class CurlDownloadStrategyError < RuntimeError
   end
 end
 
+# Raised in {HomebrewCurlDownloadStrategy#fetch}.
+class HomebrewCurlDownloadStrategyError < CurlDownloadStrategyError
+  def initialize(url)
+    super "Homebrew-installed `curl` is not installed for: #{url}"
+  end
+end
+
 # Raised by {Kernel#safe_system} in `utils.rb`.
 class ErrorDuringExecution < RuntimeError
   extend T::Sig

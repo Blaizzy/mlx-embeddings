@@ -22,7 +22,8 @@ module Homebrew
       @strict    = options[:strict]
       @only      = options[:only]
       @except    = options[:except]
-      @problems  = []
+      @use_homebrew_curl = options[:use_homebrew_curl]
+      @problems = []
     end
 
     def audit
@@ -110,7 +111,14 @@ module Homebrew
 
         strategy = DownloadStrategyDetector.detect(url, using)
         if strategy <= CurlDownloadStrategy && !url.start_with?("file")
-          if (http_content_problem = curl_check_http_content(url, "source URL", specs: specs))
+
+          raise HomebrewCurlDownloadStrategyError, url if
+            strategy <= HomebrewCurlDownloadStrategy && !Formula["curl"].any_version_installed?
+
+          if (http_content_problem = curl_check_http_content(url,
+                                                             "source URL",
+                                                             specs:             specs,
+                                                             use_homebrew_curl: @use_homebrew_curl))
             problem http_content_problem
           end
         elsif strategy <= GitDownloadStrategy
