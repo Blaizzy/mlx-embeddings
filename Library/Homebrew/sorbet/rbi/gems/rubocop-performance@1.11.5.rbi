@@ -464,6 +464,7 @@ class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock < ::RuboCop::C
   def offense_range(node); end
   def one_block_argument?(block_arguments); end
   def same_block_argument_and_is_a_argument?(block_body, block_argument); end
+  def use_block_argument_in_method_argument_of_operand?(block_argument, operand); end
   def use_equality_comparison_block?(block_body); end
 end
 
