@@ -44,20 +44,21 @@ module Homebrew
         # With either approach, an array of unique matches is returned.
         #
         # @param content [String] the page content to check
-        # @param regex [Regexp] a regex used for matching versions in the
+        # @param regex [Regexp, nil] a regex used for matching versions in the
         #   content
         # @return [Array]
         sig {
           params(
             content: String,
-            regex:   Regexp,
+            regex:   T.nilable(Regexp),
             block:   T.nilable(
-              T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
+              T.proc.params(arg0: String, arg1: T.nilable(Regexp)).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Array[String])
         }
         def self.versions_from_content(content, regex, &block)
           return Strategy.handle_block_return(block.call(content, regex)) if block
+          return [] if regex.blank?
 
           content.scan(regex).map do |match|
             case match
@@ -73,22 +74,22 @@ module Homebrew
         # regex for matching.
         #
         # @param url [String] the URL of the content to check
-        # @param regex [Regexp] a regex used for matching versions
+        # @param regex [Regexp, nil] a regex used for matching versions
         # @param provided_content [String, nil] page content to use in place of
         #   fetching via Strategy#page_content
         # @return [Hash]
         sig {
           params(
             url:              String,
-            regex:            Regexp,
+            regex:            T.nilable(Regexp),
             provided_content: T.nilable(String),
             _unused:          T.nilable(T::Hash[Symbol, T.untyped]),
             block:            T.nilable(
-              T.proc.params(arg0: String, arg1: Regexp).returns(T.any(String, T::Array[String], NilClass)),
+              T.proc.params(arg0: String, arg1: T.nilable(Regexp)).returns(T.any(String, T::Array[String], NilClass)),
             ),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex:, provided_content: nil, **_unused, &block)
+        def self.find_versions(url:, regex: nil, provided_content: nil, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
           return match_data if url.blank? || (regex.blank? && block.blank?)
 
