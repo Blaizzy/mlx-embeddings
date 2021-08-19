@@ -129,4 +129,4 @@ Common reasons to reject a Cask from the main repo:
 
 ## No cask is guaranteed to be accepted
 
-Follow the guidelines above and your submission has a great chance of being accepted. But remember documentation tends to lag behind current decision-making and we can’t predict every case. Maitainers may override these rules when experience tells us it will lead to a better overall Homebrew.
+Follow the guidelines above and your submission has a great chance of being accepted. But remember documentation tends to lag behind current decision-making and we can’t predict every case. Maintainers may override these rules when experience tells us it will lead to a better overall Homebrew.
