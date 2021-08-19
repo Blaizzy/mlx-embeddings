@@ -28,11 +28,11 @@ Stable versions live in the main repository at [Homebrew/homebrew-cask](https://
 
 ### But There Is No Stable Version!
 
-When an App is only available as beta, development, or unstable versions, or in cases where such a version is the general standard, then said version can go into the main repo.
+When software is only available as a beta, development, or unstable version, its cask can go in the main repo. When stable versions become available, only those will be accepted as subsequent updates.
 
 ### Beta, Unstable, Development, Nightly, or Legacy
 
-When an App has a main stable version, alternative versions should be submitted to [Homebrew/homebrew-cask-versions](https://github.com/Homebrew/homebrew-cask-versions).
+Alternative versions should be submitted to [Homebrew/homebrew-cask-versions](https://github.com/Homebrew/homebrew-cask-versions).
 
 ### Regional and Localized
 
@@ -126,3 +126,7 @@ Common reasons to reject a Cask entirely:
 Common reasons to reject a Cask from the main repo:
 
 + The cask was submitted to the wrong repo. When drafting a cask, consult “[Finding a Home For Your Cask](#finding-a-home-for-your-cask)” to see where it belongs.
+
+## No cask is guaranteed to be accepted
+
+Follow the guidelines above and your submission has a great chance of being accepted. But remember documentation tends to lag behind current decision-making and we can’t predict every case. Maitainers may override these rules when experience tells us it will lead to a better overall Homebrew.
