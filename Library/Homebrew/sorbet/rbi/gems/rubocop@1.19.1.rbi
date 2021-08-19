@@ -3501,7 +3501,7 @@ class RuboCop::Cop::Layout::RescueEnsureAlignment < ::RuboCop::Cop::Base
 
   def access_modifier?(node); end
   def access_modifier_node(node); end
-  def aligned_with_leading_dot?(do_keyword_line, dot, rescue_keyword_column); end
+  def aligned_with_leading_dot?(do_keyword_line, send_node_loc, rescue_keyword_column); end
   def aligned_with_line_break_method?(ancestor_node, node); end
   def alignment_location(alignment_node); end
   def alignment_node(node); end
@@ -8254,6 +8254,7 @@ class RuboCop::Cop::Style::DoubleNegation < ::RuboCop::Cop::Base
   def allowed_in_returns?(node); end
   def end_of_method_definition?(node); end
   def find_def_node_from_ascendant(node); end
+  def find_last_child(node); end
 end
 
 RuboCop::Cop::Style::DoubleNegation::MSG = T.let(T.unsafe(nil), String)
@@ -8419,13 +8420,13 @@ class RuboCop::Cop::Style::Encoding < ::RuboCop::Cop::Base
 
   private
 
-  def encoding_line_number(processed_source); end
-  def encoding_omitable?(line); end
-  def offense(processed_source, line_number); end
+  def comments; end
+  def offense?(comment); end
+  def register_offense(line_number, comment); end
 end
 
 RuboCop::Cop::Style::Encoding::ENCODING_PATTERN = T.let(T.unsafe(nil), Regexp)
-RuboCop::Cop::Style::Encoding::MSG_UNNECESSARY = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Style::Encoding::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Style::Encoding::SHEBANG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::EndBlock < ::RuboCop::Cop::Base
@@ -8735,6 +8736,7 @@ end
 RuboCop::Cop::Style::GuardClause::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::HashAsLastArrayItem < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -8748,6 +8750,7 @@ class RuboCop::Cop::Style::HashAsLastArrayItem < ::RuboCop::Cop::Base
   def containing_array(hash_node); end
   def explicit_array?(array); end
   def last_array_item?(array, node); end
+  def remove_last_element_trailing_comma(corrector, node); end
 end
 
 class RuboCop::Cop::Style::HashConversion < ::RuboCop::Cop::Base
@@ -10314,11 +10317,15 @@ class RuboCop::Cop::Style::RedundantBegin < ::RuboCop::Cop::Base
   private
 
   def any_ancestor_assignment_node?(node); end
+  def begin_block_has_multiline_statements?(node); end
+  def condition_range(node); end
   def contain_rescue_or_ensure?(node); end
+  def correct_modifier_form_after_multiline_begin_block(corrector, node); end
   def empty_begin?(node); end
   def register_offense(node); end
   def replace_begin_with_statement(corrector, offense_range, node); end
   def restore_removed_comments(corrector, offense_range, node, first_child); end
+  def use_modifier_form_after_multiline_begin_block?(node); end
   def valid_begin_assignment?(node); end
   def valid_context_using_only_begin?(node); end
 end
@@ -10680,16 +10687,15 @@ class RuboCop::Cop::Style::RedundantSelfAssignmentBranch < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def bad_method?(param0 = T.unsafe(nil)); end
-  def on_cvasgn(node); end
-  def on_gvasgn(node); end
-  def on_ivasgn(node); end
   def on_lvasgn(node); end
 
   private
 
-  def autocorrect_if_condition(corrector, if_node, if_node_loc, keyword); end
+  def inconvertible_to_modifier?(if_branch, else_branch); end
+  def multiple_statements?(branch); end
   def register_offense(if_node, offense_branch, opposite_branch, keyword); end
   def self_assign?(variable, branch); end
+  def use_if_and_else_branch?(expression); end
 end
 
 RuboCop::Cop::Style::RedundantSelfAssignmentBranch::MSG = T.let(T.unsafe(nil), String)
@@ -11054,6 +11060,10 @@ class RuboCop::Cop::Style::SoleNestedConditional < ::RuboCop::Cop::Base
   def requrie_parentheses?(condition); end
   def use_variable_assignment_in_condition?(condition, if_branch); end
   def wrap_condition?(node); end
+
+  class << self
+    def autocorrect_incompatible_with; end
+  end
 end
 
 RuboCop::Cop::Style::SoleNestedConditional::MSG = T.let(T.unsafe(nil), String)
@@ -11299,7 +11309,7 @@ class RuboCop::Cop::Style::SymbolArray < ::RuboCop::Cop::Base
 
   private
 
-  def correct_bracketed(corrector, node); end
+  def build_bracketed_array(node); end
   def symbol_without_quote?(string); end
   def symbols_contain_spaces?(node); end
   def to_symbol_literal(string); end
@@ -11672,8 +11682,8 @@ class RuboCop::Cop::Style::WordArray < ::RuboCop::Cop::Base
 
   private
 
+  def build_bracketed_array(node); end
   def complex_content?(strings, complex_regex: T.unsafe(nil)); end
-  def correct_bracketed(corrector, node); end
   def invalid_percent_array_contents?(node); end
   def word_regex; end
 
@@ -12826,6 +12836,7 @@ class RuboCop::MagicComment
   def frozen_string_literal_specified?; end
   def shareable_constant_value; end
   def shareable_constant_value_specified?; end
+  def valid?; end
   def valid_literal_value?; end
   def valid_shareable_constant_value?; end
 
@@ -12840,6 +12851,9 @@ class RuboCop::MagicComment
 end
 
 class RuboCop::MagicComment::EditorComment < ::RuboCop::MagicComment
+  def encoding; end
+  def without(type); end
+
   private
 
   def match(keyword); end
@@ -12847,20 +12861,21 @@ class RuboCop::MagicComment::EditorComment < ::RuboCop::MagicComment
 end
 
 class RuboCop::MagicComment::EmacsComment < ::RuboCop::MagicComment::EditorComment
-  def encoding; end
-
   private
 
   def extract_frozen_string_literal; end
   def extract_shareable_constant_value; end
 end
 
-RuboCop::MagicComment::EmacsComment::FORMAT = T.let(T.unsafe(nil), Regexp)
+RuboCop::MagicComment::EmacsComment::FORMAT = T.let(T.unsafe(nil), String)
 RuboCop::MagicComment::EmacsComment::OPERATOR = T.let(T.unsafe(nil), String)
+RuboCop::MagicComment::EmacsComment::REGEXP = T.let(T.unsafe(nil), Regexp)
 RuboCop::MagicComment::EmacsComment::SEPARATOR = T.let(T.unsafe(nil), String)
+RuboCop::MagicComment::KEYWORDS = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::MagicComment::SimpleComment < ::RuboCop::MagicComment
   def encoding; end
+  def without(type); end
 
   private
 
@@ -12876,8 +12891,10 @@ class RuboCop::MagicComment::VimComment < ::RuboCop::MagicComment::EditorComment
   def shareable_constant_value; end
 end
 
-RuboCop::MagicComment::VimComment::FORMAT = T.let(T.unsafe(nil), Regexp)
+RuboCop::MagicComment::VimComment::FORMAT = T.let(T.unsafe(nil), String)
+RuboCop::MagicComment::VimComment::KEYWORDS = T.let(T.unsafe(nil), Hash)
 RuboCop::MagicComment::VimComment::OPERATOR = T.let(T.unsafe(nil), String)
+RuboCop::MagicComment::VimComment::REGEXP = T.let(T.unsafe(nil), Regexp)
 RuboCop::MagicComment::VimComment::SEPARATOR = T.let(T.unsafe(nil), String)
 
 module RuboCop::NameSimilarity
