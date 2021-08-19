@@ -108,6 +108,23 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
     it "finds versions in provided_content" do
       expect(page_match.find_versions(url: http_url, regex: regex, provided_content: content))
         .to eq(find_versions_cached_return_hash)
+
+      # NOTE: Ideally, a regex should always be provided to `#find_versions`
+      # for `PageMatch` but there are currently some `livecheck` blocks in
+      # casks where `#regex` isn't used and the regex only exists within a
+      # `strategy` block. This isn't ideal but, for the moment, we allow a
+      # `strategy` block to act as a substitution for a regex and we need to
+      # test this scenario to ensure it works.
+      #
+      # Under normal circumstances, a regex should be established in a
+      # `livecheck` block using `#regex` and passed into the `strategy` block
+      # using `do |page, regex|`. Hopefully over time we can address related
+      # issues and get to a point where regexes are always established using
+      # `#regex`.
+      expect(page_match.find_versions(url: http_url, provided_content: content) do |page|
+        page.scan(%r{href=.*?/homebrew[._-]v?(\d+(?:\.\d+)+)/?["' >]}i).map(&:first)
+      end)
+        .to eq(find_versions_cached_return_hash.merge({ regex: nil }))
     end
   end
 end
