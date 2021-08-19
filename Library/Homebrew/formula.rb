@@ -1620,6 +1620,7 @@ class Formula
       raise
     end
   end
+  private :extract_macho_slice_from
 
   # an array of all core {Formula} names
   # @private
