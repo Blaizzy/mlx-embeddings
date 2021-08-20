@@ -412,11 +412,21 @@ module Homebrew
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
+      use_homebrew_curl = false
+      %w[Stable HEAD].each do |name|
+        spec_name = name.downcase.to_sym
+        next unless (spec = formula.send(spec_name))
+
+        use_homebrew_curl = spec.using == :homebrew_curl
+        break if use_homebrew_curl
+      end
+
       if (http_content_problem = curl_check_http_content(homepage,
                                                          "homepage URL",
-                                                         user_agents:   [:browser, :default],
-                                                         check_content: true,
-                                                         strict:        @strict))
+                                                         user_agents:       [:browser, :default],
+                                                         check_content:     true,
+                                                         strict:            @strict,
+                                                         use_homebrew_curl: use_homebrew_curl))
         problem http_content_problem
       end
     end
