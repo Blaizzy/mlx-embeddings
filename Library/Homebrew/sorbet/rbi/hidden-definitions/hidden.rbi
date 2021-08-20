@@ -110,7 +110,7 @@ class ActiveSupport::Cache::Entry
 
   def expires_at=(value); end
 
-  def initialize(value, compress: T.unsafe(nil), compress_threshold: T.unsafe(nil), version: T.unsafe(nil), expires_in: T.unsafe(nil), **_); end
+  def initialize(value, compress: T.unsafe(nil), compress_threshold: T.unsafe(nil), version: T.unsafe(nil), expires_in: T.unsafe(nil), **arg); end
 
   def mismatched?(version); end
 
@@ -440,7 +440,7 @@ class ActiveSupport::Callbacks::Filters::Environment
 end
 
 class ActiveSupport::Callbacks::Filters::Environment
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -1285,7 +1285,7 @@ class ActiveSupport::ExecutionWrapper::CompleteHook
 end
 
 class ActiveSupport::ExecutionWrapper::CompleteHook
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -1299,7 +1299,7 @@ class ActiveSupport::ExecutionWrapper::RunHook
 end
 
 class ActiveSupport::ExecutionWrapper::RunHook
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -1363,7 +1363,7 @@ module ActiveSupport::ForkTracker
 end
 
 module ActiveSupport::ForkTracker::CoreExt
-  def fork(*_); end
+  def fork(*arg); end
 end
 
 module ActiveSupport::ForkTracker::CoreExt
@@ -1697,7 +1697,7 @@ class ActiveSupport::Notifications::Fanout::Subscribers::AllMessages
 
   def initialize(delegate); end
 
-  def matches?(_); end
+  def matches?(arg); end
 
   def publish(name, *args); end
 
@@ -1705,7 +1705,7 @@ class ActiveSupport::Notifications::Fanout::Subscribers::AllMessages
 
   def subscribed_to?(name); end
 
-  def unsubscribe!(*_); end
+  def unsubscribe!(*arg); end
 end
 
 class ActiveSupport::Notifications::Fanout::Subscribers::AllMessages
@@ -1972,7 +1972,7 @@ class ActiveSupport::OrderedOptions
 
   def []=(key, value); end
 
-  def _get(_); end
+  def _get(arg); end
 
   def method_missing(name, *args); end
 end
@@ -2075,7 +2075,7 @@ end
 class ActiveSupport::SafeBuffer
   def %(args); end
 
-  def *(*_); end
+  def *(*arg); end
 
   def +(other); end
 
@@ -2472,11 +2472,11 @@ class ActiveSupport::TimeWithZone
 
   def advance(options); end
 
-  def after?(_); end
+  def after?(arg); end
 
   def ago(other); end
 
-  def before?(_); end
+  def before?(arg); end
 
   def between?(min, max); end
 
@@ -2878,7 +2878,7 @@ end
 class Array
   def self.parse(string); end
 
-  def self.try_convert(_); end
+  def self.try_convert(arg); end
 
   def self.wrap(object); end
 end
@@ -3346,7 +3346,7 @@ class Bundler::Fetcher::CompactIndex::ClientFetcher
 end
 
 class Bundler::Fetcher::CompactIndex::ClientFetcher
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -3613,7 +3613,7 @@ module Bundler::Plugin::API::Source
 
   def dependency_names=(dependency_names); end
 
-  def double_check_for(*_); end
+  def double_check_for(*arg); end
 
   def eql?(other); end
 
@@ -3872,7 +3872,7 @@ class Bundler::VersionRanges::NEq
 end
 
 class Bundler::VersionRanges::NEq
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -3907,13 +3907,13 @@ class Bundler::VersionRanges::ReqR::Endpoint
 end
 
 class Bundler::VersionRanges::ReqR::Endpoint
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
 
 class Bundler::VersionRanges::ReqR
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -4025,7 +4025,7 @@ class Byebug::Breakpoint
 
   def id(); end
 
-  def initialize(_, _1, _2); end
+  def initialize(arg, arg1, arg2); end
 
   def pos(); end
 
@@ -4238,17 +4238,17 @@ class Byebug::Context
 
   def frame=(pos); end
 
-  def frame_binding(*_); end
+  def frame_binding(*arg); end
 
-  def frame_class(*_); end
+  def frame_class(*arg); end
 
-  def frame_file(*_); end
+  def frame_file(*arg); end
 
-  def frame_line(*_); end
+  def frame_line(*arg); end
 
-  def frame_method(*_); end
+  def frame_method(*arg); end
 
-  def frame_self(*_); end
+  def frame_self(*arg); end
 
   def full_location(); end
 
@@ -4264,11 +4264,11 @@ class Byebug::Context
 
   def stack_size(); end
 
-  def step_into(*_); end
+  def step_into(*arg); end
 
-  def step_out(*_); end
+  def step_out(*arg); end
 
-  def step_over(*_); end
+  def step_over(*arg); end
 
   def stop_reason(); end
 
@@ -5929,7 +5929,7 @@ class CodeRay::Duo
 end
 
 class CodeRay::Duo
-  def self.[](*_); end
+  def self.[](*arg); end
 end
 
 module CodeRay::Encoders
@@ -6210,11 +6210,11 @@ class CodeRay::Tokens
 
   def split_into_parts(*sizes); end
 
-  def text_token(*_); end
+  def text_token(*arg); end
 
   def to_s(); end
 
-  def tokens(*_); end
+  def tokens(*arg); end
 end
 
 class CodeRay::Tokens
@@ -6623,7 +6623,7 @@ module Commander
 end
 
 class CompilerSelector::Compiler
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -6874,7 +6874,7 @@ class Date
 
   def compare_with_coercion(other); end
 
-  def compare_without_coercion(_); end
+  def compare_without_coercion(arg); end
 
   def default_inspect(); end
 
@@ -6890,13 +6890,13 @@ class Date
 
   def minus_with_duration(other); end
 
-  def minus_without_duration(_); end
+  def minus_without_duration(arg); end
 
   def noon(); end
 
   def plus_with_duration(other); end
 
-  def plus_without_duration(_); end
+  def plus_without_duration(arg); end
 
   def since(seconds); end
 
@@ -7065,7 +7065,7 @@ module DateAndTime::Compatibility
 end
 
 class Debrew::Menu::Entry
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -7178,7 +7178,7 @@ end
 class DidYouMean::NullChecker
   def corrections(); end
 
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class DidYouMean::PlainFormatter
@@ -7259,7 +7259,7 @@ class Dir
 end
 
 class Dir
-  def self.exists?(_); end
+  def self.exists?(arg); end
 end
 
 module DiskUsageExtension
@@ -7471,15 +7471,15 @@ class EmbeddedPatch
 end
 
 class Encoding
-  def _dump(*_); end
+  def _dump(*arg); end
 end
 
 class Encoding::Converter
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Encoding
-  def self._load(_); end
+  def self._load(arg); end
 end
 
 module Enumerable
@@ -7508,7 +7508,7 @@ module Enumerable
 end
 
 class Enumerator
-  def +(_); end
+  def +(arg); end
 
   def each_with_index(); end
 end
@@ -7522,7 +7522,7 @@ class Enumerator::ArithmeticSequence
 
   def exclude_end?(); end
 
-  def last(*_); end
+  def last(*arg); end
 
   def step(); end
 end
@@ -7537,9 +7537,9 @@ class Enumerator::Chain
 end
 
 class Enumerator::Generator
-  def each(*_, &blk); end
+  def each(*arg, &blk); end
 
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Errno::EAUTH
@@ -7707,7 +7707,7 @@ end
 
 class Etc::Group
   extend ::Enumerable
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.each(&blk); end
 
@@ -7746,7 +7746,7 @@ end
 
 class Etc::Passwd
   extend ::Enumerable
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.each(&blk); end
 
@@ -7808,7 +7808,7 @@ class FalseClass
 end
 
 class Fiber
-  def transfer(*_); end
+  def transfer(*arg); end
 end
 
 class Fiber
@@ -7818,7 +7818,7 @@ end
 class File
   def self.atomic_write(file_name, temp_dir=T.unsafe(nil)); end
 
-  def self.exists?(_); end
+  def self.exists?(arg); end
 
   def self.probe_stat_in(dir); end
 end
@@ -7878,7 +7878,7 @@ module FormulaCellarChecks
 end
 
 class FormulaConflict
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -7910,7 +7910,7 @@ module Forwardable
 end
 
 module GC
-  def garbage_collect(*_); end
+  def garbage_collect(*arg); end
 end
 
 module GC
@@ -8603,7 +8603,7 @@ class Hash
 end
 
 class Hash
-  def self.try_convert(_); end
+  def self.try_convert(arg); end
 end
 
 class HighLine
@@ -9151,7 +9151,7 @@ class HighLine::Question
 
   def case(); end
 
-  def case=(_); end
+  def case=(arg); end
 
   def change_case(answer_string); end
 
@@ -9219,7 +9219,7 @@ class HighLine::Question
 
   def in(); end
 
-  def in=(_); end
+  def in=(arg); end
 
   def in_range?(); end
 
@@ -9988,7 +9988,7 @@ class Homebrew::Livecheck::Strategy::Sparkle::Item
 end
 
 class Homebrew::Livecheck::Strategy::Sparkle::Item
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -10979,13 +10979,13 @@ module Hpricot
 
   def self.build(ele=T.unsafe(nil), assigns=T.unsafe(nil), &blk); end
 
-  def self.css(_, _1, _2); end
+  def self.css(arg, arg1, arg2); end
 
   def self.make(input=T.unsafe(nil), opts=T.unsafe(nil), &blk); end
 
   def self.parse(input=T.unsafe(nil), opts=T.unsafe(nil), &blk); end
 
-  def self.scan(*_); end
+  def self.scan(*arg); end
 
   def self.uxs(str); end
 end
@@ -11025,9 +11025,9 @@ class IO
 
   def echo?(); end
 
-  def getch(*_); end
+  def getch(*arg); end
 
-  def getpass(*_); end
+  def getpass(*arg); end
 
   def goto(); end
 
@@ -11037,7 +11037,7 @@ class IO
 
   def noecho(); end
 
-  def nonblock(*_); end
+  def nonblock(*arg); end
 
   def nonblock=(nonblock); end
 
@@ -11047,21 +11047,21 @@ class IO
 
   def oflush(); end
 
-  def pathconf(_); end
+  def pathconf(arg); end
 
   def pressed?(); end
 
-  def raw(*_); end
+  def raw(*arg); end
 
-  def raw!(*_); end
+  def raw!(*arg); end
 
   def ready?(); end
 
-  def wait(*_); end
+  def wait(*arg); end
 
-  def wait_readable(*_); end
+  def wait_readable(*arg); end
 
-  def wait_writable(*_); end
+  def wait_writable(*arg); end
 
   def winsize(); end
 
@@ -11069,7 +11069,7 @@ class IO
 end
 
 class IO
-  def self.console(*_); end
+  def self.console(*arg); end
 end
 
 class IPAddr
@@ -11086,7 +11086,7 @@ module IRB
 end
 
 class IRB::Context
-  def __exit__(*_); end
+  def __exit__(*arg); end
 
   def __inspect__(); end
 
@@ -11111,7 +11111,7 @@ class IRB::DefaultEncodings
 end
 
 class IRB::DefaultEncodings
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -11326,11 +11326,11 @@ class Integer
 end
 
 class JSON::Ext::Generator::State
-  def self.from_state(_); end
+  def self.from_state(arg); end
 end
 
 class JSON::Ext::Parser
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 JSON::Parser = JSON::Ext::Parser
@@ -11396,7 +11396,7 @@ module Kernel
 
   def self.gem(dep, *reqs); end
 
-  def self.load(*_); end
+  def self.load(*arg); end
 
   def self.require(path); end
 end
@@ -12777,9 +12777,9 @@ module MessagePack
 end
 
 class MessagePack::Packer
-  def write_bin(_); end
+  def write_bin(arg); end
 
-  def write_bin_header(_); end
+  def write_bin_header(arg); end
 end
 
 module MessagePack::Time
@@ -12813,7 +12813,7 @@ class MessagePack::Timestamp
 end
 
 class MessagePack::Unpacker
-  def feed_reference(_); end
+  def feed_reference(arg); end
 
   def freeze?(); end
 end
@@ -13114,7 +13114,7 @@ class Minitest::Expectation
 end
 
 class Minitest::Expectation
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -13210,7 +13210,7 @@ class Minitest::Mock
 
   def __call(name, data); end
 
-  def __respond_to?(*_); end
+  def __respond_to?(*arg); end
 
   def class(*args, &b); end
 
@@ -14109,9 +14109,9 @@ class NilClass
   include ::MessagePack::CoreExt
   def to_d(); end
 
-  def try(_method_name=T.unsafe(nil), *_); end
+  def try(_method_name=T.unsafe(nil), *arg); end
 
-  def try!(_method_name=T.unsafe(nil), *_); end
+  def try!(_method_name=T.unsafe(nil), *arg); end
 end
 
 class NoSeedProgressFormatter
@@ -14346,7 +14346,7 @@ class OpenSSL::BN
 
   def -@(); end
 
-  def /(_); end
+  def /(arg); end
 
   def negative?(); end
 end
@@ -14361,11 +14361,11 @@ class OpenSSL::KDF::KDFError
 end
 
 module OpenSSL::KDF
-  def self.hkdf(*_); end
+  def self.hkdf(*arg); end
 
-  def self.pbkdf2_hmac(*_); end
+  def self.pbkdf2_hmac(*arg); end
 
-  def self.scrypt(*_); end
+  def self.scrypt(*arg); end
 end
 
 class OpenSSL::OCSP::Request
@@ -14379,7 +14379,7 @@ class OpenSSL::PKey::EC
 end
 
 class OpenSSL::PKey::EC::Point
-  def to_octet_string(_); end
+  def to_octet_string(arg); end
 end
 
 module OpenSSL::SSL
@@ -15565,11 +15565,11 @@ end
 class Pathname
   include ::ELFShim
   include ::MachOShim
-  def fnmatch?(*_); end
+  def fnmatch?(*arg); end
 
-  def glob(*_); end
+  def glob(*arg); end
 
-  def make_symlink(_); end
+  def make_symlink(arg); end
 end
 
 class Pathname
@@ -15592,9 +15592,9 @@ end
 class Proc
   include ::MethodSource::SourceLocation::ProcExtensions
   include ::MethodSource::MethodExtensions
-  def <<(_); end
+  def <<(arg); end
 
-  def >>(_); end
+  def >>(arg); end
 
   def clone(); end
 end
@@ -16686,7 +16686,7 @@ class Pry::Command::ShowInfo
 
   def header_options(); end
 
-  def initialize(*_); end
+  def initialize(*arg); end
 
   def method_header(code_object, line_num); end
 
@@ -16789,7 +16789,7 @@ class Pry::Command::Whereami
 
   def code?(); end
 
-  def initialize(*_); end
+  def initialize(*arg); end
 
   def location(); end
 end
@@ -18199,7 +18199,7 @@ class Pry::Pager::PageTracker
 end
 
 class Pry::Pager::SimplePager
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Pry::Pager::SimplePager
@@ -18212,7 +18212,7 @@ class Pry::Pager::StopPaging
 end
 
 class Pry::Pager::SystemPager
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Pry::Pager::SystemPager
@@ -18887,9 +18887,9 @@ class RDiscount
 
   def text(); end
 
-  def to_html(*_); end
+  def to_html(*arg); end
 
-  def toc_content(*_); end
+  def toc_content(*arg); end
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
@@ -18993,7 +18993,7 @@ class RSpec::Core::Bisect::ExampleSetDescriptor
 end
 
 class RSpec::Core::Bisect::ExampleSetDescriptor
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -20199,7 +20199,7 @@ class RSpec::Core::Formatters::DeprecationFormatter::GeneratedDeprecationMessage
 end
 
 class RSpec::Core::Formatters::DeprecationFormatter::GeneratedDeprecationMessage
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -20241,7 +20241,7 @@ class RSpec::Core::Formatters::DeprecationFormatter::SpecifiedDeprecationMessage
 end
 
 class RSpec::Core::Formatters::DeprecationFormatter::SpecifiedDeprecationMessage
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -20308,7 +20308,7 @@ module RSpec::Core::Formatters::ExceptionPresenter::Factory::EmptyBacktraceForma
 end
 
 module RSpec::Core::Formatters::ExceptionPresenter::Factory::EmptyBacktraceFormatter
-  def self.format_backtrace(*_); end
+  def self.format_backtrace(*arg); end
 end
 
 class RSpec::Core::Formatters::ExceptionPresenter::Factory
@@ -20921,7 +20921,7 @@ class RSpec::Core::Hooks::Hook
 end
 
 class RSpec::Core::Hooks::Hook
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -21006,7 +21006,7 @@ class RSpec::Core::Invocations::PrintHelp
 end
 
 class RSpec::Core::Invocations::PrintHelp
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -21031,7 +21031,7 @@ class RSpec::Core::LegacyExampleGroupHash
 end
 
 module RSpec::Core::MemoizedHelpers
-  def initialize(*_); end
+  def initialize(*arg); end
 
   def is_expected(); end
 
@@ -21258,7 +21258,7 @@ class RSpec::Core::Notifications::DeprecationNotification
 end
 
 class RSpec::Core::Notifications::DeprecationNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.from_hash(data); end
 
@@ -21272,7 +21272,7 @@ class RSpec::Core::Notifications::ExampleNotification
 end
 
 class RSpec::Core::Notifications::ExampleNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.for(example); end
 
@@ -21332,7 +21332,7 @@ class RSpec::Core::Notifications::GroupNotification
 end
 
 class RSpec::Core::Notifications::GroupNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -21344,7 +21344,7 @@ class RSpec::Core::Notifications::MessageNotification
 end
 
 class RSpec::Core::Notifications::MessageNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -21408,7 +21408,7 @@ class RSpec::Core::Notifications::SeedNotification
 end
 
 class RSpec::Core::Notifications::SeedNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -21431,7 +21431,7 @@ class RSpec::Core::Notifications::StartNotification
 end
 
 class RSpec::Core::Notifications::StartNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -21482,7 +21482,7 @@ class RSpec::Core::Notifications::SummaryNotification
 end
 
 class RSpec::Core::Notifications::SummaryNotification
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -22029,7 +22029,7 @@ class RSpec::Core::SharedContext::Recording
 end
 
 class RSpec::Core::SharedContext::Recording
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -22301,7 +22301,7 @@ class RSpec::Expectations::BlockSnippetExtractor::BlockLocator
 end
 
 class RSpec::Expectations::BlockSnippetExtractor::BlockLocator
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -22325,7 +22325,7 @@ class RSpec::Expectations::BlockSnippetExtractor::BlockTokenExtractor
 end
 
 class RSpec::Expectations::BlockSnippetExtractor::BlockTokenExtractor
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -22823,7 +22823,7 @@ class RSpec::Matchers::AliasedMatcher
 
   def initialize(base_matcher, description_block); end
 
-  def method_missing(*_); end
+  def method_missing(*arg); end
 end
 
 class RSpec::Matchers::AliasedMatcher
@@ -23145,7 +23145,7 @@ class RSpec::Matchers::BuiltIn::Compound::Or
 end
 
 class RSpec::Matchers::BuiltIn::Compound::SequentialEvaluator
-  def initialize(actual, *_); end
+  def initialize(actual, *arg); end
 
   def matcher_matches?(matcher); end
 end
@@ -23207,7 +23207,7 @@ class RSpec::Matchers::BuiltIn::ContainExactly::PairingsMaximizer::Solution
 end
 
 class RSpec::Matchers::BuiltIn::ContainExactly::PairingsMaximizer::Solution
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -25230,7 +25230,7 @@ class RSpec::Mocks::Proxy::SpecificMessage
 end
 
 class RSpec::Mocks::Proxy::SpecificMessage
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -25893,7 +25893,7 @@ class RSpec::Support::ObjectFormatter::BaseInspector
 end
 
 class RSpec::Support::ObjectFormatter::BaseInspector
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.can_inspect?(_object); end
 
@@ -25938,7 +25938,7 @@ class RSpec::Support::ObjectFormatter::InspectableItem
 end
 
 class RSpec::Support::ObjectFormatter::InspectableItem
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -26444,7 +26444,7 @@ class Rack::Auth::Digest::Request
 
   def nonce(); end
 
-  def respond_to?(sym, *_); end
+  def respond_to?(sym, *arg); end
 end
 
 class Rack::Auth::Digest::Request
@@ -27048,7 +27048,7 @@ class Rack::MockResponse
 end
 
 class Rack::MockResponse
-  def self.[](*_); end
+  def self.[](*arg); end
 end
 
 module Rack::Multipart
@@ -27173,7 +27173,7 @@ class Rack::Multipart::Parser::MultipartInfo
 end
 
 class Rack::Multipart::Parser::MultipartInfo
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -27754,9 +27754,9 @@ class Rack::Session::Abstract::Persisted
 end
 
 class Rack::Session::Abstract::PersistedSecure
-  def extract_session_id(*_); end
+  def extract_session_id(*arg); end
 
-  def generate_sid(*_); end
+  def generate_sid(*arg); end
 end
 
 class Rack::Session::Abstract::PersistedSecure::SecureSessionHash
@@ -28005,11 +28005,11 @@ module Rack
 end
 
 class Random
-  def self.bytes(_); end
+  def self.bytes(arg); end
 end
 
 class Range
-  def %(_); end
+  def %(arg); end
 
   def entries(); end
 
@@ -28114,7 +28114,7 @@ class Resource
 end
 
 class Resource::Partial
-  def self.[](*_); end
+  def self.[](*arg); end
 
   def self.members(); end
 end
@@ -29652,13 +29652,13 @@ end
 module RubyVM::MJIT
   def self.enabled?(); end
 
-  def self.pause(*_); end
+  def self.pause(*arg); end
 
   def self.resume(); end
 end
 
 class RubyVM
-  def self.resolve_feature_path(_); end
+  def self.resolve_feature_path(arg); end
 end
 
 class Sandbox
@@ -31000,13 +31000,13 @@ end
 class StringScanner
   def bol?(); end
 
-  def initialize(*_); end
+  def initialize(*arg); end
   Id = ::T.let(nil, ::T.untyped)
   Version = ::T.let(nil, ::T.untyped)
 end
 
 class Struct
-  def filter(*_); end
+  def filter(*arg); end
 end
 
 module Superenv
@@ -31132,7 +31132,7 @@ class Time
 
   def compare_with_coercion(other); end
 
-  def compare_without_coercion(_); end
+  def compare_without_coercion(arg); end
 
   def end_of_day(); end
 
@@ -31142,7 +31142,7 @@ class Time
 
   def eql_with_coercion(other); end
 
-  def eql_without_coercion(_); end
+  def eql_without_coercion(arg); end
 
   def in(seconds); end
 
@@ -31158,7 +31158,7 @@ class Time
 
   def minus_without_coercion(other); end
 
-  def minus_without_duration(_); end
+  def minus_without_duration(arg); end
 
   def next_day(days=T.unsafe(nil)); end
 
@@ -31170,7 +31170,7 @@ class Time
 
   def plus_with_duration(other); end
 
-  def plus_without_duration(_); end
+  def plus_without_duration(arg); end
 
   def prev_day(days=T.unsafe(nil)); end
 
@@ -31197,7 +31197,7 @@ class Time
 
   def self.at_with_coercion(*args); end
 
-  def self.at_without_coercion(*_); end
+  def self.at_without_coercion(*arg); end
 
   def self.current(); end
 
@@ -31223,7 +31223,7 @@ class Time
 end
 
 class TracePoint
-  def __enable(_, _1); end
+  def __enable(arg, arg1); end
 
   def eval_script(); end
 
@@ -31857,17 +31857,17 @@ module Zeitwerk
 end
 
 class Zlib::Deflate
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Zlib::GzipReader
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Zlib::GzipWriter
-  def initialize(*_); end
+  def initialize(*arg); end
 end
 
 class Zlib::Inflate
-  def initialize(*_); end
+  def initialize(*arg); end
 end
