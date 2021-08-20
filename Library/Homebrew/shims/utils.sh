@@ -1,7 +1,7 @@
 set +o posix
 
 quiet_safe_cd() {
-  cd "$1" >/dev/null || { echo "Error: failed to cd to $1" >&2; exit 1; }
+  cd "$1" &>/dev/null || { echo "Error: failed to cd to $1" >&2; exit 1; }
 }
 
 absdir() {
