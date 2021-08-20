@@ -15,12 +15,15 @@ module Homebrew
     def initialize(tap, strict:)
       @name                      = tap.name
       @path                      = tap.path
-      @formula_names             = tap.formula_names
       @cask_tokens               = tap.cask_tokens
       @tap_audit_exceptions      = tap.audit_exceptions
       @tap_style_exceptions      = tap.style_exceptions
       @tap_pypi_formula_mappings = tap.pypi_formula_mappings
       @problems                  = []
+
+      @formula_names = tap.formula_names.map do |formula_name|
+        formula_name.split("/").last
+      end
     end
 
     sig { void }
