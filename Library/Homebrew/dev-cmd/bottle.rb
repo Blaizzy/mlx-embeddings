@@ -271,6 +271,32 @@ module Homebrew
     ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end
 
+  def formula_ignores(f)
+    ignores = []
+    cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
+
+    # Ignore matches to go keg, because all go binaries are statically linked.
+    any_go_deps = f.deps.any? do |dep|
+      dep.name =~ Version.formula_optionally_versioned_regex(:go)
+    end
+    if any_go_deps
+      go_regex = Version.formula_optionally_versioned_regex(:go, full: false)
+      ignores << %r{#{cellar_regex}/#{go_regex}/[\d.]+/libexec]}
+    end
+
+    ignores << case f.name
+    # On Linux, GCC installation can be moved so long as the whole directory tree is moved together:
+    # https://gcc-help.gcc.gnu.narkive.com/GnwuCA7l/moving-gcc-from-the-installation-path-is-it-allowed.
+    when Version.formula_optionally_versioned_regex(:gcc)
+      %r{#{cellar_regex}/gcc} if OS.linux?
+    # binutils is relocatable for the same reason: https://github.com/Homebrew/brew/pull/11899#issuecomment-906804451.
+    when Version.formula_optionally_versioned_regex(:binutils)
+      %r{#{cellar_regex}/binutils} if OS.linux?
+    end
+
+    ignores.compact
+  end
+
   def bottle_formula(f, args:)
     local_bottle_json = args.json? && f.local_bottle_path.present?
 
@@ -440,14 +466,9 @@ module Homebrew
         # Ignore matches to source code, which is not required at run time.
         # These matches may be caused by debugging symbols.
         ignores = [%r{/include/|\.(c|cc|cpp|h|hpp)$}]
-        any_go_deps = f.deps.any? do |dep|
-          dep.name =~ Version.formula_optionally_versioned_regex(:go)
-        end
-        if any_go_deps
-          go_regex =
-            Version.formula_optionally_versioned_regex(:go, full: false)
-          ignores << %r{#{Regexp.escape(HOMEBREW_CELLAR)}/#{go_regex}/[\d.]+/libexec}
-        end
+
+        # Add additional workarounds to ignore
+        ignores += formula_ignores(f)
 
         repository_reference = if HOMEBREW_PREFIX == HOMEBREW_REPOSITORY
           HOMEBREW_LIBRARY
