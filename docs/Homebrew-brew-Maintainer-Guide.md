@@ -92,6 +92,21 @@ every line of code to have a test associated with it, especially when testing wo
 integration test. For this reason, it's okay to merge PRs that fail the Codecov check if necessary,
 but this should be avoided if possible.
 
+### `brew tests` and BuildPulse
+
+BuildPulse monitors CI jobs for every push to `Homebrew/brew` to detect flaky tests and track them over time. The
+reports are available to Homebrew maintainers on [buildpulse.io](https://buildpulse.io/installations) and daily
+summaries are published to [`#buildpulse-health`](https://machomebrew.slack.com/archives/C0268BSJBJ8) in Slack.
+
+BuildPulse can be used as a guide to identify which flaky tests are causing the most disruption to the CI suite. To make
+the biggest improvements to the reliability of the build, we can focus on the most disruptive flaky tests first (i.e.,
+the tests causing the most intermittent failures).
+
+To help find the root cause for a particular flaky test, buildpulse.io provides links to the most recent CI job and
+commit where the test failed and then passed with no change to the underlying code. You may want to check out the code
+at that commit to attempt to reproduce the failure locally. You can also see the list of recent failures on
+buildpulse.io to determine if the test always fails the same way.
+
 ## Manpages and shell completions
 
 Homebrew's manpages and shell completions are generated automatically by the `brew generate-man-completions` command.
