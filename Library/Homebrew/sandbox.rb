@@ -102,6 +102,7 @@ class Sandbox
 
     begin
       command = [SANDBOX_EXEC, "-f", seatbelt.path, *args]
+      # Start sandbox in a pseudoterminal to prevent access of the parent terminal.
       T.unsafe(PTY).spawn(*command) do |r, w, pid|
         w.winsize = $stdout.winsize
         trap(:WINCH) { w.winsize = $stdout.winsize }
