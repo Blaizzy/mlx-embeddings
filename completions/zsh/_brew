@@ -252,9 +252,10 @@ __brew_diagnostic_checks() {
 # brew --cache
 _brew___cache() {
   _arguments \
-    '(--force-bottle --cask)--build-from-source[Show the cache file used when building from source]' \
+    '(--build-from-source --force-bottle --cask)--HEAD[Show the cache file used when building from HEAD]' \
+    '(--force-bottle --HEAD --cask)--build-from-source[Show the cache file used when building from source]' \
     '--debug[Display any debugging information]' \
-    '(--build-from-source --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
+    '(--build-from-source --HEAD --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
@@ -262,7 +263,7 @@ _brew___cache() {
     '(--cask)--formula[Only show cache files for formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--build-from-source --force-bottle --formula)--cask[Only show cache files for casks]' \
+    '(--build-from-source --force-bottle --HEAD --formula)--cask[Only show cache files for casks]' \
     '*::cask:__brew_casks'
 }
 

@@ -124,6 +124,7 @@ _brew___cache() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --HEAD
       --build-from-source
       --cask
       --debug
