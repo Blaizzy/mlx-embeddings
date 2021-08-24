@@ -81,6 +81,21 @@ module Cask
                           .reverse
     end
 
+    def os_versions
+      @os_versions ||= begin
+        version_os_hash = {}
+        actual_version = MacOS.full_version.to_s
+
+        MacOS::Version::SYMBOLS.each do |os_name, os_version|
+          MacOS.full_version = os_version
+          version_os_hash[os_name] = CaskLoader.load(token).version
+        end
+
+        MacOS.full_version = actual_version
+        version_os_hash
+      end
+    end
+
     def full_name
       return token if tap.nil?
       return token if tap.user == "Homebrew"
@@ -181,6 +196,7 @@ module Cask
         "url"            => url,
         "appcast"        => appcast,
         "version"        => version,
+        "versions"       => os_versions,
         "installed"      => versions.last,
         "outdated"       => outdated?,
         "sha256"         => sha256,
