@@ -90,6 +90,10 @@ Secure password storage and syncing is provided by [1Password for Teams](https:/
 
 [![1Password](https://1password.com/img/redesign/press/logo.c757be5591a513da9c768f8b80829318.svg)](https://1password.com)
 
+Flaky test detection and tracking is provided by [BuildPulse](https://buildpulse.io/).
+
+[![BuildPulse](https://user-images.githubusercontent.com/2988/130445500-96f44c87-e7dd-4da0-9877-7e5b1618e144.png)](https://buildpulse.io)
+
 Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org).
 
 [![Software Freedom Conservancy](https://sfconservancy.org/img/conservancy_64x64.png)](https://sfconservancy.org)
