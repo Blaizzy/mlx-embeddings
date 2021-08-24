@@ -200,6 +200,7 @@ end
 
 
 __fish_brew_complete_cmd '--cache' 'Display Homebrew\'s download cache'
+__fish_brew_complete_arg '--cache' -l HEAD -d 'Show the cache file used when building from HEAD'
 __fish_brew_complete_arg '--cache' -l build-from-source -d 'Show the cache file used when building from source'
 __fish_brew_complete_arg '--cache' -l cask -d 'Only show cache files for casks'
 __fish_brew_complete_arg '--cache' -l debug -d 'Display any debugging information'

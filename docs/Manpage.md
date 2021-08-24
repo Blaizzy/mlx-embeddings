@@ -747,6 +747,8 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
+* `--HEAD`:
+  Show the cache file used when building from HEAD.
 * `--formula`:
   Only show cache files for formulae.
 * `--cask`:
