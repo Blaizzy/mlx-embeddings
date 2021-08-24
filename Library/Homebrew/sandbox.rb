@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 require "erb"
+require "io/console"
+require "pty"
 require "tempfile"
 
 # Helper class for running a sub-process inside of a sandboxed environment.
@@ -95,12 +97,29 @@ class Sandbox
     seatbelt.close
     @start = Time.now
 
+    $stdin.raw! if $stdin.tty?
+    stdin_thread = T.let(nil, T.nilable(Thread))
+
     begin
-      T.unsafe(self).safe_system SANDBOX_EXEC, "-f", seatbelt.path, *args
+      command = [SANDBOX_EXEC, "-f", seatbelt.path, *args]
+      # Start sandbox in a pseudoterminal to prevent access of the parent terminal.
+      T.unsafe(PTY).spawn(*command) do |r, w, pid|
+        if $stdout.tty?
+          w.winsize = $stdout.winsize
+          trap(:WINCH) { w.winsize = $stdout.winsize }
+        end
+        stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
+        r.each_char { |c| print(c) }
+        Process.wait(pid)
+      end
+      raise ErrorDuringExecution.new(command, status: $CHILD_STATUS) unless $CHILD_STATUS.success?
     rescue
       @failed = true
       raise
     ensure
+      stdin_thread&.kill
+      $stdin.cooked! if $stdin.tty?
+
       seatbelt.unlink
       sleep 0.1 # wait for a bit to let syslog catch up the latest events.
       syslog_args = [
