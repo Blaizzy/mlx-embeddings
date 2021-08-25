@@ -74,7 +74,7 @@ module SharedAudits
     release = gitlab_release_data(user, repo, tag)
     return unless release
 
-    return if Date.parse(release["released_at"]) <= Date.today
+    return if DateTime.parse(release["released_at"]) <= DateTime.now
 
     exception, version = if formula
       [tap_audit_exception(:gitlab_prerelease_allowlist, formula.tap, formula.name), formula.version]
