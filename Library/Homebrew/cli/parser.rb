@@ -264,6 +264,7 @@ module Homebrew
         remaining = []
 
         argv, non_options = split_non_options(argv)
+        allow_commands = Array(@named_args_type).include?(:command)
 
         while i < argv.count
           begin
@@ -279,7 +280,7 @@ module Homebrew
               i += 1
             end
           rescue OptionParser::InvalidOption
-            if ignore_invalid_options
+            if ignore_invalid_options || (allow_commands && Commands.path(arg))
               remaining << arg
             else
               $stderr.puts generate_help_text

@@ -559,5 +559,19 @@ describe Homebrew::CLI::Parser do
         Homebrew::CLI::MaxNamedArgumentsError, /This command does not take more than 1 formula or cask argument/
       )
     end
+
+    it "accepts commands with :command" do
+      parser = described_class.new do
+        named_args :command
+      end
+      expect { parser.parse(["--prefix", "--version"]) }.not_to raise_error
+    end
+
+    it "doesn't accept invalid options with :command" do
+      parser = described_class.new do
+        named_args :command
+      end
+      expect { parser.parse(["--not-a-command"]) }.to raise_error(OptionParser::InvalidOption, /--not-a-command/)
+    end
   end
 end
