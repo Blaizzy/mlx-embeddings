@@ -84,7 +84,7 @@ describe Cask::Cmd::List, :cask do
   end
 
   describe "lists json" do
-    let(:casks) { ["local-caffeine", "local-transmission", "third-party/tap/third-party-cask"] }
+    let(:casks) { ["local-caffeine", "local-transmission", "multiple-versions", "third-party/tap/third-party-cask"] }
     let(:expected_output) {
       <<~EOS
         [
@@ -100,6 +100,8 @@ describe Cask::Cmd::List, :cask do
             "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip",
             "appcast": null,
             "version": "1.2.3",
+            "versions": {
+            },
             "installed": "1.2.3",
             "outdated": false,
             "sha256": "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
@@ -127,12 +129,44 @@ describe Cask::Cmd::List, :cask do
             "url": "file://#{TEST_FIXTURE_DIR}/cask/transmission-2.61.dmg",
             "appcast": null,
             "version": "2.61",
+            "versions": {
+            },
             "installed": "2.61",
             "outdated": false,
             "sha256": "e44ffa103fbf83f55c8d0b1bea309a43b2880798dae8620b1ee8da5e1095ec68",
             "artifacts": [
               [
                 "Transmission.app"
+              ]
+            ],
+            "caveats": null,
+            "depends_on": {
+            },
+            "conflicts_with": null,
+            "container": null,
+            "auto_updates": null
+          },
+          {
+            "token": "multiple-versions",
+            "full_token": "multiple-versions",
+            "tap": "homebrew/cask",
+            "name": [
+
+            ],
+            "desc": null,
+            "homepage": "https://brew.sh/",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip",
+            "appcast": null,
+            "version": "1.2.3",
+            "versions": {
+              "test_os": "1.2.0"
+            },
+            "installed": "1.2.3",
+            "outdated": false,
+            "sha256": "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
+            "artifacts": [
+              [
+                "Caffeine.app"
               ]
             ],
             "caveats": null,
@@ -154,6 +188,8 @@ describe Cask::Cmd::List, :cask do
             "url": "https://brew.sh/ThirdParty.dmg",
             "appcast": null,
             "version": "1.2.3",
+            "versions": {
+            },
             "installed": "1.2.3",
             "outdated": false,
             "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b",
@@ -175,6 +211,11 @@ describe Cask::Cmd::List, :cask do
 
     before do
       casks.map(&Cask::CaskLoader.method(:load)).each(&InstallHelper.method(:install_with_caskfile))
+
+      # Add a test OS to ensure that all cask versions are listed regardless of OS.
+      symbols = MacOS::Version::SYMBOLS.dup
+      symbols[:test_os] = "10.9"
+      stub_const("MacOS::Version::SYMBOLS", symbols)
     end
 
     it "of all installed Casks" do
@@ -185,7 +226,8 @@ describe Cask::Cmd::List, :cask do
 
     it "of given Casks" do
       expect {
-        described_class.run("--json", "local-caffeine", "local-transmission", "third-party/tap/third-party-cask")
+        described_class.run("--json", "local-caffeine", "local-transmission", "multiple-versions",
+                            "third-party/tap/third-party-cask")
       }.to output(expected_output).to_stdout
     end
   end

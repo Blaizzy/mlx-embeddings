@@ -88,11 +88,13 @@ module Cask
 
         MacOS::Version::SYMBOLS.each do |os_name, os_version|
           MacOS.full_version = os_version
-          version_os_hash[os_name] = CaskLoader.load(token).version
+          cask = CaskLoader.load(token)
+          version_os_hash[os_name] = cask.version if cask.version != version
         end
 
-        MacOS.full_version = actual_version
         version_os_hash
+      ensure
+        MacOS.full_version = actual_version
       end
     end
 
