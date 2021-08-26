@@ -373,7 +373,7 @@ class Formula
   # @private
   sig { params(tag: T.nilable(String)).returns(T.nilable(Bottle)) }
   def bottle_for_tag(tag = nil)
-    Bottle.new(self, bottle_specification, tag) if bottled?
+    Bottle.new(self, bottle_specification, tag) if bottled?(tag)
   end
 
   # The description of the software.

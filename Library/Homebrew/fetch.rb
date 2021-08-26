@@ -11,6 +11,7 @@ module Homebrew
       bottle = f.bottle
 
       return true if args.force_bottle? && bottle.present?
+      return true if args.bottle_tag.present? && f.bottled?(args.bottle_tag)
 
       bottle.present? &&
         f.pour_bottle? &&

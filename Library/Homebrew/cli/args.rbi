@@ -160,6 +160,9 @@ module Homebrew
       def minor?; end
 
       sig { returns(T.nilable(String)) }
+      def bottle_tag; end
+
+      sig { returns(T.nilable(String)) }
       def tag; end
 
       sig { returns(T.nilable(String)) }

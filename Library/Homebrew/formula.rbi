@@ -7,8 +7,8 @@ class Formula
   def bottle_disabled?; end
   def bottle_disable_reason; end
   def bottle_defined?; end
-  def bottle_tag?; end
-  def bottled?; end
+  def bottle_tag?(tag = nil); end
+  def bottled?(tag = nil); end
   def bottle_specification; end
   def downloader; end
 

@@ -11,7 +11,9 @@ module Utils
     class << self
       extend T::Sig
 
-      def tag
+      def tag(symbol = nil)
+        return Tag.from_symbol(symbol) if symbol.present?
+
         @tag ||= Tag.new(system: T.must(ENV["HOMEBREW_SYSTEM"]).downcase.to_sym,
                          arch:   T.must(ENV["HOMEBREW_PROCESSOR"]).downcase.to_sym)
       end
