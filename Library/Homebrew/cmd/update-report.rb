@@ -102,7 +102,7 @@ module Homebrew
     updated_taps = []
     Tap.each do |tap|
       next unless tap.git?
-      next if tap.core_tap? && ENV["HOMEBREW_JSON_CORE"].present? && args.preinstall?
+      next if tap.core_tap? && ENV["HOMEBREW_INSTALL_FROM_API"].present? && args.preinstall?
 
       begin
         reporter = Reporter.new(tap)
@@ -208,7 +208,7 @@ module Homebrew
 
   def install_core_tap_if_necessary
     return if ENV["HOMEBREW_UPDATE_TEST"]
-    return if ENV["HOMEBREW_JSON_CORE"].present?
+    return if ENV["HOMEBREW_INSTALL_FROM_API"].present?
 
     core_tap = CoreTap.instance
     return if core_tap.installed?

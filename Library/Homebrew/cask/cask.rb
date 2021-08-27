@@ -149,7 +149,7 @@ module Cask
         return []
       end
 
-      latest_version = if ENV["HOMEBREW_JSON_CORE"].present? &&
+      latest_version = if ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
                           (latest_cask_version = Homebrew::API::Versions.latest_cask_version(token))
         DSL::Version.new latest_cask_version.to_s
       else

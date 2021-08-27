@@ -64,7 +64,7 @@ describe Homebrew::API::Bottle do
 
   describe "::fetch_bottles" do
     before do
-      ENV["HOMEBREW_JSON_CORE"] = "1"
+      ENV["HOMEBREW_INSTALL_FROM_API"] = "1"
       allow(described_class).to receive(:fetch).and_return bottle_hash
     end
 

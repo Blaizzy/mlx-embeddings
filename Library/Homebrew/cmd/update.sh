@@ -498,7 +498,7 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    if [[ -n "${HOMEBREW_JSON_CORE}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
+    if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
        [[ "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
     then
       continue
@@ -647,7 +647,7 @@ EOS
   do
     # HOMEBREW_UPDATE_PREINSTALL wasn't modified in subshell.
     # shellcheck disable=SC2031
-    if [[ -n "${HOMEBREW_JSON_CORE}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
+    if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
        [[ "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ||
           "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
     then
