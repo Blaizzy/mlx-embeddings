@@ -55,3 +55,7 @@ Style/HashAsLastArrayItem:
 Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
+
+Bundler/GemFilename:
+  Exclude:
+    - "utils/gems.rb"
