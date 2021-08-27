@@ -19,7 +19,7 @@ homebrew-shellenv() {
   if [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" ]]; then
     [[ "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]] && return
     opoo "You have set HOMEBREW_SHELLENV_PREFIX=\"${HOMEBREW_SHELLENV_PREFIX}\"," \
-         "but the brew's executable does not present in your PATH." \
+         "but the brew's executable is not present in your PATH." \
          "Please run \`brew help shellenv\` for more information."
   fi
 
