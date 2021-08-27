@@ -820,7 +820,13 @@ See our [Deprecating, Disabling, and Removing Formulae](Deprecating-Disabling-an
 
 ## Updating formulae
 
-Eventually a new version of the software will be released. In this case you should update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method). If a [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) line exists outside any `bottle do` block it should be removed.
+Eventually a new version of the software will be released. In this case you should update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method). You can use:
+
+```sh
+brew bump-formula-pr foo
+```
+
+If a [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) line exists outside any `bottle do` block it should be removed.
 
 Leave the `bottle do ... end`  block as-is; our CI system will update it when we pull your change.
 
