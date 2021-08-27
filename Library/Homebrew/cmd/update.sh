@@ -648,7 +648,8 @@ EOS
     # HOMEBREW_UPDATE_PREINSTALL wasn't modified in subshell.
     # shellcheck disable=SC2031
     if [[ -n "${HOMEBREW_JSON_CORE}" ]] && [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
-       [[ "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
+       [[ "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ||
+          "${DIR}" = "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
     then
       continue
     fi

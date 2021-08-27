@@ -6,6 +6,7 @@ require "cask/config"
 require "cask/dsl"
 require "cask/metadata"
 require "searchable"
+require "api"
 
 module Cask
   # An instance of a cask.
@@ -19,7 +20,7 @@ module Cask
     extend Searchable
     include Metadata
 
-    attr_reader :token, :sourcefile_path, :config, :default_config
+    attr_reader :token, :sourcefile_path, :source, :config, :default_config
 
     def self.each(&block)
       return to_enum unless block
@@ -37,9 +38,10 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, tap: nil, config: nil, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
+      @source = source
       @tap = tap
       @block = block
 
@@ -147,14 +149,21 @@ module Cask
         return []
       end
 
+      latest_version = if ENV["HOMEBREW_JSON_CORE"].present? &&
+                          (latest_cask_version = Homebrew::API::Versions.latest_cask_version(token))
+        DSL::Version.new latest_cask_version.to_s
+      else
+        version
+      end
+
       installed = versions
       current   = installed.last
 
       # not outdated unless there is a different version on tap
-      return [] if current == version
+      return [] if current == latest_version
 
       # collect all installed versions that are different than tap version and return them
-      installed.reject { |v| v == version }
+      installed.reject { |v| v == latest_version }
     end
 
     def outdated_info(greedy, verbose, json, greedy_latest, greedy_auto_updates)

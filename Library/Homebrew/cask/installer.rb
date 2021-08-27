@@ -399,10 +399,10 @@ module Cask
     def save_caskfile
       old_savedir = @cask.metadata_timestamped_path
 
-      return unless @cask.sourcefile_path
+      return if @cask.source.blank?
 
       savedir = @cask.metadata_subdir("Casks", timestamp: :now, create: true)
-      FileUtils.copy @cask.sourcefile_path, savedir
+      (savedir/"#{@cask.token}.rb").write @cask.source
       old_savedir&.rmtree
     end
 

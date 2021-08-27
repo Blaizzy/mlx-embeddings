@@ -14,6 +14,12 @@ describe Homebrew::API do
   end
 
   describe "::fetch" do
+    it "fetches a text file" do
+      mock_curl_output stdout: text
+      fetched_text = described_class.fetch("foo.txt", json: false)
+      expect(fetched_text).to eq text
+    end
+
     it "fetches a JSON file" do
       mock_curl_output stdout: json
       fetched_json = described_class.fetch("foo.json")

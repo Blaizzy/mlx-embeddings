@@ -44,7 +44,12 @@ module Homebrew
         def latest_cask_version(token)
           return unless casks.key? token
 
-          Version.new(casks[token]["version"])
+          version = if casks[token]["versions"].key? MacOS.version.to_sym.to_s
+            casks[token]["versions"][MacOS.version.to_sym.to_s]
+          else
+            casks[token]["version"]
+          end
+          Version.new(version)
         end
       end
     end
