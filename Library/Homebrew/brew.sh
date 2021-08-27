@@ -51,23 +51,8 @@ HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
 HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
 HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 
-# Don't need to handle a default case.
-# HOMEBREW_LIBRARY set by bin/brew
-# shellcheck disable=SC2249,SC2154
-case "$*" in
-  --cellar)            echo "${HOMEBREW_CELLAR}"; exit 0 ;;
-  --repository|--repo) echo "${HOMEBREW_REPOSITORY}"; exit 0 ;;
-  --caskroom)          echo "${HOMEBREW_PREFIX}/Caskroom"; exit 0 ;;
-  --cache)             echo "${HOMEBREW_CACHE}"; exit 0 ;;
-  shellenv)            source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
-  formulae)            source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
-  casks)               source "${HOMEBREW_LIBRARY}/Homebrew/cmd/casks.sh"; homebrew-casks; exit 0 ;;
-  # falls back to cmd/prefix.rb on a non-zero return
-  --prefix*)           source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"; homebrew-prefix "$@" && exit 0 ;;
-esac
-
 #####
-##### Next, define all helper functions.
+##### Next, define helper functions for prompting.
 #####
 
 # These variables are set from the user environment.
@@ -124,6 +109,25 @@ odie() {
   onoe "$@"
   exit 1
 }
+
+# Don't need to handle a default case.
+# HOMEBREW_LIBRARY set by bin/brew
+# shellcheck disable=SC2249,SC2154
+case "$*" in
+  --cellar)            echo "${HOMEBREW_CELLAR}"; exit 0 ;;
+  --repository|--repo) echo "${HOMEBREW_REPOSITORY}"; exit 0 ;;
+  --caskroom)          echo "${HOMEBREW_PREFIX}/Caskroom"; exit 0 ;;
+  --cache)             echo "${HOMEBREW_CACHE}"; exit 0 ;;
+  shellenv)            source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
+  formulae)            source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
+  casks)               source "${HOMEBREW_LIBRARY}/Homebrew/cmd/casks.sh"; homebrew-casks; exit 0 ;;
+  # falls back to cmd/prefix.rb on a non-zero return
+  --prefix*)           source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"; homebrew-prefix "$@" && exit 0 ;;
+esac
+
+#####
+##### Next, define the reset of helper functions.
+#####
 
 safe_cd() {
   cd "$@" >/dev/null || odie "Failed to cd to $*!"
