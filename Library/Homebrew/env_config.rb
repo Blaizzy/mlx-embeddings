@@ -229,6 +229,10 @@ module Homebrew
                      "formulae.",
         boolean:     true,
       },
+      HOMEBREW_NO_CLEANUP_FORMULAE:           {
+        description: "A comma-separated list of formulae. Homebrew will refuse to clean up a " \
+                     "formula if it appears on this list.",
+      },
       HOMEBREW_NO_COLOR:                      {
         description:  "If set, do not print text with colour added.",
         default_text: "`$NO_COLOR`.",
