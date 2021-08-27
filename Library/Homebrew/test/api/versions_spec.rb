@@ -12,7 +12,15 @@ describe Homebrew::API::Versions do
       }
     EOS
   }
-  let(:versions_casks_json) { '{"foo":{"version":"1.2.3"}}' }
+  let(:versions_casks_json) {
+    <<~EOS
+      {
+        "foo":{"version":"1.2.3","versions":{}},
+        "bar":{"version":"1.2.3","versions":{"#{MacOS.version.to_sym}":"1.2.0"}},
+        "baz":{"version":"1.2.3","versions":{"test_os":"1.2.0"}}
+      }
+    EOS
+  }
 
   def mock_curl_output(stdout: "", success: true)
     curl_output = OpenStruct.new(stdout: stdout, success?: success)
@@ -46,9 +54,17 @@ describe Homebrew::API::Versions do
       expect(version.to_s).to eq "1.2.3"
     end
 
-    it "returns `nil` when the cask is not in the JSON file" do
+    it "returns the expected `Version` for an OS with a non-default version" do
       mock_curl_output stdout: versions_casks_json
       version = described_class.latest_cask_version("bar")
+      expect(version.to_s).to eq "1.2.0"
+      version = described_class.latest_cask_version("baz")
+      expect(version.to_s).to eq "1.2.3"
+    end
+
+    it "returns `nil` when the cask is not in the JSON file" do
+      mock_curl_output stdout: versions_casks_json
+      version = described_class.latest_cask_version("doesnotexist")
       expect(version).to be_nil
     end
   end
