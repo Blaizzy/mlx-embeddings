@@ -9817,6 +9817,8 @@ module Homebrew::EnvConfig
 
   def self.force_homebrew_on_linux?(); end
 
+  def self.force_homebrew_core_repo_on_linux?(); end
+
   def self.force_vendor_ruby?(); end
 
   def self.ftp_proxy(); end

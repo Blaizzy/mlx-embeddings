@@ -6,7 +6,9 @@ module Homebrew
     module Analytics
       class << self
         def analytics_api_path
-          return generic_analytics_api_path if Homebrew::EnvConfig.force_homebrew_on_linux?
+          return generic_analytics_api_path if
+            Homebrew::EnvConfig.force_homebrew_on_linux? ||
+            Homebrew::EnvConfig.force_homebrew_core_repo_on_linux?
 
           "analytics-linux"
         end

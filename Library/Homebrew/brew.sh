@@ -469,6 +469,17 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
 
   HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION="2.13"
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
+
+  HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin)"
+  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" = "https://github.com/Homebrew/homebrew-core" ]]
+  then
+    # If the remote origin has been set to Homebrew/homebrew-core by the install script,
+    # then we are in the case of a new installation of brew, using Homebrew/homebrew-core as a Linux core repository.
+    # In that case, set HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX=1 to set the right HOMEBREW_BOTTLE_DOMAIN below.
+    # TODO: Once the linuxbrew-core migration is done we will be able to clean this up and
+    # remove HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX
+    export HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX="1"
+  fi
 fi
 
 # A bug in the auto-update process prior to 3.1.2 means $HOMEBREW_BOTTLE_DOMAIN
@@ -484,7 +495,7 @@ then
   unset HOMEBREW_BOTTLE_DOMAIN
 fi
 
-if [[ -n "${HOMEBREW_MACOS}" || -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]]
+if [[ -n "${HOMEBREW_MACOS}" || -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" || -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
 then
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
 else
@@ -624,7 +635,7 @@ then
 fi
 export HOMEBREW_BREW_GIT_REMOTE
 
-if [[ -n "${HOMEBREW_MACOS}" ]] || [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]]
+if [[ -n "${HOMEBREW_MACOS}" ]] || [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]]  || [[ -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
 then
   HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
 else
