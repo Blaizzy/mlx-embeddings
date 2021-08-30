@@ -520,7 +520,7 @@ class Formula
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    latest_prefix = if ENV["HOMEBREW_JSON_CORE"].present? &&
+    latest_prefix = if ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
                        (latest_pkg_version = Homebrew::API::Versions.latest_formula_version(name))
       prefix latest_pkg_version
     else
@@ -1340,7 +1340,7 @@ class Formula
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
       current_version = T.let(false, T::Boolean)
-      latest_version = if ENV["HOMEBREW_JSON_CORE"].present? && (core_formula? || tap.blank?)
+      latest_version = if ENV["HOMEBREW_INSTALL_FROM_API"].present? && (core_formula? || tap.blank?)
         Homebrew::API::Versions.latest_formula_version(name) || pkg_version
       else
         pkg_version
