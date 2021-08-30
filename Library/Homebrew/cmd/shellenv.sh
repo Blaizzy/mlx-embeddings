@@ -4,24 +4,14 @@
 #:
 #:  The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
 #:  The variable `HOMEBREW_SHELLENV_PREFIX` will be exported to avoid adding duplicate entries to the environment variables.
-#:
-#:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`)
-#:  with: `eval "$(/path/to/brew shellenv)"`.
-#:
-#:  The variable `HOMEBREW_SHELLENV_PREFIX` may be inherited from the parent shell session. If you explicitly
-#:  modified the path variables (e.g. `PATH`) in your dotfiles which breaks the subshell varibale inheritecement,
-#:  please use `eval "$(HOMEBREW_SHELLENV_PREFIX='' /path/to/brew shellenv)"` to always get all the export statements.
+#:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 # HOMEBREW_CELLAR and HOMEBREW_PREFIX are set by extend/ENV/super.rb
 # HOMEBREW_REPOSITORY is set by bin/brew
 # shellcheck disable=SC2154
 homebrew-shellenv() {
-  if [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" ]]; then
-    [[ "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]] && return
-    opoo "You have set HOMEBREW_SHELLENV_PREFIX=\"${HOMEBREW_SHELLENV_PREFIX}\"," \
-         "but the brew's executable is not present in your PATH." \
-         "Please run \`brew help shellenv\` for more information."
-  fi
+  [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" &&
+     "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]] && return
 
   case "$(/bin/ps -p "${PPID}" -c -o comm=)" in
     fish | -fish)

@@ -570,13 +570,7 @@ Print export statements. When run in a shell, this installation of Homebrew will
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
 The variable `HOMEBREW_SHELLENV_PREFIX` will be exported to avoid adding duplicate entries to the environment variables.
-
-Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`)
-with: `eval "$(/path/to/brew shellenv)"`.
-
-The variable `HOMEBREW_SHELLENV_PREFIX` may be inherited from the parent shell session. If you explicitly
-modified the path variables (e.g. `PATH`) in your dotfiles which breaks the subshell varibale inheritecement,
-please use `eval "$(HOMEBREW_SHELLENV_PREFIX='' /path/to/brew shellenv)"` to always get all the export statements.
+Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
 
 ### `tap` [*`options`*] [*`user`*`/`*`repo`*] [*`URL`*]
 

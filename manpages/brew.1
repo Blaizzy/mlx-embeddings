@@ -792,13 +792,7 @@ Search for \fItext\fR in the given database\.
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
-The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. The variable \fBHOMEBREW_SHELLENV_PREFIX\fR will be exported to avoid adding duplicate entries to the environment variables\.
-.
-.P
-Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval "$(/path/to/brew shellenv)"\fR\.
-.
-.P
-The variable \fBHOMEBREW_SHELLENV_PREFIX\fR may be inherited from the parent shell session\. If you explicitly modified the path variables (e\.g\. \fBPATH\fR) in your dotfiles which breaks the subshell varibale inheritecement, please use \fBeval "$(HOMEBREW_SHELLENV_PREFIX=\'\' /path/to/brew shellenv)"\fR to always get all the export statements\.
+The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. The variable \fBHOMEBREW_SHELLENV_PREFIX\fR will be exported to avoid adding duplicate entries to the environment variables\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval $(brew shellenv)\fR
 .
 .SS "\fBtap\fR [\fIoptions\fR] [\fIuser\fR\fB/\fR\fIrepo\fR] [\fIURL\fR]"
 Tap a formula repository\.
