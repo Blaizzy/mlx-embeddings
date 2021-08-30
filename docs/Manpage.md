@@ -2037,6 +2037,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
   <br>If set, do not check for broken dependents after installing, upgrading or reinstalling formulae.
 
+- `HOMEBREW_NO_CLEANUP_FORMULAE`
+  <br>A comma-separated list of formulae. Homebrew will refuse to clean up a formula if it appears on this list.
+
 - `HOMEBREW_NO_COLOR`
   <br>If set, do not print text with colour added.
 
