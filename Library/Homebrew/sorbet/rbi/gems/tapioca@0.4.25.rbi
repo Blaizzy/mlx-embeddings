@@ -1082,6 +1082,9 @@ class Tapioca::Gemfile
 
   def lockfile; end
 
+  sig { returns([T::Array[Gem::Specification], T::Array[String]]) }
+  def materialize_deps; end
+
   sig { returns(Bundler::Runtime) }
   def runtime; end
 end

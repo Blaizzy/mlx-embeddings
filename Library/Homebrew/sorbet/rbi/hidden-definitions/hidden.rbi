@@ -9849,6 +9849,8 @@ module Homebrew::EnvConfig
 
   def self.no_bootsnap?(); end
 
+  def self.no_cleanup_formulae(); end
+
   def self.no_color?(); end
 
   def self.no_compat?(); end
