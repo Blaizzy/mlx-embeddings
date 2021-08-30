@@ -41,10 +41,10 @@ module Homebrew
         end
       end
 
-      formulae_to_install.each do |formula|
+      formula_installers = formulae_to_install.map do |formula|
         Migrator.migrate_if_needed(formula, force: force)
         begin
-          upgrade_formula(
+          fetch_formula_installer(
             formula,
             flags:                      flags,
             installed_on_request:       installed_on_request,
@@ -57,10 +57,15 @@ module Homebrew
             quiet:                      quiet,
             verbose:                    verbose,
           )
-          Cleanup.install_formula_clean!(formula)
-        rescue UnsatisfiedRequirements => e
+        rescue UnsatisfiedRequirements, DownloadError => e
           ofail "#{formula}: #{e}"
+          nil
         end
+      end.compact
+
+      formula_installers.each do |fi|
+        upgrade_formula(fi, verbose: verbose)
+        Cleanup.install_formula_clean!(fi.formula)
       end
     end
 
@@ -82,7 +87,7 @@ module Homebrew
       EOS
     end
 
-    def upgrade_formula(
+    def fetch_formula_installer(
       formula,
       flags:,
       installed_on_request: false,
@@ -100,9 +105,6 @@ module Homebrew
         keg_had_linked_opt = true
         keg_was_linked = keg.linked?
       end
-
-      kegs = outdated_kegs(formula)
-      linked_kegs = kegs.select(&:linked?)
 
       if formula.opt_prefix.directory?
         keg = Keg.new(formula.opt_prefix.resolved_path)
@@ -133,23 +135,33 @@ module Homebrew
         }.compact,
       )
 
-      print_upgrade_message(formula, fi.options)
-
-      fi.prelude
       fi.fetch
+      fi
+    end
+    private_class_method :fetch_formula_installer
+
+    def upgrade_formula(formula_installer, verbose: false)
+      formula = formula_installer.formula
+
+      kegs = outdated_kegs(formula)
+      linked_kegs = kegs.select(&:linked?)
+
+      print_upgrade_message(formula, formula_installer.options)
+
+      formula_installer.prelude
 
       # first we unlink the currently active keg for this formula otherwise it is
       # possible for the existing build to interfere with the build we are about to
       # do! Seriously, it happens!
       kegs.each(&:unlink)
 
-      fi.install
-      fi.finish
+      formula_installer.install
+      formula_installer.finish
     rescue FormulaInstallationAlreadyAttemptedError
       # We already attempted to upgrade f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.
       nil
-    rescue CannotInstallFormulaError, DownloadError => e
+    rescue CannotInstallFormulaError => e
       ofail e
     rescue BuildError => e
       e.dump(verbose: verbose)
