@@ -166,7 +166,7 @@ module Homebrew
             system "shards", "build", "--release"
             bin.install "bin/#{name}"
         <% elsif mode == :go %>
-            system "go", "build", *std_go_args
+            system "go", "build", *std_go_args(ldflags: "-s -w")
         <% elsif mode == :meson %>
             mkdir "build" do
               system "meson", *std_meson_args, ".."
