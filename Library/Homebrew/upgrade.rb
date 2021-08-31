@@ -44,7 +44,7 @@ module Homebrew
       formula_installers = formulae_to_install.map do |formula|
         Migrator.migrate_if_needed(formula, force: force)
         begin
-          fi = create_formula_installer(
+          fi = create_and_fetch_formula_installer(
             formula,
             flags:                      flags,
             installed_on_request:       installed_on_request,
@@ -89,7 +89,7 @@ module Homebrew
       EOS
     end
 
-    def create_formula_installer(
+    def create_and_fetch_formula_installer(
       formula,
       flags:,
       installed_on_request: false,
@@ -137,7 +137,7 @@ module Homebrew
         }.compact,
       )
     end
-    private_class_method :create_formula_installer
+    private_class_method :create_and_fetch_formula_installer
 
     def upgrade_formula(formula_installer, verbose: false)
       formula = formula_installer.formula
