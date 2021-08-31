@@ -44,7 +44,7 @@ module Homebrew
       formula_installers = formulae_to_install.map do |formula|
         Migrator.migrate_if_needed(formula, force: force)
         begin
-          fetch_formula_installer(
+          fi = create_formula_installer(
             formula,
             flags:                      flags,
             installed_on_request:       installed_on_request,
@@ -57,6 +57,8 @@ module Homebrew
             quiet:                      quiet,
             verbose:                    verbose,
           )
+          fi.fetch
+          fi
         rescue UnsatisfiedRequirements, DownloadError => e
           ofail "#{formula}: #{e}"
           nil
@@ -87,7 +89,7 @@ module Homebrew
       EOS
     end
 
-    def fetch_formula_installer(
+    def create_formula_installer(
       formula,
       flags:,
       installed_on_request: false,
@@ -116,7 +118,7 @@ module Homebrew
       options |= formula.build.used_options
       options &= formula.options
 
-      fi = FormulaInstaller.new(
+      FormulaInstaller.new(
         formula,
         **{
           options:                    options,
@@ -134,11 +136,8 @@ module Homebrew
           verbose:                    verbose,
         }.compact,
       )
-
-      fi.fetch
-      fi
     end
-    private_class_method :fetch_formula_installer
+    private_class_method :create_formula_installer
 
     def upgrade_formula(formula_installer, verbose: false)
       formula = formula_installer.formula
