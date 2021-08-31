@@ -578,12 +578,16 @@ Print only one commit\.
 \fB\-n\fR, \fB\-\-max\-count\fR
 Print only a specified number of commits\.
 .
-.SS "\fBmigrate\fR [\fI\-\-force\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBmigrate\fR [\fI\-\-force\fR] [\fI\-\-dry\-run\fR] \fIinstalled_formula\fR [\.\.\.]"
 Migrate renamed packages to new names, where \fIformula\fR are old names of packages\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Treat installed \fIformula\fR and provided \fIformula\fR as if they are from the same taps and migrate them anyway\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Show what would be migrated, but do not actually migrate anything\.
 .
 .SS "\fBmissing\fR [\fI\-\-hide\fR\fB=\fR] [\fIformula\fR \.\.\.]"
 Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\fR are provided, check all kegs\. Will exit with a non\-zero status if any kegs are found to be missing dependencies\.

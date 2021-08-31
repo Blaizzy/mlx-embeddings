@@ -997,6 +997,7 @@ __fish_brew_complete_arg 'man' -l verbose -d 'Make some output more verbose'
 
 __fish_brew_complete_cmd 'migrate' 'Migrate renamed packages to new names, where formula are old names of packages'
 __fish_brew_complete_arg 'migrate' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'migrate' -l dry-run -d 'Show what would be migrated, but do not actually migrate anything'
 __fish_brew_complete_arg 'migrate' -l force -d 'Treat installed formula and provided formula as if they are from the same taps and migrate them anyway'
 __fish_brew_complete_arg 'migrate' -l help -d 'Show this message'
 __fish_brew_complete_arg 'migrate' -l quiet -d 'Make some output more quiet'

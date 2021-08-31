@@ -187,21 +187,20 @@ module Homebrew
       puts formulae_upgrades.join("\n")
     end
 
-    unless args.dry_run?
-      Upgrade.upgrade_formulae(
-        formulae_to_install,
-        flags:                      args.flags_only,
-        installed_on_request:       args.named.present?,
-        force_bottle:               args.force_bottle?,
-        build_from_source_formulae: args.build_from_source_formulae,
-        interactive:                args.interactive?,
-        keep_tmp:                   args.keep_tmp?,
-        force:                      args.force?,
-        debug:                      args.debug?,
-        quiet:                      args.quiet?,
-        verbose:                    args.verbose?,
-      )
-    end
+    Upgrade.upgrade_formulae(
+      formulae_to_install,
+      flags:                      args.flags_only,
+      dry_run:                    args.dry_run?,
+      installed_on_request:       args.named.present?,
+      force_bottle:               args.force_bottle?,
+      build_from_source_formulae: args.build_from_source_formulae,
+      interactive:                args.interactive?,
+      keep_tmp:                   args.keep_tmp?,
+      force:                      args.force?,
+      debug:                      args.debug?,
+      quiet:                      args.quiet?,
+      verbose:                    args.verbose?,
+    )
 
     Upgrade.check_installed_dependents(
       formulae_to_install,

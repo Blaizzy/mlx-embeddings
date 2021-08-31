@@ -417,13 +417,15 @@ if no formula is provided.
 * `-n`, `--max-count`:
   Print only a specified number of commits.
 
-### `migrate` [*`--force`*] *`installed_formula`* [...]
+### `migrate` [*`--force`*] [*`--dry-run`*] *`installed_formula`* [...]
 
 Migrate renamed packages to new names, where *`formula`* are old names of
 packages.
 
 * `-f`, `--force`:
   Treat installed *`formula`* and provided *`formula`* as if they are from the same taps and migrate them anyway.
+* `-n`, `--dry-run`:
+  Show what would be migrated, but do not actually migrate anything.
 
 ### `missing` [*`--hide`*`=`] [*`formula`* ...]
 
