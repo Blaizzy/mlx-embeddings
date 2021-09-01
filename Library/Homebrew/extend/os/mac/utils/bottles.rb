@@ -6,7 +6,9 @@ module Utils
     class << self
       undef tag
 
-      def tag
+      def tag(symbol = nil)
+        return Utils::Bottles::Tag.from_symbol(symbol) if symbol.present?
+
         Utils::Bottles::Tag.new(system: MacOS.version.to_sym, arch: Hardware::CPU.arch)
       end
     end

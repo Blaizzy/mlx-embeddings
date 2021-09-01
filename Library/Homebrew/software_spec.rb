@@ -93,13 +93,13 @@ class SoftwareSpec
     !bottle_specification.collector.keys.empty?
   end
 
-  def bottle_tag?
-    bottle_specification.tag?(Utils::Bottles.tag)
+  def bottle_tag?(tag = nil)
+    bottle_specification.tag?(Utils::Bottles.tag(tag))
   end
 
-  def bottled?
-    bottle_tag? && \
-      (bottle_specification.compatible_locations? || owner.force_bottle)
+  def bottled?(tag = nil)
+    bottle_tag?(tag) && \
+      (tag.present? || bottle_specification.compatible_locations? || owner.force_bottle)
   end
 
   def bottle(disable_type = nil, disable_reason = nil, &block)
@@ -306,12 +306,7 @@ class Bottle
     @resource.specs[:bottle] = true
     @spec = spec
 
-    bottle_tag = if tag.present?
-      Utils::Bottles::Tag.from_symbol(tag)
-    else
-      Utils::Bottles.tag
-    end
-    checksum, tag, cellar = spec.checksum_for(bottle_tag)
+    checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag(tag))
 
     @prefix = spec.prefix
     @tag = tag
