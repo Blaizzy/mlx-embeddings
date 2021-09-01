@@ -1221,6 +1221,7 @@ _brew_man() {
 _brew_migrate() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--dry-run[Show what would be migrated, but do not actually migrate anything]' \
     '--force[Treat installed formula and provided formula as if they are from the same taps and migrate them anyway]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \

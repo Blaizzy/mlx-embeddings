@@ -154,10 +154,10 @@ module Homebrew
       @cleaned_up_paths = Set.new
     end
 
-    def self.install_formula_clean!(f)
+    def self.install_formula_clean!(f, dry_run: false)
       return if Homebrew::EnvConfig.no_install_cleanup?
 
-      cleanup = Cleanup.new
+      cleanup = Cleanup.new(dry_run: dry_run)
       if cleanup.periodic_clean_due?
         cleanup.periodic_clean!
       elsif f.latest_version_installed? && !cleanup.skip_clean_formula?(f)
@@ -187,8 +187,12 @@ module Homebrew
     def periodic_clean!
       return false unless periodic_clean_due?
 
-      ohai "`brew cleanup` has not been run in #{CLEANUP_DEFAULT_DAYS} days, running now..."
-      clean!(quiet: true, periodic: true)
+      if dry_run?
+        ohai "Would run `brew cleanup` which has not been run in the last #{CLEANUP_DEFAULT_DAYS} days"
+      else
+        ohai "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
+        clean!(quiet: true, periodic: true)
+      end
     end
 
     def clean!(quiet: false, periodic: false)

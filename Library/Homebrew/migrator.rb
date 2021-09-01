@@ -110,10 +110,14 @@ class Migrator
     true
   end
 
-  def self.migrate_if_needed(formula, force:)
+  def self.migrate_if_needed(formula, force:, dry_run: false)
     return unless Migrator.needs_migration?(formula)
 
     begin
+      if dry_run
+        ohai "Would migrate #{formula.oldname} to #{formula.name}"
+        return
+      end
       migrator = Migrator.new(formula, force: force)
       migrator.migrate
     rescue => e

@@ -1419,6 +1419,7 @@ _brew_migrate() {
     -*)
       __brewcomp "
       --debug
+      --dry-run
       --force
       --help
       --quiet

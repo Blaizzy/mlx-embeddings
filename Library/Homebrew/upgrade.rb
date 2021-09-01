@@ -17,6 +17,7 @@ module Homebrew
     def upgrade_formulae(
       formulae_to_install,
       flags:,
+      dry_run: false,
       installed_on_request: false,
       force_bottle: false,
       build_from_source_formulae: [],
@@ -42,7 +43,7 @@ module Homebrew
       end
 
       formula_installers = formulae_to_install.map do |formula|
-        Migrator.migrate_if_needed(formula, force: force)
+        Migrator.migrate_if_needed(formula, force: force, dry_run: dry_run)
         begin
           fi = create_and_fetch_formula_installer(
             formula,
@@ -57,7 +58,7 @@ module Homebrew
             quiet:                      quiet,
             verbose:                    verbose,
           )
-          fi.fetch
+          fi.fetch unless dry_run
           fi
         rescue UnsatisfiedRequirements, DownloadError => e
           ofail "#{formula}: #{e}"
@@ -66,8 +67,8 @@ module Homebrew
       end.compact
 
       formula_installers.each do |fi|
-        upgrade_formula(fi, verbose: verbose)
-        Cleanup.install_formula_clean!(fi.formula)
+        upgrade_formula(fi, dry_run: dry_run, verbose: verbose)
+        Cleanup.install_formula_clean!(fi.formula, dry_run: dry_run)
       end
     end
 
@@ -75,6 +76,22 @@ module Homebrew
       [formula, *formula.old_installed_formulae].map(&:linked_keg)
                                                 .select(&:directory?)
                                                 .map { |k| Keg.new(k.resolved_path) }
+    end
+
+    def print_dry_run_dependencies(formula, fi_deps)
+      return if fi_deps.empty?
+
+      plural = "dependency".pluralize(fi_deps.count)
+      ohai "Would upgrade #{fi_deps.count} #{plural} for #{formula.full_specified_name}:"
+      formulae_upgrades = fi_deps.map(&:first).map(&:to_formula).map do |f|
+        name = f.full_specified_name
+        if f.optlinked?
+          "#{name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
+        else
+          "#{name} #{f.pkg_version}"
+        end
+      end
+      puts formulae_upgrades.join(", ")
     end
 
     def print_upgrade_message(formula, fi_options)
@@ -139,13 +156,18 @@ module Homebrew
     end
     private_class_method :create_and_fetch_formula_installer
 
-    def upgrade_formula(formula_installer, verbose: false)
+    def upgrade_formula(formula_installer, dry_run: false, verbose: false)
       formula = formula_installer.formula
 
       kegs = outdated_kegs(formula)
       linked_kegs = kegs.select(&:linked?)
 
-      print_upgrade_message(formula, formula_installer.options)
+      if dry_run
+        print_dry_run_dependencies(formula, formula_installer.compute_dependencies)
+        return
+      else
+        print_upgrade_message(formula, formula_installer.options)
+      end
 
       formula_installer.prelude
 
