@@ -37,7 +37,7 @@ class Caveats
 
     if f.plist_manual || f.service?
       command = if f.service?
-        f.service.command.join(" ")
+        f.service.command.map{ |arg| "'#{arg}'" }.join(" ")
       else
         f.plist_manual
       end
