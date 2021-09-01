@@ -27,7 +27,9 @@ module Homebrew
 
         sig { params(name: String).returns(T.nilable(PkgVersion)) }
         def latest_formula_version(name)
-          versions = if OS.mac? || Homebrew::EnvConfig.force_homebrew_on_linux?
+          versions = if OS.mac? ||
+                        Homebrew::EnvConfig.force_homebrew_on_linux? ||
+                        Homebrew::EnvConfig.force_homebrew_core_repo_on_linux?
             formulae
           else
             linux

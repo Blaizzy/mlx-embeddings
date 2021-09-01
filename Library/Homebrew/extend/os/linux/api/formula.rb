@@ -6,7 +6,9 @@ module Homebrew
     module Formula
       class << self
         def formula_api_path
-          return generic_formula_api_path if Homebrew::EnvConfig.force_homebrew_on_linux?
+          return generic_formula_api_path if
+            Homebrew::EnvConfig.force_homebrew_on_linux? ||
+            Homebrew::EnvConfig.force_homebrew_core_repo_on_linux?
 
           "formula-linux"
         end
