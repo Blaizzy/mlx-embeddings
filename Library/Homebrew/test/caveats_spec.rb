@@ -124,7 +124,7 @@ describe Caveats do
         caveats = described_class.new(f).caveats
 
         expect(f.service?).to eq(true)
-        expect(caveats).to include("#{f.bin}/php test")
+        expect(caveats).to include("'#{f.bin}/php' 'test'")
         expect(caveats).to include("background service")
       end
 
