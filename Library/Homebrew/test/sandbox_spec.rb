@@ -34,7 +34,8 @@ describe Sandbox, :needs_macos do
     it "complains on failure" do
       ENV["HOMEBREW_VERBOSE"] = "1"
 
-      expect(Utils).to receive(:popen_read).and_return("foo")
+      allow(Utils).to receive(:popen_read).and_call_original
+      allow(Utils).to receive(:popen_read).with("syslog", any_args).and_return("foo")
 
       expect { sandbox.exec "false" }
         .to raise_error(ErrorDuringExecution)
@@ -49,7 +50,8 @@ describe Sandbox, :needs_macos do
         Mar 17 02:55:06 sandboxd[342]: Python(49765) deny file-write-unlink /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/distutils/errors.pyc
         bar
       EOS
-      expect(Utils).to receive(:popen_read).and_return(with_bogus_error)
+      allow(Utils).to receive(:popen_read).and_call_original
+      allow(Utils).to receive(:popen_read).with("syslog", any_args).and_return(with_bogus_error)
 
       expect { sandbox.exec "false" }
         .to raise_error(ErrorDuringExecution)

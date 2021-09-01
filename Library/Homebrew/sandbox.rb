@@ -101,8 +101,21 @@ class Sandbox
       command = [SANDBOX_EXEC, "-f", seatbelt.path, *args]
       # Start sandbox in a pseudoterminal to prevent access of the parent terminal.
       T.unsafe(PTY).spawn(*command) do |r, w, pid|
-        old_winch = trap(:WINCH) { w.winsize = $stdout.winsize if $stdout.tty? }
-        w.winsize = $stdout.winsize if $stdout.tty?
+        # Set the PTY's window size to match the parent terminal.
+        # Some formula tests are sensitive to the terminal size and fail if this is not set.
+        winch = proc do |_sig|
+          w.winsize = if $stdout.tty?
+            # We can only use IO#winsize if the IO object is a TTY.
+            $stdout.winsize
+          else
+            # Otherwise, default to tput, if available.
+            # This relies on ncurses rather than the system's ioctl.
+            [Utils.popen_read("tput", "lines").to_i, Utils.popen_read("tput", "cols").to_i]
+          end
+        end
+        # Update the window size whenever the parent terminal's window size changes.
+        old_winch = trap(:WINCH, &winch)
+        winch.call(nil)
 
         $stdin.raw! if $stdin.tty?
         stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
