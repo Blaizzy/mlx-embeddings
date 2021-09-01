@@ -33,6 +33,9 @@ module Utils
       # do not load .curlrc unless requested (must be the first argument)
       args << "--disable" unless Homebrew::EnvConfig.curlrc?
 
+      # echo any cookies received on a redirect
+      args << "--cookie-jar" << "/dev/null"
+
       args << "--globoff"
 
       args << "--show-error"
