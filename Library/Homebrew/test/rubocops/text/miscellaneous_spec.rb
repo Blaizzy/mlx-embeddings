@@ -45,22 +45,6 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "reports an offense when `OS.linux?` is used in homebrew/core" do
-      expect_offense(<<~RUBY, "/homebrew-core/")
-        class Foo < Formula
-          desc "foo"
-          url 'https://brew.sh/foo-1.0.tgz'
-          bottle do
-            if OS.linux?
-               ^^^^^^^^^ Don\'t use OS.linux?; homebrew/core only supports macOS
-              nil
-            end
-            sha256 "fe0679b932dd43a87fd415b609a7fbac7a069d117642ae8ebaac46ae1fb9f0b3" => :sierra
-          end
-        end
-      RUBY
-    end
-
     it "reports an offense when a useless `fails_with :llvm` is used" do
       expect_offense(<<~RUBY)
         class Foo < Formula
