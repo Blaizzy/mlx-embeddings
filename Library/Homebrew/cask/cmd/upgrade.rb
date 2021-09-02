@@ -166,6 +166,7 @@ module Cask
       )
         require "cask/installer"
 
+        start_time = Time.now
         odebug "Started upgrade process for Cask #{old_cask}"
         old_config = old_cask.config
 
@@ -228,6 +229,9 @@ module Cask
           old_cask_installer.revert_upgrade if started_upgrade
           raise e
         end
+
+        end_time = Time.now
+        Homebrew.messages.package_installed(new_cask.token, end_time - start_time)
       end
     end
   end

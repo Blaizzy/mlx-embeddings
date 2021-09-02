@@ -441,7 +441,7 @@ class FormulaInstaller
 
     opoo "Nothing was installed to #{formula.prefix}" unless formula.latest_version_installed?
     end_time = Time.now
-    Homebrew.messages.formula_installed(formula, end_time - start_time)
+    Homebrew.messages.package_installed(formula.name, end_time - start_time)
   end
 
   def check_conflicts
