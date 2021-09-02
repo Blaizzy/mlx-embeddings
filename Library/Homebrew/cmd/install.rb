@@ -202,28 +202,24 @@ module Homebrew
 
     Install.perform_preinstall_checks(cc: args.cc)
 
-    installed_formulae.each do |f|
-      Migrator.migrate_if_needed(f, force: args.force?)
-      Install.install_formula(
-        f,
-        build_bottle:               args.build_bottle?,
-        force_bottle:               args.force_bottle?,
-        bottle_arch:                args.bottle_arch,
-        ignore_deps:                args.ignore_dependencies?,
-        only_deps:                  args.only_dependencies?,
-        include_test_formulae:      args.include_test_formulae,
-        build_from_source_formulae: args.build_from_source_formulae,
-        cc:                         args.cc,
-        git:                        args.git?,
-        interactive:                args.interactive?,
-        keep_tmp:                   args.keep_tmp?,
-        force:                      args.force?,
-        debug:                      args.debug?,
-        quiet:                      args.quiet?,
-        verbose:                    args.verbose?,
-      )
-      Cleanup.install_formula_clean!(f)
-    end
+    Install.install_formulae(
+      installed_formulae,
+      build_bottle:               args.build_bottle?,
+      force_bottle:               args.force_bottle?,
+      bottle_arch:                args.bottle_arch,
+      ignore_deps:                args.ignore_dependencies?,
+      only_deps:                  args.only_dependencies?,
+      include_test_formulae:      args.include_test_formulae,
+      build_from_source_formulae: args.build_from_source_formulae,
+      cc:                         args.cc,
+      git:                        args.git?,
+      interactive:                args.interactive?,
+      keep_tmp:                   args.keep_tmp?,
+      force:                      args.force?,
+      debug:                      args.debug?,
+      quiet:                      args.quiet?,
+      verbose:                    args.verbose?,
+    )
 
     Upgrade.check_installed_dependents(
       installed_formulae,

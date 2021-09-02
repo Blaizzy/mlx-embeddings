@@ -229,8 +229,8 @@ module Homebrew
       false
     end
 
-    def install_formula(
-      f,
+    def install_formulae(
+      formulae_to_install,
       build_bottle: false,
       force_bottle: false,
       bottle_arch: nil,
@@ -247,28 +247,49 @@ module Homebrew
       quiet: false,
       verbose: false
     )
-      f.print_tap_action
-      build_options = f.build
+      formula_installers = formulae_to_install.map do |f|
+        Migrator.migrate_if_needed(f, force: force)
+        build_options = f.build
 
-      fi = FormulaInstaller.new(
-        f,
-        options:                    build_options.used_options,
-        build_bottle:               build_bottle,
-        force_bottle:               force_bottle,
-        bottle_arch:                bottle_arch,
-        ignore_deps:                ignore_deps,
-        only_deps:                  only_deps,
-        include_test_formulae:      include_test_formulae,
-        build_from_source_formulae: build_from_source_formulae,
-        cc:                         cc,
-        git:                        git,
-        interactive:                interactive,
-        keep_tmp:                   keep_tmp,
-        force:                      force,
-        debug:                      debug,
-        quiet:                      quiet,
-        verbose:                    verbose,
-      )
+        fi = FormulaInstaller.new(
+          f,
+          options:                    build_options.used_options,
+          build_bottle:               build_bottle,
+          force_bottle:               force_bottle,
+          bottle_arch:                bottle_arch,
+          ignore_deps:                ignore_deps,
+          only_deps:                  only_deps,
+          include_test_formulae:      include_test_formulae,
+          build_from_source_formulae: build_from_source_formulae,
+          cc:                         cc,
+          git:                        git,
+          interactive:                interactive,
+          keep_tmp:                   keep_tmp,
+          force:                      force,
+          debug:                      debug,
+          quiet:                      quiet,
+          verbose:                    verbose,
+        )
+
+        begin
+          fi.fetch
+          fi
+        rescue UnsatisfiedRequirements, DownloadError, ChecksumMismatchError => e
+          ofail "#{f}: #{e}"
+          nil
+        end
+      end.compact
+
+      formula_installers.each do |fi|
+        install_formula(fi, only_deps: only_deps)
+        Cleanup.install_formula_clean!(fi.formula)
+      end
+    end
+
+    def install_formula(formula_installer, only_deps: false)
+      f = formula_installer.formula
+
+      f.print_tap_action
 
       if f.linked_keg.directory?
         if Homebrew::EnvConfig.no_install_upgrade?
@@ -291,17 +312,16 @@ module Homebrew
           puts "#{f.name} #{f.linked_version} is installed but outdated"
           kegs = Upgrade.outdated_kegs(f)
           linked_kegs = kegs.select(&:linked?)
-          Upgrade.print_upgrade_message(f, fi.options)
+          Upgrade.print_upgrade_message(f, formula_installer.options)
         end
       end
 
-      fi.prelude
-      fi.fetch
+      formula_installer.prelude
 
       kegs.each(&:unlink) if kegs.present?
 
-      fi.install
-      fi.finish
+      formula_installer.install
+      formula_installer.finish
     rescue FormulaInstallationAlreadyAttemptedError
       # We already attempted to install f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.
@@ -316,6 +336,7 @@ module Homebrew
           nil
       end
     end
+    private_class_method :install_formula
   end
 end
 
