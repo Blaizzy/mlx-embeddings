@@ -21,7 +21,7 @@ module Homebrew
              description: "Pull requests must have this label."
       comma_array "--without-labels",
                   description: "Pull requests must not have these labels (default: "\
-                               "`do not merge`, `new formula`, `automerge-skip`, `linux-only`, "\
+                               "`do not merge`, `new formula`, `automerge-skip`, "\
                                "`linux to homebrew-core`)."
       switch "--without-approval",
              description: "Pull requests do not require approval to be merged."
@@ -49,7 +49,6 @@ module Homebrew
       "do not merge",
       "new formula",
       "automerge-skip",
-      "linux-only",
       "linux to homebrew-core",
     ]
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
