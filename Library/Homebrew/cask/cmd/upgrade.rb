@@ -203,7 +203,9 @@ module Cask
           # Start new cask's installation steps
           new_cask_installer.check_conflicts
 
-          puts new_cask_installer.caveats if new_cask_installer.caveats
+          if (caveats = new_cask_installer.caveats)
+            puts caveats
+          end
 
           new_cask_installer.fetch
 
