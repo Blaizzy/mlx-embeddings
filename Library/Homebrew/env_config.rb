@@ -31,7 +31,7 @@ module Homebrew
       },
       HOMEBREW_BAT_CONFIG_PATH:                   {
         description:  "Use this as the `bat` configuration file.",
-        default_text: "`$HOME/.bat/config`.",
+        default_text: "`$HOME/.config/bat/config`.",
       },
       HOMEBREW_BOOTSNAP:                          {
         description: "If set, use Bootsnap to speed up repeated `brew` calls. "\
