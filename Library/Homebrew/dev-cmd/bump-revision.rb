@@ -18,8 +18,12 @@ module Homebrew
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
+      switch "--write-only",
+             description: "Make the expected file modifications without taking any Git actions."
       flag   "--message=",
              description: "Append <message> to the default commit message."
+
+      conflicts "--dry-run", "--write-only"
 
       named_args :formula, min: 1
     end
@@ -62,7 +66,7 @@ module Homebrew
       message = "#{formula.name}: revision bump #{args.message}"
       if args.dry_run?
         ohai "git commit --no-edit --verbose --message=#{message} -- #{formula.path}"
-      else
+      elsif !args.write_only?
         formula.path.parent.cd do
           safe_system "git", "commit", "--no-edit", "--verbose",
                       "--message=#{message}", "--", formula.path
