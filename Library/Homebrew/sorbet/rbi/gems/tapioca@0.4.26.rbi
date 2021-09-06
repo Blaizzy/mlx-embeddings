@@ -772,7 +772,7 @@ Tapioca::Compilers::Sorbet::SORBET = T.let(T.unsafe(nil), Pathname)
 module Tapioca::Compilers::SymbolTable; end
 
 class Tapioca::Compilers::SymbolTable::SymbolGenerator
-  sig { params(gem: Tapioca::Gemfile::Gem, indent: Integer).void }
+  sig { params(gem: Tapioca::Gemfile::GemSpec, indent: Integer).void }
   def initialize(gem, indent = T.unsafe(nil)); end
 
   def gem; end
@@ -971,7 +971,7 @@ class Tapioca::Compilers::SymbolTable::SymbolLoader::SymbolTableParser
 end
 
 class Tapioca::Compilers::SymbolTableCompiler
-  sig { params(gem: Tapioca::Gemfile::Gem, indent: Integer).returns(String) }
+  sig { params(gem: Tapioca::Gemfile::GemSpec, indent: Integer).returns(String) }
   def compile(gem, indent = T.unsafe(nil)); end
 end
 
@@ -1054,17 +1054,17 @@ class Tapioca::Gemfile
   sig { returns(Bundler::Definition) }
   def definition; end
 
-  sig { returns(T::Array[Tapioca::Gemfile::Gem]) }
+  sig { returns(T::Array[Tapioca::Gemfile::GemSpec]) }
   def dependencies; end
 
-  sig { params(gem_name: String).returns(T.nilable(Tapioca::Gemfile::Gem)) }
+  sig { params(gem_name: String).returns(T.nilable(Tapioca::Gemfile::GemSpec)) }
   def gem(gem_name); end
 
   sig { returns(T::Array[String]) }
   def missing_specs; end
 
   sig { void }
-  def require; end
+  def require_bundle; end
 
   private
 
@@ -1077,7 +1077,7 @@ class Tapioca::Gemfile
   sig { returns(T::Array[Symbol]) }
   def groups; end
 
-  sig { returns([T::Array[Tapioca::Gemfile::Gem], T::Array[String]]) }
+  sig { returns([T::Array[Tapioca::Gemfile::GemSpec], T::Array[String]]) }
   def load_dependencies; end
 
   def lockfile; end
@@ -1089,7 +1089,7 @@ class Tapioca::Gemfile
   def runtime; end
 end
 
-class Tapioca::Gemfile::Gem
+class Tapioca::Gemfile::GemSpec
   sig { params(spec: T.any(Gem::Specification, T.all(Bundler::RemoteSpecification, Bundler::StubSpecification))).void }
   def initialize(spec); end
 
@@ -1140,7 +1140,7 @@ class Tapioca::Gemfile::Gem
   def version_string; end
 end
 
-Tapioca::Gemfile::Gem::IGNORED_GEMS = T.let(T.unsafe(nil), Array)
+Tapioca::Gemfile::GemSpec::IGNORED_GEMS = T.let(T.unsafe(nil), Array)
 Tapioca::Gemfile::Spec = T.type_alias { T.any(Gem::Specification, T.all(Bundler::RemoteSpecification, Bundler::StubSpecification)) }
 
 class Tapioca::Generator < ::Thor::Shell::Color
@@ -1182,7 +1182,7 @@ class Tapioca::Generator < ::Thor::Shell::Color
   sig { params(constant_name: String, contents: String, outpath: Pathname, quiet: T::Boolean).returns(T.nilable(Pathname)) }
   def compile_dsl_rbi(constant_name, contents, outpath: T.unsafe(nil), quiet: T.unsafe(nil)); end
 
-  sig { params(gem: Tapioca::Gemfile::Gem).void }
+  sig { params(gem: Tapioca::Gemfile::GemSpec).void }
   def compile_gem_rbi(gem); end
 
   sig { returns(Tapioca::Compilers::SymbolTableCompiler) }
@@ -1218,7 +1218,7 @@ class Tapioca::Generator < ::Thor::Shell::Color
   sig { params(gem_name: String, version: String).returns(Pathname) }
   def gem_rbi_filename(gem_name, version); end
 
-  sig { params(gem_names: T::Array[String]).returns(T::Array[Tapioca::Gemfile::Gem]) }
+  sig { params(gem_names: T::Array[String]).returns(T::Array[Tapioca::Gemfile::GemSpec]) }
   def gems_to_generate(gem_names); end
 
   sig { params(eager_load: T::Boolean).void }
@@ -1316,7 +1316,7 @@ class Tapioca::Loader
   def load_bundle(initialize_file, require_file); end
 
   sig { params(environment_load: T::Boolean, eager_load: T::Boolean).void }
-  def load_rails(environment_load: T.unsafe(nil), eager_load: T.unsafe(nil)); end
+  def load_rails_application(environment_load: T.unsafe(nil), eager_load: T.unsafe(nil)); end
 
   private
 
@@ -1329,14 +1329,8 @@ class Tapioca::Loader
   sig { void }
   def load_rails_engines; end
 
-  sig { void }
-  def load_rake; end
-
   sig { returns(T::Array[T.untyped]) }
   def rails_engines; end
-
-  sig { void }
-  def require_bundle; end
 
   sig { params(file: T.nilable(String)).void }
   def require_helper(file); end
