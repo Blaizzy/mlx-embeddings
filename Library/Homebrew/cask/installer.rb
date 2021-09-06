@@ -88,6 +88,7 @@ module Cask
     end
 
     def install
+      start_time = Time.now
       odebug "Cask::Installer#install"
 
       old_config = @cask.config
@@ -115,6 +116,8 @@ module Cask
       purge_backed_up_versioned_files
 
       puts summary
+      end_time = Time.now
+      Homebrew.messages.package_installed(@cask.token, end_time - start_time)
     rescue
       restore_backup
       raise

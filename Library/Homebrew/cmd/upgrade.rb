@@ -67,7 +67,7 @@ module Homebrew
         }],
         [:switch, "--display-times", {
           env:         :display_install_times,
-          description: "Print install times for each formula at the end of the run.",
+          description: "Print install times for each package at the end of the run.",
         }],
       ].each do |options|
         send(*options)
@@ -104,12 +104,10 @@ module Homebrew
     only_upgrade_formulae = formulae.present? && casks.blank?
     only_upgrade_casks = casks.present? && formulae.blank?
 
-    display_messages = !only_upgrade_casks && upgrade_outdated_formulae(formulae, args: args)
-    force_caveats = !only_upgrade_formulae && upgrade_outdated_casks(casks, args: args)
+    upgrade_outdated_formulae(formulae, args: args) unless only_upgrade_casks
+    upgrade_outdated_casks(casks, args: args) unless only_upgrade_formulae
 
-    return unless display_messages
-
-    Homebrew.messages.display_messages(force_caveats: force_caveats, display_times: args.display_times?)
+    Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 
   sig { params(formulae: T::Array[Formula], args: CLI::Args).returns(T::Boolean) }

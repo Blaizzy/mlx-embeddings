@@ -6,12 +6,12 @@
 class Messages
   extend T::Sig
 
-  attr_reader :caveats, :formula_count, :install_times
+  attr_reader :caveats, :package_count, :install_times
 
   sig { void }
   def initialize
     @caveats = []
-    @formula_count = 0
+    @package_count = 0
     @install_times = []
   end
 
@@ -19,9 +19,9 @@ class Messages
     @caveats.push(package: package, caveats: caveats)
   end
 
-  def formula_installed(f, elapsed_time)
-    @formula_count += 1
-    @install_times.push(formula: f.name, time: elapsed_time)
+  def package_installed(package, elapsed_time)
+    @package_count += 1
+    @install_times.push(package: package, time: elapsed_time)
   end
 
   def display_messages(force_caveats: false, display_times: false)
@@ -30,8 +30,8 @@ class Messages
   end
 
   def display_caveats(force: false)
-    return if @formula_count.zero?
-    return if @formula_count == 1 && !force
+    return if @package_count.zero?
+    return if @package_count == 1 && !force
     return if @caveats.empty?
 
     oh1 "Caveats"
@@ -45,7 +45,7 @@ class Messages
 
     oh1 "Installation times"
     install_times.each do |t|
-      puts format("%<formula>-20s %<time>10.3f s", t)
+      puts format("%<package>-20s %<time>10.3f s", t)
     end
   end
 end

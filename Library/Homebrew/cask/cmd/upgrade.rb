@@ -166,6 +166,7 @@ module Cask
       )
         require "cask/installer"
 
+        start_time = Time.now
         odebug "Started upgrade process for Cask #{old_cask}"
         old_config = old_cask.config
 
@@ -203,7 +204,9 @@ module Cask
           # Start new cask's installation steps
           new_cask_installer.check_conflicts
 
-          puts new_cask_installer.caveats if new_cask_installer.caveats
+          if (caveats = new_cask_installer.caveats)
+            puts caveats
+          end
 
           new_cask_installer.fetch
 
@@ -226,6 +229,9 @@ module Cask
           old_cask_installer.revert_upgrade if started_upgrade
           raise e
         end
+
+        end_time = Time.now
+        Homebrew.messages.package_installed(new_cask.token, end_time - start_time)
       end
     end
   end
