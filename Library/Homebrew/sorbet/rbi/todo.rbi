@@ -10,4 +10,3 @@ module T::InterfaceWrapper::Helpers; end
 module T::Private::Abstract::Hooks; end
 module T::Private::Methods::MethodHooks; end
 module T::Private::Methods::SingletonMethodHooks; end
-module Tapioca::Gemfile::Gem::Specification; end
