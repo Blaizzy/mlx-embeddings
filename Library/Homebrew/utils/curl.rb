@@ -10,6 +10,8 @@ module Utils
   #
   # @api private
   module Curl
+    extend T::Sig
+
     using TimeRemaining
 
     module_function
@@ -27,7 +29,26 @@ module Utils
       @curl
     end
 
-    def curl_args(*extra_args, **options)
+    sig {
+      params(
+        extra_args:      T.untyped,
+        connect_timeout: T.any(Integer, Float, NilClass),
+        max_time:        T.any(Integer, Float, NilClass),
+        retries:         T.nilable(Integer),
+        retry_max_time:  T.any(Integer, Float, NilClass),
+        show_output:     T.nilable(T::Boolean),
+        user_agent:      T.any(String, Symbol, NilClass),
+      ).returns(T::Array[T.untyped])
+    }
+    def curl_args(
+      *extra_args,
+      connect_timeout: nil,
+      max_time: nil,
+      retries: Homebrew::EnvConfig.curl_retries.to_i,
+      retry_max_time: nil,
+      show_output: false,
+      user_agent: nil
+    )
       args = []
 
       # do not load .curlrc unless requested (must be the first argument)
@@ -40,28 +61,33 @@ module Utils
 
       args << "--show-error"
 
-      args << "--user-agent" << case options[:user_agent]
+      args << "--user-agent" << case user_agent
       when :browser, :fake
         HOMEBREW_USER_AGENT_FAKE_SAFARI
       when :default, nil
         HOMEBREW_USER_AGENT_CURL
       when String
-        options[:user_agent]
+        user_agent
+      else
+        raise TypeError, ":user_agent must be :browser/:fake, :default, or a String"
       end
 
       args << "--header" << "Accept-Language: en"
 
-      unless options[:show_output] == true
+      unless show_output == true
         args << "--fail"
         args << "--progress-bar" unless Context.current.verbose?
         args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
         args << "--silent" unless $stdout.tty?
       end
 
-      args << "--connect-timeout" << connect_timeout.round(3) if options[:connect_timeout]
-      args << "--max-time" << max_time.round(3) if options[:max_time]
-      args << "--retry" << Homebrew::EnvConfig.curl_retries unless options[:retry] == false
-      args << "--retry-max-time" << retry_max_time.round if options[:retry_max_time]
+      args << "--connect-timeout" << connect_timeout.round(3) if connect_timeout.present?
+      args << "--max-time" << max_time.round(3) if max_time.present?
+
+      # A non-positive integer (e.g., 0) or `nil` will omit this argument
+      args << "--retry" << retries if retries&.positive?
+
+      args << "--retry-max-time" << retry_max_time.round if retry_max_time.present?
 
       args + extra_args
     end

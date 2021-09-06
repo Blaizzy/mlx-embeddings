@@ -67,7 +67,7 @@ module Homebrew
         debug:        false,
         verbose:      false,
         timeout:      CURL_PROCESS_TIMEOUT,
-        retry:        false,
+        retries:      0,
       }.freeze
 
       # HTTP response head(s) and body are typically separated by a double
