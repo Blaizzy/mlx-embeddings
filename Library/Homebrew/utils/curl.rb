@@ -214,8 +214,13 @@ module Utils
       if url != secure_url
         user_agents.each do |user_agent|
           secure_details = begin
-            curl_http_content_headers_and_checksum(secure_url, specs: specs, hash_needed: true,
-                                                   user_agent: user_agent, use_homebrew_curl: use_homebrew_curl)
+            curl_http_content_headers_and_checksum(
+              secure_url,
+              specs:             specs,
+              hash_needed:       true,
+              use_homebrew_curl: use_homebrew_curl,
+              user_agent:        user_agent,
+            )
           rescue Timeout::Error
             next
           end
@@ -231,8 +236,13 @@ module Utils
       details = nil
       user_agents.each do |user_agent|
         details =
-          curl_http_content_headers_and_checksum(url, specs: specs, hash_needed: hash_needed,
-                                                 user_agent: user_agent, use_homebrew_curl: use_homebrew_curl)
+          curl_http_content_headers_and_checksum(
+            url,
+            specs:             specs,
+            hash_needed:       hash_needed,
+            use_homebrew_curl: use_homebrew_curl,
+            user_agent:        user_agent,
+          )
         break if http_status_ok?(details[:status])
       end
 
@@ -297,16 +307,21 @@ module Utils
       "The #{url_type} #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
     end
 
-    def curl_http_content_headers_and_checksum(url, specs: {}, hash_needed: false,
-                                               user_agent: :default, use_homebrew_curl: false)
+    def curl_http_content_headers_and_checksum(
+      url, specs: {}, hash_needed: false,
+      use_homebrew_curl: false, user_agent: :default
+    )
       file = Tempfile.new.tap(&:close)
 
       specs = specs.flat_map { |option, argument| ["--#{option.to_s.tr("_", "-")}", argument] }
-      max_time = hash_needed ? "600" : "25"
+      max_time = hash_needed ? 600 : 25
       output, _, status = curl_output(
-        *specs, "--dump-header", "-", "--output", file.path, "--location",
-        "--connect-timeout", "15", "--max-time", max_time, "--retry-max-time", max_time, url,
-        user_agent: user_agent, use_homebrew_curl: use_homebrew_curl
+        *specs, "--dump-header", "-", "--output", file.path, "--location", url,
+        use_homebrew_curl: use_homebrew_curl,
+        connect_timeout:   15,
+        max_time:          max_time,
+        retry_max_time:    max_time,
+        user_agent:        user_agent
       )
 
       status_code = :unknown
