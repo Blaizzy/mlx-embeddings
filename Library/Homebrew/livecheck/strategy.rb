@@ -247,10 +247,8 @@ module Homebrew
           return data
         end
 
-        /^(?<error_msg>curl: \(\d+\) .+)/ =~ stderr
-        {
-          messages: [error_msg.presence || "cURL failed without an error"],
-        }
+        error_msgs = stderr&.scan(/^curl:.+$/)
+        { messages: error_msgs.presence || ["cURL failed without a detectable error"] }
       end
 
       # Handles the return value from a `strategy` block in a `livecheck`
