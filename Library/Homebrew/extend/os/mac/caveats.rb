@@ -38,8 +38,8 @@ class Caveats
     if f.plist_manual || f.service?
       command = if f.service?
         f.service.command
-         .map { |arg| (arg =~ /\s/) ? "'#{arg}'" : arg } # wrap multi-word arguments in quotes
-         .join(" ")
+          .map { |arg| (arg =~ /\s/) ? "'#{arg}'" : arg } # wrap multi-word arguments in quotes
+          .join(" ")
       else
         f.plist_manual
       end
