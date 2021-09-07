@@ -128,6 +128,20 @@ describe Caveats do
         expect(caveats).to include("background service")
       end
 
+      it "wraps multi-word service parameters" do
+        f = formula do
+          url "foo-1.0"
+          service do
+            run [bin/"nginx", "-g", "daemon off;"]
+          end
+        end
+        caveats = described_class.new(f).caveats
+
+        expect(f.service?).to eq(true)
+        expect(caveats).to include("#{f.bin}/nginx -g 'daemon off;'")
+        expect(caveats).to include("background service")
+      end
+
       it "warns about brew failing under tmux" do
         f = formula do
           url "foo-1.0"
