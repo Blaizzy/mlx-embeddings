@@ -27,7 +27,7 @@ module Homebrew
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
 
       api_url = "#{API_DOMAIN}/#{endpoint}"
-      output = Utils::Curl.curl_output("--fail", "--max-time", "5", api_url)
+      output = Utils::Curl.curl_output("--fail", api_url, max_time: 5)
       raise ArgumentError, "No file found at #{Tty.underline}#{api_url}#{Tty.reset}" unless output.success?
 
       cache[endpoint] = if json

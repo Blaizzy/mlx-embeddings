@@ -39,8 +39,6 @@ module Homebrew
       DEFAULT_CURL_ARGS = [
         # Follow redirections to handle mirrors, relocations, etc.
         "--location",
-        "--connect-timeout", CURL_CONNECT_TIMEOUT,
-        "--max-time", CURL_MAX_TIME
       ].freeze
 
       # `curl` arguments used in `Strategy#page_headers` method.
@@ -62,12 +60,14 @@ module Homebrew
 
       # Baseline `curl` options used in {Strategy} methods.
       DEFAULT_CURL_OPTIONS = {
-        print_stdout: false,
-        print_stderr: false,
-        debug:        false,
-        verbose:      false,
-        timeout:      CURL_PROCESS_TIMEOUT,
-        retry:        false,
+        print_stdout:    false,
+        print_stderr:    false,
+        debug:           false,
+        verbose:         false,
+        timeout:         CURL_PROCESS_TIMEOUT,
+        connect_timeout: CURL_CONNECT_TIMEOUT,
+        max_time:        CURL_MAX_TIME,
+        retries:         0,
       }.freeze
 
       # HTTP response head(s) and body are typically separated by a double
