@@ -101,32 +101,40 @@ class Sandbox
       command = [SANDBOX_EXEC, "-f", seatbelt.path, *args]
       # Start sandbox in a pseudoterminal to prevent access of the parent terminal.
       T.unsafe(PTY).spawn(*command) do |r, w, pid|
-        # Set the PTY's window size to match the parent terminal.
-        # Some formula tests are sensitive to the terminal size and fail if this is not set.
-        winch = proc do |_sig|
-          w.winsize = if $stdout.tty?
-            # We can only use IO#winsize if the IO object is a TTY.
-            $stdout.winsize
-          else
-            # Otherwise, default to tput, if available.
-            # This relies on ncurses rather than the system's ioctl.
-            [Utils.popen_read("tput", "lines").to_i, Utils.popen_read("tput", "cols").to_i]
+        write_to_pty = proc {
+          # Set the PTY's window size to match the parent terminal.
+          # Some formula tests are sensitive to the terminal size and fail if this is not set.
+          winch = proc do |_sig|
+            w.winsize = if $stdout.tty?
+              # We can only use IO#winsize if the IO object is a TTY.
+              $stdout.winsize
+            else
+              # Otherwise, default to tput, if available.
+              # This relies on ncurses rather than the system's ioctl.
+              [Utils.popen_read("tput", "lines").to_i, Utils.popen_read("tput", "cols").to_i]
+            end
           end
+
+          begin
+            # Update the window size whenever the parent terminal's window size changes.
+            old_winch = trap(:WINCH, &winch)
+            winch.call(nil)
+
+            stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
+
+            r.each_char { |c| print(c) }
+
+            Process.wait(pid)
+          ensure
+            stdin_thread&.kill
+            trap(:WINCH, old_winch)
+          end
+        }
+        if $stdout.tty?
+          $stdin.raw &write_to_pty
+        else
+          write_to_pty.call
         end
-        # Update the window size whenever the parent terminal's window size changes.
-        old_winch = trap(:WINCH, &winch)
-        winch.call(nil)
-
-        $stdin.raw! if $stdin.tty?
-        stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
-
-        r.each_char { |c| print(c) }
-
-        Process.wait(pid)
-      ensure
-        stdin_thread&.kill
-        $stdin.cooked! if $stdin.tty?
-        trap(:WINCH, old_winch)
       end
       raise ErrorDuringExecution.new(command, status: $CHILD_STATUS) unless $CHILD_STATUS.success?
     rescue
