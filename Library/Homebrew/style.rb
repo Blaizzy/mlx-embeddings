@@ -164,7 +164,7 @@ module Homebrew
     end
 
     def run_shellcheck(files, output_type)
-      shellcheck   = Formula["shellcheck"].opt_bin/"shellcheck" if Formula["shellcheck"].any_version_installed?
+      shellcheck   = Formula["shellcheck"].opt_bin/"shellcheck" if Formula["shellcheck"].latest_version_installed?
       shellcheck ||= which("shellcheck")
       shellcheck ||= which("shellcheck", ENV["HOMEBREW_PATH"])
       shellcheck ||= begin
