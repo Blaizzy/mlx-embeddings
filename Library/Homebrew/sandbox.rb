@@ -115,20 +115,18 @@ class Sandbox
         end
 
         write_to_pty = proc do
-          begin
-            # Update the window size whenever the parent terminal's window size changes.
-            old_winch = trap(:WINCH, &winch)
-            winch.call(nil)
+          # Update the window size whenever the parent terminal's window size changes.
+          old_winch = trap(:WINCH, &winch)
+          winch.call(nil)
 
-            stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
+          stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
 
-            r.each_char { |c| print(c) }
+          r.each_char { |c| print(c) }
 
-            Process.wait(pid)
-          ensure
-            stdin_thread&.kill
-            trap(:WINCH, old_winch)
-          end
+          Process.wait(pid)
+        ensure
+          stdin_thread&.kill
+          trap(:WINCH, old_winch)
         end
 
         if $stdin.tty?
