@@ -101,20 +101,20 @@ class Sandbox
       command = [SANDBOX_EXEC, "-f", seatbelt.path, *args]
       # Start sandbox in a pseudoterminal to prevent access of the parent terminal.
       T.unsafe(PTY).spawn(*command) do |r, w, pid|
-        write_to_pty = proc {
-          # Set the PTY's window size to match the parent terminal.
-          # Some formula tests are sensitive to the terminal size and fail if this is not set.
-          winch = proc do |_sig|
-            w.winsize = if $stdout.tty?
-              # We can only use IO#winsize if the IO object is a TTY.
-              $stdout.winsize
-            else
-              # Otherwise, default to tput, if available.
-              # This relies on ncurses rather than the system's ioctl.
-              [Utils.popen_read("tput", "lines").to_i, Utils.popen_read("tput", "cols").to_i]
-            end
+        # Set the PTY's window size to match the parent terminal.
+        # Some formula tests are sensitive to the terminal size and fail if this is not set.
+        winch = proc do |_sig|
+          w.winsize = if $stdout.tty?
+            # We can only use IO#winsize if the IO object is a TTY.
+            $stdout.winsize
+          else
+            # Otherwise, default to tput, if available.
+            # This relies on ncurses rather than the system's ioctl.
+            [Utils.popen_read("tput", "lines").to_i, Utils.popen_read("tput", "cols").to_i]
           end
+        end
 
+        write_to_pty = proc do
           begin
             # Update the window size whenever the parent terminal's window size changes.
             old_winch = trap(:WINCH, &winch)
@@ -129,9 +129,10 @@ class Sandbox
             stdin_thread&.kill
             trap(:WINCH, old_winch)
           end
-        }
-        if $stdout.tty?
-          $stdin.raw &write_to_pty
+        end
+
+        if $stdin.tty?
+          $stdin.raw(&write_to_pty)
         else
           write_to_pty.call
         end
