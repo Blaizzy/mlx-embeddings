@@ -290,6 +290,9 @@ module Homebrew
 
       sig { returns(T.nilable(T::Array[String])) }
       def groups; end
+
+      sig { returns(T::Boolean) }
+      def write_only?; end
     end
   end
 end
