@@ -130,6 +130,10 @@ class Sandbox
         end
 
         if $stdin.tty?
+          # If stdin is a TTY, use io.raw to set stdin to a raw, passthrough
+          # mode while we copy the input/output of the process spawned in the
+          # PTY. After we've finished copying to/from the PTY process, io.raw
+          # will restore the stdin TTY to its original state.
           $stdin.raw(&write_to_pty)
         else
           write_to_pty.call
