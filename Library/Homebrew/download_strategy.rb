@@ -1316,12 +1316,12 @@ class FossilDownloadStrategy < VCSDownloadStrategy
 
   sig { params(timeout: T.nilable(Time)).void }
   def clone_repo(timeout: nil)
-    silent_command! "fossil", args: ["clone", @url, cached_location], timeout: timeout&.remaining
+    command! "fossil", args: ["clone", @url, cached_location], timeout: timeout&.remaining
   end
 
   sig { params(timeout: T.nilable(Time)).void }
   def update(timeout: nil)
-    silent_command! "fossil", args: ["pull", "-R", cached_location], timeout: timeout&.remaining
+    command! "fossil", args: ["pull", "-R", cached_location], timeout: timeout&.remaining
   end
 end
 
