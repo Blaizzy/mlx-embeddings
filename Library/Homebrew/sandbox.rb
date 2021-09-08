@@ -113,20 +113,31 @@ class Sandbox
             [Utils.popen_read("tput", "lines").to_i, Utils.popen_read("tput", "cols").to_i]
           end
         end
-        # Update the window size whenever the parent terminal's window size changes.
-        old_winch = trap(:WINCH, &winch)
-        winch.call(nil)
 
-        $stdin.raw! if $stdin.tty?
-        stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
+        write_to_pty = proc do
+          # Update the window size whenever the parent terminal's window size changes.
+          old_winch = trap(:WINCH, &winch)
+          winch.call(nil)
 
-        r.each_char { |c| print(c) }
+          stdin_thread = Thread.new { IO.copy_stream($stdin, w) }
 
-        Process.wait(pid)
-      ensure
-        stdin_thread&.kill
-        $stdin.cooked! if $stdin.tty?
-        trap(:WINCH, old_winch)
+          r.each_char { |c| print(c) }
+
+          Process.wait(pid)
+        ensure
+          stdin_thread&.kill
+          trap(:WINCH, old_winch)
+        end
+
+        if $stdin.tty?
+          # If stdin is a TTY, use io.raw to set stdin to a raw, passthrough
+          # mode while we copy the input/output of the process spawned in the
+          # PTY. After we've finished copying to/from the PTY process, io.raw
+          # will restore the stdin TTY to its original state.
+          $stdin.raw(&write_to_pty)
+        else
+          write_to_pty.call
+        end
       end
       raise ErrorDuringExecution.new(command, status: $CHILD_STATUS) unless $CHILD_STATUS.success?
     rescue
