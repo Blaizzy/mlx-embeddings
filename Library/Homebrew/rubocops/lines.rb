@@ -368,6 +368,9 @@ module RuboCop
                 block_node = offending_node.parent
                 next if block_node.type != :block
 
+                # TODO: could fix corrector to handle this but punting for now.
+                next if block_node.single_line?
+
                 source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
                 corrector.replace(source_range, if_method_and_class)
               end
@@ -382,6 +385,9 @@ module RuboCop
                       "use '#{if_method_and_class}' instead." do |corrector|
                 block_node = offending_node.parent
                 next if block_node.type != :block
+
+                # TODO: could fix corrector to handle this but punting for now.
+                next if block_node.single_line?
 
                 source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
                 corrector.replace(source_range, if_method_and_class)
@@ -414,6 +420,8 @@ module RuboCop
               problem "Don't use '#{if_method_and_class}', use '#{on_method_name} do' instead." do |corrector|
                 if_node = method.parent
                 next if if_node.type != :if
+
+                # TODO: could fix corrector to handle this but punting for now.
                 next if if_node.unless?
 
                 corrector.replace(if_node.source_range, "#{on_method_name} do\n#{if_node.body.source}\nend")
