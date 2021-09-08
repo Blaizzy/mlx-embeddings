@@ -31529,6 +31529,11 @@ class Utils::Bottles::Tag
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Utils::Curl
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Utils::Inreplace
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
