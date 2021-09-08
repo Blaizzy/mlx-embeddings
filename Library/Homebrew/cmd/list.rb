@@ -104,7 +104,7 @@ module Homebrew
         puts full_cask_names if full_cask_names.present?
       end
     elsif args.cask?
-      list_casks(args: args)
+      list_casks(args.named.to_casks, args)
     elsif args.pinned? || args.versions?
       filtered_list args: args
     elsif args.no_named?
@@ -132,7 +132,9 @@ module Homebrew
       system_command! "find", args:         args.named.to_default_kegs.map(&:to_s) + %w[-not -type d -print],
                               print_stdout: true
     else
-      args.named.to_default_kegs.each { |keg| PrettyListing.new keg }
+      formula_names, cask_names = args.named.to_resolved_formulae_to_casks
+      formula_names.map(&:name).each { |keg| PrettyListing.new keg } if formula_names.present?
+      list_casks(cask_names, args) if cask_names.present?
     end
   end
 
@@ -165,9 +167,9 @@ module Homebrew
     end
   end
 
-  def list_casks(args:)
+  def list_casks(casks, args)
     Cask::Cmd::List.list_casks(
-      *args.named.to_casks,
+      *casks,
       one:       args.public_send(:"1?"),
       full_name: args.full_name?,
       versions:  args.versions?,
