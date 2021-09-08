@@ -358,7 +358,7 @@ class FormulaInstaller
     raise UnbottledError, [formula] if !pour_bottle? && !formula.bottle_unneeded? && !DevelopmentTools.installed?
 
     unless ignore_deps?
-      deps = compute_dependencies
+      deps = compute_dependencies(use_cache: false)
       if ((pour_bottle? && !DevelopmentTools.installed?) || build_bottle?) &&
          (unbottled = unbottled_dependencies(deps)).presence
         # Check that each dependency in deps has a bottle available, terminating
@@ -475,7 +475,8 @@ class FormulaInstaller
 
   # Compute and collect the dependencies needed by the formula currently
   # being installed.
-  def compute_dependencies
+  def compute_dependencies(use_cache: true)
+    @compute_dependencies = nil unless use_cache
     @compute_dependencies ||= begin
       check_requirements(expand_requirements)
       expand_dependencies
