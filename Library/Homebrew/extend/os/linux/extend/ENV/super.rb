@@ -4,9 +4,15 @@
 module Superenv
   extend T::Sig
 
+  # The location of Homebrew's shims on Linux.
+  # @public
+  def self.shims_path
+    HOMEBREW_SHIMS_PATH/"linux/super"
+  end
+
   # @private
   def self.bin
-    (HOMEBREW_SHIMS_PATH/"linux/super").realpath
+    shims_path.realpath
   end
 
   # @private

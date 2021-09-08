@@ -29,6 +29,13 @@ module Superenv
     base.run_time_deps = []
   end
 
+  # The location of Homebrew's shims on this OS.
+  # @public
+  sig { returns(Pathname) }
+  def self.shims_path
+    HOMEBREW_SHIMS_PATH/"super"
+  end
+
   # @private
   sig { returns(T.nilable(Pathname)) }
   def self.bin; end
