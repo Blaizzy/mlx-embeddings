@@ -347,6 +347,82 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that OS conditionals are consistent.
+      #
+      # @api private
+      class OSConditionals < FormulaCop
+        extend AutoCorrector
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          no_on_os_method_names = [:install, :post_install].freeze
+          no_on_os_block_names = [:test].freeze
+          [[:on_macos, :mac?], [:on_linux, :linux?]].each do |on_method_name, if_method_name|
+            if_method_and_class = "if OS.#{if_method_name}"
+            no_on_os_method_names.each do |formula_method_name|
+              method_node = find_method_def(body_node, formula_method_name)
+              next unless method_node
+              next unless method_called_ever?(method_node, on_method_name)
+
+              problem "Don't use '#{on_method_name}' in 'def #{formula_method_name}', " \
+                      "use '#{if_method_and_class}' instead." do |corrector|
+                block_node = offending_node.parent
+                next if block_node.type != :block
+
+                source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
+                corrector.replace(source_range, if_method_and_class)
+              end
+            end
+
+            no_on_os_block_names.each do |formula_block_name|
+              block_node = find_block(body_node, formula_block_name)
+              next unless block_node
+              next unless method_called_in_block?(block_node, on_method_name)
+
+              problem "Don't use '#{on_method_name}' in '#{formula_block_name} do', " \
+                      "use '#{if_method_and_class}' instead." do |corrector|
+                block_node = offending_node.parent
+                next if block_node.type != :block
+
+                source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
+                corrector.replace(source_range, if_method_and_class)
+              end
+            end
+
+            find_instance_method_call(body_node, "OS", if_method_name) do |method|
+              valid = T.let(false, T::Boolean)
+              method.each_ancestor do |ancestor|
+                valid_method_names = case ancestor.type
+                when :def
+                  no_on_os_method_names
+                when :block
+                  no_on_os_block_names
+                else
+                  next
+                end
+                next unless valid_method_names.include?(ancestor.method_name)
+
+                valid = true
+                break
+              end
+              next if valid
+
+              # TODO: temporarily allow this for linuxbrew-core merge.
+              next if method&.parent&.parent&.source&.start_with?("revision OS.mac?")
+              next if method&.parent&.source&.match?(/revision \d unless OS\.mac\?/)
+
+              offending_node(method)
+              problem "Don't use '#{if_method_and_class}', use '#{on_method_name} do' instead." do |corrector|
+                if_node = method.parent
+                next if if_node.type != :if
+                next if if_node.unless?
+
+                corrector.replace(if_node.source_range, "#{on_method_name} do\n#{if_node.body.source}\nend")
+              end
+            end
+          end
+        end
+      end
+
       # This cop checks for other miscellaneous style violations.
       #
       # @api private
