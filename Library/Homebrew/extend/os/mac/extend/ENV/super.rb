@@ -5,13 +5,19 @@ module Superenv
   extend T::Sig
 
   class << self
+    # The location of Homebrew's shims on macOS.
+    # @public
+    def shims_path
+      HOMEBREW_SHIMS_PATH/"mac/super"
+    end
+
     undef bin
 
     # @private
     def bin
       return unless DevelopmentTools.installed?
 
-      (HOMEBREW_SHIMS_PATH/"mac/super").realpath
+      shims_path.realpath
     end
   end
 
