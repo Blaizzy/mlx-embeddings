@@ -82,7 +82,6 @@ module RuboCop
           gzip
           openssl
           openssl@1.1
-          openssl@3
           perl
           php
           python
