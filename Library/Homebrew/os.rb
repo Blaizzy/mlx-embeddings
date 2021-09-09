@@ -35,6 +35,14 @@ module OS
     @kernel_version ||= Version.new(Utils.safe_popen_read("uname", "-r").chomp)
   end
 
+  # Get the kernel name.
+  #
+  # @api public
+  sig { returns(String) }
+  def self.uname
+    @uname ||= Utils.safe_popen_read("uname").chomp
+  end
+
   ::OS_VERSION = ENV["HOMEBREW_OS_VERSION"]
 
   CI_GLIBC_VERSION = "2.23"
