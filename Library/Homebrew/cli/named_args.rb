@@ -77,7 +77,7 @@ module Homebrew
       def to_formulae_to_casks(only: parent&.only_formula_or_cask, method: nil)
         @to_formulae_to_casks ||= {}
         @to_formulae_to_casks[[method, only]] = to_formulae_and_casks(only: only, method: method)
-                                                .partition { |o| o.is_a?(Formula) }
+                                                .partition { |o| o.is_a?(Formula) || o.is_a?(Keg) }
                                                 .map(&:freeze).freeze
       end
 
