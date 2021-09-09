@@ -27,6 +27,7 @@ module RuboCop
         KEYWORD_ARGS = %i[
           method params session body flash xhr as headers env to
         ].freeze
+        ROUTING_METHODS = %i[draw routes].freeze
         RESTRICT_ON_SEND = %i[get post put patch delete head].freeze
 
         minimum_target_rails_version 5.0
@@ -40,6 +41,8 @@ module RuboCop
         PATTERN
 
         def on_send(node)
+          return if in_routing_block?(node)
+
           http_request?(node) do |data|
             return unless needs_conversion?(data)
 
@@ -63,13 +66,17 @@ module RuboCop
 
         private
 
+        def in_routing_block?(node)
+          !!node.each_ancestor(:block).detect { |block| ROUTING_METHODS.include?(block.send_node.method_name) }
+        end
+
         def needs_conversion?(data)
           return true unless data.hash_type?
           return false if kwsplat_hash?(data)
 
           data.each_pair.none? do |pair|
             special_keyword_arg?(pair.key) ||
-              format_arg?(pair.key) && data.pairs.one?
+              (format_arg?(pair.key) && data.pairs.one?)
           end
         end
 

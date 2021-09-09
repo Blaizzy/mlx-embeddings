@@ -383,10 +383,10 @@ class RuboCop::Cop::Rails::ContentTag < ::RuboCop::Cop::Base
   private
 
   def allowed_argument?(argument); end
-  def autocorrect(corrector, node); end
+  def allowed_name?(argument); end
+  def autocorrect(corrector, node, preferred_method); end
   def corrected_ancestor?(node); end
   def correction_range(node); end
-  def method_name?(node); end
 end
 
 RuboCop::Cop::Rails::ContentTag::MSG = T.let(T.unsafe(nil), String)
@@ -755,6 +755,7 @@ class RuboCop::Cop::Rails::HttpPositionalArguments < ::RuboCop::Cop::Base
   def correction_template(node); end
   def format_arg?(node); end
   def highlight_range(node); end
+  def in_routing_block?(node); end
   def needs_conversion?(data); end
   def special_keyword_arg?(node); end
 end
@@ -762,6 +763,7 @@ end
 RuboCop::Cop::Rails::HttpPositionalArguments::KEYWORD_ARGS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::HttpPositionalArguments::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::HttpPositionalArguments::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Rails::HttpPositionalArguments::ROUTING_METHODS = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::HttpStatus < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -906,7 +908,9 @@ class RuboCop::Cop::Rails::LexicallyScopedActionFilter < ::RuboCop::Cop::Base
 
   private
 
+  def aliased_action_methods(node, defined_methods); end
   def array_values(node); end
+  def defined_action_methods(block); end
   def message(methods, parent); end
 end
 
@@ -924,7 +928,7 @@ class RuboCop::Cop::Rails::LinkToBlank < ::RuboCop::Cop::Base
 
   private
 
-  def add_rel(send_node, offence_node, corrector); end
+  def add_rel(send_node, offense_node, corrector); end
   def append_to_rel(rel_node, corrector); end
   def autocorrect(corrector, send_node, node, option_nodes); end
   def contains_noopener?(value); end
@@ -1014,6 +1018,9 @@ RuboCop::Cop::Rails::OrderById::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::OrderById::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::Output < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
+
   def io_output?(param0 = T.unsafe(nil)); end
   def on_send(node); end
   def output?(param0 = T.unsafe(nil)); end
@@ -1021,6 +1028,7 @@ class RuboCop::Cop::Rails::Output < ::RuboCop::Cop::Base
   private
 
   def match_gvar?(sym); end
+  def offense_range(node); end
 end
 
 RuboCop::Cop::Rails::Output::MSG = T.let(T.unsafe(nil), String)
@@ -1256,6 +1264,17 @@ end
 
 RuboCop::Cop::Rails::RedundantReceiverInWithOptions::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Rails::RedundantTravelBack < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
+
+  def on_send(node); end
+end
+
+RuboCop::Cop::Rails::RedundantTravelBack::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::RedundantTravelBack::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Rails::ReflectionClassName < ::RuboCop::Cop::Base
   def association_with_reflection(param0 = T.unsafe(nil)); end
   def on_send(node); end
@@ -1476,6 +1495,8 @@ RuboCop::Cop::Rails::SaveBang::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::SaveBang::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::ScopeArgs < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
   def on_send(node); end
   def scope?(param0 = T.unsafe(nil)); end
 end
