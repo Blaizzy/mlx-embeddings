@@ -6,6 +6,7 @@ require "formula_installer"
 require "development_tools"
 require "messages"
 require "cleanup"
+require "utils/topological_hash"
 
 module Homebrew
   # Helper functions for upgrading formulae.
@@ -40,6 +41,14 @@ module Homebrew
         else
           0
         end
+      end
+
+      dependency_graph = Utils::TopologicalHash.graph_package_dependencies(formulae_to_install)
+      begin
+        formulae_to_install = dependency_graph.tsort & formulae_to_install
+      rescue TSort::Cyclic
+        # Failed to sort formulae topologically because there are cyclic
+        # dependencies. Let FormulaInstaller handle it.
       end
 
       formula_installers = formulae_to_install.map do |formula|
