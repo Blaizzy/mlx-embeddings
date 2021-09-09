@@ -270,41 +270,77 @@ module GitHub
 
   def get_workflow_run(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
-    base_url = "#{API_URL}/repos/#{user}/#{repo}"
-    pr_payload = API.open_rest("#{base_url}/pulls/#{pr}", scopes: scopes)
-    pr_sha = pr_payload["head"]["sha"]
-    pr_branch = URI.encode_www_form_component(pr_payload["head"]["ref"])
-    parameters = "event=pull_request&branch=#{pr_branch}"
 
-    workflow = API.open_rest("#{base_url}/actions/workflows/#{workflow_id}/runs?#{parameters}", scopes: scopes)
-    workflow_run = workflow["workflow_runs"].select do |run|
-      run["head_sha"] == pr_sha
+    # GraphQL unfortunately has no way to get the workflow yml name, so we need an extra REST call.
+    workflow_api_url = "#{API_URL}/repos/#{user}/#{repo}/actions/workflows/#{workflow_id}"
+    workflow_payload = API.open_rest(workflow_api_url, scopes: scopes)
+    workflow_id_num = workflow_payload["id"]
+
+    query = <<~EOS
+      query ($user: String!, $repo: String!, $pr: Int!) {
+        repository(owner: $user, name: $repo) {
+          pullRequest(number: $pr) {
+            commits(last: 1) {
+              nodes {
+                commit {
+                  checkSuites(first: 100) {
+                    nodes {
+                      status,
+                      workflowRun {
+                        databaseId,
+                        url,
+                        workflow {
+                          databaseId
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    EOS
+    variables = {
+      user: user,
+      repo: repo,
+      pr:   pr,
+    }
+    result = API.open_graphql(query, variables: variables, scopes: scopes)
+
+    commit_node = result["repository"]["pullRequest"]["commits"]["nodes"].first
+    check_suite = if commit_node.present?
+      commit_node["commit"]["checkSuites"]["nodes"].select do |suite|
+        suite["workflowRun"]["workflow"]["databaseId"] == workflow_id_num
+      end
+    else
+      []
     end
 
-    [workflow_run, pr_sha, pr_branch, pr, workflow_id, scopes, artifact_name]
+    [check_suite, user, repo, pr, workflow_id, scopes, artifact_name]
   end
 
   def get_artifact_url(workflow_array)
-    workflow_run, pr_sha, pr_branch, pr, workflow_id, scopes, artifact_name = *workflow_array
-    if workflow_run.empty?
+    check_suite, user, repo, pr, workflow_id, scopes, artifact_name = *workflow_array
+    if check_suite.empty?
       raise API::Error, <<~EOS
-        No matching workflow run found for these criteria!
-          Commit SHA:   #{pr_sha}
-          Branch ref:   #{pr_branch}
+        No matching check suite found for these criteria!
           Pull request: #{pr}
           Workflow:     #{workflow_id}
       EOS
     end
 
-    status = workflow_run.first["status"].sub("_", " ")
+    status = check_suite.first["status"].sub("_", " ").downcase
     if status != "completed"
       raise API::Error, <<~EOS
         The newest workflow run for ##{pr} is still #{status}!
-          #{Formatter.url workflow_run.first["html_url"]}
+          #{Formatter.url check_suite.first["workflowRun"]["url"]}
       EOS
     end
 
-    artifacts = API.open_rest(workflow_run.first["artifacts_url"], scopes: scopes)
+    run_id = check_suite.first["workflowRun"]["databaseId"]
+    artifacts = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/actions/runs/#{run_id}/artifacts", scopes: scopes)
 
     artifact = artifacts["artifacts"].select do |art|
       art["name"] == artifact_name
@@ -313,7 +349,7 @@ module GitHub
     if artifact.empty?
       raise API::Error, <<~EOS
         No artifact with the name `#{artifact_name}` was found!
-          #{Formatter.url workflow_run.first["html_url"]}
+          #{Formatter.url check_suite.first["workflowRun"]["url"]}
       EOS
     end
 
