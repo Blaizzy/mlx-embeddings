@@ -289,6 +289,8 @@ module Homebrew
     def install_formula(formula_installer, only_deps: false)
       f = formula_installer.formula
 
+      formula_installer.prelude
+
       f.print_tap_action
 
       if f.linked_keg.directory?
@@ -315,8 +317,6 @@ module Homebrew
           Upgrade.print_upgrade_message(f, formula_installer.options)
         end
       end
-
-      formula_installer.prelude
 
       kegs.each(&:unlink) if kegs.present?
 
