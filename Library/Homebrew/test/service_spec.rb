@@ -76,6 +76,7 @@ describe Homebrew::Service do
         root_dir var
         working_dir var
         keep_alive true
+        process_type "interactive"
         restart_delay 30
         macos_legacy_timers true
       end
@@ -101,6 +102,8 @@ describe Homebrew::Service do
         \t<string>homebrew.mxcl.formula_name</string>
         \t<key>LegacyTimers</key>
         \t<true/>
+        \t<key>ProcessType</key>
+        \t<string>Interactive</string>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -165,6 +168,7 @@ describe Homebrew::Service do
         root_dir var
         working_dir var
         keep_alive true
+        process_type "interactive"
         restart_delay 30
         macos_legacy_timers true
       end

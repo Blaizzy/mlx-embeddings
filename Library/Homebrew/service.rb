@@ -13,6 +13,11 @@ module Homebrew
     RUN_TYPE_INTERVAL = "interval"
     RUN_TYPE_CRON = "cron"
 
+    PROCESS_TYPE_BACKGROUND = "background"
+    PROCESS_TYPE_STANDARD = "standard"
+    PROCESS_TYPE_INTERACTIVE = "interactive"
+    PROCESS_TYPE_ADAPTIVE = "adaptive"
+
     # sig { params(formula: Formula).void }
     def initialize(formula, &block)
       @formula = formula
@@ -119,6 +124,22 @@ module Homebrew
       end
     end
 
+    sig { params(type: T.nilable(String)).returns(T.nilable(String)) }
+    def process_type(type = nil)
+      case T.unsafe(type)
+      when nil
+        @process_type
+      when PROCESS_TYPE_BACKGROUND, PROCESS_TYPE_STANDARD, PROCESS_TYPE_INTERACTIVE, PROCESS_TYPE_ADAPTIVE
+        @process_type = type.to_s
+      when String
+        raise TypeError, "Service#process_type allows: "\
+                         "'#{PROCESS_TYPE_BACKGROUND}'/'#{PROCESS_TYPE_STANDARD}'/"\
+                         "'#{PROCESS_TYPE_INTERACTIVE}'/'#{PROCESS_TYPE_ADAPTIVE}'"
+      else
+        raise TypeError, "Service#process_type expects a String"
+      end
+    end
+
     sig { params(type: T.nilable(T.any(String, Symbol))).returns(T.nilable(String)) }
     def run_type(type = nil)
       case T.unsafe(type)
@@ -193,6 +214,7 @@ module Homebrew
       base[:KeepAlive] = @keep_alive if @keep_alive == true
       base[:LegacyTimers] = @macos_legacy_timers if @macos_legacy_timers == true
       base[:TimeOut] = @restart_delay if @restart_delay.present?
+      base[:ProcessType] = @process_type.capitalize if @process_type.present?
       base[:WorkingDirectory] = @working_dir if @working_dir.present?
       base[:RootDirectory] = @root_dir if @root_dir.present?
       base[:StandardInPath] = @input_path if @input_path.present?
