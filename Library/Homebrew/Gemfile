@@ -8,6 +8,7 @@ source "https://rubygems.org"
 # installed gems (should all be require: false)
 gem "bootsnap", require: false
 gem "byebug", require: false
+gem "json_schemer", require: false
 gem "minitest", require: false
 gem "parallel_tests", require: false
 gem "ronn", require: false

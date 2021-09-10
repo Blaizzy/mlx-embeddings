@@ -75,7 +75,6 @@ class GitHubPackages
       skopeo = Formula["skopeo"].opt_bin/"skopeo"
     end
 
-    Homebrew.install_gem!("json_schemer")
     require "json_schemer"
 
     load_schemas!
