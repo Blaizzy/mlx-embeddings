@@ -201,6 +201,7 @@ end
 
 __fish_brew_complete_cmd '--cache' 'Display Homebrew\'s download cache'
 __fish_brew_complete_arg '--cache' -l HEAD -d 'Show the cache file used when building from HEAD'
+__fish_brew_complete_arg '--cache' -l bottle-tag -d 'Show the cache file used when pouring a bottle for the given tag'
 __fish_brew_complete_arg '--cache' -l build-from-source -d 'Show the cache file used when building from source'
 __fish_brew_complete_arg '--cache' -l cask -d 'Only show cache files for casks'
 __fish_brew_complete_arg '--cache' -l debug -d 'Display any debugging information'
@@ -758,7 +759,7 @@ __fish_brew_complete_arg 'instal' -l cc -d 'Attempt to compile using the specifi
 __fish_brew_complete_arg 'instal' -l colorpickerdir -d 'Target location for Color Pickers (default: `~/Library/ColorPickers`)'
 __fish_brew_complete_arg 'instal' -l debug -d 'If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory'
 __fish_brew_complete_arg 'instal' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
-__fish_brew_complete_arg 'instal' -l display-times -d 'Print install times for each formula at the end of the run'
+__fish_brew_complete_arg 'instal' -l display-times -d 'Print install times for each package at the end of the run'
 __fish_brew_complete_arg 'instal' -l env -d 'Disabled other than for internal Homebrew use'
 __fish_brew_complete_arg 'instal' -l fetch-HEAD -d 'Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released'
 __fish_brew_complete_arg 'instal' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'
@@ -806,7 +807,7 @@ __fish_brew_complete_arg 'install' -l cc -d 'Attempt to compile using the specif
 __fish_brew_complete_arg 'install' -l colorpickerdir -d 'Target location for Color Pickers (default: `~/Library/ColorPickers`)'
 __fish_brew_complete_arg 'install' -l debug -d 'If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory'
 __fish_brew_complete_arg 'install' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
-__fish_brew_complete_arg 'install' -l display-times -d 'Print install times for each formula at the end of the run'
+__fish_brew_complete_arg 'install' -l display-times -d 'Print install times for each package at the end of the run'
 __fish_brew_complete_arg 'install' -l env -d 'Disabled other than for internal Homebrew use'
 __fish_brew_complete_arg 'install' -l fetch-HEAD -d 'Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released'
 __fish_brew_complete_arg 'install' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'
@@ -1070,7 +1071,7 @@ __fish_brew_complete_arg 'pr-automerge' -l tap -d 'Target tap repository (defaul
 __fish_brew_complete_arg 'pr-automerge' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'pr-automerge' -l with-label -d 'Pull requests must have this label'
 __fish_brew_complete_arg 'pr-automerge' -l without-approval -d 'Pull requests do not require approval to be merged'
-__fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`, `linux to homebrew-core`)'
+__fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux to homebrew-core`)'
 
 
 __fish_brew_complete_cmd 'pr-publish' 'Publish bottles for a pull request with GitHub Actions'
@@ -1526,7 +1527,7 @@ __fish_brew_complete_arg 'upgrade' -l cask -d 'Treat all named arguments as cask
 __fish_brew_complete_arg 'upgrade' -l colorpickerdir -d 'Target location for Color Pickers (default: `~/Library/ColorPickers`)'
 __fish_brew_complete_arg 'upgrade' -l debug -d 'If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory'
 __fish_brew_complete_arg 'upgrade' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
-__fish_brew_complete_arg 'upgrade' -l display-times -d 'Print install times for each formula at the end of the run'
+__fish_brew_complete_arg 'upgrade' -l display-times -d 'Print install times for each package at the end of the run'
 __fish_brew_complete_arg 'upgrade' -l dry-run -d 'Show what would be upgraded, but do not actually upgrade anything'
 __fish_brew_complete_arg 'upgrade' -l fetch-HEAD -d 'Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released'
 __fish_brew_complete_arg 'upgrade' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'

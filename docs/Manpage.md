@@ -333,7 +333,7 @@ the installed formulae or, every 30 days, for all formulae.
 * `--bottle-arch`:
   Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on.
 * `--display-times`:
-  Print install times for each formula at the end of the run.
+  Print install times for each package at the end of the run.
 * `-i`, `--interactive`:
   Download and patch *`formula`*, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package.
 * `-g`, `--git`:
@@ -697,7 +697,7 @@ upgraded formulae or, every 30 days, for all formulae.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
 * `--display-times`:
-  Print install times for each formula at the end of the run.
+  Print install times for each package at the end of the run.
 * `--cask`:
   Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks.
 * `--[no-]binaries`:
@@ -749,6 +749,8 @@ If *`formula`* is provided, display the file or directory used to cache *`formul
   Show the cache file used when building from source.
 * `--force-bottle`:
   Show the cache file used when pouring a bottle.
+* `--bottle-tag`:
+  Show the cache file used when pouring a bottle for the given tag.
 * `--HEAD`:
   Show the cache file used when building from HEAD.
 * `--formula`:
@@ -1194,7 +1196,7 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 * `--with-label`:
   Pull requests must have this label.
 * `--without-labels`:
-  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`, `linux to homebrew-core`).
+  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux to homebrew-core`).
 * `--without-approval`:
   Pull requests do not require approval to be merged.
 * `--publish`:
@@ -1884,7 +1886,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_BAT_CONFIG_PATH`
   <br>Use this as the `bat` configuration file.
 
-  *Default:* `$HOME/.bat/config`.
+  *Default:* `$HOME/.config/bat/config`.
 
 - `HOMEBREW_BOOTSNAP`
   <br>If set, use Bootsnap to speed up repeated `brew` calls. A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).

@@ -252,10 +252,11 @@ __brew_diagnostic_checks() {
 # brew --cache
 _brew___cache() {
   _arguments \
-    '(--build-from-source --force-bottle --cask)--HEAD[Show the cache file used when building from HEAD]' \
-    '(--force-bottle --HEAD --cask)--build-from-source[Show the cache file used when building from source]' \
+    '(--build-from-source --force-bottle --bottle-tag --cask)--HEAD[Show the cache file used when building from HEAD]' \
+    '(--build-from-source --force-bottle --HEAD --cask)--bottle-tag[Show the cache file used when pouring a bottle for the given tag]' \
+    '(--force-bottle --bottle-tag --HEAD --cask)--build-from-source[Show the cache file used when building from source]' \
     '--debug[Display any debugging information]' \
-    '(--build-from-source --HEAD --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
+    '(--build-from-source --bottle-tag --HEAD --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
@@ -263,7 +264,7 @@ _brew___cache() {
     '(--cask)--formula[Only show cache files for formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--build-from-source --force-bottle --HEAD --formula)--cask[Only show cache files for casks]' \
+    '(--build-from-source --force-bottle --bottle-tag --HEAD --formula)--cask[Only show cache files for casks]' \
     '*::cask:__brew_casks'
 }
 
@@ -937,7 +938,7 @@ _brew_instal() {
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--cask)--display-times[Print install times for each formula at the end of the run]' \
+    '(--cask)--display-times[Print install times for each package at the end of the run]' \
     '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
@@ -989,7 +990,7 @@ _brew_install() {
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--cask)--display-times[Print install times for each formula at the end of the run]' \
+    '(--cask)--display-times[Print install times for each package at the end of the run]' \
     '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
@@ -1313,7 +1314,7 @@ _brew_pr_automerge() {
     '--verbose[Make some output more verbose]' \
     '--with-label[Pull requests must have this label]' \
     '--without-approval[Pull requests do not require approval to be merged]' \
-    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`, `linux to homebrew-core`)]'
+    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux to homebrew-core`)]'
 }
 
 # brew pr-publish
@@ -1871,7 +1872,7 @@ _brew_upgrade() {
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--cask)--display-times[Print install times for each formula at the end of the run]' \
+    '(--cask)--display-times[Print install times for each package at the end of the run]' \
     '--dry-run[Show what would be upgraded, but do not actually upgrade anything]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
