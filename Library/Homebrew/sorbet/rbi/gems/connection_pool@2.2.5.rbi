@@ -22,12 +22,8 @@ class ConnectionPool
 end
 
 ConnectionPool::DEFAULTS = T.let(T.unsafe(nil), Hash)
-
-class ConnectionPool::Error < ::RuntimeError
-end
-
-class ConnectionPool::PoolShuttingDownError < ::ConnectionPool::Error
-end
+class ConnectionPool::Error < ::RuntimeError; end
+class ConnectionPool::PoolShuttingDownError < ::ConnectionPool::Error; end
 
 class ConnectionPool::TimedStack
   def initialize(size = T.unsafe(nil), &block); end
@@ -50,9 +46,7 @@ class ConnectionPool::TimedStack
   def try_create(options = T.unsafe(nil)); end
 end
 
-class ConnectionPool::TimeoutError < ::Timeout::Error
-end
-
+class ConnectionPool::TimeoutError < ::Timeout::Error; end
 ConnectionPool::VERSION = T.let(T.unsafe(nil), String)
 
 class ConnectionPool::Wrapper < ::BasicObject
