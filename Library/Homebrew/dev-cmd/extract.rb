@@ -28,13 +28,6 @@ def with_monkey_patch
     define_method(:parse_symbol_spec) { |*| }
   end
 
-  if defined?(DependencyCollector::Compat)
-    DependencyCollector::Compat.class_eval do
-      alias_method :old_parse_string_spec, :parse_string_spec if method_defined?(:parse_string_spec)
-      define_method(:parse_string_spec) { |*| }
-    end
-  end
-
   yield
 ensure
   BottleSpecification.class_eval do
@@ -62,15 +55,6 @@ ensure
     if method_defined?(:old_parse_symbol_spec)
       alias_method :parse_symbol_spec, :old_parse_symbol_spec
       undef :old_parse_symbol_spec
-    end
-  end
-
-  if defined?(DependencyCollector::Compat)
-    DependencyCollector::Compat.class_eval do
-      if method_defined?(:old_parse_string_spec)
-        alias_method :parse_string_spec, :old_parse_string_spec
-        undef :old_parse_string_spec
-      end
     end
   end
 end
