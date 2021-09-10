@@ -12,6 +12,8 @@ on:
   schedule:
     - cron: "0 */3 * * *" # every 3 hours
 
+concurrency: triage-${{ github.ref }}
+
 jobs:
   review:
     runs-on: ubuntu-latest
