@@ -106,6 +106,7 @@ module Homebrew
 
       def check_for_unsupported_macos
         return if Homebrew::EnvConfig.developer?
+        return if ENV["HOMEBREW_INTEGRATION_TEST"]
 
         who = +"We"
         what = if OS::Mac.version.prerelease?
