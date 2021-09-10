@@ -44,7 +44,7 @@ jobs:
             git checkout "$BRANCH"
             git reset --hard origin/master
           else
-            git checkout -B "$BRANCH" origin/master
+            git checkout --no-track -B "$BRANCH" origin/master
           fi
 
           if brew typecheck --update --fail-if-not-changed; then
