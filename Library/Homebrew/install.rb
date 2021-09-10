@@ -212,7 +212,10 @@ module Homebrew
       elsif f.linked?
         message = "#{f.name} #{f.linked_version} is already installed"
         if f.outdated? && !head
-          return true unless Homebrew::EnvConfig.no_install_upgrade?
+          unless Homebrew::EnvConfig.no_install_upgrade?
+            puts "#{message} but outdated"
+            return true
+          end
 
           onoe <<~EOS
             #{message}
@@ -315,28 +318,9 @@ module Homebrew
 
       f.print_tap_action
 
-      if f.linked? && f.outdated? && !f.head? && !Homebrew::EnvConfig.no_install_upgrade?
-        puts "#{f.full_name} #{f.linked_version} is installed but outdated"
-        kegs = Upgrade.outdated_kegs(f)
-        linked_kegs = kegs.select(&:linked?)
-        Upgrade.print_upgrade_message(f, formula_installer.options)
-      end
+      upgrade = f.linked? && f.outdated? && !f.head? && !Homebrew::EnvConfig.no_install_upgrade?
 
-      kegs.each(&:unlink) if kegs.present?
-
-      formula_installer.install
-      formula_installer.finish
-    rescue FormulaInstallationAlreadyAttemptedError
-      # We already attempted to install f as part of the dependency tree of
-      # another formula. In that case, don't generate an error, just move on.
-      nil
-    ensure
-      # Re-link kegs if upgrade fails
-      begin
-        linked_kegs.each(&:link) if linked_kegs.present? && !f.latest_version_installed?
-        rescue
-          nil
-      end
+      Upgrade.install_formula(formula_installer, upgrade: upgrade)
     end
     private_class_method :install_formula
   end

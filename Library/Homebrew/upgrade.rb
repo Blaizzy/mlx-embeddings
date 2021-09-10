@@ -164,9 +164,6 @@ module Homebrew
     def upgrade_formula(formula_installer, dry_run: false, verbose: false)
       formula = formula_installer.formula
 
-      kegs = outdated_kegs(formula)
-      linked_kegs = kegs.select(&:linked?)
-
       if dry_run
         print_dry_run_dependencies(formula, formula_installer.compute_dependencies)
         return
@@ -174,12 +171,28 @@ module Homebrew
 
       formula_installer.check_installation_already_attempted
 
-      print_upgrade_message(formula, formula_installer.options)
+      install_formula(formula_installer, upgrade: true)
+    rescue BuildError => e
+      e.dump(verbose: verbose)
+      puts
+      Homebrew.failed = true
+    end
+    private_class_method :upgrade_formula
+
+    def install_formula(formula_installer, upgrade:)
+      formula = formula_installer.formula
+
+      if upgrade
+        print_upgrade_message(formula, formula_installer.options)
+
+        kegs = outdated_kegs(formula)
+        linked_kegs = kegs.select(&:linked?)
+      end
 
       # first we unlink the currently active keg for this formula otherwise it is
       # possible for the existing build to interfere with the build we are about to
       # do! Seriously, it happens!
-      kegs.each(&:unlink)
+      kegs.each(&:unlink) if kegs.present?
 
       formula_installer.install
       formula_installer.finish
@@ -187,19 +200,14 @@ module Homebrew
       # We already attempted to upgrade f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.
       nil
-    rescue BuildError => e
-      e.dump(verbose: verbose)
-      puts
-      Homebrew.failed = true
     ensure
       # restore previous installation state if build failed
       begin
-        linked_kegs.each(&:link) unless formula.latest_version_installed?
+        linked_kegs.each(&:link) if linked_kegs.present? && !f.latest_version_installed?
       rescue
         nil
       end
     end
-    private_class_method :upgrade_formula
 
     def check_broken_dependents(installed_formulae)
       CacheStoreDatabase.use(:linkage) do |db|
