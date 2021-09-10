@@ -160,5 +160,8 @@ module Cask
 
     sig { returns(T::Boolean) }
     def quarantine?; end
+
+    sig { returns(T::Boolean) }
+    def quiet?; end
   end
 end
