@@ -18912,10 +18912,6 @@ class REXML::Validation::ValidationException
   def initialize(msg); end
 end
 
-class REXML::XPath
-  def self.match(element, path=T.unsafe(nil), namespaces=T.unsafe(nil), variables=T.unsafe(nil), options=T.unsafe(nil)); end
-end
-
 class REXML::XPathParser
   DEBUG = ::T.let(nil, ::T.untyped)
 end
