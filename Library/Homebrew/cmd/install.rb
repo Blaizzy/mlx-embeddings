@@ -172,6 +172,7 @@ module Homebrew
         require_sha:    args.require_sha?,
         skip_cask_deps: args.skip_cask_deps?,
         quarantine:     args.quarantine?,
+        quiet:          args.quiet?,
       )
     end
 

@@ -38,6 +38,7 @@ module Cask
           skip_cask_deps: args.skip_cask_deps?,
           require_sha:    args.require_sha?,
           quarantine:     args.quarantine?,
+          quiet:          args.quiet?,
         )
       end
 
@@ -48,7 +49,8 @@ module Cask
         binaries: nil,
         skip_cask_deps: nil,
         require_sha: nil,
-        quarantine: nil
+        quarantine: nil,
+        quiet: nil
       )
         odie "Installing casks is supported only on macOS" unless OS.mac?
 

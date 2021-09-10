@@ -31,7 +31,7 @@ module Cask
                    skip_cask_deps: false, binaries: true, verbose: false,
                    require_sha: false, upgrade: false,
                    installed_as_dependency: false, quarantine: true,
-                   verify_download_integrity: true)
+                   verify_download_integrity: true, quiet: false)
       @cask = cask
       @command = command
       @force = force
@@ -44,11 +44,12 @@ module Cask
       @installed_as_dependency = installed_as_dependency
       @quarantine = quarantine
       @verify_download_integrity = verify_download_integrity
+      @quiet = quiet
     end
 
     attr_predicate :binaries?, :force?, :skip_cask_deps?, :require_sha?,
                    :reinstall?, :upgrade?, :verbose?, :installed_as_dependency?,
-                   :quarantine?
+                   :quarantine?, :quiet?
 
     def self.caveats(cask)
       odebug "Printing caveats"
@@ -92,8 +93,11 @@ module Cask
       odebug "Cask::Installer#install"
 
       old_config = @cask.config
+      if @cask.installed? && !force? && !reinstall? && !upgrade?
+        return if quiet?
 
-      raise CaskAlreadyInstalledError, @cask if @cask.installed? && !force? && !reinstall? && !upgrade?
+        raise CaskAlreadyInstalledError, @cask
+      end
 
       check_conflicts
 
