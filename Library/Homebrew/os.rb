@@ -39,8 +39,8 @@ module OS
   #
   # @api public
   sig { returns(String) }
-  def self.uname
-    @uname ||= Utils.safe_popen_read("uname", "-s").chomp
+  def self.kernel_name
+    @kernel_name ||= Utils.safe_popen_read("uname", "-s").chomp
   end
 
   ::OS_VERSION = ENV["HOMEBREW_OS_VERSION"]
