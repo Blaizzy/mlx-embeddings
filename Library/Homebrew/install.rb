@@ -291,8 +291,11 @@ module Homebrew
         )
 
         begin
+          fi.prelude
           fi.fetch
           fi
+        rescue CannotInstallFormulaError => e
+          ofail e.message
         rescue UnsatisfiedRequirements, DownloadError, ChecksumMismatchError => e
           ofail "#{f}: #{e}"
           nil
@@ -308,7 +311,7 @@ module Homebrew
     def install_formula(formula_installer)
       f = formula_installer.formula
 
-      formula_installer.prelude
+      formula_installer.check_installation_already_attempted
 
       f.print_tap_action
 
@@ -327,8 +330,6 @@ module Homebrew
       # We already attempted to install f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.
       nil
-    rescue CannotInstallFormulaError => e
-      ofail e.message
     ensure
       # Re-link kegs if upgrade fails
       begin

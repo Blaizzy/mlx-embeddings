@@ -58,8 +58,13 @@ module Homebrew
             quiet:                      quiet,
             verbose:                    verbose,
           )
-          fi.fetch unless dry_run
+          unless dry_run
+            fi.prelude
+            fi.fetch
+          end
           fi
+        rescue CannotInstallFormulaError => e
+          ofail e
         rescue UnsatisfiedRequirements, DownloadError => e
           ofail "#{formula}: #{e}"
           nil
@@ -167,7 +172,7 @@ module Homebrew
         return
       end
 
-      formula_installer.prelude
+      formula_installer.check_installation_already_attempted
 
       print_upgrade_message(formula, formula_installer.options)
 
@@ -182,8 +187,6 @@ module Homebrew
       # We already attempted to upgrade f as part of the dependency tree of
       # another formula. In that case, don't generate an error, just move on.
       nil
-    rescue CannotInstallFormulaError => e
-      ofail e
     rescue BuildError => e
       e.dump(verbose: verbose)
       puts
