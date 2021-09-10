@@ -125,6 +125,7 @@ _brew___cache() {
     -*)
       __brewcomp "
       --HEAD
+      --bottle-tag
       --build-from-source
       --cask
       --debug

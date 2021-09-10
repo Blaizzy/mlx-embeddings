@@ -449,7 +449,7 @@ Optimise bottles for the specified architecture rather than the oldest architect
 .
 .TP
 \fB\-\-display\-times\fR
-Print install times for each formula at the end of the run\.
+Print install times for each package at the end of the run\.
 .
 .TP
 \fB\-i\fR, \fB\-\-interactive\fR
@@ -957,7 +957,7 @@ Retain the temporary files created during installation\.
 .
 .TP
 \fB\-\-display\-times\fR
-Print install times for each formula at the end of the run\.
+Print install times for each package at the end of the run\.
 .
 .TP
 \fB\-\-cask\fR
@@ -1039,6 +1039,10 @@ Show the cache file used when building from source\.
 .TP
 \fB\-\-force\-bottle\fR
 Show the cache file used when pouring a bottle\.
+.
+.TP
+\fB\-\-bottle\-tag\fR
+Show the cache file used when pouring a bottle for the given tag\.
 .
 .TP
 \fB\-\-HEAD\fR
@@ -1682,7 +1686,7 @@ Pull requests must have this label\.
 .
 .TP
 \fB\-\-without\-labels\fR
-Pull requests must not have these labels (default: \fBdo not merge\fR, \fBnew formula\fR, \fBautomerge\-skip\fR, \fBlinux\-only\fR, \fBlinux to homebrew\-core\fR)\.
+Pull requests must not have these labels (default: \fBdo not merge\fR, \fBnew formula\fR, \fBautomerge\-skip\fR, \fBlinux to homebrew\-core\fR)\.
 .
 .TP
 \fB\-\-without\-approval\fR
@@ -2656,7 +2660,7 @@ If set, use \fBbat\fR for the \fBbrew cat\fR command\.
 Use this as the \fBbat\fR configuration file\.
 .
 .IP
-\fIDefault:\fR \fB$HOME/\.bat/config\fR\.
+\fIDefault:\fR \fB$HOME/\.config/bat/config\fR\.
 .
 .TP
 \fBHOMEBREW_BOOTSNAP\fR
