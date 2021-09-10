@@ -7465,6 +7465,16 @@ module ERB::Util
   def self.unwrapped_html_escape(s); end
 end
 
+module EcmaReValidator
+  INVALID_REGEXP = ::T.let(nil, ::T.untyped)
+  INVALID_TOKENS = ::T.let(nil, ::T.untyped)
+  UNICODE_CHARACTERS = ::T.let(nil, ::T.untyped)
+end
+
+module EcmaReValidator
+  def self.valid?(input); end
+end
+
 class EmbeddedPatch
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -8553,6 +8563,110 @@ end
 
 class HTTP::Cookie
   def self.parse(set_cookie, origin, options=T.unsafe(nil), &block); end
+end
+
+module Hana
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class Hana::Patch
+  def apply(doc); end
+
+  def initialize(is); end
+  FROM = ::T.let(nil, ::T.untyped)
+  VALID = ::T.let(nil, ::T.untyped)
+  VALUE = ::T.let(nil, ::T.untyped)
+end
+
+class Hana::Patch::Exception
+end
+
+class Hana::Patch::Exception
+end
+
+class Hana::Patch::FailedTestException
+  def initialize(path, value); end
+
+  def path(); end
+
+  def path=(path); end
+
+  def value(); end
+
+  def value=(value); end
+end
+
+class Hana::Patch::FailedTestException
+end
+
+class Hana::Patch::IndexError
+end
+
+class Hana::Patch::IndexError
+end
+
+class Hana::Patch::InvalidObjectOperationException
+end
+
+class Hana::Patch::InvalidObjectOperationException
+end
+
+class Hana::Patch::InvalidPath
+end
+
+class Hana::Patch::InvalidPath
+end
+
+class Hana::Patch::MissingTargetException
+end
+
+class Hana::Patch::MissingTargetException
+end
+
+class Hana::Patch::ObjectOperationOnArrayException
+end
+
+class Hana::Patch::ObjectOperationOnArrayException
+end
+
+class Hana::Patch::OutOfBoundsException
+end
+
+class Hana::Patch::OutOfBoundsException
+end
+
+class Hana::Patch
+end
+
+class Hana::Pointer
+  include ::Enumerable
+  def each(&block); end
+
+  def eval(object); end
+
+  def initialize(path); end
+  ESC = ::T.let(nil, ::T.untyped)
+end
+
+class Hana::Pointer::Exception
+end
+
+class Hana::Pointer::Exception
+end
+
+class Hana::Pointer::FormatError
+end
+
+class Hana::Pointer::FormatError
+end
+
+class Hana::Pointer
+  def self.eval(list, object); end
+
+  def self.parse(path); end
+end
+
+module Hana
 end
 
 class Hardware::CPU
@@ -11347,6 +11461,193 @@ JSON::State = JSON::Ext::Generator::State
 
 JSON::UnparserError = JSON::GeneratorError
 
+module JSONSchemer
+  DEFAULT_META_SCHEMA = ::T.let(nil, ::T.untyped)
+  DRAFT_CLASS_BY_META_SCHEMA = ::T.let(nil, ::T.untyped)
+  FILE_URI_REF_RESOLVER = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
+  WINDOWS_URI_PATH_REGEX = ::T.let(nil, ::T.untyped)
+end
+
+class JSONSchemer::CachedRefResolver
+  def call(uri); end
+
+  def initialize(&ref_resolver); end
+end
+
+class JSONSchemer::CachedRefResolver
+end
+
+module JSONSchemer::Errors
+end
+
+module JSONSchemer::Errors
+  def self.pretty(error); end
+end
+
+module JSONSchemer::Format
+  def iri_escape(data); end
+
+  def parse_uri_scheme(data); end
+
+  def valid_date_time?(data); end
+
+  def valid_email?(data); end
+
+  def valid_hostname?(data); end
+
+  def valid_ip?(data, type); end
+
+  def valid_json?(data); end
+
+  def valid_json_pointer?(data); end
+
+  def valid_relative_json_pointer?(data); end
+
+  def valid_spec_format?(data, format); end
+
+  def valid_uri?(data); end
+
+  def valid_uri_reference?(data); end
+
+  def valid_uri_template?(data); end
+  DATE_TIME_OFFSET_REGEX = ::T.let(nil, ::T.untyped)
+  EMAIL_REGEX = ::T.let(nil, ::T.untyped)
+  HOSTNAME_REGEX = ::T.let(nil, ::T.untyped)
+  INVALID_QUERY_REGEX = ::T.let(nil, ::T.untyped)
+  JSON_POINTER_REGEX = ::T.let(nil, ::T.untyped)
+  JSON_POINTER_REGEX_STRING = ::T.let(nil, ::T.untyped)
+  LABEL_REGEX_STRING = ::T.let(nil, ::T.untyped)
+  RELATIVE_JSON_POINTER_REGEX = ::T.let(nil, ::T.untyped)
+end
+
+module JSONSchemer::Format
+end
+
+class JSONSchemer::InvalidFileURI
+end
+
+class JSONSchemer::InvalidFileURI
+end
+
+class JSONSchemer::InvalidRefResolution
+end
+
+class JSONSchemer::InvalidRefResolution
+end
+
+class JSONSchemer::InvalidSymbolKey
+end
+
+class JSONSchemer::InvalidSymbolKey
+end
+
+module JSONSchemer::Schema
+end
+
+class JSONSchemer::Schema::Base
+  include ::JSONSchemer::Format
+  def ids(); end
+
+  def initialize(schema, format: T.unsafe(nil), insert_property_defaults: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil), formats: T.unsafe(nil), keywords: T.unsafe(nil), ref_resolver: T.unsafe(nil)); end
+
+  def valid?(data); end
+
+  def valid_instance?(instance); end
+
+  def validate(data); end
+
+  def validate_instance(instance, &block); end
+  BOOLEANS = ::T.let(nil, ::T.untyped)
+  DEFAULT_REF_RESOLVER = ::T.let(nil, ::T.untyped)
+  ID_KEYWORD = ::T.let(nil, ::T.untyped)
+  INSERT_DEFAULT_PROPERTY = ::T.let(nil, ::T.untyped)
+  NET_HTTP_REF_RESOLVER = ::T.let(nil, ::T.untyped)
+  RUBY_REGEX_ANCHORS_TO_ECMA_262 = ::T.let(nil, ::T.untyped)
+end
+
+class JSONSchemer::Schema::Base::Instance
+  def after_property_validation(); end
+
+  def after_property_validation=(_); end
+
+  def before_property_validation(); end
+
+  def before_property_validation=(_); end
+
+  def data(); end
+
+  def data=(_); end
+
+  def data_pointer(); end
+
+  def data_pointer=(_); end
+
+  def merge(data: T.unsafe(nil), data_pointer: T.unsafe(nil), schema: T.unsafe(nil), schema_pointer: T.unsafe(nil), parent_uri: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil)); end
+
+  def parent_uri(); end
+
+  def parent_uri=(_); end
+
+  def schema(); end
+
+  def schema=(_); end
+
+  def schema_pointer(); end
+
+  def schema_pointer=(_); end
+end
+
+class JSONSchemer::Schema::Base::Instance
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
+class JSONSchemer::Schema::Base
+end
+
+class JSONSchemer::Schema::Draft4
+  ID_KEYWORD = ::T.let(nil, ::T.untyped)
+  SUPPORTED_FORMATS = ::T.let(nil, ::T.untyped)
+end
+
+class JSONSchemer::Schema::Draft4
+end
+
+class JSONSchemer::Schema::Draft6
+  SUPPORTED_FORMATS = ::T.let(nil, ::T.untyped)
+end
+
+class JSONSchemer::Schema::Draft6
+end
+
+class JSONSchemer::Schema::Draft7
+  SUPPORTED_FORMATS = ::T.let(nil, ::T.untyped)
+end
+
+class JSONSchemer::Schema::Draft7
+end
+
+module JSONSchemer::Schema
+end
+
+class JSONSchemer::UnknownRef
+end
+
+class JSONSchemer::UnknownRef
+end
+
+class JSONSchemer::UnsupportedMetaSchema
+end
+
+class JSONSchemer::UnsupportedMetaSchema
+end
+
+module JSONSchemer
+  def self.schema(schema, **options); end
+end
+
 class Keg::ConflictError
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -13992,8 +14293,6 @@ end
 class Net::HTTPAlreadyReported
 end
 
-Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
-
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 class Net::HTTPEarlyHints
@@ -14005,9 +14304,13 @@ end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
 
-Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
+class Net::HTTPInformation
+end
 
-Net::HTTPInformationCode = Net::HTTPInformation
+Net::HTTPInformationCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPInformation
+end
 
 class Net::HTTPLoopDetected
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -14055,8 +14358,6 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -14064,8 +14365,6 @@ Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
 Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
-
-Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
 
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
@@ -31348,6 +31647,630 @@ end
 
 module URI
   def self.get_encoding(label); end
+end
+
+module URITemplate
+  def +(other, *args, &block); end
+
+  def /(other, *args, &block); end
+
+  def ==(other, *args, &block); end
+
+  def >>(other, *args, &block); end
+
+  def absolute?(); end
+
+  def concat(other, *args, &block); end
+
+  def concat_without_coercion(other); end
+
+  def eq(other, *args, &block); end
+
+  def eq_without_coercion(other); end
+
+  def expand(variables=T.unsafe(nil)); end
+
+  def expand_partial(variables=T.unsafe(nil)); end
+
+  def host?(); end
+
+  def path_concat(other, *args, &block); end
+
+  def path_concat_without_coercion(other); end
+
+  def pattern(); end
+
+  def relative?(); end
+
+  def scheme?(); end
+
+  def static_characters(); end
+
+  def to_s(); end
+
+  def tokens(); end
+
+  def type(); end
+
+  def variables(); end
+  HOST_REGEX = ::T.let(nil, ::T.untyped)
+  SCHEME_REGEX = ::T.let(nil, ::T.untyped)
+  URI_SPLIT = ::T.let(nil, ::T.untyped)
+  VERSIONS = ::T.let(nil, ::T.untyped)
+end
+
+module URITemplate::ClassMethods
+  def convert(x); end
+
+  def included(base); end
+
+  def try_convert(x); end
+end
+
+module URITemplate::ClassMethods
+end
+
+class URITemplate::Colon
+  include ::URITemplate
+  def extract(uri); end
+
+  def initialize(pattern); end
+
+  def to_r(); end
+
+  def tokenize!(); end
+  VAR = ::T.let(nil, ::T.untyped)
+end
+
+class URITemplate::Colon::InvalidValue
+  include ::URITemplate::InvalidValue
+  def generate_message(); end
+
+  def initialize(variable, value); end
+
+  def value(); end
+
+  def variable(); end
+end
+
+class URITemplate::Colon::InvalidValue::SplatIsNotAnArray
+end
+
+class URITemplate::Colon::InvalidValue::SplatIsNotAnArray
+end
+
+class URITemplate::Colon::InvalidValue
+end
+
+class URITemplate::Colon::Token
+end
+
+class URITemplate::Colon::Token::Splat
+  def index(); end
+
+  def initialize(index); end
+  SPLAT = ::T.let(nil, ::T.untyped)
+end
+
+class URITemplate::Colon::Token::Splat
+end
+
+class URITemplate::Colon::Token::Static
+  include ::URITemplate::Literal
+  include ::URITemplate::Token
+  def initialize(str); end
+
+  def to_r(); end
+end
+
+class URITemplate::Colon::Token::Static
+end
+
+class URITemplate::Colon::Token::Variable
+  include ::URITemplate::Expression
+  include ::URITemplate::Token
+  def expand(vars); end
+
+  def initialize(name); end
+
+  def name(); end
+
+  def to_r(); end
+end
+
+class URITemplate::Colon::Token::Variable
+end
+
+class URITemplate::Colon::Token
+end
+
+class URITemplate::Colon
+  extend ::URITemplate::ClassMethods
+end
+
+module URITemplate::Expression
+  include ::URITemplate::Token
+  def expression?(); end
+
+  def literal?(); end
+
+  def variables(); end
+end
+
+module URITemplate::Expression
+end
+
+module URITemplate::Invalid
+end
+
+module URITemplate::Invalid
+end
+
+module URITemplate::InvalidValue
+end
+
+module URITemplate::InvalidValue
+end
+
+module URITemplate::Literal
+  include ::URITemplate::Token
+  def ends_with_slash?(); end
+
+  def expand(_); end
+
+  def expand_partial(_); end
+
+  def expression?(); end
+
+  def literal?(); end
+
+  def size(); end
+
+  def starts_with_slash?(); end
+
+  def string(); end
+
+  def to_s(); end
+  SLASH = ::T.let(nil, ::T.untyped)
+end
+
+module URITemplate::Literal
+end
+
+class URITemplate::RFC6570
+  include ::URITemplate
+  def ===(*args, &block); end
+
+  def extract(uri_or_match, post_processing=T.unsafe(nil)); end
+
+  def extract_matchdata(matchdata, post_processing); end
+
+  def extract_simple(uri_or_match); end
+
+  def initialize(pattern_or_tokens, options=T.unsafe(nil)); end
+
+  def level(); end
+
+  def match(*args, &block); end
+
+  def options(); end
+
+  def to_r(); end
+
+  def tokenize!(); end
+  CHARACTER_CLASSES = ::T.let(nil, ::T.untyped)
+  CONVERT_RESULT = ::T.let(nil, ::T.untyped)
+  CONVERT_VALUES = ::T.let(nil, ::T.untyped)
+  DEFAULT_PROCESSING = ::T.let(nil, ::T.untyped)
+  EXPRESSION = ::T.let(nil, ::T.untyped)
+  LITERAL = ::T.let(nil, ::T.untyped)
+  NO_PROCESSING = ::T.let(nil, ::T.untyped)
+  OPERATORS = ::T.let(nil, ::T.untyped)
+  TYPE = ::T.let(nil, ::T.untyped)
+  URI = ::T.let(nil, ::T.untyped)
+  VAR = ::T.let(nil, ::T.untyped)
+end
+
+module URITemplate::RFC6570::ClassMethods
+  def try_convert(x); end
+
+  def valid?(pattern); end
+end
+
+module URITemplate::RFC6570::ClassMethods
+end
+
+class URITemplate::RFC6570::Expression
+  include ::URITemplate::Expression
+  include ::URITemplate::Token
+  def arity(); end
+
+  def cut(str, chars); end
+
+  def decode(x, split=T.unsafe(nil)); end
+
+  def empty_literals?(list); end
+
+  def escape(x); end
+
+  def expand(vars); end
+
+  def expand_partial(vars); end
+
+  def extract(position, matched); end
+
+  def initialize(vars); end
+
+  def level(); end
+
+  def pair(key, value, max_length=T.unsafe(nil), &block); end
+
+  def regex_builder(); end
+
+  def transform_array(name, ary, expand, max_length); end
+
+  def transform_hash(name, hsh, expand, max_length); end
+
+  def unescape(x); end
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  CHARACTER_CLASS = ::T.let(nil, ::T.untyped)
+  COMMA = ::T.let(nil, ::T.untyped)
+  LIST_CONNECTOR = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PAIR_CONNECTOR = ::T.let(nil, ::T.untyped)
+  PAIR_IF_EMPTY = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+  SEPARATOR = ::T.let(nil, ::T.untyped)
+  SPLITTER = ::T.let(nil, ::T.untyped)
+end
+
+class URITemplate::RFC6570::Expression::Basic
+end
+
+URITemplate::RFC6570::Expression::Basic::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::Basic
+
+URITemplate::RFC6570::Expression::Basic::FOLLOW_UP = URITemplate::RFC6570::Expression::Basic
+
+class URITemplate::RFC6570::Expression::Basic
+end
+
+module URITemplate::RFC6570::Expression::ClassMethods
+  def generate_hash_extractor(max_length); end
+
+  def hash_extractor(max_length); end
+
+  def hash_extractors(); end
+
+  def regex_builder(); end
+end
+
+module URITemplate::RFC6570::Expression::ClassMethods
+end
+
+class URITemplate::RFC6570::Expression::FormQuery
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+  SEPARATOR = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::FormQuery::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::FormQueryContinuation
+
+URITemplate::RFC6570::Expression::FormQuery::FOLLOW_UP = URITemplate::RFC6570::Expression::Basic
+
+class URITemplate::RFC6570::Expression::FormQuery
+end
+
+class URITemplate::RFC6570::Expression::FormQueryContinuation
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+  SEPARATOR = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::FormQueryContinuation::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::FormQueryContinuation
+
+URITemplate::RFC6570::Expression::FormQueryContinuation::FOLLOW_UP = URITemplate::RFC6570::Expression::Basic
+
+class URITemplate::RFC6570::Expression::FormQueryContinuation
+end
+
+class URITemplate::RFC6570::Expression::Fragment
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  CHARACTER_CLASS = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::Fragment::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::Reserved
+
+URITemplate::RFC6570::Expression::Fragment::FOLLOW_UP = URITemplate::RFC6570::Expression::Reserved
+
+class URITemplate::RFC6570::Expression::Fragment
+end
+
+class URITemplate::RFC6570::Expression::Label
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+  SEPARATOR = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::Label::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::Label
+
+URITemplate::RFC6570::Expression::Label::FOLLOW_UP = URITemplate::RFC6570::Expression::Label
+
+class URITemplate::RFC6570::Expression::Label
+end
+
+class URITemplate::RFC6570::Expression::Named
+  def self_pair(key, value, max_length=T.unsafe(nil), &block); end
+
+  def to_r_source(); end
+end
+
+class URITemplate::RFC6570::Expression::Named
+end
+
+class URITemplate::RFC6570::Expression::Path
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+  SEPARATOR = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::Path::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::Path
+
+URITemplate::RFC6570::Expression::Path::FOLLOW_UP = URITemplate::RFC6570::Expression::Path
+
+class URITemplate::RFC6570::Expression::Path
+end
+
+class URITemplate::RFC6570::Expression::PathParameters
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+  PAIR_IF_EMPTY = ::T.let(nil, ::T.untyped)
+  PREFIX = ::T.let(nil, ::T.untyped)
+  SEPARATOR = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::PathParameters::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::PathParameters
+
+URITemplate::RFC6570::Expression::PathParameters::FOLLOW_UP = URITemplate::RFC6570::Expression::PathParameters
+
+class URITemplate::RFC6570::Expression::PathParameters
+end
+
+class URITemplate::RFC6570::Expression::Reserved
+  BASE_LEVEL = ::T.let(nil, ::T.untyped)
+  CHARACTER_CLASS = ::T.let(nil, ::T.untyped)
+  OPERATOR = ::T.let(nil, ::T.untyped)
+end
+
+URITemplate::RFC6570::Expression::Reserved::BULK_FOLLOW_UP = URITemplate::RFC6570::Expression::Reserved
+
+URITemplate::RFC6570::Expression::Reserved::FOLLOW_UP = URITemplate::RFC6570::Expression::Reserved
+
+class URITemplate::RFC6570::Expression::Reserved
+end
+
+class URITemplate::RFC6570::Expression::Unnamed
+  def self_pair(_, value, max_length=T.unsafe(nil), &block); end
+
+  def to_r_source(); end
+end
+
+class URITemplate::RFC6570::Expression::Unnamed
+end
+
+class URITemplate::RFC6570::Expression
+  extend ::URITemplate::RFC6570::Expression::ClassMethods
+end
+
+class URITemplate::RFC6570::Invalid
+  include ::URITemplate::Invalid
+  def initialize(source, position); end
+
+  def pattern(); end
+
+  def position(); end
+end
+
+class URITemplate::RFC6570::Invalid
+end
+
+class URITemplate::RFC6570::Literal
+  include ::URITemplate::Literal
+  include ::URITemplate::Token
+  def initialize(string); end
+
+  def level(); end
+
+  def to_r_source(*_); end
+end
+
+class URITemplate::RFC6570::Literal
+end
+
+class URITemplate::RFC6570::RegexBuilder
+  def <<(arg); end
+
+  def capture(&block); end
+
+  def character_class(max_length=T.unsafe(nil), min=T.unsafe(nil)); end
+
+  def character_class_with_comma(max_length=T.unsafe(nil), min=T.unsafe(nil)); end
+
+  def escaped_pair_connector(); end
+
+  def escaped_prefix(); end
+
+  def escaped_separator(); end
+
+  def group(capture=T.unsafe(nil)); end
+
+  def initialize(expression_class); end
+
+  def join(); end
+
+  def length(*args); end
+
+  def lookahead(); end
+
+  def negative_lookahead(); end
+
+  def push(*args); end
+
+  def reluctant(); end
+
+  def separated_list(first=T.unsafe(nil), length=T.unsafe(nil), min=T.unsafe(nil), &block); end
+end
+
+class URITemplate::RFC6570::RegexBuilder
+end
+
+class URITemplate::RFC6570::Token
+end
+
+class URITemplate::RFC6570::Token
+end
+
+class URITemplate::RFC6570::Tokenizer
+  include ::Enumerable
+  def each(&blk); end
+
+  def initialize(source, ops); end
+
+  def source(); end
+end
+
+class URITemplate::RFC6570::Tokenizer
+end
+
+module URITemplate::RFC6570::Utils
+  include ::URITemplate::Utils
+  include ::URITemplate::Utils::StringEncoding
+  include ::URITemplate::Utils::StringEncoding::Encode
+  include ::URITemplate::Utils::Escaping::Pure
+  def def?(value); end
+end
+
+module URITemplate::RFC6570::Utils
+  extend ::URITemplate::RFC6570::Utils
+  extend ::URITemplate::Utils
+  extend ::URITemplate::Utils::StringEncoding
+  extend ::URITemplate::Utils::StringEncoding::Encode
+  extend ::URITemplate::Utils::Escaping::Pure
+end
+
+class URITemplate::RFC6570
+  extend ::URITemplate::ClassMethods
+  extend ::Forwardable
+  extend ::URITemplate::RFC6570::ClassMethods
+end
+
+module URITemplate::Token
+  def ends_with_slash?(); end
+
+  def expand(variables); end
+
+  def expand_partial(variables); end
+
+  def host?(); end
+
+  def scheme?(); end
+
+  def size(); end
+
+  def starts_with_slash?(); end
+
+  def to_s(); end
+
+  def variables(); end
+  EMPTY_ARRAY = ::T.let(nil, ::T.untyped)
+end
+
+module URITemplate::Token
+end
+
+module URITemplate::Utils
+  include ::URITemplate::Utils::StringEncoding
+  include ::URITemplate::Utils::StringEncoding::Encode
+  include ::URITemplate::Utils::Escaping::Pure
+  def compact_regexp(rx); end
+
+  def object_to_param(object); end
+
+  def pair_array?(a); end
+
+  def pair_array_to_hash(x, careful=T.unsafe(nil)); end
+
+  def pair_array_to_hash2(x); end
+
+  def use_unicode?(); end
+  KCODE_UTF8 = ::T.let(nil, ::T.untyped)
+end
+
+module URITemplate::Utils::Escaping
+end
+
+module URITemplate::Utils::Escaping::Pure
+  def escape_uri(s); end
+
+  def escape_url(s); end
+
+  def unescape_uri(s); end
+
+  def unescape_url(s); end
+
+  def using_escape_utils?(); end
+  PCT = ::T.let(nil, ::T.untyped)
+  URI_ESCAPED = ::T.let(nil, ::T.untyped)
+  URL_ESCAPED = ::T.let(nil, ::T.untyped)
+end
+
+module URITemplate::Utils::Escaping::Pure
+end
+
+module URITemplate::Utils::Escaping
+end
+
+module URITemplate::Utils::StringEncoding
+  include ::URITemplate::Utils::StringEncoding::Encode
+end
+
+module URITemplate::Utils::StringEncoding::Encode
+  def force_utf8(str); end
+
+  def to_ascii(str); end
+
+  def to_utf8(str); end
+end
+
+module URITemplate::Utils::StringEncoding::Encode
+end
+
+module URITemplate::Utils::StringEncoding
+end
+
+module URITemplate::Utils
+  extend ::URITemplate::Utils
+  extend ::URITemplate::Utils::StringEncoding
+  extend ::URITemplate::Utils::StringEncoding::Encode
+  extend ::URITemplate::Utils::Escaping::Pure
+end
+
+module URITemplate
+  extend ::URITemplate::ClassMethods
+  def self.apply(a, method, b, *args); end
+
+  def self.coerce(a, b); end
+
+  def self.coerce_first_arg(meth); end
+
+  def self.new(*args); end
+
+  def self.resolve_class(*args); end
 end
 
 module URL::BlockDSL::PageWithURL
