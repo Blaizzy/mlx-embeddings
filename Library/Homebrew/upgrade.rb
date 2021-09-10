@@ -165,11 +165,11 @@ module Homebrew
       if dry_run
         print_dry_run_dependencies(formula, formula_installer.compute_dependencies)
         return
-      else
-        print_upgrade_message(formula, formula_installer.options)
       end
 
       formula_installer.prelude
+
+      print_upgrade_message(formula, formula_installer.options)
 
       # first we unlink the currently active keg for this formula otherwise it is
       # possible for the existing build to interfere with the build we are about to
