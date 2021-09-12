@@ -3,8 +3,8 @@
 
 require "formula_installer"
 require "unpack_strategy"
+require "utils/topological_hash"
 
-require "cask/topological_hash"
 require "cask/config"
 require "cask/download"
 require "cask/staged"
@@ -294,43 +294,14 @@ module Cask
             "but you are running #{@current_arch}."
     end
 
-    def graph_dependencies(cask_or_formula, acc = TopologicalHash.new)
-      return acc if acc.key?(cask_or_formula)
-
-      if cask_or_formula.is_a?(Cask)
-        formula_deps = cask_or_formula.depends_on.formula.map { |f| Formula[f] }
-        cask_deps = cask_or_formula.depends_on.cask.map { |c| CaskLoader.load(c, config: nil) }
-      else
-        formula_deps = cask_or_formula.deps.reject(&:build?).map(&:to_formula)
-        cask_deps = cask_or_formula.requirements.map(&:cask).compact
-                                   .map { |c| CaskLoader.load(c, config: nil) }
-      end
-
-      acc[cask_or_formula] ||= []
-      acc[cask_or_formula] += formula_deps
-      acc[cask_or_formula] += cask_deps
-
-      formula_deps.each do |f|
-        graph_dependencies(f, acc)
-      end
-
-      cask_deps.each do |c|
-        graph_dependencies(c, acc)
-      end
-
-      acc
-    end
-
     def collect_cask_and_formula_dependencies
       return @cask_and_formula_dependencies if @cask_and_formula_dependencies
 
-      graph = graph_dependencies(@cask)
+      graph = ::Utils::TopologicalHash.graph_package_dependencies(@cask)
 
       raise CaskSelfReferencingDependencyError, cask.token if graph[@cask].include?(@cask)
 
-      primary_container.dependencies.each do |dep|
-        graph_dependencies(dep, graph)
-      end
+      ::Utils::TopologicalHash.graph_package_dependencies(primary_container.dependencies, graph)
 
       begin
         @cask_and_formula_dependencies = graph.tsort - [@cask]
