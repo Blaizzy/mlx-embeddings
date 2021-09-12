@@ -79,6 +79,10 @@ class Formula
 
   # The path to the alias that was used to identify this {Formula}.
   # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Aliases/another-name-for-this-formula`
+  attr_reader :bottle_path
+
+  # The path to the alias that was used to identify this {Formula}.
+  # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Aliases/another-name-for-this-formula`
   attr_reader :alias_path
 
   # The name of the alias that was used to identify this {Formula}.
@@ -308,9 +312,20 @@ class Formula
     full_name_with_optional_tap(installed_alias_name)
   end
 
+  def prefix_formula_file
+    return unless prefix.directory?
+
+    prefix/".brew/#{name}.rb"
+  end
+
   # The path that was specified to find this formula.
   def specified_path
-    alias_path || path
+    default_specified_path = alias_path || path
+
+    return default_specified_path if default_specified_path.present? && default_specified_path.exist?
+    return local_bottle_path if local_bottle_path.present? && local_bottle_path.exist?
+
+    default_specified_path
   end
 
   # The name specified to find this formula.
@@ -523,7 +538,7 @@ class Formula
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    latest_prefix = if ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
+    latest_prefix = if !head? && ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
                        (latest_pkg_version = Homebrew::API::Versions.latest_formula_version(name))
       prefix latest_pkg_version
     else
@@ -1343,7 +1358,7 @@ class Formula
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
       current_version = T.let(false, T::Boolean)
-      latest_version = if ENV["HOMEBREW_INSTALL_FROM_API"].present? && (core_formula? || tap.blank?)
+      latest_version = if !head? && ENV["HOMEBREW_INSTALL_FROM_API"].present? && (core_formula? || tap.blank?)
         Homebrew::API::Versions.latest_formula_version(name) || pkg_version
       else
         pkg_version
