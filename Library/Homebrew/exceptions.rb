@@ -758,3 +758,13 @@ class ShebangDetectionError < RuntimeError
     super "Cannot detect #{type} shebang: #{reason}."
   end
 end
+
+# Raised when one or more formulae have cyclic dependencies.
+class CyclicDependencyError < RuntimeError
+  def initialize(strongly_connected_components)
+    super <<~EOS
+      The following packages contain cyclic dependencies:
+        #{strongly_connected_components.select { |packages| packages.count > 1 }.map(&:to_sentence).join("\n  ")}
+    EOS
+  end
+end

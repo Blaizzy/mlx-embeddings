@@ -47,8 +47,7 @@ module Homebrew
       begin
         formulae_to_install = dependency_graph.tsort & formulae_to_install
       rescue TSort::Cyclic
-        # Failed to sort formulae topologically because there are cyclic
-        # dependencies. Let FormulaInstaller handle it.
+        raise CyclicDependencyError, dependency_graph.strongly_connected_components if Homebrew::EnvConfig.developer?
       end
 
       formula_installers = formulae_to_install.map do |formula|
