@@ -37,7 +37,7 @@ then
   ruby_URLs=()
   if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" ]]
   then
-    ruby_URLs+=("${HOMEBREW_ARTIFACT_DOMAIN}/bottles-portable-ruby/${ruby_FILENAME}")
+    ruby_URLs+=("${HOMEBREW_ARTIFACT_DOMAIN}/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}")
   fi
   if [[ -n "${HOMEBREW_BOTTLE_DOMAIN}" ]]
   then
