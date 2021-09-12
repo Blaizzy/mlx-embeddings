@@ -1,9 +1,31 @@
 export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.3
 
+# Search given executable in all PATH entries (remove dependency for `which` command)
+which_all() {
+  if [[ $# -ne 1 ]]
+  then
+    return 1
+  fi
+
+  local executable entries entry retcode=1
+  IFS=':' read -r -a entries <<< "${PATH}"  # `readarray -d ':' -t` seems not applicable on WSL Bash
+  for entry in "${entries[@]}"
+  do
+    executable="${entry}/$1"
+    if [[ -x "${executable}" ]]
+    then
+      echo "${executable}"
+      retcode=0  # present
+    fi
+  done
+
+  return "${retcode}"
+}
+
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
 test_ruby() {
-  if [[ ! -x $1 ]]
+  if [[ ! -x "$1" ]]
   then
     return 1
   fi
@@ -15,22 +37,23 @@ test_ruby() {
 
 # HOMEBREW_MACOS is set by brew.sh
 # HOMEBREW_PATH is set by global.rb
-# SC2230 falsely flags `which -a`
-# shellcheck disable=SC2154,SC2230
+# shellcheck disable=SC2154
 find_ruby() {
   if [[ -n "${HOMEBREW_MACOS}" ]]
   then
     echo "/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
   else
-    IFS=$'\n' # Do word splitting on new lines only
-    for ruby_exec in $(which -a ruby 2>/dev/null) $(PATH=${HOMEBREW_PATH} which -a ruby 2>/dev/null)
+    local ruby_exec
+    while read -r ruby_exec
     do
       if test_ruby "${ruby_exec}"; then
         echo "${ruby_exec}"
         break
       fi
-    done
-    IFS=$' \t\n' # Restore IFS to its default value
+    done < <(
+      which_all ruby
+      PATH="${HOMEBREW_PATH}" which_all ruby
+    )
   fi
 }
 
