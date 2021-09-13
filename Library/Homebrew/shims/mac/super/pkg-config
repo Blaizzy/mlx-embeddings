@@ -4,7 +4,8 @@
 # shellcheck disable=SC2154
 pkg_config="${HOMEBREW_OPT}/pkg-config/bin/pkg-config"
 
-if [ -z "${HOMEBREW_SDKROOT}" ]; then
+if [[ -z "${HOMEBREW_SDKROOT}" ]]
+then
   exec "${pkg_config}" "$@"
 fi
 

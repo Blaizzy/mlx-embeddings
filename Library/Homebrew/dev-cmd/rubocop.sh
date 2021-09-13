@@ -14,7 +14,8 @@ homebrew-rubocop() {
   GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${RUBY_DISABLE_OPTIONS}" -rrbconfig -e 'puts RbConfig::CONFIG["ruby_version"]')"
   GEM_HOME="${HOMEBREW_LIBRARY}/Homebrew/vendor/bundle/ruby/${GEM_VERSION}"
 
-  if ! [[ -f "${GEM_HOME}/bin/rubocop" ]]; then
+  if ! [[ -f "${GEM_HOME}/bin/rubocop" ]]
+  then
     "${HOMEBREW_BREW_FILE}" install-bundler-gems
   fi
 

@@ -361,7 +361,7 @@ Everything is built on Git, so contribution is easy:
 
 ```sh
 brew update # required in more ways than you think (initialises the brew git repository if you don't already have it)
-cd $(brew --repository homebrew/core)
+cd "$(brew --repository homebrew/core)"
 # Create a new git branch for your formula so your pull request is easy to
 # modify if any changes come up during review.
 git checkout -b <some-descriptive-name> origin/master

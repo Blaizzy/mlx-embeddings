@@ -114,7 +114,7 @@ then
     # Skip if variable value is empty.
     [[ -z "${!VAR}" ]] && continue
 
-    FILTERED_ENV+=( "${VAR}=${!VAR}" )
+    FILTERED_ENV+=("${VAR}=${!VAR}")
   done
 
   exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "${HOMEBREW_LIBRARY}/Homebrew/brew.sh" "$@"

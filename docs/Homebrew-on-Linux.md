@@ -31,10 +31,10 @@ The prefix `/home/linuxbrew/.linuxbrew` was chosen so that users without admin a
 Follow the *Next steps* instructions to add Homebrew to your `PATH` and to your bash shell profile script, either `~/.profile` on Debian/Ubuntu or `~/.bash_profile` on CentOS/Fedora/Red Hat.
 
 ```sh
-test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
+test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+test -r ~/.bash_profile && echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >>~/.bash_profile
+echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >>~/.profile
 ```
 
 You're done! Try installing a package:
@@ -86,7 +86,7 @@ Extract or `git clone` Homebrew wherever you want. Use `/home/linuxbrew/.linuxbr
 git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
 mkdir ~/.linuxbrew/bin
 ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin
-eval $(~/.linuxbrew/bin/brew shellenv)
+eval "$(~/.linuxbrew/bin/brew shellenv)"
 ```
 
 ## Homebrew on Linux Community

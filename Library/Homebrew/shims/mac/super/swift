@@ -7,8 +7,9 @@
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/shims/utils.sh"
 
-if [[ -z "${SDKROOT}" && -n "${HOMEBREW_SDKROOT}" ]]; then
-  export SDKROOT=${HOMEBREW_SDKROOT}
+if [[ -z "${SDKROOT}" && -n "${HOMEBREW_SDKROOT}" ]]
+then
+  export SDKROOT="${HOMEBREW_SDKROOT}"
 fi
 
 try_exec_non_system "swift" "$@"

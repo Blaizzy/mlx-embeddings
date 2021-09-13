@@ -17,14 +17,14 @@ After running `brew update`, you receive a Git error warning about untracked fil
 This is caused by an old bug in in the `update` code that has long since been fixed. However, the nature of the bug requires that you do the following:
 
 ```sh
-cd $(brew --repository)
+cd "$(brew --repository)"
 git reset --hard FETCH_HEAD
 ```
 
 If `brew doctor` still complains about uncommitted modifications, also run this command:
 
 ```sh
-cd $(brew --repository)/Library
+cd "$(brew --repository)/Library"
 git clean -fd
 ```
 
@@ -71,7 +71,7 @@ Please report this bug:
 This happens because an old version of the upgrade command is hanging around for some reason. The fix:
 
 ```sh
-cd $(brew --repository)/Library/Contributions/examples
+cd "$(brew --repository)/Library/Contributions/examples"
 git clean -n # if this doesn't list anything that you want to keep, then
 git clean -f # this will remove untracked files
 ```

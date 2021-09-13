@@ -44,9 +44,9 @@ variable, or let `hub fork` add a remote for you.
 
 ```bash
 brew install hub
-cd $(brew --repository homebrew/core)
+cd "$(brew --repository homebrew/core)"
 git remote add homebrew https://github.com/Homebrew/homebrew-core.git
-hub fork --remote-name=$HOMEBREW_GITHUB_USER
+hub fork --remote-name="${HOMEBREW_GITHUB_USER}"
 ```
 
 Now, let's make sure that our local branch `master` is clean and that
@@ -56,7 +56,7 @@ your fork is up-to-date with Homebrew/linuxbrew-core:
 git checkout master
 git fetch origin master
 git reset --hard origin/master
-git push --force $HOMEBREW_GITHUB_USER master
+git push --force "${HOMEBREW_GITHUB_USER}" master
 ```
 
 Strictly speaking, there is no need for `git reset --hard
@@ -220,8 +220,9 @@ manually, tap `Homebrew/homebrew-linux-dev` and run the following
 command where the merge commit is `HEAD`:
 
 ```sh
-for formula in $(brew find-formulae-to-bottle); do
-  brew request-bottle $formula
+for formula in $(brew find-formulae-to-bottle)
+do
+  brew request-bottle "${formula}"
 done
 ```
 

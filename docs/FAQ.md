@@ -55,7 +55,7 @@ Homebrew doesn't support arbitrary mixing and matching of formula versions, so e
 Which is usually: `~/Library/Caches/Homebrew`
 
 ## My Mac `.app`s don’t find Homebrew utilities!
-GUI apps on macOS don’t have Homebrew's prefix in their `PATH` by default. If you're on Mountain Lion or later, you can fix this by running `sudo launchctl config user path "$(brew --prefix)/bin:$PATH"` and then rebooting, as documented in `man launchctl`. Note that this sets the launchctl `PATH` for *all users*. For earlier versions of macOS, see [this page](https://developer.apple.com/legacy/library/qa/qa1067/_index.html).
+GUI apps on macOS don’t have Homebrew's prefix in their `PATH` by default. If you're on Mountain Lion or later, you can fix this by running `sudo launchctl config user path "$(brew --prefix)/bin:${PATH}"` and then rebooting, as documented in `man launchctl`. Note that this sets the launchctl `PATH` for *all users*. For earlier versions of macOS, see [this page](https://developer.apple.com/legacy/library/qa/qa1067/_index.html).
 
 ## How do I contribute to Homebrew?
 Read our [contribution guidelines](https://github.com/Homebrew/brew/blob/HEAD/CONTRIBUTING.md#contributing-to-homebrew).
@@ -84,7 +84,7 @@ We aim to bottle everything.
 ```sh
 brew install hub
 brew update
-cd $(brew --repository)
+cd "$(brew --repository)"
 hub pull someone_else
 ```
 

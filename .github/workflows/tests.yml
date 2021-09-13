@@ -90,10 +90,10 @@ jobs:
       - name: Set up all Homebrew taps
         run: |
           HOMEBREW_REPOSITORY="$(brew --repo)"
-          HOMEBREW_CORE_REPOSITORY="$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-core"
-          git -C "$HOMEBREW_CORE_REPOSITORY" remote add homebrew_core https://github.com/Homebrew/homebrew-core
-          git -C "$HOMEBREW_CORE_REPOSITORY" fetch homebrew_core || git -C "$HOMEBREW_CORE_REPOSITORY" fetch homebrew_core
-          git -C "$HOMEBREW_CORE_REPOSITORY" checkout --force -B master homebrew_core/master
+          HOMEBREW_CORE_REPOSITORY="${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core"
+          git -C "${HOMEBREW_CORE_REPOSITORY}" remote add homebrew_core https://github.com/Homebrew/homebrew-core
+          git -C "${HOMEBREW_CORE_REPOSITORY}" fetch homebrew_core || git -C "${HOMEBREW_CORE_REPOSITORY}" fetch homebrew_core
+          git -C "${HOMEBREW_CORE_REPOSITORY}" checkout --force -B master homebrew_core/master
 
           brew tap homebrew/aliases
           brew tap homebrew/autoupdate
@@ -111,7 +111,7 @@ jobs:
           brew update-reset Library/Taps/homebrew/homebrew-bundle
 
           # brew style doesn't like world writable directories
-          sudo chmod -R g-w,o-w "$HOMEBREW_REPOSITORY/Library/Taps"
+          sudo chmod -R g-w,o-w "${HOMEBREW_REPOSITORY}/Library/Taps"
 
       - name: Run brew style on homebrew-core
         run: brew style --display-cop-names homebrew/core
@@ -178,11 +178,11 @@ jobs:
       - name: Deploy the Docker image to GitHub Packages and Docker Hub
         if: github.ref == 'refs/heads/master'
         run: |
-          echo ${{secrets.HOMEBREW_BREW_GITHUB_PACKAGES_TOKEN}} | \
+          echo ${{secrets.HOMEBREW_BREW_GITHUB_PACKAGES_TOKEN}} |
             docker login ghcr.io -u BrewTestBot --password-stdin
           docker tag brew "ghcr.io/homebrew/ubuntu16.04:master"
           docker push "ghcr.io/homebrew/ubuntu16.04:master"
-          echo ${{secrets.HOMEBREW_BREW_DOCKER_TOKEN}} | \
+          echo ${{secrets.HOMEBREW_BREW_DOCKER_TOKEN}} |
             docker login -u brewtestbot --password-stdin
           docker tag brew "homebrew/ubuntu16.04:master"
           docker push "homebrew/ubuntu16.04:master"
@@ -321,9 +321,10 @@ jobs:
         run: |
           # Retry multiple times when using BuildPulse to detect and submit
           # flakiness (because rspec-retry is disabled).
-          if [ -n "$HOMEBREW_BUILDPULSE_ACCESS_KEY_ID" ]; then
-            brew tests --online --coverage || \
-            brew tests --online --coverage || \
+          if [[ -n "${HOMEBREW_BUILDPULSE_ACCESS_KEY_ID}" ]]
+          then
+            brew tests --online --coverage ||
+            brew tests --online --coverage ||
             brew tests --online --coverage
           else
             brew tests --online --coverage

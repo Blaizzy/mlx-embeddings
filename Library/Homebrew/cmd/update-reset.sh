@@ -11,10 +11,10 @@ homebrew-update-reset() {
   for option in "$@"
   do
     case "${option}" in
-      -\?|-h|--help|--usage)          brew help update-reset; exit $? ;;
-      --debug)                        HOMEBREW_DEBUG=1 ;;
+      -\? | -h | --help | --usage) brew help update-reset; exit $? ;;
+      --debug)                     HOMEBREW_DEBUG=1 ;;
       -*)
-        [[ "${option}" = *d* ]] && HOMEBREW_DEBUG=1
+        [[ "${option}" == *d* ]] && HOMEBREW_DEBUG=1
         ;;
       *)
         REPOS+=("${option}")

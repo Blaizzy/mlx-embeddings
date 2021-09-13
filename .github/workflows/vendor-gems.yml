@@ -51,7 +51,8 @@ jobs:
         run: |
           set -u
 
-          if [[ "${GEM_NAME}" == 'sorbet' ]]; then
+          if [[ "${GEM_NAME}" == 'sorbet' ]]
+          then
             brew vendor-gems --update sorbet,sorbet-runtime
           else
             brew vendor-gems
@@ -63,8 +64,10 @@ jobs:
         run: |
           set -u
 
-          if brew typecheck --update --fail-if-not-changed; then
-            if git add Library/Homebrew/sorbet; then
+          if brew typecheck --update --fail-if-not-changed
+          then
+            if git add Library/Homebrew/sorbet
+            then
               git commit -m "Update RBI files for ${GEM_NAME}."
             fi
 

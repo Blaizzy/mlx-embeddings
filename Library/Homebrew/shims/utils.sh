@@ -1,7 +1,10 @@
 set +o posix
 
 quiet_safe_cd() {
-  cd "$1" &>/dev/null || { echo "Error: failed to cd to $1" >&2; exit 1; }
+  cd "$1" &>/dev/null || {
+    echo "Error: failed to cd to $1" >&2
+    exit 1
+  }
 }
 
 absdir() {
@@ -25,7 +28,7 @@ realpath() {
   while [[ -L "${path}" ]]
   do
     dest="$(readlink "${path}")"
-    if [[ "${dest}" = "/"* ]]
+    if [[ "${dest}" == "/"* ]]
     then
       path="${dest}"
     else
@@ -54,11 +57,11 @@ safe_exec() {
     return
   fi
   # prevent fork-bombs
-  if [[ "$(lowercase "${arg0}")" = "${SHIM_FILE}" || "$(realpath "${arg0}")" = "${SHIM_REAL}" ]]
+  if [[ "$(lowercase "${arg0}")" == "${SHIM_FILE}" || "$(realpath "${arg0}")" == "${SHIM_REAL}" ]]
   then
     return
   fi
-  if [[ "${HOMEBREW}" = "print-path" ]]
+  if [[ "${HOMEBREW}" == "print-path" ]]
   then
     local dir
     dir="$(quiet_safe_cd "${arg0%/*}/" && pwd)"
@@ -71,25 +74,23 @@ safe_exec() {
 }
 
 try_exec_non_system() {
-	local file="$1"
+  local file="$1"
   shift
 
-	IFS=$'\n'
-	for path in $(type -aP "${file}")
-	do
-	  if [[ "${path}" != "/usr/bin/${file}" ]]
-	  then
-	    safe_exec "${path}" "$@"
-	  fi
-	done
-	unset IFS
+  local path
+  while read -r path
+  do
+    if [[ "${path}" != "/usr/bin/${file}" ]]
+    then
+      safe_exec "${path}" "$@"
+    fi
+  done < <(type -aP "${file}")
 }
-
 
 SHIM_FILE="${0##*/}"
 SHIM_REAL="$(realpath "$0")"
 
-if [[ "$1" = --homebrew=* ]]
+if [[ "$1" == "--homebrew="* ]]
 then
   HOMEBREW="${1:11}"
   shift
