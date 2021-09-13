@@ -5,9 +5,9 @@
 # typed: true
 
 class HTTP::CookieJar
-  include(::Mechanize::CookieDeprecated)
-  include(::Mechanize::CookieJarIMethods)
-  include(::Enumerable)
+  include ::Mechanize::CookieDeprecated
+  include ::Mechanize::CookieJarIMethods
+  include ::Enumerable
 
   def initialize(options = T.unsafe(nil)); end
 
@@ -161,9 +161,7 @@ class Mechanize
 end
 
 Mechanize::AGENT_ALIASES = T.let(T.unsafe(nil), Hash)
-
-class Mechanize::ChunkedTerminationError < ::Mechanize::ResponseReadError
-end
+class Mechanize::ChunkedTerminationError < ::Mechanize::ResponseReadError; end
 
 class Mechanize::ContentTypeError < ::Mechanize::Error
   def initialize(content_type); end
@@ -174,20 +172,19 @@ end
 Mechanize::Cookie = HTTP::Cookie
 
 module Mechanize::CookieCMethods
-  include(::Mechanize::CookieDeprecated)
+  include ::Mechanize::CookieDeprecated
 
   def parse(arg1, arg2, arg3 = T.unsafe(nil), &block); end
 end
 
 module Mechanize::CookieDeprecated
-
   private
 
   def __deprecated__(to = T.unsafe(nil)); end
 end
 
 module Mechanize::CookieIMethods
-  include(::Mechanize::CookieDeprecated)
+  include ::Mechanize::CookieDeprecated
 
   def set_domain(domain); end
 end
@@ -198,7 +195,7 @@ class Mechanize::CookieJar < ::HTTP::CookieJar
 end
 
 module Mechanize::CookieJarIMethods
-  include(::Mechanize::CookieDeprecated)
+  include ::Mechanize::CookieDeprecated
 
   def add(arg1, arg2 = T.unsafe(nil)); end
   def add!(cookie); end
@@ -221,7 +218,7 @@ class Mechanize::DirectorySaver < ::Mechanize::Download
 end
 
 class Mechanize::Download
-  include(::Mechanize::Parser)
+  include ::Mechanize::Parser
 
   def initialize(uri = T.unsafe(nil), response = T.unsafe(nil), body_io = T.unsafe(nil), code = T.unsafe(nil)); end
 
@@ -247,11 +244,10 @@ class Mechanize::ElementNotFoundError < ::Mechanize::Error
   def source; end
 end
 
-class Mechanize::Error < ::RuntimeError
-end
+class Mechanize::Error < ::RuntimeError; end
 
 class Mechanize::File
-  include(::Mechanize::Parser)
+  include ::Mechanize::Parser
 
   def initialize(uri = T.unsafe(nil), response = T.unsafe(nil), body = T.unsafe(nil), code = T.unsafe(nil)); end
 
@@ -314,8 +310,8 @@ class Mechanize::FileSaver < ::Mechanize::Download
 end
 
 class Mechanize::Form
-  extend(::Forwardable)
-  extend(::Mechanize::ElementMatcher)
+  extend ::Forwardable
+  extend ::Mechanize::ElementMatcher
 
   def initialize(node, mech = T.unsafe(nil), page = T.unsafe(nil)); end
 
@@ -416,9 +412,7 @@ class Mechanize::Form
   def rand_string(len = T.unsafe(nil)); end
 end
 
-class Mechanize::Form::Button < ::Mechanize::Form::Field
-end
-
+class Mechanize::Form::Button < ::Mechanize::Form::Field; end
 Mechanize::Form::CRLF = T.let(T.unsafe(nil), String)
 
 class Mechanize::Form::CheckBox < ::Mechanize::Form::RadioButton
@@ -427,7 +421,7 @@ class Mechanize::Form::CheckBox < ::Mechanize::Form::RadioButton
 end
 
 class Mechanize::Form::Field
-  extend(::Forwardable)
+  extend ::Forwardable
 
   def initialize(node, value = T.unsafe(nil)); end
 
@@ -466,8 +460,7 @@ class Mechanize::Form::FileUpload < ::Mechanize::Form::Field
   def mime_type=(_arg0); end
 end
 
-class Mechanize::Form::Hidden < ::Mechanize::Form::Field
-end
+class Mechanize::Form::Hidden < ::Mechanize::Form::Field; end
 
 class Mechanize::Form::ImageButton < ::Mechanize::Form::Button
   def initialize(*args); end
@@ -488,7 +481,7 @@ class Mechanize::Form::Keygen < ::Mechanize::Form::Field
 end
 
 class Mechanize::Form::MultiSelectList < ::Mechanize::Form::Field
-  extend(::Mechanize::ElementMatcher)
+  extend ::Mechanize::ElementMatcher
 
   def initialize(node); end
 
@@ -551,8 +544,7 @@ class Mechanize::Form::RadioButton < ::Mechanize::Form::Field
   def uncheck_peers; end
 end
 
-class Mechanize::Form::Reset < ::Mechanize::Form::Button
-end
+class Mechanize::Form::Reset < ::Mechanize::Form::Button; end
 
 class Mechanize::Form::SelectList < ::Mechanize::Form::MultiSelectList
   def initialize(node); end
@@ -562,17 +554,10 @@ class Mechanize::Form::SelectList < ::Mechanize::Form::MultiSelectList
   def value=(new_value); end
 end
 
-class Mechanize::Form::Submit < ::Mechanize::Form::Button
-end
-
-class Mechanize::Form::Text < ::Mechanize::Form::Field
-end
-
-class Mechanize::Form::Textarea < ::Mechanize::Form::Field
-end
-
-class Mechanize::HTTP
-end
+class Mechanize::Form::Submit < ::Mechanize::Form::Button; end
+class Mechanize::Form::Text < ::Mechanize::Form::Field; end
+class Mechanize::Form::Textarea < ::Mechanize::Form::Field; end
+class Mechanize::HTTP; end
 
 class Mechanize::HTTP::Agent
   def initialize(connection_name = T.unsafe(nil)); end
@@ -701,9 +686,7 @@ class Mechanize::HTTP::Agent
 end
 
 Mechanize::HTTP::Agent::CREDENTIAL_HEADERS = T.let(T.unsafe(nil), Array)
-
 Mechanize::HTTP::Agent::POST_HEADERS = T.let(T.unsafe(nil), Array)
-
 Mechanize::HTTP::Agent::RobotsKey = T.let(T.unsafe(nil), Symbol)
 
 class Mechanize::HTTP::AuthChallenge < ::Struct
@@ -832,12 +815,11 @@ class Mechanize::History < ::Array
   def remove_from_index(page); end
 end
 
-class Mechanize::Image < ::Mechanize::Download
-end
+class Mechanize::Image < ::Mechanize::Download; end
 
 class Mechanize::Page < ::Mechanize::File
-  extend(::Forwardable)
-  extend(::Mechanize::ElementMatcher)
+  extend ::Forwardable
+  extend ::Mechanize::ElementMatcher
 
   def initialize(uri = T.unsafe(nil), response = T.unsafe(nil), body = T.unsafe(nil), code = T.unsafe(nil), mech = T.unsafe(nil)); end
 
@@ -920,9 +902,7 @@ class Mechanize::Page < ::Mechanize::File
   end
 end
 
-class Mechanize::Page::Base < ::Mechanize::Page::Link
-end
-
+class Mechanize::Page::Base < ::Mechanize::Page::Link; end
 Mechanize::Page::DEFAULT_RESPONSE = T.let(T.unsafe(nil), Hash)
 
 class Mechanize::Page::Frame < ::Mechanize::Page::Link
@@ -1010,11 +990,10 @@ class Mechanize::Page::MetaRefresh < ::Mechanize::Page::Link
 end
 
 Mechanize::Page::MetaRefresh::CONTENT_REGEXP = T.let(T.unsafe(nil), Regexp)
-
 Mechanize::Page::MetaRefresh::UNSAFE = T.let(T.unsafe(nil), Regexp)
 
 module Mechanize::Parser
-  extend(::Forwardable)
+  extend ::Forwardable
 
   def [](*args, &block); end
   def []=(*args, &block); end
@@ -1052,7 +1031,6 @@ class Mechanize::PluggableParser
 end
 
 Mechanize::PluggableParser::CONTENT_TYPES = T.let(T.unsafe(nil), Hash)
-
 Mechanize::PluggableParser::InvalidContentTypeError = MIME::Type::InvalidContentType
 
 class Mechanize::RedirectLimitReachedError < ::Mechanize::Error
@@ -1138,11 +1116,10 @@ class Mechanize::Util
 end
 
 Mechanize::Util::DefaultMimeTypes = T.let(T.unsafe(nil), Hash)
-
 Mechanize::VERSION = T.let(T.unsafe(nil), String)
 
 class Mechanize::XmlFile < ::Mechanize::File
-  extend(::Forwardable)
+  extend ::Forwardable
 
   def initialize(uri = T.unsafe(nil), response = T.unsafe(nil), body = T.unsafe(nil), code = T.unsafe(nil)); end
 

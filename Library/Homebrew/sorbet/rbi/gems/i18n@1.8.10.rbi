@@ -5,7 +5,7 @@
 # typed: true
 
 module I18n
-  extend(::I18n::Base)
+  extend ::I18n::Base
 
   class << self
     def interpolate(string, values); end
@@ -14,14 +14,11 @@ module I18n
   end
 end
 
-class I18n::ArgumentError < ::ArgumentError
-end
-
-module I18n::Backend
-end
+class I18n::ArgumentError < ::ArgumentError; end
+module I18n::Backend; end
 
 module I18n::Backend::Base
-  include(::I18n::Backend::Transliterator)
+  include ::I18n::Backend::Transliterator
 
   def available_locales; end
   def eager_load!; end
@@ -80,14 +77,14 @@ module I18n::Backend::Cascade
 end
 
 class I18n::Backend::Chain
-  include(::I18n::Backend::Transliterator)
-  include(::I18n::Backend::Base)
-  include(::I18n::Backend::Chain::Implementation)
+  include ::I18n::Backend::Transliterator
+  include ::I18n::Backend::Base
+  include ::I18n::Backend::Chain::Implementation
 end
 
 module I18n::Backend::Chain::Implementation
-  include(::I18n::Backend::Transliterator)
-  include(::I18n::Backend::Base)
+  include ::I18n::Backend::Transliterator
+  include ::I18n::Backend::Base
 
   def initialize(*backends); end
 
@@ -143,11 +140,9 @@ module I18n::Backend::Flatten
 end
 
 I18n::Backend::Flatten::FLATTEN_SEPARATOR = T.let(T.unsafe(nil), String)
-
 I18n::Backend::Flatten::SEPARATOR_ESCAPE_CHAR = T.let(T.unsafe(nil), String)
 
 module I18n::Backend::Gettext
-
   protected
 
   def load_po(filename); end
@@ -170,7 +165,7 @@ module I18n::Backend::InterpolationCompiler
 end
 
 module I18n::Backend::InterpolationCompiler::Compiler
-  extend(::I18n::Backend::InterpolationCompiler::Compiler)
+  extend ::I18n::Backend::InterpolationCompiler::Compiler
 
   def compile_if_an_interpolation(string); end
   def interpolated_str?(str); end
@@ -192,20 +187,19 @@ module I18n::Backend::InterpolationCompiler::Compiler
 end
 
 I18n::Backend::InterpolationCompiler::Compiler::INTERPOLATION_SYNTAX_PATTERN = T.let(T.unsafe(nil), Regexp)
-
 I18n::Backend::InterpolationCompiler::Compiler::TOKENIZER = T.let(T.unsafe(nil), Regexp)
 
 class I18n::Backend::KeyValue
-  include(::I18n::Backend::Flatten)
-  include(::I18n::Backend::Transliterator)
-  include(::I18n::Backend::Base)
-  include(::I18n::Backend::KeyValue::Implementation)
+  include ::I18n::Backend::Flatten
+  include ::I18n::Backend::Transliterator
+  include ::I18n::Backend::Base
+  include ::I18n::Backend::KeyValue::Implementation
 end
 
 module I18n::Backend::KeyValue::Implementation
-  include(::I18n::Backend::Flatten)
-  include(::I18n::Backend::Transliterator)
-  include(::I18n::Backend::Base)
+  include ::I18n::Backend::Flatten
+  include ::I18n::Backend::Transliterator
+  include ::I18n::Backend::Base
 
   def initialize(store, subtrees = T.unsafe(nil)); end
 
@@ -273,14 +267,14 @@ module I18n::Backend::Pluralization
 end
 
 class I18n::Backend::Simple
-  include(::I18n::Backend::Transliterator)
-  include(::I18n::Backend::Base)
-  include(::I18n::Backend::Simple::Implementation)
+  include ::I18n::Backend::Transliterator
+  include ::I18n::Backend::Base
+  include ::I18n::Backend::Simple::Implementation
 end
 
 module I18n::Backend::Simple::Implementation
-  include(::I18n::Backend::Transliterator)
-  include(::I18n::Backend::Base)
+  include ::I18n::Backend::Transliterator
+  include ::I18n::Backend::Base
 
   def available_locales; end
   def eager_load!; end
@@ -430,7 +424,7 @@ module I18n::Gettext::Helpers
 end
 
 I18n::Gettext::PLURAL_SEPARATOR = T.let(T.unsafe(nil), String)
-
+module I18n::HashRefinements; end
 I18n::INTERPOLATION_PATTERN = T.let(T.unsafe(nil), Regexp)
 
 class I18n::InvalidLocale < ::I18n::ArgumentError
@@ -453,8 +447,8 @@ class I18n::InvalidPluralizationData < ::I18n::ArgumentError
   def key; end
 end
 
-module I18n::Locale
-end
+I18n::JSON = ActiveSupport::JSON
+module I18n::Locale; end
 
 class I18n::Locale::Fallbacks < ::Hash
   def initialize(*mappings); end
@@ -483,8 +477,11 @@ module I18n::Locale::Tag::Parents
   def self_and_parents; end
 end
 
+I18n::Locale::Tag::RFC4646_FORMATS = T.let(T.unsafe(nil), Hash)
+I18n::Locale::Tag::RFC4646_SUBTAGS = T.let(T.unsafe(nil), Array)
+
 class I18n::Locale::Tag::Rfc4646 < ::Struct
-  include(::I18n::Locale::Tag::Parents)
+  include ::I18n::Locale::Tag::Parents
 
   def language; end
   def region; end
@@ -510,7 +507,7 @@ end
 I18n::Locale::Tag::Rfc4646::Parser::PATTERN = T.let(T.unsafe(nil), Regexp)
 
 class I18n::Locale::Tag::Simple
-  include(::I18n::Locale::Tag::Parents)
+  include ::I18n::Locale::Tag::Parents
 
   def initialize(*tag); end
 
@@ -540,7 +537,7 @@ class I18n::MissingInterpolationArgument < ::I18n::ArgumentError
 end
 
 class I18n::MissingTranslation < ::I18n::ArgumentError
-  include(::I18n::MissingTranslation::Base)
+  include ::I18n::MissingTranslation::Base
 end
 
 module I18n::MissingTranslation::Base
@@ -556,11 +553,10 @@ module I18n::MissingTranslation::Base
 end
 
 class I18n::MissingTranslationData < ::I18n::ArgumentError
-  include(::I18n::MissingTranslation::Base)
+  include ::I18n::MissingTranslation::Base
 end
 
 I18n::RESERVED_KEYS = T.let(T.unsafe(nil), Array)
-
 I18n::RESERVED_KEYS_PATTERN = T.let(T.unsafe(nil), Regexp)
 
 class I18n::ReservedInterpolationKey < ::I18n::ArgumentError
@@ -570,8 +566,18 @@ class I18n::ReservedInterpolationKey < ::I18n::ArgumentError
   def string; end
 end
 
-module I18n::Tests
+module I18n::Tests; end
+
+module I18n::Tests::Basics
+  def teardown; end
 end
+
+module I18n::Tests::Defaults
+  def setup; end
+end
+
+module I18n::Tests::Interpolation; end
+module I18n::Tests::Link; end
 
 module I18n::Tests::Localization
   class << self
@@ -583,44 +589,11 @@ module I18n::Tests::Localization::Date
   def setup; end
 end
 
-class I18n::UnknownFileType < ::I18n::ArgumentError
-  def initialize(type, filename); end
-
-  def filename; end
-  def type; end
-end
-
-I18n::VERSION = T.let(T.unsafe(nil), String)
-
-module I18n::HashRefinements
-end
-
-I18n::JSON = ActiveSupport::JSON
-
-I18n::Locale::Tag::RFC4646_FORMATS = T.let(T.unsafe(nil), Hash)
-
-I18n::Locale::Tag::RFC4646_SUBTAGS = T.let(T.unsafe(nil), Array)
-
-module I18n::Tests::Basics
-  def teardown; end
-end
-
-module I18n::Tests::Defaults
-  def setup; end
-end
-
-module I18n::Tests::Interpolation
-end
-
-module I18n::Tests::Link
-end
-
 module I18n::Tests::Localization::DateTime
   def setup; end
 end
 
-module I18n::Tests::Localization::Procs
-end
+module I18n::Tests::Localization::Procs; end
 
 module I18n::Tests::Localization::Time
   def setup; end
@@ -630,8 +603,14 @@ module I18n::Tests::Lookup
   def setup; end
 end
 
-module I18n::Tests::Pluralization
+module I18n::Tests::Pluralization; end
+module I18n::Tests::Procs; end
+
+class I18n::UnknownFileType < ::I18n::ArgumentError
+  def initialize(type, filename); end
+
+  def filename; end
+  def type; end
 end
 
-module I18n::Tests::Procs
-end
+I18n::VERSION = T.let(T.unsafe(nil), String)
