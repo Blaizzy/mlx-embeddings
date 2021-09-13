@@ -314,10 +314,6 @@ module Homebrew
     def install_formula(formula_installer)
       f = formula_installer.formula
 
-      formula_installer.check_installation_already_attempted
-
-      f.print_tap_action
-
       upgrade = f.linked? && f.outdated? && !f.head? && !Homebrew::EnvConfig.no_install_upgrade?
 
       Upgrade.install_formula(formula_installer, upgrade: upgrade)
