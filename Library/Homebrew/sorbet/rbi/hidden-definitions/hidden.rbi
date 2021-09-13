@@ -32477,6 +32477,11 @@ module Utils::Svn
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Utils::TopologicalHash
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Utils
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
