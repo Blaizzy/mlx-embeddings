@@ -522,6 +522,7 @@ _brew_bump_revision() {
       --message
       --quiet
       --verbose
+      --write-only
       "
       return
       ;;

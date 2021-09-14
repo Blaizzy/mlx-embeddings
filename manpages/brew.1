@@ -1416,12 +1416,16 @@ Specify the new commit \fIrevision\fR corresponding to the specified git \fItag\
 \fB\-f\fR, \fB\-\-force\fR
 Ignore duplicate open PRs\. Remove all mirrors if \fB\-\-mirror\fR was not specified\.
 .
-.SS "\fBbump\-revision\fR [\fI\-\-dry\-run\fR] [\fI\-\-message\fR\fB=\fR] \fIformula\fR [\.\.\.]"
+.SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Print what would be done rather than doing it\.
+.
+.TP
+\fB\-\-write\-only\fR
+Make the expected file modifications without taking any Git actions\.
 .
 .TP
 \fB\-\-message\fR

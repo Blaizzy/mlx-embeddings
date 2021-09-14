@@ -997,13 +997,15 @@ nor vice versa. It must use whichever style specification the formula already us
 * `-f`, `--force`:
   Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified.
 
-### `bump-revision` [*`--dry-run`*] [*`--message`*`=`] *`formula`* [...]
+### `bump-revision` [*`options`*] *`formula`* [...]
 
 Create a commit to increment the revision of *`formula`*. If no revision is
 present, "revision 1" will be added.
 
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
+* `--write-only`:
+  Make the expected file modifications without taking any Git actions.
 * `--message`:
   Append *`message`* to the default commit message.
 
