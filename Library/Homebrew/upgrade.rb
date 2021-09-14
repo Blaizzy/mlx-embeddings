@@ -177,8 +177,6 @@ module Homebrew
         return
       end
 
-      formula_installer.check_installation_already_attempted
-
       install_formula(formula_installer, upgrade: true)
     rescue BuildError => e
       e.dump(verbose: verbose)
@@ -190,11 +188,15 @@ module Homebrew
     def install_formula(formula_installer, upgrade:)
       formula = formula_installer.formula
 
+      formula_installer.check_installation_already_attempted
+
       if upgrade
         print_upgrade_message(formula, formula_installer.options)
 
         kegs = outdated_kegs(formula)
         linked_kegs = kegs.select(&:linked?)
+      else
+        formula.print_tap_action
       end
 
       # first we unlink the currently active keg for this formula otherwise it is
