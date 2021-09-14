@@ -73,6 +73,7 @@ module Homebrew
           fi
         rescue CannotInstallFormulaError => e
           ofail e
+          nil
         rescue UnsatisfiedRequirements, DownloadError => e
           ofail "#{formula}: #{e}"
           nil
