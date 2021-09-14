@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # The Library/Homebrew/extend/os/software_spec.rb conditional logic will need to be more nuanced
