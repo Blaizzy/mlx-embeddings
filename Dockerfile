@@ -1,5 +1,6 @@
 ARG version=20.04
-FROM ubuntu:$version
+# shellcheck disable=SC2154
+FROM ubuntu:"${version}"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008

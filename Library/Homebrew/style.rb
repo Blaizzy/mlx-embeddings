@@ -177,6 +177,7 @@ module Homebrew
         files = [
           HOMEBREW_BREW_FILE,
           HOMEBREW_REPOSITORY/"completions/bash/brew",
+          HOMEBREW_REPOSITORY/"Dockerfile",
           *HOMEBREW_LIBRARY.glob("Homebrew/*.sh"),
           *HOMEBREW_LIBRARY.glob("Homebrew/shims/**/*").map(&:realpath).uniq
                            .reject { |path| path.directory? || path.basename.to_s == "cc" },
