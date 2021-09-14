@@ -33,8 +33,8 @@ describe Formula do
 
       expect(f.class.stable.deps.first.name).to eq("foo")
       expect(f.class.head.deps.first.name).to eq("foo")
-      expect(f.class.stable.uses_from_macos_elements).to be_empty
-      expect(f.class.head.uses_from_macos_elements).to be_empty
+      expect(f.class.stable.uses_from_macos_elements).to eq(["foo"])
+      expect(f.class.head.uses_from_macos_elements).to eq(["foo"])
     end
   end
 

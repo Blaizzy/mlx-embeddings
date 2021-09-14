@@ -47,6 +47,7 @@ class SoftwareSpec
     @deprecated_options = []
     @build = BuildOptions.new(Options.create(@flags), options)
     @compiler_failures = []
+    @uses_from_macos_elements = []
     @bottle_disable_reason = nil
   end
 
@@ -178,8 +179,15 @@ class SoftwareSpec
   end
 
   def uses_from_macos(spec, _bounds = {})
-    spec = spec.dup.shift if spec.is_a?(Hash)
+    spec = [spec.dup.shift].to_h if spec.is_a?(Hash)
+
+    @uses_from_macos_elements << spec
+
     depends_on(spec)
+  end
+
+  def uses_from_macos_names
+    uses_from_macos_elements.flat_map { |e| e.is_a?(Hash) ? e.keys : e }
   end
 
   def deps
