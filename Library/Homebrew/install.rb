@@ -299,6 +299,7 @@ module Homebrew
           fi
         rescue CannotInstallFormulaError => e
           ofail e.message
+          nil
         rescue UnsatisfiedRequirements, DownloadError, ChecksumMismatchError => e
           ofail "#{f}: #{e}"
           nil
