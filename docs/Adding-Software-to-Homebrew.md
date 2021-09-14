@@ -13,7 +13,7 @@ If everything checks out, you're ready to get started on a new formula!
 
 1. If you're starting from scratch, the [`brew create` command](Manpage.md#create-options-url) can be used to produce a basic version of your formula. This command accepts a number of options and you may be able to save yourself some work by using an appropriate template option like `--python`.
 
-1. You will now have to work to develop the boilerplate code from `brew create` into a fully-fledged formula. Your main references will be the [Formula Cookbook](Formula-Cookbook.md), similar formulae in Homebrew, and the upstream documentation for your chosen software. Be sure to also take note of the Homebrew documentation for writing [`Python`](Python-for-Formula-Authors.md) and [`Node`](Node-for-Formula-Authors.md) formulae, if applicable.  
+1. You will now have to work to develop the boilerplate code from `brew create` into a fully-fledged formula. Your main references will be the [Formula Cookbook](Formula-Cookbook.md), similar formulae in Homebrew, and the upstream documentation for your chosen software. Be sure to also take note of the Homebrew documentation for writing [`Python`](Python-for-Formula-Authors.md) and [`Node`](Node-for-Formula-Authors.md) formulae, if applicable.
 
 1. Make sure you write a good test as part of your formula. Refer to the "[Add a test to the formula](Formula-Cookbook.md#add-a-test-to-the-formula)" section of the Cookbook for help with this.
 

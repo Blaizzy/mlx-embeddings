@@ -1036,7 +1036,7 @@ __fish_brew_complete_arg 'outdated' -l greedy -d 'Print outdated casks with `aut
 __fish_brew_complete_arg 'outdated' -l greedy-auto-updates -d 'Print outdated casks including those with `auto_updates true`'
 __fish_brew_complete_arg 'outdated' -l greedy-latest -d 'Print outdated casks including those with `version :latest`'
 __fish_brew_complete_arg 'outdated' -l help -d 'Show this message'
-__fish_brew_complete_arg 'outdated' -l json -d 'Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks. '
+__fish_brew_complete_arg 'outdated' -l json -d 'Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks'
 __fish_brew_complete_arg 'outdated' -l quiet -d 'List only the names of outdated kegs (takes precedence over `--verbose`)'
 __fish_brew_complete_arg 'outdated' -l verbose -d 'Include detailed version information'
 __fish_brew_complete_arg 'outdated; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
