@@ -264,7 +264,7 @@ module Homebrew
           next unless @core_tap
 
           # we want to allow uses_from_macos for aliases but not bare dependencies
-          if self.class.aliases.include?(dep.name) && spec.uses_from_macos_elements.exclude?(dep.name)
+          if self.class.aliases.include?(dep.name) && spec.uses_from_macos_names.exclude?(dep.name)
             problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
           end
 

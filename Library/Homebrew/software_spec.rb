@@ -186,6 +186,10 @@ class SoftwareSpec
     depends_on(spec)
   end
 
+  def uses_from_macos_names
+    uses_from_macos_elements.flat_map { |e| e.is_a?(Hash) ? e.keys : e }
+  end
+
   def deps
     dependency_collector.deps
   end
