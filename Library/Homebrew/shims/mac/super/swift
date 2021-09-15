@@ -11,5 +11,5 @@ if [[ -z "${SDKROOT}" && -n "${HOMEBREW_SDKROOT}" ]]; then
   export SDKROOT=${HOMEBREW_SDKROOT}
 fi
 
-try_exec_non_system "swift" "$@"
-safe_exec "/usr/bin/swift" "$@"
+try_exec_non_system "${SHIM_FILE}" "$@"
+safe_exec "/usr/bin/${SHIM_FILE}" "$@"
