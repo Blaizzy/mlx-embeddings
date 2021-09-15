@@ -74,6 +74,7 @@ do
   [[ -n "${!VAR_NEW}" ]] && continue
   export "${VAR_NEW}"="${!VAR}"
 done
+unset VAR VAR_NEW
 
 export HOMEBREW_BREW_FILE
 export HOMEBREW_PREFIX
@@ -104,18 +105,21 @@ then
   PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 
   FILTERED_ENV=()
+  ENV_VAR_NAMES=(
+    HOME SHELL PATH TERM TERMINFO COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
+    http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY
+    GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_MACOS_SELF_HOSTED
+    GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF
+  )
   # Filter all but the specific variables.
-  for VAR in HOME SHELL PATH TERM TERMINFO COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS \
-             http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY \
-             GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_MACOS_SELF_HOSTED \
-             GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF \
-             "${!HOMEBREW_@}"
+  for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"
   do
     # Skip if variable value is empty.
     [[ -z "${!VAR}" ]] && continue
 
     FILTERED_ENV+=("${VAR}=${!VAR}")
   done
+  unset VAR ENV_VAR_NAMES
 
   exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "${HOMEBREW_LIBRARY}/Homebrew/brew.sh" "$@"
 else
