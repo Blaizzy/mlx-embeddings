@@ -178,7 +178,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8)
-    unicode-display_width (2.0.0)
+    unicode-display_width (2.1.0)
     uri_template (0.7.0)
     warning (1.2.0)
     webrick (1.7.0)
