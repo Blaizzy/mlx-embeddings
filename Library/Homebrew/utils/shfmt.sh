@@ -83,14 +83,23 @@ fi
 #
 no_tabs() {
   local file="$1"
+  local tempfile="$2"
+  local line
+  local num=0
+  local retcode=0
+  local regex_pos='^[[:space:]]+'
+  local regex_neg='^ +'
 
-  # TODO: use bash built-in regex match syntax instead
-  if grep -qE '^\t+' "${file}"
-  then
-    # TODO: add line number
-    onoe "Indent by tab detected."
-    return 1
-  fi
+  while IFS='' read -r line
+  do
+    num="$((num + 1))"
+    if [[ "${line}" =~ ${regex_pos} && ! "${line}" =~ ${regex_neg} ]]
+    then
+      onoe "Indent by tab detected at \"${file}\", line ${num}."
+      retcode=1
+    fi
+  done <"${file}"
+  return "${retcode}"
 }
 
 # Check pattern:
@@ -98,56 +107,98 @@ no_tabs() {
 #            ...; do
 #
 # Use the followings instead (keep for statements only one line):
-# ARRAY=(
-#   ...
-#   ...
-# )
-# for var in "${ARRAY[@]}"
-# do
+#   ARRAY=(
+#     ...
+#   )
+#   for var in "${ARRAY[@]}"
+#   do
 #
 no_multiline_for_statements() {
   local file="$1"
+  local tempfile="$2"
+  local line
+  local num=0
+  local retcode=0
+  local regex='^ *for [_[:alnum:]]+ in .*\\$'
 
-  # TODO: use bash built-in regex match syntax instead
-  if grep -qE '^\s*for .*\\\(#.*\)\?$' "${file}"
-  then
-    # TODO: add line number
-    onoe "Multi-line for statement detected."
-    return 1
-  fi
+  while IFS='' read -r line
+  do
+    num="$((num + 1))"
+    if [[ "${line}" =~ ${regex} ]]
+    then
+      onoe "Multiline for statement detected at \"${file}\", line ${num}."
+      cat >&2 <<EOMSG
+Use the followings instead (keep for statements only one line):
+  ARRAY=(
+    ...
+  )
+  for var in "\${ARRAY[@]}"
+  do
+    ...
+  done
+EOMSG
+      retcode=1
+    fi
+  done <"${file}"
+  return "${retcode}"
 }
 
 # Check pattern:
 # IFS=$'\n'
 #
 # Use the followings instead:
-# while IFS='' read -r line
-# do
-#   ...
-# done < <(command)
+#   while IFS='' read -r line
+#   do
+#     ...
+#   done < <(command)
 #
 no_IFS_newline() {
   local file="$1"
+  local tempfile="$2"
+  local line
+  local num=0
+  local retcode=0
+  local regex="^[^#]*IFS=\\\$'\\\\n'"
 
-  # TODO: use bash built-in regex match syntax instead
-  if grep -qE "^[^#]*IFS=\\\$'\\\\n'" "${file}"
-  then
-    # TODO: add line number
-    onoe "Pattern \`IFS=\$'\\\\n'\` detected."
-    return 1
-  fi
+  while IFS='' read -r line
+  do
+    num="$((num + 1))"
+    if [[ "${line}" =~ ${regex} ]]
+    then
+      onoe "Pattern \`IFS=\$'\\n'\` detected at \"${file}\", line ${num}."
+      cat >&2 <<EOMSG
+Use the followings instead:
+  while IFS='' read -r line
+  do
+    ...
+  done < <(command)
+EOMSG
+      retcode=1
+    fi
+  done <"${file}"
+  return "${retcode}"
+}
+
+# Combine all forbidden styles
+no_forbiddens() {
+  local file="$1"
+  local tempfile="$2"
+
+  no_tabs "${file}" "${tempfile}" || return 1
+  no_multiline_for_statements "${file}" "${tempfile}" || return 1
+  no_IFS_newline "${file}" "${tempfile}" || return 1
 }
 
 # Align multiline if condition (indent with 3 spaces or 6 spaces (start with "-"))
 # before:                   after:
-# if [[ ... ]] ||           if [[ ... ]] ||
-#   [[ ... ]]                  [[ ... ]]
-# then                      then
+#   if [[ ... ]] ||           if [[ ... ]] ||
+#     [[ ... ]]                  [[ ... ]]
+#   then                      then
 #
 # before:                   after:
-# if [[ -n ... || \         if [[ -n ... || \
-#   -n ... ]]                     -n ... ]]
-# then                      then
+#   if [[ -n ... || \         if [[ -n ... || \
+#     -n ... ]]                     -n ... ]]
+#   then                      then
 #
 align_multiline_if_condition() {
   local multiline_if_begin_regex='^( *)(el)?if '
@@ -188,20 +239,21 @@ align_multiline_if_condition() {
 
 # Wrap `then` and `do` to a separated line
 # before:                   after:
-# if [[ ... ]]; then        if [[ ... ]]
-#                           then
+#   if [[ ... ]]; then        if [[ ... ]]
+#                             then
 #
 # before:                   after:
-# if [[ ... ]] ||           if [[ ... ]] ||
-#   [[ ... ]]; then           [[ ... ]]
-#                           then
+#   if [[ ... ]] ||           if [[ ... ]] ||
+#     [[ ... ]]; then           [[ ... ]]
+#                             then
 #
 # before:                   after:
-# for var in ...; do        for var in ...
-#                           do
+#   for var in ...; do        for var in ...
+#                             do
 #
 wrap_then_do() {
   local file="$1"
+  local tempfile="$2"
 
   local -a processed
   local line
@@ -240,17 +292,13 @@ wrap_then_do() {
         buffer=()
       fi
     fi
-  done < <(cat "${file}")
+  done <"${tempfile}"
 
-  printf "%s\n" "${processed[@]}" >"${file}"
+  printf "%s\n" "${processed[@]}" >"${tempfile}"
 }
 
 # TODO: it's hard to align multiline switch cases
 align_multiline_switch_cases() {
-  true
-}
-
-no_forbiddens() {
   true
 }
 
@@ -282,17 +330,16 @@ format() {
   fi
 
   # Fail fast when forbidden patterns detected
-  if ! no_tabs "${tempfile}" ||
-     ! no_multiline_for_statements "${tempfile}" ||
-     ! no_IFS_newline "${tempfile}"
+  if ! no_forbiddens "${file}" "${tempfile}"
   then
-    return 1
+    return 2
   fi
 
   # Tweak it with custom shell script styles
-  wrap_then_do "${tempfile}"
+  wrap_then_do "${file}" "${tempfile}"
+  align_multiline_switch_cases "${file}" "${tempfile}"
 
-  if ! diff -q "${file}" "${tempfile}"
+  if ! diff -q "${file}" "${tempfile}" &>/dev/null
   then
     # Show differences
     diff -d -C 1 --color=auto "${file}" "${tempfile}"
@@ -314,9 +361,9 @@ do
   then
     if [[ "$?" == 1 ]]
     then
-      onoe "${0##*/}: Failed to format file \"${file}\". Function exited with code $?."
+      onoe "${0##*/}: Failed to format file \"${file}\". Function exited with code 1."
     else
-      onoe "${0##*/}: Bad style for file \"${file}\". Function exited with code $?."
+      onoe "${0##*/}: Bad style for file \"${file}\". Function exited with code 2."
     fi
     onoe
     RETCODE=1
