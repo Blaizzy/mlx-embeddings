@@ -65,7 +65,7 @@ module Homebrew
         run_shellcheck(shell_files, output_type)
       end
 
-      run_shfmt(shell_files) if ruby_files.none? || shell_files.any?
+      run_shfmt(shell_files, inplace: fix) if ruby_files.none? || shell_files.any?
 
       if output_type == :json
         Offenses.new(rubocop_result + shellcheck_result)
@@ -214,10 +214,15 @@ module Homebrew
       end
     end
 
-    def run_shfmt(files)
+    def run_shfmt(files, inplace: false)
       files = shell_scripts if files.empty?
+      # Do not format completions and Dockerfile
+      files.delete(HOMEBREW_REPOSITORY/"completions/bash/brew")
+      files.delete(HOMEBREW_REPOSITORY/"Dockerfile")
 
       args = ["-i", "2", "-ci", "-ln", "bash", "--", *files]
+
+      args.unshift("-w") if inplace
 
       system shfmt, *args
       $CHILD_STATUS.success?
