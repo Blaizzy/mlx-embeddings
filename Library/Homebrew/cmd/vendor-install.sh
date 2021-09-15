@@ -259,11 +259,14 @@ homebrew-vendor-install() {
   for option in "$@"
   do
     case "${option}" in
-      -\?|-h|--help|--usage) brew help vendor-install; exit $? ;;
-      --verbose)             HOMEBREW_VERBOSE=1 ;;
-      --quiet)               HOMEBREW_QUIET=1 ;;
-      --debug)               HOMEBREW_DEBUG=1 ;;
-      --*)                   ;;
+      -\? | -h | --help | --usage)
+        brew help vendor-install
+        exit $?
+        ;;
+      --verbose) HOMEBREW_VERBOSE=1 ;;
+      --quiet) HOMEBREW_QUIET=1 ;;
+      --debug) HOMEBREW_DEBUG=1 ;;
+      --*) ;;
       -*)
         [[ "${option}" == *v* ]] && HOMEBREW_VERBOSE=1
         [[ "${option}" == *q* ]] && HOMEBREW_QUIET=1

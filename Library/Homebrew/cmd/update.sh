@@ -222,8 +222,8 @@ merge_or_rebase() {
     git rebase --abort &>/dev/null
     git reset --mixed "${QUIET_ARGS[@]}"
     if ! git -c "user.email=brew-update@localhost" \
-             -c "user.name=brew update" \
-             stash save --include-untracked "${QUIET_ARGS[@]}"
+       -c "user.name=brew update" \
+       stash save --include-untracked "${QUIET_ARGS[@]}"
     then
       odie <<EOS
 Could not 'git stash' in ${DIR}!
@@ -312,15 +312,18 @@ homebrew-update() {
   for option in "$@"
   do
     case "${option}" in
-      -\? | -h | --help | --usage)    brew help update; exit $? ;;
-      --verbose)                      HOMEBREW_VERBOSE=1 ;;
-      --debug)                        HOMEBREW_DEBUG=1 ;;
-      --quiet)                        HOMEBREW_QUIET=1 ;;
-      --merge)                        HOMEBREW_MERGE=1 ;;
-      --force)                        HOMEBREW_UPDATE_FORCE=1 ;;
+      -\? | -h | --help | --usage)
+        brew help update
+        exit $?
+        ;;
+      --verbose) HOMEBREW_VERBOSE=1 ;;
+      --debug) HOMEBREW_DEBUG=1 ;;
+      --quiet) HOMEBREW_QUIET=1 ;;
+      --merge) HOMEBREW_MERGE=1 ;;
+      --force) HOMEBREW_UPDATE_FORCE=1 ;;
       --simulate-from-current-branch) HOMEBREW_SIMULATE_FROM_CURRENT_BRANCH=1 ;;
-      --preinstall)                   export HOMEBREW_UPDATE_PREINSTALL=1 ;;
-      --*)                            ;;
+      --preinstall) export HOMEBREW_UPDATE_PREINSTALL=1 ;;
+      --*) ;;
       -*)
         [[ "${option}" == *v* ]] && HOMEBREW_VERBOSE=1
         [[ "${option}" == *q* ]] && HOMEBREW_QUIET=1

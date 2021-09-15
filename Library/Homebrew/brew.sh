@@ -9,7 +9,7 @@ HOMEBREW_PROCESSOR="$(uname -m)"
 HOMEBREW_SYSTEM="$(uname -s)"
 case "${HOMEBREW_SYSTEM}" in
   Darwin) HOMEBREW_MACOS="1" ;;
-  Linux)  HOMEBREW_LINUX="1" ;;
+  Linux) HOMEBREW_LINUX="1" ;;
 esac
 
 # If we're running under macOS Rosetta 2, and it was requested by setting
@@ -56,15 +56,42 @@ HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 # HOMEBREW_LIBRARY set by bin/brew
 # shellcheck disable=SC2249,SC2154
 case "$*" in
-  --cellar)              echo "${HOMEBREW_CELLAR}"; exit 0 ;;
-  --repository | --repo) echo "${HOMEBREW_REPOSITORY}"; exit 0 ;;
-  --caskroom)            echo "${HOMEBREW_PREFIX}/Caskroom"; exit 0 ;;
-  --cache)               echo "${HOMEBREW_CACHE}"; exit 0 ;;
-  shellenv)              source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
-  formulae)              source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
-  casks)                 source "${HOMEBREW_LIBRARY}/Homebrew/cmd/casks.sh"; homebrew-casks; exit 0 ;;
+  --cellar)
+    echo "${HOMEBREW_CELLAR}"
+    exit 0
+    ;;
+  --repository | --repo)
+    echo "${HOMEBREW_REPOSITORY}"
+    exit 0
+    ;;
+  --caskroom)
+    echo "${HOMEBREW_PREFIX}/Caskroom"
+    exit 0
+    ;;
+  --cache)
+    echo "${HOMEBREW_CACHE}"
+    exit 0
+    ;;
+  shellenv)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"
+    homebrew-shellenv
+    exit 0
+    ;;
+  formulae)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"
+    homebrew-formulae
+    exit 0
+    ;;
+  casks)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/casks.sh"
+    homebrew-casks
+    exit 0
+    ;;
   # falls back to cmd/prefix.rb on a non-zero return
-  --prefix*)             source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"; homebrew-prefix "$@" && exit 0 ;;
+  --prefix*)
+    source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"
+    homebrew-prefix "$@" && exit 0
+    ;;
 esac
 
 #####
@@ -611,22 +638,22 @@ HOMEBREW_ARG_COUNT="$#"
 HOMEBREW_COMMAND="$1"
 shift
 case "${HOMEBREW_COMMAND}" in
-  ls)          HOMEBREW_COMMAND="list" ;;
-  homepage)    HOMEBREW_COMMAND="home" ;;
-  -S)          HOMEBREW_COMMAND="search" ;;
-  up)          HOMEBREW_COMMAND="update" ;;
-  ln)          HOMEBREW_COMMAND="link" ;;
-  instal)      HOMEBREW_COMMAND="install" ;; # gem does the same
-  uninstal)    HOMEBREW_COMMAND="uninstall" ;;
-  rm)          HOMEBREW_COMMAND="uninstall" ;;
-  remove)      HOMEBREW_COMMAND="uninstall" ;;
-  configure)   HOMEBREW_COMMAND="diy" ;;
-  abv)         HOMEBREW_COMMAND="info" ;;
-  dr)          HOMEBREW_COMMAND="doctor" ;;
-  --repo)      HOMEBREW_COMMAND="--repository" ;;
+  ls) HOMEBREW_COMMAND="list" ;;
+  homepage) HOMEBREW_COMMAND="home" ;;
+  -S) HOMEBREW_COMMAND="search" ;;
+  up) HOMEBREW_COMMAND="update" ;;
+  ln) HOMEBREW_COMMAND="link" ;;
+  instal) HOMEBREW_COMMAND="install" ;; # gem does the same
+  uninstal) HOMEBREW_COMMAND="uninstall" ;;
+  rm) HOMEBREW_COMMAND="uninstall" ;;
+  remove) HOMEBREW_COMMAND="uninstall" ;;
+  configure) HOMEBREW_COMMAND="diy" ;;
+  abv) HOMEBREW_COMMAND="info" ;;
+  dr) HOMEBREW_COMMAND="doctor" ;;
+  --repo) HOMEBREW_COMMAND="--repository" ;;
   environment) HOMEBREW_COMMAND="--env" ;;
-  --config)    HOMEBREW_COMMAND="config" ;;
-  -v)          HOMEBREW_COMMAND="--version" ;;
+  --config) HOMEBREW_COMMAND="config" ;;
+  -v) HOMEBREW_COMMAND="--version" ;;
 esac
 
 # Set HOMEBREW_DEV_CMD_RUN for users who have run a development command.

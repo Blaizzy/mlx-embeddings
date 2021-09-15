@@ -10,13 +10,15 @@ homebrew-prefix() {
     case "$1" in
       # check we actually have --prefix and not e.g. --prefixsomething
       --prefix)
-        local prefix="1"; shift
+        local prefix="1"
+        shift
         ;;
       # reject all other flags
       -*) return 1 ;;
       *)
         [[ -n "${formula}" ]] && return 1
-        local formula="$1"; shift
+        local formula="$1"
+        shift
         ;;
     esac
   done

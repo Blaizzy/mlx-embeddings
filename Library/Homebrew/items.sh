@@ -18,19 +18,19 @@ homebrew-items() {
   # shellcheck disable=SC2154
   items="$(
     find "${HOMEBREW_REPOSITORY}/Library/Taps" \
-         -type d \( \
-           -name "${find_filter}" -o \
-           -name cmd -o \
-           -name .github -o \
-           -name lib -o \
-           -name spec -o \
-           -name vendor \
-          \) \
-         -prune -false -o -name '*\.rb' |
+      -type d \( \
+      -name "${find_filter}" -o \
+      -name cmd -o \
+      -name .github -o \
+      -name lib -o \
+      -name spec -o \
+      -name vendor \
+      \) \
+      -prune -false -o -name '*\.rb' |
       sed "${sed_extended_regex_flag}" \
-          -e 's/\.rb//g' \
-          -e 's_.*/Taps/(.*)/(home|linux)brew-_\1/_' \
-          -e "${sed_filter}"
+        -e 's/\.rb//g' \
+        -e 's_.*/Taps/(.*)/(home|linux)brew-_\1/_' \
+        -e "${sed_filter}"
   )"
   local shortnames
   shortnames="$(echo "${items}" | cut -d "/" -f 3)"
