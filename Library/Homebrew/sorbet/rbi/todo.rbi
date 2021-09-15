@@ -3,8 +3,6 @@
 
 # typed: strong
 module ::StackProf; end
-module DependencyCollector::Compat; end
-module OS::Mac::Version::NULL; end
 module T::InterfaceWrapper::Helpers; end
 module T::Private::Abstract::Hooks; end
 module T::Private::Methods::MethodHooks; end

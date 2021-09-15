@@ -394,6 +394,12 @@ module RuboCop
               end
             end
 
+            # Don't restrict OS.mac? or OS.linux? usage in taps; they don't care
+            # as much as we do about e.g. formulae.brew.sh generation, often use
+            # platform-specific URLs and we don't want to add DSLs to support
+            # that case.
+            next if formula_tap != "homebrew-core"
+
             find_instance_method_call(body_node, "OS", if_method_name) do |method|
               valid = T.let(false, T::Boolean)
               method.each_ancestor do |ancestor|

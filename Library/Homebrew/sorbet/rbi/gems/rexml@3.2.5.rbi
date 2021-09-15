@@ -5,7 +5,7 @@
 # typed: true
 
 class REXML::AttlistDecl < ::REXML::Child
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(source); end
 
@@ -18,9 +18,9 @@ class REXML::AttlistDecl < ::REXML::Child
 end
 
 class REXML::Attribute
-  include(::REXML::Node)
-  include(::REXML::XMLTokens)
-  include(::REXML::Namespace)
+  include ::REXML::Node
+  include ::REXML::XMLTokens
+  include ::REXML::Namespace
 
   def initialize(first, second = T.unsafe(nil), parent = T.unsafe(nil)); end
 
@@ -73,7 +73,7 @@ class REXML::CData < ::REXML::Text
 end
 
 class REXML::Child
-  include(::REXML::Node)
+  include ::REXML::Node
 
   def initialize(parent = T.unsafe(nil)); end
 
@@ -90,7 +90,7 @@ class REXML::Child
 end
 
 class REXML::Comment < ::REXML::Child
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(first, second = T.unsafe(nil)); end
 
@@ -104,8 +104,7 @@ class REXML::Comment < ::REXML::Child
   def write(output, indent = T.unsafe(nil), transitive = T.unsafe(nil), ie_hack = T.unsafe(nil)); end
 end
 
-module REXML::DClonable
-end
+module REXML::DClonable; end
 
 class REXML::Declaration < ::REXML::Child
   def initialize(src); end
@@ -115,7 +114,7 @@ class REXML::Declaration < ::REXML::Child
 end
 
 class REXML::DocType < ::REXML::Parent
-  include(::REXML::XMLTokens)
+  include ::REXML::XMLTokens
 
   def initialize(first, parent = T.unsafe(nil)); end
 
@@ -172,8 +171,8 @@ class REXML::Document < ::REXML::Element
 end
 
 class REXML::Element < ::REXML::Parent
-  include(::REXML::XMLTokens)
-  include(::REXML::Namespace)
+  include ::REXML::XMLTokens
+  include ::REXML::Namespace
 
   def initialize(arg = T.unsafe(nil), parent = T.unsafe(nil), context = T.unsafe(nil)); end
 
@@ -228,8 +227,12 @@ class REXML::Element < ::REXML::Parent
   def each_with_something(test, max = T.unsafe(nil), name = T.unsafe(nil)); end
 end
 
+class REXML::ElementDecl < ::REXML::Declaration
+  def initialize(src); end
+end
+
 class REXML::Elements
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(parent); end
 
@@ -265,7 +268,7 @@ module REXML::Encoding
 end
 
 class REXML::Entity < ::REXML::Child
-  include(::REXML::XMLTokens)
+  include ::REXML::XMLTokens
 
   def initialize(stream, value = T.unsafe(nil), parent = T.unsafe(nil), reference = T.unsafe(nil)); end
 
@@ -373,7 +376,7 @@ class REXML::NotationDecl < ::REXML::Child
 end
 
 class REXML::Output
-  include(::REXML::Encoding)
+  include ::REXML::Encoding
 
   def initialize(real_IO, encd = T.unsafe(nil)); end
 
@@ -383,7 +386,7 @@ class REXML::Output
 end
 
 class REXML::Parent < ::REXML::Child
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(parent = T.unsafe(nil)); end
 
@@ -454,13 +457,9 @@ class REXML::Parsers::BaseParser
 end
 
 REXML::Parsers::BaseParser::EXTERNAL_ID_PUBLIC = T.let(T.unsafe(nil), Regexp)
-
 REXML::Parsers::BaseParser::EXTERNAL_ID_SYSTEM = T.let(T.unsafe(nil), Regexp)
-
 REXML::Parsers::BaseParser::PUBLIC_ID = T.let(T.unsafe(nil), Regexp)
-
 REXML::Parsers::BaseParser::QNAME = T.let(T.unsafe(nil), Regexp)
-
 REXML::Parsers::BaseParser::QNAME_STR = T.let(T.unsafe(nil), String)
 
 class REXML::Parsers::StreamParser
@@ -478,7 +477,7 @@ class REXML::Parsers::TreeParser
 end
 
 class REXML::Parsers::XPathParser
-  include(::REXML::XMLTokens)
+  include ::REXML::XMLTokens
 
   def abbreviate(path); end
   def expand(path); end
@@ -510,7 +509,6 @@ class REXML::Parsers::XPathParser
 end
 
 REXML::Parsers::XPathParser::LOCAL_NAME_WILDCARD = T.let(T.unsafe(nil), Regexp)
-
 REXML::Parsers::XPathParser::PREFIX_WILDCARD = T.let(T.unsafe(nil), Regexp)
 
 class REXML::ReferenceWriter
@@ -520,7 +518,7 @@ class REXML::ReferenceWriter
 end
 
 class REXML::Source
-  include(::REXML::Encoding)
+  include ::REXML::Encoding
 
   def initialize(arg, encoding = T.unsafe(nil)); end
 
@@ -545,7 +543,7 @@ class REXML::Source
 end
 
 class REXML::Text < ::REXML::Child
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(arg, respect_whitespace = T.unsafe(nil), parent = T.unsafe(nil), raw = T.unsafe(nil), entity_filter = T.unsafe(nil), illegal = T.unsafe(nil)); end
 
@@ -581,8 +579,16 @@ class REXML::Text < ::REXML::Child
   end
 end
 
+class REXML::UndefinedNamespaceException < ::REXML::ParseException
+  def initialize(prefix, source, parser); end
+end
+
+class REXML::Validation::ValidationException < ::RuntimeError
+  def initialize(msg); end
+end
+
 class REXML::XMLDecl < ::REXML::Child
-  include(::REXML::Encoding)
+  include ::REXML::Encoding
 
   def initialize(version = T.unsafe(nil), encoding = T.unsafe(nil), standalone = T.unsafe(nil)); end
 
@@ -622,7 +628,7 @@ class REXML::XPathNode
 end
 
 class REXML::XPathParser
-  include(::REXML::XMLTokens)
+  include ::REXML::XMLTokens
 
   def initialize(strict: T.unsafe(nil)); end
 

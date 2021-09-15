@@ -23,7 +23,7 @@ describe SoftwareSpec do
       spec.uses_from_macos("foo", since: :high_sierra)
 
       expect(spec.deps.first.name).to eq("foo")
-      expect(spec.uses_from_macos_elements).to be_empty
+      expect(spec.uses_from_macos_elements).to eq(["foo"])
     end
 
     it "works with tags" do

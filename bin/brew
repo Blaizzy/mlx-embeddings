@@ -7,6 +7,12 @@ if ! [[ -d "${PWD}" ]]; then
   exit 1
 fi
 
+# Fail fast with concise message when not using bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "Error: Bash is required to run brew." >&2
+  exit 1
+fi
+
 quiet_cd() {
   cd "$@" &>/dev/null || return
 }

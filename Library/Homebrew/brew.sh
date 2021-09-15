@@ -138,6 +138,12 @@ git() {
   "${HOMEBREW_LIBRARY}/Homebrew/shims/scm/git" "$@"
 }
 
+# Search given executable in PATH (remove dependency for `which` command)
+which() {
+  # Alias to Bash built-in command `type -P`
+  type -P "$@"
+}
+
 numeric() {
   # Condense the exploded argument into a single return value.
   # shellcheck disable=SC2086,SC2183

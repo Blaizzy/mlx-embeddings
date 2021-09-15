@@ -15,7 +15,6 @@ module PublicSuffix
 end
 
 PublicSuffix::BANG = T.let(T.unsafe(nil), String)
-
 PublicSuffix::DOT = T.let(T.unsafe(nil), String)
 
 class PublicSuffix::Domain
@@ -37,14 +36,9 @@ class PublicSuffix::Domain
   end
 end
 
-class PublicSuffix::DomainInvalid < ::PublicSuffix::Error
-end
-
-class PublicSuffix::DomainNotAllowed < ::PublicSuffix::DomainInvalid
-end
-
-class PublicSuffix::Error < ::StandardError
-end
+class PublicSuffix::DomainInvalid < ::PublicSuffix::Error; end
+class PublicSuffix::DomainNotAllowed < ::PublicSuffix::DomainInvalid; end
+class PublicSuffix::Error < ::StandardError; end
 
 class PublicSuffix::List
   def initialize; end
@@ -148,5 +142,4 @@ class PublicSuffix::Rule::Wildcard < ::PublicSuffix::Rule::Base
 end
 
 PublicSuffix::STAR = T.let(T.unsafe(nil), String)
-
 PublicSuffix::VERSION = T.let(T.unsafe(nil), String)

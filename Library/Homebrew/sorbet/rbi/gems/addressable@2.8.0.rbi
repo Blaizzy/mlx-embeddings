@@ -73,6 +73,72 @@ Addressable::IDNA::UNICODE_TABLE = T.let(T.unsafe(nil), String)
 Addressable::IDNA::UTF8_REGEX = T.let(T.unsafe(nil), Regexp)
 Addressable::IDNA::UTF8_REGEX_MULTIBYTE = T.let(T.unsafe(nil), Regexp)
 
+class Addressable::Template
+  def initialize(pattern); end
+
+  def ==(template); end
+  def eql?(template); end
+  def expand(mapping, processor = T.unsafe(nil), normalize_values = T.unsafe(nil)); end
+  def extract(uri, processor = T.unsafe(nil)); end
+  def freeze; end
+  def inspect; end
+  def keys; end
+  def match(uri, processor = T.unsafe(nil)); end
+  def named_captures; end
+  def names; end
+  def partial_expand(mapping, processor = T.unsafe(nil), normalize_values = T.unsafe(nil)); end
+  def pattern; end
+  def source; end
+  def to_regexp; end
+  def variable_defaults; end
+  def variables; end
+
+  private
+
+  def join_values(operator, return_value); end
+  def normalize_keys(mapping); end
+  def normalize_value(value); end
+  def ordered_variable_defaults; end
+  def parse_new_template_pattern(pattern, processor = T.unsafe(nil)); end
+  def parse_template_pattern(pattern, processor = T.unsafe(nil)); end
+  def transform_capture(mapping, capture, processor = T.unsafe(nil), normalize_values = T.unsafe(nil)); end
+  def transform_partial_capture(mapping, capture, processor = T.unsafe(nil), normalize_values = T.unsafe(nil)); end
+end
+
+Addressable::Template::EXPRESSION = T.let(T.unsafe(nil), Regexp)
+class Addressable::Template::InvalidTemplateOperatorError < ::StandardError; end
+class Addressable::Template::InvalidTemplateValueError < ::StandardError; end
+Addressable::Template::JOINERS = T.let(T.unsafe(nil), Hash)
+Addressable::Template::LEADERS = T.let(T.unsafe(nil), Hash)
+
+class Addressable::Template::MatchData
+  def initialize(uri, template, mapping); end
+
+  def [](key, len = T.unsafe(nil)); end
+  def captures; end
+  def inspect; end
+  def keys; end
+  def mapping; end
+  def names; end
+  def post_match; end
+  def pre_match; end
+  def string; end
+  def template; end
+  def to_a; end
+  def to_s; end
+  def uri; end
+  def values; end
+  def values_at(*indexes); end
+  def variables; end
+end
+
+Addressable::Template::RESERVED = T.let(T.unsafe(nil), String)
+class Addressable::Template::TemplateOperatorAbortedError < ::StandardError; end
+Addressable::Template::UNRESERVED = T.let(T.unsafe(nil), String)
+Addressable::Template::VARIABLE_LIST = T.let(T.unsafe(nil), Regexp)
+Addressable::Template::VARNAME = T.let(T.unsafe(nil), Regexp)
+Addressable::Template::VARSPEC = T.let(T.unsafe(nil), Regexp)
+
 class Addressable::URI
   def initialize(options = T.unsafe(nil)); end
 

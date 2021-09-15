@@ -545,11 +545,12 @@ _brew_bump_formula_pr() {
 _brew_bump_revision() {
   _arguments \
     '--debug[Display any debugging information]' \
-    '--dry-run[Print what would be done rather than doing it]' \
+    '(--write-only)--dry-run[Print what would be done rather than doing it]' \
     '--help[Show this message]' \
     '--message[Append message to the default commit message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
+    '(--dry-run)--write-only[Make the expected file modifications without taking any Git actions]' \
     - formula \
     '*::formula:__brew_formulae'
 }

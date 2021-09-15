@@ -1,27 +1,5 @@
 export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.3
 
-# Search given executable in all PATH entries (remove dependency for `which` command)
-which_all() {
-  if [[ $# -ne 1 ]]
-  then
-    return 1
-  fi
-
-  local executable entries entry retcode=1
-  IFS=':' read -r -a entries <<<"${PATH}" # `readarray -d ':' -t` seems not applicable on WSL Bash
-  for entry in "${entries[@]}"
-  do
-    executable="${entry}/$1"
-    if [[ -x "${executable}" ]]
-    then
-      echo "${executable}"
-      retcode=0 # present
-    fi
-  done
-
-  return "${retcode}"
-}
-
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
 test_ruby() {
@@ -52,8 +30,12 @@ find_ruby() {
         break
       fi
     done < <(
-      which_all ruby
-      PATH="${HOMEBREW_PATH}" which_all ruby
+      # function which() is set by brew.sh
+      # it's aliased to `type -P`
+      # shellcheck disable=SC2230
+      which -a ruby
+      # shellcheck disable=SC2230
+      PATH="${HOMEBREW_PATH}" which -a ruby
     )
   fi
 }

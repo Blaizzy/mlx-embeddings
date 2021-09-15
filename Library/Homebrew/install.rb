@@ -299,6 +299,7 @@ module Homebrew
           fi
         rescue CannotInstallFormulaError => e
           ofail e.message
+          nil
         rescue UnsatisfiedRequirements, DownloadError, ChecksumMismatchError => e
           ofail "#{f}: #{e}"
           nil
@@ -313,10 +314,6 @@ module Homebrew
 
     def install_formula(formula_installer)
       f = formula_installer.formula
-
-      formula_installer.check_installation_already_attempted
-
-      f.print_tap_action
 
       upgrade = f.linked? && f.outdated? && !f.head? && !Homebrew::EnvConfig.no_install_upgrade?
 

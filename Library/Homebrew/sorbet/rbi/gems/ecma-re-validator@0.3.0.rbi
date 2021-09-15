@@ -4,5 +4,12 @@
 
 # typed: true
 
-# THIS IS AN EMPTY RBI FILE.
-# see https://github.com/Shopify/tapioca/blob/master/README.md#manual-gem-requires
+module EcmaReValidator
+  class << self
+    def valid?(input); end
+  end
+end
+
+EcmaReValidator::INVALID_REGEXP = T.let(T.unsafe(nil), Array)
+EcmaReValidator::INVALID_TOKENS = T.let(T.unsafe(nil), Array)
+EcmaReValidator::UNICODE_CHARACTERS = T.let(T.unsafe(nil), Array)
