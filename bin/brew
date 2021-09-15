@@ -2,13 +2,15 @@
 set +o posix
 
 # Fail fast with concise message when cwd does not exist
-if ! [[ -d "${PWD}" ]]; then
+if ! [[ -d "${PWD}" ]]
+then
   echo "Error: The current working directory doesn't exist, cannot proceed." >&2
   exit 1
 fi
 
 # Fail fast with concise message when not using bash
-if [ -z "${BASH_VERSION:-}" ]; then
+if [ -z "${BASH_VERSION:-}" ]
+then
   echo "Error: Bash is required to run brew." >&2
   exit 1
 fi

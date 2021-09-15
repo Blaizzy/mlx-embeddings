@@ -602,7 +602,7 @@ EOS
       else
         # Capture stderr to tmp_failure_file
         if ! git fetch --tags --force "${QUIET_ARGS[@]}" origin \
-          "refs/heads/${UPSTREAM_BRANCH_DIR}:refs/remotes/origin/${UPSTREAM_BRANCH_DIR}" 2>>"${tmp_failure_file}"
+           "refs/heads/${UPSTREAM_BRANCH_DIR}:refs/remotes/origin/${UPSTREAM_BRANCH_DIR}" 2>>"${tmp_failure_file}"
         then
           # Reprint fetch errors to stderr
           [[ -f "${tmp_failure_file}" ]] && cat "${tmp_failure_file}" 1>&2
@@ -650,7 +650,7 @@ EOS
     # shellcheck disable=SC2031
     if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
        [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
-       [[ "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" || \
+       [[ "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ||
           "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
     then
       continue

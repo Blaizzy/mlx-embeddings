@@ -10,8 +10,11 @@
 # HOMEBREW_REPOSITORY is set by bin/brew
 # shellcheck disable=SC2154
 homebrew-shellenv() {
-  [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" ]] &&
-  [[ "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]] && return
+  if [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" ]] &&
+     [[ "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]]
+  then
+    return
+  fi
 
   case "$(/bin/ps -p "${PPID}" -c -o comm=)" in
     fish | -fish)

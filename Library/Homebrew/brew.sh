@@ -74,7 +74,8 @@ esac
 # These variables are set from the user environment.
 # shellcheck disable=SC2154
 ohai() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 1 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stdout is a tty.
+  # Check whether stdout is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 1 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -e "\\033[34m==>\\033[0m \\033[1m$*\\033[0m" # blue arrow and bold text
   else
@@ -83,7 +84,8 @@ ohai() {
 }
 
 opoo() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  # Check whether stderr is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -ne "\\033[4;33mWarning\\033[0m: " >&2 # highlight Warning with underline and yellow color
   else
@@ -98,7 +100,8 @@ opoo() {
 }
 
 bold() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  # Check whether stderr is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -e "\\033[1m""$*""\\033[0m"
   else
@@ -107,7 +110,8 @@ bold() {
 }
 
 onoe() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  # Check whether stderr is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -ne "\\033[4;31mError\\033[0m: " >&2 # highlight Error with underline and red color
   else
@@ -742,6 +746,6 @@ else
   {
     update-preinstall "$@"
     exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${RUBY_DISABLE_OPTIONS}" \
-         "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"
+      "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"
   }
 fi
