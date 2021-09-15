@@ -12,4 +12,4 @@ export HOMEBREW_CXX="swift_clang++"
 
 # HOMEBREW_OPT is set by extend/ENV/super.rb
 # shellcheck disable=SC2154
-exec "${HOMEBREW_OPT}/swift/bin/swift" "$@"
+exec "${HOMEBREW_OPT}/swift/bin/${0##*/}" "$@"
