@@ -55,9 +55,14 @@ for file in "$@"
 do
   if [[ -f "${file}" ]]
   then
-    FILES+=("${file}")
+    if [[ -w "${file}" ]]
+    then
+      FILES+=("${file}")
+    else
+      onoe "${0##*/}: File \"${file}\" is not writable."
+    fi
   else
-    echo "${0##*/}: File \"${file}\" does not exist." >&2
+    onoe "${0##*/}: File \"${file}\" does not exist."
     exit 1
   fi
 done
@@ -66,10 +71,6 @@ if [[ "${#FILES[@]}" == 0 ]]
 then
   exit
 fi
-
-check_read_and_write() {
-  [[ -f "$1" && -w "$1" ]]
-}
 
 ###
 ### Custom shell script styling
@@ -106,7 +107,6 @@ no_tabs() {
 #
 no_multiline_for_statements() {
   local file="$1"
-  check_read_and_write "${file}" || return 1
 
   # TODO: use bash built-in regex match syntax instead
   if grep -qE '^\s*for .*\\\(#.*\)\?$' "${file}"
@@ -128,8 +128,6 @@ no_multiline_for_statements() {
 #
 no_IFS_newline() {
   local file="$1"
-  check_read_and_write "${file}" || return 1
-
 
   # TODO: use bash built-in regex match syntax instead
   if grep -qE "^[^#]*IFS=\\\$'\\\\n'" "${file}"
@@ -140,37 +138,7 @@ no_IFS_newline() {
   fi
 }
 
-# TODO: Wrap `then` to a separated line
-# before:                   after:
-# if [[ ... ]]; then        if [[ ... ]]
-#                           then
-#
-# before:                   after:
-# if [[ ... ]] ||           if [[ ... ]] ||
-#   [[ ... ]]; then           [[ ... ]]
-#                           then
-#
-wrap_then() {
-  local file="$1"
-  check_read_and_write "${file}" || return 1
-
-  true
-}
-
-# Probably merge into the above function
-# TODO: Wrap `do` to a separated line
-# before:                   after:
-# for var in ...; do        for var in ...do
-#                           do
-#
-wrap_do() {
-  local file="$1"
-  check_read_and_write "${file}" || return 1
-
-  true
-}
-
-# TODO: Align multiline if condition (indent with 3 spaces or 6 spaces (start with "-"))
+# Align multiline if condition (indent with 3 spaces or 6 spaces (start with "-"))
 # before:                   after:
 # if [[ ... ]] ||           if [[ ... ]] ||
 #   [[ ... ]]                  [[ ... ]]
@@ -182,60 +150,177 @@ wrap_do() {
 # then                      then
 #
 align_multiline_if_condition() {
-  local file="$1"
-  check_read_and_write "${file}" || return 1
+  local multiline_if_begin_regex='^( *)(el)?if '
+  local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
+  local within_test_regex='^( *)(((! )?-[fdrwxes])|([^\[]+ == ))'
+  local base_indent=''
+  local extra_indent=''
+  local line
+  local lastline=''
 
+  if [[ "$1" =~ ${multiline_if_begin_regex} ]]
+  then
+    base_indent="${BASH_REMATCH[1]}"
+    [[ -n "${BASH_REMATCH[2]}" ]] && extra_indent='  '
+    echo "$1"
+    shift
+  fi
+
+  while [[ "$#" -gt 0 ]]
+  do
+    line="$1"
+    shift
+    if [[ "${line}" =~ ${multiline_then_end_regex} ]]
+    then
+      line="${BASH_REMATCH[1]}"
+      lastline="${base_indent}${BASH_REMATCH[2]}"
+    fi
+    if [[ "${line}" =~ ${within_test_regex} ]]
+    then
+      echo "  ${extra_indent}${line}"
+    else
+      echo " ${extra_indent}${line}"
+    fi
+  done
+
+  echo "${lastline}"
+}
+
+# Wrap `then` and `do` to a separated line
+# before:                   after:
+# if [[ ... ]]; then        if [[ ... ]]
+#                           then
+#
+# before:                   after:
+# if [[ ... ]] ||           if [[ ... ]] ||
+#   [[ ... ]]; then           [[ ... ]]
+#                           then
+#
+# before:                   after:
+# for var in ...; do        for var in ...
+#                           do
+#
+wrap_then_do() {
+  local file="$1"
+
+  local -a processed
+  local line
+  local singleline_then_regex='^( *)(el)?if (.+)\; (then( *#.*)?)$'
+  local singleline_do_regex='^( *)(for|while) (.+)\; (do( *#.*)?)$'
+  local multiline_if_begin_regex='^( *)(el)?if '
+  local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
+  local -a buffer=()
+
+  while IFS='' read -r line
+  do
+    if [[ "${#buffer[@]}" == 0 ]]
+    then
+      if [[ "${line}" =~ ${singleline_then_regex} ]]
+      then
+        processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[2]}if ${BASH_REMATCH[3]}")
+        processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[4]}")
+      elif [[ "${line}" =~ ${singleline_do_regex} ]]
+      then
+        processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[2]} ${BASH_REMATCH[3]}")
+        processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[4]}")
+      elif [[ "${line}" =~ ${multiline_if_begin_regex} ]]
+      then
+        buffer=("${line}")
+      else
+        processed+=("${line}")
+      fi
+    else
+      buffer+=("${line}")
+      if [[ "${line}" =~ ${multiline_then_end_regex} ]]
+      then
+        while IFS='' read -r line
+        do
+          processed+=("${line}")
+        done < <(align_multiline_if_condition "${buffer[@]}")
+        buffer=()
+      fi
+    fi
+  done < <(cat "${file}")
+
+  printf "%s\n" "${processed[@]}" >"${file}"
+}
+
+# TODO: it's hard to align multiline switch cases
+align_multiline_switch_cases() {
   true
 }
 
-# TODO: It's hard to align multiline switch cases
-align_multiline_switch_cases() {
+no_forbiddens() {
   true
 }
 
 format() {
   local file="$1"
+  if [[ ! -f "${file}" || ! -r "${file}" ]]
+  then
+    onoe "File \"${file}\" is not readable."
+    return 1
+  fi
+
   # shellcheck disable=SC2155
   local tempfile="$(dirname "${file}")/.${file##*/}.temp"
-  local retcode=0
 
+  trap 'rm -f "${tempfile}" 2>/dev/null' RETURN
   cp -af "${file}" "${tempfile}"
 
+  if [[ ! -f "${tempfile}" || ! -w "${tempfile}" ]]
+  then
+    onoe "File \"${tempfile}\" is not writable."
+    return 1
+  fi
+
   # Format with `shfmt` first
-  "${SHFMT}" -w "${SHFMT_ARGS[@]}" "${tempfile}"
+  if ! "${SHFMT}" -w "${SHFMT_ARGS[@]}" "${tempfile}"
+  then
+    onoe "Failed to run \`shfmt\`"
+    return 1
+  fi
 
   # Fail fast when forbidden patterns detected
   if ! no_tabs "${tempfile}" ||
      ! no_multiline_for_statements "${tempfile}" ||
      ! no_IFS_newline "${tempfile}"
   then
-    rm -f "${tempfile}" 2>/dev/null
     return 1
   fi
 
   # Tweak it with custom shell script styles
-  wrap_then "${tempfile}"
-  wrap_do "${tempfile}"
-  align_multiline_if_condition "${tempfile}"
+  wrap_then_do "${tempfile}"
 
   if ! diff -q "${file}" "${tempfile}"
   then
     # Show differences
     diff -d -C 1 --color=auto "${file}" "${tempfile}"
-    if [[ -n "${INPLACE}" ]]; then
+    if [[ -n "${INPLACE}" ]]
+    then
       cp -af "${tempfile}" "${file}"
     fi
-    retcode=1
+    return 2
   else
     # File is identical between code formations (good styling)
-    retcode=0
+    return 0
   fi
-  rm -f "${tempfile}" 2>/dev/null
-  return "${retcode}"
 }
 
+RETCODE=0
 for file in "${FILES[@]}"
 do
-  # TODO: catch return values
-  format "${file}"
+  if ! format "${file}"
+  then
+    if [[ "$?" == 1 ]]
+    then
+      onoe "${0##*/}: Failed to format file \"${file}\". Function exited with code $?."
+    else
+      onoe "${0##*/}: Bad style for file \"${file}\". Function exited with code $?."
+    fi
+    onoe
+    RETCODE=1
+  fi
 done
+
+exit "${RETCODE}"
