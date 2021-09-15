@@ -8,6 +8,10 @@ on:
         description: Pull request number
         required: true
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   vendor-gems:
     if: >

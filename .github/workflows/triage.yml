@@ -12,6 +12,8 @@ on:
   schedule:
     - cron: "0 */3 * * *" # every 3 hours
 
+permissions:
+
 concurrency: triage-${{ github.ref }}
 
 jobs:

@@ -8,6 +8,8 @@ on:
       - Library/Homebrew/extend/os/diagnostic.rb
       - Library/Homebrew/extend/os/mac/diagnostic.rb
       - Library/Homebrew/os/mac/xcode.rb
+permissions:
+  contents: read
 env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
