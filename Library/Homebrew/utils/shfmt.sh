@@ -202,18 +202,23 @@ no_forbidden_styles() {
 #   then                      then
 #
 # before:                   after:
-#   if [[ -n ... || \         if [[ -n ... || \
+#   if [[ -n ... ||           if [[ -n ... ||
 #     -n ... ]]                     -n ... ]]
 #   then                      then
 #
 align_multiline_if_condition() {
-  local multiline_if_begin_regex='^( *)(el)?if '
-  local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
-  local within_test_regex='^( *)(((! )?-[fdrwxes])|([^\[]+ == ))'
-  local base_indent=''
-  local extra_indent=''
   local line
   local lastline=''
+  local base_indent=''  # indents before `if`
+  local extra_indent='' # 2 extra spaces for `elif`
+  local multiline_if_begin_regex='^( *)(el)?if '
+  local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
+  local within_test_regex='^( *)(((! )?-[fdLrwxeszn] )|([^\[]+ == ))'
+
+  trim() {
+    [[ "$1" =~ [^[:space:]](.*[^[:space:]])? ]]
+    printf "%s" "${BASH_REMATCH[0]}"
+  }
 
   if [[ "$1" =~ ${multiline_if_begin_regex} ]]
   then
@@ -234,9 +239,9 @@ align_multiline_if_condition() {
     fi
     if [[ "${line}" =~ ${within_test_regex} ]]
     then
-      echo "  ${extra_indent}${line}"
+      echo "${base_indent}${extra_indent}      $(trim "${line}")"
     else
-      echo " ${extra_indent}${line}"
+      echo "${base_indent}${extra_indent}   $(trim "${line}")"
     fi
   done
 
@@ -250,7 +255,7 @@ align_multiline_if_condition() {
 #
 # before:                   after:
 #   if [[ ... ]] ||           if [[ ... ]] ||
-#     [[ ... ]]; then           [[ ... ]]
+#     [[ ... ]]; then            [[ ... ]]
 #                             then
 #
 # before:                   after:
@@ -261,13 +266,13 @@ wrap_then_do() {
   local file="$1"
   local tempfile="$2"
 
-  local -a processed
+  local -a processed=()
+  local -a buffer=()
   local line
   local singleline_then_regex='^( *)(el)?if (.+)\; (then( *#.*)?)$'
   local singleline_do_regex='^( *)(for|while) (.+)\; (do( *#.*)?)$'
   local multiline_if_begin_regex='^( *)(el)?if '
   local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
-  local -a buffer=()
 
   while IFS='' read -r line
   do
@@ -303,7 +308,7 @@ wrap_then_do() {
   printf "%s\n" "${processed[@]}" >"${tempfile}"
 }
 
-# TODO: it's hard to align multiline switch cases
+# TODO: It's hard to align multiline switch cases
 align_multiline_switch_cases() {
   true
 }
@@ -359,13 +364,15 @@ format() {
 RETCODE=0
 for file in "${FILES[@]}"
 do
-  if ! format "${file}"
+  format "${file}"
+  retcode="$?"
+  if [[ "${retcode}" != 0 ]]
   then
-    if [[ "$?" == 1 ]]
+    if [[ "${retcode}" == 1 ]]
     then
-      onoe "${0##*/}: Failed to format file \"${file}\". Function exited with code 1."
+      onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code 1."
     else
-      onoe "${0##*/}: Bad style for file \"${file}\". Function exited with code 2."
+      onoe "${0##*/}: Bad style for file \"${file}\". Formatter exited with code 2."
     fi
     onoe
     RETCODE=1
