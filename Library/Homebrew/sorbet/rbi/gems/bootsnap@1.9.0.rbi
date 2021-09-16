@@ -17,14 +17,14 @@ module Bootsnap
     def log!; end
     def logger; end
     def logger=(logger); end
-    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), autoload_paths_cache: T.unsafe(nil), disable_trace: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil)); end
+    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), autoload_paths_cache: T.unsafe(nil), disable_trace: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
   end
 end
 
 module Bootsnap::CompileCache
   class << self
     def permission_error(path); end
-    def setup(cache_dir:, iseq:, yaml:); end
+    def setup(cache_dir:, iseq:, yaml:, json:); end
     def supported?; end
   end
 end
