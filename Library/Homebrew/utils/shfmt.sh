@@ -49,6 +49,7 @@ do
   SHFMT_ARGS+=("${arg}")
   shift
 done
+unset arg
 
 FILES=()
 for file in "$@"
@@ -66,6 +67,7 @@ do
     exit 1
   fi
 done
+unset file
 
 if [[ "${#FILES[@]}" == 0 ]]
 then
@@ -76,6 +78,32 @@ fi
 ### Custom shell script styling
 ###
 
+# Check for specific patterns and prompt messages if detected
+no_forbidden_patten() {
+  local file="$1"
+  local tempfile="$2"
+  local subject="$3"
+  local message="$4"
+  local regex_pos="$5"
+  local regex_neg="${6:-}"
+  local line
+  local num=0
+  local retcode=0
+
+  while IFS='' read -r line
+  do
+    num="$((num + 1))"
+    if [[ "${line}" =~ ${regex_pos} ]] &&
+       [[ -z "${regex_neg}" || ! "${line}" =~ ${regex_neg} ]]
+    then
+      onoe "${subject} detected at \"${file}\", line ${num}."
+      [[ -n "${message}" ]] && onoe "${message}"
+      retcode=1
+    fi
+  done <"${file}"
+  return "${retcode}"
+}
+
 # Check pattern:
 # '^\t+'
 #
@@ -84,22 +112,12 @@ fi
 no_tabs() {
   local file="$1"
   local tempfile="$2"
-  local line
-  local num=0
-  local retcode=0
-  local regex_pos='^[[:space:]]+'
-  local regex_neg='^ +'
 
-  while IFS='' read -r line
-  do
-    num="$((num + 1))"
-    if [[ "${line}" =~ ${regex_pos} && ! "${line}" =~ ${regex_neg} ]]
-    then
-      onoe "Indent by tab detected at \"${file}\", line ${num}."
-      retcode=1
-    fi
-  done <"${file}"
-  return "${retcode}"
+  no_forbidden_patten "${file}" "${tempfile}" \
+    "Indent with tab" \
+    'Replace tabs with 2 spaces instead.' \
+    '^[[:space:]]+' \
+    '^ +'
 }
 
 # Check pattern:
@@ -116,18 +134,10 @@ no_tabs() {
 no_multiline_for_statements() {
   local file="$1"
   local tempfile="$2"
-  local line
-  local num=0
-  local retcode=0
   local regex='^ *for [_[:alnum:]]+ in .*\\$'
-
-  while IFS='' read -r line
-  do
-    num="$((num + 1))"
-    if [[ "${line}" =~ ${regex} ]]
-    then
-      onoe "Multiline for statement detected at \"${file}\", line ${num}."
-      cat >&2 <<EOMSG
+  local message
+  message="$(
+    cat <<EOMSG
 Use the followings instead (keep for statements only one line):
   ARRAY=(
     ...
@@ -137,10 +147,12 @@ Use the followings instead (keep for statements only one line):
     ...
   done
 EOMSG
-      retcode=1
-    fi
-  done <"${file}"
-  return "${retcode}"
+  )"
+
+  no_forbidden_patten "${file}" "${tempfile}" \
+    "Multiline for statement" \
+    "${message}" \
+    "${regex}"
 }
 
 # Check pattern:
@@ -155,32 +167,26 @@ EOMSG
 no_IFS_newline() {
   local file="$1"
   local tempfile="$2"
-  local line
-  local num=0
-  local retcode=0
   local regex="^[^#]*IFS=\\\$'\\\\n'"
-
-  while IFS='' read -r line
-  do
-    num="$((num + 1))"
-    if [[ "${line}" =~ ${regex} ]]
-    then
-      onoe "Pattern \`IFS=\$'\\n'\` detected at \"${file}\", line ${num}."
-      cat >&2 <<EOMSG
+  local message
+  message="$(
+    cat <<EOMSG
 Use the followings instead:
   while IFS='' read -r line
   do
     ...
   done < <(command)
 EOMSG
-      retcode=1
-    fi
-  done <"${file}"
-  return "${retcode}"
+  )"
+
+  no_forbidden_patten "${file}" "${tempfile}" \
+    "Pattern \`IFS=\$'\\n'\`" \
+    "${message}" \
+    "${regex}"
 }
 
 # Combine all forbidden styles
-no_forbiddens() {
+no_forbidden_styles() {
   local file="$1"
   local tempfile="$2"
 
@@ -304,15 +310,14 @@ align_multiline_switch_cases() {
 
 format() {
   local file="$1"
+  local tempfile
   if [[ ! -f "${file}" || ! -r "${file}" ]]
   then
     onoe "File \"${file}\" is not readable."
     return 1
   fi
 
-  # shellcheck disable=SC2155
-  local tempfile="$(dirname "${file}")/.${file##*/}.temp"
-
+  tempfile="$(dirname "${file}")/.${file##*/}.temp"
   trap 'rm -f "${tempfile}" 2>/dev/null' RETURN
   cp -af "${file}" "${tempfile}"
 
@@ -325,15 +330,12 @@ format() {
   # Format with `shfmt` first
   if ! "${SHFMT}" -w "${SHFMT_ARGS[@]}" "${tempfile}"
   then
-    onoe "Failed to run \`shfmt\`"
+    onoe "Failed to run \`shfmt\` for file \"${file}\"."
     return 1
   fi
 
-  # Fail fast when forbidden patterns detected
-  if ! no_forbiddens "${file}" "${tempfile}"
-  then
-    return 2
-  fi
+  # Fail fast when forbidden styles detected
+  ! no_forbidden_styles "${file}" "${tempfile}" && return 2
 
   # Tweak it with custom shell script styles
   wrap_then_do "${file}" "${tempfile}"
