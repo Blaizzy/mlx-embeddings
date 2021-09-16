@@ -65,7 +65,7 @@ module Homebrew
         run_shellcheck(shell_files, output_type)
       end
 
-      run_shfmt(shell_files, inplace: fix) if ruby_files.none? || shell_files.any?
+      run_shfmt(shell_files, fix: fix) if ruby_files.none? || shell_files.any?
 
       if output_type == :json
         Offenses.new(rubocop_result + shellcheck_result)
@@ -166,7 +166,7 @@ module Homebrew
     end
 
     def run_shellcheck(files, output_type)
-      files = [*shell_scripts, HOMEBREW_REPOSITORY/"Dockerfile"] if files.empty?
+      files = shell_scripts if files.blank?
 
       args = ["--shell=bash", "--enable=all", "--external-sources", "--source-path=#{HOMEBREW_LIBRARY}", "--", *files]
 
@@ -214,15 +214,22 @@ module Homebrew
       end
     end
 
-    def run_shfmt(files, inplace: false)
-      files = shell_scripts if files.empty?
+    def run_shfmt(files, fix: false)
+      files = shell_scripts if files.blank?
       # Do not format completions and Dockerfile
       files.delete(HOMEBREW_REPOSITORY/"completions/bash/brew")
       files.delete(HOMEBREW_REPOSITORY/"Dockerfile")
 
+      # shfmt options:
+      #   -i 2     : indent by 2 spaces
+      #   -ci      : indent switch cases
+      #   -ln bash : language variant to parse ("bash")
+      #   -w       : write result to file instead of stdout (inplace fixing)
+      # "--" is needed for `utils/shfmt.sh`
       args = ["-i", "2", "-ci", "-ln", "bash", "--", *files]
 
-      args.unshift("-w") if inplace
+      # Do inplace fixing
+      args << "-w" if fix
 
       system shfmt, *args
       $CHILD_STATUS.success?
