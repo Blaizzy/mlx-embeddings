@@ -65,12 +65,16 @@ module Homebrew
         run_shellcheck(shell_files, output_type)
       end
 
-      run_shfmt(shell_files, fix: fix) if ruby_files.none? || shell_files.any?
+      shfmt_result = if ruby_files.any? && shell_files.none?
+        true
+      else
+        run_shfmt(shell_files, fix: fix)
+      end
 
       if output_type == :json
         Offenses.new(rubocop_result + shellcheck_result)
       else
-        rubocop_result && shellcheck_result
+        rubocop_result && shellcheck_result && shfmt_result
       end
     end
 
