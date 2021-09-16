@@ -4,7 +4,7 @@
 require "cli/named_args"
 
 def setup_unredable_formula(name)
-  error = FormulaUnreadableError.new(name, "testing")
+  error = FormulaUnreadableError.new(name, RuntimeError.new("testing"))
   allow(Formulary).to receive(:factory).with(name, force_bottle: false, flags: []).and_raise(error)
 end
 
