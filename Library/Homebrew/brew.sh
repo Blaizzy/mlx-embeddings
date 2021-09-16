@@ -647,7 +647,6 @@ case "${HOMEBREW_COMMAND}" in
   uninstal) HOMEBREW_COMMAND="uninstall" ;;
   rm) HOMEBREW_COMMAND="uninstall" ;;
   remove) HOMEBREW_COMMAND="uninstall" ;;
-  configure) HOMEBREW_COMMAND="diy" ;;
   abv) HOMEBREW_COMMAND="info" ;;
   dr) HOMEBREW_COMMAND="doctor" ;;
   --repo) HOMEBREW_COMMAND="--repository" ;;
