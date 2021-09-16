@@ -386,7 +386,7 @@ describe "brew bottle" do
 
     describe "#merge_bottle_spec" do
       it "allows new bottle hash to be empty" do
-        valid_keys = [:root_url, :prefix, :cellar, :rebuild, :sha256]
+        valid_keys = [:root_url, :cellar, :rebuild, :sha256]
         old_spec = BottleSpecification.new
         old_spec.sha256(big_sur: "f59bc65c91e4e698f6f050e1efea0040f57372d4dcf0996cbb8f97ced320403b")
         expect { homebrew.merge_bottle_spec(valid_keys, old_spec, {}) }.not_to raise_error

@@ -150,13 +150,14 @@ class FormulaInstaller
       return false
     end
 
-    bottle = formula.bottle_specification
-    unless bottle.compatible_locations?
+    bottle = formula.bottle
+    if bottle && !bottle.compatible_locations?
       if output_warning
+        prefix = Pathname(bottle.cellar).parent
         opoo <<~EOS
           Building #{formula.full_name} from source as the bottle needs:
           - HOMEBREW_CELLAR: #{bottle.cellar} (yours is #{HOMEBREW_CELLAR})
-          - HOMEBREW_PREFIX: #{bottle.prefix} (yours is #{HOMEBREW_PREFIX})
+          - HOMEBREW_PREFIX: #{prefix} (yours is #{HOMEBREW_PREFIX})
         EOS
       end
       return false
