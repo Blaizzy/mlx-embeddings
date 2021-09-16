@@ -7,9 +7,9 @@
 # SHIM_FILE is set by shims/utils.sh
 # HOMEBREW_GIT is set by brew.sh
 # HOMEBREW_SVN is from the user environment.
-# HOMEBREW_PREFIX is set extend/ENV/super.rb
+# HOMEBREW_PREFIX is set by extend/ENV/super.rb
 # shellcheck disable=SC2154
-if [ -z "${HOMEBREW_LIBRARY}" ]
+if [[ -z "${HOMEBREW_LIBRARY}" ]]
 then
   echo "${0##*/}: This shim is internal and must be run via brew." >&2
   exit 1

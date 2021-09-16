@@ -27,13 +27,13 @@ Useful, reliable alternatives exist should you wish to use `keg_only` tools outs
 You can set flags to give configure scripts or Makefiles a nudge in the right direction. An example of flag setting:
 
 ```sh
-./configure --prefix=/Users/Dave/Downloads CFLAGS=-I$(brew --prefix)/opt/openssl/include LDFLAGS=-L$(brew --prefix)/opt/openssl/lib
+./configure --prefix=/Users/Dave/Downloads CFLAGS="-I$(brew --prefix)/opt/openssl/include" LDFLAGS="-L$(brew --prefix)/opt/openssl/lib"
 ```
 
 An example using `pip`:
 
 ```sh
-CFLAGS=-I$(brew --prefix)/opt/icu4c/include LDFLAGS=-L$(brew --prefix)/opt/icu4c/lib pip install pyicu
+CFLAGS="-I$(brew --prefix)/opt/icu4c/include" LDFLAGS="-L$(brew --prefix)/opt/icu4c/lib" pip install pyicu
 ```
 
 ### `PATH` modification
@@ -41,7 +41,7 @@ CFLAGS=-I$(brew --prefix)/opt/icu4c/include LDFLAGS=-L$(brew --prefix)/opt/icu4c
 You can temporarily prepend your `PATH` with the tool’s `bin` directory, such as:
 
 ```sh
-export PATH=$(brew --prefix)/opt/openssl/bin:$PATH
+export PATH="$(brew --prefix)/opt/openssl/bin:${PATH}"
 ```
 
 This will prepend that folder to your `PATH`, ensuring any build script that searches the `PATH` will find it first.
@@ -55,7 +55,7 @@ If the tool you are attempting to build is [pkg-config](https://en.wikipedia.org
 An example of this is:
 
 ```sh
-export PKG_CONFIG_PATH=$(brew --prefix)/opt/openssl/lib/pkgconfig
+export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl/lib/pkgconfig"
 ```
 
 If you’re curious about the `PKG_CONFIG_PATH` variable `man pkg-config` goes into more detail.

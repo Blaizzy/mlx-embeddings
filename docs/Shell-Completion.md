@@ -13,13 +13,16 @@ Shell completions for external Homebrew commands are not automatically installed
 To make Homebrew's completions available in `bash`, you must source the definitions as part of your shell's startup. Add the following to your `~/.bash_profile` (or, if it doesn't exist, `~/.profile`):
 
 ```sh
-if type brew &>/dev/null; then
+if type brew &>/dev/null
+then
   HOMEBREW_PREFIX="$(brew --prefix)"
-  if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
+  if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]
+  then
     source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
   else
-    for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
-      [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+    for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*
+    do
+      [[ -r "${COMPLETION}" ]] && source "${COMPLETION}"
     done
   fi
 fi
@@ -35,8 +38,9 @@ If you are using the `bash` formula as your shell (i.e. `bash` >= v4) you should
 To make Homebrew's completions available in `zsh`, you must get the Homebrew-managed zsh site-functions on your `FPATH` before initialising `zsh`'s completion facility. Add the following to your `~/.zshrc` file:
 
 ```sh
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+if type brew &>/dev/null
+then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
   autoload -Uz compinit
   compinit
@@ -46,7 +50,7 @@ fi
 This must be done before `compinit` is called. Note that if you are using Oh My Zsh, it will call `compinit` for you, so this must be done before you call `oh-my-zsh.sh`. This may be done by appending the following line to your `~/.zprofile` after Homebrew's initialization, instead of modifying your `~/.zshrc` as above:
 
 ```sh
-FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 ```
 
 You may also need to forcibly rebuild `zcompdump`:

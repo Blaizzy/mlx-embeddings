@@ -118,7 +118,7 @@ Then put the appropriate incantation in your shell’s startup, e.g. for
 [`local::lib`](https://metacpan.org/pod/local::lib) docs.
 
 ```sh
-eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 ```
 
 Now (after you restart your shell) `cpan` or `perl -MCPAN -eshell` etc.

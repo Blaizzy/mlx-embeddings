@@ -4,14 +4,17 @@
 #:
 #:  The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
 #:  The variable `HOMEBREW_SHELLENV_PREFIX` will be exported to avoid adding duplicate entries to the environment variables.
-#:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
+#:  Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval "$(brew shellenv)"`
 
 # HOMEBREW_CELLAR and HOMEBREW_PREFIX are set by extend/ENV/super.rb
 # HOMEBREW_REPOSITORY is set by bin/brew
 # shellcheck disable=SC2154
 homebrew-shellenv() {
-  [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" &&
-     "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]] && return
+  if [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" ]] &&
+     [[ "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]]
+  then
+    return
+  fi
 
   case "$(/bin/ps -p "${PPID}" -c -o comm=)" in
     fish | -fish)

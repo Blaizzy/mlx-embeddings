@@ -77,7 +77,7 @@ For brewed Python, modules installed with `pip3` or `python3 setup.py install` w
 The system Python may not know which compiler flags to set in order to build bindings for software installed in Homebrew so you may need to run:
 
 ```sh
-CFLAGS=-I$(brew --prefix)/include LDFLAGS=-L$(brew --prefix)/lib pip install <package>
+CFLAGS="-I$(brew --prefix)/include" LDFLAGS="-L$(brew --prefix)/lib" pip install <package>
 ```
 
 ## Virtualenv

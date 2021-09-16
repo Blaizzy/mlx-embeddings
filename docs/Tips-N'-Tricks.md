@@ -28,14 +28,14 @@ In the case of Erlang, this requires renaming the file from `otp_src_R13B03` to
 
 `brew --cache -s erlang` will print the correct name of the cached
 download. This means instead of manually renaming a formula, you can
-run `mv the_tarball $(brew --cache -s <formula>)`.
+run `mv the_tarball "$(brew --cache -s <formula>)"`.
 
 You can also pre-cache the download by using the command `brew fetch <formula>` which also displays the SHA-256 hash. This can be useful for updating formulae to new versions.
 
 ## Installing stuff without the Xcode CLT
 
 ```sh
-brew sh          # or: eval $(brew --env)
+brew sh          # or: eval "$(brew --env)"
 gem install ronn # or c-programs
 ```
 

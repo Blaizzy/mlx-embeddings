@@ -10,7 +10,7 @@ migrate-legacy-uuid-file() {
 
   if [[ -f "${legacy_uuid_file}" ]]
   then
-    analytics_uuid="$(<"${legacy_uuid_file}")"
+    analytics_uuid="$(cat "${legacy_uuid_file}")"
     if [[ -n "${analytics_uuid}" ]]
     then
       git config --file="${HOMEBREW_REPOSITORY}/.git/config" --replace-all homebrew.analyticsuuid "${analytics_uuid}" 2>/dev/null
@@ -32,7 +32,7 @@ setup-analytics() {
   local message_seen analytics_disabled
   message_seen="$(git config --file="${git_config_file}" --get homebrew.analyticsmessage 2>/dev/null)"
   analytics_disabled="$(git config --file="${git_config_file}" --get homebrew.analyticsdisabled 2>/dev/null)"
-  if [[ "${message_seen}" != "true" || "${analytics_disabled}" = "true" ]]
+  if [[ "${message_seen}" != "true" || "${analytics_disabled}" == "true" ]]
   then
     # Internal variable for brew's use, to differentiate from user-supplied setting
     export HOMEBREW_NO_ANALYTICS_THIS_RUN="1"

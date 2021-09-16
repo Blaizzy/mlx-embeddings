@@ -15,7 +15,7 @@ Depending on the change you want to make, you need to send the pull request to t
   * This creates a personal remote repository that you can push to. This is needed because only Homebrew maintainers have push access to the main repositories.
 2. Change to the directory containing your Homebrew installation:
     ```sh
-    cd $(brew --repository)
+    cd "$(brew --repository)"
     ```
 3. Add your pushable forked repository as a new remote:
     ```sh
@@ -29,7 +29,7 @@ Depending on the change you want to make, you need to send the pull request to t
   * This creates a personal remote repository that you can push to. This is needed because only Homebrew maintainers have push access to the main repositories.
 2. Change to the directory containing Homebrew formulae:
     ```sh
-    cd $(brew --repository homebrew/core)
+    cd "$(brew --repository homebrew/core)"
     ```
 3. Add your pushable forked repository as a new remote:
     ```sh

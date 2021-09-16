@@ -9,7 +9,7 @@ HOMEBREW_PROCESSOR="$(uname -m)"
 HOMEBREW_SYSTEM="$(uname -s)"
 case "${HOMEBREW_SYSTEM}" in
   Darwin) HOMEBREW_MACOS="1" ;;
-  Linux)  HOMEBREW_LINUX="1" ;;
+  Linux) HOMEBREW_LINUX="1" ;;
 esac
 
 # If we're running under macOS Rosetta 2, and it was requested by setting
@@ -17,10 +17,11 @@ esac
 # same file under the native architecture
 # These variables are set from the user environment.
 # shellcheck disable=SC2154
-if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" = "1" ]] && \
-   [[ "${HOMEBREW_MACOS}" = "1" ]] && \
-   [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]] && \
-   [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" = "1" ]]; then
+if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" == "1" ]] &&
+   [[ "${HOMEBREW_MACOS}" == "1" ]] &&
+   [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]] &&
+   [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" == "1" ]]
+then
   exec arch -arm64e "${HOMEBREW_BREW_FILE}" "$@"
 fi
 
@@ -55,15 +56,42 @@ HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 # HOMEBREW_LIBRARY set by bin/brew
 # shellcheck disable=SC2249,SC2154
 case "$*" in
-  --cellar)            echo "${HOMEBREW_CELLAR}"; exit 0 ;;
-  --repository|--repo) echo "${HOMEBREW_REPOSITORY}"; exit 0 ;;
-  --caskroom)          echo "${HOMEBREW_PREFIX}/Caskroom"; exit 0 ;;
-  --cache)             echo "${HOMEBREW_CACHE}"; exit 0 ;;
-  shellenv)            source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"; homebrew-shellenv; exit 0 ;;
-  formulae)            source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"; homebrew-formulae; exit 0 ;;
-  casks)               source "${HOMEBREW_LIBRARY}/Homebrew/cmd/casks.sh"; homebrew-casks; exit 0 ;;
+  --cellar)
+    echo "${HOMEBREW_CELLAR}"
+    exit 0
+    ;;
+  --repository | --repo)
+    echo "${HOMEBREW_REPOSITORY}"
+    exit 0
+    ;;
+  --caskroom)
+    echo "${HOMEBREW_PREFIX}/Caskroom"
+    exit 0
+    ;;
+  --cache)
+    echo "${HOMEBREW_CACHE}"
+    exit 0
+    ;;
+  shellenv)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"
+    homebrew-shellenv
+    exit 0
+    ;;
+  formulae)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"
+    homebrew-formulae
+    exit 0
+    ;;
+  casks)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/casks.sh"
+    homebrew-casks
+    exit 0
+    ;;
   # falls back to cmd/prefix.rb on a non-zero return
-  --prefix*)           source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"; homebrew-prefix "$@" && exit 0 ;;
+  --prefix*)
+    source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"
+    homebrew-prefix "$@" && exit 0
+    ;;
 esac
 
 #####
@@ -73,7 +101,8 @@ esac
 # These variables are set from the user environment.
 # shellcheck disable=SC2154
 ohai() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 1 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stdout is a tty.
+  # Check whether stdout is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 1 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -e "\\033[34m==>\\033[0m \\033[1m$*\\033[0m" # blue arrow and bold text
   else
@@ -82,7 +111,8 @@ ohai() {
 }
 
 opoo() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  # Check whether stderr is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -ne "\\033[4;33mWarning\\033[0m: " >&2 # highlight Warning with underline and yellow color
   else
@@ -97,7 +127,8 @@ opoo() {
 }
 
 bold() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  # Check whether stderr is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -e "\\033[1m""$*""\\033[0m"
   else
@@ -106,7 +137,8 @@ bold() {
 }
 
 onoe() {
-  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]] # check whether stderr is a tty.
+  # Check whether stderr is a tty.
+  if [[ -n "${HOMEBREW_COLOR}" || (-t 2 && -z "${HOMEBREW_NO_COLOR}") ]]
   then
     echo -ne "\\033[4;31mError\\033[0m: " >&2 # highlight Error with underline and red color
   else
@@ -150,16 +182,16 @@ numeric() {
 }
 
 check-run-command-as-root() {
-  [[ "$(id -u)" = 0 ]] || return
+  [[ "$(id -u)" == 0 ]] || return
 
   # Allow Azure Pipelines/GitHub Actions/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
   [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|actions_job|docker|garden|kubepods" -q /proc/1/cgroup && return
 
   # Homebrew Services may need `sudo` for system-wide daemons.
-  [[ "${HOMEBREW_COMMAND}" = "services" ]] && return
+  [[ "${HOMEBREW_COMMAND}" == "services" ]] && return
 
   # It's fine to run this as root as it's not changing anything.
-  [[ "${HOMEBREW_COMMAND}" = "--prefix" ]] && return
+  [[ "${HOMEBREW_COMMAND}" == "--prefix" ]] && return
 
   odie <<EOS
 Running Homebrew as root is extremely dangerous and no longer supported.
@@ -171,7 +203,7 @@ EOS
 check-prefix-is-not-tmpdir() {
   [[ -z "${HOMEBREW_MACOS}" ]] && return
 
-  if [[ "${HOMEBREW_PREFIX}" = "${HOMEBREW_TEMP}"* ]]
+  if [[ "${HOMEBREW_PREFIX}" == "${HOMEBREW_TEMP}"* ]]
   then
     odie <<EOS
 Your HOMEBREW_PREFIX is in the Homebrew temporary directory, which Homebrew
@@ -201,10 +233,13 @@ update-preinstall() {
   # If we've checked for updates, we don't need to check again.
   export HOMEBREW_AUTO_UPDATE_CHECKED="1"
 
-  if [[ "${HOMEBREW_COMMAND}" = "install" || "${HOMEBREW_COMMAND}" = "upgrade" ||
-        "${HOMEBREW_COMMAND}" = "bump-formula-pr" || "${HOMEBREW_COMMAND}" = "bump-cask-pr" ||
-        "${HOMEBREW_COMMAND}" = "bundle" || "${HOMEBREW_COMMAND}" = "release" ||
-        "${HOMEBREW_COMMAND}" = "tap" && ${HOMEBREW_ARG_COUNT} -gt 1 ]]
+  if [[ "${HOMEBREW_COMMAND}" == "install" ]] ||
+     [[ "${HOMEBREW_COMMAND}" == "upgrade" ]] ||
+     [[ "${HOMEBREW_COMMAND}" == "bump-formula-pr" ]] ||
+     [[ "${HOMEBREW_COMMAND}" == "bump-cask-pr" ]] ||
+     [[ "${HOMEBREW_COMMAND}" == "bundle" ]] ||
+     [[ "${HOMEBREW_COMMAND}" == "release" ]] ||
+     [[ "${HOMEBREW_COMMAND}" == "tap" && "${HOMEBREW_ARG_COUNT}" -gt 1 ]]
   then
     export HOMEBREW_AUTO_UPDATING="1"
 
@@ -216,8 +251,8 @@ update-preinstall() {
     # Skip auto-update if the repository has been updated in the
     # last $HOMEBREW_AUTO_UPDATE_SECS.
     repo_fetch_head="${HOMEBREW_REPOSITORY}/.git/FETCH_HEAD"
-    if [[ -f "${repo_fetch_head}" &&
-          -n "$(find "${repo_fetch_head}" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]]
+    if [[ -f "${repo_fetch_head}" ]] &&
+       [[ -n "$(find "${repo_fetch_head}" -type f -mtime -"${HOMEBREW_AUTO_UPDATE_SECS}"s 2>/dev/null)" ]]
     then
       return
     fi
@@ -250,7 +285,8 @@ update-preinstall() {
 # Colorize output on GitHub Actions.
 # This is set by the user environment.
 # shellcheck disable=SC2154
-if [[ -n "${GITHUB_ACTIONS}" ]]; then
+if [[ -n "${GITHUB_ACTIONS}" ]]
+then
   export HOMEBREW_COLOR="1"
 fi
 
@@ -267,13 +303,13 @@ else
     export LC_ALL=C
   elif [[ "$(locale charmap)" != "UTF-8" ]]
   then
-    locales=$(locale -a)
+    locales="$(locale -a)"
     c_utf_regex='\bC\.(utf8|UTF-8)\b'
     en_us_regex='\ben_US\.(utf8|UTF-8)\b'
     utf_regex='\b[a-z][a-z]_[A-Z][A-Z]\.(utf8|UTF-8)\b'
     if [[ ${locales} =~ ${c_utf_regex} || ${locales} =~ ${en_us_regex} || ${locales} =~ ${utf_regex} ]]
     then
-      export LC_ALL=${BASH_REMATCH[0]}
+      export LC_ALL="${BASH_REMATCH[0]}"
     else
       export LC_ALL=C
     fi
@@ -284,7 +320,7 @@ fi
 ##### odie as quickly as possible.
 #####
 
-if [[ "${HOMEBREW_PREFIX}" = "/" || "${HOMEBREW_PREFIX}" = "/usr" ]]
+if [[ "${HOMEBREW_PREFIX}" == "/" || "${HOMEBREW_PREFIX}" == "/usr" ]]
 then
   # it may work, but I only see pain this route and don't want to support it
   odie "Cowardly refusing to continue at this prefix: ${HOMEBREW_PREFIX}"
@@ -302,17 +338,16 @@ fi
 #####
 
 # USER isn't always set so provide a fall back for `brew` and subprocesses.
-export USER=${USER:-$(id -un)}
+export USER="${USER:-$(id -un)}"
 
 # A depth of 1 means this command was directly invoked by a user.
 # Higher depths mean this command was invoked by another Homebrew command.
-export HOMEBREW_COMMAND_DEPTH=$((HOMEBREW_COMMAND_DEPTH + 1))
+export HOMEBREW_COMMAND_DEPTH="$((HOMEBREW_COMMAND_DEPTH + 1))"
 
 # This is set by the user environment.
 # shellcheck disable=SC2154
-if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" &&
-      -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
-         "${HOMEBREW_PREFIX}/opt/curl/bin/curl" --version >/dev/null
+if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
+   "${HOMEBREW_PREFIX}/opt/curl/bin/curl" --version >/dev/null
 then
   HOMEBREW_CURL="${HOMEBREW_PREFIX}/opt/curl/bin/curl"
 elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_CURL_PATH}" ]]
@@ -324,9 +359,8 @@ fi
 
 # This is set by the user environment.
 # shellcheck disable=SC2154
-if [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" &&
-      -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]] &&
-         "${HOMEBREW_PREFIX}/opt/git/bin/git" --version >/dev/null
+if [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" && -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]] &&
+   "${HOMEBREW_PREFIX}/opt/git/bin/git" --version >/dev/null
 then
   HOMEBREW_GIT="${HOMEBREW_PREFIX}/opt/git/bin/git"
 elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_GIT_PATH}" ]]
@@ -350,7 +384,11 @@ HOMEBREW_CORE_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
 HOMEBREW_CASK_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask"
 
 case "$*" in
-  --version|-v) source "${HOMEBREW_LIBRARY}/Homebrew/cmd/--version.sh"; homebrew-version; exit 0 ;;
+  --version | -v)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/--version.sh"
+    homebrew-version
+    exit 0
+    ;;
 esac
 
 # shellcheck disable=SC2154
@@ -363,7 +401,7 @@ if [[ -n "${HOMEBREW_MACOS}" ]]
 then
   HOMEBREW_PRODUCT="Homebrew"
   HOMEBREW_SYSTEM="Macintosh"
-  [[ "${HOMEBREW_PROCESSOR}" = "x86_64" ]] && HOMEBREW_PROCESSOR="Intel"
+  [[ "${HOMEBREW_PROCESSOR}" == "x86_64" ]] && HOMEBREW_PROCESSOR="Intel"
   HOMEBREW_MACOS_VERSION="$(/usr/bin/sw_vers -productVersion)"
   # Don't change this from Mac OS X to match what macOS itself does in Safari on 10.12
   HOMEBREW_OS_USER_AGENT_VERSION="Mac OS X ${HOMEBREW_MACOS_VERSION}"
@@ -429,17 +467,19 @@ else
   curl_version_output="$(${HOMEBREW_CURL} --version 2>/dev/null)"
   curl_name_and_version="${curl_version_output%% (*}"
   # shellcheck disable=SC2248
-  if [[ $(numeric "${curl_name_and_version##* }") -lt $(numeric "${HOMEBREW_MINIMUM_CURL_VERSION}") ]]
+  if [[ "$(numeric "${curl_name_and_version##* }")" -lt "$(numeric "${HOMEBREW_MINIMUM_CURL_VERSION}")" ]]
   then
-      message="Please update your system curl.
+    message="Please update your system curl.
 Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
 Your curl version: ${curl_name_and_version##* }
 Your curl executable: $(type -p ${HOMEBREW_CURL})"
 
-    if [[ -z ${HOMEBREW_CURL_PATH} || -z ${HOMEBREW_DEVELOPER} ]]; then
+    if [[ -z ${HOMEBREW_CURL_PATH} || -z ${HOMEBREW_DEVELOPER} ]]
+    then
       HOMEBREW_SYSTEM_CURL_TOO_OLD=1
       HOMEBREW_FORCE_BREWED_CURL=1
-      if [[ -z ${HOMEBREW_CURL_WARNING} ]]; then
+      if [[ -z ${HOMEBREW_CURL_WARNING} ]]
+      then
         onoe "${message}"
         HOMEBREW_CURL_WARNING=1
       fi
@@ -454,17 +494,19 @@ Your curl executable: $(type -p ${HOMEBREW_CURL})"
   git_version_output="$(${HOMEBREW_GIT} --version 2>/dev/null)"
   # $extra is intentionally discarded.
   # shellcheck disable=SC2034
-  IFS=. read -r major minor micro build extra <<< "${git_version_output##* }"
+  IFS='.' read -r major minor micro build extra <<<"${git_version_output##* }"
   # shellcheck disable=SC2248
-  if [[ $(numeric "${major}.${minor}.${micro}.${build}") -lt $(numeric "${HOMEBREW_MINIMUM_GIT_VERSION}") ]]
+  if [[ "$(numeric "${major}.${minor}.${micro}.${build}")" -lt "$(numeric "${HOMEBREW_MINIMUM_GIT_VERSION}")" ]]
   then
     message="Please update your system Git.
 Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}
 Your Git version: ${major}.${minor}.${micro}.${build}
 Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
-    if [[ -z ${HOMEBREW_GIT_PATH} || -z ${HOMEBREW_DEVELOPER} ]]; then
+    if [[ -z ${HOMEBREW_GIT_PATH} || -z ${HOMEBREW_DEVELOPER} ]]
+    then
       HOMEBREW_FORCE_BREWED_GIT="1"
-      if [[ -z ${HOMEBREW_GIT_WARNING} ]]; then
+      if [[ -z ${HOMEBREW_GIT_WARNING} ]]
+      then
         onoe "${message}"
         HOMEBREW_GIT_WARNING=1
       fi
@@ -477,7 +519,7 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 
   HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin)"
-  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" = "https://github.com/Homebrew/homebrew-core" ]]
+  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" == "https://github.com/Homebrew/homebrew-core" ]]
   then
     # If the remote origin has been set to Homebrew/homebrew-core by the install script,
     # then we are in the case of a new installation of brew, using Homebrew/homebrew-core as a Linux core repository.
@@ -496,12 +538,15 @@ fi
 # That will be when macOS 12 is the minimum required version.
 # HOMEBREW_BOTTLE_DOMAIN is set from the user environment
 # shellcheck disable=SC2154
-if [[ -n "${HOMEBREW_BOTTLE_DEFAULT_DOMAIN}" && "${HOMEBREW_BOTTLE_DOMAIN}" = "${HOMEBREW_BOTTLE_DEFAULT_DOMAIN}" ]]
+if [[ -n "${HOMEBREW_BOTTLE_DEFAULT_DOMAIN}" ]] &&
+   [[ "${HOMEBREW_BOTTLE_DOMAIN}" == "${HOMEBREW_BOTTLE_DEFAULT_DOMAIN}" ]]
 then
   unset HOMEBREW_BOTTLE_DOMAIN
 fi
 
-if [[ -n "${HOMEBREW_MACOS}" || -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" || -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
+if [[ -n "${HOMEBREW_MACOS}" ]] ||
+   [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]] ||
+   [[ -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
 then
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
 else
@@ -541,8 +586,8 @@ export HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 
 if [[ -n "${HOMEBREW_MACOS}" && -x "/usr/bin/xcode-select" ]]
 then
-  XCODE_SELECT_PATH=$('/usr/bin/xcode-select' --print-path 2>/dev/null)
-  if [[ "${XCODE_SELECT_PATH}" = "/" ]]
+  XCODE_SELECT_PATH="$('/usr/bin/xcode-select' --print-path 2>/dev/null)"
+  if [[ "${XCODE_SELECT_PATH}" == "/" ]]
   then
     odie <<EOS
 Your xcode-select path is currently set to '/'.
@@ -561,7 +606,7 @@ EOS
     XCRUN_OUTPUT="$(/usr/bin/xcrun clang 2>&1)"
     XCRUN_STATUS="$?"
 
-    if [[ "${XCRUN_STATUS}" -ne 0 && "${XCRUN_OUTPUT}" = *license* ]]
+    if [[ "${XCRUN_STATUS}" -ne 0 && "${XCRUN_OUTPUT}" == *license* ]]
     then
       odie <<EOS
 You have not agreed to the Xcode license. Please resolve this by running:
@@ -571,7 +616,7 @@ EOS
   fi
 fi
 
-if [[ "$1" = -v ]]
+if [[ "$1" == "-v" ]]
 then
   # Shift the -v to the end of the parameter list
   shift
@@ -580,9 +625,9 @@ fi
 
 for arg in "$@"
 do
-  [[ ${arg} = "--" ]] && break
+  [[ "${arg}" == "--" ]] && break
 
-  if [[ ${arg} = "--help" || ${arg} = "-h" || ${arg} = "--usage" || ${arg} = "-?" ]]
+  if [[ "${arg}" == "--help" || "${arg}" == "-h" || "${arg}" == "--usage" || "${arg}" == "-?" ]]
   then
     export HOMEBREW_HELP="1"
     break
@@ -593,22 +638,21 @@ HOMEBREW_ARG_COUNT="$#"
 HOMEBREW_COMMAND="$1"
 shift
 case "${HOMEBREW_COMMAND}" in
-  ls)          HOMEBREW_COMMAND="list" ;;
-  homepage)    HOMEBREW_COMMAND="home" ;;
-  -S)          HOMEBREW_COMMAND="search" ;;
-  up)          HOMEBREW_COMMAND="update" ;;
-  ln)          HOMEBREW_COMMAND="link" ;;
-  instal)      HOMEBREW_COMMAND="install" ;; # gem does the same
-  uninstal)    HOMEBREW_COMMAND="uninstall" ;;
-  rm)          HOMEBREW_COMMAND="uninstall" ;;
-  remove)      HOMEBREW_COMMAND="uninstall" ;;
-  configure)   HOMEBREW_COMMAND="diy" ;;
-  abv)         HOMEBREW_COMMAND="info" ;;
-  dr)          HOMEBREW_COMMAND="doctor" ;;
-  --repo)      HOMEBREW_COMMAND="--repository" ;;
+  ls) HOMEBREW_COMMAND="list" ;;
+  homepage) HOMEBREW_COMMAND="home" ;;
+  -S) HOMEBREW_COMMAND="search" ;;
+  up) HOMEBREW_COMMAND="update" ;;
+  ln) HOMEBREW_COMMAND="link" ;;
+  instal) HOMEBREW_COMMAND="install" ;; # gem does the same
+  uninstal) HOMEBREW_COMMAND="uninstall" ;;
+  rm) HOMEBREW_COMMAND="uninstall" ;;
+  remove) HOMEBREW_COMMAND="uninstall" ;;
+  abv) HOMEBREW_COMMAND="info" ;;
+  dr) HOMEBREW_COMMAND="doctor" ;;
+  --repo) HOMEBREW_COMMAND="--repository" ;;
   environment) HOMEBREW_COMMAND="--env" ;;
-  --config)    HOMEBREW_COMMAND="config" ;;
-  -v)          HOMEBREW_COMMAND="--version" ;;
+  --config) HOMEBREW_COMMAND="config" ;;
+  -v) HOMEBREW_COMMAND="--version" ;;
 esac
 
 # Set HOMEBREW_DEV_CMD_RUN for users who have run a development command.
@@ -617,7 +661,7 @@ if [[ -z "${HOMEBREW_DEVELOPER}" ]]
 then
   export HOMEBREW_GIT_CONFIG_FILE="${HOMEBREW_REPOSITORY}/.git/config"
   HOMEBREW_GIT_CONFIG_DEVELOPERMODE="$(git config --file="${HOMEBREW_GIT_CONFIG_FILE}" --get homebrew.devcmdrun 2>/dev/null)"
-  if [[ "${HOMEBREW_GIT_CONFIG_DEVELOPERMODE}" = "true" ]]
+  if [[ "${HOMEBREW_GIT_CONFIG_DEVELOPERMODE}" == "true" ]]
   then
     export HOMEBREW_DEV_CMD_RUN="1"
   fi
@@ -641,7 +685,9 @@ then
 fi
 export HOMEBREW_BREW_GIT_REMOTE
 
-if [[ -n "${HOMEBREW_MACOS}" ]] || [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]]  || [[ -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
+if [[ -n "${HOMEBREW_MACOS}" ]] ||
+   [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]] ||
+   [[ -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
 then
   HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
 else
@@ -682,9 +728,9 @@ check-run-command-as-root
 check-prefix-is-not-tmpdir
 
 # shellcheck disable=SC2250
-if [[ "${HOMEBREW_PREFIX}" = "/usr/local" &&
-      "${HOMEBREW_PREFIX}" != "${HOMEBREW_REPOSITORY}" &&
-      "${HOMEBREW_CELLAR}" = "${HOMEBREW_REPOSITORY}/Cellar" ]]
+if [[ "${HOMEBREW_PREFIX}" == "/usr/local" ]] &&
+   [[ "${HOMEBREW_PREFIX}" != "${HOMEBREW_REPOSITORY}" ]] &&
+   [[ "${HOMEBREW_CELLAR}" == "${HOMEBREW_REPOSITORY}/Cellar" ]]
 then
   cat >&2 <<EOS
 Warning: your HOMEBREW_PREFIX is set to /usr/local but HOMEBREW_CELLAR is set
@@ -708,7 +754,13 @@ then
   # Shellcheck can't follow this dynamic `source`.
   # shellcheck disable=SC1090
   source "${HOMEBREW_BASH_COMMAND}"
-  { update-preinstall "$@"; "homebrew-${HOMEBREW_COMMAND}" "$@"; exit $?; }
+
+  {
+    update-preinstall "$@"
+    "homebrew-${HOMEBREW_COMMAND}" "$@"
+    exit $?
+  }
+
 else
   source "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
   setup-ruby-path
@@ -717,5 +769,9 @@ else
   [[ "${HOMEBREW_ARG_COUNT}" -gt 0 ]] && set -- "${HOMEBREW_COMMAND}" "$@"
   # HOMEBREW_RUBY_PATH set by utils/ruby.sh
   # shellcheck disable=SC2154
-  { update-preinstall "$@"; exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${RUBY_DISABLE_OPTIONS}" "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"; }
+  {
+    update-preinstall "$@"
+    exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${RUBY_DISABLE_OPTIONS}" \
+      "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"
+  }
 fi

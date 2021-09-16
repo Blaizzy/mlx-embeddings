@@ -8,7 +8,7 @@ lock() {
   local lock_dir="${HOMEBREW_PREFIX}/var/homebrew/locks"
   local lock_file="${lock_dir}/${name}"
   [[ -d "${lock_dir}" ]] || mkdir -p "${lock_dir}"
-  if ! [[ -w "${lock_dir}" ]]
+  if [[ ! -w "${lock_dir}" ]]
   then
     odie <<EOS
 Can't create ${name} lock in ${lock_dir}!

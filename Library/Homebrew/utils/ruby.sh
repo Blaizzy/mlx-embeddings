@@ -73,7 +73,7 @@ setup-ruby-path() {
   local upgrade_fail
   local install_fail
 
-  if [[ -n ${HOMEBREW_MACOS} ]]
+  if [[ -n "${HOMEBREW_MACOS}" ]]
   then
     upgrade_fail="Failed to upgrade Homebrew Portable Ruby!"
     install_fail="Failed to install Homebrew Portable Ruby (and your system version is too old)!"
@@ -92,8 +92,8 @@ If there's no Homebrew Portable Ruby available for your processor:
   vendor_ruby_root="${vendor_dir}/portable-ruby/current"
   vendor_ruby_path="${vendor_ruby_root}/bin/ruby"
   vendor_ruby_terminfo="${vendor_ruby_root}/share/terminfo"
-  vendor_ruby_latest_version=$(<"${vendor_dir}/portable-ruby-version")
-  vendor_ruby_current_version=$(readlink "${vendor_ruby_root}")
+  vendor_ruby_latest_version="$(cat "${vendor_dir}/portable-ruby-version")"
+  vendor_ruby_current_version="$(readlink "${vendor_ruby_root}")"
 
   unset HOMEBREW_RUBY_PATH
 
@@ -106,12 +106,12 @@ If there's no Homebrew Portable Ruby available for your processor:
   then
     HOMEBREW_RUBY_PATH="${vendor_ruby_path}"
     TERMINFO_DIRS="${vendor_ruby_terminfo}"
-    if [[ ${vendor_ruby_current_version} != "${vendor_ruby_latest_version}" ]]
+    if [[ "${vendor_ruby_current_version}" != "${vendor_ruby_latest_version}" ]]
     then
       brew vendor-install ruby || odie "${upgrade_fail}"
     fi
   else
-    HOMEBREW_RUBY_PATH=$(find_ruby)
+    HOMEBREW_RUBY_PATH="$(find_ruby)"
     if need_vendored_ruby
     then
       brew vendor-install ruby || odie "${install_fail}"

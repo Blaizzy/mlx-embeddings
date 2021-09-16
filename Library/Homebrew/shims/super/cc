@@ -1,11 +1,11 @@
 #!/bin/sh
 # Make sure this shim uses the same Ruby interpreter that is used by Homebrew.
-if [ -z "$HOMEBREW_RUBY_PATH" ]
+if [[ -z "${HOMEBREW_RUBY_PATH}" ]]
 then
   echo "${0##*/}: The build tool has reset ENV; --env=std required." >&2
   exit 1
 fi
-exec "$HOMEBREW_RUBY_PATH" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -x "$0" "$@"
+exec "${HOMEBREW_RUBY_PATH}" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -x "$0" "$@"
 #!/usr/bin/env ruby -W0
 
 require "pathname"

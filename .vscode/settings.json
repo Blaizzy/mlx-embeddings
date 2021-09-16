@@ -1,6 +1,17 @@
 {
-    "ruby.rubocop.executePath": "Library/Homebrew/shims/gems/",
-    "files.trimTrailingWhitespace": true,
-    "editor.tabSize": 2,
-    "files.insertFinalNewline": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "ruby.rubocop.executePath": "Library/Homebrew/shims/gems/",
+  "shellcheck.customArgs": [
+    "--shell=bash",
+    "--enable=all",
+    "--external-sources",
+    "--source-path=${workspaceFolder}/Library"
+  ],
+  "shellformat.flag": "-i 2 -ci"
 }

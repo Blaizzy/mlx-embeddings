@@ -1,5 +1,6 @@
 ARG version=20.04
-FROM ubuntu:$version
+# shellcheck disable=SC2154
+FROM ubuntu:"${version}"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008
@@ -34,7 +35,7 @@ RUN apt-get update \
 
 USER linuxbrew
 COPY --chown=linuxbrew:linuxbrew . /home/linuxbrew/.linuxbrew/Homebrew
-ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 WORKDIR /home/linuxbrew
 
 RUN mkdir -p \

@@ -463,7 +463,7 @@ information is displayed in interactive shells, and suppressed otherwise.
 * `--cask`:
   List only outdated casks.
 * `--json`:
-  Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks. 
+  Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
@@ -572,7 +572,7 @@ Print export statements. When run in a shell, this installation of Homebrew will
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
 The variable `HOMEBREW_SHELLENV_PREFIX` will be exported to avoid adding duplicate entries to the environment variables.
-Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval $(brew shellenv)`
+Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval "$(brew shellenv)"`
 
 ### `tap` [*`options`*] [*`user`*`/`*`repo`*] [*`URL`*]
 
