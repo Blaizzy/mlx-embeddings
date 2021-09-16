@@ -1,17 +1,19 @@
 #!/bin/bash
-set +o posix
+
+# Fail fast with concise message when not using bash
+# Single brackets is needed here for POSIX compatibility
+if [ -z "${BASH_VERSION:-}" ]
+then
+  echo "Error: Bash is required to run brew." >&2
+  exit 1
+fi
+
+set +o posix # as we are using bash now
 
 # Fail fast with concise message when cwd does not exist
 if ! [[ -d "${PWD}" ]]
 then
   echo "Error: The current working directory doesn't exist, cannot proceed." >&2
-  exit 1
-fi
-
-# Fail fast with concise message when not using bash
-if [ -z "${BASH_VERSION:-}" ]
-then
-  echo "Error: Bash is required to run brew." >&2
   exit 1
 fi
 
