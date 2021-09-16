@@ -229,7 +229,7 @@ module Homebrew
       args = ["-i", "2", "-ci", "-ln", "bash", "--", *files]
 
       # Do inplace fixing
-      args << "-w" if fix
+      args.unshift("-w") if fix # need to add before "--"
 
       system shfmt, *args
       $CHILD_STATUS.success?
