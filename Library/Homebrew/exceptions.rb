@@ -208,6 +208,7 @@ class FormulaUnreadableError < FormulaUnavailableError
   def initialize(name, error)
     super(name)
     @formula_error = error
+    set_backtrace(error.backtrace)
   end
 end
 
@@ -257,6 +258,7 @@ class TapFormulaUnreadableError < TapFormulaUnavailableError
   def initialize(tap, name, error)
     super(tap, name)
     @formula_error = error
+    set_backtrace(error.backtrace)
   end
 end
 
