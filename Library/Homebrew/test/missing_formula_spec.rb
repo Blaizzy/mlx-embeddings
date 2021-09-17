@@ -18,7 +18,6 @@ describe Homebrew::MissingFormula do
     end
 
     it { is_expected.to disallow("gem") }
-    it("disallows LaTeX", :needs_macos) { is_expected.to disallow("latex") }
     it { is_expected.to disallow("pip") }
     it { is_expected.to disallow("pil") }
     it { is_expected.to disallow("macruby") }
