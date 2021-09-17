@@ -48,6 +48,7 @@ describe "Bash" do
         next if path.directory?
         next if path.symlink?
         next unless path.executable?
+        next if path.basename.to_s == "cc" # `bash -n` tries to parse the Ruby part
         next unless path.read(12) == "#!/bin/bash\n"
 
         expect(path).to have_valid_bash_syntax
