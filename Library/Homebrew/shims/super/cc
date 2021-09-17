@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Make sure this shim uses the same Ruby interpreter that is used by Homebrew.
 if [[ -z "${HOMEBREW_RUBY_PATH}" ]]
 then
