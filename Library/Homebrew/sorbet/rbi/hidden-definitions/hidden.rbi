@@ -3253,56 +3253,6 @@ module DidYouMean
   def self.formatter=(formatter); end
 end
 
-class Diff::LCS::Block
-  def changes(); end
-
-  def diff_size(); end
-
-  def initialize(chunk); end
-
-  def insert(); end
-
-  def op(); end
-
-  def remove(); end
-end
-
-class Diff::LCS::Block
-end
-
-class Diff::LCS::Hunk
-  def blocks(); end
-
-  def diff(format, last=T.unsafe(nil)); end
-
-  def end_new(); end
-
-  def end_old(); end
-
-  def file_length_difference(); end
-
-  def flag_context(); end
-
-  def flag_context=(context); end
-
-  def initialize(data_old, data_new, piece, flag_context, file_length_difference); end
-
-  def merge(hunk); end
-
-  def missing_last_newline?(data); end
-
-  def overlaps?(hunk); end
-
-  def start_new(); end
-
-  def start_old(); end
-
-  def unshift(hunk); end
-end
-
-class Diff::LCS::Hunk
-end
-
 class Dir
   def children(); end
 
