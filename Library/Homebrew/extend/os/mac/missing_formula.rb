@@ -18,19 +18,6 @@ module Homebrew
           <<~EOS
             Xcode can be installed from the App Store.
           EOS
-        when "tex", "tex-live", "texlive", "mactex", "latex"
-          <<~EOS
-            There are three versions of MacTeX.
-
-            Full installation:
-              brew install --cask mactex
-
-            Full installation without bundled applications:
-              brew install --cask mactex-no-gui
-
-            Minimal installation:
-              brew install --cask basictex
-          EOS
         else
           generic_disallowed_reason(name)
         end
