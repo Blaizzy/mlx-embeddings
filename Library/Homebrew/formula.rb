@@ -371,7 +371,7 @@ class Formula
 
   # The Bottle object for given tag.
   # @private
-  sig { params(tag: T.nilable(String)).returns(T.nilable(Bottle)) }
+  sig { params(tag: T.nilable(Symbol)).returns(T.nilable(Bottle)) }
   def bottle_for_tag(tag = nil)
     Bottle.new(self, bottle_specification, tag) if bottled?(tag)
   end
