@@ -91,7 +91,7 @@ class SoftwareSpec
   end
 
   def bottle_defined?
-    !bottle_specification.collector.keys.empty?
+    !bottle_specification.collector.tags.empty?
   end
 
   def bottle_tag?(tag = nil)
@@ -302,7 +302,7 @@ class Bottle
 
   extend Forwardable
 
-  attr_reader :name, :resource, :prefix, :cellar, :rebuild
+  attr_reader :name, :resource, :cellar, :rebuild
 
   def_delegators :resource, :url, :verify_download_integrity
   def_delegators :resource, :cached_download
@@ -314,15 +314,14 @@ class Bottle
     @resource.specs[:bottle] = true
     @spec = spec
 
-    checksum, tag, cellar = spec.checksum_for(Utils::Bottles.tag(tag))
+    tag_spec = spec.tag_specification_for(Utils::Bottles.tag(tag))
 
-    @prefix = spec.prefix
-    @tag = tag
-    @cellar = cellar
+    @tag = tag_spec.tag
+    @cellar = tag_spec.cellar
     @rebuild = spec.rebuild
 
     @resource.version = formula.pkg_version
-    @resource.checksum = checksum
+    @resource.checksum = tag_spec.checksum
 
     root_url(spec.root_url, spec.root_url_specs)
   end
@@ -342,12 +341,12 @@ class Bottle
   end
 
   def compatible_locations?
-    @spec.compatible_locations?
+    @spec.compatible_locations?(tag: @tag)
   end
 
   # Does the bottle need to be relocated?
   def skip_relocation?
-    @spec.skip_relocation?
+    @spec.skip_relocation?(tag: @tag)
   end
 
   def stage
@@ -469,12 +468,11 @@ class BottleSpecification
 
   attr_rw :rebuild
   attr_accessor :tap
-  attr_reader :all_tags_cellar, :collector, :root_url_specs, :repository, :prefix
+  attr_reader :collector, :root_url_specs, :repository
 
   sig { void }
   def initialize
     @rebuild = 0
-    @prefix = Homebrew::DEFAULT_PREFIX
     @repository = Homebrew::DEFAULT_REPOSITORY
     @collector = Utils::Bottles::Collector.new
     @root_url_specs = {}
@@ -497,26 +495,25 @@ class BottleSpecification
     end
   end
 
-  def cellar(val = nil)
-    if val.present?
-      odisabled(
-        "`cellar` in a bottle block",
-        "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
-      )
-    end
-
-    if val.nil?
-      return collector.dig(Utils::Bottles.tag.to_sym, :cellar) || @all_tags_cellar || Homebrew::DEFAULT_CELLAR
-    end
-
-    @all_tags_cellar = val
+  def cellar(_val = nil)
+    odisabled(
+      "`cellar` in a bottle block",
+      "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
+    )
   end
 
-  def compatible_locations?
-    # this looks like it should check prefix and repository too but to be
-    # `cellar :any` actually requires no references to the cellar, prefix or
-    # repository.
+  sig { params(tag: Utils::Bottles::Tag).returns(T::Boolean) }
+  def compatible_locations?(tag: Utils::Bottles.tag)
+    spec = collector.specification_for(tag)
+    cellar = if spec.present?
+      spec.cellar
+    else
+      tag.default_cellar
+    end
+
     return true if [:any, :any_skip_relocation].include?(cellar)
+
+    prefix = Pathname(cellar).parent.to_s
 
     compatible_cellar = cellar == HOMEBREW_CELLAR.to_s
     compatible_prefix = prefix == HOMEBREW_PREFIX.to_s
@@ -525,14 +522,15 @@ class BottleSpecification
   end
 
   # Does the {Bottle} this {BottleSpecification} belongs to need to be relocated?
-  sig { returns(T::Boolean) }
-  def skip_relocation?
-    cellar == :any_skip_relocation
+  sig { params(tag: Utils::Bottles::Tag).returns(T::Boolean) }
+  def skip_relocation?(tag: Utils::Bottles.tag)
+    spec = collector.specification_for(tag)
+    spec&.cellar == :any_skip_relocation
   end
 
   sig { params(tag: T.any(Symbol, Utils::Bottles::Tag), no_older_versions: T::Boolean).returns(T::Boolean) }
   def tag?(tag, no_older_versions: false)
-    checksum_for(tag, no_older_versions: no_older_versions) ? true : false
+    collector.tag?(tag, no_older_versions: no_older_versions)
   end
 
   # Checksum methods in the DSL's bottle block take
@@ -569,40 +567,35 @@ class BottleSpecification
 
     tag = Utils::Bottles::Tag.from_symbol(tag)
 
-    cellar ||= all_tags_cellar
     cellar ||= tag.default_cellar
 
-    collector[tag.to_sym] = { checksum: Checksum.new(digest), cellar: cellar }
+    collector.add(tag, checksum: Checksum.new(digest), cellar: cellar)
   end
 
   sig {
-    params(
-      tag:               T.any(Symbol, Utils::Bottles::Tag),
-      no_older_versions: T::Boolean,
-    ).returns(
-      T.nilable([Checksum, Symbol, T.any(Symbol, String)]),
-    )
+    params(tag: Utils::Bottles::Tag, no_older_versions: T::Boolean)
+      .returns(T.nilable(Utils::Bottles::TagSpecification))
   }
-  def checksum_for(tag, no_older_versions: false)
-    collector.fetch_checksum_for(tag, no_older_versions: no_older_versions)
+  def tag_specification_for(tag, no_older_versions: false)
+    collector.specification_for(tag, no_older_versions: no_older_versions)
   end
 
   def checksums
-    tags = collector.keys.sort_by do |sym|
-      tag = Utils::Bottles::Tag.from_symbol(sym)
+    tags = collector.tags.sort_by do |tag|
       version = tag.to_macos_version
       # Give arm64 bottles a higher priority so they are first
       priority = tag.arch == :arm64 ? "2" : "1"
-      "#{priority}.#{version}_#{sym}"
+      "#{priority}.#{version}_#{tag}"
     rescue MacOSVersionError
       # Sort non-MacOS tags below MacOS tags.
-      "0.#{sym}"
+      "0.#{tag}"
     end
     tags.reverse.map do |tag|
+      spec = collector.specification_for(tag)
       {
-        "tag"    => tag,
-        "digest" => collector[tag][:checksum],
-        "cellar" => collector[tag][:cellar],
+        "tag"    => spec.tag.to_sym,
+        "digest" => spec.checksum,
+        "cellar" => spec.cellar,
       }
     end
   end

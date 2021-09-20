@@ -2034,17 +2034,17 @@ class Formula
       "root_url" => bottle_spec.root_url,
       "files"    => {},
     }
-    bottle_spec.collector.each_key do |os|
-      collector_os = bottle_spec.collector[os]
-      os_cellar = collector_os[:cellar]
+    bottle_spec.collector.each_tag do |tag|
+      tag_spec = bottle_spec.collector.specification_for(tag)
+      os_cellar = tag_spec.cellar
       os_cellar = os_cellar.inspect if os_cellar.is_a?(Symbol)
 
-      checksum = collector_os[:checksum].hexdigest
-      filename = Bottle::Filename.create(self, os, bottle_spec.rebuild)
+      checksum = tag_spec.checksum.hexdigest
+      filename = Bottle::Filename.create(self, tag, bottle_spec.rebuild)
       path, = Utils::Bottles.path_resolved_basename(bottle_spec.root_url, name, checksum, filename)
       url = "#{bottle_spec.root_url}/#{path}"
 
-      hash["files"][os] = {
+      hash["files"][tag.to_sym] = {
         "cellar" => os_cellar,
         "url"    => url,
         "sha256" => checksum,

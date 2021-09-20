@@ -17,8 +17,8 @@ describe BottleSpecification do
 
       checksums.each_pair do |cat, digest|
         bottle_spec.sha256(cat => digest)
-        checksum, = bottle_spec.checksum_for(cat)
-        expect(Checksum.new(digest)).to eq(checksum)
+        tag_spec = bottle_spec.tag_specification_for(Utils::Bottles::Tag.from_symbol(cat))
+        expect(Checksum.new(digest)).to eq(tag_spec.checksum)
       end
     end
 
@@ -32,11 +32,11 @@ describe BottleSpecification do
 
       checksums.each do |checksum|
         bottle_spec.sha256(cellar: checksum[:cellar], checksum[:tag] => checksum[:digest])
-        digest, tag, cellar = bottle_spec.checksum_for(checksum[:tag])
-        expect(Checksum.new(checksum[:digest])).to eq(digest)
-        expect(checksum[:tag]).to eq(tag)
+        tag_spec = bottle_spec.tag_specification_for(Utils::Bottles::Tag.from_symbol(checksum[:tag]))
+        expect(Checksum.new(checksum[:digest])).to eq(tag_spec.checksum)
+        expect(checksum[:tag]).to eq(tag_spec.tag.to_sym)
         checksum[:cellar] ||= Homebrew::DEFAULT_CELLAR
-        expect(checksum[:cellar]).to eq(cellar)
+        expect(checksum[:cellar]).to eq(tag_spec.cellar)
       end
     end
   end

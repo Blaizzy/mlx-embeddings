@@ -350,9 +350,9 @@ module Homebrew
       tab_json = Utils::Bottles.file_from_bottle(bottle_path, tab_path)
       tab = Tab.from_file_content(tab_json, tab_path)
 
-      _, _, bottle_cellar = Formula[f.name].bottle_specification.checksum_for(bottle_tag, no_older_versions: true)
-      relocatable = [:any, :any_skip_relocation].include?(bottle_cellar)
-      skip_relocation = bottle_cellar == :any_skip_relocation
+      tag_spec = Formula[f.name].bottle_specification.tag_specification_for(bottle_tag, no_older_versions: true)
+      relocatable = [:any, :any_skip_relocation].include?(tag_spec.cellar)
+      skip_relocation = tag_spec.cellar == :any_skip_relocation
 
       prefix = bottle_tag.default_prefix
       cellar = bottle_tag.default_cellar
@@ -506,7 +506,7 @@ module Homebrew
 
     old_spec = f.bottle_specification
     if args.keep_old? && !old_spec.checksums.empty?
-      mismatches = [:root_url, :prefix, :rebuild].reject do |key|
+      mismatches = [:root_url, :rebuild].reject do |key|
         old_spec.send(key) == bottle.send(key)
       end
       unless mismatches.empty?
@@ -551,7 +551,7 @@ module Homebrew
         },
         "bottle"  => {
           "root_url" => bottle.root_url,
-          "prefix"   => bottle.prefix,
+          "prefix"   => prefix.to_s, # TODO: 3.3.0: deprecate this
           "cellar"   => bottle_cellar.to_s,
           "rebuild"  => bottle.rebuild,
           "date"     => Pathname(filename.to_s).mtime.strftime("%F"),
@@ -640,16 +640,16 @@ module Homebrew
                              bottle_hash["formula"]["pkg_version"] == formula.pkg_version.to_s &&
                              bottle.rebuild  != old_bottle_spec.rebuild &&
                              bottle.root_url == old_bottle_spec.root_url
-        bottle.collector.keys.all? do |tag|
-          bottle_collector_tag = bottle.collector[tag]
-          next false if bottle_collector_tag.blank?
+        bottle.collector.tags.all? do |tag|
+          tag_spec = bottle.collector.specification_for(tag)
+          next false if tag_spec.blank?
 
-          old_bottle_spec_collector_tag = old_bottle_spec.collector[tag]
-          next false if old_bottle_spec_collector_tag.blank?
+          old_tag_spec = old_bottle_spec.collector.specification_for(tag)
+          next false if old_tag_spec.blank?
 
-          next false if bottle_collector_tag[:cellar] != old_bottle_spec_collector_tag[:cellar]
+          next false if tag_spec.cellar != old_tag_spec.cellar
 
-          bottle_collector_tag[:checksum].hexdigest == old_bottle_spec_collector_tag[:checksum].hexdigest
+          tag_spec.checksum.hexdigest == old_tag_spec.checksum.hexdigest
         end
       end
 
@@ -744,7 +744,6 @@ module Homebrew
 
     new_values = {
       root_url: new_bottle_hash["root_url"],
-      prefix:   new_bottle_hash["prefix"],
       rebuild:  new_bottle_hash["rebuild"],
     }
 
@@ -762,17 +761,17 @@ module Homebrew
 
     return [mismatches, checksums] if old_keys.exclude? :sha256
 
-    old_bottle_spec.collector.each_key do |tag|
-      old_checksum_hash = old_bottle_spec.collector[tag]
-      old_hexdigest = old_checksum_hash[:checksum].hexdigest
-      old_cellar = old_checksum_hash[:cellar]
+    old_bottle_spec.collector.each_tag do |tag|
+      old_tag_spec = old_bottle_spec.collector.specification_for(tag)
+      old_hexdigest = old_tag_spec.checksum.hexdigest
+      old_cellar = old_tag_spec.cellar
       new_value = new_bottle_hash.dig("tags", tag.to_s)
       if new_value.present? && new_value["sha256"] != old_hexdigest
         mismatches << "sha256 #{tag}: old: #{old_hexdigest.inspect}, new: #{new_value["sha256"].inspect}"
       elsif new_value.present? && new_value["cellar"] != old_cellar.to_s
         mismatches << "cellar #{tag}: old: #{old_cellar.to_s.inspect}, new: #{new_value["cellar"].inspect}"
       else
-        checksums << { cellar: old_cellar, tag => old_hexdigest }
+        checksums << { cellar: old_cellar, tag.to_sym => old_hexdigest }
       end
     end
 
