@@ -81,6 +81,10 @@ class DependencyCollector
     Dependency.new("xz", tags) unless which("xz")
   end
 
+  def zstd_dep_if_needed(tags)
+    Dependency.new("zstd", tags) unless which("zstd")
+  end
+
   def unzip_dep_if_needed(tags)
     Dependency.new("unzip", tags) unless which("unzip")
   end
@@ -171,6 +175,7 @@ class DependencyCollector
   def parse_url_spec(url, tags)
     case File.extname(url)
     when ".xz"          then xz_dep_if_needed(tags)
+    when ".zst"         then zstd_dep_if_needed(tags)
     when ".zip"         then unzip_dep_if_needed(tags)
     when ".bz2"         then bzip2_dep_if_needed(tags)
     when ".lha", ".lzh" then Dependency.new("lha", tags)

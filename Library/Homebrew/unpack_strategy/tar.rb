@@ -20,14 +20,15 @@ module UnpackStrategy
         ".tbz", ".tbz2", ".tar.bz2",
         ".tgz", ".tar.gz",
         ".tlzma", ".tar.lzma",
-        ".txz", ".tar.xz"
+        ".txz", ".tar.xz",
+        ".tar.zst"
       ]
     end
 
     def self.can_extract?(path)
       return true if path.magic_number.match?(/\A.{257}ustar/n)
 
-      return false unless [Bzip2, Gzip, Lzip, Xz].any? { |s| s.can_extract?(path) }
+      return false unless [Bzip2, Gzip, Lzip, Xz, Zstd].any? { |s| s.can_extract?(path) }
 
       # Check if `tar` can list the contents, then it can also extract it.
       stdout, _, status = system_command("tar", args: ["--list", "--file", path], print_stderr: false)
@@ -39,12 +40,12 @@ module UnpackStrategy
     sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       Dir.mktmpdir do |tmpdir|
-        tar_path = path
-
-        if DependencyCollector.tar_needs_xz_dependency? && Xz.can_extract?(path)
-          tmpdir = Pathname(tmpdir)
-          Xz.new(path).extract(to: tmpdir, verbose: verbose)
-          tar_path = tmpdir.children.first
+        tar_path = if DependencyCollector.tar_needs_xz_dependency? && Xz.can_extract?(path)
+          subextract(Xz, Pathname(tmpdir), verbose)
+        elsif Zstd.can_extract?(path)
+          subextract(Zstd, Pathname(tmpdir), verbose)
+        else
+          path
         end
 
         system_command! "tar",
@@ -53,6 +54,14 @@ module UnpackStrategy
                                   "--directory", unpack_dir],
                         verbose: verbose
       end
+    end
+
+    sig {
+      params(extractor: T.any(T.class_of(Xz), T.class_of(Zstd)), dir: Pathname, verbose: T::Boolean).returns(Pathname)
+    }
+    def subextract(extractor, dir, verbose)
+      extractor.new(path).extract(to: dir, verbose: verbose)
+      T.must(dir.children.first)
     end
   end
 end

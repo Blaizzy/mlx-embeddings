@@ -44,12 +44,13 @@ module UnpackStrategy
 
   def self.strategies
     @strategies ||= [
-      Tar, # Needs to be before Bzip2/Gzip/Xz/Lzma.
+      Tar, # Needs to be before Bzip2/Gzip/Xz/Lzma/Zstd.
       Pax,
       Gzip,
       Dmg, # Needs to be before Bzip2/Xz/Lzma.
       Lzma,
       Xz,
+      Zstd,
       Lzip,
       Air, # Needs to be before `Zip`.
       Jar, # Needs to be before `Zip`.
@@ -203,3 +204,4 @@ require "unpack_strategy/uncompressed"
 require "unpack_strategy/xar"
 require "unpack_strategy/xz"
 require "unpack_strategy/zip"
+require "unpack_strategy/zstd"
