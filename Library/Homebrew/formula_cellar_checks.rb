@@ -341,6 +341,8 @@ module FormulaCellarChecks
     mismatches_expected = formula.tap.blank? || tap_audit_exception(:mismatched_binary_allowlist, formula.name)
     return if compatible_universal_binaries.empty? && mismatches_expected
 
+    return if universal_binaries_expected && mismatches_expected
+
     s = ""
 
     if mismatches.present? && !mismatches_expected
