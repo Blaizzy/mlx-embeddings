@@ -67,7 +67,7 @@ GEM
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
     parallel (1.21.0)
-    parallel_tests (3.7.1)
+    parallel_tests (3.7.3)
       parallel
     parlour (6.0.1)
       commander (~> 4.5)
