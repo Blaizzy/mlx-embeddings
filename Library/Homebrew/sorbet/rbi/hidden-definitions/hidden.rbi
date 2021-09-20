@@ -9713,6 +9713,11 @@ class UnpackStrategy::Zip
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class UnpackStrategy::Zstd
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module UnpackStrategy
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
@@ -9749,6 +9754,11 @@ class Utils::Bottles::Collector
 end
 
 class Utils::Bottles::Tag
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Utils::Bottles::TagSpecification
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
