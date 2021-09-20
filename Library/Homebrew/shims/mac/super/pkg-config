@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # HOMEBREW_OPT and HOMEBREW_SDKROOT are set by extend/ENV/super.rb
 # shellcheck disable=SC2154
