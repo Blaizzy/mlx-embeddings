@@ -150,8 +150,10 @@ class FormulaInstaller
       return false
     end
 
-    bottle = formula.bottle
-    if bottle && !bottle.compatible_locations?
+    bottle = formula.bottle_for_tag(Utils::Bottles.tag.to_sym)
+    return false if bottle.nil?
+
+    unless bottle.compatible_locations?
       if output_warning
         prefix = Pathname(bottle.cellar).parent
         opoo <<~EOS

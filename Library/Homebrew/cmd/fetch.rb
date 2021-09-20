@@ -93,7 +93,7 @@ module Homebrew
           begin
             f.clear_cache if args.force?
             f.fetch_bottle_tab
-            fetch_formula(f.bottle_for_tag(args.bottle_tag), args: args)
+            fetch_formula(f.bottle_for_tag(args.bottle_tag&.to_sym), args: args)
           rescue Interrupt
             raise
           rescue => e
