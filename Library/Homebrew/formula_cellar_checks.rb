@@ -287,7 +287,7 @@ module FormulaCellarChecks
   def check_cpuid_instruction(formula)
     return unless formula.prefix.directory?
     # TODO: add methods to `utils/ast` to allow checking for method use
-    return unless formula.prefix_formula_file.read.include? "ENV.runtime_cpu_detection"
+    return unless (formula.prefix/".brew/#{formula.name}.rb").read.include? "ENV.runtime_cpu_detection"
     # Checking for `cpuid` only makes sense on Intel:
     # https://en.wikipedia.org/wiki/CPUID
     return unless Hardware::CPU.intel?

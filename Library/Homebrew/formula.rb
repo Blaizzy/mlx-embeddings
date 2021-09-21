@@ -79,10 +79,6 @@ class Formula
 
   # The path to the alias that was used to identify this {Formula}.
   # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Aliases/another-name-for-this-formula`
-  attr_reader :bottle_path
-
-  # The path to the alias that was used to identify this {Formula}.
-  # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Aliases/another-name-for-this-formula`
   attr_reader :alias_path
 
   # The name of the alias that was used to identify this {Formula}.
@@ -312,18 +308,12 @@ class Formula
     full_name_with_optional_tap(installed_alias_name)
   end
 
-  def prefix_formula_file
-    return unless prefix.directory?
-
-    prefix/".brew/#{name}.rb"
-  end
-
   # The path that was specified to find this formula.
   def specified_path
     default_specified_path = alias_path || path
 
-    return default_specified_path if default_specified_path.present? && default_specified_path.exist?
-    return local_bottle_path if local_bottle_path.present? && local_bottle_path.exist?
+    return default_specified_path if default_specified_path.presence&.exist?
+    return local_bottle_path if local_bottle_path.presence&.exist?
 
     default_specified_path
   end
