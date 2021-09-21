@@ -41,7 +41,7 @@ class Tab < OpenStruct
       "source"                  => {
         "path"         => formula.specified_path.to_s,
         "tap"          => formula.tap&.name,
-        "tap_git_head" => formula.tap&.git_head,
+        "tap_git_head" => nil, # Filled in later if possible
         "spec"         => formula.active_spec_sym.to_s,
         "versions"     => {
           "stable"         => formula.stable&.version.to_s,
@@ -51,6 +51,9 @@ class Tab < OpenStruct
       },
       "built_on"                => DevelopmentTools.build_system_info,
     }
+
+    # We can only get `tap_git_head` if the tap is installed locally
+    attributes["source"]["tap_git_head"] = formula.tap.git_head if formula.tap&.installed?
 
     new(attributes)
   end

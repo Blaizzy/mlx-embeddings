@@ -160,6 +160,7 @@ module Homebrew
 
     if ENV["HOMEBREW_INSTALL_FROM_API"].present?
       formulae_to_install.map! do |formula|
+        next formula if formula.head?
         next formula if formula.tap.present? && !formula.core_formula?
         next formula unless Homebrew::API::Bottle.available?(formula.name)
 
