@@ -234,15 +234,17 @@ module Homebrew
 
     Cask::Cmd::Upgrade.upgrade_casks(
       *casks,
-      force:          args.force?,
-      greedy:         args.greedy?,
-      dry_run:        args.dry_run?,
-      binaries:       args.binaries?,
-      quarantine:     args.quarantine?,
-      require_sha:    args.require_sha?,
-      skip_cask_deps: args.skip_cask_deps?,
-      verbose:        args.verbose?,
-      args:           args,
+      force:               args.force?,
+      greedy:              args.greedy?,
+      greedy_latest:       args.greedy_latest?,
+      greedy_auto_updates: args.greedy_auto_updates?,
+      dry_run:             args.dry_run?,
+      binaries:            args.binaries?,
+      quarantine:          args.quarantine?,
+      require_sha:         args.require_sha?,
+      skip_cask_deps:      args.skip_cask_deps?,
+      verbose:             args.verbose?,
+      args:                args,
     )
   end
 end
