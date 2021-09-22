@@ -175,6 +175,7 @@ module Language
       # case where it's not clear whether python or python@x.y should be the
       # default guess.
       def virtualenv_install_with_resources(using: nil, system_site_packages: true)
+        python = using
         if python.nil?
           wanted = python_names.select { |py| needs_python?(py) }
           raise FormulaUnknownPythonError, self if wanted.empty?
