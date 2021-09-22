@@ -6,7 +6,11 @@ require "active_support/core_ext/array/conversions"
 require "rubocop-performance"
 require "rubocop-rails"
 require "rubocop-rspec"
-require "rubocop-sorbet"
+
+require_relative "../warnings"
+Warnings.ignore :parser_syntax do
+  require "rubocop-sorbet"
+end
 
 require_relative "io_read"
 require_relative "shell_commands"
