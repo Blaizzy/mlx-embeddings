@@ -150,6 +150,8 @@ class FormulaInstaller
       return false
     end
 
+    return true if formula.local_bottle_path.present?
+
     bottle = formula.bottle_for_tag(Utils::Bottles.tag.to_sym)
     return false if bottle.nil?
 
