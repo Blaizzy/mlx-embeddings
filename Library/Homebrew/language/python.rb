@@ -128,10 +128,10 @@ module Language
       #   or "python3.x")
       # @param formula [Formula] the active {Formula}
       # @return [Virtualenv] a {Virtualenv} instance
-      def virtualenv_create(venv_root, python = "python", formula = self)
+      def virtualenv_create(venv_root, python = "python", formula = self, system_site_packages: true)
         ENV.refurbish_args
         venv = Virtualenv.new formula, venv_root, python
-        venv.create
+        venv.create(system_site_packages: system_site_packages)
 
         # Find any Python bindings provided by recursive dependencies
         formula_deps = formula.recursive_dependencies
@@ -174,8 +174,7 @@ module Language
       # formula preference for python or python@x.y, or to resolve an ambiguous
       # case where it's not clear whether python or python@x.y should be the
       # default guess.
-      def virtualenv_install_with_resources(options = {})
-        python = options[:using]
+      def virtualenv_install_with_resources(using: nil, system_site_packages: true)
         if python.nil?
           wanted = python_names.select { |py| needs_python?(py) }
           raise FormulaUnknownPythonError, self if wanted.empty?
@@ -184,7 +183,7 @@ module Language
           python = wanted.first
           python = "python3" if python == "python"
         end
-        venv = virtualenv_create(libexec, python.delete("@"))
+        venv = virtualenv_create(libexec, python.delete("@"), system_site_packages: system_site_packages)
         venv.pip_install resources
         venv.pip_install_and_link buildpath
         venv
@@ -215,10 +214,12 @@ module Language
         # Obtains a copy of the virtualenv library and creates a new virtualenv on disk.
         #
         # @return [void]
-        def create
+        def create(system_site_packages: true)
           return if (@venv_root/"bin/python").exist?
 
-          @formula.system @python, "-m", "venv", "--system-site-packages", @venv_root
+          args = ["-m", "venv"]
+          args << "--system-site-packages" if system_site_packages
+          @formula.system @python, *args, @venv_root
 
           # Robustify symlinks to survive python patch upgrades
           @venv_root.find do |f|
