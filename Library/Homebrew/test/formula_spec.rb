@@ -28,7 +28,7 @@ describe Formula do
     let(:path) { Formulary.core_path(name) }
     let(:spec) { :stable }
     let(:alias_name) { "baz@1" }
-    let(:alias_path) { CoreTap.instance.alias_dir/alias_name }
+    let(:alias_path) { (CoreTap.instance.alias_dir/alias_name).to_s }
     let(:f) { klass.new(name, path, spec) }
     let(:f_alias) { klass.new(name, path, spec, alias_path: alias_path) }
 
@@ -41,6 +41,7 @@ describe Formula do
       expect(f.alias_path).to be nil
       expect(f.alias_name).to be nil
       expect(f.full_alias_name).to be nil
+      expect(f.specified_path).to eq(path)
       expect { klass.new }.to raise_error(ArgumentError)
     end
 
@@ -51,6 +52,7 @@ describe Formula do
       expect(f_alias.alias_path).to eq(alias_path)
       expect(f_alias.alias_name).to eq(alias_name)
       expect(f_alias.specified_name).to eq(alias_name)
+      expect(f_alias.specified_path).to eq(Pathname(alias_path))
       expect(f_alias.full_alias_name).to eq(alias_name)
       expect(f_alias.full_specified_name).to eq(alias_name)
       expect { klass.new }.to raise_error(ArgumentError)
@@ -71,6 +73,7 @@ describe Formula do
         expect(f.alias_path).to be nil
         expect(f.alias_name).to be nil
         expect(f.full_alias_name).to be nil
+        expect(f.specified_path).to eq(path)
         expect { klass.new }.to raise_error(ArgumentError)
       end
 
@@ -81,6 +84,7 @@ describe Formula do
         expect(f_alias.alias_path).to eq(alias_path)
         expect(f_alias.alias_name).to eq(alias_name)
         expect(f_alias.specified_name).to eq(alias_name)
+        expect(f_alias.specified_path).to eq(Pathname(alias_path))
         expect(f_alias.full_alias_name).to eq(full_alias_name)
         expect(f_alias.full_specified_name).to eq(full_alias_name)
         expect { klass.new }.to raise_error(ArgumentError)

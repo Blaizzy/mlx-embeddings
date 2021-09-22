@@ -310,7 +310,8 @@ class Formula
 
   # The path that was specified to find this formula.
   def specified_path
-    default_specified_path = alias_path || path
+    default_specified_path = Pathname(alias_path) if alias_path.present?
+    default_specified_path ||= path
 
     return default_specified_path if default_specified_path.presence&.exist?
     return local_bottle_path if local_bottle_path.presence&.exist?
