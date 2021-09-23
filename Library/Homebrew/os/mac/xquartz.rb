@@ -11,7 +11,8 @@ module OS
 
       module_function
 
-      DEFAULT_BUNDLE_PATH = Pathname("Applications/Utilities/XQuartz.app").freeze
+      DEFAULT_BUNDLE_PATH = Pathname("/Applications/Utilities/XQuartz.app").freeze
+      NEW_BUNDLE_PKG_ID = "org.xquartz.X11"
       FORGE_BUNDLE_ID = "org.macosforge.xquartz.X11"
       FORGE_PKG_ID = "org.macosforge.xquartz.pkg"
 
@@ -73,7 +74,7 @@ module OS
 
         # Ask Spotlight where XQuartz is. If the user didn't install XQuartz
         # in the conventional place, this is our only option.
-        MacOS.app_with_bundle_id(FORGE_BUNDLE_ID)
+        MacOS.app_with_bundle_id(NEW_BUNDLE_PKG_ID, FORGE_BUNDLE_ID)
       end
 
       def version_from_mdls(path)
@@ -86,8 +87,12 @@ module OS
       # Upstream XQuartz *does* have a pkg-info entry, so if we can't get it
       # from mdls, we can try pkgutil. This is very slow.
       def version_from_pkgutil
-        str = MacOS.pkgutil_info(FORGE_PKG_ID)[/version: (\d\.\d\.\d+)$/, 1]
-        PKGINFO_VERSION_MAP.fetch(str, str)
+        [NEW_BUNDLE_PKG_ID, FORGE_PKG_ID].each do |id|
+          str = MacOS.pkgutil_info(id)[/version: (\d\.\d\.\d+)$/, 1]
+          return PKGINFO_VERSION_MAP.fetch(str, str) if str
+        end
+
+        nil
       end
 
       def prefix
