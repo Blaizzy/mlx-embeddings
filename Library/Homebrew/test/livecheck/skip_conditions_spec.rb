@@ -287,7 +287,7 @@ describe Homebrew::Livecheck::SkipConditions do
     end
 
     context "when a formula is HEAD-only and not installed" do
-      it "skips " do
+      it "skips" do
         expect(skip_conditions.skip_information(formulae[:head_only]))
           .to eq(status_hashes[:formula][:head_only])
       end
@@ -389,7 +389,7 @@ describe Homebrew::Livecheck::SkipConditions do
     end
 
     context "when a formula is HEAD-only and not installed" do
-      it "skips " do
+      it "skips" do
         expect(skip_conditions.referenced_skip_information(formulae[:head_only], original_name))
           .to eq(status_hashes[:formula][:head_only].merge({ formula: original_name }))
       end
