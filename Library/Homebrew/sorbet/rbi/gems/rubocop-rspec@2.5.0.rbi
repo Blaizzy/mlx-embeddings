@@ -453,6 +453,23 @@ RuboCop::Cop::RSpec::ExampleWording::MSG_IT = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::ExampleWording::MSG_SHOULD = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::ExampleWording::SHOULD_PREFIX = T.let(T.unsafe(nil), Regexp)
 
+class RuboCop::Cop::RSpec::ExcessiveDocstringSpacing < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def example_description(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def add_whitespace_offense(node, text); end
+  def docstring(node); end
+  def excessive_whitespace?(text); end
+  def strip_excessive_whitespace(text); end
+  def text(node); end
+end
+
+RuboCop::Cop::RSpec::ExcessiveDocstringSpacing::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::RSpec::ExpectActual < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -1422,6 +1439,18 @@ class RuboCop::Cop::RSpec::StubbedMock < ::RuboCop::Cop::RSpec::Base
 end
 
 RuboCop::Cop::RSpec::StubbedMock::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::RSpec::SubjectDeclaration < ::RuboCop::Cop::RSpec::Base
+  def offensive_subject_declaration?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def message_for(offense); end
+end
+
+RuboCop::Cop::RSpec::SubjectDeclaration::MSG_LET = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::SubjectDeclaration::MSG_REDUNDANT = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::SubjectStub < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::RSpec::TopLevelGroup
