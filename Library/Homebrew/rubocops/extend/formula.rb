@@ -1,15 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-# Silence compatibility warning.
-begin
-  old_verbosity = $VERBOSE
-  $VERBOSE = nil
-  require "parser/current"
-ensure
-  $VERBOSE = old_verbosity
-end
-
 require "extend/string"
 require "rubocops/shared/helper_functions"
 

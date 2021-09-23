@@ -3,6 +3,11 @@
 
 require "rubocop"
 
+require_relative "../../warnings"
+Warnings.ignore :parser_syntax do
+  require "parser/current"
+end
+
 module RuboCop
   module Cop
     # Helper functions for cops.
