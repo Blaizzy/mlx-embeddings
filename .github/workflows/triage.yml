@@ -33,7 +33,7 @@ jobs:
         if: >
           (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
             github.event.action != 'closed' && github.event.pull_request.state != 'closed'
-        uses: actions/github-script@v4.1
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           script: |
