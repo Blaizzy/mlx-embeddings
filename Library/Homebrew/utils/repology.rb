@@ -15,33 +15,29 @@ module Repology
   MAX_PAGINATION = 15
   private_constant :MAX_PAGINATION
 
-  def query_api(_last_package_in_response = "", repository:)
-    {}
-    # TODO: uncomment (and remove lines above) when we have a fix for Repology
-    # `curl` issues
-    # last_package_in_response += "/" if last_package_in_response.present?
-    # url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
+  def query_api(last_package_in_response = "", repository:)
+    last_package_in_response += "/" if last_package_in_response.present?
+    url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
 
-    # output, _errors, _status = curl_output(url.to_s)
-    # JSON.parse(output)
+    output, _errors, _status = curl_output(url.to_s, use_homebrew_curl: OS.mac?)
+    JSON.parse(output)
   end
 
   def single_package_query(name, repository:)
-    # TODO: uncomment when we have a fix for Repology `curl` issues
-    # url = "https://repology.org/tools/project-by?repo=#{repository}&" \
-    #       "name_type=srcname&target_page=api_v1_project&name=#{name}"
+    url = "https://repology.org/tools/project-by?repo=#{repository}&" \
+          "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
-    # output, _errors, _status = curl_output("--location", url.to_s)
+    output, _errors, _status = curl_output("--location", url.to_s, use_homebrew_curl: OS.mac?)
 
-    # begin
-    #   data = JSON.parse(output)
-    #   { name => data }
-    # rescue
-    #   nil
-    # end
+    begin
+      data = JSON.parse(output)
+      { name => data }
+    rescue
+      nil
+    end
   end
 
-  def parse_api_response(limit = nil, repository:)
+  def parse_api_response(limit = nil, last_package = "", repository:)
     package_term = case repository
     when HOMEBREW_CORE
       "formula"
@@ -55,14 +51,13 @@ module Repology
 
     page_no = 1
     outdated_packages = {}
-    last_package = ""
 
     while page_no <= MAX_PAGINATION
       odebug "Paginating Repology API page: #{page_no}"
 
       response = query_api(last_package, repository: repository)
       outdated_packages.merge!(response)
-      last_package = response.keys.last
+      last_package = response.keys.max
 
       page_no += 1
       break if (limit && outdated_packages.size >= limit) || response.size <= 1
@@ -71,7 +66,7 @@ module Repology
     puts "#{outdated_packages.size} outdated #{package_term.pluralize(outdated_packages.size)} found"
     puts
 
-    outdated_packages
+    outdated_packages.sort.to_h
   end
 
   def latest_version(repositories)

@@ -357,6 +357,12 @@ module Utils
       file.unlink
     end
 
+    def homebrew_curl_available?
+      Formulary.factory("curl").present?
+    rescue FormulaUnavailableError
+      false
+    end
+
     def http_status_ok?(status)
       (100..299).cover?(status.to_i)
     end

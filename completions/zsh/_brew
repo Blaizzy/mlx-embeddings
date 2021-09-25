@@ -479,6 +479,7 @@ _brew_bump() {
     '--limit[Limit number of package results returned]' \
     '--no-pull-requests[Do not retrieve pull requests from GitHub]' \
     '--quiet[Make some output more quiet]' \
+    '--start-with[Letter or word that the list of package results should alphabetically follow]' \
     '--verbose[Make some output more verbose]' \
     - formula \
     '(--cask)--formula[Check only formulae]' \

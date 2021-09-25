@@ -193,6 +193,9 @@ module Homebrew
       def limit; end
 
       sig { returns(T.nilable(String)) }
+      def start_with; end
+
+      sig { returns(T.nilable(String)) }
       def message; end
 
       sig { returns(T.nilable(String)) }
