@@ -95,8 +95,8 @@ module Cask
 
         outdated_casks = if casks.empty?
           Caskroom.casks(config: Config.from_args(args)).select do |cask|
-            cask.outdated?(greedy: greedy, greedy_latest: args.greedy_latest?,
-                           greedy_auto_updates: args.greedy_auto_updates?)
+            cask.outdated?(greedy: greedy, greedy_latest: greedy_latest,
+                           greedy_auto_updates: greedy_auto_updates)
           end
         else
           casks.select do |cask|
@@ -120,14 +120,14 @@ module Cask
         return false if outdated_casks.empty?
 
         if casks.empty? && !greedy
-          if !args.greedy_auto_updates? && !args.greedy_latest?
-            ohai "Casks with 'auto_updates true' or 'version :latest'
-            will not be upgraded; pass `--greedy` to upgrade them."
+          if !greedy_auto_updates && !greedy_latest
+            ohai "Casks with 'auto_updates true' or 'version :latest' " \
+                 "will not be upgraded; pass `--greedy` to upgrade them."
           end
-          if args.greedy_auto_updates? && !args.greedy_latest?
+          if greedy_auto_updates && !greedy_latest
             ohai "Casks with 'version :latest' will not be upgraded; pass `--greedy-latest` to upgrade them."
           end
-          if !args.greedy_auto_updates? && args.greedy_latest?
+          if !greedy_auto_updates && greedy_latest
             ohai "Casks with 'auto_updates true' will not be upgraded; pass `--greedy-auto-updates` to upgrade them."
           end
         end
