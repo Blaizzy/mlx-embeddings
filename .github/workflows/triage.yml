@@ -44,7 +44,7 @@ jobs:
                 return
               }
 
-              await github.pulls.createReview({
+              await github.rest.pulls.createReview({
                 ...context.repo,
                 pull_number: pullRequestNumber,
                 event: 'APPROVE',
@@ -52,7 +52,7 @@ jobs:
             }
 
             async function findComment(pullRequestNumber, id) {
-              const { data: comments } = await github.issues.listComments({
+              const { data: comments } = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pullRequestNumber,
@@ -67,13 +67,13 @@ jobs:
 
               const body = `<!-- #${id} -->\n\n${message}`
               if (beginComment) {
-                await github.issues.updateComment({
+                await github.rest.issues.updateComment({
                   ...context.repo,
                   comment_id: beginComment.id,
                   body,
                 })
               } else {
-                await github.issues.createComment({
+                await github.rest.issues.createComment({
                   ...context.repo,
                   issue_number: pullRequestNumber,
                   body,
@@ -82,9 +82,9 @@ jobs:
             }
 
             async function approvalsByAuthenticatedUser(pullRequestNumber) {
-              const { data: user } = await github.users.getAuthenticated()
+              const { data: user } = await github.rest.users.getAuthenticated()
 
-              const { data: reviews } = await github.pulls.listReviews({
+              const { data: reviews } = await github.rest.pulls.listReviews({
                 ...context.repo,
                 pull_number: pullRequestNumber,
               })
@@ -96,7 +96,7 @@ jobs:
             async function dismissApprovals(pullRequestNumber, message) {
               const reviews = await approvalsByAuthenticatedUser(pullRequestNumber)
               for (const review of reviews) {
-                await github.pulls.dismissReview({
+                await github.rest.pulls.dismissReview({
                   ...context.repo,
                   pull_number: pullRequestNumber,
                   review_id: review.id,
@@ -130,13 +130,13 @@ jobs:
             }
 
             async function reviewPullRequest(pullRequestNumber) {
-              const { data: pullRequest } = await github.pulls.get({
+              const { data: pullRequest } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: pullRequestNumber,
               })
 
-              const { data: user } = await github.users.getAuthenticated()
+              const { data: user } = await github.rest.users.getAuthenticated()
               if (pullRequest.user.login == user.login) {
                 core.warning('Pull request author is a bot.')
                 return
@@ -174,7 +174,7 @@ jobs:
                 }
 
                 if (hasReviewLabel) {
-                  await github.issues.removeLabel({
+                  await github.rest.issues.removeLabel({
                     ...context.repo,
                     issue_number: pullRequestNumber,
                     name: reviewLabel,
@@ -193,13 +193,13 @@ jobs:
 
                 const endComment = await findComment(pullRequestNumber, 'review-period-end')
                 if (endComment) {
-                  await github.issues.deleteComment({
+                  await github.rest.issues.deleteComment({
                     ...context.repo,
                     comment_id: endComment.id,
                   })
                 }
 
-                await github.issues.addLabels({
+                await github.rest.issues.addLabels({
                   ...context.repo,
                   issue_number: pullRequestNumber,
                   labels: [reviewLabel],
