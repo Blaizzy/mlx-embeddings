@@ -59,7 +59,7 @@ module Utils
           receipt_file = file_from_bottle(bottle_file, receipt_file_path)
           tap = Tab.from_file_content(receipt_file, "#{bottle_file}/#{receipt_file_path}").tap
           "#{tap}/#{name}" if tap.present? && !tap.core_tap?
-        elsif (bottle_json_path = Pathname(bottle_file.sub(/\.tar\.gz$/, ".json"))) &&
+        elsif (bottle_json_path = Pathname(bottle_file.sub(/\.(\d+\.)?tar\.gz$/, ".json"))) &&
               bottle_json_path.exist? &&
               (bottle_json_path_contents = bottle_json_path.read.presence) &&
               (bottle_json = JSON.parse(bottle_json_path_contents).presence) &&
@@ -98,7 +98,7 @@ module Utils
       def load_tab(formula)
         keg = Keg.new(formula.prefix)
         tabfile = keg/Tab::FILENAME
-        bottle_json_path = formula.local_bottle_path&.sub(/\.tar\.gz$/, ".json")
+        bottle_json_path = formula.local_bottle_path&.sub(/\.(\d+\.)?tar\.gz$/, ".json")
 
         if (tab_attributes = formula.bottle_tab_attributes.presence)
           Tab.from_file_content(tab_attributes.to_json, tabfile)
