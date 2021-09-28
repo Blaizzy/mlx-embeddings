@@ -347,7 +347,7 @@ export HOMEBREW_COMMAND_DEPTH="$((HOMEBREW_COMMAND_DEPTH + 1))"
 # This is set by the user environment.
 # shellcheck disable=SC2154
 if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
-   "${HOMEBREW_PREFIX}/opt/curl/bin/curl" --version >/dev/null
+   "${HOMEBREW_PREFIX}/opt/curl/bin/curl" --version &>/dev/null
 then
   HOMEBREW_CURL="${HOMEBREW_PREFIX}/opt/curl/bin/curl"
 elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_CURL_PATH}" ]]
@@ -360,7 +360,7 @@ fi
 # This is set by the user environment.
 # shellcheck disable=SC2154
 if [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" && -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]] &&
-   "${HOMEBREW_PREFIX}/opt/git/bin/git" --version >/dev/null
+   "${HOMEBREW_PREFIX}/opt/git/bin/git" --version &>/dev/null
 then
   HOMEBREW_GIT="${HOMEBREW_PREFIX}/opt/git/bin/git"
 elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_GIT_PATH}" ]]
@@ -518,7 +518,7 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
   HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION="2.13"
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 
-  HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin)"
+  HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin 2>/dev/null)"
   if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" == "https://github.com/Homebrew/homebrew-core" ]]
   then
     # If the remote origin has been set to Homebrew/homebrew-core by the install script,
