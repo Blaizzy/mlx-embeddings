@@ -19,15 +19,27 @@ fi
 # HOMEBREW_PREFIX is set by extend/ENV/super.rb
 # shellcheck disable=SC2154
 SHFMT="${HOMEBREW_PREFIX}/opt/shfmt/bin/shfmt"
-
 if [[ ! -x "${SHFMT}" ]]
 then
   odie "${0##*/}: Please install shfmt by running \`brew install shfmt\`."
 fi
 
-if [[ ! -x "$(command -v diff)" ]]
+# HOMEBREW_PREFIX is set by extend/ENV/super.rb
+# shellcheck disable=SC2154
+DIFF="${HOMEBREW_PREFIX}/opt/diffutils/bin/diff"
+DIFF_ARGS=("-d" "-C" "1")
+if [[ ! -x "${DIFF}" ]]
 then
-  odie "${0##*/}: Please install diff by running \`brew install diffutils\`."
+  # HOMEBREW_PATH is set by global.rb
+  # shellcheck disable=SC2154
+  if [[ -x "$(PATH="${HOMEBREW_PATH}" command -v diff)" ]]
+  then
+    DIFF="$(PATH="${HOMEBREW_PATH}" command -v diff)" # fall back to `diff` in PATH without coloring
+  else
+    odie "${0##*/}: Please install diff by running \`brew install diffutils\`."
+  fi
+else
+  DIFF_ARGS+=("--color") # enable color output for GNU diff
 fi
 
 SHFMT_ARGS=()
@@ -346,10 +358,10 @@ format() {
   wrap_then_do "${file}" "${tempfile}"
   align_multiline_switch_cases "${file}" "${tempfile}"
 
-  if ! diff -q "${file}" "${tempfile}" &>/dev/null
+  if ! "${DIFF}" -q "${file}" "${tempfile}" &>/dev/null
   then
     # Show differences
-    diff -d -C 1 --color=auto "${file}" "${tempfile}"
+    "${DIFF}" "${DIFF_ARGS[@]}" "${file}" "${tempfile}"
     if [[ -n "${INPLACE}" ]]
     then
       cp -af "${tempfile}" "${file}"
