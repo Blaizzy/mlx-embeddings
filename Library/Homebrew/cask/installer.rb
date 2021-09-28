@@ -341,7 +341,7 @@ module Cask
       missing_formulae_and_casks.each do |cask_or_formula|
         if cask_or_formula.is_a?(Cask)
           if skip_cask_deps?
-            opoo "`--skip-cask-deps` is set; skipping installation of #{@cask}."
+            opoo "`--skip-cask-deps` is set; skipping installation of #{cask_or_formula}."
             next
           end
 
