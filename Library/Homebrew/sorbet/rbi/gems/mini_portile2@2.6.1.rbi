@@ -32,6 +32,9 @@ class MiniPortile
   def patch_files; end
   def patch_files=(_arg0); end
   def path; end
+  def prepare_build_directory; end
+  def source_directory; end
+  def source_directory=(path); end
   def target; end
   def target=(_arg0); end
   def version; end
