@@ -78,17 +78,6 @@ You may need to install your own Ruby using your system package manager, a PPA, 
 
 Homebrew does not currently support 32-bit x86 platforms. It would be possible for Homebrew to work on 32-bit x86 platforms with some effort. An interested and dedicated person could maintain a fork of Homebrew to develop support for 32-bit x86.
 
-## Alternative Installation
-
-Extract or `git clone` Homebrew wherever you want. Use `/home/linuxbrew/.linuxbrew` if possible (to enable the use of binary packages).
-
-```sh
-git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
-mkdir ~/.linuxbrew/bin
-ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin
-eval "$(~/.linuxbrew/bin/brew shellenv)"
-```
-
 ## Homebrew on Linux Community
 
 - [@HomebrewOnLinux on Twitter](https://twitter.com/HomebrewOnLinux)

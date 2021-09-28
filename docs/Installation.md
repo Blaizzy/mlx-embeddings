@@ -53,6 +53,20 @@ here. *Pick another prefix at your peril!*
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 ```
 
+or
+
+```sh
+git clone https://github.com/Homebrew/brew homebrew
+```
+
+then
+
+```sh
+eval "$(homebrew/bin/brew shellenv)"
+brew update --force --quiet
+chmod -R go-w "$(brew --prefix)/share/zsh"
+```
+
 ### Multiple installations
 
 Create a Homebrew installation wherever you extract the tarball. Whichever `brew` command is called is where the packages will be installed. You can use this as you see fit, e.g. a system set of libs in the default prefix and tweaked formulae for development in `~/homebrew`.
