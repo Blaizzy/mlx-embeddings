@@ -50,6 +50,7 @@ module Homebrew
       if args.update?
         excluded_gems = [
           "did_you_mean", # RBI file is already provided by Sorbet
+          "webrobots", # RBI file is bugged
         ]
 
         ohai "Updating Tapioca RBI files..."
