@@ -178,6 +178,7 @@ module OS
       paths.uniq
     end
 
+    sig { params(ids: String).returns(T.nilable(Pathname)) }
     def app_with_bundle_id(*ids)
       path = mdfind(*ids)
              .reject { |p| p.include?("/Backups.backupdb/") }
@@ -185,6 +186,7 @@ module OS
       Pathname.new(path) if path.present?
     end
 
+    sig { params(ids: String).returns(T::Array[String]) }
     def mdfind(*ids)
       (@mdfind ||= {}).fetch(ids) do
         @mdfind[ids] = Utils.popen_read("/usr/bin/mdfind", mdfind_query(*ids)).split("\n")
@@ -197,6 +199,7 @@ module OS
       end
     end
 
+    sig { params(ids: String).returns(String) }
     def mdfind_query(*ids)
       ids.map! { |id| "kMDItemCFBundleIdentifier == #{id}" }.join(" || ")
     end

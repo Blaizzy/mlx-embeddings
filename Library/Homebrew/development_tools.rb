@@ -1,9 +1,14 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
+
+require "version"
 
 # @private
 class DevelopmentTools
   class << self
+    extend T::Sig
+
+    sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
       # Don't call tools (cc, make, strip, etc.) directly!
       # Give the name of the binary you look for as a string to this method
@@ -18,17 +23,27 @@ class DevelopmentTools
       end
     end
 
+    sig { returns(T::Boolean) }
     def installed?
-      locate("clang") || locate("gcc")
+      locate("clang").present? || locate("gcc").present?
     end
 
+    sig { returns(String) }
     def installation_instructions
       "Install Clang or run `brew install gcc`."
     end
-    alias custom_installation_instructions installation_instructions
 
+    sig { returns(String) }
+    def custom_installation_instructions
+      installation_instructions
+    end
+
+    # TODO: This method appears to be unused. Can it be deleted?
+    sig { returns(T.nilable(String)) }
     def default_cc
       cc = DevelopmentTools.locate "cc"
+      return if cc.nil?
+
       begin
         cc.realpath.basename.to_s
       rescue
@@ -36,10 +51,12 @@ class DevelopmentTools
       end
     end
 
+    sig { returns(Symbol) }
     def default_compiler
       :clang
     end
 
+    sig { returns(Version) }
     def clang_version
       @clang_version ||= if (path = locate("clang")) &&
                             (build_version = `#{path} --version`[/(?:clang|LLVM) version (\d+\.\d(?:\.\d)?)/, 1])
@@ -49,6 +66,7 @@ class DevelopmentTools
       end
     end
 
+    sig { returns(Version) }
     def clang_build_version
       @clang_build_version ||= if (path = locate("clang")) &&
                                   (build_version = `#{path} --version`[
@@ -59,6 +77,7 @@ class DevelopmentTools
       end
     end
 
+    sig { returns(Version) }
     def llvm_clang_build_version
       @llvm_clang_build_version ||= begin
         path = Formulary.factory("llvm").opt_prefix/"bin/clang"
@@ -71,6 +90,7 @@ class DevelopmentTools
       end
     end
 
+    sig { params(cc: String).returns(Version) }
     def non_apple_gcc_version(cc)
       (@non_apple_gcc_version ||= {}).fetch(cc) do
         path = HOMEBREW_PREFIX/"opt/#{CompilerSelector.preferred_gcc}/bin"/cc
@@ -85,19 +105,23 @@ class DevelopmentTools
       end
     end
 
+    sig { void }
     def clear_version_cache
       @clang_version = @clang_build_version = nil
       @non_apple_gcc_version = {}
     end
 
+    sig { returns(T::Boolean) }
     def curl_handles_most_https_certificates?
       true
     end
 
+    sig { returns(T::Boolean) }
     def subversion_handles_most_https_certificates?
       true
     end
 
+    sig { returns(T::Hash[String, T.untyped]) }
     def build_system_info
       {
         "os"         => ENV["HOMEBREW_SYSTEM"],

@@ -5,6 +5,7 @@ class DevelopmentTools
   class << self
     extend T::Sig
 
+    sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
       (@locate ||= {}).fetch(tool) do |key|
         @locate[key] = if (path = HOMEBREW_PREFIX/"bin/#{tool}").executable?
@@ -20,6 +21,7 @@ class DevelopmentTools
       :gcc
     end
 
+    sig { returns(T::Hash[String, T.untyped]) }
     def build_system_info
       generic_build_system_info.merge({
         "glibc_version"     => OS::Linux::Glibc.version,
