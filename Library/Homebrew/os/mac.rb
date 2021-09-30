@@ -75,6 +75,7 @@ module OS
       languages.first
     end
 
+    sig { returns(String) }
     def active_developer_dir
       @active_developer_dir ||= Utils.popen_read("/usr/bin/xcode-select", "-print-path").strip
     end

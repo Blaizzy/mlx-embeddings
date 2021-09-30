@@ -108,7 +108,7 @@ class DevelopmentTools
       true
     end
 
-    sig { returns(T::Hash[String, T.untyped]) }
+    sig { returns(T::Hash[String, T.nilable(String)]) }
     def build_system_info
       {
         "os"         => ENV["HOMEBREW_SYSTEM"],

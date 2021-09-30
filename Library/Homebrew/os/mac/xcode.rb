@@ -91,6 +91,9 @@ module OS
       # directory or nil if Xcode.app is not installed.
       sig { returns(T.nilable(Pathname)) }
       def prefix
+        return @prefix if defined?(@prefix)
+
+        @prefix = T.let(@prefix, T.nilable(Pathname))
         @prefix ||=
           begin
             dir = MacOS.active_developer_dir
