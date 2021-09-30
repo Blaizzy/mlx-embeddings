@@ -30,7 +30,7 @@ module UnpackStrategy
       FileUtils.cp path, unpack_dir/basename, preserve: true
       quiet_flags = verbose ? [] : ["-q"]
       system_command! "unzstd",
-                      args:    [*quiet_flags, "-T0", "--", unpack_dir/basename],
+                      args:    [*quiet_flags, "-T0", "--rm", "--", unpack_dir/basename],
                       env:     { "PATH" => PATH.new(Formula["zstd"].opt_bin, ENV["PATH"]) },
                       verbose: verbose
     end
