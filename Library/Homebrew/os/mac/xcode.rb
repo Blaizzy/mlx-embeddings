@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module OS
@@ -89,7 +89,11 @@ module OS
 
       # Returns a Pathname object corresponding to Xcode.app's Developer
       # directory or nil if Xcode.app is not installed.
+      sig { returns(T.nilable(Pathname)) }
       def prefix
+        return @prefix if defined?(@prefix)
+
+        @prefix = T.let(@prefix, T.nilable(Pathname))
         @prefix ||=
           begin
             dir = MacOS.active_developer_dir
@@ -109,6 +113,7 @@ module OS
         Pathname("#{prefix}/Toolchains/XcodeDefault.xctoolchain")
       end
 
+      sig { returns(T.nilable(Pathname)) }
       def bundle_path
         # Use the default location if it exists.
         return DEFAULT_BUNDLE_PATH if DEFAULT_BUNDLE_PATH.exist?
@@ -124,18 +129,22 @@ module OS
         !prefix.nil?
       end
 
+      sig { returns(XcodeSDKLocator) }
       def sdk_locator
         @sdk_locator ||= XcodeSDKLocator.new
       end
 
+      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
       def sdk(v = nil)
         sdk_locator.sdk_if_applicable(v)
       end
 
+      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
       def sdk_path(v = nil)
         sdk(v)&.path
       end
 
+      sig { returns(String) }
       def installation_instructions
         if OS::Mac.version.prerelease?
           <<~EOS
@@ -163,6 +172,7 @@ module OS
         end
       end
 
+      sig { returns(::Version) }
       def version
         # may return a version string
         # that is guessed based on the compiler, so do not
@@ -174,6 +184,7 @@ module OS
         end
       end
 
+      sig { returns(T.nilable(String)) }
       def detect_version
         # This is a separate function as you can't cache the value out of a block
         # if return is used in the middle, which we do many times in here.
@@ -231,6 +242,7 @@ module OS
         end
       end
 
+      sig { returns(T::Boolean) }
       def default_prefix?
         prefix.to_s == "/Applications/Xcode.app/Contents/Developer"
       end
@@ -255,26 +267,32 @@ module OS
         !version.null?
       end
 
+      sig { returns(T::Boolean) }
       def separate_header_package?
         version >= "10" && MacOS.version >= "10.14"
       end
 
+      sig { returns(T::Boolean) }
       def provides_sdk?
         version >= "8"
       end
 
+      sig { returns(CLTSDKLocator) }
       def sdk_locator
         @sdk_locator ||= CLTSDKLocator.new
       end
 
+      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
       def sdk(v = nil)
         sdk_locator.sdk_if_applicable(v)
       end
 
+      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
       def sdk_path(v = nil)
         sdk(v)&.path
       end
 
+      sig { returns(String) }
       def installation_instructions
         if MacOS.version == "10.14"
           # This is not available from `xcode-select`
@@ -344,6 +362,7 @@ module OS
         end
       end
 
+      sig { returns(T::Boolean) }
       def below_minimum_version?
         return false unless installed?
 
@@ -358,11 +377,13 @@ module OS
         ::Version.new(clang_version) < latest_clang_version
       end
 
+      sig { returns(T.nilable(String)) }
       def detect_clang_version
         version_output = Utils.popen_read("#{PKG_PATH}/usr/bin/clang", "--version")
         version_output[/clang-(\d+\.\d+\.\d+(\.\d+)?)/, 1]
       end
 
+      sig { returns(T.nilable(String)) }
       def detect_version_from_clang_version
         detect_clang_version&.sub(/^(\d+)0(\d)\./, "\\1.\\2.")
       end
@@ -370,6 +391,7 @@ module OS
       # Version string (a pretty long one) of the CLT package.
       # Note that the different ways of installing the CLTs lead to different
       # version numbers.
+      sig { returns(::Version) }
       def version
         if @version ||= detect_version
           ::Version.new @version
@@ -378,8 +400,9 @@ module OS
         end
       end
 
+      sig { returns(T.nilable(String)) }
       def detect_version
-        version = nil
+        version = T.let(nil, T.nilable(String))
         [EXECUTABLE_PKG_ID, MAVERICKS_NEW_PKG_ID].each do |id|
           next unless File.exist?("#{PKG_PATH}/usr/bin/clang")
 

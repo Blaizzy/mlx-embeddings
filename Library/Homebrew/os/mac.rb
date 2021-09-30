@@ -24,16 +24,19 @@ module OS
 
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
+    sig { returns(Version) }
     def version
       @version ||= full_version.strip_patch
     end
 
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
+    sig { returns(Version) }
     def full_version
       @full_version ||= Version.new((ENV["HOMEBREW_MACOS_VERSION"]).chomp)
     end
 
+    sig { params(version: Version).void }
     def full_version=(version)
       @full_version = Version.new(version.chomp)
       @version = nil
@@ -72,6 +75,7 @@ module OS
       languages.first
     end
 
+    sig { returns(String) }
     def active_developer_dir
       @active_developer_dir ||= Utils.popen_read("/usr/bin/xcode-select", "-print-path").strip
     end
@@ -178,6 +182,7 @@ module OS
       paths.uniq
     end
 
+    sig { params(ids: String).returns(T.nilable(Pathname)) }
     def app_with_bundle_id(*ids)
       path = mdfind(*ids)
              .reject { |p| p.include?("/Backups.backupdb/") }
@@ -185,6 +190,7 @@ module OS
       Pathname.new(path) if path.present?
     end
 
+    sig { params(ids: String).returns(T::Array[String]) }
     def mdfind(*ids)
       (@mdfind ||= {}).fetch(ids) do
         @mdfind[ids] = Utils.popen_read("/usr/bin/mdfind", mdfind_query(*ids)).split("\n")
@@ -197,6 +203,7 @@ module OS
       end
     end
 
+    sig { params(ids: String).returns(String) }
     def mdfind_query(*ids)
       ids.map! { |id| "kMDItemCFBundleIdentifier == #{id}" }.join(" || ")
     end
