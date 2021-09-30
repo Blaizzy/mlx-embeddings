@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "archive"
 require "github_packages"
 require "github_releases"
 
@@ -29,8 +28,6 @@ module Homebrew
                           "Useful for repairing bottle uploads that previously failed."
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
-      flag   "--archive-item=",
-             description: "Upload to the specified Internet Archive item (default: `homebrew`)."
       flag   "--github-org=",
              description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
       flag   "--root-url=",
@@ -51,12 +48,6 @@ module Homebrew
       next if formula_version == bottle_version
 
       odie "Bottles are for #{name} #{bottle_version} but formula is version #{formula_version}!"
-    end
-  end
-
-  def internet_archive?(bottles_hash)
-    @internet_archive ||= bottles_hash.values.all? do |bottle_hash|
-      bottle_hash["bottle"]["root_url"].start_with? "#{Archive::URL_PREFIX}/"
     end
   end
 
@@ -113,8 +104,6 @@ module Homebrew
       dry_run_service = if github_packages?(bottles_hash)
         # GitHub Packages has its own --dry-run handling.
         nil
-      elsif internet_archive?(bottles_hash)
-        "Internet Archive"
       elsif github_releases?(bottles_hash)
         "GitHub Releases"
       else
@@ -158,12 +147,7 @@ module Homebrew
       safe_system HOMEBREW_BREW_FILE, *audit_args
     end
 
-    if internet_archive?(bottles_hash)
-      archive_item = args.archive_item || "homebrew"
-      archive = Archive.new(item: archive_item)
-      archive.upload_bottles(bottles_hash,
-                             warn_on_error: args.warn_on_upload_failure?)
-    elsif github_releases?(bottles_hash)
+    if github_releases?(bottles_hash)
       github_releases = GitHubReleases.new
       github_releases.upload_bottles(bottles_hash)
     elsif github_packages?(bottles_hash)

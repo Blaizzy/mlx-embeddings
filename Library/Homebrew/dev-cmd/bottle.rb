@@ -9,7 +9,6 @@ require "formula_versions"
 require "cli/parser"
 require "utils/inreplace"
 require "erb"
-require "archive"
 require "zlib"
 require "api"
 

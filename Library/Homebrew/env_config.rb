@@ -187,10 +187,6 @@ module Homebrew
         default_text: 'The "Beer Mug" emoji.',
         default:      "🍺",
       },
-      HOMEBREW_INTERNET_ARCHIVE_KEY:              {
-        description: "Use this API key when accessing the Internet Archive S3 API, where bottles are stored. " \
-                     "The format is access:secret. See https://archive.org/account/s3.php",
-      },
       HOMEBREW_LIVECHECK_WATCHLIST:               {
         description: "Consult this file for the list of formulae to check by default when no formula argument " \
                      "is passed to `brew livecheck`.",
