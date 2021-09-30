@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "formula"
 require "cli/parser"
 
 module Homebrew
@@ -13,8 +12,8 @@ module Homebrew
   def log_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Show the `git log` for <formula>, or show the log for the Homebrew repository
-        if no formula is provided.
+        Show the `git log` for <formula> or <cask>, or show the log for the Homebrew repository
+        if no formula or cask is provided.
       EOS
       switch "-p", "-u", "--patch",
              description: "Also print patch from commit."
@@ -26,10 +25,15 @@ module Homebrew
              description: "Print only one commit."
       flag   "-n", "--max-count=",
              description: "Print only a specified number of commits."
+      switch "--formula", "--formulae",
+             description: "Treat all named arguments as formulae."
+      switch "--cask", "--casks",
+             description: "Treat all named arguments as casks."
 
       conflicts "-1", "--max-count"
+      conflicts "--formula", "--cask"
 
-      named_args :formula, max: 1
+      named_args [:formula, :cask], max: 1
     end
   end
 
@@ -43,7 +47,7 @@ module Homebrew
     if args.no_named?
       git_log HOMEBREW_REPOSITORY, args: args
     else
-      path = Formulary.path(args.named.first)
+      path = args.named.to_paths.first
       tap = Tap.from_path(path)
       git_log path.dirname, path, tap, args: args
     end
