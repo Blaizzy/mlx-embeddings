@@ -89,7 +89,7 @@ module OS
 
       # Returns a Pathname object corresponding to Xcode.app's Developer
       # directory or nil if Xcode.app is not installed.
-      sig { returns(Pathname) }
+      sig { returns(T.nilable(Pathname)) }
       def prefix
         @prefix ||=
           begin

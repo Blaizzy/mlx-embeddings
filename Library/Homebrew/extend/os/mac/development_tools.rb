@@ -64,7 +64,7 @@ class DevelopmentTools
       EOS
     end
 
-    sig { returns(T::Hash[String, T.untyped]) }
+    sig { returns(T::Hash[String, T.nilable(String)]) }
     def build_system_info
       build_info = {
         "xcode"          => MacOS::Xcode.version.to_s.presence,

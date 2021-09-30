@@ -4,7 +4,12 @@
 module Hardware
   extend T::Sig
   sig { params(version: T.nilable(Version)).returns(Symbol) }
-  def self.oldest_cpu(version = MacOS.version)
+  def self.oldest_cpu(version = nil)
+    version = if version
+      MacOS::Version.new(version.to_s)
+    else
+      MacOS.version
+    end
     if CPU.arch == :arm64
       :arm_vortex_tempest
     # TODO: this cannot be re-enabled until either Rosetta 2 supports AVX

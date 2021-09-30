@@ -38,19 +38,6 @@ class DevelopmentTools
       installation_instructions
     end
 
-    # TODO: This method appears to be unused. Can it be deleted?
-    sig { returns(T.nilable(String)) }
-    def default_cc
-      cc = DevelopmentTools.locate "cc"
-      return if cc.nil?
-
-      begin
-        cc.realpath.basename.to_s
-      rescue
-        nil
-      end
-    end
-
     sig { returns(Symbol) }
     def default_compiler
       :clang
@@ -126,7 +113,7 @@ class DevelopmentTools
       {
         "os"         => ENV["HOMEBREW_SYSTEM"],
         "os_version" => OS_VERSION,
-        "cpu_family" => Hardware::CPU.family,
+        "cpu_family" => Hardware::CPU.family.to_s,
       }
     end
     alias generic_build_system_info build_system_info

@@ -21,11 +21,11 @@ class DevelopmentTools
       :gcc
     end
 
-    sig { returns(T::Hash[String, T.untyped]) }
+    sig { returns(T::Hash[String, T.nilable(String)]) }
     def build_system_info
       generic_build_system_info.merge({
-        "glibc_version"     => OS::Linux::Glibc.version,
-        "oldest_cpu_family" => Hardware.oldest_cpu,
+        "glibc_version"     => OS::Linux::Glibc.version.to_s.presence,
+        "oldest_cpu_family" => Hardware.oldest_cpu.to_s,
       })
     end
   end
