@@ -42,7 +42,7 @@ module Homebrew
                          display_cop_names: false,
                          reset_cache: false,
                          debug: false, verbose: false)
-      raise ArgumentError, "Invalid output type: #{output_type.inspect}" unless [:print, :json].include?(output_type)
+      raise ArgumentError, "Invalid output type: #{output_type.inspect}" if [:print, :json].exclude?(output_type)
 
       shell_files, ruby_files =
         Array(files).map(&method(:Pathname))
@@ -97,7 +97,7 @@ module Homebrew
         --force-exclusion
       ]
       args << if fix
-        "-A"
+        "--auto-correct-all"
       else
         "--parallel"
       end
@@ -125,12 +125,11 @@ module Homebrew
         args << "--only" << cops_to_include.join(",")
       end
 
-      has_non_formula = files.any? do |file|
-        File.expand_path(file).start_with? HOMEBREW_LIBRARY_PATH
-      end
-
-      if files.any? && !has_non_formula
-        config = if files.first && File.exist?("#{files.first}/spec")
+      files&.map!(&:expand_path)
+      if files.blank? || files == [HOMEBREW_REPOSITORY]
+        files = [HOMEBREW_LIBRARY_PATH]
+      elsif files.none? { |f| f.to_s.start_with? HOMEBREW_LIBRARY_PATH }
+        config = if files.any? { |f| (f/"spec").exist? }
           HOMEBREW_LIBRARY/".rubocop_rspec.yml"
         else
           HOMEBREW_LIBRARY/".rubocop.yml"
@@ -138,11 +137,7 @@ module Homebrew
         args << "--config" << config
       end
 
-      if files.blank?
-        args << HOMEBREW_LIBRARY_PATH
-      else
-        args += files
-      end
+      args += files
 
       cache_env = { "XDG_CACHE_HOME" => "#{HOMEBREW_CACHE}/style" }
 
