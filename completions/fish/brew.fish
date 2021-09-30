@@ -957,8 +957,10 @@ __fish_brew_complete_arg 'ln' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'ln' -a '(__fish_brew_suggest_formulae_installed)'
 
 
-__fish_brew_complete_cmd 'log' 'Show the `git log` for formula, or show the log for the Homebrew repository if no formula is provided'
+__fish_brew_complete_cmd 'log' 'Show the `git log` for formula or cask, or show the log for the Homebrew repository if no formula or cask is provided'
+__fish_brew_complete_arg 'log' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'log' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'log' -l formula -d 'Treat all named arguments as formulae'
 __fish_brew_complete_arg 'log' -l help -d 'Show this message'
 __fish_brew_complete_arg 'log' -l max-count -d 'Print only a specified number of commits'
 __fish_brew_complete_arg 'log' -l oneline -d 'Print only one line per commit'
@@ -967,7 +969,8 @@ __fish_brew_complete_arg 'log' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'log' -l stat -d 'Also print diffstat from commit'
 __fish_brew_complete_arg 'log' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'log' -l 1 -d 'Print only one commit'
-__fish_brew_complete_arg 'log' -a '(__fish_brew_suggest_formulae_all)'
+__fish_brew_complete_arg 'log; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
+__fish_brew_complete_arg 'log; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
 
 __fish_brew_complete_cmd 'ls' 'List all installed formulae and casks'

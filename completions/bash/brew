@@ -1353,7 +1353,9 @@ _brew_log() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --cask
       --debug
+      --formula
       --help
       --max-count
       --oneline
@@ -1368,6 +1370,7 @@ _brew_log() {
     *)
   esac
   __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_ls() {
