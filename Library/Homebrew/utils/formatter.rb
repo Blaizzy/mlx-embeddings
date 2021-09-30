@@ -98,7 +98,7 @@ module Formatter
     rows = (objects.count + cols - 1) / cols
     cols = (objects.count + rows - 1) / rows # avoid empty trailing columns
 
-    col_width = (console_width + gap_size) / cols - gap_size
+    col_width = ((console_width + gap_size) / cols) - gap_size
 
     gap_string = "".rjust(gap_size)
 

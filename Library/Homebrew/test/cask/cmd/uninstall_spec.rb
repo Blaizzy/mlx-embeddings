@@ -138,7 +138,7 @@ describe Cask::Cmd::Uninstall, :cask do
 
       saved_caskfile.dirname.mkpath
 
-      IO.write saved_caskfile, <<~RUBY
+      File.write saved_caskfile, <<~RUBY
         cask 'ive-been-renamed' do
           version :latest
 

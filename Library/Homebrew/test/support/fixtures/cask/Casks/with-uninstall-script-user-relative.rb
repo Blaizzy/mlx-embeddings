@@ -8,7 +8,7 @@ cask "with-uninstall-script-user-relative" do
   app "MyFancyApp/MyFancyApp.app", target: "~/MyFancyApp.app"
 
   postflight do
-    IO.write "#{ENV["HOME"]}/MyFancyApp.app/uninstall.sh", <<~SH
+    File.write "#{ENV["HOME"]}/MyFancyApp.app/uninstall.sh", <<~SH
       #!/bin/sh
       /bin/rm -r "#{ENV["HOME"]}/MyFancyApp.app"
     SH

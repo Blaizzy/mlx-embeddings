@@ -32,7 +32,7 @@ module Homebrew
 
     if args.syntax? && args.no_named?
       scan_files = "#{HOMEBREW_LIBRARY_PATH}/**/*.rb"
-      ruby_files = Dir.glob(scan_files).reject { |file| file =~ %r{/(vendor)/} }
+      ruby_files = Dir.glob(scan_files).grep_v(%r{/(vendor)/})
 
       Homebrew.failed = true unless Readall.valid_ruby_syntax?(ruby_files)
     end

@@ -95,7 +95,7 @@ class Keg
     links = file.method(linkage_type)
                 .call
                 .uniq
-                .reject { |fn| fn =~ /^@(loader_|executable_|r)path/ }
+                .grep_v(/^@(loader_|executable_|r)path/)
     links.each(&block)
   end
 
