@@ -12,8 +12,8 @@ module Homebrew
   def log_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Show the `git log` for <formula>, or show the log for the Homebrew repository
-        if no formula is provided.
+        Show the `git log` for <formula> or <cask>, or show the log for the Homebrew repository
+        if no formula or cask is provided.
       EOS
       switch "-p", "-u", "--patch",
              description: "Also print patch from commit."
