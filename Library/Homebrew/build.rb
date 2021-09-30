@@ -35,14 +35,6 @@ class Build
     end
   end
 
-  def post_superenv_hacks
-    # Only allow Homebrew-approved directories into the PATH, unless
-    # a formula opts-in to allowing the user's path.
-    return if !formula.env.userpaths? && reqs.none? { |rq| rq.env.userpaths? }
-
-    ENV.userpaths!
-  end
-
   def effective_build_options_for(dependent)
     args  = dependent.build.used_options
     args |= Tab.for_formula(dependent).used_options
@@ -92,7 +84,6 @@ class Build
         build_bottle: args.build_bottle?,
         bottle_arch:  args.bottle_arch,
       )
-      post_superenv_hacks
       reqs.each do |req|
         req.modify_build_environment(
           env: args.env, cc: args.cc, build_bottle: args.build_bottle?, bottle_arch: args.bottle_arch,
