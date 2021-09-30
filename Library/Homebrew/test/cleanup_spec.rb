@@ -315,8 +315,8 @@ describe Homebrew::Cleanup do
     it "cleans up VCS checkout directories with modified time < prune time" do
       foo = (HOMEBREW_CACHE/"--foo")
       foo.mkpath
-      allow_any_instance_of(Pathname).to receive(:ctime).and_return(Time.now - 2 * 60 * 60 * 24)
-      allow_any_instance_of(Pathname).to receive(:mtime).and_return(Time.now - 2 * 60 * 60 * 24)
+      allow_any_instance_of(Pathname).to receive(:ctime).and_return(Time.now - (2 * 60 * 60 * 24))
+      allow_any_instance_of(Pathname).to receive(:mtime).and_return(Time.now - (2 * 60 * 60 * 24))
       described_class.new(days: 1).cleanup_cache
       expect(foo).not_to exist
     end

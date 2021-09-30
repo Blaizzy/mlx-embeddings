@@ -217,12 +217,12 @@ module Superenv
       rescue FormulaUnavailableError
         nil
       else
-        paths << f.opt_lib/"gcc"/f.version.major if f.any_version_installed?
+        paths << (f.opt_lib/"gcc"/f.version.major) if f.any_version_installed?
       end
     end
 
     paths << keg_only_deps.map(&:opt_lib)
-    paths << HOMEBREW_PREFIX/"lib"
+    paths << (HOMEBREW_PREFIX/"lib")
 
     paths += homebrew_extra_library_paths
     PATH.new(paths).existing

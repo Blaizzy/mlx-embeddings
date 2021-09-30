@@ -65,7 +65,7 @@ module Repology
       last_package = response.keys.last
 
       page_no += 1
-      break if limit && outdated_packages.size >= limit || response.size <= 1
+      break if (limit && outdated_packages.size >= limit) || response.size <= 1
     end
 
     puts "#{outdated_packages.size} outdated #{package_term.pluralize(outdated_packages.size)} found"

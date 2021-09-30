@@ -95,7 +95,7 @@ describe "globally-scoped helper methods" do
     let(:shell) { dir/"myshell" }
 
     it "starts an interactive shell session" do
-      IO.write shell, <<~SH
+      File.write shell, <<~SH
         #!/bin/sh
         echo called > "#{dir}/called"
       SH

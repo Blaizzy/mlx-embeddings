@@ -82,7 +82,7 @@ module RuboCop
 
             offending_node(hash)
             problem "Align bottle tags" do |corrector|
-              new_line = " " * (max_tag_column - tag_column) + hash.source
+              new_line = (" " * (max_tag_column - tag_column)) + hash.source
               corrector.replace(hash.source_range, new_line)
             end
           end
@@ -118,7 +118,7 @@ module RuboCop
 
             offending_node(hash)
             problem "Align bottle digests" do |corrector|
-              new_line = " " * (max_digest_column - digest_column) + hash.source
+              new_line = (" " * (max_digest_column - digest_column)) + hash.source
               corrector.replace(hash.source_range, new_line)
             end
           end

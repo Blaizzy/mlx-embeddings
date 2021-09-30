@@ -168,12 +168,12 @@ module Homebrew
 
       unless OS.mac?
         bundle_args << "--tag" << "~needs_macos" << "--tag" << "~cask"
-        files = files.reject { |p| p =~ %r{^test/(os/mac|cask)(/.*|_spec\.rb)$} }
+        files = files.grep_v(%r{^test/(os/mac|cask)(/.*|_spec\.rb)$})
       end
 
       unless OS.linux?
         bundle_args << "--tag" << "~needs_linux"
-        files = files.reject { |p| p =~ %r{^test/os/linux(/.*|_spec\.rb)$} }
+        files = files.grep_v(%r{^test/os/linux(/.*|_spec\.rb)$})
       end
 
       puts "Randomized with seed #{seed}"
