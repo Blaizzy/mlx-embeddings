@@ -29,11 +29,6 @@ class BuildEnvironment
     @settings.include? :std
   end
 
-  sig { returns(T::Boolean) }
-  def userpaths?
-    @settings.include? :userpaths
-  end
-
   # DSL for specifying build environment settings.
   module DSL
     extend T::Sig
