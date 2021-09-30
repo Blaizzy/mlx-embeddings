@@ -555,8 +555,8 @@ Reverse the order of the formulae and/or casks sort to list the oldest entries f
 \fB\-t\fR
 Sort formulae and/or casks by time modified, listing most recently modified first\. Has no effect when a formula or cask name is passed as an argument\.
 .
-.SS "\fBlog\fR [\fIoptions\fR] [\fIformula\fR]"
-Show the \fBgit log\fR for \fIformula\fR, or show the log for the Homebrew repository if no formula is provided\.
+.SS "\fBlog\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR]"
+Show the \fBgit log\fR for \fIformula\fR or \fIcask\fR, or show the log for the Homebrew repository if no formula or cask is provided\.
 .
 .TP
 \fB\-p\fR, \fB\-\-patch\fR
@@ -577,6 +577,14 @@ Print only one commit\.
 .TP
 \fB\-n\fR, \fB\-\-max\-count\fR
 Print only a specified number of commits\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fBmigrate\fR [\fI\-\-force\fR] [\fI\-\-dry\-run\fR] \fIinstalled_formula\fR [\.\.\.]"
 Migrate renamed packages to new names, where \fIformula\fR are old names of packages\.

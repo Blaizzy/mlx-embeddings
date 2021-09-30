@@ -175,7 +175,7 @@ __brew_internal_commands() {
     'linkage:Check the library links from the given formula kegs'
     'list:List all installed formulae and casks'
     'livecheck:Check for newer versions of formulae and/or casks from upstream'
-    'log:Show the `git log` for formula, or show the log for the Homebrew repository if no formula is provided'
+    'log:Show the `git log` for formula or cask, or show the log for the Homebrew repository if no formula or cask is provided'
     'man:Generate Homebrew'\''s manpages'
     'migrate:Migrate renamed packages to new names, where formula are old names of packages'
     'missing:Check the given formula kegs for missing dependencies'
@@ -1183,7 +1183,11 @@ _brew_log() {
     '--verbose[Make some output more verbose]' \
     '-1[Print only one commit]' \
     - formula \
-    '*::formula:__brew_formulae'
+    '(--cask)--formula[Treat all named arguments as formulae]' \
+    '*::formula:__brew_formulae' \
+    - cask \
+    '(--formula)--cask[Treat all named arguments as casks]' \
+    '*::cask:__brew_casks'
 }
 
 # brew ls

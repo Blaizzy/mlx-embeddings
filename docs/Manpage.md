@@ -401,10 +401,10 @@ If *`cask`* is provided, list its artifacts.
 * `-t`:
   Sort formulae and/or casks by time modified, listing most recently modified first. Has no effect when a formula or cask name is passed as an argument.
 
-### `log` [*`options`*] [*`formula`*]
+### `log` [*`options`*] [*`formula`*|*`cask`*]
 
-Show the `git log` for *`formula`*, or show the log for the Homebrew repository
-if no formula is provided.
+Show the `git log` for *`formula`* or *`cask`*, or show the log for the Homebrew repository
+if no formula or cask is provided.
 
 * `-p`, `--patch`:
   Also print patch from commit.
@@ -416,6 +416,10 @@ if no formula is provided.
   Print only one commit.
 * `-n`, `--max-count`:
   Print only a specified number of commits.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `migrate` [*`--force`*] [*`--dry-run`*] *`installed_formula`* [...]
 
