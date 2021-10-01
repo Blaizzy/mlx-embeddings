@@ -62,11 +62,6 @@ class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
 
-class Archive
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Array
   def abbrev(pattern=T.unsafe(nil)); end
 
@@ -4658,8 +4653,6 @@ module Homebrew::EnvConfig
   def self.https_proxy(); end
 
   def self.install_badge(); end
-
-  def self.internet_archive_key(); end
 
   def self.livecheck_watchlist(); end
 
