@@ -1976,6 +1976,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_FORBIDDEN_LICENSES`
   <br>A space-separated list of licenses. Homebrew will refuse to install a formula if it or any of its dependencies has a license on this list.
 
+- `HOMEBREW_FORCE_BREWED_CA_CERTIFICATES`
+  <br>If set, always use a Homebrew-installed `ca-certificates` rather than the system version. Automatically set if the system version is too old.
+
 - `HOMEBREW_FORCE_BREWED_CURL`
   <br>If set, always use a Homebrew-installed `curl`(1) rather than the system version. Automatically set if the system version of `curl` is too old.
 

@@ -375,11 +375,21 @@ user account:
 EOS
   fi
 
+  # we may want to use Homebrew CA certificates
+  if [[ -n "${HOMEBREW_FORCE_BREWED_CA_CERTIFICATES}" && ! -f "${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem" ]]
+  then
+    # we cannot install Homebrew CA certificates if homebrew/core is unavailable.
+    if [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" || -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+    then
+      brew install ca-certificates || true
+    fi
+  fi
+
   # we may want to use a Homebrew curl
   if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && ! -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]]
   then
     # we cannot install a Homebrew cURL if homebrew/core is unavailable.
-    if [[ ! -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]] || ! brew install curl
+    if [[ ! -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install curl
     then
       odie "'curl' must be installed and in your PATH!"
     fi
@@ -389,7 +399,7 @@ EOS
      [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" && ! -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]]
   then
     # we cannot install a Homebrew Git if homebrew/core is unavailable.
-    if [[ ! -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]] || ! brew install git
+    if [[ ! -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install git
     then
       odie "'git' must be installed and in your PATH!"
     fi

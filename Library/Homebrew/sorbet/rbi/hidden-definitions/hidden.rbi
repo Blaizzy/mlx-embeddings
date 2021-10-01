@@ -4626,6 +4626,8 @@ module Homebrew::EnvConfig
 
   def self.forbidden_licenses(); end
 
+  def self.force_brewed_ca_certificates?(); end
+
   def self.force_brewed_curl?(); end
 
   def self.force_brewed_git?(); end
