@@ -45,8 +45,8 @@ module Homebrew
                           "`cask-install` or `os-version` may be specified if <formula> is not. "\
                           "The default is `install`."
       switch "--github",
-             description: "Open the GitHub source page for <formula> in a browser. "\
-                          "To view formula history locally: `brew log -p` <formula>"
+             description: "Open the GitHub source page for <formula> and <cask> in a browser. "\
+                          "To view the history locally: `brew log -p` <formula> or <cask>"
       flag   "--json",
              description: "Print a JSON representation. Currently the default value for <version> is `v1` for "\
                           "<formula>. For <formula> and <cask> use `v2`. See the docs for examples of using the "\
