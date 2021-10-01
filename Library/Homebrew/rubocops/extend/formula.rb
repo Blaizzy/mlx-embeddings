@@ -35,14 +35,14 @@ module RuboCop
       # @param urls [Array] url/mirror method call nodes
       # @param regex [Regexp] pattern to match URLs
       def audit_urls(urls, regex)
-        urls.each do |url_node|
+        urls.each_with_index do |url_node, index|
           url_string_node = parameters(url_node).first
           url_string = string_content(url_string_node)
           match_object = regex_match_group(url_string_node, regex)
           next unless match_object
 
           offending_node(url_string_node.parent)
-          yield match_object, url_string
+          yield match_object, url_string, index
         end
       end
 
