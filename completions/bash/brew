@@ -1586,7 +1586,6 @@ _brew_pr_pull() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --archive-item
       --artifact
       --autosquash
       --branch-okay
@@ -1620,7 +1619,6 @@ _brew_pr_upload() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --archive-item
       --committer
       --debug
       --dry-run

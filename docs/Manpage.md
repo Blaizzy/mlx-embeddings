@@ -278,7 +278,7 @@ If a *`formula`* or *`cask`* is provided, show summary of information about it.
 * `--category`:
   Which type of analytics data to retrieve. The value for *`category`* must be `install`, `install-on-request` or `build-error`; `cask-install` or `os-version` may be specified if *`formula`* is not. The default is `install`.
 * `--github`:
-  Open the GitHub source page for *`formula`* in a browser. To view formula history locally: `brew log -p` *`formula`*
+  Open the GitHub source page for *`formula`* and *`cask`* in a browser. To view the history locally: `brew log -p` *`formula`* or *`cask`*
 * `--json`:
   Print a JSON representation. Currently the default value for *`version`* is `v1` for *`formula`*. For *`formula`* and *`cask`* use `v2`. See the docs for examples of using the JSON output: <https://docs.brew.sh/Querying-Brew>
 * `--installed`:
@@ -1262,8 +1262,6 @@ Requires write access to the repository.
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--artifact`:
   Download artifacts with the specified name (default: `bottles`).
-* `--archive-item`:
-  Upload to the specified Internet Archive item (default: `homebrew`).
 * `--tap`:
   Target tap repository (default: `homebrew/core`).
 * `--root-url`:
@@ -1289,8 +1287,6 @@ Apply the bottle commit and publish bottles to a host.
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
 * `--committer`:
   Specify a committer name and email in `git`'s standard author format.
-* `--archive-item`:
-  Upload to the specified Internet Archive item (default: `homebrew`).
 * `--github-org`:
   Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`).
 * `--root-url`:
@@ -2016,9 +2012,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Print this text before the installation summary of each successful build.
 
   *Default:* The "Beer Mug" emoji.
-
-- `HOMEBREW_INTERNET_ARCHIVE_KEY`
-  <br>Use this API key when accessing the Internet Archive S3 API, where bottles are stored. The format is access:secret. See https://archive.org/account/s3.php
 
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
