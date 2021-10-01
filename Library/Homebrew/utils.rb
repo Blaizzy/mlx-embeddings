@@ -363,8 +363,8 @@ module Kernel
     editor = Homebrew::EnvConfig.editor
     return editor if editor
 
-    # Find Atom, Sublime Text, Textmate, BBEdit / TextWrangler, or vim
-    editor = %w[atom subl mate edit vim].find do |candidate|
+    # Find Atom, Sublime Text, VS Code, Textmate, BBEdit / TextWrangler, or vim
+    editor = %w[atom subl code mate edit vim].find do |candidate|
       candidate if which(candidate, ENV["HOMEBREW_PATH"])
     end
     editor ||= "vim"
