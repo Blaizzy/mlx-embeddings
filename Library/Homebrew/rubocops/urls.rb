@@ -83,8 +83,14 @@ module RuboCop
                                                  %r{^http://(?:[^/]*\.)?archive\.org},
                                                  %r{^http://(?:[^/]*\.)?freedesktop\.org},
                                                  %r{^http://(?:[^/]*\.)?mirrorservice\.org/}])
-          audit_urls(urls, http_to_https_patterns) do |_, url|
-            problem "Please use https:// for #{url}"
+          audit_urls(urls, http_to_https_patterns) do |_, url, index|
+            # It's fine to have a plain HTTP mirror further down the mirror list.
+            https_url = url.dup.insert(4, "s")
+            https_index = nil
+            audit_urls(urls, https_url) do |_, _, found_https_index|
+              https_index = found_https_index
+            end
+            problem "Please use https:// for #{url}" if !https_index || https_index > index
           end
 
           apache_mirror_pattern = %r{^https?://(?:[^/]*\.)?apache\.org/dyn/closer\.(?:cgi|lua)\?path=/?(.*)}i
