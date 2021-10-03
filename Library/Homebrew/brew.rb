@@ -77,9 +77,9 @@ begin
   path = PATH.new(ENV["PATH"])
   homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
 
-  # Add SCM wrappers.
-  path.prepend(HOMEBREW_SHIMS_PATH/"scm")
-  homebrew_path.prepend(HOMEBREW_SHIMS_PATH/"scm")
+  # Add shared wrappers.
+  path.prepend(HOMEBREW_SHIMS_PATH/"shared")
+  homebrew_path.prepend(HOMEBREW_SHIMS_PATH/"shared")
 
   ENV["PATH"] = path
 

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Make our $HOMEBREW_CURL selection universal - including in formulae usage.
+
+# HOMEBREW_LIBRARY is set by bin/brew
+# HOMEBREW_CURL is set by brew.sh
+# shellcheck disable=SC2154
+if [[ -z "${HOMEBREW_LIBRARY}" ]]
+then
+  echo "${0##*/}: This shim is internal and must be run via brew." >&2
+  exit 1
+fi
+
+source "${HOMEBREW_LIBRARY}/Homebrew/shims/utils.sh"
+
+try_exec_non_system "${HOMEBREW_CURL:-curl}" "$@"
+safe_exec "/usr/bin/curl" "$@"
+
+echo "Could not execute curl. Try HOMEBREW_FORCE_BREWED_CURL=1" >&2
+exit 1

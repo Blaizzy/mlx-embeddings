@@ -12,7 +12,7 @@ describe Utils::Git do
   end
 
   before do
-    git = HOMEBREW_SHIMS_PATH/"scm/git"
+    git = HOMEBREW_SHIMS_PATH/"shared/git"
 
     HOMEBREW_CACHE.cd do
       system git, "init"
@@ -201,7 +201,7 @@ describe Utils::Git do
 
     context "when git is available" do
       it "returns true when git remote exists", :needs_network do
-        git = HOMEBREW_SHIMS_PATH/"scm/git"
+        git = HOMEBREW_SHIMS_PATH/"shared/git"
         url = "https://github.com/Homebrew/homebrew.github.io"
         repo = HOMEBREW_CACHE/"hey"
         repo.mkpath

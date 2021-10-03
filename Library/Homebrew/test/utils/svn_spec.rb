@@ -10,7 +10,7 @@ describe Utils::Svn do
 
   describe "::available?" do
     it "returns svn version if svn available" do
-      if quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
+      if quiet_system "#{HOMEBREW_SHIMS_PATH}/shared/svn", "--version"
         expect(described_class).to be_available
       else
         expect(described_class).not_to be_available
@@ -20,7 +20,7 @@ describe Utils::Svn do
 
   describe "::version" do
     it "returns svn version if svn available" do
-      if quiet_system "#{HOMEBREW_SHIMS_PATH}/scm/svn", "--version"
+      if quiet_system "#{HOMEBREW_SHIMS_PATH}/shared/svn", "--version"
         expect(described_class.version).to match(/^\d+\.\d+\.\d+$/)
       else
         expect(described_class.version).to be_nil

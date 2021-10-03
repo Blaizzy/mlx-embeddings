@@ -19,14 +19,7 @@ module Utils
     def curl_executable(use_homebrew_curl: false)
       return Formula["curl"].opt_bin/"curl" if use_homebrew_curl
 
-      @curl ||= [
-        ENV["HOMEBREW_CURL"],
-        which("curl"),
-        "/usr/bin/curl",
-      ].compact.map { |c| Pathname(c) }.find(&:executable?)
-      raise "No executable `curl` was found" unless @curl
-
-      @curl
+      @curl_executable ||= HOMEBREW_SHIMS_PATH/"shared/curl"
     end
 
     sig {
