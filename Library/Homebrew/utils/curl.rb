@@ -304,7 +304,13 @@ module Utils
     )
       file = Tempfile.new.tap(&:close)
 
-      specs = specs.flat_map { |option, argument| ["--#{option.to_s.tr("_", "-")}", argument] }
+      specs = specs.flat_map do |option, argument|
+        next if argument == false # No flag.
+
+        args = ["--#{option.to_s.tr("_", "-")}"]
+        args << argument unless argument == true # It's a flag.
+        args
+      end
       max_time = hash_needed ? 600 : 25
       output, _, status = curl_output(
         *specs, "--dump-header", "-", "--output", file.path, "--location", url,
