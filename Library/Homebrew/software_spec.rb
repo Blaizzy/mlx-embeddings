@@ -310,8 +310,8 @@ class Bottle
   def initialize(formula, spec, tag = nil)
     @name = formula.name
     @resource = Resource.new
-    @resource.owner = formula
     @resource.specs[:bottle] = true
+    @resource.owner = formula
     @spec = spec
 
     tag_spec = spec.tag_specification_for(Utils::Bottles.tag(tag))
