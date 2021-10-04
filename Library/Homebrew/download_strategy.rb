@@ -550,7 +550,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
              "because we need it installed to download securely."
         @insecure_warning_shown = true
       end
-      args += ["--insecure"] if meta[:insecure]
+      args += ["--insecure"]
     end
 
     args
