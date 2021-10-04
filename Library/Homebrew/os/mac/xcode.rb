@@ -14,6 +14,7 @@ module OS
       DEFAULT_BUNDLE_PATH = Pathname("/Applications/Xcode.app").freeze
       BUNDLE_ID = "com.apple.dt.Xcode"
       OLD_BUNDLE_ID = "com.apple.Xcode"
+      APPLE_DEVELOPER_DOWNLOAD_URL = "https://developer.apple.com/download/all/"
 
       # Bump these when a new version is available from the App Store and our
       # CI systems have been updated.
@@ -149,7 +150,7 @@ module OS
         if OS::Mac.version.prerelease?
           <<~EOS
             Xcode can be installed from:
-              #{Formatter.url("https://developer.apple.com/download/more/")}
+              #{Formatter.url(APPLE_DEVELOPER_DOWNLOAD_URL)}
           EOS
         else
           <<~EOS
@@ -163,7 +164,7 @@ module OS
         if OS::Mac.version.prerelease?
           <<~EOS
             Xcode can be updated from:
-              #{Formatter.url("https://developer.apple.com/download/more/")}
+              #{Formatter.url(APPLE_DEVELOPER_DOWNLOAD_URL)}
           EOS
         else
           <<~EOS
@@ -298,7 +299,7 @@ module OS
           # This is not available from `xcode-select`
           <<~EOS
             Install the Command Line Tools for Xcode 11.3.1 from:
-              #{Formatter.url("https://developer.apple.com/download/more/")}
+              #{Formatter.url(MacOS::Xcode::APPLE_DEVELOPER_DOWNLOAD_URL)}
           EOS
         else
           <<~EOS
@@ -325,7 +326,7 @@ module OS
             sudo xcode-select --install
 
           Alternatively, manually download them from:
-            #{Formatter.url("https://developer.apple.com/download/more/")}.
+            #{Formatter.url(MacOS::Xcode::APPLE_DEVELOPER_DOWNLOAD_URL)}.
           You should download the Command Line Tools for Xcode #{MacOS::Xcode.latest_version}.
         EOS
       end
