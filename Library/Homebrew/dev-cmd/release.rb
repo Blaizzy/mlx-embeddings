@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "release_notes"
 
 module Homebrew
   extend T::Sig
@@ -70,12 +69,15 @@ module Homebrew
     if args.major? || args.minor?
       latest_major_minor_version = "#{latest_version.major}.#{latest_version.minor.to_i}.0"
       ohai "Release notes since #{latest_major_minor_version} for #{new_version} blog post:"
-      # release notes without username suffix or dependabot bumps
-      puts ReleaseNotes.generate_release_notes(latest_major_minor_version, "origin/HEAD")
-                       .lines
-                       .reject { |l| l.include?(" (@Homebrew)") }
-                       .map { |l| l.gsub(/ \(@[\w-]+\)$/, "") }
-                       .sort
+      # release notes without usernames, new contributors, or extra lines
+      blog_post_notes = GitHub.generate_release_notes("Homebrew", "brew", new_version,
+                                                      previous_tag: latest_major_minor_version)["body"]
+      blog_post_notes = blog_post_notes.lines.map do |line|
+        next unless (match = line.match(/^\* (.*) by @[\w-]+ in (.*)$/))
+
+        "- [#{match[1]}](#{match[2]})"
+      end.compact.sort
+      puts blog_post_notes
     end
 
     ohai "Creating draft release for version #{new_version}"
@@ -85,7 +87,8 @@ module Homebrew
     else
       ""
     end
-    release_notes += ReleaseNotes.generate_release_notes latest_version, "origin/HEAD"
+    release_notes += GitHub.generate_release_notes("Homebrew", "brew", new_version,
+                                                   previous_tag: latest_version)["body"]
 
     begin
       release = GitHub.create_or_update_release "Homebrew", "brew", new_version, body: release_notes, draft: true
