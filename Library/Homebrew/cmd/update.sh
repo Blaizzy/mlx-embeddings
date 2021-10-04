@@ -389,7 +389,7 @@ EOS
     # we cannot install Homebrew CA certificates if homebrew/core is unavailable.
     if [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" || -n "${HOMEBREW_INSTALL_FROM_API}" ]]
     then
-      brew install ca-certificates || true
+      brew install ca-certificates
     fi
   fi
 
