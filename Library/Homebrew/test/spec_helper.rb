@@ -146,7 +146,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_svn) do
-    svn_shim = HOMEBREW_SHIMS_PATH/"scm/svn"
+    svn_shim = HOMEBREW_SHIMS_PATH/"shared/svn"
     skip "Subversion is not installed." unless quiet_system svn_shim, "--version"
 
     svn_shim_path = Pathname(Utils.popen_read(svn_shim, "--homebrew=print-path").chomp.presence)

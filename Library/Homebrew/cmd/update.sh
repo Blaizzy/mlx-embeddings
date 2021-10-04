@@ -18,12 +18,20 @@
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
 
-# Replaces the function in Library/Homebrew/brew.sh to cache the Git executable to
-# provide speedup when using Git repeatedly (as update.sh does).
+# Replaces the function in Library/Homebrew/brew.sh to cache the Curl/Git executable to
+# provide speedup when using Curl/Git repeatedly (as update.sh does).
+curl() {
+  if [[ -z "${CURL_EXECUTABLE}" ]]
+  then
+    CURL_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/shared/curl" --homebrew=print-path)"
+  fi
+  "${CURL_EXECUTABLE}" "$@"
+}
+
 git() {
   if [[ -z "${GIT_EXECUTABLE}" ]]
   then
-    GIT_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/scm/git" --homebrew=print-path)"
+    GIT_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/shared/git" --homebrew=print-path)"
   fi
   "${GIT_EXECUTABLE}" "$@"
 }
@@ -564,7 +572,7 @@ EOS
         # HOMEBREW_CURL is set by brew.sh (and isn't mispelt here)
         # shellcheck disable=SC2153
         UPSTREAM_SHA_HTTP_CODE="$(
-          "${HOMEBREW_CURL}" \
+          curl \
             "${CURL_DISABLE_CURLRC_ARGS[@]}" \
             --silent --max-time 3 \
             --location --no-remote-time --output /dev/null --write-out "%{http_code}" \

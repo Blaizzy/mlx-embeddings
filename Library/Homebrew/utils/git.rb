@@ -30,7 +30,7 @@ module Utils
     def git
       return @git if defined?(@git)
 
-      @git = HOMEBREW_SHIMS_PATH/"scm/git"
+      @git = HOMEBREW_SHIMS_PATH/"shared/git"
     end
 
     def remote_exists?(url)

@@ -165,8 +165,12 @@ brew() {
   "${HOMEBREW_BREW_FILE}" "$@"
 }
 
+curl() {
+  "${HOMEBREW_LIBRARY}/Homebrew/shims/shared/curl" "$@"
+}
+
 git() {
-  "${HOMEBREW_LIBRARY}/Homebrew/shims/scm/git" "$@"
+  "${HOMEBREW_LIBRARY}/Homebrew/shims/shared/git" "$@"
 }
 
 # Search given executable in PATH (remove dependency for `which` command)
@@ -554,7 +558,7 @@ else
 fi
 
 HOMEBREW_USER_AGENT="${HOMEBREW_PRODUCT}/${HOMEBREW_USER_AGENT_VERSION} (${HOMEBREW_SYSTEM}; ${HOMEBREW_PROCESSOR} ${HOMEBREW_OS_USER_AGENT_VERSION})"
-curl_version_output="$("${HOMEBREW_CURL}" --version 2>/dev/null)"
+curl_version_output="$(curl --version 2>/dev/null)"
 curl_name_and_version="${curl_version_output%% (*}"
 HOMEBREW_USER_AGENT_CURL="${HOMEBREW_USER_AGENT} ${curl_name_and_version// //}"
 
