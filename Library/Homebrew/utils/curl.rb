@@ -305,7 +305,7 @@ module Utils
       file = Tempfile.new.tap(&:close)
 
       specs = specs.flat_map do |option, argument|
-        next if argument == false # No flag.
+        next [] if argument == false # No flag.
 
         args = ["--#{option.to_s.tr("_", "-")}"]
         args << argument unless argument == true # It's a flag.
