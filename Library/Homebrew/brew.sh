@@ -433,6 +433,20 @@ then
     printf "\\n" >&2
   fi
 
+  # Versions before Sierra don't handle custom cert files correctly, so need a full brewed curl.
+  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101200" ]]
+  then
+    HOMEBREW_SYSTEM_CURL_TOO_OLD="1"
+    HOMEBREW_FORCE_BREWED_CURL="1"
+  fi
+
+  # The system libressl has a bug before macOS 10.15.6 where it incorrectly handles expired roots.
+  if [[ -z "${HOMEBREW_SYSTEM_CURL_TOO_OLD}" && "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101506" ]]
+  then
+    HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD="1"
+    HOMEBREW_FORCE_BREWED_CA_CERTIFICATES="1"
+  fi
+
   # The system Git on macOS versions before Sierra is too old for some Homebrew functionality we rely on.
   HOMEBREW_MINIMUM_GIT_VERSION="2.14.3"
   if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101200" ]]
@@ -534,6 +548,12 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
   fi
 fi
 
+if [[ -n "${HOMEBREW_FORCE_BREWED_CA_CERTIFICATES}" && -f "${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem" ]]
+then
+  export SSL_CERT_FILE="${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem"
+  export GIT_SSL_CAINFO="${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem"
+fi
+
 # A bug in the auto-update process prior to 3.1.2 means $HOMEBREW_BOTTLE_DOMAIN
 # could be passed down with the default domain.
 # This is problematic as this is will be the old bottle domain.
@@ -571,6 +591,7 @@ export HOMEBREW_DEFAULT_TEMP
 export HOMEBREW_TEMP
 export HOMEBREW_CELLAR
 export HOMEBREW_SYSTEM
+export HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD
 export HOMEBREW_CURL
 export HOMEBREW_CURL_WARNING
 export HOMEBREW_SYSTEM_CURL_TOO_OLD

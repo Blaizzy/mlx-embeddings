@@ -99,6 +99,11 @@ class DevelopmentTools
     end
 
     sig { returns(T::Boolean) }
+    def ca_file_handles_most_https_certificates?
+      true
+    end
+
+    sig { returns(T::Boolean) }
     def curl_handles_most_https_certificates?
       true
     end

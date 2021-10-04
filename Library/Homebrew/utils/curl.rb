@@ -100,11 +100,9 @@ module Utils
         verbose:      verbose,
       }.compact
 
-      # SSL_CERT_FILE can be incorrectly set by users or portable-ruby and screw
-      # with SSL downloads so unset it here.
       result = system_command curl_executable(use_homebrew_curl: use_homebrew_curl),
                               args:    curl_args(*args, **options),
-                              env:     { "SSL_CERT_FILE" => nil }.merge(env),
+                              env:     env,
                               timeout: end_time&.remaining,
                               **command_options
 

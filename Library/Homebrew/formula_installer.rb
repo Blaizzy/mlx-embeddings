@@ -796,6 +796,12 @@ class FormulaInstaller
     # let's reset Utils::Git.available? if we just installed git
     Utils::Git.clear_available_cache if formula.name == "git"
 
+    # use installed ca-certificates when it's needed and available
+    if formula.name == "ca-certificates" &&
+       !DevelopmentTools.ca_file_handles_most_https_certificates?
+      ENV["SSL_CERT_FILE"] = ENV["GIT_SSL_CAINFO"] = formula.pkgetc/"cert.pem"
+    end
+
     # use installed curl when it's needed and available
     if formula.name == "curl" &&
        !DevelopmentTools.curl_handles_most_https_certificates?
