@@ -544,6 +544,15 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     args += [meta[:header], meta[:headers]].flatten.compact.flat_map { |h| ["--header", h.strip] }
 
+    if meta[:insecure]
+      unless @insecure_warning_shown
+        opoo "Using --insecure with curl to download `ca-certificates` " \
+             "because we need it installed to download securely."
+        @insecure_warning_shown = true
+      end
+      args += ["--insecure"] if meta[:insecure]
+    end
+
     args
   end
 

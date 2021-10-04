@@ -42,6 +42,11 @@ class Resource
   def owner=(owner)
     @owner = owner
     patches.each { |p| p.owner = owner }
+
+    return if !owner.respond_to?(:full_name) || owner.full_name != "ca-certificates"
+    return if Homebrew::EnvConfig.no_insecure_redirect?
+
+    @specs[:insecure] = !specs[:bottle] && !DevelopmentTools.ca_file_handles_most_https_certificates?
   end
 
   def downloader
@@ -170,10 +175,14 @@ class Resource
   def url(val = nil, **specs)
     return @url if val.nil?
 
+    specs = specs.dup
+    # Don't allow this to be set.
+    specs.delete(:insecure)
+
     @url = val
-    @specs.merge!(specs)
-    @using = @specs.delete(:using)
+    @using = specs.delete(:using)
     @download_strategy = DownloadStrategyDetector.detect(url, using)
+    @specs.merge!(specs)
     @downloader = nil
   end
 
