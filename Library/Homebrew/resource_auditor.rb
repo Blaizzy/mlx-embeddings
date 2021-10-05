@@ -90,22 +90,28 @@ module Homebrew
       problem "Checksum is missing" if checksum.blank?
     end
 
-    def self.curl_openssl_and_deps
-      @curl_openssl_and_deps ||= begin
-        formulae_names = ["curl", "openssl"]
-        formulae_names += formulae_names.flat_map do |f|
-          Formula[f].recursive_dependencies.map(&:name)
-        end
-        formulae_names.uniq
+    def self.curl_deps
+      @curl_deps ||= begin
+        ["curl"] + Formula["curl"].recursive_dependencies.map(&:name).uniq
       rescue FormulaUnavailableError
         []
       end
     end
 
     def audit_urls
+      urls = [url] + mirrors
+
+      curl_dep = self.class.curl_deps.include?(owner.name)
+      # Ideally `ca-certificates` would not be excluded here, but sourcing a HTTP mirror was tricky.
+      # Instead, we have logic elsewhere to pass `--insecure` to curl when downloading the certs.
+      # TODO: try remove the OS/env conditional
+      if (OS.mac? || Homebrew::EnvConfig.simulate_macos_on_linux?) && spec_name == :stable &&
+         owner.name != "ca-certificates" && curl_dep && !urls.find { |u| u.start_with?("http://") }
+        problem "should always include at least one HTTP mirror"
+      end
+
       return unless @online
 
-      urls = [url] + mirrors
       urls.each do |url|
         next if !@strict && mirrors.include?(url)
 
