@@ -691,6 +691,23 @@ class Tap
     "#{name}/#{file.basename}"
   end
 
+  def audit_exception(list, formula_or_cask, value = nil)
+    return false if audit_exceptions.blank?
+    return false unless audit_exceptions.key? list
+
+    list = audit_exceptions[list]
+
+    case list
+    when Array
+      list.include? formula_or_cask
+    when Hash
+      return false unless list.include? formula_or_cask
+      return list[formula_or_cask] if value.blank?
+
+      list[formula_or_cask] == value
+    end
+  end
+
   private
 
   def read_or_set_private_config

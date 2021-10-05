@@ -35,7 +35,6 @@ module Homebrew
       @specs = %w[stable head].map { |s| formula.send(s) }.compact
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
-      @tap_audit_exceptions = options[:tap_audit_exceptions]
     end
 
     def audit_style
@@ -196,7 +195,7 @@ module Homebrew
         return unless github_license
         return if (licenses + ["NOASSERTION"]).include?(github_license)
         return if PERMITTED_LICENSE_MISMATCHES[github_license]&.any? { |license| licenses.include? license }
-        return if tap_audit_exception :permitted_formula_license_mismatches, formula.name
+        return if formula.tap&.audit_exception :permitted_formula_license_mismatches, formula.name
 
         problem "Formula license #{licenses} does not match GitHub license #{Array(github_license)}."
 
@@ -236,7 +235,7 @@ module Homebrew
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
              formula.requirements.none?(LinuxRequirement) &&
-             !tap_audit_exception(:provided_by_macos_depends_on_allowlist, dep.name)
+             !formula.tap&.audit_exception(:provided_by_macos_depends_on_allowlist, dep.name)
             new_formula_problem(
               "Dependency '#{dep.name}' is provided by macOS; " \
               "please replace 'depends_on' with 'uses_from_macos'.",
@@ -281,7 +280,7 @@ module Homebrew
       end
 
       return unless @core_tap
-      return if tap_audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
+      return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
@@ -397,7 +396,7 @@ module Homebrew
         return if formula.name.start_with?("openssl", "libressl") && formula.keg_only_reason.by_macos?
       end
 
-      return if tap_audit_exception :versioned_keg_only_allowlist, formula.name
+      return if formula.tap&.audit_exception :versioned_keg_only_allowlist, formula.name
 
       problem "Versioned formulae in homebrew/core should use `keg_only :versioned_formula`"
     end
@@ -409,7 +408,7 @@ module Homebrew
 
       return unless @online
 
-      return if tap_audit_exception :cert_error_allowlist, formula.name, homepage
+      return if formula.tap&.audit_exception :cert_error_allowlist, formula.name, homepage
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
@@ -536,7 +535,7 @@ module Homebrew
 
         except = @except.to_a
         if spec_name == :head &&
-           tap_audit_exception(:head_non_default_branch_allowlist, formula.name, spec.specs[:branch])
+           formula.tap&.audit_exception(:head_non_default_branch_allowlist, formula.name, spec.specs[:branch])
           except << "head_branch"
         end
 
@@ -573,7 +572,7 @@ module Homebrew
       return unless @core_tap
 
       if formula.head && @versioned_formula &&
-         !tap_audit_exception(:versioned_head_spec_allowlist, formula.name)
+         !formula.tap&.audit_exception(:versioned_head_spec_allowlist, formula.name)
         problem "Versioned formulae should not have a `HEAD` spec"
       end
 
@@ -593,7 +592,7 @@ module Homebrew
       stable_url_minor_version = stable_url_version.minor.to_i
 
       formula_suffix = stable.version.patch.to_i
-      throttled_rate = tap_audit_exception(:throttled_formulae, formula.name)
+      throttled_rate = formula.tap&.audit_exception(:throttled_formulae, formula.name)
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
@@ -602,13 +601,13 @@ module Homebrew
       when /[\d._-](alpha|beta|rc\d)/
         matched = Regexp.last_match(1)
         version_prefix = stable_version_string.sub(/\d+$/, "")
-        return if tap_audit_exception :unstable_allowlist, formula.name, version_prefix
-        return if tap_audit_exception :unstable_devel_allowlist, formula.name, version_prefix
+        return if formula.tap&.audit_exception :unstable_allowlist, formula.name, version_prefix
+        return if formula.tap&.audit_exception :unstable_devel_allowlist, formula.name, version_prefix
 
         problem "Stable version URLs should not contain #{matched}"
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
         version_prefix = stable.version.major_minor
-        return if tap_audit_exception :gnome_devel_allowlist, formula.name, version_prefix
+        return if formula.tap&.audit_exception :gnome_devel_allowlist, formula.name, version_prefix
         return if stable_url_version < Version.create("1.0")
         # All minor versions are stable in the new GNOME version scheme (which starts at version 40.0)
         # https://discourse.gnome.org/t/new-gnome-versioning-scheme/4235
@@ -811,23 +810,6 @@ module Homebrew
 
     def head_only?(formula)
       formula.head && formula.stable.nil?
-    end
-
-    def tap_audit_exception(list, formula, value = nil)
-      return false if @tap_audit_exceptions.blank?
-      return false unless @tap_audit_exceptions.key? list
-
-      list = @tap_audit_exceptions[list]
-
-      case list
-      when Array
-        list.include? formula
-      when Hash
-        return false unless list.include? formula
-        return list[formula] if value.blank?
-
-        list[formula] == value
-      end
     end
   end
 end

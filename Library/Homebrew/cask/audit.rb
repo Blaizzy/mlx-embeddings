@@ -44,7 +44,6 @@ module Cask
       @strict = strict
       @new_cask = new_cask
       @token_conflicts = token_conflicts
-      @tap_audit_exceptions = cask.tap&.audit_exceptions
     end
 
     def run!
@@ -737,47 +736,30 @@ module Cask
       return unless download
 
       if cask.url && !cask.url.using
-        check_url_for_https_availability(cask.url, "binary URL",
+        check_url_for_https_availability(cask.url, "binary URL", cask.token, cask.tap,
                                          user_agents: [cask.url.user_agent])
       end
 
-      check_url_for_https_availability(cask.appcast, "appcast URL", check_content: true) if cask.appcast && appcast?
+      if cask.appcast && appcast?
+        check_url_for_https_availability(cask.appcast, "appcast URL", cask.token, cask.tap, check_content: true)
+      end
 
       return unless cask.homepage
 
-      check_url_for_https_availability(cask.homepage,
-                                       "homepage URL",
-                                       cask.token,
+      check_url_for_https_availability(cask.homepage, "homepage URL", cask.token, cask.tap,
                                        user_agents:   [:browser, :default],
                                        check_content: true,
                                        strict:        strict?)
     end
 
-    def check_url_for_https_availability(url_to_check, url_type, cask_token, **options)
+    def check_url_for_https_availability(url_to_check, url_type, cask_token, tap, **options)
       problem = curl_check_http_content(url_to_check.to_s, url_type, **options)
-      exception = tap_audit_exception(:cert_error_allowlist, cask_token, url_to_check)
+      exception = tap&.audit_exception(:cert_error_allowlist, cask_token, url_to_check.to_s)
 
       if problem
         add_error problem unless exception
       elsif exception
         add_error "#{url_to_check} is in the certificate error allowlist but does not have a certificate error"
-      end
-    end
-
-    def tap_audit_exception(list, cask, value = nil)
-      return false if @tap_audit_exceptions.blank?
-      return false unless @tap_audit_exceptions.key? list
-
-      list = @tap_audit_exceptions[list]
-
-      case list
-      when Array
-        list.include? cask
-      when Hash
-        return false unless list.include? cask
-        return list[cask] if value.blank?
-
-        list[cask] == value
       end
     end
   end
