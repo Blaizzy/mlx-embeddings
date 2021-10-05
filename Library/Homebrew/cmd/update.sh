@@ -390,6 +390,7 @@ EOS
     if [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" || -n "${HOMEBREW_INSTALL_FROM_API}" ]]
     then
       brew install ca-certificates
+      setup_ca_certificates
     fi
   fi
 
@@ -401,6 +402,8 @@ EOS
     then
       odie "'curl' must be installed and in your PATH!"
     fi
+
+    setup_curl
   fi
 
   if ! git --version &>/dev/null ||
@@ -411,6 +414,8 @@ EOS
     then
       odie "'git' must be installed and in your PATH!"
     fi
+
+    setup_git
   fi
 
   [[ -f "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core/.git/shallow" ]] && HOMEBREW_CORE_SHALLOW=1
