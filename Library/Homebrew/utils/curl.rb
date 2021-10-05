@@ -304,6 +304,8 @@ module Utils
     )
       file = Tempfile.new.tap(&:close)
 
+      # Convert specs to options. This is mostly key-value options,
+      # unless the value is a boolean in which case treat as as flag.
       specs = specs.flat_map do |option, argument|
         next [] if argument == false # No flag.
 
@@ -311,6 +313,7 @@ module Utils
         args << argument unless argument == true # It's a flag.
         args
       end
+
       max_time = hash_needed ? 600 : 25
       output, _, status = curl_output(
         *specs, "--dump-header", "-", "--output", file.path, "--location", url,
