@@ -4,6 +4,18 @@
 #:
 #:  *Note:* this will destroy all your uncommitted or committed changes.
 
+# Replaces the function in Library/Homebrew/brew.sh to cache the Git executable to provide
+# speedup when using Git repeatedly and prevent errors if the shim changes mid-update.
+git() {
+  if [[ -z "${GIT_EXECUTABLE}" ]]
+  then
+    # HOMEBREW_LIBRARY is set by bin/brew
+    # shellcheck disable=SC2154
+    GIT_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/shared/git" --homebrew=print-path)"
+  fi
+  "${GIT_EXECUTABLE}" "$@"
+}
+
 homebrew-update-reset() {
   local DIR
   local -a REPOS=()
