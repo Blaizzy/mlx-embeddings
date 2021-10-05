@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "formula"
 require "cli/parser"
 
 module Homebrew
