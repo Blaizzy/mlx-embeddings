@@ -22,6 +22,10 @@ module Utils
       @curl_executable ||= HOMEBREW_SHIMS_PATH/"shared/curl"
     end
 
+    def curl_path
+      @curl_path ||= Utils.popen_read(curl_executable, "--homebrew=print-path").chomp.presence
+    end
+
     sig {
       params(
         extra_args:      T.untyped,
