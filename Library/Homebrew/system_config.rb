@@ -130,7 +130,7 @@ module SystemConfig
       out, = system_command(curl_executable, args: ["--version"], verbose: false)
 
       if /^curl (?<curl_version>[\d.]+)/ =~ out
-        "#{curl_version} => #{curl_executable}"
+        "#{curl_version} => #{curl_path}"
       else
         "N/A"
       end
