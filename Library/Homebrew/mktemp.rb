@@ -11,7 +11,7 @@ class Mktemp
   # Path to the tmpdir used in this run, as a {Pathname}.
   attr_reader :tmpdir
 
-  def initialize(prefix = name, opts = {})
+  def initialize(prefix, opts = {})
     @prefix = prefix
     @retain = opts[:retain]
     @quiet = false
