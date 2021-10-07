@@ -86,10 +86,10 @@ GEM
     racc (1.5.2)
     rack (2.2.3)
     rainbow (3.0.0)
-    rbi (0.0.5)
+    rbi (0.0.6)
       ast
       parser
-      sorbet-runtime
+      sorbet-runtime (>= 0.5.9204)
       unparser
     rdiscount (2.2.0.2)
     regexp_parser (2.1.1)
