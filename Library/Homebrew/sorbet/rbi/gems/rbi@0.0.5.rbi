@@ -651,6 +651,9 @@ class RBI::Param < ::RBI::NodeWithComments
   sig { override.params(v: RBI::Printer).void }
   def accept_printer(v); end
 
+  sig { returns(T::Array[String]) }
+  def comments_lines; end
+
   sig { returns(String) }
   def name; end
 
@@ -670,6 +673,9 @@ class RBI::ParseError < ::StandardError
 end
 
 class RBI::Parser
+  sig { void }
+  def initialize; end
+
   sig { params(path: String).returns(RBI::Tree) }
   def parse_file(path); end
 
@@ -1024,6 +1030,9 @@ class RBI::SigParam < ::RBI::NodeWithComments
 
   sig { override.params(v: RBI::Printer).void }
   def accept_printer(v); end
+
+  sig { returns(T::Array[String]) }
+  def comments_lines; end
 
   sig { returns(String) }
   def name; end
