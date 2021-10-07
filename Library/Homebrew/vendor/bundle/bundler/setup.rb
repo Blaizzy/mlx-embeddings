@@ -101,4 +101,4 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-stub-0
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/thor-1.1.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/spoom-1.1.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tapioca-0.5.2/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/warning-1.2.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/warning-1.2.1/lib"
