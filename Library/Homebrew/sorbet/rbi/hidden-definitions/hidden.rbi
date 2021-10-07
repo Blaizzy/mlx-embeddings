@@ -7425,11 +7425,6 @@ module Readline
   def self.completion_quote_character(); end
 end
 
-module ReleaseNotes
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Requirement
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
