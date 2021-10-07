@@ -123,6 +123,7 @@ module Utils
     end
 
     def setup_gpg!
+      require "formula"
       return unless Formula["gnupg"].optlinked?
 
       ENV["PATH"] = PATH.new(ENV["PATH"])
