@@ -371,7 +371,7 @@ format() {
       cp -af "${tempfile}" "${file}"
     else
       # Show differences
-      "${DIFF}" "${DIFF_ARGS[@]}" "${file}" "${tempfile}"
+      "${DIFF}" "${DIFF_ARGS[@]}" "${file}" "${tempfile}" 1>&2
     fi
     return 4
   else
