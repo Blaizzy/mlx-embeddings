@@ -123,11 +123,11 @@ module Utils
     end
 
     def setup_gpg!
-      require "formula"
-      return unless Formula["gnupg"].optlinked?
+      gnupg_bin = HOMEBREW_PREFIX/"opt/gnupg/bin"
+      return unless gnupg_bin.directory?
 
       ENV["PATH"] = PATH.new(ENV["PATH"])
-                        .prepend(Formula["gnupg"].opt_bin)
+                        .prepend(gnupg_bin)
     end
 
     # Special case of `git cherry-pick` that permits non-verbose output and
