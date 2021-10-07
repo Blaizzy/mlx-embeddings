@@ -390,7 +390,7 @@ do
     retcode="$?"
     if [[ "${retcode}" == 4 ]]
     then
-      onoe "${0##*/}: Bad styles detected in file \"${file}\", apply auto-fix."
+      onoe "${0##*/}: Bad styles detected in file \"${file}\", fixing..."
       retcode=''
     fi
   fi
