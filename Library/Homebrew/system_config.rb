@@ -76,8 +76,11 @@ module SystemConfig
     def describe_clang
       return "N/A" if clang.null?
 
-      clang_build_info = clang_build.null? ? "(parse error)" : clang_build
-      "#{clang} build #{clang_build_info}"
+      if clang_build.null?
+        clang.to_s
+      else
+        "#{clang} build #{clang_build}"
+      end
     end
 
     def describe_path(path)
