@@ -1986,7 +1986,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, always use a Homebrew-installed `git`(1) rather than the system version. Automatically set if the system version of `git` is too old.
 
 - `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`
-  <br>If set, running Homebrew on Linux will use URLs for macOS. This is useful when merging pull requests for macOS while on Linux.
+  <br>If set, running Homebrew on Linux will use URLs for macOS and will use homebrew-core instead of linuxbrew-core. This is useful when merging pull requests for macOS while on Linux.
 
 - `HOMEBREW_FORCE_VENDOR_RUBY`
   <br>If set, always use Homebrew's vendored, relocatable Ruby version even if the system version of Ruby is new enough.

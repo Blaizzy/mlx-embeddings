@@ -58,8 +58,8 @@ git_init_if_necessary() {
     trap - EXIT
   fi
 
-  [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]] || return
-  safe_cd "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
+  [[ -d "${HOMEBREW_CORE_REPOSITORY}" ]] || return
+  safe_cd "${HOMEBREW_CORE_REPOSITORY}"
   if [[ ! -d ".git" ]]
   then
     set -e
@@ -270,7 +270,13 @@ EOS
   # ensure we don't munge line endings on checkout
   git config core.autocrlf false
 
-  if [[ -z "${HOMEBREW_MERGE}" ]]
+  if [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -n "${HOMEBREW_LINUXBREW_MIGRATION}" ]]
+  then
+    # Don't even try to rebase/merge on linuxbrew-core migration but rely on
+    # stashing etc. above.
+    git reset --hard "${QUIET_ARGS[@]}" "${REMOTE_REF}"
+    unset HOMEBREW_LINUXBREW_MIGRATION
+  elif [[ -z "${HOMEBREW_MERGE}" ]]
   then
     # Work around bug where git rebase --quiet is not quiet
     if [[ -z "${HOMEBREW_VERBOSE}" ]]
@@ -387,7 +393,7 @@ EOS
   if [[ -n "${HOMEBREW_FORCE_BREWED_CA_CERTIFICATES}" && ! -f "${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem" ]]
   then
     # we cannot install Homebrew CA certificates if homebrew/core is unavailable.
-    if [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" || -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+    if [[ -d "${HOMEBREW_CORE_REPOSITORY}" || -n "${HOMEBREW_INSTALL_FROM_API}" ]]
     then
       brew install ca-certificates
       setup_ca_certificates
@@ -398,7 +404,7 @@ EOS
   if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && ! -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]]
   then
     # we cannot install a Homebrew cURL if homebrew/core is unavailable.
-    if [[ ! -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install curl
+    if [[ ! -d "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install curl
     then
       odie "'curl' must be installed and in your PATH!"
     fi
@@ -410,7 +416,7 @@ EOS
      [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" && ! -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]]
   then
     # we cannot install a Homebrew Git if homebrew/core is unavailable.
-    if [[ ! -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install git
+    if [[ ! -d "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install git
     then
       odie "'git' must be installed and in your PATH!"
     fi
@@ -418,7 +424,7 @@ EOS
     setup_git
   fi
 
-  [[ -f "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core/.git/shallow" ]] && HOMEBREW_CORE_SHALLOW=1
+  [[ -f "${HOMEBREW_CORE_REPOSITORY}/.git/shallow" ]] && HOMEBREW_CORE_SHALLOW=1
   [[ -f "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask/.git/shallow" ]] && HOMEBREW_CASK_SHALLOW=1
   if [[ -n "${HOMEBREW_CORE_SHALLOW}" && -n "${HOMEBREW_CASK_SHALLOW}" ]]
   then
@@ -436,7 +442,7 @@ ${HOMEBREW_CORE_SHALLOW:+
   homebrew-core is a shallow clone.}${HOMEBREW_CASK_SHALLOW:+
   homebrew-cask is a shallow clone.}
 To \`brew update\`, first run:${HOMEBREW_CORE_SHALLOW:+
-  git -C "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" fetch --unshallow}${HOMEBREW_CASK_SHALLOW:+
+  git -C "${HOMEBREW_CORE_REPOSITORY}" fetch --unshallow}${HOMEBREW_CASK_SHALLOW:+
   git -C "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" fetch --unshallow}
 ${SHALLOW_COMMAND_PHRASE} may take a few minutes to run due to the large size of the ${SHALLOW_REPO_PHRASE}.
 This restriction has been made on GitHub's request because updating shallow
@@ -491,26 +497,42 @@ EOS
     git remote set-url origin "${HOMEBREW_BREW_GIT_REMOTE}"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force --tags origin
+    SKIP_FETCH_BREW_REPOSITORY=1
   fi
 
-  if [[ "${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_CORE_GIT_REMOTE}" ]] &&
-     [[ -d "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
+  if [[ -d "${HOMEBREW_CORE_REPOSITORY}" ]] &&
+     [[ "${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_CORE_GIT_REMOTE}" ||
+        -n "${HOMEBREW_LINUXBREW_MIGRATION}" ]]
   then
-    safe_cd "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
+    if [[ -n "${HOMEBREW_LINUXBREW_MIGRATION}" ]]
+    then
+      # This means a migration is needed (in case it isn't run this time)
+      safe_cd "${HOMEBREW_REPOSITORY}"
+      git config --bool homebrew.linuxbrewmigrated false
+    fi
+
+    safe_cd "${HOMEBREW_CORE_REPOSITORY}"
     echo "HOMEBREW_CORE_GIT_REMOTE set: using ${HOMEBREW_CORE_GIT_REMOTE} for Homebrew/core Git remote."
     git remote set-url origin "${HOMEBREW_CORE_GIT_REMOTE}"
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch --force origin refs/heads/master:refs/remotes/origin/master
+    SKIP_FETCH_CORE_REPOSITORY=1
   fi
 
   safe_cd "${HOMEBREW_REPOSITORY}"
 
-  # if an older system had a newer curl installed, change each repo's remote URL from GIT to HTTPS
+  # This means a migration is needed but hasn't completed (yet).
+  if [[ "$(git config homebrew.linuxbrewmigrated 2>/dev/null)" == "false" ]]
+  then
+    export HOMEBREW_MIGRATE_LINUXBREW_FORMULAE=1
+  fi
+
+  # if an older system had a newer curl installed, change each repo's remote URL from git to https
   if [[ -n "${HOMEBREW_SYSTEM_CURL_TOO_OLD}" && -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
      [[ "$(git config remote.origin.url)" =~ ^git:// ]]
   then
     git config remote.origin.url "${HOMEBREW_BREW_GIT_REMOTE}"
-    git config -f "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core/.git/config" remote.origin.url "${HOMEBREW_CORE_GIT_REMOTE}"
+    git config -f "${HOMEBREW_CORE_REPOSITORY}/.git/config" remote.origin.url "${HOMEBREW_CORE_GIT_REMOTE}"
   fi
 
   # kill all of subprocess on interrupt
@@ -525,7 +547,7 @@ EOS
   do
     if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
        [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
-       [[ "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]]
+       [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ]]
     then
       continue
     fi
@@ -552,7 +574,7 @@ EOS
     if [[ -z "${HOMEBREW_UPDATE_FORCE}" ]]
     then
       [[ -n "${SKIP_FETCH_BREW_REPOSITORY}" && "${DIR}" == "${HOMEBREW_REPOSITORY}" ]] && continue
-      [[ -n "${SKIP_FETCH_CORE_REPOSITORY}" && "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ]] && continue
+      [[ -n "${SKIP_FETCH_CORE_REPOSITORY}" && "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ]] && continue
     fi
 
     # The upstream repository's default branch may not be master;
@@ -676,7 +698,7 @@ EOS
     # shellcheck disable=SC2031
     if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
        [[ -n "${HOMEBREW_UPDATE_PREINSTALL}" ]] &&
-       [[ "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core" ||
+       [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ||
           "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
     then
       continue
@@ -719,6 +741,7 @@ EOS
      [[ -n "${HOMEBREW_UPDATE_FAILED}" ]] ||
      [[ -n "${HOMEBREW_MISSING_REMOTE_REF_DIRS}" ]] ||
      [[ -n "${HOMEBREW_UPDATE_FORCE}" ]] ||
+     [[ -n "${HOMEBREW_MIGRATE_LINUXBREW_FORMULAE}" ]] ||
      [[ -d "${HOMEBREW_LIBRARY}/LinkedKegs" ]] ||
      [[ ! -f "${HOMEBREW_CACHE}/all_commands_list.txt" ]] ||
      [[ -n "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_UPDATE_PREINSTALL}" ]]

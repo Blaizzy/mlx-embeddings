@@ -154,8 +154,8 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_FORCE_HOMEBREW_ON_LINUX:           {
-        description: "If set, running Homebrew on Linux will use URLs for macOS. This is useful when merging " \
-                     "pull requests for macOS while on Linux.",
+        description: "If set, running Homebrew on Linux will use URLs for macOS and will use homebrew-core instead " \
+                     "of linuxbrew-core. This is useful when merging pull requests for macOS while on Linux.",
         boolean:     true,
       },
       HOMEBREW_FORCE_VENDOR_RUBY:                 {
