@@ -387,6 +387,7 @@ class RuboCop::Cop::Rails::ContentTag < ::RuboCop::Cop::Base
   def autocorrect(corrector, node, preferred_method); end
   def corrected_ancestor?(node); end
   def correction_range(node); end
+  def register_offense(node, message, preferred_method); end
 end
 
 RuboCop::Cop::Rails::ContentTag::MSG = T.let(T.unsafe(nil), String)
@@ -690,6 +691,8 @@ class RuboCop::Cop::Rails::FindEach < ::RuboCop::Cop::Base
 
   private
 
+  def active_model_error?(node); end
+  def active_model_error_where?(node); end
   def ignored?(node); end
 end
 
