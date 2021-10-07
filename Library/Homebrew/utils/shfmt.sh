@@ -325,6 +325,12 @@ align_multiline_switch_cases() {
   true
 }
 
+# Return codes:
+#   0: success, good styles
+#   1: file system permission errors
+#   2: shfmt failed
+#   3: forbidden styles detected
+#   4: bad styles but can be auto-fixed
 format() {
   local file="$1"
   local tempfile
@@ -348,11 +354,11 @@ format() {
   if ! "${SHFMT}" -w "${SHFMT_ARGS[@]}" "${tempfile}"
   then
     onoe "Failed to run \`shfmt\` for file \"${file}\"."
-    return 1
+    return 2
   fi
 
   # Fail fast when forbidden styles detected
-  ! no_forbidden_styles "${file}" "${tempfile}" && return 2
+  no_forbidden_styles "${file}" "${tempfile}" || return 3
 
   # Tweak it with custom shell script styles
   wrap_then_do "${file}" "${tempfile}"
@@ -360,13 +366,14 @@ format() {
 
   if ! "${DIFF}" -q "${file}" "${tempfile}" &>/dev/null
   then
-    # Show differences
-    "${DIFF}" "${DIFF_ARGS[@]}" "${file}" "${tempfile}"
     if [[ -n "${INPLACE}" ]]
     then
       cp -af "${tempfile}" "${file}"
+    else
+      # Show differences
+      "${DIFF}" "${DIFF_ARGS[@]}" "${file}" "${tempfile}" 1>&2
     fi
-    return 2
+    return 4
   else
     # File is identical between code formations (good styling)
     return 0
@@ -376,16 +383,31 @@ format() {
 RETCODE=0
 for file in "${FILES[@]}"
 do
-  format "${file}"
-  retcode="$?"
+  retcode=''
+  if [[ -n "${INPLACE}" ]]
+  then
+    INPLACE=1 format "${file}"
+    retcode="$?"
+    if [[ "${retcode}" == 4 ]]
+    then
+      onoe "${0##*/}: Bad styles detected in file \"${file}\", fixing..."
+      retcode=''
+    fi
+  fi
+  if [[ -z "${retcode}" ]]
+  then
+    INPLACE='' format "${file}"
+    retcode="$?"
+  fi
   if [[ "${retcode}" != 0 ]]
   then
-    if [[ "${retcode}" == 1 ]]
-    then
-      onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code 1."
-    else
-      onoe "${0##*/}: Bad style for file \"${file}\". Formatter exited with code 2."
-    fi
+    case "${retcode}" in
+      1) onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code 1 (permission error)." ;;
+      2) onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code 2 (\`shfmt\` failed)." ;;
+      3) onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code 3 (forbidden styles detected)." ;;
+      4) onoe "${0##*/}: Fixable bad styles detected in file \"${file}\", run \`brew style --fix\` to apply. Formatter exited with code 4." ;;
+      *) onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code ${retcode}." ;;
+    esac
     onoe
     RETCODE=1
   fi
