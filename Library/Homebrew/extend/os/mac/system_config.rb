@@ -7,7 +7,7 @@ module SystemConfig
   class << self
     include SystemCommand::Mixin
 
-    undef describe_homebrew_ruby
+    undef describe_homebrew_ruby, describe_clang
 
     def describe_homebrew_ruby
       s = describe_homebrew_ruby_version
@@ -17,6 +17,13 @@ module SystemConfig
       else
         "#{s} => #{RUBY_PATH}"
       end
+    end
+
+    def describe_clang
+      return "N/A" if clang.null?
+
+      clang_build_info = clang_build.null? ? "(parse error)" : clang_build
+      "#{clang} build #{clang_build_info}"
     end
 
     def xcode
