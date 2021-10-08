@@ -240,9 +240,10 @@ module Homebrew
   def github_info(f)
     return f.path if f.tap.blank? || f.tap.remote.blank?
 
-    path = if f.is_a?(Formula)
+    path = case f
+    when Formula
       f.path.relative_path_from(f.tap.path)
-    elsif f.is_a?(Cask::Cask)
+    when Cask::Cask
       f.sourcefile_path.relative_path_from(f.tap.path)
     end
     github_remote_path(f.tap.remote, path)
