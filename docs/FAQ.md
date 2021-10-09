@@ -45,7 +45,7 @@ When automatic `brew cleanup` is disabled, if you uninstall a formula, it will o
 
 In this case, to remove a formula entirely, you may run `brew uninstall --force <formula>`. Be careful as this is a destructive operation.
 
-## Why does `brew upgrade <formula>` also upgrade a bunch of other stuff?
+## Why does `brew upgrade <formula>` or `brew install <formula>` also upgrade a bunch of other stuff?
 Homebrew doesn't support arbitrary mixing and matching of formula versions, so everything a formula depends on, and everything that depends on it in turn, needs to be upgraded to the latest version as that's the only combination of formulae we test. As a consequence any given `upgrade` or `install` command can upgrade many other (seemingly unrelated) formulae, if something important like `python` or `openssl` also needed an upgrade.
 
 ## Where does stuff get downloaded?
