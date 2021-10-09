@@ -754,12 +754,12 @@ module Cask
 
     def check_url_for_https_availability(url_to_check, url_type, cask_token, tap, **options)
       problem = curl_check_http_content(url_to_check.to_s, url_type, **options)
-      exception = tap&.audit_exception(:cert_error_allowlist, cask_token, url_to_check.to_s)
+      exception = tap&.audit_exception(:secure_connection_audit_skiplist, cask_token, url_to_check.to_s)
 
       if problem
         add_error problem unless exception
       elsif exception
-        add_error "#{url_to_check} is in the certificate error allowlist but does not have a certificate error"
+        add_error "#{url_to_check} is in the secure connection audit skiplist but does not need to be skipped"
       end
     end
   end
