@@ -59,7 +59,7 @@ module FormulaCellarChecks
       install to "libexec" and then symlink or wrap binaries into "bin".
       See formulae 'activemq', 'jruby', etc. for examples.
       The offending files are:
-        #{jars * "\n        "}
+        #{jars * "\n  "}
     EOS
   end
 
@@ -84,7 +84,7 @@ module FormulaCellarChecks
       Non-libraries were installed to "#{formula.lib}".
       Installing non-libraries to "lib" is discouraged.
       The offending files are:
-        #{non_libraries * "\n        "}
+        #{non_libraries * "\n  "}
     EOS
   end
 
@@ -114,7 +114,7 @@ module FormulaCellarChecks
       Homebrew suggests that this software is installed to "libexec" and then
       symlinked as needed.
       The offending files are:
-        #{generics * "\n        "}
+        #{generics * "\n  "}
     EOS
   end
 
@@ -127,7 +127,7 @@ module FormulaCellarChecks
       These '.pth' files are likely to cause link conflicts.
       Please invoke `setup.py` using 'Language::Python.setup_install_args'.
       The offending files are:
-        #{pth_found * "\n        "}
+        #{pth_found * "\n  "}
     EOS
   end
 
@@ -165,7 +165,7 @@ module FormulaCellarChecks
       They should instead be installed into:
         #{share}/emacs/site-lisp/#{name}
       The offending files are:
-        #{elisps * "\n        "}
+        #{elisps * "\n  "}
     EOS
   end
 
@@ -199,9 +199,9 @@ module FormulaCellarChecks
 
     <<~EOS
       Packages have been installed for:
-        #{pythons * "\n        "}
+        #{pythons * "\n  "}
       but this formula depends on:
-        #{python_deps * "\n        "}
+        #{python_deps * "\n  "}
     EOS
   end
 
