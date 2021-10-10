@@ -45,7 +45,7 @@ module OS
     sig { returns(::Version) }
     def latest_sdk_version
       # TODO: bump version when new Xcode macOS SDK is released
-      ::Version.new("11.1")
+      ::Version.new("11.3")
     end
     private :latest_sdk_version
 
