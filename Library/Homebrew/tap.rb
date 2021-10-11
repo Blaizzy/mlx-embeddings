@@ -246,7 +246,8 @@ class Tap
   # @param force_auto_update [Boolean, nil] If present, whether to override the
   #   logic that skips non-GitHub repositories during auto-updates.
   # @param quiet [Boolean] If set, suppress all output.
-  def install(quiet: false, clone_target: nil, force_auto_update: nil)
+  # @param custom_remote [Boolean] If set, change the tap's remote if already installed.
+  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false)
     require "descriptions"
     require "readall"
 
@@ -257,9 +258,11 @@ class Tap
       odie "#{name} was moved. Tap homebrew/#{new_repo} instead."
     end
 
+    raise TapNoCustomRemoteError, name if custom_remote && clone_target.nil?
+
     requested_remote = clone_target || default_remote
 
-    if installed?
+    if installed? && !custom_remote
       raise TapRemoteMismatchError.new(name, @remote, requested_remote) if clone_target && requested_remote != remote
       raise TapAlreadyTappedError, name if force_auto_update.nil? && !shallow?
     end
@@ -268,6 +271,10 @@ class Tap
     Utils::Git.ensure_installed!
 
     if installed?
+      if requested_remote != remote # we are sure that clone_target is not nil and custom_remote is true here
+        fix_remote_configuration(requested_remote: requested_remote, quiet: quiet)
+      end
+
       unless force_auto_update.nil?
         config["forceautoupdate"] = force_auto_update
         return
@@ -358,20 +365,33 @@ class Tap
     end
   end
 
-  def fix_remote_configuration
-    return unless remote.include? "github.com"
+  def fix_remote_configuration(requested_remote: nil, quiet: false)
+    unless requested_remote.nil?
+      path.cd do
+        safe_system "git", "remote", "set-url", "origin", requested_remote
+        safe_system "git", "config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*"
+      end
+      $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
+    end
 
     current_upstream_head = path.git_origin_branch
-    return if path.git_origin_has_branch? current_upstream_head
+    return if requested_remote.nil? && path.git_origin_has_branch?(current_upstream_head)
 
-    safe_system "git", "-C", path, "fetch", "origin"
+    args = %w[fetch]
+    args << "-q" if quiet
+    args << "origin"
+    safe_system "git", "-C", path, *args
     path.git_origin_set_head_auto
 
     new_upstream_head = path.git_origin_branch
+    return if new_upstream_head == old_upstream_head
+
     path.git_rename_branch old: current_upstream_head, new: new_upstream_head
     path.git_branch_set_upstream local: new_upstream_head, origin: new_upstream_head
 
-    ohai "#{name}: changed default branch name from #{current_upstream_head} to #{new_upstream_head}!"
+    unless quiet # rubocop:disable Style/GuardClause
+      $stderr.ohai "#{name}: changed default branch name from #{current_upstream_head} to #{new_upstream_head}!"
+    end
   end
 
   # Uninstall this {Tap}.
@@ -741,12 +761,18 @@ class CoreTap < Tap
   end
 
   # CoreTap never allows shallow clones (on request from GitHub).
-  def install(quiet: false, clone_target: nil, force_auto_update: nil)
+  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false)
     remote = Homebrew::EnvConfig.core_git_remote
+    requested_remote = clone_target || default_remote
+
+    # The remote will changed again on `brew update` since remotes for Homebrew/core are mismatch
+    raise TapCoreRemoteMismatchError.new(name, remote, requested_remote) if requested_remote != remote
+
     if remote != default_remote
-      $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote URL."
+      $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote."
     end
-    super(quiet: quiet, clone_target: remote, force_auto_update: force_auto_update)
+
+    super(quiet: quiet, clone_target: remote, force_auto_update: force_auto_update, custom_remote: custom_remote)
   end
 
   # @private
