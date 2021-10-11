@@ -34,11 +34,12 @@ module Homebrew
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
-      switch "--write",
+      switch "--write-only",
              description: "Make the expected file modifications without taking any Git actions."
+      switch "--write", hidden: true
       switch "--commit",
-             depends_on:  "--write",
-             description: "When passed with `--write`, generate a new commit after writing changes "\
+             depends_on:  "--write-only",
+             description: "When passed with `--write-only`, generate a new commit after writing changes "\
                           "to the formula file."
       switch "--no-audit",
              description: "Don't run `brew audit` before opening the PR."
@@ -75,6 +76,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
 
+      conflicts "--dry-run", "--write-only"
       conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"
       conflicts "--no-audit", "--online"
@@ -98,7 +100,7 @@ module Homebrew
     formula_path = formula.path.relative_path_from(formula.tap.path)
     full_origin_branch = "#{homebrew_core_remote}/#{default_origin_branch}"
 
-    if args.dry_run? || args.write?
+    if args.dry_run? || args.write? || args.write_only?
       ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
       ohai "git fetch #{homebrew_core_remote} HEAD #{default_origin_branch}"
       ohai "git cat-file -e #{full_origin_branch}:#{formula_path}"
@@ -123,6 +125,9 @@ module Homebrew
 
   def bump_formula_pr
     args = bump_formula_pr_args.parse
+
+    # TODO: deprecate in Homebrew 3.3.0
+    # odeprecated "`brew bump-formula-pr --write`", "`brew bump-formula-pr --write-only`" if args.write?
 
     if args.revision.present? && args.tag.nil? && args.version.nil?
       raise UsageError, "`--revision` must be passed with either `--tag` or `--version`!"
