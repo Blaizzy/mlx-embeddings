@@ -13,5 +13,9 @@
     "--external-sources",
     "--source-path=${workspaceFolder}/Library"
   ],
-  "shellformat.flag": "-i 2 -ci"
+  "shellformat.effectLanguages": [
+    "shellscript"
+  ],
+  "shellformat.path": "${workspaceFolder}/Library/Homebrew/utils/shfmt.sh",
+  "shellformat.flag": "-i 2 -ci -ln bash"
 }
