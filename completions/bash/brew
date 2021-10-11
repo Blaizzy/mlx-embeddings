@@ -1902,6 +1902,7 @@ _brew_tap() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --custom-remote
       --debug
       --force-auto-update
       --full
