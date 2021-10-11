@@ -188,7 +188,7 @@ module Utils
     # Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
     def url_protected_by_cloudflare?(details)
       [403, 503].include?(details[:status].to_i) &&
-        details[:headers].match?(/^Set-Cookie: __cfduid=/i) &&
+        details[:headers].match?(/^Set-Cookie: (__cfduid|__cf_bm)=/i) &&
         details[:headers].match?(/^Server: cloudflare/i)
     end
 
