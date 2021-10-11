@@ -293,6 +293,9 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def write_only?; end
+
+      sig { returns(T::Boolean) }
+      def custom_remote?; end
     end
   end
 end
