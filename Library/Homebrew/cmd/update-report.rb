@@ -9,6 +9,7 @@ require "cleanup"
 require "description_cache_store"
 require "cli/parser"
 require "settings"
+require "linuxbrew-core-migration"
 
 module Homebrew
   extend T::Sig
@@ -103,6 +104,28 @@ module Homebrew
     Tap.each do |tap|
       next unless tap.git?
       next if tap.core_tap? && ENV["HOMEBREW_INSTALL_FROM_API"].present? && args.preinstall?
+
+      if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
+         Settings.read("linuxbrewmigrated") != "true"
+        puts_stdout_or_stderr "Migrating formulae from linuxbrew-core to homebrew-core" unless args.quiet?
+
+        LINUXBREW_CORE_MIGRATION_LIST.each do |name|
+          begin
+            formula = Formula[name]
+          rescue FormulaUnavailableError
+            next
+          end
+          next unless formula.any_version_installed?
+
+          keg = formula.installed_kegs.last
+          tab = Tab.for_keg(keg)
+          # force a `brew upgrade` from the linuxbrew-core version to the homebrew-core version (even if lower)
+          tab.source["versions"]["version_scheme"] = -1
+          tab.write
+        end
+
+        Settings.write "linuxbrewmigrated", true
+      end
 
       begin
         reporter = Reporter.new(tap)

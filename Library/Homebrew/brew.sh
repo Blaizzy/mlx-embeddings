@@ -546,12 +546,25 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
   HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin 2>/dev/null)"
   if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" == "https://github.com/Homebrew/homebrew-core" ]]
   then
-    # If the remote origin has been set to Homebrew/homebrew-core by the install script,
-    # then we are in the case of a new installation of brew, using Homebrew/homebrew-core as a Linux core repository.
-    # In that case, set HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX=1 to set the right HOMEBREW_BOTTLE_DOMAIN below.
-    # TODO: Once the linuxbrew-core migration is done we will be able to clean this up and
-    # remove HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX
-    export HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX="1"
+    # TODO: this variable can go away when we're migrating everyone to homebrew-core.
+    HOMEBREW_CORE_ON_LINUX=1
+  # Migrate from linuxbrew-core to homebrew-core:
+  # - if either HOMEBREW_FORCE_HOMEBREW_ON_LINUX or HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX are set
+  # - unless HOMEBREW_LINUXCORE_MERGE is set (by maintainers who still merge homebrew-core into linuxbrew-core)
+  # - only HOMEBREW_DEVELOPER users (for now)
+  # - not on GitHub Actions (for now)
+  elif [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ||
+          -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]] ||
+       [[ -n "${HOMEBREW_DEVELOPER}" ]] &&
+       [[ -z "${HOMEBREW_LINUXCORE_MERGE}" ]] &&
+       [[ -z "${GITHUB_ACTIONS}" ]]
+  then
+    # TODO: this variable can go away when we're migrating everyone to homebrew-core.
+    HOMEBREW_CORE_ON_LINUX=1
+
+    # triggers migration code in update.sh
+    # shellcheck disable=SC2034
+    HOMEBREW_LINUXBREW_MIGRATION=1
   fi
 fi
 
@@ -583,8 +596,7 @@ then
 fi
 
 if [[ -n "${HOMEBREW_MACOS}" ]] ||
-   [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]] ||
-   [[ -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
+   [[ -n "${HOMEBREW_CORE_ON_LINUX}" ]]
 then
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
 else
@@ -725,8 +737,7 @@ fi
 export HOMEBREW_BREW_GIT_REMOTE
 
 if [[ -n "${HOMEBREW_MACOS}" ]] ||
-   [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ]] ||
-   [[ -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]]
+   [[ -n "${HOMEBREW_CORE_ON_LINUX}" ]]
 then
   HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
 else
