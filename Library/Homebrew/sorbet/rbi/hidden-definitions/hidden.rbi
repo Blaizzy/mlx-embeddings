@@ -5858,6 +5858,7 @@ class Object
   HOMEBREW_USER_AGENT_RUBY = ::T.let(nil, ::T.untyped)
   HOMEBREW_VERSION = ::T.let(nil, ::T.untyped)
   HOMEBREW_WWW = ::T.let(nil, ::T.untyped)
+  LINUXBREW_CORE_MIGRATION_LIST = ::T.let(nil, ::T.untyped)
   OFFICIAL_CASK_TAPS = ::T.let(nil, ::T.untyped)
   OFFICIAL_CMD_TAPS = ::T.let(nil, ::T.untyped)
   OPTION_DESC_WIDTH = ::T.let(nil, ::T.untyped)
