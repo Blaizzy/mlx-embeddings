@@ -384,7 +384,7 @@ class Tap
     path.git_origin_set_head_auto
 
     new_upstream_head = path.git_origin_branch
-    return if new_upstream_head == old_upstream_head
+    return if new_upstream_head == current_upstream_head
 
     path.git_rename_branch old: current_upstream_head, new: new_upstream_head
     path.git_branch_set_upstream local: new_upstream_head, origin: new_upstream_head
