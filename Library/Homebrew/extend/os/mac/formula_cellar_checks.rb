@@ -22,7 +22,7 @@ module FormulaCellarChecks
     <<~EOS
       Header files that shadow system header files were installed to "#{formula.include}"
       The offending files are:
-        #{files * "\n        "}
+        #{files * "\n  "}
     EOS
   end
 
@@ -41,7 +41,7 @@ module FormulaCellarChecks
       These object files were linked against the deprecated system OpenSSL or
       the system's private LibreSSL.
       Adding `depends_on "openssl"` to the formula may help.
-        #{system_openssl * "\n        "}
+        #{system_openssl * "\n "}
     EOS
   end
 
@@ -58,7 +58,7 @@ module FormulaCellarChecks
       These python extension modules were linked directly to a Python
       framework binary. They should be linked with -undefined dynamic_lookup
       instead of -lpython or -framework Python.
-        #{framework_links * "\n        "}
+        #{framework_links * "\n  "}
     EOS
   end
 
@@ -88,12 +88,37 @@ module FormulaCellarChecks
     end
   end
 
+  def check_flat_namespace(formula)
+    return unless formula.prefix.directory?
+    return if formula.tap.present? && tap_audit_exception(:flat_namespace_allowlist, formula.name)
+
+    keg = Keg.new(formula.prefix)
+    flat_namespace_files = keg.mach_o_files.reject do |file|
+      next true unless file.dylib?
+      # FIXME: macho.header.flag? is not defined when macho
+      #        is a universal binary.
+      next true if file.universal?
+
+      macho = MachO.open(file)
+      macho.header.flag?(:MH_TWO_LEVEL)
+    end
+    return if flat_namespace_files.empty?
+
+    <<~EOS
+      Libraries were compiled with a flat namespace.
+      This can cause linker errors due to name collisions, and
+      is often due to a bug in detecting the macOS version.
+        #{flat_namespace_files * "\n  "}
+    EOS
+  end
+
   def audit_installed
     generic_audit_installed
     problem_if_output(check_shadowed_headers)
     problem_if_output(check_openssl_links)
     problem_if_output(check_python_framework_links(formula.lib))
     check_linkage
+    problem_if_output(check_flat_namespace(formula))
   end
 
   def valid_library_extension?(filename)
