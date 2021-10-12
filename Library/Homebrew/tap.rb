@@ -765,7 +765,7 @@ class CoreTap < Tap
     remote = Homebrew::EnvConfig.core_git_remote
     requested_remote = clone_target || default_remote
 
-    # The remote will changed again on `brew update` since remotes for Homebrew/core are mismatch
+    # The remote will changed again on `brew update` since remotes for Homebrew/core are mismatched
     raise TapCoreRemoteMismatchError.new(name, remote, requested_remote) if requested_remote != remote
 
     if remote != default_remote
