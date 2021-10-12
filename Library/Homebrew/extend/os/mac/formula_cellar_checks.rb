@@ -98,9 +98,9 @@ module FormulaCellarChecks
 
       macho = MachO.open(file)
       if file.universal?
-        macho.machos.map(&:header).all? { |h| h.flag? :MH_TWO_LEVEL }
+        macho.machos.map(&:header).all? { |h| h.flag? :MH_TWOLEVEL }
       else
-        macho.header.flag?(:MH_TWO_LEVEL)
+        macho.header.flag?(:MH_TWOLEVEL)
       end
     end
     return if flat_namespace_files.empty?
