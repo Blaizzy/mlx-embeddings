@@ -366,7 +366,7 @@ class Tap
   end
 
   def fix_remote_configuration(requested_remote: nil, quiet: false)
-    unless requested_remote.nil?
+    if requested_remote.present?
       path.cd do
         safe_system "git", "remote", "set-url", "origin", requested_remote
         safe_system "git", "config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*"
@@ -375,10 +375,10 @@ class Tap
     end
 
     current_upstream_head = path.git_origin_branch
-    return if requested_remote.nil? && path.git_origin_has_branch?(current_upstream_head)
+    return if requested_remote.blank? && path.git_origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
-    args << "-q" if quiet
+    args << "--quiet" if quiet
     args << "origin"
     safe_system "git", "-C", path, *args
     path.git_origin_set_head_auto
