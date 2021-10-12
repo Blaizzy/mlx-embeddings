@@ -389,9 +389,9 @@ class Tap
     path.git_rename_branch old: current_upstream_head, new: new_upstream_head
     path.git_branch_set_upstream local: new_upstream_head, origin: new_upstream_head
 
-    unless quiet # rubocop:disable Style/GuardClause
-      $stderr.ohai "#{name}: changed default branch name from #{current_upstream_head} to #{new_upstream_head}!"
-    end
+    return if quiet
+
+    $stderr.ohai "#{name}: changed default branch name from #{current_upstream_head} to #{new_upstream_head}!"
   end
 
   # Uninstall this {Tap}.
