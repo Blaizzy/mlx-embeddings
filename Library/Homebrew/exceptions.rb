@@ -324,9 +324,24 @@ class TapRemoteMismatchError < RuntimeError
     @expected_remote = expected_remote
     @actual_remote = actual_remote
 
-    super <<~EOS
+    super message
+  end
+
+  def message
+    <<~EOS
       Tap #{name} remote mismatch.
       #{expected_remote} != #{actual_remote}
+    EOS
+  end
+end
+
+# Raised when the remote of Homebrew/core does not match HOMEBREW_CORE_GIT_REMOTE.
+class TapCoreRemoteMismatchError < TapRemoteMismatchError
+  def message
+    <<~EOS
+      Tap #{name} remote does mot match HOMEBREW_CORE_GIT_REMOTE.
+      #{expected_remote} != #{actual_remote}
+      Please set HOMEBREW_CORE_GIT_REMOTE="#{actual_remote}" and run `brew update` instead.
     EOS
   end
 end
@@ -340,6 +355,19 @@ class TapAlreadyTappedError < RuntimeError
 
     super <<~EOS
       Tap #{name} already tapped.
+    EOS
+  end
+end
+
+# Raised when run `brew tap --custom-remote` without a remote URL.
+class TapNoCustomRemoteError < RuntimeError
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+
+    super <<~EOS
+      Tap #{name} with option `--custom-remote` but without a remote URL.
     EOS
   end
 end
