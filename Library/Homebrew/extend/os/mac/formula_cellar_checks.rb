@@ -95,12 +95,13 @@ module FormulaCellarChecks
     keg = Keg.new(formula.prefix)
     flat_namespace_files = keg.mach_o_files.reject do |file|
       next true unless file.dylib?
-      # FIXME: macho.header.flag? is not defined when macho
-      #        is a universal binary.
-      next true if file.universal?
 
       macho = MachO.open(file)
-      macho.header.flag?(:MH_TWO_LEVEL)
+      if file.universal?
+        macho.machos.map(&:header).all? { |h| h.flag? :MH_TWO_LEVEL }
+      else
+        macho.header.flag?(:MH_TWO_LEVEL)
+      end
     end
     return if flat_namespace_files.empty?
 
