@@ -5,6 +5,7 @@
     "rebornix.ruby",
     "wingrunr21.vscode-ruby",
     "timonwong.shellcheck",
-    "foxundermoon.shell-format"
+    "foxundermoon.shell-format",
+    "editorconfig.editorconfig"
   ]
 }
