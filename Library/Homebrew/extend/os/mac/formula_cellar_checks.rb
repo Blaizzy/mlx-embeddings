@@ -41,7 +41,7 @@ module FormulaCellarChecks
       These object files were linked against the deprecated system OpenSSL or
       the system's private LibreSSL.
       Adding `depends_on "openssl"` to the formula may help.
-        #{system_openssl * "\n "}
+        #{system_openssl * "\n  "}
     EOS
   end
 
@@ -97,10 +97,10 @@ module FormulaCellarChecks
       next true unless file.dylib?
 
       macho = MachO.open(file)
-      if file.universal?
+      if MachO::Utils.fat_magic?(macho.magic)
         macho.machos.map(&:header).all? { |h| h.flag? :MH_TWOLEVEL }
       else
-        macho.header.flag?(:MH_TWOLEVEL)
+        macho.header.flag? :MH_TWOLEVEL
       end
     end
     return if flat_namespace_files.empty?
