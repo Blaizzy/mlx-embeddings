@@ -11,6 +11,10 @@ module Homebrew
     module_function
 
     ENVS = {
+      HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID:    {
+        description: "Additional Google Analytics tracking ID to emit user behaviour analytics to. " \
+                     "For more information, see: <https://docs.brew.sh/Analytics>",
+      },
       HOMEBREW_ARCH:                              {
         description: "Linux only: Pass this value to a type name representing the compiler's `-march` option.",
         default:     "native",
