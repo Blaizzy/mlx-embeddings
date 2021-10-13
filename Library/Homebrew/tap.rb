@@ -762,8 +762,8 @@ class CoreTap < Tap
 
   # CoreTap never allows shallow clones (on request from GitHub).
   def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false)
-    remote = Homebrew::EnvConfig.core_git_remote
-    requested_remote = clone_target || default_remote
+    remote = Homebrew::EnvConfig.core_git_remote # set by HOMEBREW_CORE_GIT_REMOTE
+    requested_remote = clone_target || remote
 
     # The remote will changed again on `brew update` since remotes for Homebrew/core are mismatched
     raise TapCoreRemoteMismatchError.new(name, remote, requested_remote) if requested_remote != remote
