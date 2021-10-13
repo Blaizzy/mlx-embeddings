@@ -296,6 +296,9 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def custom_remote?; end
+
+      sig { returns(T::Boolean) }
+      def print_path?; end
     end
   end
 end

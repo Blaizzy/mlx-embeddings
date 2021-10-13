@@ -21,6 +21,8 @@ module Homebrew
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
+      switch "--print-path",
+             description: "Print the file path to be edited, without opening an editor."
 
       conflicts "--formula", "--cask"
 
@@ -57,6 +59,11 @@ module Homebrew
                           "Run #{Formatter.identifier("brew create --set-name #{path.basename} $URL")} " \
                           "to create a new formula!"
       end.presence
+    end
+
+    if args.print_path?
+      paths.each(&method(:puts))
+      return
     end
 
     exec_editor(*paths)

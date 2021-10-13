@@ -186,10 +186,6 @@ module Homebrew
         to_formulae_to_casks(only: only, method: :resolve)
       end
 
-      def to_formulae_paths
-        to_paths(only: :formula)
-      end
-
       # Keep existing paths and try to convert others to tap, formula or cask paths.
       # If a cask and formula with the same name exist, includes both their paths
       # unless `only` is specified.
