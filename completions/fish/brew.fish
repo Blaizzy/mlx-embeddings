@@ -416,7 +416,7 @@ __fish_brew_complete_arg 'bump-cask-pr' -a '(__fish_brew_suggest_casks_all)'
 
 
 __fish_brew_complete_cmd 'bump-formula-pr' 'Create a pull request to update formula with a new URL or a new tag'
-__fish_brew_complete_arg 'bump-formula-pr' -l commit -d 'When passed with `--write`, generate a new commit after writing changes to the formula file'
+__fish_brew_complete_arg 'bump-formula-pr' -l commit -d 'When passed with `--write-only`, generate a new commit after writing changes to the formula file'
 __fish_brew_complete_arg 'bump-formula-pr' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'bump-formula-pr' -l dry-run -d 'Print what would be done rather than doing it'
 __fish_brew_complete_arg 'bump-formula-pr' -l force -d 'Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified'
@@ -436,7 +436,7 @@ __fish_brew_complete_arg 'bump-formula-pr' -l tag -d 'Specify the new git commit
 __fish_brew_complete_arg 'bump-formula-pr' -l url -d 'Specify the URL for the new download. If a URL is specified, the SHA-256 checksum of the new download should also be specified'
 __fish_brew_complete_arg 'bump-formula-pr' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'bump-formula-pr' -l version -d 'Use the specified version to override the value parsed from the URL or tag. Note that `--version=0` can be used to delete an existing version override from a formula if it has become redundant'
-__fish_brew_complete_arg 'bump-formula-pr' -l write -d 'Make the expected file modifications without taking any Git actions'
+__fish_brew_complete_arg 'bump-formula-pr' -l write-only -d 'Make the expected file modifications without taking any Git actions'
 __fish_brew_complete_arg 'bump-formula-pr' -a '(__fish_brew_suggest_formulae_all)'
 
 
