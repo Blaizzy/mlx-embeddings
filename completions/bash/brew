@@ -502,7 +502,7 @@ _brew_bump_formula_pr() {
       --url
       --verbose
       --version
-      --write
+      --write-only
       "
       return
       ;;
