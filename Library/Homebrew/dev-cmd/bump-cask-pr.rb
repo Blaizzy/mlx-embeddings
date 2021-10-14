@@ -134,19 +134,26 @@ module Homebrew
         tmp_cask = Cask::CaskLoader.load(tmp_contents)
         tmp_config = tmp_cask.config
 
-        if old_hash != :no_check
-          new_hash = fetch_cask(tmp_contents)[1] if new_hash.nil?
-
-          if tmp_contents.include?("Hardware::CPU.intel?")
-            other_intel = !Hardware::CPU.intel?
-            other_contents = tmp_contents.gsub("Hardware::CPU.intel?", other_intel.to_s)
-            replacement_pairs << fetch_cask(other_contents)
-          end
-        end
+        new_hash = fetch_cask(tmp_contents)[1] if old_hash != :no_check && new_hash.nil?
 
         cask.languages.each do |language|
           lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
           replacement_pairs << fetch_cask(tmp_contents, config: lang_config)
+        end
+
+        if tmp_contents.include?("Hardware::CPU.intel?")
+          other_intel = !Hardware::CPU.intel?
+          other_contents = tmp_contents.gsub("Hardware::CPU.intel?", other_intel.to_s)
+          other_cask = Cask::CaskLoader.load(other_contents)
+
+          if other_cask.sha256 != :no_check && other_cask.language.blank?
+            replacement_pairs << fetch_cask(other_contents)
+          end
+
+          other_cask.languages.each do |language|
+            lang_config = other_cask.config.merge(Cask::Config.new(explicit: { languages: [language] }))
+            replacement_pairs << fetch_cask(other_contents, config: lang_config)
+          end
         end
       end
     end
