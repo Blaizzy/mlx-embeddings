@@ -89,7 +89,7 @@ module Homebrew
       end
 
       if keg_only
-        if HOMEBREW_PREFIX.to_s == "/usr/local" && formula.present? && formula.keg_only_reason.by_macos?
+        if HOMEBREW_PREFIX.to_s == HOMEBREW_DEFAULT_PREFIX && formula.present? && formula.keg_only_reason.by_macos?
           caveats = Caveats.new(formula)
           opoo <<~EOS
             Refusing to link macOS provided/shadowed software: #{keg.name}
