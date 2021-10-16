@@ -519,7 +519,7 @@ These wonderful people supported our Kickstarter by giving us £10 or more:
 * [Diogo Neves](http://diogoneves.com)
 * [Arvy](https://www.codingepiphany.com/)
 * [James Pellerano](http://jamespellerano.com)
-* [Birger J. Nordølum](http://mindtooth.me)
+* [Birger J. Nordølum](http://mindtooth.no)
 * [Bob Saska](https://r35.net/)
 * [Michael McCarthy](https://github.com/mikeycmccarthy)
 * [Scott Courtney](https://www.sinenomine.net/)
