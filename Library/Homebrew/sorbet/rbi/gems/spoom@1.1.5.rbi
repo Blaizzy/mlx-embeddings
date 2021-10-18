@@ -14,6 +14,7 @@ end
 module Spoom::Cli; end
 
 class Spoom::Cli::Bump < ::Thor
+  include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
   sig { params(directory: String).void }
@@ -26,6 +27,7 @@ class Spoom::Cli::Bump < ::Thor
 end
 
 class Spoom::Cli::Config < ::Thor
+  include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
@@ -33,6 +35,7 @@ class Spoom::Cli::Config < ::Thor
 end
 
 class Spoom::Cli::Coverage < ::Thor
+  include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
   def bundle_install(path, sha); end
@@ -48,7 +51,7 @@ end
 Spoom::Cli::Coverage::DATA_DIR = T.let(T.unsafe(nil), String)
 
 module Spoom::Cli::Helper
-  include ::Thor::Shell
+  include ::Spoom::Colorize
 
   sig { params(string: String).returns(String) }
   def blue(string); end
@@ -56,8 +59,8 @@ module Spoom::Cli::Helper
   sig { returns(T::Boolean) }
   def color?; end
 
-  sig { params(string: String, color: Symbol).returns(String) }
-  def colorize(string, color); end
+  sig { params(string: String, color: Spoom::Color).returns(String) }
+  def colorize(string, *color); end
 
   sig { returns(String) }
   def exec_path; end
@@ -96,9 +99,8 @@ module Spoom::Cli::Helper
   def yellow(string); end
 end
 
-Spoom::Cli::Helper::HIGHLIGHT_COLOR = T.let(T.unsafe(nil), Symbol)
-
 class Spoom::Cli::LSP < ::Thor
+  include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
   def defs(file, line, col); end
@@ -118,6 +120,7 @@ class Spoom::Cli::LSP < ::Thor
 end
 
 class Spoom::Cli::Main < ::Thor
+  include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
   def __print_version; end
@@ -134,6 +137,7 @@ class Spoom::Cli::Main < ::Thor
 end
 
 class Spoom::Cli::Run < ::Thor
+  include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
   def colorize_message(message); end
@@ -146,6 +150,37 @@ Spoom::Cli::Run::DEFAULT_FORMAT = T.let(T.unsafe(nil), String)
 Spoom::Cli::Run::SORT_CODE = T.let(T.unsafe(nil), String)
 Spoom::Cli::Run::SORT_ENUM = T.let(T.unsafe(nil), Array)
 Spoom::Cli::Run::SORT_LOC = T.let(T.unsafe(nil), String)
+
+class Spoom::Color < ::T::Enum
+  enums do
+    CLEAR = new
+    BOLD = new
+    BLACK = new
+    RED = new
+    GREEN = new
+    YELLOW = new
+    BLUE = new
+    MAGENTA = new
+    CYAN = new
+    WHITE = new
+    LIGHT_BLACK = new
+    LIGHT_RED = new
+    LIGHT_GREEN = new
+    LIGHT_YELLOW = new
+    LIGHT_BLUE = new
+    LIGHT_MAGENTA = new
+    LIGHT_CYAN = new
+    LIGHT_WHITE = new
+  end
+
+  sig { returns(String) }
+  def ansi_code; end
+end
+
+module Spoom::Colorize
+  sig { params(string: String, color: Spoom::Color).returns(String) }
+  def set_color(string, *color); end
+end
 
 module Spoom::Coverage
   class << self
@@ -693,7 +728,7 @@ class Spoom::FileTree::TreePrinter < ::Spoom::Printer
   sig { params(node: Spoom::FileTree::Node).returns(T.nilable(String)) }
   def node_strictness(node); end
 
-  sig { params(strictness: T.nilable(String)).returns(Symbol) }
+  sig { params(strictness: T.nilable(String)).returns(Spoom::Color) }
   def strictness_color(strictness); end
 end
 
@@ -973,13 +1008,15 @@ class Spoom::LSP::SymbolPrinter < ::Spoom::Printer
 end
 
 class Spoom::Printer
+  include ::Spoom::Colorize
+
   abstract!
 
   sig { params(out: T.any(IO, StringIO), colors: T::Boolean, indent_level: Integer).void }
   def initialize(out: T.unsafe(nil), colors: T.unsafe(nil), indent_level: T.unsafe(nil)); end
 
-  sig { params(string: String, color: Symbol).returns(String) }
-  def colorize(string, color); end
+  sig { params(string: String, color: Spoom::Color).returns(String) }
+  def colorize(string, *color); end
 
   sig { void }
   def dedent; end
@@ -995,8 +1032,8 @@ class Spoom::Printer
   sig { params(string: T.nilable(String)).void }
   def print(string); end
 
-  sig { params(string: T.nilable(String), color: Symbol, colors: Symbol).void }
-  def print_colored(string, color, *colors); end
+  sig { params(string: T.nilable(String), color: Spoom::Color).void }
+  def print_colored(string, *color); end
 
   sig { params(string: T.nilable(String)).void }
   def printl(string); end
