@@ -9028,6 +9028,10 @@ class Spoom::Cli::Bump
 end
 
 module Spoom::Cli::Helper
+  HIGHLIGHT_COLOR = ::T.let(nil, ::T.untyped)
+end
+
+module Spoom::Cli::Helper
   extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Methods::MethodHooks
@@ -9036,6 +9040,12 @@ end
 
 class Spoom::Cli::Main
   extend ::T::Sig
+end
+
+module Spoom::Colorize
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Spoom::Coverage::D3::Base
@@ -9205,87 +9215,17 @@ module Spoom
 end
 
 class String
-  def black(); end
-
-  def blink(); end
-
-  def blue(); end
-
-  def bold(); end
-
-  def cyan(); end
-
   def exclude?(string); end
 
   def fast_xs(); end
-
-  def green(); end
-
-  def hide(); end
 
   def indent(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
 
   def indent!(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
 
-  def italic(); end
-
-  def light_black(); end
-
-  def light_blue(); end
-
-  def light_cyan(); end
-
-  def light_green(); end
-
-  def light_magenta(); end
-
-  def light_red(); end
-
-  def light_white(); end
-
-  def light_yellow(); end
-
-  def magenta(); end
-
-  def on_black(); end
-
-  def on_blue(); end
-
-  def on_cyan(); end
-
-  def on_green(); end
-
-  def on_light_black(); end
-
-  def on_light_blue(); end
-
-  def on_light_cyan(); end
-
-  def on_light_green(); end
-
-  def on_light_magenta(); end
-
-  def on_light_red(); end
-
-  def on_light_white(); end
-
-  def on_light_yellow(); end
-
-  def on_magenta(); end
-
-  def on_red(); end
-
-  def on_white(); end
-
-  def on_yellow(); end
-
-  def red(); end
-
   def shellescape(); end
 
   def shellsplit(); end
-
-  def swap(); end
 
   def to_nfc(); end
 
@@ -9294,12 +9234,6 @@ class String
   def to_nfkc(); end
 
   def to_nfkd(); end
-
-  def underline(); end
-
-  def white(); end
-
-  def yellow(); end
 end
 
 class String
