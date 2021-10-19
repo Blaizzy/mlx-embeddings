@@ -455,7 +455,7 @@ EOS
   fi
 
   export GIT_TERMINAL_PROMPT="0"
-  export GIT_SSH_COMMAND="ssh -oBatchMode=yes"
+  export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh} -oBatchMode=yes"
 
   if [[ -n "${HOMEBREW_GIT_NAME}" ]]
   then
