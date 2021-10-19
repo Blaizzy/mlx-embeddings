@@ -23,7 +23,7 @@ module OS
       def latest_version(macos: MacOS.version)
         latest_stable = "13.0"
         case macos
-        when "12" then "13.0"
+        when "12" then "13.1"
         when "11" then latest_stable
         when "10.15" then "12.4"
         when "10.14" then "11.3.1"
@@ -47,7 +47,7 @@ module OS
       sig { returns(String) }
       def minimum_version
         case MacOS.version
-        when "12" then "13.0"
+        when "12" then "13.1"
         when "11" then "12.2"
         when "10.15" then "11.0"
         when "10.14" then "10.2"
