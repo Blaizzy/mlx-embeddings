@@ -43,7 +43,7 @@ module Homebrew
   def pr_automerge
     args = pr_automerge_args.parse
 
-    odeprecated "`brew pr-automerge --autosquash`", "`brew pr-automerge`" if args.autosquash?
+    odisabled "`brew pr-automerge --autosquash`", "`brew pr-automerge`" if args.autosquash?
 
     without_labels = args.without_labels || [
       "do not merge",

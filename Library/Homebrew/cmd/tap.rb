@@ -58,9 +58,9 @@ module Homebrew
     elsif args.no_named?
       puts Tap.names
     else
-      odeprecated "`brew tap --full`" if args.full?
+      odisabled "`brew tap --full`" if args.full?
 
-      odeprecated "`brew tap --shallow`" if args.shallow?
+      odisabled "`brew tap --shallow`" if args.shallow?
 
       tap = Tap.fetch(args.named.first)
       begin

@@ -30,6 +30,7 @@ __brew_list_aliases() {
     '-v' '--version'
     lc livecheck
     tc typecheck
+    man generate-man-completions
   )
   echo "${aliases}"
 }
@@ -176,7 +177,6 @@ __brew_internal_commands() {
     'list:List all installed formulae and casks'
     'livecheck:Check for newer versions of formulae and/or casks from upstream'
     'log:Show the `git log` for formula or cask, or show the log for the Homebrew repository if no formula or cask is provided'
-    'man:Generate Homebrew'\''s manpages'
     'migrate:Migrate renamed packages to new names, where formula are old names of packages'
     'missing:Check the given formula kegs for missing dependencies'
     'options:Show install options specific to formula'
