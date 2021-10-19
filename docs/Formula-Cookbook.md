@@ -441,7 +441,7 @@ inreplace "path", before, after
 
 ```ruby
 inreplace "path" do |s|
-  s.gsub! /foo/, "bar"
+  s.gsub!(/foo/, "bar")
   s.gsub! "123", "456"
 end
 ```
