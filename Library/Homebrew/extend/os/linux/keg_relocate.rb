@@ -8,7 +8,7 @@ class Keg
     # Patching the dynamic linker of glibc breaks it.
     return if name == "glibc"
 
-    # Patching patchelf using itself fails with "Text file busy" or SIGBUS.
+    # Patching patchelf fails with "Text file busy" or SIGBUS.
     return if name == "patchelf"
 
     old_prefix, new_prefix = relocation.replacement_pair_for(:prefix)
@@ -79,14 +79,6 @@ class Keg
       elf_files << pn
     end
     elf_files
-  end
-
-  def self.relocation_formulae
-    @relocation_formulae ||= if HOMEBREW_PATCHELF_RB_WRITE
-      []
-    else
-      ["patchelf"]
-    end.freeze
   end
 
   def self.bottle_dependencies
