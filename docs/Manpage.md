@@ -1133,7 +1133,7 @@ a formula from a tap that is not `homebrew/core` use its fully-qualified form of
 
 Display the path where *`formula`* is located.
 
-### `generate-man-completions` [*`--fail-if-not-changed`*]
+### `generate-man-completions`, `man` [*`--fail-if-not-changed`*]
 
 Generate Homebrew's manpages and shell completions.
 

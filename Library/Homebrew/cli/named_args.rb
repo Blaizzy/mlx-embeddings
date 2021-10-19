@@ -110,9 +110,8 @@ module Homebrew
             when :default_kegs
               resolve_default_keg(name)
             when :keg
-              odeprecated "`load_formula_or_cask` with `method: :keg`",
-                          "`load_formula_or_cask` with `method: :default_kegs`"
-              resolve_default_keg(name)
+              odisabled "`load_formula_or_cask` with `method: :keg`",
+                        "`load_formula_or_cask` with `method: :default_kegs`"
             when :kegs
               _, kegs = resolve_kegs(name)
               kegs

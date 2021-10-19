@@ -43,7 +43,7 @@ module Homebrew
     workflow = args.workflow || "publish-commit-bottles.yml"
     ref = args.branch || "master"
 
-    odeprecated "`brew pr-publish --autosquash`", "`brew pr-publish`" if args.autosquash?
+    odisabled "`brew pr-publish --autosquash`", "`brew pr-publish`" if args.autosquash?
 
     extra_args = []
     extra_args << "--autosquash" unless args.no_autosquash?

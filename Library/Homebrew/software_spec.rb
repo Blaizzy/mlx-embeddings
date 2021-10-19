@@ -495,13 +495,6 @@ class BottleSpecification
     end
   end
 
-  def cellar(_val = nil)
-    odisabled(
-      "`cellar` in a bottle block",
-      "`brew style --fix` on the formula to update the style or use `sha256` with a `cellar:` argument",
-    )
-  end
-
   sig { params(tag: Utils::Bottles::Tag).returns(T::Boolean) }
   def compatible_locations?(tag: Utils::Bottles.tag)
     spec = collector.specification_for(tag)
@@ -548,22 +541,7 @@ class BottleSpecification
       key.is_a?(Symbol) && value.is_a?(String) && value.match?(sha256_regex)
     end
 
-    if digest && tag
-      # the cellar hash key only exists on the new format
-      cellar = hash[:cellar]
-    else
-      # otherwise, find old `sha256 "69489ae397e4645..." => :big_sur` format
-      digest, tag = hash.find do |key, value|
-        key.is_a?(String) && value.is_a?(Symbol) && key.match?(sha256_regex)
-      end
-
-      if digest && tag
-        odisabled(
-          '`sha256 "digest" => :tag` in a bottle block',
-          '`brew style --fix` on the formula to update the style or use `sha256 tag: "digest"`',
-        )
-      end
-    end
+    cellar = hash[:cellar] if digest && tag
 
     tag = Utils::Bottles::Tag.from_symbol(tag)
 
