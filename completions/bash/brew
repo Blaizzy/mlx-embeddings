@@ -1401,23 +1401,6 @@ _brew_ls() {
   __brew_complete_installed_casks
 }
 
-_brew_man() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "${cur}" in
-    -*)
-      __brewcomp "
-      --debug
-      --fail-if-not-changed
-      --help
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-    *)
-  esac
-}
-
 _brew_migrate() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2500,7 +2483,6 @@ _brew() {
     ln) _brew_ln ;;
     log) _brew_log ;;
     ls) _brew_ls ;;
-    man) _brew_man ;;
     migrate) _brew_migrate ;;
     missing) _brew_missing ;;
     options) _brew_options ;;
