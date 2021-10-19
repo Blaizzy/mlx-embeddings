@@ -4482,48 +4482,6 @@ module Homebrew::API
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Homebrew::Assertions
-  def assert_include(*args); end
-
-  def assert_no_match(*args); end
-
-  def assert_not_empty(*args); end
-
-  def assert_not_equal(*args); end
-
-  def assert_not_in_delta(*args); end
-
-  def assert_not_in_epsilon(*args); end
-
-  def assert_not_include(*args); end
-
-  def assert_not_includes(*args); end
-
-  def assert_not_instance_of(*args); end
-
-  def assert_not_kind_of(*args); end
-
-  def assert_not_match(*args); end
-
-  def assert_not_nil(*args); end
-
-  def assert_not_operator(*args); end
-
-  def assert_not_predicate(*args); end
-
-  def assert_not_respond_to(*args); end
-
-  def assert_not_same(*args); end
-
-  def assert_path_exist(*args); end
-
-  def assert_path_not_exist(*args); end
-
-  def assert_raise(*args); end
-
-  def assert_throw(*args); end
-end
-
 class Homebrew::BundleVersion
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -5799,8 +5757,6 @@ class Object
   def __send(*arg); end
 
   def __send!(*arg); end
-
-  def funcall(*arg); end
 
   def stub(name, val_or_callable, *block_args); end
 
