@@ -57,7 +57,6 @@ livecheck
 ln
 log
 ls
-man
 migrate
 missing
 options

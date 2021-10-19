@@ -30,7 +30,6 @@ __brew_list_aliases() {
     '-v' '--version'
     lc livecheck
     tc typecheck
-    man generate-man-completions
   )
   echo "${aliases}"
 }
@@ -1211,16 +1210,6 @@ _brew_ls() {
     - installed_cask \
     '(--formula --pinned --multiple --unbrewed)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
-}
-
-# brew man
-_brew_man() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--fail-if-not-changed[Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
 }
 
 # brew migrate
