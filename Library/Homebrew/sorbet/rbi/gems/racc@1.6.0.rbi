@@ -5,14 +5,9 @@
 # typed: true
 
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
-  include ::ActiveSupport::ForkTracker::CoreExtPrivate
-  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
   include ::Kernel
   include ::JSON::Ext::Generator::GeneratorMethods::Object
   include ::PP::ObjectMixin
-  include ::ActiveSupport::Tryable
-  include ::ActiveSupport::Dependencies::Loadable
 end
 
 ParseError = Racc::ParseError

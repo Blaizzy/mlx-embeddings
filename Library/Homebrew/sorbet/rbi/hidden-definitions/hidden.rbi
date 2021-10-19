@@ -5758,8 +5758,6 @@ class Object
 
   def __send!(*arg); end
 
-  def funcall(*arg); end
-
   def stub(name, val_or_callable, *block_args); end
 
   def to_yaml(options=T.unsafe(nil)); end
