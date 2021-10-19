@@ -7,14 +7,15 @@ module Homebrew
       # The {Apache} strategy identifies versions of software at apache.org
       # by checking directory listing pages.
       #
-      # Apache URLs start with `https://www.apache.org/dyn/closer.lua?path=`.
-      # The `path` parameter takes one of the following formats:
+      # Apache URLs start with `https://www.apache.org/dyn/` and include
+      # a `filename` or `path` query string parameter where the value is a
+      # path to a file. The path takes one of the following formats:
       #
       # * `example/1.2.3/example-1.2.3.tar.gz`
       # * `example/example-1.2.3/example-1.2.3.tar.gz`
       # * `example/example-1.2.3-bin.tar.gz`
       #
-      # When the `path` contains a version directory (e.g. `/1.2.3/`,
+      # When the path contains a version directory (e.g. `/1.2.3/`,
       # `/example-1.2.3/`, etc.), the default regex matches numeric versions
       # in directory names. Otherwise, the default regex matches numeric
       # versions in filenames.
@@ -26,7 +27,7 @@ module Homebrew
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
           ^https?://www\.apache\.org
-          /dyn/.+path=
+          /dyn/.+(?:path|filename)=
           (?<path>.+?)/      # Path to directory of files or version directories
           (?<prefix>[^/]*?)  # Any text in filename or directory before version
           v?\d+(?:\.\d+)+    # The numeric version
