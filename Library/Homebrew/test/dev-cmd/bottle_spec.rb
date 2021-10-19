@@ -8,19 +8,6 @@ describe "brew bottle" do
   it_behaves_like "parseable arguments"
 
   it "builds a bottle for the given Formula", :integration_test do
-    # create stub patchelf
-    if OS.linux?
-      setup_test_formula "patchelf"
-      patchelf = HOMEBREW_CELLAR/"patchelf/1.0/bin/patchelf"
-      patchelf.dirname.mkpath
-      patchelf.write <<~EOS
-        #!/bin/sh
-        exit 0
-      EOS
-      FileUtils.chmod "+x", patchelf
-      FileUtils.ln_s patchelf, HOMEBREW_PREFIX/"bin/patchelf"
-    end
-
     install_test_formula "testball", build_bottle: true
 
     # `brew bottle` should not fail with dead symlink
