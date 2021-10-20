@@ -1878,6 +1878,9 @@ Note that environment variables must have a value set to be detected. For
 example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
+- `HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID`
+  <br>Additional Google Analytics tracking ID to emit user behaviour analytics to. For more information, see: <https://docs.brew.sh/Analytics>
+
 - `HOMEBREW_ARCH`
   <br>Linux only: Pass this value to a type name representing the compiler's `-march` option.
 
