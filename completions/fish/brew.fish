@@ -274,6 +274,7 @@ __fish_brew_complete_arg '--repository' -a '(__fish_brew_suggest_taps_installed)
 
 
 __fish_brew_complete_cmd '-S' 'Perform a substring search of cask tokens and formula names for text'
+__fish_brew_complete_arg '-S' -l archlinux -d 'Search for text in the given database'
 __fish_brew_complete_arg '-S' -l cask -d 'Search online and locally for casks'
 __fish_brew_complete_arg '-S' -l closed -d 'Search for only closed GitHub pull requests'
 __fish_brew_complete_arg '-S' -l debian -d 'Search for text in the given database'
@@ -1227,6 +1228,7 @@ __fish_brew_complete_arg 'ruby' -l r -d 'Load a library using `require`'
 
 
 __fish_brew_complete_cmd 'search' 'Perform a substring search of cask tokens and formula names for text'
+__fish_brew_complete_arg 'search' -l archlinux -d 'Search for text in the given database'
 __fish_brew_complete_arg 'search' -l cask -d 'Search online and locally for casks'
 __fish_brew_complete_arg 'search' -l closed -d 'Search for only closed GitHub pull requests'
 __fish_brew_complete_arg 'search' -l debian -d 'Search for text in the given database'

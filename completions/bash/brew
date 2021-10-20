@@ -270,6 +270,7 @@ _brew__s() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --archlinux
       --cask
       --closed
       --debian
@@ -1794,6 +1795,7 @@ _brew_search() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --archlinux
       --cask
       --closed
       --debian
