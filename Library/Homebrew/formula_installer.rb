@@ -800,6 +800,7 @@ class FormulaInstaller
     if formula.name == "ca-certificates" &&
        !DevelopmentTools.ca_file_handles_most_https_certificates?
       ENV["SSL_CERT_FILE"] = ENV["GIT_SSL_CAINFO"] = formula.pkgetc/"cert.pem"
+      ENV["GIT_SSL_CAPATH"] = formula.pkgetc
     end
 
     # use installed curl when it's needed and available
