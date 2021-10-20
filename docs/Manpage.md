@@ -565,6 +565,8 @@ The search for *`text`* is extended online to `homebrew/core` and `homebrew/cask
   Search for *`text`* in the given database.
 * `--fedora`:
   Search for *`text`* in the given database.
+* `--archlinux`:
+  Search for *`text`* in the given database.
 * `--debian`:
   Search for *`text`* in the given database.
 * `--ubuntu`:
