@@ -2695,7 +2695,7 @@ If set, use Bootsnap to speed up repeated \fBbrew\fR calls\. A no\-op when using
 Use this URL as the download mirror for bottles\. If bottles at that URL are temporarily unavailable, the default bottle domain will be used as a fallback mirror\. For example, \fBHOMEBREW_BOTTLE_DOMAIN=http://localhost:8080\fR will cause all bottles to download from the prefix \fBhttp://localhost:8080/\fR\. If bottles are not available at \fBHOMEBREW_BOTTLE_DOMAIN\fR they will be downloaded from the default bottle domain\.
 .
 .IP
-\fIDefault:\fR macOS: \fBhttps://ghcr\.io/v2/homebrew/core\fR, Linux: \fBhttps://ghcr\.io/v2/linuxbrew/core\fR\.
+\fIDefault:\fR \fBhttps://ghcr\.io/v2/homebrew/core\fR\.
 .
 .TP
 \fBHOMEBREW_BREW_GIT_REMOTE\fR
@@ -2764,7 +2764,7 @@ If set, force colour output on non\-TTY outputs\.
 Use this URL as the Homebrew/homebrew\-core \fBgit\fR(1) remote\.
 .
 .IP
-\fIDefault:\fR macOS: \fBhttps://github\.com/Homebrew/homebrew\-core\fR, Linux: \fBhttps://github\.com/Homebrew/linuxbrew\-core\fR\.
+\fIDefault:\fR \fBhttps://github\.com/Homebrew/homebrew\-core\fR\.
 .
 .TP
 \fBHOMEBREW_CURLRC\fR
@@ -2858,12 +2858,6 @@ If set, always use a Homebrew\-installed \fBcurl\fR(1) rather than the system ve
 .
 .br
 If set, always use a Homebrew\-installed \fBgit\fR(1) rather than the system version\. Automatically set if the system version of \fBgit\fR is too old\.
-.
-.TP
-\fBHOMEBREW_FORCE_HOMEBREW_ON_LINUX\fR
-.
-.br
-If set, running Homebrew on Linux will use URLs for macOS and will use homebrew\-core instead of linuxbrew\-core\. This is useful when merging pull requests for macOS while on Linux\.
 .
 .TP
 \fBHOMEBREW_FORCE_VENDOR_RUBY\fR
@@ -3037,13 +3031,7 @@ If set, use Pry for the \fBbrew irb\fR command\.
 \fBHOMEBREW_SIMULATE_MACOS_ON_LINUX\fR
 .
 .br
-If set, running Homebrew on Linux will simulate certain macOS code paths\. This is useful when auditing macOS formulae while on Linux\. Implies \fBHOMEBREW_FORCE_HOMEBREW_ON_LINUX\fR\.
-.
-.TP
-\fBHOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX\fR
-.
-.br
-If set, running Homebrew on Linux will use homebrew\-core instead of linuxbrew\-core\.
+If set, running Homebrew on Linux will simulate certain macOS code paths\. This is useful when auditing macOS formulae while on Linux\.
 .
 .TP
 \fBHOMEBREW_SSH_CONFIG_PATH\fR

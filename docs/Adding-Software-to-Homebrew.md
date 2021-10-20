@@ -2,7 +2,7 @@
 
 Are you missing your favorite software in Homebrew? Then you're the perfect person to resolve this problem.
 
-Before you start, please check the open pull requests for [homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) or [linuxbrew-core](https://github.com/Homebrew/linuxbrew-core/pulls), to make sure no one else beat you to the punch.
+Before you start, please check the open pull requests for [homebrew-core](https://github.com/Homebrew/homebrew-core/pulls), to make sure no one else beat you to the punch.
 
 Next, you will want to go through the [Acceptable Formulae](Acceptable-Formulae.md) documentation to determine if the software is an appropriate addition to Homebrew. If you are creating a formula for an alternative version of software already in Homebrew (for example, a major/minor version that significantly differs from the existing version), be sure to read the [Versions](Versions.md) documentation to understand versioned formulae requirements.
 
@@ -29,6 +29,6 @@ If you're stuck, ask for help on GitHub or [Homebrew/discussions](https://github
 
 ## Submitting the formula
 
-You're finally ready to submit your formula to the [homebrew-core](https://github.com/Homebrew/homebrew-core/) or [linuxbrew-core](https://github.com/Homebrew/linuxbrew-core/) repository. If you haven't done this before, you can refer to the [How to Open a Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation for help. Maintainers will review the pull request and provide feedback about any areas that need to be addressed before the formula can be added to Homebrew.
+You're finally ready to submit your formula to the [homebrew-core](https://github.com/Homebrew/homebrew-core/) repository. If you haven't done this before, you can refer to the [How to Open a Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation for help. Maintainers will review the pull request and provide feedback about any areas that need to be addressed before the formula can be added to Homebrew.
 
 If you've made it this far, congratulations on submitting a Homebrew formula! We appreciate the hard work you put into this and you can take satisfaction in knowing that your work may benefit other Homebrew users as well.

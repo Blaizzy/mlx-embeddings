@@ -42,6 +42,17 @@ module Homebrew
   def update_report
     args = update_report_args.parse
 
+    # Run `brew update` (again) if we've got a linuxbrew-core CoreTap
+    if CoreTap.instance.linuxbrew_core? && ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
+      ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"] = "1"
+      update_args = []
+      update_args << "--preinstall" if args.preinstall?
+      update_args << "--force" if args.force?
+      ohai_stdout_or_stderr "Re-running `brew update` for linuxbrew-core migration"
+      FileUtils.rm_f HOMEBREW_LOCKS/"update"
+      exec HOMEBREW_BREW_FILE, "update", *update_args
+    end
+
     if !Utils::Analytics.messages_displayed? &&
        !Utils::Analytics.disabled? &&
        !Utils::Analytics.no_message_output?
@@ -107,7 +118,7 @@ module Homebrew
 
       if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
          Settings.read("linuxbrewmigrated") != "true"
-        puts_stdout_or_stderr "Migrating formulae from linuxbrew-core to homebrew-core" unless args.quiet?
+        ohai_stdout_or_stderr "Migrating formulae from linuxbrew-core to homebrew-core"
 
         LINUXBREW_CORE_MIGRATION_LIST.each do |name|
           begin
@@ -185,7 +196,7 @@ module Homebrew
         end
       end
       puts_stdout_or_stderr if args.preinstall?
-    elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"]
+    elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"] && !ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"]
       puts_stdout_or_stderr "Already up-to-date." unless args.quiet?
     end
 

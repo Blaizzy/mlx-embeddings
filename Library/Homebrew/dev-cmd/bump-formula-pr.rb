@@ -86,43 +86,6 @@ module Homebrew
     end
   end
 
-  def use_correct_linux_tap(formula, args:)
-    default_origin_branch = formula.tap.path.git_origin_branch
-
-    if !OS.linux? || !formula.tap.core_tap? || Homebrew::EnvConfig.force_homebrew_on_linux?
-      return formula.tap.remote_repo, "origin", default_origin_branch, "-"
-    end
-
-    tap_remote_repo = formula.tap.full_name.gsub("linuxbrew", "homebrew")
-    homebrew_core_url = "https://github.com/#{tap_remote_repo}"
-    homebrew_core_remote = "homebrew"
-    previous_branch = formula.tap.path.git_branch || "master"
-    formula_path = formula.path.relative_path_from(formula.tap.path)
-    full_origin_branch = "#{homebrew_core_remote}/#{default_origin_branch}"
-
-    if args.dry_run? || args.write? || args.write_only?
-      ohai "git remote add #{homebrew_core_remote} #{homebrew_core_url}"
-      ohai "git fetch #{homebrew_core_remote} HEAD #{default_origin_branch}"
-      ohai "git cat-file -e #{full_origin_branch}:#{formula_path}"
-      ohai "git checkout #{full_origin_branch}"
-      return tap_remote_repo, homebrew_core_remote, default_origin_branch, previous_branch
-    end
-
-    formula.tap.path.cd do
-      unless Utils.popen_read("git", "remote", "-v").match?(%r{^homebrew.*Homebrew/homebrew-core.*$})
-        ohai "Adding #{homebrew_core_remote} remote"
-        safe_system "git", "remote", "add", homebrew_core_remote, homebrew_core_url
-      end
-      ohai "Fetching remote #{homebrew_core_remote}"
-      safe_system "git", "fetch", homebrew_core_remote, "HEAD", default_origin_branch
-      if quiet_system "git", "cat-file", "-e", "#{full_origin_branch}:#{formula_path}"
-        ohai "#{formula.full_name} exists in #{full_origin_branch}."
-        safe_system "git", "checkout", full_origin_branch
-        return tap_remote_repo, homebrew_core_remote, default_origin_branch, previous_branch
-      end
-    end
-  end
-
   def bump_formula_pr
     args = bump_formula_pr_args.parse
 
@@ -157,7 +120,11 @@ module Homebrew
     # spamming during normal output.
     Homebrew.install_bundler_gems!
 
-    tap_remote_repo, remote, remote_branch, previous_branch = use_correct_linux_tap(formula, args: args)
+    tap_remote_repo = formula.tap.remote_repo
+    remote = "origin"
+    remote_branch = formula.tap.path.git_origin_branch
+    previous_branch = "-"
+
     check_open_pull_requests(formula, tap_remote_repo, args: args)
 
     new_version = args.version
@@ -299,16 +266,6 @@ module Homebrew
       replacement_pairs << [
         /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
         "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
-      ]
-    end
-
-    # When bumping a linux-only formula, one needs to also delete the
-    # sha256 linux bottle line if it exists. That's because of running
-    # test-bot with --keep-old option in linuxbrew-core.
-    if old_contents.include?("depends_on :linux") && old_contents.include?("=> :x86_64_linux")
-      replacement_pairs << [
-        /^    sha256 ".+" => :x86_64_linux\n/m,
-        "\\2",
       ]
     end
 

@@ -418,10 +418,6 @@ module RuboCop
               end
               next if valid
 
-              # TODO: temporarily allow this for linuxbrew-core merge.
-              next if method&.parent&.parent&.source&.start_with?("revision OS.mac?")
-              next if method&.parent&.source&.match?(/revision \d unless OS\.mac\?/)
-
               offending_node(method)
               problem "Don't use '#{if_method_and_class}', use '#{on_method_name} do' instead." do |corrector|
                 if_node = method.parent

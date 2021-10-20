@@ -81,5 +81,4 @@ Homebrew does not currently support 32-bit x86 platforms. It would be possible f
 ## Homebrew on Linux Community
 
 - [@HomebrewOnLinux on Twitter](https://twitter.com/HomebrewOnLinux)
-- [Homebrew/linuxbrew-core on GitHub](https://github.com/Homebrew/linuxbrew-core)
 - [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions)

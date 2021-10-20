@@ -808,6 +808,12 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(T::Boolean) }
+  def linuxbrew_core?
+    remote_repo.to_s.end_with?("/linuxbrew-core")
+  end
+
+  # @private
   def formula_dir
     @formula_dir ||= begin
       self.class.ensure_installed!

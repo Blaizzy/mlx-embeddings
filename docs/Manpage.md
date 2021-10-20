@@ -1905,7 +1905,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_BOTTLE_DOMAIN`
   <br>Use this URL as the download mirror for bottles. If bottles at that URL are temporarily unavailable, the default bottle domain will be used as a fallback mirror. For example, `HOMEBREW_BOTTLE_DOMAIN=http://localhost:8080` will cause all bottles to download from the prefix `http://localhost:8080/`. If bottles are not available at `HOMEBREW_BOTTLE_DOMAIN` they will be downloaded from the default bottle domain.
 
-  *Default:* macOS: `https://ghcr.io/v2/homebrew/core`, Linux: `https://ghcr.io/v2/linuxbrew/core`.
+  *Default:* `https://ghcr.io/v2/homebrew/core`.
 
 - `HOMEBREW_BREW_GIT_REMOTE`
   <br>Use this URL as the Homebrew/brew `git`(1) remote.
@@ -1943,7 +1943,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_CORE_GIT_REMOTE`
   <br>Use this URL as the Homebrew/homebrew-core `git`(1) remote.
 
-  *Default:* macOS: `https://github.com/Homebrew/homebrew-core`, Linux: `https://github.com/Homebrew/linuxbrew-core`.
+  *Default:* `https://github.com/Homebrew/homebrew-core`.
 
 - `HOMEBREW_CURLRC`
   <br>If set, do not pass `--disable` when invoking `curl`(1), which disables the use of `curlrc`.
@@ -1993,9 +1993,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_FORCE_BREWED_GIT`
   <br>If set, always use a Homebrew-installed `git`(1) rather than the system version. Automatically set if the system version of `git` is too old.
-
-- `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`
-  <br>If set, running Homebrew on Linux will use URLs for macOS and will use homebrew-core instead of linuxbrew-core. This is useful when merging pull requests for macOS while on Linux.
 
 - `HOMEBREW_FORCE_VENDOR_RUBY`
   <br>If set, always use Homebrew's vendored, relocatable Ruby version even if the system version of Ruby is new enough.
@@ -2086,10 +2083,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, use Pry for the `brew irb` command.
 
 - `HOMEBREW_SIMULATE_MACOS_ON_LINUX`
-  <br>If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful when auditing macOS formulae while on Linux. Implies `HOMEBREW_FORCE_HOMEBREW_ON_LINUX`.
-
-- `HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX`
-  <br>If set, running Homebrew on Linux will use homebrew-core instead of linuxbrew-core.
+  <br>If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful when auditing macOS formulae while on Linux.
 
 - `HOMEBREW_SSH_CONFIG_PATH`
   <br>If set, Homebrew will use the given config file instead of `~/.ssh/config` when fetching `git` repos over `ssh`.
