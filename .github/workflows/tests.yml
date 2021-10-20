@@ -309,6 +309,8 @@ jobs:
           brew sh -c "svn --homebrew=print-path"
           which svn
           which svnadmin
+          brew install curl
+          which curl
 
       - name: Create parallel test log directory
         run: mkdir tests

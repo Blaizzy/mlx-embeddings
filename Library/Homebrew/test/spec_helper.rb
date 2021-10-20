@@ -169,6 +169,15 @@ RSpec.configure do |config|
                       .append(svnadmin.dirname)
   end
 
+  config.before(:each, :needs_tls13) do
+    begin
+      curl = Utils::Curl.curl_executable(use_homebrew_curl: OS.mac?)
+    rescue FormulaUnavailableError
+      skip "curl formula not available"
+    end
+    skip "Requires curl with TLS 1.3 support." unless quiet_system curl, "--tlsv1.3", "--head", "https://brew.sh/"
+  end
+
   config.before(:each, :needs_unzip) do
     skip "Unzip is not installed." unless which("unzip")
   end

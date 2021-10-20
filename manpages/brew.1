@@ -1265,7 +1265,7 @@ Use the specified \fIURL\fR as the root of the bottle\'s URL instead of Homebrew
 Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default\.
 .
 .SS "\fBbump\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
-Display out\-of\-date brew formulae and the latest version available\. Also displays whether a pull request has been opened with the URL\.
+Display out\-of\-date brew formulae and the latest version available\. If the returned current and livecheck versions differ or when querying specific formulae, also displays whether a pull request has been opened with the URL\.
 .
 .TP
 \fB\-\-full\-name\fR
@@ -1286,6 +1286,10 @@ Check only casks\.
 .TP
 \fB\-\-limit\fR
 Limit number of package results returned\.
+.
+.TP
+\fB\-\-start\-with\fR
+Letter or word that the list of package results should alphabetically follow\.
 .
 .SS "\fBbump\-cask\-pr\fR [\fIoptions\fR] \fIcask\fR"
 Create a pull request to update \fIcask\fR with a new version\.
