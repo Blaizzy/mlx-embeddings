@@ -24,5 +24,3 @@ module Homebrew
     end
   end
 end
-
-require "extend/os/api/formula"

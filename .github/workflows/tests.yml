@@ -84,7 +84,7 @@ jobs:
       - name: Run brew readall on all taps
         run: brew readall --aliases
 
-      - name: Run brew style on linuxbrew-core
+      - name: Run brew style on homebrew-core for Linux
         run: brew style --display-cop-names homebrew/core
 
       - name: Run brew audit --skip-style on all taps
@@ -116,12 +116,12 @@ jobs:
           # brew style doesn't like world writable directories
           sudo chmod -R g-w,o-w "${HOMEBREW_REPOSITORY}/Library/Taps"
 
-      - name: Run brew style on homebrew-core
+      - name: Run brew style on homebrew-core for macOS
         run: brew style --display-cop-names homebrew/core
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
 
-      - name: Run brew audit --skip-style on homebrew-core
+      - name: Run brew audit --skip-style on homebrew-core for macOS
         run: brew audit --skip-style --except=version --tap=homebrew/core
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1

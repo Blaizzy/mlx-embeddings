@@ -2,7 +2,7 @@
 
 Did you find something in Homebrew that wasn't the latest version? You can help yourself and others by submitting a pull request to update the formula.
 
-First, check the pull requests in the [homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) or [linuxbrew-core](https://github.com/Homebrew/linuxbrew-core/pulls) repositories (whichever apply) to make sure there isn't already an open PR. You may also want to look through closed pull requests for the formula, as sometimes formulae run into problems preventing them from being updated and it's better to be aware of any issues before putting significant effort into an update.
+First, check the pull requests in the [homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) repository to make sure there isn't already an open PR. You may also want to look through closed pull requests for the formula, as sometimes formulae run into problems preventing them from being updated and it's better to be aware of any issues before putting significant effort into an update.
 
 The [How To Open a Homebrew Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation should explain most everything you need to know about the process of creating a PR for a version update. For simple formulae updates, this typically involves changing the URL and sha256.
 

@@ -270,12 +270,12 @@ EOS
   # ensure we don't munge line endings on checkout
   git config core.autocrlf false
 
-  if [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -n "${HOMEBREW_LINUXBREW_MIGRATION}" ]]
+  if [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -n "${HOMEBREW_LINUXBREW_CORE_MIGRATION}" ]]
   then
     # Don't even try to rebase/merge on linuxbrew-core migration but rely on
     # stashing etc. above.
     git reset --hard "${QUIET_ARGS[@]}" "${REMOTE_REF}"
-    unset HOMEBREW_LINUXBREW_MIGRATION
+    unset HOMEBREW_LINUXBREW_CORE_MIGRATION
   elif [[ -z "${HOMEBREW_MERGE}" ]]
   then
     # Work around bug where git rebase --quiet is not quiet
@@ -502,9 +502,9 @@ EOS
 
   if [[ -d "${HOMEBREW_CORE_REPOSITORY}" ]] &&
      [[ "${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_CORE_GIT_REMOTE}" ||
-        -n "${HOMEBREW_LINUXBREW_MIGRATION}" ]]
+        -n "${HOMEBREW_LINUXBREW_CORE_MIGRATION}" ]]
   then
-    if [[ -n "${HOMEBREW_LINUXBREW_MIGRATION}" ]]
+    if [[ -n "${HOMEBREW_LINUXBREW_CORE_MIGRATION}" ]]
     then
       # This means a migration is needed (in case it isn't run this time)
       safe_cd "${HOMEBREW_REPOSITORY}"

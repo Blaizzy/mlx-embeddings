@@ -402,12 +402,6 @@ case "$*" in
     ;;
 esac
 
-# shellcheck disable=SC2154
-if [[ -n "${HOMEBREW_SIMULATE_MACOS_ON_LINUX}" ]]
-then
-  export HOMEBREW_FORCE_HOMEBREW_ON_LINUX="1"
-fi
-
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
   HOMEBREW_PRODUCT="Homebrew"
@@ -544,27 +538,11 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 
   HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin 2>/dev/null)"
-  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" == "https://github.com/Homebrew/homebrew-core" ]]
+  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" =~ /linuxbrew-core(\.git)?$ ]]
   then
-    # TODO: this variable can go away when we're migrating everyone to homebrew-core.
-    HOMEBREW_CORE_ON_LINUX=1
-  # Migrate from linuxbrew-core to homebrew-core:
-  # - if either HOMEBREW_FORCE_HOMEBREW_ON_LINUX or HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX are set
-  # - unless HOMEBREW_LINUXCORE_MERGE is set (by maintainers who still merge homebrew-core into linuxbrew-core)
-  # - only HOMEBREW_DEVELOPER users (for now)
-  # - not on GitHub Actions (for now)
-  elif [[ -n "${HOMEBREW_FORCE_HOMEBREW_ON_LINUX}" ||
-          -n "${HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX}" ]] ||
-       [[ -n "${HOMEBREW_DEVELOPER}" ]] &&
-       [[ -z "${HOMEBREW_LINUXCORE_MERGE}" ]] &&
-       [[ -z "${GITHUB_ACTIONS}" ]]
-  then
-    # TODO: this variable can go away when we're migrating everyone to homebrew-core.
-    HOMEBREW_CORE_ON_LINUX=1
-
     # triggers migration code in update.sh
     # shellcheck disable=SC2034
-    HOMEBREW_LINUXBREW_MIGRATION=1
+    HOMEBREW_LINUXBREW_CORE_MIGRATION=1
   fi
 fi
 
@@ -595,13 +573,7 @@ then
   unset HOMEBREW_BOTTLE_DOMAIN
 fi
 
-if [[ -n "${HOMEBREW_MACOS}" ]] ||
-   [[ -n "${HOMEBREW_CORE_ON_LINUX}" ]]
-then
-  HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
-else
-  HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/linuxbrew/core"
-fi
+HOMEBREW_BOTTLE_DEFAULT_DOMAIN="https://ghcr.io/v2/homebrew/core"
 
 HOMEBREW_USER_AGENT="${HOMEBREW_PRODUCT}/${HOMEBREW_USER_AGENT_VERSION} (${HOMEBREW_SYSTEM}; ${HOMEBREW_PROCESSOR} ${HOMEBREW_OS_USER_AGENT_VERSION})"
 curl_version_output="$(curl --version 2>/dev/null)"
@@ -736,15 +708,7 @@ then
 fi
 export HOMEBREW_BREW_GIT_REMOTE
 
-if [[ -n "${HOMEBREW_MACOS}" ]] ||
-   [[ -n "${HOMEBREW_CORE_ON_LINUX}" ]]
-then
-  HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
-else
-  HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/linuxbrew-core"
-fi
-export HOMEBREW_CORE_DEFAULT_GIT_REMOTE
-
+HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
 if [[ -z "${HOMEBREW_CORE_GIT_REMOTE}" ]]
 then
   HOMEBREW_CORE_GIT_REMOTE="${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}"

@@ -17,9 +17,8 @@ but there are four main teams that maintainers tend to be a part of:
 - Core maintainers: this team maintains the [`Homebrew/homebrew-core`](https://github.com/Homebrew/homebrew-core)
   repository. See the [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Maintainer-Guide.md)
   for more details about being a core maintainer.
-- Linux maintainers: this team maintains the [`Homebrew/linuxbrew-core`](https://github.com/Homebrew/linuxbrew-core)
-  repository. See the [Homebrew/linuxbrew-core Maintainer Guide](Homebrew-linuxbrew-core-Maintainer-Guide.md)
-  for more details about being a Linux maintainer.
+- Linux maintainers: this team maintains the [`Homebrew/homebrew-core`](https://github.com/Homebrew/homebrew-core)
+  repository on Linux.
 - Cask maintainers: this team maintains the [`Homebrew/homebrew-cask`](https://github.com/Homebrew/homebrew-cask),
   [`Homebrew/homebrew-cask-drivers`](https://github.com/Homebrew/homebrew-cask-drivers),
   [`Homebrew/homebrew-cask-fonts`](https://github.com/Homebrew/homebrew-cask-fonts) and
