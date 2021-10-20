@@ -17,7 +17,7 @@ module Zeitwerk
       # @sig Hash[String, Zeitwerk::Loader]
       attr_reader :loaders_managing_gems
 
-      # Maps real paths to the loaders responsible for them.
+      # Maps absolute paths to the loaders responsible for them.
       #
       # This information is used by our decorated `Kernel#require` to be able to
       # invoke callbacks and autovivify modules.
@@ -73,6 +73,15 @@ module Zeitwerk
         loaders << loader
       end
 
+      # @private
+      # @sig (Zeitwerk::Loader) -> void
+      def unregister_loader(loader)
+        loaders.delete(loader)
+        loaders_managing_gems.delete_if { |_, l| l == loader }
+        autoloads.delete_if { |_, l| l == loader }
+        inceptions.delete_if { |_, (_, l)| l == loader }
+      end
+
       # This method returns always a loader, the same instance for the same root
       # file. That is how Zeitwerk::Loader.for_gem is idempotent.
       #
@@ -90,20 +99,20 @@ module Zeitwerk
 
       # @private
       # @sig (Zeitwerk::Loader, String) -> String
-      def register_autoload(loader, realpath)
-        autoloads[realpath] = loader
+      def register_autoload(loader, abspath)
+        autoloads[abspath] = loader
       end
 
       # @private
       # @sig (String) -> void
-      def unregister_autoload(realpath)
-        autoloads.delete(realpath)
+      def unregister_autoload(abspath)
+        autoloads.delete(abspath)
       end
 
       # @private
       # @sig (String, String, Zeitwerk::Loader) -> void
-      def register_inception(cpath, realpath, loader)
-        inceptions[cpath] = [realpath, loader]
+      def register_inception(cpath, abspath, loader)
+        inceptions[cpath] = [abspath, loader]
       end
 
       # @private
