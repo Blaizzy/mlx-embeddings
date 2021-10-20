@@ -4510,6 +4510,8 @@ end
 module Homebrew::EnvConfig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+  def self.additional_google_analytics_id(); end
+
   def self.all_proxy(); end
 
   def self.arch(); end
@@ -4627,6 +4629,8 @@ module Homebrew::EnvConfig
   def self.skip_or_later_bottles?(); end
 
   def self.sorbet_runtime?(); end
+
+  def self.ssh_config_path(); end
 
   def self.sudo_askpass(); end
 
