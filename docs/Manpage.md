@@ -1110,7 +1110,7 @@ Build bottles for these formulae with GitHub Actions.
 * `--linux-wheezy`:
   Use Debian Wheezy container for building the bottle on Linux.
 
-### `edit` [*`--formula`*] [*`--cask`*] [*`formula`*|*`cask`* ...]
+### `edit` [*`options`*] [*`formula`*|*`cask`* ...]
 
 Open a *`formula`* or *`cask`* in the editor set by `EDITOR` or `HOMEBREW_EDITOR`,
 or open the Homebrew repository for editing if no formula is provided.
@@ -1119,6 +1119,8 @@ or open the Homebrew repository for editing if no formula is provided.
   Treat all named arguments as formulae.
 * `--cask`:
   Treat all named arguments as casks.
+* `--print-path`:
+  Print the file path to be edited, without opening an editor.
 
 ### `extract` [*`--version`*`=`] [*`--force`*] *`formula`* *`tap`*
 

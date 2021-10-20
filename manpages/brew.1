@@ -1590,7 +1590,7 @@ Dispatch bottle for Linux (using self\-hosted runner)\.
 \fB\-\-linux\-wheezy\fR
 Use Debian Wheezy container for building the bottle on Linux\.
 .
-.SS "\fBedit\fR [\fI\-\-formula\fR] [\fI\-\-cask\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
+.SS "\fBedit\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Open a \fIformula\fR or \fIcask\fR in the editor set by \fBEDITOR\fR or \fBHOMEBREW_EDITOR\fR, or open the Homebrew repository for editing if no formula is provided\.
 .
 .TP
@@ -1600,6 +1600,10 @@ Treat all named arguments as formulae\.
 .TP
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
+.
+.TP
+\fB\-\-print\-path\fR
+Print the file path to be edited, without opening an editor\.
 .
 .SS "\fBextract\fR [\fI\-\-version\fR\fB=\fR] [\fI\-\-force\fR] \fIformula\fR \fItap\fR"
 Look through repository history to find the most recent version of \fIformula\fR and create a copy in \fItap\fR\. Specifically, the command will create the new formula file at \fItap\fR\fB/Formula/\fR\fIformula\fR\fB@\fR\fIversion\fR\fB\.rb\fR\. If the tap is not installed yet, attempt to install/clone the tap before continuing\. To extract a formula from a tap that is not \fBhomebrew/core\fR use its fully\-qualified form of \fIuser\fR\fB/\fR\fIrepo\fR\fB/\fR\fIformula\fR\.

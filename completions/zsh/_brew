@@ -776,6 +776,7 @@ _brew_edit() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
+    '--print-path[Print the file path to be edited, without opening an editor]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     - formula \
