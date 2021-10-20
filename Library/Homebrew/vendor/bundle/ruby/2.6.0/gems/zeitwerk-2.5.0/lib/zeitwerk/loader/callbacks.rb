@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Zeitwerk::Loader::Callbacks
   include Zeitwerk::RealModName
 
@@ -9,16 +11,19 @@ module Zeitwerk::Loader::Callbacks
     cref  = autoloads.delete(file)
     cpath = cpath(*cref)
 
+    # If reloading is enabled, we need to put this constant for unloading
+    # regardless of what cdef? says. In Ruby < 3.1 the internal state is not
+    # fully cleared. Module#constants still includes it, and you need to
+    # remove_const. See https://github.com/ruby/ruby/pull/4715.
     to_unload[cpath] = [file, cref] if reloading_enabled?
     Zeitwerk::Registry.unregister_autoload(file)
 
-    if logger && cdef?(*cref)
-      log("constant #{cpath} loaded from file #{file}")
-    elsif !cdef?(*cref)
+    if cdef?(*cref)
+      log("constant #{cpath} loaded from file #{file}") if logger
+      run_on_load_callbacks(cpath, cget(*cref), file) unless on_load_callbacks.empty?
+    else
       raise Zeitwerk::NameError.new("expected file #{file} to define constant #{cpath}, but didn't", cref.last)
     end
-
-    run_on_load_callbacks(cpath)
   end
 
   # Invoked from our decorated Kernel#require when a managed directory is
@@ -54,7 +59,7 @@ module Zeitwerk::Loader::Callbacks
 
         on_namespace_loaded(autovivified_module)
 
-        run_on_load_callbacks(cpath)
+        run_on_load_callbacks(cpath, autovivified_module, dir) unless on_load_callbacks.empty?
       end
     end
   end
@@ -75,12 +80,13 @@ module Zeitwerk::Loader::Callbacks
 
   private
 
-  # @sig (String) -> void
-  def run_on_load_callbacks(cpath)
-    # Very common, do not even compute a hash code.
-    return if on_load_callbacks.empty?
-
+  # @sig (String, Object) -> void
+  def run_on_load_callbacks(cpath, value, abspath)
+    # Order matters. If present, run the most specific one.
     callbacks = reloading_enabled? ? on_load_callbacks[cpath] : on_load_callbacks.delete(cpath)
-    callbacks.each(&:call) if callbacks
+    callbacks&.each { |c| c.call(value, abspath) }
+
+    callbacks = on_load_callbacks[:ANY]
+    callbacks&.each { |c| c.call(cpath, value, abspath) }
   end
 end

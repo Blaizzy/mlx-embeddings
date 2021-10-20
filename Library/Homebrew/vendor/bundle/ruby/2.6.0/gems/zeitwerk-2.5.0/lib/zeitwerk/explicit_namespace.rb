@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Zeitwerk
   # Centralizes the logic for the trace point used to detect the creation of
   # explicit namespaces, needed to descend into matching subdirectories right
@@ -41,7 +43,7 @@ module Zeitwerk
 
       # @private
       # @sig (Zeitwerk::Loader) -> void
-      def unregister(loader)
+      def unregister_loader(loader)
         cpaths.delete_if { |_cpath, l| l == loader }
         disable_tracer_if_unneeded
       end
@@ -62,8 +64,14 @@ module Zeitwerk
         # than accessing its name.
         return if event.self.singleton_class?
 
-        # Note that it makes sense to compute the hash code unconditionally,
-        # because the trace point is disabled if cpaths is empty.
+        # It might be tempting to return if name.nil?, to avoid the computation
+        # of a hash code and delete call. But Ruby does not trigger the :class
+        # event on Class.new or Module.new, so that would incur in an extra call
+        # for nothing.
+        #
+        # On the other hand, if we were called, cpaths is not empty. Otherwise
+        # the tracer is disabled. So we do need to go ahead with the hash code
+        # computation and delete call.
         if loader = cpaths.delete(real_mod_name(event.self))
           loader.on_namespace_loaded(event.self)
           disable_tracer_if_unneeded
