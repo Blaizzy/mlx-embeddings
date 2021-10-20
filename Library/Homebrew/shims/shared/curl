@@ -20,7 +20,7 @@ then
   set_certs=1
   for arg in "$@"
   do
-    if [[ "${arg}" =~ --ca(cert|path) ]]
+    if [[ "${arg}" =~ ^--ca(cert|path)$ ]]
     then
       # User passed their own settings - don't use ours!
       set_certs=0
