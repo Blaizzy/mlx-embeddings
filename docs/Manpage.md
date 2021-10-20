@@ -927,7 +927,7 @@ supplied by the user.
 
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
-* `--write`:
+* `--write-only`:
   Make the expected file modifications without taking any Git actions.
 * `--commit`:
   When passed with `--write`, generate a new commit after writing changes to the cask file.

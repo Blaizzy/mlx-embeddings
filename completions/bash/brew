@@ -470,7 +470,7 @@ _brew_bump_cask_pr() {
       --url
       --verbose
       --version
-      --write
+      --write-only
       "
       return
       ;;
