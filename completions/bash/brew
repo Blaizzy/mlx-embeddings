@@ -840,6 +840,7 @@ _brew_edit() {
       --debug
       --formula
       --help
+      --print-path
       --quiet
       --verbose
       "
