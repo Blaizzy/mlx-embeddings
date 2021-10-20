@@ -2089,6 +2089,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_FORCE_HOMEBREW_CORE_REPO_ON_LINUX`
   <br>If set, running Homebrew on Linux will use homebrew-core instead of linuxbrew-core.
 
+- `HOMEBREW_SSH_CONFIG_PATH`
+  <br>If set, Homebrew will use the given config file instead of `~/.ssh/config` when fetching `git` repos over `ssh`.
+
+  *Default:* `$HOME/.ssh/config`
+
 - `HOMEBREW_SKIP_OR_LATER_BOTTLES`
   <br>If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions of macOS. This is useful in development on new macOS versions.
 

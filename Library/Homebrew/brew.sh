@@ -794,6 +794,12 @@ fi
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/analytics.sh"
 setup-analytics
 
+# Use this configuration file instead of ~/.ssh/config when fetching git over SSH.
+if [[ -n "${HOMEBREW_SSH_CONFIG_PATH}" ]]
+then
+  export GIT_SSH_COMMAND="ssh -F${HOMEBREW_SSH_CONFIG_PATH}"
+fi
+
 if [[ -n "${HOMEBREW_BASH_COMMAND}" ]]
 then
   # source rather than executing directly to ensure the entire file is read into
