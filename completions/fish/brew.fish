@@ -413,7 +413,7 @@ __fish_brew_complete_arg 'bump-cask-pr' -l sha256 -d 'Specify the SHA-256 checks
 __fish_brew_complete_arg 'bump-cask-pr' -l url -d 'Specify the URL for the new download'
 __fish_brew_complete_arg 'bump-cask-pr' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'bump-cask-pr' -l version -d 'Specify the new version for the cask'
-__fish_brew_complete_arg 'bump-cask-pr' -l write -d 'Make the expected file modifications without taking any Git actions'
+__fish_brew_complete_arg 'bump-cask-pr' -l write-only -d 'Make the expected file modifications without taking any Git actions'
 __fish_brew_complete_arg 'bump-cask-pr' -a '(__fish_brew_suggest_casks_all)'
 
 

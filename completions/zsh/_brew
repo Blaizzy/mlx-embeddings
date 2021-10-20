@@ -509,7 +509,7 @@ _brew_bump_cask_pr() {
     '--url[Specify the URL for the new download]' \
     '--verbose[Make some output more verbose]' \
     '--version[Specify the new version for the cask]' \
-    '(--dry-run)--write[Make the expected file modifications without taking any Git actions]' \
+    '--write-only[Make the expected file modifications without taking any Git actions]' \
     - cask \
     '*::cask:__brew_casks'
 }
