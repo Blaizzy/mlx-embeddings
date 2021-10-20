@@ -22,8 +22,9 @@ module Homebrew
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
-      switch "--write",
+      switch "--write-only",
              description: "Make the expected file modifications without taking any Git actions."
+      switch "--write", hidden: true
       switch "--commit",
              depends_on:  "--write",
              description: "When passed with `--write`, generate a new commit after writing changes "\
@@ -60,6 +61,8 @@ module Homebrew
 
   def bump_cask_pr
     args = bump_cask_pr_args.parse
+
+    odeprecated "`brew bump-cask-pr --write`", "`brew bump-cask-pr --write-only`" if args.write?
 
     # This will be run by `brew style` later so run it first to not start
     # spamming during normal output.

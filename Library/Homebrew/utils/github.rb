@@ -488,7 +488,7 @@ module GitHub
       changed_files = [sourcefile_path]
       changed_files += additional_files if additional_files.present?
 
-      if args.dry_run? || (args.write? && !args.commit?)
+      if args.dry_run? || (args.write_only? && !args.commit?)
         remote_url = if args.no_fork?
           Utils.popen_read("git", "remote", "get-url", "--push", "origin").chomp
         else
