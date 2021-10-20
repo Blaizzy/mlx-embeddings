@@ -551,6 +551,7 @@ setup_ca_certificates() {
   then
     export SSL_CERT_FILE="${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem"
     export GIT_SSL_CAINFO="${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem"
+    export GIT_SSL_CAPATH="${HOMEBREW_PREFIX}/etc/ca-certificates"
   fi
 }
 setup_ca_certificates
