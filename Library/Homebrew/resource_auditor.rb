@@ -143,6 +143,7 @@ module Homebrew
       return unless @strict
       return if spec_name != :head
       return unless Utils::Git.remote_exists?(url)
+      return if specs[:tag].present?
 
       branch = Utils.popen_read("git", "ls-remote", "--symref", url, "HEAD")
                     .match(%r{ref: refs/heads/(.*?)\s+HEAD})[1]
