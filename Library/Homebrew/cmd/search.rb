@@ -15,15 +15,16 @@ module Homebrew
   extend Search
 
   PACKAGE_MANAGERS = {
-    repology: ->(query) { "https://repology.org/projects/?search=#{query}" },
-    macports: ->(query) { "https://ports.macports.org/search/?q=#{query}" },
-    fink:     ->(query) { "https://pdb.finkproject.org/pdb/browse.php?summary=#{query}" },
-    opensuse: ->(query) { "https://software.opensuse.org/search?q=#{query}" },
-    fedora:   ->(query) { "https://apps.fedoraproject.org/packages/s/#{query}" },
-    debian:   lambda { |query|
+    repology:  ->(query) { "https://repology.org/projects/?search=#{query}" },
+    macports:  ->(query) { "https://ports.macports.org/search/?q=#{query}" },
+    fink:      ->(query) { "https://pdb.finkproject.org/pdb/browse.php?summary=#{query}" },
+    opensuse:  ->(query) { "https://software.opensuse.org/search?q=#{query}" },
+    fedora:    ->(query) { "https://apps.fedoraproject.org/packages/s/#{query}" },
+    archlinux: ->(query) { "https://archlinux.org/packages/?q=#{query}" },
+    debian:    lambda { |query|
       "https://packages.debian.org/search?keywords=#{query}&searchon=names&suite=all&section=all"
     },
-    ubuntu:   lambda { |query|
+    ubuntu:    lambda { |query|
       "https://packages.ubuntu.com/search?keywords=#{query}&searchon=names&suite=all&section=all"
     },
   }.freeze
