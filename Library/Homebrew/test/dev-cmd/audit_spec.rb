@@ -64,7 +64,16 @@ module Homebrew
         f.write text
       end
 
-      described_class.new(Formulary.factory(path), options)
+      formula = Formulary.factory(path)
+
+      if options.key? :tap_audit_exceptions
+        tap = Tap.fetch("test/tap")
+        allow(tap).to receive(:audit_exceptions).and_return(options[:tap_audit_exceptions])
+        allow(formula).to receive(:tap).and_return(tap)
+        options.delete :tap_audit_exceptions
+      end
+
+      described_class.new(formula, options)
     end
 
     let(:dir) { mktmpdir }
