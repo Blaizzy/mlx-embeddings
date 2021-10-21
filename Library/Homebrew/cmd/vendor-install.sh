@@ -16,15 +16,15 @@ if [[ -n "${HOMEBREW_MACOS}" ]]
 then
   if [[ "${HOMEBREW_PROCESSOR}" == "Intel" ]]
   then
-    ruby_FILENAME="portable-ruby-2.6.3_2.yosemite.bottle.tar.gz"
-    ruby_SHA="b065e5e3783954f3e65d8d3a6377ca51649bfcfa21b356b0dd70490f74c6bd86"
+    ruby_FILENAME="portable-ruby-2.6.8.yosemite.bottle.tar.gz"
+    ruby_SHA="0cb1cc7af109437fe0e020c9f3b7b95c3c709b140bde9f991ad2c1433496dd42"
   fi
 elif [[ -n "${HOMEBREW_LINUX}" ]]
 then
   case "${HOMEBREW_PROCESSOR}" in
     x86_64)
-      ruby_FILENAME="portable-ruby-2.6.3_2.x86_64_linux.bottle.tar.gz"
-      ruby_SHA="97e639a64dcec285392b53ad804b5334c324f1d2a8bdc2b5087b8bf8051e332f"
+      ruby_FILENAME="portable-ruby-2.6.8.x86_64_linux.bottle.tar.gz"
+      ruby_SHA="cd7fffb18ef9338baa670fc5e8fce99b0e3cc0f0fd7627bcbb56f3c8d54161d4"
       ;;
     *) ;;
   esac
@@ -45,7 +45,7 @@ then
   fi
   ruby_URLs+=(
     "https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}"
-    "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.3_2/${ruby_FILENAME}"
+    "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.8/${ruby_FILENAME}"
   )
   ruby_URL="${ruby_URLs[0]}"
 fi
