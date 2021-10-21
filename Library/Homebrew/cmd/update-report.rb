@@ -48,7 +48,8 @@ module Homebrew
 
       if ENV["HOMEBREW_CORE_DEFAULT_GIT_REMOTE"] != ENV["HOMEBREW_CORE_GIT_REMOTE"]
         opoo <<~EOS
-          HOMEBREW_CORE_GIT_REMOTE was set. It has been unset for the migration.
+          HOMEBREW_CORE_GIT_REMOTE was set: #{ENV["HOMEBREW_CORE_GIT_REMOTE"]}.
+          It has been unset for the migration.
           You may need to change this from a linuxbrew-core mirror to a homebrew-core one.
 
         EOS
@@ -57,8 +58,9 @@ module Homebrew
 
       if ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"] != ENV["HOMEBREW_BOTTLE_DOMAIN"]
         opoo <<~EOS
-          HOMEBREW_BOTTLE_DOMAIN was set. It has been unset for the migration.
-          You may need to change this Linuxbrew packages to Homebrew packages.
+          HOMEBREW_BOTTLE_DOMAIN was set: #{ENV["HOMEBREW_BOTTLE_DOMAIN"]}.
+          It has been unset for the migration.
+          You may need to change this from a Linuxbrew package mirror to a Homebrew one.
 
         EOS
       end

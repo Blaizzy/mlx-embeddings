@@ -130,12 +130,12 @@ module Homebrew
       end
 
       def check_linuxbrew_bottle_domain
-        return unless Homebrew::EnvConfig.bottle_domain.include?("linuxbrew-core")
+        return unless Homebrew::EnvConfig.bottle_domain.include?("linuxbrew")
 
         <<~EOS
-          Your HOMEBREW_BOTTLE_DOMAIN still contains linuxbrew-core.
-          You must unset it (or adjust it to not contain linuxbrew-core
-          e.g. by using homebrew-core instead).
+          Your HOMEBREW_BOTTLE_DOMAIN still contains "linuxbrew".
+          You must unset it (or adjust it to not contain linuxbrew
+          e.g. by using homebrew instead).
         EOS
       end
     end
