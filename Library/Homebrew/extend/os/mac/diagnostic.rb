@@ -212,7 +212,7 @@ module Homebrew
         return if Homebrew::EnvConfig.developer? && OS::Mac.version.prerelease?
 
         <<~EOS
-          Ruby version #{RUBY_VERSION} is unsupported on #{MacOS.version}. Homebrew
+          Ruby version #{RUBY_VERSION} is unsupported on macOS #{MacOS.version}. Homebrew
           is developed and tested on Ruby #{required_version}, and may not work correctly
           on other Rubies. Patches are accepted as long as they don't cause breakage
           on supported Rubies.
