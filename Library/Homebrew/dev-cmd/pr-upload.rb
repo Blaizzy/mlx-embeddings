@@ -26,6 +26,8 @@ module Homebrew
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. "\
                           "Useful for repairing bottle uploads that previously failed."
+      switch "--upload-only",
+             description: "Skip running `brew bottle` before uploading."
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--github-org=",
@@ -35,6 +37,9 @@ module Homebrew
       flag   "--root-url-using=",
              description: "Use the specified download strategy class for downloading the bottle's URL instead of "\
                           "Homebrew's default."
+
+      conflicts "--upload-only", "--keep-old"
+      conflicts "--upload-only", "--no-commit"
 
       named_args :none
     end
@@ -90,61 +95,63 @@ module Homebrew
     odie "No bottle JSON files found in the current working directory" if json_files.blank?
     bottles_hash = bottles_hash_from_json_files(json_files, args)
 
-    bottle_args = ["bottle", "--merge", "--write"]
-    bottle_args << "--verbose" if args.verbose?
-    bottle_args << "--debug" if args.debug?
-    bottle_args << "--keep-old" if args.keep_old?
-    bottle_args << "--root-url=#{args.root_url}" if args.root_url
-    bottle_args << "--committer=#{args.committer}" if args.committer
-    bottle_args << "--no-commit" if args.no_commit?
-    bottle_args << "--root-url-using=#{args.root_url_using}" if args.root_url_using
-    bottle_args += json_files
+    unless args.upload_only?
+      bottle_args = ["bottle", "--merge", "--write"]
+      bottle_args << "--verbose" if args.verbose?
+      bottle_args << "--debug" if args.debug?
+      bottle_args << "--keep-old" if args.keep_old?
+      bottle_args << "--root-url=#{args.root_url}" if args.root_url
+      bottle_args << "--committer=#{args.committer}" if args.committer
+      bottle_args << "--no-commit" if args.no_commit?
+      bottle_args << "--root-url-using=#{args.root_url_using}" if args.root_url_using
+      bottle_args += json_files
 
-    if args.dry_run?
-      dry_run_service = if github_packages?(bottles_hash)
-        # GitHub Packages has its own --dry-run handling.
-        nil
-      elsif github_releases?(bottles_hash)
-        "GitHub Releases"
-      else
-        odie "Service specified by root_url is not recognized"
+      if args.dry_run?
+        dry_run_service = if github_packages?(bottles_hash)
+          # GitHub Packages has its own --dry-run handling.
+          nil
+        elsif github_releases?(bottles_hash)
+          "GitHub Releases"
+        else
+          odie "Service specified by root_url is not recognized"
+        end
+
+        if dry_run_service
+          puts <<~EOS
+            brew #{bottle_args.join " "}
+            Upload bottles described by these JSON files to #{dry_run_service}:
+              #{json_files.join("\n  ")}
+          EOS
+          return
+        end
       end
 
-      if dry_run_service
-        puts <<~EOS
-          brew #{bottle_args.join " "}
-          Upload bottles described by these JSON files to #{dry_run_service}:
-            #{json_files.join("\n  ")}
-        EOS
+      check_bottled_formulae!(bottles_hash)
+
+      # This will be run by `brew bottle` and `brew audit` later so run it first
+      # to not start spamming during normal output.
+      Homebrew.install_bundler_gems!
+
+      safe_system HOMEBREW_BREW_FILE, *bottle_args
+
+      json_files = Dir["*.bottle.json"]
+      if json_files.blank?
+        puts "No bottle JSON files after merge, no upload needed!"
         return
       end
-    end
 
-    check_bottled_formulae!(bottles_hash)
+      # Reload the JSON files (in case `brew bottle --merge` generated
+      # `all: $SHA256` bottles)
+      bottles_hash = bottles_hash_from_json_files(json_files, args)
 
-    # This will be run by `brew bottle` and `brew audit` later so run it first
-    # to not start spamming during normal output.
-    Homebrew.install_bundler_gems!
-
-    safe_system HOMEBREW_BREW_FILE, *bottle_args
-
-    json_files = Dir["*.bottle.json"]
-    if json_files.blank?
-      puts "No bottle JSON files after merge, no upload needed!"
-      return
-    end
-
-    # Reload the JSON files (in case `brew bottle --merge` generated
-    # `all: $SHA256` bottles)
-    bottles_hash = bottles_hash_from_json_files(json_files, args)
-
-    # Check the bottle commits did not break `brew audit`
-    unless args.no_commit?
-      audit_args = ["audit", "--skip-style"]
-      audit_args << "--verbose" if args.verbose?
-      audit_args << "--debug" if args.debug?
-      audit_args += bottles_hash.keys
-      safe_system HOMEBREW_BREW_FILE, *audit_args
+      # Check the bottle commits did not break `brew audit`
+      unless args.no_commit?
+        audit_args = ["audit", "--skip-style"]
+        audit_args << "--verbose" if args.verbose?
+        audit_args << "--debug" if args.debug?
+        audit_args += bottles_hash.keys
+        safe_system HOMEBREW_BREW_FILE, *audit_args
+      end
     end
 
     if github_releases?(bottles_hash)
