@@ -12,7 +12,7 @@ it does it too. You have to confirm everything it will do before it starts.
 ## macOS Requirements
 
 * A 64-bit Intel CPU or Apple Silicon CPU <sup>[1](#1)</sup>
-* macOS Mojave (10.14) (or higher) <sup>[2](#2)</sup>
+* macOS Catalina (10.15) (or higher) <sup>[2](#2)</sup>
 * Command Line Tools (CLT) for Xcode: `xcode-select --install`,
   [developer.apple.com/downloads](https://developer.apple.com/downloads) or
   [Xcode](https://itunes.apple.com/us/app/xcode/id497799835) <sup>[3](#3)</sup>
@@ -78,7 +78,7 @@ Uninstallation is documented in the [FAQ](FAQ.md).
 <a name="1"><sup>1</sup></a> For 32-bit or PPC support see
 [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 
-<a name="2"><sup>2</sup></a> 10.14 or higher is recommended. 10.9–10.13 are
+<a name="2"><sup>2</sup></a> 10.15 or higher is recommended. 10.10–10.14 are
 supported on a best-effort basis. For 10.4-10.6 see
 [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 
