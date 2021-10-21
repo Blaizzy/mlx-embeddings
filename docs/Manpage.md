@@ -1294,6 +1294,8 @@ Apply the bottle commit and publish bottles to a host.
   Do not generate a new commit before uploading.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
+* `--upload-only`:
+  Skip running `brew bottle` before uploading.
 * `--committer`:
   Specify a committer name and email in `git`'s standard author format.
 * `--github-org`:
