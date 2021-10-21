@@ -22,20 +22,6 @@ module Zeitwerk
   end
 end
 
-class Zeitwerk::Autoloads
-  def initialize; end
-
-  def a2c; end
-  def abspath_for(parent, cname); end
-  def c2a; end
-  def clear; end
-  def cref_for(abspath); end
-  def define(parent, cname, abspath); end
-  def delete(abspath); end
-  def each(&block); end
-  def empty?; end
-end
-
 class Zeitwerk::Error < ::StandardError; end
 
 module Zeitwerk::ExplicitNamespace
@@ -95,6 +81,7 @@ class Zeitwerk::Loader
   private
 
   def autoload_file(parent, cname, file); end
+  def autoload_path_set_by_me_for?(parent, cname); end
   def autoload_subdir(parent, cname, subdir); end
   def promote_namespace_from_implicit_to_explicit(dir:, file:, parent:, cname:); end
   def raise_if_conflicting_directory(dir); end
