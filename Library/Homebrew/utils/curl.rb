@@ -52,7 +52,7 @@ module Utils
       args << "--disable" unless Homebrew::EnvConfig.curlrc?
 
       # echo any cookies received on a redirect
-      args << "--cookie-jar" << "/dev/null"
+      args << "--cookie" << "/dev/null"
 
       args << "--globoff"
 
