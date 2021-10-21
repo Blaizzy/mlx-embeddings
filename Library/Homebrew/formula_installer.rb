@@ -235,9 +235,6 @@ class FormulaInstaller
     end
 
     if Homebrew.default_prefix? &&
-       # TODO: re-enable this on Linux when we merge linuxbrew-core into
-       # homebrew-core and have full bottle coverage.
-       (OS.mac? || ENV["CI"]) &&
        !build_from_source? && !build_bottle? && !formula.head? &&
        formula.tap&.core_tap? && !formula.bottle_unneeded? &&
        # Integration tests override homebrew-core locations
