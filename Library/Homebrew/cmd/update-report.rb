@@ -44,12 +44,34 @@ module Homebrew
 
     # Run `brew update` (again) if we've got a linuxbrew-core CoreTap
     if CoreTap.instance.linuxbrew_core? && ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
+      ohai_stdout_or_stderr "Re-running `brew update` for linuxbrew-core migration"
+
+      if ENV["HOMEBREW_CORE_DEFAULT_GIT_REMOTE"] != ENV["HOMEBREW_CORE_GIT_REMOTE"]
+        opoo <<~EOS
+          HOMEBREW_CORE_GIT_REMOTE was set: #{ENV["HOMEBREW_CORE_GIT_REMOTE"]}.
+          It has been unset for the migration.
+          You may need to change this from a linuxbrew-core mirror to a homebrew-core one.
+
+        EOS
+      end
+      ENV.delete("HOMEBREW_CORE_GIT_REMOTE")
+
+      if ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"] != ENV["HOMEBREW_BOTTLE_DOMAIN"]
+        opoo <<~EOS
+          HOMEBREW_BOTTLE_DOMAIN was set: #{ENV["HOMEBREW_BOTTLE_DOMAIN"]}.
+          It has been unset for the migration.
+          You may need to change this from a Linuxbrew package mirror to a Homebrew one.
+
+        EOS
+      end
+      ENV.delete("HOMEBREW_BOTTLE_DOMAIN")
+
       ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"] = "1"
+      FileUtils.rm_f HOMEBREW_LOCKS/"update"
+
       update_args = []
       update_args << "--preinstall" if args.preinstall?
       update_args << "--force" if args.force?
-      ohai_stdout_or_stderr "Re-running `brew update` for linuxbrew-core migration"
-      FileUtils.rm_f HOMEBREW_LOCKS/"update"
       exec HOMEBREW_BREW_FILE, "update", *update_args
     end
 
