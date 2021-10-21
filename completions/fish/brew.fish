@@ -1121,6 +1121,7 @@ __fish_brew_complete_arg 'pr-upload' -l no-commit -d 'Do not generate a new comm
 __fish_brew_complete_arg 'pr-upload' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'pr-upload' -l root-url -d 'Use the specified URL as the root of the bottle\'s URL instead of Homebrew\'s default'
 __fish_brew_complete_arg 'pr-upload' -l root-url-using -d 'Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default'
+__fish_brew_complete_arg 'pr-upload' -l upload-only -d 'Skip running `brew bottle` before uploading'
 __fish_brew_complete_arg 'pr-upload' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'pr-upload' -l warn-on-upload-failure -d 'Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed'
 
