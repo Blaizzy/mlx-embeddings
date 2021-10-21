@@ -64,7 +64,7 @@ module Homebrew
           return values if match.blank?
 
           # The directory listing page for the project's files
-          values[:url] = "http://ftp.gnu.org/gnu/#{match[:project_name]}/"
+          values[:url] = "https://ftp.gnu.org/gnu/#{match[:project_name]}/"
 
           regex_name = Regexp.escape(T.must(match[:project_name])).gsub("\\-", "-")
 

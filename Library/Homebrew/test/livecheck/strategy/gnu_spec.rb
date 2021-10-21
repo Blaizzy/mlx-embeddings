@@ -19,15 +19,15 @@ describe Homebrew::Livecheck::Strategy::Gnu do
   let(:generated) {
     {
       no_version_dir: {
-        url:   "http://ftp.gnu.org/gnu/abc/",
+        url:   "https://ftp.gnu.org/gnu/abc/",
         regex: %r{href=.*?abc[._-]v?(\d+(?:\.\d+)*)(?:\.[a-z]+|/)}i,
       },
       software_page:  {
-        url:   "http://ftp.gnu.org/gnu/abc/",
+        url:   "https://ftp.gnu.org/gnu/abc/",
         regex: %r{href=.*?abc[._-]v?(\d+(?:\.\d+)*)(?:\.[a-z]+|/)}i,
       },
       subdomain:      {
-        url:   "http://ftp.gnu.org/gnu/abc/",
+        url:   "https://ftp.gnu.org/gnu/abc/",
         regex: %r{href=.*?abc[._-]v?(\d+(?:\.\d+)*)(?:\.[a-z]+|/)}i,
       },
       savannah:       {},
