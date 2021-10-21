@@ -189,7 +189,7 @@ GEM
     warning (1.2.1)
     webrick (1.7.0)
     webrobots (0.1.2)
-    zeitwerk (2.5.0)
+    zeitwerk (2.5.1)
 
 PLATFORMS
   ruby
