@@ -37,9 +37,9 @@ module SharedAudits
     return unless release
 
     exception, name, version = if formula
-      [tap_audit_exception(:github_prerelease_allowlist, formula.tap, formula.name), formula.name, formula.version]
+      [formula.tap&.audit_exception(:github_prerelease_allowlist, formula.name), formula.name, formula.version]
     elsif cask
-      [tap_audit_exception(:github_prerelease_allowlist, cask.tap, cask.token), cask.token, cask.version]
+      [cask.tap&.audit_exception(:github_prerelease_allowlist, cask.token), cask.token, cask.version]
     end
 
     return "#{tag} is a GitHub pre-release." if release["prerelease"] && [version, "all"].exclude?(exception)
@@ -77,9 +77,9 @@ module SharedAudits
     return if DateTime.parse(release["released_at"]) <= DateTime.now
 
     exception, version = if formula
-      [tap_audit_exception(:gitlab_prerelease_allowlist, formula.tap, formula.name), formula.version]
+      [formula.tap&.audit_exception(:gitlab_prerelease_allowlist, formula.name), formula.version]
     elsif cask
-      [tap_audit_exception(:gitlab_prerelease_allowlist, cask.tap, cask.token), cask.version]
+      [cask.tap&.audit_exception(:gitlab_prerelease_allowlist, cask.token), cask.version]
     end
     return if [version, "all"].include?(exception)
 
@@ -165,22 +165,5 @@ module SharedAudits
     url.match(%r{^https://gitlab\.com/[\w-]+/[\w-]+/-/archive/([^/]+)/})
        .to_a
        .second
-  end
-
-  def tap_audit_exception(list, tap, formula_or_cask, value = nil)
-    return false if tap.audit_exceptions.blank?
-    return false unless tap.audit_exceptions.key? list
-
-    list = tap.audit_exceptions[list]
-
-    case list
-    when Array
-      list.include? formula_or_cask
-    when Hash
-      return false if list.exclude? formula_or_cask
-      return list[formula_or_cask] if value.blank?
-
-      list[formula_or_cask] == value
-    end
   end
 end

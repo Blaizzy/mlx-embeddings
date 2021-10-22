@@ -90,7 +90,7 @@ module FormulaCellarChecks
 
   def check_flat_namespace(formula)
     return unless formula.prefix.directory?
-    return if formula.tap.present? && tap_audit_exception(:flat_namespace_allowlist, formula.name)
+    return if formula.tap.present? && formula.tap.audit_exception(:flat_namespace_allowlist, formula.name)
 
     keg = Keg.new(formula.prefix)
     flat_namespace_files = keg.mach_o_files.reject do |file|

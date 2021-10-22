@@ -332,13 +332,14 @@ module FormulaCellarChecks
     end.map(&:to_h) # To prevent transformation into nested arrays
 
     universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
-      tap_audit_exception(:universal_binary_allowlist, formula.name)
+      formula.tap.audit_exception(:universal_binary_allowlist, formula.name)
     else
       true
     end
     return if mismatches.empty? && universal_binaries_expected
 
-    mismatches_expected = formula.tap.blank? || tap_audit_exception(:mismatched_binary_allowlist, formula.name)
+    mismatches_expected = formula.tap.blank? ||
+                          formula.tap.audit_exception(:mismatched_binary_allowlist, formula.name)
     return if compatible_universal_binaries.empty? && mismatches_expected
 
     return if universal_binaries_expected && mismatches_expected
