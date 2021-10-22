@@ -138,6 +138,10 @@ class Build
         # https://reproducible-builds.org/docs/source-date-epoch/
         ENV["SOURCE_DATE_EPOCH"] = formula.source_modified_time.to_i.to_s
 
+        # Avoid make getting confused about timestamps.
+        # https://github.com/Homebrew/homebrew-core/pull/87470
+        ENV["TZ"] = "UTC0"
+
         formula.patch
 
         if args.git?
