@@ -199,6 +199,9 @@ module Homebrew
       def message; end
 
       sig { returns(T.nilable(String)) }
+      def timeout; end
+
+      sig { returns(T.nilable(String)) }
       def issue; end
 
       sig { returns(T.nilable(String)) }

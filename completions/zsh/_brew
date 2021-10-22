@@ -738,6 +738,7 @@ _brew_dispatch_build_bottle() {
     '(--linux --linux-self-hosted)--macos[Version of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
+    '--timeout[Build timeout (in minutes, default: 60)]' \
     '--upload[Upload built bottles]' \
     '--verbose[Make some output more verbose]' \
     '--workflow[Dispatch specified workflow (default: `dispatch-build-bottle.yml`)]' \

@@ -782,6 +782,7 @@ _brew_dispatch_build_bottle() {
       --macos
       --quiet
       --tap
+      --timeout
       --upload
       --verbose
       --workflow
