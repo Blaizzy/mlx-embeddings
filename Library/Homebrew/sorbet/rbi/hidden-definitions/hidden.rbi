@@ -4592,6 +4592,8 @@ module Homebrew::EnvConfig
 
   def self.install_badge(); end
 
+  def self.install_from_api?(); end
+
   def self.livecheck_watchlist(); end
 
   def self.logs(); end

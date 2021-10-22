@@ -136,9 +136,7 @@ module Homebrew
     updated_taps = []
     Tap.each do |tap|
       next unless tap.git?
-      if (tap.core_tap? || tap == "homebrew/cask") && ENV["HOMEBREW_INSTALL_FROM_API"].present? && args.preinstall?
-        next
-      end
+      next if (tap.core_tap? || tap == "homebrew/cask") && Homebrew::EnvConfig.install_from_api? && args.preinstall?
 
       if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
          Settings.read("linuxbrewmigrated") != "true"
@@ -266,7 +264,7 @@ module Homebrew
 
   def install_core_tap_if_necessary
     return if ENV["HOMEBREW_UPDATE_TEST"]
-    return if ENV["HOMEBREW_INSTALL_FROM_API"].present?
+    return if Homebrew::EnvConfig.install_from_api?
 
     core_tap = CoreTap.instance
     return if core_tap.installed?

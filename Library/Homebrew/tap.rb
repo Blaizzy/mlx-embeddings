@@ -772,7 +772,7 @@ class CoreTap < Tap
 
   def self.ensure_installed!
     return if instance.installed?
-    return if ENV["HOMEBREW_INSTALL_FROM_API"].present?
+    return if Homebrew::EnvConfig.install_from_api?
 
     safe_system HOMEBREW_BREW_FILE, "tap", instance.name
   end
@@ -795,7 +795,7 @@ class CoreTap < Tap
   # @private
   sig { params(manual: T::Boolean).void }
   def uninstall(manual: false)
-    raise "Tap#uninstall is not available for CoreTap" if ENV["HOMEBREW_INSTALL_FROM_API"].blank?
+    raise "Tap#uninstall is not available for CoreTap" unless Homebrew::EnvConfig.install_from_api?
 
     super
   end

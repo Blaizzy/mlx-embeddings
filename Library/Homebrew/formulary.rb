@@ -361,7 +361,7 @@ module Formulary
     end
 
     def get_formula(*)
-      if !CoreTap.instance.installed? && ENV["HOMEBREW_INSTALL_FROM_API"].present?
+      if !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
         raise CoreTapFormulaUnavailableError, name
       end
 
@@ -399,7 +399,7 @@ module Formulary
   )
     raise ArgumentError, "Formulae must have a ref!" unless ref
 
-    if ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
+    if Homebrew::EnvConfig.install_from_api? &&
        @formula_name_local_bottle_path_map.present? &&
        @formula_name_local_bottle_path_map.key?(ref)
       ref = @formula_name_local_bottle_path_map[ref]
@@ -431,7 +431,7 @@ module Formulary
   # @param formula_name the formula name string to map.
   # @param local_bottle_path a path pointing to the target bottle archive.
   def self.map_formula_name_to_local_bottle_path(formula_name, local_bottle_path)
-    if ENV["HOMEBREW_INSTALL_FROM_API"].blank?
+    unless Homebrew::EnvConfig.install_from_api?
       raise UsageError, "HOMEBREW_INSTALL_FROM_API not set but required for #{__method__}!"
     end
 
