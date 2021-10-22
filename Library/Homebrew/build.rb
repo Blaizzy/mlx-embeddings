@@ -131,50 +131,54 @@ class Build
         keep_tmp:    args.keep_tmp?,
         interactive: args.interactive?,
       ) do
-        # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,
-        # which is not known until after the formula has been staged.
-        ENV["HOMEBREW_FORMULA_PREFIX"] = formula.prefix
-
-        # https://reproducible-builds.org/docs/source-date-epoch/
-        ENV["SOURCE_DATE_EPOCH"] = formula.source_modified_time.to_i.to_s
-
-        formula.patch
-
-        if args.git?
-          system "git", "init"
-          system "git", "add", "-A"
-        end
-        if args.interactive?
-          ohai "Entering interactive mode..."
-          puts <<~EOS
-            Type `exit` to return and finalize the installation.
-            Install to this prefix: #{formula.prefix}
-          EOS
+        with_env(
+          # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,
+          # which is not known until after the formula has been staged.
+          HOMEBREW_FORMULA_PREFIX: formula.prefix,
+          # https://reproducible-builds.org/docs/source-date-epoch/
+          SOURCE_DATE_EPOCH:       formula.source_modified_time.to_i.to_s,
+          # Avoid make getting confused about timestamps.
+          # https://github.com/Homebrew/homebrew-core/pull/87470
+          TZ:                      "UTC0",
+        ) do
+          formula.patch
 
           if args.git?
-            puts <<~EOS
-              This directory is now a Git repository. Make your changes and then use:
-                git diff | pbcopy
-              to copy the diff to the clipboard.
-            EOS
+            system "git", "init"
+            system "git", "add", "-A"
           end
+          if args.interactive?
+            ohai "Entering interactive mode..."
+            puts <<~EOS
+              Type `exit` to return and finalize the installation.
+              Install to this prefix: #{formula.prefix}
+            EOS
 
-          interactive_shell(formula)
-        else
-          formula.prefix.mkpath
-          formula.logs.mkpath
+            if args.git?
+              puts <<~EOS
+                This directory is now a Git repository. Make your changes and then use:
+                  git diff | pbcopy
+                to copy the diff to the clipboard.
+              EOS
+            end
 
-          (formula.logs/"00.options.out").write \
-            "#{formula.full_name} #{formula.build.used_options.sort.join(" ")}".strip
-          formula.install
+            interactive_shell(formula)
+          else
+            formula.prefix.mkpath
+            formula.logs.mkpath
 
-          stdlibs = detect_stdlibs
-          tab = Tab.create(formula, ENV.compiler, stdlibs.first)
-          tab.write
+            (formula.logs/"00.options.out").write \
+              "#{formula.full_name} #{formula.build.used_options.sort.join(" ")}".strip
+            formula.install
 
-          # Find and link metafiles
-          formula.prefix.install_metafiles formula.buildpath
-          formula.prefix.install_metafiles formula.libexec if formula.libexec.exist?
+            stdlibs = detect_stdlibs
+            tab = Tab.create(formula, ENV.compiler, stdlibs.first)
+            tab.write
+
+            # Find and link metafiles
+            formula.prefix.install_metafiles formula.buildpath
+            formula.prefix.install_metafiles formula.libexec if formula.libexec.exist?
+          end
         end
       end
     end
