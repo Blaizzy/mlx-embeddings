@@ -897,7 +897,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
     case @ref_type
     when :branch then "+refs/heads/#{@ref}:refs/remotes/origin/#{@ref}"
     when :tag    then "+refs/tags/#{@ref}:refs/tags/#{@ref}"
-    else              "+refs/heads/master:refs/remotes/origin/master"
+    else              "+refs/heads/*:refs/remotes/origin/*"
     end
   end
 
