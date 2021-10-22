@@ -116,11 +116,12 @@ begin
   end
 
   if internal_dev_cmd && Homebrew::EnvConfig.install_from_api?
-    odie "Developer commands cannot be run while `HOMEBREW_INSTALL_FROM_API` is set!"
+    odie "Developer commands cannot be run while HOMEBREW_INSTALL_FROM_API is set!"
   elsif Homebrew::EnvConfig.install_from_api? && developer_mode
     opoo <<~MESSAGE
-      Developers should not have `HOMEBREW_INSTALL_FROM_API` set! Please unset
-      `HOMEBREW_INSTALL_FROM_API` or turn developer mode off by running #{Tty.bold}brew developer off#{Tty.reset}
+      Developers should not have HOMEBREW_INSTALL_FROM_API set!
+      Please unset HOMEBREW_INSTALL_FROM_API or turn developer mode off by running:
+        brew developer off
     MESSAGE
   end
 
