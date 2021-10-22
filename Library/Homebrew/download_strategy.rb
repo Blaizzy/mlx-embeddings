@@ -897,8 +897,14 @@ class GitDownloadStrategy < VCSDownloadStrategy
     case @ref_type
     when :branch then "+refs/heads/#{@ref}:refs/remotes/origin/#{@ref}"
     when :tag    then "+refs/tags/#{@ref}:refs/tags/#{@ref}"
-    else              "+refs/heads/*:refs/remotes/origin/*"
+    else              default_refspec
     end
+  end
+
+  sig { returns(String) }
+  def default_refspec
+    # https://git-scm.com/book/en/v2/Git-Internals-The-Refspec
+    "+refs/heads/*:refs/remotes/origin/*"
   end
 
   sig { void }
@@ -1068,6 +1074,30 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
     else
       super
     end
+  end
+
+  sig { returns(String) }
+  def default_refspec
+    default_branch.yield_self do |branch|
+      if branch
+        "+refs/heads/#{branch}:refs/remotes/origin/#{branch}"
+      else
+        super
+      end
+    end
+  end
+
+  sig { returns(String) }
+  def default_branch
+    command! "git",
+             args:  ["remote", "set-head", "origin", "--auto"],
+             chdir: cached_location
+
+    result = command! "git",
+                      args:  ["symbolic-ref", "refs/remotes/origin/HEAD"],
+                      chdir: cached_location
+
+    result.stdout[%r{^refs/remotes/origin/(.*)$}, 1]
   end
 end
 
