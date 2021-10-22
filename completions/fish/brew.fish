@@ -603,6 +603,7 @@ __fish_brew_complete_arg 'dispatch-build-bottle' -l linux-wheezy -d 'Use Debian 
 __fish_brew_complete_arg 'dispatch-build-bottle' -l macos -d 'Version of macOS the bottle should be built for'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l tap -d 'Target tap repository (default: `homebrew/core`)'
+__fish_brew_complete_arg 'dispatch-build-bottle' -l timeout -d 'Build timeout (in minutes, default: 60)'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l upload -d 'Upload built bottles'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l workflow -d 'Dispatch specified workflow (default: `dispatch-build-bottle.yml`)'

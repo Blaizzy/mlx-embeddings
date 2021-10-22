@@ -1095,6 +1095,8 @@ Build bottles for these formulae with GitHub Actions.
 
 * `--tap`:
   Target tap repository (default: `homebrew/core`).
+* `--timeout`:
+  Build timeout (in minutes, default: 60).
 * `--issue`:
   If specified, post a comment to this issue number if the job fails.
 * `--macos`:

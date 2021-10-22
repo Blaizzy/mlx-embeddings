@@ -17,6 +17,8 @@ module Homebrew
       EOS
       flag   "--tap=",
              description: "Target tap repository (default: `homebrew/core`)."
+      flag   "--timeout=",
+             description: "Build timeout (in minutes, default: 60)."
       flag   "--issue=",
              description: "If specified, post a comment to this issue number if the job fails."
       flag   "--macos=",
@@ -81,6 +83,7 @@ module Homebrew
 
       # Optional inputs
       # These cannot be passed as nil to GitHub API
+      inputs[:timeout] = args.timeout if args.timeout
       inputs[:issue] = args.issue if args.issue
       inputs[:upload] = args.upload?.to_s if args.upload?
       inputs[:wheezy] = args.linux_wheezy?.to_s if args.linux_wheezy?
