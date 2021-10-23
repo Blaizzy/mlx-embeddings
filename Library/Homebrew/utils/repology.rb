@@ -19,7 +19,7 @@ module Repology
     last_package_in_response += "/" if last_package_in_response.present?
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
 
-    output, _errors, _status = curl_output(url.to_s, use_homebrew_curl: OS.mac?)
+    output, _errors, _status = curl_output(url.to_s, use_homebrew_curl: !curl_supports_tls13?)
     JSON.parse(output)
   end
 
@@ -27,7 +27,7 @@ module Repology
     url = "https://repology.org/tools/project-by?repo=#{repository}&" \
           "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
-    output, _errors, _status = curl_output("--location", url.to_s, use_homebrew_curl: OS.mac?)
+    output, _errors, _status = curl_output("--location", url.to_s, use_homebrew_curl: !curl_supports_tls13?)
 
     begin
       data = JSON.parse(output)

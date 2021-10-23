@@ -351,10 +351,11 @@ export HOMEBREW_COMMAND_DEPTH="$((HOMEBREW_COMMAND_DEPTH + 1))"
 setup_curl() {
   # This is set by the user environment.
   # shellcheck disable=SC2154
-  if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
-     "${HOMEBREW_PREFIX}/opt/curl/bin/curl" --version &>/dev/null
+  HOMEBREW_BREWED_CURL_PATH="${HOMEBREW_PREFIX}/opt/curl/bin/curl"
+  if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && -x "${HOMEBREW_BREWED_CURL_PATH}" ]] &&
+     "${HOMEBREW_BREWED_CURL_PATH}" --version &>/dev/null
   then
-    HOMEBREW_CURL="${HOMEBREW_PREFIX}/opt/curl/bin/curl"
+    HOMEBREW_CURL="${HOMEBREW_BREWED_CURL_PATH}"
   elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_CURL_PATH}" ]]
   then
     HOMEBREW_CURL="${HOMEBREW_CURL_PATH}"
@@ -592,6 +593,7 @@ export HOMEBREW_CELLAR
 export HOMEBREW_SYSTEM
 export HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD
 export HOMEBREW_CURL
+export HOMEBREW_BREWED_CURL_PATH
 export HOMEBREW_CURL_WARNING
 export HOMEBREW_SYSTEM_CURL_TOO_OLD
 export HOMEBREW_GIT

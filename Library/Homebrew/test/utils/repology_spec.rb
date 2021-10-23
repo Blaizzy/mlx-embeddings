@@ -22,7 +22,8 @@ describe Repology do
   describe "parse_api_response", :needs_network, :needs_tls13 do
     it "returns a hash of data" do
       limit = 1
-      response = described_class.parse_api_response(limit, repository: "homebrew")
+      start_with = "x"
+      response = described_class.parse_api_response(limit, start_with, repository: "homebrew")
 
       expect(response).not_to be_nil
       expect(response).to be_a(Hash)

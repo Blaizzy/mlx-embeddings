@@ -56,15 +56,14 @@ module Homebrew
 
     limit = args.limit.to_i if args.limit.present?
 
-    unless quiet_system(HOMEBREW_SHIMS_PATH/"shared/curl", "--tlsv1.3", "--head", "https://repology.org/")
+    unless Utils::Curl.curl_supports_tls13?
       begin
-        brewed_curl = Formula["curl"]
-        unless brewed_curl.any_version_installed?
+        unless Pathname.new(ENV["HOMEBREW_BREWED_CURL_PATH"]).exist?
           ohai "Installing `curl` for Repology queries..."
-          safe_system HOMEBREW_BREW_FILE, "install", "--formula", brewed_curl.full_name
+          safe_system HOMEBREW_BREW_FILE, "install", "--formula", Formula["curl"].full_name
         end
       rescue FormulaUnavailableError
-        opoo "A `curl` with TLS 1.3 support is required for Repology queries"
+        opoo "A `curl` with TLS 1.3 support is required for Repology queries."
       end
     end
 
