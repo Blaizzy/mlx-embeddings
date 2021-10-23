@@ -161,6 +161,8 @@
 **/vendor/bundle/ruby/*/gems/unparser-*/
 **/vendor/bundle/ruby/*/gems/uri_template-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
+**/vendor/bundle/ruby/*/gems/yard-*/
+**/vendor/bundle/ruby/*/gems/yard-sorbet-*/
 
 # Ignore `bin` contents (again).
 /bin
