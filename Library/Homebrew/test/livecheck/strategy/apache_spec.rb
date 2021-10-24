@@ -7,28 +7,30 @@ describe Homebrew::Livecheck::Strategy::Apache do
   subject(:apache) { described_class }
 
   let(:apache_urls) {
-    urls = {
-      version_dir:          "https://www.apache.org/dyn/closer.lua?path=abc/1.2.3/def-1.2.3.tar.gz",
-      name_and_version_dir: "https://www.apache.org/dyn/closer.lua?path=abc/def-1.2.3/ghi-1.2.3.tar.gz",
-      name_dir_bin:         "https://www.apache.org/dyn/closer.lua?path=abc/def/ghi-1.2.3-bin.tar.gz",
+    {
+      version_dir:                    "https://www.apache.org/dyn/closer.lua?path=abc/1.2.3/def-1.2.3.tar.gz",
+      version_dir_root:               "https://www.apache.org/dyn/closer.lua?path=/abc/1.2.3/def-1.2.3.tar.gz",
+      name_and_version_dir:           "https://www.apache.org/dyn/closer.lua?path=abc/def-1.2.3/ghi-1.2.3.tar.gz",
+      name_dir_bin:                   "https://www.apache.org/dyn/closer.lua?path=abc/def/ghi-1.2.3-bin.tar.gz",
+      archive_version_dir:            "https://archive.apache.org/dist/abc/1.2.3/def-1.2.3.tar.gz",
+      archive_name_and_version_dir:   "https://archive.apache.org/dist/abc/def-1.2.3/ghi-1.2.3.tar.gz",
+      archive_name_dir_bin:           "https://archive.apache.org/dist/abc/def/ghi-1.2.3-bin.tar.gz",
+      dlcdn_version_dir:              "https://dlcdn.apache.org/abc/1.2.3/def-1.2.3.tar.gz",
+      dlcdn_name_and_version_dir:     "https://dlcdn.apache.org/abc/def-1.2.3/ghi-1.2.3.tar.gz",
+      dlcdn_name_dir_bin:             "https://dlcdn.apache.org/abc/def/ghi-1.2.3-bin.tar.gz",
+      downloads_version_dir:          "https://downloads.apache.org/abc/1.2.3/def-1.2.3.tar.gz",
+      downloads_name_and_version_dir: "https://downloads.apache.org/abc/def-1.2.3/ghi-1.2.3.tar.gz",
+      downloads_name_dir_bin:         "https://downloads.apache.org/abc/def/ghi-1.2.3-bin.tar.gz",
+      mirrors_version_dir:            "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=abc/1.2.3/def-1.2.3.tar.gz",
+      mirrors_version_dir_root:       "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=/abc/1.2.3/def-1.2.3.tar.gz",
+      mirrors_name_and_version_dir:   "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=abc/def-1.2.3/ghi-1.2.3.tar.gz",
+      mirrors_name_dir_bin:           "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=abc/def/ghi-1.2.3-bin.tar.gz",
     }
-
-    # Add mirrors.cgi test URLs using the same paths
-    urls.clone.each do |key, url|
-      next unless url.include?("/closer.lua?path=")
-
-      urls["mirrors_#{key}".to_sym] = url.sub(
-        "/closer.lua?path=",
-        "/mirrors/mirrors.cgi?action=download&filename=",
-      )
-    end
-
-    urls
   }
   let(:non_apache_url) { "https://brew.sh/test" }
 
   let(:generated) {
-    {
+    values = {
       version_dir:          {
         url:   "https://archive.apache.org/dist/abc/",
         regex: %r{href=["']?v?(\d+(?:\.\d+)+)/}i,
@@ -42,6 +44,22 @@ describe Homebrew::Livecheck::Strategy::Apache do
         regex: /href=["']?ghi-v?(\d+(?:\.\d+)+)-bin\.t/i,
       },
     }
+    values[:version_dir_root] = values[:version_dir]
+    values[:archive_version_dir] = values[:version_dir]
+    values[:archive_name_and_version_dir] = values[:name_and_version_dir]
+    values[:archive_name_dir_bin] = values[:name_dir_bin]
+    values[:dlcdn_version_dir] = values[:version_dir]
+    values[:dlcdn_name_and_version_dir] = values[:name_and_version_dir]
+    values[:dlcdn_name_dir_bin] = values[:name_dir_bin]
+    values[:downloads_version_dir] = values[:version_dir]
+    values[:downloads_name_and_version_dir] = values[:name_and_version_dir]
+    values[:downloads_name_dir_bin] = values[:name_dir_bin]
+    values[:mirrors_version_dir] = values[:version_dir]
+    values[:mirrors_version_dir_root] = values[:version_dir_root]
+    values[:mirrors_name_and_version_dir] = values[:name_and_version_dir]
+    values[:mirrors_name_dir_bin] = values[:name_dir_bin]
+
+    values
   }
 
   describe "::match?" do
@@ -57,8 +75,7 @@ describe Homebrew::Livecheck::Strategy::Apache do
   describe "::generate_input_values" do
     it "returns a hash containing url and regex for an Apache URL" do
       apache_urls.each do |key, url|
-        generated_key = key.to_s.start_with?("mirrors_") ? key.to_s.delete_prefix("mirrors_").to_sym : key
-        expect(apache.generate_input_values(url)).to eq(generated[generated_key])
+        expect(apache.generate_input_values(url)).to eq(generated[key])
       end
     end
 
