@@ -168,7 +168,7 @@ module Homebrew
       sig { returns(T.nilable(String)) }
       def tap; end
 
-      sig { returns(T.nilable(String)) }
+      sig { returns(T.nilable(T::Array[String])) }
       def macos; end
 
       sig { returns(T.nilable(T::Array[String])) }
