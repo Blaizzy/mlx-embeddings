@@ -1100,7 +1100,7 @@ Build bottles for these formulae with GitHub Actions.
 * `--issue`:
   If specified, post a comment to this issue number if the job fails.
 * `--macos`:
-  Version of macOS the bottle should be built for.
+  Version(s) of macOS the bottle should be built for.
 * `--workflow`:
   Dispatch specified workflow (default: `dispatch-build-bottle.yml`).
 * `--upload`:
