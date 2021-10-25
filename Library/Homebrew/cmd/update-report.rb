@@ -43,7 +43,8 @@ module Homebrew
     args = update_report_args.parse
 
     # Run `brew update` (again) if we've got a linuxbrew-core CoreTap
-    if CoreTap.instance.linuxbrew_core? && ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
+    if CoreTap.instance.installed? && CoreTap.instance.linuxbrew_core? &&
+       ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
       ohai_stdout_or_stderr "Re-running `brew update` for linuxbrew-core migration"
 
       if ENV["HOMEBREW_CORE_DEFAULT_GIT_REMOTE"] != ENV["HOMEBREW_CORE_GIT_REMOTE"]
