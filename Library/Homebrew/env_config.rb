@@ -189,6 +189,11 @@ module Homebrew
         default_text: 'The "Beer Mug" emoji.',
         default:      "🍺",
       },
+      HOMEBREW_INSTALL_FROM_API:               {
+        description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
+                     "API instead of needing (large, slow) local checkouts of these repositories.",
+        boolean:     true,
+      },
       HOMEBREW_LIVECHECK_WATCHLIST:            {
         description: "Consult this file for the list of formulae to check by default when no formula argument " \
                      "is passed to `brew livecheck`.",

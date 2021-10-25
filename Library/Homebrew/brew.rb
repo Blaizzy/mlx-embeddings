@@ -107,6 +107,24 @@ begin
     end
   end
 
+  developer_mode = if cmd == "developer" && ARGV.include?("on")
+    true
+  elsif cmd == "developer" && ARGV.include?("off")
+    false
+  else
+    Homebrew::EnvConfig.developer? || Homebrew::Settings.read("devcmdrun") == "true"
+  end
+
+  if internal_dev_cmd && Homebrew::EnvConfig.install_from_api?
+    odie "Developer commands cannot be run while HOMEBREW_INSTALL_FROM_API is set!"
+  elsif Homebrew::EnvConfig.install_from_api? && developer_mode
+    opoo <<~MESSAGE
+      Developers should not have HOMEBREW_INSTALL_FROM_API set!
+      Please unset HOMEBREW_INSTALL_FROM_API or turn developer mode off by running:
+        brew developer off
+    MESSAGE
+  end
+
   unless internal_cmd
     # Add contributed commands to PATH before checking.
     homebrew_path.append(Tap.cmd_directories)

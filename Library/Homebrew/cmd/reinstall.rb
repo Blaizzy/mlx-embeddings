@@ -88,7 +88,7 @@ module Homebrew
     # We need to use the bottle API instead of just using the formula file
     # from an installed keg because it will not contain bottle information.
     # As a consequence, `brew reinstall` will also upgrade outdated formulae
-    if ENV["HOMEBREW_INSTALL_FROM_API"].present?
+    if Homebrew::EnvConfig.install_from_api?
       args.named.each do |name|
         formula = Formulary.factory(name)
         next unless formula.any_version_installed?

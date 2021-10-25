@@ -252,7 +252,7 @@ module Homebrew
   def info_formula(f, args:)
     specs = []
 
-    if ENV["HOMEBREW_INSTALL_FROM_API"].present? && Homebrew::API::Bottle.available?(f.name)
+    if Homebrew::EnvConfig.install_from_api? && Homebrew::API::Bottle.available?(f.name)
       info = Homebrew::API::Bottle.fetch(f.name)
 
       latest_version = info["pkg_version"].split("_").first

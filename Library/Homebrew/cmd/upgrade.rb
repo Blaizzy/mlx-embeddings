@@ -158,7 +158,7 @@ module Homebrew
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
 
-    if ENV["HOMEBREW_INSTALL_FROM_API"].present?
+    if Homebrew::EnvConfig.install_from_api?
       formulae_to_install.map! do |formula|
         next formula if formula.head?
         next formula if formula.tap.present? && !formula.core_formula?
@@ -223,7 +223,7 @@ module Homebrew
   def upgrade_outdated_casks(casks, args:)
     return false if args.formula?
 
-    if ENV["HOMEBREW_INSTALL_FROM_API"].present?
+    if Homebrew::EnvConfig.install_from_api?
       casks = casks.map do |cask|
         next cask if cask.tap.present? && cask.tap != "homebrew/cask"
         next cask unless Homebrew::API::CaskSource.available?(cask.token)

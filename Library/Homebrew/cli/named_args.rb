@@ -94,7 +94,7 @@ module Homebrew
         unreadable_error = nil
 
         if only != :cask
-          if prefer_loading_from_api && ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
+          if prefer_loading_from_api && Homebrew::EnvConfig.install_from_api? &&
              Homebrew::API::Bottle.available?(name)
             Homebrew::API::Bottle.fetch_bottles(name)
           end
@@ -132,7 +132,7 @@ module Homebrew
         end
 
         if only != :formula
-          if prefer_loading_from_api && ENV["HOMEBREW_INSTALL_FROM_API"].present? &&
+          if prefer_loading_from_api && Homebrew::EnvConfig.install_from_api? &&
              Homebrew::API::CaskSource.available?(name)
             contents = Homebrew::API::CaskSource.fetch(name)
           end
