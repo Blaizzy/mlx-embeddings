@@ -2030,7 +2030,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* The "Beer Mug" emoji.
 
 - `HOMEBREW_INSTALL_FROM_API`
-  <br>If set, install formulae and casks using Homebrew's formulae.brew.sh API instead of using local definitions. This allows formulae and casks in homebrew/core and homebrew/cask to be installed even if their respective tap is not installed locally.
+  <br>If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API instead of needing (large, slow) local checkouts of these repositories.
 
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
