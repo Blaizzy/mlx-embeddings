@@ -600,7 +600,7 @@ __fish_brew_complete_arg 'dispatch-build-bottle' -l issue -d 'If specified, post
 __fish_brew_complete_arg 'dispatch-build-bottle' -l linux -d 'Dispatch bottle for Linux (using GitHub runners)'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l linux-self-hosted -d 'Dispatch bottle for Linux (using self-hosted runner)'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l linux-wheezy -d 'Use Debian Wheezy container for building the bottle on Linux'
-__fish_brew_complete_arg 'dispatch-build-bottle' -l macos -d 'Version of macOS the bottle should be built for'
+__fish_brew_complete_arg 'dispatch-build-bottle' -l macos -d 'Version(s) of macOS the bottle should be built for'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l tap -d 'Target tap repository (default: `homebrew/core`)'
 __fish_brew_complete_arg 'dispatch-build-bottle' -l timeout -d 'Build timeout (in minutes, default: 60)'

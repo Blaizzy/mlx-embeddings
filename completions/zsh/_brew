@@ -735,7 +735,7 @@ _brew_dispatch_build_bottle() {
     '(--macos --linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
     '(--macos --linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
     '--linux-wheezy[Use Debian Wheezy container for building the bottle on Linux]' \
-    '(--linux --linux-self-hosted)--macos[Version of macOS the bottle should be built for]' \
+    '(--linux --linux-self-hosted)--macos[Version(s) of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--timeout[Build timeout (in minutes, default: 60)]' \
