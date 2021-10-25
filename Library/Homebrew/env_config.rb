@@ -190,9 +190,8 @@ module Homebrew
         default:      "🍺",
       },
       HOMEBREW_INSTALL_FROM_API:               {
-        description: "If set, install formulae and casks using Homebrew's formulae.brew.sh API instead of " \
-                     "using local definitions. This allows formulae and casks in homebrew/core and homebrew/cask " \
-                     "to be installed even if their respective tap is not installed locally.",
+        description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
+                     "API instead of needing (large, slow) local checkouts of these repositories.",
         boolean:     true,
       },
       HOMEBREW_LIVECHECK_WATCHLIST:            {
