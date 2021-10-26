@@ -567,6 +567,14 @@ describe Formula do
     expect(f.class.head).to be_kind_of(SoftwareSpec)
   end
 
+  specify "instance specs have different references" do
+    f = Testball.new
+    f2 = Testball.new
+
+    expect(f.stable.owner).to equal(f)
+    expect(f2.stable.owner).to equal(f2)
+  end
+
   specify "incomplete instance specs are not accessible" do
     f = formula do
       url "foo-1.0"
