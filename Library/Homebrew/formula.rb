@@ -262,7 +262,7 @@ class Formula
   end
 
   def spec_eval(name)
-    spec = self.class.send(name)
+    spec = self.class.send(name).dup
     return unless spec.url
 
     spec.owner = self
@@ -1449,9 +1449,9 @@ class Formula
 
   # @private
   def ==(other)
-    instance_of?(other.class) &&
+    self.class == other.class &&
       name == other.name &&
-      active_spec == other.active_spec
+      active_spec_sym == other.active_spec_sym
   end
   alias eql? ==
 
