@@ -281,7 +281,7 @@ module Homebrew
     end
     if any_go_deps
       go_regex = Version.formula_optionally_versioned_regex(:go, full: false)
-      ignores << %r{#{cellar_regex}/#{go_regex}/[\d.]+/libexec]}
+      ignores << %r{#{cellar_regex}/#{go_regex}/[\d.]+/libexec}
     end
 
     ignores << case f.name
