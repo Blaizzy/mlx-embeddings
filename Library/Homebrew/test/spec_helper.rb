@@ -170,12 +170,12 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :needs_tls13) do
-    begin
-      curl = Utils::Curl.curl_executable(use_homebrew_curl: OS.mac?)
-    rescue FormulaUnavailableError
-      skip "curl formula not available"
+    unless curl_supports_tls13?
+      ENV["HOMEBREW_CURL"] = ENV["HOMEBREW_BREWED_CURL_PATH"]
+      skip "A `curl` with TLS 1.3 support is required." unless curl_supports_tls13?
     end
-    skip "Requires curl with TLS 1.3 support." unless quiet_system curl, "--tlsv1.3", "--head", "https://brew.sh/"
+  rescue FormulaUnavailableError
+    skip "No `curl` formula is available."
   end
 
   config.before(:each, :needs_unzip) do
