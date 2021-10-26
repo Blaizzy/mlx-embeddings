@@ -450,7 +450,7 @@ module Formulary
     keg = kegs.find(&:linked?) || kegs.find(&:optlinked?) || kegs.max_by(&:version)
 
     if keg
-      from_keg(keg, spec, alias_path: alias_path)
+      from_keg(keg, spec, alias_path: alias_path, force_bottle: force_bottle, flags: flags)
     else
       factory(rack.basename.to_s, spec || :stable, alias_path: alias_path, from: :rack,
               force_bottle: force_bottle, flags: flags)
