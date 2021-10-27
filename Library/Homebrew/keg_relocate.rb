@@ -7,6 +7,7 @@ class Keg
   REPOSITORY_PLACEHOLDER = "@@HOMEBREW_REPOSITORY@@"
   LIBRARY_PLACEHOLDER = "@@HOMEBREW_LIBRARY@@"
   PERL_PLACEHOLDER = "@@HOMEBREW_PERL@@"
+  JAVA_PLACEHOLDER = "@@HOMEBREW_JAVA@@"
 
   class Relocation
     extend T::Sig
@@ -82,6 +83,8 @@ class Keg
     []
   end
 
+  JAVA_REGEX = %r{#{HOMEBREW_PREFIX}/opt/openjdk(@\d+(\.\d+)*)?/libexec(/openjdk\.jdk/Contents/Home)?}.freeze
+
   def prepare_relocation_to_placeholders
     relocation = Relocation.new
     relocation.add_replacement_pair(:prefix, HOMEBREW_PREFIX.to_s, PREFIX_PLACEHOLDER, path: true)
@@ -95,6 +98,7 @@ class Keg
     relocation.add_replacement_pair(:perl,
                                     %r{\A#!(?:/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)( |$)}o,
                                     "#!#{PERL_PLACEHOLDER}\\1")
+    relocation.add_replacement_pair(:java, JAVA_REGEX, JAVA_PLACEHOLDER)
     relocation
   end
   alias generic_prepare_relocation_to_placeholders prepare_relocation_to_placeholders
@@ -112,6 +116,9 @@ class Keg
     relocation.add_replacement_pair(:repository, REPOSITORY_PLACEHOLDER, HOMEBREW_REPOSITORY.to_s)
     relocation.add_replacement_pair(:library, LIBRARY_PLACEHOLDER, HOMEBREW_LIBRARY.to_s)
     relocation.add_replacement_pair(:perl, PERL_PLACEHOLDER, "#{HOMEBREW_PREFIX}/opt/perl/bin/perl")
+    openjdk = openjdk_dep_name_if_applicable
+    relocation.add_replacement_pair(:java, JAVA_PLACEHOLDER, "#{HOMEBREW_PREFIX}/opt/#{openjdk}/libexec") if openjdk
+
     relocation
   end
   alias generic_prepare_relocation_to_locations prepare_relocation_to_locations
@@ -120,6 +127,12 @@ class Keg
     relocation = prepare_relocation_to_locations.freeze
     relocate_dynamic_linkage(relocation) unless skip_linkage
     replace_text_in_files(relocation, files: files)
+  end
+
+  def openjdk_dep_name_if_applicable
+    runtime_dependencies.find do |dep|
+      dep["full_name"].match? Version.formula_optionally_versioned_regex(:openjdk)
+    end&.fetch("full_name")
   end
 
   def replace_text_in_files(relocation, files: nil)
