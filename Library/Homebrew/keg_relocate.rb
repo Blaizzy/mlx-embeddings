@@ -116,8 +116,9 @@ class Keg
     relocation.add_replacement_pair(:repository, REPOSITORY_PLACEHOLDER, HOMEBREW_REPOSITORY.to_s)
     relocation.add_replacement_pair(:library, LIBRARY_PLACEHOLDER, HOMEBREW_LIBRARY.to_s)
     relocation.add_replacement_pair(:perl, PERL_PLACEHOLDER, "#{HOMEBREW_PREFIX}/opt/perl/bin/perl")
-    openjdk = openjdk_dep_name_if_applicable
-    relocation.add_replacement_pair(:java, JAVA_PLACEHOLDER, "#{HOMEBREW_PREFIX}/opt/#{openjdk}/libexec") if openjdk
+    if (openjdk = openjdk_dep_name_if_applicable)
+      relocation.add_replacement_pair(:java, JAVA_PLACEHOLDER, "#{HOMEBREW_PREFIX}/opt/#{openjdk}/libexec")
+    end
 
     relocation
   end
@@ -130,9 +131,11 @@ class Keg
   end
 
   def openjdk_dep_name_if_applicable
-    runtime_dependencies&.find do |dep|
-      dep["full_name"].match? Version.formula_optionally_versioned_regex(:openjdk)
-    end&.fetch("full_name")
+    deps = runtime_dependencies
+    return if deps.blank?
+    
+    dep_names = deps.map { |d| d["full_name"] }
+    dep_names.find { |d| d.match? Version.formula_optionally_versioned_regex(:openjdk) }
   end
 
   def replace_text_in_files(relocation, files: nil)
