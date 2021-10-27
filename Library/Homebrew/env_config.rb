@@ -191,7 +191,8 @@ module Homebrew
       },
       HOMEBREW_INSTALL_FROM_API:               {
         description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
-                     "API instead of needing (large, slow) local checkouts of these repositories.",
+                     "API instead of needing (large, slow) local checkouts of these repositories." \
+                     "\n\n    *Note:* Users with developer mode enabled cannot set HOMEBREW_INSTALL_FROM_API.",
         boolean:     true,
       },
       HOMEBREW_LIVECHECK_WATCHLIST:            {
