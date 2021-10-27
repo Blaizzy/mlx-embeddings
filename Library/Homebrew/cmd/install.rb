@@ -138,6 +138,7 @@ module Homebrew
     end
 
     args.named.each do |name|
+      next if EnvConfig.install_from_api?
       next if File.exist?(name)
       next if name !~ HOMEBREW_TAP_FORMULA_REGEX && name !~ HOMEBREW_CASK_TAP_CASK_REGEX
 

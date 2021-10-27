@@ -191,7 +191,9 @@ module Homebrew
       },
       HOMEBREW_INSTALL_FROM_API:               {
         description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
-                     "API instead of needing (large, slow) local checkouts of these repositories.",
+                     "API instead of needing (large, slow) local checkouts of these repositories." \
+                     "\n\n    *Note:* Setting HOMEBREW_INSTALL_FROM_API is not compatible with Homebrew's " \
+                     "developer mode so will error (as Homebrew development needs a full clone).",
         boolean:     true,
       },
       HOMEBREW_LIVECHECK_WATCHLIST:            {
