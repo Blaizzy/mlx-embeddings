@@ -130,7 +130,7 @@ class Keg
   end
 
   def openjdk_dep_name_if_applicable
-    runtime_dependencies.find do |dep|
+    runtime_dependencies&.find do |dep|
       dep["full_name"].match? Version.formula_optionally_versioned_regex(:openjdk)
     end&.fetch("full_name")
   end
