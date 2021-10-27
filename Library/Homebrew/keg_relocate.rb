@@ -133,7 +133,6 @@ class Keg
   def openjdk_dep_name_if_applicable
     deps = runtime_dependencies
     return if deps.blank?
-    
     dep_names = deps.map { |d| d["full_name"] }
     dep_names.find { |d| d.match? Version.formula_optionally_versioned_regex(:openjdk) }
   end
