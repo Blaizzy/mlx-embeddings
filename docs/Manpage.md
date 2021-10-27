@@ -2032,7 +2032,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_INSTALL_FROM_API`
   <br>If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API instead of needing (large, slow) local checkouts of these repositories.
 
-    *Note:* Users with developer mode enabled cannot set HOMEBREW_INSTALL_FROM_API.
+    *Note:* Setting HOMEBREW_INSTALL_FROM_API is not compatible with Homebrew's developer mode so will error (as Homebrew development needs a full clone).
 
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
