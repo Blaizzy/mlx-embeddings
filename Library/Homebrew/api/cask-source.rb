@@ -12,6 +12,7 @@ module Homebrew
 
         sig { params(token: String).returns(Hash) }
         def fetch(token)
+          token = token.sub(%r{^homebrew/cask/}, "")
           Homebrew::API.fetch "cask-source/#{token}.rb", json: false
         end
 
