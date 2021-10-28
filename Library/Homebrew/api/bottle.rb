@@ -22,6 +22,7 @@ module Homebrew
 
         sig { params(name: String).returns(Hash) }
         def fetch(name)
+          name = name.sub(%r{^homebrew/core/}, "")
           Homebrew::API.fetch "#{bottle_api_path}/#{name}.json"
         end
 
@@ -85,7 +86,9 @@ module Homebrew
 
           # Map the name of this formula to the local bottle path to allow the
           # formula to be loaded by passing just the name to `Formulary::factory`.
-          Formulary.map_formula_name_to_local_bottle_path hash["name"], resource.downloader.cached_location
+          [hash["name"], "homebrew/core/#{hash["name"]}"].each do |name|
+            Formulary.map_formula_name_to_local_bottle_path name, resource.downloader.cached_location
+          end
         end
       end
     end
