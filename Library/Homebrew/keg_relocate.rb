@@ -98,8 +98,8 @@ class Keg
     relocation.add_replacement_pair(:perl,
                                     %r{\A#!(?:/usr/bin/perl\d\.\d+|#{HOMEBREW_PREFIX}/opt/perl/bin/perl)( |$)}o,
                                     "#!#{PERL_PLACEHOLDER}\\1")
-    # TODO: Enable relocation upon bottling when relocation upon pouring is in a brew release tag.
-    # relocation.add_replacement_pair(:java, JAVA_REGEX, JAVA_PLACEHOLDER)
+    relocation.add_replacement_pair(:java, JAVA_REGEX, JAVA_PLACEHOLDER)
+
     relocation
   end
   alias generic_prepare_relocation_to_placeholders prepare_relocation_to_placeholders
