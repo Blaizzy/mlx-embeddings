@@ -172,6 +172,11 @@ class Keg
     end
     relocation.add_replacement_pair(:perl, PERL_PLACEHOLDER, perl_path)
 
+    if (openjdk = openjdk_dep_name_if_applicable)
+      openjdk_path = HOMEBREW_PREFIX/"opt"/openjdk/"libexec/openjdk.jdk/Contents/Home"
+      relocation.add_replacement_pair(:java, JAVA_PLACEHOLDER, openjdk_path.to_s)
+    end
+
     relocation
   end
 
