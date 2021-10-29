@@ -4,7 +4,7 @@
 describe Cask::Installer, :cask do
   describe "install" do
     let(:empty_depends_on_stub) {
-      double(formula: [], cask: [], macos: nil, arch: nil, x11: nil)
+      double(formula: [], cask: [], macos: nil, arch: nil)
     }
 
     it "downloads and installs a nice fresh Cask" do

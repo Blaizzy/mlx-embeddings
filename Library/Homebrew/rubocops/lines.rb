@@ -55,7 +55,6 @@ module RuboCop
               "# if this fails, try separate make/make install steps",
               "# The URL of the archive",
               "## Naming --",
-              "# if your formula requires any X11/XQuartz components",
               "# if your formula fails when building in parallel",
               "# Remove unrecognized options if warned by configure",
               '# system "cmake',
