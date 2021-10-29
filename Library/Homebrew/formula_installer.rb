@@ -213,7 +213,7 @@ class FormulaInstaller
     begin
       compute_dependencies
     rescue TapFormulaUnavailableError => e
-      raise if e.tap.installed?
+      raise if e.tap.installed? || e.tap.core_tap?
 
       e.tap.install
       retry

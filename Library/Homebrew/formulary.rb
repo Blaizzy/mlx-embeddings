@@ -343,6 +343,8 @@ module Formulary
     rescue FormulaClassUnavailableError => e
       raise TapFormulaClassUnavailableError.new(tap, name, e.path, e.class_name, e.class_list), "", e.backtrace
     rescue FormulaUnavailableError => e
+      raise CoreTapFormulaUnavailableError.new(name), "", e.backtrace if tap.core_tap?
+
       raise TapFormulaUnavailableError.new(tap, name), "", e.backtrace
     end
 
