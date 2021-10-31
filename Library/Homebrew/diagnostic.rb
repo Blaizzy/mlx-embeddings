@@ -890,8 +890,7 @@ module Homebrew
             # Formulae installed with HOMEBREW_INSTALL_FROM_API should not count as deleted formulae
             # but may not have a tap listed in their tab
             tap = Tab.for_keg(keg).tap
-            next if tap.present? && tap.core_tap?
-            next if tap.blank? && Homebrew::API::Bottle.available?(keg.name)
+            next if (tap.blank? || tap.core_tap?) && Homebrew::API::Bottle.available?(keg.name)
           end
 
           keg.name
