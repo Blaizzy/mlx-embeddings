@@ -884,9 +884,16 @@ module Homebrew
         kegs = Keg.all
 
         deleted_formulae = kegs.map do |keg|
-          next if !CoreTap.instance.installed? && EnvConfig.install_from_api? && Tab.for_keg(keg).tap.core_tap?
+          next if Formulary.tap_paths(keg.name).any?
 
-          keg.name if Formulary.tap_paths(keg.name).blank?
+          if !CoreTap.instance.installed? && EnvConfig.install_from_api?
+            # Formulae installed with HOMEBREW_INSTALL_FROM_API should not count as deleted formulae
+            # but may not have a tap listed in their tab
+            tap = Tab.for_keg(keg).tap
+            next if (tap.blank? || tap.core_tap?) && Homebrew::API::Bottle.available?(keg.name)
+          end
+
+          keg.name
         end.compact.uniq
 
         return if deleted_formulae.blank?
