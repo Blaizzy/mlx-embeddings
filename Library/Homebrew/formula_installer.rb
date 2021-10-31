@@ -218,7 +218,7 @@ class FormulaInstaller
       Homebrew::API::Bottle.fetch_bottles(e.name)
       retry
     rescue TapFormulaUnavailableError => e
-      raise if e.tap.installed? || e.tap.core_tap?
+      raise if e.tap.installed?
 
       e.tap.install
       retry

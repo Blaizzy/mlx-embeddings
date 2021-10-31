@@ -343,7 +343,9 @@ module Formulary
     rescue FormulaClassUnavailableError => e
       raise TapFormulaClassUnavailableError.new(tap, name, e.path, e.class_name, e.class_list), "", e.backtrace
     rescue FormulaUnavailableError => e
-      raise CoreTapFormulaUnavailableError.new(name), "", e.backtrace if tap.core_tap?
+      if tap.core_tap? && Homebrew::EnvConfig.install_from_api?
+        raise CoreTapFormulaUnavailableError.new(name), "", e.backtrace
+      end
 
       raise TapFormulaUnavailableError.new(tap, name), "", e.backtrace
     end
