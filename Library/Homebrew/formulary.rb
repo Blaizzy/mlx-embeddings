@@ -535,6 +535,13 @@ module Formulary
     when URL_START_REGEX
       return FromUrlLoader.new(ref)
     when HOMEBREW_TAP_FORMULA_REGEX
+      # If `homebrew/core` is specified and not installed, check whether the formula is already installed.
+      if ref.start_with?("homebrew/core/") && !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
+        name = ref.split("/", 3).last
+        possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{name}/.brew/#{name}.rb")
+        return FormulaLoader.new(name, possible_keg_formula) if possible_keg_formula.file?
+      end
+
       return TapLoader.new(ref, from: from)
     end
 

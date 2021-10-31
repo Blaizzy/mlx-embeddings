@@ -44,11 +44,6 @@ class Dependency
     formula = Formulary.factory(name)
     formula.build = BuildOptions.new(options, formula.options)
     formula
-  rescue CoreTapFormulaUnavailableError
-    raise if !Homebrew::EnvConfig.install_from_api? || !Homebrew::API::Bottle.available?(name)
-
-    Homebrew::API::Bottle.fetch_bottles(name)
-    retry
   end
 
   def unavailable_core_formula?
