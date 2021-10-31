@@ -114,6 +114,15 @@ class FormulaInstaller
     @installed = Set.new
   end
 
+  def self.fetched
+    @fetched ||= Set.new
+  end
+
+  sig { void }
+  def self.clear_fetched
+    @fetched = Set.new
+  end
+
   sig { returns(T::Boolean) }
   def build_from_source?
     @build_from_source_formulae.include?(formula.full_name)
@@ -1141,6 +1150,8 @@ class FormulaInstaller
 
   sig { void }
   def fetch
+    return if self.class.fetched.include?(formula)
+
     fetch_dependencies
 
     return if only_deps?
@@ -1152,6 +1163,8 @@ class FormulaInstaller
       formula.resources.each(&:fetch)
     end
     downloader.fetch
+
+    self.class.fetched << formula
   end
 
   def downloader
