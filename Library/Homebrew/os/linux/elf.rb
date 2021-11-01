@@ -133,8 +133,6 @@ module ELFShim
         match.captures.compact.first
       end.compact
       @dylibs = ldd_paths.select do |ldd_path|
-        next true unless ldd_path.start_with? "/"
-
         needed.include? File.basename(ldd_path)
       end
     end
