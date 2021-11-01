@@ -8,8 +8,9 @@ module RuboCop
       # You can set the maximum number of key-value pairs to consider
       # an offense with `MaxKeyValuePairs`.
       #
-      # This cop is marked as unsafe because RuboCop cannot determine if the
-      # receiver of `merge!` is actually a hash or not.
+      # @safety
+      #   This cop is unsafe because RuboCop cannot determine if the
+      #   receiver of `merge!` is actually a hash or not.
       #
       # @example
       #   # bad
@@ -91,7 +92,7 @@ module RuboCop
         end
 
         def non_redundant_pairs?(receiver, pairs)
-          pairs.size > 1 && !receiver.pure? || pairs.size > max_key_value_pairs
+          (pairs.size > 1 && !receiver.pure?) || pairs.size > max_key_value_pairs
         end
 
         def kwsplat_used?(pairs)
