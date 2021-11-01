@@ -40,7 +40,7 @@ class Caveats
       caveats << function_completion_caveats(shell)
     end
 
-    caveats << plist_caveats
+    caveats << service_caveats
     caveats << elisp_caveats
     caveats.compact.join("\n")
   end
@@ -151,8 +151,10 @@ class Caveats
     EOS
   end
 
-  def plist_caveats
-    return if !f.plist_manual && !f.service?
+  def service_caveats
+    return if !f.plist && !f.service? && !keg&.plist_installed?
+
+    s = []
 
     command = if f.service?
       f.service.manual_command
@@ -160,30 +162,42 @@ class Caveats
       f.plist_manual
     end
 
-    # Default to brew services not being supported. macOS overrides this behavior.
-    <<~EOS
+    return <<~EOS if !which("launchctl") && f.plist
       #{Formatter.warning("Warning:")} #{f.name} provides a launchd plist which can only be used on macOS!
       You can manually execute the service instead with:
         #{command}
     EOS
-  end
 
-  def plist_path
-    destination = if f.plist_startup
-      "/Library/LaunchDaemons"
+    # Brew services only works with these two tools
+    return <<~EOS if !which("systemctl") && !which("launchctl") && f.service?
+      #{Formatter.warning("Warning:")} #{f.name} provides a service which can only be used on macOS or systemd!
+      You can manually execute the service instead with:
+        #{command}
+    EOS
+
+    is_running_service = f.service? && quiet_system("ps aux | grep #{f.service.command&.first}")
+    if is_running_service || (f.plist && quiet_system("/bin/launchctl list #{f.plist_name} &>/dev/null"))
+      s << "To restart #{f.full_name} after an upgrade:"
+      s << "  #{f.plist_startup ? "sudo " : ""}brew services restart #{f.full_name}"
+    elsif f.plist_startup
+      s << "To start #{f.full_name} now and restart at startup:"
+      s << "  sudo brew services start #{f.full_name}"
     else
-      "~/Library/LaunchAgents"
+      s << "To start #{f.full_name} now and restart at login:"
+      s << "  brew services start #{f.full_name}"
     end
 
-    plist_filename = if f.plist
-      f.plist_path.basename
-    else
-      File.basename Dir["#{keg}/*.plist"].first
+    if f.plist_manual || f.service?
+      s << "Or, if you don't want/need a background service you can just run:"
+      s << "  #{command}"
     end
-    destination_path = Pathname.new(File.expand_path(destination))
 
-    destination_path/plist_filename
+    # pbpaste is the system clipboard tool on macOS and fails with `tmux` by default
+    # check if this is being run under `tmux` to avoid failing
+    if ENV["HOMEBREW_TMUX"] && !quiet_system("/usr/bin/pbpaste")
+      s << "" << "WARNING: brew services will fail when run under tmux."
+    end
+
+    "#{s.join("\n")}\n" unless s.empty?
   end
 end
-
-require "extend/os/caveats"
