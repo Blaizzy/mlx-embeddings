@@ -553,11 +553,24 @@ module Cask
     def check_livecheck_version
       return unless appcast?
 
+      referenced_cask, = Homebrew::Livecheck.resolve_livecheck_reference(cask)
+
+      # Respect skip conditions for a referenced cask
+      if referenced_cask
+        skip_info = Homebrew::Livecheck::SkipConditions.referenced_skip_information(
+          referenced_cask,
+          Homebrew::Livecheck.cask_name(cask),
+        )
+      end
+
       # Respect cask skip conditions (e.g. discontinued, latest, unversioned)
-      skip_info = Homebrew::Livecheck::SkipConditions.skip_information(cask)
+      skip_info ||= Homebrew::Livecheck::SkipConditions.skip_information(cask)
       return :skip if skip_info.present?
 
-      latest_version = Homebrew::Livecheck.latest_version(cask)&.fetch(:latest)
+      latest_version = Homebrew::Livecheck.latest_version(
+        cask,
+        referenced_formula_or_cask: referenced_cask,
+      )&.fetch(:latest)
       if cask.version.to_s == latest_version.to_s
         if cask.appcast
           add_error "Version '#{latest_version}' was automatically detected by livecheck; " \
