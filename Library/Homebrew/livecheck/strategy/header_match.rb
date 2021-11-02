@@ -53,7 +53,7 @@ module Homebrew
           ).returns(T::Array[String])
         }
         def self.versions_from_headers(headers, regex = nil, &block)
-          return Strategy.handle_block_return(block.call(headers, regex)) if block
+          return Strategy.handle_block_return(yield(headers, regex)) if block
 
           DEFAULT_HEADERS_TO_CHECK.map do |header_name|
             header_value = headers[header_name]

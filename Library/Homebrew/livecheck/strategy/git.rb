@@ -93,7 +93,7 @@ module Homebrew
           ).returns(T::Array[String])
         }
         def self.versions_from_tags(tags, regex = nil, &block)
-          return Strategy.handle_block_return(block.call(tags, regex || DEFAULT_REGEX)) if block
+          return Strategy.handle_block_return(yield(tags, regex || DEFAULT_REGEX)) if block
 
           tags_only_debian = tags.all? { |tag| tag.start_with?("debian/") }
 

@@ -57,7 +57,7 @@ module Homebrew
           ).returns(T::Array[String])
         }
         def self.versions_from_content(content, regex, &block)
-          return Strategy.handle_block_return(block.call(content, regex)) if block
+          return Strategy.handle_block_return(yield(content, regex)) if block
           return [] if regex.blank?
 
           content.scan(regex).map do |match|

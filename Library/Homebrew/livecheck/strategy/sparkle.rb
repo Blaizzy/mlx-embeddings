@@ -157,7 +157,7 @@ module Homebrew
           item = item_from_content(content)
           return [] if item.blank?
 
-          return Strategy.handle_block_return(block.call(item)) if block
+          return Strategy.handle_block_return(yield(item)) if block
 
           version = item.bundle_version&.nice_version
           version.present? ? [version] : []
