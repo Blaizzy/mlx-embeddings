@@ -748,6 +748,8 @@ If the version depends on multiple header fields, a block can be specified, e.g.
 strategy :header_match do |headers|
   v = headers["content-disposition"][/MyApp-(\d+(?:\.\d+)*)\.zip/i, 1]
   id = headers["location"][%r{/(\d+)/download$}i, 1]
+  next if v.blank? || id.blank?
+  
   "#{v},#{id}"
 end
 ```
@@ -757,6 +759,8 @@ Similarly, the `:page_match` strategy can also be used for more complex versions
 ```ruby
 strategy :page_match do |page|
   match = page.match(%r{href=.*?/(\d+)/MyApp-(\d+(?:\.\d+)*)\.zip}i)
+  next if match.blank?
+  
   "#{match[2]},#{match[1]}"
 end
 ```
