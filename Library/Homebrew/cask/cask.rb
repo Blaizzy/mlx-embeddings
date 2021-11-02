@@ -26,7 +26,7 @@ module Cask
       return to_enum unless block
 
       Tap.flat_map(&:cask_files).each do |f|
-        block.call CaskLoader::FromTapPathLoader.new(f).load(config: nil)
+        yield CaskLoader::FromTapPathLoader.new(f).load(config: nil)
       rescue CaskUnreadableError => e
         opoo e.message
       end

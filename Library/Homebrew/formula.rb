@@ -1674,9 +1674,9 @@ class Formula
   end
 
   # @private
-  def self.each(&block)
+  def self.each(&_block)
     files.each do |file|
-      block.call Formulary.factory(file)
+      yield Formulary.factory(file)
     rescue FormulaUnavailableError, FormulaUnreadableError => e
       # Don't let one broken formula break commands. But do complain.
       onoe "Failed to import: #{file}"

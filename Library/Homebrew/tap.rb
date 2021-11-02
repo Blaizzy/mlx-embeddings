@@ -659,7 +659,7 @@ class Tap
 
     TAP_DIRECTORY.subdirs.each do |user|
       user.subdirs.each do |repo|
-        block.call fetch(user.basename.to_s, repo.basename.to_s)
+        yield fetch(user.basename.to_s, repo.basename.to_s)
       end
     end
   end

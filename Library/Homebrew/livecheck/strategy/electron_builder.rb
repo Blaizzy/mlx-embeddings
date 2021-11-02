@@ -50,7 +50,7 @@ module Homebrew
           yaml = YAML.safe_load(content)
           return [] if yaml.blank?
 
-          return Strategy.handle_block_return(block.call(yaml)) if block
+          return Strategy.handle_block_return(yield(yaml)) if block
 
           version = yaml["version"]
           version.present? ? [version] : []

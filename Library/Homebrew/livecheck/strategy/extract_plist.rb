@@ -68,7 +68,7 @@ module Homebrew
           ).returns(T::Array[String])
         }
         def self.versions_from_items(items, &block)
-          return Strategy.handle_block_return(block.call(items)) if block
+          return Strategy.handle_block_return(yield(items)) if block
 
           items.map do |_key, item|
             item.bundle_version.nice_version
