@@ -190,7 +190,7 @@ GEM
     webrick (1.7.0)
     webrobots (0.1.2)
     yard (0.9.26)
-    yard-sorbet (0.6.0)
+    yard-sorbet (0.6.1)
       sorbet-runtime (>= 0.5)
       yard (>= 0.9)
     zeitwerk (2.5.1)
