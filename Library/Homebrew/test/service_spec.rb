@@ -32,6 +32,28 @@ describe Homebrew::Service do
     end
   end
 
+  describe "#run_type" do
+    it "throws for cron type" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :cron
+      end
+
+      expect { f.service.manual_command }.to raise_error TypeError, "Service#run_type does not support cron"
+    end
+
+    it "throws for unexpected type" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :cow
+      end
+
+      expect {
+        f.service.manual_command
+      }.to raise_error TypeError, "Service#run_type allows: 'immediate'/'interval'/'cron'"
+    end
+  end
+
   describe "#manual_command" do
     it "returns valid manual_command" do
       f.class.service do
@@ -76,8 +98,9 @@ describe Homebrew::Service do
         root_dir var
         working_dir var
         keep_alive true
-        process_type "interactive"
+        process_type :interactive
         restart_delay 30
+        interval 5
         macos_legacy_timers true
       end
 
@@ -154,6 +177,35 @@ describe Homebrew::Service do
       EOS
       expect(plist).to eq(plist_expect)
     end
+
+    it "returns valid interval plist" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :interval
+        interval 5
+      end
+
+      plist = f.service.to_plist
+      plist_expect = <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        \t<key>Label</key>
+        \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>ProgramArguments</key>
+        \t<array>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t</array>
+        \t<key>RunAtLoad</key>
+        \t<false/>
+        \t<key>StartInterval</key>
+        \t<integer>5</integer>
+        </dict>
+        </plist>
+      EOS
+      expect(plist).to eq(plist_expect)
+    end
   end
 
   describe "#to_systemd_unit" do
@@ -168,7 +220,7 @@ describe Homebrew::Service do
         root_dir var
         working_dir var
         keep_alive true
-        process_type "interactive"
+        process_type :interactive
         restart_delay 30
         macos_legacy_timers true
       end
