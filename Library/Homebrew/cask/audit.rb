@@ -27,15 +27,16 @@ module Cask
                    new_cask: nil)
 
       # `new_cask` implies `online` and `strict`
-      online = new_cask if online.nil?
-      strict = new_cask if strict.nil?
+      online = new_cask if online.blank?
+      strict = new_cask if strict.blank?
 
       # `online` implies `appcast` and `download`
-      appcast = online if appcast.nil?
-      download = online if download.nil?
+      appcast = online if appcast.nil? # `appcast` is `nil` if neither `--appcast` nor `--no-appcast` are passed
+      download = online if download.blank?
 
+      odie online
       # `new_cask` implies `token_conflicts`
-      token_conflicts = new_cask if token_conflicts.nil?
+      token_conflicts = new_cask if token_conflicts.blank?
 
       @cask = cask
       @appcast = appcast
