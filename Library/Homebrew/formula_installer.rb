@@ -215,6 +215,7 @@ class FormulaInstaller
     forbidden_license_check
 
     check_install_sanity
+    install_fetch_deps unless ignore_deps?
   end
 
   sig { void }
@@ -341,6 +342,19 @@ class FormulaInstaller
     raise CannotInstallFormulaError,
           "You must `brew unpin #{pinned_unsatisfied_deps * " "}` as installing " \
           "#{formula.full_name} requires the latest version of pinned dependencies"
+  end
+
+  sig { void }
+  def install_fetch_deps
+    return if @compute_dependencies.blank?
+
+    compute_dependencies(use_cache: false) if @compute_dependencies.any? do |dep, options|
+      next false unless dep.tags == [:build, :test]
+
+      fetch_dependencies
+      install_dependency(dep, options)
+      true
+    end
   end
 
   def build_bottle_preinstall
