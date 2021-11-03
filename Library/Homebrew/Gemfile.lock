@@ -119,7 +119,7 @@ GEM
     rspec-sorbet (1.8.0)
       sorbet
       sorbet-runtime
-    rspec-support (3.10.2)
+    rspec-support (3.10.3)
     rspec-wait (0.0.9)
       rspec (>= 3, < 4)
     rspec_junit_formatter (0.4.1)
