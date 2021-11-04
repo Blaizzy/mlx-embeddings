@@ -34,7 +34,6 @@ module Cask
       appcast = online if appcast.nil? # `appcast` is `nil` if neither `--appcast` nor `--no-appcast` are passed
       download = online if download.blank?
 
-      odie online
       # `new_cask` implies `token_conflicts`
       token_conflicts = new_cask if token_conflicts.blank?
 
