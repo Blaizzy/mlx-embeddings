@@ -38,16 +38,11 @@ module SystemConfig
       @clt ||= MacOS::CLT.version if MacOS::CLT.installed?
     end
 
-    def xquartz
-      @xquartz ||= "#{MacOS::XQuartz.version} => #{describe_path(MacOS::XQuartz.prefix)}" if MacOS::XQuartz.installed?
-    end
-
     def dump_verbose_config(f = $stdout)
       dump_generic_verbose_config(f)
       f.puts "macOS: #{MacOS.full_version}-#{kernel}"
       f.puts "CLT: #{clt || "N/A"}"
       f.puts "Xcode: #{xcode || "N/A"}"
-      f.puts "XQuartz: #{xquartz}" if xquartz
       f.puts "Rosetta 2: #{Hardware::CPU.in_rosetta2?}" if Hardware::CPU.physical_cpu_arm64?
     end
   end

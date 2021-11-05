@@ -409,16 +409,6 @@ describe Cask::DSL, :cask do
     end
   end
 
-  describe "depends_on x11" do
-    context "with invalid depends_on x11 value" do
-      let(:token) { "invalid/invalid-depends-on-x11-value" }
-
-      it "refuses to load" do
-        expect { cask }.to raise_error(Cask::CaskInvalidError)
-      end
-    end
-  end
-
   describe "conflicts_with stanza" do
     context "when valid" do
       let(:token) { "with-conflicts-with" }

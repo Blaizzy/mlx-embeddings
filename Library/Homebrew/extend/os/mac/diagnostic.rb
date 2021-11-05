@@ -268,17 +268,6 @@ module Homebrew
         EOS
       end
 
-      def check_xquartz_up_to_date
-        return unless MacOS::XQuartz.outdated?
-
-        <<~EOS
-          Your XQuartz (#{MacOS::XQuartz.version}) is outdated.
-          Please install XQuartz #{MacOS::XQuartz.latest_version} (or delete the current version).
-          XQuartz can be updated using Homebrew Cask by running:
-            brew reinstall xquartz
-        EOS
-      end
-
       def check_filesystem_case_sensitive
         dirs_to_check = [
           HOMEBREW_PREFIX,
