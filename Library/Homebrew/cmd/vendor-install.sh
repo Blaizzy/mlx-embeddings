@@ -14,7 +14,11 @@ VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 # Built from https://github.com/Homebrew/homebrew-portable-ruby.
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
-  if [[ "${HOMEBREW_PROCESSOR}" == "Intel" ]]
+  if [[ "${HOMEBREW_PROCESSOR}" == "Intel" ]] ||
+     # Handle the case where /usr/local/bin/brew is run under arm64.
+     # It's a x86_64 installation there (we refuse to install arm64 binaries) so
+     # use a x86_64 Portable Ruby.
+     [[ "${HOMEBREW_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
   then
     ruby_FILENAME="portable-ruby-2.6.8.yosemite.bottle.tar.gz"
     ruby_SHA="0cb1cc7af109437fe0e020c9f3b7b95c3c709b140bde9f991ad2c1433496dd42"
