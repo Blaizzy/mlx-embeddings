@@ -130,16 +130,16 @@ module Homebrew
     local_casks = search_casks(string_or_regex)
     remote_casks = remote_results[:casks]
     all_casks = local_casks + remote_casks
+
     print_formulae = args.formula?
     print_casks = args.cask?
     print_formulae = print_casks = true if !print_formulae && !print_casks
+    print_formulae &&= all_formulae.any?
+    print_casks &&= all_casks.any?
 
-    ohai "Formulae", Formatter.columns(all_formulae) if print_formulae && all_formulae.any?
-
-    if print_casks && all_casks.any?
-      puts if args.formula? && all_formulae.any?
-      ohai "Casks", Formatter.columns(all_casks)
-    end
+    ohai "Formulae", Formatter.columns(all_formulae) if print_formulae
+    puts if print_formulae && print_casks
+    ohai "Casks", Formatter.columns(all_casks) if print_casks
 
     count = all_formulae.count + all_casks.count
 
