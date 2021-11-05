@@ -143,14 +143,21 @@ module Homebrew
 
     count = all_formulae.count + all_casks.count
 
-    if $stdout.tty? && (reason = MissingFormula.reason(query, silent: true)) && local_casks.exclude?(query)
-      if count.positive?
-        puts
-        puts "If you meant #{query.inspect} specifically:"
-      end
-      puts reason
-    end
+    print_missing_formula_help(query, count.positive?) if local_casks.exclude?(query)
 
     odie "No formulae or casks found for #{query.inspect}." if count.zero?
+  end
+
+  def print_missing_formula_help(query, found_matches)
+    return unless $stdout.tty?
+
+    reason = MissingFormula.reason(query, silent: true)
+    return if reason.nil?
+
+    if found_matches
+      puts
+      puts "If you meant #{query.inspect} specifically:"
+    end
+    puts reason
   end
 end
