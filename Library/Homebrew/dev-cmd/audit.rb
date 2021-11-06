@@ -211,7 +211,7 @@ module Homebrew
       Cask::Cmd::Audit.audit_casks(
         *audit_casks,
         download:              nil,
-        # No need for `|| nil` because this is a `--[no-]appcast` and automatically sets itself to `nil` if not passed
+        # No need for `|| nil` for `--[no-]appcast` because boolean switches are already `nil` if not passed
         appcast:               args.appcast?,
         online:                args.online? || nil,
         strict:                args.strict? || nil,
