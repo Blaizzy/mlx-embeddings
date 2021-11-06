@@ -624,10 +624,19 @@ module Homebrew
       bottle.root_url bottle_hash["bottle"]["root_url"]
       bottle.rebuild bottle_hash["bottle"]["rebuild"]
 
+      path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
+      formula = Formulary.factory(path)
+      old_bottle_spec = formula.bottle_specification
+      old_bottle_spec_matches = old_bottle_spec &&
+                                bottle_hash["formula"]["pkg_version"] == formula.pkg_version.to_s &&
+                                bottle.rebuild  != old_bottle_spec.rebuild &&
+                                bottle.root_url == old_bottle_spec.root_url &&
+                                old_bottle_spec.collector.tags.present?
+
       # if all the cellars and checksums are the same: we can create an
       # `all: $SHA256` bottle.
       tag_hashes = bottle_hash["bottle"]["tags"].values
-      all_bottle = (tag_hashes.count > 1) && tag_hashes.uniq do |tag_hash|
+      all_bottle = !old_bottle_spec_matches && (tag_hashes.count > 1) && tag_hashes.uniq do |tag_hash|
         "#{tag_hash["cellar"]}-#{tag_hash["sha256"]}"
       end.count == 1
 
@@ -652,14 +661,7 @@ module Homebrew
         next
       end
 
-      path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
-      formula = Formulary.factory(path)
-      old_bottle_spec = formula.bottle_specification
-
-      no_bottle_changes = if old_bottle_spec &&
-                             bottle_hash["formula"]["pkg_version"] == formula.pkg_version.to_s &&
-                             bottle.rebuild  != old_bottle_spec.rebuild &&
-                             bottle.root_url == old_bottle_spec.root_url
+      no_bottle_changes = if old_bottle_spec_matches
         bottle.collector.tags.all? do |tag|
           tag_spec = bottle.collector.specification_for(tag)
           next false if tag_spec.blank?
