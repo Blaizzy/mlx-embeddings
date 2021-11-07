@@ -426,7 +426,7 @@ module Cask
       cask.url.from_block?
     end
 
-    VERIFIED_URL_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#when-url-and-homepage-hostnames-differ-add-verified"
+    VERIFIED_URL_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#when-url-and-homepage-domains-differ-add-verified"
 
     def check_unnecessary_verified
       return if block_url_offline?
