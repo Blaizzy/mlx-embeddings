@@ -657,7 +657,7 @@ EOS
 
           if [[ "${UPSTREAM_SHA_HTTP_CODE}" == "404" ]]
           then
-            TAP="${DIR#${HOMEBREW_LIBRARY}/Taps/}"
+            TAP="${DIR#"${HOMEBREW_LIBRARY}"/Taps/}"
             echo "${TAP} does not exist! Run \`brew untap ${TAP}\` to remove it." >>"${update_failed_file}"
           else
             echo "Fetching ${DIR} failed!" >>"${update_failed_file}"

@@ -2,6 +2,7 @@
 
 # Fail fast with concise message when not using bash
 # Single brackets is needed here for POSIX compatibility
+# shellcheck disable=SC2292
 if [ -z "${BASH_VERSION:-}" ]
 then
   echo "Error: Bash is required to run brew." >&2
