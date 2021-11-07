@@ -62,7 +62,7 @@ module Homebrew
       shellcheck_result = if ruby_files.any? && shell_files.none?
         output_type == :json ? [] : true
       else
-        run_shellcheck(shell_files, output_type)
+        run_shellcheck(shell_files, output_type, fix: fix)
       end
 
       shfmt_result = if ruby_files.any? && shell_files.none?
@@ -164,17 +164,24 @@ module Homebrew
       end
     end
 
-    def run_shellcheck(files, output_type)
+    def run_shellcheck(files, output_type, fix: false)
       files = shell_scripts if files.blank?
 
-      args = ["--shell=bash", "--enable=all", "--external-sources", "--source-path=#{HOMEBREW_LIBRARY}", "--", *files]
+      files = files.map(&:realpath)
+
+      args = ["--shell=bash", "--enable=all", "--external-sources", "--source-path=#{HOMEBREW_LIBRARY}", "--"]
+
+      if fix
+        patch = system_command shellcheck, args: ["--format=diff", *args, *files]
+        system_command "patch", args: ["-d", "/", "-p0"], input: patch.stdout
+      end
 
       case output_type
       when :print
-        system shellcheck, "--format=tty", *args
+        system shellcheck, "--format=tty", *args, *files
         $CHILD_STATUS.success?
       when :json
-        result = system_command shellcheck, args: ["--format=json", *args]
+        result = system_command shellcheck, args: ["--format=json", *args, *files]
         json = json_result!(result)
 
         # Convert to same format as RuboCop offenses.
