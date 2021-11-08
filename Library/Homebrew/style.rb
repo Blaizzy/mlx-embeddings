@@ -169,19 +169,28 @@ module Homebrew
 
       files = files.map(&:realpath)
 
-      args = ["--shell=bash", "--enable=all", "--external-sources", "--source-path=#{HOMEBREW_LIBRARY}", "--"]
+      args = [
+        "--shell=bash",
+        "--enable=all",
+        "--external-sources",
+        "--source-path=#{HOMEBREW_LIBRARY}",
+        # TODO: fix these
+        "--exclude=SC2310,SC2311,SC2312",
+        "--",
+        *files,
+      ]
 
       if fix
-        patch = system_command shellcheck, args: ["--format=diff", *args, *files]
+        patch = system_command shellcheck, args: ["--format=diff", *args]
         system_command "patch", args: ["-d", "/", "-p0"], input: patch.stdout
       end
 
       case output_type
       when :print
-        system shellcheck, "--format=tty", *args, *files
+        system shellcheck, "--format=tty", *args
         $CHILD_STATUS.success?
       when :json
-        result = system_command shellcheck, args: ["--format=json", *args, *files]
+        result = system_command shellcheck, args: ["--format=json", *args]
         json = json_result!(result)
 
         # Convert to same format as RuboCop offenses.
