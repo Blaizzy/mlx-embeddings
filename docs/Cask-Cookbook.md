@@ -1099,7 +1099,7 @@ When a plain URL string is insufficient to fetch a file, additional information 
 
 | key                | value       |
 | ------------------ | ----------- |
-| `verified:`        | a string repeating the beginning of `url`, for verification purposes. [See below](#when-url-and-homepage-hostnames-differ-add-verified).
+| `verified:`        | a string repeating the beginning of `url`, for verification purposes. [See below](#when-url-and-homepage-domains-differ-add-verified).
 | `using:`           | the symbol `:post` is the only legal value
 | `cookies:`         | a hash of cookies to be set in the download request
 | `referer:`         | a string holding the URL to set as referer in the download request
@@ -1113,7 +1113,7 @@ Example of using `referer:`: [rrootage.rb](https://github.com/Homebrew/homebrew-
 
 Example of using `header:`: [issue-325182724](https://github.com/Homebrew/brew/pull/6545#issue-325182724)
 
-#### When URL and Homepage Hostnames Differ, Add `verified:`
+#### When URL and Homepage Domains Differ, Add `verified:`
 
 When the domains of `url` and `homepage` differ, the discrepancy should be documented with the `verified:` parameter, repeating the smallest possible portion of the URL that uniquely identifies the app or vendor, excluding the protocol. Example: [`shotcut.rb`](https://github.com/Homebrew/homebrew-cask/blob/08733296b49c59c58b6beeada59ed4207cef60c3/Casks/shotcut.rb#L5L6).
 
