@@ -62,7 +62,7 @@ module Homebrew
       shellcheck_result = if ruby_files.any? && shell_files.none?
         output_type == :json ? [] : true
       else
-        run_shellcheck(shell_files, output_type)
+        run_shellcheck(shell_files, output_type, fix: fix)
       end
 
       shfmt_result = if ruby_files.any? && shell_files.none?
@@ -164,8 +164,10 @@ module Homebrew
       end
     end
 
-    def run_shellcheck(files, output_type)
+    def run_shellcheck(files, output_type, fix: false)
       files = shell_scripts if files.blank?
+
+      files = files.map(&:realpath) # use absolute file paths
 
       args = [
         "--shell=bash",
@@ -177,6 +179,17 @@ module Homebrew
         "--",
         *files,
       ]
+
+      if fix
+        # patch options:
+        #   --get=0       : suppress environment variable `PATCH_GET`, ignore RCS, ClearCase, Perforce, and SCCS
+        #   --force       : we know what we are doing, force apply patches
+        #   --directory=/ : change to root directory, since we use absolute file paths
+        #   --strip=0     : do not strip path prefixes, since we are at root directory
+        patch_command = %w[patch --get=0 --force --directory=/ --strip=0]
+        patches = system_command(shellcheck, args: ["--format=diff", *args]).stdout
+        Utils.safe_popen_write(*patch_command) { |p| p.write(patches) }
+      end
 
       case output_type
       when :print
