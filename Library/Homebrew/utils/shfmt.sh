@@ -35,6 +35,10 @@ then
   if [[ -x "$(PATH="${HOMEBREW_PATH}" command -v diff)" ]]
   then
     DIFF="$(PATH="${HOMEBREW_PATH}" command -v diff)" # fall back to `diff` in PATH without coloring
+  elif [[ -z "${HOMEBREW_PATH}" && -x "$(command -v diff)" ]]
+  then
+    # HOMEBREW_PATH may unset if shfmt.sh is called by vscode
+    DIFF="$(command -v diff)" # fall back to `diff` in PATH without coloring
   else
     odie "${0##*/}: Please install diff by running \`brew install diffutils\`."
   fi
@@ -81,9 +85,11 @@ do
 done
 unset file
 
+STDIN=''
 if [[ "${#FILES[@]}" == 0 ]]
 then
-  exit
+  FILES=(/dev/stdin)
+  STDIN=1
 fi
 
 ###
@@ -334,27 +340,41 @@ align_multiline_switch_cases() {
 format() {
   local file="$1"
   local tempfile
-  if [[ ! -f "${file}" || ! -r "${file}" ]]
-  then
-    onoe "File \"${file}\" is not readable."
-    return 1
-  fi
 
-  tempfile="$(dirname "${file}")/.${file##*/}.temp"
+  if [[ -n "${STDIN}" ]]
+  then
+    tempfile="$(mktemp)"
+  else
+    if [[ ! -f "${file}" || ! -r "${file}" ]]
+    then
+      onoe "File \"${file}\" is not readable."
+      return 1
+    fi
+
+    tempfile="$(dirname "${file}")/.${file##*/}.temp"
+    cp -af "${file}" "${tempfile}"
+  fi
   trap 'rm -f "${tempfile}" 2>/dev/null' RETURN
-  cp -af "${file}" "${tempfile}"
-
-  if [[ ! -f "${tempfile}" || ! -w "${tempfile}" ]]
-  then
-    onoe "File \"${tempfile}\" is not writable."
-    return 1
-  fi
 
   # Format with `shfmt` first
-  if ! "${SHFMT}" -w "${SHFMT_ARGS[@]}" "${tempfile}"
+  if [[ -z "${STDIN}" ]]
   then
-    onoe "Failed to run \`shfmt\` for file \"${file}\"."
-    return 2
+    if [[ ! -f "${tempfile}" || ! -w "${tempfile}" ]]
+    then
+      onoe "File \"${tempfile}\" is not writable."
+      return 1
+    fi
+    if ! "${SHFMT}" -w "${SHFMT_ARGS[@]}" "${tempfile}"
+    then
+      onoe "Failed to run \`shfmt\` for file \"${file}\"."
+      return 2
+    fi
+  else
+    if ! "${SHFMT}" "${SHFMT_ARGS[@]}" >"${tempfile}"
+    then
+      onoe "Failed to run \`shfmt\` for file \"${file}\"."
+      return 2
+    fi
   fi
 
   # Fail fast when forbidden styles detected
@@ -363,6 +383,12 @@ format() {
   # Tweak it with custom shell script styles
   wrap_then_do "${file}" "${tempfile}"
   align_multiline_switch_cases "${file}" "${tempfile}"
+
+  if [[ -n "${STDIN}" ]]
+  then
+    cat "${tempfile}"
+    return 0
+  fi
 
   if ! "${DIFF}" -q "${file}" "${tempfile}" &>/dev/null
   then
