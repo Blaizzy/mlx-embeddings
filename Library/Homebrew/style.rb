@@ -181,8 +181,9 @@ module Homebrew
       ]
 
       if fix
-        patch = system_command shellcheck, args: ["--format=diff", *args]
-        system_command "patch", args: ["-d", "/", "-p0"], input: patch.stdout
+        patches = system_command(shellcheck, args: ["--format=diff", *args]).stdout
+        patch_command = %w[patch -g 0 -f -d / -p0]
+        Utils.popen_write(*patch_command) { |p| p.write(patches) }
       end
 
       case output_type
