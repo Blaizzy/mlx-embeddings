@@ -173,6 +173,10 @@ module Homebrew
     branch_name = "bump-#{cask.token}"
     commit_message = "Update #{cask.token}"
     if new_version.present?
+      if new_version.before_comma != old_version.before_comma
+        new_version = new_version.before_comma
+        old_version = old_version.before_comma
+      end
       branch_name += "-#{new_version.tr(",:", "-")}"
       commit_message += " from #{old_version} to #{new_version}"
     end
