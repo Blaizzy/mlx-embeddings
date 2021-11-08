@@ -9,14 +9,14 @@ module Homebrew
     extend T::Sig
     extend Forwardable
 
-    RUN_TYPE_IMMEDIATE = "immediate"
-    RUN_TYPE_INTERVAL = "interval"
-    RUN_TYPE_CRON = "cron"
+    RUN_TYPE_IMMEDIATE = :immediate
+    RUN_TYPE_INTERVAL = :interval
+    RUN_TYPE_CRON = :cron
 
-    PROCESS_TYPE_BACKGROUND = "background"
-    PROCESS_TYPE_STANDARD = "standard"
-    PROCESS_TYPE_INTERACTIVE = "interactive"
-    PROCESS_TYPE_ADAPTIVE = "adaptive"
+    PROCESS_TYPE_BACKGROUND = :background
+    PROCESS_TYPE_STANDARD = :standard
+    PROCESS_TYPE_INTERACTIVE = :interactive
+    PROCESS_TYPE_ADAPTIVE = :adaptive
 
     # sig { params(formula: Formula).void }
     def initialize(formula, &block)
@@ -124,35 +124,47 @@ module Homebrew
       end
     end
 
-    sig { params(type: T.nilable(String)).returns(T.nilable(String)) }
-    def process_type(type = nil)
-      case T.unsafe(type)
+    sig { params(value: T.nilable(Symbol)).returns(T.nilable(Symbol)) }
+    def process_type(value = nil)
+      case T.unsafe(value)
       when nil
         @process_type
-      when PROCESS_TYPE_BACKGROUND, PROCESS_TYPE_STANDARD, PROCESS_TYPE_INTERACTIVE, PROCESS_TYPE_ADAPTIVE
-        @process_type = type.to_s
-      when String
+      when :background, :standard, :interactive, :adaptive
+        @process_type = value
+      when Symbol
         raise TypeError, "Service#process_type allows: "\
                          "'#{PROCESS_TYPE_BACKGROUND}'/'#{PROCESS_TYPE_STANDARD}'/"\
                          "'#{PROCESS_TYPE_INTERACTIVE}'/'#{PROCESS_TYPE_ADAPTIVE}'"
       else
-        raise TypeError, "Service#process_type expects a String"
+        raise TypeError, "Service#process_type expects a Symbol"
       end
     end
 
-    sig { params(type: T.nilable(T.any(String, Symbol))).returns(T.nilable(String)) }
-    def run_type(type = nil)
-      case T.unsafe(type)
+    sig { params(value: T.nilable(Symbol)).returns(T.nilable(Symbol)) }
+    def run_type(value = nil)
+      case T.unsafe(value)
       when nil
         @run_type
-      when "immediate", :immediate
-        @run_type = type.to_s
-      when RUN_TYPE_INTERVAL, RUN_TYPE_CRON
-        raise TypeError, "Service#run_type does not support timers"
-      when String
+      when :immediate, :interval
+        @run_type = value
+      when :cron
+        raise TypeError, "Service#run_type does not support cron"
+      when Symbol
         raise TypeError, "Service#run_type allows: '#{RUN_TYPE_IMMEDIATE}'/'#{RUN_TYPE_INTERVAL}'/'#{RUN_TYPE_CRON}'"
       else
-        raise TypeError, "Service#run_type expects a string"
+        raise TypeError, "Service#run_type expects a Symbol"
+      end
+    end
+
+    sig { params(value: T.nilable(Integer)).returns(T.nilable(Integer)) }
+    def interval(value = nil)
+      case T.unsafe(value)
+      when nil
+        @interval
+      when Integer
+        @interval = value
+      else
+        raise TypeError, "Service#interval expects an Integer"
       end
     end
 
@@ -205,16 +217,18 @@ module Homebrew
     # @return [String]
     sig { returns(String) }
     def to_plist
+      # command needs to be first because it initializes all other values
       base = {
         Label:            @formula.plist_name,
-        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE,
         ProgramArguments: command,
+        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE,
       }
 
       base[:KeepAlive] = @keep_alive if @keep_alive == true
       base[:LegacyTimers] = @macos_legacy_timers if @macos_legacy_timers == true
       base[:TimeOut] = @restart_delay if @restart_delay.present?
-      base[:ProcessType] = @process_type.capitalize if @process_type.present?
+      base[:ProcessType] = @process_type.to_s.capitalize if @process_type.present?
+      base[:StartInterval] = @interval if @interval.present? && @run_type == RUN_TYPE_INTERVAL
       base[:WorkingDirectory] = @working_dir if @working_dir.present?
       base[:RootDirectory] = @root_dir if @root_dir.present?
       base[:StandardInPath] = @input_path if @input_path.present?
