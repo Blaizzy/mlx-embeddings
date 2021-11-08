@@ -626,9 +626,15 @@ module Homebrew
 
       path = HOMEBREW_REPOSITORY/bottle_hash["formula"]["path"]
       formula = Formulary.factory(path)
+
       old_bottle_spec = formula.bottle_specification
+      old_pkg_version = formula.pkg_version
+      FormulaVersions.new(formula).formula_at_revision("origin/HEAD") do |upstream_f|
+        old_pkg_version = upstream_f.pkg_version
+      end
+
       old_bottle_spec_matches = old_bottle_spec &&
-                                bottle_hash["formula"]["pkg_version"] == formula.pkg_version.to_s &&
+                                bottle_hash["formula"]["pkg_version"] == old_pkg_version.to_s &&
                                 bottle.root_url == old_bottle_spec.root_url &&
                                 old_bottle_spec.collector.tags.present?
 
