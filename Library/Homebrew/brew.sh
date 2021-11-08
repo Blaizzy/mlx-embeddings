@@ -458,9 +458,7 @@ then
 
   # Set a variable when the macOS system Ruby is new enough to avoid spawning
   # a Ruby process unnecessarily.
-  # On Catalina the system Ruby is technically new enough but don't allow it:
-  # https://github.com/Homebrew/brew/issues/9410
-  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101600" ]]
+  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "120000" ]]
   then
     unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
   else
