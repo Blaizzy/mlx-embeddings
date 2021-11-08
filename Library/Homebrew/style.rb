@@ -188,7 +188,7 @@ module Homebrew
         #   --strip=0     : do not strip path prefixes, since we are at root directory
         patch_command = %w[patch --get=0 --force --directory=/ --strip=0]
         patches = system_command(shellcheck, args: ["--format=diff", *args]).stdout
-        Utils.popen_write(*patch_command) { |p| p.write(patches) }
+        Utils.safe_popen_write(*patch_command) { |p| p.write(patches) }
       end
 
       case output_type
