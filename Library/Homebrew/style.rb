@@ -172,8 +172,6 @@ module Homebrew
         "--enable=all",
         "--external-sources",
         "--source-path=#{HOMEBREW_LIBRARY}",
-        # TODO: fix these
-        "--exclude=SC2310,SC2311,SC2312",
         "--",
         *files,
       ]
