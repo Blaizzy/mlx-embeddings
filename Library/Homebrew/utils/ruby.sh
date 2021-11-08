@@ -1,4 +1,4 @@
-export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.3
+export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.8
 
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
