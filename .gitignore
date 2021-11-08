@@ -188,6 +188,7 @@
 !/.gitignore
 !/.yardopts
 !/.vale.ini
+!/.shellcheckrc
 !/CHANGELOG.md
 !/CONTRIBUTING.md
 !/Dockerfile
