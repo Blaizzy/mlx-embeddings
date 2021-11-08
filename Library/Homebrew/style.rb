@@ -167,7 +167,16 @@ module Homebrew
     def run_shellcheck(files, output_type)
       files = shell_scripts if files.blank?
 
-      args = ["--shell=bash", "--enable=all", "--external-sources", "--source-path=#{HOMEBREW_LIBRARY}", "--", *files]
+      args = [
+        "--shell=bash",
+        "--enable=all",
+        "--external-sources",
+        "--source-path=#{HOMEBREW_LIBRARY}",
+        # TODO: fix these
+        "--exclude=SC2310,SC2311,SC2312",
+        "--",
+        *files,
+      ]
 
       case output_type
       when :print
