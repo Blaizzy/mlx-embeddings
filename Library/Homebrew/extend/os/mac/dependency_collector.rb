@@ -8,7 +8,7 @@ class DependencyCollector
   def git_dep_if_needed(tags); end
 
   def subversion_dep_if_needed(tags)
-    Dependency.new("subversion", tags) if MacOS.version >= :catalina
+    Dependency.new("subversion", tags)
   end
 
   def cvs_dep_if_needed(tags)

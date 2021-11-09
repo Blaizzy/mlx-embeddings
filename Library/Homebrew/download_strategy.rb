@@ -763,10 +763,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
 
     args << "--ignore-externals" if ignore_externals
 
-    if meta[:trust_cert] == true
-      args << "--trust-server-cert"
-      args << "--non-interactive"
-    end
+    args.concat Utils::Svn.invalid_cert_flags if meta[:trust_cert] == true
 
     if target.directory?
       command! "svn", args: ["update", *args], chdir: target.to_s, timeout: timeout&.remaining

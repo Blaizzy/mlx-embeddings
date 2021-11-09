@@ -45,7 +45,7 @@ class DependencyCollector
   end
 
   def cache_key(spec)
-    if spec.is_a?(Resource) && spec.download_strategy == CurlDownloadStrategy
+    if spec.is_a?(Resource) && spec.download_strategy <= CurlDownloadStrategy
       File.extname(spec.url)
     else
       spec
@@ -148,7 +148,7 @@ class DependencyCollector
     strategy = spec.download_strategy
 
     if strategy <= HomebrewCurlDownloadStrategy
-      brewed_curl_dep_if_needed(tags)
+      @deps << brewed_curl_dep_if_needed(tags)
       parse_url_spec(spec.url, tags)
     elsif strategy <= CurlDownloadStrategy
       parse_url_spec(spec.url, tags)
