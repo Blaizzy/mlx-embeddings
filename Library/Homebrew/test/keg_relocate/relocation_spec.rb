@@ -12,8 +12,8 @@ describe Keg::Relocation do
   let(:cellar_placeholder) { "@@HOMEBREW_CELLAR@@" }
   let(:repository_placeholder) { "@@HOMEBREW_REPOSITORY@@" }
   let(:library_placeholder) { "@@HOMEBREW_LIBRARY@@" }
-  let(:escaped_prefix) { /(?<![a-zA-Z0-9])#{Regexp.escape(HOMEBREW_PREFIX)}/o }
-  let(:escaped_cellar) { /(?<![a-zA-Z0-9])#{HOMEBREW_CELLAR}/o }
+  let(:escaped_prefix) { /(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))#{Regexp.escape(HOMEBREW_PREFIX)}/o }
+  let(:escaped_cellar) { /(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))#{HOMEBREW_CELLAR}/o }
 
   def setup_relocation
     relocation = described_class.new
@@ -61,8 +61,8 @@ describe Keg::Relocation do
 
   specify "::path_to_regex" do
     expect(described_class.path_to_regex(prefix)).to eq escaped_prefix
-    expect(described_class.path_to_regex("foo.bar")).to eq(/(?<![a-zA-Z0-9])foo\.bar/)
+    expect(described_class.path_to_regex("foo.bar")).to eq(/(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))foo\.bar/)
     expect(described_class.path_to_regex(/#{cellar}/o)).to eq escaped_cellar
-    expect(described_class.path_to_regex(/foo.bar/)).to eq(/(?<![a-zA-Z0-9])foo.bar/)
+    expect(described_class.path_to_regex(/foo.bar/)).to eq(/(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))foo.bar/)
   end
 end
