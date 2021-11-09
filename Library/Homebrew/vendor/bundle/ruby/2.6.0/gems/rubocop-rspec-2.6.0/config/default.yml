@@ -1,11 +1,24 @@
 ---
 RSpec:
   Enabled: true
-  Include:
+  Include: &1
     - "**/*_spec.rb"
     - "**/spec/**/*"
-  Language:
+  Language: &2
+    inherit_mode:
+      merge:
+        - Expectations
+        - Helpers
+        - Hooks
+        - HookScopes
+        - Runners
+        - Subjects
     ExampleGroups:
+      inherit_mode:
+        merge:
+          - Regular
+          - Skipped
+          - Focused
       Regular:
         - describe
         - context
@@ -20,6 +33,12 @@ RSpec:
         - fcontext
         - ffeature
     Examples:
+      inherit_mode:
+        merge:
+          - Regular
+          - Skipped
+          - Focused
+          - Pending
       Regular:
         - it
         - specify
@@ -62,6 +81,10 @@ RSpec:
       - all
       - suite
     Includes:
+      inherit_mode:
+        merge:
+          - Examples
+          - Context
       Examples:
         - it_behaves_like
         - it_should_behave_like
@@ -73,6 +96,10 @@ RSpec:
       - to_not
       - not_to
     SharedGroups:
+      inherit_mode:
+        merge:
+          - Examples
+          - Context
       Examples:
         - shared_examples
         - shared_examples_for
@@ -718,6 +745,11 @@ RSpec/Yield:
   VersionAdded: '1.32'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Yield
 
+RSpec/Capybara:
+  Enabled: true
+  Include: *1
+  Language: *2
+
 RSpec/Capybara/CurrentPathExpectation:
   Description: Checks that no expectations are set on Capybara's `current_path`.
   Enabled: true
@@ -739,6 +771,11 @@ RSpec/Capybara/VisibilityMatcher:
   VersionAdded: '1.39'
   VersionChanged: '2.0'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Capybara/VisibilityMatcher
+
+RSpec/FactoryBot:
+  Enabled: true
+  Include: *1
+  Language: *2
 
 RSpec/FactoryBot/AttributeDefinedStatically:
   Description: Always declare attribute values as blocks.
@@ -778,6 +815,11 @@ RSpec/FactoryBot/FactoryClassName:
   VersionAdded: '1.37'
   VersionChanged: '2.0'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/FactoryBot/FactoryClassName
+
+RSpec/Rails:
+  Enabled: true
+  Include: *1
+  Language: *2
 
 RSpec/Rails/AvoidSetupHook:
   Description: Checks that tests use RSpec `before` hook over Rails `setup` method.
