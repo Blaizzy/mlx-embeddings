@@ -12,7 +12,7 @@ class Keg
   class Relocation
     extend T::Sig
 
-    RELOCATABLE_PATH_REGEX_PREFIX = /(?<![a-zA-Z0-9])/.freeze
+    RELOCATABLE_PATH_REGEX_PREFIX = /(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))/.freeze
 
     def initialize
       @replacement_map = {}
