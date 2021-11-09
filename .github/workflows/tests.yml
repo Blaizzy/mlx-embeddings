@@ -305,6 +305,10 @@ jobs:
 
       - name: Install brew tests dependencies
         run: |
+          brew install subversion
+          brew sh -c "svn --homebrew=print-path"
+          which svn
+          which svnadmin
           brew install curl
           which curl
 
