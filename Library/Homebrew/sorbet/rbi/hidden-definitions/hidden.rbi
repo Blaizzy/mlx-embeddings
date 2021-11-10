@@ -4134,8 +4134,6 @@ class Pathname
   include ::MachOShim
   def fnmatch?(*arg); end
 
-  def glob(*arg); end
-
   def make_symlink(arg); end
 end
 
