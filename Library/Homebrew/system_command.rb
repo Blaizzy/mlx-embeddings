@@ -53,10 +53,10 @@ class SystemCommand
     each_output_line do |type, line|
       case type
       when :stdout
-        $stdout << line if print_stdout?
+        $stdout << redact_secrets(line, @secrets) if print_stdout?
         @output << [:stdout, line]
       when :stderr
-        $stderr << line if print_stderr?
+        $stderr << redact_secrets(line, @secrets) if print_stderr?
         @output << [:stderr, line]
       end
     end
