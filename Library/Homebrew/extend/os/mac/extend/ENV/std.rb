@@ -16,6 +16,8 @@ module Stdenv
       bottle_arch: bottle_arch, testing_formula: testing_formula
     )
 
+    append "LDFLAGS", "-Wl,-headerpad_max_install_names"
+
     # sed is strict, and errors out when it encounters files with
     # mixed character sets
     delete("LC_ALL")
