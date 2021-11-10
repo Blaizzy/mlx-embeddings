@@ -69,11 +69,7 @@ module Homebrew
   def search
     args = search_args.parse
 
-    if (package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] })
-      _, url = package_manager
-      exec_browser url.call(URI.encode_www_form_component(args.named.join(" ")))
-      return
-    end
+    return if search_package_manager(args)
 
     query = args.named.join(" ")
     string_or_regex = query_regexp(query)
@@ -81,47 +77,15 @@ module Homebrew
     if args.desc?
       search_descriptions(string_or_regex, args)
     elsif args.pull_request?
-      only = if args.open? && !args.closed?
-        "open"
-      elsif args.closed? && !args.open?
-        "closed"
-      end
-
-      GitHub.print_pull_requests_matching(query, only)
+      search_pull_requests(query, args)
     else
-      remote_results = search_taps(query, silent: true)
-
-      local_formulae = search_formulae(string_or_regex)
-      remote_formulae = remote_results[:formulae]
-      all_formulae = local_formulae + remote_formulae
-
-      local_casks = search_casks(string_or_regex)
-      remote_casks = remote_results[:casks]
-      all_casks = local_casks + remote_casks
-      print_formulae = args.formula?
-      print_casks = args.cask?
-      print_formulae = print_casks = true if !print_formulae && !print_casks
-
-      ohai "Formulae", Formatter.columns(all_formulae) if print_formulae && all_formulae.any?
-
-      if print_casks && all_casks.any?
-        puts if args.formula? && all_formulae.any?
-        ohai "Casks", Formatter.columns(all_casks)
-      end
-
-      count = all_formulae.count + all_casks.count
-
-      if $stdout.tty? && (reason = MissingFormula.reason(query, silent: true)) && local_casks.exclude?(query)
-        if count.positive?
-          puts
-          puts "If you meant #{query.inspect} specifically:"
-        end
-        puts reason
-      end
-
-      odie "No formulae or casks found for #{query.inspect}." if count.zero?
+      search_names(query, string_or_regex, args)
     end
 
+    print_regex_help(args)
+  end
+
+  def print_regex_help(args)
     return unless $stdout.tty?
 
     metacharacters = %w[\\ | ( ) [ ] { } ^ $ * + ?].freeze
@@ -135,5 +99,65 @@ module Homebrew
       Did you mean to perform a regular expression search?
       Surround your query with /slashes/ to search locally by regex.
     EOS
+  end
+
+  def search_package_manager(args)
+    package_manager = PACKAGE_MANAGERS.find { |name,| args[:"#{name}?"] }
+    return false if package_manager.nil?
+
+    _, url = package_manager
+    exec_browser url.call(URI.encode_www_form_component(args.named.join(" ")))
+    true
+  end
+
+  def search_pull_requests(query, args)
+    only = if args.open? && !args.closed?
+      "open"
+    elsif args.closed? && !args.open?
+      "closed"
+    end
+
+    GitHub.print_pull_requests_matching(query, only)
+  end
+
+  def search_names(query, string_or_regex, args)
+    remote_results = search_taps(query, silent: true)
+
+    local_formulae = search_formulae(string_or_regex)
+    remote_formulae = remote_results[:formulae]
+    all_formulae = local_formulae + remote_formulae
+
+    local_casks = search_casks(string_or_regex)
+    remote_casks = remote_results[:casks]
+    all_casks = local_casks + remote_casks
+
+    print_formulae = args.formula?
+    print_casks = args.cask?
+    print_formulae = print_casks = true if !print_formulae && !print_casks
+    print_formulae &&= all_formulae.any?
+    print_casks &&= all_casks.any?
+
+    ohai "Formulae", Formatter.columns(all_formulae) if print_formulae
+    puts if print_formulae && print_casks
+    ohai "Casks", Formatter.columns(all_casks) if print_casks
+
+    count = all_formulae.count + all_casks.count
+
+    print_missing_formula_help(query, count.positive?) if local_casks.exclude?(query)
+
+    odie "No formulae or casks found for #{query.inspect}." if count.zero?
+  end
+
+  def print_missing_formula_help(query, found_matches)
+    return unless $stdout.tty?
+
+    reason = MissingFormula.reason(query, silent: true)
+    return if reason.nil?
+
+    if found_matches
+      puts
+      puts "If you meant #{query.inspect} specifically:"
+    end
+    puts reason
   end
 end
