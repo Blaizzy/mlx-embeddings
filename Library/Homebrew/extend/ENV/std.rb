@@ -55,8 +55,6 @@ module Stdenv
     # Os is the default Apple uses for all its stuff so let's trust them
     define_cflags "-Os #{SAFE_CFLAGS_FLAGS}"
 
-    append "LDFLAGS", "-Wl,-headerpad_max_install_names"
-
     send(compiler)
 
     return unless cc&.match?(GNU_GCC_REGEXP)
