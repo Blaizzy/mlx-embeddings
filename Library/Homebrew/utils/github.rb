@@ -5,11 +5,15 @@ require "uri"
 require "utils/github/actions"
 require "utils/github/api"
 
+require "system_command"
+
 # Wrapper functions for the GitHub API.
 #
 # @api private
 module GitHub
   extend T::Sig
+
+  include SystemCommand::Mixin
 
   module_function
 
@@ -530,7 +534,8 @@ module GitHub
                     "--", *changed_files
         return if args.commit?
 
-        safe_system "git", "push", "--set-upstream", remote_url, "#{branch}:#{branch}"
+        system_command!("git", args:         ["push", "--set-upstream", remote_url, "#{branch}:#{branch}"],
+                               print_stdout: true)
         safe_system "git", "checkout", "--quiet", previous_branch
         pr_message = <<~EOS
           #{pr_message}
