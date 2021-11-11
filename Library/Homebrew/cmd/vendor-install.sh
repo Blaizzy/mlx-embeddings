@@ -22,8 +22,7 @@ then
   then
     ruby_FILENAME="portable-ruby-2.6.8.yosemite.bottle.tar.gz"
     ruby_SHA="0cb1cc7af109437fe0e020c9f3b7b95c3c709b140bde9f991ad2c1433496dd42"
-  elif [[ "$(sysctl -n machdep.cpu.brand_string)" == "Apple"* ]]
-  then
+  else
     ruby_FILENAME="portable-ruby-2.6.8.arm64_big_sur.bottle.tar.gz"
     ruby_SHA="f2d5cab5a4dd49e5b3de780a3cd0a1f61642fea247d1c25aa40cd43f1be290b5"
   fi
