@@ -14,7 +14,8 @@ VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 # Built from https://github.com/Homebrew/homebrew-portable-ruby.
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
-  if [[ "${HOMEBREW_PROCESSOR}" == "Intel" ]] ||
+  if [[ "${HOMEBREW_PROCESSOR}" == "Intel" &&
+        "$(sysctl -n machdep.cpu.brand_string)" != "Apple"* ]] ||
      # Handle the case where /usr/local/bin/brew is run under arm64.
      # It's a x86_64 installation there (we refuse to install arm64 binaries) so
      # use a x86_64 Portable Ruby.
