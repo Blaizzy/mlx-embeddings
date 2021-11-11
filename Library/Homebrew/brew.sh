@@ -6,6 +6,7 @@
 # Doesn't need a default case because we don't support other OSs
 # shellcheck disable=SC2249
 HOMEBREW_PROCESSOR="$(uname -m)"
+HOMEBREW_PHYSICAL_PROCESSOR="${HOMEBREW_PROCESSOR}"
 HOMEBREW_SYSTEM="$(uname -s)"
 case "${HOMEBREW_SYSTEM}" in
   Darwin) HOMEBREW_MACOS="1" ;;
@@ -17,12 +18,19 @@ esac
 # same file under the native architecture
 # These variables are set from the user environment.
 # shellcheck disable=SC2154
-if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" == "1" ]] &&
-   [[ "${HOMEBREW_MACOS}" == "1" ]] &&
-   [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]] &&
-   [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" == "1" ]]
+if [[ "${HOMEBREW_MACOS}" == "1" ]] &&
+   [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]]
 then
-  exec arch -arm64e "${HOMEBREW_BREW_FILE}" "$@"
+  # used in vendor-install.sh
+  # shellcheck disable=SC2034
+  HOMEBREW_PHYSICAL_PROCESSOR="arm64"
+  HOMEBREW_ROSETTA="$(sysctl -n sysctl.proc_translated)"
+
+  if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" == "1" ]] &&
+     [[ "${HOMEBREW_ROSETTA}" == "1" ]]
+  then
+    exec arch -arm64e "${HOMEBREW_BREW_FILE}" "$@"
+  fi
 fi
 
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
