@@ -13,11 +13,6 @@ case "${HOMEBREW_SYSTEM}" in
   Linux) HOMEBREW_LINUX="1" ;;
 esac
 
-# If we're running under macOS Rosetta 2, and it was requested by setting
-# HOMEBREW_CHANGE_ARCH_TO_ARM (for example in CI), then we re-exec this
-# same file under the native architecture
-# These variables are set from the user environment.
-# shellcheck disable=SC2154
 if [[ "${HOMEBREW_MACOS}" == "1" ]] &&
    [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]]
 then
@@ -26,6 +21,11 @@ then
   HOMEBREW_PHYSICAL_PROCESSOR="arm64"
   HOMEBREW_ROSETTA="$(sysctl -n sysctl.proc_translated)"
 
+  # If we're running under macOS Rosetta 2, and it was requested by setting
+  # HOMEBREW_CHANGE_ARCH_TO_ARM (for example in CI), then we re-exec this
+  # same file under the native architecture
+  # These variables are set from the user environment.
+  # shellcheck disable=SC2154
   if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" == "1" ]] &&
      [[ "${HOMEBREW_ROSETTA}" == "1" ]]
   then
