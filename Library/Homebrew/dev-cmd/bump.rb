@@ -227,7 +227,8 @@ module Homebrew
     end
 
     livecheck_latest = livecheck_result(formula_or_cask)
-    pull_requests = if !args.no_pull_requests? && (args.named.present? || livecheck_latest != current_version)
+    pull_requests = if !args.no_pull_requests? && (args.named.present? ||
+                       (livecheck_latest.is_a?(Version) && livecheck_latest != current_version))
       retrieve_pull_requests(formula_or_cask, name)
     end
 
