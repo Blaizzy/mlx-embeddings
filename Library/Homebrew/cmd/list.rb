@@ -132,7 +132,7 @@ module Homebrew
       system_command! "find", args:         args.named.to_default_kegs.map(&:to_s) + %w[-not -type d -print],
                               print_stdout: true
     else
-      kegs, casks = args.named.to_formulae_to_casks(method: :default_kegs)
+      kegs, casks = args.named.to_kegs_to_casks
 
       kegs.each { |keg| PrettyListing.new keg } if kegs.present?
       list_casks(casks, args: args) if casks.present?
