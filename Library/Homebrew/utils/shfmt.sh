@@ -292,6 +292,7 @@ wrap_then_do() {
   local -a processed=()
   local -a buffer=()
   local line
+  local singleline_if_then_fi_regex='^( *)if (.+)\; then (.+)\; fi( *#.*)?$'
   local singleline_if_then_regex='^( *)(el)?if (.+)\; (then( *#.*)?)$'
   local singleline_for_do_regex='^( *)(for|while) (.+)\; (do( *#.*)?)$'
   local multiline_if_then_begin_regex='^( *)(el)?if '
@@ -301,7 +302,10 @@ wrap_then_do() {
   do
     if [[ "${#buffer[@]}" == 0 ]]
     then
-      if [[ "${line}" =~ ${singleline_if_then_regex} ]]
+      if [[ "${line}" =~ ${singleline_if_then_fi_regex} ]]
+      then
+        processed+=("${line}")
+      elif [[ "${line}" =~ ${singleline_if_then_regex} ]]
       then
         processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[2]}if ${BASH_REMATCH[3]}")
         processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[4]}")
