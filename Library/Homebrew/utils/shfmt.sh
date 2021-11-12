@@ -229,8 +229,8 @@ align_multiline_if_condition() {
   local lastline=''
   local base_indent=''  # indents before `if`
   local extra_indent='' # 2 extra spaces for `elif`
-  local multiline_if_begin_regex='^( *)(el)?if '
-  local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
+  local multiline_if_then_begin_regex='^( *)(el)?if '
+  local multiline_if_then_end_regex='^(.*)\; (then( *#.*)?)$'
   local within_test_regex='^( *)(((! )?-[fdLrwxeszn] )|([^\[]+ == ))'
 
   trim() {
@@ -238,7 +238,7 @@ align_multiline_if_condition() {
     printf "%s" "${BASH_REMATCH[0]}"
   }
 
-  if [[ "$1" =~ ${multiline_if_begin_regex} ]]
+  if [[ "$1" =~ ${multiline_if_then_begin_regex} ]]
   then
     base_indent="${BASH_REMATCH[1]}"
     [[ -n "${BASH_REMATCH[2]}" ]] && extra_indent='  '
@@ -250,7 +250,7 @@ align_multiline_if_condition() {
   do
     line="$1"
     shift
-    if [[ "${line}" =~ ${multiline_then_end_regex} ]]
+    if [[ "${line}" =~ ${multiline_if_then_end_regex} ]]
     then
       line="${BASH_REMATCH[1]}"
       lastline="${base_indent}${BASH_REMATCH[2]}"
@@ -287,24 +287,24 @@ wrap_then_do() {
   local -a processed=()
   local -a buffer=()
   local line
-  local singleline_then_regex='^( *)(el)?if (.+)\; (then( *#.*)?)$'
-  local singleline_do_regex='^( *)(for|while) (.+)\; (do( *#.*)?)$'
-  local multiline_if_begin_regex='^( *)(el)?if '
-  local multiline_then_end_regex='^(.*)\; (then( *#.*)?)$'
+  local singleline_if_then_regex='^( *)(el)?if (.+)\; (then( *#.*)?)$'
+  local singleline_for_do_regex='^( *)(for|while) (.+)\; (do( *#.*)?)$'
+  local multiline_if_then_begin_regex='^( *)(el)?if '
+  local multiline_if_then_end_regex='^(.*)\; (then( *#.*)?)$'
 
   while IFS='' read -r line
   do
     if [[ "${#buffer[@]}" == 0 ]]
     then
-      if [[ "${line}" =~ ${singleline_then_regex} ]]
+      if [[ "${line}" =~ ${singleline_if_then_regex} ]]
       then
         processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[2]}if ${BASH_REMATCH[3]}")
         processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[4]}")
-      elif [[ "${line}" =~ ${singleline_do_regex} ]]
+      elif [[ "${line}" =~ ${singleline_for_do_regex} ]]
       then
         processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[2]} ${BASH_REMATCH[3]}")
         processed+=("${BASH_REMATCH[1]}${BASH_REMATCH[4]}")
-      elif [[ "${line}" =~ ${multiline_if_begin_regex} ]]
+      elif [[ "${line}" =~ ${multiline_if_then_begin_regex} ]]
       then
         buffer=("${line}")
       else
@@ -312,7 +312,7 @@ wrap_then_do() {
       fi
     else
       buffer+=("${line}")
-      if [[ "${line}" =~ ${multiline_then_end_regex} ]]
+      if [[ "${line}" =~ ${multiline_if_then_end_regex} ]]
       then
         while IFS='' read -r line
         do
@@ -351,7 +351,7 @@ format() {
       return 1
     fi
 
-    tempfile="$(dirname "${file}")/.${file##*/}.temp"
+    tempfile="$(dirname "${file}")/.${file##*/}.formatted~"
     cp -af "${file}" "${tempfile}"
   fi
   trap 'rm -f "${tempfile}" 2>/dev/null' RETURN
@@ -396,6 +396,8 @@ format() {
     then
       cp -af "${tempfile}" "${file}"
     else
+      # Show a linebreak between outputs
+      [[ "${RETCODE}" != 0 ]] && onoe
       # Show differences
       "${DIFF}" "${DIFF_ARGS[@]}" "${file}" "${tempfile}" 1>&2
     fi
@@ -434,7 +436,6 @@ do
       4) onoe "${0##*/}: Fixable bad styles detected in file \"${file}\", run \`brew style --fix\` to apply. Formatter exited with code 4." ;;
       *) onoe "${0##*/}: Failed to format file \"${file}\". Formatter exited with code ${retcode}." ;;
     esac
-    onoe
     RETCODE=1
   fi
 done
