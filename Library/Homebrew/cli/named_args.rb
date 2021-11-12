@@ -167,6 +167,8 @@ module Homebrew
           raise TapFormulaOrCaskUnavailableError.new(tap, short_name)
         end
 
+        raise NoSuchKegError, name if resolve_formula(name)
+
         raise FormulaOrCaskUnavailableError, name
       end
       private :load_formula_or_cask
