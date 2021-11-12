@@ -227,11 +227,11 @@ no_forbidden_styles() {
 align_multiline_if_condition() {
   local line
   local lastline=''
-  local base_indent=''  # indents before `if`
-  local extra_indent='' # 2 extra spaces for `elif`
+  local base_indent=''       # indents before `if`
+  local elif_extra_indent='' # 2 extra spaces for `elif`
   local multiline_if_then_begin_regex='^( *)(el)?if '
   local multiline_if_then_end_regex='^(.*)\; (then( *#.*)?)$'
-  local within_test_regex='^( *)(((! )?-[fdLrwxeszn] )|([^\[]+ == ))'
+  local within_test_regex='^( *)(((! )?-[fdLrwxeszn] )|([^\[]+ (==|!=|=~) ))'
 
   trim() {
     [[ "$1" =~ [^[:space:]](.*[^[:space:]])? ]]
@@ -241,7 +241,7 @@ align_multiline_if_condition() {
   if [[ "$1" =~ ${multiline_if_then_begin_regex} ]]
   then
     base_indent="${BASH_REMATCH[1]}"
-    [[ -n "${BASH_REMATCH[2]}" ]] && extra_indent='  '
+    [[ -n "${BASH_REMATCH[2]}" ]] && elif_extra_indent='  ' # 2 extra spaces for `elif`
     echo "$1"
     shift
   fi
@@ -257,9 +257,14 @@ align_multiline_if_condition() {
     fi
     if [[ "${line}" =~ ${within_test_regex} ]]
     then
-      echo "${base_indent}${extra_indent}      $(trim "${line}")"
+      # Add 3 extra spaces (6 spaces in total) to multiline test conditions
+      # before:                   after:
+      #   if [[ -n ... ||           if [[ -n ... ||
+      #     -n ... ]]                     -n ... ]]
+      #   then                      then
+      echo "${base_indent}${elif_extra_indent}      $(trim "${line}")"
     else
-      echo "${base_indent}${extra_indent}   $(trim "${line}")"
+      echo "${base_indent}${elif_extra_indent}   $(trim "${line}")"
     fi
   done
 
