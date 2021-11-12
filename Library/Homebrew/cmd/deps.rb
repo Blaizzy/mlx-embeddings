@@ -203,13 +203,12 @@ module Homebrew
   def puts_deps_tree(dependents, args:, recursive: false)
     dependents.each do |d|
       puts d.full_name
-      @dep_stack = []
-      recursive_deps_tree(d, "", recursive, args: args)
+      recursive_deps_tree(d, dep_stack: [], prefix: "", recursive: recursive, args: args)
       puts
     end
   end
 
-  def recursive_deps_tree(f, prefix, recursive, args:)
+  def recursive_deps_tree(f, dep_stack:, prefix:, recursive:, args:)
     includes, ignores = args_includes_ignores(args)
     dependables = @use_runtime_dependencies ? f.runtime_dependencies : f.deps
     deps = reject_ignores(dependables, ignores, includes)
@@ -217,7 +216,7 @@ module Homebrew
     dependables = reqs + deps
 
     max = dependables.length - 1
-    @dep_stack.push f.name
+    dep_stack.push f.name
     dependables.each_with_index do |dep, i|
       next if !args.include_requirements? && dep.is_a?(Requirement)
 
@@ -228,7 +227,7 @@ module Homebrew
       end
 
       display_s = "#{tree_lines} #{dep_display_name(dep, args: args)}"
-      is_circular = @dep_stack.include?(dep.name)
+      is_circular = dep_stack.include?(dep.name)
       display_s = "#{display_s} (CIRCULAR DEPENDENCY)" if is_circular
       puts "#{prefix}#{display_s}"
 
@@ -240,11 +239,15 @@ module Homebrew
         "│   "
       end
 
-      if dep.is_a? Dependency
-        recursive_deps_tree(Formulary.factory(dep.name), prefix + prefix_addition, true, args: args)
-      end
+      next unless dep.is_a? Dependency
+
+      recursive_deps_tree(Formulary.factory(dep.name),
+                          dep_stack: dep_stack,
+                          prefix:    prefix + prefix_addition,
+                          recursive: true,
+                          args:      args)
     end
 
-    @dep_stack.pop
+    dep_stack.pop
   end
 end
