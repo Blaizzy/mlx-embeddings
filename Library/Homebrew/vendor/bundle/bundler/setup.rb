@@ -51,7 +51,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/nokogiri-1.12.5-x86_6
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubyntlm-0.6.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/webrick-1.7.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/webrobots-0.1.2/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/mechanize-2.8.1/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/mechanize-2.8.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/method_source-1.0.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/mustache-1.1.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/parallel-1.21.0/lib"
