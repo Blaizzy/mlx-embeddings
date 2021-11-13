@@ -1783,6 +1783,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Set the Git author/committer email to the given email.
 * `--publish`:
   Publish the uploaded bottles.
+* `--skip-online-checks`:
+  Don't pass `--online` to `brew audit` and skip `brew livecheck`.
 * `--skip-dependents`:
   Don't test any dependents.
 * `--skip-recursive-dependents`:
