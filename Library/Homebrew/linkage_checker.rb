@@ -32,6 +32,7 @@ class LinkageChecker
     @unnecessary_deps = []
     @unwanted_system_dylibs = []
     @version_conflict_deps = []
+    @broken_variable_dylibs = []
 
     check_dylibs(rebuild_cache: rebuild_cache)
   end
@@ -46,6 +47,7 @@ class LinkageChecker
     display_items "Undeclared dependencies with linkage", @undeclared_deps
     display_items "Dependencies with no linkage", @unnecessary_deps
     display_items "Unwanted system libraries", @unwanted_system_dylibs
+    display_items "Libraries with broken variable references", @broken_variable_dylibs
   end
 
   def display_reverse_output
@@ -68,11 +70,12 @@ class LinkageChecker
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
+    display_items "Libraries with broken variable references", @broken_variable_dylibs, puts_output: puts_output
   end
 
   sig { returns(T::Boolean) }
   def broken_library_linkage?
-    issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
+    issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps, @broken_variable_dylibs]
     [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)
   end
 
@@ -148,6 +151,7 @@ class LinkageChecker
     end
 
     checked_dylibs = Set.new
+    dlopened_if_needed_files = Set.new
 
     keg_files_dylibs.each do |file, dylibs|
       dylibs.each do |dylib|
@@ -159,6 +163,15 @@ class LinkageChecker
 
         if dylib.start_with? "@"
           @variable_dylibs << dylib
+
+          if dlopened_if_needed_files.add?(file)
+            file = Pathname.new(file)
+            next if file.binary_executable?
+            next if dylib_found_via_dlopen(file.dylib_id)
+
+            @broken_variable_dylibs << file.dylib_id
+          end
+
           next
         end
 
