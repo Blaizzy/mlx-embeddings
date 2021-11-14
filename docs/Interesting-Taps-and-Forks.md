@@ -1,19 +1,20 @@
 # Interesting Taps & Forks
 
-A [tap](Taps.md) is Homebrew-speak for a Git repository containing extra formulae.
+A [tap](Taps.md) is Homebrew-speak for a Git repository containing additional formulae.
 
-Homebrew has the capability to add (and remove) multiple taps to your local installation with the `brew tap` and `brew untap` commands. Type `man brew` in your terminal. The main repository at <https://github.com/Homebrew/homebrew-core>, often called `homebrew/core`, is always built-in.
+Homebrew has the capability to add (and remove) multiple taps to your local installation with the `brew tap` and `brew untap` commands; run `man brew` in your terminal for usage information. The main repository at <https://github.com/Homebrew/homebrew-core>, often called `homebrew/core`, is always built-in.
 
 Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 ## Unsupported interesting taps
+
 * [homebrew-ffmpeg/ffmpeg](https://github.com/homebrew-ffmpeg/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions.
 
 * [denji/nginx](https://github.com/denji/homebrew-nginx): A tap for NGINX modules, intended for its `nginx-full` formula which includes more module options.
 
-* [InstantClientTap/instantclient](https://github.com/InstantClientTap/homebrew-instantclient): A tap for Oracle Instant Client. The packages need to be downloaded manually.
+* [InstantClientTap/instantclient](https://github.com/InstantClientTap/homebrew-instantclient): A tap for Oracle Instant Client.
 
-* [osx-cross/avr](https://github.com/osx-cross/homebrew-avr): GNU AVR toolchain (Libc, compilers and other tools for Atmel MCUs, useful for Arduino hackers and AVR programmers).
+* [osx-cross/avr](https://github.com/osx-cross/homebrew-avr): GNU AVR toolchain (Libc, compilers and other tools for Atmel MCUs), useful for Arduino hackers and AVR programmers.
 
 * [petere/postgresql](https://github.com/petere/homebrew-postgresql): Allows installing multiple PostgreSQL versions in parallel.
 
@@ -29,4 +30,4 @@ Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 ## Unsupported interesting forks
 
-* [mistydemeo/tigerbrew](https://github.com/mistydemeo/tigerbrew): Experimental Tiger PowerPC version.
+* [mistydemeo/tigerbrew](https://github.com/mistydemeo/tigerbrew): Experimental Tiger/Leopard PowerPC version.
