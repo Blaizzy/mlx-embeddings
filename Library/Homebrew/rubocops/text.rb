@@ -57,8 +57,10 @@ module RuboCop
             problem %q(use "xcodebuild *args" instead of "system 'xcodebuild', *args")
           end
 
-          find_method_with_args(body_node, :system, "go", "get") do
-            problem "Do not use `go get`. Please ask upstream to implement Go vendoring"
+          if (method_node = find_method_def(body_node, :install))
+            find_method_with_args(method_node, :system, "go", "get") do
+              problem "Do not use `go get`. Please ask upstream to implement Go vendoring"
+            end
           end
 
           find_method_with_args(body_node, :system, "dep", "ensure") do |d|
