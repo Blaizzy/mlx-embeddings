@@ -288,15 +288,16 @@ module PyPI
   end
 
   def json_to_packages(json_tree, main_package, exclude_packages)
-    return [] if json_tree.nil?
+    return [] if json_tree.blank?
 
     json_tree.flat_map do |package_json|
       package = Package.new("#{package_json["name"]}==#{package_json["version"]}")
-      [package] + if package == main_package || exclude_packages.exclude?(package)
+      dependencies = if package == main_package || exclude_packages.exclude?(package)
         json_to_packages(package_json["dependencies"], main_package, exclude_packages)
       else
         []
       end
+      [package] + dependencies
     end
   end
 end
