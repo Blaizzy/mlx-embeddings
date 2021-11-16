@@ -15,18 +15,18 @@ The Homebrew package manager may be used on Linux and [Windows Subsystem for Lin
 
 ## Features
 
-+ Can install software to your home directory and so does not require *sudo*
-+ Install software not packaged by your host distribution
-+ Install up-to-date versions of software when your host distribution is old
-+ Use the same package manager to manage your macOS, Linux, and Windows systems
+- Can install software to your home directory and so does not require *sudo*
+- Install software not packaged by your host distribution
+- Install up-to-date versions of software when your host distribution is old
+- Use the same package manager to manage your macOS, Linux, and Windows systems
 
 ## Install
 
 Instructions for a supported install of Homebrew on Linux are on the [homepage](https://brew.sh).
 
-The installation script installs Homebrew to `/home/linuxbrew/.linuxbrew` using *sudo* if possible and in your home directory at `~/.linuxbrew` otherwise. Homebrew does not use *sudo* after installation. Using `/home/linuxbrew/.linuxbrew` allows the use of more binary packages (bottles) than installing in your personal home directory.
+The installation script installs Homebrew to `/home/linuxbrew/.linuxbrew` using *sudo* if possible and within your home directory at `~/.linuxbrew` otherwise. Homebrew does not use *sudo* after installation. Using `/home/linuxbrew/.linuxbrew` allows the use of more binary packages (bottles) than installing in your personal home directory.
 
-The prefix `/home/linuxbrew/.linuxbrew` was chosen so that users without admin access can ask an admin to create a `linuxbrew` role account and still benefit from precompiled binaries. If you do not yourself have admin privileges, consider asking your admin staff to create a `linuxbrew` role account for you with home directory `/home/linuxbrew`.
+The prefix `/home/linuxbrew/.linuxbrew` was chosen so that users without admin access can ask an admin to create a `linuxbrew` role account and still benefit from precompiled binaries. If you do not yourself have admin privileges, consider asking your admin staff to create a `linuxbrew` role account for you with home directory set to `/home/linuxbrew`.
 
 Follow the *Next steps* instructions to add Homebrew to your `PATH` and to your bash shell profile script, either `~/.profile` on Debian/Ubuntu or `~/.bash_profile` on CentOS/Fedora/Red Hat.
 
@@ -47,26 +47,26 @@ If you're using an older distribution of Linux, installing your first package wi
 
 ## Requirements
 
-+ **GCC** 4.7.0 or newer
-+ **Linux** 2.6.32 or newer
-+ **Glibc** 2.13 or newer
-+ **64-bit x86_64** CPU
+- **GCC** 4.7.0 or newer
+- **Linux** 2.6.32 or newer
+- **Glibc** 2.13 or newer
+- **64-bit x86_64** CPU
 
-Paste at a terminal prompt:
+To install build tools, paste at a terminal prompt:
 
-### Debian or Ubuntu
+- **Debian or Ubuntu**
 
-```sh
-sudo apt-get install build-essential procps curl file git
-```
+  ```sh
+  sudo apt-get install build-essential procps curl file git
+  ```
 
-### Fedora, CentOS, or Red Hat
+- **Fedora, CentOS, or Red Hat**
 
-```sh
-sudo yum groupinstall 'Development Tools'
-sudo yum install procps-ng curl file git
-sudo yum install libxcrypt-compat # needed by Fedora 30 and up
-```
+  ```sh
+  sudo yum groupinstall 'Development Tools'
+  sudo yum install procps-ng curl file git
+  sudo yum install libxcrypt-compat # needed by Fedora 30 and up
+  ```
 
 ### ARM
 
