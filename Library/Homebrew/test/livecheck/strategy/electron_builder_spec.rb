@@ -25,6 +25,7 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
       releaseDate: '2000-01-01T00:00:00.000Z'
     EOS
   }
+  let(:mac_regex) { /Example[._-]v?(\d+(?:\.\d+)+)[._-]mac\.zip/i }
 
   let(:versions) { ["1.2.3"] }
 
@@ -57,6 +58,26 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
 
       # Returning an array of strings from block
       expect(electron_builder.versions_from_content(electron_builder_yaml) { versions }).to eq(versions)
+    end
+
+    it "returns an array of version strings when given YAML text, a regex, and a block" do
+      # Returning a string from block
+      expect(
+        electron_builder.versions_from_content(electron_builder_yaml, mac_regex) do |yaml, regex|
+          yaml["path"][regex, 1]
+        end,
+      ).to eq(versions)
+
+      # Returning an array of strings from block
+      expect(
+        electron_builder.versions_from_content(electron_builder_yaml, mac_regex) do |yaml, regex|
+          yaml["files"]&.map do |file|
+            next if file["url"].blank?
+
+            file["url"][regex, 1]
+          end
+        end,
+      ).to eq(versions)
     end
 
     it "allows a nil return from a block" do

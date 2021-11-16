@@ -21,7 +21,20 @@ describe Homebrew::Livecheck::Strategy::ExtractPlist do
     }
   end
 
+  let(:multipart_items) do
+    {
+      "first"  => extract_plist::Item.new(
+        bundle_version: Homebrew::BundleVersion.new(nil, "1.2.3-45"),
+      ),
+      "second" => extract_plist::Item.new(
+        bundle_version: Homebrew::BundleVersion.new(nil, "1.2.3-45-abcdef"),
+      ),
+    }
+  end
+  let(:multipart_regex) { /^v?(\d+(?:\.\d+)+)(?:[._-](\d+))?(?:[._-]([0-9a-f]+))?$/i }
+
   let(:versions) { ["1.2", "1.2.3"] }
+  let(:multipart_versions) { ["1.2.3,45", "1.2.3,45,abcdef"] }
 
   describe "::match?" do
     it "returns true for an HTTP URL" do
@@ -58,6 +71,30 @@ describe Homebrew::Livecheck::Strategy::ExtractPlist do
           end
         end,
       ).to eq(versions)
+    end
+
+    it "returns an array of version strings when given Items, a regex, and a block" do
+      # Returning a string from block
+      expect(
+        extract_plist.versions_from_items(multipart_items, multipart_regex) do |items, regex|
+          match = items["first"].version.match(regex)
+          next if match.blank?
+
+          match[1..].compact.join(",")
+        end,
+      ).to eq(["1.2.3,45"])
+
+      # Returning an array of strings from block
+      expect(
+        extract_plist.versions_from_items(multipart_items, multipart_regex) do |items, regex|
+          items.map do |_key, item|
+            match = item.version.match(regex)
+            next if match.blank?
+
+            match[1..].compact.join(",")
+          end
+        end,
+      ).to eq(multipart_versions)
     end
 
     it "allows a nil return from a block" do
