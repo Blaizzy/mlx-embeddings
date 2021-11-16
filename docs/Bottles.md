@@ -1,22 +1,32 @@
 # Bottles (Binary Packages)
 
-Bottles are produced by installing a formula with `brew install --build-bottle <formula>` and then bottling it with `brew bottle <formula>`. This outputs the bottle DSL which should be inserted into the formula file.
+Bottles are produced by installing a formula with `brew install --build-bottle <formula>` and then bottling it with `brew bottle <formula>`. This generates a bottle file in the current directory and outputs the bottle DSL for insertion into the formula file.
 
 ## Usage
-If a bottle is available and usable it will be downloaded and poured automatically when you `brew install <formula>`. If you wish to disable this you can do so by specifying `--build-from-source`.
 
-Bottles will not be used if the user requests it (see above), if the formula requests it (with `pour_bottle?`), if any options are specified during installation (bottles are all compiled with default options), if the bottle is not up to date (e.g. lacking a checksum) or if the bottle's `cellar` is not `:any` nor equal to the current `HOMEBREW_CELLAR`.
+When the formula being installed defines a bottle matching your system, it will be downloaded and installed automatically when you run `brew install <formula>`.
+
+Bottles will not be used if:
+
+- the user requests it (by specifying `--build-from-source`),
+- the formula requests it (with `pour_bottle?`),
+- any options are specified during installation (bottles are all compiled with default options),
+- the bottle is not up to date (e.g. missing or mismatched checksum),
+- or the bottle's `cellar` is neither `:any` (it requires being installed to a specific Cellar path) nor equal to the current `HOMEBREW_CELLAR` (the required Cellar path does not match that of the current Homebrew installation).
 
 ## Creation
-Bottles are created using the [Brew Test Bot](Brew-Test-Bot.md), usually when people submit pull requests to Homebrew. The `bottle do` block is updated by maintainers when they merge a pull request. For the Homebrew organisations' taps they are uploaded to and downloaded from [GitHub Packages](https://github.com/orgs/Homebrew/packages).
 
-By default, bottles will be built for the oldest CPU supported by the OS/architecture you're building for (Core 2 for 64-bit OSs). This ensures that bottles are compatible with all computers you might distribute them to. If you *really* want your bottles to be optimised for something else, you can pass the `--bottle-arch=` option to build for another architecture; for example, `brew install foo --build-bottle --bottle-arch=penryn`. Just remember that if you build for a newer architecture some of your users might get binaries they can't run and that would be sad!
+Bottles for `homebrew/core` formulae are created by [Brew Test Bot](Brew-Test-Bot.md) when a pull request is submitted. If the formula builds successfully on each supported platform and a maintainer approves the change, Brew Test Bot updates its `bottle do` block and uploads each bottle to [GitHub Packages](https://github.com/orgs/Homebrew/packages).
+
+By default, bottles will be built for the oldest CPU supported by the OS/architecture you're building for (Core 2 for 64-bit x86 operating systems). This ensures that bottles are compatible with all computers you might distribute them to. If you *really* want your bottles to be optimised for something else, you can pass the `--bottle-arch=` option to build for another architecture; for example, `brew install foo --build-bottle --bottle-arch=penryn`. Just remember that if you build for a newer architecture, some of your users might get binaries they can't run and that would be sad!
 
 ## Format
-Bottles are simple gzipped tarballs of compiled binaries. Any metadata is stored in a formula's bottle DSL and in the bottle filename (i.e. macOS version, revision).
+
+Bottles are simple gzipped tarballs of compiled binaries. The formula name, version, target operating system and rebuild version is stored in the filename, any other metadata is in the formula's bottle DSL, and the formula definition is located within the bottle at `<formula>/<version>/.brew/<formula>.rb`.
 
 ## Bottle DSL (Domain Specific Language)
-Bottles have a DSL to be used in formulae which is contained in the `bottle do ... end` block.
+
+Bottles are specified in formula definitions by a DSL contained within a `bottle do ... end` block.
 
 A simple (and typical) example:
 
@@ -43,26 +53,36 @@ end
 ```
 
 ### Root URL (`root_url`)
-Optionally contains the URL root used to calculate bottle URLs.
-By default this is omitted and the Homebrew default bottle URL root is used. This may be useful for taps which wish to provide bottles for their formulae or to cater for a non-default `HOMEBREW_CELLAR`.
+
+Optionally contains the URL root used to determine bottle URLs.
+
+By default this is omitted and Homebrew's default bottle URL root is used. This may be useful for taps that wish to provide bottles for their formulae or cater to a non-default `HOMEBREW_CELLAR`.
 
 ### Cellar (`cellar`)
+
 Optionally contains the value of `HOMEBREW_CELLAR` in which the bottles were built.
-Most compiled software contains references to its compiled location so cannot be simply relocated anywhere on disk. If this value is `:any` or `:any_skip_relocation` this means that the bottle can be safely installed in any Cellar as it did not contain any references to its installation Cellar. This can be omitted if a bottle is compiled (as all default Homebrew ones are) for the default `HOMEBREW_CELLAR`.
+
+Most compiled software contains references to its compiled location, preventing it from being simply relocated anywhere on disk. A value of `:any` or `:any_skip_relocation` means that the bottle can be safely installed in any Cellar as it did not contain any references to the Cellar in which it was originally built. This can be omitted if the bottle was compiled for the given OS/architecture's default `HOMEBREW_CELLAR`, as is done for all bottles built by Brew Test Bot.
 
 ### Rebuild version (`rebuild`)
+
 Optionally contains the rebuild version of the bottle.
-Sometimes bottles may need be updated without bumping the version of the formula, e.g. a new patch was applied. In that case the rebuild will have a value of 1 or more.
+
+Sometimes bottles may need be updated without bumping the version or revision of the formula, e.g. if a new patch was applied. In such cases `rebuild` will have a value of `1` or more.
 
 ### Checksum (`sha256`)
-Contains the SHA-256 hash of a bottle for a particular version of macOS.
+
+Contains the SHA-256 hash of the bottle for the given OS/architecture.
 
 ## Formula DSL
-An additional method is available in the formula DSL.
+
+An additional bottle-related method is available in the formula DSL.
 
 ### Pour bottle (`pour_bottle?`)
-Optionally returns a boolean to decide whether a bottle should be used for this formula.
-For example a bottle may break if another formula has been compiled with non-default options, so this method could check for that case and return `false`.
+
+Optionally returns a boolean to indicate whether a bottle should be used when installing this formula.
+
+For example a bottle may break if a related formula has been compiled with non-default options, so this method could check for that case and return `false`.
 
 A full example:
 
@@ -76,5 +96,6 @@ end
 Commonly used `pour_bottle?` conditions can be added as preset symbols to the `pour_bottle?` method, allowing them to be specified like this:
 
 ```ruby
+pour_bottle? only_if: :default_prefix
 pour_bottle? only_if: :clt_installed
 ```
