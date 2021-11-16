@@ -22,6 +22,8 @@ module GitHub
     class Annotation
       extend T::Sig
 
+      ANNOTATION_TYPES = [:notice, :warning, :error].freeze
+
       sig { params(path: T.any(String, Pathname)).returns(T.nilable(Pathname)) }
       def self.path_relative_to_workspace(path)
         workspace = Pathname(ENV.fetch("GITHUB_WORKSPACE", Dir.pwd)).realpath
@@ -33,18 +35,27 @@ module GitHub
 
       sig {
         params(
-          type: Symbol, message: String,
-          file: T.nilable(T.any(String, Pathname)), line: T.nilable(Integer), column: T.nilable(Integer)
+          type:       Symbol,
+          message:    String,
+          title:      T.nilable(String),
+          file:       T.nilable(T.any(String, Pathname)),
+          line:       T.nilable(Integer),
+          end_line:   T.nilable(Integer),
+          column:     T.nilable(Integer),
+          end_column: T.nilable(Integer),
         ).void
       }
-      def initialize(type, message, file: nil, line: nil, column: nil)
-        raise ArgumentError, "Unsupported type: #{type.inspect}" unless [:warning, :error].include?(type)
+      def initialize(type, message, title: nil, file: nil, line: nil, end_line: nil, column: nil, end_column: nil)
+        raise ArgumentError, "Unsupported type: #{type.inspect}" if ANNOTATION_TYPES.exclude?(type)
 
         @type = type
         @message = Tty.strip_ansi(message)
+        @title = Tty.strip_ansi(title) if title
         @file = self.class.path_relative_to_workspace(file) if file
         @line = Integer(line) if line
+        @end_line = Integer(end_line) if end_line
         @column = Integer(column) if column
+        @end_column = Integer(end_column) if end_column
       end
 
       sig { returns(String) }
@@ -56,8 +67,22 @@ module GitHub
 
           if @line
             metadata << ",line=#{@line}"
-            metadata << ",col=#{@column}" if @column
+            metadata << ",endLine=#{@end_line}" if @end_line
+
+            if @column
+              metadata << ",col=#{@column}"
+              metadata << ",endColumn=#{@end_column}" if @end_column
+            end
           end
+        end
+
+        if @title
+          metadata << if @file
+            ","
+          else
+            " "
+          end
+          metadata << "title=#{Actions.escape(@title)}"
         end
 
         "::#{metadata}::#{Actions.escape(@message)}"
