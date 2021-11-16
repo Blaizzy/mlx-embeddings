@@ -32,7 +32,6 @@ If you install the `bash-completion` formula, this will automatically source the
 
 If you are using the `bash` formula as your shell (i.e. `bash` >= v4) you should use the `bash-completion@2` formula instead.
 
-
 ## Configuring Completions in `zsh`
 
 To make Homebrew's completions available in `zsh`, you must get the Homebrew-managed zsh site-functions on your `FPATH` before initialising `zsh`'s completion facility. Add the following to your `~/.zshrc` file:

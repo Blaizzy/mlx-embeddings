@@ -3,15 +3,19 @@
 This is a list of commonly encountered problems, known issues, and their solutions.
 
 ### `brew` complains about absence of "Command Line Tools"
+
 You need to have the Xcode Command Line Utilities installed (and updated): run `xcode-select --install` in the terminal.
 
 ### Ruby: `bad interpreter: /usr/bin/ruby^M: no such file or directory`
+
 You cloned with `git`, and your Git configuration is set to use Windows line endings. See this page: <https://help.github.com/articles/dealing-with-line-endings>
 
 ### Ruby: `bad interpreter: /usr/bin/ruby`
+
 You don't have a `/usr/bin/ruby` or it is not executable. It's not recommended to let this persist; you'd be surprised how many `.app`s, tools and scripts expect your macOS-provided files and directories to be *unmodified* since macOS was installed.
 
 ### `brew update` complains about untracked working tree files
+
 After running `brew update`, you receive a Git error warning about untracked files or local changes that would be overwritten by a checkout or merge, followed by a list of files inside your Homebrew installation.
 
 This is caused by an old bug in in the `update` code that has long since been fixed. However, the nature of the bug requires that you do the following:
@@ -29,6 +33,7 @@ git clean -fd
 ```
 
 ### `launchctl` refuses to load launchd plist files
+
 When trying to load a plist file into launchctl, you receive an error that resembles
 
 ```
@@ -51,6 +56,7 @@ These are likely due to one of four issues:
 4. You are `su`'ed as a different user.
 
 ### `brew upgrade` errors out
+
 When running `brew upgrade`, you see something like this:
 
 ```

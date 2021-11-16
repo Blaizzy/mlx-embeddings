@@ -9,6 +9,7 @@ Next, you will want to go through the [Acceptable Formulae](Acceptable-Formulae.
 If everything checks out, you're ready to get started on a new formula!
 
 ## Writing the formula
+
 1. It's a good idea to find existing formulae in Homebrew that have similarities to the software you want to add. This will help you to understand how specific languages, build methods, etc. are typically handled.
 
 1. If you're starting from scratch, the [`brew create` command](Manpage.md#create-options-url) can be used to produce a basic version of your formula. This command accepts a number of options and you may be able to save yourself some work by using an appropriate template option like `--python`.
