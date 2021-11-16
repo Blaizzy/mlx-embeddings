@@ -94,10 +94,16 @@ module PyPI
       @name.tr("_", "-").casecmp(other.name.tr("_", "-")).zero?
     end
 
-    # Compare only names so we can use .include? on a Package array
+    # Compare only names so we can use .include? and .uniq on a Package array
     sig { params(other: Package).returns(T::Boolean) }
     def ==(other)
       same_package?(other)
+    end
+    alias eql? ==
+
+    sig { returns(Integer) }
+    def hash
+      @name.tr("_", "-").downcase.hash
     end
 
     sig { params(other: Package).returns(T.nilable(Integer)) }
@@ -212,7 +218,8 @@ module PyPI
     odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
 
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
-    command = [Formula["pipgrip"].opt_bin/"pipgrip", "--json", "--no-cache-dir", *input_packages.map(&:to_s)]
+    command =
+      [Formula["pipgrip"].opt_bin/"pipgrip", "--json", "--tree", "--no-cache-dir", *input_packages.map(&:to_s)]
     pipgrip_output = Utils.popen_read(*command)
     unless $CHILD_STATUS.success?
       odie <<~EOS
@@ -222,9 +229,7 @@ module PyPI
       EOS
     end
 
-    found_packages = JSON.parse(pipgrip_output).to_h.map do |new_name, new_version|
-      Package.new("#{new_name}==#{new_version}")
-    end
+    found_packages = json_to_packages(JSON.parse(pipgrip_output), main_package, exclude_packages).uniq
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
@@ -280,5 +285,19 @@ module PyPI
     end
 
     true
+  end
+
+  def json_to_packages(json_tree, main_package, exclude_packages)
+    return [] if json_tree.blank?
+
+    json_tree.flat_map do |package_json|
+      package = Package.new("#{package_json["name"]}==#{package_json["version"]}")
+      dependencies = if package == main_package || exclude_packages.exclude?(package)
+        json_to_packages(package_json["dependencies"], main_package, exclude_packages)
+      else
+        []
+      end
+      [package] + dependencies
+    end
   end
 end
