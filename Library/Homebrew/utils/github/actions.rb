@@ -37,21 +37,21 @@ module GitHub
         params(
           type:       Symbol,
           message:    String,
+          file:       T.any(String, Pathname),
           title:      T.nilable(String),
-          file:       T.nilable(T.any(String, Pathname)),
           line:       T.nilable(Integer),
           end_line:   T.nilable(Integer),
           column:     T.nilable(Integer),
           end_column: T.nilable(Integer),
         ).void
       }
-      def initialize(type, message, title: nil, file: nil, line: nil, end_line: nil, column: nil, end_column: nil)
+      def initialize(type, message, file:, title: nil, line: nil, end_line: nil, column: nil, end_column: nil)
         raise ArgumentError, "Unsupported type: #{type.inspect}" if ANNOTATION_TYPES.exclude?(type)
 
         @type = type
         @message = Tty.strip_ansi(message)
+        @file = self.class.path_relative_to_workspace(file)
         @title = Tty.strip_ansi(title) if title
-        @file = self.class.path_relative_to_workspace(file) if file
         @line = Integer(line) if line
         @end_line = Integer(end_line) if end_line
         @column = Integer(column) if column
@@ -61,29 +61,19 @@ module GitHub
       sig { returns(String) }
       def to_s
         metadata = @type.to_s
+        metadata << " file=#{Actions.escape(@file.to_s)}"
 
-        if @file
-          metadata << " file=#{Actions.escape(@file.to_s)}"
+        if @line
+          metadata << ",line=#{@line}"
+          metadata << ",endLine=#{@end_line}" if @end_line
 
-          if @line
-            metadata << ",line=#{@line}"
-            metadata << ",endLine=#{@end_line}" if @end_line
-
-            if @column
-              metadata << ",col=#{@column}"
-              metadata << ",endColumn=#{@end_column}" if @end_column
-            end
+          if @column
+            metadata << ",col=#{@column}"
+            metadata << ",endColumn=#{@end_column}" if @end_column
           end
         end
 
-        if @title
-          metadata << if @file
-            ","
-          else
-            " "
-          end
-          metadata << "title=#{Actions.escape(@title)}"
-        end
+        metadata << ",title=#{Actions.escape(@title)}" if @title
 
         "::#{metadata}::#{Actions.escape(@message)}"
       end
@@ -92,8 +82,6 @@ module GitHub
       # the `GITHUB_WORKSPACE` directory or if no `file` is specified.
       sig { returns(T::Boolean) }
       def relevant?
-        return true if @file.nil?
-
         @file.descend.next.to_s != ".."
       end
     end

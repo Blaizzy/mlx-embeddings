@@ -9,25 +9,31 @@ describe GitHub::Actions::Annotation do
   describe "#new" do
     it "fails when the type is wrong" do
       expect {
-        described_class.new(:fatal, message)
+        described_class.new(:fatal, message, file: "file.txt")
       }.to raise_error(ArgumentError)
     end
   end
 
   describe "#to_s" do
     it "escapes newlines" do
-      annotation = described_class.new(:warning, <<~EOS)
+      annotation = described_class.new(:warning, <<~EOS, file: "file.txt")
         lorem
         ipsum
       EOS
 
-      expect(annotation.to_s).to eq "::warning::lorem%0Aipsum%0A"
+      expect(annotation.to_s).to eq "::warning file=file.txt::lorem%0Aipsum%0A"
     end
 
     it "allows specifying the file" do
       annotation = described_class.new(:warning, "lorem ipsum", file: "file.txt")
 
       expect(annotation.to_s).to eq "::warning file=file.txt::lorem ipsum"
+    end
+
+    it "allows specifying the title" do
+      annotation = described_class.new(:warning, "lorem ipsum", file: "file.txt", title: "foo")
+
+      expect(annotation.to_s).to eq "::warning file=file.txt,title=foo::lorem ipsum"
     end
 
     it "allows specifying the file and line" do
