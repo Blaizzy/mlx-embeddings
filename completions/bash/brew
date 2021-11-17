@@ -707,9 +707,11 @@ _brew_deps() {
       --annotate
       --cask
       --debug
+      --dot
       --for-each
       --formula
       --full-name
+      --graph
       --help
       --include-build
       --include-optional
