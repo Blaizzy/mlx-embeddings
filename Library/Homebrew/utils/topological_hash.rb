@@ -20,7 +20,7 @@ module Utils
       packages = Array(packages)
 
       packages.each do |cask_or_formula|
-        next accumulator if accumulator.key?(cask_or_formula)
+        next if accumulator.key?(cask_or_formula)
 
         if cask_or_formula.is_a?(Cask::Cask)
           formula_deps = cask_or_formula.depends_on
@@ -39,9 +39,7 @@ module Utils
                                      .map { |c| Cask::CaskLoader.load(c, config: nil) }
         end
 
-        accumulator[cask_or_formula] ||= []
-        accumulator[cask_or_formula] += formula_deps
-        accumulator[cask_or_formula] += cask_deps
+        accumulator[cask_or_formula] = formula_deps + cask_deps
 
         graph_package_dependencies(formula_deps, accumulator)
         graph_package_dependencies(cask_deps, accumulator)

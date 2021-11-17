@@ -3,6 +3,8 @@
 
 # An adapter for casks to provide dependency information in a formula-like interface.
 class CaskDependent
+  attr_reader :cask
+
   def initialize(cask)
     @cask = cask
   end
