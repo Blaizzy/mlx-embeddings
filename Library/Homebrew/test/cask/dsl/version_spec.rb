@@ -140,6 +140,20 @@ describe Cask::DSL::Version, :cask do
                        "1.2.3-4,5:6" => "2.3-4"
     end
 
+    describe "#csv" do
+      subject { version.csv }
+
+      include_examples "expectations hash", :raw_version,
+                       :latest     => ["latest"],
+                       "latest"    => ["latest"],
+                       ""          => [],
+                       nil         => [],
+                       "1.2.3"     => ["1.2.3"],
+                       "1.2.3,"    => ["1.2.3"],
+                       ",abc"      => ["", "abc"],
+                       "1.2.3,abc" => ["1.2.3", "abc"]
+    end
+
     describe "#before_comma" do
       include_examples "version expectations hash", :before_comma,
                        "1.2.3"     => "1.2.3",
