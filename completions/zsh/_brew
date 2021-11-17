@@ -679,8 +679,10 @@ _brew_deps() {
     '(--installed)--all[List dependencies for all available formulae]' \
     '--annotate[Mark any build, test, optional, or recommended dependencies as such in the output]' \
     '--debug[Display any debugging information]' \
+    '--dot[Show text-based graph description in DOT format]' \
     '--for-each[Switch into the mode used by the `--all` option, but only list dependencies for each provided formula, one formula per line. This is used for debugging the `--installed`/`--all` display mode]' \
     '--full-name[List dependencies by their full name]' \
+    '(--tree)--graph[Show dependencies as a directed graph]' \
     '--help[Show this message]' \
     '--include-build[Include `:build` dependencies for formula]' \
     '--include-optional[Include `:optional` dependencies for formula]' \
@@ -689,7 +691,7 @@ _brew_deps() {
     '(--all)--installed[List dependencies for formulae that are currently installed. If formula is specified, list only its dependencies that are currently installed]' \
     '--quiet[Make some output more quiet]' \
     '--skip-recommended[Skip `:recommended` dependencies for formula]' \
-    '--tree[Show dependencies as a tree. When given multiple formula arguments, show individual trees for each formula]' \
+    '(--graph)--tree[Show dependencies as a tree. When given multiple formula arguments, show individual trees for each formula]' \
     '--union[Show the union of dependencies for multiple formula, instead of the intersection]' \
     '--verbose[Make some output more verbose]' \
     '-n[Sort dependencies in topological order]' \

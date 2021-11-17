@@ -158,6 +158,10 @@ show the intersection of dependencies for each formula.
   Include requirements in addition to dependencies for *`formula`*.
 * `--tree`:
   Show dependencies as a tree. When given multiple formula arguments, show individual trees for each formula.
+* `--graph`:
+  Show dependencies as a directed graph.
+* `--dot`:
+  Show text-based graph description in DOT format.
 * `--annotate`:
   Mark any build, test, optional, or recommended dependencies as such in the output.
 * `--installed`:
