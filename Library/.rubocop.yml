@@ -471,6 +471,10 @@ Style/GuardClause:
 Style/HashSyntax:
   EnforcedStyle: ruby19
 
+# OpenStruct is a nice helper.
+Style/OpenStructUse:
+  Enabled: false
+
 # so many of these in formulae and can't be autocorrected
 Style/StringConcatenation:
   Exclude:
