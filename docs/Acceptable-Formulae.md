@@ -5,6 +5,12 @@ Some formulae should not go in
 additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can start their
 own!
 
+### Supported platforms in `homebrew/core`
+
+The formula needs to build and pass tests on the latest 3 supported macOS versions ([x86_64 and Apple Silicon/ARM](Installation.md#macos-requirements)) and on x86_64 Linux.
+Please have a look at the continuous integration jobs on a pull request in `homebrew/core` to see the full list of OSs.
+If upstream does not support one of these platforms, an exception can be made and the formula can be disabled for that platform.
+
 ### Dupes in `homebrew/core`
 We now accept stuff that comes with macOS as long as it uses `keg_only :provided_by_macos` to be keg-only by default.
 
