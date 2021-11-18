@@ -24,9 +24,9 @@ module Homebrew
              description: "List only the names of outdated kegs (takes precedence over `--verbose`)."
       switch "-v", "--verbose",
              description: "Include detailed version information."
-      switch "--formula",
+      switch "--formula", "--formulae",
              description: "List only outdated formulae."
-      switch "--cask",
+      switch "--cask", "--casks",
              description: "List only outdated casks."
       flag   "--json",
              description: "Print output in JSON format. There are two versions: `v1` and `v2`. " \
