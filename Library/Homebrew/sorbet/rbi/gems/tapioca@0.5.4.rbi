@@ -83,6 +83,8 @@ class RBI::File
   sig { returns(RBI::Tree) }
   def root; end
 
+  def root=(_arg0); end
+
   sig { void }
   def set_empty_body_content; end
 
@@ -91,6 +93,8 @@ class RBI::File
 
   sig { returns(T.nilable(String)) }
   def strictness; end
+
+  def strictness=(_arg0); end
 
   sig { params(indent: Integer, print_locs: T::Boolean).returns(String) }
   def string(indent: T.unsafe(nil), print_locs: T.unsafe(nil)); end
@@ -114,6 +118,9 @@ class RBI::Tree < ::RBI::NodeWithComments
 
   sig { params(with_todo_comment: T::Boolean).void }
   def add_sig_templates!(with_todo_comment: T.unsafe(nil)); end
+
+  sig { params(annotation: String, annotate_scopes: T::Boolean, annotate_properties: T::Boolean).void }
+  def annotate!(annotation, annotate_scopes: T.unsafe(nil), annotate_properties: T.unsafe(nil)); end
 
   sig { params(name: String, superclass_name: T.nilable(String), block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
   def create_class(name, superclass_name: T.unsafe(nil), &block); end
@@ -142,6 +149,9 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { params(name: String, value: String).void }
   def create_type_member(name, value: T.unsafe(nil)); end
 
+  sig { params(annotation: String).void }
+  def deannotate!(annotation); end
+
   sig { returns(T::Boolean) }
   def empty?; end
 
@@ -151,8 +161,8 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { returns(RBI::Index) }
   def index; end
 
-  sig { params(other: RBI::Tree).returns(RBI::Tree) }
-  def merge(other); end
+  sig { params(other: RBI::Tree, left_name: String, right_name: String, keep: RBI::Rewriters::Merge::Keep).returns(RBI::MergeTree) }
+  def merge(other, left_name: T.unsafe(nil), right_name: T.unsafe(nil), keep: T.unsafe(nil)); end
 
   sig { void }
   def nest_non_public_methods!; end
