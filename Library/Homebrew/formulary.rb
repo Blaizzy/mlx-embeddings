@@ -564,23 +564,16 @@ module Formulary
       return FormulaLoader.new(name, path)
     end
 
-    if (newref = CoreTap.instance.formula_renames[ref])
-      formula_with_that_oldname = core_path(newref)
-      return FormulaLoader.new(newref, formula_with_that_oldname) if formula_with_that_oldname.file?
-    end
+    return TapLoader.new("#{CoreTap.instance}/#{ref}", from: from) if CoreTap.instance.formula_renames.key?(ref)
 
-    possible_tap_newname_formulae = []
-    Tap.each do |tap|
-      if (newref = tap.formula_renames[ref])
-        possible_tap_newname_formulae << "#{tap.name}/#{newref}"
-      end
-    end
+    possible_taps = Tap.select { |tap| tap.formula_renames.key?(ref) }
 
-    if possible_tap_newname_formulae.size > 1
+    if possible_taps.size > 1
+      possible_tap_newname_formulae = possible_taps.map { |tap| "#{tap}/#{tap.formula_renames[ref]}" }
       raise TapFormulaWithOldnameAmbiguityError.new(ref, possible_tap_newname_formulae)
     end
 
-    return TapLoader.new(possible_tap_newname_formulae.first, from: from) unless possible_tap_newname_formulae.empty?
+    return TapLoader.new("#{possible_taps.first}/#{ref}", from: from) unless possible_taps.empty?
 
     possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{ref}/.brew/#{ref}.rb")
     return FormulaLoader.new(ref, possible_keg_formula) if possible_keg_formula.file?
