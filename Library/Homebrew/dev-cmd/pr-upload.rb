@@ -30,8 +30,7 @@ module Homebrew
              description: "Skip running `brew bottle` before uploading."
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
-      flag   "--github-org=",
-             description: "Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`)."
+      flag   "--github-org=", hidden: true
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       flag   "--root-url-using=",
@@ -90,6 +89,8 @@ module Homebrew
 
   def pr_upload
     args = pr_upload_args.parse
+
+    # odeprecated "`brew pr-upload --github-org`", "`brew pr-upload` without `--github-org`" if args.github_org
 
     json_files = Dir["*.bottle.json"]
     odie "No bottle JSON files found in the current working directory" if json_files.blank?
@@ -158,8 +159,7 @@ module Homebrew
       github_releases = GitHubReleases.new
       github_releases.upload_bottles(bottles_hash)
     elsif github_packages?(bottles_hash)
-      github_org = args.github_org || "homebrew"
-      github_packages = GitHubPackages.new(org: github_org)
+      github_packages = GitHubPackages.new
       github_packages.upload_bottles(bottles_hash,
                                      keep_old:      args.keep_old?,
                                      dry_run:       args.dry_run?,
