@@ -64,6 +64,8 @@ module Homebrew
 
   module_function
 
+  BOTTLE_BLOCK_REGEX = /  bottle do.+?end\n\n/m.freeze
+
   sig { returns(CLI::Parser) }
   def extract_args
     Homebrew::CLI::Parser.new do
@@ -184,7 +186,7 @@ module Homebrew
     result.sub!("class #{class_name} < Formula", "class #{versioned_name} < Formula")
 
     # Remove bottle blocks, they won't work.
-    result.sub!(/  bottle do.+?end\n\n/m, "") if destination_tap != source_tap
+    result.sub!(BOTTLE_BLOCK_REGEX, "")
 
     path = destination_tap.path/"Formula/#{name}@#{version.to_s.downcase}.rb"
     if path.exist?
@@ -210,6 +212,7 @@ module Homebrew
     contents = Utils::Git.last_revision_of_file(repo, file, before_commit: rev)
     contents.gsub!("@url=", "url ")
     contents.gsub!("require 'brewkit'", "require 'formula'")
+    contents.sub!(BOTTLE_BLOCK_REGEX, "")
     with_monkey_patch { Formulary.from_contents(name, file, contents, ignore_errors: true) }
   end
 end
