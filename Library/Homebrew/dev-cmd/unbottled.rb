@@ -123,8 +123,6 @@ module Homebrew
     uses_hash = {}
 
     all_formulae.each do |f|
-      next unless f.core_formula?
-
       deps = f.recursive_dependencies do |_, dep|
         Dependency.prune if dep.optional?
       end.map(&:to_formula)
