@@ -62,17 +62,19 @@ class LinkageChecker
     end
   end
 
-  def display_test_output(puts_output: true)
+  def display_test_output(puts_output: true, strict: false)
     display_items "Missing libraries", broken_dylibs_with_expectations, puts_output: puts_output
     display_items "Unused missing linkage information", unexpected_present_dylibs, puts_output: puts_output
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
+    display_items "Undeclared dependencies with linkage", @undeclared_deps, puts_output: puts_output if strict
   end
 
-  sig { returns(T::Boolean) }
-  def broken_library_linkage?
+  sig { params(strict: T::Boolean).returns(T::Boolean) }
+  def broken_library_linkage?(strict: false)
     issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
+    issues << @undeclared_deps if strict
     [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)
   end
 
