@@ -203,6 +203,8 @@ module Homebrew
       @run.map(&:to_s)
     end
 
+    # Returns the `String` command to run manually instead of the service.
+    # @return [String]
     sig { returns(String) }
     def manual_command
       instance_eval(&@service_block)
@@ -211,6 +213,14 @@ module Homebrew
 
       out = vars + command
       out.join(" ")
+    end
+
+    # Returns a `Boolean` describing if a service is timed.
+    # @return [Boolean]
+    sig { returns(T::Boolean) }
+    def timed?
+      instance_eval(&@service_block)
+      @run_type == RUN_TYPE_CRON || @run_type == RUN_TYPE_INTERVAL
     end
 
     # Returns a `String` plist.
@@ -266,6 +276,29 @@ module Homebrew
       options += @environment_variables.map { |k, v| "Environment=\"#{k}=#{v}\"" } if @environment_variables.present?
 
       unit + options.join("\n")
+    end
+
+    # Returns a `String` systemd unit timer.
+    # @return [String]
+    sig { returns(String) }
+    def to_systemd_timer
+      timer = <<~EOS
+        [Unit]
+        Description=Homebrew generated timer for #{@formula.name}
+
+        [Install]
+        WantedBy=timers.target
+
+        [Timer]
+        Unit=#{@formula.service_name}
+      EOS
+
+      instance_eval(&@service_block)
+      options = []
+      options << "Persistent=true=" if @run_type == RUN_TYPE_CRON
+      options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
+
+      timer + options.join("\n")
     end
   end
 end

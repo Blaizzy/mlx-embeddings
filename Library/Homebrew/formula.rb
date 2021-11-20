@@ -1005,6 +1005,12 @@ class Formula
     opt_prefix/"#{service_name}.service"
   end
 
+  # The generated systemd {.timer} file path.
+  sig { returns(Pathname) }
+  def systemd_timer_path
+    opt_prefix/"#{service_name}.timer"
+  end
+
   # The service specification of the software.
   def service
     return unless service?
