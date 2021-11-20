@@ -40,12 +40,7 @@ module Homebrew
           params(
             content: String,
             regex:   T.nilable(Regexp),
-            block:   T.nilable(
-              T.proc.params(
-                arg0: T::Hash[String, T.untyped],
-                arg1: T.nilable(Regexp),
-              ).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            block:   T.untyped,
           ).returns(T::Array[String])
         }
         def self.versions_from_content(content, regex = nil, &block)
@@ -54,7 +49,10 @@ module Homebrew
           yaml = YAML.safe_load(content)
           return [] if yaml.blank?
 
-          return Strategy.handle_block_return(yield(yaml, regex)) if block
+          if block
+            block_return_value = regex.present? ? yield(yaml, regex) : yield(yaml)
+            return Strategy.handle_block_return(block_return_value)
+          end
 
           version = yaml["version"]
           version.present? ? [version] : []
@@ -69,12 +67,7 @@ module Homebrew
             url:     String,
             regex:   T.nilable(Regexp),
             _unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:   T.nilable(
-              T.proc.params(
-                arg0: T::Hash[String, T.untyped],
-                arg1: T.nilable(Regexp),
-              ).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            block:   T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **_unused, &block)

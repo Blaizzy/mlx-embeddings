@@ -51,13 +51,15 @@ module Homebrew
           params(
             content: String,
             regex:   T.nilable(Regexp),
-            block:   T.nilable(
-              T.proc.params(arg0: String, arg1: T.nilable(Regexp)).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            block:   T.untyped,
           ).returns(T::Array[String])
         }
         def self.versions_from_content(content, regex, &block)
-          return Strategy.handle_block_return(yield(content, regex)) if block
+          if block
+            block_return_value = regex.present? ? yield(content, regex) : yield(content)
+            return Strategy.handle_block_return(block_return_value)
+          end
+
           return [] if regex.blank?
 
           content.scan(regex).map do |match|
@@ -84,9 +86,7 @@ module Homebrew
             regex:            T.nilable(Regexp),
             provided_content: T.nilable(String),
             _unused:          T.nilable(T::Hash[Symbol, T.untyped]),
-            block:            T.nilable(
-              T.proc.params(arg0: String, arg1: T.nilable(Regexp)).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            block:            T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, provided_content: nil, **_unused, &block)

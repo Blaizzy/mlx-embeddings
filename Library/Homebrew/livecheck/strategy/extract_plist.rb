@@ -63,16 +63,14 @@ module Homebrew
           params(
             items: T::Hash[String, Item],
             regex: T.nilable(Regexp),
-            block: T.nilable(
-              T.proc.params(
-                arg0: T::Hash[String, Item],
-                arg1: T.nilable(Regexp),
-              ).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            block: T.untyped,
           ).returns(T::Array[String])
         }
         def self.versions_from_items(items, regex = nil, &block)
-          return Strategy.handle_block_return(yield(items, regex)) if block
+          if block
+            block_return_value = regex.present? ? yield(items, regex) : yield(items)
+            return Strategy.handle_block_return(block_return_value)
+          end
 
           items.map do |_key, item|
             item.bundle_version.nice_version
@@ -89,12 +87,7 @@ module Homebrew
             cask:    Cask::Cask,
             regex:   T.nilable(Regexp),
             _unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:   T.nilable(
-              T.proc.params(
-                arg0: T::Hash[String, Item],
-                arg1: T.nilable(Regexp),
-              ).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            block:   T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(cask:, regex: nil, **_unused, &block)
