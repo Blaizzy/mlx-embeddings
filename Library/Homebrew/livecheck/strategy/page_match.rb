@@ -90,6 +90,10 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, provided_content: nil, **_unused, &block)
+          if regex.blank? && block.blank?
+            raise ArgumentError, "#{T.must(name).demodulize} requires a regex or `strategy` block"
+          end
+
           match_data = { matches: {}, regex: regex, url: url }
           return match_data if url.blank? || (regex.blank? && block.blank?)
 

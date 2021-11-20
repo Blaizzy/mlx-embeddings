@@ -626,13 +626,10 @@ module Homebrew
         end
 
         if livecheck_strategy.present?
-          if livecheck_strategy == :page_match && (livecheck_regex.blank? && livecheck_strategy_block.blank?)
-            odebug "#{strategy_name} strategy requires a regex or block"
-            next
-          elsif livecheck_url.blank?
+          if livecheck_url.blank?
             odebug "#{strategy_name} strategy requires a URL"
             next
-          elsif strategies.exclude?(strategy)
+          elsif livecheck_strategy != :page_match && strategies.exclude?(strategy)
             odebug "#{strategy_name} strategy does not apply to this URL"
             next
           end
