@@ -1315,7 +1315,7 @@ Make the expected file modifications without taking any Git actions\.
 .
 .TP
 \fB\-\-commit\fR
-When passed with \fB\-\-write\fR, generate a new commit after writing changes to the cask file\.
+When passed with \fB\-\-write\-only\fR, generate a new commit after writing changes to the cask file\.
 .
 .TP
 \fB\-\-no\-audit\fR
@@ -1664,6 +1664,10 @@ Check the library links from the given \fIformula\fR kegs\. If no \fIformula\fR 
 Show only missing libraries and exit with a non\-zero status if any missing libraries are found\.
 .
 .TP
+\fB\-\-strict\fR
+Exit with a non\-zero status if any undeclared dependencies with linkage are found\.
+.
+.TP
 \fB\-\-reverse\fR
 For every library that a keg references, print its dylib path followed by the binaries that link to it\.
 .
@@ -1872,10 +1876,6 @@ Skip running \fBbrew bottle\fR before uploading\.
 .TP
 \fB\-\-committer\fR
 Specify a committer name and email in \fBgit\fR\'s standard author format\.
-.
-.TP
-\fB\-\-github\-org\fR
-Upload to the specified GitHub organisation\'s GitHub Packages (default: \fBhomebrew\fR)\.
 .
 .TP
 \fB\-\-root\-url\fR

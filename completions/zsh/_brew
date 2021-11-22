@@ -492,7 +492,7 @@ _brew_bump() {
 # brew bump-cask-pr
 _brew_bump_cask_pr() {
   _arguments \
-    '--commit[When passed with `--write`, generate a new commit after writing changes to the cask file]' \
+    '--commit[When passed with `--write-only`, generate a new commit after writing changes to the cask file]' \
     '--debug[Display any debugging information]' \
     '(--write)--dry-run[Print what would be done rather than doing it]' \
     '--force[Ignore duplicate open PRs]' \
@@ -1110,6 +1110,7 @@ _brew_linkage() {
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--reverse[For every library that a keg references, print its dylib path followed by the binaries that link to it]' \
+    '--strict[Exit with a non-zero status if any undeclared dependencies with linkage are found]' \
     '--test[Show only missing libraries and exit with a non-zero status if any missing libraries are found]' \
     '--verbose[Make some output more verbose]' \
     - installed_formula \
@@ -1364,7 +1365,6 @@ _brew_pr_upload() {
     '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
-    '--github-org[Upload to the specified GitHub organisation'\''s GitHub Packages (default: `homebrew`)]' \
     '--help[Show this message]' \
     '(--upload-only)--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '(--upload-only)--no-commit[Do not generate a new commit before uploading]' \

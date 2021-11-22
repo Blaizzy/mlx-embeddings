@@ -396,7 +396,7 @@ __fish_brew_complete_arg 'bump; and not __fish_seen_argument -l formula -l formu
 
 
 __fish_brew_complete_cmd 'bump-cask-pr' 'Create a pull request to update cask with a new version'
-__fish_brew_complete_arg 'bump-cask-pr' -l commit -d 'When passed with `--write`, generate a new commit after writing changes to the cask file'
+__fish_brew_complete_arg 'bump-cask-pr' -l commit -d 'When passed with `--write-only`, generate a new commit after writing changes to the cask file'
 __fish_brew_complete_arg 'bump-cask-pr' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'bump-cask-pr' -l dry-run -d 'Print what would be done rather than doing it'
 __fish_brew_complete_arg 'bump-cask-pr' -l force -d 'Ignore duplicate open PRs'
@@ -910,6 +910,7 @@ __fish_brew_complete_arg 'linkage' -l debug -d 'Display any debugging informatio
 __fish_brew_complete_arg 'linkage' -l help -d 'Show this message'
 __fish_brew_complete_arg 'linkage' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'linkage' -l reverse -d 'For every library that a keg references, print its dylib path followed by the binaries that link to it'
+__fish_brew_complete_arg 'linkage' -l strict -d 'Exit with a non-zero status if any undeclared dependencies with linkage are found'
 __fish_brew_complete_arg 'linkage' -l test -d 'Show only missing libraries and exit with a non-zero status if any missing libraries are found'
 __fish_brew_complete_arg 'linkage' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'linkage' -a '(__fish_brew_suggest_formulae_installed)'
@@ -1117,7 +1118,6 @@ __fish_brew_complete_cmd 'pr-upload' 'Apply the bottle commit and publish bottle
 __fish_brew_complete_arg 'pr-upload' -l committer -d 'Specify a committer name and email in `git`\'s standard author format'
 __fish_brew_complete_arg 'pr-upload' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-upload' -l dry-run -d 'Print what would be done rather than doing it'
-__fish_brew_complete_arg 'pr-upload' -l github-org -d 'Upload to the specified GitHub organisation\'s GitHub Packages (default: `homebrew`)'
 __fish_brew_complete_arg 'pr-upload' -l help -d 'Show this message'
 __fish_brew_complete_arg 'pr-upload' -l keep-old -d 'If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL'
 __fish_brew_complete_arg 'pr-upload' -l no-commit -d 'Do not generate a new commit before uploading'
