@@ -44,17 +44,7 @@ module Homebrew
     titleized_repo = tap.repo.dup
     titleized_user[0] = titleized_user[0].upcase
     titleized_repo[0] = titleized_repo[0].upcase
-
-    pr_pull_env = {}
-    pr_pull_env["HOMEBREW_GITHUB_API_TOKEN"] = "${{ github.token }}"
-    pr_pull_env["PULL_REQUEST"] = "${{ github.event.pull_request.number }}"
-
-    if args.github_packages?
-      pr_pull_env["HOMEBREW_GITHUB_PACKAGES_USER"] = "${{ github.actor }}"
-      pr_pull_env["HOMEBREW_GITHUB_PACKAGES_TOKEN"] = "${{ github.token }}"
-
-      root_url = GitHubPackages.root_url(tap.user, "homebrew-#{tap.repo}")
-    end
+    root_url = GitHubPackages.root_url(tap.user, "homebrew-#{tap.repo}") if args.github_packages?
 
     (tap.path/"Formula").mkpath
 
@@ -139,7 +129,10 @@ module Homebrew
 
             - name: Pull bottles
               env:
-                #{pr_pull_env.map { |k, v| "#{k}: #{v}" }.join "\n#{" " * 10}"}
+                HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+                HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ github.token }}
+                HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.actor }}
+                PULL_REQUEST: ${{ github.event.pull_request.number }}
               run: brew pr-pull --debug --tap=$GITHUB_REPOSITORY $PULL_REQUEST
 
             - name: Push commits
