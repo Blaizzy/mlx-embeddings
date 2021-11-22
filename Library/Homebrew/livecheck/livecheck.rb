@@ -626,13 +626,10 @@ module Homebrew
         end
 
         if livecheck_strategy.present?
-          if livecheck_strategy == :page_match && (livecheck_regex.blank? && livecheck_strategy_block.blank?)
-            odebug "#{strategy_name} strategy requires a regex or block"
-            next
-          elsif livecheck_url.blank?
+          if livecheck_url.blank?
             odebug "#{strategy_name} strategy requires a URL"
             next
-          elsif strategies.exclude?(strategy)
+          elsif livecheck_strategy != :page_match && strategies.exclude?(strategy)
             odebug "#{strategy_name} strategy does not apply to this URL"
             next
           end
@@ -658,9 +655,13 @@ module Homebrew
         end
 
         if debug
-          puts "URL (strategy):   #{strategy_data[:url]}" if strategy_data[:url] != url
-          puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url]
-          puts "Regex (strategy): #{strategy_data[:regex].inspect}" if strategy_data[:regex] != livecheck_regex
+          if strategy_data[:url].present? && strategy_data[:url] != url
+            puts "URL (strategy):   #{strategy_data[:url]}"
+          end
+          puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url].present?
+          if strategy_data[:regex].present? && strategy_data[:regex] != livecheck_regex
+            puts "Regex (strategy): #{strategy_data[:regex].inspect}"
+          end
           puts "Cached?:          Yes" if strategy_data[:cached] == true
         end
 

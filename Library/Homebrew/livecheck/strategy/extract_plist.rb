@@ -62,13 +62,15 @@ module Homebrew
         sig {
           params(
             items: T::Hash[String, Item],
-            block: T.nilable(
-              T.proc.params(arg0: T::Hash[String, Item]).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            regex: T.nilable(Regexp),
+            block: T.untyped,
           ).returns(T::Array[String])
         }
-        def self.versions_from_items(items, &block)
-          return Strategy.handle_block_return(yield(items)) if block
+        def self.versions_from_items(items, regex = nil, &block)
+          if block
+            block_return_value = regex.present? ? yield(items, regex) : yield(items)
+            return Strategy.handle_block_return(block_return_value)
+          end
 
           items.map do |_key, item|
             item.bundle_version.nice_version
@@ -82,15 +84,16 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            cask:   Cask::Cask,
-            unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:  T.nilable(
-              T.proc.params(arg0: T::Hash[String, Item]).returns(T.any(String, T::Array[String], NilClass)),
-            ),
+            cask:    Cask::Cask,
+            regex:   T.nilable(Regexp),
+            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:   T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(cask:, **unused, &block)
-          raise ArgumentError, "The #{T.must(name).demodulize} strategy does not support a regex." if unused[:regex]
+        def self.find_versions(cask:, regex: nil, **_unused, &block)
+          if regex.present? && block.blank?
+            raise ArgumentError, "#{T.must(name).demodulize} only supports a regex when using a `strategy` block"
+          end
           raise ArgumentError, "The #{T.must(name).demodulize} strategy only supports casks." unless T.unsafe(cask)
 
           match_data = { matches: {} }
@@ -98,7 +101,7 @@ module Homebrew
           unversioned_cask_checker = UnversionedCaskChecker.new(cask)
           items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
 
-          versions_from_items(items, &block).each do |version_text|
+          versions_from_items(items, regex, &block).each do |version_text|
             match_data[:matches][version_text] = Version.new(version_text)
           end
 

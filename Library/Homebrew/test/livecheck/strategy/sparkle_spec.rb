@@ -41,6 +41,8 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     EOS
   }
 
+  let(:title_regex) { /Version\s+v?(\d+(?:\.\d+)+)\s*$/i }
+
   let(:item) {
     Homebrew::Livecheck::Strategy::Sparkle::Item.new(
       title:          appcast_data[:title],
@@ -93,8 +95,24 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
         end,
       ).to eq([item.bundle_version.nice_version.sub("3", "4")])
 
-      # Returning an array of strings from block
+      # Returning an array of strings from block (unlikely to be used)
       expect(sparkle.versions_from_content(appcast_xml) { versions }).to eq(versions)
+    end
+
+    it "returns an array of version strings when given content, a regex, and a block" do
+      # Returning a string from block
+      expect(
+        sparkle.versions_from_content(appcast_xml, title_regex) do |item, regex|
+          item.title[regex, 1]
+        end,
+      ).to eq([item.bundle_version.short_version])
+
+      # Returning an array of strings from block (unlikely to be used)
+      expect(
+        sparkle.versions_from_content(appcast_xml, title_regex) do |item, regex|
+          [item.title[regex, 1]]
+        end,
+      ).to eq([item.bundle_version.short_version])
     end
 
     it "allows a nil return from a block" do
