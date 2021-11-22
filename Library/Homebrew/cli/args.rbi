@@ -4,6 +4,9 @@ module Homebrew
   module CLI
     class Args < OpenStruct
       sig { returns(T::Boolean) }
+      def strict?; end
+
+      sig { returns(T::Boolean) }
       def HEAD?; end
 
       sig { returns(T::Boolean) }
