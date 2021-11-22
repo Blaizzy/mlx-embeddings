@@ -33,20 +33,6 @@ class GitHubPackages
     "Macintosh" => "darwin",
   }.freeze
 
-  sig { returns(String) }
-  def inspect
-    "#<GitHubPackages: org=#{@github_org}>"
-  end
-
-  sig { params(org: T.nilable(String)).void }
-  def initialize(org: "homebrew")
-    @github_org = org
-
-    raise UsageError, "Must set a GitHub organisation!" unless @github_org
-
-    ENV["HOMEBREW_FORCE_HOMEBREW_ON_LINUX"] = "1" if @github_org == "homebrew" && !OS.mac?
-  end
-
   sig {
     params(
       bottles_hash:  T::Hash[String, T.untyped],
