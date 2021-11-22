@@ -26,8 +26,8 @@ module Homebrew
              description: "Make the expected file modifications without taking any Git actions."
       switch "--write", hidden: true
       switch "--commit",
-             depends_on:  "--write",
-             description: "When passed with `--write`, generate a new commit after writing changes "\
+             depends_on:  "--write-only",
+             description: "When passed with `--write-only`, generate a new commit after writing changes "\
                           "to the cask file."
       switch "--no-audit",
              description: "Don't run `brew audit` before opening the PR."
