@@ -1528,10 +1528,13 @@ class Formula
   end
 
   # Standard parameters for Go builds.
-  sig { params(ldflags: T.nilable(String)).returns(T::Array[String]) }
-  def std_go_args(ldflags: nil)
-    args = ["-trimpath", "-o=#{bin/name}"]
-    args += ["-ldflags=#{ldflags}"] if ldflags
+  sig {
+    params(output:  T.any(String, Pathname),
+           ldflags: T.nilable(T.any(String, T::Array[String]))).returns(T::Array[String])
+  }
+  def std_go_args(output: bin/name, ldflags: nil)
+    args = ["-trimpath", "-o=#{output}"]
+    args += ["-ldflags=#{Array(ldflags).join(" ")}"] if ldflags
     args
   end
 
