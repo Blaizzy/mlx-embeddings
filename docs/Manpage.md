@@ -934,7 +934,7 @@ supplied by the user.
 * `--write-only`:
   Make the expected file modifications without taking any Git actions.
 * `--commit`:
-  When passed with `--write`, generate a new commit after writing changes to the cask file.
+  When passed with `--write-only`, generate a new commit after writing changes to the cask file.
 * `--no-audit`:
   Don't run `brew audit` before opening the PR.
 * `--online`:
@@ -1176,6 +1176,8 @@ provided, check all kegs. Raises an error if run on uninstalled formulae.
 
 * `--test`:
   Show only missing libraries and exit with a non-zero status if any missing libraries are found.
+* `--strict`:
+  Exit with a non-zero status if any undeclared dependencies with linkage are found.
 * `--reverse`:
   For every library that a keg references, print its dylib path followed by the binaries that link to it.
 * `--cached`:
@@ -1304,8 +1306,6 @@ Apply the bottle commit and publish bottles to a host.
   Skip running `brew bottle` before uploading.
 * `--committer`:
   Specify a committer name and email in `git`'s standard author format.
-* `--github-org`:
-  Upload to the specified GitHub organisation's GitHub Packages (default: `homebrew`).
 * `--root-url`:
   Use the specified *`URL`* as the root of the bottle's URL instead of Homebrew's default.
 * `--root-url-using`:
