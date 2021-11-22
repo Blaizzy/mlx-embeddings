@@ -437,19 +437,21 @@ module Kernel
     $stderr = old
   end
 
-  def nostdout
+  def nostdout(&block)
     if verbose?
       yield
     else
-      begin
-        out = $stdout.dup
-        $stdout.reopen(File::NULL)
-        yield
-      ensure
-        $stdout.reopen(out)
-        out.close
-      end
+      redirect_stdout(File::NULL, &block)
     end
+  end
+
+  def redirect_stdout(file)
+    out = $stdout.dup
+    $stdout.reopen(file)
+    yield
+  ensure
+    $stdout.reopen(out)
+    out.close
   end
 
   def paths
