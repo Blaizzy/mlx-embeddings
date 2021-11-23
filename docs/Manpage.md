@@ -1398,6 +1398,8 @@ Generate the template files for a new tap.
   Label name for pull requests ready to be pulled (default: `pr-pull`).
 * `--branch`:
   Initialize Git repository and setup GitHub Actions workflows with the specified branch name (default: `main`).
+* `--github-packages`:
+  Upload bottles to GitHub Packages.
 
 ### `test` [*`options`*] *`installed_formula`* [...]
 

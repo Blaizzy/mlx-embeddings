@@ -1937,6 +1937,7 @@ _brew_tap_new() {
       __brewcomp "
       --branch
       --debug
+      --github-packages
       --help
       --no-git
       --pull-label
