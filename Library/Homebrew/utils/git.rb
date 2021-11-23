@@ -94,8 +94,6 @@ module Utils
       # we cannot install brewed git if homebrew/core is unavailable.
       if CoreTap.instance.installed?
         begin
-          oh1 "Installing #{Formatter.identifier("git")}"
-
           # Otherwise `git` will be installed from source in tests that need it. This is slow
           # and will also likely fail due to `OS::Linux` and `OS::Mac` being undefined.
           raise "Refusing to install Git on a generic OS." if ENV["HOMEBREW_TEST_GENERIC_OS"]
