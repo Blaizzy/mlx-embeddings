@@ -59,8 +59,7 @@ module Homebrew
     unless Utils::Curl.curl_supports_tls13?
       begin
         unless Pathname.new(ENV["HOMEBREW_BREWED_CURL_PATH"]).exist?
-          ohai "Installing `curl` for Repology queries..."
-          safe_system HOMEBREW_BREW_FILE, "install", "--formula", Formula["curl"].full_name
+          ensure_formula_installed!("curl", reason: "Repology queries")
         end
       rescue FormulaUnavailableError
         opoo "A `curl` with TLS 1.3 support is required for Repology queries."

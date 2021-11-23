@@ -108,10 +108,7 @@ module Homebrew
 
   def ensure_relocation_formulae_installed!
     Keg.relocation_formulae.each do |f|
-      next if Formula[f].latest_version_installed?
-
-      ohai "Installing #{f}..."
-      safe_system HOMEBREW_BREW_FILE, "install", f
+      ensure_formula_installed!(f, latest: true)
     end
   end
 
@@ -263,10 +260,7 @@ module Homebrew
       return default_tar_args
     end
 
-    unless gnu_tar.any_version_installed?
-      ohai "Installing `gnu-tar` for bottling..."
-      safe_system HOMEBREW_BREW_FILE, "install", "--formula", gnu_tar.full_name
-    end
+    ensure_formula_installed!(gnu_tar, reason: "bottling")
 
     ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end

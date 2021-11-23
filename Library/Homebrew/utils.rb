@@ -112,24 +112,6 @@ module Kernel
     puts sput
   end
 
-  def ohai_stdout_or_stderr(message, *sput)
-    if $stdout.tty?
-      ohai(message, *sput)
-    else
-      $stderr.puts(ohai_title(message))
-      $stderr.puts(sput)
-    end
-  end
-
-  def puts_stdout_or_stderr(*message)
-    message = "\n" if message.empty?
-    if $stdout.tty?
-      puts(message)
-    else
-      $stderr.puts(message)
-    end
-  end
-
   def odebug(title, *sput, always_display: false)
     debug = if respond_to?(:debug)
       debug?
@@ -452,6 +434,60 @@ module Kernel
   ensure
     $stdout.reopen(out)
     out.close
+  end
+
+  # Ensure the given formula is installed
+  # This is useful for installing a utility formula (e.g. `shellcheck` for `brew style`)
+  def ensure_formula_installed!(formula_or_name, reason: "", latest: false,
+                                output_to_stderr: true, quiet: false)
+    if output_to_stderr || quiet
+      file = if quiet
+        File::NULL
+      else
+        $stderr
+      end
+      # Call this method itself with redirected stdout
+      redirect_stdout(file) do
+        return ensure_formula_installed!(formula_or_name, latest: latest,
+                                         reason: reason, output_to_stderr: false)
+      end
+    end
+
+    require "formula"
+
+    formula = if formula_or_name.is_a?(Formula)
+      formula_or_name
+    else
+      Formula[formula_or_name]
+    end
+
+    reason = " for #{reason}" if reason.present?
+
+    unless formula.any_version_installed?
+      ohai "Installing `#{formula.name}`#{reason}..."
+      safe_system HOMEBREW_BREW_FILE, "install", "--formula", formula.full_name
+    end
+
+    if latest && !formula.latest_version_installed?
+      ohai "Upgrading `#{formula.name}`#{reason}..."
+      safe_system HOMEBREW_BREW_FILE, "upgrade", "--formula", formula.full_name
+    end
+
+    formula
+  end
+
+  # Ensure the given executable is exist otherwise install the brewed version
+  def ensure_executable!(name, formula_name = nil, reason: "")
+    formula_name ||= name
+
+    executable = [
+      which(name),
+      which(name, ENV["HOMEBREW_PATH"]),
+      HOMEBREW_PREFIX/"bin/#{name}",
+    ].compact.first
+    return executable if executable.exist?
+
+    ensure_formula_installed!(formula_name, reason: reason).opt_bin/name
   end
 
   def paths

@@ -31,18 +31,14 @@ module Homebrew
 
     cd HOMEBREW_REPOSITORY
     pager = if Homebrew::EnvConfig.bat?
-      require "formula"
-
-      unless Formula["bat"].any_version_installed?
+      ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
+      ensure_formula_installed!(
+        "bat",
+        reason:           "displaying <formula>/<cask> source",
         # The user might want to capture the output of `brew cat ...`
         # Redirect stdout to stderr
-        redirect_stdout($stderr) do
-          ohai "Installing `bat` for displaying <formula>/<cask> source..."
-          safe_system HOMEBREW_BREW_FILE, "install", "bat"
-        end
-      end
-      ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
-      Formula["bat"].opt_bin/"bat"
+        output_to_stderr: true,
+      ).opt_bin/"bat"
     else
       "cat"
     end
