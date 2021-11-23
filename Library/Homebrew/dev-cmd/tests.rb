@@ -50,7 +50,7 @@ module Homebrew
 
     with_env(HOMEBREW_NO_AUTO_UPDATE: "1", HOMEBREW_NO_BOOTSNAP: "1") do
       ensure_formula_installed!("buildpulse-test-reporter",
-                                "for reporting test flakiness")
+                                reason: "for reporting test flakiness")
     end
 
     ENV["BUILDPULSE_ACCESS_KEY_ID"] = ENV["HOMEBREW_BUILDPULSE_ACCESS_KEY_ID"]

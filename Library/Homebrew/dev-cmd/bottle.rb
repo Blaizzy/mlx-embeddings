@@ -260,7 +260,7 @@ module Homebrew
       return default_tar_args
     end
 
-    ensure_formula_installed!(gnu_tar, "for bottling")
+    ensure_formula_installed!(gnu_tar, reason: "for bottling")
 
     ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end

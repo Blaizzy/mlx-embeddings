@@ -456,7 +456,7 @@ module Kernel
 
   # Ensure the given formula is installed
   # This is useful for installing a utility formula (e.g. `shellcheck` for `brew style`)
-  def ensure_formula_installed!(formula_or_name, reason = "", latest: false,
+  def ensure_formula_installed!(formula_or_name, latest: false, reason: "",
                                 output_to_stderr: true, quiet: false)
     if output_to_stderr || quiet
       file = if quiet
@@ -466,7 +466,8 @@ module Kernel
       end
       # Call this method itself with redirected stdout
       redirect_stdout(file) do
-        return ensure_formula_installed!(formula_or_name, reason, latest: latest, output_to_stderr: false)
+        return ensure_formula_installed!(formula_or_name, latest: latest,
+                                         reason: reason, output_to_stderr: false)
       end
     end
 
