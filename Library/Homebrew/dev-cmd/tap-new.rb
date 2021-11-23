@@ -24,6 +24,8 @@ module Homebrew
       flag   "--branch=",
              description: "Initialize Git repository and setup GitHub Actions workflows with the " \
                           "specified branch name (default: `main`)."
+      switch "--github-packages",
+             description: "Upload bottles to GitHub Packages."
 
       named_args :tap, number: 1
     end
@@ -42,6 +44,7 @@ module Homebrew
     titleized_repo = tap.repo.dup
     titleized_user[0] = titleized_user[0].upcase
     titleized_repo[0] = titleized_repo[0].upcase
+    root_url = GitHubPackages.root_url(tap.user, "homebrew-#{tap.repo}") if args.github_packages?
 
     (tap.path/"Formula").mkpath
 
@@ -96,7 +99,7 @@ module Homebrew
 
             - run: brew test-bot --only-tap-syntax
 
-            - run: brew test-bot --only-formulae
+            - run: brew test-bot --only-formulae#{" --root-url=#{root_url}" if root_url}
               if: github.event_name == 'pull_request'
 
             - name: Upload bottles as artifact
@@ -127,6 +130,8 @@ module Homebrew
             - name: Pull bottles
               env:
                 HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+                HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ github.token }}
+                HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.actor }}
                 PULL_REQUEST: ${{ github.event.pull_request.number }}
               run: brew pr-pull --debug --tap=$GITHUB_REPOSITORY $PULL_REQUEST
 
