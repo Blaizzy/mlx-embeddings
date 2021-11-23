@@ -438,7 +438,7 @@ module Kernel
 
   # Ensure the given formula is installed
   # This is useful for installing a utility formula (e.g. `shellcheck` for `brew style`)
-  def ensure_formula_installed!(formula_or_name, latest: false, reason: "",
+  def ensure_formula_installed!(formula_or_name, reason: "", latest: false,
                                 output_to_stderr: true, quiet: false)
     if output_to_stderr || quiet
       file = if quiet

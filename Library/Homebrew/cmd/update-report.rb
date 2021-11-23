@@ -40,14 +40,14 @@ module Homebrew
   end
 
   def update_report
-    return update_report_impl if $stdout.tty?
+    return output_update_report if $stdout.tty?
 
     redirect_stdout($stderr) do
-      return update_report_impl
+      output_update_report
     end
   end
 
-  def update_report_impl
+  def output_update_report
     args = update_report_args.parse
 
     # Run `brew update` (again) if we've got a linuxbrew-core CoreTap
