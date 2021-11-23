@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "formula"
 
 module Homebrew
   extend T::Sig
@@ -32,6 +31,8 @@ module Homebrew
 
     cd HOMEBREW_REPOSITORY
     pager = if Homebrew::EnvConfig.bat?
+      require "formula"
+
       unless Formula["bat"].any_version_installed?
         # The user might want to capture the output of `brew cat ...`
         # Redirect stdout to stderr
