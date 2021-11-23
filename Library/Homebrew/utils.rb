@@ -494,6 +494,20 @@ module Kernel
     formula
   end
 
+  # Ensure the given executable is exist otherwise install the brewed version
+  def ensure_executable!(name, formula_name = nil, reason: "")
+    formula_name ||= name
+
+    executable = [
+      which(name),
+      which(name, ENV["HOMEBREW_PATH"]),
+      HOMEBREW_PREFIX/"bin/#{name}",
+    ].compact.first
+    return executable if executable.exist?
+
+    ensure_formula_installed!(formula_name, reason: reason).opt_bin/name
+  end
+
   def paths
     @paths ||= PATH.new(ENV["HOMEBREW_PATH"]).map do |p|
       File.expand_path(p).chomp("/")
