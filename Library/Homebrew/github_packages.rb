@@ -53,11 +53,7 @@ class GitHubPackages
       which("skopeo", ENV["HOMEBREW_PATH"]),
       HOMEBREW_PREFIX/"bin/skopeo",
     ].compact.first
-    unless skopeo.exist?
-      ohai "Installing `skopeo` for upload..."
-      safe_system HOMEBREW_BREW_FILE, "install", "--formula", "skopeo"
-      skopeo = Formula["skopeo"].opt_bin/"skopeo"
-    end
+    skopeo = ensure_formula_installed!("skopeo", "for upload").opt_bin/"skopeo" unless skopeo.exist?
 
     require "json_schemer"
 

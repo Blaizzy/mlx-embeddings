@@ -454,6 +454,47 @@ module Kernel
     out.close
   end
 
+  # Ensure the given formula is installed
+  # This is useful for installing a utility formula (e.g. `shellcheck` for `brew style`)
+  def ensure_formula_installed!(formula_or_name, reason = "", latest: false, linked: false,
+                                output_to_stderr: false, quiet: false)
+    if output_to_stderr || quiet
+      file = if quiet
+        File::NULL
+      else
+        $stderr
+      end
+      # Call this method itself with redirected stdout
+      redirect_stdout(file) do
+        return ensure_formula_installed!(formula_or_name, reason, latest: latest, linked: linked)
+      end
+    end
+
+    require "formula"
+
+    formula = if formula_or_name.is_a?(Formula)
+      formula_or_name
+    else
+      Formula[formula_or_name]
+    end
+
+    reason = " #{reason}" if reason.present? # add a whitespace
+
+    unless formula.any_version_installed?
+      ohai "Installing `#{formula.name}`#{reason}..."
+      safe_system HOMEBREW_BREW_FILE, "install", "--formula", formula.full_name
+    end
+
+    if latest && !formula.latest_version_installed?
+      ohai "Upgrading `#{formula.name}`#{reason}..."
+      safe_system HOMEBREW_BREW_FILE, "upgrade", "--formula", formula.full_name
+    end
+
+    safe_system HOMEBREW_BREW_FILE, "link", formula.full_name if linked && !formula.linked?
+
+    formula
+  end
+
   def paths
     @paths ||= PATH.new(ENV["HOMEBREW_PATH"]).map do |p|
       File.expand_path(p).chomp("/")

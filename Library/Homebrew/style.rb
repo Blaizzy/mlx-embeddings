@@ -278,31 +278,12 @@ module Homebrew
 
     def shellcheck
       # Always use the latest brewed shellcheck
-      unless Formula["shellcheck"].latest_version_installed?
-        if Formula["shellcheck"].any_version_installed?
-          ohai "Upgrading `shellcheck` for shell style checks..."
-          safe_system HOMEBREW_BREW_FILE, "upgrade", "shellcheck"
-        else
-          ohai "Installing `shellcheck` for shell style checks..."
-          safe_system HOMEBREW_BREW_FILE, "install", "shellcheck"
-        end
-      end
-
-      Formula["shellcheck"].opt_bin/"shellcheck"
+      ensure_formula_installed!("shellcheck", "for shell style checks", latest: true).opt_bin/"shellcheck"
     end
 
     def shfmt
       # Always use the latest brewed shfmt
-      unless Formula["shfmt"].latest_version_installed?
-        if Formula["shfmt"].any_version_installed?
-          ohai "Upgrading `shfmt` to format shell scripts..."
-          safe_system HOMEBREW_BREW_FILE, "upgrade", "shfmt"
-        else
-          ohai "Installing `shfmt` to format shell scripts..."
-          safe_system HOMEBREW_BREW_FILE, "install", "shfmt"
-        end
-      end
-
+      ensure_formula_installed!("shfmt", "to format shell scripts", latest: true)
       HOMEBREW_LIBRARY/"Homebrew/utils/shfmt.sh"
     end
 
