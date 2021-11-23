@@ -34,7 +34,7 @@ module Homebrew
       ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
       ensure_formula_installed!(
         "bat",
-        reason:           "for displaying <formula>/<cask> source",
+        reason:           "displaying <formula>/<cask> source",
         # The user might want to capture the output of `brew cat ...`
         # Redirect stdout to stderr
         output_to_stderr: true,

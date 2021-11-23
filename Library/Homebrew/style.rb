@@ -279,13 +279,13 @@ module Homebrew
     def shellcheck
       # Always use the latest brewed shellcheck
       ensure_formula_installed!("shellcheck", latest: true,
-                                              reason: "for shell style checks").opt_bin/"shellcheck"
+                                              reason: "shell style checks").opt_bin/"shellcheck"
     end
 
     def shfmt
       # Always use the latest brewed shfmt
       ensure_formula_installed!("shfmt", latest: true,
-                                         reason: "to format shell scripts")
+                                         reason: "formatting shell scripts")
       HOMEBREW_LIBRARY/"Homebrew/utils/shfmt.sh"
     end
 

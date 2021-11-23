@@ -461,7 +461,7 @@ module Kernel
       Formula[formula_or_name]
     end
 
-    reason = " #{reason}" if reason.present? # add a whitespace
+    reason = " for #{reason}" if reason.present?
 
     unless formula.any_version_installed?
       ohai "Installing `#{formula.name}`#{reason}..."
