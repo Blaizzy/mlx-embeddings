@@ -16,7 +16,7 @@ describe Homebrew::Livecheck do
     formula("test") do
       desc "Test formula"
       homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
+      url "https://brew.sh/test-0.0.1.tgz", using: :homebrew_curl
       head "https://github.com/Homebrew/brew.git"
 
       livecheck do
@@ -31,7 +31,7 @@ describe Homebrew::Livecheck do
       cask "test" do
         version "0.0.1,2"
 
-        url "https://brew.sh/test-0.0.1.dmg"
+        url "https://brew.sh/test-0.0.1.dmg", using: :homebrew_curl
         name "Test"
         desc "Test cask"
         homepage "https://brew.sh"
@@ -144,6 +144,17 @@ describe Homebrew::Livecheck do
     it "returns the list of URLs to check" do
       expect(livecheck.checkable_urls(f)).to eq([stable_url, head_url, homepage_url])
       expect(livecheck.checkable_urls(c)).to eq([cask_url, homepage_url])
+    end
+  end
+
+  describe "::use_homebrew_curl?" do
+    it "uses brewed curl if called for by the download URL" do
+      expect(livecheck.use_homebrew_curl?(f, livecheck_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(f, homepage_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(f, stable_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(c, livecheck_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(c, homepage_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(c, cask_url)).to be(true)
     end
   end
 

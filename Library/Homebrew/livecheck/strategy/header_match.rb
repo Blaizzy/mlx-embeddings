@@ -71,19 +71,21 @@ module Homebrew
         #
         # @param url [String] the URL to fetch
         # @param regex [Regexp, nil] a regex used for matching versions
+        # @param homebrew_curl [Boolean] whether to use brewed curl with the URL
         # @return [Hash]
         sig {
           params(
-            url:     String,
-            regex:   T.nilable(Regexp),
-            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:   T.untyped,
+            url:           String,
+            regex:         T.nilable(Regexp),
+            homebrew_curl: T::Boolean,
+            _unused:       T.nilable(T::Hash[Symbol, T.untyped]),
+            block:         T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex: nil, **_unused, &block)
+        def self.find_versions(url:, regex: nil, homebrew_curl: false, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
-          headers = Strategy.page_headers(url)
+          headers = Strategy.page_headers(url, homebrew_curl: homebrew_curl)
 
           # Merge the headers from all responses into one hash
           merged_headers = headers.reduce(&:merge)
