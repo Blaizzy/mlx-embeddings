@@ -29,7 +29,7 @@ module Homebrew
   def migrate
     args = migrate_args.parse
 
-    args.named.to_default_kegs.each do |keg|
+    args.named.to_kegs.each do |keg|
       f = Formulary.from_keg(keg)
 
       if f.oldname
