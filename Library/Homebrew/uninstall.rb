@@ -36,7 +36,7 @@ module Homebrew
               f = Formulary.from_rack(rack)
               if f.pinned?
                 onoe "#{f.full_name} is pinned. You must unpin it to uninstall."
-                next
+                break # exit keg loop and move on to next rack
               end
             rescue
               nil
