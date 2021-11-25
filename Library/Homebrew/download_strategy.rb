@@ -520,7 +520,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     if Homebrew::EnvConfig.no_insecure_redirect? &&
        url.start_with?("https://") && !resolved_url.start_with?("https://")
-      $stderr.puts "HTTPS to HTTP redirect detected & HOMEBREW_NO_INSECURE_REDIRECT is set."
+      $stderr.puts "HTTPS to HTTP redirect detected and HOMEBREW_NO_INSECURE_REDIRECT is set."
       raise CurlDownloadStrategyError, url
     end
 
@@ -1029,6 +1029,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
   end
 
   def github_last_commit
+    # TODO: move to Utils::GitHub
     return if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = curl_output(
@@ -1045,6 +1046,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
   end
 
   def multiple_short_commits_exist?(commit)
+    # TODO: move to Utils::GitHub
     return if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = curl_output(

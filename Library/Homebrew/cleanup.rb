@@ -161,6 +161,7 @@ module Homebrew
       if cleanup.periodic_clean_due?
         cleanup.periodic_clean!
       elsif f.latest_version_installed? && !cleanup.skip_clean_formula?(f)
+        ohai "Running `brew cleanup #{f}`..."
         cleanup.cleanup_formula(f)
       end
     end
@@ -191,8 +192,11 @@ module Homebrew
         ohai "Would run `brew cleanup` which has not been run in the last #{CLEANUP_DEFAULT_DAYS} days"
       else
         ohai "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
-        clean!(quiet: true, periodic: true)
       end
+
+      return if dry_run?
+
+      clean!(quiet: true, periodic: true)
     end
 
     def clean!(quiet: false, periodic: false)

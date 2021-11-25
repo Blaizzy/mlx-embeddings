@@ -27,8 +27,14 @@ module Homebrew
         Install a <formula> or <cask>. Additional options specific to a <formula> may be
         appended to the command.
 
+        Unless `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK` is set, `brew upgrade` or `brew reinstall` will be run for
+        outdated dependents and dependents with broken linkage, respectively.
+
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
         the installed formulae or, every 30 days, for all formulae.
+
+        Unless `HOMEBREW_NO_INSTALL_UPGRADE` is set, `brew install <formula>` will upgrade <formula> if it
+        is already installed but outdated.
       EOS
       switch "-d", "--debug",
              description: "If brewing fails, open an interactive debugging session with access to IRB " \

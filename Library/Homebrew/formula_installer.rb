@@ -1302,7 +1302,8 @@ class FormulaInstaller
       next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
 
       raise CannotInstallFormulaError, <<~EOS
-        The installation of #{formula.name} has a dependency on #{dep.name} where all its licenses are forbidden:
+        The installation of #{formula.name} has a dependency on #{dep.name} where all
+        its licenses are forbidden by HOMEBREW_FORBIDDEN_LICENSES:
           #{SPDX.license_expression_to_string dep_f.license}.
       EOS
     end
@@ -1312,7 +1313,8 @@ class FormulaInstaller
     return unless SPDX.licenses_forbid_installation? formula.license, forbidden_licenses
 
     raise CannotInstallFormulaError, <<~EOS
-      #{formula.name}'s licenses are all forbidden: #{SPDX.license_expression_to_string formula.license}.
+      #{formula.name}'s licenses are all forbidden by HOMEBREW_FORBIDDEN_LICENSES:
+        #{SPDX.license_expression_to_string formula.license}.
     EOS
   end
 end

@@ -61,6 +61,9 @@ For the full command list, see the \fICOMMANDS\fR section\.
 .P
 With \fB\-\-verbose\fR or \fB\-\-debug\fR, many commands print extra debugging information\. Note that these options should only appear after a command\.
 .
+.P
+Some command behaviour can be customised with environment variables; see the \fIENVIRONMENT\fR section\.
+.
 .SS "\fBinstall\fR \fIformula\fR"
 Install \fIformula\fR\.
 .
@@ -389,7 +392,13 @@ Treat all named arguments as casks\.
 Install a \fIformula\fR or \fIcask\fR\. Additional options specific to a \fIformula\fR may be appended to the command\.
 .
 .P
+Unless \fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fR is set, \fBbrew upgrade\fR or \fBbrew reinstall\fR will be run for outdated dependents and dependents with broken linkage, respectively\.
+.
+.P
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the installed formulae or, every 30 days, for all formulae\.
+.
+.P
+Unless \fBHOMEBREW_NO_INSTALL_UPGRADE\fR is set, \fBbrew install <formula>\fR will upgrade \fIformula\fR if it is already installed but outdated\.
 .
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
@@ -691,6 +700,9 @@ Syntax\-check all of Homebrew\'s Ruby files (if no \fB<tap>\fR is passed)\.
 Uninstall and then reinstall a \fIformula\fR or \fIcask\fR using the same options it was originally installed with, plus any appended options specific to a \fIformula\fR\.
 .
 .P
+Unless \fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fR is set, \fBbrew upgrade\fR or \fBbrew reinstall\fR will be run for outdated dependents and dependents with broken linkage, respectively\.
+.
+.P
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the reinstalled formulae or, every 30 days, for all formulae\.
 .
 .TP
@@ -931,6 +943,9 @@ Fetch and reset Homebrew and all tap repositories (or any specified \fIrepositor
 .
 .SS "\fBupgrade\fR [\fIoptions\fR] [\fIoutdated_formula\fR|\fIoutdated_cask\fR \.\.\.]"
 Upgrade outdated casks and outdated, unpinned formulae using the same options they were originally installed with, plus any appended brew formula options\. If \fIcask\fR or \fIformula\fR are specified, upgrade only the given \fIcask\fR or \fIformula\fR kegs (unless they are pinned; see \fBpin\fR, \fBunpin\fR)\.
+.
+.P
+Unless \fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fR is set, \fBbrew upgrade\fR or \fBbrew reinstall\fR will be run for outdated dependents and dependents with broken linkage, respectively\.
 .
 .P
 Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fR is set, \fBbrew cleanup\fR will then be run for the upgraded formulae or, every 30 days, for all formulae\.
@@ -2684,7 +2699,7 @@ Prefix all download URLs, including those for bottles, with this value\. For exa
 \fBHOMEBREW_AUTO_UPDATE_SECS\fR
 .
 .br
-Automatically check for updates once per this seconds interval\.
+Run \fBbrew update\fR once every \fBHOMEBREW_AUTO_UPDATE_SECS\fR seconds before some commands, e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\. Alternatively, disable auto\-update entirely with HOMEBREW_NO_AUTO_UPDATE\.
 .
 .IP
 \fIDefault:\fR \fB300\fR\.
@@ -2981,7 +2996,7 @@ If set, do not send analytics\. For more information, see: \fIhttps://docs\.brew
 \fBHOMEBREW_NO_AUTO_UPDATE\fR
 .
 .br
-If set, do not automatically update before running some commands e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\.
+If set, do not automatically update before running some commands, e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\. Alternatively, run this less often by setting HOMEBREW_AUTO_UPDATE_SECS to a value higher than the default\.
 .
 .TP
 \fBHOMEBREW_NO_BOOTSNAP\fR
@@ -2993,7 +3008,7 @@ If set, do not use Bootsnap to speed up repeated \fBbrew\fR calls\.
 \fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fR
 .
 .br
-If set, do not check for broken dependents after installing, upgrading or reinstalling formulae\.
+If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae\. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running \fBbrew install <formula>\fR or \fBbrew upgrade <formula>\fR\.
 .
 .TP
 \fBHOMEBREW_NO_CLEANUP_FORMULAE\fR
@@ -3044,13 +3059,13 @@ If set, forbid redirects from secure HTTPS to insecure HTTP\.
 \fBHOMEBREW_NO_INSTALL_CLEANUP\fR
 .
 .br
-If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every \fBHOMEBREW_CLEANUP_PERIODIC_FULL_DAYS\fR days\.
+If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every \fBHOMEBREW_CLEANUP_PERIODIC_FULL_DAYS\fR days\. Alternatively, HOMEBREW_NO_CLEANUP_FORMULAE allows specifying specific formulae to not clean up\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALL_UPGRADE\fR
 .
 .br
-If set, \fBbrew install\fR will not automatically upgrade installed but outdated formulae
+If set, \fBbrew install <formula>\fR will not upgrade \fB<formula>\fR if it is installed but outdated\.
 .
 .TP
 \fBHOMEBREW_PRY\fR

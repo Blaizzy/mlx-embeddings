@@ -301,7 +301,7 @@ module Homebrew
 
   def changed_formulae(tap, original_commit)
     if Homebrew::EnvConfig.disable_load_formula?
-      opoo "Can't check if updated bottles are necessary as formula loading is disabled!"
+      opoo "Can't check if updated bottles are necessary as HOMEBREW_DISABLE_LOAD_FORMULA is set!"
       return
     end
 

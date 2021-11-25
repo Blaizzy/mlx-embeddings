@@ -318,6 +318,7 @@ module Homebrew
 
       # Assess the dependents tree again now we've upgraded.
       oh1 "Checking for dependents of upgraded formulae..." unless dry_run
+
       broken_dependents = check_broken_dependents(installed_formulae)
       if broken_dependents.blank?
         if dry_run
@@ -354,7 +355,7 @@ module Homebrew
       else
         count = reinstallable_broken_dependents.count
         plural = "dependent".pluralize(reinstallable_broken_dependents.count)
-        ohai "Reinstalling #{count} broken #{plural} from source:"
+        ohai "Reinstalling #{count} #{plural} with broken linkage from source:"
         puts reinstallable_broken_dependents.map(&:full_specified_name)
                                             .join(", ")
       end

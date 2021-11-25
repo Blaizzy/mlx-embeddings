@@ -26,7 +26,9 @@ module Homebrew
                      "`http://localhost:8080/example.com/foo.tar.gz`.",
       },
       HOMEBREW_AUTO_UPDATE_SECS:               {
-        description: "Automatically check for updates once per this seconds interval.",
+        description: "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
+                     "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
+                     "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
         default:     300,
       },
       HOMEBREW_BAT:                            {
@@ -221,8 +223,9 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_AUTO_UPDATE:                 {
-        description: "If set, do not automatically update before running some commands e.g. " \
-                     "`brew install`, `brew upgrade` and `brew tap`.",
+        description: "If set, do not automatically update before running some commands, e.g. " \
+                     "`brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
+                     "run this less often by setting HOMEBREW_AUTO_UPDATE_SECS to a value higher than the default.",
         boolean:     true,
       },
       HOMEBREW_NO_BOOTSNAP:                    {
@@ -230,8 +233,10 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK:  {
-        description: "If set, do not check for broken dependents after installing, upgrading or reinstalling " \
-                     "formulae.",
+        description: "If set, do not check for broken linkage of dependents or outdated dependents after " \
+                     "installing, upgrading or reinstalling formulae. This will result in fewer dependents " \
+                     " (and their dependencies) being upgraded or reinstalled but may result in more breakage " \
+                     "from running `brew install <formula>` or `brew upgrade <formula>`.",
         boolean:     true,
       },
       HOMEBREW_NO_CLEANUP_FORMULAE:            {
@@ -266,11 +271,13 @@ module Homebrew
       HOMEBREW_NO_INSTALL_CLEANUP:             {
         description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically " \
                      "cleanup installed/upgraded/reinstalled formulae or all formulae every " \
-                     "`HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days.",
+                     "`HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days. Alternatively, HOMEBREW_NO_CLEANUP_FORMULAE " \
+                     "allows specifying specific formulae to not clean up.",
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_UPGRADE:             {
-        description: "If set, `brew install` will not automatically upgrade installed but outdated formulae",
+        description: "If set, `brew install <formula>` will not upgrade `<formula>` if it is installed but " \
+                     "outdated.",
         boolean:     true,
       },
       HOMEBREW_PRY:                            {
