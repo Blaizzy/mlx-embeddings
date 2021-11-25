@@ -1795,10 +1795,6 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Don't test any dependents.
 * `--skip-recursive-dependents`:
   Only test the direct dependents.
-* `--skip-unbottled-arm`:
-  Only test bottled formulae on Apple Silicon.
-* `--skip-unbottled-linux`:
-  Only test bottled formulae on Linux.
 * `--only-cleanup-before`:
   Only run the pre-cleanup step. Needs `--cleanup`.
 * `--only-setup`:
