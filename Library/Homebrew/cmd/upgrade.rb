@@ -23,6 +23,9 @@ module Homebrew
         installed with, plus any appended brew formula options. If <cask> or <formula> are specified,
         upgrade only the given <cask> or <formula> kegs (unless they are pinned; see `pin`, `unpin`).
 
+        Unless `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK` is set, `brew upgrade` or `brew reinstall` will be run for
+        outdated dependents and dependents with broken linkage, respectively.
+
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for the
         upgraded formulae or, every 30 days, for all formulae.
       EOS

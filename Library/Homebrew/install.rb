@@ -125,7 +125,10 @@ module Homebrew
         # dependencies. Therefore before performing other checks we need to be
         # sure --force flag is passed.
         if f.outdated?
-          return true unless Homebrew::EnvConfig.no_install_upgrade?
+          unless Homebrew::EnvConfig.no_install_upgrade?
+            puts "#{f.name} #{f.linked_version} is already installed but outdated (so it will be upgraded)."
+            return true
+          end
 
           optlinked_version = Keg.for(f.opt_prefix).version
           onoe <<~EOS
@@ -213,7 +216,7 @@ module Homebrew
         message = "#{f.name} #{f.linked_version} is already installed"
         if f.outdated? && !head
           unless Homebrew::EnvConfig.no_install_upgrade?
-            puts "#{message} but outdated"
+            puts "#{message} but outdated (so it will be upgraded)."
             return true
           end
 
