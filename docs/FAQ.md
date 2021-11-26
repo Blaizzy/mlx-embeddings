@@ -41,6 +41,10 @@ To __disable__ automatic `brew cleanup`:
 
     export HOMEBREW_NO_INSTALL_CLEANUP=1
 
+To disable automatic `brew cleanup` only for formulae `foo` and `bar`:
+
+    export HOMEBREW_NO_CLEANUP_FORMULAE=foo,bar
+
 When automatic `brew cleanup` is disabled, if you uninstall a formula, it will only remove the latest version you have installed. It will not remove all versions of the formula that you may have installed in the past. Homebrew will continue to attempt to install the newest version it knows about when you run `brew upgrade`. This can be surprising.
 
 In this case, to remove a formula entirely, you may run `brew uninstall --force <formula>`. Be careful as this is a destructive operation.
