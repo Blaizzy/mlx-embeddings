@@ -251,7 +251,8 @@ module Homebrew
     )
       return if Homebrew::EnvConfig.no_installed_dependents_check?
 
-      installed_formulae = dry_run ? formulae : FormulaInstaller.installed.to_a
+      installed_formulae = (dry_run ? formulae : FormulaInstaller.installed.to_a).dup
+      installed_formulae.reject! { |f| f.core_formula? && f.versioned_formula? }
       return if installed_formulae.empty?
 
       already_broken_dependents = check_broken_dependents(installed_formulae)
