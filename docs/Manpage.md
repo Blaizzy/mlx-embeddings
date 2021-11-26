@@ -2095,6 +2095,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
     *Note:* Will only try to print emoji on OS X Lion or newer.
 
+- `HOMEBREW_NO_ENV_HINTS`
+  <br>If set, do not print any hints about changing Homebrew's behaviour with environment variables.
+
 - `HOMEBREW_NO_GITHUB_API`
   <br>If set, do not use the GitHub API, e.g. for searches or fetching relevant issues after a failed install.
 
