@@ -2660,6 +2660,8 @@ module Homebrew::EnvConfig
 
   def self.no_emoji?(); end
 
+  def self.no_env_hints?(); end
+
   def self.no_github_api?(); end
 
   def self.no_insecure_redirect?(); end
