@@ -235,6 +235,16 @@ module Homebrew
       end
     end
 
+    def self.puts_no_installed_dependents_check_disable_message_if_not_already!
+      return if Homebrew::EnvConfig.no_env_hints?
+      return if Homebrew::EnvConfig.no_installed_dependents_check?
+      return if @puts_no_installed_dependents_check_disable_message_if_not_already
+
+      puts "Disable this behaviour by setting HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK."
+      puts "Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`)."
+      @puts_no_installed_dependents_check_disable_message_if_not_already = true
+    end
+
     def check_installed_dependents(
       formulae,
       flags:,
@@ -249,7 +259,13 @@ module Homebrew
       quiet: false,
       verbose: false
     )
-      return if Homebrew::EnvConfig.no_installed_dependents_check?
+      if Homebrew::EnvConfig.no_installed_dependents_check?
+        opoo <<~EOS
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK is set: not checking for outdated
+          dependents or dependents with broken linkage!
+        EOS
+        return
+      end
 
       installed_formulae = dry_run ? formulae : FormulaInstaller.installed.to_a
       return if installed_formulae.empty?
@@ -286,6 +302,7 @@ module Homebrew
         plural = "dependent".pluralize(upgradeable_dependents.count)
         verb = dry_run ? "Would upgrade" : "Upgrading"
         ohai "#{verb} #{upgradeable_dependents.count} #{plural}:"
+        Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
         formulae_upgrades = upgradeable_dependents.map do |f|
           name = f.full_specified_name
           if f.optlinked?
@@ -317,7 +334,10 @@ module Homebrew
       installed_formulae = FormulaInstaller.installed.to_a
 
       # Assess the dependents tree again now we've upgraded.
-      oh1 "Checking for dependents of upgraded formulae..." unless dry_run
+      unless dry_run
+        oh1 "Checking for dependents of upgraded formulae..."
+        Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
+      end
 
       broken_dependents = check_broken_dependents(installed_formulae)
       if broken_dependents.blank?
@@ -356,6 +376,7 @@ module Homebrew
         count = reinstallable_broken_dependents.count
         plural = "dependent".pluralize(reinstallable_broken_dependents.count)
         ohai "Reinstalling #{count} #{plural} with broken linkage from source:"
+        Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
         puts reinstallable_broken_dependents.map(&:full_specified_name)
                                             .join(", ")
       end

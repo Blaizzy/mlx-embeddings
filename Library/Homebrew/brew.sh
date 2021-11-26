@@ -230,7 +230,16 @@ EOS
 # exceeds 3 seconds.
 update-preinstall-timer() {
   sleep 3
-  echo 'Updating Homebrew...' >&2
+  # Outputting a command but don't want to run it, hence single quotes.
+  # shellcheck disable=SC2016
+  echo 'Running `brew update --preinstall`...' >&2
+  if [[ -z "${HOMEBREW_NO_ENV_HINTS}" && -z "${HOMEBREW_AUTO_UPDATE_SECS}" ]]
+  then
+    # shellcheck disable=SC2016
+    echo 'Adjust how often this is run with HOMEBREW_AUTO_UPDATE_SECS or disable with' >&2
+    # shellcheck disable=SC2016
+    echo 'HOMEBREW_NO_AUTO_UPDATE. Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).' >&2
+  fi
 }
 
 # These variables are set from various Homebrew scripts.

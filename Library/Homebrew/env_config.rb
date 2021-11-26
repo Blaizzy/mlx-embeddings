@@ -257,6 +257,10 @@ module Homebrew
                      "\n\n    *Note:* Will only try to print emoji on OS X Lion or newer.",
         boolean:     true,
       },
+      HOMEBREW_NO_ENV_HINTS:                   {
+        description: "If set, do not print any hints about changing Homebrew's behaviour with environment variables.",
+        boolean:     true,
+      },
       HOMEBREW_NO_GITHUB_API:                  {
         description: "If set, do not use the GitHub API, e.g. for searches or fetching relevant issues " \
                      "after a failed install.",
