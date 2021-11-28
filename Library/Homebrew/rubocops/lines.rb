@@ -354,7 +354,7 @@ module RuboCop
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           no_on_os_method_names = [:install, :post_install].freeze
-          no_on_os_block_names = [:test].freeze
+          no_on_os_block_names = [:service, :test].freeze
           [[:on_macos, :mac?], [:on_linux, :linux?]].each do |on_method_name, if_method_name|
             if_method_and_class = "if OS.#{if_method_name}"
             no_on_os_method_names.each do |formula_method_name|
