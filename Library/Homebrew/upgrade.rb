@@ -285,7 +285,7 @@ module Homebrew
       if skipped_dependents.present?
         opoo <<~EOS
           The following dependents of upgraded formulae are outdated but will not
-          be upgraded:
+          be upgraded because they are not bottled:
             #{skipped_dependents * "\n  "}
         EOS
       end
