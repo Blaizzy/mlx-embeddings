@@ -376,6 +376,7 @@ class Parser::Builders::Default
   def unary_op_map(op_t, arg_e = T.unsafe(nil)); end
   def unquoted_map(token); end
   def validate_definee(definee); end
+  def validate_no_forward_arg_after_restarg(args); end
   def value(token); end
   def var_send_map(variable_e); end
   def variable_map(name_t); end
@@ -411,6 +412,7 @@ class Parser::Context
   def empty?; end
   def in_block?; end
   def in_class?; end
+  def in_def_open_args?; end
   def in_dynamic_block?; end
   def in_lambda?; end
   def indirectly_in_def?; end
@@ -1599,8 +1601,10 @@ class Parser::StaticEnvironment
   def initialize; end
 
   def declare(name); end
+  def declare_anonymous_blockarg; end
   def declare_forward_args; end
   def declared?(name); end
+  def declared_anonymous_blockarg?; end
   def declared_forward_args?; end
   def empty?; end
   def extend_dynamic; end
@@ -1609,6 +1613,7 @@ class Parser::StaticEnvironment
   def unextend; end
 end
 
+Parser::StaticEnvironment::ANONYMOUS_BLOCKARG = T.let(T.unsafe(nil), Symbol)
 Parser::StaticEnvironment::FORWARD_ARGS = T.let(T.unsafe(nil), Symbol)
 
 class Parser::SyntaxError < ::StandardError
