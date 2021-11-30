@@ -11,7 +11,7 @@
 # shellcheck disable=SC2154
 homebrew-shellenv() {
   if [[ "${HOMEBREW_SHELLENV_PREFIX}" == "${HOMEBREW_PREFIX}" ]] &&
-     [[ "$(PATH="${HOMEBREW_PATH}" command -v brew)" == "${HOMEBREW_PREFIX}/bin/brew" ]]
+     [[ "${HOMEBREW_PATH%%/usr/bin:*}" == *"${HOMEBREW_PREFIX}/bin"* ]]
   then
     return
   fi
