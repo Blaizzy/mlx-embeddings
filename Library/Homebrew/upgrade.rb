@@ -279,7 +279,7 @@ module Homebrew
 
       # Ensure we never attempt a source build for outdated dependents of upgraded formulae.
       outdated_dependents, skipped_dependents = outdated_dependents.partition do |dependent|
-        dependent.bottled? && dependent.deps.all?(&:bottled?)
+        dependent.bottled? && dependent.deps.map(&:to_formula).all?(&:bottled?)
       end
 
       if skipped_dependents.present?
