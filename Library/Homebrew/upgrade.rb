@@ -276,6 +276,20 @@ module Homebrew
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
                           .uniq
                           .select(&:outdated?)
+
+      # Ensure we never attempt a source build for outdated dependents of upgraded formulae.
+      outdated_dependents, skipped_dependents = outdated_dependents.partition do |dependent|
+        dependent.bottled? && dependent.deps.all?(&:bottled?)
+      end
+
+      if skipped_dependents.present?
+        opoo <<~EOS
+          The following dependents of upgraded formulae are outdated but will not
+          be upgraded because they are not bottled:
+            #{skipped_dependents * "\n  "}
+        EOS
+      end
+
       return if outdated_dependents.blank? && already_broken_dependents.blank?
 
       outdated_dependents -= installed_formulae if dry_run
