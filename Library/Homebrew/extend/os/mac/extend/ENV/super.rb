@@ -6,7 +6,6 @@ module Superenv
 
   class << self
     # The location of Homebrew's shims on macOS.
-    # @public
     def shims_path
       HOMEBREW_SHIMS_PATH/"mac/super"
     end
