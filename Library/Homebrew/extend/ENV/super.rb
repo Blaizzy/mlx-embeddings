@@ -30,7 +30,6 @@ module Superenv
   end
 
   # The location of Homebrew's shims on this OS.
-  # @public
   sig { returns(Pathname) }
   def self.shims_path
     HOMEBREW_SHIMS_PATH/"super"
