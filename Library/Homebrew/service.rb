@@ -145,10 +145,8 @@ module Homebrew
       case T.unsafe(value)
       when nil
         @run_type
-      when :immediate, :interval
+      when :immediate, :interval, :cron
         @run_type = value
-      when :cron
-        raise TypeError, "Service#run_type does not support cron"
       when Symbol
         raise TypeError, "Service#run_type allows: '#{RUN_TYPE_IMMEDIATE}'/'#{RUN_TYPE_INTERVAL}'/'#{RUN_TYPE_CRON}'"
       else
@@ -166,6 +164,64 @@ module Homebrew
       else
         raise TypeError, "Service#interval expects an Integer"
       end
+    end
+
+    sig { params(value: T.nilable(String)).returns(T.nilable(Hash)) }
+    def cron(value = nil)
+      case T.unsafe(value)
+      when nil
+        @cron
+      when String
+        @cron = parse_cron(T.must(value))
+      else
+        raise TypeError, "Service#cron expects a String"
+      end
+    end
+
+    sig { returns(T::Hash[Symbol, T.any(Integer, String)]) }
+    def default_cron_values
+      {
+        Month:   "*",
+        Day:     "*",
+        Weekday: "*",
+        Hour:    "*",
+        Minute:  "*",
+      }
+    end
+
+    sig { params(cron_statement: String).returns(T::Hash[Symbol, T.any(Integer, String)]) }
+    def parse_cron(cron_statement)
+      parsed = default_cron_values
+
+      case cron_statement
+      when "@hourly"
+        parsed[:Minute] = 0
+      when "@daily"
+        parsed[:Minute] = 0
+        parsed[:Hour] = 0
+      when "@weekly"
+        parsed[:Minute] = 0
+        parsed[:Hour] = 0
+        parsed[:Weekday] = 0
+      when "@monthly"
+        parsed[:Minute] = 0
+        parsed[:Hour] = 0
+        parsed[:Day] = 1
+      when "@yearly", "@annually"
+        parsed[:Minute] = 0
+        parsed[:Hour] = 0
+        parsed[:Day] = 1
+        parsed[:Month] = 1
+      else
+        cron_parts = cron_statement.split
+        raise TypeError, "Service#parse_cron expects a valid cron syntax" if cron_parts.length != 5
+
+        [:Minute, :Hour, :Day, :Month, :Weekday].each_with_index do |selector, index|
+          parsed[selector] = Integer(cron_parts.fetch(index)) if cron_parts.fetch(index) != "*"
+        end
+      end
+
+      parsed
     end
 
     sig { params(variables: T::Hash[String, String]).returns(T.nilable(T::Hash[String, String])) }
@@ -246,6 +302,10 @@ module Homebrew
       base[:StandardErrorPath] = @error_log_path if @error_log_path.present?
       base[:EnvironmentVariables] = @environment_variables unless @environment_variables.empty?
 
+      if @cron.present? && @run_type == RUN_TYPE_CRON
+        base[:StartCalendarInterval] = @cron.reject { |_, value| value == "*" }
+      end
+
       base.to_plist
     end
 
@@ -295,8 +355,14 @@ module Homebrew
 
       instance_eval(&@service_block)
       options = []
-      options << "Persistent=true=" if @run_type == RUN_TYPE_CRON
+      options << "Persistent=true" if @run_type == RUN_TYPE_CRON
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
+
+      if @run_type == RUN_TYPE_CRON
+        minutes = @cron[:Minute] == "*" ? "*" : format("%02d", @cron[:Minute])
+        hours   = @cron[:Hour] == "*" ? "*" : format("%02d", @cron[:Hour])
+        options << "OnCalendar=#{@cron[:Weekday]}-*-#{@cron[:Month]}-#{@cron[:Day]} #{hours}:#{minutes}:00"
+      end
 
       timer + options.join("\n")
     end

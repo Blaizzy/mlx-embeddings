@@ -32,16 +32,20 @@ describe Homebrew::Service do
     end
   end
 
-  describe "#run_type" do
-    it "throws for cron type" do
+  describe "#process_type" do
+    it "throws for unexpected type" do
       f.class.service do
         run opt_bin/"beanstalkd"
-        run_type :cron
+        process_type :cow
       end
 
-      expect { f.service.manual_command }.to raise_error TypeError, "Service#run_type does not support cron"
+      expect {
+        f.service.manual_command
+      }.to raise_error TypeError, "Service#process_type allows: 'background'/'standard'/'interactive'/'adaptive'"
     end
+  end
 
+  describe "#run_type" do
     it "throws for unexpected type" do
       f.class.service do
         run opt_bin/"beanstalkd"
@@ -206,6 +210,40 @@ describe Homebrew::Service do
       EOS
       expect(plist).to eq(plist_expect)
     end
+
+    it "returns valid cron plist" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :cron
+        cron "@daily"
+      end
+
+      plist = f.service.to_plist
+      plist_expect = <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        \t<key>Label</key>
+        \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>ProgramArguments</key>
+        \t<array>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t</array>
+        \t<key>RunAtLoad</key>
+        \t<false/>
+        \t<key>StartCalendarInterval</key>
+        \t<dict>
+        \t\t<key>Hour</key>
+        \t\t<integer>0</integer>
+        \t\t<key>Minute</key>
+        \t\t<integer>0</integer>
+        \t</dict>
+        </dict>
+        </plist>
+      EOS
+      expect(plist).to eq(plist_expect)
+    end
   end
 
   describe "#to_systemd_unit" do
@@ -313,6 +351,53 @@ describe Homebrew::Service do
         Unit=homebrew.formula_name
       EOS
       expect(unit).to eq(unit_expect)
+    end
+
+    it "throws on incomplete cron" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :cron
+        cron "1 2 3 4"
+      end
+
+      expect {
+        f.service.to_systemd_timer
+      }.to raise_error TypeError, "Service#parse_cron expects a valid cron syntax"
+    end
+
+    it "returns valid cron timers" do
+      styles = {
+        "@hourly":   "*-*-*-* *:00:00",
+        "@daily":    "*-*-*-* 00:00:00",
+        "@weekly":   "0-*-*-* 00:00:00",
+        "@monthly":  "*-*-*-1 00:00:00",
+        "@yearly":   "*-*-1-1 00:00:00",
+        "@annually": "*-*-1-1 00:00:00",
+        "5 5 5 5 5": "5-*-5-5 05:05:00",
+      }
+
+      styles.each do |cron, calendar|
+        f.class.service do
+          run opt_bin/"beanstalkd"
+          run_type :cron
+          cron cron.to_s
+        end
+
+        unit = f.service.to_systemd_timer
+        unit_expect = <<~EOS
+          [Unit]
+          Description=Homebrew generated timer for formula_name
+
+          [Install]
+          WantedBy=timers.target
+
+          [Timer]
+          Unit=homebrew.formula_name
+          Persistent=true
+          OnCalendar=#{calendar}
+        EOS
+        expect(unit).to eq(unit_expect.chomp)
+      end
     end
   end
 
