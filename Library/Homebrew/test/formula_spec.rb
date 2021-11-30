@@ -758,6 +758,7 @@ describe Formula do
       expect(f.service_name).to eq("homebrew.formula_name")
       expect(f.plist_path).to eq(HOMEBREW_PREFIX/"opt/formula_name/homebrew.mxcl.formula_name.plist")
       expect(f.systemd_service_path).to eq(HOMEBREW_PREFIX/"opt/formula_name/homebrew.formula_name.service")
+      expect(f.systemd_timer_path).to eq(HOMEBREW_PREFIX/"opt/formula_name/homebrew.formula_name.timer")
     end
   end
 

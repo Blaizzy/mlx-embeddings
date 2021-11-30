@@ -272,6 +272,70 @@ describe Homebrew::Service do
     end
   end
 
+  describe "#to_systemd_timer" do
+    it "returns valid timer" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        run_type :interval
+        interval 5
+      end
+
+      unit = f.service.to_systemd_timer
+      unit_expect = <<~EOS
+        [Unit]
+        Description=Homebrew generated timer for formula_name
+
+        [Install]
+        WantedBy=timers.target
+
+        [Timer]
+        Unit=homebrew.formula_name
+        OnUnitActiveSec=5
+      EOS
+      expect(unit).to eq(unit_expect.strip)
+    end
+
+    it "returns valid partial timer" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        run_type :immediate
+      end
+
+      unit = f.service.to_systemd_timer
+      unit_expect = <<~EOS
+        [Unit]
+        Description=Homebrew generated timer for formula_name
+
+        [Install]
+        WantedBy=timers.target
+
+        [Timer]
+        Unit=homebrew.formula_name
+      EOS
+      expect(unit).to eq(unit_expect)
+    end
+  end
+
+  describe "#timed?" do
+    it "returns false for immediate" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        run_type :immediate
+      end
+
+      expect(f.service.timed?).to eq(false)
+    end
+
+    it "returns true for interval" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        run_type :interval
+      end
+
+      expect(f.service.timed?).to eq(true)
+    end
+  end
+
   describe "#command" do
     it "returns @run data" do
       f.class.service do

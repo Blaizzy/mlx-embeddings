@@ -1043,6 +1043,12 @@ class FormulaInstaller
       service_path = formula.systemd_service_path
       service_path.atomic_write(formula.service.to_systemd_unit)
       service_path.chmod 0644
+
+      if formula.service.timed?
+        timer_path = formula.systemd_timer_path
+        timer_path.atomic_write(formula.service.to_systemd_timer)
+        timer_path.chmod 0644
+      end
     end
 
     service = if formula.service?
