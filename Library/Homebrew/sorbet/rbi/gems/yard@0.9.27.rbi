@@ -135,6 +135,7 @@ module YARD
     def ruby18?; end
     def ruby19?; end
     def ruby2?; end
+    def ruby3?; end
     def windows?; end
   end
 end
@@ -1346,7 +1347,12 @@ class YARD::Handlers::Ruby::MixinHandler < ::YARD::Handlers::Ruby::Base
   def recipient(mixin); end
 end
 
-class YARD::Handlers::Ruby::ModuleFunctionHandler < ::YARD::Handlers::Ruby::Base; end
+class YARD::Handlers::Ruby::ModuleFunctionHandler < ::YARD::Handlers::Ruby::Base
+  include ::YARD::Handlers::Ruby::DecoratorHandlerMethods
+
+  def make_module_function(instance_method, namespace); end
+end
+
 class YARD::Handlers::Ruby::ModuleHandler < ::YARD::Handlers::Ruby::Base; end
 
 class YARD::Handlers::Ruby::PrivateClassMethodHandler < ::YARD::Handlers::Ruby::Base
@@ -3256,6 +3262,7 @@ class YARD::Tags::Directive
 
   protected
 
+  def inside_directive?; end
   def parser; end
 end
 
