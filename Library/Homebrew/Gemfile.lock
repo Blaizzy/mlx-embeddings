@@ -85,7 +85,7 @@ GEM
     racc (1.6.0)
     rack (2.2.3)
     rainbow (3.0.0)
-    rbi (0.0.8)
+    rbi (0.0.9)
       ast
       parser
       sorbet-runtime (>= 0.5.9204)
