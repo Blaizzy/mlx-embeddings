@@ -5113,10 +5113,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
-  SET_NEW_ = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
-  SET_TO_H_TO_HASH = ::T.let(nil, ::T.untyped)
-  SET_TO_I_TO_F_TO_C_TO_R = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
 end
 
