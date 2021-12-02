@@ -31,7 +31,7 @@ find_ruby() {
       fi
     done < <(
       # function which() is set by brew.sh
-      # it's aliased to `type -P`
+      # it is aliased to `type -P`
       # shellcheck disable=SC2230
       which -a ruby
       # shellcheck disable=SC2230
