@@ -883,9 +883,9 @@ class GitDownloadStrategy < VCSDownloadStrategy
     case @ref_type
     when :branch, :tag
       args << "--branch" << @ref
-      args << "-c" << "advice.detachedHead=false" # silences detached head warning
     end
 
+    args << "-c" << "advice.detachedHead=false" # silences detached head warning
     args << @url << cached_location
   end
 
@@ -914,6 +914,9 @@ class GitDownloadStrategy < VCSDownloadStrategy
              chdir: cached_location
     command! "git",
              args:  ["config", "remote.origin.tagOpt", "--no-tags"],
+             chdir: cached_location
+    command! "git",
+             args:  ["config", "advice.detachedHead", "false"],
              chdir: cached_location
   end
 
