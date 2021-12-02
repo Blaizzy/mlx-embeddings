@@ -45,6 +45,8 @@ class KegUnspecifiedError < UsageError
   end
 end
 
+class UnsupportedInstallationMethod < RuntimeError; end
+
 class MultipleVersionsInstalledError < RuntimeError; end
 
 class NotAKegError < RuntimeError; end
