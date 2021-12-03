@@ -7,7 +7,12 @@ task :build do
   sh "jekyll", "build"
 end
 
-desc "Run html proofer to validate the HTML output."
+desc "Run Markdownlint to validate the Markdown style."
+task lint: :build do
+  sh "mdl", "."
+end
+
+desc "Run HTMLProofer to validate the HTML output."
 task test: :build do
   require "html-proofer"
   HTMLProofer.check_directory(

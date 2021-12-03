@@ -9,6 +9,7 @@ brew mycommand --option1 --option3 <formula>
 without modifying Homebrew's internals.
 
 ## Command types
+
 External commands come in two flavours: Ruby commands and shell scripts.
 
 In both cases, the command file should be executable (`chmod +x`) and live somewhere in `PATH`.
@@ -16,11 +17,13 @@ In both cases, the command file should be executable (`chmod +x`) and live somew
 External commands can be added to a tap to allow easy distribution. See [below](#external-commands-in-taps) for more details.
 
 ### Ruby commands
+
 An external command `extcmd` implemented as a Ruby command should be named `brew-extcmd.rb`. The command is executed by doing a `require` on the full pathname. As the command is `require`d, it has full access to the Homebrew "environment", i.e. all global variables and modules that any internal command has access to. Be wary of using Homebrew internals; they may change at any time without warning.
 
 The command may `Kernel.exit` with a status code if it needs to; if it doesn't explicitly exit then Homebrew will return `0`.
 
 ### Other executable scripts
+
 An executable script for a command named `extcmd` should be named `brew-extcmd`. The script itself can use any suitable shebang (`#!`) line, so an external script can be written in Bash, Ruby, or even Python. Unlike the ruby commands this file must not end with a language-specific suffix (`.sh`, or `.py`). This file will be run via `exec` with some Homebrew variables set as environment variables, and passed any additional command-line arguments.
 
 | Variable               | Description                                                                                                                                                                 |
@@ -38,16 +41,19 @@ All internal and external Homebrew commands can provide styled `--help` output b
 For example, see the [header of `brew-services.rb`](https://github.com/Homebrew/homebrew-services/blob/a58a1fe9145de4e50e1cbfb5b0e8a30087826393/cmd/brew-services.rb#L1-L23) which is output with `brew services --help`.
 
 ## Unofficial external commands
+
 These commands have been contributed by Homebrew users but are not included in the main Homebrew organisation, nor are they installed by the installer script. You can install them manually, as outlined above.
 
 Note they are largely untested, and as always, be careful about running untested code on your machine.
 
 ### brew-gem
+
 Install any `gem` package into a self-contained Homebrew Cellar location: <https://github.com/sportngin/brew-gem>
 
 Note this can also be installed with `brew install brew-gem`.
 
 ## External commands in taps
+
 External commands can be hosted in a [tap](Taps.md) to allow users to easily install and use them. See [How to Create and Maintain a Tap](How-to-Create-and-Maintain-a-Tap.md) for more details about creating and maintaining a tap.
 
 External commands should be added to a `cmd` directory in the tap. An external command `extcmd` implemented as a Ruby command should live in `cmd/extcmd.rb` (don't forget to `chmod +x`).
