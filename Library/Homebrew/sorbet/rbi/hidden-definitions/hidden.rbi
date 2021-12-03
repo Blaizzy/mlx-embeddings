@@ -6856,8 +6856,6 @@ end
 
 class Tempfile
   def _close(); end
-
-  def inspect(); end
 end
 
 class Tempfile::Remover
