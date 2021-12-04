@@ -11,11 +11,13 @@ describe Utils::Analytics do
         described_class.clear_os_arch_prefix_ci
       end
 
+      ci = ", CI" if ENV["CI"]
+
       it "returns OS_VERSION and prefix when HOMEBREW_PREFIX is a custom prefix on intel" do
         allow(Hardware::CPU).to receive(:type).and_return(:intel)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
-        expected = "#{OS_VERSION}, #{described_class.custom_prefix_label}"
+        expected = "#{OS_VERSION}, #{described_class.custom_prefix_label}#{ci}"
         expect(described_class.os_arch_prefix_ci).to eq expected
       end
 
@@ -23,7 +25,7 @@ describe Utils::Analytics do
         allow(Hardware::CPU).to receive(:type).and_return(:arm)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
-        expected = "#{OS_VERSION}, ARM, #{described_class.custom_prefix_label}"
+        expected = "#{OS_VERSION}, ARM, #{described_class.custom_prefix_label}#{ci}"
         expect(described_class.os_arch_prefix_ci).to eq expected
       end
 
@@ -31,7 +33,7 @@ describe Utils::Analytics do
         allow(Hardware::CPU).to receive(:type).and_return(:intel)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(true)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
-        expected = "#{OS_VERSION}, Rosetta, #{described_class.custom_prefix_label}"
+        expected = "#{OS_VERSION}, Rosetta, #{described_class.custom_prefix_label}#{ci}"
         expect(described_class.os_arch_prefix_ci).to eq expected
       end
 
