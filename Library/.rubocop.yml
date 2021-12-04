@@ -404,6 +404,9 @@ Sorbet/FalseSigil:
     - "Homebrew/test/**/Casks/**/*.rb"
 
 Sorbet/StrictSigil:
+  inherit_mode:
+    override:
+      - Include
   Enabled: true
   Include:
     - "**/*.rbi"
