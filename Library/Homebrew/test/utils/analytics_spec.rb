@@ -11,7 +11,7 @@ describe Utils::Analytics do
         described_class.clear_os_arch_prefix_ci
       end
 
-      ci = ", CI" if ENV["CI"]
+      let(:ci) { ", CI" if ENV["CI"] }
 
       it "returns OS_VERSION and prefix when HOMEBREW_PREFIX is a custom prefix on intel" do
         allow(Hardware::CPU).to receive(:type).and_return(:intel)
@@ -21,7 +21,7 @@ describe Utils::Analytics do
         expect(described_class.os_arch_prefix_ci).to eq expected
       end
 
-      it 'returns OS_VERSION, "ARM" and prefix when HOMEBREW_PREFIX is a custom prefix on arm' do
+      it "returns OS_VERSION, ARM and prefix when HOMEBREW_PREFIX is a custom prefix on arm" do
         allow(Hardware::CPU).to receive(:type).and_return(:arm)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
@@ -29,7 +29,7 @@ describe Utils::Analytics do
         expect(described_class.os_arch_prefix_ci).to eq expected
       end
 
-      it 'returns OS_VERSION, "Rosetta" and prefix when HOMEBREW_PREFIX is a custom prefix using Rosetta' do
+      it "returns OS_VERSION, Rosetta and prefix when HOMEBREW_PREFIX is a custom prefix on Rosetta", :needs_macos do
         allow(Hardware::CPU).to receive(:type).and_return(:intel)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(true)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
