@@ -31,7 +31,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/x86_64-darwin-1
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/unf_ext-0.0.8/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/unf-0.1.4/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/domain_name-0.5.20190701/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/regexp_parser-2.1.1/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/regexp_parser-2.2.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ecma-re-validator-0.3.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/elftools-1.1.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/hana-1.3.7/lib"
