@@ -267,9 +267,6 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Set up Xcode
-        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
-
       - run: brew test-bot --only-cleanup-before
 
       - run: brew config

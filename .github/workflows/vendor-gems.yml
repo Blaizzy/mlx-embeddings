@@ -26,16 +26,17 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Set up Xcode
-        run: sudo xcode-select --switch /Applications/Xcode_12.2.app/Contents/Developer
+
       - name: Configure Git user
         uses: Homebrew/actions/git-user-config@master
         with:
           username: BrewTestBot
+
       - name: Set up commit signing
         uses: Homebrew/actions/setup-commit-signing@master
         with:
           signing_key: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY }}
+
       - name: Check out pull request
         id: checkout
         run: |
@@ -48,6 +49,7 @@ jobs:
           echo "::set-output name=gem_name::${gem_name}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Vendor Gems
         env:
           GEM_NAME: ${{ steps.checkout.outputs.gem_name }}
@@ -61,6 +63,7 @@ jobs:
           else
             brew vendor-gems
           fi
+
       - name: Update RBI files
         env:
           GEM_NAME: ${{ steps.checkout.outputs.gem_name }}
@@ -77,6 +80,7 @@ jobs:
 
             git reset --hard
           fi
+
       - name: Push to pull request
         uses: Homebrew/actions/git-try-push@master
         with:
