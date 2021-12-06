@@ -347,6 +347,11 @@ class Bottle
     @spec.compatible_locations?(tag: @tag)
   end
 
+  # Should the build prefix be relocated?
+  def skip_prefix_relocation?
+    @spec.skip_prefix_relocation?(tag: @tag)
+  end
+
   # Does the bottle need to be relocated?
   def skip_relocation?
     @spec.skip_relocation?(tag: @tag)
@@ -473,6 +478,8 @@ class Bottle
 end
 
 class BottleSpecification
+  RELOCATABLE_CELLARS = [:any, :any_skip_relocation].freeze
+
   extend T::Sig
 
   attr_rw :rebuild
@@ -513,7 +520,30 @@ class BottleSpecification
       tag.default_cellar
     end
 
-    return true if [:any, :any_skip_relocation].include?(cellar)
+    return true if RELOCATABLE_CELLARS.include?(cellar)
+
+    prefix = Pathname(cellar).parent.to_s
+
+    cellar_relocatable = cellar.size >= HOMEBREW_CELLAR.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
+    prefix_relocatable = prefix.size >= HOMEBREW_PREFIX.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
+
+    compatible_cellar = cellar == HOMEBREW_CELLAR.to_s || cellar_relocatable
+    compatible_prefix = prefix == HOMEBREW_PREFIX.to_s || prefix_relocatable
+
+    compatible_cellar && compatible_prefix
+  end
+
+  # Should the build prefix for the {Bottle} this {BottleSpecification} belongs to be relocated?
+  sig { params(tag: Utils::Bottles::Tag).returns(T::Boolean) }
+  def skip_prefix_relocation?(tag: Utils::Bottles.tag)
+    spec = collector.specification_for(tag)
+    cellar = if spec.present?
+      spec.cellar
+    else
+      tag.default_cellar
+    end
+
+    return true if RELOCATABLE_CELLARS.include?(cellar)
 
     prefix = Pathname(cellar).parent.to_s
 
