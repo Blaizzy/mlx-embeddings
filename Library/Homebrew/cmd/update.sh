@@ -745,6 +745,20 @@ EOS
     fi
   done
 
+  if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+  then
+    mkdir -p "${HOMEBREW_CACHE}/api"
+    # TODO: etags?
+    curl \
+      "${CURL_DISABLE_CURLRC_ARGS[@]}" \
+      --fail --compressed --silent --max-time 5 \
+      --location --output "${HOMEBREW_CACHE}/api/formula.json" \
+      --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
+      "https://formulae.brew.sh/api/formula.json"
+    # TODO: we probably want to print an error if this fails.
+    # TODO: set HOMEBREW_UPDATED or HOMEBREW_UPDATE_FAILED
+  fi
+
   safe_cd "${HOMEBREW_REPOSITORY}"
 
   # HOMEBREW_UPDATE_AUTO wasn't modified in subshell.

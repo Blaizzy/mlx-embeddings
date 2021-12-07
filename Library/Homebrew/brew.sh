@@ -764,7 +764,7 @@ then
   export HOMEBREW_DEVELOPER_MODE="1"
 fi
 
-if [[ -n "${HOMEBREW_INSTALL_FROM_API}" && -n "${HOMEBREW_DEVELOPER_COMMAND}" ]]
+if [[ -n "${HOMEBREW_INSTALL_FROM_API}" && -n "${HOMEBREW_DEVELOPER_COMMAND}" && "${HOMEBREW_COMMAND}" != "irb" ]]
 then
   odie "Developer commands cannot be run while HOMEBREW_INSTALL_FROM_API is set!"
 elif [[ -n "${HOMEBREW_INSTALL_FROM_API}" && -n "${HOMEBREW_DEVELOPER_MODE}" ]]

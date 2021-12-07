@@ -21,6 +21,7 @@ module Homebrew
     module_function
 
     API_DOMAIN = "https://formulae.brew.sh/api"
+    HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
 
     sig { params(endpoint: String, json: T::Boolean).returns(T.any(String, Hash)) }
     def fetch(endpoint, json: true)

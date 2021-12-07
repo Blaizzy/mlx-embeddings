@@ -161,19 +161,6 @@ module Homebrew
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
 
-    if Homebrew::EnvConfig.install_from_api?
-      formulae_to_install.map! do |formula|
-        next formula if formula.head?
-        next formula if formula.tap.present? && !formula.core_formula?
-        next formula unless Homebrew::API::Bottle.available?(formula.name)
-
-        Homebrew::API::Bottle.fetch_bottles(formula.name)
-        Formulary.factory(formula.name)
-      rescue FormulaUnavailableError
-        formula
-      end
-    end
-
     if formulae_to_install.empty?
       oh1 "No packages to upgrade"
     else

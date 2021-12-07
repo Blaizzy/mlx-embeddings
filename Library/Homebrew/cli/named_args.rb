@@ -94,11 +94,6 @@ module Homebrew
         unreadable_error = nil
 
         if only != :cask
-          if prefer_loading_from_api && Homebrew::EnvConfig.install_from_api? &&
-             Homebrew::API::Bottle.available?(name)
-            Homebrew::API::Bottle.fetch_bottles(name)
-          end
-
           begin
             formula = case method
             when nil, :factory

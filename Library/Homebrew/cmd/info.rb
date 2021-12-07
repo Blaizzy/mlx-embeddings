@@ -252,16 +252,7 @@ module Homebrew
   def info_formula(f, args:)
     specs = []
 
-    if Homebrew::EnvConfig.install_from_api? && Homebrew::API::Bottle.available?(f.name)
-      info = Homebrew::API::Bottle.fetch(f.name)
-
-      latest_version = info["pkg_version"].split("_").first
-      bottle_exists = info["bottles"].key?(Utils::Bottles.tag.to_s) || info["bottles"].key?("all")
-
-      s = "stable #{latest_version}"
-      s += " (bottled)" if bottle_exists
-      specs << s
-    elsif (stable = f.stable)
+    if (stable = f.stable)
       s = "stable #{stable.version}"
       s += " (bottled)" if stable.bottled? && f.pour_bottle?
       specs << s

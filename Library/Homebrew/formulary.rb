@@ -6,6 +6,8 @@ require "extend/cachable"
 require "tab"
 require "utils/bottles"
 
+require "active_support/core_ext/hash/deep_transform_values"
+
 # The {Formulary} is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.
 #
@@ -43,6 +45,8 @@ module Formulary
 
       remove_const(namespace.demodulize)
     end
+
+    remove_const("FormulaNamespaceAPI")
 
     super
   end
@@ -392,6 +396,102 @@ module Formulary
     end
   end
 
+  # Load formulae from the API.
+  class FormulaAPILoader < FormulaLoader
+    def initialize(name)
+      super name, Formulary.core_path(name)
+    end
+
+    def klass(flags:, ignore_errors:)
+      namespace = "FormulaNamespaceAPI"
+      mod = if Formulary.const_defined?(namespace)
+        Formulary.const_get(namespace)
+      else
+        Formulary.const_set(namespace, Module.new)
+      end
+
+      mod.send(:remove_const, :BUILD_FLAGS) if mod.const_defined?(:BUILD_FLAGS)
+      mod.const_set(:BUILD_FLAGS, flags)
+
+      class_s = Formulary.class_s(name)
+      if mod.const_defined?(class_s)
+        mod.const_get(class_s)
+      else
+        json_formula = Homebrew::API::Formula.all_formulae[name]
+        klass = Class.new(::Formula) do
+          desc json_formula["desc"]
+          homepage json_formula["homepage"]
+          license json_formula["license"]
+          revision json_formula["revision"]
+          version_scheme json_formula["version_scheme"]
+
+          if (urls_stable = json_formula["urls"]["stable"]).present?
+            stable do
+              url urls_stable["url"]
+              version json_formula["versions"]["stable"]
+            end
+          end
+
+          if (bottles_stable = json_formula["bottle"]["stable"]).present?
+            bottle do
+              root_url bottles_stable["root_url"]
+              bottles_stable["files"].each do |tag, bottle_spec|
+                cellar = bottle_spec["cellar"]
+                cellar = cellar[1..].to_sym if cellar.start_with?(":")
+                sha256 cellar: cellar, tag.to_sym => bottle_spec["sha256"]
+              end
+            end
+          end
+
+          if (keg_only_reason = json_formula["keg_only_reason"]).present?
+            reason = keg_only_reason["reason"]
+            reason = reason[1..].to_sym if reason.start_with?(":")
+            keg_only reason, keg_only_reason["explanation"]
+          end
+
+          if (deprecation_date = json_formula["deprecation_date"]).present?
+            deprecate! date: deprecation_date, because: json_formula["deprecation_reason"]
+          end
+
+          if (disable_date = json_formula["disable_date"]).present?
+            disable! date: disable_date, because: json_formula["disable_reason"]
+          end
+
+          json_formula["build_dependencies"].each do |dep|
+            depends_on dep => :build
+          end
+
+          json_formula["dependencies"].each do |dep|
+            depends_on dep
+          end
+
+          json_formula["recommended_dependencies"].each do |dep|
+            depends_on dep => :recommended
+          end
+
+          json_formula["optional_dependencies"].each do |dep|
+            depends_on dep => :optional
+          end
+
+          json_formula["uses_from_macos"].each do |dep|
+            dep = dep.deep_transform_values(&:to_sym) if dep.is_a?(Hash)
+            uses_from_macos dep
+          end
+
+          def install
+            raise "Cannot build from source from abstract formula."
+          end
+
+          @caveats_string = json_formula["caveats"]
+          def caveats
+            @caveats_string
+          end
+        end
+        mod.const_set(class_s, klass)
+      end
+    end
+  end
+
   # Return a {Formula} instance for the given reference.
   # `ref` is a string containing:
   #
@@ -539,11 +639,9 @@ module Formulary
     when URL_START_REGEX
       return FromUrlLoader.new(ref)
     when HOMEBREW_TAP_FORMULA_REGEX
-      # If `homebrew/core` is specified and not installed, check whether the formula is already installed.
       if ref.start_with?("homebrew/core/") && !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
         name = ref.split("/", 3).last
-        possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{name}/.brew/#{name}.rb")
-        return FormulaLoader.new(name, possible_keg_formula) if possible_keg_formula.file?
+        return FormulaAPILoader.new(name) if Homebrew::API::Formula.all_formulae.key?(name)
       end
 
       return TapLoader.new(ref, from: from)
@@ -556,6 +654,12 @@ module Formulary
 
     possible_alias = CoreTap.instance.alias_dir/ref
     return AliasLoader.new(possible_alias) if possible_alias.file?
+
+    if !CoreTap.instance.installed? &&
+       Homebrew::EnvConfig.install_from_api? &&
+       Homebrew::API::Formula.all_formulae.key?(ref)
+      return FormulaAPILoader.new(ref)
+    end
 
     possible_tap_formulae = tap_paths(ref)
     raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae) if possible_tap_formulae.size > 1
