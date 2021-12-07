@@ -38,19 +38,7 @@ Good luck!
 
 Homebrew is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Homebrew better for our users.
 
-Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew) or [Patreon](https://www.patreon.com/homebrew).
-
-Alternatively, if you'd rather make a one-off payment:
-
-- [Donate with PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=V6ZE57MJRYC8L)
-- Donate by USA $ check from a USA bank:
-  - Make check payable to "Software Freedom Conservancy, Inc." and place "Directed donation: Homebrew" in the memo field. Checks should then be mailed to:
-    - Software Freedom Conservancy, Inc.
-      137 Montague ST  STE 380
-      BROOKLYN, NY 11201             USA
-- Donate by wire transfer: contact accounting@sfconservancy.org for wire transfer details.
-
-Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org) which provides us with an ability to receive tax-deductible, Homebrew earmarked donations (and [many other services](https://sfconservancy.org/members/services/)). Software Freedom Conservancy, Inc. is a 501(c)(3) organization incorporated in New York, and donations made to it are fully tax-deductible to the extent permitted by law.
+Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew), [Open Collective](https://opencollective.com/homebrew) or [Patreon](https://www.patreon.com/homebrew). Homebrew is fiscally hosted by the [Open Source Collective](https://opencollective.com/opensource).
 
 ## Security
 
@@ -93,10 +81,6 @@ Secure password storage and syncing is provided by [1Password for Teams](https:/
 Flaky test detection and tracking is provided by [BuildPulse](https://buildpulse.io/).
 
 [![BuildPulse](https://user-images.githubusercontent.com/2988/130445500-96f44c87-e7dd-4da0-9877-7e5b1618e144.png)](https://buildpulse.io)
-
-Homebrew is a member of the [Software Freedom Conservancy](https://sfconservancy.org).
-
-[![Software Freedom Conservancy](https://sfconservancy.org/img/conservancy_64x64.png)](https://sfconservancy.org)
 
 Homebrew is generously supported by [Substack](https://github.com/substackinc), [Randy Reddig](https://github.com/ydnar), [embark-studios](https://github.com/embark-studios), [CodeCrafters](https://github.com/codecrafters-io) and many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
 
