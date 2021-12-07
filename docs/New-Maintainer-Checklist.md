@@ -65,7 +65,6 @@ If they are interested in doing system administration work:
 
 If they are elected to the Homebrew's [Project Leadership Committee](https://docs.brew.sh/Homebrew-Governance#4-project-leadership-committee):
 
-- Email their name, email and employer to the [Software Freedom Conservancy](https://sfconservancy.org) at homebrew@sfconservancy.org
 - Make them [owners on the Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people)
 - Invite them to the [**@Homebrew/plc** team](https://github.com/orgs/Homebrew/teams/plc/members)
 - Invite them to [Google Analytics](https://analytics.google.com/analytics/web/#management/Settings/a76679469w115400090p120682403/%3Fm.page%3DAccountUsers/).
