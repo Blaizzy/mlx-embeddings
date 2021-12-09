@@ -592,8 +592,9 @@ The search for *`text`* is extended online to `homebrew/core` and `homebrew/cask
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
 
 The variables `HOMEBREW_PREFIX`, `HOMEBREW_CELLAR` and `HOMEBREW_REPOSITORY` are also exported to avoid querying them multiple times.
-The variable `HOMEBREW_SHELLENV_PREFIX` will be exported to avoid adding duplicate entries to the environment variables.
-Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`, `~/.bash_profile`, or `~/.zprofile`) with: `eval "$(brew shellenv)"`
+To help guarantee idempotence, this command produces no output when Homebrew's `bin` and `sbin` directores are first and second
+respectively in your `PATH`. Consider adding evaluation of this command's output to your dotfiles (e.g. `~/.profile`,
+`~/.bash_profile`, or `~/.zprofile`) with: `eval "$(brew shellenv)"`
 
 ### `tap` [*`options`*] [*`user`*`/`*`repo`*] [*`URL`*]
 
