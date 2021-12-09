@@ -828,7 +828,7 @@ Search for \fItext\fR in the given database\.
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
-The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. The variable \fBHOMEBREW_SHELLENV_PREFIX\fR will be exported to avoid adding duplicate entries to the environment variables\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval "$(brew shellenv)"\fR
+The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. To help guarantee idempotence, this command produces no output when Homebrew\'s \fBbin\fR and \fBsbin\fR directores are first and second respectively in your \fBPATH\fR\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval "$(brew shellenv)"\fR
 .
 .SS "\fBtap\fR [\fIoptions\fR] [\fIuser\fR\fB/\fR\fIrepo\fR] [\fIURL\fR]"
 Tap a formula repository\.
