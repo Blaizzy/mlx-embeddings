@@ -1121,6 +1121,8 @@ module Spoom::Sorbet::Errors
   end
 end
 
+Spoom::Sorbet::Errors::DEFAULT_ERROR_URL_BASE = T.let(T.unsafe(nil), String)
+
 class Spoom::Sorbet::Errors::Error
   include ::Comparable
 
@@ -1148,8 +1150,8 @@ class Spoom::Sorbet::Errors::Error
 end
 
 class Spoom::Sorbet::Errors::Parser
-  sig { void }
-  def initialize; end
+  sig { params(error_url_base: String).void }
+  def initialize(error_url_base: T.unsafe(nil)); end
 
   sig { params(output: String).returns(T::Array[Spoom::Sorbet::Errors::Error]) }
   def parse(output); end
@@ -1162,6 +1164,9 @@ class Spoom::Sorbet::Errors::Parser
   sig { void }
   def close_error; end
 
+  sig { params(error_url_base: String).returns(Regexp) }
+  def error_line_match_regexp(error_url_base); end
+
   sig { params(line: String).returns(T.nilable(Spoom::Sorbet::Errors::Error)) }
   def match_error_line(line); end
 
@@ -1169,12 +1174,11 @@ class Spoom::Sorbet::Errors::Parser
   def open_error(error); end
 
   class << self
-    sig { params(output: String).returns(T::Array[Spoom::Sorbet::Errors::Error]) }
-    def parse_string(output); end
+    sig { params(output: String, error_url_base: String).returns(T::Array[Spoom::Sorbet::Errors::Error]) }
+    def parse_string(output, error_url_base: T.unsafe(nil)); end
   end
 end
 
-Spoom::Sorbet::Errors::Parser::ERROR_LINE_MATCH_REGEX = T.let(T.unsafe(nil), Regexp)
 Spoom::Sorbet::Errors::Parser::HEADER = T.let(T.unsafe(nil), Array)
 Spoom::Sorbet::GEM_PATH = T.let(T.unsafe(nil), String)
 
