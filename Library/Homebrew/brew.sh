@@ -554,7 +554,7 @@ Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
   unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 
   HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin 2>/dev/null)"
-  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" =~ /linuxbrew-core(\.git)?$ ]]
+  if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" =~ (/linuxbrew|Linuxbrew/homebrew)-core(\.git)?$ ]]
   then
     # triggers migration code in update.sh
     # shellcheck disable=SC2034
