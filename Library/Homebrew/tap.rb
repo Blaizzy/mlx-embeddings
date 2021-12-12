@@ -827,7 +827,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Boolean) }
   def linuxbrew_core?
-    remote_repo.to_s.end_with?("/linuxbrew-core")
+    remote_repo.to_s.end_with?("/linuxbrew-core") || remote_repo == "Linuxbrew/homebrew-core"
   end
 
   # @private
