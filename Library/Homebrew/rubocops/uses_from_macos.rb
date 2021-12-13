@@ -21,7 +21,6 @@ module RuboCop
           expat
           file-formula
           flex
-          gcore
           gnu-getopt
           gperf
           icu4c
