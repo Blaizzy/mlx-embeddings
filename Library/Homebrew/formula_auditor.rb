@@ -121,6 +121,8 @@ module Homebrew
     SYNCED_VERSIONS_FORMULAE_FILE = "synced_versions_formulae.json"
 
     def audit_synced_versions_formulae
+      return unless formula.tap
+
       synced_versions_formulae_file = formula.tap.path/SYNCED_VERSIONS_FORMULAE_FILE
       return unless synced_versions_formulae_file.file?
 
