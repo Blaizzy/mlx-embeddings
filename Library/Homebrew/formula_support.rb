@@ -60,6 +60,19 @@ class KegOnlyReason
       @reason
     end.strip
   end
+
+  def to_hash
+    reason_string = if @reason.is_a?(Symbol)
+      @reason.inspect
+    else
+      @reason.to_s
+    end
+
+    {
+      "reason"      => reason_string,
+      "explanation" => @explanation,
+    }
+  end
 end
 
 # Used to annotate formulae that don't require compiling or cannot build a bottle.
