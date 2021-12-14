@@ -1551,6 +1551,7 @@ class RuboCop::AST::PairNode < ::RuboCop::AST::Node
   def delimiter(*deprecated, with_spacing: T.unsafe(nil)); end
   def hash_rocket?; end
   def inverse_delimiter(*deprecated, with_spacing: T.unsafe(nil)); end
+  def value_omission?; end
   def value_on_new_line?; end
 end
 
