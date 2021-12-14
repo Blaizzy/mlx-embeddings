@@ -202,26 +202,40 @@ Performance/Caller:
 Performance/MethodObjectAsBlock:
   Enabled: false
 
-# Cannot use ActiveSupport in RuboCops.
 Rails:
+  # Selectively enable what we want.
+  Enabled: false
+  # Cannot use ActiveSupport in RuboCops.
   Exclude:
     - "Homebrew/rubocops/**/*"
 
-# Skip these as they only apply to actual Rails and not our ActiveSupport usage.
-Rails/ArelStar:
-  Enabled: false
-Rails/Date:
-  Enabled: false
+# These relate to ActiveSupport and not other parts of Rails.
+Rails/ActiveSupportAliases:
+  Enabled: true
+Rails/Blank:
+  Enabled: true
 Rails/Delegate:
-  Enabled: false
-Rails/RakeEnvironment:
-  Enabled: false
-Rails/SkipsModelValidations:
-  Enabled: false
-Rails/Pluck:
-  Enabled: false
-Rails/TimeZone:
-  Enabled: false
+  Enabled: false # TODO
+Rails/DelegateAllowBlank:
+  Enabled: true
+Rails/ExpandedDateRange:
+  Enabled: true
+Rails/Inquiry:
+  Enabled: true
+Rails/NegateInclude:
+  Enabled: true
+Rails/PluralizationGrammar:
+  Enabled: true
+Rails/Presence:
+  Enabled: true
+Rails/Present:
+  Enabled: true
+Rails/RelativeDateConstant:
+  Enabled: true
+Rails/SafeNavigation:
+  Enabled: true
+Rails/SafeNavigationWithBlank:
+  Enabled: true
 
 # Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
