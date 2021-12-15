@@ -1742,6 +1742,9 @@ Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 [`sudo`] `brew services` [`list`]
 <br>List all managed services for the current user (or root).
 
+[`sudo`] `brew services info` (*`formula`*|`--all`)
+<br>List all managed services for the current user (or root).
+
 [`sudo`] `brew services run` (*`formula`*|`--all`)
 <br>Run the service *`formula`* without registering to launch at login (or boot).
 
@@ -1761,6 +1764,8 @@ Otherwise, operate on `~/Library/LaunchAgents` (started at login).
   Use the plist file from this location to start or run the service.
 * `--all`:
   Run *`subcommand`* on all services.
+* `--json`:
+  Output as JSON.
 
 ### `test-bot` [*`options`*] [*`formula`*]
 

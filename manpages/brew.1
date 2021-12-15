@@ -2453,6 +2453,10 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
     List all managed services for the current user (or root)\.
 .
 .P
+[\fBsudo\fR] \fBbrew services info\fR (\fIformula\fR|\fB\-\-all\fR)
+    List all managed services for the current user (or root)\.
+.
+.P
 [\fBsudo\fR] \fBbrew services run\fR (\fIformula\fR|\fB\-\-all\fR)
     Run the service \fIformula\fR without registering to launch at login (or boot)\.
 .
@@ -2479,6 +2483,10 @@ Use the plist file from this location to start or run the service\.
 .TP
 \fB\-\-all\fR
 Run \fIsubcommand\fR on all services\.
+.
+.TP
+\fB\-\-json\fR
+Output as JSON\.
 .
 .SS "\fBtest\-bot\fR [\fIoptions\fR] [\fIformula\fR]"
 Tests the full lifecycle of a Homebrew change to a tap (Git repository)\. For example, for a GitHub Actions pull request that changes a formula \fBbrew test\-bot\fR will ensure the system is cleaned and set up to test the formula, install the formula, run various tests and checks on it, bottle (package) the binaries and test formulae that depend on it to ensure they aren\'t broken by these changes\.
