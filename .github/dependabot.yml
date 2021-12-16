@@ -16,6 +16,7 @@ updates:
       interval: weekly
     allow:
       - dependency-type: all
+    versioning-strategy: lockfile-only
 
   - package-ecosystem: bundler
     directory: /Library/Homebrew
@@ -25,3 +26,4 @@ updates:
       - dependency-type: all
     ignore:
       - dependency-name: sorbet-runtime
+    versioning-strategy: lockfile-only
