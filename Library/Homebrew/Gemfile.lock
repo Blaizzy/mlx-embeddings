@@ -201,7 +201,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
+  activesupport (< 7)
   bootsnap
   byebug
   concurrent-ruby
