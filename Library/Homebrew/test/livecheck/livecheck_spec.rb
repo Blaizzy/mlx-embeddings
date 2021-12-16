@@ -44,6 +44,15 @@ describe Homebrew::Livecheck do
     RUBY
   end
 
+  let(:f_duplicate_urls) do
+    formula("test_duplicate_urls") do
+      desc "Test formula with a duplicate URL"
+      homepage "https://github.com/Homebrew/brew.git"
+      url "https://brew.sh/test-0.0.1.tgz"
+      head "https://github.com/Homebrew/brew.git"
+    end
+  end
+
   describe "::resolve_livecheck_reference" do
     context "when a formula/cask has a livecheck block without formula/cask methods" do
       it "returns [nil, []]" do
@@ -144,6 +153,7 @@ describe Homebrew::Livecheck do
     it "returns the list of URLs to check" do
       expect(livecheck.checkable_urls(f)).to eq([stable_url, head_url, homepage_url])
       expect(livecheck.checkable_urls(c)).to eq([cask_url, homepage_url])
+      expect(livecheck.checkable_urls(f_duplicate_urls)).to eq([stable_url, head_url])
     end
   end
 
