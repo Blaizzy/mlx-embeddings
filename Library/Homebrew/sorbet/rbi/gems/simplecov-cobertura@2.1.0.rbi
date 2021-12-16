@@ -61,6 +61,8 @@ module SimpleCov::Formatter
 end
 
 class SimpleCov::Formatter::CoberturaFormatter
+  def initialize(result_file_name: T.unsafe(nil)); end
+
   def format(result); end
 
   private
