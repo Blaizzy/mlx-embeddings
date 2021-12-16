@@ -119,7 +119,7 @@ fetch() {
     --remote-time
     --location
     --user-agent "${HOMEBREW_USER_AGENT_CURL}"
-    --header "Authorization: Bearer QQ=="
+    --header "Authorization: Bearer ${HOMEBREW_DOCKER_REGISTRY_TOKEN:-QQ==}"
   )
 
   if [[ -n "${HOMEBREW_QUIET}" ]]
