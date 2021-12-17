@@ -18,7 +18,8 @@ module Homebrew
       EOS
       switch "--autosquash",
              description: "If supported on the target tap, automatically reformat and reword commits "\
-                          "in the pull request to our preferred format."
+                          "in the pull request to our preferred format.",
+             replacement: "`--no-autosquash` to opt out"
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request "\
                           "to the preferred format, even if supported on the target tap."
@@ -42,8 +43,6 @@ module Homebrew
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
     workflow = args.workflow || "publish-commit-bottles.yml"
     ref = args.branch || "master"
-
-    odisabled "`brew pr-publish --autosquash`", "`brew pr-publish`" if args.autosquash?
 
     extra_args = []
     extra_args << "--autosquash" unless args.no_autosquash?

@@ -320,8 +320,6 @@ is already installed but outdated.
   Print the verification and postinstall steps.
 * `--formula`:
   Treat all named arguments as formulae.
-* `--env`:
-  Disabled other than for internal Homebrew use.
 * `--ignore-dependencies`:
   An unsupported Homebrew development flag to skip installing any dependencies of any kind. If the dependencies are not already present, the formula will have issues. If you're not developing Homebrew, consider adjusting your PATH rather than using this flag.
 * `--only-dependencies`:
@@ -612,10 +610,6 @@ simplifies but also limits. This two-argument command makes no
 assumptions, so taps can be cloned from places other than GitHub and
 using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
 
-* `--full`:
-  Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed.
-* `--shallow`:
-  Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.
 * `--force-auto-update`:
   Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons).
 * `--custom-remote`:
@@ -1239,8 +1233,6 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
   Pull requests do not require approval to be merged.
 * `--publish`:
   Run `brew pr-publish` on matching pull requests.
-* `--autosquash`:
-  Instruct `brew pr-publish` to automatically reformat and reword commits in the pull request to our preferred format.
 * `--no-autosquash`:
   Instruct `brew pr-publish` to skip automatically reformatting and rewording commits in the pull request to the preferred format.
 * `--ignore-failures`:
@@ -1251,8 +1243,6 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 Publish bottles for a pull request with GitHub Actions.
 Requires write access to the repository.
 
-* `--autosquash`:
-  If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format.
 * `--no-autosquash`:
   Skip automatically reformatting and rewording commits in the pull request to the preferred format, even if supported on the target tap.
 * `--branch`:

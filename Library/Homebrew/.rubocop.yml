@@ -16,7 +16,7 @@ Lint/NestedMethodDefinition:
 Metrics/AbcSize:
   Max: 280
 Metrics/BlockLength:
-  Max: 102
+  Max: 103
   Exclude:
     # TODO: extract more of the bottling logic
     - "dev-cmd/bottle.rb"

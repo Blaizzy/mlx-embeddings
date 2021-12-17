@@ -29,9 +29,11 @@ module Homebrew
       EOS
       switch "--full",
              description: "Convert a shallow clone to a full clone without untapping. Taps are only cloned as "\
-                          "shallow clones if `--shallow` was originally passed."
+                          "shallow clones if `--shallow` was originally passed.",
+             replacement: false
       switch "--shallow",
-             description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration."
+             description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.",
+             replacement: false
       switch "--force-auto-update",
              description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
                           "hosted on GitHub are auto-updated (for performance reasons)."
@@ -58,10 +60,6 @@ module Homebrew
     elsif args.no_named?
       puts Tap.names
     else
-      odisabled "`brew tap --full`" if args.full?
-
-      odisabled "`brew tap --shallow`" if args.shallow?
-
       tap = Tap.fetch(args.named.first)
       begin
         tap.install clone_target:      args.named.second,

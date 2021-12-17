@@ -28,7 +28,8 @@ module Homebrew
              description: "Run `brew pr-publish` on matching pull requests."
       switch "--autosquash",
              description: "Instruct `brew pr-publish` to automatically reformat and reword commits "\
-                          "in the pull request to our preferred format."
+                          "in the pull request to our preferred format.",
+             replacement: "`--no-autosquash` to opt out"
       switch "--no-autosquash",
              description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits "\
                           "in the pull request to the preferred format."
@@ -41,8 +42,6 @@ module Homebrew
 
   def pr_automerge
     args = pr_automerge_args.parse
-
-    odisabled "`brew pr-automerge --autosquash`", "`brew pr-automerge`" if args.autosquash?
 
     without_labels = args.without_labels || [
       "do not merge",
