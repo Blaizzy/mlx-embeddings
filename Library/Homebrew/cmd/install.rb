@@ -51,6 +51,7 @@ module Homebrew
         }],
         [:flag, "--env=", {
           description: "Disabled other than for internal Homebrew use.",
+          hidden:      true,
         }],
         [:switch, "--ignore-dependencies", {
           description: "An unsupported Homebrew development flag to skip installing any dependencies of any kind. " \

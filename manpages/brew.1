@@ -417,10 +417,6 @@ Print the verification and postinstall steps\.
 Treat all named arguments as formulae\.
 .
 .TP
-\fB\-\-env\fR
-Disabled other than for internal Homebrew use\.
-.
-.TP
 \fB\-\-ignore\-dependencies\fR
 An unsupported Homebrew development flag to skip installing any dependencies of any kind\. If the dependencies are not already present, the formula will have issues\. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this flag\.
 .
@@ -841,14 +837,6 @@ With \fIURL\fR unspecified, tap a formula repository from GitHub using HTTPS\. S
 .
 .P
 With \fIURL\fR specified, tap a formula repository from anywhere, using any transport protocol that \fBgit\fR(1) handles\. The one\-argument form of \fBtap\fR simplifies but also limits\. This two\-argument command makes no assumptions, so taps can be cloned from places other than GitHub and using protocols other than HTTPS, e\.g\. SSH, git, HTTP, FTP(S), rsync\.
-.
-.TP
-\fB\-\-full\fR
-Convert a shallow clone to a full clone without untapping\. Taps are only cloned as shallow clones if \fB\-\-shallow\fR was originally passed\.
-.
-.TP
-\fB\-\-shallow\fR
-Fetch tap as a shallow clone rather than a full clone\. Useful for continuous integration\.
 .
 .TP
 \fB\-\-force\-auto\-update\fR
@@ -1756,10 +1744,6 @@ Pull requests do not require approval to be merged\.
 Run \fBbrew pr\-publish\fR on matching pull requests\.
 .
 .TP
-\fB\-\-autosquash\fR
-Instruct \fBbrew pr\-publish\fR to automatically reformat and reword commits in the pull request to our preferred format\.
-.
-.TP
 \fB\-\-no\-autosquash\fR
 Instruct \fBbrew pr\-publish\fR to skip automatically reformatting and rewording commits in the pull request to the preferred format\.
 .
@@ -1769,10 +1753,6 @@ Include pull requests that have failing status checks\.
 .
 .SS "\fBpr\-publish\fR [\fIoptions\fR] \fIpull_request\fR [\.\.\.]"
 Publish bottles for a pull request with GitHub Actions\. Requires write access to the repository\.
-.
-.TP
-\fB\-\-autosquash\fR
-If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format\.
 .
 .TP
 \fB\-\-no\-autosquash\fR

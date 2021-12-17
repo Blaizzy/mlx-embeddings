@@ -767,7 +767,6 @@ __fish_brew_complete_arg 'instal' -l colorpickerdir -d 'Target location for Colo
 __fish_brew_complete_arg 'instal' -l debug -d 'If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory'
 __fish_brew_complete_arg 'instal' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
 __fish_brew_complete_arg 'instal' -l display-times -d 'Print install times for each package at the end of the run'
-__fish_brew_complete_arg 'instal' -l env -d 'Disabled other than for internal Homebrew use'
 __fish_brew_complete_arg 'instal' -l fetch-HEAD -d 'Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released'
 __fish_brew_complete_arg 'instal' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'
 __fish_brew_complete_arg 'instal' -l force -d 'Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)'
@@ -815,7 +814,6 @@ __fish_brew_complete_arg 'install' -l colorpickerdir -d 'Target location for Col
 __fish_brew_complete_arg 'install' -l debug -d 'If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory'
 __fish_brew_complete_arg 'install' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
 __fish_brew_complete_arg 'install' -l display-times -d 'Print install times for each package at the end of the run'
-__fish_brew_complete_arg 'install' -l env -d 'Disabled other than for internal Homebrew use'
 __fish_brew_complete_arg 'install' -l fetch-HEAD -d 'Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released'
 __fish_brew_complete_arg 'install' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'
 __fish_brew_complete_arg 'install' -l force -d 'Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)'
@@ -1063,7 +1061,6 @@ __fish_brew_complete_arg 'postinstall' -a '(__fish_brew_suggest_formulae_install
 
 
 __fish_brew_complete_cmd 'pr-automerge' 'Find pull requests that can be automatically merged using `brew pr-publish`'
-__fish_brew_complete_arg 'pr-automerge' -l autosquash -d 'Instruct `brew pr-publish` to automatically reformat and reword commits in the pull request to our preferred format'
 __fish_brew_complete_arg 'pr-automerge' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-automerge' -l help -d 'Show this message'
 __fish_brew_complete_arg 'pr-automerge' -l ignore-failures -d 'Include pull requests that have failing status checks'
@@ -1078,7 +1075,6 @@ __fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must
 
 
 __fish_brew_complete_cmd 'pr-publish' 'Publish bottles for a pull request with GitHub Actions'
-__fish_brew_complete_arg 'pr-publish' -l autosquash -d 'If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format'
 __fish_brew_complete_arg 'pr-publish' -l branch -d 'Branch to publish to (default: `master`)'
 __fish_brew_complete_arg 'pr-publish' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-publish' -l help -d 'Show this message'
@@ -1291,12 +1287,10 @@ __fish_brew_complete_cmd 'tap' 'Tap a formula repository'
 __fish_brew_complete_arg 'tap' -l custom-remote -d 'Install or change a tap with a custom remote. Useful for mirrors'
 __fish_brew_complete_arg 'tap' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'tap' -l force-auto-update -d 'Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons)'
-__fish_brew_complete_arg 'tap' -l full -d 'Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed'
 __fish_brew_complete_arg 'tap' -l help -d 'Show this message'
 __fish_brew_complete_arg 'tap' -l list-pinned -d 'List all pinned taps'
 __fish_brew_complete_arg 'tap' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'tap' -l repair -d 'Migrate tapped formulae from symlink-based to directory-based structure'
-__fish_brew_complete_arg 'tap' -l shallow -d 'Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration'
 __fish_brew_complete_arg 'tap' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'tap' -a '(__fish_brew_suggest_taps_installed)'
 

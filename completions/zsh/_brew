@@ -945,7 +945,6 @@ _brew_instal() {
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
     '(--cask)--display-times[Print install times for each package at the end of the run]' \
-    '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
@@ -997,7 +996,6 @@ _brew_install() {
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
     '(--cask)--display-times[Print install times for each package at the end of the run]' \
-    '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
@@ -1304,7 +1302,6 @@ _brew_postinstall() {
 # brew pr-automerge
 _brew_pr_automerge() {
   _arguments \
-    '--autosquash[Instruct `brew pr-publish` to automatically reformat and reword commits in the pull request to our preferred format]' \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--ignore-failures[Include pull requests that have failing status checks]' \
@@ -1321,7 +1318,6 @@ _brew_pr_automerge() {
 # brew pr-publish
 _brew_pr_publish() {
   _arguments \
-    '--autosquash[If supported on the target tap, automatically reformat and reword commits in the pull request to our preferred format]' \
     '--branch[Branch to publish to (default: `master`)]' \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
@@ -1579,12 +1575,10 @@ _brew_tap() {
     '--custom-remote[Install or change a tap with a custom remote. Useful for mirrors]' \
     '--debug[Display any debugging information]' \
     '--force-auto-update[Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons)]' \
-    '--full[Convert a shallow clone to a full clone without untapping. Taps are only cloned as shallow clones if `--shallow` was originally passed]' \
     '--help[Show this message]' \
     '--list-pinned[List all pinned taps]' \
     '--quiet[Make some output more quiet]' \
     '--repair[Migrate tapped formulae from symlink-based to directory-based structure]' \
-    '--shallow[Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration]' \
     '--verbose[Make some output more verbose]' \
     - tap \
     '*::tap:__brew_any_tap'

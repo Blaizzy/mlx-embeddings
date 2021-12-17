@@ -1063,7 +1063,6 @@ _brew_instal() {
       --debug
       --dictionarydir
       --display-times
-      --env
       --fetch-HEAD
       --fontdir
       --force
@@ -1120,7 +1119,6 @@ _brew_install() {
       --debug
       --dictionarydir
       --display-times
-      --env
       --fetch-HEAD
       --fontdir
       --force
@@ -1530,7 +1528,6 @@ _brew_pr_automerge() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --autosquash
       --debug
       --help
       --ignore-failures
@@ -1554,7 +1551,6 @@ _brew_pr_publish() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --autosquash
       --branch
       --debug
       --help
@@ -1896,12 +1892,10 @@ _brew_tap() {
       --custom-remote
       --debug
       --force-auto-update
-      --full
       --help
       --list-pinned
       --quiet
       --repair
-      --shallow
       --verbose
       "
       return
