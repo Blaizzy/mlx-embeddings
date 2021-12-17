@@ -451,6 +451,11 @@ class Pathname
   def dylib?
     false
   end
+
+  sig { returns(T::Array[String]) }
+  def rpaths
+    []
+  end
 end
 
 require "extend/os/pathname"

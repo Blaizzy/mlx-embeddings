@@ -32,6 +32,7 @@ class LinkageChecker
     @unnecessary_deps = []
     @unwanted_system_dylibs = []
     @version_conflict_deps = []
+    @executables_missing_rpaths = []
 
     check_dylibs(rebuild_cache: rebuild_cache)
   end
@@ -46,6 +47,7 @@ class LinkageChecker
     display_items "Undeclared dependencies with linkage", @undeclared_deps
     display_items "Dependencies with no linkage", @unnecessary_deps
     display_items "Unwanted system libraries", @unwanted_system_dylibs
+    display_items "Executables with missing rpath", @executables_missing_rpaths
   end
 
   def display_reverse_output
@@ -69,11 +71,12 @@ class LinkageChecker
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
     display_items "Undeclared dependencies with linkage", @undeclared_deps, puts_output: puts_output if strict
+    display_items "Executables with missing rpath", @executables_missing_rpaths, puts_output: puts_output
   end
 
   sig { params(strict: T::Boolean).returns(T::Boolean) }
   def broken_library_linkage?(strict: false)
-    issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
+    issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps, @executables_missing_rpaths]
     issues << @undeclared_deps if strict
     [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)
   end
@@ -152,8 +155,17 @@ class LinkageChecker
     checked_dylibs = Set.new
 
     keg_files_dylibs.each do |file, dylibs|
+      file_has_any_rpath_dylibs = T.let(false, T::Boolean)
       dylibs.each do |dylib|
         @reverse_links[dylib] << file
+
+        # Binary executables that link @rpath-prefixed dylibs must include at
+        # least one rpath in order to resolve it.
+        if !file_has_any_rpath_dylibs && (dylib.start_with? "@rpath/")
+          file_has_any_rpath_dylibs = true
+          pathname = Pathname(file)
+          @executables_missing_rpaths << file if pathname.binary_executable? && pathname.rpaths.empty?
+        end
 
         next if checked_dylibs.include? dylib
 
