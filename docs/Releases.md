@@ -25,7 +25,8 @@ If this is a major or minor release (e.g. X.0.0 or X.Y.0) then there are a few m
 
 1. Before creating the tag you should delete any `odisabled` code, make any
    `odeprecated` code `odisabled`, uncomment any `# odeprecated` code and add
-   any new `odeprecations` that are desired.
+   any new `odeprecations` that are desired. Also delete any command argument
+   definitions that pass `replacement: ...`.
 2. Write up a release notes blog post to <https://brew.sh>
    e.g. [brew.sh#319](https://github.com/Homebrew/brew.sh/pull/319).
    This should use the output from `brew release [--major|--minor]` as input but
