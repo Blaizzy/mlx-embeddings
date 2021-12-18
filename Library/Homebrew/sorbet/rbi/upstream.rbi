@@ -21,14 +21,3 @@ class Module
   end
   def define_method(arg0, arg1=T.unsafe(nil), &blk); end
 end
-
-class Pathname
-  # https://github.com/sorbet/sorbet/pull/4660
-  sig do
-    params(
-        consider_symlink: T::Boolean,
-    )
-    .returns(Pathname)
-  end
-  def cleanpath(consider_symlink=T.unsafe(nil)); end
-end
