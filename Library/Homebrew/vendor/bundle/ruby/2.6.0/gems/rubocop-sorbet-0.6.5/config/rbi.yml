@@ -188,7 +188,7 @@ Lint/EmptyFile:
   Enabled: true
   AllowComments: false
 
-Lint/SyntaxError:
+Lint/Syntax:
   Enabled: true
 
 ## Sorbet
@@ -197,6 +197,9 @@ Sorbet:
   DisabledByDefault: true
 
 Sorbet/EnforceSigilOrder:
+  Enabled: true
+
+Sorbet/EnforceSingleSigil:
   Enabled: true
 
 Sorbet/ForbidExtendTSigHelpersInShims:
