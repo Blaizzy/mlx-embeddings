@@ -153,7 +153,7 @@ module Homebrew
       end
     end
 
-    if new_hash.present?
+    if new_hash.present? && cask.language.blank?
       hash_regex = old_hash == :no_check ? ":no_check" : "[\"']#{Regexp.escape(old_hash.to_s)}[\"']"
 
       replacement_pairs << [
