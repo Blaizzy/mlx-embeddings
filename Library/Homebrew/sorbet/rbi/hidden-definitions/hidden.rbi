@@ -3190,6 +3190,8 @@ module Kernel
   extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
+  def self.autoload(arg, arg1); end
+
   def self.fork(); end
 
   def self.gem(dep, *reqs); end
@@ -3469,6 +3471,8 @@ class MockExpectationError
 end
 
 class Module
+  def autoload_without_tapioca(arg, arg1); end
+
   def context(*a, &b); end
 
   def describe(*a, &b); end
@@ -6848,7 +6852,36 @@ class Tapioca::Compilers::Dsl::Base
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Tapioca::Compilers::Dsl::ParamHelper
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Tapioca::Compilers::DslCompiler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Tapioca::Reflection
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Tapioca::Trackers::Autoload
+  extend ::T::Sig
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Tapioca::Trackers::Mixin
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Tapioca
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
