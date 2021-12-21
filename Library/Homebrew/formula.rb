@@ -64,7 +64,6 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
-  include OnOS # TODO: 3.3.0: deprecate OnOS usage in instance methods.
   extend Enumerable
   extend Forwardable
   extend Cachable
@@ -3065,7 +3064,7 @@ class Formula
       block ||= case only_if
       when :clt_installed
         lambda do |_|
-          on_macos do
+          if OS.mac? || Homebrew::EnvConfig.simulate_macos_on_linux?
             T.cast(self, PourBottleCheck).reason(+<<~EOS)
               The bottle needs the Apple Command Line Tools to be installed.
                 You can install them, if desired, with:

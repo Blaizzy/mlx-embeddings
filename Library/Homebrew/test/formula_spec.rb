@@ -1542,12 +1542,8 @@ describe Formula do
         attr_reader :test
 
         def install
-          on_macos do
-            @test = 1
-          end
-          on_linux do
-            @test = 2
-          end
+          @test = 1 if OS.mac? || Homebrew::EnvConfig.simulate_macos_on_linux?
+          @test = 2 if OS.linux?
         end
       end.new
     end
@@ -1565,12 +1561,8 @@ describe Formula do
         attr_reader :test
 
         def install
-          on_macos do
-            @test = 1
-          end
-          on_linux do
-            @test = 2
-          end
+          @test = 1 if OS.mac? || Homebrew::EnvConfig.simulate_macos_on_linux?
+          @test = 2 if OS.linux?
         end
       end.new
     end
