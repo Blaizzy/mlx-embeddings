@@ -107,7 +107,7 @@ module Hardware
           :arm_lightning_thunder
         when 0x573b5eec, 0x1b588bb3 # ARMv8.4-A (Firestorm, Icestorm)
           :arm_firestorm_icestorm
-        when 0xda33d83d             # ARMv8.4-A (Blizzard, Avalanche)
+        when 0xda33d83d             # ARMv8.5-A (Blizzard, Avalanche)
           :arm_blizzard_avalanche
         else
           :dunno
