@@ -1385,7 +1385,7 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { params(annotation: String, annotate_scopes: T::Boolean, annotate_properties: T::Boolean).void }
   def annotate!(annotation, annotate_scopes: T.unsafe(nil), annotate_properties: T.unsafe(nil)); end
 
-  sig { params(name: String, superclass_name: T.nilable(String), block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
+  sig { params(name: String, superclass_name: T.nilable(String), block: T.nilable(T.proc.params(scope: RBI::Scope).void)).returns(RBI::Scope) }
   def create_class(name, superclass_name: T.unsafe(nil), &block); end
 
   sig { params(name: String, value: String).void }
@@ -1397,13 +1397,13 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { params(name: String).void }
   def create_include(name); end
 
-  sig { params(name: String, parameters: T::Array[RBI::TypedParam], return_type: String, class_method: T::Boolean).void }
-  def create_method(name, parameters: T.unsafe(nil), return_type: T.unsafe(nil), class_method: T.unsafe(nil)); end
+  sig { params(name: String, parameters: T::Array[RBI::TypedParam], return_type: String, class_method: T::Boolean, visibility: RBI::Visibility).void }
+  def create_method(name, parameters: T.unsafe(nil), return_type: T.unsafe(nil), class_method: T.unsafe(nil), visibility: T.unsafe(nil)); end
 
   sig { params(name: String).void }
   def create_mixes_in_class_methods(name); end
 
-  sig { params(name: String, block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
+  sig { params(name: String, block: T.nilable(T.proc.params(scope: RBI::Scope).void)).returns(RBI::Scope) }
   def create_module(name, &block); end
 
   sig { params(constant: Module, block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
