@@ -57,6 +57,15 @@ class DynamicMixinCompiler
   def instance_attribute_writers; end
 end
 
+class Module
+  include ::ActiveSupport::Dependencies::ModuleConstMissing
+
+  def autoload(const_name, path); end
+end
+
+Module::DELEGATION_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
+Module::DELEGATION_RESERVED_METHOD_NAMES = T.let(T.unsafe(nil), Set)
+Module::RUBY_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
 module RBI; end
 
 class RBI::File
@@ -122,7 +131,7 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { params(annotation: String, annotate_scopes: T::Boolean, annotate_properties: T::Boolean).void }
   def annotate!(annotation, annotate_scopes: T.unsafe(nil), annotate_properties: T.unsafe(nil)); end
 
-  sig { params(name: String, superclass_name: T.nilable(String), block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
+  sig { params(name: String, superclass_name: T.nilable(String), block: T.nilable(T.proc.params(scope: RBI::Scope).void)).returns(RBI::Scope) }
   def create_class(name, superclass_name: T.unsafe(nil), &block); end
 
   sig { params(name: String, value: String).void }
@@ -134,13 +143,13 @@ class RBI::Tree < ::RBI::NodeWithComments
   sig { params(name: String).void }
   def create_include(name); end
 
-  sig { params(name: String, parameters: T::Array[RBI::TypedParam], return_type: String, class_method: T::Boolean).void }
-  def create_method(name, parameters: T.unsafe(nil), return_type: T.unsafe(nil), class_method: T.unsafe(nil)); end
+  sig { params(name: String, parameters: T::Array[RBI::TypedParam], return_type: String, class_method: T::Boolean, visibility: RBI::Visibility).void }
+  def create_method(name, parameters: T.unsafe(nil), return_type: T.unsafe(nil), class_method: T.unsafe(nil), visibility: T.unsafe(nil)); end
 
   sig { params(name: String).void }
   def create_mixes_in_class_methods(name); end
 
-  sig { params(name: String, block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
+  sig { params(name: String, block: T.nilable(T.proc.params(scope: RBI::Scope).void)).returns(RBI::Scope) }
   def create_module(name, &block); end
 
   sig { params(constant: Module, block: T.nilable(T.proc.params(scope: RBI::Scope).void)).void }
@@ -220,12 +229,17 @@ end
 
 module Tapioca
   class << self
+    sig { type_parameters(:Result).params(blk: T.proc.returns(T.type_parameter(:Result))).returns(T.type_parameter(:Result)) }
     def silence_warnings(&blk); end
   end
 end
 
 class Tapioca::Cli < ::Thor
+  include ::Tapioca::CliHelper
+  include ::Tapioca::ConfigHelper
+
   def __print_version; end
+  def clean_shims(*files_to_clean); end
   def dsl(*constants); end
   def gem(*gems); end
   def init; end
@@ -237,16 +251,24 @@ class Tapioca::Cli < ::Thor
   end
 end
 
+Tapioca::Cli::FILE_HEADER_OPTION_DESC = T.let(T.unsafe(nil), String)
+
+module Tapioca::CliHelper
+  sig { params(message: String, color: T.any(Symbol, T::Array[Symbol])).void }
+  def say_error(message = T.unsafe(nil), *color); end
+end
+
 module Tapioca::Compilers; end
 module Tapioca::Compilers::Dsl; end
 
 class Tapioca::Compilers::Dsl::Base
   include ::Tapioca::Reflection
+  include ::Tapioca::Compilers::Dsl::ParamHelper
 
   abstract!
 
-  sig { void }
-  def initialize; end
+  sig { params(compiler: Tapioca::Compilers::DslCompiler).void }
+  def initialize(compiler); end
 
   sig { params(error: String).void }
   def add_error(error); end
@@ -259,6 +281,9 @@ class Tapioca::Compilers::Dsl::Base
 
   sig { abstract.returns(T::Enumerable[Module]) }
   def gather_constants; end
+
+  sig { params(generator_name: String).returns(T::Boolean) }
+  def generator_enabled?(generator_name); end
 
   sig { params(constant: Module).returns(T::Boolean) }
   def handles?(constant); end
@@ -280,6 +305,21 @@ class Tapioca::Compilers::Dsl::Base
   sig { params(method_def: T.any(Method, UnboundMethod)).returns(String) }
   def compile_method_return_type_to_rbi(method_def); end
 
+  sig { params(scope: RBI::Scope, method_def: T.any(Method, UnboundMethod), class_method: T::Boolean).void }
+  def create_method_from_def(scope, method_def, class_method: T.unsafe(nil)); end
+
+  sig { params(method_def: T.any(Method, UnboundMethod), signature: T.untyped).returns(T::Array[String]) }
+  def parameters_types_from_signature(method_def, signature); end
+
+  class << self
+    sig { params(name: String).returns(T.nilable(T.class_of(Tapioca::Compilers::Dsl::Base))) }
+    def resolve(name); end
+  end
+end
+
+Tapioca::Compilers::Dsl::DSL_COMPILERS_DIR = T.let(T.unsafe(nil), String)
+
+module Tapioca::Compilers::Dsl::ParamHelper
   sig { params(name: String, type: String).returns(RBI::TypedParam) }
   def create_block_param(name, type:); end
 
@@ -292,9 +332,6 @@ class Tapioca::Compilers::Dsl::Base
   sig { params(name: String, type: String).returns(RBI::TypedParam) }
   def create_kw_rest_param(name, type:); end
 
-  sig { params(scope: RBI::Scope, method_def: T.any(Method, UnboundMethod), class_method: T::Boolean).void }
-  def create_method_from_def(scope, method_def, class_method: T.unsafe(nil)); end
-
   sig { params(name: String, type: String, default: String).returns(RBI::TypedParam) }
   def create_opt_param(name, type:, default:); end
 
@@ -306,19 +343,17 @@ class Tapioca::Compilers::Dsl::Base
 
   sig { params(param: RBI::Param, type: String).returns(RBI::TypedParam) }
   def create_typed_param(param, type); end
-
-  sig { params(method_def: T.any(Method, UnboundMethod), signature: T.untyped).returns(T::Array[String]) }
-  def parameters_types_from_signature(method_def, signature); end
 end
 
-Tapioca::Compilers::Dsl::COMPILERS_PATH = T.let(T.unsafe(nil), String)
-
 class Tapioca::Compilers::DslCompiler
-  sig { params(requested_constants: T::Array[Module], requested_generators: T::Array[T.class_of(Tapioca::Compilers::Dsl::Base)], excluded_generators: T::Array[T.class_of(Tapioca::Compilers::Dsl::Base)], error_handler: T.nilable(T.proc.params(error: String).void)).void }
-  def initialize(requested_constants:, requested_generators: T.unsafe(nil), excluded_generators: T.unsafe(nil), error_handler: T.unsafe(nil)); end
+  sig { params(requested_constants: T::Array[Module], requested_generators: T::Array[T.class_of(Tapioca::Compilers::Dsl::Base)], excluded_generators: T::Array[T.class_of(Tapioca::Compilers::Dsl::Base)], error_handler: T.proc.params(error: String).void, number_of_workers: T.nilable(Integer)).void }
+  def initialize(requested_constants:, requested_generators: T.unsafe(nil), excluded_generators: T.unsafe(nil), error_handler: T.unsafe(nil), number_of_workers: T.unsafe(nil)); end
 
   sig { returns(T.proc.params(error: String).void) }
   def error_handler; end
+
+  sig { params(generator_name: String).returns(T::Boolean) }
+  def generator_enabled?(generator_name); end
 
   sig { returns(T::Enumerable[Tapioca::Compilers::Dsl::Base]) }
   def generators; end
@@ -326,7 +361,7 @@ class Tapioca::Compilers::DslCompiler
   sig { returns(T::Array[Module]) }
   def requested_constants; end
 
-  sig { params(blk: T.proc.params(constant: Module, rbi: RBI::File).void).void }
+  sig { type_parameters(:T).params(blk: T.proc.params(constant: Module, rbi: RBI::File).returns(T.type_parameter(:T))).returns(T::Array[T.type_parameter(:T)]) }
   def run(&blk); end
 
   private
@@ -404,6 +439,9 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   def indent; end
 
   private
+
+  sig { params(tree: RBI::Tree, mods: T::Array[Module], mixin_type: Tapioca::Trackers::Mixin::Type).void }
+  def add_mixins(tree, mods, mixin_type); end
 
   sig { params(name: String).void }
   def add_to_alias_namespace(name); end
@@ -504,14 +542,14 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   sig { params(mod: Module).returns(T::Hash[Symbol, T::Array[Symbol]]) }
   def method_names_by_visibility(mod); end
 
+  sig { params(mod: Module, mixin_type: Tapioca::Trackers::Mixin::Type, mixin_locations: T::Hash[Tapioca::Trackers::Mixin::Type, T::Hash[Module, T::Array[String]]]).returns(T::Boolean) }
+  def mixed_in_by_gem?(mod, mixin_type, mixin_locations); end
+
   sig { params(constant: Module).returns(T.nilable(String)) }
   def name_of(constant); end
 
   sig { params(constant: Module, class_name: T.nilable(String)).returns(T.nilable(String)) }
   def name_of_proxy_target(constant, class_name); end
-
-  sig { params(symbol: String, inherit: T::Boolean, namespace: Module).returns(BasicObject) }
-  def resolve_constant(symbol, inherit: T.unsafe(nil), namespace: T.unsafe(nil)); end
 
   sig { params(sig_string: String).returns(String) }
   def sanitize_signature_types(sig_string); end
@@ -576,67 +614,50 @@ class Tapioca::Compilers::TodosCompiler
   def list_todos; end
 end
 
-class Tapioca::Config < ::T::Struct
-  const :doc, T::Boolean, default: T.unsafe(nil)
-  const :exclude, T::Array[String]
-  const :exclude_generators, T::Array[String]
-  const :file_header, T::Boolean, default: T.unsafe(nil)
-  const :generators, T::Array[String]
-  const :outdir, String
-  const :postrequire, String
-  const :prerequire, T.nilable(String)
-  const :todos_path, String
-  const :typed_overrides, T::Hash[String, String]
+module Tapioca::ConfigHelper
+  sig { params(args: T.untyped, local_options: T.untyped, config: T.untyped).void }
+  def initialize(args = T.unsafe(nil), local_options = T.unsafe(nil), config = T.unsafe(nil)); end
 
-  sig { returns(Pathname) }
-  def outpath; end
+  sig { returns(String) }
+  def command_name; end
 
-  class << self
-    def inherited(s); end
-  end
+  sig { returns(Thor::CoreExt::HashWithIndifferentAccess) }
+  def defaults; end
+
+  sig { returns(Thor::CoreExt::HashWithIndifferentAccess) }
+  def options; end
+
+  private
+
+  sig { params(options: Thor::CoreExt::HashWithIndifferentAccess).returns(Thor::CoreExt::HashWithIndifferentAccess) }
+  def config_options(options); end
+
+  sig { params(options: T::Hash[Symbol, Thor::Option]).void }
+  def filter_defaults(options); end
+
+  sig { params(options: T.nilable(Thor::CoreExt::HashWithIndifferentAccess)).returns(Thor::CoreExt::HashWithIndifferentAccess) }
+  def merge_options(*options); end
 end
 
-Tapioca::Config::DEFAULT_COMMAND = T.let(T.unsafe(nil), String)
-Tapioca::Config::DEFAULT_DSLDIR = T.let(T.unsafe(nil), String)
-Tapioca::Config::DEFAULT_GEMDIR = T.let(T.unsafe(nil), String)
-Tapioca::Config::DEFAULT_OVERRIDES = T.let(T.unsafe(nil), Hash)
-Tapioca::Config::DEFAULT_POSTREQUIRE = T.let(T.unsafe(nil), String)
-Tapioca::Config::DEFAULT_RBIDIR = T.let(T.unsafe(nil), String)
-Tapioca::Config::DEFAULT_TODOSPATH = T.let(T.unsafe(nil), String)
-Tapioca::Config::SORBET_CONFIG = T.let(T.unsafe(nil), String)
-Tapioca::Config::SORBET_PATH = T.let(T.unsafe(nil), String)
-Tapioca::Config::TAPIOCA_CONFIG = T.let(T.unsafe(nil), String)
-Tapioca::Config::TAPIOCA_PATH = T.let(T.unsafe(nil), String)
-
-class Tapioca::ConfigBuilder
-  class << self
-    sig { params(command: Symbol, options: T::Hash[String, T.untyped]).returns(Tapioca::Config) }
-    def from_options(command, options); end
-
-    private
-
-    sig { returns(T::Hash[String, T.untyped]) }
-    def config_options; end
-
-    sig { params(command: Symbol).returns(T::Hash[String, T.untyped]) }
-    def default_options(command); end
-
-    sig { params(options: T::Hash[String, T.untyped]).returns(T::Hash[String, T.untyped]) }
-    def merge_options(*options); end
-  end
-end
-
-Tapioca::ConfigBuilder::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
-
-module Tapioca::ConstantLocator
-  extend ::Tapioca::Reflection
-
-  class << self
-    def files_for(klass); end
-  end
-end
-
+Tapioca::DEFAULT_COMMAND = T.let(T.unsafe(nil), String)
+Tapioca::DEFAULT_DSL_DIR = T.let(T.unsafe(nil), String)
+Tapioca::DEFAULT_GEM_DIR = T.let(T.unsafe(nil), String)
+Tapioca::DEFAULT_OVERRIDES = T.let(T.unsafe(nil), Hash)
+Tapioca::DEFAULT_POSTREQUIRE_FILE = T.let(T.unsafe(nil), String)
+Tapioca::DEFAULT_RBI_DIR = T.let(T.unsafe(nil), String)
+Tapioca::DEFAULT_SHIM_DIR = T.let(T.unsafe(nil), String)
+Tapioca::DEFAULT_TODO_FILE = T.let(T.unsafe(nil), String)
 class Tapioca::Error < ::StandardError; end
+
+class Tapioca::Executor
+  sig { params(queue: T::Array[T.untyped], number_of_workers: T.nilable(Integer)).void }
+  def initialize(queue, number_of_workers: T.unsafe(nil)); end
+
+  sig { type_parameters(:T).params(block: T.proc.params(item: T.untyped).returns(T.type_parameter(:T))).returns(T::Array[T.type_parameter(:T)]) }
+  def run_in_parallel(&block); end
+end
+
+Tapioca::Executor::MINIMUM_ITEMS_PER_WORKER = T.let(T.unsafe(nil), Integer)
 
 class Tapioca::Gemfile
   sig { void }
@@ -686,6 +707,15 @@ class Tapioca::Gemfile::GemSpec
 
   sig { params(path: String).returns(T::Boolean) }
   def contains_path?(path); end
+
+  sig { returns(T::Boolean) }
+  def export_rbi_files?; end
+
+  sig { returns(T::Array[String]) }
+  def exported_rbi_files; end
+
+  sig { returns(RBI::MergeTree) }
+  def exported_rbi_tree; end
 
   sig { returns(T::Array[Pathname]) }
   def files; end
@@ -739,6 +769,7 @@ Tapioca::Gemfile::Spec = T.type_alias { T.any(Bundler::StubSpecification, Gem::S
 module Tapioca::Generators; end
 
 class Tapioca::Generators::Base
+  include ::Tapioca::CliHelper
   include ::Thor::Base
   include ::Thor::Invocation
   include ::Thor::Shell
@@ -758,8 +789,8 @@ class Tapioca::Generators::Base
   sig { params(path: T.any(Pathname, String), content: String, force: T::Boolean, skip: T::Boolean, verbose: T::Boolean).void }
   def create_file(path, content, force: T.unsafe(nil), skip: T.unsafe(nil), verbose: T.unsafe(nil)); end
 
-  sig { params(message: String, color: T.any(Symbol, T::Array[Symbol])).void }
-  def say_error(message = T.unsafe(nil), *color); end
+  sig { params(path: T.any(Pathname, String), verbose: T::Boolean).void }
+  def remove_file(path, verbose: T.unsafe(nil)); end
 end
 
 class Tapioca::Generators::Base::FileWriter < ::Thor
@@ -768,8 +799,8 @@ class Tapioca::Generators::Base::FileWriter < ::Thor
 end
 
 class Tapioca::Generators::Dsl < ::Tapioca::Generators::Base
-  sig { params(requested_constants: T::Array[String], outpath: Pathname, generators: T::Array[String], exclude_generators: T::Array[String], file_header: T::Boolean, compiler_path: String, tapioca_path: String, default_command: String, file_writer: Thor::Actions, should_verify: T::Boolean, quiet: T::Boolean, verbose: T::Boolean).void }
-  def initialize(requested_constants:, outpath:, generators:, exclude_generators:, file_header:, compiler_path:, tapioca_path:, default_command:, file_writer: T.unsafe(nil), should_verify: T.unsafe(nil), quiet: T.unsafe(nil), verbose: T.unsafe(nil)); end
+  sig { params(requested_constants: T::Array[String], outpath: Pathname, only: T::Array[String], exclude: T::Array[String], file_header: T::Boolean, compiler_path: String, tapioca_path: String, default_command: String, file_writer: Thor::Actions, should_verify: T::Boolean, quiet: T::Boolean, verbose: T::Boolean, number_of_workers: T.nilable(Integer)).void }
+  def initialize(requested_constants:, outpath:, only:, exclude:, file_header:, compiler_path:, tapioca_path:, default_command:, file_writer: T.unsafe(nil), should_verify: T.unsafe(nil), quiet: T.unsafe(nil), verbose: T.unsafe(nil), number_of_workers: T.unsafe(nil)); end
 
   sig { override.void }
   def generate; end
@@ -804,6 +835,9 @@ class Tapioca::Generators::Dsl < ::Tapioca::Generators::Base
   def load_application(eager_load:); end
 
   sig { void }
+  def load_dsl_extensions; end
+
+  sig { void }
   def load_dsl_generators; end
 
   sig { returns(Tapioca::Loader) }
@@ -821,9 +855,6 @@ class Tapioca::Generators::Dsl < ::Tapioca::Generators::Base
   sig { params(path: Pathname).returns(T::Array[Pathname]) }
   def rbi_files_in(path); end
 
-  sig { params(filename: Pathname).void }
-  def remove(filename); end
-
   sig { params(diff: T::Hash[String, Symbol], command: String).void }
   def report_diff_and_exit_if_out_of_date(diff, command); end
 
@@ -835,8 +866,8 @@ class Tapioca::Generators::Dsl < ::Tapioca::Generators::Base
 end
 
 class Tapioca::Generators::Gem < ::Tapioca::Generators::Base
-  sig { params(gem_names: T::Array[String], gem_excludes: T::Array[String], prerequire: T.nilable(String), postrequire: String, typed_overrides: T::Hash[String, String], default_command: String, outpath: Pathname, file_header: T::Boolean, doc: T::Boolean, file_writer: Thor::Actions).void }
-  def initialize(gem_names:, gem_excludes:, prerequire:, postrequire:, typed_overrides:, default_command:, outpath:, file_header:, doc:, file_writer: T.unsafe(nil)); end
+  sig { params(gem_names: T::Array[String], exclude: T::Array[String], prerequire: T.nilable(String), postrequire: String, typed_overrides: T::Hash[String, String], default_command: String, outpath: Pathname, file_header: T::Boolean, doc: T::Boolean, include_exported_rbis: T::Boolean, file_writer: Thor::Actions, number_of_workers: T.nilable(Integer)).void }
+  def initialize(gem_names:, exclude:, prerequire:, postrequire:, typed_overrides:, default_command:, outpath:, file_header:, doc:, include_exported_rbis:, file_writer: T.unsafe(nil), number_of_workers: T.unsafe(nil)); end
 
   sig { override.void }
   def generate; end
@@ -885,6 +916,9 @@ class Tapioca::Generators::Gem < ::Tapioca::Generators::Base
   sig { returns(Tapioca::Loader) }
   def loader; end
 
+  sig { params(gem: Tapioca::Gemfile::GemSpec, file: RBI::File).void }
+  def merge_with_exported_rbi(gem, file); end
+
   sig { params(old_filename: Pathname, new_filename: Pathname).void }
   def move(old_filename, new_filename); end
 
@@ -897,9 +931,6 @@ class Tapioca::Generators::Gem < ::Tapioca::Generators::Base
   sig { void }
   def perform_sync_verification; end
 
-  sig { params(filename: Pathname).void }
-  def remove(filename); end
-
   sig { returns(T::Array[String]) }
   def removed_rbis; end
 
@@ -911,8 +942,8 @@ class Tapioca::Generators::Gem < ::Tapioca::Generators::Base
 end
 
 class Tapioca::Generators::Init < ::Tapioca::Generators::Base
-  sig { params(sorbet_config: String, default_postrequire: String, default_command: String, file_writer: Thor::Actions).void }
-  def initialize(sorbet_config:, default_postrequire:, default_command:, file_writer: T.unsafe(nil)); end
+  sig { params(sorbet_config: String, tapioca_config: String, default_postrequire: String, default_command: String, file_writer: Thor::Actions).void }
+  def initialize(sorbet_config:, tapioca_config:, default_postrequire:, default_command:, file_writer: T.unsafe(nil)); end
 
   sig { override.void }
   def generate; end
@@ -920,16 +951,16 @@ class Tapioca::Generators::Init < ::Tapioca::Generators::Base
   private
 
   sig { void }
-  def create_config; end
+  def create_binstub; end
 
   sig { void }
   def create_post_require; end
 
   sig { void }
-  def generate_binstub; end
+  def create_sorbet_config; end
 
   sig { void }
-  def generate_binstub!; end
+  def create_tapioca_config; end
 
   sig { returns(Bundler::Installer) }
   def installer; end
@@ -947,8 +978,8 @@ class Tapioca::Generators::Require < ::Tapioca::Generators::Base
 end
 
 class Tapioca::Generators::Todo < ::Tapioca::Generators::Base
-  sig { params(todos_path: String, file_header: T::Boolean, default_command: String, file_writer: Thor::Actions).void }
-  def initialize(todos_path:, file_header:, default_command:, file_writer: T.unsafe(nil)); end
+  sig { params(todo_file: String, file_header: T::Boolean, default_command: String, file_writer: Thor::Actions).void }
+  def initialize(todo_file:, file_header:, default_command:, file_writer: T.unsafe(nil)); end
 
   sig { override.void }
   def generate; end
@@ -1023,6 +1054,9 @@ module Tapioca::Reflection
   sig { params(object: BasicObject).returns(Class) }
   def class_of(object); end
 
+  sig { params(symbol: String, inherit: T::Boolean, namespace: Module).returns(BasicObject) }
+  def constantize(symbol, inherit: T.unsafe(nil), namespace: T.unsafe(nil)); end
+
   sig { params(constant: Module).returns(T::Array[Symbol]) }
   def constants_of(constant); end
 
@@ -1078,6 +1112,52 @@ Tapioca::Reflection::PROTECTED_INSTANCE_METHODS_METHOD = T.let(T.unsafe(nil), Un
 Tapioca::Reflection::PUBLIC_INSTANCE_METHODS_METHOD = T.let(T.unsafe(nil), UnboundMethod)
 Tapioca::Reflection::SINGLETON_CLASS_METHOD = T.let(T.unsafe(nil), UnboundMethod)
 Tapioca::Reflection::SUPERCLASS_METHOD = T.let(T.unsafe(nil), UnboundMethod)
+Tapioca::SORBET_CONFIG_FILE = T.let(T.unsafe(nil), String)
+Tapioca::SORBET_DIR = T.let(T.unsafe(nil), String)
+Tapioca::TAPIOCA_CONFIG_FILE = T.let(T.unsafe(nil), String)
+Tapioca::TAPIOCA_DIR = T.let(T.unsafe(nil), String)
+module Tapioca::Trackers; end
+
+module Tapioca::Trackers::Autoload
+  class << self
+    sig { void }
+    def eager_load_all!; end
+
+    sig { params(constant_name: String).void }
+    def register(constant_name); end
+
+    sig { type_parameters(:Result).params(block: T.proc.returns(T.type_parameter(:Result))).returns(T.type_parameter(:Result)) }
+    def with_disabled_exits(&block); end
+  end
+end
+
+Tapioca::Trackers::Autoload::NOOP_METHOD = T.let(T.unsafe(nil), Proc)
+
+module Tapioca::Trackers::ConstantDefinition
+  extend ::Tapioca::Reflection
+
+  class << self
+    def files_for(klass); end
+  end
+end
+
+module Tapioca::Trackers::Mixin
+  class << self
+    sig { params(constant: Module).returns(T::Hash[Tapioca::Trackers::Mixin::Type, T::Hash[Module, T::Array[String]]]) }
+    def mixin_locations_for(constant); end
+
+    sig { params(constant: Module, mod: Module, mixin_type: Tapioca::Trackers::Mixin::Type, locations: T.nilable(T::Array[Thread::Backtrace::Location])).void }
+    def register(constant, mod, mixin_type, locations); end
+  end
+end
+
+class Tapioca::Trackers::Mixin::Type < ::T::Enum
+  enums do
+    Prepend = new
+    Include = new
+    Extend = new
+  end
+end
 
 class Tapioca::TypeMember < ::T::Types::TypeMember
   sig { params(variance: Symbol, fixed: T.untyped, lower: T.untyped, upper: T.untyped).void }
