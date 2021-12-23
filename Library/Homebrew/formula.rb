@@ -2021,11 +2021,11 @@ class Formula
   def to_recursive_bottle_hash(top_level: true)
     bottle = bottle_hash
 
-    bottles = bottle["files"].map do |tag, file|
+    bottles = bottle["files"].to_h do |tag, file|
       info = { "url" => file["url"] }
       info["sha256"] = file["sha256"] if tap.name != "homebrew/core"
       [tag.to_s, info]
-    end.to_h
+    end
 
     hash = {
       "name"        => name,

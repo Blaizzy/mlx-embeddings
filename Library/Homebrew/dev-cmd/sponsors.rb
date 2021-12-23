@@ -62,7 +62,7 @@ module Homebrew
     content.gsub!(/(Homebrew is generously supported by) .*\Z/m, "\\1 #{named_sponsors.to_sentence}.\n")
     content << "\n#{logo_sponsors.join}\n" if logo_sponsors.presence
 
-    File.open(readme, "w+") { |f| f.write(content) }
+    File.write(readme, content)
 
     diff = system_command "git", args: [
       "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "README.md"

@@ -17,26 +17,26 @@ describe Utils::Git do
     HOMEBREW_CACHE.cd do
       system git, "init"
 
-      File.open("README.md", "w") { |f| f.write("README") }
+      File.write("README.md", "README")
       system git, "add", HOMEBREW_CACHE/"README.md"
       system git, "commit", "-m", "File added"
       @h1 = `git rev-parse HEAD`
 
-      File.open("README.md", "w") { |f| f.write("# README") }
+      File.write("README.md", "# README")
       system git, "add", HOMEBREW_CACHE/"README.md"
       system git, "commit", "-m", "written to File"
       @h2 = `git rev-parse HEAD`
 
-      File.open("LICENSE.txt", "w") { |f| f.write("LICENCE") }
+      File.write("LICENSE.txt", "LICENCE")
       system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
       system git, "commit", "-m", "File added"
       @h3 = `git rev-parse HEAD`
 
-      File.open("LICENSE.txt", "w") { |f| f.write("LICENSE") }
+      File.write("LICENSE.txt", "LICENSE")
       system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
       system git, "commit", "-m", "written to File"
 
-      File.open("LICENSE.txt", "w") { |f| f.write("test") }
+      File.write("LICENSE.txt", "test")
       system git, "add", HOMEBREW_CACHE/"LICENSE.txt"
       system git, "commit", "-m", "written to File"
       @cherry_pick_commit = `git rev-parse HEAD`

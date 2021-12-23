@@ -189,8 +189,8 @@ module Homebrew
             h, stdout = stdout.split("\r\n\r\n", 2)
 
             headers << h.split("\r\n").drop(1)
-                        .map { |header| header.split(/:\s*/, 2) }
-                        .to_h.transform_keys(&:downcase)
+                        .to_h { |header| header.split(/:\s*/, 2) }
+                        .transform_keys(&:downcase)
           end
 
           return headers if status.success?

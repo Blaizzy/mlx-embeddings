@@ -52,7 +52,7 @@ class Descriptions
   private
 
   def short_names
-    @short_names ||= @descriptions.keys.map { |k| [k, k.split("/").last] }.to_h
+    @short_names ||= @descriptions.keys.to_h { |k| [k, k.split("/").last] }
   end
 
   def short_name_counts

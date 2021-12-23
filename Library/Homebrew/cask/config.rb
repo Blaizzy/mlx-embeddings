@@ -77,7 +77,7 @@ module Cask
         .returns(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])])
     }
     def self.canonicalize(config)
-      config.map do |k, v|
+      config.to_h do |k, v|
         key = k.to_sym
 
         if DEFAULT_DIRS.key?(key)
@@ -85,7 +85,7 @@ module Cask
         else
           [key, v]
         end
-      end.to_h
+      end
     end
 
     sig { returns(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])]) }

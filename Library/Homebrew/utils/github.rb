@@ -351,7 +351,7 @@ module GitHub
     end
     raise API::Error, "The team #{org}/#{team} does not exist" if result["organization"]["team"].blank?
 
-    result["organization"]["team"]["members"]["nodes"].map { |member| [member["login"], member["name"]] }.to_h
+    result["organization"]["team"]["members"]["nodes"].to_h { |member| [member["login"], member["name"]] }
   end
 
   def sponsors_by_tier(user)
