@@ -2,7 +2,7 @@
 
 The following commands are used by Homebrew contributors to set up a fork of Homebrew's Git repository on GitHub, create a new branch and create a GitHub pull request ("PR") of the changes in that branch.
 
-Depending on the change you want to make, you need to send the pull request to the appropriate one of Homebrew's main repositories. If you want to submit a change to Homebrew core code (the `brew` implementation), you should open the pull request on [Homebrew/brew](https://github.com/Homebrew/brew). If you want to submit a change for a formula, you should open the pull request on the [homebrew/core](https://github.com/Homebrew/homebrew-core) tap, for casks you should open the pull request on the [homebrew/cask](https://github.com/Homebrew/homebrew-tap) tap or another [official tap](https://github.com/Homebrew), based on the formula type.
+Depending on the change you want to make, you need to send the pull request to the appropriate one of Homebrew's main repositories. If you want to submit a change to Homebrew core code (the `brew` implementation), you should open the pull request on [Homebrew/brew](https://github.com/Homebrew/brew). If you want to submit a change for a formula, you should open the pull request on the [homebrew/core](https://github.com/Homebrew/homebrew-core) tap, for casks you should open the pull request on the [homebrew/cask](https://github.com/Homebrew/homebrew-cask) tap or another [official tap](https://github.com/Homebrew), based on the formula type.
 
 ## Submit a new version of an existing formula
 1. Use `brew bump-formula-pr` to do everything (i.e. forking, committing, pushing) with a single command. Run `brew bump-formula-pr --help` to learn more.
@@ -70,9 +70,9 @@ To make a new branch and submit it for review, create a GitHub pull request with
     ```sh
     git checkout -b <YOUR_BRANCH_NAME> origin/master
     ```
-4. Make your changes. For formulae, use `brew edit` or your favourite text editor, following all the guidelines in the [Formula Cookbook](Formula-Cookbook.md) or [Cask Cookbook](Cask-Cookbook.md).
+4. Make your changes. For formulae or casks, use `brew edit` or your favourite text editor, following all the guidelines in the [Formula Cookbook](Formula-Cookbook.md) or [Cask Cookbook](Cask-Cookbook.md).
   * If there's a `bottle do` block in the formula, don't remove or change it; we'll update it when we pull your PR.
-5. Test your changes by running the following, and ensure they all pass without issue. For changed formulae and cask, make sure you do the `brew audit` step while your changed formula/cask is installed.
+5. Test your changes by running the following, and ensure they all pass without issue. For changed formulae and casks, make sure you do the `brew audit` step while your changed formula/cask is installed.
     ```sh
     brew tests
     brew install --build-from-source <CHANGED_FORMULA|CHANGED_CASK>

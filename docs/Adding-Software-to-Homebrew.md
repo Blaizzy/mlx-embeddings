@@ -3,9 +3,9 @@
 Are you missing your favorite software in Homebrew? Then you're the perfect person to resolve this problem.
 
 If you want to add software that is either closed source, or a GUI only program you will want to follow the guide for [Casks](#casks). Otherwise follow the guide for [Formulae](#formulae).
-See also: https://docs.brew.sh/Formula-Cookbook#homebrew-terminology
+See also: [Homebrew Terminology](https://docs.brew.sh/Formula-Cookbook#homebrew-terminology)
 
-Before you start, please check the open pull requests for [homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) or [homebrew-cask](https://github.com/Homebrew/homebrew-core/pulls), to make sure no one else beat you to the punch.
+Before you start, please check the open pull requests for [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) or [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-core/pulls), to make sure no one else beat you to the punch.
 
 Next, you will want to go through the [Acceptable Formulae](Acceptable-Formulae.md) or [Acceptable Casks](Acceptable-Casks.md) documentation to determine if the software is an appropriate addition to Homebrew. If you are creating a formula for an alternative version of software already in Homebrew (for example, a major/minor version that significantly differs from the existing version), be sure to read the [Versions](Versions.md) documentation to understand versioned formulae requirements.
 
