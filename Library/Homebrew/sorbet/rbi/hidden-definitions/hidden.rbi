@@ -1197,6 +1197,14 @@ module DidYouMean::Correctable
   def to_s(); end
 end
 
+class DidYouMean::Formatter
+  def message_for(corrections); end
+end
+
+class DidYouMean::Formatter
+  def self.message_for(corrections); end
+end
+
 module DidYouMean::Jaro
   def self.distance(str1, str2); end
 end
@@ -1241,12 +1249,16 @@ class DidYouMean::NullChecker
   def initialize(*arg); end
 end
 
-class DidYouMean::PlainFormatter
-  def message_for(corrections); end
+class DidYouMean::PatternKeyNameChecker
+  def corrections(); end
+
+  def initialize(no_matching_pattern_key_error); end
 end
 
-class DidYouMean::PlainFormatter
+class DidYouMean::PatternKeyNameChecker
 end
+
+DidYouMean::PlainFormatter = DidYouMean::Formatter
 
 class DidYouMean::RequirePathChecker
   def corrections(); end
@@ -1310,6 +1322,8 @@ module DidYouMean
   def self.formatter(); end
 
   def self.formatter=(formatter); end
+
+  def self.spell_checkers(); end
 end
 
 class Dir
