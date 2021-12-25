@@ -99,10 +99,10 @@ module Cask
 
         require "cask/auditor"
 
-        casks.map do |cask|
+        casks.to_h do |cask|
           odebug "Auditing Cask #{cask}"
           [cask.sourcefile_path, Auditor.audit(cask, **options)]
-        end.to_h
+        end
       end
     end
   end

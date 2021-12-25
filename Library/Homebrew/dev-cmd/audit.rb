@@ -166,7 +166,7 @@ module Homebrew
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
     new_formula_problem_lines = []
-    formula_results = audit_formulae.sort.map do |f|
+    formula_results = audit_formulae.sort.to_h do |f|
       only = only_cops ? ["style"] : args.only
       options = {
         new_formula:         new_formula,
@@ -198,7 +198,7 @@ module Homebrew
       end
 
       [f.path, { errors: fa.problems + fa.new_formula_problems, warnings: [] }]
-    end.to_h
+    end
 
     cask_results = if audit_casks.empty?
       {}

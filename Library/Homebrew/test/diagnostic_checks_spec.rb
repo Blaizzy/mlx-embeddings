@@ -16,9 +16,7 @@ describe Homebrew::Diagnostic::Checks do
       anaconda = "#{path}/anaconda"
       python = "#{path}/python"
       FileUtils.touch anaconda
-      File.open(python, "w") do |file|
-        file.write("#! #{`which bash`}\necho -n '#{python}'\n")
-      end
+      File.write(python, "#! #{`which bash`}\necho -n '#{python}'\n")
       FileUtils.chmod 0755, anaconda
       FileUtils.chmod 0755, python
 

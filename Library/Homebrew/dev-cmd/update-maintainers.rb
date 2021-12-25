@@ -54,7 +54,7 @@ module Homebrew
     content.gsub!(/(Homebrew's other current maintainers are).*\./,
                   "\\1 #{sentences[:other]}.")
 
-    File.open(readme, "w+") { |f| f.write(content) }
+    File.write(readme, content)
 
     diff = system_command "git", args: [
       "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "README.md"

@@ -56,7 +56,7 @@ module Utils
       errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.blank?
 
       Array(paths).each do |path|
-        str = File.open(path, "rb", &:read) || ""
+        str = File.binread(path)
         s = StringInreplaceExtension.new(str)
 
         if before.nil? && after.nil?
@@ -75,7 +75,7 @@ module Utils
 
     # @api private
     def inreplace_pairs(path, replacement_pairs, read_only_run: false, silent: false)
-      str = File.open(path, "rb", &:read) || ""
+      str = File.binread(path)
       contents = StringInreplaceExtension.new(str)
       replacement_pairs.each do |old, new|
         ohai "replace #{old.inspect} with #{new.inspect}" unless silent

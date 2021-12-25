@@ -53,9 +53,9 @@ describe "brew pr-pull" do
           safe_system Utils::Git.git, "add", formula_file
           safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
           original_hash = `git rev-parse HEAD`.chomp
-          File.open(formula_file, "w") { |f| f.write(formula_revision) }
+          File.write(formula_file, formula_revision)
           safe_system Utils::Git.git, "commit", formula_file, "-m", "revision"
-          File.open(formula_file, "w") { |f| f.write(formula_version) }
+          File.write(formula_file, formula_version)
           safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
           described_class.autosquash!(original_hash, path: path)
           expect(path.git_commit_message).to include("foo 2.0")
