@@ -145,8 +145,6 @@ module Homebrew
         end
 
         cask.languages.each do |language|
-          next if language == cask.language
-
           lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
           replacement_pairs << fetch_cask(tmp_contents, config: lang_config)
         end
