@@ -151,21 +151,18 @@ RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation::MSG = T.let(T.unsafe(nil)
 RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::RSpec::Capybara::FeatureMethods < ::RuboCop::Cop::RSpec::Base
+  include ::RuboCop::Cop::RSpec::InsideExampleGroup
   extend ::RuboCop::Cop::AutoCorrector
 
   def capybara_speak(param0 = T.unsafe(nil)); end
   def feature_method(param0 = T.unsafe(nil)); end
   def message(range); end
   def on_block(node); end
-  def spec?(param0 = T.unsafe(nil)); end
 
   private
 
   def enabled?(method_name); end
   def enabled_methods; end
-  def inside_spec?(node); end
-  def root_node?(node); end
-  def root_with_siblings?(node); end
 end
 
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MAP = T.let(T.unsafe(nil), Hash)
@@ -573,6 +570,7 @@ RuboCop::Cop::RSpec::FactoryBot::AttributeDefinedStatically::MSG = T.let(T.unsaf
 
 class RuboCop::Cop::RSpec::FactoryBot::CreateList < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
+  include ::RuboCop::RSpec::FactoryBot::Language
   extend ::RuboCop::Cop::AutoCorrector
 
   def factory_call(param0 = T.unsafe(nil)); end
@@ -643,6 +641,23 @@ end
 RuboCop::Cop::RSpec::FactoryBot::FactoryClassName::ALLOWED_CONSTANTS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::RSpec::FactoryBot::FactoryClassName::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::FactoryBot::FactoryClassName::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::RSpec::FactoryBot::SyntaxMethods < ::RuboCop::Cop::RSpec::Base
+  include ::RuboCop::Cop::RSpec::InsideExampleGroup
+  include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::RSpec::FactoryBot::Language
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+
+  private
+
+  def crime_scene(node); end
+  def offense(node); end
+end
+
+RuboCop::Cop::RSpec::FactoryBot::SyntaxMethods::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::FactoryBot::SyntaxMethods::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
 
 class RuboCop::Cop::RSpec::FilePath < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::RSpec::TopLevelGroup
@@ -807,6 +822,14 @@ module RuboCop::Cop::RSpec::InflectedHelper
 end
 
 RuboCop::Cop::RSpec::InflectedHelper::MSG_INFLECTED = T.let(T.unsafe(nil), String)
+
+module RuboCop::Cop::RSpec::InsideExampleGroup
+  private
+
+  def example_group_root?(node); end
+  def example_group_root_with_siblings?(node); end
+  def inside_example_group?(node); end
+end
 
 class RuboCop::Cop::RSpec::InstanceSpy < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -1677,6 +1700,13 @@ end
 
 RuboCop::RSpec::FactoryBot::ATTRIBUTE_DEFINING_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::RSpec::FactoryBot::DEFINITION_PROXY_METHODS = T.let(T.unsafe(nil), Array)
+
+module RuboCop::RSpec::FactoryBot::Language
+  extend ::RuboCop::AST::NodePattern::Macros
+
+  def factory_bot?(param0 = T.unsafe(nil)); end
+end
+
 RuboCop::RSpec::FactoryBot::RESERVED_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::RSpec::FactoryBot::UNPROXIED_METHODS = T.let(T.unsafe(nil), Array)
 
