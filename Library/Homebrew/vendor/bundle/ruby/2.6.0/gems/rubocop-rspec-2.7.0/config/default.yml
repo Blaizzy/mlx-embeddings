@@ -196,8 +196,9 @@ RSpec/DescribeClass:
       - system
       - mailbox
       - aruba
+      - task
   VersionAdded: '1.0'
-  VersionChanged: '2.5'
+  VersionChanged: '2.7'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/DescribeClass
 
 RSpec/DescribeMethod:
@@ -815,6 +816,13 @@ RSpec/FactoryBot/FactoryClassName:
   VersionAdded: '1.37'
   VersionChanged: '2.0'
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/FactoryBot/FactoryClassName
+
+RSpec/FactoryBot/SyntaxMethods:
+  Description: Use shorthands from `FactoryBot::Syntax::Methods` in your specs.
+  Enabled: pending
+  SafeAutoCorrect: false
+  VersionAdded: '2.7'
+  StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/FactoryBot/SyntaxMethods
 
 RSpec/Rails:
   Enabled: true
