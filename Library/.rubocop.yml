@@ -214,9 +214,13 @@ Rails/ActiveSupportAliases:
   Enabled: true
 Rails/Blank:
   Enabled: true
+Rails/CompactBlank:
+  Enabled: true
 Rails/Delegate:
   Enabled: false # TODO
 Rails/DelegateAllowBlank:
+  Enabled: true
+Rails/DurationArithmetic:
   Enabled: true
 Rails/ExpandedDateRange:
   Enabled: true
