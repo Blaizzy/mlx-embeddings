@@ -46,10 +46,7 @@ class RuboCop::Cop::Performance::BigDecimalWithNumericArgument < ::RuboCop::Cop:
 
   def big_decimal_with_numeric_argument?(param0 = T.unsafe(nil)); end
   def on_send(node); end
-
-  private
-
-  def specifies_precision?(node); end
+  def to_d?(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Performance::BigDecimalWithNumericArgument::MSG = T.let(T.unsafe(nil), String)
@@ -406,8 +403,10 @@ class RuboCop::Cop::Performance::MapCompact < ::RuboCop::Cop::Base
 
   private
 
+  def compact_method_with_final_newline_range(compact_method_range); end
   def invoke_method_after_map_compact_on_same_line?(compact_node, chained_method); end
-  def remove_compact_method(corrector, compact_node); end
+  def map_method_and_compact_method_on_same_line?(compact_node); end
+  def remove_compact_method(corrector, compact_node, chained_method); end
 end
 
 RuboCop::Cop::Performance::MapCompact::MSG = T.let(T.unsafe(nil), String)
@@ -586,6 +585,7 @@ class RuboCop::Cop::Performance::RedundantStringChars < ::RuboCop::Cop::Base
   def build_bad_method(method, args); end
   def build_call_args(call_args_node); end
   def build_good_method(method, args); end
+  def build_good_method_for_brackets_or_first_method(method, args); end
   def build_message(method, args); end
   def correction_range(receiver, node); end
   def offense_range(receiver, node); end
@@ -733,6 +733,15 @@ end
 
 RuboCop::Cop::Performance::StartWith::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Performance::StartWith::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Performance::StringIdentifierArgument < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+end
+
+RuboCop::Cop::Performance::StringIdentifierArgument::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Performance::StringIdentifierArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::StringInclude < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
