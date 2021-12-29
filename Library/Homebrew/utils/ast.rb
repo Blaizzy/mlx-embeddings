@@ -114,6 +114,39 @@ module Utils
         add_stanza(:bottle, "\n#{bottle_output.chomp}", type: :block_call)
       end
 
+      sig { params(name: Symbol, type: T.nilable(Symbol)).void }
+      def remove_stanza(name, type: nil)
+        stanza_node = stanza(name, type: type)
+        raise "Could not find '#{name}' stanza!" if stanza_node.blank?
+
+        # stanza is probably followed by a newline character
+        # try to delete it if so
+        stanza_range = stanza_node.source_range
+        trailing_range = stanza_range.with(begin_pos: stanza_range.end_pos,
+                                           end_pos:   stanza_range.end_pos + 1)
+        if trailing_range.source.chomp.empty?
+          stanza_range = stanza_range.adjust(end_pos: 1)
+
+          # stanza_node is probably indented
+          # since a trailing newline has been removed,
+          # try to delete leading whitespace on line
+          leading_range = stanza_range.with(begin_pos: stanza_range.begin_pos - stanza_range.column,
+                                            end_pos:   stanza_range.begin_pos)
+          if leading_range.source.strip.empty?
+            stanza_range = stanza_range.adjust(begin_pos: -stanza_range.column)
+
+            # if the stanza was preceded by a blank line, it should be removed
+            # that is, if the two previous characters are newlines,
+            # then delete one of them
+            leading_range = stanza_range.with(begin_pos: stanza_range.begin_pos - 2,
+                                              end_pos:   stanza_range.begin_pos)
+            stanza_range = stanza_range.adjust(begin_pos: -1) if leading_range.source.chomp.chomp.empty?
+          end
+        end
+
+        tree_rewriter.remove(stanza_range)
+      end
+
       sig { params(name: Symbol, replacement: T.any(Numeric, String, Symbol), type: T.nilable(Symbol)).void }
       def replace_stanza(name, replacement, type: nil)
         stanza_node = stanza(name, type: type)
