@@ -81,7 +81,7 @@ module Homebrew
 
     Formulary.enable_factory_cache!
 
-    recursive = !args.send("1?")
+    recursive = !args.send(:"1?")
     installed = args.installed? || dependents(args.named.to_formulae_and_casks).all?(&:any_version_installed?)
 
     @use_runtime_dependencies = installed && recursive &&
