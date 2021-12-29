@@ -523,6 +523,7 @@ _brew_bump_revision() {
       --help
       --message
       --quiet
+      --remove-bottle-block
       --verbose
       --write-only
       "
