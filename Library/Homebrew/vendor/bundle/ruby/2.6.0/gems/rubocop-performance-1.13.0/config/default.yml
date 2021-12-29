@@ -17,7 +17,7 @@ Performance/ArraySemiInfiniteRangeSlice:
   VersionAdded: '1.9'
 
 Performance/BigDecimalWithNumericArgument:
-  Description: 'Convert numeric argument to string before passing to BigDecimal.'
+  Description: 'Convert numeric literal to string and pass it to `BigDecimal`.'
   Enabled: 'pending'
   VersionAdded: '1.7'
 
@@ -43,10 +43,9 @@ Performance/CaseWhenSplat:
                  Reordering `when` conditions with a splat to the end
                  of the `when` branches can improve performance.
   Enabled: false
-  AutoCorrect: false
   SafeAutoCorrect: false
   VersionAdded: '0.34'
-  VersionChanged: '0.59'
+  VersionChanged: '1.13'
 
 Performance/Casecmp:
   Description: >-
@@ -137,7 +136,7 @@ Performance/DoubleStartEndWith:
   VersionAdded: '0.36'
   VersionChanged: '0.48'
   # Used to check for `starts_with?` and `ends_with?`.
-  # These methods are defined by `ActiveSupport`.
+  # These methods are defined by Active Support.
   IncludeActiveSupportAliases: false
 
 Performance/EndWith:
@@ -312,6 +311,11 @@ Performance/StartWith:
   VersionAdded: '0.36'
   VersionChanged: '1.10'
 
+Performance/StringIdentifierArgument:
+  Description: 'Use symbol identifier argument instead of string identifier argument.'
+  Enabled: pending
+  VersionAdded: '1.13'
+
 Performance/StringInclude:
   Description: 'Use `String#include?` instead of a regex match with literal-only pattern.'
   Enabled: 'pending'
@@ -330,17 +334,20 @@ Performance/StringReplacement:
 
 Performance/Sum:
   Description: 'Use `sum` instead of a custom array summation.'
+  SafeAutoCorrect: false
   Reference: 'https://blog.bigbinary.com/2016/11/02/ruby-2-4-introduces-enumerable-sum.html'
   Enabled: 'pending'
   VersionAdded: '1.8'
+  VersionChanged: '1.13'
+  OnlySumOrWithInitialValue: false
 
 Performance/TimesMap:
   Description: 'Checks for .times.map calls.'
-  AutoCorrect: false
   Enabled: true
+  # See https://github.com/rubocop/rubocop/issues/4658
+  SafeAutoCorrect: false
   VersionAdded: '0.36'
-  VersionChanged: '0.50'
-  SafeAutoCorrect: false # see https://github.com/rubocop/rubocop/issues/4658
+  VersionChanged: '1.13'
 
 Performance/UnfreezeString:
   Description: 'Use unary plus to get an unfrozen string literal.'

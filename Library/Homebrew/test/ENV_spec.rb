@@ -130,7 +130,7 @@ describe "ENV" do
 
     describe "#compiler" do
       it "allows switching compilers" do
-        subject.public_send("gcc-6")
+        subject.public_send(:"gcc-6")
         expect(subject.compiler).to eq("gcc-6")
       end
     end
