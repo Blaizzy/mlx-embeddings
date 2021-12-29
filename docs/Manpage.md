@@ -1028,6 +1028,8 @@ present, "revision 1" will be added.
 
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
+* `--remove-bottle-block`:
+  Remove the bottle block in addition to bumping the revision.
 * `--write-only`:
   Make the expected file modifications without taking any Git actions.
 * `--message`:

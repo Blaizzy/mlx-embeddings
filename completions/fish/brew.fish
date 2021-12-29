@@ -448,6 +448,7 @@ __fish_brew_complete_arg 'bump-revision' -l dry-run -d 'Print what would be done
 __fish_brew_complete_arg 'bump-revision' -l help -d 'Show this message'
 __fish_brew_complete_arg 'bump-revision' -l message -d 'Append message to the default commit message'
 __fish_brew_complete_arg 'bump-revision' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'bump-revision' -l remove-bottle-block -d 'Remove the bottle block in addition to bumping the revision'
 __fish_brew_complete_arg 'bump-revision' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'bump-revision' -l write-only -d 'Make the expected file modifications without taking any Git actions'
 __fish_brew_complete_arg 'bump-revision' -a '(__fish_brew_suggest_formulae_all)'

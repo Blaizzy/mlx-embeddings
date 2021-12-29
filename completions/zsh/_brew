@@ -550,6 +550,7 @@ _brew_bump_revision() {
     '--help[Show this message]' \
     '--message[Append message to the default commit message]' \
     '--quiet[Make some output more quiet]' \
+    '--remove-bottle-block[Remove the bottle block in addition to bumping the revision]' \
     '--verbose[Make some output more verbose]' \
     '(--dry-run)--write-only[Make the expected file modifications without taking any Git actions]' \
     - formula \
