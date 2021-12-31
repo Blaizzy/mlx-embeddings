@@ -485,7 +485,7 @@ __fish_brew_complete_arg 'cleanup' -l prune -d 'Remove all cache files older tha
 __fish_brew_complete_arg 'cleanup' -l prune-prefix -d 'Only prune the symlinks and directories from the prefix and remove no other files'
 __fish_brew_complete_arg 'cleanup' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'cleanup' -l verbose -d 'Make some output more verbose'
-__fish_brew_complete_arg 'cleanup' -l s -d 'Scrub the cache, including downloads for even the latest versions. Note downloads for any installed formulae or casks will still not be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`'
+__fish_brew_complete_arg 'cleanup' -l s -d 'Scrub the cache, including downloads for even the latest versions. Note that downloads for any installed formulae or casks will still not be deleted. If you want to delete those too: `rm -rf "$(brew --cache)"`'
 __fish_brew_complete_arg 'cleanup' -a '(__fish_brew_suggest_formulae_all)'
 __fish_brew_complete_arg 'cleanup' -a '(__fish_brew_suggest_casks_all)'
 
