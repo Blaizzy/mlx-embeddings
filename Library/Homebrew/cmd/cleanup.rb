@@ -26,7 +26,7 @@ module Homebrew
              description: "Show what would be removed, but do not actually remove anything."
       switch "-s",
              description: "Scrub the cache, including downloads for even the latest versions. "\
-                          "Note downloads for any installed formulae or casks will still not be deleted. "\
+                          "Note that downloads for any installed formulae or casks will still not be deleted. "\
                           "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
       switch "--prune-prefix",
              description: "Only prune the symlinks and directories from the prefix and remove no other files."
