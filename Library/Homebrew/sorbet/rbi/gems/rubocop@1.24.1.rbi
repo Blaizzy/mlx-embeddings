@@ -1572,7 +1572,7 @@ class RuboCop::Cop::Gemspec::RequireMFA < ::RuboCop::Cop::Base
   def autocorrect(corrector, node, block_var, metadata); end
   def change_value(corrector, value); end
   def correct_metadata(corrector, metadata); end
-  def correct_missing_metadata(corrector, node, block_var); end
+  def insert_mfa_required(corrector, node, block_var); end
   def mfa_value(metadata_value); end
 end
 
@@ -5116,10 +5116,11 @@ class RuboCop::Cop::Lint::ParenthesesAsGroupedExpression < ::RuboCop::Cop::Base
 
   def chained_calls?(node); end
   def first_argument_starts_with_left_parenthesis?(node); end
-  def operator_keyword?(node); end
   def space_range(expr, space_length); end
   def spaces_before_left_parenthesis(node); end
+  def ternary_expression?(node); end
   def valid_context?(node); end
+  def valid_first_argument?(first_arg); end
 end
 
 RuboCop::Cop::Lint::ParenthesesAsGroupedExpression::MSG = T.let(T.unsafe(nil), String)
@@ -6518,6 +6519,7 @@ RuboCop::Cop::Naming::BinaryOperatorParameterName::OP_LIKE_METHODS = T.let(T.uns
 
 class RuboCop::Cop::Naming::BlockForwarding < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
+  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
   extend ::RuboCop::Cop::TargetRubyVersion
 
@@ -8610,6 +8612,9 @@ class RuboCop::Cop::Style::FileWrite < ::RuboCop::Cop::Base
   private
 
   def file_open_write?(node); end
+  def heredoc?(write_node); end
+  def heredoc_range(first_argument); end
+  def replacement(mode, filename, content, write_node); end
   def write_method(mode); end
 end
 
@@ -9341,6 +9346,7 @@ module RuboCop::Cop::Style::MethodCallWithArgsParentheses::OmitParentheses
   def omit_parentheses(node); end
   def parentheses_at_the_end_of_multiline_call?(node); end
   def regexp_slash_literal?(node); end
+  def require_parentheses_for_hash_value_omission?(node); end
   def splat?(node); end
   def super_call_without_arguments?(node); end
   def syntax_like_method_call?(node); end
@@ -9402,9 +9408,9 @@ class RuboCop::Cop::Style::MethodDefParentheses < ::RuboCop::Cop::Base
 
   private
 
+  def anonymous_block_arg?(node); end
   def arguments_without_parentheses?(node); end
   def correct_arguments(arg_node, corrector); end
-  def correct_definition(def_node, corrector); end
   def forced_parentheses?(node); end
   def missing_parentheses(node); end
   def require_parentheses?(args); end
