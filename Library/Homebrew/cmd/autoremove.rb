@@ -34,13 +34,14 @@ module Homebrew
     args = autoremove_args.parse
 
     removable_formulae = get_removable_formulae(Formula.installed)
-    return if removable_formulae.blank?
 
     if (casks = Cask::Caskroom.casks.presence)
       removable_formulae -= casks.flat_map { |cask| cask.depends_on[:formula] }
                                  .compact
                                  .map { |formula| Formula[formula] }
     end
+    return if removable_formulae.blank?
+
     formulae_names = removable_formulae.map(&:full_name).sort
 
     verb = args.dry_run? ? "Would uninstall" : "Uninstalling"
