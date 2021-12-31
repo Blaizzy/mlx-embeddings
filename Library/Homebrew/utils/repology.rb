@@ -19,22 +19,35 @@ module Repology
     last_package_in_response += "/" if last_package_in_response.present?
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
 
-    output, _errors, _status = curl_output(url.to_s, use_homebrew_curl: !curl_supports_tls13?)
+    output, errors, = curl_output(url.to_s, "--silent", use_homebrew_curl: false)
     JSON.parse(output)
+  rescue
+    if Homebrew::EnvConfig.developer?
+      $stderr.puts errors
+    else
+      odebug errors
+    end
+
+    raise
   end
 
   def single_package_query(name, repository:)
     url = "https://repology.org/tools/project-by?repo=#{repository}&" \
           "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
-    output, _errors, _status = curl_output("--location", url.to_s, use_homebrew_curl: !curl_supports_tls13?)
+    output, errors, = curl_output("--location", "--silent", url.to_s, use_homebrew_curl: true)
 
-    begin
-      data = JSON.parse(output)
-      { name => data }
-    rescue
-      nil
+    data = JSON.parse(output)
+    { name => data }
+  rescue => e
+    error_output = [errors, "#{e.class}: #{e}", e.backtrace].compact
+    if Homebrew::EnvConfig.developer?
+      $stderr.puts(*error_output)
+    else
+      odebug(*error_output)
     end
+
+    nil
   end
 
   def parse_api_response(limit = nil, last_package = "", repository:)

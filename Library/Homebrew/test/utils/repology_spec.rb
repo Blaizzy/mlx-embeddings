@@ -4,7 +4,7 @@
 require "utils/repology"
 
 describe Repology do
-  describe "single_package_query", :needs_network, :needs_tls13 do
+  describe "single_package_query", :needs_network, :needs_homebrew_curl do
     it "returns nil for non-existent package" do
       response = described_class.single_package_query("invalidName", repository: "homebrew")
 
@@ -19,7 +19,7 @@ describe Repology do
     end
   end
 
-  describe "parse_api_response", :needs_network, :needs_tls13 do
+  describe "parse_api_response", :needs_network, :needs_homebrew_curl do
     it "returns a hash of data" do
       limit = 1
       start_with = "x"
