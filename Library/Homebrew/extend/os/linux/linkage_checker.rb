@@ -15,6 +15,7 @@ class LinkageChecker
     libm.so.6
     libmvec.so.1
     libnsl.so.1
+    libnss_files.so.2
     libpthread.so.0
     libresolv.so.2
     librt.so.1
