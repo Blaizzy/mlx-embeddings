@@ -228,6 +228,9 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-
 
+      - name: Install brew tests dependencies
+        run: brew install curl
+
       - name: Run brew tests
         run: |
           # brew tests doesn't like world writable directories
@@ -303,13 +306,7 @@ jobs:
         run: brew readall --aliases
 
       - name: Install brew tests dependencies
-        run: |
-          brew install subversion
-          brew sh -c "svn --homebrew=print-path"
-          which svn
-          which svnadmin
-          brew install curl
-          which curl
+        run: brew install subversion curl
 
       - name: Create parallel test log directory
         run: mkdir tests
