@@ -36,7 +36,7 @@ class DescriptionCacheStore < CacheStore
   def populate_if_empty!
     return unless database.empty?
 
-    Formula.each { |f| update!(f.full_name, f.desc) }
+    Formula.all.each { |f| update!(f.full_name, f.desc) }
   end
 
   # Use an update report to update the {DescriptionCacheStore}.

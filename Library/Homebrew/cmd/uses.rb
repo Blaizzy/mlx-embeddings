@@ -101,10 +101,10 @@ module Homebrew
       deps
     else
       if show_formulae_and_casks || args.formula?
-        deps += args.installed? ? Formula.installed : Formula.to_a
+        deps += args.installed? ? Formula.installed : Formula.all
       end
       if show_formulae_and_casks || args.cask?
-        deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.to_a
+        deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.all
       end
 
       select_used_dependents(dependents(deps), used_formulae, recursive, includes, ignores)

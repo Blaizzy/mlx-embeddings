@@ -367,7 +367,7 @@ module Homebrew
     base_url = url_split.first(components_to_match).join("/")
     base_url = /#{Regexp.escape(base_url)}/
     guesses = []
-    Formula.each do |f|
+    Formula.all.each do |f|
       guesses << f if f.stable&.url&.match(base_url)
     end
     return guesses.shift if guesses.count == 1
