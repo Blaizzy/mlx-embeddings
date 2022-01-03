@@ -2,7 +2,7 @@
 
 In early 2015 Homebrew started the process of deprecating _SHA1_ for package
 integrity verification. Since then formulae under the Homebrew organisation
-have been moved onto using _SHA256_ for verification; this includes both source
+have been migrated to use _SHA256_ for verification; this includes both source
 packages and our precompiled packages (bottles).
 
 Homebrew has since stopped supporting _SHA1_ and _MD5_ entirely.
@@ -14,5 +14,5 @@ We removed _SHA1_ support in **November 2016**,
 This is enforced in the same way _MD5_ is, by blocking the installation of that
 individual formula until the checksum is migrated.
 
-This means custom taps, local custom formulae, etc need to be migrated to use
+This means custom taps, local custom formulae, etc. need to be migrated to use
 _SHA256_ before you can install them.

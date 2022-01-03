@@ -12,7 +12,7 @@ without modifying Homebrew's internals.
 
 External commands come in two flavours: Ruby commands and shell scripts.
 
-In both cases, the command file should be executable (`chmod +x`) and live somewhere in `PATH`.
+In both cases, the command file should be executable (`chmod +x`) and live somewhere in your `PATH`.
 
 External commands can be added to a tap to allow easy distribution. See [below](#external-commands-in-taps) for more details.
 
@@ -32,13 +32,11 @@ An executable script for a command named `extcmd` should be named `brew-extcmd`.
 | `HOMEBREW_PREFIX`      | Where Homebrew installs software. `/usr/local` by default for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux.                    |
 | `HOMEBREW_CELLAR`      | The location of the Homebrew Cellar, where software is staged. This will be `HOMEBREW_PREFIX/Cellar` if that directory exists, or `HOMEBREW_REPOSITORY/Cellar` otherwise.   |
 | `HOMEBREW_LIBRARY_PATH`| The directory containing Homebrew’s own application code.                                                                                                                   |
-| `HOMEBREW_REPOSITORY`  | The Git repository directory (i.e. where Homebrew’s `.git` directory lives). Usually either the same as `HOMEBREW_PREFIX` or a `Homebrew` subdirectory`.                    |
+| `HOMEBREW_REPOSITORY`  | The Git repository directory (i.e. where Homebrew’s `.git` directory lives). Usually either the same as `HOMEBREW_PREFIX` or a `Homebrew` subdirectory.                    |
 
 ## Providing `--help`
 
-All internal and external Homebrew commands can provide styled `--help` output by using lines starting with `#:` (a comment then `:` character in both Bash and Ruby) which are then output by `--help`.
-
-For example, see the [header of `brew-services.rb`](https://github.com/Homebrew/homebrew-services/blob/a58a1fe9145de4e50e1cbfb5b0e8a30087826393/cmd/brew-services.rb#L1-L23) which is output with `brew services --help`.
+All internal and external Homebrew commands can provide styled `--help` output by using Homebrew’s [argument parser](https://rubydoc.brew.sh/Homebrew/CLI/Parser.html), as seen in the [`brew services` command](https://github.com/Homebrew/homebrew-services/blob/HEAD/cmd/services.rb); or by including lines starting with `#:` (a comment then `:` character in both Bash and Ruby), as seen in the [header of `update.sh`](https://github.com/Homebrew/brew/blob/cf7def0c68903814c6b4e04a55fe8f3cb3f5605e/Library/Homebrew/cmd/update.sh#L1-L10), which is printed with `brew update --help`.
 
 ## Unofficial external commands
 
@@ -58,7 +56,7 @@ External commands can be hosted in a [tap](Taps.md) to allow users to easily ins
 
 External commands should be added to a `cmd` directory in the tap. An external command `extcmd` implemented as a Ruby command should live in `cmd/extcmd.rb` (don't forget to `chmod +x`).
 
-To easily use Homebrew's argument parser, follow the following Ruby template for external commands (replacing all instances of `foo` with the name of the command):
+To easily use Homebrew's argument parser, replicate the following Ruby template for external commands (replacing all instances of `foo` with the name of the command):
 
 ```ruby
 # frozen_string_literal: true
@@ -111,7 +109,7 @@ Do something. Place a description here.
 
 The usage string is automatically generated based on the specified number and type of named arguments (see below for more details on specifying named arguments). The generated usage string can be overridden by passing the correct usage string to the `usage_banner` method (placed just before the `description` method). See the [`brew tap` command](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/tap.rb) for an example.
 
-Use the `named_args` method to specify the type and number of named arguments that are expected. Pass either a symbol to indicate the type of argument expected, an array of symbols to indicate that multiple types should be expected, or an array of strings to specify which specific options should be expected (see the [`brew analytics`](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/analytics.rb) command for an example of this).
+Use the `named_args` method to specify the type and number of named arguments that are expected. Pass either a symbol to indicate the type of argument expected, an array of symbols to indicate that multiple types should be expected, or an array of strings to specify which specific options should be expected (see the [`brew analytics` command](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/cmd/analytics.rb) for an example of this).
 
 Pass an integer to the `number`, `min`, or `max` parameter of `named_args` to specify the number of named arguments that are expected. See the following examples:
 

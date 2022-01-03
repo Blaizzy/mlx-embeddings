@@ -8,11 +8,11 @@ As an example:
 
 *OpenSSL isn’t symlinked into my `PATH` and non-Homebrew builds can’t find it!*
 
-This is because Homebrew keeps it locked inside its individual prefix, rather than symlinking to the publicly-available location.
+This is because Homebrew isolates it within its individual prefix, rather than symlinking to the publicly available location.
 
 ## Advice on potential workarounds
 
-A number of people in this situation are either forcefully linking `keg_only` tools with `brew link --force` or moving default system utilities out of the `PATH` and replacing them with manually-created symlinks to the Homebrew-provided tool.
+A number of people in this situation are either forcefully linking keg-only tools with `brew link --force` or moving default system utilities out of the `PATH` and replacing them with manually created symlinks to the Homebrew-provided tool.
 
 *Please* do not remove macOS native tools and forcefully replace them with symlinks back to the Homebrew-provided tool. Doing so can and likely will cause significant breakage when attempting to build software.
 
@@ -20,7 +20,7 @@ A number of people in this situation are either forcefully linking `keg_only` to
 
 ## How do I use those tools outside of Homebrew?
 
-Useful, reliable alternatives exist should you wish to use `keg_only` tools outside of Homebrew.
+Useful, reliable alternatives exist should you wish to use keg-only tools outside of Homebrew.
 
 ### Build flags
 
@@ -44,13 +44,13 @@ You can temporarily prepend your `PATH` with the tool’s `bin` directory, such 
 export PATH="$(brew --prefix)/opt/openssl/bin:${PATH}"
 ```
 
-This will prepend that folder to your `PATH`, ensuring any build script that searches the `PATH` will find it first.
+This will prepend the directory to your `PATH`, ensuring any build script that searches the `PATH` will find it first.
 
-Changing your `PATH` using that command ensures the change only exists for the duration of that shell session. Once you are no longer in that session, the `PATH` reverts to the prior state.
+Changing your `PATH` using this command ensures the change only exists for the duration of the shell session. Once the current session ends, the `PATH` reverts to its prior state.
 
 ### `pkg-config` detection
 
-If the tool you are attempting to build is [pkg-config](https://en.wikipedia.org/wiki/Pkg-config) aware, you can amend your `PKG_CONFIG_PATH` to find that `keg_only` utility’s `.pc` file, if it has them. Not all formulae ship with those files.
+If the tool you are attempting to build is [pkg-config](https://en.wikipedia.org/wiki/Pkg-config) aware, you can amend your `PKG_CONFIG_PATH` to find a keg-only utility’s `.pc` files, if it has any. Not all formulae ship with these files.
 
 An example of this is:
 
@@ -58,9 +58,9 @@ An example of this is:
 export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl/lib/pkgconfig"
 ```
 
-If you’re curious about the `PKG_CONFIG_PATH` variable `man pkg-config` goes into more detail.
+If you’re curious about the `PKG_CONFIG_PATH` variable, `man pkg-config` goes into more detail.
 
-You can get `pkg-config` to detail the default search path with:
+You can get `pkg-config` to print the default search path with:
 
 ```sh
 pkg-config --variable pc_path pkg-config
