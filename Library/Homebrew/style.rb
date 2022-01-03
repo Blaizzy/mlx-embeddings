@@ -180,13 +180,14 @@ module Homebrew
 
       if fix
         # patch options:
-        #   --get=0       : suppress environment variable `PATCH_GET`, ignore RCS, ClearCase, Perforce, and SCCS
-        #   --force       : we know what we are doing, force apply patches
-        #   --directory=/ : change to root directory, since we use absolute file paths
-        #   --strip=0     : do not strip path prefixes, since we are at root directory
-        patch_command = %w[patch --get=0 --force --directory=/ --strip=0]
+        #   -g 0 (--get=0)       : suppress environment variable `PATCH_GET`
+        #   -f   (--force)       : we know what we are doing, force apply patches
+        #   -d / (--directory=/) : change to root directory, since we use absolute file paths
+        #   -p0  (--strip=0)     : do not strip path prefixes, since we are at root directory
+        # NOTE: we use short flags where for compatibility
+        patch_command = %w[patch -g 0 -f -d / -p0]
         patches = system_command(shellcheck, args: ["--format=diff", *args]).stdout
-        Utils.safe_popen_write(*patch_command) { |p| p.write(patches) }
+        Utils.safe_popen_write(*patch_command) { |p| p.write(patches) } if patches.present?
       end
 
       case output_type
