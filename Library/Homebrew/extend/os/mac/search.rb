@@ -15,7 +15,7 @@ module Homebrew
         return if args.formula?
 
         ohai "Casks"
-        Cask::Cask.to_a.extend(Searchable)
+        Cask::Cask.all.extend(Searchable)
                   .search(string_or_regex, &:name)
                   .each do |cask|
           puts "#{Tty.bold}#{cask.token}:#{Tty.reset} #{cask.name.join(", ")}"

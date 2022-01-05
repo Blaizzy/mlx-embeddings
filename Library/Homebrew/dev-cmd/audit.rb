@@ -121,7 +121,7 @@ module Homebrew
       end
     elsif args.no_named?
       no_named_args = true
-      [Formula, Cask::Cask.to_a]
+      [Formula.all, Cask::Cask.all]
     else
       args.named.to_formulae_and_casks
           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }

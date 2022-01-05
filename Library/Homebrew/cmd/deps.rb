@@ -121,7 +121,7 @@ module Homebrew
       puts_deps_tree dependents, recursive: recursive, args: args
       return
     elsif args.all?
-      puts_deps sorted_dependents(Formula.to_a + Cask::Cask.to_a), recursive: recursive, args: args
+      puts_deps sorted_dependents(Formula.all + Cask::Cask.all), recursive: recursive, args: args
       return
     elsif !args.no_named? && args.for_each?
       puts_deps sorted_dependents(args.named.to_formulae_and_casks), recursive: recursive, args: args

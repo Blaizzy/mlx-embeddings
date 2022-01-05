@@ -593,6 +593,7 @@ class ReporterHub
   private
 
   def dump_formula_report(key, title)
+    # TODO: 3.4.0: odisabled the old functionality and make this default
     only_installed = Homebrew::EnvConfig.update_report_only_installed?
 
     formulae = select_formula(key).sort.map do |name, new_name|
