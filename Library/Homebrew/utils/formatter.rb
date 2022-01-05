@@ -45,15 +45,19 @@ module Formatter
   #    with a hanging indent, without breaking any words that overflow
   # 4. wrap any remaining description lines that need wrapping with the same indent
   # 5. wrap all lines to the given width.
+  #
+  # Note that an option (e.g. `--foo`) may not be at the beginning of a line,
+  # so we always wrap one word before an option.
+  # @see https://github.com/Homebrew/brew/pull/12672
   # @see https://macromates.com/blog/2006/wrapping-text-with-regular-expressions/
-  def wrap(s, width = 172)
+  def format_help_text(s, width: 172)
     desc = OPTION_DESC_WIDTH
     indent = width - desc
     s.gsub(/(?<=\S) *\n(?=\S)/, " ")
      .gsub(/([`>)\]]:) /, "\\1\n    ")
-     .gsub(/^( +-.+  +(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)\n?/, "\\1\\2\n#{" " * indent}")
-     .gsub(/^( {#{indent}}(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)\n?/, "\\1\\2\n#{" " * indent}")
-     .gsub(/(.{1,#{width}})( +|$)\n?/, "\\1\n")
+     .gsub(/^( +-.+  +(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)(?!-)\n?/, "\\1\\2\n#{" " * indent}")
+     .gsub(/^( {#{indent}}(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)(?!-)\n?/, "\\1\\2\n#{" " * indent}")
+     .gsub(/(.{1,#{width}})( +|$)(?!-)\n?/, "\\1\n")
   end
 
   def url(string)

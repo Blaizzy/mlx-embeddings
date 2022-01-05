@@ -9,7 +9,7 @@ require "set"
 require "utils/tty"
 
 COMMAND_DESC_WIDTH = 80
-OPTION_DESC_WIDTH = 43
+OPTION_DESC_WIDTH = 45
 HIDDEN_DESC_PLACEHOLDER = "@@HIDDEN@@"
 
 module Homebrew
@@ -351,7 +351,7 @@ module Homebrew
       end
 
       def generate_help_text
-        Formatter.wrap(@parser.to_s, COMMAND_DESC_WIDTH)
+        Formatter.format_help_text(@parser.to_s, width: COMMAND_DESC_WIDTH)
                  .gsub(/\n.*?@@HIDDEN@@.*?(?=\n)/, "")
                  .sub(/^/, "#{Tty.bold}Usage: brew#{Tty.reset} ")
                  .gsub(/`(.*?)`/m, "#{Tty.bold}\\1#{Tty.reset}")
@@ -503,7 +503,7 @@ module Homebrew
       end
 
       def wrap_option_desc(desc)
-        Formatter.wrap(desc, OPTION_DESC_WIDTH).split("\n")
+        Formatter.format_help_text(desc, width: OPTION_DESC_WIDTH).split("\n")
       end
 
       def set_constraints(name, depends_on:, required_for:)
