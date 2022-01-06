@@ -36,9 +36,10 @@ module Homebrew
     removable_formulae = get_removable_formulae(Formula.installed)
 
     if (casks = Cask::Caskroom.casks.presence)
-      removable_formulae -= casks.flat_map { |cask| cask.depends_on[:formula] }
-                                 .compact
-                                 .map { |formula| Formula[formula] }
+      cask_formulae = casks.flat_map { |cask| cask.depends_on[:formula] }
+                           .compact
+                           .map { |formula| Formula[formula] }
+      removable_formulae -= [*cask_formulae, *cask_formulae.flat_map(&:runtime_formula_dependencies)]
     end
     return if removable_formulae.blank?
 
