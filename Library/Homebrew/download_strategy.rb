@@ -595,8 +595,14 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   def initialize(url, name, version, **meta)
     meta ||= {}
     meta[:headers] ||= []
-    token = Homebrew::EnvConfig.artifact_domain ? Homebrew::EnvConfig.docker_registry_token : "QQ=="
-    meta[:headers] << "Authorization: Bearer #{token}" if token.present?
+    meta[:headers] << if Homebrew::EnvConfig.artifact_domain && Homebrew::EnvConfig.docker_registry_token
+      "Authorization: Bearer #{Homebrew::EnvConfig.docker_registry_token}"
+    elsif Homebrew::EnvConfig.artifact_domain && Homebrew::EnvConfig.docker_registry_basic_auth_token
+      "Authorization: Basic #{Homebrew::EnvConfig.docker_registry_basic_auth_token}"
+    else
+      # This QQ== is needed for the no-auth GitHub Packages default.
+      "Authorization: Bearer QQ=="
+    end
     super(url, name, version, meta)
   end
 
