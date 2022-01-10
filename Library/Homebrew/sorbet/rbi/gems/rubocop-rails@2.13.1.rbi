@@ -1256,6 +1256,7 @@ class RuboCop::Cop::Rails::ReadWriteAttribute < ::RuboCop::Cop::Base
 
   def message(node); end
   def read_attribute_replacement(node); end
+  def within_shadowing_method?(node); end
   def write_attribute_replacement(node); end
 end
 
@@ -1313,8 +1314,15 @@ class RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo < ::RuboCop::C
 
   private
 
+  def add_offense_and_correct(node, all_keys, keys, options, presence); end
   def belongs_to_for(model_class_node, key); end
-  def remove_presence_validation(corrector, node, options, presence); end
+  def extract_validation_for_keys(corrector, node, keys, options); end
+  def message_for(keys); end
+  def non_optional_belongs_to(node, keys); end
+  def remove_keys_from_validation(corrector, node, keys); end
+  def remove_presence_option(corrector, presence); end
+  def remove_validation(corrector, node); end
+  def validation_range(node); end
 end
 
 RuboCop::Cop::Rails::RedundantPresenceValidationOnBelongsTo::MSG = T.let(T.unsafe(nil), String)
