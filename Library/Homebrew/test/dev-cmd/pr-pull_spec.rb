@@ -40,11 +40,38 @@ describe "brew pr-pull" do
         end
       EOS
     end
+    let(:cask_rebuild) do
+      <<~EOS
+        cask "food" do
+          desc "Helpful description"
+          version "1.0"
+          url "https://brew.sh/food-\#{version}.tgz"
+        end
+      EOS
+    end
+    let(:cask_version) do
+      <<~EOS
+        cask "food" do
+          version "2.0"
+          url "https://brew.sh/food-\#{version}.tgz"
+        end
+      EOS
+    end
+    let(:cask) do
+      <<~EOS
+        cask "food" do
+          version "1.0"
+          url "https://brew.sh/food-\#{version}.tgz"
+        end
+      EOS
+    end
     let(:tap) { Tap.fetch("Homebrew", "foo") }
     let(:formula_file) { tap.path/"Formula/foo.rb" }
+    let(:cask_file) { tap.cask_dir/"food.rb" }
+    let(:path) { (Tap::TAP_DIRECTORY/"homebrew/homebrew-foo").extend(GitRepositoryExtension) }
 
     describe "#autosquash!" do
-      it "squashes a formula correctly" do
+      it "squashes a formula or cask correctly" do
         secondary_author = "Someone Else <me@example.com>"
         (tap.path/"Formula").mkpath
         formula_file.write(formula)
@@ -61,11 +88,26 @@ describe "brew pr-pull" do
           expect(tap.path.git_commit_message).to include("foo 2.0")
           expect(tap.path.git_commit_message).to include("Co-authored-by: #{secondary_author}")
         end
+
+        (path/"Casks").mkpath
+        cask_file.write(cask)
+        cd path do
+          safe_system Utils::Git.git, "add", cask_file
+          safe_system Utils::Git.git, "commit", "-m", "food 1.0 (new cask)"
+          original_hash = `git rev-parse HEAD`.chomp
+          File.write(cask_file, cask_rebuild)
+          safe_system Utils::Git.git, "commit", cask_file, "-m", "rebuild"
+          File.write(cask_file, cask_version)
+          safe_system Utils::Git.git, "commit", cask_file, "-m", "version", "--author=#{secondary_author}"
+          described_class.autosquash!(original_hash, tap: tap)
+          expect(path.git_commit_message).to include("food 2.0")
+          expect(path.git_commit_message).to include("Co-authored-by: #{secondary_author}")
+        end
       end
     end
 
     describe "#signoff!" do
-      it "signs off a formula" do
+      it "signs off a formula or cask" do
         (tap.path/"Formula").mkpath
         formula_file.write(formula)
         cd tap.path do
@@ -75,6 +117,33 @@ describe "brew pr-pull" do
         end
         described_class.signoff!(tap.path)
         expect(tap.path.git_commit_message).to include("Signed-off-by:")
+
+        (path/"Casks").mkpath
+        cask_file.write(cask)
+        cd path do
+          safe_system Utils::Git.git, "add", cask_file
+          safe_system Utils::Git.git, "commit", "-m", "food 1.0 (new cask)"
+        end
+        described_class.signoff!(tap.path)
+        expect(tap.path.git_commit_message).to include("Signed-off-by:")
+      end
+    end
+
+    describe "#get_package" do
+      it "returns a formula" do
+        expect(described_class.get_package(tap, "foo", formula_file, formula)).to be_a(Formula)
+      end
+
+      it "returns nil for an unknown formula" do
+        expect(described_class.get_package(tap, "foo", formula_file, "")).to be_nil
+      end
+
+      it "returns a cask" do
+        expect(described_class.get_package(tap, "foo", cask_file, cask)).to be_a(Cask::Cask)
+      end
+
+      it "returns nil for an unknown cask" do
+        expect(described_class.get_package(tap, "foo", cask_file, "")).to be_nil
       end
     end
 
@@ -83,8 +152,16 @@ describe "brew pr-pull" do
         expect(described_class.determine_bump_subject("", formula, formula_file)).to eq("foo 1.0 (new formula)")
       end
 
+      it "correctly bumps a new cask" do
+        expect(described_class.determine_bump_subject("", cask, cask_file)).to eq("food 1.0 (new cask)")
+      end
+
       it "correctly bumps a formula version" do
         expect(described_class.determine_bump_subject(formula, formula_version, formula_file)).to eq("foo 2.0")
+      end
+
+      it "correctly bumps a cask version" do
+        expect(described_class.determine_bump_subject(cask, cask_version, cask_file)).to eq("food 2.0")
       end
 
       it "correctly bumps a formula revision with reason" do
@@ -99,6 +176,10 @@ describe "brew pr-pull" do
 
       it "correctly bumps a formula deletion" do
         expect(described_class.determine_bump_subject(formula, "", formula_file)).to eq("foo: delete")
+      end
+
+      it "correctly bumps a cask deletion" do
+        expect(described_class.determine_bump_subject(cask, "", cask_file)).to eq("food: delete")
       end
     end
   end
