@@ -12,7 +12,7 @@ module RuboCop
         include OnUrlStanza
         extend AutoCorrector
 
-        MSG_CSV = "Use 'version.csv.first' instead of 'version.before_comma'"\
+        MSG_CSV = "Use 'version.csv.first' instead of 'version.before_comma' " \
                   "and 'version.csv.second' instead of 'version.after_comma'."
 
         def on_url_stanza(stanza)
