@@ -10,16 +10,28 @@ module ActiveSupport
   extend ::ActiveSupport::LazyLoadHooks
   extend ::ActiveSupport::Autoload
 
+  def parse_json_times; end
+  def parse_json_times=(val); end
   def test_order; end
   def test_order=(val); end
 
   class << self
     def eager_load!; end
+    def escape_html_entities_in_json(*args, &block); end
+    def escape_html_entities_in_json=(arg); end
     def gem_version; end
+    def json_encoder(*args, &block); end
+    def json_encoder=(arg); end
+    def parse_json_times; end
+    def parse_json_times=(val); end
     def test_order; end
     def test_order=(val); end
+    def time_precision(*args, &block); end
+    def time_precision=(arg); end
     def to_time_preserves_timezone; end
     def to_time_preserves_timezone=(value); end
+    def use_standard_json_time_format(*args, &block); end
+    def use_standard_json_time_format=(arg); end
     def utc_to_local_returns_utc_offset_times; end
     def utc_to_local_returns_utc_offset_times=(value); end
     def version; end
@@ -3318,14 +3330,14 @@ Numeric::PETABYTE = T.let(T.unsafe(nil), Integer)
 Numeric::TERABYTE = T.let(T.unsafe(nil), Integer)
 
 class Object < ::BasicObject
+  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
   include ::ActiveSupport::ForkTracker::CoreExt
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
-  include ::ActiveSupport::ToJsonWithActiveSupportEncoder
   include ::Kernel
   include ::JSON::Ext::Generator::GeneratorMethods::Object
   include ::PP::ObjectMixin
-  include ::ActiveSupport::Tryable
   include ::ActiveSupport::Dependencies::Loadable
+  include ::ActiveSupport::Tryable
 
   def acts_like?(duck); end
   def as_json(options = T.unsafe(nil)); end
