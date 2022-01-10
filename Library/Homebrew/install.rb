@@ -268,6 +268,7 @@ module Homebrew
       interactive: false,
       keep_tmp: false,
       force: false,
+      overwrite: false,
       debug: false,
       quiet: false,
       verbose: false
@@ -291,6 +292,7 @@ module Homebrew
           interactive:                interactive,
           keep_tmp:                   keep_tmp,
           force:                      force,
+          overwrite:                  overwrite,
           debug:                      debug,
           quiet:                      quiet,
           verbose:                    verbose,
