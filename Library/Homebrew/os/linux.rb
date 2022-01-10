@@ -12,7 +12,7 @@ module OS
     def os_version
       if which("lsb_release")
         lsb_info = Utils.popen_read("lsb_release", "-a")
-        description = lsb_info[/^Description:\s*(.*)$/, 1]
+        description = lsb_info[/^Description:\s*(.*)$/, 1].force_encoding("UTF-8")
         codename = lsb_info[/^Codename:\s*(.*)$/, 1]
         if codename.blank? || (codename == "n/a")
           description
