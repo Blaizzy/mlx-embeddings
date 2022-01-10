@@ -4154,9 +4154,6 @@ end
 class Pathname
   include ::ELFShim
   include ::MachOShim
-  def fnmatch?(*arg); end
-
-  def make_symlink(arg); end
 end
 
 class Pathname
