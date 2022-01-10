@@ -12,11 +12,12 @@ module RuboCop
         include OnUrlStanza
         extend AutoCorrector
 
-        MSG_CSV = "Use 'version.csv.first' instead of 'version.before_comma' and 'version.csv.second' instead of 'version.after_comma'."
+        MSG_CSV = "Use 'version.csv.first' instead of 'version.before_comma'"\
+                  "and 'version.csv.second' instead of 'version.after_comma'."
 
-        def on_url_stanza(stanza)       
+        def on_url_stanza(stanza)
           return if stanza.stanza_node.type == :block
-          
+
           url_node = stanza.stanza_node.first_argument
 
           legacy_comma_separator_pattern = /version.(before|after)_comma/
