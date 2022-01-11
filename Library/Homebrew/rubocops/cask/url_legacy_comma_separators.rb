@@ -13,7 +13,7 @@ module RuboCop
         extend AutoCorrector
 
         MSG_CSV = "Use 'version.csv.first' instead of 'version.before_comma' " \
-                  "and 'version.csv.second' instead of 'version.after_comma'."
+                  "and 'version.csv.second' instead of 'version.after_comma'"
 
         def on_url_stanza(stanza)
           return if stanza.stanza_node.type == :block

@@ -14,7 +14,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       <<-CASK.undent
         cask 'foo' do
           version '1.1'
-          url 'https://foo.brew.sh/foo-#{version}.dmg'
+          url 'https://foo.brew.sh/foo-\#{version}.dmg'
         end
       CASK
     end
@@ -27,7 +27,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       <<-CASK.undent
         cask 'foo' do
           version '1.1,111'
-          url 'https://foo.brew.sh/foo-#{version.csv.first}.dmg'
+          url 'https://foo.brew.sh/foo-\#{version.csv.first}.dmg'
         end
       CASK
     end
@@ -40,7 +40,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       <<-CASK.undent
         cask 'foo' do
           version '1.1,111'
-          url 'https://foo.brew.sh/foo-#{version.before_comma}.dmg'
+          url 'https://foo.brew.sh/foo-\#{version.before_comma}.dmg'
         end
       CASK
     end
@@ -48,18 +48,18 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       <<-CASK.undent
         cask 'foo' do
           version '1.1,111'
-          url 'https://foo.brew.sh/foo-#{version.csv.first}.dmg'
+          url 'https://foo.brew.sh/foo-\#{version.csv.first}.dmg'
         end
       CASK
     end
     let(:expected_offenses) do
       [{
-        message:  "'https://foo.brew.sh/foo-#{version.before_comma}.dmg' should use "\
-                  "#{version.csv.first} instead of #{version.before_comma}.'",
+        message:  "Use 'version.csv.first' instead of 'version.before_comma' "\
+                  "and 'version.csv.second' instead of 'version.after_comma'",
         severity: :convention,
-        line:     2,
-        column:   11,
-        source:   "'https://foo.brew.sh/foo-#{version.before_comma}.dmg'",
+        line:     3,
+        column:   6,
+        source:   "'https://foo.brew.sh/foo-\#{version.before_comma}.dmg'",
       }]
     end
 
@@ -73,7 +73,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       <<-CASK.undent
         cask 'foo' do
           version '1.1,111'
-          url 'https://foo.brew.sh/foo-#{version.after_comma}.dmg'
+          url 'https://foo.brew.sh/foo-\#{version.after_comma}.dmg'
         end
       CASK
     end
@@ -81,18 +81,18 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       <<-CASK.undent
         cask 'foo' do
           version '1.1,111'
-          url 'https://foo.brew.sh/foo-#{version.csv.second}.dmg'
+          url 'https://foo.brew.sh/foo-\#{version.csv.second}.dmg'
         end
       CASK
     end
     let(:expected_offenses) do
       [{
-        message:  "'https://foo.brew.sh/foo-#{version.after_comma}.dmg' should use "\
-                  "#{version.csv.second} instead of #{version.after_comma}.'",
+        message:  "Use 'version.csv.first' instead of 'version.before_comma' "\
+                  "and 'version.csv.second' instead of 'version.after_comma'",
         severity: :convention,
-        line:     2,
-        column:   11,
-        source:   "'https://foo.brew.sh/foo-#{version.after_comma}.dmg'",
+        line:     3,
+        column:   6,
+        source:   "'https://foo.brew.sh/foo-\#{version.after_comma}.dmg'",
       }]
     end
 
