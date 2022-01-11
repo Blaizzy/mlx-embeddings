@@ -11,6 +11,7 @@ module Bootsnap
 
   class << self
     def _instrument(event, path); end
+    def absolute_path?(path); end
     def default_setup; end
     def instrumentation=(callback); end
     def iseq_cache_supported?; end
@@ -61,7 +62,6 @@ Bootsnap::LoadPathCache::CACHED_EXTENSIONS = T.let(T.unsafe(nil), Array)
 class Bootsnap::LoadPathCache::Cache
   def initialize(store, path_obj, development_mode: T.unsafe(nil)); end
 
-  def absolute_path?(path); end
   def find(feature, try_extensions: T.unsafe(nil)); end
   def load_dir(dir); end
   def push_paths(sender, *paths); end
@@ -208,10 +208,13 @@ class Bootsnap::LoadPathCache::Store
   private
 
   def commit_transaction; end
+  def default_data; end
   def dump_data; end
   def load_data; end
 end
 
+Bootsnap::LoadPathCache::Store::CURRENT_VERSION = T.let(T.unsafe(nil), String)
 class Bootsnap::LoadPathCache::Store::NestedTransactionError < ::StandardError; end
 class Bootsnap::LoadPathCache::Store::SetOutsideTransactionNotAllowed < ::StandardError; end
+Bootsnap::LoadPathCache::Store::VERSION_KEY = T.let(T.unsafe(nil), String)
 Bootsnap::VERSION = T.let(T.unsafe(nil), String)
