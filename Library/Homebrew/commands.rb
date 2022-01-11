@@ -30,6 +30,13 @@ module Commands
     "lc"          => "livecheck",
     "tc"          => "typecheck",
   }.freeze
+  HOMEBREW_UNSUPPORTED_COMMAND_MESSAGES = {
+    "cask" => "`brew cask <command>` is no longer supported. Use `brew <command> --cask` instead.",
+  }.freeze
+
+  def unsupported_cmd?(cmd)
+    HOMEBREW_UNSUPPORTED_COMMAND_MESSAGES.fetch(cmd, nil)
+  end
 
   def valid_internal_cmd?(cmd)
     require?(HOMEBREW_CMD_PATH/cmd)

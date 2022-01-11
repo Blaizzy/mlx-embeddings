@@ -86,6 +86,10 @@ begin
   require "commands"
   require "settings"
 
+  # Print an error message and exit if the command is no longer supported
+  unsupported_cmd_message = Commands.unsupported_cmd?(cmd)
+  odie unsupported_cmd_message if unsupported_cmd_message
+
   internal_cmd = Commands.valid_internal_cmd?(cmd) || Commands.valid_internal_dev_cmd?(cmd) if cmd
 
   unless internal_cmd
