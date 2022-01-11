@@ -22,7 +22,6 @@ module Homebrew
 
   sig { returns(CLI::Parser) }
   def install_args
-    # rubocop:disable Metrics/BlockLength
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Install a <formula> or <cask>. Additional options specific to a <formula> may be
@@ -136,7 +135,6 @@ module Homebrew
 
       named_args [:formula, :cask], min: 1
     end
-    # rubocop:enable Metrics/BlockLength
   end
 
   def install
