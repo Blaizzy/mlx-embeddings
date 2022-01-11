@@ -20,7 +20,7 @@ module RuboCop
 
           url_node = stanza.stanza_node.first_argument
 
-          legacy_comma_separator_pattern = /version.(before|after)_comma/
+          legacy_comma_separator_pattern = /version\.(before|after)_comma/
 
           url = url_node.source
 
