@@ -12,8 +12,6 @@ module PyPI
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
   private_constant :PYTHONHOSTED_URL_PREFIX
 
-  @pipgrip_installed = nil
-
   # PyPI Package
   #
   # @api private
@@ -214,8 +212,7 @@ module PyPI
       end
     end
 
-    @pipgrip_installed ||= Formula["pipgrip"].any_version_installed?
-    odie '"pipgrip" must be installed (`brew install pipgrip`)' unless @pipgrip_installed
+    ensure_formula_installed!("pipgrip")
 
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
     command =
