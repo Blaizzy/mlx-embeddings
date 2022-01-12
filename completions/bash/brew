@@ -436,6 +436,7 @@ _brew_bump() {
       --help
       --limit
       --no-pull-requests
+      --open-pr
       --quiet
       --start-with
       --verbose

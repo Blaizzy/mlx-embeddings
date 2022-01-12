@@ -99,6 +99,6 @@ module Repology
     # scheme
     return "no latest version" if latest_version.blank?
 
-    latest_version["version"]
+    Version.new(latest_version["version"])
   end
 end

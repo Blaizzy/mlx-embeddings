@@ -25,12 +25,15 @@ module Homebrew
              description: "Check only formulae."
       switch "--cask", "--casks",
              description: "Check only casks."
+      switch "--open-pr",
+             description: "Open a pull request for the new version if there are none already open."
       flag   "--limit=",
              description: "Limit number of package results returned."
       flag   "--start-with=",
              description: "Letter or word that the list of package results should alphabetically follow."
 
       conflicts "--cask", "--formula"
+      conflicts "--no-pull-requests", "--open-pr"
 
       named_args [:formula, :cask]
     end
@@ -103,7 +106,7 @@ module Homebrew
         end
 
         package_data = Repology.single_package_query(name, repository: repository)
-        retrieve_and_display_info(
+        retrieve_and_display_info_and_open_pr(
           formula_or_cask,
           name,
           package_data&.values&.first,
@@ -157,7 +160,13 @@ module Homebrew
           end
 
           puts if i.positive?
-          retrieve_and_display_info(formula_or_cask, name, repositories, args: args, ambiguous_cask: ambiguous_cask)
+          retrieve_and_display_info_and_open_pr(
+            formula_or_cask,
+            name,
+            repositories,
+            args:           args,
+            ambiguous_cask: ambiguous_cask,
+          )
         end
       end
     end
@@ -205,17 +214,21 @@ module Homebrew
       pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
     end
 
-    return "none" if pull_requests.blank?
-
     pull_requests
   end
 
-  def retrieve_and_display_info(formula_or_cask, name, repositories, args:, ambiguous_cask: false)
-    current_version = if formula_or_cask.is_a?(Formula)
-      formula_or_cask.stable.version
+  def retrieve_and_display_info_and_open_pr(formula_or_cask, name, repositories, args:, ambiguous_cask: false)
+    if formula_or_cask.is_a?(Formula)
+      current_version = formula_or_cask.stable.version
+      type = :formula
+      version_name = "formula version"
     else
-      Version.new(formula_or_cask.version)
+      current_version = Version.new(formula_or_cask.version)
+      type = :cask
+      version_name = "cask version   "
     end
+
+    livecheck_latest = livecheck_result(formula_or_cask)
 
     repology_latest = if repositories.present?
       Repology.latest_version(repositories)
@@ -223,26 +236,37 @@ module Homebrew
       "not found"
     end
 
-    livecheck_latest = livecheck_result(formula_or_cask)
-    pull_requests = if !args.no_pull_requests? && (args.named.present? ||
-                       (livecheck_latest.is_a?(Version) && livecheck_latest != current_version))
-      retrieve_pull_requests(formula_or_cask, name)
-    end
+    new_version = if livecheck_latest.is_a?(Version) && livecheck_latest > current_version
+      livecheck_latest
+    elsif repology_latest.is_a?(Version) && repology_latest > current_version
+      repology_latest
+    end.presence
 
-    name += " (cask)" if ambiguous_cask
+    pull_requests = if !args.no_pull_requests? && (args.named.present? || new_version)
+      retrieve_pull_requests(formula_or_cask, name)
+    end.presence
+
+    title_name = ambiguous_cask ? "#{name} (cask)" : name
     title = if current_version == repology_latest &&
                current_version == livecheck_latest
-      "#{name} #{Tty.green}is up to date!#{Tty.reset}"
+      "#{title_name} #{Tty.green}is up to date!#{Tty.reset}"
     else
-      name
+      title_name
     end
 
     ohai title
     puts <<~EOS
-      Current #{formula_or_cask.is_a?(Formula) ? "formula version:" : "cask version:   "}  #{current_version}
+      Current #{version_name}:  #{current_version}
       Latest livecheck version: #{livecheck_latest}
       Latest Repology version:  #{repology_latest}
+      Open pull requests:       #{pull_requests || "none"}
     EOS
-    puts "Open pull requests:       #{pull_requests}" unless pull_requests.nil?
+
+    return unless args.open_pr?
+    return unless new_version
+    return if pull_requests
+
+    system HOMEBREW_BREW_FILE, "bump-#{type}-pr", "--no-browse",
+           "--message=Created by `brew bump`", "--version=#{new_version}", name
   end
 end
