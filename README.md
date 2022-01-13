@@ -34,12 +34,6 @@ Alternatively, for something more substantial, check out one of the issues label
 
 Good luck!
 
-## Donations
-
-Homebrew is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Homebrew better for our users.
-
-Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew), [Open Collective](https://opencollective.com/homebrew) or [Patreon](https://www.patreon.com/homebrew). Homebrew is fiscally hosted by the [Open Source Collective](https://opencollective.com/opensource).
-
 ## Security
 
 Please report security issues to our [HackerOne](https://hackerone.com/homebrew/).
@@ -67,6 +61,12 @@ Former maintainers with significant contributions include [Jan Viljanen](https:/
 
 Code is under the [BSD 2-clause "Simplified" License](LICENSE.txt).
 Documentation is under the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/).
+
+## Donations
+
+Homebrew is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Homebrew better for our users.
+
+Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew), [Open Collective](https://opencollective.com/homebrew) or [Patreon](https://www.patreon.com/homebrew). Homebrew is fiscally hosted by the [Open Source Collective](https://opencollective.com/opensource).
 
 ## Sponsors
 
