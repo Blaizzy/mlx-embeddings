@@ -49,59 +49,62 @@ class Nokogiri::CSS::Parser < ::Racc::Parser
   def initialize(namespaces = T.unsafe(nil)); end
 
   def _reduce_1(val, _values, result); end
+  def _reduce_10(val, _values, result); end
   def _reduce_11(val, _values, result); end
-  def _reduce_12(val, _values, result); end
   def _reduce_13(val, _values, result); end
   def _reduce_14(val, _values, result); end
   def _reduce_15(val, _values, result); end
-  def _reduce_16(val, _values, result); end
+  def _reduce_17(val, _values, result); end
   def _reduce_18(val, _values, result); end
+  def _reduce_19(val, _values, result); end
   def _reduce_2(val, _values, result); end
-  def _reduce_20(val, _values, result); end
   def _reduce_21(val, _values, result); end
-  def _reduce_22(val, _values, result); end
   def _reduce_23(val, _values, result); end
+  def _reduce_24(val, _values, result); end
   def _reduce_25(val, _values, result); end
   def _reduce_26(val, _values, result); end
-  def _reduce_27(val, _values, result); end
   def _reduce_28(val, _values, result); end
   def _reduce_29(val, _values, result); end
   def _reduce_3(val, _values, result); end
   def _reduce_30(val, _values, result); end
   def _reduce_31(val, _values, result); end
   def _reduce_32(val, _values, result); end
-  def _reduce_33(val, _values, result); end
   def _reduce_34(val, _values, result); end
   def _reduce_35(val, _values, result); end
   def _reduce_36(val, _values, result); end
   def _reduce_37(val, _values, result); end
+  def _reduce_38(val, _values, result); end
+  def _reduce_39(val, _values, result); end
   def _reduce_4(val, _values, result); end
   def _reduce_40(val, _values, result); end
   def _reduce_41(val, _values, result); end
   def _reduce_42(val, _values, result); end
-  def _reduce_43(val, _values, result); end
-  def _reduce_44(val, _values, result); end
   def _reduce_45(val, _values, result); end
+  def _reduce_47(val, _values, result); end
   def _reduce_48(val, _values, result); end
   def _reduce_49(val, _values, result); end
   def _reduce_5(val, _values, result); end
   def _reduce_50(val, _values, result); end
   def _reduce_51(val, _values, result); end
-  def _reduce_52(val, _values, result); end
+  def _reduce_54(val, _values, result); end
+  def _reduce_55(val, _values, result); end
+  def _reduce_56(val, _values, result); end
+  def _reduce_57(val, _values, result); end
   def _reduce_58(val, _values, result); end
-  def _reduce_59(val, _values, result); end
   def _reduce_6(val, _values, result); end
-  def _reduce_60(val, _values, result); end
-  def _reduce_61(val, _values, result); end
-  def _reduce_63(val, _values, result); end
   def _reduce_64(val, _values, result); end
   def _reduce_65(val, _values, result); end
   def _reduce_66(val, _values, result); end
   def _reduce_67(val, _values, result); end
-  def _reduce_68(val, _values, result); end
   def _reduce_69(val, _values, result); end
   def _reduce_7(val, _values, result); end
   def _reduce_70(val, _values, result); end
+  def _reduce_71(val, _values, result); end
+  def _reduce_72(val, _values, result); end
+  def _reduce_73(val, _values, result); end
+  def _reduce_74(val, _values, result); end
+  def _reduce_75(val, _values, result); end
+  def _reduce_76(val, _values, result); end
   def _reduce_8(val, _values, result); end
   def _reduce_9(val, _values, result); end
   def _reduce_none(val, _values, result); end
@@ -168,6 +171,7 @@ class Nokogiri::CSS::XPathVisitor
   private
 
   def css_class(hay, needle); end
+  def html5_element_name_needs_namespace_handling(node); end
   def is_of_type_pseudo_class?(node); end
   def nth(node, options = T.unsafe(nil)); end
   def read_a_and_positive_b(values); end
