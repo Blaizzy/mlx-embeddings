@@ -125,16 +125,17 @@ module Homebrew
         # dependencies. Therefore before performing other checks we need to be
         # sure --force flag is passed.
         if f.outdated?
-          unless Homebrew::EnvConfig.no_install_upgrade?
+          if !Homebrew::EnvConfig.no_install_upgrade? && !f.pinned?
             puts "#{f.name} #{f.linked_version} is already installed but outdated (so it will be upgraded)."
             return true
           end
 
+          unpin_cmd_if_needed = ("brew unpin #{f.full_name} && " if f.pinned?)
           optlinked_version = Keg.for(f.opt_prefix).version
           onoe <<~EOS
             #{f.full_name} #{optlinked_version} is already installed.
             To upgrade to #{f.version}, run:
-              brew upgrade #{f.full_name}
+              #{unpin_cmd_if_needed}brew upgrade #{f.full_name}
           EOS
         elsif only_dependencies
           return true
@@ -215,15 +216,16 @@ module Homebrew
       elsif f.linked?
         message = "#{f.name} #{f.linked_version} is already installed"
         if f.outdated? && !head
-          unless Homebrew::EnvConfig.no_install_upgrade?
+          if !Homebrew::EnvConfig.no_install_upgrade? && !f.pinned?
             puts "#{message} but outdated (so it will be upgraded)."
             return true
           end
 
+          unpin_cmd_if_needed = ("brew unpin #{f.full_name} && " if f.pinned?)
           onoe <<~EOS
             #{message}
             To upgrade to #{f.pkg_version}, run:
-              brew upgrade #{f.full_name}
+              #{unpin_cmd_if_needed}brew upgrade #{f.full_name}
           EOS
         elsif only_dependencies
           return true
