@@ -477,8 +477,8 @@ _brew_bump() {
     '--full-name[Print formulae/casks with fully-qualified names]' \
     '--help[Show this message]' \
     '--limit[Limit number of package results returned]' \
-    '--no-pull-requests[Do not retrieve pull requests from GitHub]' \
-    '--open-pr[Open a pull request for the new version if there are none already open]' \
+    '(--open-pr)--no-pull-requests[Do not retrieve pull requests from GitHub]' \
+    '(--no-pull-requests)--open-pr[Open a pull request for the new version if there are none already open]' \
     '--quiet[Make some output more quiet]' \
     '--start-with[Letter or word that the list of package results should alphabetically follow]' \
     '--verbose[Make some output more verbose]' \
@@ -964,6 +964,7 @@ _brew_instal() {
     '--no-binaries[Disable/enable linking of helper executables (default: enabled)]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '(--cask --ignore-dependencies)--only-dependencies[Install the dependencies with specified options but do not install the formula itself]' \
+    '(--cask)--overwrite[Delete files that already exist in the prefix while linking]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
     '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
@@ -979,7 +980,7 @@ _brew_instal() {
     '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git)--cask[Treat all named arguments as casks]' \
+    '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git --overwrite)--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
 }
 
@@ -1015,6 +1016,7 @@ _brew_install() {
     '--no-binaries[Disable/enable linking of helper executables (default: enabled)]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '(--cask --ignore-dependencies)--only-dependencies[Install the dependencies with specified options but do not install the formula itself]' \
+    '(--cask)--overwrite[Delete files that already exist in the prefix while linking]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
     '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
@@ -1030,7 +1032,7 @@ _brew_install() {
     '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git)--cask[Treat all named arguments as casks]' \
+    '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git --overwrite)--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
 }
 

@@ -1083,6 +1083,7 @@ _brew_instal() {
       --no-binaries
       --no-quarantine
       --only-dependencies
+      --overwrite
       --prefpanedir
       --qlplugindir
       --quarantine
@@ -1139,6 +1140,7 @@ _brew_install() {
       --no-binaries
       --no-quarantine
       --only-dependencies
+      --overwrite
       --prefpanedir
       --qlplugindir
       --quarantine
