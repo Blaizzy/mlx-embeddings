@@ -130,11 +130,14 @@ module Homebrew
             return true
           end
 
+          unpin_cmd_if_needed = if f.pinned?
+            "brew unpin #{f.full_name} && "
+          end
           optlinked_version = Keg.for(f.opt_prefix).version
           onoe <<~EOS
             #{f.full_name} #{optlinked_version} is already installed.
             To upgrade to #{f.version}, run:
-              brew upgrade #{f.full_name}
+              #{unpin_cmd_if_needed}brew upgrade #{f.full_name}
           EOS
         elsif only_dependencies
           return true
@@ -220,10 +223,13 @@ module Homebrew
             return true
           end
 
+          unpin_cmd_if_needed = if f.pinned?
+            "brew unpin #{f.full_name} && "
+          end
           onoe <<~EOS
             #{message}
             To upgrade to #{f.pkg_version}, run:
-              brew upgrade #{f.full_name}
+              #{unpin_cmd_if_needed}brew upgrade #{f.full_name}
           EOS
         elsif only_dependencies
           return true
