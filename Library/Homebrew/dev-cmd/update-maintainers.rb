@@ -28,9 +28,8 @@ module Homebrew
     public_members = GitHub.public_member_usernames("Homebrew")
 
     members = {
-      plc:   GitHub.members_by_team("Homebrew", "plc"),
-      tsc:   GitHub.members_by_team("Homebrew", "tsc"),
-      linux: GitHub.members_by_team("Homebrew", "linux"),
+      plc: GitHub.members_by_team("Homebrew", "plc"),
+      tsc: GitHub.members_by_team("Homebrew", "tsc"),
     }
     members[:other] = GitHub.members_by_team("Homebrew", "maintainers")
                             .except(*members.values.map(&:keys).flatten.uniq)
@@ -49,8 +48,6 @@ module Homebrew
                   "\\1 is #{sentences[:plc]}.")
     content.gsub!(/(Homebrew's \[Technical Steering Committee.*) is .*\./,
                   "\\1 is #{sentences[:tsc]}.")
-    content.gsub!(/(Homebrew's Linux maintainers are).*\./,
-                  "\\1 #{sentences[:linux]}.")
     content.gsub!(/(Homebrew's other current maintainers are).*\./,
                   "\\1 #{sentences[:other]}.")
 
