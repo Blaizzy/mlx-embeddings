@@ -63,6 +63,9 @@ class FormulaInstaller
   def force?; end
 
   sig { returns(T::Boolean) }
+  def overwrite?; end
+
+  sig { returns(T::Boolean) }
   def keep_tmp?; end
 
   sig { returns(T::Boolean) }
