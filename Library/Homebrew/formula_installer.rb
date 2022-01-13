@@ -38,7 +38,7 @@ class FormulaInstaller
 
   attr_predicate :installed_as_dependency?, :installed_on_request?
   attr_predicate :show_summary_heading?, :show_header?
-  attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :keep_tmp?
+  attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :overwrite?, :keep_tmp?
   attr_predicate :verbose?, :debug?, :quiet?
 
   # TODO: Remove when removed from `test-bot`.
@@ -64,6 +64,7 @@ class FormulaInstaller
     cc: nil,
     options: Options.new,
     force: false,
+    overwrite: false,
     debug: false,
     quiet: false,
     verbose: false
@@ -71,6 +72,7 @@ class FormulaInstaller
     @formula = formula
     @env = env
     @force = force
+    @overwrite = overwrite
     @keep_tmp = keep_tmp
     @link_keg = !formula.keg_only? || link_keg
     @show_header = show_header
@@ -951,7 +953,7 @@ class FormulaInstaller
 
     unless link_keg
       begin
-        keg.optlink(verbose: verbose?)
+        keg.optlink(verbose: verbose?, overwrite: overwrite?)
       rescue Keg::LinkError => e
         ofail "Failed to create #{formula.opt_prefix}"
         puts "Things that depend on #{formula.full_name} will probably not build."
@@ -982,7 +984,7 @@ class FormulaInstaller
     backup_dir = HOMEBREW_CACHE/"Backup"
 
     begin
-      keg.link(verbose: verbose?)
+      keg.link(verbose: verbose?, overwrite: overwrite?)
     rescue Keg::ConflictError => e
       conflict_file = e.dst
       if formula.link_overwrite?(conflict_file) && !link_overwrite_backup.key?(conflict_file)
