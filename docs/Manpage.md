@@ -348,6 +348,8 @@ is already installed but outdated.
   Download and patch *`formula`*, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package.
 * `-g`, `--git`:
   Create a Git repository, useful for creating patches to the software.
+* `--overwrite`:
+  Delete files that already exist in the prefix while linking.
 * `--cask`:
   Treat all named arguments as casks.
 * `--[no-]binaries`:
