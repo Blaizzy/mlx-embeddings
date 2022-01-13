@@ -121,5 +121,12 @@ module MachO
     def self.big_magic?(num)
       [Headers::MH_MAGIC, Headers::MH_MAGIC_64].include? num
     end
+
+    # Compares the given number to the known magic number for a compressed Mach-O slice.
+    # @param num [Integer] the number being checked
+    # @return [Boolean] whether `num` is a valid compressed header magic number
+    def self.compressed_magic?(num)
+      num == Headers::COMPRESSED_MAGIC
+    end
   end
 end

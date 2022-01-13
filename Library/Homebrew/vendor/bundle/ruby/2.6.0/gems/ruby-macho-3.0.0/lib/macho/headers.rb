@@ -37,6 +37,18 @@ module MachO
     # @api private
     MH_CIGAM_64 = 0xcffaedfe
 
+    # compressed mach-o magic
+    # @api private
+    COMPRESSED_MAGIC = 0x636f6d70 # "comp"
+
+    # a compressed mach-o slice, using LZSS for compression
+    # @api private
+    COMP_TYPE_LZSS = 0x6c7a7373 # "lzss"
+
+    # a compressed mach-o slice, using LZVN ("FastLib") for compression
+    # @api private
+    COMP_TYPE_FASTLIB = 0x6c7a766e # "lzvn"
+
     # association of magic numbers to string representations
     # @api private
     MH_MAGICS = {
@@ -433,6 +445,11 @@ module MachO
     # @api private
     MH_KEXT_BUNDLE = 0xb
 
+    # a set of Mach-Os, running in the same userspace, sharing a linkedit.  The kext collection files are an example
+    # of this object type
+    # @api private
+    MH_FILESET = 0xc
+
     # association of filetypes to Symbol representations
     # @api private
     MH_FILETYPES = {
@@ -447,6 +464,7 @@ module MachO
       MH_DYLIB_STUB => :dylib_stub,
       MH_DSYM => :dsym,
       MH_KEXT_BUNDLE => :kext_bundle,
+      MH_FILESET => :fileset,
     }.freeze
 
     # association of mach header flag symbols to values
@@ -478,6 +496,9 @@ module MachO
       :MH_HAS_TLV_DESCRIPTORS => 0x800000,
       :MH_NO_HEAP_EXECUTION => 0x1000000,
       :MH_APP_EXTENSION_SAFE => 0x02000000,
+      :MH_NLIST_OUTOFSYNC_WITH_DYLDINFO => 0x04000000,
+      :MH_SIM_SUPPORT => 0x08000000,
+      :MH_DYLIB_IN_CACHE => 0x80000000,
     }.freeze
 
     # Fat binary header structure
@@ -724,6 +745,11 @@ module MachO
         filetype == Headers::MH_KEXT_BUNDLE
       end
 
+      # @return [Boolean] whether or not the file is of type `MH_FILESET`
+      def fileset?
+        filetype == Headers::MH_FILESET
+      end
+
       # @return [Boolean] true if the Mach-O has 32-bit magic, false otherwise
       def magic32?
         Utils.magic32?(magic)
@@ -782,6 +808,89 @@ module MachO
       def to_h
         {
           "reserved" => reserved,
+        }.merge super
+      end
+    end
+
+    # Prelinked kernel/"kernelcache" header structure
+    class PrelinkedKernelHeader < MachOStructure
+      # @return [Integer] the magic number for a compressed header ({COMPRESSED_MAGIC})
+      attr_reader :signature
+
+      # @return [Integer] the type of compression used
+      attr_reader :compress_type
+
+      # @return [Integer] a checksum for the uncompressed data
+      attr_reader :adler32
+
+      # @return [Integer] the size of the uncompressed data, in bytes
+      attr_reader :uncompressed_size
+
+      # @return [Integer] the size of the compressed data, in bytes
+      attr_reader :compressed_size
+
+      # @return [Integer] the version of the prelink format
+      attr_reader :prelink_version
+
+      # @return [void]
+      attr_reader :reserved
+
+      # @return [void]
+      attr_reader :platform_name
+
+      # @return [void]
+      attr_reader :root_path
+
+      # @see MachOStructure::FORMAT
+      # @api private
+      FORMAT = "L>6a40a64a256"
+
+      # @see MachOStructure::SIZEOF
+      # @api private
+      SIZEOF = 384
+
+      # @api private
+      def initialize(signature, compress_type, adler32, uncompressed_size, compressed_size, prelink_version, reserved, platform_name, root_path)
+        super()
+
+        @signature = signature
+        @compress_type = compress_type
+        @adler32 = adler32
+        @uncompressed_size = uncompressed_size
+        @compressed_size = compressed_size
+        @prelink_version = prelink_version
+        @reserved = reserved.unpack("L>10")
+        @platform_name = platform_name
+        @root_path = root_path
+      end
+
+      # @return [Boolean] whether this prelinked kernel supports KASLR
+      def kaslr?
+        prelink_version >= 1
+      end
+
+      # @return [Boolean] whether this prelinked kernel is compressed with LZSS
+      def lzss?
+        compress_type == COMP_TYPE_LZSS
+      end
+
+      # @return [Boolean] whether this prelinked kernel is compressed with LZVN
+      def lzvn?
+        compress_type == COMP_TYPE_FASTLIB
+      end
+
+      # @return [Hash] a hash representation of this {PrelinkedKernelHeader}
+      def to_h
+        {
+          "signature" => signature,
+          "compress_type" => compress_type,
+          "adler32" => adler32,
+          "uncompressed_size" => uncompressed_size,
+          "compressed_size" => compressed_size,
+          "prelink_version" => prelink_version,
+          "reserved" => reserved,
+          "platform_name" => platform_name,
+          "root_path" => root_path,
         }.merge super
       end
     end

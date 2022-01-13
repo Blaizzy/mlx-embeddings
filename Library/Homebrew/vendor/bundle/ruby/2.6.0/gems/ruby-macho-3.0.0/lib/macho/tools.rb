@@ -51,6 +51,8 @@ module MachO
     # @param options [Hash]
     # @option options [Boolean] :strict (true) whether or not to fail loudly
     #  with an exception if the change cannot be performed
+    # @option options [Boolean] :uniq (false) whether or not to change duplicate
+    #  rpaths simultaneously
     # @return [void]
     def self.change_rpath(filename, old_path, new_path, options = {})
       file = MachO.open(filename)
@@ -80,6 +82,8 @@ module MachO
     # @param options [Hash]
     # @option options [Boolean] :strict (true) whether or not to fail loudly
     #  with an exception if the change cannot be performed
+    # @option options [Boolean] :uniq (false) whether or not to delete duplicate
+    #  rpaths simultaneously
     # @return [void]
     def self.delete_rpath(filename, old_path, options = {})
       file = MachO.open(filename)

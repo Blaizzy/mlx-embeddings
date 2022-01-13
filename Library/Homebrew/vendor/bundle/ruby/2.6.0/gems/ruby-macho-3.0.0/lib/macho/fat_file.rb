@@ -55,7 +55,7 @@ module MachO
       machos.each do |macho|
         macho_offset = Utils.round(offset, 2**macho.segment_alignment)
 
-        raise FatArchOffsetOverflowError, macho_offset if !fat64 && macho_offset > (2**32 - 1)
+        raise FatArchOffsetOverflowError, macho_offset if !fat64 && macho_offset > ((2**32) - 1)
 
         macho_pads[macho] = Utils.padding_for(offset, 2**macho.segment_alignment)
 
@@ -96,7 +96,7 @@ module MachO
 
       @filename = filename
       @options = opts
-      @raw_data = File.open(@filename, "rb", &:read)
+      @raw_data = File.binread(@filename)
       populate_fields
     end
 
@@ -238,6 +238,8 @@ module MachO
     # @param options [Hash]
     # @option options [Boolean] :strict (true) if true, fail if one slice fails.
     #  if false, fail only if all slices fail.
+    # @option options [Boolean] :uniq (false) for each slice: if true, change
+    #  each rpath simultaneously.
     # @return [void]
     # @see MachOFile#change_rpath
     def change_rpath(old_path, new_path, options = {})
@@ -268,6 +270,9 @@ module MachO
     # @param options [Hash]
     # @option options [Boolean] :strict (true) if true, fail if one slice fails.
     #  if false, fail only if all slices fail.
+    # @option options [Boolean] :uniq (false) for each slice: if true, delete
+    #  only the first runtime path that matches. if false, delete all duplicate
+    #  paths that match.
     # @return void
     # @see MachOFile#delete_rpath
     def delete_rpath(path, options = {})
@@ -291,7 +296,7 @@ module MachO
     # @param filename [String] the file to write to
     # @return [void]
     def write(filename)
-      File.open(filename, "wb") { |f| f.write(@raw_data) }
+      File.binwrite(filename, @raw_data)
     end
 
     # Write all (fat) data to the file used to initialize the instance.
@@ -301,7 +306,7 @@ module MachO
     def write!
       raise MachOError, "no initial file to write to" if filename.nil?
 
-      File.open(@filename, "wb") { |f| f.write(@raw_data) }
+      File.binwrite(@filename, @raw_data)
     end
 
     # @return [Hash] a hash representation of this {FatFile}
