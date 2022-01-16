@@ -18,10 +18,11 @@ A formula should be deprecated to indicate to users that the formula should not 
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
-Formulae with dependents should **not** be deprecated unless the formula:
+Formulae with dependents should **not** be deprecated unless:
 
-- does not build on any of our supported platforms; or,
-- has outstanding CVEs.
+- all of its dependents are also deprecated;
+- the formula does not build on any of our supported platforms; or,
+- the formula has outstanding CVEs.
 
 To deprecate a formula, add a `deprecate!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
 
