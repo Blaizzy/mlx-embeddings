@@ -453,6 +453,7 @@ Rails/InverseOf:
   Description: 'Checks for associations where the inverse cannot be determined automatically.'
   Enabled: true
   VersionAdded: '0.52'
+  IgnoreScopes: false
   Include:
     - app/models/**/*.rb
 
@@ -627,6 +628,7 @@ Rails/RedundantForeignKey:
 Rails/RedundantPresenceValidationOnBelongsTo:
   Description: 'Checks for redundant presence validation on belongs_to association.'
   Enabled: pending
+  SafeAutoCorrect: false
   VersionAdded: '2.13'
 
 Rails/RedundantReceiverInWithOptions:
@@ -702,15 +704,17 @@ Rails/ReversibleMigration:
   Reference: 'https://api.rubyonrails.org/classes/ActiveRecord/Migration/CommandRecorder.html'
   Enabled: true
   VersionAdded: '0.47'
+  VersionChanged: '2.13'
   Include:
-    - db/migrate/*.rb
+    - db/**/*.rb
 
 Rails/ReversibleMigrationMethodDefinition:
   Description: 'Checks whether the migration implements either a `change` method or both an `up` and a `down` method.'
   Enabled: false
   VersionAdded: '2.10'
+  VersionChanged: '2.13'
   Include:
-    - db/migrate/*.rb
+    - db/**/*.rb
 
 Rails/RootJoinChain:
   Description: 'Use a single `#join` instead of chaining on `Rails.root` or `Rails.public_path`.'
