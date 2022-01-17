@@ -32,6 +32,7 @@ end
 
 class Bootsnap::CompileCache::Error < ::StandardError; end
 class Bootsnap::CompileCache::PermissionError < ::Bootsnap::CompileCache::Error; end
+Bootsnap::CompileCache::UNCOMPILABLE = T.let(T.unsafe(nil), BasicObject)
 
 module Bootsnap::ExplicitRequire
   class << self
@@ -72,13 +73,13 @@ class Bootsnap::LoadPathCache::Cache
 
   def dir_changed?; end
   def expand_path(feature); end
-  def maybe_append_extension(f); end
+  def maybe_append_extension(feature); end
   def now; end
   def push_paths_locked(*paths); end
-  def search_index(f, try_extensions: T.unsafe(nil)); end
+  def search_index(feature, try_extensions: T.unsafe(nil)); end
   def stale?; end
-  def try_ext(f); end
-  def try_index(f); end
+  def try_ext(feature); end
+  def try_index(feature); end
   def unshift_paths_locked(*paths); end
 end
 
@@ -134,15 +135,17 @@ class Bootsnap::LoadPathCache::FallbackScan < ::StandardError; end
 class Bootsnap::LoadPathCache::LoadedFeaturesIndex
   def initialize; end
 
+  def cursor(short); end
+  def identify(short, cursor); end
   def key?(feature); end
   def purge(feature); end
   def purge_multi(features); end
-  def register(short, long = T.unsafe(nil)); end
+  def register(short, long); end
 
   private
 
-  def extension_elidable?(f); end
-  def strip_extension_if_elidable(f); end
+  def extension_elidable?(feature); end
+  def strip_extension_if_elidable(feature); end
 end
 
 Bootsnap::LoadPathCache::LoadedFeaturesIndex::STRIP_EXTENSION = T.let(T.unsafe(nil), Regexp)
