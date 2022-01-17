@@ -37,7 +37,7 @@ module RuboCop
       class ReadWriteAttribute < Base
         extend AutoCorrector
 
-        MSG = 'Prefer `%<prefer>s` over `%<current>s`.'
+        MSG = 'Prefer `%<prefer>s`.'
         RESTRICT_ON_SEND = %i[read_attribute write_attribute].freeze
 
         def_node_matcher :read_write_attribute?, <<~PATTERN
@@ -51,35 +51,51 @@ module RuboCop
           return unless read_write_attribute?(node)
           return if within_shadowing_method?(node)
 
-          add_offense(node.loc.selector, message: message(node)) do |corrector|
-            case node.method_name
-            when :read_attribute
-              replacement = read_attribute_replacement(node)
-            when :write_attribute
-              replacement = write_attribute_replacement(node)
-            end
-
-            corrector.replace(node.source_range, replacement)
+          add_offense(node, message: build_message(node)) do |corrector|
+            corrector.replace(node.source_range, node_replacement(node))
           end
         end
 
         private
 
         def within_shadowing_method?(node)
-          node.each_ancestor(:def).any? do |enclosing_method|
-            shadowing_method_name = node.first_argument.value.to_s
-            shadowing_method_name << '=' if node.method?(:write_attribute)
+          first_arg = node.first_argument
+          return false unless first_arg.respond_to?(:value)
 
-            enclosing_method.method_name.to_s == shadowing_method_name
+          enclosing_method = node.each_ancestor(:def).first
+          return false unless enclosing_method
+
+          shadowing_method_name = first_arg.value.to_s
+          shadowing_method_name << '=' if node.method?(:write_attribute)
+          enclosing_method.method?(shadowing_method_name)
+        end
+
+        def build_message(node)
+          if node.single_line?
+            single_line_message(node)
+          else
+            multi_line_message(node)
           end
         end
 
-        def message(node)
+        def single_line_message(node)
+          format(MSG, prefer: node_replacement(node))
+        end
+
+        def multi_line_message(node)
           if node.method?(:read_attribute)
-            format(MSG, prefer: 'self[:attr]', current: 'read_attribute(:attr)')
+            format(MSG, prefer: 'self[:attr]')
           else
-            format(MSG, prefer: 'self[:attr] = val',
-                        current: 'write_attribute(:attr, val)')
+            format(MSG, prefer: 'self[:attr] = val')
+          end
+        end
+
+        def node_replacement(node)
+          case node.method_name
+          when :read_attribute
+            read_attribute_replacement(node)
+          when :write_attribute
+            write_attribute_replacement(node)
           end
         end
 

@@ -8,6 +8,10 @@ module RuboCop
       # explicitly set to `false`. The presence validator is added
       # automatically, and explicit presence validation is redundant.
       #
+      # @safety
+      #   This cop's autocorrection is unsafe because it changes the default error message
+      #   from "can't be blank" to "must exist".
+      #
       # @example
       #   # bad
       #   belongs_to :user
@@ -46,9 +50,6 @@ module RuboCop
         #   @example source that matches - by association
         #     validates :name, :user, presence: true
         #
-        #   @example source that matches - with presence options
-        #     validates :user, presence: { message: 'duplicate' }
-        #
         #   @example source that matches - by a foreign key
         #     validates :user_id, presence: true
         #
@@ -62,7 +63,7 @@ module RuboCop
             send nil? :validates
             (sym $_)+
             $[
-              (hash <$(pair (sym :presence) {true hash}) ...>)  # presence: true
+              (hash <$(pair (sym :presence) true) ...>)         # presence: true
               !(hash <$(pair (sym :strict) {true const}) ...>)  # strict: true
             ]
           )
