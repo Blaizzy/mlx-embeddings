@@ -31,11 +31,9 @@ class Keg
           change_install_name(old_name, new_name, file) if new_name
         end
 
-        if ENV["HOMEBREW_RELOCATE_RPATHS"]
-          each_linkage_for(file, :rpaths) do |old_name|
-            new_name = relocated_name_for(old_name, relocation)
-            change_rpath(old_name, new_name, file) if new_name
-          end
+        each_linkage_for(file, :rpaths) do |old_name|
+          new_name = relocated_name_for(old_name, relocation)
+          change_rpath(old_name, new_name, file) if new_name
         end
       end
     end
@@ -56,11 +54,21 @@ class Keg
           change_install_name(bad_name, new_name, file) unless new_name == bad_name
         end
 
-        each_linkage_for(file, :rpaths) do |bad_name|
-          # Strip rpaths rooted in the build directory
-          next if !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
-                  !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s)
+        # Count duplicate rpaths. We need to keep track of this ourselves
+        # because the MachO data is cached and this cache is not updated
+        # after modification with #delete_rpath.
+        rpath_dupe_count = Hash.new { |h, k| h[k] = -1 }
+        file.rpaths.each do |rpath|
+          rpath_dupe_count[rpath] += 1
+        end
 
+        each_linkage_for(file, :rpaths) do |bad_name|
+          # Strip duplicate rpaths and rpaths rooted in the build directory
+          next if !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
+                  !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s) &&
+                  (rpath_dupe_count[bad_name] <= 0)
+
+          rpath_dupe_count[bad_name] -= 1
           delete_rpath(bad_name, file)
         end
       end
