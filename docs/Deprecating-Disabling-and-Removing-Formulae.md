@@ -18,7 +18,7 @@ A formula should be deprecated to indicate to users that the formula should not 
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
-Formulae with dependents should **only** be deprecated if any of the below are true:
+Formulae with dependents may be deprecated only if at least one of the following are true:
 
 - its dependents are all deprecated
 - the formula does not build on any of our supported macOS versions and on Linux
@@ -47,7 +47,7 @@ The most common reasons for disabling a formula are:
 - the upstream repository has been removed
 - the project has no license
 
-Formulae should not be disabled without a deprecation period of at least three months unless the circumstances are exceptional (e.g. the formula does not build on any supported macOS version or Linux). How long a reasonable period is depends on the formula's usage statistics. Popular formulae should have longer deprecation periods.
+Formulae should not be disabled without a deprecation period of at least three months unless the circumstances are exceptional (e.g. the formula does not build on any supported macOS version or Linux). Popular formulae should have longer deprecation periods. The popularity of a formula should be based on our analytics data.
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
