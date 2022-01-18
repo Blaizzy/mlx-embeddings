@@ -1303,6 +1303,7 @@ class Formula
           CMakeCache.txt
           CMakeOutput.log
           CMakeError.log
+          meson-log.txt
         ].each do |logfile|
           Dir["**/#{logfile}"].each do |logpath|
             destdir = logs/File.dirname(logpath)
