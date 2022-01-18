@@ -21,6 +21,7 @@ describe "brew bottle" do
         .to output(/testball--0\.1.*\.bottle\.tar\.gz/).to_stdout
         .and not_to_output.to_stderr
         .and be_a_success
+      expect(HOMEBREW_CELLAR/"testball-bottle.tar").not_to exist
     ensure
       FileUtils.rm_f Dir.glob("testball--0.1*.bottle.tar.gz")
     end
