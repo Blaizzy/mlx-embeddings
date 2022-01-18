@@ -54,20 +54,12 @@ class Keg
           change_install_name(bad_name, new_name, file) unless new_name == bad_name
         end
 
-        # Keep track of the rpath counts for deletion of duplicates.
-        # We need to track this here since we cache the MachO data [0]
-        # and this cache is not updated after modification with #delete_rpath.
-        #
-        # [0] See os/mac/mach.rb.
-        rpath_count = Hash.new { |h, k| h[k] = file.rpaths.count(k) }
-
         each_linkage_for(file, :rpaths) do |bad_name|
           # Strip duplicate rpaths and rpaths rooted in the build directory.
           next if !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
                   !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s) &&
-                  (rpath_count[bad_name] == 1)
+                  (file.rpaths.count(bad_name) == 1)
 
-          rpath_count[bad_name] -= 1
           delete_rpath(bad_name, file)
         end
       end
