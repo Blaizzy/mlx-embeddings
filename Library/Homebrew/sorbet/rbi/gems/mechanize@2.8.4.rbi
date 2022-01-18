@@ -192,6 +192,10 @@ end
 class Mechanize::CookieJar < ::HTTP::CookieJar
   def load(input, *options); end
   def save(output, *options); end
+
+  private
+
+  def load_yaml(yaml); end
 end
 
 module Mechanize::CookieJarIMethods
