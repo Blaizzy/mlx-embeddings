@@ -18,6 +18,12 @@ A formula should be deprecated to indicate to users that the formula should not 
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
+Formulae with dependents may be deprecated only if at least one of the following are true:
+
+- its dependents are all deprecated
+- the formula does not build on any of our supported macOS versions and on Linux
+- the formula has outstanding CVEs
+
 To deprecate a formula, add a `deprecate!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
 
 ```ruby
@@ -40,6 +46,8 @@ The most common reasons for disabling a formula are:
 - it has been deprecated for a long time
 - the upstream repository has been removed
 - the project has no license
+
+Formulae should not be disabled without a deprecation period of at least three months unless the circumstances are exceptional (e.g. the formula does not build on any supported macOS version or Linux). Popular formulae should have longer deprecation periods. The popularity of a formula should be based on our analytics data.
 
 **Note: disabled formulae in homebrew/core will be automatically removed one year after their disable date**
 
