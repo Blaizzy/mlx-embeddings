@@ -446,6 +446,7 @@ module Homebrew
             gz.write(tarfile.read(GZIP_BUFFER_SIZE)) until tarfile.eof?
           end
           gz.close
+          rm_f relocatable_tar_path
           sudo_purge
         end
 
