@@ -52,7 +52,7 @@ class Keg
 
   def delete_rpath(rpath, file)
     odebug "Deleting rpath #{rpath} in #{file}"
-    MachO::Tools.delete_rpath(file, rpath, strict: false)
+    file.delete_rpath(rpath, strict: false)
     apply_ad_hoc_signature(file)
   rescue MachO::MachOError
     onoe <<~EOS

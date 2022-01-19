@@ -57,6 +57,13 @@ module MachOShim
   end
   private :mach_data
 
+  # TODO: See if the `#write!` call can be delayed until
+  # we know we're not making any changes to the rpaths.
+  def delete_rpath(rpath, **options)
+    macho.delete_rpath(rpath, options)
+    macho.write!
+  end
+
   def dynamically_linked_libraries(except: :none)
     lcs = macho.dylib_load_commands.reject { |lc| lc.type == except }
 
