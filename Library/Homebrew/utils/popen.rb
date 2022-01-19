@@ -28,7 +28,7 @@ module Utils
 
       yield pipe
       pipe.close_write
-      IO.select([pipe])
+      pipe.wait_readable
 
       # Capture the rest of the output
       output += pipe.read

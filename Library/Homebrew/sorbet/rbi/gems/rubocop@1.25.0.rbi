@@ -1742,7 +1742,9 @@ module RuboCop::Cop::HashShorthandSyntax
   private
 
   def enforced_shorthand_syntax; end
+  def node_with_block_and_arguments?(node); end
   def require_hash_value?(hash_key_source, node); end
+  def without_parentheses?(node); end
   def without_parentheses_call_expr_follows?(node); end
 end
 
@@ -1963,11 +1965,14 @@ class RuboCop::Cop::Layout::ArgumentAlignment < ::RuboCop::Cop::Base
 
   private
 
+  def arguments_or_first_arg_pairs(node); end
+  def arguments_with_last_arg_pairs(node); end
   def autocorrect(corrector, node); end
   def base_column(node, first_argument); end
   def fixed_indentation?; end
+  def flattened_arguments(node); end
   def message(_node); end
-  def multiple_arguments?(node, first_argument); end
+  def multiple_arguments?(node); end
   def target_method_lineno(node); end
 end
 
@@ -6529,9 +6534,10 @@ class RuboCop::Cop::Naming::BlockForwarding < ::RuboCop::Cop::Base
   private
 
   def anonymous_block_argument?(node); end
+  def block_forwarding_name; end
   def expected_block_forwarding_style?(node, last_argument); end
   def explicit_block_argument?(node); end
-  def register_offense(block_argument); end
+  def register_offense(block_argument, node); end
   def use_block_argument_as_local_variable?(node, last_argument); end
   def use_kwarg_in_method_definition?(node); end
 end
@@ -11549,13 +11555,13 @@ class RuboCop::Cop::Style::TernaryParentheses < ::RuboCop::Cop::Base
 
   def method_name(param0 = T.unsafe(nil)); end
   def on_if(node); end
-  def only_closing_parenthesis_is_last_line?(condition); end
 
   private
 
   def autocorrect(corrector, node); end
   def below_ternary_precedence?(child); end
   def complex_condition?(condition); end
+  def condition_as_parenthesized_one_line_pattern_matching?(condition); end
   def correct_parenthesized(corrector, condition); end
   def correct_unparenthesized(corrector, condition); end
   def infinite_loop?; end
@@ -11563,6 +11569,7 @@ class RuboCop::Cop::Style::TernaryParentheses < ::RuboCop::Cop::Base
   def non_complex_expression?(condition); end
   def non_complex_send?(node); end
   def offense?(node); end
+  def only_closing_parenthesis_is_last_line?(condition); end
   def parenthesized?(node); end
   def redundant_parentheses_enabled?; end
   def require_parentheses?; end
