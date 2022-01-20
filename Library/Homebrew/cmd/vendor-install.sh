@@ -119,8 +119,17 @@ fetch() {
     --remote-time
     --location
     --user-agent "${HOMEBREW_USER_AGENT_CURL}"
-    --header "Authorization: Bearer ${HOMEBREW_DOCKER_REGISTRY_TOKEN:-QQ==}"
   )
+
+  if [[ -n "${HOMEBREW_DOCKER_REGISTRY_TOKEN}" ]]
+  then
+    curl_args[${#curl_args[*]}]="--header \"Authorization: Bearer ${HOMEBREW_DOCKER_REGISTRY_TOKEN}\""
+  elif [[ -n "${HOMEBREW_DOCKER_REGISTRY_BASIC_AUTH_TOKEN}" ]]
+  then
+    curl_args[${#curl_args[*]}]="--header \"Authorization: Basic ${HOMEBREW_DOCKER_REGISTRY_BASIC_AUTH_TOKEN}\""
+  else
+    curl_args[${#curl_args[*]}]="--header \"Authorization: Bearer QQ==\""
+  fi
 
   if [[ -n "${HOMEBREW_QUIET}" ]]
   then
