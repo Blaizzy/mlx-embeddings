@@ -6810,6 +6810,10 @@ class Struct
   def filter(*arg); end
 end
 
+class Symbol
+  def to_msgpack_ext(); end
+end
+
 class SystemCommand::Result
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
