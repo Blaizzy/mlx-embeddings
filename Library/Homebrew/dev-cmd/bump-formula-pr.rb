@@ -408,7 +408,7 @@ module Homebrew
     resource.owner = Resource.new(formula.name)
     forced_version = new_version && new_version != resource.version
     resource.version = new_version if forced_version
-    odie "No `--version=` argument specified!" if resource.version.blank?
+    odie "Couldn't identify version, specify it using `--version=`." if resource.version.blank?
     [resource.fetch, forced_version]
   end
 
