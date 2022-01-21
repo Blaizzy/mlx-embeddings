@@ -436,6 +436,9 @@ module Homebrew
       specs[:tag] = tag if tag.present?
       version = Version.detect(url, **specs)
     end
+
+    return if version.null?
+
     check_throttle(formula, version)
     check_closed_pull_requests(formula, tap_remote_repo, args: args, version: version)
   end
