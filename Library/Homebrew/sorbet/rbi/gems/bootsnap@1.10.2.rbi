@@ -129,8 +129,7 @@ Bootsnap::LoadPathCache::DLEXT = T.let(T.unsafe(nil), String)
 Bootsnap::LoadPathCache::DL_EXTENSIONS = T.let(T.unsafe(nil), Array)
 Bootsnap::LoadPathCache::DOT_RB = T.let(T.unsafe(nil), String)
 Bootsnap::LoadPathCache::DOT_SO = T.let(T.unsafe(nil), String)
-Bootsnap::LoadPathCache::ERROR_TAG_IVAR = T.let(T.unsafe(nil), Symbol)
-class Bootsnap::LoadPathCache::FallbackScan < ::StandardError; end
+Bootsnap::LoadPathCache::FALLBACK_SCAN = T.let(T.unsafe(nil), BasicObject)
 
 class Bootsnap::LoadPathCache::LoadedFeaturesIndex
   def initialize; end
@@ -197,7 +196,6 @@ class Bootsnap::LoadPathCache::RealpathCache
   def realpath(caller_location, path); end
 end
 
-class Bootsnap::LoadPathCache::ReturnFalse < ::StandardError; end
 Bootsnap::LoadPathCache::SLASH = T.let(T.unsafe(nil), String)
 
 class Bootsnap::LoadPathCache::Store
