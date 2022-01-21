@@ -12,6 +12,9 @@ class ActiveRecordColumnTypeHelper
 
   private
 
+  sig { params(type: String).returns(String) }
+  def as_nilable_type(type); end
+
   sig { params(constant: Module).returns(T::Boolean) }
   def do_not_generate_strong_types?(constant); end
 
@@ -49,12 +52,18 @@ class DynamicMixinCompiler
   sig { returns(T::Boolean) }
   def empty_attributes?; end
 
+  sig { params(qualified_mixin_name: String).returns(T::Boolean) }
+  def filtered_mixin?(qualified_mixin_name); end
+
   def instance_attribute_predicates; end
 
   sig { returns(T::Array[Symbol]) }
   def instance_attribute_readers; end
 
   def instance_attribute_writers; end
+
+  sig { params(mod: Module, dynamic_extends: T::Array[Module]).returns(T::Boolean) }
+  def module_included_by_another_dynamic_extend?(mod, dynamic_extends); end
 end
 
 class Module
@@ -219,8 +228,9 @@ module T::Generic::TypeStoragePatch
   def type_template(variance = T.unsafe(nil), fixed: T.unsafe(nil), lower: T.unsafe(nil), upper: T.unsafe(nil)); end
 end
 
-module T::Types::Simple::GenericNamePatch
+module T::Types::Simple::GenericPatch
   def name; end
+  def valid?(obj); end
 end
 
 module T::Types::Simple::NamePatch
@@ -311,6 +321,9 @@ class Tapioca::Compilers::Dsl::Base
   sig { params(method_def: T.any(Method, UnboundMethod), signature: T.untyped).returns(T::Array[String]) }
   def parameters_types_from_signature(method_def, signature); end
 
+  sig { params(name: String).returns(T::Boolean) }
+  def valid_parameter_name?(name); end
+
   class << self
     sig { params(name: String).returns(T.nilable(T.class_of(Tapioca::Compilers::Dsl::Base))) }
     def resolve(name); end
@@ -396,9 +409,6 @@ class Tapioca::Compilers::RequiresCompiler
 
   sig { params(config: Spoom::Sorbet::Config, file_path: Pathname).returns(T::Boolean) }
   def file_ignored_by_sorbet?(config, file_path); end
-
-  sig { params(files: T::Enumerable[String], name: String).returns(T::Boolean) }
-  def name_in_project?(files, name); end
 
   sig { params(path: Pathname).returns(T::Array[String]) }
   def path_parts(path); end
@@ -518,6 +528,9 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
   sig { params(symbols: T::Set[String]).returns(T::Set[String]) }
   def engine_symbols(symbols); end
 
+  sig { params(mixin_name: String).returns(T::Boolean) }
+  def filtered_mixin?(mixin_name); end
+
   sig { params(tree: RBI::Tree, symbol: String).void }
   def generate_from_symbol(tree, symbol); end
 
@@ -568,6 +581,9 @@ class Tapioca::Compilers::SymbolTable::SymbolGenerator
 
   sig { params(name: String).returns(T::Boolean) }
   def valid_method_name?(name); end
+
+  sig { params(name: String).returns(T::Boolean) }
+  def valid_parameter_name?(name); end
 end
 
 Tapioca::Compilers::SymbolTable::SymbolGenerator::IGNORED_COMMENTS = T.let(T.unsafe(nil), Array)
@@ -629,6 +645,9 @@ module Tapioca::ConfigHelper
 
   private
 
+  sig { params(msg: String).returns(Tapioca::ConfigHelper::ConfigError) }
+  def build_error(msg); end
+
   sig { params(options: Thor::CoreExt::HashWithIndifferentAccess).returns(Thor::CoreExt::HashWithIndifferentAccess) }
   def config_options(options); end
 
@@ -637,6 +656,32 @@ module Tapioca::ConfigHelper
 
   sig { params(options: T.nilable(Thor::CoreExt::HashWithIndifferentAccess)).returns(Thor::CoreExt::HashWithIndifferentAccess) }
   def merge_options(*options); end
+
+  sig { params(config_file: String, errors: T::Array[Tapioca::ConfigHelper::ConfigError]).void }
+  def print_errors(config_file, errors); end
+
+  sig { params(config_file: String, config: T::Hash[T.untyped, T.untyped]).void }
+  def validate_config!(config_file, config); end
+
+  sig { params(command_options: T::Hash[Symbol, Thor::Option], config_key: String, config_options: T::Hash[T.untyped, T.untyped]).returns(T::Array[Tapioca::ConfigHelper::ConfigError]) }
+  def validate_config_options(command_options, config_key, config_options); end
+end
+
+class Tapioca::ConfigHelper::ConfigError < ::T::Struct
+  const :message_parts, T::Array[Tapioca::ConfigHelper::ConfigErrorMessagePart]
+
+  class << self
+    def inherited(s); end
+  end
+end
+
+class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
+  const :colors, T::Array[Symbol]
+  const :message, String
+
+  class << self
+    def inherited(s); end
+  end
 end
 
 Tapioca::DEFAULT_COMMAND = T.let(T.unsafe(nil), String)
@@ -739,7 +784,10 @@ class Tapioca::Gemfile::GemSpec
 
   private
 
-  sig { returns(T::Boolean) }
+  sig { returns(T::Array[Pathname]) }
+  def collect_files; end
+
+  sig { returns(T.nilable(T::Boolean)) }
   def default_gem?; end
 
   sig { returns(T::Boolean) }
@@ -754,8 +802,11 @@ class Tapioca::Gemfile::GemSpec
   sig { params(path: String).returns(T::Boolean) }
   def has_parent_gemspec?(path); end
 
-  sig { returns(Pathname) }
-  def ruby_lib_dir; end
+  sig { returns(Regexp) }
+  def require_paths_prefix_matcher; end
+
+  sig { params(file: String).returns(Pathname) }
+  def resolve_to_ruby_lib_dir(file); end
 
   sig { params(path: T.any(Pathname, String)).returns(String) }
   def to_realpath(path); end
@@ -769,10 +820,10 @@ Tapioca::Gemfile::Spec = T.type_alias { T.any(Bundler::StubSpecification, Gem::S
 module Tapioca::Generators; end
 
 class Tapioca::Generators::Base
-  include ::Tapioca::CliHelper
   include ::Thor::Base
   include ::Thor::Invocation
   include ::Thor::Shell
+  include ::Tapioca::CliHelper
   extend ::Thor::Base::ClassMethods
   extend ::Thor::Invocation::ClassMethods
 
@@ -990,13 +1041,16 @@ end
 
 module Tapioca::GenericTypeRegistry
   class << self
-    sig { params(constant: Module).returns(T.nilable(T::Hash[T.any(Tapioca::TypeMember, Tapioca::TypeTemplate), String])) }
+    sig { params(instance: Object).returns(T::Boolean) }
+    def generic_type_instance?(instance); end
+
+    sig { params(constant: Module).returns(T.nilable(T::Array[Tapioca::TypeVariableModule])) }
     def lookup_type_variables(constant); end
 
     sig { params(constant: T.untyped, types: T.untyped).returns(Module) }
     def register_type(constant, types); end
 
-    sig { params(constant: T.untyped, type_variable: T.any(Tapioca::TypeMember, Tapioca::TypeTemplate)).void }
+    sig { params(constant: T.untyped, type_variable: Tapioca::TypeVariableModule).void }
     def register_type_variable(constant, type_variable); end
 
     private
@@ -1007,12 +1061,10 @@ module Tapioca::GenericTypeRegistry
     sig { params(constant: Class).returns(Class) }
     def create_safe_subclass(constant); end
 
-    sig { params(constant: Module).returns(T::Hash[T.any(Tapioca::TypeMember, Tapioca::TypeTemplate), String]) }
+    sig { params(constant: Module).returns(T::Array[Tapioca::TypeVariableModule]) }
     def lookup_or_initialize_type_variables(constant); end
   end
 end
-
-Tapioca::GenericTypeRegistry::TypeVariable = T.type_alias { T.any(Tapioca::TypeMember, Tapioca::TypeTemplate) }
 
 class Tapioca::Loader
   sig { params(gemfile: Tapioca::Gemfile, initialize_file: T.nilable(String), require_file: T.nilable(String)).void }
@@ -1159,44 +1211,27 @@ class Tapioca::Trackers::Mixin::Type < ::T::Enum
   end
 end
 
-class Tapioca::TypeMember < ::T::Types::TypeMember
-  sig { params(variance: Symbol, fixed: T.untyped, lower: T.untyped, upper: T.untyped).void }
-  def initialize(variance, fixed, lower, upper); end
-
-  sig { returns(T.untyped) }
-  def fixed; end
-
-  def lower; end
+class Tapioca::TypeVariableModule < ::Module
+  sig { params(context: Module, type: Tapioca::TypeVariableModule::Type, variance: Symbol, fixed: T.untyped, lower: T.untyped, upper: T.untyped).void }
+  def initialize(context, type, variance, fixed, lower, upper); end
 
   sig { returns(T.nilable(String)) }
   def name; end
 
-  def name=(_arg0); end
-
   sig { returns(String) }
   def serialize; end
 
-  def upper; end
+  private
+
+  sig { type_parameters(:Result).params(block: T.proc.returns(T.type_parameter(:Result))).returns(T.type_parameter(:Result)) }
+  def with_bound_name_pre_3_0(&block); end
 end
 
-class Tapioca::TypeTemplate < ::T::Types::TypeTemplate
-  sig { params(variance: Symbol, fixed: T.untyped, lower: T.untyped, upper: T.untyped).void }
-  def initialize(variance, fixed, lower, upper); end
-
-  sig { returns(T.untyped) }
-  def fixed; end
-
-  def lower; end
-
-  sig { returns(T.nilable(String)) }
-  def name; end
-
-  def name=(_arg0); end
-
-  sig { returns(String) }
-  def serialize; end
-
-  def upper; end
+class Tapioca::TypeVariableModule::Type < ::T::Enum
+  enums do
+    Member = new
+    Template = new
+  end
 end
 
 Tapioca::VERSION = T.let(T.unsafe(nil), String)
