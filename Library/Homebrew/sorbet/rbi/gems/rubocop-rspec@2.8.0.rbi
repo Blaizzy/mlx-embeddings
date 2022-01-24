@@ -381,13 +381,10 @@ class RuboCop::Cop::RSpec::EmptyLineAfterSubject < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::RSpec::FinalEndLocation
   include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::RSpec::EmptyLineSeparation
+  include ::RuboCop::Cop::RSpec::InsideExampleGroup
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_block(node); end
-
-  private
-
-  def in_spec_block?(node); end
 end
 
 RuboCop::Cop::RSpec::EmptyLineAfterSubject::MSG = T.let(T.unsafe(nil), String)
@@ -891,6 +888,7 @@ end
 RuboCop::Cop::RSpec::IteratedExpectation::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::LeadingSubject < ::RuboCop::Cop::RSpec::Base
+  include ::RuboCop::Cop::RSpec::InsideExampleGroup
   extend ::RuboCop::Cop::AutoCorrector
 
   def check_previous_nodes(node); end
@@ -899,7 +897,6 @@ class RuboCop::Cop::RSpec::LeadingSubject < ::RuboCop::Cop::RSpec::Base
   private
 
   def autocorrect(corrector, node, sibling); end
-  def in_spec_block?(node); end
   def offending?(node); end
   def offending_node(node); end
   def parent(node); end
@@ -1478,14 +1475,15 @@ RuboCop::Cop::RSpec::SubjectDeclaration::MSG_REDUNDANT = T.let(T.unsafe(nil), St
 class RuboCop::Cop::RSpec::SubjectStub < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::RSpec::TopLevelGroup
 
+  def let?(param0 = T.unsafe(nil)); end
   def message_expectation?(param0 = T.unsafe(nil), param1); end
   def message_expectation_matcher?(param0); end
   def on_top_level_group(node); end
-  def subject(param0 = T.unsafe(nil)); end
+  def subject?(param0 = T.unsafe(nil)); end
 
   private
 
-  def find_all_explicit_subjects(node); end
+  def find_all_explicit(node); end
   def find_subject_expectations(node, subject_names = T.unsafe(nil), &block); end
 end
 
