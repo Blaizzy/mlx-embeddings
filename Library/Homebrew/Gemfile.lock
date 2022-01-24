@@ -57,7 +57,7 @@ GEM
     mime-types-data (3.2022.0105)
     mini_portile2 (2.7.1)
     minitest (5.15.0)
-    msgpack (1.4.3)
+    msgpack (1.4.4)
     mustache (1.1.1)
     net-http-digest_auth (1.4.1)
     net-http-persistent (4.0.1)
