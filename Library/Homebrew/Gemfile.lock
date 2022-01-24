@@ -116,7 +116,7 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-retry (0.6.2)
       rspec-core (> 3.3)
-    rspec-sorbet (1.8.1)
+    rspec-sorbet (1.8.2)
       sorbet
       sorbet-runtime
     rspec-support (3.10.3)
