@@ -799,6 +799,7 @@ The only required field in a `service` block is the `run` field to indicate what
 | `restart_delay`         | -            |  yes  |  yes  | The delay before restarting a process                                                    |
 | `process_type`          | -            |  yes  | no-op | The type of process to manage, `:background`, `:standard`, `:interactive` or `:adaptive` |
 | `macos_legacy_timers`   | -            |  yes  | no-op | Timers created by launchd jobs are coalesced unless this is set                          |
+| `sockets`               | -            |  yes  | no-op | A socket that is created as an accesspoint to the service                                |
 
 For services that start and keep running alive you can use the default `run_type :` like so:
 ```ruby
@@ -835,6 +836,55 @@ This method will set the path to `#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin
     environment_variables PATH: std_service_path_env
   end
 ```
+
+#### KeepAlive options
+The standard options, keep alive regardless of any status or circomstances
+```rb
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    keep_alive true # or false
+  end
+```
+
+Same as above in hash form
+```rb
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    keep_alive { always: true }
+  end
+```
+
+Keep alive until the job exits with a non-zero return code
+```rb
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    keep_alive { succesful_exit: true }
+  end
+```
+
+Keep alive only if the job crashed
+```rb
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    keep_alive { crashed: true }
+  end
+```
+
+Keep alive as long as a file exists
+```rb
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    keep_alive { path: "/some/path" }
+  end
+```
+
+#### Socket format
+The sockets method accepts a formatted socket definition as `<type>://<host>:<port>`.
+- `type`: `udp` or `tcp`
+- `host`: The host to run the socket on. For example `0.0.0.0`
+- `port`: The port the socket should listen on.
+
+Please note that sockets will be accessible on IPv4 and IPv6 addresses by default.
 
 ### Using environment variables
 

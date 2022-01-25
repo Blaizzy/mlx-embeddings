@@ -18,6 +18,8 @@ module Homebrew
     PROCESS_TYPE_INTERACTIVE = :interactive
     PROCESS_TYPE_ADAPTIVE = :adaptive
 
+    KEEP_ALIVE_KEYS = [:always, :successful_exit, :crashed, :path].freeze
+
     # sig { params(formula: Formula).void }
     def initialize(formula, &block)
       @formula = formula
@@ -100,15 +102,41 @@ module Homebrew
       end
     end
 
-    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    sig {
+      params(value: T.nilable(T.any(T::Boolean, T::Hash[Symbol, T.untyped])))
+        .returns(T.nilable(T::Hash[Symbol, T.untyped]))
+    }
     def keep_alive(value = nil)
       case T.unsafe(value)
       when nil
         @keep_alive
       when true, false
+        @keep_alive = { always: value }
+      when Hash
+        hash = T.cast(value, Hash)
+        unless (hash.keys - KEEP_ALIVE_KEYS).empty?
+          raise TypeError, "Service#keep_alive allows only #{KEEP_ALIVE_KEYS}"
+        end
+
         @keep_alive = value
       else
-        raise TypeError, "Service#keep_alive expects a Boolean"
+        raise TypeError, "Service#keep_alive expects a Boolean or Hash"
+      end
+    end
+
+    sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
+    def sockets(value = nil)
+      case T.unsafe(value)
+      when nil
+        @sockets
+      when String
+        match = T.must(value).match(%r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i)
+        raise TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>" if match.blank?
+
+        type, host, port = match.captures
+        @sockets = { host: host, port: port, type: type }
+      else
+        raise TypeError, "Service#sockets expects a String"
       end
     end
 
@@ -117,7 +145,7 @@ module Homebrew
     sig { returns(T::Boolean) }
     def keep_alive?
       instance_eval(&@service_block)
-      @keep_alive == true
+      @keep_alive.present? && @keep_alive[:always] != false
     end
 
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
@@ -310,7 +338,6 @@ module Homebrew
         RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE,
       }
 
-      base[:KeepAlive] = @keep_alive if @keep_alive == true
       base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
       base[:LegacyTimers] = @macos_legacy_timers if @macos_legacy_timers == true
       base[:TimeOut] = @restart_delay if @restart_delay.present?
@@ -322,6 +349,28 @@ module Homebrew
       base[:StandardOutPath] = @log_path if @log_path.present?
       base[:StandardErrorPath] = @error_log_path if @error_log_path.present?
       base[:EnvironmentVariables] = @environment_variables unless @environment_variables.empty?
+
+      if keep_alive?
+        if (always = @keep_alive[:always].presence)
+          base[:KeepAlive] = always
+        elsif @keep_alive.key?(:successful_exit)
+          base[:KeepAlive] = { SuccessfulExit: @keep_alive[:successful_exit] }
+        elsif @keep_alive.key?(:crashed)
+          base[:KeepAlive] = { Crashed: @keep_alive[:crashed] }
+        elsif @keep_alive.key?(:path) && @keep_alive[:path].present?
+          base[:KeepAlive] = { PathState: @keep_alive[:path].to_s }
+        end
+      end
+
+      if @sockets.present?
+        base[:Sockets] = {}
+        base[:Sockets][:Listeners] = {
+          SockNodeName:    @sockets[:host],
+          SockServiceName: @sockets[:port],
+          SockProtocol:    @sockets[:type].upcase,
+          SockFamily:      "IPv4v6",
+        }
+      end
 
       if @cron.present? && @run_type == RUN_TYPE_CRON
         base[:StartCalendarInterval] = @cron.reject { |_, value| value == "*" }
@@ -350,7 +399,8 @@ module Homebrew
       options = []
       options << "Type=#{@launch_only_once == true ? "oneshot" : "simple"}"
       options << "ExecStart=#{cmd}"
-      options << "Restart=always" if @keep_alive == true
+
+      options << "Restart=always" if @keep_alive.present? && @keep_alive[:always].present?
       options << "RestartSec=#{restart_delay}" if @restart_delay.present?
       options << "WorkingDirectory=#{@working_dir}" if @working_dir.present?
       options << "RootDirectory=#{@root_dir}" if @root_dir.present?
