@@ -489,7 +489,7 @@ module Homebrew
         dir.find do |path|
           path.extend(ObserverPathnameExtension)
           if path.symlink?
-            if path.readable_real? && !path.resolved_path_exists?
+            unless path.resolved_path_exists?
               path.uninstall_info if path.to_s.match?(Keg::INFOFILE_RX) && !dry_run?
 
               if dry_run?
