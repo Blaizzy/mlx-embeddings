@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'i18n/core_ext/hash'
+
 module I18n
   module Backend
     # Backend that chains multiple other backends and checks each of them when
@@ -17,8 +19,6 @@ module I18n
     # The implementation assumes that all backends added to the Chain implement
     # a lookup method with the same API as Simple backend does.
     class Chain
-      using I18n::HashRefinements
-
       module Implementation
         include Base
 
@@ -55,7 +55,7 @@ module I18n
 
         def translate(locale, key, default_options = EMPTY_HASH)
           namespace = nil
-          options = default_options.except(:default)
+          options = Utils.except(default_options, :default)
 
           backends.each do |backend|
             catch(:exception) do
@@ -101,7 +101,7 @@ module I18n
                 init_translations unless initialized?
                 translations
               end
-              memo.deep_merge!(partial_translations) { |_, a, b| b || a }
+              Utils.deep_merge!(memo, partial_translations) { |_, a, b| b || a }
             end
           end
 
