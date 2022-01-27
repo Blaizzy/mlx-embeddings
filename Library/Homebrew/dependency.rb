@@ -124,6 +124,7 @@ class Dependency
           expanded_deps << dep
         else
           next if @expand_stack.include? dep.name
+          next if dep.tags.include?(:build)
 
           expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, ignore_missing: ignore_missing, &block))
           expanded_deps << dep
