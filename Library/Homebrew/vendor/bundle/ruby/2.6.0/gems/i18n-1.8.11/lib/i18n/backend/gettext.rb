@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'i18n/core_ext/hash'
 require 'i18n/gettext'
 require 'i18n/gettext/po_parser'
 
@@ -32,6 +31,8 @@ module I18n
     # Without it strings containing periods (".") will not be translated.
 
     module Gettext
+      using I18n::HashRefinements
+
       class PoData < Hash
         def set_comment(msgid_or_sym, comment)
           # ignore
@@ -42,7 +43,7 @@ module I18n
         def load_po(filename)
           locale = ::File.basename(filename, '.po').to_sym
           data = normalize(locale, parse(filename))
-          [{ locale => data }, false]
+          { locale => data }
         end
 
         def parse(filename)
@@ -60,7 +61,7 @@ module I18n
                 { part => _normalized.empty? ? value : _normalized }
               end
 
-              Utils.deep_merge!(result, normalized)
+              result.deep_merge!(normalized)
             end
             result
           end
