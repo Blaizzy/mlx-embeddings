@@ -8,9 +8,20 @@ module I18n
   extend ::I18n::Base
 
   class << self
+    def cache_key_digest; end
+    def cache_key_digest=(key_digest); end
+    def cache_namespace; end
+    def cache_namespace=(namespace); end
+    def cache_store; end
+    def cache_store=(store); end
+    def fallbacks; end
+    def fallbacks=(fallbacks); end
     def interpolate(string, values); end
     def interpolate_hash(string, values); end
     def new_double_nested_cache; end
+    def perform_caching?; end
+    def reserve_key(key); end
+    def reserved_keys_pattern; end
   end
 end
 
@@ -76,43 +87,10 @@ module I18n::Backend::Cascade
   def lookup(locale, key, scope = T.unsafe(nil), options = T.unsafe(nil)); end
 end
 
-class I18n::Backend::Chain
-  include ::I18n::Backend::Transliterator
-  include ::I18n::Backend::Base
-  include ::I18n::Backend::Chain::Implementation
-end
-
-module I18n::Backend::Chain::Implementation
-  include ::I18n::Backend::Transliterator
-  include ::I18n::Backend::Base
-
-  def initialize(*backends); end
-
-  def available_locales; end
-  def backends; end
-  def backends=(_arg0); end
-  def eager_load!; end
-  def exists?(locale, key, options = T.unsafe(nil)); end
-  def initialized?; end
-  def localize(locale, object, format = T.unsafe(nil), options = T.unsafe(nil)); end
-  def reload!; end
-  def store_translations(locale, data, options = T.unsafe(nil)); end
-  def translate(locale, key, default_options = T.unsafe(nil)); end
-
-  protected
-
-  def init_translations; end
-  def namespace_lookup?(result, options); end
-  def translations; end
-
-  private
-
-  def _deep_merge(hash, other_hash); end
-end
-
 module I18n::Backend::Fallbacks
   def exists?(locale, key, options = T.unsafe(nil)); end
   def extract_non_symbol_default!(options); end
+  def resolve(locale, object, subject, options = T.unsafe(nil)); end
   def translate(locale, key, options = T.unsafe(nil)); end
 
   private
@@ -141,19 +119,6 @@ end
 
 I18n::Backend::Flatten::FLATTEN_SEPARATOR = T.let(T.unsafe(nil), String)
 I18n::Backend::Flatten::SEPARATOR_ESCAPE_CHAR = T.let(T.unsafe(nil), String)
-
-module I18n::Backend::Gettext
-  protected
-
-  def load_po(filename); end
-  def normalize(locale, data); end
-  def normalize_pluralization(locale, key, value); end
-  def parse(filename); end
-end
-
-class I18n::Backend::Gettext::PoData < ::Hash
-  def set_comment(msgid_or_sym, comment); end
-end
 
 module I18n::Backend::InterpolationCompiler
   def interpolate(locale, string, values); end
@@ -424,7 +389,6 @@ module I18n::Gettext::Helpers
 end
 
 I18n::Gettext::PLURAL_SEPARATOR = T.let(T.unsafe(nil), String)
-module I18n::HashRefinements; end
 I18n::INTERPOLATION_PATTERN = T.let(T.unsafe(nil), Regexp)
 
 class I18n::InvalidLocale < ::I18n::ArgumentError
@@ -456,7 +420,7 @@ class I18n::Locale::Fallbacks < ::Hash
   def [](locale); end
   def defaults; end
   def defaults=(defaults); end
-  def map(mappings); end
+  def map(*args, &block); end
 
   protected
 
@@ -552,12 +516,13 @@ module I18n::MissingTranslation::Base
   def to_s; end
 end
 
+I18n::MissingTranslation::Base::PERMITTED_KEYS = T.let(T.unsafe(nil), Array)
+
 class I18n::MissingTranslationData < ::I18n::ArgumentError
   include ::I18n::MissingTranslation::Base
 end
 
 I18n::RESERVED_KEYS = T.let(T.unsafe(nil), Array)
-I18n::RESERVED_KEYS_PATTERN = T.let(T.unsafe(nil), Regexp)
 
 class I18n::ReservedInterpolationKey < ::I18n::ArgumentError
   def initialize(key, string); end
@@ -580,6 +545,11 @@ module I18n::Tests::Interpolation; end
 module I18n::Tests::Link; end
 
 module I18n::Tests::Localization
+  include ::I18n::Tests::Localization::Date
+  include ::I18n::Tests::Localization::DateTime
+  include ::I18n::Tests::Localization::Procs
+  include ::I18n::Tests::Localization::Time
+
   class << self
     def included(base); end
   end
@@ -611,6 +581,19 @@ class I18n::UnknownFileType < ::I18n::ArgumentError
 
   def filename; end
   def type; end
+end
+
+module I18n::Utils
+  class << self
+    def deep_merge(hash, other_hash, &block); end
+    def deep_merge!(hash, other_hash, &block); end
+    def deep_symbolize_keys(hash); end
+    def except(hash, *keys); end
+
+    private
+
+    def deep_symbolize_keys_in_object(value); end
+  end
 end
 
 I18n::VERSION = T.let(T.unsafe(nil), String)
