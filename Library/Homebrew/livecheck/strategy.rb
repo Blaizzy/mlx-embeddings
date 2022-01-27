@@ -118,7 +118,7 @@ module Homebrew
       # @param symbol [Symbol, nil] the strategy name in snake case as a
       #   `Symbol` (e.g. `:page_match`)
       # @return [Class, nil]
-      sig { params(symbol: T.nilable(Symbol)).returns(T.nilable(T.untyped)) }
+      sig { params(symbol: T.nilable(Symbol)).returns(T.untyped) }
       def from_symbol(symbol)
         strategies[symbol] if symbol.present?
       end
