@@ -2417,48 +2417,6 @@ module Gem
   def self.remove_unresolved_default_spec(spec); end
 end
 
-module GetText
-end
-
-class GetText::PoParser
-  def _(x); end
-
-  def _reduce_10(val, _values, result); end
-
-  def _reduce_12(val, _values, result); end
-
-  def _reduce_13(val, _values, result); end
-
-  def _reduce_14(val, _values, result); end
-
-  def _reduce_15(val, _values, result); end
-
-  def _reduce_5(val, _values, result); end
-
-  def _reduce_8(val, _values, result); end
-
-  def _reduce_9(val, _values, result); end
-
-  def _reduce_none(val, _values, result); end
-
-  def on_comment(comment); end
-
-  def on_message(msgid, msgstr); end
-
-  def parse(str, data, ignore_fuzzy=T.unsafe(nil)); end
-
-  def unescape(orig); end
-  Racc_arg = ::T.let(nil, ::T.untyped)
-  Racc_debug_parser = ::T.let(nil, ::T.untyped)
-  Racc_token_to_s_table = ::T.let(nil, ::T.untyped)
-end
-
-class GetText::PoParser
-end
-
-module GetText
-end
-
 module GitHub::API
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -2777,26 +2735,6 @@ module HostEnvironmentSimulatorHelper
 end
 
 module HostEnvironmentSimulatorHelper
-end
-
-module I18n
-  def self.cache_key_digest(); end
-
-  def self.cache_key_digest=(key_digest); end
-
-  def self.cache_namespace(); end
-
-  def self.cache_namespace=(namespace); end
-
-  def self.cache_store(); end
-
-  def self.cache_store=(store); end
-
-  def self.fallbacks(); end
-
-  def self.fallbacks=(fallbacks); end
-
-  def self.perform_caching?(); end
 end
 
 class IO
@@ -4376,8 +4314,6 @@ module RSpec::Core::MockingAdapters
 end
 
 class RSpec::Core::OutputWrapper
-  def as_json(*args, &block); end
-
   def readline_nonblock(*args, &block); end
 end
 
