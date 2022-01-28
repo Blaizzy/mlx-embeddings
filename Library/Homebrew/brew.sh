@@ -818,6 +818,16 @@ then
   export GIT_SSH_COMMAND="ssh -F${HOMEBREW_SSH_CONFIG_PATH}"
 fi
 
+if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" && -n "${HOMEBREW_DOCKER_REGISTRY_TOKEN}" ]]
+then
+  export HOMEBREW_GITHUB_PACKAGES_AUTH="Bearer ${HOMEBREW_DOCKER_REGISTRY_TOKEN}"
+elif [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" && -n "${HOMEBREW_DOCKER_REGISTRY_BASIC_AUTH_TOKEN}" ]]
+then
+  export HOMEBREW_GITHUB_PACKAGES_AUTH="Basic ${HOMEBREW_DOCKER_REGISTRY_BASIC_AUTH_TOKEN}"
+else
+  export HOMEBREW_GITHUB_PACKAGES_AUTH="Bearer QQ=="
+fi
+
 if [[ -n "${HOMEBREW_BASH_COMMAND}" ]]
 then
   # source rather than executing directly to ensure the entire file is read into
