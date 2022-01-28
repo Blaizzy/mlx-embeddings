@@ -4,6 +4,7 @@ require 'concurrent/map'
 require 'concurrent/hash'
 
 require 'i18n/version'
+require 'i18n/utils'
 require 'i18n/exceptions'
 require 'i18n/interpolate/ruby'
 
@@ -22,6 +23,7 @@ module I18n
     exception_handler
     fallback
     fallback_in_progress
+    fallback_original_locale
     format
     object
     raise
@@ -29,12 +31,24 @@ module I18n
     scope
     separator
     throw
-  ].freeze
-  RESERVED_KEYS_PATTERN = /%\{(#{RESERVED_KEYS.join("|")})\}/
+  ]
   EMPTY_HASH = {}.freeze
 
   def self.new_double_nested_cache # :nodoc:
     Concurrent::Map.new { |h, k| h[k] = Concurrent::Map.new }
+  end
+
+  # Marks a key as reserved. Reserved keys are used internally,
+  # and can't also be used for interpolation. If you are using any
+  # extra keys as I18n options, you should call I18n.reserve_key
+  # before any I18n.translate (etc) calls are made.
+  def self.reserve_key(key)
+    RESERVED_KEYS << key.to_sym
+    @reserved_keys_pattern = nil
+  end
+
+  def self.reserved_keys_pattern # :nodoc:
+    @reserved_keys_pattern ||= /%\{(#{RESERVED_KEYS.join("|")})\}/
   end
 
   module Base
@@ -260,14 +274,14 @@ module I18n
     #
     # Setting a Hash using Ruby:
     #
-    #     store_translations(:de, :i18n => {
-    #       :transliterate => {
-    #         :rule => {
-    #           "ü" => "ue",
-    #           "ö" => "oe"
-    #         }
-    #       }
-    #     )
+    #     store_translations(:de, i18n: {
+    #                          transliterate: {
+    #                            rule: {
+    #                              'ü' => 'ue',
+    #                              'ö' => 'oe'
+    #                            }
+    #                          }
+    #                        })
     #
     # Setting a Proc:
     #
@@ -396,7 +410,7 @@ module I18n
           keys.delete('')
           keys.map! do |k|
             case k
-            when /\A[-+]?[1-9]\d*\z/ # integer
+            when /\A[-+]?([1-9]\d*|0)\z/ # integer
               k.to_i
             when 'true'
               true
