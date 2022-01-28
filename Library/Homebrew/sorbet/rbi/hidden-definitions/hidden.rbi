@@ -3722,6 +3722,7 @@ class Object
   HOMEBREW_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
+  HOMEBREW_GITHUB_PACKAGES_AUTH = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_LINKED_KEGS = ::T.let(nil, ::T.untyped)
