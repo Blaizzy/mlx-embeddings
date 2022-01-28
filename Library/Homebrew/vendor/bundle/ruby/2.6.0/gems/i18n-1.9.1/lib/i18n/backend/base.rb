@@ -2,12 +2,10 @@
 
 require 'yaml'
 require 'json'
-require 'i18n/core_ext/hash'
 
 module I18n
   module Backend
     module Base
-      using I18n::HashRefinements
       include I18n::Backend::Transliterator
 
       # Accepts a list of paths to translation files. Loads translations from
@@ -53,7 +51,7 @@ module I18n
         end
 
         deep_interpolation = options[:deep_interpolation]
-        values = options.except(*RESERVED_KEYS)
+        values = Utils.except(options, *RESERVED_KEYS)
         if values
           entry = if deep_interpolation
             deep_interpolate(locale, entry, values)
@@ -223,17 +221,18 @@ module I18n
         def load_file(filename)
           type = File.extname(filename).tr('.', '').downcase
           raise UnknownFileType.new(type, filename) unless respond_to?(:"load_#{type}", true)
-          data = send(:"load_#{type}", filename)
+          data, keys_symbolized = send(:"load_#{type}", filename)
           unless data.is_a?(Hash)
             raise InvalidLocaleData.new(filename, 'expects it to return a hash, but does not')
           end
-          data.each { |locale, d| store_translations(locale, d || {}) }
+          data.each { |locale, d| store_translations(locale, d || {}, skip_symbolize_keys: keys_symbolized) }
         end
 
         # Loads a plain Ruby translations file. eval'ing the file must yield
         # a Hash containing translation data with locales as toplevel keys.
         def load_rb(filename)
-          eval(IO.read(filename), binding, filename)
+          translations = eval(IO.read(filename), binding, filename)
+          [translations, false]
         end
 
         # Loads a YAML translations file. The data must have locales as
@@ -241,9 +240,9 @@ module I18n
         def load_yml(filename)
           begin
             if YAML.respond_to?(:unsafe_load_file) # Psych 4.0 way
-              YAML.unsafe_load_file(filename)
+              [YAML.unsafe_load_file(filename, symbolize_names: true, freeze: true), true]
             else
-              YAML.load_file(filename)
+              [YAML.load_file(filename), false]
             end
           rescue TypeError, ScriptError, StandardError => e
             raise InvalidLocaleData.new(filename, e.inspect)
@@ -255,7 +254,12 @@ module I18n
         # toplevel keys.
         def load_json(filename)
           begin
-            ::JSON.parse(File.read(filename))
+            # Use #load_file as a proxy for a version of JSON where symbolize_names and freeze are supported.
+            if ::JSON.respond_to?(:load_file)
+              [::JSON.load_file(filename, symbolize_names: true, freeze: true), true]
+            else
+              [::JSON.parse(File.read(filename)), false]
+            end
           rescue TypeError, StandardError => e
             raise InvalidLocaleData.new(filename, e.inspect)
           end
