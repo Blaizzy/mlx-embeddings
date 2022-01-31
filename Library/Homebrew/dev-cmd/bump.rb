@@ -105,7 +105,12 @@ module Homebrew
           Repology::HOMEBREW_CASK
         end
 
-        package_data = Repology.single_package_query(name, repository: repository)
+        package_data = if formula_or_cask.is_a?(Formula) && formula_or_cask.versioned_formula?
+          nil
+        else
+          Repology.single_package_query(name, repository: repository)
+        end
+
         retrieve_and_display_info_and_open_pr(
           formula_or_cask,
           name,
