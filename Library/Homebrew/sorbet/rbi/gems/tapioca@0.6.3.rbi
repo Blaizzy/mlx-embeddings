@@ -95,8 +95,8 @@ class RBI::File
   sig { returns(T::Boolean) }
   def empty?; end
 
-  sig { params(out: T.any(IO, StringIO), indent: Integer, print_locs: T::Boolean).void }
-  def print(out: T.unsafe(nil), indent: T.unsafe(nil), print_locs: T.unsafe(nil)); end
+  sig { params(out: T.any(IO, StringIO), indent: Integer, print_locs: T::Boolean, max_line_length: T.nilable(Integer)).void }
+  def print(out: T.unsafe(nil), indent: T.unsafe(nil), print_locs: T.unsafe(nil), max_line_length: T.unsafe(nil)); end
 
   sig { returns(RBI::Tree) }
   def root; end
@@ -114,8 +114,8 @@ class RBI::File
 
   def strictness=(_arg0); end
 
-  sig { params(indent: Integer, print_locs: T::Boolean).returns(String) }
-  def string(indent: T.unsafe(nil), print_locs: T.unsafe(nil)); end
+  sig { params(indent: Integer, print_locs: T::Boolean, max_line_length: T.nilable(Integer)).returns(String) }
+  def string(indent: T.unsafe(nil), print_locs: T.unsafe(nil), max_line_length: T.unsafe(nil)); end
 
   sig { void }
   def transform_rbi!; end
@@ -308,6 +308,9 @@ class Tapioca::Compilers::Dsl::Base
 
   sig { returns(T::Enumerable[Module]) }
   def all_modules; end
+
+  sig { params(type: String).returns(String) }
+  def as_nilable_type(type); end
 
   sig { params(method_def: T.any(Method, UnboundMethod)).returns(T::Array[RBI::TypedParam]) }
   def compile_method_parameters_to_rbi(method_def); end
