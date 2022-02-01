@@ -28,6 +28,8 @@ Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 * [gromgit/fuse](https://github.com/gromgit/homebrew-fuse): macOS FUSE formulae that are no longer available in `homebrew/core`.
 
+* [cloudflare/cloudflare](https://github.com/cloudflare/homebrew-cloudflare): Formulae for the applications by Cloudflare, including curl with HTTP/3 support.
+
 ## Unsupported interesting forks
 
 * [mistydemeo/tigerbrew](https://github.com/mistydemeo/tigerbrew): Experimental Tiger/Leopard PowerPC version.
