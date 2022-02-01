@@ -70,7 +70,9 @@ module RuboCop
             problem "use \"dep\", \"ensure\", \"-vendor-only\""
           end
 
-          find_method_with_args(body_node, :system, "cargo", "build") do
+          find_method_with_args(body_node, :system, "cargo", "build") do |m|
+            next if parameters_passed?(m, /--lib/)
+
             problem "use \"cargo\", \"install\", *std_cargo_args"
           end
 

@@ -205,6 +205,19 @@ describe RuboCop::Cop::FormulaAudit::Text do
       RUBY
     end
 
+    it "doesn't reports an offense if `cargo build` is executed with --lib" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          homepage "https://brew.sh"
+
+          def install
+            system "cargo", "build", "--lib"
+          end
+        end
+      RUBY
+    end
+
     it "reports an offense if `make` calls are not separated" do
       expect_offense(<<~RUBY)
         class Foo < Formula
