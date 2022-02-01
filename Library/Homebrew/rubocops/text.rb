@@ -35,13 +35,6 @@ module RuboCop
             problem "Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library."
           end
 
-          if method_called_ever?(body_node, :virtualenv_create) ||
-             method_called_ever?(body_node, :virtualenv_install_with_resources)
-            find_method_with_args(body_node, :resource, "setuptools") do
-              problem "Formulae using virtualenvs do not need a `setuptools` resource."
-            end
-          end
-
           unless method_called_ever?(body_node, :go_resource)
             # processed_source.ast is passed instead of body_node because `require` would be outside body_node
             find_method_with_args(processed_source.ast, :require, "language/go") do

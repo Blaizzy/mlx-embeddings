@@ -144,25 +144,6 @@ describe RuboCop::Cop::FormulaAudit::Text do
       RUBY
     end
 
-    it "reports an offense if formula uses virtualenv and also `setuptools` resource" do
-      expect_offense(<<~RUBY)
-        class Foo < Formula
-          url "https://brew.sh/foo-1.0.tgz"
-          homepage "https://brew.sh"
-
-          resource "setuptools" do
-          ^^^^^^^^^^^^^^^^^^^^^ Formulae using virtualenvs do not need a `setuptools` resource.
-            url "https://foo.com/foo.tar.gz"
-            sha256 "db0904a28253cfe53e7dedc765c71596f3c53bb8a866ae50123320ec1a7b73fd"
-          end
-
-          def install
-            virtualenv_create(libexec)
-          end
-        end
-      RUBY
-    end
-
     it "reports an offense if `Formula.factory(name)` is present" do
       expect_offense(<<~RUBY)
         class Foo < Formula
