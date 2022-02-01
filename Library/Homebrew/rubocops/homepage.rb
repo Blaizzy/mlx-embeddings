@@ -57,7 +57,7 @@ module RuboCop
               corrector.replace(homepage_parameter_node.source_range, "\"#{fixed}\"")
             end
 
-          when %r{^https://github.com.*\.git}
+          when %r{^https://github.com.*\.git$}
             problem "GitHub homepages should not end with .git" do |corrector|
               corrector.replace(homepage_parameter_node.source_range, "\"#{homepage.delete_suffix(".git")}\"")
             end
