@@ -34,17 +34,13 @@ module Utils
     # @api public
     sig { params(rewrite_info: RewriteInfo, paths: T::Array[T.any(String, Pathname)]).void }
     def rewrite_shebang(rewrite_info, *paths)
-      found = T.let(false, T::Boolean)
       paths.each do |f|
         f = Pathname(f)
         next unless f.file?
         next unless rewrite_info.regex.match?(f.read(rewrite_info.max_length))
 
         Utils::Inreplace.inreplace f.to_s, rewrite_info.regex, "#!#{rewrite_info.replacement}"
-        found = true
       end
-
-      raise "No matching files found to rewrite shebang" unless found
     end
   end
 end
