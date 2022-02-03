@@ -1742,10 +1742,12 @@ module RuboCop::Cop::HashShorthandSyntax
   private
 
   def enforced_shorthand_syntax; end
-  def node_with_block_and_arguments?(node); end
+  def ignore_hash_shorthand_syntax?(pair_node); end
   def require_hash_value?(hash_key_source, node); end
-  def without_parentheses?(node); end
-  def without_parentheses_call_expr_follows?(node); end
+  def require_hash_value_for_around_hash_literal?(node); end
+  def use_element_of_hash_literal_as_receiver?(ancestor, parent); end
+  def use_modifier_form_without_parenthesized_method_call?(ancestor); end
+  def without_parentheses_call_expr_follows?(ancestor); end
 end
 
 RuboCop::Cop::HashShorthandSyntax::EXPLICIT_HASH_VALUE_MSG = T.let(T.unsafe(nil), String)
@@ -2590,6 +2592,7 @@ class RuboCop::Cop::Layout::EmptyLinesAroundExceptionHandlingKeywords < ::RuboCo
   def keyword_locations(node); end
   def keyword_locations_in_ensure(node); end
   def keyword_locations_in_rescue(node); end
+  def last_rescue_and_end_on_same_line(body); end
   def message(location, keyword); end
   def style; end
 end
@@ -2860,6 +2863,7 @@ class RuboCop::Cop::Layout::HashAlignment < ::RuboCop::Cop::Base
   def alignment_for_colons; end
   def alignment_for_hash_rockets; end
   def argument_alignment_config; end
+  def argument_before_hash(hash_node); end
   def autocorrect_incompatible_with_other_cops?(node); end
   def check_delta(delta, node:, alignment:); end
   def check_pairs(node); end
@@ -9342,12 +9346,14 @@ module RuboCop::Cop::Style::MethodCallWithArgsParentheses::OmitParentheses
   def call_in_single_line_inheritance?(node); end
   def call_with_ambiguous_arguments?(node); end
   def call_with_braced_block?(node); end
+  def exist_next_line_expression?(node); end
   def hash_literal?(node); end
   def hash_literal_in_arguments?(node); end
   def inside_endless_method_def?(node); end
   def inside_string_interpolation?(node); end
   def legitimate_call_with_parentheses?(node); end
   def logical_operator?(node); end
+  def modifier_form?(node); end
   def offense_range(node); end
   def omit_parentheses(node); end
   def parentheses_at_the_end_of_multiline_call?(node); end
@@ -10449,7 +10455,6 @@ class RuboCop::Cop::Style::RedundantBegin < ::RuboCop::Cop::Base
 
   private
 
-  def any_ancestor_assignment_node?(node); end
   def begin_block_has_multiline_statements?(node); end
   def condition_range(node); end
   def contain_rescue_or_ensure?(node); end
@@ -12708,6 +12713,8 @@ class RuboCop::Formatter::DisabledConfigFormatter < ::RuboCop::Formatter::BaseFo
   def set_max(cfg, cop_name); end
   def show_offense_counts?; end
   def show_timestamp?; end
+  def supports_safe_auto_correct?(cop_class, default_cfg); end
+  def supports_unsafe_autocorrect?(cop_class, default_cfg); end
   def timestamp; end
 
   class << self
