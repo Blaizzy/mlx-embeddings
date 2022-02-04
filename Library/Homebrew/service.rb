@@ -303,7 +303,7 @@ module Homebrew
       }
 
       base[:KeepAlive] = @keep_alive if @keep_alive == true
-      base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == false
+      base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
       base[:LegacyTimers] = @macos_legacy_timers if @macos_legacy_timers == true
       base[:TimeOut] = @restart_delay if @restart_delay.present?
       base[:ProcessType] = @process_type.to_s.capitalize if @process_type.present?

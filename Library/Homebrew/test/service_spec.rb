@@ -102,6 +102,7 @@ describe Homebrew::Service do
         root_dir var
         working_dir var
         keep_alive true
+        launch_only_once true
         process_type :interactive
         restart_delay 30
         interval 5
@@ -127,6 +128,8 @@ describe Homebrew::Service do
         \t<true/>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LaunchOnlyOnce</key>
+        \t<true/>
         \t<key>LegacyTimers</key>
         \t<true/>
         \t<key>ProcessType</key>
