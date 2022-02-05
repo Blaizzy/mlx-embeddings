@@ -78,7 +78,7 @@ module Utils
       when :csh, :tcsh
         "echo 'setenv PATH #{csh_quote(path)}:$PATH' >> #{profile}"
       when :fish
-        "echo 'fish_add_path #{sh_quote(path)}' >> #{profile}"
+        "fish_add_path #{sh_quote(path)}"
       end
     end
 
