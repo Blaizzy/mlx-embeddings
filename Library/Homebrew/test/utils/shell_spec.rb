@@ -98,7 +98,7 @@ describe Utils::Shell do
       ENV["SHELL"] = "/usr/local/bin/fish"
       ENV["fish_user_paths"] = "/some/path"
       expect(described_class.prepend_path_in_profile(path))
-        .to eq("echo 'fish_add_path #{path}' >> #{shell_profile}")
+        .to eq("fish_add_path #{path}")
     end
   end
 end
