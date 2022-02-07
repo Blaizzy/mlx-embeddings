@@ -968,6 +968,8 @@ class Cask::DSL::Caveats
 
   def reboot(*args); end
 
+  def requires_rosetta(*args); end
+
   def unsigned_accessibility(*args); end
 
   def zsh_path_helper(*args); end
