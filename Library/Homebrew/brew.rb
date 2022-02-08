@@ -86,10 +86,6 @@ begin
   require "commands"
   require "settings"
 
-  # Print an error message and exit if the command is no longer supported
-  unsupported_cmd_message = Commands.unsupported_cmd?(cmd)
-  odie unsupported_cmd_message if unsupported_cmd_message
-
   internal_cmd = Commands.valid_internal_cmd?(cmd) || Commands.valid_internal_dev_cmd?(cmd) if cmd
 
   unless internal_cmd
@@ -125,6 +121,9 @@ begin
     possible_tap = Tap.fetch(possible_tap.first) if possible_tap
 
     if !possible_tap || possible_tap.installed? || Tap.untapped_official_taps.include?(possible_tap.name)
+      if cmd == 'cask' # Check for cask explicitly because it's very common in old guides
+        odie "`brew cask <command>` is no longer supported. Use `brew <command> --cask` instead."
+      end
       odie "Unknown command: #{cmd}"
     end
 
