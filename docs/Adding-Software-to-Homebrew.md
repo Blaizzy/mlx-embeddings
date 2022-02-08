@@ -1,4 +1,4 @@
-# Adding Software to Homebrew
+# Adding Software To Homebrew
 
 Are you missing your favorite software in Homebrew? Then you're the perfect person to resolve this problem.
 
@@ -358,4 +358,3 @@ if you set the variable `HOMEBREW_NO_AUTO_UPDATE` then clean it up with:
 ```bash
 unset HOMEBREW_NO_AUTO_UPDATE
 ```
-
