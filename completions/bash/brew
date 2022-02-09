@@ -1577,7 +1577,6 @@ _brew_pr_pull() {
     -*)
       __brewcomp "
       --artifact
-      --autosquash
       --branch-okay
       --clean
       --committer
@@ -1587,6 +1586,7 @@ _brew_pr_pull() {
       --ignore-missing-artifacts
       --keep-old
       --message
+      --no-autosquash
       --no-commit
       --no-upload
       --quiet

@@ -1276,8 +1276,8 @@ Requires write access to the repository.
   Do not amend the commits from pull requests.
 * `--keep-old`:
   If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
-* `--autosquash`:
-  Automatically reformat and reword commits in the pull request to our preferred format.
+* `--no-autosquash`:
+  Skip automatically reformatting and rewording commits in the pull request to our preferred format.
 * `--branch-okay`:
   Do not warn if pulling to a branch besides the repository default (useful for testing).
 * `--resolve`:
