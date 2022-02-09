@@ -854,18 +854,12 @@ module Homebrew
     end
 
     describe "#audit_revision_and_version_scheme" do
-      subject {
-        fa = described_class.new(Formulary.factory(formula_path), git: true)
-        fa.audit_revision_and_version_scheme
-        fa.problems.first&.fetch(:message)
-      }
-
-      let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
-      let(:foo_version) { Count.increment }
-      let(:formula_subpath) { "Formula/foo#{foo_version}.rb" }
-      let(:origin_formula_path) { origin_tap_path/formula_subpath }
-      let(:tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-bar" }
       let(:formula_path) { tap_path/formula_subpath }
+      let(:tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-bar" }
+      let(:origin_formula_path) { origin_tap_path/formula_subpath }
+      let(:formula_subpath) { "Formula/foo#{foo_version}.rb" }
+      let(:foo_version) { Count.increment }
+      let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
 
       before do
         origin_formula_path.dirname.mkpath
@@ -890,6 +884,29 @@ module Homebrew
           system "git", "clone", origin_tap_path, "."
         end
       end
+
+      describe "new formulae should not have a revision" do
+        it "doesn't allow new formulae to have a revision" do
+          fa = formula_auditor "foo", <<~RUBY, new_formula: true
+            class Foo < Formula
+              url "https://brew.sh/foo-1.0.tgz"
+              revision 1
+            end
+          RUBY
+
+          fa.audit_revision_and_version_scheme
+
+          expect(fa.new_formula_problems).to include(
+            a_hash_including(message: a_string_matching(/should not define a revision/)),
+          )
+        end
+      end
+
+      subject {
+        fa = described_class.new(Formulary.factory(formula_path), git: true)
+        fa.audit_revision_and_version_scheme
+        fa.problems.first&.fetch(:message)
+      }
 
       def formula_gsub(before, after = "")
         text = formula_path.read
