@@ -220,6 +220,9 @@ Sorbet/SignatureBuildOrder:
 Sorbet/SingleLineRbiClassModuleDefinitions:
   Enabled: true
 
+Sorbet/TypeAliasName:
+  Enabled: true
+
 Sorbet/ValidSigil:
   Enabled: true
   RequireSigilOnAllFiles: true
