@@ -17,6 +17,8 @@ module RSpec
     def context(*args, &example_group_block); end
     def current_example; end
     def current_example=(example); end
+    def current_scope; end
+    def current_scope=(scope); end
     def describe(*args, &example_group_block); end
     def example_group(*args, &example_group_block); end
     def fcontext(*args, &example_group_block); end
@@ -53,6 +55,12 @@ class RSpec::Mocks::AllowanceTarget < ::RSpec::Mocks::TargetBase
   def not_to(matcher, *_args); end
   def to(matcher, &block); end
   def to_not(matcher, *_args); end
+end
+
+class RSpec::Mocks::AndInvokeImplementation
+  def initialize(procs_to_invoke); end
+
+  def call(*args, &block); end
 end
 
 class RSpec::Mocks::AndReturnImplementation
@@ -783,6 +791,7 @@ class RSpec::Mocks::Matchers::Receive
   def initialize(message, block); end
 
   def and_call_original(*args, &block); end
+  def and_invoke(*args, &block); end
   def and_raise(*args, &block); end
   def and_return(*args, &block); end
   def and_throw(*args, &block); end
@@ -832,6 +841,7 @@ class RSpec::Mocks::Matchers::ReceiveMessageChain
   def initialize(chain, &block); end
 
   def and_call_original(*args, &block); end
+  def and_invoke(*args, &block); end
   def and_raise(*args, &block); end
   def and_return(*args, &block); end
   def and_throw(*args, &block); end
@@ -896,6 +906,7 @@ class RSpec::Mocks::MessageExpectation
   include ::RSpec::Mocks::MessageExpectation::ImplementationDetails
 
   def and_call_original; end
+  def and_invoke(first_proc, *procs); end
   def and_raise(*args); end
   def and_return(first_value, *values); end
   def and_throw(*args); end

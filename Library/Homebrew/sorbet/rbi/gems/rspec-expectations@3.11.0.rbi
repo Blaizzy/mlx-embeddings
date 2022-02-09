@@ -17,6 +17,8 @@ module RSpec
     def context(*args, &example_group_block); end
     def current_example; end
     def current_example=(example); end
+    def current_scope; end
+    def current_scope=(scope); end
     def describe(*args, &example_group_block); end
     def example_group(*args, &example_group_block); end
     def fcontext(*args, &example_group_block); end
@@ -330,6 +332,16 @@ module RSpec::Expectations::Syntax
   end
 end
 
+class RSpec::Expectations::ValueExpectationTarget < ::RSpec::Expectations::ExpectationTarget
+  def not_to(matcher = T.unsafe(nil), message = T.unsafe(nil), &block); end
+  def to(matcher = T.unsafe(nil), message = T.unsafe(nil), &block); end
+
+  private
+
+  def enforce_value_expectation(matcher); end
+  def supports_value_expectations?(matcher); end
+end
+
 module RSpec::Expectations::Version; end
 RSpec::Expectations::Version::STRING = T.let(T.unsafe(nil), String)
 RSpec::MODULES_TO_AUTOLOAD = T.let(T.unsafe(nil), Hash)
@@ -521,6 +533,7 @@ class RSpec::Matchers::BuiltIn::BaseMatcher
   def present_ivars; end
   def rescued_exception; end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -719,6 +732,7 @@ class RSpec::Matchers::BuiltIn::Change < ::RSpec::Matchers::BuiltIn::BaseMatcher
   def from(value); end
   def matches?(event_proc); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
   def to(value); end
 
   private
@@ -746,6 +760,8 @@ class RSpec::Matchers::BuiltIn::ChangeDetails
   def message_notation(receiver, message); end
 end
 
+module RSpec::Matchers::BuiltIn::ChangeDetails::UNDEFINED; end
+
 class RSpec::Matchers::BuiltIn::ChangeFromValue < ::RSpec::Matchers::BuiltIn::SpecificValuesChange
   def initialize(change_details, expected_before); end
 
@@ -766,6 +782,7 @@ class RSpec::Matchers::BuiltIn::ChangeRelatively < ::RSpec::Matchers::BuiltIn::B
   def failure_message; end
   def matches?(event_proc); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -795,6 +812,7 @@ class RSpec::Matchers::BuiltIn::Compound < ::RSpec::Matchers::BuiltIn::BaseMatch
   def matcher_1; end
   def matcher_2; end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   protected
 
@@ -811,6 +829,7 @@ class RSpec::Matchers::BuiltIn::Compound < ::RSpec::Matchers::BuiltIn::BaseMatch
   def matcher_2_matches?; end
   def matcher_is_diffable?(matcher); end
   def matcher_supports_block_expectations?(matcher); end
+  def matcher_supports_value_expectations?(matcher); end
 end
 
 class RSpec::Matchers::BuiltIn::Compound::And < ::RSpec::Matchers::BuiltIn::Compound
@@ -1180,6 +1199,7 @@ class RSpec::Matchers::BuiltIn::Output < ::RSpec::Matchers::BuiltIn::BaseMatcher
   def failure_message_when_negated; end
   def matches?(block); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
   def to_stderr; end
   def to_stderr_from_any_process; end
   def to_stdout; end
@@ -1209,6 +1229,7 @@ class RSpec::Matchers::BuiltIn::RaiseError
   def failure_message_when_negated; end
   def matches?(given_proc, negative_expectation = T.unsafe(nil), &block); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
   def with_message(expected_message); end
 
   private
@@ -1306,6 +1327,7 @@ class RSpec::Matchers::BuiltIn::SpecificValuesChange < ::RSpec::Matchers::BuiltI
   def failure_message; end
   def matches?(event_proc); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -1352,6 +1374,7 @@ class RSpec::Matchers::BuiltIn::ThrowSymbol
   def failure_message_when_negated; end
   def matches?(given_proc); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -1369,6 +1392,7 @@ class RSpec::Matchers::BuiltIn::YieldControl < ::RSpec::Matchers::BuiltIn::BaseM
   def failure_message_when_negated; end
   def matches?(block); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -1404,6 +1428,7 @@ class RSpec::Matchers::BuiltIn::YieldSuccessiveArgs < ::RSpec::Matchers::BuiltIn
   def failure_message_when_negated; end
   def matches?(block); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -1421,6 +1446,7 @@ class RSpec::Matchers::BuiltIn::YieldWithArgs < ::RSpec::Matchers::BuiltIn::Base
   def failure_message_when_negated; end
   def matches?(block); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -1437,6 +1463,7 @@ class RSpec::Matchers::BuiltIn::YieldWithNoArgs < ::RSpec::Matchers::BuiltIn::Ba
   def failure_message_when_negated; end
   def matches?(block); end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
@@ -1499,6 +1526,7 @@ module RSpec::Matchers::DSL::DefaultImplementations
   def diffable?; end
   def expects_call_stack_jump?; end
   def supports_block_expectations?; end
+  def supports_value_expectations?; end
 
   private
 
