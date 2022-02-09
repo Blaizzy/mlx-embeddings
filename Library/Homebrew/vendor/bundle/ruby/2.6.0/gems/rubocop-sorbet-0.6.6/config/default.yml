@@ -197,6 +197,17 @@ Sorbet/TrueSigil:
   - db/**/*.rb
   - script/**/*
 
+Sorbet/TypeAliasName:
+  Description: 'Type alias constant names must be in CamelCase.'
+  Enabled: true
+  VersionAdded: 0.6.6
+  Include:
+  - "**/*.{rb,rbi,rake,ru}"
+  Exclude:
+  - bin/**/*
+  - db/**/*.rb
+  - script/**/*
+
 Sorbet/ValidSigil:
   Description: 'All files must have a valid sigil.'
   Enabled: true

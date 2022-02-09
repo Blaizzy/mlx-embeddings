@@ -257,6 +257,13 @@ class RuboCop::Cop::Sorbet::TrueSigil < ::RuboCop::Cop::Sorbet::HasSigil
   def minimum_strictness; end
 end
 
+class RuboCop::Cop::Sorbet::TypeAliasName < ::RuboCop::Cop::Cop
+  def casgn_type_alias?(param0 = T.unsafe(nil)); end
+  def on_casgn(node); end
+end
+
+RuboCop::Cop::Sorbet::TypeAliasName::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Sorbet::ValidSigil < ::RuboCop::Cop::Cop
   def autocorrect(_node); end
   def investigate(processed_source); end

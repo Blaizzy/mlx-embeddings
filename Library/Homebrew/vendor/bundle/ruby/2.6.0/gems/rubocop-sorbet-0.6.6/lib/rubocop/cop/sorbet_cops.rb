@@ -7,6 +7,7 @@ require_relative "sorbet/forbid_untyped_struct_props"
 require_relative "sorbet/one_ancestor_per_line"
 require_relative "sorbet/callback_conditionals_binding"
 require_relative "sorbet/forbid_t_unsafe"
+require_relative "sorbet/type_alias_name"
 
 require_relative "sorbet/rbi/forbid_extend_t_sig_helpers_in_shims"
 require_relative "sorbet/rbi/forbid_rbi_outside_of_allowed_paths"
