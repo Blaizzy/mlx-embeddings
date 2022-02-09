@@ -289,6 +289,13 @@ module Homebrew
 
           next unless @core_tap
 
+          unless dep_f.tap.core_tap?
+            problem <<~EOS
+              Dependency '#{dep.name}' is not in homebrew/core. Formulae in homebrew/core
+              should not have dependencies in external taps.
+            EOS
+          end
+
           # we want to allow uses_from_macos for aliases but not bare dependencies
           if self.class.aliases.include?(dep.name) && spec.uses_from_macos_names.exclude?(dep.name)
             problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
