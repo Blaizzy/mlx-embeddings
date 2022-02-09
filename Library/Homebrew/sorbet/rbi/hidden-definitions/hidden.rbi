@@ -4162,6 +4162,12 @@ class RBI::File
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class RBI::Formatter
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class RBI::Index
   include ::T::Enumerable
 end
