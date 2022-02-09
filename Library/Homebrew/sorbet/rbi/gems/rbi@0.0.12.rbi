@@ -313,6 +313,43 @@ class RBI::File
   def transformed_string; end
 end
 
+class RBI::Formatter
+  sig { params(add_sig_templates: T::Boolean, group_nodes: T::Boolean, max_line_length: T.nilable(Integer), nest_singleton_methods: T::Boolean, nest_non_public_methods: T::Boolean, sort_nodes: T::Boolean).void }
+  def initialize(add_sig_templates: T.unsafe(nil), group_nodes: T.unsafe(nil), max_line_length: T.unsafe(nil), nest_singleton_methods: T.unsafe(nil), nest_non_public_methods: T.unsafe(nil), sort_nodes: T.unsafe(nil)); end
+
+  sig { returns(T::Boolean) }
+  def add_sig_templates; end
+
+  def add_sig_templates=(_arg0); end
+
+  sig { params(file: RBI::File).void }
+  def format_file(file); end
+
+  sig { params(tree: RBI::Tree).void }
+  def format_tree(tree); end
+
+  def group_nodes; end
+  def group_nodes=(_arg0); end
+
+  sig { returns(T.nilable(Integer)) }
+  def max_line_length; end
+
+  def max_line_length=(_arg0); end
+  def nest_non_public_methods; end
+  def nest_non_public_methods=(_arg0); end
+  def nest_singleton_methods; end
+  def nest_singleton_methods=(_arg0); end
+
+  sig { params(file: RBI::File).returns(String) }
+  def print_file(file); end
+
+  sig { params(tree: RBI::Tree).returns(String) }
+  def print_tree(tree); end
+
+  def sort_nodes; end
+  def sort_nodes=(_arg0); end
+end
+
 class RBI::Group < ::RBI::Tree
   sig { params(kind: RBI::Group::Kind).void }
   def initialize(kind); end
@@ -1168,8 +1205,8 @@ class RBI::Send < ::RBI::NodeWithComments
 end
 
 class RBI::Sig < ::RBI::Node
-  sig { params(params: T::Array[RBI::SigParam], return_type: T.nilable(String), is_abstract: T::Boolean, is_override: T::Boolean, is_overridable: T::Boolean, type_params: T::Array[String], checked: T.nilable(Symbol), loc: T.nilable(RBI::Loc), block: T.nilable(T.proc.params(node: RBI::Sig).void)).void }
-  def initialize(params: T.unsafe(nil), return_type: T.unsafe(nil), is_abstract: T.unsafe(nil), is_override: T.unsafe(nil), is_overridable: T.unsafe(nil), type_params: T.unsafe(nil), checked: T.unsafe(nil), loc: T.unsafe(nil), &block); end
+  sig { params(params: T::Array[RBI::SigParam], return_type: T.nilable(String), is_abstract: T::Boolean, is_override: T::Boolean, is_overridable: T::Boolean, is_final: T::Boolean, type_params: T::Array[String], checked: T.nilable(Symbol), loc: T.nilable(RBI::Loc), block: T.nilable(T.proc.params(node: RBI::Sig).void)).void }
+  def initialize(params: T.unsafe(nil), return_type: T.unsafe(nil), is_abstract: T.unsafe(nil), is_override: T.unsafe(nil), is_overridable: T.unsafe(nil), is_final: T.unsafe(nil), type_params: T.unsafe(nil), checked: T.unsafe(nil), loc: T.unsafe(nil), &block); end
 
   sig { params(param: RBI::SigParam).void }
   def <<(param); end
@@ -1192,6 +1229,8 @@ class RBI::Sig < ::RBI::Node
   def is_abstract; end
 
   def is_abstract=(_arg0); end
+  def is_final; end
+  def is_final=(_arg0); end
   def is_overridable; end
   def is_overridable=(_arg0); end
   def is_override; end
