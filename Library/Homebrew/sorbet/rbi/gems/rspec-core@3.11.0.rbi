@@ -17,6 +17,8 @@ module RSpec
     def context(*args, &example_group_block); end
     def current_example; end
     def current_example=(example); end
+    def current_scope; end
+    def current_scope=(scope); end
     def describe(*args, &example_group_block); end
     def example_group(*args, &example_group_block); end
     def fcontext(*args, &example_group_block); end
@@ -1640,6 +1642,8 @@ module RSpec::Core::MemoizedHelpers
 
   def __init_memoized; end
   def __memoized; end
+  def enforce_value_expectation(matcher, method_name); end
+  def matcher_supports_value_expectations?(matcher); end
 
   class << self
     def define_helpers_on(example_group); end
@@ -2036,6 +2040,10 @@ class RSpec::Core::Ordering::Random
 end
 
 RSpec::Core::Ordering::Random::MAX_32_BIT = T.let(T.unsafe(nil), Integer)
+
+class RSpec::Core::Ordering::RecentlyModified
+  def order(list); end
+end
 
 class RSpec::Core::Ordering::Registry
   def initialize(configuration); end
@@ -2470,6 +2478,8 @@ class RSpec::Core::World
   def report_filter_message(message); end
   def reporter; end
   def reset; end
+  def rspec_is_quitting; end
+  def rspec_is_quitting=(_arg0); end
   def shared_example_group_registry; end
   def source_from_file(path); end
   def syntax_highlighter; end

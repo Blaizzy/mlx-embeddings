@@ -17,6 +17,8 @@ module RSpec
     def context(*args, &example_group_block); end
     def current_example; end
     def current_example=(example); end
+    def current_scope; end
+    def current_scope=(scope); end
     def describe(*args, &example_group_block); end
     def example_group(*args, &example_group_block); end
     def fcontext(*args, &example_group_block); end
