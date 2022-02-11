@@ -225,16 +225,23 @@ class Keg
   end
   alias generic_egrep_args egrep_args
 
+  def each_unique_file(io)
+    hardlinks = Set.new
+
+    until io.eof?
+      file = Pathname.new(io.readline.chomp)
+      # Don't yield symlinks
+      next if file.symlink?
+
+      # Only yield a file if it has a unique inode.
+      # This makes sure we don't yield hardlinks.
+      yield file if hardlinks.add? file.stat.ino
+    end
+  end
+
   def each_unique_file_matching(string)
     Utils.popen_read("fgrep", recursive_fgrep_args, string, to_s) do |io|
-      hardlinks = Set.new
-
-      until io.eof?
-        file = Pathname.new(io.readline.chomp)
-        next if file.symlink?
-
-        yield file if hardlinks.add? file.stat.ino
-      end
+      each_unique_file(io)
     end
   end
 
@@ -242,15 +249,8 @@ class Keg
     grep_bin, grep_args = egrep_args
 
     # An extra \ is needed for the null character when calling grep
-    Utils.popen_read(grep_bin, grep_args, "\\x00", to_s) do |io|
-      hardlinks = Set.new
-
-      until io.eof?
-        file = Pathname.new(io.readline.chomp)
-        next if file.symlink?
-
-        yield file if hardlinks.add? file.stat.ino
-      end
+    Utils.popen_read(grep_bin, grep_args, "\#{BINARY_NULL_CHARACTER}", to_s) do |io|
+      each_unique_file(io)
     end
   end
 
