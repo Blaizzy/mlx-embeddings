@@ -891,6 +891,23 @@ module Homebrew
         end
       end
 
+      describe "new formulae should not have a revision" do
+        it "doesn't allow new formulae to have a revision" do
+          fa = formula_auditor "foo", <<~RUBY, new_formula: true
+            class Foo < Formula
+              url "https://brew.sh/foo-1.0.tgz"
+              revision 1
+            end
+          RUBY
+
+          fa.audit_revision_and_version_scheme
+
+          expect(fa.new_formula_problems).to include(
+            a_hash_including(message: a_string_matching(/should not define a revision/)),
+          )
+        end
+      end
+
       def formula_gsub(before, after = "")
         text = formula_path.read
         text.gsub! before, after

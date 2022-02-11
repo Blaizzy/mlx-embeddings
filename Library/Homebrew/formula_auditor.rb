@@ -681,6 +681,8 @@ module Homebrew
     end
 
     def audit_revision_and_version_scheme
+      new_formula_problem("New formulae should not define a revision.") if @new_formula && !formula.revision.zero?
+
       return unless @git
       return unless formula.tap # skip formula not from core or any taps
       return unless formula.tap.git? # git log is required
