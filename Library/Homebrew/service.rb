@@ -334,11 +334,14 @@ module Homebrew
         WantedBy=multi-user.target
 
         [Service]
-        Type=simple
-        ExecStart=#{command.join(" ")}
       EOS
 
+      # command needs to be first because it initializes all other values
+      cmd = command.join(" ")
+
       options = []
+      options << "Type=#{@launch_only_once == true ? "oneshot" : "simple"}"
+      options << "ExecStart=#{cmd}"
       options << "Restart=always" if @keep_alive == true
       options << "RestartSec=#{restart_delay}" if @restart_delay.present?
       options << "WorkingDirectory=#{@working_dir}" if @working_dir.present?
