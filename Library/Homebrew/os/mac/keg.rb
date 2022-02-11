@@ -7,7 +7,7 @@ class Keg
 
     @require_relocation = true
     odebug "Changing dylib ID of #{file}\n  from #{file.dylib_id}\n    to #{id}"
-    MachO::Tools.change_dylib_id(file, id, strict: false)
+    file.change_dylib_id(id, strict: false)
     apply_ad_hoc_signature(file)
   rescue MachO::MachOError
     onoe <<~EOS
@@ -23,7 +23,7 @@ class Keg
 
     @require_relocation = true
     odebug "Changing install name in #{file}\n  from #{old}\n    to #{new}"
-    MachO::Tools.change_install_name(file, old, new, strict: false)
+    file.change_install_name(old, new, strict: false)
     apply_ad_hoc_signature(file)
   rescue MachO::MachOError
     onoe <<~EOS
@@ -39,7 +39,7 @@ class Keg
 
     @require_relocation = true
     odebug "Changing rpath in #{file}\n  from #{old}\n    to #{new}"
-    MachO::Tools.change_rpath(file, old, new, strict: false)
+    file.change_rpath(old, new, strict: false)
     apply_ad_hoc_signature(file)
   rescue MachO::MachOError
     onoe <<~EOS
