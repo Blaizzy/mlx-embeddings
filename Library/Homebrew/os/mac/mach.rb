@@ -64,6 +64,21 @@ module MachOShim
     macho.write!
   end
 
+  def change_rpath(old, new, **options)
+    macho.change_rpath(old, new, options)
+    macho.write!
+  end
+
+  def change_dylib_id(id, **options)
+    macho.change_dylib_id(id, options)
+    macho.write!
+  end
+
+  def change_install_name(old, new, **options)
+    macho.change_install_name(old, new, options)
+    macho.write!
+  end
+
   def dynamically_linked_libraries(except: :none)
     lcs = macho.dylib_load_commands.reject { |lc| lc.type == except }
 
