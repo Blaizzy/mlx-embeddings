@@ -1242,7 +1242,7 @@ class ActiveSupport::ExecutionWrapper
     def active?; end
     def inherited(other); end
     def register_hook(hook, outer: T.unsafe(nil)); end
-    def run!; end
+    def run!(reset: T.unsafe(nil)); end
     def to_complete(*args, &block); end
     def to_run(*args, &block); end
     def wrap; end
@@ -2141,7 +2141,7 @@ class ActiveSupport::Reloader < ::ActiveSupport::ExecutionWrapper
     def prepare!; end
     def reload!; end
     def reloaded!; end
-    def run!; end
+    def run!(reset: T.unsafe(nil)); end
     def to_prepare(*args, &block); end
     def wrap; end
   end
