@@ -112,6 +112,18 @@ module Homebrew
       end
     end
 
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def launch_only_once(value = nil)
+      case T.unsafe(value)
+      when nil
+        @launch_only_once
+      when true, false
+        @launch_only_once = value
+      else
+        raise TypeError, "Service#launch_only_once expects a Boolean"
+      end
+    end
+
     sig { params(value: T.nilable(Integer)).returns(T.nilable(Integer)) }
     def restart_delay(value = nil)
       case T.unsafe(value)
@@ -291,6 +303,7 @@ module Homebrew
       }
 
       base[:KeepAlive] = @keep_alive if @keep_alive == true
+      base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
       base[:LegacyTimers] = @macos_legacy_timers if @macos_legacy_timers == true
       base[:TimeOut] = @restart_delay if @restart_delay.present?
       base[:ProcessType] = @process_type.to_s.capitalize if @process_type.present?
@@ -321,11 +334,14 @@ module Homebrew
         WantedBy=multi-user.target
 
         [Service]
-        Type=simple
-        ExecStart=#{command.join(" ")}
       EOS
 
+      # command needs to be first because it initializes all other values
+      cmd = command.join(" ")
+
       options = []
+      options << "Type=#{@launch_only_once == true ? "oneshot" : "simple"}"
+      options << "ExecStart=#{cmd}"
       options << "Restart=always" if @keep_alive == true
       options << "RestartSec=#{restart_delay}" if @restart_delay.present?
       options << "WorkingDirectory=#{@working_dir}" if @working_dir.present?
