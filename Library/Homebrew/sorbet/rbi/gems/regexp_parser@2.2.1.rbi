@@ -760,6 +760,7 @@ class Regexp::Scanner
 
   class << self
     def long_prop_map; end
+    def parse_prop_map(name); end
     def scan(input_object, options: T.unsafe(nil), &block); end
     def short_prop_map; end
   end
@@ -879,9 +880,12 @@ module Regexp::Syntax::Token::Backreference; end
 Regexp::Syntax::Token::Backreference::All = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::Backreference::Name = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::Backreference::Number = T.let(T.unsafe(nil), Array)
+Regexp::Syntax::Token::Backreference::NumberRef = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::Backreference::Plain = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::Backreference::RecursionLevel = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::Backreference::Type = T.let(T.unsafe(nil), Symbol)
+Regexp::Syntax::Token::Backreference::V1_8_6 = T.let(T.unsafe(nil), Array)
+Regexp::Syntax::Token::Backreference::V1_9_1 = T.let(T.unsafe(nil), Array)
 module Regexp::Syntax::Token::CharacterSet; end
 Regexp::Syntax::Token::CharacterSet::All = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::CharacterSet::Basic = T.let(T.unsafe(nil), Array)
