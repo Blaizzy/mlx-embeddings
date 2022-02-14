@@ -1230,6 +1230,10 @@ class FormulaInstaller
     keg = Keg.new(formula.prefix)
     skip_linkage = formula.bottle_specification.skip_relocation?
     keg.replace_placeholders_with_locations tab.changed_files, skip_linkage: skip_linkage
+
+    return if formula.bottle_specification.skip_prefix_relocation?
+
+    keg.relocate_build_prefix(keg, Utils::Bottles.tag.default_prefix, HOMEBREW_PREFIX)
   end
 
   sig { params(output: T.nilable(String)).void }

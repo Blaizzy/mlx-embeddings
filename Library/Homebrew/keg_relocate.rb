@@ -8,6 +8,7 @@ class Keg
   LIBRARY_PLACEHOLDER = "@@HOMEBREW_LIBRARY@@"
   PERL_PLACEHOLDER = "@@HOMEBREW_PERL@@"
   JAVA_PLACEHOLDER = "@@HOMEBREW_JAVA@@"
+  BINARY_NULL_CHARACTER = "\x00"
 
   class Relocation
     extend T::Sig
@@ -163,6 +164,49 @@ class Keg
     changed_files
   end
 
+  def relocate_build_prefix(keg, old_prefix, new_prefix)
+    # Find binaries which match prefix strings.
+    string_matches = Set.new
+    keg.each_unique_file_matching(old_prefix) do |file|
+      string_matches << file
+    end
+
+    binary_string_matches = Set.new
+    keg.each_unique_binary_file do |file|
+      binary_string_matches << file if string_matches.include?(file)
+    end
+
+    # Only consider string matches which are binary files with null bytes, and remove any
+    # matches which are sharballs found by text_files.
+    binary_string_matches -= text_files
+
+    # Split binary by null characters into array and substitute new cellar for old cellar.
+    # Null padding is added if the new string is too short.
+    binary_string_matches.each do |binary_file|
+      binary_file.ensure_writable do
+        binary = File.binread binary_file
+        puts "Replacing build prefix in: #{binary_file}"
+        binary_strings = binary.split(BINARY_NULL_CHARACTER)
+        match_indices = binary_strings.each_index.select { |i| binary_strings[i].include?(old_prefix) }
+
+        # Only perform substitution on strings which match prefix regex.
+        match_indices.each do |i|
+          s = binary_strings[i]
+          binary_strings[i] = s.gsub(old_prefix, new_prefix).ljust(s.size, BINARY_NULL_CHARACTER)
+        end
+
+        # Add back null padding at the end of the binary if needed.
+        patched_binary = binary_strings.join(BINARY_NULL_CHARACTER).ljust(binary.size, BINARY_NULL_CHARACTER)
+        if patched_binary.size != binary.size
+          raise "Patching failed!  Original and patched binary sizes do not match."
+        end
+
+        binary_file.atomic_write patched_binary
+      end
+      codesign_patched_binary(binary_file)
+    end
+  end
+
   def detect_cxx_stdlibs(_options = {})
     []
   end
@@ -173,17 +217,45 @@ class Keg
   end
   alias generic_recursive_fgrep_args recursive_fgrep_args
 
+  def egrep_args
+    grep_bin = "grep"
+    grep_args = recursive_fgrep_args
+    grep_args += "Pa"
+    [grep_bin, grep_args]
+  end
+  alias generic_egrep_args egrep_args
+
+  def each_unique_file(io)
+    hardlinks = Set.new
+
+    until io.eof?
+      file = Pathname.new(io.readline.chomp)
+      # Don't yield symlinks
+      next if file.symlink?
+
+      # Only yield a file if it has a unique inode.
+      # This makes sure we don't yield hardlinks.
+      yield file if hardlinks.add? file.stat.ino
+    end
+  end
+
   def each_unique_file_matching(string)
     Utils.popen_read("fgrep", recursive_fgrep_args, string, to_s) do |io|
-      hardlinks = Set.new
-
-      until io.eof?
-        file = Pathname.new(io.readline.chomp)
-        next if file.symlink?
-
-        yield file if hardlinks.add? file.stat.ino
-      end
+      each_unique_file(io)
     end
+  end
+
+  def each_unique_binary_file
+    grep_bin, grep_args = egrep_args
+
+    # An extra \ is needed for the null character when calling grep
+    Utils.popen_read(grep_bin, grep_args, "\#{BINARY_NULL_CHARACTER}", to_s) do |io|
+      each_unique_file(io)
+    end
+  end
+
+  def codesign_patched_binary(_binary_file)
+    []
   end
 
   def lib

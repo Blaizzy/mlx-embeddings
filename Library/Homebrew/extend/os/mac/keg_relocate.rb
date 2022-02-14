@@ -183,4 +183,14 @@ class Keg
     # it's wrong. -O is a BSD-grep-only option.
     "-lrO"
   end
+
+  def egrep_args
+    grep_bin = "egrep"
+    grep_args = recursive_fgrep_args
+    [grep_bin, grep_args]
+  end
+
+  def codesign_patched_binary(binary_file)
+    apply_ad_hoc_signature(binary_file)
+  end
 end
