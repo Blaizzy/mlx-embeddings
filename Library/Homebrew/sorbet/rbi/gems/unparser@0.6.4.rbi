@@ -797,6 +797,12 @@ class Unparser::Emitter::Defined < ::Unparser::Emitter
   def subject; end
 end
 
+class Unparser::Emitter::FindPattern < ::Unparser::Emitter
+  private
+
+  def dispatch; end
+end
+
 class Unparser::Emitter::FlipFlop < ::Unparser::Emitter
   def symbol_name; end
 
@@ -1059,7 +1065,19 @@ class Unparser::Emitter::MatchPattern < ::Unparser::Emitter
   def target; end
 end
 
+Unparser::Emitter::MatchPattern::SYMBOL = T.let(T.unsafe(nil), String)
+
+class Unparser::Emitter::MatchPatternP < ::Unparser::Emitter
+  private
+
+  def dispatch; end
+  def pattern; end
+  def remaining_children; end
+  def target; end
+end
+
 class Unparser::Emitter::MatchRest < ::Unparser::Emitter
+  def dispatch; end
   def emit_array_pattern; end
   def emit_hash_pattern; end
 
