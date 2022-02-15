@@ -3174,6 +3174,8 @@ module MachOShim
 end
 
 class MessagePack::Packer
+  def reset(); end
+
   def write_bin(arg); end
 
   def write_bin_header(arg); end
