@@ -13,7 +13,10 @@ module I18n
       # for details.
       def load_translations(*filenames)
         filenames = I18n.load_path if filenames.empty?
-        filenames.flatten.each { |filename| load_file(filename) }
+        filenames.flatten.each do |filename|
+          loaded_translations = load_file(filename)
+          yield filename, loaded_translations if block_given?
+        end
       end
 
       # This method receives a locale, a data hash and options for storing translations.
@@ -32,7 +35,7 @@ module I18n
         if entry.nil? && options.key?(:default)
           entry = default(locale, key, options[:default], options)
         else
-          entry = resolve(locale, key, entry, options)
+          entry = resolve_entry(locale, key, entry, options)
         end
 
         count = options[:count]
@@ -151,6 +154,7 @@ module I18n
           end
           result unless result.is_a?(MissingTranslation)
         end
+        alias_method :resolve_entry, :resolve
 
         # Picks a translation from a pluralized mnemonic subkey according to English
         # pluralization rules :
@@ -226,6 +230,8 @@ module I18n
             raise InvalidLocaleData.new(filename, 'expects it to return a hash, but does not')
           end
           data.each { |locale, d| store_translations(locale, d || {}, skip_symbolize_keys: keys_symbolized) }
+
+          data
         end
 
         # Loads a plain Ruby translations file. eval'ing the file must yield
