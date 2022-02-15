@@ -79,6 +79,7 @@ module I18n::Backend::Base
   def pluralization_key(entry, count); end
   def pluralize(locale, entry, count); end
   def resolve(locale, object, subject, options = T.unsafe(nil)); end
+  def resolve_entry(locale, object, subject, options = T.unsafe(nil)); end
   def subtrees?; end
   def translate_localization_format(locale, object, format, options); end
 end
@@ -148,7 +149,7 @@ end
 module I18n::Backend::Fallbacks
   def exists?(locale, key, options = T.unsafe(nil)); end
   def extract_non_symbol_default!(options); end
-  def resolve(locale, object, subject, options = T.unsafe(nil)); end
+  def resolve_entry(locale, object, subject, options = T.unsafe(nil)); end
   def translate(locale, key, options = T.unsafe(nil)); end
 
   private
@@ -264,6 +265,38 @@ class I18n::Backend::KeyValue::SubtreeProxy
   def is_a?(klass); end
   def kind_of?(klass); end
   def nil?; end
+end
+
+class I18n::Backend::LazyLoadable < ::I18n::Backend::Simple
+  def initialize(lazy_load: T.unsafe(nil)); end
+
+  def available_locales; end
+  def eager_load!; end
+  def initialized?; end
+  def lookup(locale, key, scope = T.unsafe(nil), options = T.unsafe(nil)); end
+  def reload!; end
+
+  protected
+
+  def init_translations; end
+  def initialized_locales; end
+
+  private
+
+  def assert_file_named_correctly!(file, translations); end
+  def filenames_for_current_locale; end
+  def lazy_load?; end
+  def load_translations_and_collect_file_errors(files); end
+end
+
+class I18n::Backend::LazyLoadable::FilenameIncorrect < ::StandardError
+  def initialize(file, expected_locale, unexpected_locales); end
+end
+
+class I18n::Backend::LocaleExtractor
+  class << self
+    def locale_from_path(path); end
+  end
 end
 
 module I18n::Backend::Memoize
@@ -462,6 +495,12 @@ end
 I18n::Gettext::PLURAL_SEPARATOR = T.let(T.unsafe(nil), String)
 I18n::INTERPOLATION_PATTERN = T.let(T.unsafe(nil), Regexp)
 
+class I18n::InvalidFilenames < ::I18n::ArgumentError
+  def initialize(file_errors); end
+end
+
+I18n::InvalidFilenames::NUMBER_OF_ERRORS_SHOWN = T.let(T.unsafe(nil), Integer)
+
 class I18n::InvalidLocale < ::I18n::ArgumentError
   def initialize(locale); end
 
@@ -652,6 +691,14 @@ class I18n::UnknownFileType < ::I18n::ArgumentError
 
   def filename; end
   def type; end
+end
+
+class I18n::UnsupportedMethod < ::I18n::ArgumentError
+  def initialize(method, backend_klass, msg); end
+
+  def backend_klass; end
+  def method; end
+  def msg; end
 end
 
 module I18n::Utils
