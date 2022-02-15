@@ -81,7 +81,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-retry-0.6.2/lib
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-sorbet-1.8.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-wait-0.0.9/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec_junit_formatter-0.5.1/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-ast-1.15.1/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-ast-1.15.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ruby-progressbar-1.11.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/unicode-display_width-2.1.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rubocop-1.25.1/lib"
