@@ -9,22 +9,38 @@ module SimpleCovJSONFormatter
     end
 
     def format
-      @result.files.each do |source_file|
-        formatted_result[:coverage][source_file.filename] =
-          format_source_file(source_file)
-      end
+      format_files
+      format_groups
 
       formatted_result
     end
 
     private
 
+    def format_files
+      @result.files.each do |source_file|
+        formatted_result[:coverage][source_file.filename] =
+          format_source_file(source_file)
+      end
+    end
+
+    def format_groups
+      @result.groups.each do |name, file_list|
+        formatted_result[:groups][name] = {
+          lines: {
+            covered_percent: file_list.covered_percent
+          }
+        }
+      end
+    end
+
     def formatted_result
       @formatted_result ||= {
         meta: {
           simplecov_version: SimpleCov::VERSION
         },
-        coverage: {}
+        coverage: {},
+        groups: {}
       }
     end
 
