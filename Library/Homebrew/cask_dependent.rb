@@ -18,7 +18,7 @@ class CaskDependent
   end
 
   def runtime_dependencies
-    deps.flat_map { |dep| [dep, dep.to_formula.runtime_dependencies] }.uniq
+    deps.flat_map { |dep| [dep, *dep.to_formula.runtime_dependencies] }.uniq
   end
 
   def deps
