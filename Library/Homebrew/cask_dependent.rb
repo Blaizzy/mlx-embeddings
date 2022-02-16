@@ -17,11 +17,8 @@ class CaskDependent
     @cask.full_name
   end
 
-  def runtime_dependencies(ignore_missing: false)
-    recursive_dependencies(ignore_missing: ignore_missing).reject do |dependency|
-      tags = dependency.tags
-      tags.include?(:build) || tags.include?(:test)
-    end
+  def runtime_dependencies
+    deps.flat_map { |dep| [dep, *dep.to_formula.runtime_dependencies] }.uniq
   end
 
   def deps
