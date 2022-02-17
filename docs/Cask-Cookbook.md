@@ -470,6 +470,7 @@ The available values for macOS releases are:
 | `:mojave`          | `10.14`
 | `:catalina`        | `10.15`
 | `:big_sur`         | `11.0`
+| `:monterey`        | `12.0`
 
 Only major releases are covered (version numbers containing a single dot). The symbol form is used for readability. The following are all valid ways to enumerate the exact macOS release requirements for a Cask:
 
