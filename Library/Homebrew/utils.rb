@@ -372,7 +372,9 @@ module Kernel
 
     ENV["DISPLAY"] = Homebrew::EnvConfig.display
 
-    safe_system(browser, *args)
+    with_env(DBUS_SESSION_BUS_ADDRESS: ENV["HOMEBREW_DBUS_SESSION_BUS_ADDRESS"]) do
+      safe_system(browser, *args)
+    end
   end
 
   # GZips the given paths, and returns the gzipped paths.
