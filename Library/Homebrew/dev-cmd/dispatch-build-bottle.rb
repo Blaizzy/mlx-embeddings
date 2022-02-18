@@ -47,10 +47,6 @@ module Homebrew
     ref = "master"
     workflow = args.workflow || "dispatch-build-bottle.yml"
 
-    # Ensure we dispatch the bottle in homebrew/homebrew-core
-    # TODO: remove when core taps are merged
-    repo.gsub!("linux", "home") unless args.tap
-
     runners = if (macos = args.macos&.compact_blank) && macos.present?
       macos.map do |element|
         # We accept runner name syntax (11-arm64) or bottle syntax (arm64_big_sur)
