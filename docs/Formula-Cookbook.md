@@ -822,7 +822,7 @@ If a service needs to run at certain times, use `run_type :cron` and specify a t
 ```ruby
   service do
     run [opt_bin/"beanstalkd", "test"]
-    run_type :interval
+    run_type :cron
     cron "5 * * * *"
   end
 ```
