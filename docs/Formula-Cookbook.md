@@ -761,44 +761,78 @@ For example, Ruby 1.9’s gems should be installed to `var/lib/ruby/` so that ge
 
 Another example would be configuration files that should not be overwritten on package upgrades. If after installation you find that to-be-persisted configuration files are not copied but instead *symlinked* into `/usr/local/etc/` from the Cellar, this can often be rectified by passing an appropriate argument to the package’s configure script. That argument will vary depending on a given package’s configure script and/or Makefile, but one example might be: `--sysconfdir=#{etc}`
 
-### launchd plist files
+### Service files
 
-Homebrew provides two formula DSL methods for launchd plist files:
-
-* [`plist_name`](https://rubydoc.brew.sh/Formula#plist_name-instance_method) will return e.g. `homebrew.mxcl.<formula>`
-* [`plist_path`](https://rubydoc.brew.sh/Formula#plist_path-instance_method) will return e.g. `/usr/local/Cellar/foo/0.1/homebrew.mxcl.foo.plist`
-
-There is two ways to add plists to a formula, so that [`brew services`](https://github.com/Homebrew/homebrew-services) can pick it up:
-1. If the formula already provides a plist file the formula can install it into the prefix like so.
+There are two ways to add plists and systemd services to a formula, so that [`brew services`](https://github.com/Homebrew/homebrew-services) can pick it up:
+1. If the formula already provides a file the formula can install it into the prefix like so.
 
 ```ruby
 prefix.install_symlink "file.plist" => "#{plist_name}.plist"
+prefix.install_symlink "file.service" => "#{service_name}.service"
 ```
 
-1. If the formula does not provide a plist you can add a plist using the following stanzas.
-This will define what the user can run manually instead of the launchd service.
-```ruby
-  plist_options manual: "#{HOMEBREW_PREFIX}/var/some/bin/stuff run"
+2. If the formula does not provide a service you can generate one using the following stanza.
+```rb
+service do
+  run bin/"script"
+end
 ```
 
-This provides the actual plist file, see [Apple's plist(5) man page](https://www.unix.com/man-page/mojave/5/plist/) for more information.
+#### Service block methods
+There are many more options you can set within such a block, and in this table you will find them all.
+The only required field in a `service` block is the `run` field to indicate what to run.
+
+| Method                  | Default      | macOS | Linux | Description                                                                              |
+|-------------------------|--------------|-------|-------|------------------------------------------------------------------------------------------|
+| `run`                   | -            |  yes  |  yes  | Command to execute, an array with arguments or a path                                    |
+| `run_type`              | `:immediate` |  yes  |  yes  | The type of service, `:immediate`, `:interval` or `:cron`                                |
+| `keep_alive`            | `false`      |  yes  |  yes  | If the service needs to keep the process running after exit                              |
+| `interval`              | -            |  yes  |  yes  | Controls the start interval, required for the `:interval` type                           |
+| `cron`                  | -            |  yes  |  yes  | Controls the trigger times, required for the `:cron` type                                |
+| `launch_only_once`      | false        |  yes  |  yes  | If the command should only run once                                                      |
+| `environment_variables` | -            |  yes  |  yes  | A hash of variables to set                                                               |
+| `working_dir`           | -            |  yes  |  yes  | The directory to operate from                                                            |
+| `root_dir`              | -            |  yes  |  yes  | The directory to use as a chroot for the process                                         |
+| `input_path`            | -            |  yes  |  yes  | Path to use as input for the process                                                     |
+| `log_path`              | -            |  yes  |  yes  | Path to write stdout to                                                                  |
+| `error_log_path`        | -            |  yes  |  yes  | Path to write stderr to                                                                  |
+| `restart_delay`         | -            |  yes  |  yes  | The delay before restarting a process                                                    |
+| `process_type`          | -            |  yes  | no-op | The type of process to manage, `:background`, `:standard`, `:interactive` or `:adaptive` |
+| `macos_legacy_timers`   | -            |  yes  | no-op | Timers created by launchd jobs are coalesced unless this is set                          |
+
+For services that start and keep running alive you can use the default `run_type :` like so:
 ```ruby
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-        <dict>
-          <key>Label</key>
-          <string>#{plist_name}</string>
-          <key>ProgramArguments</key>
-          <array>
-            <string>#{var}/some/bin/stuff</string>
-            <string>run</string>
-          </array>
-        </dict>
-      </plist>
-    EOS
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    keep_alive true
+    run_type :immediate # This should be omitted since it's the default
+  end
+```
+
+If a service needs to run on an interval, use `run_type :interval` and specify an interval:
+```ruby
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    run_type :interval
+    interval 500
+  end
+```
+
+If a service needs to run at certain times, use `run_type :cron` and specify a time with the crontab syntax:
+```ruby
+  service do
+    run [opt_bin/"beanstalkd", "test"]
+    run_type :cron
+    cron "5 * * * *"
+  end
+```
+
+For environment variables you can specify a hash. For the path there is the helper method `std_service_path_env`.
+This method will set the path to `#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin` so the service can find other `brew` commands.
+```rb
+  service do
+    run opt_bin/"beanstalkd"
+    environment_variables PATH: std_service_path_env
   end
 ```
 
