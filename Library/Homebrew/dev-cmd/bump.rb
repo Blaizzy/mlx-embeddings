@@ -201,13 +201,14 @@ module Homebrew
     version_info = Livecheck.latest_version(
       formula_or_cask,
       referenced_formula_or_cask: referenced_formula_or_cask,
-      json: true, full_name: false, verbose: false, debug: false
+      json: true, full_name: false, verbose: true, debug: false
     )
-    latest = version_info[:latest] if version_info.present?
+    return "unable to get versions" if version_info.blank?
 
-    return "unable to get versions" if latest.blank?
+    latest = version_info[:latest]
+    strategy = version_info[:meta][:strategy]
 
-    Version.new(latest)
+    [Version.new(latest), strategy]
   rescue => e
     "error: #{e}"
   end
@@ -233,7 +234,7 @@ module Homebrew
       version_name = "cask version   "
     end
 
-    livecheck_latest = livecheck_result(formula_or_cask)
+    livecheck_latest, livecheck_strategy = livecheck_result(formula_or_cask)
 
     repology_latest = if repositories.present?
       Repology.latest_version(repositories)
@@ -243,7 +244,7 @@ module Homebrew
 
     new_version = if livecheck_latest.is_a?(Version) && livecheck_latest > current_version
       livecheck_latest
-    elsif repology_latest.is_a?(Version) && repology_latest > current_version
+    elsif repology_latest.is_a?(Version) && repology_latest > current_version && livecheck_strategy != "GithubLatest"
       repology_latest
     end.presence
 
