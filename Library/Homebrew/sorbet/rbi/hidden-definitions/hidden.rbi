@@ -12,12 +12,6 @@ class AbstractDownloadStrategy
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class ActiveRecordColumnTypeHelper
-  extend ::T::Sig
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class ActiveSupport::Deprecation
   def self.deprecation_warning(*args, &block); end
 
@@ -1311,12 +1305,6 @@ class Dir
 end
 
 module DiskUsageExtension
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class DynamicMixinCompiler
-  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -3118,8 +3106,6 @@ module Kernel
   extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
-  def self.autoload(arg, arg1); end
-
   def self.fork(); end
 
   def self.gem(dep, *reqs); end
@@ -3401,8 +3387,6 @@ class MockExpectationError
 end
 
 class Module
-  def autoload_without_tapioca(arg, arg1); end
-
   def context(*a, &b); end
 
   def describe(*a, &b); end
@@ -6765,44 +6749,6 @@ class Tab
 end
 
 class Tap
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Tapioca::Compilers::Dsl::Base
-  extend ::T::Sig
-  extend ::T::Helpers
-  extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Tapioca::Compilers::Dsl::ParamHelper
-  extend ::T::Sig
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Tapioca::Compilers::DslCompiler
-  extend ::T::Sig
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Tapioca::Reflection
-  extend ::T::Sig
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Tapioca::Trackers::Autoload
-  extend ::T::Sig
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Tapioca::Trackers::Mixin
-  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
