@@ -269,6 +269,14 @@ module Homebrew
     EOS
 
     return unless args.open_pr?
+
+    if repology_latest > current_version &&
+       repology_latest > livecheck_latest &&
+       livecheck_strategy == "GithubLatest"
+      puts "#{title_name} was not bumped to the Repology version because that " \
+           "version is not the latest release on GitHub."
+    end
+
     return unless new_version
     return if pull_requests
 
