@@ -493,8 +493,10 @@ else
   # shellcheck disable=SC2154
   if [[ -n "${HOMEBREW_ON_DEBIAN7}" ]]
   then
-    # Special version for our debian 7 docker container used to build patchelf and binutils
+    # Special version for our debian 7 docker container used to build binutils
     HOMEBREW_MINIMUM_CURL_VERSION="7.25.0"
+    HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD="1"
+    HOMEBREW_FORCE_BREWED_CA_CERTIFICATES="1"
   else
     # Ensure the system Curl is a version that supports modern HTTPS certificates.
     HOMEBREW_MINIMUM_CURL_VERSION="7.41.0"

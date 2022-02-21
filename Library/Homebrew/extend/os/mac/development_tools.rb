@@ -10,7 +10,7 @@ class DevelopmentTools
 
     alias generic_locate locate
     undef installed?, default_compiler, curl_handles_most_https_certificates?,
-          ca_file_handles_most_https_certificates?, subversion_handles_most_https_certificates?
+          subversion_handles_most_https_certificates?
 
     sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
@@ -35,13 +35,6 @@ class DevelopmentTools
     sig { returns(Symbol) }
     def default_compiler
       :clang
-    end
-
-    sig { returns(T::Boolean) }
-    def ca_file_handles_most_https_certificates?
-      # The system CA file is too old for some modern HTTPS certificates on
-      # older macOS versions.
-      ENV["HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD"].nil?
     end
 
     sig { returns(T::Boolean) }
