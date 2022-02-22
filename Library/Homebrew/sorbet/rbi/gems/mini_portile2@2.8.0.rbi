@@ -75,6 +75,7 @@ class MiniPortile
   end
 end
 
+MiniPortile::DEFAULT_TIMEOUT = T.let(T.unsafe(nil), Integer)
 MiniPortile::KEYRING_NAME = T.let(T.unsafe(nil), String)
 MiniPortile::TAR_EXECUTABLES = T.let(T.unsafe(nil), Array)
 MiniPortile::VERSION = T.let(T.unsafe(nil), String)
