@@ -62,7 +62,7 @@ module Homebrew
   def bump_cask_pr
     args = bump_cask_pr_args.parse
 
-    odeprecated "`brew bump-cask-pr --write`", "`brew bump-cask-pr --write-only`" if args.write?
+    odisabled "`brew bump-cask-pr --write`", "`brew bump-cask-pr --write-only`" if args.write?
 
     # This will be run by `brew style` later so run it first to not start
     # spamming during normal output.

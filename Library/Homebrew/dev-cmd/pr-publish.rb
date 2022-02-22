@@ -16,10 +16,6 @@ module Homebrew
         Publish bottles for a pull request with GitHub Actions.
         Requires write access to the repository.
       EOS
-      switch "--autosquash",
-             description: "If supported on the target tap, automatically reformat and reword commits "\
-                          "in the pull request to our preferred format.",
-             replacement: "`--no-autosquash` to opt out"
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request "\
                           "to the preferred format, even if supported on the target tap."
