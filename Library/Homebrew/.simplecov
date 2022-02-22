@@ -9,6 +9,9 @@ SimpleCov.start do
   coverage_dir File.expand_path("../test/coverage", File.realpath(__FILE__))
   root File.expand_path("..", File.realpath(__FILE__))
 
+  # enables branch coverage as well as, the default, line coverage
+  enable_coverage :branch
+
   # We manage the result cache ourselves and the default of 10 minutes can be
   # too low (particularly on Travis CI), causing results from some integration
   # tests to be dropped. This causes random fluctuations in test coverage.
