@@ -100,7 +100,9 @@ class DevelopmentTools
 
     sig { returns(T::Boolean) }
     def ca_file_handles_most_https_certificates?
-      true
+      # The system CA file is too old for some modern HTTPS certificates on
+      # older OS versions.
+      ENV["HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD"].nil?
     end
 
     sig { returns(T::Boolean) }
