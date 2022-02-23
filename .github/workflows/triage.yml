@@ -14,7 +14,7 @@ on:
 
 permissions: {}
 
-concurrency: triage-${{ github.ref }}
+concurrency: triage-${{ github.head_ref }}
 
 jobs:
   review:
