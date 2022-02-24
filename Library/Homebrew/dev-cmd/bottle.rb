@@ -566,7 +566,6 @@ module Homebrew
         },
         "bottle"  => {
           "root_url" => bottle.root_url,
-          "prefix"   => prefix.to_s, # TODO: 3.3.0: deprecate this
           "cellar"   => bottle_cellar.to_s,
           "rebuild"  => bottle.rebuild,
           "date"     => Pathname(filename.to_s).mtime.strftime("%F"),
