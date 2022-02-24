@@ -6,8 +6,8 @@ module Cask
     extend Enumerable
 
     def self.each(&block)
-      # TODO: 3.4.0: odeprecated "`Enumerable` methods on `Cask::Cask`",
-      #              "`Cask::Cask.all` (but avoid looping over all casks, it's slow and insecure)"
+      odeprecated "`Enumerable` methods on `Cask::Cask`",
+                  "`Cask::Cask.all` (but avoid looping over all casks, it's slow and insecure)"
 
       return to_enum unless block
 
