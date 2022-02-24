@@ -331,9 +331,6 @@ class Reporter
 
       if paths.any? { |p| tap.cask_file?(p) }
         case status
-        when "A"
-          # Have a dedicated report array for new casks.
-          @report[:AC] << tap.formula_file_to_name(src)
         when "D"
           # Have a dedicated report array for deleted casks.
           @report[:DC] << tap.formula_file_to_name(src)
@@ -413,11 +410,13 @@ class Reporter
       renamed_formulae << [old_full_name, new_full_name]
     end
 
-    unless renamed_formulae.empty?
+    if renamed_formulae.present?
       @report[:A] -= renamed_formulae.map(&:last)
       @report[:D] -= renamed_formulae.map(&:first)
-      @report[:R] = renamed_formulae.to_a
     end
+
+    # Only needed additions for calculating deletions correctly based on renames.
+    @report.delete(:A)
 
     @report
   end
@@ -569,18 +568,18 @@ class ReporterHub
   delegate empty?: :@hash
 
   def dump(updated_formula_report: true)
-    # Key Legend: Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
+    if ENV["HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED"]
+      opoo "HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED can be unset, it is now the default!"
+    end
 
-    dump_formula_report :A, "New Formulae"
+    # Key Legend: Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
     if updated_formula_report
       dump_formula_report :M, "Updated Formulae"
     else
       updated = select_formula(:M).count
       ohai "Updated Formulae", "Updated #{updated} #{"formula".pluralize(updated)}." if updated.positive?
     end
-    dump_formula_report :R, "Renamed Formulae"
     dump_formula_report :D, "Deleted Formulae"
-    dump_formula_report :AC, "New Casks"
     if updated_formula_report
       dump_formula_report :MC, "Updated Casks"
     else
@@ -593,33 +592,13 @@ class ReporterHub
   private
 
   def dump_formula_report(key, title)
-    # TODO: 3.4.0: odisabled the old functionality and make this default
-    only_installed = Homebrew::EnvConfig.update_report_only_installed?
-
-    formulae = select_formula(key).sort.map do |name, new_name|
-      # Format list items of renamed formulae
+    formulae = select_formula(key).sort.map do |name, _new_name|
       case key
-      when :R
-        name = pretty_installed(name) if installed?(name)
-        new_name = pretty_installed(new_name) if installed?(new_name)
-        "#{name} -> #{new_name}" unless only_installed
-      when :A
-        name if !installed?(name) && !only_installed
-      when :AC
-        name.split("/").last if !cask_installed?(name) && !only_installed
       when :MC, :DC
         name = name.split("/").last
-        if cask_installed?(name)
-          pretty_installed(name)
-        elsif !only_installed
-          name
-        end
-      else
-        if installed?(name)
-          pretty_installed(name)
-        elsif !only_installed
-          name
-        end
+        pretty_installed(name) if cask_installed?(name)
+      when :M, :D
+        pretty_installed(name) if installed?(name)
       end
     end.compact
 
