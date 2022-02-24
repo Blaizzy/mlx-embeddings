@@ -64,6 +64,7 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
+  include OnOS # TODO: 3.4.0: odeprecate OnOS usage in instance methods.
   extend Forwardable
   extend Cachable
   extend Predicable
