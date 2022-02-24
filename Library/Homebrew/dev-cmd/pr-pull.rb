@@ -32,10 +32,6 @@ module Homebrew
       switch "--keep-old",
              description: "If the formula specifies a rebuild version, " \
                           "attempt to preserve its value in the generated DSL."
-      switch "--autosquash",
-             description: "Automatically reformat and reword commits in the pull request to our "\
-                          "preferred format.",
-             replacement: "`--no-autosquash` to opt out"
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request to our "\
                           "preferred format."

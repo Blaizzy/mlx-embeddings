@@ -26,10 +26,6 @@ module Homebrew
              description: "Pull requests do not require approval to be merged."
       switch "--publish",
              description: "Run `brew pr-publish` on matching pull requests."
-      switch "--autosquash",
-             description: "Instruct `brew pr-publish` to automatically reformat and reword commits "\
-                          "in the pull request to our preferred format.",
-             replacement: "`--no-autosquash` to opt out"
       switch "--no-autosquash",
              description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits "\
                           "in the pull request to the preferred format."

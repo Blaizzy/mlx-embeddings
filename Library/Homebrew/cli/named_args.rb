@@ -109,9 +109,6 @@ module Homebrew
               resolve_latest_keg(name)
             when :default_kegs
               resolve_default_keg(name)
-            when :keg
-              odisabled "`load_formula_or_cask` with `method: :keg`",
-                        "`load_formula_or_cask` with `method: :default_kegs`"
             when :kegs
               _, kegs = resolve_kegs(name)
               kegs
