@@ -2,18 +2,6 @@
 # frozen_string_literal: true
 
 class Formula
-  extend OnOS
-
-  def on_macos(&block)
-    odeprecated "`on_macos do` inside `Formula` methods", "`if OS.mac?`"
-    super
-  end
-
-  def on_linux(&block)
-    odeprecated "`on_linux do` inside `Formula` methods", "`if OS.linux?`"
-    super
-  end
-
   extend Enumerable
 
   def self.each(&_block)

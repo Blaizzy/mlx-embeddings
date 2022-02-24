@@ -64,6 +64,7 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
+  include OnOS
   extend Forwardable
   extend Cachable
   extend Predicable
