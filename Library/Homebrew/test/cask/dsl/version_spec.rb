@@ -170,22 +170,6 @@ describe Cask::DSL::Version, :cask do
                        "1.2.3,abc" => "abc"
     end
 
-    describe "#before_colon" do
-      include_examples "version expectations hash", :before_colon,
-                       "1.2.3"     => "1.2.3",
-                       "1.2.3:"    => "1.2.3",
-                       ":abc"      => "",
-                       "1.2.3:abc" => "1.2.3"
-    end
-
-    describe "#after_colon" do
-      include_examples "version expectations hash", :after_colon,
-                       "1.2.3"     => "",
-                       "1.2.3:"    => "",
-                       ":abc"      => "abc",
-                       "1.2.3:abc" => "abc"
-    end
-
     describe "#dots_to_hyphens" do
       include_examples "version expectations hash", :dots_to_hyphens,
                        "1.2.3_4-5" => "1-2-3_4-5"
