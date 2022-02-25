@@ -314,9 +314,10 @@ module Homebrew
       if upgradeable_dependents.blank?
         ohai "No outdated dependents to upgrade!" unless dry_run
       else
-        plural = "dependent".pluralize(upgradeable_dependents.count)
-        verb = dry_run ? "Would upgrade" : "Upgrading"
-        ohai "#{verb} #{upgradeable_dependents.count} #{plural}:"
+        dependent_plural = "dependent".pluralize(upgradeable_dependents.count)
+        formula_plural = "formula".pluralize(installed_formulae.count)
+        upgrade_verb = dry_run ? "Would upgrade" : "Upgrading"
+        ohai "#{upgrade_verb} #{upgradeable_dependents.count} #{dependent_plural} of upgraded #{formula_plural}:"
         Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
         formulae_upgrades = upgradeable_dependents.map do |f|
           name = f.full_specified_name
