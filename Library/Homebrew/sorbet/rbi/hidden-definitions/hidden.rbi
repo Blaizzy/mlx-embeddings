@@ -2626,6 +2626,8 @@ module Homebrew::EnvConfig
 
   def self.temp(); end
 
+  def self.update_report_only_installed?(); end
+
   def self.update_to_tag?(); end
 
   def self.verbose?(); end
