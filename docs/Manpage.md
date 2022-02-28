@@ -2144,6 +2144,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* macOS: `/private/tmp`, Linux: `/tmp`.
 
+- `HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED`
+  <br>If set, `brew update` only lists updates to installed software.
+
 - `HOMEBREW_UPDATE_TO_TAG`
   <br>If set, always use the latest stable tag (even if developer commands have been run).
 
