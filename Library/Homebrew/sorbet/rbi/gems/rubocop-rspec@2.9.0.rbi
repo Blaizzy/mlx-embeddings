@@ -112,6 +112,16 @@ end
 
 RuboCop::Cop::RSpec::Be::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::RSpec::BeEq < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def eq_type_with_identity?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::RSpec::BeEq::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::BeEq::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::RSpec::BeEql < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -121,6 +131,16 @@ end
 
 RuboCop::Cop::RSpec::BeEql::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::BeEql::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::RSpec::BeNil < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def nil_value_expectation?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::RSpec::BeNil::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::BeNil::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::RSpec::BeforeAfterAll < ::RuboCop::Cop::RSpec::Base
   def before_or_after_all(param0 = T.unsafe(nil)); end
