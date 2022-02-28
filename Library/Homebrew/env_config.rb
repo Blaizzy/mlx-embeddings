@@ -325,6 +325,10 @@ module Homebrew
         default_text: "macOS: `/private/tmp`, Linux: `/tmp`.",
         default:      HOMEBREW_DEFAULT_TEMP,
       },
+      HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED:     {
+        description: "If set, `brew update` only lists updates to installed software.",
+        boolean:     true,
+      },
       HOMEBREW_UPDATE_TO_TAG:                    {
         description: "If set, always use the latest stable tag (even if developer commands " \
                      "have been run).",
