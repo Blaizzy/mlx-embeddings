@@ -209,22 +209,21 @@ module Homebrew
     ohai bump_subject
   end
 
-  def autosquash!(original_commit, path: ".", reason: "", verbose: false, resolve: false)
-    path = Pathname(path).extend(GitRepositoryExtension)
-    original_head = path.git_head
+  def autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false)
+    original_head = tap.path.git_head
 
-    commits = Utils.safe_popen_read("git", "-C", path, "rev-list",
+    commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
 
     # Generate a bidirectional mapping of commits <=> formula files.
     files_to_commits = {}
     commits_to_files = commits.to_h do |commit|
-      files = Utils.safe_popen_read("git", "-C", path, "diff-tree", "--diff-filter=AMD",
+      files = Utils.safe_popen_read("git", "-C", tap.path, "diff-tree", "--diff-filter=AMD",
                                     "-r", "--name-only", "#{commit}^", commit).lines.map(&:strip)
       files.each do |file|
         files_to_commits[file] ||= []
         files_to_commits[file] << commit
-        next if %r{^Formula/.*\.rb$}.match?(file)
+        next if (tap.path/file).dirname == tap.formula_dir && File.extname(file) == ".rb"
 
         odie <<~EOS
           Autosquash can't squash commits that modify non-formula files.
@@ -236,7 +235,7 @@ module Homebrew
     end
 
     # Reset to state before cherry-picking.
-    safe_system "git", "-C", path, "reset", "--hard", original_commit
+    safe_system "git", "-C", tap.path, "reset", "--hard", original_commit
 
     # Iterate over every commit in the pull request series, but if we have to squash
     # multiple commits into one, ensure that we skip over commits we've already squashed.
@@ -247,13 +246,13 @@ module Homebrew
       files = commits_to_files[commit]
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
-        reword_formula_commit(commit, files.first, path: path, reason: reason, verbose: verbose, resolve: resolve)
+        reword_formula_commit(commit, files.first, path: tap.path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
-        squash_formula_commits(commits, file, path: path, reason: reason, verbose: verbose, resolve: resolve)
+        squash_formula_commits(commits, file, path: tap.path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
@@ -266,8 +265,8 @@ module Homebrew
     end
   rescue
     opoo "Autosquash encountered an error; resetting to original cherry-picked state at #{original_head}"
-    system "git", "-C", path, "reset", "--hard", original_head
-    system "git", "-C", path, "cherry-pick", "--abort"
+    system "git", "-C", tap.path, "reset", "--hard", original_head
+    system "git", "-C", tap.path, "cherry-pick", "--abort"
     raise
   end
 
@@ -367,7 +366,7 @@ module Homebrew
           unless args.no_commit?
             cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
             if !args.no_autosquash? && !args.dry_run?
-              autosquash!(original_commit, path: tap.path,
+              autosquash!(original_commit, tap: tap,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
             signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
