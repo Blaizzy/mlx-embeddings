@@ -223,11 +223,11 @@ describe Version do
 
   describe "#empty?" do
     it "returns true if version is empty" do
-      expect(described_class.create("").empty?).to eq(true)
+      expect(described_class.create("").empty?).to be(true)
     end
 
     it "returns false if version is not empty" do
-      expect(described_class.create("1.2.3").empty?).to eq(false)
+      expect(described_class.create("1.2.3").empty?).to be(false)
     end
   end
 

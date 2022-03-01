@@ -142,7 +142,7 @@ describe Utils::Git do
   describe "::path" do
     it "returns nil when git is not available" do
       stub_const("HOMEBREW_SHIMS_PATH", HOMEBREW_PREFIX/"bin/shim")
-      expect(described_class.path).to eq(nil)
+      expect(described_class.path).to be(nil)
     end
 
     it "returns path of git when git is available" do
@@ -153,7 +153,7 @@ describe Utils::Git do
   describe "::version" do
     it "returns nil when git is not available" do
       stub_const("HOMEBREW_SHIMS_PATH", HOMEBREW_PREFIX/"bin/shim")
-      expect(described_class.version).to eq(nil)
+      expect(described_class.version).to be(nil)
     end
 
     it "returns version of git when git is available" do

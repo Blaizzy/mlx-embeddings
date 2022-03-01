@@ -16,7 +16,7 @@ describe Language::Node do
       described_class.instance_variable_set(:@env_set, false)
       expect(described_class.setup_npm_environment).to be_nil
 
-      expect(described_class.instance_variable_get(:@env_set)).to eq(true)
+      expect(described_class.instance_variable_get(:@env_set)).to be(true)
       expect(ENV).not_to receive(:prepend_path)
       expect(described_class.setup_npm_environment).to be_nil
     end

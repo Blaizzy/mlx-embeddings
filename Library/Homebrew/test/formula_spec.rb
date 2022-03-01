@@ -719,7 +719,7 @@ describe Formula do
         url "https://brew.sh/test-1.0.tbz"
       end
 
-      expect(f.service).to eq(nil)
+      expect(f.service).to be(nil)
     end
 
     specify "service complicated" do
@@ -735,7 +735,7 @@ describe Formula do
         working_dir var
         keep_alive true
       end
-      expect(f.service).not_to eq(nil)
+      expect(f.service).not_to be(nil)
     end
 
     specify "service uses simple run" do
@@ -746,7 +746,7 @@ describe Formula do
         end
       end
 
-      expect(f.service).not_to eq(nil)
+      expect(f.service).not_to be(nil)
     end
 
     specify "service helpers return data" do

@@ -207,9 +207,9 @@ describe Homebrew::Completions do
 
       it "handles --[no]- options correctly" do
         options = described_class.command_options("audit")
-        expect(options.key?("--appcast")).to eq true
-        expect(options.key?("--no-appcast")).to eq true
-        expect(options["--appcast"] == options["--no-appcast"]).to eq true
+        expect(options.key?("--appcast")).to be true
+        expect(options.key?("--no-appcast")).to be true
+        expect(options["--appcast"] == options["--no-appcast"]).to be true
       end
 
       it "return an empty array if command is not found" do
@@ -228,15 +228,15 @@ describe Homebrew::Completions do
 
     describe ".command_gets_completions?" do
       it "returns true for a non-cask command with options" do
-        expect(described_class.command_gets_completions?("install")).to eq true
+        expect(described_class.command_gets_completions?("install")).to be true
       end
 
       it "returns false for a non-cask command with no options" do
-        expect(described_class.command_gets_completions?("help")).to eq false
+        expect(described_class.command_gets_completions?("help")).to be false
       end
 
       it "returns false for a cask command" do
-        expect(described_class.command_gets_completions?("cask install")).to eq false
+        expect(described_class.command_gets_completions?("cask install")).to be false
       end
     end
 

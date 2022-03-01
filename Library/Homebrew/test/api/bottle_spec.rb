@@ -53,12 +53,12 @@ describe Homebrew::API::Bottle do
   describe "::available?" do
     it "returns `true` if `fetch` succeeds" do
       allow(described_class).to receive(:fetch)
-      expect(described_class.available?("foo")).to eq true
+      expect(described_class.available?("foo")).to be true
     end
 
     it "returns `false` if `fetch` fails" do
       allow(described_class).to receive(:fetch).and_raise ArgumentError
-      expect(described_class.available?("foo")).to eq false
+      expect(described_class.available?("foo")).to be false
     end
   end
 
