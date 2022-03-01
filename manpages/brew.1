@@ -2441,11 +2441,11 @@ Manage background services with macOS\' \fBlaunchctl\fR(1) daemon manager\.
 If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boot)\. Otherwise, operate on \fB~/Library/LaunchAgents\fR (started at login)\.
 .
 .P
-[\fBsudo\fR] \fBbrew services\fR [\fBlist\fR]
-    List all managed services for the current user (or root)\.
+[\fBsudo\fR] \fBbrew services\fR [\fBlist\fR] (\fB\-\-json\fR)
+    List information about all managed services for the current user (or root)\.
 .
 .P
-[\fBsudo\fR] \fBbrew services info\fR (\fIformula\fR|\fB\-\-all\fR)
+[\fBsudo\fR] \fBbrew services info\fR (\fIformula\fR|\fB\-\-all\fR|\fB\-\-json\fR)
     List all managed services for the current user (or root)\.
 .
 .P

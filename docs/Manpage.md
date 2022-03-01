@@ -1735,10 +1735,10 @@ Manage background services with macOS' `launchctl`(1) daemon manager.
 If `sudo` is passed, operate on `/Library/LaunchDaemons` (started at boot).
 Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 
-[`sudo`] `brew services` [`list`]
-<br>List all managed services for the current user (or root).
+[`sudo`] `brew services` [`list`] (`--json`)
+<br>List information about all managed services for the current user (or root).
 
-[`sudo`] `brew services info` (*`formula`*|`--all`)
+[`sudo`] `brew services info` (*`formula`*|`--all`|`--json`)
 <br>List all managed services for the current user (or root).
 
 [`sudo`] `brew services run` (*`formula`*|`--all`)
