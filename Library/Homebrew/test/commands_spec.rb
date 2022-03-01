@@ -70,7 +70,7 @@ describe Commands do
     specify "returns the path for an internal command" do
       expect(described_class.path("rbcmd")).to eq(HOMEBREW_LIBRARY_PATH/"cmd/rbcmd.rb")
       expect(described_class.path("shcmd")).to eq(HOMEBREW_LIBRARY_PATH/"cmd/shcmd.sh")
-      expect(described_class.path("idontexist1234")).to be nil
+      expect(described_class.path("idontexist1234")).to be_nil
     end
 
     specify "returns the path for an internal developer-command" do

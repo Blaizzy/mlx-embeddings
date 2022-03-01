@@ -40,7 +40,7 @@ describe Formula do
         head "foo"
       end
 
-      expect(f.stable).to be nil
+      expect(f.stable).to be_nil
       expect(f).to be_head
     end
 

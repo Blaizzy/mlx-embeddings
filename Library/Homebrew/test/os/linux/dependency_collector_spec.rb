@@ -35,19 +35,19 @@ describe DependencyCollector do
       it "does not create a resource dependency from a '.xz' URL" do
         resource.url("https://brew.sh/foo.xz")
         allow_any_instance_of(Object).to receive(:which).with("xz").and_return(Pathname.new("foo"))
-        expect(collector.add(resource)).to be nil
+        expect(collector.add(resource)).to be_nil
       end
 
       it "does not create a resource dependency from a '.zip' URL" do
         resource.url("https://brew.sh/foo.zip")
         allow_any_instance_of(Object).to receive(:which).with("unzip").and_return(Pathname.new("foo"))
-        expect(collector.add(resource)).to be nil
+        expect(collector.add(resource)).to be_nil
       end
 
       it "does not create a resource dependency from a '.bz2' URL" do
         resource.url("https://brew.sh/foo.tar.bz2")
         allow_any_instance_of(Object).to receive(:which).with("bzip2").and_return(Pathname.new("foo"))
-        expect(collector.add(resource)).to be nil
+        expect(collector.add(resource)).to be_nil
       end
     end
   end

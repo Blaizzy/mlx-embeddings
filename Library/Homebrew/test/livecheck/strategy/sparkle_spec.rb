@@ -68,7 +68,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     let(:item_from_appcast_xml) { sparkle.item_from_content(appcast_xml) }
 
     it "returns nil if content is blank" do
-      expect(sparkle.item_from_content("")).to be nil
+      expect(sparkle.item_from_content("")).to be_nil
     end
 
     it "returns an Item when given XML data" do

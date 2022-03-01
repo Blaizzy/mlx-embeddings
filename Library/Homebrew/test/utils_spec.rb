@@ -132,7 +132,7 @@ describe "globally-scoped helper methods" do
     end
 
     it "skips non-executables" do
-      expect(which(File.basename(cmd), File.dirname(cmd))).to be nil
+      expect(which(File.basename(cmd), File.dirname(cmd))).to be_nil
     end
 
     it "skips malformed path and doesn't fail" do

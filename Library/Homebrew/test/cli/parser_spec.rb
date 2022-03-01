@@ -41,7 +41,7 @@ describe Homebrew::CLI::Parser do
 
       it "does not set the positive name if the positive flag is not passed" do
         args = parser.parse([])
-        expect(args.positive?).to be nil
+        expect(args.positive?).to be_nil
       end
     end
 

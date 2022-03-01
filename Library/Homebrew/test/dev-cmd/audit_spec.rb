@@ -46,7 +46,7 @@ module Homebrew
       expect(ft).to have_trailing_newline
 
       expect(ft =~ /\burl\b/).to be_truthy
-      expect(ft.line_number(/desc/)).to be nil
+      expect(ft.line_number(/desc/)).to be_nil
       expect(ft.line_number(/\burl\b/)).to eq(2)
       expect(ft).to include("Valid")
     end

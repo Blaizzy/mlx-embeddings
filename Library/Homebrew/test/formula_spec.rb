@@ -38,9 +38,9 @@ describe Formula do
       expect(f.full_name).to eq(name)
       expect(f.full_specified_name).to eq(name)
       expect(f.path).to eq(path)
-      expect(f.alias_path).to be nil
-      expect(f.alias_name).to be nil
-      expect(f.full_alias_name).to be nil
+      expect(f.alias_path).to be_nil
+      expect(f.alias_name).to be_nil
+      expect(f.full_alias_name).to be_nil
       expect(f.specified_path).to eq(path)
       expect { klass.new }.to raise_error(ArgumentError)
     end
@@ -70,9 +70,9 @@ describe Formula do
         expect(f.full_name).to eq(full_name)
         expect(f.full_specified_name).to eq(full_name)
         expect(f.path).to eq(path)
-        expect(f.alias_path).to be nil
-        expect(f.alias_name).to be nil
-        expect(f.full_alias_name).to be nil
+        expect(f.alias_path).to be_nil
+        expect(f.alias_name).to be_nil
+        expect(f.full_alias_name).to be_nil
         expect(f.specified_path).to eq(path)
         expect { klass.new }.to raise_error(ArgumentError)
       end
@@ -175,9 +175,9 @@ describe Formula do
     ]
     build_values_with_no_installed_alias.each do |build|
       f.build = build
-      expect(f.installed_alias_path).to be nil
-      expect(f.installed_alias_name).to be nil
-      expect(f.full_installed_alias_name).to be nil
+      expect(f.installed_alias_path).to be_nil
+      expect(f.installed_alias_name).to be_nil
+      expect(f.full_installed_alias_name).to be_nil
       expect(f.installed_specified_name).to eq(f.name)
       expect(f.full_installed_specified_name).to eq(f.name)
     end
@@ -210,9 +210,9 @@ describe Formula do
     ]
     build_values_with_no_installed_alias.each do |build|
       f.build = build
-      expect(f.installed_alias_path).to be nil
-      expect(f.installed_alias_name).to be nil
-      expect(f.full_installed_alias_name).to be nil
+      expect(f.installed_alias_path).to be_nil
+      expect(f.installed_alias_name).to be_nil
+      expect(f.full_installed_alias_name).to be_nil
       expect(f.installed_specified_name).to eq(f.name)
       expect(f.full_installed_specified_name).to eq(f.full_name)
     end
@@ -401,7 +401,7 @@ describe Formula do
   end
 
   specify "#<=>" do
-    expect(Testball.new <=> Object.new).to be nil
+    expect(Testball.new <=> Object.new).to be_nil
   end
 
   describe "#installed_alias_path" do
@@ -414,7 +414,7 @@ describe Formula do
       f.build = BuildOptions.new(Options.new, f.options)
 
       expect(f.alias_path).to eq(alias_path)
-      expect(f.installed_alias_path).to be nil
+      expect(f.installed_alias_path).to be_nil
     end
 
     example "alias paths with tab with non alias source path" do
@@ -427,7 +427,7 @@ describe Formula do
       f.build = Tab.new(source: { "path" => source_path.to_s })
 
       expect(f.alias_path).to eq(alias_path)
-      expect(f.installed_alias_path).to be nil
+      expect(f.installed_alias_path).to be_nil
     end
 
     example "alias paths with tab with alias source path" do
@@ -580,7 +580,7 @@ describe Formula do
       url "foo-1.0"
     end
 
-    expect(f.head).to be nil
+    expect(f.head).to be_nil
   end
 
   it "honors attributes declared before specs" do
@@ -1132,7 +1132,7 @@ describe Formula do
     specify "alias changes when not installed with alias" do
       tab.source["path"] = Formulary.core_path(f.name).to_s
 
-      expect(f.current_installed_alias_target).to be nil
+      expect(f.current_installed_alias_target).to be_nil
       expect(f.latest_formula).to eq(f)
       expect(f).not_to have_changed_installed_alias_target
       expect(f).not_to supersede_an_installed_formula
@@ -1526,7 +1526,7 @@ describe Formula do
     end
 
     it "returns nil when not installed" do
-      expect(f.any_installed_version).to be nil
+      expect(f.any_installed_version).to be_nil
     end
 
     it "returns package version when installed" do

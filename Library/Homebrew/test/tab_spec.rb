@@ -64,20 +64,20 @@ describe Tab do
     expect(tab.homebrew_version).to eq(HOMEBREW_VERSION)
     expect(tab.unused_options).to be_empty
     expect(tab.used_options).to be_empty
-    expect(tab.changed_files).to be nil
+    expect(tab.changed_files).to be_nil
     expect(tab).not_to be_built_as_bottle
     expect(tab).not_to be_poured_from_bottle
     expect(tab).to be_stable
     expect(tab).not_to be_head
-    expect(tab.tap).to be nil
-    expect(tab.time).to be nil
-    expect(tab.HEAD).to be nil
-    expect(tab.runtime_dependencies).to be nil
-    expect(tab.stable_version).to be nil
-    expect(tab.head_version).to be nil
+    expect(tab.tap).to be_nil
+    expect(tab.time).to be_nil
+    expect(tab.HEAD).to be_nil
+    expect(tab.runtime_dependencies).to be_nil
+    expect(tab.stable_version).to be_nil
+    expect(tab.head_version).to be_nil
     expect(tab.cxxstdlib.compiler).to eq(DevelopmentTools.default_compiler)
-    expect(tab.cxxstdlib.type).to be nil
-    expect(tab.source["path"]).to be nil
+    expect(tab.cxxstdlib.type).to be_nil
+    expect(tab.source["path"]).to be_nil
   end
 
   specify "#include?" do
@@ -114,25 +114,25 @@ describe Tab do
 
   specify "#runtime_dependencies" do
     tab = described_class.new
-    expect(tab.runtime_dependencies).to be nil
+    expect(tab.runtime_dependencies).to be_nil
 
     tab.homebrew_version = "1.1.6"
-    expect(tab.runtime_dependencies).to be nil
+    expect(tab.runtime_dependencies).to be_nil
 
     tab.runtime_dependencies = []
-    expect(tab.runtime_dependencies).not_to be nil
+    expect(tab.runtime_dependencies).not_to be_nil
 
     tab.homebrew_version = "1.1.5"
-    expect(tab.runtime_dependencies).to be nil
+    expect(tab.runtime_dependencies).to be_nil
 
     tab.homebrew_version = "1.1.7"
-    expect(tab.runtime_dependencies).not_to be nil
+    expect(tab.runtime_dependencies).not_to be_nil
 
     tab.homebrew_version = "1.1.10"
-    expect(tab.runtime_dependencies).not_to be nil
+    expect(tab.runtime_dependencies).not_to be_nil
 
     tab.runtime_dependencies = [{ "full_name" => "foo", "version" => "1.0" }]
-    expect(tab.runtime_dependencies).not_to be nil
+    expect(tab.runtime_dependencies).not_to be_nil
   end
 
   specify "::runtime_deps_hash" do
@@ -232,7 +232,7 @@ describe Tab do
       expect(tab.HEAD).to eq(TEST_SHA1)
       expect(tab.cxxstdlib.compiler).to eq(:clang)
       expect(tab.cxxstdlib.type).to eq(:libcxx)
-      expect(tab.runtime_dependencies).to be nil
+      expect(tab.runtime_dependencies).to be_nil
     end
 
     it "raises a parse exception message including the Tab filename" do
@@ -331,7 +331,7 @@ describe Tab do
       f.prefix.mkpath
 
       tab = described_class.for_formula(f)
-      expect(tab.tabfile).to be nil
+      expect(tab.tabfile).to be_nil
     end
 
     it "can create a Tab for a Formula with multiple Kegs" do
