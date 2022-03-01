@@ -6,11 +6,11 @@ require "utils/spdx"
 describe SPDX do
   describe ".license_data" do
     it "has the license list version" do
-      expect(described_class.license_data["licenseListVersion"]).not_to be(nil)
+      expect(described_class.license_data["licenseListVersion"]).not_to be_nil
     end
 
     it "has the release date" do
-      expect(described_class.license_data["releaseDate"]).not_to be(nil)
+      expect(described_class.license_data["releaseDate"]).not_to be_nil
     end
 
     it "has licenses" do
@@ -20,11 +20,11 @@ describe SPDX do
 
   describe ".exception_data" do
     it "has the license list version" do
-      expect(described_class.exception_data["licenseListVersion"]).not_to be(nil)
+      expect(described_class.exception_data["licenseListVersion"]).not_to be_nil
     end
 
     it "has the release date" do
-      expect(described_class.exception_data["releaseDate"]).not_to be(nil)
+      expect(described_class.exception_data["releaseDate"]).not_to be_nil
     end
 
     it "has exceptions" do
