@@ -180,7 +180,7 @@ describe Requirement do
       let(:klass) { Class.new(described_class) }
 
       it "returns nil" do
-        expect(requirement.modify_build_environment).to be nil
+        expect(requirement.modify_build_environment).to be_nil
       end
     end
   end

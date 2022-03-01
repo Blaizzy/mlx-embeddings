@@ -21,12 +21,12 @@ describe Utils::Bottles::Collector do
     end
 
     it "returns nil if empty" do
-      expect(collector.specification_for(Utils::Bottles::Tag.from_symbol(:foo))).to be nil
+      expect(collector.specification_for(Utils::Bottles::Tag.from_symbol(:foo))).to be_nil
     end
 
     it "returns nil when there is no match" do
       collector.add(catalina, checksum: Checksum.new("bar_checksum"), cellar: "bar_cellar")
-      expect(collector.specification_for(Utils::Bottles::Tag.from_symbol(:foo))).to be nil
+      expect(collector.specification_for(Utils::Bottles::Tag.from_symbol(:foo))).to be_nil
     end
 
     it "uses older tags when needed", :needs_macos do

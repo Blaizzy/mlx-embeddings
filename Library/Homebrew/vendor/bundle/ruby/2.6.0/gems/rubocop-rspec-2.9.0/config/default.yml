@@ -142,11 +142,23 @@ RSpec/Be:
   StyleGuide: https://rspec.rubystyle.guide/#be-matcher
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Be
 
+RSpec/BeEq:
+  Description: Check for expectations where `be(...)` can replace `eq(...)`.
+  Enabled: pending
+  VersionAdded: 2.9.0
+  Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/BeEq
+
 RSpec/BeEql:
   Description: Check for expectations where `be(...)` can replace `eql(...)`.
   Enabled: true
   VersionAdded: '1.7'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/BeEql
+
+RSpec/BeNil:
+  Description: Check that `be_nil` is used instead of `be(nil)`.
+  Enabled: pending
+  VersionAdded: 2.9.0
+  Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/BeNil
 
 RSpec/BeforeAfterAll:
   Description: Check that before/after(:all) isn't being used.

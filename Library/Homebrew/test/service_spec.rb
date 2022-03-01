@@ -412,7 +412,7 @@ describe Homebrew::Service do
         run_type :immediate
       end
 
-      expect(f.service.timed?).to eq(false)
+      expect(f.service.timed?).to be(false)
     end
 
     it "returns true for interval" do
@@ -421,7 +421,7 @@ describe Homebrew::Service do
         run_type :interval
       end
 
-      expect(f.service.timed?).to eq(true)
+      expect(f.service.timed?).to be(true)
     end
   end
 

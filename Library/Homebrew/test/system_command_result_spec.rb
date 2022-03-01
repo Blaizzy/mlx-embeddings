@@ -170,7 +170,7 @@ describe SystemCommand::Result do
       let(:stdout) { "" }
 
       it "returns nil" do
-        expect(result_plist).to be nil
+        expect(result_plist).to be_nil
       end
     end
   end

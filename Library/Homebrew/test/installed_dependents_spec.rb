@@ -81,7 +81,7 @@ describe InstalledDependents do
 
     specify "no dependencies anywhere" do
       dependencies nil
-      expect(described_class.find_some_installed_dependents([keg])).to be nil
+      expect(described_class.find_some_installed_dependents([keg])).to be_nil
     end
 
     specify "missing Formula dependency" do
@@ -93,7 +93,7 @@ describe InstalledDependents do
     specify "uninstalling dependent and dependency" do
       dependencies nil
       Formula["bar"].class.depends_on "foo"
-      expect(described_class.find_some_installed_dependents([keg, dependent])).to be nil
+      expect(described_class.find_some_installed_dependents([keg, dependent])).to be_nil
     end
 
     specify "renamed dependency" do
@@ -112,7 +112,7 @@ describe InstalledDependents do
 
     specify "empty dependencies in Tab" do
       dependencies []
-      expect(described_class.find_some_installed_dependents([keg])).to be nil
+      expect(described_class.find_some_installed_dependents([keg])).to be_nil
     end
 
     specify "same name but different version in Tab" do
@@ -123,7 +123,7 @@ describe InstalledDependents do
     specify "different name and same version in Tab" do
       stub_formula_name("baz")
       dependencies [{ "full_name" => "baz", "version" => keg.version.to_s }]
-      expect(described_class.find_some_installed_dependents([keg])).to be nil
+      expect(described_class.find_some_installed_dependents([keg])).to be_nil
     end
 
     specify "same name and version in Tab" do
@@ -140,7 +140,7 @@ describe InstalledDependents do
     specify "non-opt-linked" do
       keg.remove_opt_record
       dependencies [{ "full_name" => "foo", "version" => "1.0" }]
-      expect(described_class.find_some_installed_dependents([keg])).to be nil
+      expect(described_class.find_some_installed_dependents([keg])).to be_nil
     end
 
     specify "keg-only" do
@@ -173,7 +173,7 @@ describe InstalledDependents do
     specify "identify dependent casks" do
       setup_test_cask("qux", "1.0.0", "foo")
       dependents = described_class.find_some_installed_dependents([keg]).last
-      expect(dependents.include?("qux")).to eq(true)
+      expect(dependents.include?("qux")).to be(true)
     end
   end
 end

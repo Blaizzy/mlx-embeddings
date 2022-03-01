@@ -125,7 +125,7 @@ describe PATH do
     end
 
     it "returns nil instead of an empty #{described_class}" do
-      expect(described_class.new.existing).to be nil
+      expect(described_class.new.existing).to be_nil
     end
   end
 end

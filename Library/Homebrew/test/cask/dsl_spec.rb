@@ -342,7 +342,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-depends-on-formula" }
 
       it "allows depends_on formula to be specified" do
-        expect(cask.depends_on.formula).not_to be nil
+        expect(cask.depends_on.formula).not_to be_nil
       end
     end
 
@@ -350,7 +350,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-depends-on-formula-multiple" }
 
       it "allows multiple depends_on formula to be specified" do
-        expect(cask.depends_on.formula).not_to be nil
+        expect(cask.depends_on.formula).not_to be_nil
       end
     end
   end
@@ -360,7 +360,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-depends-on-cask" }
 
       it "is allowed" do
-        expect(cask.depends_on.cask).not_to be nil
+        expect(cask.depends_on.cask).not_to be_nil
       end
     end
 
@@ -368,7 +368,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-depends-on-cask-multiple" }
 
       it "is allowed" do
-        expect(cask.depends_on.cask).not_to be nil
+        expect(cask.depends_on.cask).not_to be_nil
       end
     end
   end
@@ -396,7 +396,7 @@ describe Cask::DSL, :cask do
       let(:token) { "with-depends-on-arch" }
 
       it "is allowed to be specified" do
-        expect(cask.depends_on.arch).not_to be nil
+        expect(cask.depends_on.arch).not_to be_nil
       end
     end
 

@@ -458,11 +458,11 @@ describe Homebrew::Livecheck::SkipConditions do
     end
 
     it "returns an empty hash for a non-skippable formula" do
-      expect(skip_conditions.referenced_skip_information(formulae[:basic], original_name)).to eq(nil)
+      expect(skip_conditions.referenced_skip_information(formulae[:basic], original_name)).to be_nil
     end
 
     it "returns an empty hash for a non-skippable cask" do
-      expect(skip_conditions.referenced_skip_information(casks[:basic], original_name)).to eq(nil)
+      expect(skip_conditions.referenced_skip_information(casks[:basic], original_name)).to be_nil
     end
   end
 

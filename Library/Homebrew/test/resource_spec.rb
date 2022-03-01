@@ -85,7 +85,7 @@ describe Resource do
     end
 
     it "returns nil if unset" do
-      expect(resource.version).to be nil
+      expect(resource.version).to be_nil
     end
   end
 
@@ -103,7 +103,7 @@ describe Resource do
 
   describe "#checksum" do
     it "returns nil if unset" do
-      expect(resource.checksum).to be nil
+      expect(resource.checksum).to be_nil
     end
 
     it "returns the checksum set with #sha256" do

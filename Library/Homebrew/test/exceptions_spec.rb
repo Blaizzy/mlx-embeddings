@@ -47,12 +47,12 @@ describe "Exception" do
 
     describe "#dependent_s" do
       it "returns nil if there is no dependent" do
-        expect(error.dependent_s).to be nil
+        expect(error.dependent_s).to be_nil
       end
 
       it "returns nil if it depended on by itself" do
         error.dependent = "foo"
-        expect(error.dependent_s).to be nil
+        expect(error.dependent_s).to be_nil
       end
 
       it "returns a string if there is a dependent" do

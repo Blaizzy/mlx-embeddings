@@ -47,7 +47,7 @@ describe Homebrew::Style do
 
       style_result = described_class.check_style_and_print([target_file])
 
-      expect(style_result).to eq true
+      expect(style_result).to be true
     end
   end
 end

@@ -35,13 +35,13 @@ describe Version do
 
     specify "comparison returns nil for non-token" do
       v = described_class.create("1")
-      expect(v <=> Object.new).to be nil
+      expect(v <=> Object.new).to be_nil
       expect { v > Object.new }.to raise_error(ArgumentError)
     end
 
     describe "#to_str" do
       it "implicitly converts token to string" do
-        expect(String.try_convert(described_class.new("foo"))).not_to be nil
+        expect(String.try_convert(described_class.new("foo"))).not_to be_nil
       end
     end
   end
@@ -211,7 +211,7 @@ describe Version do
 
   specify "comparison returns nil for non-version" do
     v = described_class.create("1.0")
-    expect(v <=> Object.new).to be nil
+    expect(v <=> Object.new).to be_nil
     expect { v > Object.new }.to raise_error(ArgumentError)
   end
 
@@ -223,11 +223,11 @@ describe Version do
 
   describe "#empty?" do
     it "returns true if version is empty" do
-      expect(described_class.create("").empty?).to eq(true)
+      expect(described_class.create("").empty?).to be(true)
     end
 
     it "returns false if version is not empty" do
-      expect(described_class.create("1.2.3").empty?).to eq(false)
+      expect(described_class.create("1.2.3").empty?).to be(false)
     end
   end
 
@@ -271,7 +271,7 @@ describe Version do
 
     specify "HEAD without commit" do
       v = described_class.create("HEAD")
-      expect(v.commit).to be nil
+      expect(v.commit).to be_nil
       expect(v.to_str).to eq("HEAD")
     end
   end
@@ -326,7 +326,7 @@ describe Version do
 
   describe "#minor" do
     it "returns minor version token" do
-      expect(described_class.create("1").minor).to be nil
+      expect(described_class.create("1").minor).to be_nil
       expect(described_class.create("1.2").minor).to be == Version::Token.create("2")
       expect(described_class.create("1.2.3").minor).to be == Version::Token.create("2")
       expect(described_class.create("1.2.3alpha").minor).to be == Version::Token.create("2")
@@ -340,8 +340,8 @@ describe Version do
 
   describe "#patch" do
     it "returns patch version token" do
-      expect(described_class.create("1").patch).to be nil
-      expect(described_class.create("1.2").patch).to be nil
+      expect(described_class.create("1").patch).to be_nil
+      expect(described_class.create("1.2").patch).to be_nil
       expect(described_class.create("1.2.3").patch).to be == Version::Token.create("3")
       expect(described_class.create("1.2.3alpha").patch).to be == Version::Token.create("3")
       expect(described_class.create("1.2.3alpha4").patch).to be == Version::Token.create("3")

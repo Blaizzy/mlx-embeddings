@@ -56,9 +56,9 @@ describe Utils::Shell do
     end
 
     it "returns nil when input is invalid" do
-      expect(described_class.from_path("")).to be nil
-      expect(described_class.from_path("@@@@@@")).to be nil
-      expect(described_class.from_path("invalid_shell-4.2")).to be nil
+      expect(described_class.from_path("")).to be_nil
+      expect(described_class.from_path("@@@@@@")).to be_nil
+      expect(described_class.from_path("invalid_shell-4.2")).to be_nil
     end
   end
 

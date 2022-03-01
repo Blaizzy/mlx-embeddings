@@ -18,6 +18,6 @@ describe Checksum do
 
     it { is_expected.to eq(other) }
     it { is_expected.not_to eq(other_reversed) }
-    it { is_expected.not_to eq(nil) }
+    it { is_expected.not_to be_nil }
   end
 end

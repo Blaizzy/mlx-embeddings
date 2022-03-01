@@ -56,12 +56,12 @@ describe PkgVersion do
 
   describe "#<=>" do
     it "returns nil if the comparison fails" do
-      expect(described_class.new(Version.create("1.0"), 0) <=> Object.new).to be nil
-      expect(Object.new <=> described_class.new(Version.create("1.0"), 0)).to be nil
-      expect(Object.new <=> described_class.new(Version.create("1.0"), 0)).to be nil
-      expect(described_class.new(Version.create("1.0"), 0) <=> nil).to be nil
+      expect(described_class.new(Version.create("1.0"), 0) <=> Object.new).to be_nil
+      expect(Object.new <=> described_class.new(Version.create("1.0"), 0)).to be_nil
+      expect(Object.new <=> described_class.new(Version.create("1.0"), 0)).to be_nil
+      expect(described_class.new(Version.create("1.0"), 0) <=> nil).to be_nil
       # This one used to fail due to dereferencing a null `self`
-      expect(described_class.new(nil, 0) <=> described_class.new(Version.create("1.0"), 0)).to be nil
+      expect(described_class.new(nil, 0) <=> described_class.new(Version.create("1.0"), 0)).to be_nil
     end
   end
 

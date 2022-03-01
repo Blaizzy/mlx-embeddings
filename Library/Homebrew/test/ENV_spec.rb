@@ -11,7 +11,7 @@ describe "ENV" do
 
     it "supports switching compilers" do
       subject.clang
-      expect(subject["LD"]).to be nil
+      expect(subject["LD"]).to be_nil
       expect(subject["CC"]).to eq(subject["OBJC"])
     end
 
@@ -23,7 +23,7 @@ describe "ENV" do
           subject["foo"] = "bar"
         end
 
-        expect(subject["foo"]).to be nil
+        expect(subject["foo"]).to be_nil
         expect(subject).to eq(before)
       end
 
@@ -37,7 +37,7 @@ describe "ENV" do
           end
         }.to raise_error(StandardError)
 
-        expect(subject["foo"]).to be nil
+        expect(subject["foo"]).to be_nil
         expect(subject).to eq(before)
       end
 
@@ -139,7 +139,7 @@ describe "ENV" do
       subject["MAKEFLAGS"] = "-j4"
 
       subject.deparallelize do
-        expect(subject["MAKEFLAGS"]).to be nil
+        expect(subject["MAKEFLAGS"]).to be_nil
       end
 
       expect(subject["MAKEFLAGS"]).to eq("-j4")

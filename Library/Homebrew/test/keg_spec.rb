@@ -55,7 +55,7 @@ describe Keg do
   end
 
   specify "#oldname_opt_record" do
-    expect(keg.oldname_opt_record).to be nil
+    expect(keg.oldname_opt_record).to be_nil
     oldname_opt_record = HOMEBREW_PREFIX/"opt/oldfoo"
     oldname_opt_record.make_relative_symlink(HOMEBREW_CELLAR/"foo/1.0")
     expect(keg.oldname_opt_record).to eq(oldname_opt_record)

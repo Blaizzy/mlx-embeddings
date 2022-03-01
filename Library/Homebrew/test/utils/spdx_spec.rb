@@ -6,11 +6,11 @@ require "utils/spdx"
 describe SPDX do
   describe ".license_data" do
     it "has the license list version" do
-      expect(described_class.license_data["licenseListVersion"]).not_to eq(nil)
+      expect(described_class.license_data["licenseListVersion"]).not_to be_nil
     end
 
     it "has the release date" do
-      expect(described_class.license_data["releaseDate"]).not_to eq(nil)
+      expect(described_class.license_data["releaseDate"]).not_to be_nil
     end
 
     it "has licenses" do
@@ -20,11 +20,11 @@ describe SPDX do
 
   describe ".exception_data" do
     it "has the license list version" do
-      expect(described_class.exception_data["licenseListVersion"]).not_to eq(nil)
+      expect(described_class.exception_data["licenseListVersion"]).not_to be_nil
     end
 
     it "has the release date" do
-      expect(described_class.exception_data["releaseDate"]).not_to eq(nil)
+      expect(described_class.exception_data["releaseDate"]).not_to be_nil
     end
 
     it "has exceptions" do
@@ -99,75 +99,75 @@ describe SPDX do
 
   describe ".valid_license?" do
     it "returns true for valid license identifier" do
-      expect(described_class.valid_license?("MIT")).to eq true
+      expect(described_class.valid_license?("MIT")).to be true
     end
 
     it "returns false for invalid license identifier" do
-      expect(described_class.valid_license?("foo")).to eq false
+      expect(described_class.valid_license?("foo")).to be false
     end
 
     it "returns true for deprecated license identifier" do
-      expect(described_class.valid_license?("GPL-1.0")).to eq true
+      expect(described_class.valid_license?("GPL-1.0")).to be true
     end
 
     it "returns true for license identifier with plus" do
-      expect(described_class.valid_license?("Apache-2.0+")).to eq true
+      expect(described_class.valid_license?("Apache-2.0+")).to be true
     end
 
     it "returns true for :public_domain" do
-      expect(described_class.valid_license?(:public_domain)).to eq true
+      expect(described_class.valid_license?(:public_domain)).to be true
     end
 
     it "returns true for :cannot_represent" do
-      expect(described_class.valid_license?(:cannot_represent)).to eq true
+      expect(described_class.valid_license?(:cannot_represent)).to be true
     end
 
     it "returns false for invalid symbol" do
-      expect(described_class.valid_license?(:invalid_symbol)).to eq false
+      expect(described_class.valid_license?(:invalid_symbol)).to be false
     end
   end
 
   describe ".deprecated_license?" do
     it "returns true for deprecated license identifier" do
-      expect(described_class.deprecated_license?("GPL-1.0")).to eq true
+      expect(described_class.deprecated_license?("GPL-1.0")).to be true
     end
 
     it "returns true for deprecated license identifier with plus" do
-      expect(described_class.deprecated_license?("GPL-1.0+")).to eq true
+      expect(described_class.deprecated_license?("GPL-1.0+")).to be true
     end
 
     it "returns false for non-deprecated license identifier" do
-      expect(described_class.deprecated_license?("MIT")).to eq false
+      expect(described_class.deprecated_license?("MIT")).to be false
     end
 
     it "returns false for non-deprecated license identifier with plus" do
-      expect(described_class.deprecated_license?("EPL-1.0+")).to eq false
+      expect(described_class.deprecated_license?("EPL-1.0+")).to be false
     end
 
     it "returns false for invalid license identifier" do
-      expect(described_class.deprecated_license?("foo")).to eq false
+      expect(described_class.deprecated_license?("foo")).to be false
     end
 
     it "returns false for :public_domain" do
-      expect(described_class.deprecated_license?(:public_domain)).to eq false
+      expect(described_class.deprecated_license?(:public_domain)).to be false
     end
 
     it "returns false for :cannot_represent" do
-      expect(described_class.deprecated_license?(:cannot_represent)).to eq false
+      expect(described_class.deprecated_license?(:cannot_represent)).to be false
     end
   end
 
   describe ".valid_license_exception?" do
     it "returns true for valid license exception identifier" do
-      expect(described_class.valid_license_exception?("LLVM-exception")).to eq true
+      expect(described_class.valid_license_exception?("LLVM-exception")).to be true
     end
 
     it "returns false for invalid license exception identifier" do
-      expect(described_class.valid_license_exception?("foo")).to eq false
+      expect(described_class.valid_license_exception?("foo")).to be false
     end
 
     it "returns false for deprecated license exception identifier" do
-      expect(described_class.valid_license_exception?("Nokia-Qt-exception-1.1")).to eq false
+      expect(described_class.valid_license_exception?("Nokia-Qt-exception-1.1")).to be false
     end
   end
 
@@ -275,55 +275,55 @@ describe SPDX do
     let(:license_exception) { { "MIT" => { with: "LLVM-exception" } } }
 
     it "allows installation with no forbidden licenses" do
-      expect(described_class.licenses_forbid_installation?("MIT", {})).to eq false
+      expect(described_class.licenses_forbid_installation?("MIT", {})).to be false
     end
 
     it "allows installation with non-forbidden license" do
-      expect(described_class.licenses_forbid_installation?("0BSD", mit_forbidden)).to eq false
+      expect(described_class.licenses_forbid_installation?("0BSD", mit_forbidden)).to be false
     end
 
     it "forbids installation with forbidden license" do
-      expect(described_class.licenses_forbid_installation?("MIT", mit_forbidden)).to eq true
+      expect(described_class.licenses_forbid_installation?("MIT", mit_forbidden)).to be true
     end
 
     it "allows installation of later license version" do
-      expect(described_class.licenses_forbid_installation?("EPL-2.0", epl_1_forbidden)).to eq false
+      expect(described_class.licenses_forbid_installation?("EPL-2.0", epl_1_forbidden)).to be false
     end
 
     it "forbids installation of later license version with plus in forbidden license list" do
-      expect(described_class.licenses_forbid_installation?("EPL-2.0", epl_1_plus_forbidden)).to eq true
+      expect(described_class.licenses_forbid_installation?("EPL-2.0", epl_1_plus_forbidden)).to be true
     end
 
     it "allows installation when one of the any_of licenses is allowed" do
-      expect(described_class.licenses_forbid_installation?(any_of_license, mit_forbidden)).to eq false
+      expect(described_class.licenses_forbid_installation?(any_of_license, mit_forbidden)).to be false
     end
 
     it "forbids installation when none of the any_of licenses are allowed" do
-      expect(described_class.licenses_forbid_installation?(any_of_license, multiple_forbidden)).to eq true
+      expect(described_class.licenses_forbid_installation?(any_of_license, multiple_forbidden)).to be true
     end
 
     it "forbids installation when one of the all_of licenses is allowed" do
-      expect(described_class.licenses_forbid_installation?(all_of_license, mit_forbidden)).to eq true
+      expect(described_class.licenses_forbid_installation?(all_of_license, mit_forbidden)).to be true
     end
 
     it "allows installation with license + exception that aren't forbidden" do
-      expect(described_class.licenses_forbid_installation?(license_exception, epl_1_forbidden)).to eq false
+      expect(described_class.licenses_forbid_installation?(license_exception, epl_1_forbidden)).to be false
     end
 
     it "forbids installation with license + exception that are't forbidden" do
-      expect(described_class.licenses_forbid_installation?(license_exception, mit_forbidden)).to eq true
+      expect(described_class.licenses_forbid_installation?(license_exception, mit_forbidden)).to be true
     end
 
     it "allows installation with nested licenses with no forbidden licenses" do
-      expect(described_class.licenses_forbid_installation?(nested_licenses, epl_1_forbidden)).to eq false
+      expect(described_class.licenses_forbid_installation?(nested_licenses, epl_1_forbidden)).to be false
     end
 
     it "allows installation with nested licenses when second hash item matches" do
-      expect(described_class.licenses_forbid_installation?(nested_licenses, mit_forbidden)).to eq false
+      expect(described_class.licenses_forbid_installation?(nested_licenses, mit_forbidden)).to be false
     end
 
     it "forbids installation with nested licenses when all licenses are forbidden" do
-      expect(described_class.licenses_forbid_installation?(nested_licenses, multiple_forbidden)).to eq true
+      expect(described_class.licenses_forbid_installation?(nested_licenses, multiple_forbidden)).to be true
     end
   end
 
@@ -333,23 +333,23 @@ describe SPDX do
     let(:epl_1_plus_forbidden) { { "EPL-1.0+" => described_class.license_version_info("EPL-1.0+") } }
 
     it "returns false with no forbidden licenses" do
-      expect(described_class.forbidden_licenses_include?("MIT", {})).to eq false
+      expect(described_class.forbidden_licenses_include?("MIT", {})).to be false
     end
 
     it "returns false with no matching forbidden licenses" do
-      expect(described_class.forbidden_licenses_include?("MIT", epl_1_forbidden)).to eq false
+      expect(described_class.forbidden_licenses_include?("MIT", epl_1_forbidden)).to be false
     end
 
     it "returns true with matching license" do
-      expect(described_class.forbidden_licenses_include?("MIT", mit_forbidden)).to eq true
+      expect(described_class.forbidden_licenses_include?("MIT", mit_forbidden)).to be true
     end
 
     it "returns false with later version of forbidden license" do
-      expect(described_class.forbidden_licenses_include?("EPL-2.0", epl_1_forbidden)).to eq false
+      expect(described_class.forbidden_licenses_include?("EPL-2.0", epl_1_forbidden)).to be false
     end
 
     it "returns true with later version of forbidden license with later versions forbidden" do
-      expect(described_class.forbidden_licenses_include?("EPL-2.0", epl_1_plus_forbidden)).to eq true
+      expect(described_class.forbidden_licenses_include?("EPL-2.0", epl_1_plus_forbidden)).to be true
     end
   end
 end

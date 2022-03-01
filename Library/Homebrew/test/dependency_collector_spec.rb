@@ -65,7 +65,7 @@ describe DependencyCollector do
     it "creates a resource dependency from a '.gz' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.tar.gz")
-      expect(collector.add(resource)).to be nil
+      expect(collector.add(resource)).to be_nil
     end
 
     it "creates a resource dependency from a '.lz' URL" do

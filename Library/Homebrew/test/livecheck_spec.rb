@@ -30,7 +30,7 @@ describe Livecheck do
 
   describe "#formula" do
     it "returns nil if not set" do
-      expect(livecheckable_f.formula).to be nil
+      expect(livecheckable_f.formula).to be_nil
     end
 
     it "returns the String if set" do
@@ -47,7 +47,7 @@ describe Livecheck do
 
   describe "#cask" do
     it "returns nil if not set" do
-      expect(livecheckable_c.cask).to be nil
+      expect(livecheckable_c.cask).to be_nil
     end
 
     it "returns the String if set" do
@@ -64,7 +64,7 @@ describe Livecheck do
 
   describe "#regex" do
     it "returns nil if not set" do
-      expect(livecheckable_f.regex).to be nil
+      expect(livecheckable_f.regex).to be_nil
     end
 
     it "returns the Regexp if set" do
@@ -83,7 +83,7 @@ describe Livecheck do
     it "sets @skip to true when no argument is provided" do
       expect(livecheckable_f.skip).to be true
       expect(livecheckable_f.instance_variable_get(:@skip)).to be true
-      expect(livecheckable_f.instance_variable_get(:@skip_msg)).to be nil
+      expect(livecheckable_f.instance_variable_get(:@skip_msg)).to be_nil
     end
 
     it "sets @skip to true and @skip_msg to the provided String" do
@@ -110,7 +110,7 @@ describe Livecheck do
 
   describe "#strategy" do
     it "returns nil if not set" do
-      expect(livecheckable_f.strategy).to be nil
+      expect(livecheckable_f.strategy).to be_nil
     end
 
     it "returns the Symbol if set" do
@@ -129,7 +129,7 @@ describe Livecheck do
     let(:url_string) { "https://brew.sh" }
 
     it "returns nil if not set" do
-      expect(livecheckable_f.url).to be nil
+      expect(livecheckable_f.url).to be_nil
     end
 
     it "returns a string when set to a string" do

@@ -54,7 +54,7 @@ describe Formula do
 
       expect(f.class.stable.deps[0].name).to eq("hello_both")
       expect(f.class.stable.deps[1].name).to eq("hello_linux")
-      expect(f.class.stable.deps[2]).to eq(nil)
+      expect(f.class.stable.deps[2]).to be_nil
     end
 
     it "adds a patch on Linux only" do
