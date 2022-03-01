@@ -40,15 +40,15 @@ describe "brew pr-pull" do
         end
       EOS
     end
-    let(:formula_file) { path/"Formula/foo.rb" }
-    let(:path) { (Tap::TAP_DIRECTORY/"homebrew/homebrew-foo").extend(GitRepositoryExtension) }
+    let(:tap) { Tap.fetch("Homebrew", "foo") }
+    let(:formula_file) { tap.path/"Formula/foo.rb" }
 
     describe "#autosquash!" do
       it "squashes a formula correctly" do
         secondary_author = "Someone Else <me@example.com>"
-        (path/"Formula").mkpath
+        (tap.path/"Formula").mkpath
         formula_file.write(formula)
-        cd path do
+        cd tap.path do
           safe_system Utils::Git.git, "init"
           safe_system Utils::Git.git, "add", formula_file
           safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
@@ -57,24 +57,24 @@ describe "brew pr-pull" do
           safe_system Utils::Git.git, "commit", formula_file, "-m", "revision"
           File.write(formula_file, formula_version)
           safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
-          described_class.autosquash!(original_hash, path: path)
-          expect(path.git_commit_message).to include("foo 2.0")
-          expect(path.git_commit_message).to include("Co-authored-by: #{secondary_author}")
+          described_class.autosquash!(original_hash, tap: tap)
+          expect(tap.path.git_commit_message).to include("foo 2.0")
+          expect(tap.path.git_commit_message).to include("Co-authored-by: #{secondary_author}")
         end
       end
     end
 
     describe "#signoff!" do
       it "signs off a formula" do
-        (path/"Formula").mkpath
+        (tap.path/"Formula").mkpath
         formula_file.write(formula)
-        cd path do
+        cd tap.path do
           safe_system Utils::Git.git, "init"
           safe_system Utils::Git.git, "add", formula_file
           safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
         end
-        described_class.signoff!(path)
-        expect(path.git_commit_message).to include("Signed-off-by:")
+        described_class.signoff!(tap.path)
+        expect(tap.path.git_commit_message).to include("Signed-off-by:")
       end
     end
 
