@@ -335,6 +335,9 @@ module Homebrew
   def pr_pull
     args = pr_pull_args.parse
 
+    # Needed when extracting the CI artifact.
+    ensure_executable!("unzip", reason: "extracting CI artifacts")
+
     workflows = args.workflows.presence || ["tests.yml"]
     artifact = args.artifact || "bottles"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
