@@ -95,9 +95,6 @@ Naming/InclusiveLanguage:
         - "ssdb_slave" # Used in formula `ssdb`
         - "var_slave" # Used in formula `ssdb`
         - "patches/13_fix_scope_for_show_slave_status_data.patch" # Used in formula `mytop`
-    blacklist:
-      AllowedRegex:
-        - "--listBlacklist" # Used in formula `xmlsectool`
 
 Naming/MethodName:
   IgnoredPatterns:
