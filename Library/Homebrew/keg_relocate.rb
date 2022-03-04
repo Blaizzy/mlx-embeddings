@@ -214,8 +214,6 @@ class Keg
     end
   end
 
-  def codesign_patched_binary(_binary_file); end
-
   def lib
     path/"lib"
   end
