@@ -18,7 +18,7 @@ And of course, you can simply `brew link <formula>` again afterwards!
 
 Sometimes it's faster to download a file via means other than the strategies that are available as part of Homebrew. For example, Erlang provides a torrent that'll let you download at 4–5× compared to the normal HTTP method.
 
-Downloads are saved in the `downloads` subdirectory of Homebrew's cache directory (as specified by `brew --cache`, e.g. `~/Library/Caches/Homebrew`) and renamed as `<url-hash>--<formula>-<version>`. The command `brew --cache -s <formula>` will print the expected path of the cached download, so after downloading the file, you can run `mv the_tarball "$(brew --cache -s <formula>)"` to relocate it to the cache.
+Downloads are saved in the `downloads` subdirectory of Homebrew's cache directory (as specified by `brew --cache`, e.g. `~/Library/Caches/Homebrew`) and renamed as `<url-hash>--<formula>-<version>`. The command `brew --cache --build-from-source <formula>` will print the expected path of the cached download, so after downloading the file, you can run `mv the_tarball "$(brew --cache --build-from-source <formula>)"` to relocate it to the cache.
 
 You can also pre-cache the download by using the command `brew fetch <formula>` which also displays the SHA-256 hash. This can be useful for updating formulae to new versions.
 
