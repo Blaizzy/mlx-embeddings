@@ -3,6 +3,7 @@
 
 require "utils/curl"
 require "json"
+require "zlib"
 
 # GitHub Packages client.
 #
@@ -20,6 +21,9 @@ class GitHubPackages
   private_constant :DOCKER_PREFIX
 
   URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
+
+  GZIP_BUFFER_SIZE = 64 * 1024
+  private_constant :GZIP_BUFFER_SIZE
 
   # Translate Homebrew tab.arch to OCI platform.architecture
   TAB_ARCH_TO_PLATFORM_ARCHITECTURE = {
@@ -338,11 +342,14 @@ class GitHubPackages
         "os.version" => os_version,
       }.reject { |_, v| v.blank? }
 
-      tar_sha256 = Digest::SHA256.hexdigest(
-        Utils.safe_popen_read("gunzip", "--stdout", "--decompress", local_file),
-      )
+      tar_sha256 = Digest::SHA256.new
+      Zlib::GzipReader.open(local_file) do |gz|
+        while (data = gz.read(GZIP_BUFFER_SIZE))
+          tar_sha256 << data
+        end
+      end
 
-      config_json_sha256, config_json_size = write_image_config(platform_hash, tar_sha256, blobs)
+      config_json_sha256, config_json_size = write_image_config(platform_hash, tar_sha256.hexdigest, blobs)
 
       formulae_dir = tag_hash["formulae_brew_sh_path"]
       documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
