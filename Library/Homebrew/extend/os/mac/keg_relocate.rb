@@ -186,7 +186,7 @@ class Keg
 
   def egrep_args
     grep_bin = "egrep"
-    grep_args = recursive_fgrep_args
+    grep_args = "--files-with-matches"
     [grep_bin, grep_args]
   end
 end
