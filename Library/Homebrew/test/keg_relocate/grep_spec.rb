@@ -43,16 +43,15 @@ describe Keg do
     end
   end
 
-  describe "#each_unique_binary_file" do
-    specify "find null bytes in binaries" do
+  describe "#binary_file?" do
+    specify "test if file has null bytes" do
       setup_binary_file
 
-      binary_matches = Set.new
-      keg.each_unique_binary_file do |file|
-        binary_matches << file
-      end
+      expect(keg.binary_file?(binary_file)).to be true
 
-      expect(binary_matches.size).to eq 1
+      setup_text_file
+
+      expect(keg.binary_file?(text_file)).to be false
     end
   end
 end
