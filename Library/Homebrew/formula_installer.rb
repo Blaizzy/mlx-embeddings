@@ -579,7 +579,8 @@ class FormulaInstaller
         if req.prune_from_option?(build) ||
            req.satisfied?(env: @env, cc: @cc, build_bottle: @build_bottle, bottle_arch: @bottle_arch) ||
            ((req.build? || req.test?) && !keep_build_test) ||
-           formula_deps_map[dependent.name]&.build?
+           formula_deps_map[dependent.name]&.build? ||
+           (only_deps? && f == dependent)
           Requirement.prune
         else
           unsatisfied_reqs[dependent] << req
