@@ -41,6 +41,18 @@ describe BottleSpecification do
     end
   end
 
+  describe "#compatible_locations?" do
+    it "checks if the bottle cellar is relocatable" do
+      expect(bottle_spec.compatible_locations?).to be false
+    end
+  end
+
+  describe "#tag_to_cellar" do
+    it "returns the cellar for a tag" do
+      expect(bottle_spec.tag_to_cellar).to eq Utils::Bottles.tag.default_cellar
+    end
+  end
+
   %w[root_url rebuild].each do |method|
     specify "##{method}" do
       object = Object.new
