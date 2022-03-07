@@ -214,12 +214,14 @@ RSpec.configure do |config|
 
     @__stdout = $stdout.clone
     @__stderr = $stderr.clone
+    @__stdin = $stdin.clone
 
     begin
       if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
       end
+      $stdin.reopen(File::NULL)
 
       begin
         timeout = example.metadata.fetch(:timeout, 60)
@@ -236,8 +238,10 @@ RSpec.configure do |config|
 
       $stdout.reopen(@__stdout)
       $stderr.reopen(@__stderr)
+      $stdin.reopen(@__stdin)
       @__stdout.close
       @__stderr.close
+      @__stdin.close
 
       Formulary.clear_cache
       Tap.clear_cache
