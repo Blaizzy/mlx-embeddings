@@ -405,8 +405,8 @@ class RuboCop::Cop::Performance::MapCompact < ::RuboCop::Cop::Base
 
   def compact_method_with_final_newline_range(compact_method_range); end
   def invoke_method_after_map_compact_on_same_line?(compact_node, chained_method); end
-  def map_method_and_compact_method_on_same_line?(compact_node); end
-  def remove_compact_method(corrector, compact_node, chained_method); end
+  def map_method_and_compact_method_on_same_line?(map_node, compact_node); end
+  def remove_compact_method(corrector, map_node, compact_node, chained_method); end
 end
 
 RuboCop::Cop::Performance::MapCompact::MSG = T.let(T.unsafe(nil), String)
