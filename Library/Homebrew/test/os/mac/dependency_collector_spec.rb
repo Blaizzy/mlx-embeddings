@@ -35,10 +35,6 @@ describe DependencyCollector do
   specify "Resource dependency from a Subversion URL" do
     resource = Resource.new
     resource.url("svn://brew.sh/foo/bar")
-    if MacOS.version < :catalina
-      expect(collector.add(resource)).to be_nil
-    else
-      expect(collector.add(resource)).not_to be_nil
-    end
+    expect(collector.add(resource)).to eq(Dependency.new("subversion", [:build, :test]))
   end
 end
