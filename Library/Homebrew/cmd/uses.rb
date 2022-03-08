@@ -30,6 +30,9 @@ module Homebrew
              description: "Resolve more than one level of dependencies."
       switch "--installed",
              description: "Only list formulae and casks that are currently installed."
+      switch "--all",
+             description: "List all formulae and casks whether installed or not.",
+             hidden:      true
       switch "--include-build",
              description: "Include all formulae that specify <formula> as `:build` type dependency."
       switch "--include-test",
@@ -44,6 +47,7 @@ module Homebrew
              description: "Include only casks."
 
       conflicts "--formula", "--cask"
+      conflicts "--installed", "--all"
 
       named_args :formula, min: 1
     end
@@ -83,6 +87,8 @@ module Homebrew
     recursive = args.recursive?
     show_formulae_and_casks = !args.formula? && !args.cask?
     includes, ignores = args_includes_ignores(args)
+
+    # TODO: 3.6.0: odeprecate not specifying args.all?, require args.installed?
 
     deps = []
     if use_runtime_dependents

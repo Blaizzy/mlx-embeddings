@@ -39,6 +39,11 @@ module Homebrew
              description: "Run additional, slower style checks that navigate the Git repository."
       switch "--online",
              description: "Run additional, slower style checks that require a network connection."
+      switch "--installed",
+             description: "Only check formulae and casks that are currently installed."
+      switch "--all",
+             description: "Check all formulae and casks whether installed or not.",
+             hidden:      true
       switch "--new", "--new-formula", "--new-cask",
              description: "Run various additional style checks to determine if a new formula or cask is eligible "\
                           "for Homebrew. This should be used when creating new formula and implies "\
@@ -87,6 +92,7 @@ module Homebrew
       conflicts "--display-cop-names", "--only-cops"
       conflicts "--display-cop-names", "--except-cops"
       conflicts "--formula", "--cask"
+      conflicts "--installed", "--all"
 
       named_args [:formula, :cask]
     end
@@ -112,6 +118,8 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
+    # TODO: 3.6.0: odeprecate not specifying args.all?, require args.installed?
+
     audit_formulae, audit_casks = if args.tap
       Tap.fetch(args.tap).yield_self do |tap|
         [
@@ -119,6 +127,9 @@ module Homebrew
           tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
         ]
       end
+    elsif args.installed?
+      no_named_args = true
+      [Formula.installed, Cask::Cask.casks]
     elsif args.no_named?
       no_named_args = true
       [Formula.all, Cask::Cask.all]

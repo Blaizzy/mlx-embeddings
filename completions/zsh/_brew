@@ -416,6 +416,7 @@ _brew_audit() {
     '--fix[Fix style violations automatically using RuboCop'\''s auto-correct feature]' \
     '--git[Run additional, slower style checks that navigate the Git repository]' \
     '--help[Show this message]' \
+    '(--all)--installed[Only check formulae and casks that are currently installed]' \
     '--new[Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`]' \
     '--no-appcast[Audit the appcast]' \
     '--online[Run additional, slower style checks that require a network connection]' \
@@ -1682,12 +1683,12 @@ _brew_typecheck() {
 # brew unbottled
 _brew_unbottled() {
   _arguments \
+    '(--dependents --installed)--all[Print the number of unbottled and total formulae]' \
     '--debug[Display any debugging information]' \
-    '(--total)--dependents[Skip getting analytics data and sort by number of dependents instead]' \
+    '(--all)--dependents[Skip getting analytics data and sort by number of dependents instead]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--tag[Use the specified bottle tag (e.g. `big_sur`) instead of the current OS]' \
-    '(--dependents)--total[Print the number of unbottled and total formulae]' \
     '--verbose[Make some output more verbose]' \
     - formula \
     '*::formula:__brew_formulae'
@@ -1919,7 +1920,7 @@ _brew_uses() {
     '--include-build[Include all formulae that specify formula as `:build` type dependency]' \
     '--include-optional[Include all formulae that specify formula as `:optional` type dependency]' \
     '--include-test[Include all formulae that specify formula as `:test` type dependency]' \
-    '--installed[Only list formulae and casks that are currently installed]' \
+    '(--all)--installed[Only list formulae and casks that are currently installed]' \
     '--quiet[Make some output more quiet]' \
     '--recursive[Resolve more than one level of dependencies]' \
     '--skip-recommended[Skip all formulae that specify formula as `:recommended` type dependency]' \

@@ -337,6 +337,7 @@ __fish_brew_complete_arg 'audit' -l fix -d 'Fix style violations automatically u
 __fish_brew_complete_arg 'audit' -l formula -d 'Treat all named arguments as formulae'
 __fish_brew_complete_arg 'audit' -l git -d 'Run additional, slower style checks that navigate the Git repository'
 __fish_brew_complete_arg 'audit' -l help -d 'Show this message'
+__fish_brew_complete_arg 'audit' -l installed -d 'Only check formulae and casks that are currently installed'
 __fish_brew_complete_arg 'audit' -l new -d 'Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`'
 __fish_brew_complete_arg 'audit' -l no-appcast -d 'Audit the appcast'
 __fish_brew_complete_arg 'audit' -l online -d 'Run additional, slower style checks that require a network connection'
@@ -1376,12 +1377,12 @@ __fish_brew_complete_arg 'typecheck' -l verbose -d 'Make some output more verbos
 
 
 __fish_brew_complete_cmd 'unbottled' 'Show the unbottled dependents of formulae'
+__fish_brew_complete_arg 'unbottled' -l all -d 'Print the number of unbottled and total formulae'
 __fish_brew_complete_arg 'unbottled' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'unbottled' -l dependents -d 'Skip getting analytics data and sort by number of dependents instead'
 __fish_brew_complete_arg 'unbottled' -l help -d 'Show this message'
 __fish_brew_complete_arg 'unbottled' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'unbottled' -l tag -d 'Use the specified bottle tag (e.g. `big_sur`) instead of the current OS'
-__fish_brew_complete_arg 'unbottled' -l total -d 'Print the number of unbottled and total formulae'
 __fish_brew_complete_arg 'unbottled' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'unbottled' -a '(__fish_brew_suggest_formulae_all)'
 

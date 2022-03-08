@@ -1683,8 +1683,11 @@ class Formula
   end
 
   # an array of all {Formula}
+  # this should only be used when users specify `--all` to a command
   # @private
   def self.all
+    # TODO: 3.6.0: consider checking ARGV for --all
+
     files.map do |file|
       Formulary.factory(file)
     rescue FormulaUnavailableError, FormulaUnreadableError => e
