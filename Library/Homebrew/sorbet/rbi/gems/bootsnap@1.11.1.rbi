@@ -18,6 +18,7 @@ module Bootsnap
     def log!; end
     def logger; end
     def logger=(logger); end
+    def rb_get_path(fname); end
     def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), autoload_paths_cache: T.unsafe(nil), disable_trace: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
   end
 end
@@ -52,7 +53,6 @@ module Bootsnap::LoadPathCache
   class << self
     def load_path_cache; end
     def loaded_features_index; end
-    def realpath_cache; end
     def setup(cache_path:, development_mode:); end
     def supported?; end
   end
@@ -150,7 +150,7 @@ end
 Bootsnap::LoadPathCache::LoadedFeaturesIndex::STRIP_EXTENSION = T.let(T.unsafe(nil), Regexp)
 
 class Bootsnap::LoadPathCache::Path
-  def initialize(path); end
+  def initialize(path, real: T.unsafe(nil)); end
 
   def entries_and_dirs(store); end
   def expanded_path; end
@@ -158,6 +158,7 @@ class Bootsnap::LoadPathCache::Path
   def path; end
   def relative?; end
   def stable?; end
+  def to_realpath; end
   def volatile?; end
 
   private
@@ -184,18 +185,6 @@ Bootsnap::LoadPathCache::PathScanner::ALTERNATIVE_NATIVE_EXTENSIONS_PATTERN = T.
 Bootsnap::LoadPathCache::PathScanner::BUNDLE_PATH = T.let(T.unsafe(nil), String)
 Bootsnap::LoadPathCache::PathScanner::NORMALIZE_NATIVE_EXTENSIONS = T.let(T.unsafe(nil), TrueClass)
 Bootsnap::LoadPathCache::PathScanner::REQUIRABLE_EXTENSIONS = T.let(T.unsafe(nil), Array)
-
-class Bootsnap::LoadPathCache::RealpathCache
-  def initialize; end
-
-  def call(*key); end
-
-  private
-
-  def find_file(name); end
-  def realpath(caller_location, path); end
-end
-
 Bootsnap::LoadPathCache::SLASH = T.let(T.unsafe(nil), String)
 
 class Bootsnap::LoadPathCache::Store
@@ -212,6 +201,8 @@ class Bootsnap::LoadPathCache::Store
   def default_data; end
   def dump_data; end
   def load_data; end
+  def mark_for_mutation!; end
+  def mkdir_p(path); end
 end
 
 Bootsnap::LoadPathCache::Store::CURRENT_VERSION = T.let(T.unsafe(nil), String)
