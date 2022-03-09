@@ -304,6 +304,8 @@ class Tap
 
     begin
       safe_system "git", *args
+      # TODO: 3.6.0: consider if we want to actually read all contents of tap or odeprecate.
+
       if !Readall.valid_tap?(self, aliases: true) && !Homebrew::EnvConfig.developer?
         raise "Cannot tap #{name}: invalid syntax in tap!"
       end

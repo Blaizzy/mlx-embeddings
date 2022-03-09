@@ -36,6 +36,7 @@ class DescriptionCacheStore < CacheStore
   def populate_if_empty!
     return unless database.empty?
 
+    # TODO: 3.6.0: consider if we want to actually read all contents of all formulae or odeprecate.
     Formula.all.each { |f| update!(f.full_name, f.desc) }
   end
 

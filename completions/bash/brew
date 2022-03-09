@@ -357,6 +357,7 @@ _brew_audit() {
       --formula
       --git
       --help
+      --installed
       --new
       --no-appcast
       --online
@@ -2044,12 +2045,12 @@ _brew_unbottled() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --all
       --debug
       --dependents
       --help
       --quiet
       --tag
-      --total
       --verbose
       "
       return

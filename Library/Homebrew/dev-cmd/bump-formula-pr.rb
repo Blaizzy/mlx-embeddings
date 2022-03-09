@@ -34,6 +34,9 @@ module Homebrew
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
+      switch "--all",
+             description: "Read all formulae if necessary to determine URL.",
+             hidden:      true
       switch "--write-only",
              description: "Make the expected file modifications without taking any Git actions."
       switch "--write", hidden: true
@@ -81,6 +84,7 @@ module Homebrew
       conflicts "--no-audit", "--strict"
       conflicts "--no-audit", "--online"
       conflicts "--url", "--tag"
+      conflicts "--installed", "--all"
 
       named_args :formula, max: 1
     end
@@ -367,6 +371,7 @@ module Homebrew
     base_url = url_split.first(components_to_match).join("/")
     base_url = /#{Regexp.escape(base_url)}/
     guesses = []
+    # TODO: 3.6.0: odeprecate not specifying args.all?
     Formula.all.each do |f|
       guesses << f if f.stable&.url&.match(base_url)
     end
