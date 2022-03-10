@@ -41,9 +41,6 @@ class FormulaInstaller
   attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :overwrite?, :keep_tmp?
   attr_predicate :verbose?, :debug?, :quiet?
 
-  # TODO: Remove when removed from `test-bot`.
-  attr_writer :build_bottle
-
   def initialize(
     formula,
     link_keg: false,
