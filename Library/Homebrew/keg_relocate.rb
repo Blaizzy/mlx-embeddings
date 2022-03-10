@@ -177,41 +177,39 @@ class Keg
 
   def egrep_args
     grep_bin = "grep"
-    grep_args = recursive_fgrep_args
-    grep_args += "Pa"
+    grep_args = [
+      "--files-with-matches",
+      "--perl-regexp",
+      "--binary-files=text",
+    ]
+
     [grep_bin, grep_args]
   end
   alias generic_egrep_args egrep_args
 
-  def each_unique_file(io, block)
-    hardlinks = Set.new
-
-    until io.eof?
-      file = Pathname.new(io.readline.chomp)
-      # Don't return symbolic links.
-      next if file.symlink?
-
-      # To avoid returning hardlinks, only return files with unique inodes.
-      # Hardlinks will have the same inode as the file they point to.
-      block.call file if hardlinks.add? file.stat.ino
-    end
-  end
-
-  def each_unique_file_matching(string, &block)
+  def each_unique_file_matching(string)
     Utils.popen_read("fgrep", recursive_fgrep_args, string, to_s) do |io|
-      each_unique_file(io, block)
+      hardlinks = Set.new
+
+      until io.eof?
+        file = Pathname.new(io.readline.chomp)
+        # Don't return symbolic links.
+        next if file.symlink?
+
+        # To avoid returning hardlinks, only return files with unique inodes.
+        # Hardlinks will have the same inode as the file they point to.
+        yield file if hardlinks.add? file.stat.ino
+      end
     end
   end
 
-  def each_unique_binary_file(&block)
+  def binary_file?(file)
     grep_bin, grep_args = egrep_args
 
     # We need to pass NULL_BYTE_STRING, the literal string "\x00", to grep
     # rather than NULL_BYTE, a literal null byte, because grep will internally
     # convert the literal string "\x00" to a null byte.
-    Utils.popen_read(grep_bin, grep_args, NULL_BYTE_STRING, to_s) do |io|
-      each_unique_file(io, block)
-    end
+    Utils.popen_read(grep_bin, *grep_args, NULL_BYTE_STRING, file).present?
   end
 
   def lib
