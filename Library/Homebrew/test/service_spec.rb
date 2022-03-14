@@ -425,6 +425,34 @@ describe Homebrew::Service do
     end
   end
 
+  describe "#keep_alive?" do
+    it "returns true when keep_alive set to true" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        keep_alive true
+      end
+
+      expect(f.service.keep_alive?).to be(true)
+    end
+
+    it "returns false when keep_alive not set" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+      end
+
+      expect(f.service.keep_alive?).to be(false)
+    end
+
+    it "returns false when keep_alive set to false" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        keep_alive false
+      end
+
+      expect(f.service.keep_alive?).to be(false)
+    end
+  end
+
   describe "#command" do
     it "returns @run data" do
       f.class.service do

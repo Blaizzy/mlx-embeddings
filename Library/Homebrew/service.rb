@@ -112,6 +112,14 @@ module Homebrew
       end
     end
 
+    # Returns a `Boolean` describing if a service is set to be kept alive.
+    # @return [Boolean]
+    sig { returns(T::Boolean) }
+    def keep_alive?
+      instance_eval(&@service_block)
+      @keep_alive == true
+    end
+
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def launch_only_once(value = nil)
       case T.unsafe(value)
