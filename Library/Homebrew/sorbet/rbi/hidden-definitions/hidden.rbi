@@ -4204,6 +4204,12 @@ class RBI::Rewriters::RemoveKnownDefinitions::Operation
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class RBI::UnexpectedParserError
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class RBI::Visitor
   extend ::T::Helpers
   extend ::T::Sig
