@@ -662,6 +662,9 @@ class RBI::Loc
   sig { returns(T.nilable(::String)) }
   def file; end
 
+  sig { returns(T.nilable(::String)) }
+  def source; end
+
   sig { returns(::String) }
   def to_s; end
 
@@ -1903,6 +1906,9 @@ class RBI::TreeBuilder < ::RBI::ASTVisitor
   end
   def initialize(file:, comments: T.unsafe(nil), nodes_comments_assoc: T.unsafe(nil)); end
 
+  sig { returns(T.nilable(::AST::Node)) }
+  def last_node; end
+
   sig { void }
   def post_process; end
 
@@ -2000,6 +2006,17 @@ class RBI::TypeMember < ::RBI::NodeWithComments
   def to_s; end
 
   def value; end
+end
+
+class RBI::UnexpectedParserError < ::StandardError
+  sig { params(parent_exception: ::Exception, last_location: ::RBI::Loc).void }
+  def initialize(parent_exception, last_location); end
+
+  sig { returns(::RBI::Loc) }
+  def last_location; end
+
+  sig { params(io: T.any(::IO, ::StringIO)).void }
+  def print_debug(io: T.unsafe(nil)); end
 end
 
 RBI::VERSION = T.let(T.unsafe(nil), String)
