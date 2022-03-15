@@ -7,7 +7,9 @@ inherit_mode:
 AllCops:
   Exclude:
     - bin/*
-    - db/schema.rb
+    # Exclude db/schema.rb and db/[CONFIGURATION_NAMESPACE]_schema.rb by default.
+    # See: https://guides.rubyonrails.org/active_record_multiple_databases.html#setting-up-your-application
+    - db/*schema.rb
   # What version of Rails is the inspected code using?  If a value is specified
   # for TargetRailsVersion then it is used.  Acceptable values are specified
   # as a float (i.e. 5.1); the patch version of Rails should not be included.
@@ -37,6 +39,16 @@ Lint/NumberConversion:
     - fortnight
     - fortnights
     - in_milliseconds
+
+Rails/ActionControllerTestCase:
+  Description: 'Use `ActionDispatch::IntegrationTest` instead of `ActionController::TestCase`.'
+  StyleGuide: 'https://rails.rubystyle.guide/#integration-testing'
+  Reference: 'https://api.rubyonrails.org/classes/ActionController/TestCase.html'
+  Enabled: 'pending'
+  SafeAutocorrect: false
+  VersionAdded: '2.14'
+  Include:
+    - '**/test/**/*.rb'
 
 Rails/ActionFilter:
   Description: 'Enforces consistent use of action filter methods.'
@@ -195,9 +207,12 @@ Rails/ContentTag:
   Enabled: true
   VersionAdded: '2.6'
   VersionChanged: '2.12'
-  # This `Exclude` config prevents false positives for `tag` calls to `has_one: tag`. No helpers are used in normal models.
+  # This `Exclude` config prevents false positives for `tag` calls to `has_one: tag` and Puma configuration:
+  # https://puma.io/puma/Puma/DSL.html#tag-instance_method
+  # No helpers are used in normal models and configs.
   Exclude:
     - app/models/**/*.rb
+    - config/**/*.rb
 
 Rails/CreateTableWithTimestamps:
   Description: >-
@@ -250,6 +265,22 @@ Rails/DelegateAllowBlank:
   Description: 'Do not use allow_blank as an option to delegate.'
   Enabled: true
   VersionAdded: '0.44'
+
+Rails/DeprecatedActiveModelErrorsMethods:
+  Description: 'Avoid manipulating ActiveModel errors hash directly.'
+  Enabled: pending
+  Safe: false
+  VersionAdded: '2.14'
+
+Rails/DuplicateAssociation:
+  Description: "Don't repeat associations in a model."
+  Enabled: pending
+  VersionAdded: '2.14'
+
+Rails/DuplicateScope:
+  Description: 'Multiple scopes share this same where clause.'
+  Enabled: pending
+  VersionAdded: '2.14'
 
 Rails/DurationArithmetic:
   Description: 'Do not use duration as arithmetic operand with `Time.current`.'
@@ -415,6 +446,15 @@ Rails/HttpStatus:
     - numeric
     - symbolic
 
+Rails/I18nLazyLookup:
+  Description: 'Checks for places where I18n "lazy" lookup can be used.'
+  StyleGuide: 'https://rails.rubystyle.guide/#lazy-lookup'
+  Reference: 'https://guides.rubyonrails.org/i18n.html#lazy-lookup'
+  Enabled: pending
+  VersionAdded: '2.14'
+  Include:
+    - 'controllers/**/*'
+
 Rails/I18nLocaleAssignment:
   Description: 'Prefer the usage of `I18n.with_locale` instead of manually updating `I18n.locale` value.'
   Enabled: 'pending'
@@ -422,6 +462,12 @@ Rails/I18nLocaleAssignment:
   Include:
     - spec/**/*.rb
     - test/**/*.rb
+
+Rails/I18nLocaleTexts:
+  Description: 'Enforces use of I18n and locale files instead of locale specific strings.'
+  StyleGuide: 'https://rails.rubystyle.guide/#locale-texts'
+  Enabled: pending
+  VersionAdded: '2.14'
 
 Rails/IgnoredSkipActionFilterOption:
   Description: 'Checks that `if` and `only` (or `except`) are not used together as options of `skip_*` action filter.'
@@ -494,6 +540,13 @@ Rails/MatchRoute:
   Include:
     - config/routes.rb
     - config/routes/**/*.rb
+
+Rails/MigrationClassName:
+  Description: 'The class name of the migration should match its file name.'
+  Enabled: pending
+  VersionAdded: '2.14'
+  Include:
+    - db/migrate/*.rb
 
 Rails/NegateInclude:
   Description: 'Prefer `collection.exclude?(obj)` over `!collection.include?(obj)`.'
@@ -817,6 +870,15 @@ Rails/SquishedSQLHeredocs:
   # to be preserved in order to work, thus auto-correction is not safe.
   SafeAutoCorrect: false
 
+Rails/TableNameAssignment:
+  Description: >-
+    Do not use `self.table_name =`. Use Inflections or `table_name_prefix` instead.
+  StyleGuide: 'https://rails.rubystyle.guide/#keep-ar-defaults'
+  Enabled: false
+  VersionAdded: '2.14'
+  Include:
+    - app/models/**/*.rb
+
 Rails/TimeZone:
   Description: 'Checks the correct usage of time zone aware methods.'
   StyleGuide: 'https://rails.rubystyle.guide#time'
@@ -842,6 +904,11 @@ Rails/TimeZoneAssignment:
   Include:
     - spec/**/*.rb
     - test/**/*.rb
+
+Rails/TransactionExitStatement:
+  Description: 'Avoid the usage of `return`, `break` and `throw` in transaction blocks.'
+  Enabled: pending
+  VersionAdded: '2.14'
 
 Rails/UniqBeforePluck:
   Description: 'Prefer the use of uniq or distinct before pluck.'

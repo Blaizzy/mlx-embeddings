@@ -36,6 +36,10 @@ RuboCop::Cop::ActiveRecordMigrationsHelper::POSTGRES_SCHEMA_DEFINITIONS = T.let(
 RuboCop::Cop::ActiveRecordMigrationsHelper::RAILS_ABSTRACT_SCHEMA_DEFINITIONS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::ActiveRecordMigrationsHelper::RAILS_ABSTRACT_SCHEMA_DEFINITIONS_HELPERS = T.let(T.unsafe(nil), Array)
 
+module RuboCop::Cop::ClassSendNodeHelper
+  def class_send_nodes(class_node); end
+end
+
 module RuboCop::Cop::EnforceSuperclass
   def on_class(node); end
   def on_send(node); end
@@ -118,6 +122,16 @@ module RuboCop::Cop::MigrationsHelper
 end
 
 module RuboCop::Cop::Rails; end
+
+class RuboCop::Cop::Rails::ActionControllerTestCase < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
+
+  def action_controller_test_case?(param0 = T.unsafe(nil)); end
+  def on_class(node); end
+end
+
+RuboCop::Cop::Rails::ActionControllerTestCase::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Rails::ActionFilter < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -217,12 +231,13 @@ RuboCop::Cop::Rails::AddColumnIndex::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::AddColumnIndex::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::AfterCommitOverride < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::ClassSendNodeHelper
+
   def on_class(class_node); end
 
   private
 
   def after_commit_callback?(node); end
-  def class_send_nodes(class_node); end
   def each_after_commit_callback(class_node); end
   def named_callback?(node); end
 end
@@ -364,10 +379,12 @@ class RuboCop::Cop::Rails::BulkChangeTable < ::RuboCop::Cop::Base
   def call_to_combinable_alter_method?(child_node); end
   def combinable_alter_methods; end
   def combinable_transformations; end
+  def count_transformations(send_nodes); end
   def database; end
   def database_from_yaml; end
   def database_yaml; end
   def include_bulk_options?(node); end
+  def send_nodes_from_change_table_block(body); end
   def support_bulk_alter?; end
 end
 
@@ -520,6 +537,53 @@ end
 
 RuboCop::Cop::Rails::DelegateAllowBlank::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::DelegateAllowBlank::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods < ::RuboCop::Cop::Base
+  def any_manipulation?(param0 = T.unsafe(nil)); end
+  def messages_details_assignment?(param0 = T.unsafe(nil)); end
+  def messages_details_manipulation?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+  def receiver_matcher_inside_model(param0 = T.unsafe(nil)); end
+  def receiver_matcher_outside_model(param0 = T.unsafe(nil)); end
+  def root_assignment?(param0 = T.unsafe(nil)); end
+  def root_manipulation?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def model_file?; end
+  def receiver_matcher(node); end
+end
+
+RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::MANIPULATIVE_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Rails::DuplicateAssociation < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::ClassSendNodeHelper
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def association(param0 = T.unsafe(nil)); end
+  def on_class(class_node); end
+
+  private
+
+  def offenses(class_node); end
+end
+
+RuboCop::Cop::Rails::DuplicateAssociation::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Rails::DuplicateScope < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::ClassSendNodeHelper
+
+  def on_class(class_node); end
+  def scope(param0 = T.unsafe(nil)); end
+
+  private
+
+  def offenses(class_node); end
+end
+
+RuboCop::Cop::Rails::DuplicateScope::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Rails::DurationArithmetic < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -877,6 +941,22 @@ end
 RuboCop::Cop::Rails::HttpStatus::SymbolicStyleChecker::DEFAULT_MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::HttpStatus::SymbolicStyleChecker::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Rails::I18nLazyLookup < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::VisibilityHelp
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+  def translate_call?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def controller_and_action(node); end
+  def controller_path(controller); end
+  def get_scoped_key(key_node, controller, action); end
+end
+
+RuboCop::Cop::Rails::I18nLazyLookup::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Rails::I18nLocaleAssignment < ::RuboCop::Cop::Base
   def i18n_locale_assignment?(param0 = T.unsafe(nil)); end
   def on_send(node); end
@@ -884,6 +964,17 @@ end
 
 RuboCop::Cop::Rails::I18nLocaleAssignment::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::I18nLocaleAssignment::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::I18nLocaleTexts < ::RuboCop::Cop::Base
+  def flash_assignment?(param0 = T.unsafe(nil)); end
+  def mail_subject(param0); end
+  def on_send(node); end
+  def redirect_to_flash(param0); end
+  def validation_message(param0); end
+end
+
+RuboCop::Cop::Rails::I18nLocaleTexts::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::I18nLocaleTexts::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::IgnoredSkipActionFilterOption < ::RuboCop::Cop::Base
   def filter_options(param0 = T.unsafe(nil)); end
@@ -1038,6 +1129,20 @@ RuboCop::Cop::Rails::MatchRoute::HTTP_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::MatchRoute::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::MatchRoute::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Rails::MigrationClassName < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_class(node); end
+
+  private
+
+  def basename_without_timestamp; end
+  def to_camelcase(word); end
+  def to_snakecase(word); end
+end
+
+RuboCop::Cop::Rails::MigrationClassName::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Rails::NegateInclude < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -1131,11 +1236,12 @@ class RuboCop::Cop::Rails::Pluck < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::TargetRailsVersion
 
   def on_block(node); end
+  def on_numblock(node); end
   def pluck_candidate?(param0 = T.unsafe(nil)); end
 
   private
 
-  def message(method, argument, element, value); end
+  def message(value, node); end
   def offense_range(node); end
 end
 
@@ -1692,6 +1798,15 @@ RuboCop::Cop::Rails::SquishedSQLHeredocs::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::SquishedSQLHeredocs::SQL = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::SquishedSQLHeredocs::SQUISH = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Rails::TableNameAssignment < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::ActiveRecordHelper
+
+  def base_class?(param0 = T.unsafe(nil)); end
+  def on_class(class_node); end
+end
+
+RuboCop::Cop::Rails::TableNameAssignment::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Rails::TimeZone < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
   extend ::RuboCop::Cop::AutoCorrector
@@ -1735,6 +1850,14 @@ end
 
 RuboCop::Cop::Rails::TimeZoneAssignment::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::TimeZoneAssignment::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::TransactionExitStatement < ::RuboCop::Cop::Base
+  def exit_statements(param0); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::Rails::TransactionExitStatement::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::TransactionExitStatement::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::UniqBeforePluck < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
