@@ -20,15 +20,19 @@ module RuboCop
       #
       class MigrationClassName < Base
         extend AutoCorrector
+        include MigrationsHelper
 
         MSG = 'Replace with `%<corrected_class_name>s` that matches the file name.'
 
         def on_class(node)
+          return if in_migration?(node)
+
           snake_class_name = to_snakecase(node.identifier.source)
 
-          return if snake_class_name == basename_without_timestamp
+          basename = basename_without_timestamp_and_suffix
+          return if snake_class_name == basename
 
-          corrected_class_name = to_camelcase(basename_without_timestamp)
+          corrected_class_name = to_camelcase(basename)
           message = format(MSG, corrected_class_name: corrected_class_name)
 
           add_offense(node.identifier, message: message) do |corrector|
@@ -38,10 +42,16 @@ module RuboCop
 
         private
 
-        def basename_without_timestamp
+        def basename_without_timestamp_and_suffix
           filepath = processed_source.file_path
           basename = File.basename(filepath, '.rb')
+          basename = remove_gem_suffix(basename)
           basename.sub(/\A\d+_/, '')
+        end
+
+        # e.g.: from `add_blobs.active_storage` to `add_blobs`.
+        def remove_gem_suffix(file_name)
+          file_name.sub(/\..+\z/, '')
         end
 
         def to_camelcase(word)
