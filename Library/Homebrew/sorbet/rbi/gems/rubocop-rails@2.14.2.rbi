@@ -1137,10 +1137,9 @@ class RuboCop::Cop::Rails::MigrationClassName < ::RuboCop::Cop::Base
 
   private
 
-  def basename_without_timestamp_and_suffix; end
+  def basename_without_timestamp_and_suffix(filepath); end
+  def camelize(word); end
   def remove_gem_suffix(file_name); end
-  def to_camelcase(word); end
-  def to_snakecase(word); end
 end
 
 RuboCop::Cop::Rails::MigrationClassName::MSG = T.let(T.unsafe(nil), String)
@@ -1856,6 +1855,12 @@ RuboCop::Cop::Rails::TimeZoneAssignment::RESTRICT_ON_SEND = T.let(T.unsafe(nil),
 class RuboCop::Cop::Rails::TransactionExitStatement < ::RuboCop::Cop::Base
   def exit_statements(param0); end
   def on_send(node); end
+
+  private
+
+  def in_rescue?(statement_node); end
+  def nested_block?(statement_node); end
+  def statement(statement_node); end
 end
 
 RuboCop::Cop::Rails::TransactionExitStatement::MSG = T.let(T.unsafe(nil), String)
