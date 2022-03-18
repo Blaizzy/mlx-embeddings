@@ -1130,13 +1130,15 @@ RuboCop::Cop::Rails::MatchRoute::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::MatchRoute::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::MigrationClassName < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::MigrationsHelper
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_class(node); end
 
   private
 
-  def basename_without_timestamp; end
+  def basename_without_timestamp_and_suffix; end
+  def remove_gem_suffix(file_name); end
   def to_camelcase(word); end
   def to_snakecase(word); end
 end
