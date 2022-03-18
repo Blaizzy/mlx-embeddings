@@ -54,22 +54,39 @@ module RuboCop
         PATTERN
 
         def on_send(node)
-          parent = node.parent
-
-          return unless parent&.block_type?
+          return unless (parent = node.parent)
+          return unless parent.block_type? && parent.body
 
           exit_statements(parent.body).each do |statement_node|
-            statement = if statement_node.return_type?
-                          'return'
-                        elsif statement_node.break_type?
-                          'break'
-                        else
-                          statement_node.method_name
-                        end
+            next if in_rescue?(statement_node) || nested_block?(statement_node)
+
+            statement = statement(statement_node)
             message = format(MSG, statement: statement)
 
             add_offense(statement_node, message: message)
           end
+        end
+
+        private
+
+        def statement(statement_node)
+          if statement_node.return_type?
+            'return'
+          elsif statement_node.break_type?
+            'break'
+          else
+            statement_node.method_name
+          end
+        end
+
+        def in_rescue?(statement_node)
+          statement_node.ancestors.find(&:rescue_type?)
+        end
+
+        def nested_block?(statement_node)
+          return false unless statement_node.break_type?
+
+          !statement_node.ancestors.find(&:block_type?).method?(:transaction)
         end
       end
     end
