@@ -502,7 +502,7 @@ The available symbols for hardware are:
 | ---------- | -------------- |
 | `:x86_64`  | 64-bit Intel   |
 | `:intel`   | 64-bit Intel   |
-| `:arm64`   | Apple M1   |
+| `:arm64`   | Apple Silicon  |
 
 The following are all valid expressions:
 
