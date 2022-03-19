@@ -234,7 +234,7 @@ module Homebrew
           attributes << "color = green"
         end
         comment = " # #{dep.tags.map(&:inspect).join(", ")}" if dep.tags.any?
-        "  \"#{d}\" -> \"#{dep}\"#{" [#{attributes.join(", ")}]" if attributes.any?}#{comment}"
+        "  \"#{d.name}\" -> \"#{dep}\"#{" [#{attributes.join(", ")}]" if attributes.any?}#{comment}"
       end
     end.flatten.join("\n")
     "digraph {\n#{dot_code}\n}"
