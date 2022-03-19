@@ -502,6 +502,7 @@ The available symbols for hardware are:
 | ---------- | -------------- |
 | `:x86_64`  | 64-bit Intel   |
 | `:intel`   | 64-bit Intel   |
+| `:arm64`   | Apple Silicon  |
 
 The following are all valid expressions:
 
@@ -509,9 +510,8 @@ The following are all valid expressions:
 depends_on arch: :intel
 depends_on arch: :x86_64            # same meaning as above
 depends_on arch: [:x86_64]          # same meaning as above
+depends_on arch: :arm64
 ```
-
-Since as of now all the macOS versions we support only run on 64-bit Intel, `depends_on arch:` is never necessary.
 
 #### All depends_on Keys
 
@@ -750,7 +750,7 @@ strategy :header_match do |headers|
   v = headers["content-disposition"][/MyApp-(\d+(?:\.\d+)*)\.zip/i, 1]
   id = headers["location"][%r{/(\d+)/download$}i, 1]
   next if v.blank? || id.blank?
-  
+
   "#{v},#{id}"
 end
 ```
@@ -761,7 +761,7 @@ Similarly, the `:page_match` strategy can also be used for more complex versions
 strategy :page_match do |page|
   match = page.match(%r{href=.*?/(\d+)/MyApp-(\d+(?:\.\d+)*)\.zip}i)
   next if match.blank?
-  
+
   "#{match[2]},#{match[1]}"
 end
 ```
