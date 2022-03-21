@@ -165,6 +165,45 @@ class Keg
     changed_files
   end
 
+  def relocate_build_prefix(keg, old_prefix, new_prefix)
+    each_unique_file_matching(old_prefix) do |file|
+      # Skip files which are not binary, as they do not need null padding.
+      next unless keg.binary_file?(file)
+
+      # Skip sharballs, which appear to break if patched.
+      next if file.text_executable?
+
+      # Split binary by null characters into array and substitute new prefix for old prefix.
+      # Null padding is added if the new string is too short.
+      file.ensure_writable do
+        binary = File.binread file
+        odebug "Replacing build prefix in: #{file}"
+        binary_strings = binary.split(/#{NULL_BYTE}/o, -1)
+        match_indices = binary_strings.each_index.select { |i| binary_strings[i].include?(old_prefix) }
+
+        # Only perform substitution on strings which match prefix regex.
+        match_indices.each do |i|
+          s = binary_strings[i]
+          binary_strings[i] = s.gsub(old_prefix, new_prefix)
+                               .ljust(s.size, NULL_BYTE)
+        end
+
+        # Rejoin strings by null bytes.
+        patched_binary = binary_strings.join(NULL_BYTE)
+        if patched_binary.size != binary.size
+          raise <<~EOS
+            Patching failed!  Original and patched binary sizes do not match.
+            Original size: #{binary.size}
+            Patched size: #{patched_binary.size}
+          EOS
+        end
+
+        file.atomic_write patched_binary
+      end
+      codesign_patched_binary(file)
+    end
+  end
+
   def detect_cxx_stdlibs(_options = {})
     []
   end
