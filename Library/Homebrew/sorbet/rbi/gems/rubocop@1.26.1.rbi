@@ -4058,6 +4058,7 @@ module RuboCop::Cop::LineLengthHelp
   def allow_uri?; end
   def allowed_uri_position?(line, uri_range); end
   def directive_on_source_line?(line_index); end
+  def extend_uri_end_position(line, end_position); end
   def find_excessive_uri_range(line); end
   def ignore_cop_directives?; end
   def indentation_difference(line); end
@@ -11062,6 +11063,7 @@ class RuboCop::Cop::Style::SelectByRegexp < ::RuboCop::Cop::Base
 
   def calls_lvar?(param0 = T.unsafe(nil), param1); end
   def creates_hash?(param0 = T.unsafe(nil)); end
+  def env_const?(param0 = T.unsafe(nil)); end
   def on_send(node); end
   def regexp_match?(param0 = T.unsafe(nil)); end
 
@@ -11238,13 +11240,17 @@ class RuboCop::Cop::Style::SoleNestedConditional < ::RuboCop::Cop::Base
   def arguments_range(node); end
   def assigned_variables(condition); end
   def autocorrect(corrector, node, if_branch); end
+  def autocorrect_outer_condition_basic(corrector, node, if_branch); end
+  def autocorrect_outer_condition_modify_form(corrector, node, if_branch); end
   def correct_for_basic_condition_style(corrector, node, if_branch, and_operator); end
   def correct_for_comment(corrector, node, if_branch); end
   def correct_for_guard_condition_style(corrector, node, if_branch, and_operator); end
-  def correct_from_unless_to_if(corrector, node); end
+  def correct_for_outer_condition_modify_form_style(corrector, node, if_branch); end
+  def correct_from_unless_to_if(corrector, node, is_modify_form: T.unsafe(nil)); end
   def correct_outer_condition(corrector, condition); end
-  def offending_branch?(branch); end
-  def replacement_condition(and_operator, condition); end
+  def offending_branch?(node, branch); end
+  def outer_condition_modify_form?(node, if_branch); end
+  def replace_condition(condition); end
   def requrie_parentheses?(condition); end
   def use_variable_assignment_in_condition?(condition, if_branch); end
   def wrap_condition?(node); end
