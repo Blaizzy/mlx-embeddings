@@ -6599,6 +6599,12 @@ module Spoom::Git
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Spoom::LSP::Client
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Spoom::LSP::Diagnostic
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
@@ -6611,6 +6617,12 @@ class Spoom::LSP::DocumentSymbol
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Spoom::LSP::Error::Diagnostics
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Spoom::LSP::Hover
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
@@ -6618,6 +6630,12 @@ class Spoom::LSP::Hover
 end
 
 class Spoom::LSP::Location
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Message
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -6639,6 +6657,12 @@ module Spoom::LSP::PrintableSymbol
 end
 
 class Spoom::LSP::Range
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::ResponseError
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
