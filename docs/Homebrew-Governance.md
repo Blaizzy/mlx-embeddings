@@ -84,7 +84,7 @@
 
 1. The Project Leader will represent Homebrew publicly, manage all day-to-day technical decisions, and resolve disputes related to the operation of Homebrew between maintainers, members, other contributors, and users.
 
-2. The Project Leader will be elected annually by Homebrew members in a [Schulze Condorcet method](https://en.wikipedia.org/wiki/Schulze_method) election. The PLC will nominate at least one candidate for Project Leader. Any member may nominate a candidate, or self-nominate. Nominations must be announced to the membership three weeks before the AGM.
+2. The Project Leader will be elected annually by Homebrew members in a [Schulze Condorcet method](https://en.wikipedia.org/wiki/Schulze_method) (aka 'beatpath') election. The PLC will nominate at least one candidate for Project Leader. Any member may nominate a candidate, or self-nominate. Nominations must be announced to the membership three weeks before the AGM.
 
 3. Any vacancy of the Project Leader will be filled by appointment of the PLC.
 
