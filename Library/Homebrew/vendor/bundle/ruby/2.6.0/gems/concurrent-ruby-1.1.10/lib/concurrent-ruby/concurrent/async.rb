@@ -272,6 +272,7 @@ module Concurrent
         obj.send(:init_synchronization)
         obj
       end
+      ruby2_keywords :new if respond_to?(:ruby2_keywords, true)
     end
     private_constant :ClassMethods
 
