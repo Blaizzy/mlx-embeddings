@@ -2469,6 +2469,10 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
     Stop the service \fIformula\fR immediately and unregister it from launching at login (or boot)\.
 .
 .P
+[\fBsudo\fR] \fBbrew services kill\fR (\fIformula\fR|\fB\-\-all\fR)
+    Stop the service \fIformula\fR immediately but keep it registered to launch at login (or boot)\.
+.
+.P
 [\fBsudo\fR] \fBbrew services restart\fR (\fIformula\fR|\fB\-\-all\fR)
     Stop (if necessary) and start the service \fIformula\fR immediately and register it to launch at login (or boot)\.
 .
