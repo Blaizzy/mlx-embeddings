@@ -197,6 +197,10 @@ module Homebrew
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
         end
+        CacheStoreDatabase.use(:cask_descriptions) do |db|
+          CaskDescriptionCacheStore.new(db)
+                                   .update_from_report!(hub)
+        end
 
         if !args.preinstall? && !args.quiet?
           outdated_formulae = Formula.installed.count(&:outdated?)

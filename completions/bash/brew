@@ -741,8 +741,10 @@ _brew_desc() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --cask
       --debug
       --description
+      --formula
       --help
       --name
       --quiet
@@ -754,6 +756,7 @@ _brew_desc() {
     *)
   esac
   __brew_complete_formulae
+  __brew_complete_casks
 }
 
 _brew_developer() {

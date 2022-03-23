@@ -53,4 +53,34 @@ describe DescriptionCacheStore do
       cache_store.delete_from_formula_names!([formula_name])
     end
   end
+
+  describe CaskDescriptionCacheStore do
+    subject(:cache_store) { described_class.new(database) }
+
+    let(:database) { double("database") }
+
+    describe "#update_from_report!" do
+      let(:report) { double(select_formula: [], empty?: false) }
+
+      it "reads from the report" do
+        expect(database).to receive(:empty?).at_least(:once).and_return(false)
+        cache_store.update_from_report!(report)
+      end
+    end
+
+    describe "#update_from_cask_tokens!" do
+      it "sets the cask descriptions" do
+        c = Cask::Cask.new("cask-names-desc") do
+          url "url-1"
+          name "Name 1"
+          name "Name 2"
+          desc "description"
+        end
+        expect(Cask::CaskLoader).to receive(:load).with("cask-names-desc", any_args).and_return(c)
+        expect(database).to receive(:empty?).and_return(false)
+        expect(database).to receive(:set).with(c.full_name, [c.name.join(", "), c.desc.presence])
+        cache_store.update_from_cask_tokens!([c.token])
+      end
+    end
+  end
 end

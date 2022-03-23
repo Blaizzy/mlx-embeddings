@@ -1759,7 +1759,7 @@ class Formula
     @aliases ||= (core_aliases + tap_aliases.map { |name| name.split("/").last }).uniq.sort
   end
 
-  # an array of all aliases, , which the tap formulae have the fully-qualified name
+  # an array of all aliases as fully-qualified names
   # @private
   def self.alias_full_names
     @alias_full_names ||= core_aliases + tap_aliases

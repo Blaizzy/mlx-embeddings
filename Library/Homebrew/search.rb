@@ -89,7 +89,7 @@ module Homebrew
                 .search(string_or_regex)
                 .sort
 
-      results |= Formula.fuzzy_search(string_or_regex)
+      results |= Formula.fuzzy_search(string_or_regex).map { |n| Formulary.factory(n).full_name }
 
       results.map do |name|
         formula, canonical_full_name = begin
