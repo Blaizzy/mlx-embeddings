@@ -2445,10 +2445,6 @@ module Hardware
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Hash
-  def self.try_convert(arg); end
-end
-
 module Homebrew
   MAX_PORT = ::T.let(nil, ::T.untyped)
   MIN_PORT = ::T.let(nil, ::T.untyped)
