@@ -52,15 +52,14 @@ module Homebrew
                           "Has no effect when a formula or cask name is passed as an argument."
 
       conflicts "--formula", "--cask"
-      conflicts "--full-name", "--versions"
-      conflicts "--pinned", "--multiple"
       conflicts "--pinned", "--cask"
-      conflicts "--cask", "--multiple"
+      conflicts "--multiple", "--cask"
+      conflicts "--pinned", "--multiple"
       ["-1", "-l", "-r", "-t"].each do |flag|
         conflicts "--versions", flag
         conflicts "--pinned", flag
       end
-      ["--pinned", "-l", "-r", "-t"].each do |flag|
+      ["--versions", "--pinned", "-l", "-r", "-t"].each do |flag|
         conflicts "--full-name", flag
       end
 
@@ -96,10 +95,11 @@ module Homebrew
         full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:"1?")
         puts full_cask_names if full_cask_names.present?
       end
-    elsif args.cask?
-      list_casks(args.named.to_casks, args: args)
-    elsif args.pinned? || args.versions?
-      filtered_list args: args
+    elsif args.pinned?
+      filtered_list(args: args)
+    elsif args.versions?
+      filtered_list(args: args) unless args.cask?
+      list_casks(args: args) if args.cask? || (!args.formula? && !args.multiple? && args.no_named?)
     elsif args.no_named?
       ENV["CLICOLOR"] = nil
 
@@ -109,26 +109,28 @@ module Homebrew
       ls_args << "-r" if args.r?
       ls_args << "-t" if args.t?
 
-      if HOMEBREW_CELLAR.exist? && HOMEBREW_CELLAR.children.any?
+      if !args.cask? && HOMEBREW_CELLAR.exist? && HOMEBREW_CELLAR.children.any?
         ohai "Formulae" if $stdout.tty? && !args.formula?
         safe_system "ls", *ls_args, HOMEBREW_CELLAR
       end
-
       if !args.formula? && Cask::Caskroom.casks.any?
-        if $stdout.tty?
+        if $stdout.tty? && !args.cask?
           puts
           ohai "Casks"
         end
         safe_system "ls", *ls_args, Cask::Caskroom.path
       end
-    elsif args.verbose? || !$stdout.tty?
-      system_command! "find", args:         args.named.to_default_kegs.map(&:to_s) + %w[-not -type d -print],
-                              print_stdout: true
     else
       kegs, casks = args.named.to_kegs_to_casks
 
-      kegs.each { |keg| PrettyListing.new keg } if kegs.present?
-      list_casks(casks, args: args) if casks.present?
+      if args.verbose? || !$stdout.tty?
+        find_args = %w[-not -type d -not -name .DS_Store -print]
+        system_command! "find", args: kegs.map(&:to_s) + find_args, print_stdout: true if kegs.present?
+        system_command! "find", args: casks.map(&:caskroom_path) + find_args, print_stdout: true if casks.present?
+      else
+        kegs.each { |keg| PrettyListing.new keg } if kegs.present?
+        list_casks(args: args) if casks.present?
+      end
     end
   end
 
@@ -161,7 +163,15 @@ module Homebrew
     end
   end
 
-  def list_casks(casks, args:)
+  def list_casks(args:)
+    casks = if args.no_named?
+      Cask::Caskroom.casks
+    else
+      args.named.dup.delete_if do |n|
+        Homebrew.failed = true unless Cask::Caskroom.path.join(n).exist?
+        !Cask::Caskroom.path.join(n).exist?
+      end.to_formulae_and_casks(only: :cask)
+    end
     Cask::Cmd::List.list_casks(
       *casks,
       one:       args.public_send(:"1?"),
