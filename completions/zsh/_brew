@@ -1126,11 +1126,11 @@ _brew_list() {
     '--debug[Display any debugging information]' \
     '(--versions --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
-    '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
-    '(--multiple --cask --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
+    '(--cask --pinned)--multiple[Only show formulae with multiple versions installed]' \
+    '(--cask --multiple --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
-    '(--full-name --1 --l --r --t)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
+    '(--1 --l --r --t --full-name)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
     '-1[Force output to be one entry per line. This is the default when output is not to a terminal]' \
     '-l[List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument]' \
     '-r[Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument]' \
@@ -1205,11 +1205,11 @@ _brew_ls() {
     '--debug[Display any debugging information]' \
     '(--versions --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
-    '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
-    '(--multiple --cask --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
+    '(--cask --pinned)--multiple[Only show formulae with multiple versions installed]' \
+    '(--cask --multiple --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
-    '(--full-name --1 --l --r --t)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
+    '(--1 --l --r --t --full-name)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
     '-1[Force output to be one entry per line. This is the default when output is not to a terminal]' \
     '-l[List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument]' \
     '-r[Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument]' \
