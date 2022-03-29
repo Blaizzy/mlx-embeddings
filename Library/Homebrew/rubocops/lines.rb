@@ -404,18 +404,15 @@ module RuboCop
             no_on_os_block_names.each do |formula_block_name|
               block_node = find_block(body_node, formula_block_name)
               next unless block_node
-              next unless method_called_in_block?(block_node, on_method_name)
+              next unless block_method_called_in_block?(block_node, on_method_name)
 
               problem "Don't use '#{on_method_name}' in '#{formula_block_name} do', " \
                       "use '#{if_method_and_class}' instead." do |corrector|
-                block_node = offending_node.parent
-                next if block_node.type != :block
-
                 # TODO: could fix corrector to handle this but punting for now.
-                next if block_node.single_line?
+                next if offending_node.single_line?
 
-                source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
-                corrector.replace(source_range, if_method_and_class)
+                source_range = offending_node.send_node.source_range.join(offending_node.body.source_range.begin)
+                corrector.replace(source_range, "#{if_method_and_class}\n")
               end
             end
 
