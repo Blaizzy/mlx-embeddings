@@ -113,7 +113,7 @@ module Homebrew
         ohai "Formulae" if $stdout.tty? && !args.formula?
         safe_system "ls", *ls_args, HOMEBREW_CELLAR
       end
-      if !args.formula? && Cask::Caskroom.casks.any?
+      if !args.formula? && Cask::Caskroom.any_casks_installed?
         if $stdout.tty? && !args.cask?
           puts
           ohai "Casks"

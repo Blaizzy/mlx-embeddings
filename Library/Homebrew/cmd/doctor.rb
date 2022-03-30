@@ -48,7 +48,7 @@ module Homebrew
         check_missing_deps
       ]
       methods = (checks.all - slow_checks) + slow_checks
-      methods -= checks.cask_checks if Cask::Caskroom.casks.blank?
+      methods -= checks.cask_checks unless Cask::Caskroom.any_casks_installed?
     else
       methods = args.named
     end
