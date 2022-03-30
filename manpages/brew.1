@@ -225,7 +225,7 @@ Treat all named arguments as formulae\.
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
 .
-.SS "\fBdesc\fR [\fIoptions\fR] \fIformula\fR|\fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
+.SS "\fBdesc\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR|\fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
 Display \fIformula\fR\'s name and one\-line description\. Formula descriptions are cached; the cache is created on the first search, making that search slower than subsequent ones\.
 .
 .TP
@@ -239,6 +239,14 @@ Search just names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is in
 .TP
 \fB\-d\fR, \fB\-\-description\fR
 Search just descriptions for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
+.
+.TP
+\fB\-\-formula\fR
+Treat all named arguments as formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Treat all named arguments as casks\.
 .
 .SS "\fBdeveloper\fR [\fIsubcommand\fR]"
 Control Homebrew\'s developer mode\. When developer mode is enabled, \fBbrew update\fR will update Homebrew to the latest commit on the \fBmaster\fR branch instead of the latest stable version along with some other behaviour changes\.
@@ -778,7 +786,7 @@ Search online and locally for casks\.
 .
 .TP
 \fB\-\-desc\fR
-Search for formulae with a description matching \fItext\fR and casks with a name matching \fItext\fR\.
+Search for formulae with a description matching \fItext\fR and casks with a name or description matching \fItext\fR\.
 .
 .TP
 \fB\-\-pull\-request\fR

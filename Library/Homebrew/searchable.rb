@@ -32,7 +32,7 @@ module Searchable
     simplified_string = simplify_string(string)
     select do |*args|
       args = yield(*args) if block_given?
-      args = Array(args).compact
+      args = Array(args).flatten.compact
       args.any? { |arg| simplify_string(arg).include?(simplified_string) }
     end
   end

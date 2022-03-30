@@ -177,7 +177,7 @@ show the intersection of dependencies for each formula.
 * `--cask`:
   Treat all named arguments as casks.
 
-### `desc` [*`options`*] *`formula`*|*`text`*|`/`*`regex`*`/` [...]
+### `desc` [*`options`*] *`formula`*|*`cask`*|*`text`*|`/`*`regex`*`/` [...]
 
 Display *`formula`*'s name and one-line description.
 Formula descriptions are cached; the cache is created on the
@@ -189,6 +189,10 @@ first search, making that search slower than subsequent ones.
   Search just names for *`text`*. If *`text`* is flanked by slashes, it is interpreted as a regular expression.
 * `-d`, `--description`:
   Search just descriptions for *`text`*. If *`text`* is flanked by slashes, it is interpreted as a regular expression.
+* `--formula`:
+  Treat all named arguments as formulae.
+* `--cask`:
+  Treat all named arguments as casks.
 
 ### `developer` [*`subcommand`*]
 
@@ -563,7 +567,7 @@ The search for *`text`* is extended online to `homebrew/core` and `homebrew/cask
 * `--cask`:
   Search online and locally for casks.
 * `--desc`:
-  Search for formulae with a description matching *`text`* and casks with a name matching *`text`*.
+  Search for formulae with a description matching *`text`* and casks with a name or description matching *`text`*.
 * `--pull-request`:
   Search for GitHub pull requests containing *`text`*.
 * `--open`:

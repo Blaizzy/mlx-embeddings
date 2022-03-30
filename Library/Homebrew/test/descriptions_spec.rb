@@ -43,4 +43,9 @@ describe Descriptions do
       EOS
     ).to_stdout
   end
+
+  it "can print description for a cask" do
+    descriptions_hash["homebrew/cask/foo"] = ["Foo", "Cask foo"]
+    expect { descriptions.print }.to output("foo: (Foo) Cask foo\n").to_stdout
+  end
 end

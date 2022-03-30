@@ -10,15 +10,13 @@ module Homebrew
       def search_descriptions(string_or_regex, args)
         super
 
-        puts
-
         return if args.formula?
 
+        puts unless args.cask?
         ohai "Casks"
-        Cask::Cask.all.extend(Searchable)
-                  .search(string_or_regex, &:name)
-                  .each do |cask|
-          puts "#{Tty.bold}#{cask.token}:#{Tty.reset} #{cask.name.join(", ")}"
+        CacheStoreDatabase.use(:cask_descriptions) do |db|
+          cache_store = CaskDescriptionCacheStore.new(db)
+          Descriptions.search(string_or_regex, :desc, cache_store).print
         end
       end
 
@@ -42,9 +40,9 @@ module Homebrew
         results.sort.map do |name|
           cask = Cask::CaskLoader.load(name)
           if cask.installed?
-            pretty_installed(cask.token)
+            pretty_installed(cask.full_name)
           else
-            cask.token
+            cask.full_name
           end
         end
       end

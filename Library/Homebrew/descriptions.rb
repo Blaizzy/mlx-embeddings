@@ -45,7 +45,13 @@ class Descriptions
         full_name
       end
       description = @descriptions[full_name] || blank
-      puts "#{Tty.bold}#{printed_name}:#{Tty.reset} #{description}"
+      if description.is_a?(Array)
+        names = description[0]
+        description = description[1] || blank
+        puts "#{Tty.bold}#{printed_name}:#{Tty.reset} (#{names}) #{description}"
+      else
+        puts "#{Tty.bold}#{printed_name}:#{Tty.reset} #{description}"
+      end
     end
   end
 
