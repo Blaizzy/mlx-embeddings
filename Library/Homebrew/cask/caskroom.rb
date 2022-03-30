@@ -12,7 +12,14 @@ module Cask
 
     sig { returns(Pathname) }
     def self.path
-      @path ||= HOMEBREW_PREFIX.join("Caskroom")
+      @path ||= HOMEBREW_PREFIX/"Caskroom"
+    end
+
+    sig { returns(T::Boolean) }
+    def self.any_casks_installed?
+      return false unless path.exist?
+
+      path.children.select(&:directory?).any?
     end
 
     sig { void }
@@ -36,7 +43,7 @@ module Cask
     def self.casks(config: nil)
       return [] unless path.exist?
 
-      Pathname.glob(path.join("*")).sort.select(&:directory?).map do |path|
+      path.children.select(&:directory?).sort.map do |path|
         token = path.basename.to_s
 
         if (tap_path = CaskLoader.tap_paths(token).first)
