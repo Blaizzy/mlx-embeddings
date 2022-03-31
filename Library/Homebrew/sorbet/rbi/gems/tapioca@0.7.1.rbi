@@ -577,6 +577,7 @@ module Tapioca::Dsl; end
 class Tapioca::Dsl::Compiler
   extend T::Generic
   include ::Tapioca::Runtime::Reflection
+  include ::Tapioca::SignaturesHelper
   include ::Tapioca::Dsl::Helpers::ParamHelper
   extend ::Tapioca::Runtime::Reflection
 
@@ -648,6 +649,8 @@ Tapioca::Dsl::Compilers::NAMESPACES = T.let(T.unsafe(nil), Array)
 module Tapioca::Dsl::Helpers; end
 
 module Tapioca::Dsl::Helpers::ParamHelper
+  include ::Tapioca::SignaturesHelper
+
   sig { params(name: ::String, type: ::String).returns(::RBI::TypedParam) }
   def create_block_param(name, type:); end
 
@@ -712,6 +715,9 @@ class Tapioca::Dsl::Pipeline
   def run(&blk); end
 
   private
+
+  sig { params(constants: T::Set[::Module]).returns(T::Set[::Module]) }
+  def filter_anonymous_and_reloaded_constants(constants); end
 
   sig do
     params(
@@ -911,7 +917,7 @@ end
 
 class Tapioca::Gem::Listeners::SorbetSignatures < ::Tapioca::Gem::Listeners::Base
   include ::Tapioca::Runtime::Reflection
-  include ::Tapioca::RBIHelper
+  include ::Tapioca::SignaturesHelper
 
   private
 
@@ -1007,7 +1013,7 @@ end
 
 class Tapioca::Gem::Pipeline
   include ::Tapioca::Runtime::Reflection
-  include ::Tapioca::RBIHelper
+  include ::Tapioca::SignaturesHelper
 
   sig { params(gem: ::Tapioca::Gemfile::GemSpec, include_doc: T::Boolean).void }
   def initialize(gem, include_doc: T.unsafe(nil)); end
@@ -1245,11 +1251,6 @@ class Tapioca::RBIFormatter < ::RBI::Formatter
 
   sig { params(file: ::RBI::File, command: ::String, reason: T.nilable(::String)).void }
   def write_header!(file, command, reason: T.unsafe(nil)); end
-end
-
-module Tapioca::RBIHelper
-  sig { params(sig_string: ::String).returns(::String) }
-  def sanitize_signature_types(sig_string); end
 end
 
 module Tapioca::Runtime; end
@@ -1527,6 +1528,11 @@ module Tapioca::ShimsHelper
 
   sig { params(nodes: T::Array[::RBI::Node], shim_rbi_dir: ::String).returns(T::Boolean) }
   def shims_have_duplicates?(nodes, shim_rbi_dir); end
+end
+
+module Tapioca::SignaturesHelper
+  sig { params(sig_string: ::String).returns(::String) }
+  def sanitize_signature_types(sig_string); end
 end
 
 module Tapioca::SorbetHelper
