@@ -181,6 +181,7 @@
 /docs/bin
 /docs/.jekyll-metadata
 /docs/vendor
+/docs/Gemfile.lock
 
 # Unignore our root-level metadata files.
 !/.dockerignore
