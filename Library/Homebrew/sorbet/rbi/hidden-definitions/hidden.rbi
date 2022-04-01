@@ -6506,14 +6506,6 @@ module Socket::Constants
   TCP_NOPUSH = ::T.let(nil, ::T.untyped)
 end
 
-class SortedSet
-  def initialize(*args, &block); end
-end
-
-class SortedSet
-  def self.setup(); end
-end
-
 class Spoom::Cli::Bump
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
