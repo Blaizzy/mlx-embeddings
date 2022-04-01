@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Re-run this workflow
         if: github.event_name == 'schedule' || github.event.action == 'closed'
-        uses: reitermarkus/rerun-workflow@64cba9e834916060e77b7dad424d086837fdd0a6
+        uses: reitermarkus/rerun-workflow@1845d3165cd8cb393ea716843ef2aad449bf94b6
         with:
           token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
           continuous-label: waiting for feedback
