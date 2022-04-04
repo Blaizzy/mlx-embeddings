@@ -110,11 +110,12 @@ module Homebrew
 
   def get_package(tap, subject_name, subject_path, content)
     if subject_path.dirname == tap.cask_dir
-      return begin
+      cask = begin
         Cask::CaskLoader.load(content.dup)
       rescue Cask::CaskUnavailableError
         nil
       end
+      return cask
     end
 
     begin
@@ -128,7 +129,8 @@ module Homebrew
     subject_path = Pathname(subject_path)
     tap          = Tap.from_path(subject_path)
     subject_name = subject_path.basename.to_s.chomp(".rb")
-    name         = subject_path.dirname == tap.cask_dir ? "cask" : "formula"
+    is_cask      = subject_path.dirname == tap.cask_dir
+    name         = is_cask ? "cask" : "formula"
 
     new_package = get_package(tap, subject_name, subject_path, new_contents)
 
@@ -136,11 +138,11 @@ module Homebrew
 
     old_package = get_package(tap, subject_name, subject_path, old_contents)
 
-    return "#{subject_name} #{new_package.version} (new #{name})" if old_package.blank?
-
-    if old_package.version != new_package.version
+    if old_package.blank?
+     "#{subject_name} #{new_package.version} (new #{name})" 
+    elsif old_package.version != new_package.version
       "#{subject_name} #{new_package.version}"
-    elsif old_package.respond_to?(:revision) && old_package.revision != new_package.revision
+    elsif !is_cask && old_package.revision != new_package.revision
       "#{subject_name}: revision #{reason}".strip
     else
       "#{subject_name}: #{reason || "rebuild"}".strip
@@ -209,7 +211,7 @@ module Homebrew
     # Determine the bump subject by comparing the original state of the tree to its current state.
     package_file = Pathname.new(path) / file
     old_package = Utils::Git.file_at_commit(path, file, "#{commits.first}^")
-    new_package = File.read(package_file)
+    new_package = package_file.read
     bump_subject = determine_bump_subject(old_package, new_package, package_file, reason: reason)
 
     # Commit with the new subject, body, and trailers.
@@ -234,7 +236,8 @@ module Homebrew
         files_to_commits[file] ||= []
         files_to_commits[file] << commit
         tap_file = tap.path/file
-        if (tap_file.dirname == tap.formula_dir || tap_file.dirname == tap.cask_dir) && File.extname(file) == ".rb"
+        if (tap_file.dirname == tap.formula_dir || tap_file.dirname == tap.cask_dir) && 
+           File.extname(file) == ".rb"
           next
         end
 
