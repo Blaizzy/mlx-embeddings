@@ -39,7 +39,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/x86_64-darwin-1
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/hpricot-0.8.6/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/http-cookie-1.0.4/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/uri_template-0.7.0/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/json_schemer-0.2.19/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/json_schemer-0.2.20/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/mime-types-data-3.2022.0105/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/mime-types-3.4.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/net-http-digest_auth-1.4.1/lib"
