@@ -236,7 +236,7 @@ module Homebrew
         files_to_commits[file] ||= []
         files_to_commits[file] << commit
         tap_file = tap.path/file
-        if (tap_file.dirname == tap.formula_dir || tap_file.dirname == tap.cask_dir) && 
+        if (tap_file.dirname == tap.formula_dir || tap_file.dirname == tap.cask_dir) &&
            File.extname(file) == ".rb"
           next
         end
