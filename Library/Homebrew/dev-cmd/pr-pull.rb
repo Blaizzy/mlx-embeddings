@@ -139,7 +139,7 @@ module Homebrew
     old_package = get_package(tap, subject_name, subject_path, old_contents)
 
     if old_package.blank?
-     "#{subject_name} #{new_package.version} (new #{name})" 
+      "#{subject_name} #{new_package.version} (new #{name})"
     elsif old_package.version != new_package.version
       "#{subject_name} #{new_package.version}"
     elsif !is_cask && old_package.revision != new_package.revision
