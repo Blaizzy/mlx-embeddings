@@ -29,7 +29,7 @@ module Cask
 
     def initialize(cask, command: SystemCommand, force: false,
                    skip_cask_deps: false, binaries: true, verbose: false,
-                   require_sha: false, upgrade: false,
+                   zap: false, require_sha: false, upgrade: false,
                    installed_as_dependency: false, quarantine: true,
                    verify_download_integrity: true, quiet: false)
       @cask = cask
@@ -38,6 +38,7 @@ module Cask
       @skip_cask_deps = skip_cask_deps
       @binaries = binaries
       @verbose = verbose
+      @zap = zap
       @require_sha = require_sha
       @reinstall = false
       @upgrade = upgrade
@@ -48,7 +49,7 @@ module Cask
     end
 
     attr_predicate :binaries?, :force?, :skip_cask_deps?, :require_sha?,
-                   :reinstall?, :upgrade?, :verbose?, :installed_as_dependency?,
+                   :reinstall?, :upgrade?, :verbose?, :zap?, :installed_as_dependency?,
                    :quarantine?, :quiet?
 
     def self.caveats(cask)
@@ -157,7 +158,8 @@ module Cask
       installed_cask = installed_caskfile.exist? ? CaskLoader.load(installed_caskfile) : @cask
 
       # Always force uninstallation, ignore method parameter
-      Installer.new(installed_cask, verbose: verbose?, force: true, upgrade: upgrade?).uninstall
+      cask_installer = Installer.new(installed_cask, verbose: verbose?, force: true, upgrade: upgrade?)
+      zap? ? cask_installer.zap : cask_installer.uninstall
     end
 
     sig { returns(String) }

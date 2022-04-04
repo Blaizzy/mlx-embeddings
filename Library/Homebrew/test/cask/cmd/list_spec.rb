@@ -108,7 +108,12 @@ describe Cask::Cmd::List, :cask do
             "artifacts": [
               [
                 "Caffeine.app"
-              ]
+              ],
+              {
+                "trash": "$HOME/support/fixtures/cask/caffeine/org.example.caffeine.plist",
+                "signal": {
+                }
+              }
             ],
             "caveats": null,
             "depends_on": {
