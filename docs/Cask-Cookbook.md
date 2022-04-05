@@ -1372,7 +1372,7 @@ Details of software names and brands will inevitably be lost in the conversion t
 
 * If the result conflicts with the name of an existing Cask, make yours unique by prepending the name of the vendor or developer, followed by a hyphen. Example: [unison.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/unison.rb) and [panic-unison.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/panic-unison.rb).
 
-* Inevitably, there are a small number of exceptions not covered by the rules. Don’t hesitate to [use the forum](https://github.com/Homebrew/discussions/discussions) if you have a problem.
+* Inevitably, there are a small number of exceptions not covered by the rules. Don’t hesitate to [use the forum](https://github.com/orgs/Homebrew/discussions) if you have a problem.
 
 ### Converting to ASCII
 
