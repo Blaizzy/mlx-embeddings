@@ -240,7 +240,7 @@ jobs:
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
+      - uses: codecov/codecov-action@e3c560433a6cc60aec8812599b7844a7b4fa0d71
         with:
           files: Library/Homebrew/test/coverage/coverage.xml
 
@@ -341,6 +341,6 @@ jobs:
 
       - run: brew test-bot --only-formulae --test-default-formula
 
-      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
+      - uses: codecov/codecov-action@e3c560433a6cc60aec8812599b7844a7b4fa0d71
         with:
           files: Library/Homebrew/test/coverage/coverage.xml
