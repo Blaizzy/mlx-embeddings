@@ -52,7 +52,7 @@ Former maintainers with significant contributions include [Claudia Pellegrino](h
 
 ## Community
 
-- [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions)
+- [Homebrew/discussions (forum)](https://github.com/orgs/Homebrew/discussions)
 - [@MacHomebrew (Twitter)](https://twitter.com/MacHomebrew)
 
 ## License
