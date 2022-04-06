@@ -98,7 +98,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-static-0.5.985
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-0.5.9851/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-stub-0.2.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/thor-1.2.1/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/spoom-1.1.9/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/spoom-1.1.11/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/yard-0.9.27/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/yard-sorbet-0.6.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tapioca-0.7.1/lib"
