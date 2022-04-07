@@ -66,18 +66,26 @@ module Homebrew
     args = fetch_args.parse
 
     bucket = if args.deps?
-      args.named.to_formulae_and_casks.flat_map do |formula_or_cask|
+      args.named.to_formulae_and_casks(prefer_loading_from_api: true).flat_map do |formula_or_cask|
         case formula_or_cask
         when Formula
           f = formula_or_cask
 
-          [f, *f.recursive_dependencies.map(&:to_formula)]
+          deps = if Homebrew::EnvConfig.install_from_api?
+            f.recursive_dependencies do |_, dependency|
+              Dependency.prune if EnvConfig.install_from_api? && (dependency.build? || dependency.test?)
+            end
+          else
+            f.recursive_dependencies
+          end
+
+          [f, *deps.map(&:to_formula)]
         else
           formula_or_cask
         end
       end
     else
-      args.named.to_formulae_and_casks
+      args.named.to_formulae_and_casks(prefer_loading_from_api: true)
     end.uniq
 
     puts "Fetching: #{bucket * ", "}" if bucket.size > 1
