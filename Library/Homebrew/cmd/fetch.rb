@@ -71,7 +71,15 @@ module Homebrew
         when Formula
           f = formula_or_cask
 
-          [f, *f.recursive_dependencies.map(&:to_formula)]
+          deps = if Homebrew::EnvConfig.install_from_api?
+            f.recursive_dependencies do |_, dependency|
+              Dependency.prune if EnvConfig.install_from_api? && (dependency.build? || dependency.test?)
+            end
+          else
+            f.recursive_dependencies
+          end
+
+          [f, *deps.map(&:to_formula)]
         else
           formula_or_cask
         end
