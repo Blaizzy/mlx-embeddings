@@ -87,19 +87,19 @@ module Superenv
   # @private
   def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
     sdk = formula ? MacOS.sdk_for_formula(formula) : MacOS.sdk
-    if MacOS.sdk_root_needed? || sdk&.source == :xcode
-      Homebrew::Diagnostic.checks(:fatal_setup_build_environment_checks)
-      self["HOMEBREW_SDKROOT"] = sdk.path
+    is_xcode_sdk = sdk&.source == :xcode
 
-      self["HOMEBREW_DEVELOPER_DIR"] = if sdk.source == :xcode
-        MacOS::Xcode.prefix
-      else
-        MacOS::CLT::PKG_PATH
-      end
-    else
-      self["HOMEBREW_SDKROOT"] = nil
-      self["HOMEBREW_DEVELOPER_DIR"] = nil
+    self["HOMEBREW_SDKROOT"] = if is_xcode_sdk || MacOS.sdk_root_needed?
+      Homebrew::Diagnostic.checks(:fatal_setup_build_environment_checks)
+      sdk.path
     end
+
+    self["HOMEBREW_DEVELOPER_DIR"] = if is_xcode_sdk
+      MacOS::Xcode.prefix
+    else
+      MacOS::CLT::PKG_PATH
+    end
+
     generic_setup_build_environment(
       formula: formula, cc: cc, build_bottle: build_bottle,
       bottle_arch: bottle_arch, testing_formula: testing_formula
