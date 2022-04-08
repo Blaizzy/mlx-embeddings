@@ -327,7 +327,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
     @resolved_url_and_basename = [url, parse_basename(url)]
   end
 
-  def parse_basename(url)
+  def parse_basename(url, search_query: true)
     uri_path = if url.match?(URI::DEFAULT_PARSER.make_regexp)
       uri = URI(url)
 
@@ -339,7 +339,11 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
         end
       end
 
-      uri.query ? "#{uri.path}?#{uri.query}" : uri.path
+      if uri.query && search_query
+        "#{uri.path}?#{uri.query}"
+      else
+        uri.path
+      end
     else
       url
     end
@@ -509,8 +513,8 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
            .map(&:to_i)
            .last
 
-    basename = filenames.last || parse_basename(redirect_url)
     is_redirection = url != redirect_url
+    basename = filenames.last || parse_basename(redirect_url, search_query: !is_redirection)
 
     @resolved_info_cache[url] = [redirect_url, basename, time, file_size, is_redirection]
   end
