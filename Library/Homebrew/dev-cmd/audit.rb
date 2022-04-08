@@ -129,7 +129,7 @@ module Homebrew
       end
     elsif args.installed?
       no_named_args = true
-      [Formula.installed, Cask::Cask.casks]
+      [Formula.installed, Cask::Caskroom.casks]
     elsif args.no_named?
       no_named_args = true
       [Formula.all, Cask::Cask.all]
