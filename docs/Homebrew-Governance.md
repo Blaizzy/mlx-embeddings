@@ -50,7 +50,7 @@
 
 1. The financial administration of Homebrew, organisation of the AGM, enforcement of the code of conduct and removal of members are performed by the PLC. The PLC will represent Homebrew in all dealings with OpenCollective.
 
-2. The PLC consists of five members including the Project Leader. Committee members are elected by majority vote of Homebrew members. Each PLC member will serve a term of two years or until the member's successor is elected. Any sudden vacancy in the PLC will be filled by the usual procedure for electing PLC members at the next general meeting, typically the next AGM.
+2. The PLC consists of five members including the Project Leader. Committee members are elected by Homebrew members in a [Meek Single Transferable Vote](https://en.wikipedia.org/wiki/Counting_single_transferable_votes#Meek) election using the Droop quota. Each PLC member will serve a term of two years or until the member's successor is elected. Any sudden vacancy in the PLC will be filled by the usual procedure for electing PLC members at the next general meeting, typically the next AGM.
 
 3. Three weeks prior to the AGM, the PLC will nominate at least one candidate for each upcoming vacant seat. Any member may also nominate any other member as a candidate for the PLC at this time.
 
@@ -80,7 +80,7 @@
 
 1. The Project Leader will represent Homebrew publicly, manage all day-to-day technical decisions, and resolve disputes related to the operation of Homebrew between maintainers, members, other contributors, and users.
 
-2. The Project Leader will be elected annually by a majority vote of Homebrew members. The PLC will nominate at least one candidate for Project Leader. Any member may nominate a candidate, or self-nominate. Nominations must be announced to the membership three weeks before the AGM.
+2. The Project Leader will be elected annually by Homebrew members in a [Schulze Condorcet method](https://en.wikipedia.org/wiki/Schulze_method) (aka 'beatpath') election. The PLC will nominate at least one candidate for Project Leader. Any member may nominate a candidate, or self-nominate. Nominations must be announced to the membership three weeks before the AGM.
 
 3. Any vacancy of the Project Leader will be filled by appointment of the PLC.
 
