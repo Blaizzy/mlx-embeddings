@@ -345,17 +345,19 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
     end
 
     uri_path = URI.decode_www_form_component(uri_path)
+    query_regex = /[^?&]+/
 
     # We need a Pathname because we've monkeypatched extname to support double
     # extensions (e.g. tar.gz).
     # Given a URL like https://example.com/download.php?file=foo-1.0.tar.gz
     # the basename we want is "foo-1.0.tar.gz", not "download.php".
     Pathname.new(uri_path).ascend do |path|
-      ext = path.extname[/[^?&]+/]
-      return path.basename.to_s[/[^?&]+#{Regexp.escape(ext)}/] if ext
+      ext = path.extname[query_regex]
+      return path.basename.to_s[/#{query_regex.source}#{Regexp.escape(ext)}/] if ext
     end
 
-    File.basename(uri_path)
+    # Strip query string
+    File.basename(uri_path)[query_regex]
   end
 end
 
