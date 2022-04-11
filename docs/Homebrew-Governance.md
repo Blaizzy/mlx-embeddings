@@ -48,7 +48,7 @@
 
 ## 4. Project Leadership Committee
 
-1. The financial administration of Homebrew, organisation of the AGM, enforcement of the code of conduct and removal of members are performed by the PLC. The PLC will represent Homebrew in all dealings with OpenCollective.
+1. The financial administration of Homebrew, organisation of the AGM, enforcement of the code of conduct and removal of members are performed by the PLC. The PLC will represent Homebrew in all dealings with Open Collective.
 
 2. The PLC consists of five members including the Project Leader. Committee members are elected by Homebrew members in a [Meek Single Transferable Vote](https://en.wikipedia.org/wiki/Counting_single_transferable_votes#Meek) election using the Droop quota. Each PLC member will serve a term of two years or until the member's successor is elected. Any sudden vacancy in the PLC will be filled by the usual procedure for electing PLC members at the next general meeting, typically the next AGM.
 
