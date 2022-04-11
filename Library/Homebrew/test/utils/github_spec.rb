@@ -71,7 +71,7 @@ describe GitHub do
         described_class.get_artifact_url(
           described_class.get_workflow_run("Homebrew", "homebrew-core", 1),
         )
-      }.to raise_error(/No matching workflow run found/)
+      }.to raise_error(/No matching check suite found/)
     end
 
     it "fails to find artifacts that don't exist" do
