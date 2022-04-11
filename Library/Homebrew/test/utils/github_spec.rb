@@ -69,7 +69,7 @@ describe GitHub do
     it "fails to find a nonexistent workflow" do
       expect {
         described_class.get_artifact_url(
-          described_class.get_workflow_run("Homebrew", "homebrew-core", 1),
+          described_class.get_workflow_run("Homebrew", "homebrew-core", "1"),
         )
       }.to raise_error(/No matching check suite found/)
     end
@@ -77,14 +77,14 @@ describe GitHub do
     it "fails to find artifacts that don't exist" do
       expect {
         described_class.get_artifact_url(
-          described_class.get_workflow_run("Homebrew", "homebrew-core", 79751, artifact_name: "false_bottles"),
+          described_class.get_workflow_run("Homebrew", "homebrew-core", "79751", artifact_name: "false_bottles"),
         )
       }.to raise_error(/No artifact .+ was found/)
     end
 
     it "gets an artifact link" do
       url = described_class.get_artifact_url(
-        described_class.get_workflow_run("Homebrew", "homebrew-core", 79751, artifact_name: "bottles"),
+        described_class.get_workflow_run("Homebrew", "homebrew-core", "79751", artifact_name: "bottles"),
       )
       expect(url).to eq("https://api.github.com/repos/Homebrew/homebrew-core/actions/artifacts/70494047/zip")
     end

@@ -305,7 +305,7 @@ module GitHub
     variables = {
       user: user,
       repo: repo,
-      pr:   pr,
+      pr:   pr.to_i,
     }
     result = API.open_graphql(query, variables: variables, scopes: scopes)
 
