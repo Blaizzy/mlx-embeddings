@@ -64,7 +64,7 @@ module Homebrew
         else
           <<~EOS
             #{path} doesn't exist on disk. \
-            Run #{Formatter.identifier("brew create --set-name #{path.basename} $URL")} \
+            Run #{Formatter.identifier("brew create --formula --set-name #{path.basename} $URL")} \
             to create a new formula!
           EOS
         end
