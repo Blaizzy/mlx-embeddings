@@ -350,6 +350,10 @@ class Tap
     return unless private?
     return if quiet
 
+    path.cd do
+      return if Utils.popen_read("git", "config", "--get", "credential.helper").present?
+    end
+
     $stderr.puts <<~EOS
       It looks like you tapped a private repository. To avoid entering your
       credentials each time you update, you can use git HTTP credential
