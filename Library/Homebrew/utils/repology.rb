@@ -19,7 +19,7 @@ module Repology
     last_package_in_response += "/" if last_package_in_response.present?
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
 
-    output, errors, = curl_output(url.to_s, "--silent", use_homebrew_curl: false)
+    output, errors, = curl_output(url.to_s, "--silent", use_homebrew_curl: !curl_supports_tls13?)
     JSON.parse(output)
   rescue
     if Homebrew::EnvConfig.developer?
@@ -35,7 +35,7 @@ module Repology
     url = "https://repology.org/tools/project-by?repo=#{repository}&" \
           "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
-    output, errors, = curl_output("--location", "--silent", url.to_s, use_homebrew_curl: true)
+    output, errors, = curl_output("--location", "--silent", url.to_s, use_homebrew_curl: !curl_supports_tls13?)
 
     data = JSON.parse(output)
     { name => data }

@@ -59,12 +59,14 @@ module Homebrew
 
     limit = args.limit.to_i if args.limit.present?
 
-    begin
-      unless Pathname.new(ENV["HOMEBREW_BREWED_CURL_PATH"]).exist?
-        ensure_formula_installed!("curl", reason: "Repology queries")
+    unless Utils::Curl.curl_supports_tls13?
+      begin
+        unless Pathname.new(ENV["HOMEBREW_BREWED_CURL_PATH"]).exist?
+          ensure_formula_installed!("curl", reason: "Repology queries")
+        end
+      rescue FormulaUnavailableError
+        opoo "A newer `curl` is required for Repology queries."
       end
-    rescue FormulaUnavailableError
-      opoo "A newer `curl` is required for Repology queries."
     end
 
     if formulae_and_casks.present?
