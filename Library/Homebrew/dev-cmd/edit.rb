@@ -55,9 +55,20 @@ module Homebrew
       args.named.to_paths.select do |path|
         next path if path.exist?
 
-        raise UsageError, "#{path} doesn't exist on disk. " \
-                          "Run #{Formatter.identifier("brew create --set-name #{path.basename} $URL")} " \
-                          "to create a new formula!"
+        message = if args.cask?
+          <<~EOS
+            #{path.basename(".rb")} doesn't exist on disk. \
+            Run #{Formatter.identifier("brew create --cask --set-name #{path.basename(".rb")} $URL")} \
+            to create a new cask!
+          EOS
+        else
+          <<~EOS
+            #{path} doesn't exist on disk. \
+            Run #{Formatter.identifier("brew create --set-name #{path.basename} $URL")} \
+            to create a new formula!
+          EOS
+        end
+        raise UsageError, message
       end.presence
     end
 
