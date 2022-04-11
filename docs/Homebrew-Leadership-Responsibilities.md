@@ -12,7 +12,7 @@
 
 ### PLC Shared Responsibilities
 
-- approving OpenCollective expenses that are expected or have already been agreed upon by the PLC (e.g. Homebrew cloud usage on a personal credit card) (only one approval needed)
+- approving Open Collective expenses that are expected or have already been agreed upon by the PLC (e.g. Homebrew cloud usage on a personal credit card) (only one approval needed)
 - blocking abusive GitHub users
 - performing GitHub admin operations on the Homebrew GitHub organisation
 - performing Slack admin operations on the Homebrew Slack
@@ -53,7 +53,7 @@
 ### PL Shared Responsibilities
 
 - approving new Homebrew maintainers (only one approval needed)
-- approving OpenCollective expenses that are expected or have already been agreed upon by the PLC (e.g. Homebrew cloud usage on a personal credit card) (only one approval needed)
+- approving Open Collective expenses that are expected or have already been agreed upon by the PLC (e.g. Homebrew cloud usage on a personal credit card) (only one approval needed)
 - blocking abusive GitHub users
 - performing GitHub admin operations on the Homebrew GitHub organisation
 - performing Slack admin operations on the Homebrew Slack
