@@ -4,7 +4,7 @@
 #
 # Domain name parser based on the Public Suffix List.
 #
-# Copyright (c) 2009-2020 Simone Carletti <weppos@weppos.net>
+# Copyright (c) 2009-2022 Simone Carletti <weppos@weppos.net>
 
 module PublicSuffix
 
@@ -63,7 +63,7 @@ module PublicSuffix
     #
     # See http://publicsuffix.org/format/ for more details about input format.
     #
-    # @param  string [#each_line] the list to parse
+    # @param  input [#each_line] the list to parse
     # @param  private_domains [Boolean] whether to ignore the private domains section
     # @return [PublicSuffix::List]
     def self.parse(input, private_domains: true)
@@ -173,7 +173,7 @@ module PublicSuffix
     # @return [PublicSuffix::Rule::*]
     def find(name, default: default_rule, **options)
       rule = select(name, **options).inject do |l, r|
-        return r if r.class == Rule::Exception
+        return r if r.instance_of?(Rule::Exception)
 
         l.length > r.length ? l : r
       end
