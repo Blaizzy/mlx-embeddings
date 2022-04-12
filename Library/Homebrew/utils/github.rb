@@ -312,7 +312,7 @@ module GitHub
     commit_node = result["repository"]["pullRequest"]["commits"]["nodes"].first
     check_suite = if commit_node.present?
       commit_node["commit"]["checkSuites"]["nodes"].select do |suite|
-        suite["workflowRun"]["workflow"]["databaseId"] == workflow_id_num
+        suite.dig("workflowRun", "workflow", "databaseId") == workflow_id_num
       end
     else
       []
