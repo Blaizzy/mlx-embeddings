@@ -981,8 +981,9 @@ _brew_instal() {
     '--verbose[Print the verification and postinstall steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
+    '(--formula)--zap[For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --zap --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git --overwrite)--cask[Treat all named arguments as casks]' \
@@ -1033,8 +1034,9 @@ _brew_install() {
     '--verbose[Print the verification and postinstall steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
+    '(--formula)--zap[For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --zap --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git --overwrite)--cask[Treat all named arguments as casks]' \
@@ -1441,8 +1443,9 @@ _brew_reinstall() {
     '--verbose[Print the verification and postinstall steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
+    '(--formula)--zap[For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --zap --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formulae --build-from-source --interactive --force-bottle --keep-tmp --display-times --git)--cask[Treat all named arguments as casks]' \

@@ -803,6 +803,7 @@ __fish_brew_complete_arg 'instal' -l skip-cask-deps -d 'Skip installing cask dep
 __fish_brew_complete_arg 'instal' -l verbose -d 'Print the verification and postinstall steps'
 __fish_brew_complete_arg 'instal' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'instal' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
+__fish_brew_complete_arg 'instal' -l zap -d 'For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*'
 __fish_brew_complete_arg 'instal; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
 __fish_brew_complete_arg 'instal; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
@@ -851,6 +852,7 @@ __fish_brew_complete_arg 'install' -l skip-cask-deps -d 'Skip installing cask de
 __fish_brew_complete_arg 'install' -l verbose -d 'Print the verification and postinstall steps'
 __fish_brew_complete_arg 'install' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'install' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
+__fish_brew_complete_arg 'install' -l zap -d 'For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*'
 __fish_brew_complete_arg 'install; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
 __fish_brew_complete_arg 'install; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
@@ -1187,6 +1189,7 @@ __fish_brew_complete_arg 'reinstall' -l skip-cask-deps -d 'Skip installing cask 
 __fish_brew_complete_arg 'reinstall' -l verbose -d 'Print the verification and postinstall steps'
 __fish_brew_complete_arg 'reinstall' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'reinstall' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
+__fish_brew_complete_arg 'reinstall' -l zap -d 'For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*'
 __fish_brew_complete_arg 'reinstall; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
 __fish_brew_complete_arg 'reinstall; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 

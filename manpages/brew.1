@@ -504,6 +504,10 @@ Disable/enable quarantining of downloads (default: enabled)\.
 \fB\-\-skip\-cask\-deps\fR
 Skip installing cask dependencies\.
 .
+.TP
+\fB\-\-zap\fR
+For use with \fBbrew reinstall \-\-cask\fR\. Remove all files associated with a cask\. \fIMay remove files which are shared between applications\.\fR
+.
 .SS "\fBleaves\fR [\fI\-\-installed\-on\-request\fR] [\fI\-\-installed\-as\-dependency\fR]"
 List installed formulae that are not dependencies of another installed formula\.
 .
@@ -772,6 +776,10 @@ Disable/enable quarantining of downloads (default: enabled)\.
 .TP
 \fB\-\-skip\-cask\-deps\fR
 Skip installing cask dependencies\.
+.
+.TP
+\fB\-\-zap\fR
+For use with \fBbrew reinstall \-\-cask\fR\. Remove all files associated with a cask\. \fIMay remove files which are shared between applications\.\fR
 .
 .SS "\fBsearch\fR, \fB\-S\fR [\fIoptions\fR] \fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
 Perform a substring search of cask tokens and formula names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\. The search for \fItext\fR is extended online to \fBhomebrew/core\fR and \fBhomebrew/cask\fR\.
