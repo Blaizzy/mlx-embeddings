@@ -529,6 +529,8 @@ class Keg
     elf_files
   end
 
+  def codesign_patched_binary(file); end
+
   private
 
   def resolve_any_conflicts(dst, dry_run: false, verbose: false, overwrite: false)
