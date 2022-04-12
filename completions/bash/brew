@@ -1099,6 +1099,7 @@ _brew_instal() {
       --verbose
       --vst-plugindir
       --vst3-plugindir
+      --zap
       "
       return
       ;;
@@ -1156,6 +1157,7 @@ _brew_install() {
       --verbose
       --vst-plugindir
       --vst3-plugindir
+      --zap
       "
       return
       ;;
@@ -1708,6 +1710,7 @@ _brew_reinstall() {
       --verbose
       --vst-plugindir
       --vst3-plugindir
+      --zap
       "
       return
       ;;

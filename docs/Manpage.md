@@ -364,6 +364,8 @@ is already installed but outdated.
   Disable/enable quarantining of downloads (default: enabled).
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
+* `--zap`:
+  For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*
 
 ### `leaves` [*`--installed-on-request`*] [*`--installed-as-dependency`*]
 
@@ -555,6 +557,8 @@ reinstalled formulae or, every 30 days, for all formulae.
   Disable/enable quarantining of downloads (default: enabled).
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
+* `--zap`:
+  For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*
 
 ### `search`, `-S` [*`options`*] *`text`*|`/`*`regex`*`/` [...]
 
