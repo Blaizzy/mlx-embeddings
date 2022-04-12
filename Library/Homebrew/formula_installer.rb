@@ -460,7 +460,7 @@ class FormulaInstaller
       end
       s = formula_contents.gsub(/  bottle do.+?end\n\n?/m, "")
       brew_prefix = formula.prefix/".brew"
-      brew_prefix.mkdir
+      brew_prefix.mkpath
       Pathname(brew_prefix/"#{formula.name}.rb").atomic_write(s)
 
       keg = Keg.new(formula.prefix)
