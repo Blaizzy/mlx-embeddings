@@ -285,12 +285,14 @@ module FormulaCellarChecks
   end
 
   def check_cpuid_instruction(formula)
-    return unless formula.prefix.directory?
-    # TODO: add methods to `utils/ast` to allow checking for method use
-    return unless (formula.prefix/".brew/#{formula.name}.rb").read.include? "ENV.runtime_cpu_detection"
     # Checking for `cpuid` only makes sense on Intel:
     # https://en.wikipedia.org/wiki/CPUID
     return unless Hardware::CPU.intel?
+
+    dot_brew_formula = formula.prefix/".brew/#{formula.name}.rb"
+    return unless dot_brew_formula.exist?
+    # TODO: add methods to `utils/ast` to allow checking for method use
+    return unless dot_brew_formula.read.include? "ENV.runtime_cpu_detection"
 
     # macOS `objdump` is a bit slow, so we prioritise llvm's `llvm-objdump` (~5.7x faster)
     # or binutils' `objdump` (~1.8x faster) if they are installed.
