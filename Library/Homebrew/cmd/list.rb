@@ -172,6 +172,8 @@ module Homebrew
         !Cask::Caskroom.path.join(n).exist?
       end.to_formulae_and_casks(only: :cask)
     end
+    return if casks.blank?
+
     Cask::Cmd::List.list_casks(
       *casks,
       one:       args.public_send(:"1?"),
