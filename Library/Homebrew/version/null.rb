@@ -51,6 +51,7 @@ class Version
     alias requires_sse41? requires_nehalem_cpu?
     alias requires_sse42? requires_nehalem_cpu?
     alias requires_popcnt? requires_nehalem_cpu?
+    alias outdated_release? requires_nehalem_cpu?
 
     sig { override.returns(Token) }
     def major
