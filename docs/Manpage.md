@@ -1756,7 +1756,7 @@ Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 [`sudo`] `brew services run` (*`formula`*|`--all`)
 <br>Run the service *`formula`* without registering to launch at login (or boot).
 
-[`sudo`] `brew services start` (*`formula`*|`--all`)
+[`sudo`] `brew services start` (*`formula`*|`--all`|`--file=`)
 <br>Start the service *`formula`* immediately and register it to launch at login (or boot).
 
 [`sudo`] `brew services stop` (*`formula`*|`--all`)
@@ -1772,7 +1772,7 @@ Otherwise, operate on `~/Library/LaunchAgents` (started at login).
 <br>Remove all unused services.
 
 * `--file`:
-  Use the plist file from this location to `start` or `run` the service.
+  Use the service file from this location to `start` the service.
 * `--all`:
   Run *`subcommand`* on all services.
 * `--json`:
