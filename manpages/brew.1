@@ -2477,7 +2477,7 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
     Run the service \fIformula\fR without registering to launch at login (or boot)\.
 .
 .P
-[\fBsudo\fR] \fBbrew services start\fR (\fIformula\fR|\fB\-\-all\fR)
+[\fBsudo\fR] \fBbrew services start\fR (\fIformula\fR|\fB\-\-all\fR|\fB\-\-file=\fR)
     Start the service \fIformula\fR immediately and register it to launch at login (or boot)\.
 .
 .P
@@ -2498,7 +2498,7 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
 .
 .TP
 \fB\-\-file\fR
-Use the plist file from this location to \fBstart\fR or \fBrun\fR the service\.
+Use the service file from this location to \fBstart\fR the service\.
 .
 .TP
 \fB\-\-all\fR
