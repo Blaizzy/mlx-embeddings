@@ -45,6 +45,19 @@ describe Homebrew::Service do
     end
   end
 
+  describe "#keep_alive" do
+    it "throws for unexpected keys" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        keep_alive test: "key"
+      end
+
+      expect {
+        f.service.manual_command
+      }.to raise_error TypeError, "Service#keep_alive allows only [:always, :successful_exit, :crashed, :path]"
+    end
+  end
+
   describe "#run_type" do
     it "throws for unexpected type" do
       f.class.service do
@@ -55,6 +68,41 @@ describe Homebrew::Service do
       expect {
         f.service.manual_command
       }.to raise_error TypeError, "Service#run_type allows: 'immediate'/'interval'/'cron'"
+    end
+  end
+
+  describe "#sockets" do
+    it "throws for missing type" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        sockets "127.0.0.1:80"
+      end
+
+      expect {
+        f.service.manual_command
+      }.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
+    end
+
+    it "throws for missing host" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        sockets "tcp://:80"
+      end
+
+      expect {
+        f.service.manual_command
+      }.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
+    end
+
+    it "throws for missing port" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        sockets "tcp://127.0.0.1"
+      end
+
+      expect {
+        f.service.manual_command
+      }.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
   end
 
@@ -159,6 +207,47 @@ describe Homebrew::Service do
       expect(plist).to eq(plist_expect)
     end
 
+    it "returns valid plist with socket" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        sockets "tcp://127.0.0.1:80"
+      end
+
+      plist = f.service.to_plist
+      plist_expect = <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        \t<key>Label</key>
+        \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>ProgramArguments</key>
+        \t<array>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t\t<string>test</string>
+        \t</array>
+        \t<key>RunAtLoad</key>
+        \t<true/>
+        \t<key>Sockets</key>
+        \t<dict>
+        \t\t<key>Listeners</key>
+        \t\t<dict>
+        \t\t\t<key>SockFamily</key>
+        \t\t\t<string>IPv4v6</string>
+        \t\t\t<key>SockNodeName</key>
+        \t\t\t<string>127.0.0.1</string>
+        \t\t\t<key>SockProtocol</key>
+        \t\t\t<string>TCP</string>
+        \t\t\t<key>SockServiceName</key>
+        \t\t\t<string>80</string>
+        \t\t</dict>
+        \t</dict>
+        </dict>
+        </plist>
+      EOS
+      expect(plist).to eq(plist_expect)
+    end
+
     it "returns valid partial plist" do
       f.class.service do
         run opt_bin/"beanstalkd"
@@ -242,6 +331,99 @@ describe Homebrew::Service do
         \t\t<key>Minute</key>
         \t\t<integer>0</integer>
         \t</dict>
+        </dict>
+        </plist>
+      EOS
+      expect(plist).to eq(plist_expect)
+    end
+
+    it "returns valid keepalive-exit plist" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        keep_alive successful_exit: false
+      end
+
+      plist = f.service.to_plist
+      plist_expect = <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        \t<key>KeepAlive</key>
+        \t<dict>
+        \t\t<key>SuccessfulExit</key>
+        \t\t<false/>
+        \t</dict>
+        \t<key>Label</key>
+        \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>ProgramArguments</key>
+        \t<array>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t</array>
+        \t<key>RunAtLoad</key>
+        \t<true/>
+        </dict>
+        </plist>
+      EOS
+      expect(plist).to eq(plist_expect)
+    end
+
+    it "returns valid keepalive-crashed plist" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        keep_alive crashed: true
+      end
+
+      plist = f.service.to_plist
+      plist_expect = <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        \t<key>KeepAlive</key>
+        \t<dict>
+        \t\t<key>Crashed</key>
+        \t\t<true/>
+        \t</dict>
+        \t<key>Label</key>
+        \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>ProgramArguments</key>
+        \t<array>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t</array>
+        \t<key>RunAtLoad</key>
+        \t<true/>
+        </dict>
+        </plist>
+      EOS
+      expect(plist).to eq(plist_expect)
+    end
+
+    it "returns valid keepalive-path plist" do
+      f.class.service do
+        run opt_bin/"beanstalkd"
+        keep_alive path: opt_pkgshare/"test-path"
+      end
+
+      plist = f.service.to_plist
+      plist_expect = <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        \t<key>KeepAlive</key>
+        \t<dict>
+        \t\t<key>PathState</key>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/share/formula_name/test-path</string>
+        \t</dict>
+        \t<key>Label</key>
+        \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>ProgramArguments</key>
+        \t<array>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t</array>
+        \t<key>RunAtLoad</key>
+        \t<true/>
         </dict>
         </plist>
       EOS
@@ -426,6 +608,15 @@ describe Homebrew::Service do
   end
 
   describe "#keep_alive?" do
+    it "returns true when keep_alive set to hash" do
+      f.class.service do
+        run [opt_bin/"beanstalkd", "test"]
+        keep_alive crashed: true
+      end
+
+      expect(f.service.keep_alive?).to be(true)
+    end
+
     it "returns true when keep_alive set to true" do
       f.class.service do
         run [opt_bin/"beanstalkd", "test"]
