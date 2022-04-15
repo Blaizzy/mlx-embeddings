@@ -124,7 +124,7 @@ module Homebrew
 
     if initial_revision != current_revision
       update_preinstall_header args: args
-      puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
+
       updated = true
 
       old_tag = Settings.read "latesttag"
@@ -133,7 +133,13 @@ module Homebrew
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
-      new_repository_version = new_tag if new_tag != old_tag
+      if old_tag.blank? || (new_tag == old_tag)
+        puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
+      else
+        new_repository_version = new_tag
+        puts "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
+             "to #{new_tag} (#{shorten_revision(current_revision)})."
+      end
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
