@@ -5,8 +5,6 @@ on:
    branches: [ master ]
  pull_request:
    branches: [ master ]
- schedule:
-   - cron: '30 2 * * 0'
 
 jobs:
  analyze:
@@ -19,8 +17,6 @@ jobs:
 
    strategy:
      fail-fast: false
-     matrix:
-       language: [ 'ruby' ]
 
    steps:
    - name: Checkout repository
@@ -29,7 +25,7 @@ jobs:
    - name: Initialize CodeQL
      uses: github/codeql-action/init@v2
      with:
-       languages: ${{ matrix.language }}
+       languages: ruby
        config-file: ./.github/codeql/codeql-config.yml
 
    - name: Perform CodeQL Analysis
