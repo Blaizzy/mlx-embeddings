@@ -383,13 +383,13 @@ module Homebrew
 
   def determine_mirror(url)
     case url
-    when %r{.*ftp.gnu.org/gnu.*}
+    when %r{.*ftp\.gnu\.org/gnu.*}
       url.sub "ftp.gnu.org/gnu", "ftpmirror.gnu.org"
-    when %r{.*download.savannah.gnu.org/*}
+    when %r{.*download\.savannah\.gnu\.org/*}
       url.sub "download.savannah.gnu.org", "download-mirror.savannah.gnu.org"
-    when %r{.*www.apache.org/dyn/closer.lua\?path=.*}
+    when %r{.*www\.apache\.org/dyn/closer\.lua\?path=.*}
       url.sub "www.apache.org/dyn/closer.lua?path=", "archive.apache.org/dist/"
-    when %r{.*mirrors.ocf.berkeley.edu/debian.*}
+    when %r{.*mirrors\.ocf\.berkeley\.edu/debian.*}
       url.sub "mirrors.ocf.berkeley.edu/debian", "mirrorservice.org/sites/ftp.debian.org/debian"
     end
   end
