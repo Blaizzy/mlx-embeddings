@@ -177,7 +177,7 @@ module RuboCop
           end
 
           # Check for new-url Google Code download URLs, https:// is preferred
-          google_code_pattern = Regexp.union([%r{^http://.*\.googlecode\.com/files.*},
+          google_code_pattern = Regexp.union([%r{^http://[A-Za-z0-9\-.]*\.googlecode\.com/files.*},
                                               %r{^http://code\.google\.com/}])
           audit_urls(urls, google_code_pattern) do |_, url|
             problem "Please use https:// for #{url}"
