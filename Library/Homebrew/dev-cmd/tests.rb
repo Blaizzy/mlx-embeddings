@@ -26,11 +26,15 @@ module Homebrew
                           "official external commands."
       switch "--byebug",
              description: "Enable debugging using byebug."
+      switch "--changed",
+             description: "Only runs tests on files that were changed from the master branch."
       flag   "--only=",
              description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a "\
                           "specific line."
       flag   "--seed=",
              description: "Randomise tests with the specified <value> instead of a random seed."
+
+      conflicts "--changed", "--only"
 
       named_args :none
     end
@@ -124,8 +128,26 @@ module Homebrew
           parallel = false
           ["test/#{test_name}_spec.rb:#{line}"]
         end
+      elsif args.changed?
+        changed_files = Utils.popen_read("git", "diff", "--name-only", "master")
+
+        raise UsageError, "No files have been changed from the master branch!" if changed_files.blank?
+
+        filestub_regex = %r{Library/Homebrew/([\w/-]+).rb}
+        changed_files.scan(filestub_regex)
+                     .map { |filestub| Pathname("test/#{filestub.last}_spec.rb") }
+                     .select(&:exist?)
       else
         Dir.glob("test/**/*_spec.rb")
+      end
+
+      if files.blank?
+        raise UsageError, "The --only= argument requires a valid file or folder name!" if args.only
+
+        if args.changed?
+          opoo "No tests are directly associated with the changed files!"
+          return
+        end
       end
 
       parallel_rspec_log_name = "parallel_runtime_rspec"
