@@ -21,7 +21,7 @@ module RuboCop
           end
 
           # GNU URLs; doesn't apply to mirrors
-          gnu_pattern = %r{^(?:https?|ftp)://ftpmirror.gnu.org/(.*)}
+          gnu_pattern = %r{^(?:https?|ftp)://ftpmirror\.gnu\.org/(.*)}
           audit_urls(urls, gnu_pattern) do |match, url|
             problem "Please use \"https://ftp.gnu.org/gnu/#{match[1]}\" instead of #{url}."
           end
@@ -267,13 +267,13 @@ module RuboCop
           urls += mirrors
 
           # Check pypi URLs
-          pypi_pattern = %r{^https?://pypi.python.org/}
+          pypi_pattern = %r{^https?://pypi\.python\.org/}
           audit_urls(urls, pypi_pattern) do |_, url|
             problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
           end
 
           # Require long files.pythonhosted.org URLs
-          pythonhosted_pattern = %r{^https?://files.pythonhosted.org/packages/source/}
+          pythonhosted_pattern = %r{^https?://files\.pythonhosted\.org/packages/source/}
           audit_urls(urls, pythonhosted_pattern) do |_, url|
             problem "use the `Source` url found on PyPI downloads page (`#{get_pypi_url(url)}`)"
           end
