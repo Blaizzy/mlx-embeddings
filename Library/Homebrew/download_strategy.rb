@@ -1404,18 +1404,18 @@ class DownloadStrategyDetector
     when %r{^https?://www\.apache\.org/dyn/closer\.cgi},
          %r{^https?://www\.apache\.org/dyn/closer\.lua}
       CurlApacheMirrorDownloadStrategy
-    when %r{^https?://(.+?\.)?googlecode\.com/svn},
+    when %r{^https?://([A-Za-z0-9\-.]+\.)?googlecode\.com/svn},
          %r{^https?://svn\.},
          %r{^svn://},
          %r{^svn\+http://},
          %r{^http://svn\.apache\.org/repos/},
-         %r{^https?://(.+?\.)?sourceforge\.net/svnroot/}
+         %r{^https?://([A-Za-z0-9\-.]+\.)?sourceforge\.net/svnroot/}
       SubversionDownloadStrategy
     when %r{^cvs://}
       CVSDownloadStrategy
     when %r{^hg://},
-         %r{^https?://(.+?\.)?googlecode\.com/hg},
-         %r{^https?://(.+?\.)?sourceforge\.net/hgweb/}
+         %r{^https?://([A-Za-z0-9\-.]+\.)?googlecode\.com/hg},
+         %r{^https?://([A-Za-z0-9\-.]+\.)?sourceforge\.net/hgweb/}
       MercurialDownloadStrategy
     when %r{^bzr://}
       BazaarDownloadStrategy
