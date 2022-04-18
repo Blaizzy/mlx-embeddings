@@ -2,9 +2,11 @@ name: "CodeQL"
 
 on:
  push:
-   branches: [ master ]
+   branches:
+     - master
  pull_request:
-   branches: [ master ]
+   branches:
+     - master
 
 jobs:
  analyze:
@@ -14,9 +16,6 @@ jobs:
      actions: read
      contents: read
      security-events: write
-
-   strategy:
-     fail-fast: false
 
    steps:
    - name: Checkout repository
