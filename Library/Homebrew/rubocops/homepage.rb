@@ -70,12 +70,12 @@ module RuboCop
           when
                # Check for http:// GitHub homepage URLs, https:// is preferred.
                # Note: only check homepages that are repo pages, not *.github.com hosts
-               %r{^http://github.com/},
+               %r{^http://github\.com/},
                %r{^http://[^/]*\.github\.io/},
 
                # Savannah has full SSL/TLS support but no auto-redirect.
                # Doesn't apply to the download URLs, only the homepage.
-               %r{^http://savannah.nongnu.org/},
+               %r{^http://savannah\.nongnu\.org/},
 
                %r{^http://[^/]*\.sourceforge\.io/},
                # There's an auto-redirect here, but this mistake is incredibly common too.
