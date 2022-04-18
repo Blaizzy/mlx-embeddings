@@ -32,6 +32,7 @@ module RuboCop
           libiconv
           libpcap
           libressl
+          libxcrypt
           libxml2
           libxslt
           llvm
