@@ -2006,6 +2006,7 @@ _brew_tests() {
     -*)
       __brewcomp "
       --byebug
+      --changed
       --coverage
       --debug
       --generic
