@@ -1,7 +1,6 @@
 # Renaming a Formula
 
-Sometimes software and formulae need to be renamed. To rename a formula
-you need to:
+Sometimes software and formulae need to be renamed. To rename a formula you need to:
 
 1. Rename the formula file and its class to a new formula. The new name must meet all the usual rules of formula naming. Fix any test failures that may occur due to the stricter requirements for new formulae than existing formulae (i.e. `brew audit --online --new-formula` must pass for that formula).
 

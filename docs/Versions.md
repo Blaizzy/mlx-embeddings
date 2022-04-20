@@ -3,6 +3,7 @@
 [homebrew/core](https://github.com/homebrew/homebrew-core) supports multiple versions of formulae with a special naming format. For example, the formula for GCC 6 is named `gcc@6.rb` and begins with `class GccAT6 < Formula`.
 
 ## Acceptable versioned formulae
+
 Versioned formulae we include in [homebrew/core](https://github.com/homebrew/homebrew-core) must meet the following standards:
 
 * Versioned software should build on all Homebrew's supported versions of macOS.

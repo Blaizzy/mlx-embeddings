@@ -1,8 +1,6 @@
 # Acceptable Casks
 
-Some casks should not go in
-[homebrew/cask](https://github.com/Homebrew/homebrew-cask). But there are
-additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can [start their own](Taps.md)!
+Some casks should not go in [homebrew/cask](https://github.com/Homebrew/homebrew-cask). But there are additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can [start their own](How-to-Create-and-Maintain-a-Tap.md)!
 
 ## Finding a Home For Your Cask
 
@@ -57,13 +55,11 @@ We do not accept these casks since they offer a higher-than-normal security risk
 
 ### Fonts
 
-Font Casks live in the [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) repository. See the font repo [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md)
-for details.
+Font casks live in the [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) repository. See the fonts repo [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md) for details.
 
 ### Drivers
 
-Driver Casks live in the [Homebrew/homebrew-cask-drivers](https://github.com/Homebrew/homebrew-cask-drivers) repository. See the drivers repo [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-drivers/blob/master/CONTRIBUTING.md)
-for details.
+Driver casks live in the [Homebrew/homebrew-cask-drivers](https://github.com/Homebrew/homebrew-cask-drivers) repository. See the drivers repo [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-drivers/blob/master/CONTRIBUTING.md) for details.
 
 ## Apps that bundle malware
 

@@ -1,6 +1,7 @@
+# Prose Style Guidelines
+
 <!-- vale off -->
 <!-- Disable vale linting for the whole of the style guide, because it contains deliberately bad examples. -->
-# Prose Style Guidelines
 
 This is a set of style and usage guidelines for Homebrew's prose documentation aimed at users, contributors, and maintainers (as opposed to executable computer code). It applies to documents like those in `docs` in the `Homebrew/brew` repository, announcement emails, and other communications with the Homebrew community.
 
