@@ -72,11 +72,6 @@ module Homebrew
         retries:         0,
       }.freeze
 
-      # HTTP response head(s) and body are typically separated by a double
-      # `CRLF` (whereas HTTP header lines are separated by a single `CRLF`).
-      # In rare cases, this can also be a double newline (`\n\n`).
-      HTTP_HEAD_BODY_SEPARATOR = "\r\n\r\n"
-
       # A regex used to identify a tarball extension at the end of a string.
       TARBALL_EXTENSION_REGEX = /
         \.t
@@ -180,22 +175,17 @@ module Homebrew
         headers = []
 
         [:default, :browser].each do |user_agent|
-          stdout, _, status = curl_with_workarounds(
+          output, _, status = curl_with_workarounds(
             *PAGE_HEADERS_CURL_ARGS, url,
             **DEFAULT_CURL_OPTIONS,
             use_homebrew_curl: homebrew_curl,
             user_agent:        user_agent
           )
+          next unless status.success?
 
-          while stdout.match?(/\AHTTP.*\r$/)
-            h, stdout = stdout.split("\r\n\r\n", 2)
-
-            headers << h.split("\r\n").drop(1)
-                        .to_h { |header| header.split(/:\s*/, 2) }
-                        .transform_keys(&:downcase)
-          end
-
-          return headers if status.success?
+          parsed_output = parse_curl_output(output)
+          parsed_output[:responses].each { |response| headers << response[:headers] }
+          break if headers.present?
         end
 
         headers
@@ -211,8 +201,6 @@ module Homebrew
       # @return [Hash]
       sig { params(url: String, homebrew_curl: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
       def self.page_content(url, homebrew_curl: false)
-        original_url = url
-
         stderr = nil
         [:default, :browser].each do |user_agent|
           stdout, stderr, status = curl_with_workarounds(
@@ -229,27 +217,11 @@ module Homebrew
 
           # Separate the head(s)/body and identify the final URL (after any
           # redirections)
-          max_iterations = 5
-          iterations = 0
-          output = output.lstrip
-          while output.match?(%r{\AHTTP/[\d.]+ \d+}) && output.include?(HTTP_HEAD_BODY_SEPARATOR)
-            iterations += 1
-            raise "Too many redirects (max = #{max_iterations})" if iterations > max_iterations
+          parsed_output = parse_curl_output(output)
+          final_url = curl_response_last_location(parsed_output[:responses], absolutize: true, base_url: url)
 
-            head_text, _, output = output.partition(HTTP_HEAD_BODY_SEPARATOR)
-            output = output.lstrip
-
-            location = head_text[/^Location:\s*(.*)$/i, 1]
-            next if location.blank?
-
-            location.chomp!
-            # Convert a relative redirect URL to an absolute URL
-            location = URI.join(url, location) unless location.match?(PageMatch::URL_MATCH_REGEX)
-            final_url = location
-          end
-
-          data = { content: output }
-          data[:final_url] = final_url if final_url.present? && final_url != original_url
+          data = { content: parsed_output[:body] }
+          data[:final_url] = final_url if final_url.present? && final_url != url
           return data
         end
 
