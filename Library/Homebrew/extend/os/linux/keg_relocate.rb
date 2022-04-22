@@ -92,7 +92,7 @@ class Keg
         preferred_gcc_version = gcc.version
       end
       if !Homebrew::EnvConfig.simulate_macos_on_linux? &&
-         DevelopmentTools.non_apple_gcc_version("gcc") < preferred_gcc_version
+         DevelopmentTools.non_apple_gcc_version("gcc") < preferred_gcc_version.major
         gcc = Formulary.factory(CompilerSelector.preferred_gcc) if Homebrew::EnvConfig.install_from_api?
         formulae += gcc.recursive_dependencies.map(&:name)
         formulae << gcc.name
