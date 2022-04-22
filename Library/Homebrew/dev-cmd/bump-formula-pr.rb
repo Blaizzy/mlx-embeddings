@@ -78,6 +78,13 @@ module Homebrew
                           "or specified <version>."
       switch "-f", "--force",
              description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
+      flag   "--python-package-name=",
+             description: "Use the specified <package-name> when finding Python resources for <formula>. "\
+                          "If no package name is specified, it will be inferred from the formula's stable URL."
+      comma_array "--python-extra-packages=",
+                  description: "Include these additional Python packages when finding resources."
+      comma_array "--python-exclude-packages=",
+                  description: "Exclude these Python packages when finding resources."
 
       conflicts "--dry-run", "--write-only"
       conflicts "--dry-run", "--write"
@@ -329,8 +336,13 @@ module Homebrew
     end
 
     unless args.dry_run?
-      resources_checked = PyPI.update_python_resources! formula, version: new_formula_version,
-                                                        silent: args.quiet?, ignore_non_pypi_packages: true
+      resources_checked = PyPI.update_python_resources! formula,
+                                                        version:                  new_formula_version,
+                                                        package_name:             args.python_package_name,
+                                                        extra_packages:           args.python_extra_packages,
+                                                        exclude_packages:         args.python_exclude_packages,
+                                                        silent:                   args.quiet?,
+                                                        ignore_non_pypi_packages: true
     end
 
     run_audit(formula, alias_rename, old_contents, args: args)
