@@ -1475,6 +1475,18 @@ Specify the new commit \fIrevision\fR corresponding to the specified git \fItag\
 \fB\-f\fR, \fB\-\-force\fR
 Ignore duplicate open PRs\. Remove all mirrors if \fB\-\-mirror\fR was not specified\.
 .
+.TP
+\fB\-\-python\-package\-name\fR
+Use the specified \fIpackage\-name\fR when finding Python resources for \fIformula\fR\. If no package name is specified, it will be inferred from the formula\'s stable URL\.
+.
+.TP
+\fB\-\-python\-extra\-packages\fR
+Include these additional Python packages when finding resources\.
+.
+.TP
+\fB\-\-python\-exclude\-packages\fR
+Exclude these Python packages when finding resources\.
+.
 .SS "\fBbump\-revision\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Create a commit to increment the revision of \fIformula\fR\. If no revision is present, "revision 1" will be added\.
 .
