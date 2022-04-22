@@ -498,6 +498,9 @@ _brew_bump_formula_pr() {
       --no-browse
       --no-fork
       --online
+      --python-exclude-packages
+      --python-extra-packages
+      --python-package-name
       --quiet
       --revision
       --sha256
