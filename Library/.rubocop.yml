@@ -97,7 +97,7 @@ Naming/InclusiveLanguage:
         - "patches/13_fix_scope_for_show_slave_status_data.patch" # Used in formula `mytop`
 
 Naming/MethodName:
-  IgnoredPatterns:
+  AllowedPatterns:
     - '\A(fetch_)?HEAD\?\Z'
 
 # Both styles are used depending on context,
@@ -389,7 +389,7 @@ Naming/MethodParameterName:
 Layout/LineLength:
   Max: 118
   # ignore manpage comments and long single-line strings
-  IgnoredPatterns:
+  AllowedPatterns:
     [
       "#: ",
       ' url "',
