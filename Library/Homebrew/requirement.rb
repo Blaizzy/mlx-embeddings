@@ -122,7 +122,7 @@ class Requirement
   alias eql? ==
 
   def hash
-    name.hash ^ tags.hash
+    [name, tags].hash
   end
 
   sig { returns(String) }
