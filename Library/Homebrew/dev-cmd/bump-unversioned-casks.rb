@@ -98,7 +98,7 @@ module Homebrew
       return
     end
 
-    last_check_time = state["check_time"]&.yield_self { |t| Time.parse(t) }
+    last_check_time = state["check_time"]&.then { |t| Time.parse(t) }
 
     check_time = Time.now
     if last_check_time && check_time < (last_check_time + 1.day)
@@ -107,7 +107,7 @@ module Homebrew
     end
 
     last_sha256 = state["sha256"]
-    last_time = state["time"]&.yield_self { |t| Time.parse(t) }
+    last_time = state["time"]&.then { |t| Time.parse(t) }
     last_file_size = state["file_size"]
 
     download = Cask::Download.new(cask)

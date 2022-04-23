@@ -121,7 +121,7 @@ module Homebrew
     # TODO: 3.6.0: odeprecate not specifying args.all?, require args.installed?
 
     audit_formulae, audit_casks = if args.tap
-      Tap.fetch(args.tap).yield_self do |tap|
+      Tap.fetch(args.tap).then do |tap|
         [
           tap.formula_names.map { |name| Formula[name] },
           tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
