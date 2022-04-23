@@ -16,4 +16,5 @@
 
 - 2021-03-10
   Misty De Méo proposed that the following members be appointed to the TSC for a one-year term: @mikemcquaid; @fxcoudert; @iMichka; @Bo98; @Rylan12.
+
   Motion carried unanimously.
