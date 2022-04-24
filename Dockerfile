@@ -17,6 +17,7 @@ RUN apt-get update \
     g++ \
     gawk \
     git \
+    gnupg \
     less \
     libz-dev \
     locales \
