@@ -17,13 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ["16.04", "18.04", "20.04"]
+        version: ["16.04", "18.04", "20.04", "22.04"]
     steps:
       - name: Checkout
         uses: actions/checkout@main
         with:
           fetch-depth: 0
           persist-credentials: false
+
       - name: Fetch origin/master from Git
         run: git fetch origin master
 
