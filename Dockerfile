@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends software-properties-common \
+  && apt-get install -y --no-install-recommends software-properties-common gnupg-agent \
   && add-apt-repository -y ppa:git-core/ppa \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -17,7 +17,6 @@ RUN apt-get update \
     g++ \
     gawk \
     git \
-    gpg-agent \
     less \
     libz-dev \
     locales \
@@ -28,6 +27,8 @@ RUN apt-get update \
     sudo \
     uuid-runtime \
     tzdata \
+  && apt remove --purge software-properties-common gnupg-agent \
+  && apt autoremove --purge \
   && rm -rf /var/lib/apt/lists/* \
   && localedef -i en_US -f UTF-8 en_US.UTF-8 \
   && useradd -m -s /bin/bash linuxbrew \
