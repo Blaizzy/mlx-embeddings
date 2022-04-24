@@ -27,8 +27,8 @@ RUN apt-get update \
     sudo \
     uuid-runtime \
     tzdata \
-  && apt remove --purge software-properties-common gnupg-agent \
-  && apt autoremove --purge \
+  && apt remove --purge -y software-properties-common gnupg-agent \
+  && apt autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
   && localedef -i en_US -f UTF-8 en_US.UTF-8 \
   && useradd -m -s /bin/bash linuxbrew \
