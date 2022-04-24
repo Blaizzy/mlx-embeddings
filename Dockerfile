@@ -18,6 +18,7 @@ RUN apt-get update \
     gawk \
     git \
     gnupg \
+    gnupg-agent \
     less \
     libz-dev \
     locales \
