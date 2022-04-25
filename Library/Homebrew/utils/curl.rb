@@ -393,13 +393,17 @@ module Utils
     # `:status_code`, `:status_text`, and `:headers`.
     # @param output [String] The output text from `curl` containing HTTP
     #   responses, body content, or both.
+    # @param max_iterations [Integer] The maximum number of iterations for the
+    #   `while` loop that parses HTTP response text. This should correspond to
+    #   the maximum number of requests in the output. If `curl`'s `--max-redirs`
+    #   option is used, `max_iterations` should be `max-redirs + 1`, to
+    #   account for any final response after the redirections.
     # @return [Hash] A hash containing an array of response hashes and the body
     #   content, if found.
-    sig { params(output: String).returns(T::Hash[Symbol, T.untyped]) }
-    def parse_curl_output(output)
+    sig { params(output: String, max_iterations: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    def parse_curl_output(output, max_iterations: 5)
       responses = []
 
-      max_iterations = 5
       iterations = 0
       output = output.lstrip
       while output.match?(%r{\AHTTP/[\d.]+ \d+}) && output.include?(HTTP_RESPONSE_BODY_SEPARATOR)

@@ -35,13 +35,24 @@ module Homebrew
       # `Utils::Curl` method calls in {Strategy}.
       CURL_PROCESS_TIMEOUT = CURL_MAX_TIME + 5
 
+      # The maximum number of redirections that `curl` should allow.
+      MAX_REDIRECTIONS = 5
+
+      # This value is passed to `#parse_curl_output` to ensure that the limit
+      # for the number of responses it will parse corresponds to the maximum
+      # number of responses in this context. The `+ 1` here accounts for the
+      # situation where there are exactly `MAX_REDIRECTIONS` number of
+      # redirections, followed by a final `200 OK` response.
+      MAX_PARSE_ITERATIONS = MAX_REDIRECTIONS + 1
+
       # Baseline `curl` arguments used in {Strategy} methods.
       DEFAULT_CURL_ARGS = [
         # Follow redirections to handle mirrors, relocations, etc.
         "--location",
+        "--max-redirs", MAX_REDIRECTIONS.to_s,
         # Avoid progress bar text, so we can reliably identify `curl` error
         # messages in output
-        "--silent",
+        "--silent"
       ].freeze
 
       # `curl` arguments used in `Strategy#page_headers` method.
@@ -183,7 +194,7 @@ module Homebrew
           )
           next unless status.success?
 
-          parsed_output = parse_curl_output(output)
+          parsed_output = parse_curl_output(output, max_iterations: MAX_PARSE_ITERATIONS)
           parsed_output[:responses].each { |response| headers << response[:headers] }
           break if headers.present?
         end
@@ -217,7 +228,7 @@ module Homebrew
 
           # Separate the head(s)/body and identify the final URL (after any
           # redirections)
-          parsed_output = parse_curl_output(output)
+          parsed_output = parse_curl_output(output, max_iterations: MAX_PARSE_ITERATIONS)
           final_url = curl_response_last_location(parsed_output[:responses], absolutize: true, base_url: url)
 
           data = { content: parsed_output[:body] }
