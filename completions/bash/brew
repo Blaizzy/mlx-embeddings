@@ -1552,6 +1552,7 @@ _brew_pr_automerge() {
       --with-label
       --without-approval
       --without-labels
+      --workflow
       "
       return
       ;;
