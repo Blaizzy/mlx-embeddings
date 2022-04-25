@@ -1085,6 +1085,7 @@ __fish_brew_complete_arg 'pr-automerge' -l verbose -d 'Make some output more ver
 __fish_brew_complete_arg 'pr-automerge' -l with-label -d 'Pull requests must have this label'
 __fish_brew_complete_arg 'pr-automerge' -l without-approval -d 'Pull requests do not require approval to be merged'
 __fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`)'
+__fish_brew_complete_arg 'pr-automerge' -l workflow -d 'Workflow file to use with `brew pr-publish`'
 
 
 __fish_brew_complete_cmd 'pr-publish' 'Publish bottles for a pull request with GitHub Actions'

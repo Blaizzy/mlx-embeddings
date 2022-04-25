@@ -1247,6 +1247,8 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 
 * `--tap`:
   Target tap repository (default: `homebrew/core`).
+* `--workflow`:
+  Workflow file to use with `brew pr-publish`.
 * `--with-label`:
   Pull requests must have this label.
 * `--without-labels`:
