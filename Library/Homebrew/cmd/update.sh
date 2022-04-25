@@ -557,9 +557,10 @@ EOS
 
     if ! git config --local --get remote.origin.url &>/dev/null
     then
-      opoo "No remote 'origin' in: ${DIR}"
+      opoo "No remote 'origin' in ${DIR}, skipping update!"
       continue
     fi
+
     if [[ -n "${HOMEBREW_VERBOSE}" ]]
     then
       echo "Checking if we need to fetch ${DIR}..."

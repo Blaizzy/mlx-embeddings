@@ -53,7 +53,7 @@ homebrew-update-reset() {
     [[ -d "${DIR}/.git" ]] || continue
     if ! git -C "${DIR}" config --local --get remote.origin.url &>/dev/null
     then
-      opoo "No remote 'origin' in: ${DIR}"
+      opoo "No remote 'origin' in ${DIR}, skipping update and reset!"
       continue
     fi
     ohai "Fetching ${DIR}..."
