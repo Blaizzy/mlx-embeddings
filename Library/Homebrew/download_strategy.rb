@@ -375,6 +375,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
   def initialize(url, name, version, **meta)
     super
+    @try_partial = true
     @mirrors = meta.fetch(:mirrors, [])
   end
 
@@ -523,7 +524,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
   end
 
   def _curl_download(resolved_url, to, timeout)
-    curl_download resolved_url, to: to, timeout: timeout
+    curl_download resolved_url, to: to, try_partial: @try_partial, timeout: timeout
   end
 
   # Curl options to be always passed to curl,
@@ -577,7 +578,7 @@ class HomebrewCurlDownloadStrategy < CurlDownloadStrategy
   def _curl_download(resolved_url, to, timeout)
     raise HomebrewCurlDownloadStrategyError, url unless Formula["curl"].any_version_installed?
 
-    curl_download resolved_url, to: to, timeout: timeout, use_homebrew_curl: true
+    curl_download resolved_url, to: to, try_partial: @try_partial, timeout: timeout, use_homebrew_curl: true
   end
 end
 
@@ -656,7 +657,7 @@ class CurlPostDownloadStrategy < CurlDownloadStrategy
       query.nil? ? [url, "-X", "POST"] : [url, "-d", query]
     end
 
-    curl_download(*args, to: temporary_path, timeout: timeout)
+    curl_download(*args, to: temporary_path, try_partial: @try_partial, timeout: timeout)
   end
 end
 

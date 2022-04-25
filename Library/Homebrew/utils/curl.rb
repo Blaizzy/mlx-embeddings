@@ -161,7 +161,7 @@ module Utils
       result
     end
 
-    def curl_download(*args, to: nil, try_partial: true, **options)
+    def curl_download(*args, to: nil, try_partial: false, **options)
       destination = Pathname(to)
       destination.dirname.mkpath
 
