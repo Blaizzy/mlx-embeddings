@@ -17,6 +17,8 @@ module Homebrew
       EOS
       flag   "--tap=",
              description: "Target tap repository (default: `homebrew/core`)."
+      flag   "--workflow=",
+             description: "Workflow file to use with `brew pr-publish`."
       flag   "--with-label=",
              description: "Pull requests must have this label."
       comma_array "--without-labels",
@@ -68,6 +70,7 @@ module Homebrew
 
     publish_args = ["pr-publish"]
     publish_args << "--tap=#{tap}" if tap
+    publish_args << "--workflow=#{args.workflow}" if args.workflow
     publish_args << "--no-autosquash" if args.no_autosquash?
     if args.publish?
       safe_system HOMEBREW_BREW_FILE, *publish_args, *pr_urls
