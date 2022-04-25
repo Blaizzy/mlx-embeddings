@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends software-properties-common gpg-agent \
+  && apt-get install -y --no-install-recommends software-properties-common gnupg-agent \
   && add-apt-repository -y ppa:git-core/ppa \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
