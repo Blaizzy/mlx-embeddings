@@ -555,6 +555,11 @@ EOS
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
+    if ! git config --local --get remote.origin.url &>/dev/null
+    then
+      opoo "No remote 'origin' in: ${DIR}"
+      continue
+    fi
     if [[ -n "${HOMEBREW_VERBOSE}" ]]
     then
       echo "Checking if we need to fetch ${DIR}..."
@@ -706,6 +711,11 @@ EOS
 
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
+    if ! git config --local --get remote.origin.url &>/dev/null
+    then
+      # No need to display a (duplicate) warning here
+      continue
+    fi
 
     TAP_VAR="$(repo_var "${DIR}")"
     UPSTREAM_BRANCH_VAR="UPSTREAM_BRANCH${TAP_VAR}"
