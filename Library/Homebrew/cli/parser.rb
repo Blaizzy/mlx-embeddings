@@ -107,9 +107,7 @@ module Homebrew
         ]
       end
 
-      # FIXME: Block should be `T.nilable(T.proc.bind(Parser).void)`.
-      # See https://github.com/sorbet/sorbet/issues/498.
-      sig { params(block: T.proc.bind(Parser).void).void.checked(:never) }
+      sig { params(block: T.nilable(T.proc.bind(Parser).void)).void }
       def initialize(&block)
         @parser = OptionParser.new
 
@@ -123,7 +121,9 @@ module Homebrew
 
         @args = Homebrew::CLI::Args.new
 
-        @command_name = caller_locations(2, 1).first.label.chomp("_args").tr("_", "-")
+        # Filter out Sorbet runtime type checking method calls.
+        @command_name = caller_locations.select { |location| location.path.exclude?("/gems/sorbet-runtime-") }
+                                        .second.label.chomp("_args").tr("_", "-")
 
         @constraints = []
         @conflicts = []
