@@ -45,6 +45,17 @@ describe "brew pr-pull" do
         cask "food" do
           desc "Helpful description"
           version "1.0"
+          sha256 "a"
+          url "https://brew.sh/food-\#{version}.tgz"
+        end
+      EOS
+    end
+    let(:cask_checksum) do
+      <<~EOS
+        cask "food" do
+          desc "Helpful description"
+          version "1.0"
+          sha256 "b"
           url "https://brew.sh/food-\#{version}.tgz"
         end
       EOS
@@ -53,6 +64,7 @@ describe "brew pr-pull" do
       <<~EOS
         cask "food" do
           version "2.0"
+          sha256 "a"
           url "https://brew.sh/food-\#{version}.tgz"
         end
       EOS
@@ -61,6 +73,7 @@ describe "brew pr-pull" do
       <<~EOS
         cask "food" do
           version "1.0"
+          sha256 "a"
           url "https://brew.sh/food-\#{version}.tgz"
         end
       EOS
@@ -162,6 +175,10 @@ describe "brew pr-pull" do
 
       it "correctly bumps a cask version" do
         expect(described_class.determine_bump_subject(cask, cask_version, cask_file)).to eq("food 2.0")
+      end
+
+      it "correctly bumps a cask checksum" do
+        expect(described_class.determine_bump_subject(cask, cask_checksum, cask_file)).to eq("food: checksum update")
       end
 
       it "correctly bumps a formula revision with reason" do

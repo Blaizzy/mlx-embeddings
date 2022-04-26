@@ -144,6 +144,8 @@ module Homebrew
       "#{subject_name} #{new_package.version}"
     elsif !is_cask && old_package.revision != new_package.revision
       "#{subject_name}: revision #{reason}".strip
+    elsif is_cask && old_package.sha256 != new_package.sha256
+      "#{subject_name}: checksum update #{reason}".strip
     else
       "#{subject_name}: #{reason || "rebuild"}".strip
     end
