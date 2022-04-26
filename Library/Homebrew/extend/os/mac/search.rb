@@ -29,7 +29,9 @@ module Homebrew
           end
         end
 
-        cask_tokens = Tap.flat_map(&:cask_tokens)
+        cask_tokens = Tap.flat_map(&:cask_tokens).map do |c|
+          c.sub(%r{^homebrew/cask.*/}, "")
+        end
 
         results = cask_tokens.extend(Searchable)
                              .search(string_or_regex)
