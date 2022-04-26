@@ -345,20 +345,20 @@ module Utils
         user_agent:        user_agent
       )
 
+      parsed_output = parse_curl_output(output)
+      responses = parsed_output[:responses]
+
+      final_url = curl_response_last_location(responses)
+      headers = if responses.last.present?
+        status_code = responses.last[:status_code]
+        responses.last[:headers]
+      else
+        {}
+      end
+      etag = headers["etag"][ETAG_VALUE_REGEX, 1] if headers["etag"].present?
+      content_length = headers["content-length"]
+
       if status.success?
-        parsed_output = parse_curl_output(output)
-        responses = parsed_output[:responses]
-
-        final_url = curl_response_last_location(responses)
-        headers = if responses.last.present?
-          status_code = responses.last[:status_code]
-          responses.last[:headers]
-        else
-          {}
-        end
-        etag = headers["etag"][ETAG_VALUE_REGEX, 1] if headers["etag"].present?
-        content_length = headers["content-length"]
-
         file_contents = File.read(file.path)
         file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
       end
