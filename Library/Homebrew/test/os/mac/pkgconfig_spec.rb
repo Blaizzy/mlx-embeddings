@@ -68,7 +68,7 @@ describe "pkg-config" do
   it "returns the correct version for libffi" do
     version = File.foreach("#{sdk}/usr/include/ffi/ffi.h")
                   .lazy
-                  .grep(/^\s*libffi (\S+) - Copyright /) { Regexp.last_match(1) }
+                  .grep(/^\s*libffi (\S+)\s+- Copyright /) { Regexp.last_match(1) }
                   .first
 
     skip "Cannot detect system libffi version." if version == "PyOBJC"
