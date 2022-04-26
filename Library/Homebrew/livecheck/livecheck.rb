@@ -441,7 +441,7 @@ module Homebrew
         info[:version][:latest]
       end
 
-      puts "#{formula_or_cask_s} : #{current_s} ==> #{latest_s}"
+      puts "#{formula_or_cask_s}: #{current_s} ==> #{latest_s}"
     end
 
     sig {

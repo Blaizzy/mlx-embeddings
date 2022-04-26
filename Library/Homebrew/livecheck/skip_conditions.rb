@@ -264,12 +264,12 @@ module Homebrew
         if skip_hash[:messages].is_a?(Array) && skip_hash[:messages].count.positive?
           # TODO: Handle multiple messages, only if needed in the future
           if skip_hash[:status] == "skipped"
-            puts "#{Tty.red}#{name}#{Tty.reset} : skipped - #{skip_hash[:messages][0]}"
+            puts "#{Tty.red}#{name}#{Tty.reset}: skipped - #{skip_hash[:messages][0]}"
           else
-            puts "#{Tty.red}#{name}#{Tty.reset} : #{skip_hash[:messages][0]}"
+            puts "#{Tty.red}#{name}#{Tty.reset}: #{skip_hash[:messages][0]}"
           end
         elsif skip_hash[:status].present?
-          puts "#{Tty.red}#{name}#{Tty.reset} : #{skip_hash[:status]}"
+          puts "#{Tty.red}#{name}#{Tty.reset}: #{skip_hash[:status]}"
         end
       end
     end
