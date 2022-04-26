@@ -23,7 +23,7 @@ module Searchable
   def search_regex(regex)
     select do |*args|
       args = yield(*args) if block_given?
-      args = Array(args).compact
+      args = Array(args).flatten.compact
       args.any? { |arg| arg.match?(regex) }
     end
   end
