@@ -17,6 +17,7 @@ git() {
 }
 
 homebrew-update-reset() {
+  local option
   local DIR
   local -a REPOS=()
 
@@ -50,6 +51,11 @@ homebrew-update-reset() {
   for DIR in "${REPOS[@]}"
   do
     [[ -d "${DIR}/.git" ]] || continue
+    if ! git -C "${DIR}" config --local --get remote.origin.url &>/dev/null
+    then
+      opoo "No remote 'origin' in ${DIR}, skipping update and reset!"
+      continue
+    fi
     ohai "Fetching ${DIR}..."
     git -C "${DIR}" fetch --force --tags origin
     git -C "${DIR}" remote set-head origin --auto >/dev/null
