@@ -400,7 +400,7 @@ module Utils
     # @return [Hash] A hash containing an array of response hashes and the body
     #   content, if found.
     sig { params(output: String, max_iterations: Integer).returns(T::Hash[Symbol, T.untyped]) }
-    def parse_curl_output(output, max_iterations: 5)
+    def parse_curl_output(output, max_iterations: 25)
       responses = []
 
       iterations = 0
