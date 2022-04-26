@@ -200,19 +200,18 @@ module Utils
     # Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
     def url_protected_by_cloudflare?(details)
       return false if details[:headers].blank?
+      return unless [403, 503].include?(details[:status].to_i)
 
-      [403, 503].include?(details[:status].to_i) &&
-        details[:headers].match?(/^Set-Cookie: (__cfduid|__cf_bm)=/i) &&
-        details[:headers].match?(/^Server: cloudflare/i)
+      details[:headers].fetch("set-cookie", nil)&.match?(/^(__cfduid|__cf_bm)=/i) &&
+        details[:headers].fetch("server", nil)&.match?(/^cloudflare/i)
     end
 
     # Check if a URL is protected by Incapsula (e.g. corsair.com).
     def url_protected_by_incapsula?(details)
       return false if details[:headers].blank?
+      return false if details[:status].to_i != 403
 
-      details[:status].to_i == 403 &&
-        details[:headers].match?(/^Set-Cookie: visid_incap_/i) &&
-        details[:headers].match?(/^Set-Cookie: incap_ses_/i)
+      details[:headers].fetch("set-cookie", nil)&.match?(/^(visid_incap|incap_ses)_/i)
     end
 
     def curl_check_http_content(url, url_type, specs: {}, user_agents: [:default],
