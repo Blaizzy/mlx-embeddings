@@ -2784,6 +2784,7 @@ end
 module ActiveSupport::VERSION; end
 ActiveSupport::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
 ActiveSupport::VERSION::MINOR = T.let(T.unsafe(nil), Integer)
+ActiveSupport::VERSION::PRE = T.let(T.unsafe(nil), String)
 ActiveSupport::VERSION::STRING = T.let(T.unsafe(nil), String)
 ActiveSupport::VERSION::TINY = T.let(T.unsafe(nil), Integer)
 
@@ -3086,6 +3087,7 @@ module ERB::Util
   def html_escape_once(s); end
   def json_escape(s); end
   def unwrapped_html_escape(s); end
+  def xml_name_escape(name); end
 
   class << self
     def h(s); end
@@ -3093,6 +3095,7 @@ module ERB::Util
     def html_escape_once(s); end
     def json_escape(s); end
     def unwrapped_html_escape(s); end
+    def xml_name_escape(name); end
   end
 end
 
@@ -3100,6 +3103,10 @@ ERB::Util::HTML_ESCAPE = T.let(T.unsafe(nil), Hash)
 ERB::Util::HTML_ESCAPE_ONCE_REGEXP = T.let(T.unsafe(nil), Regexp)
 ERB::Util::JSON_ESCAPE = T.let(T.unsafe(nil), Hash)
 ERB::Util::JSON_ESCAPE_REGEXP = T.let(T.unsafe(nil), Regexp)
+ERB::Util::TAG_NAME_FOLLOWING_REGEXP = T.let(T.unsafe(nil), Regexp)
+ERB::Util::TAG_NAME_REPLACEMENT_CHAR = T.let(T.unsafe(nil), String)
+ERB::Util::TAG_NAME_START_REGEXP = T.let(T.unsafe(nil), Regexp)
+ERB::Util::TAG_NAME_START_REGEXP_SET = T.let(T.unsafe(nil), String)
 
 module Enumerable
   def as_json(options = T.unsafe(nil)); end
