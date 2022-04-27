@@ -49,6 +49,8 @@ class LinkageChecker
     display_items "Unwanted system libraries", @unwanted_system_dylibs
     display_items "Files with missing rpath", @files_missing_rpaths
   end
+  alias generic_display_normal_output display_normal_output
+  private :generic_display_normal_output
 
   def display_reverse_output
     return if @reverse_links.empty?
@@ -75,6 +77,8 @@ class LinkageChecker
     display_items "Undeclared dependencies with linkage", @undeclared_deps, puts_output: puts_output
     display_items "Files with missing rpath", @files_missing_rpaths, puts_output: puts_output
   end
+  alias generic_display_test_output display_test_output
+  private :generic_display_test_output
 
   sig { params(strict: T::Boolean).returns(T::Boolean) }
   def broken_library_linkage?(strict: false)
@@ -82,6 +86,8 @@ class LinkageChecker
     issues += [@undeclared_deps, @files_missing_rpaths] if strict
     [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)
   end
+  alias generic_broken_library_linkage? broken_library_linkage?
+  private :generic_broken_library_linkage?
 
   def unexpected_broken_dylibs
     return @unexpected_broken_dylibs if @unexpected_broken_dylibs
