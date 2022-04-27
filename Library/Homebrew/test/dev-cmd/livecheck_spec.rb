@@ -15,7 +15,7 @@ describe "brew livecheck" do
     setup_test_formula("test", content)
 
     expect { brew "livecheck", "test" }
-      .to output(/test : /).to_stdout
+      .to output(/test: /).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end

@@ -470,7 +470,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula without a livecheckable is deprecated" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:deprecated]) }
-          .to output("test_deprecated : deprecated\n").to_stdout
+          .to output("test_deprecated: deprecated\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -478,7 +478,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula without a livecheckable is disabled" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:disabled]) }
-          .to output("test_disabled : disabled\n").to_stdout
+          .to output("test_disabled: disabled\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -486,7 +486,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula without a livecheckable is versioned" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:versioned]) }
-          .to output("test@0.0.1 : versioned\n").to_stdout
+          .to output("test@0.0.1: versioned\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -494,7 +494,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula is HEAD-only and not installed" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:head_only]) }
-          .to output("test_head_only : HEAD only formula must be installed to be livecheckable\n").to_stdout
+          .to output("test_head_only: HEAD only formula must be installed to be livecheckable\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -502,7 +502,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula has a GitHub Gist stable URL" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:gist]) }
-          .to output("test_gist : skipped - Stable URL is a GitHub Gist\n").to_stdout
+          .to output("test_gist: skipped - Stable URL is a GitHub Gist\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -510,7 +510,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula has a Google Code Archive stable URL" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:google_code_archive]) }
-          .to output("test_google_code_archive : skipped - Stable URL is from Google Code Archive\n").to_stdout
+          .to output("test_google_code_archive: skipped - Stable URL is from Google Code Archive\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -518,7 +518,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula has an Internet Archive stable URL" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:internet_archive]) }
-          .to output("test_internet_archive : skipped - Stable URL is from Internet Archive\n").to_stdout
+          .to output("test_internet_archive: skipped - Stable URL is from Internet Archive\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -526,11 +526,11 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a formula has a `livecheck` block containing `skip`" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:skip]) }
-          .to output("test_skip : skipped\n").to_stdout
+          .to output("test_skip: skipped\n").to_stdout
           .and not_to_output.to_stderr
 
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:skip_with_message]) }
-          .to output("test_skip_with_message : skipped - Not maintained\n").to_stdout
+          .to output("test_skip_with_message: skipped - Not maintained\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -538,7 +538,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when the cask is discontinued without a livecheckable" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:cask][:discontinued]) }
-          .to output("test_discontinued : discontinued\n").to_stdout
+          .to output("test_discontinued: discontinued\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -546,7 +546,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when the cask has `version :latest` without a livecheckable" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:cask][:latest]) }
-          .to output("test_latest : latest\n").to_stdout
+          .to output("test_latest: latest\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -554,7 +554,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when the cask has an unversioned URL without a livecheckable" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:cask][:unversioned]) }
-          .to output("test_unversioned : unversioned\n").to_stdout
+          .to output("test_unversioned: unversioned\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
@@ -562,11 +562,11 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when the cask has a `livecheck` block containing `skip`" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:cask][:skip]) }
-          .to output("test_skip : skipped\n").to_stdout
+          .to output("test_skip: skipped\n").to_stdout
           .and not_to_output.to_stderr
 
         expect { skip_conditions.print_skip_information(status_hashes[:cask][:skip_with_message]) }
-          .to output("test_skip_with_message : skipped - Not maintained\n").to_stdout
+          .to output("test_skip_with_message: skipped - Not maintained\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
