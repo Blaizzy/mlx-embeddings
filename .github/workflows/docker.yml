@@ -29,7 +29,20 @@ jobs:
         run: git fetch origin master
 
       - name: Build Docker image
-        run: docker build -t brew --build-arg=version=${{matrix.version}} .
+        run: |
+          brew_version="$(git describe --tags --dirty --abbrev=7)"
+          echo "Building for Homebrew ${brew_version}"
+          docker build -t brew \
+               --build-arg=version=${{matrix.version}} \
+               --label org.opencontainers.image.created="$(date --rfc-3339=seconds --utc)" \
+               --label org.opencontainers.image.url="https://brew.sh" \
+               --label org.opencontainers.image.documentation="https://docs.brew.sh" \
+               --label org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}" \
+               --label org.opencontainers.image.version="${brew_version}" \
+               --label org.opencontainers.image.revision="${GITHUB_SHA}" \
+               --label org.opencontainers.image.vendor="${GITHUB_REPOSITORY_OWNER}" \
+               --label org.opencontainers.image.licenses="BSD-2-Clause" \
+               .
 
       - name: Run brew test-bot --only-setup
         run: docker run --rm brew brew test-bot --only-setup
