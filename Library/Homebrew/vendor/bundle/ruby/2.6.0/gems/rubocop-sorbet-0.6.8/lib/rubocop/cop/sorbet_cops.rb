@@ -28,3 +28,5 @@ require_relative "sorbet/sigils/strict_sigil"
 require_relative "sorbet/sigils/strong_sigil"
 require_relative "sorbet/sigils/enforce_sigil_order"
 require_relative "sorbet/sigils/enforce_single_sigil"
+
+require_relative "sorbet/mutable_constant_sorbet_aware_behaviour"
