@@ -136,6 +136,26 @@ describe Cleaner do
 
       expect(file).not_to exist
     end
+
+    it "removes 'info/**/dir' files except for 'info/<name>/dir'" do
+      file = f.info/"dir"
+      arch_file = f.info/"i686-elf/dir"
+      name_file = f.info/"#{f.name}/dir"
+
+      f.info.mkpath
+      (f.info/"i686-elf").mkpath
+      (f.info/"#{f.name}").mkpath
+
+      touch file
+      touch arch_file
+      touch name_file
+
+      cleaner.clean
+
+      expect(file).not_to exist
+      expect(arch_file).not_to exist
+      expect(name_file).to exist
+    end
   end
 
   describe "::skip_clean" do
