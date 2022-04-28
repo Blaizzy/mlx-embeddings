@@ -29,11 +29,29 @@ class Cleaner
     [@f.bin, @f.sbin, @f.lib].each { |d| clean_dir(d) if d.exist? }
 
     # Get rid of any info 'dir' files, so they don't conflict at the link stage
+    #
+    # The 'dir' files come in at least 3 locations:
+    #
+    # 1. 'info/dir'
+    # 2. 'info/#{name}/dir'
+    # 3. 'info/#{arch}/dir'
+    #
+    # Of these 3 only 'info/#{name}/dir' is safe to keep since the rest will
+    # conflict with other formulae because they use a shared location.
+    #
+    # See [cleaner: recursively delete info `dir`s by gromgit · Pull Request
+    # #11597][1], [emacs 28.1 bottle does not contain `dir` file · Issue
+    # #100190][2], and [Keep `info/#{f.name}/dir` files in cleaner by
+    # timvisher][3] for more info.
+    #
+    # [1]: https://github.com/Homebrew/brew/pull/11597
+    # [2]: https://github.com/Homebrew/homebrew-core/issues/100190
+    # [3]: https://github.com/Homebrew/brew/pull/13215
     Dir.glob(@f.info/"**/dir").each do |f|
       info_dir_file = Pathname(f)
-      next if info_dir_file == Pathname("#{@f.info}/#{@f.name}/dir")
-      next if @f.skip_clean?(info_dir_file)
       next unless info_dir_file.file?
+      next if info_dir_file == @f.info/@f.name/"dir"
+      next if @f.skip_clean?(info_dir_file)
 
       observe_file_removal info_dir_file
     end

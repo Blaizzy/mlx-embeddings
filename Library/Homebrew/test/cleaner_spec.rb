@@ -140,11 +140,11 @@ describe Cleaner do
     it "removes 'info/**/dir' files except for 'info/<name>/dir'" do
       file = f.info/"dir"
       arch_file = f.info/"i686-elf/dir"
-      name_file = f.info/"#{f.name}/dir"
+      name_file = f.info/f.name/"dir"
 
-      f.info.mkpath
-      (f.info/"i686-elf").mkpath
-      (f.info/ + f.name.to_s).mkpath
+      file.dirname.mkpath
+      arch_file.dirname.mkpath
+      name_file.dirname.mkpath
 
       touch file
       touch arch_file
