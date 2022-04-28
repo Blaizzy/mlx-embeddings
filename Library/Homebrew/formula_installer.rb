@@ -1235,6 +1235,8 @@ class FormulaInstaller
     prefix = Pathname(cellar).parent.to_s
     return if cellar == HOMEBREW_CELLAR.to_s && prefix == HOMEBREW_PREFIX.to_s
 
+    return unless ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
+
     keg.relocate_build_prefix(keg, prefix, HOMEBREW_PREFIX)
   end
 
