@@ -11,6 +11,7 @@ module RuboCop
       # if it does not have a path component.
       class HomepageUrlTrailingSlash < Base
         include OnHomepageStanza
+        include HelperFunctions
         extend AutoCorrector
 
         MSG_NO_SLASH = "'%<url>s' must have a slash after the domain."
@@ -27,7 +28,8 @@ module RuboCop
 
           return unless url&.match?(%r{^.+://[^/]+$})
 
-          domain = URI(url_node.str_content).host
+          domain = URI(string_content(url_node, strip_dynamic: true)).host
+          return if domain.blank?
 
           # This also takes URLs like 'https://example.org?path'
           # and 'https://example.org#path' into account.
