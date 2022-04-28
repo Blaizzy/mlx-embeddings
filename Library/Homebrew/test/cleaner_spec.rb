@@ -96,7 +96,7 @@ describe Cleaner do
     it "removes '.la' files" do
       file = f.lib/"foo.la"
 
-      f.lib.mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
@@ -107,7 +107,7 @@ describe Cleaner do
     it "removes 'perllocal' files" do
       file = f.lib/"perl5/darwin-thread-multi-2level/perllocal.pod"
 
-      (f.lib/"perl5/darwin-thread-multi-2level").mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
@@ -118,7 +118,7 @@ describe Cleaner do
     it "removes '.packlist' files" do
       file = f.lib/"perl5/darwin-thread-multi-2level/auto/test/.packlist"
 
-      (f.lib/"perl5/darwin-thread-multi-2level/auto/test").mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
@@ -129,7 +129,7 @@ describe Cleaner do
     it "removes 'charset.alias' files" do
       file = f.lib/"charset.alias"
 
-      f.lib.mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
