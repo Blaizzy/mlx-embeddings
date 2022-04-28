@@ -31,7 +31,9 @@ class Cleaner
     # Get rid of any info 'dir' files, so they don't conflict at the link stage
     Dir.glob(@f.info/"**/dir").each do |f|
       info_dir_file = Pathname(f)
-      observe_file_removal info_dir_file if info_dir_file.file? && info_dir_file != Pathname("#{@f.info}/#{@f.name}/dir") && !@f.skip_clean?(info_dir_file)
+      next if info_dir_file == Pathname("#{@f.info}/#{@f.name}/dir")
+
+      observe_file_removal info_dir_file if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
     end
 
     rewrite_shebangs

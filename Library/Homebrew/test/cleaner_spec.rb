@@ -144,7 +144,7 @@ describe Cleaner do
 
       f.info.mkpath
       (f.info/"i686-elf").mkpath
-      (f.info/"#{f.name}").mkpath
+      (f.info/ + f.name.to_s).mkpath
 
       touch file
       touch arch_file
