@@ -32,8 +32,10 @@ class Cleaner
     Dir.glob(@f.info/"**/dir").each do |f|
       info_dir_file = Pathname(f)
       next if info_dir_file == Pathname("#{@f.info}/#{@f.name}/dir")
+      next if @f.skip_clean?(info_dir_file)
+      next unless info_dir_file.file?
 
-      observe_file_removal info_dir_file if info_dir_file.file? && !@f.skip_clean?(info_dir_file)
+      observe_file_removal info_dir_file
     end
 
     rewrite_shebangs
