@@ -16,6 +16,7 @@ jobs:
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         version: ["16.04", "18.04", "20.04", "22.04"]
     steps:
@@ -55,7 +56,7 @@ jobs:
           docker push "homebrew/ubuntu${{matrix.version}}:latest"
 
       - name: Deploy the homebrew/brew Docker image to GitHub Packages and Docker Hub
-        if: startsWith(github.ref, 'refs/tags/') && matrix.version == '20.04'
+        if: startsWith(github.ref, 'refs/tags/') && matrix.version == '22.04'
         run: |
           docker tag brew "ghcr.io/homebrew/brew:${brew_version}"
           docker push "ghcr.io/homebrew/brew:${brew_version}"
