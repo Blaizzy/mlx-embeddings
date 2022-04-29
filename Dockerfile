@@ -1,4 +1,4 @@
-ARG version=20.04
+ARG version=22.04
 # shellcheck disable=SC2154
 FROM ubuntu:"${version}"
 ARG DEBIAN_FRONTEND=noninteractive
