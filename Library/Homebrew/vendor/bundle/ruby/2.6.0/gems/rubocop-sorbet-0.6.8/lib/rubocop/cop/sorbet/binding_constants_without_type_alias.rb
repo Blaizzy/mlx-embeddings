@@ -57,9 +57,15 @@ module RuboCop
           )
         PATTERN
 
-        def_node_matcher(:generic_parameter_decl?, <<-PATTERN)
+        def_node_matcher(:generic_parameter_decl_call?, <<-PATTERN)
           (
             send nil? {:type_template :type_member} ...
+          )
+        PATTERN
+
+        def_node_matcher(:generic_parameter_decl_block_call?, <<-PATTERN)
+          (block
+            (send nil? {:type_template :type_member}) ...
           )
         PATTERN
 
@@ -81,7 +87,7 @@ module RuboCop
         end
 
         def not_generic_parameter_decl?(node)
-          !generic_parameter_decl?(node)
+          !generic_parameter_decl_call?(node) && !generic_parameter_decl_block_call?(node)
         end
 
         def not_nil?(node)

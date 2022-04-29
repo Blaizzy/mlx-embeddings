@@ -5239,6 +5239,11 @@ class RuboCop::Cop::FormulaCop
   def required_dependency_name?(param0, param1); end
 end
 
+class RuboCop::Cop::Style::MutableConstant
+  include ::RuboCop::Cop::Sorbet::MutableConstantSorbetAwareBehaviour
+  def t_let(param0=T.unsafe(nil)); end
+end
+
 module RuboCop::RSpec::ExpectOffense
   def expect_correction(correction, loop: T.unsafe(nil), source: T.unsafe(nil)); end
 
