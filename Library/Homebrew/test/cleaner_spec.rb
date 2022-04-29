@@ -96,7 +96,7 @@ describe Cleaner do
     it "removes '.la' files" do
       file = f.lib/"foo.la"
 
-      f.lib.mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
@@ -107,7 +107,7 @@ describe Cleaner do
     it "removes 'perllocal' files" do
       file = f.lib/"perl5/darwin-thread-multi-2level/perllocal.pod"
 
-      (f.lib/"perl5/darwin-thread-multi-2level").mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
@@ -118,7 +118,7 @@ describe Cleaner do
     it "removes '.packlist' files" do
       file = f.lib/"perl5/darwin-thread-multi-2level/auto/test/.packlist"
 
-      (f.lib/"perl5/darwin-thread-multi-2level/auto/test").mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
@@ -129,12 +129,32 @@ describe Cleaner do
     it "removes 'charset.alias' files" do
       file = f.lib/"charset.alias"
 
-      f.lib.mkpath
+      file.dirname.mkpath
       touch file
 
       cleaner.clean
 
       expect(file).not_to exist
+    end
+
+    it "removes 'info/**/dir' files except for 'info/<name>/dir'" do
+      file = f.info/"dir"
+      arch_file = f.info/"i686-elf/dir"
+      name_file = f.info/f.name/"dir"
+
+      file.dirname.mkpath
+      arch_file.dirname.mkpath
+      name_file.dirname.mkpath
+
+      touch file
+      touch arch_file
+      touch name_file
+
+      cleaner.clean
+
+      expect(file).not_to exist
+      expect(arch_file).not_to exist
+      expect(name_file).to exist
     end
   end
 
