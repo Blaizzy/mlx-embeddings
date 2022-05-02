@@ -23,7 +23,12 @@ module Homebrew
         description: "Prefix all download URLs, including those for bottles, with this value. " \
                      "For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a " \
                      "formula with the URL `https://example.com/foo.tar.gz` to instead download from " \
-                     "`http://localhost:8080/example.com/foo.tar.gz`.",
+                     "`http://localhost:8080/https://example.com/foo.tar.gz`. " \
+                     "Bottle URLs however, have their domain replaced with this prefix. " \
+                     "Using the same value for example, would cause data hosted under " \
+                     "`https://ghcr.io/v2/homebrew/core/gettext/manifests/0.21` " \
+                     "to be instead downloaded from " \
+                     "`http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`",
       },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
         description: "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
