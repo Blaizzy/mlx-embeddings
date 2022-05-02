@@ -3931,7 +3931,7 @@ class Parlour::Conversion::Converter
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Parlour::Debugging::Tree
+class Parlour::Debugging::Tree
   extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -3945,6 +3945,14 @@ end
 
 class Parlour::Generator
   extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Parlour::Mixin::Searchable
+  extend ::T::Sig
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
