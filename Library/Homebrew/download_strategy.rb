@@ -934,12 +934,12 @@ class GitDownloadStrategy < VCSDownloadStrategy
              args:  ["config", "advice.detachedHead", "false"],
              chdir: cached_location
 
-    if partial_clone_sparse_checkout?
-      command! "git",
-               args:  ["config", "origin.partialclonefilter", "blob:none"],
-               chdir: cached_location
-      configure_sparse_checkout
-    end
+    return unless partial_clone_sparse_checkout?
+
+    command! "git",
+             args:  ["config", "origin.partialclonefilter", "blob:none"],
+             chdir: cached_location
+    configure_sparse_checkout
   end
 
   sig { params(timeout: T.nilable(Time)).void }
@@ -1047,7 +1047,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
              args:  ["config", "core.sparseCheckout", "true"],
              chdir: cached_location
 
-    sparse_checkout_paths = @only_paths.join("\n") + "\n"
+    sparse_checkout_paths = "#{@only_paths.join("\n")}\n"
     (git_dir/"info"/"sparse-checkout").atomic_write(sparse_checkout_paths)
   end
 end
