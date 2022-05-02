@@ -198,20 +198,40 @@ module Utils
     end
 
     # Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
+    # @param details [Hash] Response information from
+    #  `#curl_http_content_headers_and_checksum`.
+    # @return [true, false] Whether a response contains headers indicating that
+    #   the URL is protected by Cloudflare.
+    sig { params(details: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
     def url_protected_by_cloudflare?(details)
       return false if details[:headers].blank?
-      return unless [403, 503].include?(details[:status].to_i)
+      return false unless [403, 503].include?(details[:status].to_i)
 
-      details[:headers].fetch("set-cookie", nil)&.match?(/^(__cfduid|__cf_bm)=/i) &&
-        details[:headers].fetch("server", nil)&.match?(/^cloudflare/i)
+      set_cookie_header = Array(details[:headers]["set-cookie"])
+      has_cloudflare_cookie_header = set_cookie_header.compact.any? do |cookie|
+        cookie.match?(/^(__cfduid|__cf_bm)=/i)
+      end
+
+      server_header = Array(details[:headers]["server"])
+      has_cloudflare_server = server_header.compact.any? do |server|
+        server.match?(/^cloudflare/i)
+      end
+
+      has_cloudflare_cookie_header && has_cloudflare_server
     end
 
     # Check if a URL is protected by Incapsula (e.g. corsair.com).
+    # @param details [Hash] Response information from
+    #  `#curl_http_content_headers_and_checksum`.
+    # @return [true, false] Whether a response contains headers indicating that
+    #   the URL is protected by Incapsula.
+    sig { params(details: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
     def url_protected_by_incapsula?(details)
       return false if details[:headers].blank?
       return false if details[:status].to_i != 403
 
-      details[:headers].fetch("set-cookie", nil)&.match?(/^(visid_incap|incap_ses)_/i)
+      set_cookie_header = Array(details[:headers]["set-cookie"])
+      set_cookie_header.compact.any? { |cookie| cookie.match?(/^(visid_incap|incap_ses)_/i) }
     end
 
     def curl_check_http_content(url, url_type, specs: {}, user_agents: [:default],
