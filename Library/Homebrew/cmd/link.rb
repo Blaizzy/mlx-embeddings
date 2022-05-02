@@ -84,7 +84,7 @@ module Homebrew
       formula = begin
         keg.to_formula
       rescue FormulaUnavailableError
-        # Not all kegs may belong to formulae e.g. with `brew diy`
+        # Not all kegs may belong to formulae
         nil
       end
 
