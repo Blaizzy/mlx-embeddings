@@ -20,6 +20,9 @@ module Homebrew
              description: "Silence all non-critical errors."
       switch "--update",
              description: "Update RBI files."
+      switch "--all",
+             depends_on:  "--update",
+             description: "Regenerate all RBI files rather than just updated gems."
       switch "--suggest-typed",
              depends_on:  "--update",
              description: "Try upgrading `typed` sigils."
@@ -52,9 +55,11 @@ module Homebrew
           "did_you_mean", # RBI file is already provided by Sorbet
           "webrobots", # RBI file is bugged
         ]
+        tapioca_args = ["--exclude", *excluded_gems]
+        tapioca_args << "--all" if args.all?
 
         ohai "Updating Tapioca RBI files..."
-        system "bundle", "exec", "tapioca", "gem", "--exclude", *excluded_gems
+        system "bundle", "exec", "tapioca", "gem", *tapioca_args
         system "bundle", "exec", "parlour"
         system "bundle", "exec", "srb", "rbi", "hidden-definitions"
         system "bundle", "exec", "srb", "rbi", "todo"
