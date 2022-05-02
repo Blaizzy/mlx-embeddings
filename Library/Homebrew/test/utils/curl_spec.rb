@@ -112,6 +112,24 @@ describe "Utils::Curl" do
       },
     }
 
+    response_hash[:duplicate_header] = {
+      status_code: "200",
+      status_text: "OK",
+      headers:     {
+        "cache-control"  => "max-age=604800",
+        "content-type"   => "text/html; charset=UTF-8",
+        "date"           => "Wed, 1 Jan 2020 01:23:45 GMT",
+        "expires"        => "Wed, 31 Jan 2020 01:23:45 GMT",
+        "last-modified"  => "Thu, 1 Jan 2019 01:23:45 GMT",
+        "content-length" => "123",
+        "set-cookie"     => [
+          "example1=first",
+          "example2=second; Expires Wed, 31 Jan 2020 01:23:45 GMT",
+          "example3=third",
+        ],
+      },
+    }
+
     response_hash
   }
 
@@ -143,6 +161,13 @@ describe "Utils::Curl" do
       #{response_text[:redirection]}
       #{response_text[:ok]}
     EOS
+
+    response_text[:duplicate_header] = response_text[:ok].sub(
+      /\r\n\Z/,
+      "Set-Cookie: #{response_hash[:duplicate_header][:headers]["set-cookie"][0]}\r\n" \
+      "Set-Cookie: #{response_hash[:duplicate_header][:headers]["set-cookie"][1]}\r\n" \
+      "Set-Cookie: #{response_hash[:duplicate_header][:headers]["set-cookie"][2]}\r\n\r\n",
+    )
 
     response_text
   }
@@ -312,6 +337,7 @@ describe "Utils::Curl" do
     it "returns a correct hash when given HTTP response text" do
       expect(parse_curl_response(response_text[:ok])).to eq(response_hash[:ok])
       expect(parse_curl_response(response_text[:redirection])).to eq(response_hash[:redirection])
+      expect(parse_curl_response(response_text[:duplicate_header])).to eq(response_hash[:duplicate_header])
     end
 
     it "returns an empty hash when given an empty string" do

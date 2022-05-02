@@ -484,10 +484,25 @@ module Utils
       response_text = response_text.sub(%r{^HTTP/.* (\d+).*$\s*}, "")
 
       # Create a hash from the header lines
-      response[:headers] =
-        response_text.split("\r\n")
-                     .to_h { |header| header.split(/:\s*/, 2) }
-                     .transform_keys(&:downcase)
+      response[:headers] = {}
+      response_text.split("\r\n").each do |line|
+        header_name, header_value = line.split(/:\s*/, 2)
+        next if header_name.blank?
+
+        header_name = header_name.strip.downcase
+        header_value&.strip!
+
+        case response[:headers][header_name]
+        when nil
+          response[:headers][header_name] = header_value
+        when String
+          response[:headers][header_name] = [response[:headers][header_name], header_value]
+        when Array
+          response[:headers][header_name].push(header_value)
+        end
+
+        response[:headers][header_name]
+      end
 
       response
     end
