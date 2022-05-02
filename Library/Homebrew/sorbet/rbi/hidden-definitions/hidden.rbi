@@ -2938,24 +2938,6 @@ class IRB::SLex
   def Fail(err=T.unsafe(nil), *rest); end
 
   def Raise(err=T.unsafe(nil), *rest); end
-
-  def create(token, preproc=T.unsafe(nil), postproc=T.unsafe(nil)); end
-
-  def def_rule(token, preproc=T.unsafe(nil), postproc=T.unsafe(nil), &block); end
-
-  def def_rules(*tokens, &block); end
-
-  def match(token); end
-
-  def postproc(token); end
-
-  def preproc(token, proc); end
-
-  def search(token); end
-  DOUT = ::T.let(nil, ::T.untyped)
-  D_DEBUG = ::T.let(nil, ::T.untyped)
-  D_DETAIL = ::T.let(nil, ::T.untyped)
-  D_WARN = ::T.let(nil, ::T.untyped)
 end
 
 class IRB::SLex::ErrNodeAlreadyExists
@@ -2968,29 +2950,6 @@ class IRB::SLex::ErrNodeNothing
 end
 
 class IRB::SLex::ErrNodeNothing
-end
-
-class IRB::SLex::Node
-  def create_subnode(chrs, preproc=T.unsafe(nil), postproc=T.unsafe(nil)); end
-
-  def initialize(preproc=T.unsafe(nil), postproc=T.unsafe(nil)); end
-
-  def match(chrs, op=T.unsafe(nil)); end
-
-  def match_io(io, op=T.unsafe(nil)); end
-
-  def postproc(); end
-
-  def postproc=(postproc); end
-
-  def preproc(); end
-
-  def preproc=(preproc); end
-
-  def search(chrs, opt=T.unsafe(nil)); end
-end
-
-class IRB::SLex::Node
 end
 
 class IRB::SLex
@@ -4338,14 +4297,6 @@ end
 class Racc::CparseParams
 end
 
-class Rack::Request
-  def query(); end
-
-  def version_supplied(); end
-
-  def version_supplied=(version_supplied); end
-end
-
 class Random
   def self.bytes(arg); end
 end
@@ -5245,11 +5196,6 @@ class RuboCop::Cop::FormulaCop
   def required_dependency?(param0); end
 
   def required_dependency_name?(param0, param1); end
-end
-
-class RuboCop::Cop::Style::MutableConstant
-  include ::RuboCop::Cop::Sorbet::MutableConstantSorbetAwareBehaviour
-  def t_let(param0=T.unsafe(nil)); end
 end
 
 module RuboCop::RSpec::ExpectOffense
@@ -7212,14 +7158,6 @@ class Version
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class WEBrick::HTTPRequest
-  def version_supplied(); end
-
-  def version_supplied=(version_supplied); end
-
-  def xhr?(); end
-end
-
 class WeakRef
   def initialize(orig); end
 end
@@ -7429,10 +7367,6 @@ module Webrobots
 end
 
 module Webrobots
-end
-
-module YARD::CodeObjects
-  extend ::YARD::CodeObjects::NamespaceMapper
 end
 
 module YARDSorbet::Directives
