@@ -814,6 +814,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
     super
     @ref_type ||= :branch
     @ref ||= "master"
+    @only_paths = meta[:only_paths]
   end
 
   # @see AbstractDownloadStrategy#source_modified_time
@@ -880,6 +881,14 @@ class GitDownloadStrategy < VCSDownloadStrategy
     (cached_location/".gitmodules").exist?
   end
 
+  def partial_clone_sparse_checkout?
+    return false if @only_paths.nil?
+
+    # There is some support for partial clones prior to 2.20, but we avoid using it
+    # due to performance issues
+    Version.create(Utils::Git.version) >= Version.create("2.20.0")
+  end
+
   sig { returns(T::Array[String]) }
   def clone_args
     args = %w[clone]
@@ -888,6 +897,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
     when :branch, :tag
       args << "--branch" << @ref
     end
+
+    args << "--no-checkout" << "--filter=blob:none" if partial_clone_sparse_checkout?
 
     args << "-c" << "advice.detachedHead=false" # silences detached head warning
     args << @url << cached_location
@@ -922,6 +933,13 @@ class GitDownloadStrategy < VCSDownloadStrategy
     command! "git",
              args:  ["config", "advice.detachedHead", "false"],
              chdir: cached_location
+
+    if partial_clone_sparse_checkout?
+      command! "git",
+               args:  ["config", "origin.partialclonefilter", "blob:none"],
+               chdir: cached_location
+      configure_sparse_checkout
+    end
   end
 
   sig { params(timeout: T.nilable(Time)).void }
@@ -950,6 +968,9 @@ class GitDownloadStrategy < VCSDownloadStrategy
              args:    ["config", "homebrew.cacheversion", cache_version],
              chdir:   cached_location,
              timeout: timeout&.remaining
+
+    configure_sparse_checkout if partial_clone_sparse_checkout?
+
     checkout(timeout: timeout)
     update_submodules(timeout: timeout) if submodules?
   end
@@ -1019,6 +1040,15 @@ class GitDownloadStrategy < VCSDownloadStrategy
       relative_git_dir = Pathname.new(git_dir).relative_path_from(work_dir)
       dot_git.atomic_write("gitdir: #{relative_git_dir}\n")
     end
+  end
+
+  def configure_sparse_checkout
+    command! "git",
+             args:  ["config", "core.sparseCheckout", "true"],
+             chdir: cached_location
+
+    sparse_checkout_paths = @only_paths.join("\n") + "\n"
+    (git_dir/"info"/"sparse-checkout").atomic_write(sparse_checkout_paths)
   end
 end
 
