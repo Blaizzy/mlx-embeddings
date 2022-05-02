@@ -26,6 +26,10 @@ defaults:
       image: /assets/img/homebrew-256x256.png
       search_name: Documentation
       search_site: docs
+  - scope:
+      path: governance
+    values:
+      category: governance-archives
 
 logo: /assets/img/homebrew-256x256.png
 

@@ -1,6 +1,8 @@
-# Homebrew Annual General Meeting, April 8th 2022, 7pm UTC
+# Homebrew Annual General Meeting 2022
 
 ## Minutes
+
+- 2022-04-08 19:00+0000 Call to order
 
 ## Reports
 

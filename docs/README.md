@@ -74,3 +74,4 @@
 
 - [Homebrew Governance](Homebrew-Governance.md)
 - [Homebrew Leadership Responsibilities](Homebrew-Leadership-Responsibilities.md)
+- [Homebrew Governance Archives](Homebrew-Governance-Archives.md)
