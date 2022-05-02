@@ -359,6 +359,7 @@ module Utils
 
       if status.success?
         file_contents = File.read(file.path)
+        file_contents.encode!(Encoding::UTF_8, invalid: :replace) if headers["content-type"]&.start_with?("text/")
         file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
       end
 
