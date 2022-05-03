@@ -79,6 +79,37 @@ end
 Gem::USE_BUNDLER_FOR_GEMDEPS = T.let(T.unsafe(nil), TrueClass)
 Gem::UnsatisfiableDepedencyError = Gem::UnsatisfiableDependencyError
 
+class IRB::SLex
+  def initialize; end
+
+  def create(token, preproc = T.unsafe(nil), postproc = T.unsafe(nil)); end
+  def def_rule(token, preproc = T.unsafe(nil), postproc = T.unsafe(nil), &block); end
+  def def_rules(*tokens, &block); end
+  def inspect; end
+  def match(token); end
+  def postproc(token); end
+  def preproc(token, proc); end
+  def search(token); end
+end
+
+IRB::SLex::DOUT = T.let(T.unsafe(nil), IRB::Notifier::CompositeNotifier)
+IRB::SLex::D_DEBUG = T.let(T.unsafe(nil), IRB::Notifier::LeveledNotifier)
+IRB::SLex::D_DETAIL = T.let(T.unsafe(nil), IRB::Notifier::LeveledNotifier)
+IRB::SLex::D_WARN = T.let(T.unsafe(nil), IRB::Notifier::LeveledNotifier)
+
+class IRB::SLex::Node
+  def initialize(preproc = T.unsafe(nil), postproc = T.unsafe(nil)); end
+
+  def create_subnode(chrs, preproc = T.unsafe(nil), postproc = T.unsafe(nil)); end
+  def match(chrs, op = T.unsafe(nil)); end
+  def match_io(io, op = T.unsafe(nil)); end
+  def postproc; end
+  def postproc=(_arg0); end
+  def preproc; end
+  def preproc=(_arg0); end
+  def search(chrs, opt = T.unsafe(nil)); end
+end
+
 class Insertion
   def initialize(list, value); end
 
@@ -93,10 +124,38 @@ class Insertion
 end
 
 class Module
+  include ::ActiveSupport::Dependencies::ModuleConstMissing
+
   def class_name; end
 end
 
+Module::DELEGATION_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
+Module::DELEGATION_RESERVED_METHOD_NAMES = T.let(T.unsafe(nil), Set)
+Module::RUBY_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
 RUBY19 = T.let(T.unsafe(nil), TrueClass)
+
+class Rack::Request
+  include ::Rack::Request::Env
+  include ::Rack::Request::Helpers
+
+  def initialize(env); end
+
+  def delete_param(k); end
+  def params; end
+  def query; end
+  def update_param(k, v); end
+  def version_supplied; end
+  def version_supplied=(_arg0); end
+  def xhr?; end
+
+  class << self
+    def ip_filter; end
+    def ip_filter=(_arg0); end
+  end
+end
+
+Rack::Request::ALLOWED_SCHEMES = T.let(T.unsafe(nil), Array)
+Rack::Request::SCHEME_WHITELIST = T.let(T.unsafe(nil), Array)
 
 class String
   include ::Comparable
@@ -126,6 +185,14 @@ class SymbolHash < ::Hash
     def [](*hsh); end
   end
 end
+
+class WEBrick::HTTPRequest
+  def version_supplied; end
+  def version_supplied=(_arg0); end
+  def xhr?; end
+end
+
+WEBrick::HTTPRequest::MAX_HEADER_LENGTH = T.let(T.unsafe(nil), Integer)
 
 module YARD
   class << self
@@ -504,7 +571,11 @@ end
 
 YARD::CLI::YardoptsCommand::DEFAULT_YARDOPTS_FILE = T.let(T.unsafe(nil), String)
 YARD::CONFIG_DIR = T.let(T.unsafe(nil), String)
-module YARD::CodeObjects; end
+
+module YARD::CodeObjects
+  extend ::YARD::CodeObjects::NamespaceMapper
+end
+
 YARD::CodeObjects::BUILTIN_ALL = T.let(T.unsafe(nil), Array)
 YARD::CodeObjects::BUILTIN_CLASSES = T.let(T.unsafe(nil), Array)
 YARD::CodeObjects::BUILTIN_EXCEPTIONS = T.let(T.unsafe(nil), Array)

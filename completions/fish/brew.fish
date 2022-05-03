@@ -1333,6 +1333,7 @@ __fish_brew_complete_arg 'tap-new' -a '(__fish_brew_suggest_taps_installed)'
 
 
 __fish_brew_complete_cmd 'tc' 'Check for typechecking errors using Sorbet'
+__fish_brew_complete_arg 'tc' -l all -d 'Regenerate all RBI files rather than just updated gems'
 __fish_brew_complete_arg 'tc' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'tc' -l dir -d 'Typecheck all files in a specific directory'
 __fish_brew_complete_arg 'tc' -l fail-if-not-changed -d 'Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update'
@@ -1374,6 +1375,7 @@ __fish_brew_complete_arg 'tests' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'typecheck' 'Check for typechecking errors using Sorbet'
+__fish_brew_complete_arg 'typecheck' -l all -d 'Regenerate all RBI files rather than just updated gems'
 __fish_brew_complete_arg 'typecheck' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'typecheck' -l dir -d 'Typecheck all files in a specific directory'
 __fish_brew_complete_arg 'typecheck' -l fail-if-not-changed -d 'Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update'

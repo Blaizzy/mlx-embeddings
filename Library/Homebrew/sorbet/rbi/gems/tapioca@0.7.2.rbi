@@ -592,7 +592,7 @@ class Tapioca::Dsl::Compiler
 
   abstract!
 
-  ConstantType = type_member(upper: Module)
+  ConstantType = type_member { { upper: Module } }
 
   sig { params(pipeline: ::Tapioca::Dsl::Pipeline, root: ::RBI::Tree, constant: ConstantType).void }
   def initialize(pipeline, root, constant); end

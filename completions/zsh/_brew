@@ -1631,6 +1631,7 @@ _brew_tap_new() {
 # brew tc
 _brew_tc() {
   _arguments \
+    '--all[Regenerate all RBI files rather than just updated gems]' \
     '--debug[Display any debugging information]' \
     '(--file)--dir[Typecheck all files in a specific directory]' \
     '--fail-if-not-changed[Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update]' \
@@ -1679,6 +1680,7 @@ _brew_tests() {
 # brew typecheck
 _brew_typecheck() {
   _arguments \
+    '--all[Regenerate all RBI files rather than just updated gems]' \
     '--debug[Display any debugging information]' \
     '(--file)--dir[Typecheck all files in a specific directory]' \
     '--fail-if-not-changed[Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update]' \

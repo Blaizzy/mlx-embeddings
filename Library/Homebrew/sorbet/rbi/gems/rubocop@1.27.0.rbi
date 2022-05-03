@@ -2693,10 +2693,6 @@ class RuboCop::Cop::Layout::ExtraSpacing < ::RuboCop::Cop::Base
   def force_equal_sign_alignment?; end
   def ignored_range?(ast, start_pos); end
   def ignored_ranges(ast); end
-
-  class << self
-    def autocorrect_incompatible_with; end
-  end
 end
 
 RuboCop::Cop::Layout::ExtraSpacing::MSG_UNALIGNED_ASGN = T.let(T.unsafe(nil), String)
@@ -9706,6 +9702,7 @@ end
 RuboCop::Cop::Style::MultipleComparison::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::MutableConstant < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::Sorbet::MutableConstantSorbetAwareBehaviour
   include ::RuboCop::Cop::Style::MutableConstant::ShareableConstantValue
   include ::RuboCop::Cop::FrozenStringLiteral
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -9715,6 +9712,7 @@ class RuboCop::Cop::Style::MutableConstant < ::RuboCop::Cop::Base
   def operation_produces_immutable_object?(param0 = T.unsafe(nil)); end
   def range_enclosed_in_parentheses?(param0 = T.unsafe(nil)); end
   def splat_value(param0 = T.unsafe(nil)); end
+  def t_let(param0 = T.unsafe(nil)); end
 
   private
 
@@ -9724,7 +9722,6 @@ class RuboCop::Cop::Style::MutableConstant < ::RuboCop::Cop::Base
   def frozen_regexp_or_range_literals?(node); end
   def immutable_literal?(node); end
   def mutable_literal?(value); end
-  def on_assignment(value); end
   def requires_parentheses?(node); end
   def shareable_constant_value?(node); end
   def strict_check(value); end
@@ -11703,10 +11700,6 @@ class RuboCop::Cop::Style::TrailingCommaInArguments < ::RuboCop::Cop::Base
 
   def on_csend(node); end
   def on_send(node); end
-
-  class << self
-    def autocorrect_incompatible_with; end
-  end
 end
 
 class RuboCop::Cop::Style::TrailingCommaInArrayLiteral < ::RuboCop::Cop::Base
@@ -12991,8 +12984,8 @@ end
 
 RuboCop::Formatter::PacmanFormatter::FALLBACK_TERMINAL_WIDTH = T.let(T.unsafe(nil), Integer)
 RuboCop::Formatter::PacmanFormatter::GHOST = T.let(T.unsafe(nil), String)
-RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::NullPresenter)
-RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::NullPresenter)
+RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::Presenter)
+RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::Presenter)
 
 class RuboCop::Formatter::ProgressFormatter < ::RuboCop::Formatter::ClangStyleFormatter
   include ::RuboCop::Formatter::TextUtil

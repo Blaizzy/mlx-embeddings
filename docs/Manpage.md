@@ -1478,6 +1478,8 @@ Check for typechecking errors using Sorbet.
   Silence all non-critical errors.
 * `--update`:
   Update RBI files.
+* `--all`:
+  Regenerate all RBI files rather than just updated gems.
 * `--suggest-typed`:
   Try upgrading `typed` sigils.
 * `--fail-if-not-changed`:

@@ -1965,6 +1965,7 @@ _brew_tc() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --all
       --debug
       --dir
       --fail-if-not-changed
@@ -2033,6 +2034,7 @@ _brew_typecheck() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --all
       --debug
       --dir
       --fail-if-not-changed
