@@ -155,7 +155,11 @@ module Cask
 
       # use the same cask file that was used for installation, if possible
       installed_caskfile = @cask.installed_caskfile
-      installed_cask = installed_caskfile.exist? ? CaskLoader.load(installed_caskfile) : @cask
+      installed_cask = begin
+        installed_caskfile.exist? ? CaskLoader.load(installed_caskfile) : @cask
+      rescue CaskInvalidError # could be thrown by call to CaskLoader#load with outdated caskfile
+        @cask # default
+      end
 
       # Always force uninstallation, ignore method parameter
       cask_installer = Installer.new(installed_cask, verbose: verbose?, force: true, upgrade: upgrade?)

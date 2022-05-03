@@ -251,4 +251,20 @@ describe Cask::Installer, :cask do
       expect(Cask::Caskroom.path.join("local-caffeine")).not_to be_a_directory
     end
   end
+
+  describe "uninstall_existing_cask" do
+    it "uninstalls when cask file is outdated" do
+      caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+      described_class.new(caffeine).install
+
+      expect(Cask::CaskLoader.load(cask_path("local-caffeine"))).to be_installed
+
+      expect(caffeine).to receive(:installed?).once.and_return(true)
+      outdate_caskfile = cask_path("invalid/invalid-depends-on-macos-bad-release")
+      expect(caffeine).to receive(:installed_caskfile).once.and_return(outdate_caskfile)
+      described_class.new(caffeine).uninstall_existing_cask
+
+      expect(Cask::CaskLoader.load(cask_path("local-caffeine"))).not_to be_installed
+    end
+  end
 end
