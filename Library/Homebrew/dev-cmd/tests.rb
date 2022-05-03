@@ -68,6 +68,23 @@ module Homebrew
                 "--repository-id", ENV["HOMEBREW_BUILDPULSE_REPOSITORY_ID"]
   end
 
+  def changed_test_files
+    changed_files = Utils.popen_read("git", "diff", "--name-only", "master")
+
+    raise UsageError, "No files have been changed from the master branch!" if changed_files.blank?
+
+    filestub_regex = %r{Library/Homebrew/([\w/-]+).rb}
+    changed_files.scan(filestub_regex).map(&:last).map do |filestub|
+      if filestub.start_with?("test/")
+        # Only run tests on *_spec.rb files in test/ folder
+        filestub.end_with?("_spec") ? Pathname("#{filestub}.rb") : nil
+      else
+        # For all other changed .rb files guess the associated test file name
+        Pathname("test/#{filestub}_spec.rb")
+      end
+    end.compact.select(&:exist?)
+  end
+
   def tests
     args = tests_args.parse
 
@@ -129,14 +146,7 @@ module Homebrew
           ["test/#{test_name}_spec.rb:#{line}"]
         end
       elsif args.changed?
-        changed_files = Utils.popen_read("git", "diff", "--name-only", "master")
-
-        raise UsageError, "No files have been changed from the master branch!" if changed_files.blank?
-
-        filestub_regex = %r{Library/Homebrew/([\w/-]+).rb}
-        changed_files.scan(filestub_regex)
-                     .map { |filestub| Pathname("test/#{filestub.last}_spec.rb") }
-                     .select(&:exist?)
+        changed_test_files
       else
         Dir.glob("test/**/*_spec.rb")
       end
