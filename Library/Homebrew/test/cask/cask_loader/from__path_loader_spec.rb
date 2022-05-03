@@ -34,5 +34,14 @@ describe Cask::CaskLoader::FromPathLoader do
         }.to raise_error(Cask::CaskUnreadableError, /undefined local variable or method/)
       end
     end
+
+    context "when the file contains an outdated cask" do
+      it "raises an error" do
+        expect {
+          described_class.new(cask_path("invalid/invalid-depends-on-macos-bad-release")).load(config: nil)
+        }.to raise_error(Cask::CaskInvalidError,
+                         /invalid 'depends_on macos' value: unknown or unsupported macOS version:/)
+      end
+    end
   end
 end
