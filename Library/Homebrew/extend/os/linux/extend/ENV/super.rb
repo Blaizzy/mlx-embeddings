@@ -40,8 +40,8 @@ module Superenv
   def determine_rpath_paths(formula)
     PATH.new(
       *formula&.lib,
-      "#{HOMEBREW_PREFIX}/lib",
       PATH.new(run_time_deps.map { |dep| dep.opt_lib.to_s }).existing,
+      "#{HOMEBREW_PREFIX}/lib",
     )
   end
 
