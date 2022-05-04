@@ -296,8 +296,8 @@ module Utils
       return unless check_content
 
       no_protocol_file_contents = %r{https?:\\?/\\?/}
-      http_content = details[:file]&.gsub(no_protocol_file_contents, "/")
-      https_content = secure_details[:file]&.gsub(no_protocol_file_contents, "/")
+      http_content = details[:file]&.scrub&.gsub(no_protocol_file_contents, "/")
+      https_content = secure_details[:file]&.scrub&.gsub(no_protocol_file_contents, "/")
 
       # Check for the same content after removing all protocols
       if (http_content && https_content) && (http_content == https_content) && http_with_https_available
@@ -358,7 +358,19 @@ module Utils
       content_length = headers["content-length"]
 
       if status.success?
-        file_contents = File.read(file.path)
+        open_args = {}
+        # Try to get encoding from Content-Type header
+        # TODO: add guessing encoding by <meta http-equiv="Content-Type" ...> tag
+        if (content_type = headers["content-type"]) &&
+           (match = content_type.match(/;\s*charset\s*=\s*([^\s]+)/)) &&
+           (charset = match[1])
+          begin
+            open_args[:encoding] = Encoding.find(charset)
+          rescue ArgumentError
+            # Unknown charset in Content-Type header
+          end
+        end
+        file_contents = File.read(file.path, open_args)
         file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
       end
 
