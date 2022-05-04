@@ -141,5 +141,11 @@ module Utils
         raise ErrorDuringExecution.new(cmd, status: $CHILD_STATUS, output: [[:stdout, output]])
       end
     end
+
+    def supports_partial_clone_sparse_checkout?
+      # There is some support for partial clones prior to 2.20, but we avoid using it
+      # due to performance issues
+      Version.create(version) >= Version.create("2.20.0")
+    end
   end
 end

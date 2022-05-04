@@ -884,9 +884,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
   def partial_clone_sparse_checkout?
     return false if @only_paths.blank?
 
-    # There is some support for partial clones prior to 2.20, but we avoid using it
-    # due to performance issues
-    Version.create(Utils::Git.version) >= Version.create("2.20.0")
+    Utils::Git.supports_partial_clone_sparse_checkout?
   end
 
   sig { returns(T::Array[String]) }
