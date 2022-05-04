@@ -5,6 +5,7 @@
 #:        --merge                      Use `git merge` to apply updates (rather than `git rebase`).
 #:        --preinstall                 Run on auto-updates (e.g. before `brew install`). Skips some slower steps.
 #:    -f, --force                      Always do a slower, full update check (even if unnecessary).
+#:    -q, --quiet                      Make some output more quiet
 #:    -v, --verbose                    Print the directories checked and `git` operations performed.
 #:    -d, --debug                      Display a trace of all shell commands as they are executed.
 #:    -h, --help                       Show this message.
