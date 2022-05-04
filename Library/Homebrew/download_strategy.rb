@@ -882,7 +882,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
   end
 
   def partial_clone_sparse_checkout?
-    return false if @only_paths.nil?
+    return false if @only_paths.blank?
 
     # There is some support for partial clones prior to 2.20, but we avoid using it
     # due to performance issues
