@@ -193,7 +193,7 @@ module Homebrew
       raise UsageError, "cannot specify --cask with --json=v1!" if args.cask?
 
       formulae = if args.all?
-        Formula.sort
+        Formula.all.sort
       elsif args.installed?
         Formula.installed.sort
       else
@@ -207,7 +207,7 @@ module Homebrew
       end
     when :v2
       formulae, casks = if args.all?
-        [Formula.sort, Cask::Cask.all.sort_by(&:full_name)]
+        [Formula.all.sort, Cask::Cask.all.sort_by(&:full_name)]
       elsif args.installed?
         [Formula.installed.sort, Cask::Caskroom.casks.sort_by(&:full_name)]
       else
