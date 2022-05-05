@@ -1472,6 +1472,7 @@ __fish_brew_complete_arg 'up' -l force -d 'Always do a slower, full update check
 __fish_brew_complete_arg 'up' -l help -d 'Show this message'
 __fish_brew_complete_arg 'up' -l merge -d 'Use `git merge` to apply updates (rather than `git rebase`)'
 __fish_brew_complete_arg 'up' -l preinstall -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
+__fish_brew_complete_arg 'up' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'up' -l verbose -d 'Print the directories checked and `git` operations performed'
 
 
@@ -1481,6 +1482,7 @@ __fish_brew_complete_arg 'update' -l force -d 'Always do a slower, full update c
 __fish_brew_complete_arg 'update' -l help -d 'Show this message'
 __fish_brew_complete_arg 'update' -l merge -d 'Use `git merge` to apply updates (rather than `git rebase`)'
 __fish_brew_complete_arg 'update' -l preinstall -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
+__fish_brew_complete_arg 'update' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'update' -l verbose -d 'Print the directories checked and `git` operations performed'
 
 

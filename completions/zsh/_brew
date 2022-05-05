@@ -1802,6 +1802,7 @@ _brew_up() {
     '--help[Show this message]' \
     '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \
     '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
+    '--quiet[Make some output more quiet]' \
     '--verbose[Print the directories checked and `git` operations performed]'
 }
 
@@ -1813,6 +1814,7 @@ _brew_update() {
     '--help[Show this message]' \
     '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \
     '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
+    '--quiet[Make some output more quiet]' \
     '--verbose[Print the directories checked and `git` operations performed]'
 }
 
