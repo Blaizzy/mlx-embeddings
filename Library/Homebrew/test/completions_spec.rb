@@ -200,6 +200,7 @@ describe Homebrew::Completions do
           "--help"       => "Show this message.",
           "--merge"      => "Use `git merge` to apply updates (rather than `git rebase`).",
           "--preinstall" => "Run on auto-updates (e.g. before `brew install`). Skips some slower steps.",
+          "--quiet"      => "Make some output more quiet",
           "--verbose"    => "Print the directories checked and `git` operations performed.",
         }
         expect(described_class.command_options("update")).to eq expected_options
@@ -281,6 +282,7 @@ describe Homebrew::Completions do
                 --help
                 --merge
                 --preinstall
+                --quiet
                 --verbose
                 "
                 return
@@ -345,6 +347,7 @@ describe Homebrew::Completions do
               '--help[Show this message]' \\
               '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \\
               '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \\
+              '--quiet[Make some output more quiet]' \\
               '--verbose[Print the directories checked and `git` operations performed]'
           }
         COMPLETION
@@ -404,6 +407,7 @@ describe Homebrew::Completions do
           __fish_brew_complete_arg 'update' -l help -d 'Show this message'
           __fish_brew_complete_arg 'update' -l merge -d 'Use `git merge` to apply updates (rather than `git rebase`)'
           __fish_brew_complete_arg 'update' -l preinstall -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
+          __fish_brew_complete_arg 'update' -l quiet -d 'Make some output more quiet'
           __fish_brew_complete_arg 'update' -l verbose -d 'Print the directories checked and `git` operations performed'
         COMPLETION
       end
