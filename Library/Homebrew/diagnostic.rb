@@ -900,7 +900,7 @@ module Homebrew
 
         <<~EOS
           Some installed kegs have no formulae!
-          This means they were either deleted or installed with `brew diy`.
+          This means they were either deleted or installed manually.
           You should find replacements for the following formulae:
             #{deleted_formulae.join("\n  ")}
         EOS
