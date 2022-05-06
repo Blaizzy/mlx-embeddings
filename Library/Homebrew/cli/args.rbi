@@ -311,6 +311,9 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def print_path?; end
+
+      sig { returns(T.nilable(T::Boolean)) }
+      def force_auto_update?; end
     end
   end
 end

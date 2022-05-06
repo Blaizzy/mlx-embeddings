@@ -34,7 +34,7 @@ module Homebrew
       switch "--shallow",
              description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.",
              replacement: false
-      switch "--force-auto-update",
+      switch "--[no-]force-auto-update",
              description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
                           "hosted on GitHub are auto-updated (for performance reasons)."
       switch "--custom-remote",
@@ -63,7 +63,7 @@ module Homebrew
       tap = Tap.fetch(args.named.first)
       begin
         tap.install clone_target:      args.named.second,
-                    force_auto_update: force_auto_update?(args: args),
+                    force_auto_update: args.force_auto_update?,
                     custom_remote:     args.custom_remote?,
                     quiet:             args.quiet?
       rescue TapRemoteMismatchError, TapNoCustomRemoteError => e
@@ -72,10 +72,5 @@ module Homebrew
         nil
       end
     end
-  end
-
-  def force_auto_update?(args:)
-    # if no relevant flag is present, return nil, meaning "no change"
-    true if args.force_auto_update?
   end
 end
