@@ -1938,7 +1938,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* `native`.
 
 - `HOMEBREW_ARTIFACT_DOMAIN`
-  <br>Prefix all download URLs, including those for bottles, with this value. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a formula with the URL `https://example.com/foo.tar.gz` to instead download from `http://localhost:8080/https://example.com/foo.tar.gz`. Bottle URLs however, have their domain replaced with this prefix. This results in e.g. `https://ghcr.io/v2/homebrew/core/gettext/manifests/0.21` to instead be downloaded from `http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`
+  <br>Download bottle assets from with this value. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080/mirror` will cause bottle metadata hosted at `https://ghcr.io/v2/homebrew/core/example/manifests/0.1` to instead download from `http://localhost:8080/mirror/v2/homebrew/core/example/manifests/0.1`. Other URLs such as those from Casks are *not* affected by this feature. It is intended to be used with container image mirrors/caches. For caching of arbitrary assets, see `http_proxy`.
 
 - `HOMEBREW_AUTO_UPDATE_SECS`
   <br>Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.
