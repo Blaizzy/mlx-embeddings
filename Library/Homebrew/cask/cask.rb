@@ -21,6 +21,8 @@ module Cask
 
     attr_reader :token, :sourcefile_path, :source, :config, :default_config
 
+    attr_accessor :download
+
     def self.all
       Tap.flat_map(&:cask_files).map do |f|
         CaskLoader::FromTapPathLoader.new(f).load(config: nil)
@@ -127,6 +129,23 @@ module Cask
       metadata_main_container_path/"config.json"
     end
 
+    def download_sha_path
+      metadata_main_container_path/"LATEST_DOWNLOAD_SHA256"
+    end
+
+    def new_download_sha
+      require "cask/installer"
+
+      @new_download_sha ||= Installer.new(self, verify_download_integrity: false)
+                                     .download(quiet: true)
+                                     .instance_eval { |x| Digest::SHA256.file(x).hexdigest }
+    end
+
+    def outdated_download_sha?
+      current_download_sha = download_sha_path.read if download_sha_path.exist?
+      current_download_sha.blank? || current_download_sha != new_download_sha
+    end
+
     def caskroom_path
       @caskroom_path ||= Caskroom.path.join(token)
     end
@@ -140,19 +159,21 @@ module Cask
       # special case: tap version is not available
       return [] if version.nil?
 
-      if greedy || (greedy_latest && greedy_auto_updates) || (greedy_auto_updates && auto_updates)
-        return versions if version.latest?
-      elsif greedy_latest && version.latest?
-        return versions
-      elsif auto_updates
-        return []
-      end
-
       latest_version = if Homebrew::EnvConfig.install_from_api? &&
                           (latest_cask_version = Homebrew::API::Versions.latest_cask_version(token))
         DSL::Version.new latest_cask_version.to_s
       else
         version
+      end
+
+      if greedy || greedy_latest || (greedy_auto_updates && auto_updates)
+        if latest_version.latest?
+          return versions if outdated_download_sha?
+
+          return []
+        end
+      elsif auto_updates
+        return []
       end
 
       installed = versions

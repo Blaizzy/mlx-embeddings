@@ -223,6 +223,22 @@ describe Cask::Installer, :cask do
         described_class.new(caffeine, quiet: true).install
       }.to output(nil).to_stdout
     end
+
+    it "does NOT generate LATEST_DOWNLOAD_SHA256 file for installed Cask without version :latest" do
+      caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+
+      described_class.new(caffeine).install
+
+      expect(caffeine.download_sha_path).not_to be_a_file
+    end
+
+    it "generates and finds LATEST_DOWNLOAD_SHA256 file for installed Cask with version :latest" do
+      latest_cask = Cask::CaskLoader.load(cask_path("version-latest"))
+
+      described_class.new(latest_cask).install
+
+      expect(latest_cask.download_sha_path).to be_a_file
+    end
   end
 
   describe "uninstall" do
