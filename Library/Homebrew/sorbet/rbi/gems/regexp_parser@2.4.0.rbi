@@ -92,6 +92,7 @@ class Regexp::Expression::Backreference::NumberRelative < ::Regexp::Expression::
 end
 
 class Regexp::Expression::Base
+  include ::Regexp::Expression::Shared
   include ::RuboCop::Ext::RegexpParser::Expression::Base
 
   def initialize(token, options = T.unsafe(nil)); end
@@ -100,20 +101,16 @@ class Regexp::Expression::Base
   def a?; end
   def ascii_classes?; end
   def attributes; end
-  def base_length; end
   def case_insensitive?; end
-  def coded_offset; end
   def conditional_level; end
   def conditional_level=(_arg0); end
   def d?; end
   def default_classes?; end
   def extended?; end
   def free_spacing?; end
-  def full_length; end
   def greedy?; end
   def i?; end
   def ignore_case?; end
-  def is?(test_token, test_type = T.unsafe(nil)); end
   def lazy?; end
   def level; end
   def level=(_arg0); end
@@ -123,38 +120,31 @@ class Regexp::Expression::Base
   def matches?(string); end
   def multiline?; end
   def nesting_level; end
-  def nesting_level=(_arg0); end
-  def offset; end
-  def one_of?(scope, top = T.unsafe(nil)); end
   def options; end
   def options=(_arg0); end
   def possessive?; end
-  def quantified?; end
   def quantifier; end
   def quantifier=(_arg0); end
-  def quantifier_affix(expression_format); end
-  def quantify(token, text, min = T.unsafe(nil), max = T.unsafe(nil), mode = T.unsafe(nil)); end
+  def quantify(*args); end
   def quantity; end
   def reluctant?; end
   def repetitions; end
   def set_level; end
   def set_level=(_arg0); end
-  def starts_at; end
   def strfre(format = T.unsafe(nil), indent_offset = T.unsafe(nil), index = T.unsafe(nil)); end
   def strfregexp(format = T.unsafe(nil), indent_offset = T.unsafe(nil), index = T.unsafe(nil)); end
-  def terminal?; end
+  def te; end
+  def te=(_arg0); end
   def text; end
   def text=(_arg0); end
   def to_h; end
   def to_re(format = T.unsafe(nil)); end
-  def to_s(format = T.unsafe(nil)); end
   def token; end
   def token=(_arg0); end
   def ts; end
   def ts=(_arg0); end
   def type; end
   def type=(_arg0); end
-  def type?(test_type); end
   def u?; end
   def unicode_classes?; end
   def unquantified_clone; end
@@ -180,7 +170,7 @@ class Regexp::Expression::CharacterSet < ::Regexp::Expression::Subexpression
   def negative; end
   def negative=(_arg0); end
   def negative?; end
-  def to_s(format = T.unsafe(nil)); end
+  def parts; end
 end
 
 class Regexp::Expression::CharacterSet::IntersectedSequence < ::Regexp::Expression::Sequence
@@ -197,8 +187,8 @@ class Regexp::Expression::CharacterSet::Range < ::Regexp::Expression::Subexpress
   def <<(exp); end
   def complete?; end
   def match_length; end
+  def parts; end
   def starts_at; end
-  def to_s(_format = T.unsafe(nil)); end
   def ts; end
 end
 
@@ -242,10 +232,10 @@ class Regexp::Expression::Conditional::Expression < ::Regexp::Expression::Subexp
   def condition; end
   def condition=(exp); end
   def match_length; end
+  def parts; end
   def reference; end
   def referenced_expression; end
   def referenced_expression=(_arg0); end
-  def to_s(format = T.unsafe(nil)); end
 
   private
 
@@ -318,7 +308,7 @@ class Regexp::Expression::EscapeSequence::VerticalTab < ::Regexp::Expression::Es
 
 class Regexp::Expression::FreeSpace < ::Regexp::Expression::Base
   def match_length; end
-  def quantify(_token, _text, _min = T.unsafe(nil), _max = T.unsafe(nil), _mode = T.unsafe(nil)); end
+  def quantify(*_args); end
 end
 
 module Regexp::Expression::Group; end
@@ -332,7 +322,7 @@ class Regexp::Expression::Group::Atomic < ::Regexp::Expression::Group::Base; end
 class Regexp::Expression::Group::Base < ::Regexp::Expression::Subexpression
   def capturing?; end
   def comment?; end
-  def to_s(format = T.unsafe(nil)); end
+  def parts; end
 end
 
 class Regexp::Expression::Group::Capture < ::Regexp::Expression::Group::Base
@@ -346,7 +336,7 @@ end
 
 class Regexp::Expression::Group::Comment < ::Regexp::Expression::Group::Base
   def comment?; end
-  def to_s(_format = T.unsafe(nil)); end
+  def parts; end
 end
 
 class Regexp::Expression::Group::Named < ::Regexp::Expression::Group::Capture
@@ -374,7 +364,7 @@ class Regexp::Expression::Group::Passive < ::Regexp::Expression::Group::Base
 
   def implicit=(_arg0); end
   def implicit?; end
-  def to_s(format = T.unsafe(nil)); end
+  def parts; end
 end
 
 module Regexp::Expression::Keep; end
@@ -396,26 +386,44 @@ class Regexp::Expression::PosixClass < ::Regexp::Expression::Base
 end
 
 class Regexp::Expression::Quantifier
-  def initialize(token, text, min, max, mode); end
+  include ::Regexp::Expression::Shared
 
-  def ==(other); end
-  def eq(other); end
+  def initialize(*args); end
+
+  def conditional_level; end
+  def conditional_level=(_arg0); end
   def greedy?; end
   def lazy?; end
+  def level; end
+  def level=(_arg0); end
   def max; end
   def min; end
   def mode; end
+  def nesting_level; end
+  def options; end
+  def options=(_arg0); end
   def possessive?; end
+  def quantifier; end
+  def quantifier=(_arg0); end
   def reluctant?; end
+  def set_level; end
+  def set_level=(_arg0); end
+  def te; end
+  def te=(_arg0); end
   def text; end
+  def text=(_arg0); end
   def to_h; end
-  def to_s; end
-  def to_str; end
   def token; end
+  def token=(_arg0); end
+  def ts; end
+  def ts=(_arg0); end
+  def type; end
+  def type=(_arg0); end
 
   private
 
-  def initialize_copy(orig); end
+  def deprecated_old_init(token, text, min, max, mode = T.unsafe(nil)); end
+  def minmax; end
 end
 
 Regexp::Expression::Quantifier::MODES = T.let(T.unsafe(nil), Array)
@@ -428,7 +436,7 @@ class Regexp::Expression::Root < ::Regexp::Expression::Subexpression
 end
 
 class Regexp::Expression::Sequence < ::Regexp::Expression::Subexpression
-  def quantify(token, text, min = T.unsafe(nil), max = T.unsafe(nil), mode = T.unsafe(nil)); end
+  def quantify(*args); end
   def starts_at; end
   def ts; end
 
@@ -443,10 +451,40 @@ class Regexp::Expression::SequenceOperation < ::Regexp::Expression::Subexpressio
   def add_sequence(active_opts = T.unsafe(nil)); end
   def operands; end
   def operator; end
+  def parts; end
   def sequences; end
   def starts_at; end
-  def to_s(format = T.unsafe(nil)); end
   def ts; end
+end
+
+module Regexp::Expression::Shared
+  def ==(other); end
+  def ===(other); end
+  def base_length; end
+  def coded_offset; end
+  def eql?(other); end
+  def full_length; end
+  def is?(test_token, test_type = T.unsafe(nil)); end
+  def nesting_level=(lvl); end
+  def offset; end
+  def one_of?(scope, top = T.unsafe(nil)); end
+  def parts; end
+  def quantified?; end
+  def quantifier_affix(expression_format); end
+  def starts_at; end
+  def terminal?; end
+  def to_s(format = T.unsafe(nil)); end
+  def to_str(format = T.unsafe(nil)); end
+  def type?(test_type); end
+
+  private
+
+  def init_from_token_and_options(token, options = T.unsafe(nil)); end
+  def initialize_copy(orig); end
+
+  class << self
+    def included(mod); end
+  end
 end
 
 class Regexp::Expression::Subexpression < ::Regexp::Expression::Base
@@ -471,11 +509,11 @@ class Regexp::Expression::Subexpression < ::Regexp::Expression::Base
   def last(*args, &block); end
   def length(*args, &block); end
   def match_length; end
+  def parts; end
   def strfre_tree(format = T.unsafe(nil), include_self = T.unsafe(nil), separator = T.unsafe(nil)); end
   def strfregexp_tree(format = T.unsafe(nil), include_self = T.unsafe(nil), separator = T.unsafe(nil)); end
   def te; end
   def to_h; end
-  def to_s(format = T.unsafe(nil)); end
   def traverse(include_self = T.unsafe(nil), &block); end
   def values_at(*args, &block); end
   def walk(include_self = T.unsafe(nil), &block); end
@@ -483,6 +521,7 @@ class Regexp::Expression::Subexpression < ::Regexp::Expression::Base
   private
 
   def initialize_copy(orig); end
+  def intersperse(expressions, separator); end
 end
 
 module Regexp::Expression::UnicodeProperty; end
@@ -670,9 +709,8 @@ class Regexp::Parser
   def extract_options(input, options); end
   def free_space(token); end
   def group(token); end
-  def increase_level(exp); end
+  def increase_group_level(exp); end
   def intersection(token); end
-  def interval(target_node, token); end
   def keep(token); end
   def literal(token); end
   def meta(token); end
@@ -701,7 +739,6 @@ class Regexp::Parser
   def switching_options=(_arg0); end
   def total_captured_group_count; end
   def type(token); end
-  def update_transplanted_subtree(exp, new_parent); end
 
   class << self
     def parse(input, syntax = T.unsafe(nil), options: T.unsafe(nil), &block); end
@@ -756,11 +793,12 @@ class Regexp::Scanner
   def spacing_stack=(_arg0); end
   def tokens; end
   def tokens=(_arg0); end
-  def validation_error(type, what, reason); end
+  def validation_error(type, what, reason = T.unsafe(nil)); end
 
   class << self
     def long_prop_map; end
     def parse_prop_map(name); end
+    def posix_classes; end
     def scan(input_object, options: T.unsafe(nil), &block); end
     def short_prop_map; end
   end
@@ -787,6 +825,10 @@ class Regexp::Scanner::PrematureEndError < ::Regexp::Scanner::ScannerError
 end
 
 class Regexp::Scanner::ScannerError < ::Regexp::Parser::Error; end
+
+class Regexp::Scanner::UnknownPosixClassError < ::Regexp::Scanner::ValidationError
+  def initialize(text); end
+end
 
 class Regexp::Scanner::UnknownUnicodePropertyError < ::Regexp::Scanner::ValidationError
   def initialize(name); end
