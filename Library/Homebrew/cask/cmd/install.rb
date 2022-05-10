@@ -67,6 +67,7 @@ module Cask
           skip_cask_deps: skip_cask_deps,
           require_sha:    require_sha,
           quarantine:     quarantine,
+          quiet:          quiet,
           zap:            zap,
         }.compact
 
