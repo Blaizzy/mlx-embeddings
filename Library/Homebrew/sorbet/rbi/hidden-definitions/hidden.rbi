@@ -2144,60 +2144,6 @@ end
 
 Gem::Security::KEY_ALGORITHM = OpenSSL::PKey::RSA
 
-class Gem::Security::Policy
-  include ::Gem::UserInteraction
-  include ::Gem::DefaultUserInteraction
-  include ::Gem::Text
-  def check_cert(signer, issuer, time); end
-
-  def check_chain(chain, time); end
-
-  def check_data(public_key, digest, signature, data); end
-
-  def check_key(signer, key); end
-
-  def check_root(chain, time); end
-
-  def check_trust(chain, digester, trust_dir); end
-
-  def initialize(name, policy=T.unsafe(nil), opt=T.unsafe(nil)); end
-
-  def name(); end
-
-  def only_signed(); end
-
-  def only_signed=(only_signed); end
-
-  def only_trusted(); end
-
-  def only_trusted=(only_trusted); end
-
-  def subject(certificate); end
-
-  def verify(chain, key=T.unsafe(nil), digests=T.unsafe(nil), signatures=T.unsafe(nil), full_name=T.unsafe(nil)); end
-
-  def verify_chain(); end
-
-  def verify_chain=(verify_chain); end
-
-  def verify_data(); end
-
-  def verify_data=(verify_data); end
-
-  def verify_root(); end
-
-  def verify_root=(verify_root); end
-
-  def verify_signatures(spec, digests, signatures); end
-
-  def verify_signer(); end
-
-  def verify_signer=(verify_signer); end
-end
-
-class Gem::Security::Policy
-end
-
 class Gem::Security::Signer
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
