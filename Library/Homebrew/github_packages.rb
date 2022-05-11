@@ -151,7 +151,7 @@ class GitHubPackages
   end
 
   def schema_uri(basename, uris)
-    url = "https://raw.githubusercontent.com/opencontainers/image-spec/master/schema/#{basename}.json"
+    url = "https://raw.githubusercontent.com/opencontainers/image-spec/170393e57ed656f7f81c3070bfa8c3346eaa0a5a/schema/#{basename}.json"
     out, = curl_output(url)
     json = JSON.parse(out)
 
