@@ -337,7 +337,7 @@ describe Tap do
       it "disables forced auto-updates when false" do
         expect(already_tapped_tap).to be_installed
         already_tapped_tap.install force_auto_update: false
-        expect(already_tapped_tap.config["forceautoupdate"]).to eq("false")
+        expect(already_tapped_tap.config["forceautoupdate"]).to be_nil
       end
     end
 
@@ -453,7 +453,7 @@ describe Tap do
     expect(homebrew_foo_tap.config["foo"]).to be_nil
     homebrew_foo_tap.config["foo"] = "bar"
     expect(homebrew_foo_tap.config["foo"]).to eq("bar")
-    homebrew_foo_tap.config["foo"] = nil
+    homebrew_foo_tap.config.delete("foo")
     expect(homebrew_foo_tap.config["foo"]).to be_nil
   end
 

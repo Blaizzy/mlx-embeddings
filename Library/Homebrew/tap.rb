@@ -276,7 +276,11 @@ class Tap
       end
 
       unless force_auto_update.nil?
-        config["forceautoupdate"] = force_auto_update
+        if force_auto_update
+          config["forceautoupdate"] = force_auto_update
+        elsif config["forceautoupdate"] == "true"
+          config.delete("forceautoupdate")
+        end
         return
       end
 
@@ -931,6 +935,13 @@ class TapConfig
     return unless Utils::Git.available?
 
     Homebrew::Settings.write key, value.to_s, repo: tap.path
+  end
+
+  def delete(key)
+    return unless tap.git?
+    return unless Utils::Git.available?
+
+    Homebrew::Settings.delete key, repo: tap.path
   end
 end
 
