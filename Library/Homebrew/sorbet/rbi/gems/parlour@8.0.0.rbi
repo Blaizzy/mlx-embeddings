@@ -148,7 +148,7 @@ module Parlour::Mixin::Searchable
 
   abstract!
 
-  Child = type_member
+  Child = type_member { { upper: Parlour::TypedObject } }
 
   sig { abstract.returns(T::Array[Child]) }
   def children; end
