@@ -216,6 +216,13 @@ describe Cask::Installer, :cask do
       m_subdir = caffeine.metadata_subdir(subdir_name, timestamp: :now, create: true)
       expect(caffeine.metadata_subdir(subdir_name, timestamp: :latest)).to eq(m_subdir)
     end
+
+    it "don't print cask installed message with --quiet option" do
+      caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+      expect {
+        described_class.new(caffeine, quiet: true).install
+      }.to output(nil).to_stdout
+    end
   end
 
   describe "uninstall" do
