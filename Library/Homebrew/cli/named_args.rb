@@ -148,6 +148,16 @@ module Homebrew
 
             return cask
           rescue Cask::CaskUnreadableError => e
+            # If we're trying to get a keg-like Cask, do our best to handle it
+            # not being readable and return something that can be used.
+            if [:latest_kegs, :default_kegs, :kegs].include?(method)
+              cask_version = Cask::Cask.new(name, config: config).versions.first
+              cask = Cask::Cask.new(name, config: config) do
+                version cask_version if cask_version
+              end
+              return cask
+            end
+
             # Need to rescue before `CaskUnavailableError` (superclass of this)
             # The cask was found, but there's a problem with its implementation
             unreadable_error ||= e
