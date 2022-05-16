@@ -97,6 +97,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/simplecov-cobertura-2
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-static-0.5.10010-universal-darwin-14/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-0.5.10010/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-runtime-stub-0.2.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/sorbet-static-and-runtime-0.5.10010/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/thor-1.2.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/spoom-1.1.11/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/yard-0.9.27/lib"
