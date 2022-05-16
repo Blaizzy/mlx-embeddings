@@ -44,25 +44,13 @@ jobs:
 
           branch="$(git branch --show-current)"
           echo "::set-output name=branch::${branch}"
-
-          gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
-          echo "::set-output name=gem_name::${gem_name}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Vendor Gems
         env:
-          GEM_NAME: ${{ steps.checkout.outputs.gem_name }}
           HOMEBREW_GPG_PASSPHRASE: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY_PASSPHRASE }}
-        run: |
-          set -u
-
-          if [[ "${GEM_NAME}" == 'sorbet' ]]
-          then
-            brew vendor-gems --update sorbet,sorbet-runtime
-          else
-            brew vendor-gems
-          fi
+        run: brew vendor-gems
 
       - name: Update RBI files
         env:
