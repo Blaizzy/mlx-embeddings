@@ -59,6 +59,8 @@ module OS
         # Bail out if there is no SDK prefix at all
         return @all_sdks unless File.directory? sdk_prefix
 
+        found_versions = Set.new
+
         Dir["#{sdk_prefix}/MacOSX*.sdk"].each do |sdk_path|
           next unless sdk_path.match?(SDK::VERSIONED_SDK_REGEX)
 
@@ -66,14 +68,13 @@ module OS
           next if version.nil?
 
           @all_sdks << SDK.new(version, sdk_path, source)
+          found_versions << version
         end
 
-        # Fall back onto unversioned SDK if we've not found a suitable SDK
-        if @all_sdks.empty?
-          sdk_path = Pathname.new("#{sdk_prefix}/MacOSX.sdk")
-          if (version = read_sdk_version(sdk_path))
-            @all_sdks << SDK.new(version, sdk_path, source)
-          end
+        # Use unversioned SDK only if we don't have one matching that version.
+        sdk_path = Pathname.new("#{sdk_prefix}/MacOSX.sdk")
+        if (version = read_sdk_version(sdk_path)) && found_versions.exclude?(version)
+          @all_sdks << SDK.new(version, sdk_path, source)
         end
 
         @all_sdks
