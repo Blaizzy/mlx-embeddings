@@ -151,6 +151,9 @@ class GitHubPackages
   end
 
   def schema_uri(basename, uris)
+    # The current `main` version has an invalid JSON schema.
+    # Going forward, this should probably be pinned to tags.
+    # We currently use features newer than the last one (v1.0.2).
     url = "https://raw.githubusercontent.com/opencontainers/image-spec/170393e57ed656f7f81c3070bfa8c3346eaa0a5a/schema/#{basename}.json"
     out, = curl_output(url)
     json = JSON.parse(out)
