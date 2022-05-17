@@ -16,7 +16,7 @@ describe Homebrew::Livecheck do
     formula("test") do
       desc "Test formula"
       homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz", using: :homebrew_curl
+      url "https://brew.sh/test-0.0.1.tgz"
       head "https://github.com/Homebrew/brew.git"
 
       livecheck do
@@ -31,7 +31,7 @@ describe Homebrew::Livecheck do
       cask "test" do
         version "0.0.1,2"
 
-        url "https://brew.sh/test-0.0.1.dmg", using: :homebrew_curl
+        url "https://brew.sh/test-0.0.1.dmg"
         name "Test"
         desc "Test cask"
         homepage "https://brew.sh"
@@ -158,13 +158,67 @@ describe Homebrew::Livecheck do
   end
 
   describe "::use_homebrew_curl?" do
-    it "uses brewed curl if called for by the download URL" do
+    let(:example_url) { "https://www.example.com/test-0.0.1.tgz" }
+
+    let(:f_homebrew_curl) do
+      formula("test") do
+        desc "Test formula"
+        homepage "https://brew.sh"
+        url "https://brew.sh/test-0.0.1.tgz", using: :homebrew_curl
+        # head is deliberably omitted to exercise more of the method
+
+        livecheck do
+          url "https://formulae.brew.sh/api/formula/ruby.json"
+          regex(/"stable":"(\d+(?:\.\d+)+)"/i)
+        end
+      end
+    end
+
+    let(:c_homebrew_curl) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "test" do
+          version "0.0.1,2"
+
+          url "https://brew.sh/test-0.0.1.dmg", using: :homebrew_curl
+          name "Test"
+          desc "Test cask"
+          homepage "https://brew.sh"
+
+          livecheck do
+            url "https://formulae.brew.sh/api/formula/ruby.json"
+            regex(/"stable":"(\d+(?:\.\d+)+)"/i)
+          end
+        end
+      RUBY
+    end
+
+    it "returns `true` when URL matches a `using: :homebrew_curl` URL" do
+      expect(livecheck.use_homebrew_curl?(f_homebrew_curl, livecheck_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(f_homebrew_curl, homepage_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(f_homebrew_curl, stable_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(c_homebrew_curl, livecheck_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(c_homebrew_curl, homepage_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(c_homebrew_curl, cask_url)).to be(true)
+    end
+
+    it "returns `false` if URL root domain differs from `using: :homebrew_curl` URLs" do
+      expect(livecheck.use_homebrew_curl?(f_homebrew_curl, example_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(c_homebrew_curl, example_url)).to be(false)
+    end
+
+    it "returns `false` if a `using: homebrew_curl` URL is not present" do
       expect(livecheck.use_homebrew_curl?(f, livecheck_url)).to be(false)
-      expect(livecheck.use_homebrew_curl?(f, homepage_url)).to be(true)
-      expect(livecheck.use_homebrew_curl?(f, stable_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(f, homepage_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(f, stable_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(f, example_url)).to be(false)
       expect(livecheck.use_homebrew_curl?(c, livecheck_url)).to be(false)
-      expect(livecheck.use_homebrew_curl?(c, homepage_url)).to be(true)
-      expect(livecheck.use_homebrew_curl?(c, cask_url)).to be(true)
+      expect(livecheck.use_homebrew_curl?(c, homepage_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(c, cask_url)).to be(false)
+      expect(livecheck.use_homebrew_curl?(c, example_url)).to be(false)
+    end
+
+    it "returns `false` if URL string does not contain a domain" do
+      expect(livecheck.use_homebrew_curl?(f_homebrew_curl, "test")).to be(false)
     end
   end
 
