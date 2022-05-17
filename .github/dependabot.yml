@@ -16,6 +16,4 @@ updates:
       interval: daily
     allow:
       - dependency-type: all
-    ignore:
-      - dependency-name: sorbet-runtime
     versioning-strategy: lockfile-only

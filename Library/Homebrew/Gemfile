@@ -27,8 +27,7 @@ gem "warning", require: false
 group :sorbet, optional: true do
   gem "parlour", require: false
   gem "rspec-sorbet", require: false
-  gem "sorbet", require: false
-  gem "sorbet-runtime", require: false
+  gem "sorbet-static-and-runtime", require: false
   gem "tapioca", require: false
 end
 
