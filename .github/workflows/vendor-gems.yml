@@ -44,6 +44,9 @@ jobs:
 
           branch="$(git branch --show-current)"
           echo "::set-output name=branch::${branch}"
+
+          gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
+          echo "::set-output name=gem_name::${gem_name}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
