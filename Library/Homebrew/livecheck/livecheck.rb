@@ -5,7 +5,6 @@ require "livecheck/error"
 require "livecheck/livecheck_version"
 require "livecheck/skip_conditions"
 require "livecheck/strategy"
-require "addressable"
 require "ruby-progressbar"
 require "uri"
 
@@ -530,33 +529,26 @@ module Homebrew
       url
     end
 
-    # livecheck should fetch a URL using brewed curl if the formula/cask
-    # contains a `stable`/`url` or `head` URL `using: :homebrew_curl` that
-    # shares the same root domain.
+    # Fetch with brewed curl if using the download or homepage URL
+    # and the download URL specifies `using: :homebrew_curl`.
     sig { params(formula_or_cask: T.any(Formula, Cask::Cask), url: String).returns(T::Boolean) }
     def use_homebrew_curl?(formula_or_cask, url)
-      url_root_domain = Addressable::URI.parse(url)&.domain
-      return false if url_root_domain.blank?
+      if checkable_urls(formula_or_cask).include?(url)
+        case formula_or_cask
+        when Formula
+          [:stable, :head].any? do |spec_name|
+            next false unless (spec = formula_or_cask.send(spec_name))
 
-      # Collect root domains of URLs with `using: :homebrew_curl`
-      homebrew_curl_root_domains = []
-      case formula_or_cask
-      when Formula
-        [:stable, :head].each do |spec_name|
-          next unless (spec = formula_or_cask.send(spec_name))
-          next unless spec.using == :homebrew_curl
-
-          domain = Addressable::URI.parse(spec.url)&.domain
-          homebrew_curl_root_domains << domain if domain.present?
+            spec.using == :homebrew_curl
+          end
+        when Cask::Cask
+          formula_or_cask.url.using == :homebrew_curl
+        else
+          T.absurd(formula_or_cask)
         end
-      when Cask::Cask
-        return false unless formula_or_cask.url.using == :homebrew_curl
-
-        domain = Addressable::URI.parse(formula_or_cask.url.to_s)&.domain
-        homebrew_curl_root_domains << domain if domain.present?
+      else
+        false
       end
-
-      homebrew_curl_root_domains.include?(url_root_domain)
     end
 
     # Identifies the latest version of the formula and returns a Hash containing
@@ -670,7 +662,6 @@ module Homebrew
         when "PageMatch", "HeaderMatch"
           use_homebrew_curl?((referenced_formula_or_cask || formula_or_cask), url)
         end
-        puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
 
         strategy_data = strategy.find_versions(
           url:           url,
@@ -752,7 +743,6 @@ module Homebrew
             version_info[:meta][:url][:strategy] = strategy_data[:url]
           end
           version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
-          version_info[:meta][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
 
           version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
           version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
