@@ -240,16 +240,8 @@ module Homebrew
       files.delete(HOMEBREW_REPOSITORY/"completions/bash/brew")
       files.delete(HOMEBREW_REPOSITORY/"Dockerfile")
 
-      # shfmt options:
-      #   -i 2     : indent by 2 spaces
-      #   -ci      : indent switch cases
-      #   -ln bash : language variant to parse ("bash")
-      #   -w       : write result to file instead of stdout (inplace fixing)
-      # "--" is needed for `utils/shfmt.sh`
-      args = ["-i", "2", "-ci", "-ln", "bash", "--", *files]
-
-      # Do inplace fixing
-      args.unshift("-w") if fix # need to add before "--"
+      args = ["--language-dialect", "bash", "--indent", "2", "--case-indent", "--", *files]
+      args.unshift("--write") if fix # need to add before "--"
 
       system shfmt, *args
       $CHILD_STATUS.success?
