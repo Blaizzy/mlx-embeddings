@@ -38,6 +38,7 @@
 
 # Unignore vendored gems
 !**/vendor/bundle/ruby/*/gems/*/lib
+!**/vendor/bundle/ruby/*/gems/addressable-*/data
 !**/vendor/bundle/ruby/*/gems/rubocop-performance-*/config
 !**/vendor/bundle/ruby/*/gems/rubocop-rails-*/config
 !**/vendor/bundle/ruby/*/gems/rubocop-rspec-*/config

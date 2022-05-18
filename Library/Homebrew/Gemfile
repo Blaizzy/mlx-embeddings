@@ -33,6 +33,7 @@ end
 
 # vendored gems
 gem "activesupport", "< 7" # 7 requires Ruby 2.7
+gem "addressable"
 gem "concurrent-ruby"
 gem "did_you_mean" # remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
 gem "mechanize"
