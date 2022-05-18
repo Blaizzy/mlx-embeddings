@@ -110,6 +110,14 @@ RSpec:
       - subject
       - subject!
 
+Metrics/BlockLength:
+  inherit_mode:
+    merge:
+      - Exclude
+  Exclude:
+    - "**/*_spec.rb"
+    - "**/spec/**/*"
+
 RSpec/AlignLeftLetBrace:
   Description: Checks that left braces for adjacent single line lets are aligned.
   Enabled: false
@@ -175,6 +183,12 @@ RSpec/BeforeAfterAll:
   VersionAdded: '1.12'
   StyleGuide: https://rspec.rubystyle.guide/#avoid-hooks-with-context-scope
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/BeforeAfterAll
+
+RSpec/ChangeByZero:
+  Description: Prefer negated matchers over `to change.by(0)`.
+  Enabled: pending
+  VersionAdded: 2.11.0
+  Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ChangeByZero
 
 RSpec/ContextMethod:
   Description: "`context` should not be used for specifying methods."
@@ -256,7 +270,7 @@ RSpec/DescribedClassModuleWrapping:
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/DescribedClassModuleWrapping
 
 RSpec/Dialect:
-  Description: This cop enforces custom RSpec dialects.
+  Description: Enforces custom RSpec dialects.
   Enabled: false
   PreferredMethods: {}
   VersionAdded: '1.33'
@@ -787,13 +801,13 @@ RSpec/VerifiedDoubles:
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/VerifiedDoubles
 
 RSpec/VoidExpect:
-  Description: This cop checks void `expect()`.
+  Description: Checks void `expect()`.
   Enabled: true
   VersionAdded: '1.16'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/VoidExpect
 
 RSpec/Yield:
-  Description: This cop checks for calling a block within a stub.
+  Description: Checks for calling a block within a stub.
   Enabled: true
   VersionAdded: '1.32'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Yield
