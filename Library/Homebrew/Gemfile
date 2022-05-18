@@ -6,7 +6,6 @@ source "https://rubygems.org"
 # * nokogiri - use rexml instead for XML parsing
 
 # installed gems (should all be require: false)
-gem "addressable", require: false
 gem "bootsnap", require: false
 gem "byebug", require: false
 gem "json_schemer", require: false

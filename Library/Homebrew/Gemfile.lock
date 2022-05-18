@@ -204,7 +204,6 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (< 7)
-  addressable
   bootsnap
   byebug
   concurrent-ruby
