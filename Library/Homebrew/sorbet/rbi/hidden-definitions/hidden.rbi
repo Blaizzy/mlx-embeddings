@@ -4616,6 +4616,21 @@ class RuboCop::Cop::FormulaCop
   def required_dependency_name?(param0, param1); end
 end
 
+class RuboCop::Cop::RSpec::ChangeByZero
+  def expect_change_with_arguments(param0=T.unsafe(nil)); end
+
+  def expect_change_with_block(param0=T.unsafe(nil)); end
+
+  def on_send(node); end
+  MSG = ::T.let(nil, ::T.untyped)
+  MSG_COMPOUND = ::T.let(nil, ::T.untyped)
+  RESTRICT_ON_SEND = ::T.let(nil, ::T.untyped)
+end
+
+class RuboCop::Cop::RSpec::ChangeByZero
+  extend ::RuboCop::Cop::AutoCorrector
+end
+
 module RuboCop::RSpec::ExpectOffense
   def expect_correction(correction, loop: T.unsafe(nil), source: T.unsafe(nil)); end
 
