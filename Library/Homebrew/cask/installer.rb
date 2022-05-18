@@ -181,8 +181,9 @@ module Cask
 
     sig { params(quiet: T.nilable(T::Boolean), timeout: T.nilable(T.any(Integer, Float))).returns(Pathname) }
     def download(quiet: nil, timeout: nil)
-      @download ||= downloader.fetch(quiet: quiet, verify_download_integrity: @verify_download_integrity,
-                                     timeout: timeout)
+      # Store cask download path in cask to prevent multiple downloads in a row when checking if it's outdated
+      @cask.download ||= downloader.fetch(quiet: quiet, verify_download_integrity: @verify_download_integrity,
+                                          timeout: timeout)
     end
 
     def verify_has_sha
@@ -248,6 +249,7 @@ module Cask
       end
 
       save_config_file
+      save_download_sha if @cask.version.latest?
     rescue => e
       begin
         already_installed_artifacts.each do |artifact|
@@ -392,6 +394,10 @@ module Cask
 
     def save_config_file
       @cask.config_path.atomic_write(@cask.config.to_json)
+    end
+
+    def save_download_sha
+      @cask.download_sha_path.atomic_write(@cask.new_download_sha)
     end
 
     def uninstall

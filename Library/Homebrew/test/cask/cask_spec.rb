@@ -131,15 +131,17 @@ describe Cask::Cask, :cask do
     describe ":latest casks" do
       let(:cask) { described_class.new("basic-cask") }
 
-      shared_examples ":latest cask" do |greedy, tap_version, expectations|
+      shared_examples ":latest cask" do |greedy, outdated_sha, tap_version, expectations|
         expectations.each do |installed_version, expected_output|
           context "when versions #{installed_version} are installed and the " \
-                  "tap version is #{tap_version}, #{"not" unless greedy} greedy" do
+                  "tap version is #{tap_version}, #{"not " unless greedy}greedy" \
+                  "and sha is #{"not " unless outdated_sha}outdated" do
             subject { cask.outdated_versions(greedy: greedy) }
 
             it {
               allow(cask).to receive(:versions).and_return(installed_version)
               allow(cask).to receive(:version).and_return(Cask::DSL::Version.new(tap_version))
+              allow(cask).to receive(:outdated_download_sha?).and_return(outdated_sha)
               expect(cask).to receive(:outdated_versions).and_call_original
               expect(subject).to eq expected_output
             }
@@ -148,23 +150,29 @@ describe Cask::Cask, :cask do
       end
 
       describe ":latest version installed, :latest version in tap" do
-        include_examples ":latest cask", false, "latest",
+        include_examples ":latest cask", false, false, "latest",
                          ["latest"] => []
-        include_examples ":latest cask", true, "latest",
+        include_examples ":latest cask", true, false, "latest",
+                         ["latest"] => []
+        include_examples ":latest cask", true, true, "latest",
                          ["latest"] => ["latest"]
       end
 
       describe "numbered version installed, :latest version in tap" do
-        include_examples ":latest cask", false, "latest",
+        include_examples ":latest cask", false, false, "latest",
                          ["1.2.3"] => ["1.2.3"]
-        include_examples ":latest cask", true, "latest",
+        include_examples ":latest cask", true, false, "latest",
+                         ["1.2.3"] => []
+        include_examples ":latest cask", true, true, "latest",
                          ["1.2.3"] => ["1.2.3"]
       end
 
       describe "latest version installed, numbered version in tap" do
-        include_examples ":latest cask", false, "1.2.3",
+        include_examples ":latest cask", false, false, "1.2.3",
                          ["latest"] => ["latest"]
-        include_examples ":latest cask", true, "1.2.3",
+        include_examples ":latest cask", true, false, "1.2.3",
+                         ["latest"] => ["latest"]
+        include_examples ":latest cask", true, true, "1.2.3",
                          ["latest"] => ["latest"]
       end
     end

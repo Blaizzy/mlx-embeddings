@@ -106,8 +106,10 @@ describe Cask::Cmd::Upgrade, :cask do
 
         expect(version_latest).to be_installed
         expect(version_latest_path_1).to be_a_directory
-        expect(version_latest_path_2).to be_a_directory
         expect(version_latest.versions).to include("latest")
+        # Change download sha so that :latest cask decides to update itself
+        version_latest.download_sha_path.write("fake download sha")
+        expect(version_latest.outdated_download_sha?).to be(true)
 
         described_class.run("--greedy")
 
@@ -124,12 +126,12 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission.versions).to include("2.61")
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
         expect(version_latest_path_2).to be_a_directory
         expect(version_latest.versions).to include("latest")
+        expect(version_latest.outdated_download_sha?).to be(false)
       end
 
-      it 'does not include the Casks with "auto_updates true" when the version did not change' do
+      it 'does not include the Casks with "auto_updates true" or "version latest" when the version did not change' do
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
@@ -145,6 +147,32 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.61")
+      end
+
+      it 'does not include the Casks with "version latest" when the version did not change' do
+        expect(version_latest).to be_installed
+        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest.versions).to include("latest")
+        # Change download sha so that :latest cask decides to update itself
+        version_latest.download_sha_path.write("fake download sha")
+        expect(version_latest.outdated_download_sha?).to be(true)
+
+        described_class.run("version-latest", "--greedy")
+
+        expect(version_latest).to be_installed
+        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest.versions).to include("latest")
+        expect(version_latest.outdated_download_sha?).to be(false)
+
+        described_class.run("version-latest", "--greedy")
+
+        expect(version_latest).to be_installed
+        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest.versions).to include("latest")
+        expect(version_latest.outdated_download_sha?).to be(false)
       end
     end
   end
@@ -167,6 +195,8 @@ describe Cask::Cmd::Upgrade, :cask do
 
     describe 'without --greedy it ignores the Casks with "version latest" or "auto_updates true"' do
       it "would update all the installed Casks when no token is provided" do
+        expect(described_class).not_to receive(:upgrade_cask)
+
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
         expect(local_caffeine.versions).to include("1.2.2")
@@ -189,6 +219,8 @@ describe Cask::Cmd::Upgrade, :cask do
       end
 
       it "would update only the Casks specified in the command line" do
+        expect(described_class).not_to receive(:upgrade_cask)
+
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
         expect(local_caffeine.versions).to include("1.2.2")
@@ -211,6 +243,8 @@ describe Cask::Cmd::Upgrade, :cask do
       end
 
       it 'would update "auto_updates" and "latest" Casks when their tokens are provided in the command line' do
+        expect(described_class).not_to receive(:upgrade_cask)
+
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
         expect(local_caffeine.versions).to include("1.2.2")
@@ -235,6 +269,8 @@ describe Cask::Cmd::Upgrade, :cask do
 
     describe "with --greedy it checks additional Casks" do
       it 'would include the Casks with "auto_updates true" or "version latest"' do
+        expect(described_class).not_to receive(:upgrade_cask)
+
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
         expect(local_caffeine.versions).to include("1.2.2")
@@ -248,8 +284,9 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission.versions).to include("2.60")
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        # Change download sha so that :latest cask decides to update itself
+        version_latest.download_sha_path.write("fake download sha")
+        expect(version_latest.outdated_download_sha?).to be(true)
 
         described_class.run("--greedy", "--dry-run")
 
@@ -269,10 +306,12 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission.versions).not_to include("2.61")
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest.outdated_download_sha?).to be(true)
       end
 
-      it 'does not include the Casks with "auto_updates true" when the version did not change' do
+      it 'would update outdated Casks with "auto_updates true"' do
+        expect(described_class).not_to receive(:upgrade_cask)
+
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
@@ -283,13 +322,26 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
         expect(auto_updates.versions).not_to include("2.61")
+      end
 
-        described_class.run("--dry-run", "auto-updates", "--greedy")
+      it 'would update outdated Casks with "version latest"' do
+        expect(described_class).not_to receive(:upgrade_cask)
 
-        expect(auto_updates).to be_installed
-        expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
-        expect(auto_updates.versions).not_to include("2.61")
+        expect(version_latest).to be_installed
+        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest.versions).to include("latest")
+        # Change download sha so that :latest cask decides to update itself
+        version_latest.download_sha_path.write("fake download sha")
+        expect(version_latest.outdated_download_sha?).to be(true)
+
+        described_class.run("--dry-run", "version-latest", "--greedy")
+
+        expect(version_latest).to be_installed
+        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest.versions).to include("latest")
+        expect(version_latest.outdated_download_sha?).to be(true)
       end
     end
   end
