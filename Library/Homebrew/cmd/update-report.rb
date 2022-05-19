@@ -16,9 +16,9 @@ module Homebrew
 
   module_function
 
-  def update_preinstall_header(args:)
-    @update_preinstall_header ||= begin
-      ohai "Auto-updated Homebrew!" if args.preinstall?
+  def auto_update_header(args:)
+    @auto_update_header ||= begin
+      ohai "Auto-updated Homebrew!" if args.auto_update?
       true
     end
   end
@@ -29,7 +29,7 @@ module Homebrew
       description <<~EOS
         The Ruby implementation of `brew update`. Never called manually.
       EOS
-      switch "--preinstall",
+      switch "--auto-update", "--preinstall",
              description: "Run in 'auto-update' mode (faster, less output)."
       switch "-f", "--force",
              description: "Treat installed and updated formulae as if they are from "\
@@ -79,7 +79,7 @@ module Homebrew
       FileUtils.rm_f HOMEBREW_LOCKS/"update"
 
       update_args = []
-      update_args << "--preinstall" if args.preinstall?
+      update_args << "--auto-update" if args.auto_update?
       update_args << "--force" if args.force?
       exec HOMEBREW_BREW_FILE, "update", *update_args
     end
@@ -123,7 +123,7 @@ module Homebrew
     odie "update-report should not be called directly!" if initial_revision.empty? || current_revision.empty?
 
     if initial_revision != current_revision
-      update_preinstall_header args: args
+      auto_update_header args: args
 
       updated = true
 
@@ -150,7 +150,7 @@ module Homebrew
     updated_taps = []
     Tap.each do |tap|
       next unless tap.git?
-      next if (tap.core_tap? || tap == "homebrew/cask") && Homebrew::EnvConfig.install_from_api? && args.preinstall?
+      next if (tap.core_tap? || tap == "homebrew/cask") && Homebrew::EnvConfig.install_from_api? && args.auto_update?
 
       if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
          Settings.read("linuxbrewmigrated") != "true"
@@ -182,12 +182,12 @@ module Homebrew
       end
       if reporter.updated?
         updated_taps << tap.name
-        hub.add(reporter, preinstall: args.preinstall?)
+        hub.add(reporter, auto_update: args.auto_update?)
       end
     end
 
     unless updated_taps.empty?
-      update_preinstall_header args: args
+      auto_update_header args: args
       puts "Updated #{updated_taps.count} #{"tap".pluralize(updated_taps.count)} (#{updated_taps.to_sentence})."
       updated = true
     end
@@ -196,7 +196,12 @@ module Homebrew
       if hub.empty?
         puts "No changes to formulae." unless args.quiet?
       else
-        hub.dump(updated_formula_report: !args.preinstall?) unless args.quiet?
+        if ENV.fetch("HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED", false)
+          opoo "HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED is now the default behaviour, " \
+               "so you can unset it from your environment."
+        end
+
+        hub.dump(updated_formula_report: !args.auto_update?) unless args.quiet?
         hub.reporters.each(&:migrate_tap_migration)
         hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
         CacheStoreDatabase.use(:descriptions) do |db|
@@ -208,7 +213,7 @@ module Homebrew
                                    .update_from_report!(hub)
         end
 
-        if !args.preinstall? && !args.quiet?
+        if !args.auto_update? && !args.quiet?
           outdated_formulae = Formula.installed.count(&:outdated?)
           outdated_casks = Cask::Caskroom.casks.count(&:outdated?)
           update_pronoun = if (outdated_formulae + outdated_casks) == 1
@@ -234,8 +239,8 @@ module Homebrew
           end
         end
       end
-      puts if args.preinstall?
-    elsif !args.preinstall? && !ENV["HOMEBREW_UPDATE_FAILED"] && !ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"]
+      puts if args.auto_update?
+    elsif !args.auto_update? && !ENV["HOMEBREW_UPDATE_FAILED"] && !ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"]
       puts "Already up-to-date." unless args.quiet?
     end
 
@@ -326,7 +331,7 @@ class Reporter
     raise ReporterRevisionUnsetError, current_revision_var if @current_revision.empty?
   end
 
-  def report(preinstall: false)
+  def report(auto_update: false)
     return @report if @report
 
     @report = Hash.new { |h, k| h[k] = [] }
@@ -364,8 +369,8 @@ class Reporter
       when "M"
         name = tap.formula_file_to_name(src)
 
-        # Skip reporting updated formulae to speed up automatic updates.
-        if preinstall
+        # Skip filtering unchanged formulae versions by default (as it's slow).
+        unless Homebrew::EnvConfig.update_report_version_changed_formulae?
           @report[:M] << name
           next
         end
@@ -570,9 +575,9 @@ class ReporterHub
     @hash.fetch(key, [])
   end
 
-  def add(reporter, preinstall: false)
+  def add(reporter, auto_update: false)
     @reporters << reporter
-    report = reporter.report(preinstall: preinstall).delete_if { |_k, v| v.empty? }
+    report = reporter.report(auto_update: auto_update).delete_if { |_k, v| v.empty? }
     @hash.update(report) { |_key, oldval, newval| oldval.concat(newval) }
   end
 
@@ -603,7 +608,7 @@ class ReporterHub
   private
 
   def dump_formula_report(key, title)
-    only_installed = Homebrew::EnvConfig.update_report_only_installed?
+    only_installed = !Homebrew::EnvConfig.update_report_all_formulae?
 
     formulae = select_formula(key).sort.map do |name, new_name|
       # Format list items of renamed formulae

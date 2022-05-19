@@ -1468,21 +1468,21 @@ __fish_brew_complete_arg 'untap' -a '(__fish_brew_suggest_taps_installed)'
 
 
 __fish_brew_complete_cmd 'up' 'Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations'
+__fish_brew_complete_arg 'up' -l auto-update -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
 __fish_brew_complete_arg 'up' -l debug -d 'Display a trace of all shell commands as they are executed'
 __fish_brew_complete_arg 'up' -l force -d 'Always do a slower, full update check (even if unnecessary)'
 __fish_brew_complete_arg 'up' -l help -d 'Show this message'
 __fish_brew_complete_arg 'up' -l merge -d 'Use `git merge` to apply updates (rather than `git rebase`)'
-__fish_brew_complete_arg 'up' -l preinstall -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
 __fish_brew_complete_arg 'up' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'up' -l verbose -d 'Print the directories checked and `git` operations performed'
 
 
 __fish_brew_complete_cmd 'update' 'Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1) and perform any necessary migrations'
+__fish_brew_complete_arg 'update' -l auto-update -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
 __fish_brew_complete_arg 'update' -l debug -d 'Display a trace of all shell commands as they are executed'
 __fish_brew_complete_arg 'update' -l force -d 'Always do a slower, full update check (even if unnecessary)'
 __fish_brew_complete_arg 'update' -l help -d 'Show this message'
 __fish_brew_complete_arg 'update' -l merge -d 'Use `git merge` to apply updates (rather than `git rebase`)'
-__fish_brew_complete_arg 'update' -l preinstall -d 'Run on auto-updates (e.g. before `brew install`). Skips some slower steps'
 __fish_brew_complete_arg 'update' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'update' -l verbose -d 'Print the directories checked and `git` operations performed'
 
@@ -1518,10 +1518,10 @@ __fish_brew_complete_arg 'update-python-resources' -a '(__fish_brew_suggest_form
 
 
 __fish_brew_complete_cmd 'update-report' 'The Ruby implementation of `brew update`'
+__fish_brew_complete_arg 'update-report' -l auto-update -d 'Run in \'auto-update\' mode (faster, less output)'
 __fish_brew_complete_arg 'update-report' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'update-report' -l force -d 'Treat installed and updated formulae as if they are from the same taps and migrate them anyway'
 __fish_brew_complete_arg 'update-report' -l help -d 'Show this message'
-__fish_brew_complete_arg 'update-report' -l preinstall -d 'Run in \'auto-update\' mode (faster, less output)'
 __fish_brew_complete_arg 'update-report' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'update-report' -l verbose -d 'Make some output more verbose'
 
