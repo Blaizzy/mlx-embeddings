@@ -60,11 +60,11 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
             MacPorts patches should specify a revision instead of trunk: #{patch_url}
           EOS
-        elsif patch_url.start_with?("http://trac.macports.org")
+        elsif patch_url.start_with?("http://trac.macports.org/")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
             Patches from MacPorts Trac should be https://, not http: #{patch_url}
           EOS
-        elsif patch_url.start_with?("http://bugs.debian.org")
+        elsif patch_url.start_with?("http://bugs.debian.org/")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 4, source: source
             Patches from Debian should be https://, not http: #{patch_url}
           EOS
@@ -203,11 +203,11 @@ describe RuboCop::Cop::FormulaAudit::Patches do
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
             MacPorts patches should specify a revision instead of trunk: #{patch_url}
           EOS
-        elsif patch_url.start_with?("http://trac.macports.org")
+        elsif patch_url.start_with?("http://trac.macports.org/")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
             Patches from MacPorts Trac should be https://, not http: #{patch_url}
           EOS
-        elsif patch_url.start_with?("http://bugs.debian.org")
+        elsif patch_url.start_with?("http://bugs.debian.org/")
           expect_offense_hash message: <<~EOS.chomp, severity: :convention, line: 5, column: 8, source: source
             Patches from Debian should be https://, not http: #{patch_url}
           EOS
