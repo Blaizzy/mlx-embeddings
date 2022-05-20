@@ -492,34 +492,35 @@ module Homebrew
     sig { params(url: String).returns(String) }
     def preprocess_url(url)
       begin
-        uri = URI.parse url
-      rescue URI::InvalidURIError
+        uri = Addressable::URI.parse url
+      rescue Addressable::URI::InvalidURIError
         return url
       end
 
       host = uri.host
+      domain = uri.domain
       path = uri.path
       return url if host.nil? || path.nil?
 
-      host = "github.com" if host == "github.s3.amazonaws.com"
+      domain = host = "github.com" if host == "github.s3.amazonaws.com"
       path = path.delete_prefix("/").delete_suffix(".git")
       scheme = uri.scheme
 
-      if host.end_with?("github.com")
+      if domain == "github.com"
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.delete_prefix("downloads/").split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
-      elsif host.end_with?(*GITEA_INSTANCES)
+      elsif GITEA_INSTANCES.include?(domain)
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
-      elsif host.end_with?(*GOGS_INSTANCES)
+      elsif GOGS_INSTANCES.include?(domain)
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
       # sourcehut
-      elsif host.end_with?("git.sr.ht")
+      elsif host == "git.sr.ht"
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}"
       # GitLab (gitlab.com or self-hosted)
