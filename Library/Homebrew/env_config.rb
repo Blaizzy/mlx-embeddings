@@ -25,9 +25,9 @@ module Homebrew
                      "formula with the URL `https://example.com/foo.tar.gz` to instead download from " \
                      "`http://localhost:8080/https://example.com/foo.tar.gz`. " \
                      "Bottle URLs however, have their domain replaced with this prefix. " \
-                     "Using the same value for example, would cause data hosted under " \
+                     "This results in e.g. " \
                      "`https://ghcr.io/v2/homebrew/core/gettext/manifests/0.21` " \
-                     "to be instead downloaded from " \
+                     "to instead be downloaded from " \
                      "`http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`",
       },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
