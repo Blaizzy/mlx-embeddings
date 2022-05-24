@@ -10,9 +10,11 @@ describe CurlGitHubPackagesDownloadStrategy do
   let(:url) { "https://#{GitHubPackages::URL_DOMAIN}/v2/homebrew/core/spec_test/manifests/1.2.3" }
   let(:version) { "1.2.3" }
   let(:specs) { {} }
+  let(:authorization) { nil }
 
   describe "#fetch" do
     before do
+      stub_const("HOMEBREW_GITHUB_PACKAGES_AUTH", authorization) if authorization.present?
       strategy.temporary_path.dirname.mkpath
       FileUtils.touch strategy.temporary_path
     end
@@ -30,10 +32,6 @@ describe CurlGitHubPackagesDownloadStrategy do
 
     context "with Github Packages authentication defined" do
       let(:authorization) { "Bearer dead-beef-cafe" }
-
-      before do
-        HOMEBREW_GITHUB_PACKAGES_AUTH = authorization.freeze
-      end
 
       it "calls curl with the provided header value" do
         expect(strategy).to receive(:system_command).with(
