@@ -682,7 +682,7 @@ Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1)
 
 * `--merge`:
   Use `git merge` to apply updates (rather than `git rebase`).
-* `--preinstall`:
+* `--auto-update`:
   Run on auto-updates (e.g. before `brew install`). Skips some slower steps.
 * `-f`, `--force`:
   Always do a slower, full update check (even if unnecessary).
@@ -2171,8 +2171,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* macOS: `/private/tmp`, Linux: `/tmp`.
 
-- `HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED`
-  <br>If set, `brew update` only lists updates to installed software.
+- `HOMEBREW_UPDATE_REPORT_ALL_FORMULAE`
+  <br>If set, `brew update` lists updates to all software.
+
+- `HOMEBREW_UPDATE_REPORT_VERSION_CHANGED_FORMULAE`
+  <br>If set, `brew update` only lists updates to formulae with differing versions. Note this is slower than the default behaviour.
 
 - `HOMEBREW_UPDATE_TO_TAG`
   <br>If set, always use the latest stable tag (even if developer commands have been run).

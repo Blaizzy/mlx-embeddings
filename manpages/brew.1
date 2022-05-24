@@ -936,7 +936,7 @@ Fetch the newest version of Homebrew and all formulae from GitHub using \fBgit\f
 Use \fBgit merge\fR to apply updates (rather than \fBgit rebase\fR)\.
 .
 .TP
-\fB\-\-preinstall\fR
+\fB\-\-auto\-update\fR
 Run on auto\-updates (e\.g\. before \fBbrew install\fR)\. Skips some slower steps\.
 .
 .TP
@@ -3183,10 +3183,16 @@ Use this path as the temporary directory for building packages\. Changing this m
 \fIDefault:\fR macOS: \fB/private/tmp\fR, Linux: \fB/tmp\fR\.
 .
 .TP
-\fBHOMEBREW_UPDATE_REPORT_ONLY_INSTALLED\fR
+\fBHOMEBREW_UPDATE_REPORT_ALL_FORMULAE\fR
 .
 .br
-If set, \fBbrew update\fR only lists updates to installed software\.
+If set, \fBbrew update\fR lists updates to all software\.
+.
+.TP
+\fBHOMEBREW_UPDATE_REPORT_VERSION_CHANGED_FORMULAE\fR
+.
+.br
+If set, \fBbrew update\fR only lists updates to formulae with differing versions\. Note this is slower than the default behaviour\.
 .
 .TP
 \fBHOMEBREW_UPDATE_TO_TAG\fR

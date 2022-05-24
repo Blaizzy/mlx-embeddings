@@ -226,13 +226,13 @@ EOS
   fi
 }
 
-# Let user know we're still updating Homebrew if brew update --preinstall
+# Let user know we're still updating Homebrew if brew update --auto-update
 # exceeds 3 seconds.
-update-preinstall-timer() {
+auto-update-timer() {
   sleep 3
   # Outputting a command but don't want to run it, hence single quotes.
   # shellcheck disable=SC2016
-  echo 'Running `brew update --preinstall`...' >&2
+  echo 'Running `brew update --auto-update`...' >&2
   if [[ -z "${HOMEBREW_NO_ENV_HINTS}" && -z "${HOMEBREW_AUTO_UPDATE_SECS}" ]]
   then
     # shellcheck disable=SC2016
@@ -244,11 +244,11 @@ update-preinstall-timer() {
 
 # These variables are set from various Homebrew scripts.
 # shellcheck disable=SC2154
-update-preinstall() {
+auto-update() {
   [[ -z "${HOMEBREW_HELP}" ]] || return
   [[ -z "${HOMEBREW_NO_AUTO_UPDATE}" ]] || return
   [[ -z "${HOMEBREW_AUTO_UPDATING}" ]] || return
-  [[ -z "${HOMEBREW_UPDATE_PREINSTALL}" ]] || return
+  [[ -z "${HOMEBREW_UPDATE_AUTO}" ]] || return
   [[ -z "${HOMEBREW_AUTO_UPDATE_CHECKED}" ]] || return
 
   # If we've checked for updates, we don't need to check again.
@@ -280,11 +280,11 @@ update-preinstall() {
 
     if [[ -z "${HOMEBREW_VERBOSE}" ]]
     then
-      update-preinstall-timer &
+      auto-update-timer &
       timer_pid=$!
     fi
 
-    brew update --preinstall
+    brew update --auto-update
 
     if [[ -n "${timer_pid}" ]]
     then
@@ -842,7 +842,7 @@ then
   source "${HOMEBREW_BASH_COMMAND}"
 
   {
-    update-preinstall "$@"
+    auto-update "$@"
     "homebrew-${HOMEBREW_COMMAND}" "$@"
     exit $?
   }
@@ -856,7 +856,7 @@ else
   # HOMEBREW_RUBY_PATH set by utils/ruby.sh
   # shellcheck disable=SC2154
   {
-    update-preinstall "$@"
+    auto-update "$@"
     exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${RUBY_DISABLE_OPTIONS}" \
       "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"
   }

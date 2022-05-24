@@ -1798,11 +1798,11 @@ _brew_untap() {
 # brew up
 _brew_up() {
   _arguments \
+    '--auto-update[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
     '--debug[Display a trace of all shell commands as they are executed]' \
     '--force[Always do a slower, full update check (even if unnecessary)]' \
     '--help[Show this message]' \
     '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \
-    '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Print the directories checked and `git` operations performed]'
 }
@@ -1810,11 +1810,11 @@ _brew_up() {
 # brew update
 _brew_update() {
   _arguments \
+    '--auto-update[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
     '--debug[Display a trace of all shell commands as they are executed]' \
     '--force[Always do a slower, full update check (even if unnecessary)]' \
     '--help[Show this message]' \
     '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \
-    '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Print the directories checked and `git` operations performed]'
 }
@@ -1859,10 +1859,10 @@ _brew_update_python_resources() {
 # brew update-report
 _brew_update_report() {
   _arguments \
+    '--auto-update[Run in '\''auto-update'\'' mode (faster, less output)]' \
     '--debug[Display any debugging information]' \
     '--force[Treat installed and updated formulae as if they are from the same taps and migrate them anyway]' \
     '--help[Show this message]' \
-    '--preinstall[Run in '\''auto-update'\'' mode (faster, less output)]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
 }
