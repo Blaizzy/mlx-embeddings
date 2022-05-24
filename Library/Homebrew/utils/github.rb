@@ -353,7 +353,7 @@ module GitHub
       EOS
     end
 
-    artifact.first["archive_download_url"]
+    artifact.last["archive_download_url"]
   end
 
   def public_member_usernames(org, per_page: 100)
