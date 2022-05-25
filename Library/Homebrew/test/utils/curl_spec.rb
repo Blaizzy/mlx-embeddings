@@ -14,7 +14,7 @@ describe "Utils::Curl" do
     details[:normal][:no_cookie] = {
       url:            "https://www.example.com/",
       final_url:      nil,
-      status:         "403",
+      status_code:    "403",
       headers:        {
         "age"            => "123456",
         "cache-control"  => "max-age=604800",
@@ -35,7 +35,7 @@ describe "Utils::Curl" do
     }
 
     details[:normal][:ok] = Marshal.load(Marshal.dump(details[:normal][:no_cookie]))
-    details[:normal][:ok][:status] = "200"
+    details[:normal][:ok][:status_code] = "200"
 
     details[:normal][:single_cookie] = Marshal.load(Marshal.dump(details[:normal][:no_cookie]))
     details[:normal][:single_cookie][:headers]["set-cookie"] = "a_cookie=for_testing"
@@ -52,7 +52,7 @@ describe "Utils::Curl" do
     details[:cloudflare][:single_cookie] = {
       url:            "https://www.example.com/",
       final_url:      nil,
-      status:         "403",
+      status_code:    "403",
       headers:        {
         "date"            => "Wed, 1 Jan 2020 01:23:45 GMT",
         "content-type"    => "text/plain; charset=UTF-8",
