@@ -4618,6 +4618,18 @@ class RuboCop::Cop::FormulaCop
   def required_dependency_name?(param0, param1); end
 end
 
+class RuboCop::Cop::Performance::DeletePrefix
+  extend ::RuboCop::Cop::TargetRubyVersion
+end
+
+class RuboCop::Cop::Performance::DeleteSuffix
+  extend ::RuboCop::Cop::TargetRubyVersion
+end
+
+class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock
+  extend ::RuboCop::Cop::TargetRubyVersion
+end
+
 class RuboCop::Cop::RSpec::ChangeByZero
   def expect_change_with_arguments(param0=T.unsafe(nil)); end
 
