@@ -198,21 +198,20 @@ module Utils
     end
 
     # Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
-    # @param details [Hash] Response information from
-    #  `#curl_http_content_headers_and_checksum`.
+    # @param response [Hash] A response hash from `#parse_curl_response`.
     # @return [true, false] Whether a response contains headers indicating that
     #   the URL is protected by Cloudflare.
-    sig { params(details: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
-    def url_protected_by_cloudflare?(details)
-      return false if details[:headers].blank?
-      return false unless [403, 503].include?(details[:status_code].to_i)
+    sig { params(response: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
+    def url_protected_by_cloudflare?(response)
+      return false if response[:headers].blank?
+      return false unless [403, 503].include?(response[:status_code].to_i)
 
-      set_cookie_header = Array(details[:headers]["set-cookie"])
+      set_cookie_header = Array(response[:headers]["set-cookie"])
       has_cloudflare_cookie_header = set_cookie_header.compact.any? do |cookie|
         cookie.match?(/^(__cfduid|__cf_bm)=/i)
       end
 
-      server_header = Array(details[:headers]["server"])
+      server_header = Array(response[:headers]["server"])
       has_cloudflare_server = server_header.compact.any? do |server|
         server.match?(/^cloudflare/i)
       end
@@ -221,16 +220,15 @@ module Utils
     end
 
     # Check if a URL is protected by Incapsula (e.g. corsair.com).
-    # @param details [Hash] Response information from
-    #  `#curl_http_content_headers_and_checksum`.
+    # @param response [Hash] A response hash from `#parse_curl_response`.
     # @return [true, false] Whether a response contains headers indicating that
     #   the URL is protected by Incapsula.
-    sig { params(details: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
-    def url_protected_by_incapsula?(details)
-      return false if details[:headers].blank?
-      return false if details[:status_code].to_i != 403
+    sig { params(response: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
+    def url_protected_by_incapsula?(response)
+      return false if response[:headers].blank?
+      return false if response[:status_code].to_i != 403
 
-      set_cookie_header = Array(details[:headers]["set-cookie"])
+      set_cookie_header = Array(response[:headers]["set-cookie"])
       set_cookie_header.compact.any? { |cookie| cookie.match?(/^(visid_incap|incap_ses)_/i) }
     end
 
@@ -284,7 +282,9 @@ module Utils
       end
 
       unless http_status_ok?(details[:status_code])
-        return if url_protected_by_cloudflare?(details) || url_protected_by_incapsula?(details)
+        return if details[:responses].any? do |response|
+          url_protected_by_cloudflare?(response) || url_protected_by_incapsula?(response)
+        end
 
         return "The #{url_type} #{url} is not reachable (HTTP status code #{details[:status_code]})"
       end
@@ -403,6 +403,7 @@ module Utils
         content_length: content_length,
         file:           file_contents,
         file_hash:      file_hash,
+        responses:      responses,
       }
     ensure
       file.unlink
