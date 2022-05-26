@@ -21,7 +21,7 @@ module OS
       # This may be a beta version for a beta macOS.
       sig { params(macos: MacOS::Version).returns(String) }
       def latest_version(macos: MacOS.version)
-        latest_stable = "13.3"
+        latest_stable = "13.4"
         case macos
         when "12" then latest_stable
         when "11" then "13.2.1"
@@ -240,7 +240,7 @@ module OS
         when "12.0.0" then "12.4"
         when "12.0.5" then "12.5.1"
         when "13.0.0" then "13.2.1"
-        else               "13.3"
+        else               "13.4"
         end
       end
 
@@ -337,7 +337,7 @@ module OS
       sig { returns(String) }
       def latest_clang_version
         case MacOS.version
-        when "12"    then "1316.0.21.2"
+        when "12"    then "1316.0.21.2.5"
         when "11"    then "1300.0.29.30"
         when "10.15" then "1200.0.32.29"
         when "10.14" then "1100.0.33.17"
