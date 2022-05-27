@@ -383,7 +383,7 @@ module OS
       sig { returns(T.nilable(String)) }
       def detect_clang_version
         version_output = Utils.popen_read("#{PKG_PATH}/usr/bin/clang", "--version")
-        version_output[/clang-(\d+\.\d+\.\d+(\.\d+)?)/, 1]
+        version_output[/clang-(\d+(\.\d+)+)/, 1]
       end
 
       sig { returns(T.nilable(String)) }
