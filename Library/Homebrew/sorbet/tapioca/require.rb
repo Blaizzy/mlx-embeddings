@@ -7,6 +7,9 @@ dependency_require_map = {
   "ruby-macho"    => "macho",
 }.freeze
 
+# Don't start coverage tracking automatically
+ENV["SIMPLECOV_NO_DEFAULTS"] = "1"
+
 Bundler.definition.locked_gems.specs.each do |spec|
   name = spec.name
 
