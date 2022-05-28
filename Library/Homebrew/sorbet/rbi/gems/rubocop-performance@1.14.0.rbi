@@ -132,8 +132,8 @@ class RuboCop::Cop::Performance::Casecmp < ::RuboCop::Cop::Base
 
   private
 
-  def build_good_method(arg, variable); end
-  def correction(corrector, node, method, arg, variable); end
+  def autocorrect(corrector, node, replacement); end
+  def build_good_method(method, arg, variable); end
   def take_method_apart(node); end
 end
 
@@ -243,6 +243,7 @@ RuboCop::Cop::Performance::Count::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 class RuboCop::Cop::Performance::DeletePrefix < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RegexpMetacharacter
   extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRubyVersion
 
   def delete_prefix_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
@@ -255,6 +256,7 @@ RuboCop::Cop::Performance::DeletePrefix::RESTRICT_ON_SEND = T.let(T.unsafe(nil),
 class RuboCop::Cop::Performance::DeleteSuffix < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RegexpMetacharacter
   extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRubyVersion
 
   def delete_suffix_candidate?(param0 = T.unsafe(nil)); end
   def on_send(node); end
@@ -462,6 +464,7 @@ RuboCop::Cop::Performance::RedundantBlockCall::YIELD = T.let(T.unsafe(nil), Stri
 
 class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRubyVersion
 
   def on_block(node); end
 

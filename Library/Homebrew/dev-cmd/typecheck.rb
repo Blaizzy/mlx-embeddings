@@ -54,15 +54,16 @@ module Homebrew
         excluded_gems = [
           "did_you_mean", # RBI file is already provided by Sorbet
           "webrobots", # RBI file is bugged
+          "sorbet-static-and-runtime", # Unnecessary RBI - remove this entry with Tapioca 0.8
         ]
         tapioca_args = ["--exclude", *excluded_gems]
         tapioca_args << "--all" if args.all?
 
         ohai "Updating Tapioca RBI files..."
-        system "bundle", "exec", "tapioca", "gem", *tapioca_args
-        system "bundle", "exec", "parlour"
-        system "bundle", "exec", "srb", "rbi", "hidden-definitions"
-        system "bundle", "exec", "srb", "rbi", "todo"
+        safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
+        safe_system "bundle", "exec", "parlour"
+        safe_system "bundle", "exec", "srb", "rbi", "hidden-definitions"
+        safe_system "bundle", "exec", "srb", "rbi", "todo"
 
         if args.suggest_typed?
           result = system_command(

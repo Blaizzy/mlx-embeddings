@@ -182,6 +182,24 @@ RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::MSG_FALSE = T.let(T.unsafe(nil
 RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::MSG_TRUE = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::RSpec::ChangeByZero < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def expect_change_with_arguments(param0 = T.unsafe(nil)); end
+  def expect_change_with_block(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def autocorrect(corrector, node); end
+  def check_offence(node); end
+  def compound_expectations?(node); end
+end
+
+RuboCop::Cop::RSpec::ChangeByZero::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::ChangeByZero::MSG_COMPOUND = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::ChangeByZero::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 module RuboCop::Cop::RSpec::CommentsHelp
   include ::RuboCop::Cop::RSpec::FinalEndLocation
 
@@ -276,7 +294,6 @@ class RuboCop::Cop::RSpec::DescribedClass < ::RuboCop::Cop::RSpec::Base
   def offensive?(node); end
   def offensive_described_class?(node); end
   def scope_change?(node); end
-  def skip_blocks?; end
   def skippable_block?(node); end
 end
 
