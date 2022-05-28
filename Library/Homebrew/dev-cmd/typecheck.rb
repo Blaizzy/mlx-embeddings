@@ -59,10 +59,10 @@ module Homebrew
         tapioca_args << "--all" if args.all?
 
         ohai "Updating Tapioca RBI files..."
-        system "bundle", "exec", "tapioca", "gem", *tapioca_args
-        system "bundle", "exec", "parlour"
-        system "bundle", "exec", "srb", "rbi", "hidden-definitions"
-        system "bundle", "exec", "srb", "rbi", "todo"
+        safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
+        safe_system "bundle", "exec", "parlour"
+        safe_system "bundle", "exec", "srb", "rbi", "hidden-definitions"
+        safe_system "bundle", "exec", "srb", "rbi", "todo"
 
         if args.suggest_typed?
           result = system_command(
