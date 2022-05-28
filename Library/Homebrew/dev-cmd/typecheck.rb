@@ -54,6 +54,7 @@ module Homebrew
         excluded_gems = [
           "did_you_mean", # RBI file is already provided by Sorbet
           "webrobots", # RBI file is bugged
+          "sorbet-static-and-runtime", # Unnecessary RBI - remove this entry with Tapioca 0.8
         ]
         tapioca_args = ["--exclude", *excluded_gems]
         tapioca_args << "--all" if args.all?
