@@ -3593,6 +3593,8 @@ class Object
   PATCH_B_SHA256 = ::T.let(nil, ::T.untyped)
   REQUIRED_RUBY_X = ::T.let(nil, ::T.untyped)
   REQUIRED_RUBY_Y = ::T.let(nil, ::T.untyped)
+  RUBY18 = ::T.let(nil, ::T.untyped)
+  RUBY19 = ::T.let(nil, ::T.untyped)
   RUBY_BIN = ::T.let(nil, ::T.untyped)
   RUBY_COPYRIGHT = ::T.let(nil, ::T.untyped)
   RUBY_DESCRIPTION = ::T.let(nil, ::T.untyped)
@@ -3996,11 +3998,7 @@ class Proc
 end
 
 module Process
-  def self.fork(&block); end
-
-  def self.fork_with_simplecov(&block); end
-
-  def self.fork_without_simplecov(); end
+  def self.fork(); end
 end
 
 class Pry::BasicObject
@@ -4360,6 +4358,536 @@ class ResourceStageContext
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Ripper
+  def column(); end
+
+  def encoding(); end
+
+  def end_seen?(); end
+
+  def error?(); end
+
+  def filename(); end
+
+  def initialize(*arg); end
+
+  def lineno(); end
+
+  def parse(); end
+
+  def state(); end
+
+  def yydebug(); end
+
+  def yydebug=(yydebug); end
+  EXPR_ARG = ::T.let(nil, ::T.untyped)
+  EXPR_ARG_ANY = ::T.let(nil, ::T.untyped)
+  EXPR_BEG = ::T.let(nil, ::T.untyped)
+  EXPR_BEG_ANY = ::T.let(nil, ::T.untyped)
+  EXPR_CLASS = ::T.let(nil, ::T.untyped)
+  EXPR_CMDARG = ::T.let(nil, ::T.untyped)
+  EXPR_DOT = ::T.let(nil, ::T.untyped)
+  EXPR_END = ::T.let(nil, ::T.untyped)
+  EXPR_ENDARG = ::T.let(nil, ::T.untyped)
+  EXPR_ENDFN = ::T.let(nil, ::T.untyped)
+  EXPR_END_ANY = ::T.let(nil, ::T.untyped)
+  EXPR_FITEM = ::T.let(nil, ::T.untyped)
+  EXPR_FNAME = ::T.let(nil, ::T.untyped)
+  EXPR_LABEL = ::T.let(nil, ::T.untyped)
+  EXPR_LABELED = ::T.let(nil, ::T.untyped)
+  EXPR_MID = ::T.let(nil, ::T.untyped)
+  EXPR_NONE = ::T.let(nil, ::T.untyped)
+  EXPR_VALUE = ::T.let(nil, ::T.untyped)
+  PARSER_EVENT_TABLE = ::T.let(nil, ::T.untyped)
+  SCANNER_EVENT_TABLE = ::T.let(nil, ::T.untyped)
+  Version = ::T.let(nil, ::T.untyped)
+end
+
+class Ripper::Filter
+  def initialize(src, filename=T.unsafe(nil), lineno=T.unsafe(nil)); end
+end
+
+class Ripper::Lexer
+  def lex(); end
+
+  def tokenize(); end
+end
+
+class Ripper::Lexer::Elem
+  def event(); end
+
+  def event=(_); end
+
+  def initialize(pos, event, tok, state); end
+
+  def pos(); end
+
+  def pos=(_); end
+
+  def state(); end
+
+  def state=(_); end
+
+  def tok(); end
+
+  def tok=(_); end
+end
+
+class Ripper::Lexer::Elem
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
+class Ripper::Lexer::State
+  def &(i); end
+
+  def ==(i); end
+
+  def allbits?(i); end
+
+  def anybits?(i); end
+
+  def initialize(i); end
+
+  def nobits?(i); end
+
+  def to_i(); end
+
+  def to_int(); end
+
+  def to_int=(_); end
+
+  def to_s=(_); end
+
+  def |(i); end
+end
+
+class Ripper::Lexer::State
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
+class Ripper::Lexer
+end
+
+class Ripper::SexpBuilder
+  def on_BEGIN(*args); end
+
+  def on_CHAR(tok); end
+
+  def on_END(*args); end
+
+  def on___end__(tok); end
+
+  def on_alias(*args); end
+
+  def on_alias_error(*args); end
+
+  def on_aref(*args); end
+
+  def on_aref_field(*args); end
+
+  def on_arg_ambiguous(*args); end
+
+  def on_arg_paren(*args); end
+
+  def on_args_add(*args); end
+
+  def on_args_add_block(*args); end
+
+  def on_args_add_star(*args); end
+
+  def on_args_new(*args); end
+
+  def on_array(*args); end
+
+  def on_assign(*args); end
+
+  def on_assign_error(*args); end
+
+  def on_assoc_new(*args); end
+
+  def on_assoc_splat(*args); end
+
+  def on_assoclist_from_args(*args); end
+
+  def on_backref(tok); end
+
+  def on_backtick(tok); end
+
+  def on_bare_assoc_hash(*args); end
+
+  def on_begin(*args); end
+
+  def on_binary(*args); end
+
+  def on_block_var(*args); end
+
+  def on_blockarg(*args); end
+
+  def on_bodystmt(*args); end
+
+  def on_brace_block(*args); end
+
+  def on_break(*args); end
+
+  def on_call(*args); end
+
+  def on_case(*args); end
+
+  def on_class(*args); end
+
+  def on_class_name_error(*args); end
+
+  def on_comma(tok); end
+
+  def on_command(*args); end
+
+  def on_command_call(*args); end
+
+  def on_comment(tok); end
+
+  def on_const(tok); end
+
+  def on_const_path_field(*args); end
+
+  def on_const_path_ref(*args); end
+
+  def on_const_ref(*args); end
+
+  def on_cvar(tok); end
+
+  def on_def(*args); end
+
+  def on_defined(*args); end
+
+  def on_defs(*args); end
+
+  def on_do_block(*args); end
+
+  def on_dot2(*args); end
+
+  def on_dot3(*args); end
+
+  def on_dyna_symbol(*args); end
+
+  def on_else(*args); end
+
+  def on_elsif(*args); end
+
+  def on_embdoc(tok); end
+
+  def on_embdoc_beg(tok); end
+
+  def on_embdoc_end(tok); end
+
+  def on_embexpr_beg(tok); end
+
+  def on_embexpr_end(tok); end
+
+  def on_embvar(tok); end
+
+  def on_ensure(*args); end
+
+  def on_excessed_comma(*args); end
+
+  def on_fcall(*args); end
+
+  def on_field(*args); end
+
+  def on_float(tok); end
+
+  def on_for(*args); end
+
+  def on_gvar(tok); end
+
+  def on_hash(*args); end
+
+  def on_heredoc_beg(tok); end
+
+  def on_heredoc_end(tok); end
+
+  def on_ident(tok); end
+
+  def on_if(*args); end
+
+  def on_if_mod(*args); end
+
+  def on_ifop(*args); end
+
+  def on_ignored_nl(tok); end
+
+  def on_ignored_sp(tok); end
+
+  def on_imaginary(tok); end
+
+  def on_int(tok); end
+
+  def on_ivar(tok); end
+
+  def on_kw(tok); end
+
+  def on_kwrest_param(*args); end
+
+  def on_label(tok); end
+
+  def on_label_end(tok); end
+
+  def on_lambda(*args); end
+
+  def on_lbrace(tok); end
+
+  def on_lbracket(tok); end
+
+  def on_lparen(tok); end
+
+  def on_magic_comment(*args); end
+
+  def on_massign(*args); end
+
+  def on_method_add_arg(*args); end
+
+  def on_method_add_block(*args); end
+
+  def on_mlhs_add(*args); end
+
+  def on_mlhs_add_post(*args); end
+
+  def on_mlhs_add_star(*args); end
+
+  def on_mlhs_new(*args); end
+
+  def on_mlhs_paren(*args); end
+
+  def on_module(*args); end
+
+  def on_mrhs_add(*args); end
+
+  def on_mrhs_add_star(*args); end
+
+  def on_mrhs_new(*args); end
+
+  def on_mrhs_new_from_args(*args); end
+
+  def on_next(*args); end
+
+  def on_nl(tok); end
+
+  def on_op(tok); end
+
+  def on_opassign(*args); end
+
+  def on_operator_ambiguous(*args); end
+
+  def on_param_error(*args); end
+
+  def on_params(*args); end
+
+  def on_paren(*args); end
+
+  def on_parse_error(*args); end
+
+  def on_period(tok); end
+
+  def on_program(*args); end
+
+  def on_qsymbols_add(*args); end
+
+  def on_qsymbols_beg(tok); end
+
+  def on_qsymbols_new(*args); end
+
+  def on_qwords_add(*args); end
+
+  def on_qwords_beg(tok); end
+
+  def on_qwords_new(*args); end
+
+  def on_rational(tok); end
+
+  def on_rbrace(tok); end
+
+  def on_rbracket(tok); end
+
+  def on_redo(*args); end
+
+  def on_regexp_add(*args); end
+
+  def on_regexp_beg(tok); end
+
+  def on_regexp_end(tok); end
+
+  def on_regexp_literal(*args); end
+
+  def on_regexp_new(*args); end
+
+  def on_rescue(*args); end
+
+  def on_rescue_mod(*args); end
+
+  def on_rest_param(*args); end
+
+  def on_retry(*args); end
+
+  def on_return(*args); end
+
+  def on_return0(*args); end
+
+  def on_rparen(tok); end
+
+  def on_sclass(*args); end
+
+  def on_semicolon(tok); end
+
+  def on_sp(tok); end
+
+  def on_stmts_add(*args); end
+
+  def on_stmts_new(*args); end
+
+  def on_string_add(*args); end
+
+  def on_string_concat(*args); end
+
+  def on_string_content(*args); end
+
+  def on_string_dvar(*args); end
+
+  def on_string_embexpr(*args); end
+
+  def on_string_literal(*args); end
+
+  def on_super(*args); end
+
+  def on_symbeg(tok); end
+
+  def on_symbol(*args); end
+
+  def on_symbol_literal(*args); end
+
+  def on_symbols_add(*args); end
+
+  def on_symbols_beg(tok); end
+
+  def on_symbols_new(*args); end
+
+  def on_tlambda(tok); end
+
+  def on_tlambeg(tok); end
+
+  def on_top_const_field(*args); end
+
+  def on_top_const_ref(*args); end
+
+  def on_tstring_beg(tok); end
+
+  def on_tstring_content(tok); end
+
+  def on_tstring_end(tok); end
+
+  def on_unary(*args); end
+
+  def on_undef(*args); end
+
+  def on_unless(*args); end
+
+  def on_unless_mod(*args); end
+
+  def on_until(*args); end
+
+  def on_until_mod(*args); end
+
+  def on_var_alias(*args); end
+
+  def on_var_field(*args); end
+
+  def on_var_ref(*args); end
+
+  def on_vcall(*args); end
+
+  def on_void_stmt(*args); end
+
+  def on_when(*args); end
+
+  def on_while(*args); end
+
+  def on_while_mod(*args); end
+
+  def on_word_add(*args); end
+
+  def on_word_new(*args); end
+
+  def on_words_add(*args); end
+
+  def on_words_beg(tok); end
+
+  def on_words_new(*args); end
+
+  def on_words_sep(tok); end
+
+  def on_xstring_add(*args); end
+
+  def on_xstring_literal(*args); end
+
+  def on_xstring_new(*args); end
+
+  def on_yield(*args); end
+
+  def on_yield0(*args); end
+
+  def on_zsuper(*args); end
+end
+
+class Ripper::TokenPattern
+  def initialize(pattern); end
+
+  def match(str); end
+
+  def match_list(tokens); end
+  MAP = ::T.let(nil, ::T.untyped)
+end
+
+class Ripper::TokenPattern::CompileError
+end
+
+class Ripper::TokenPattern::CompileError
+end
+
+class Ripper::TokenPattern::Error
+end
+
+class Ripper::TokenPattern::Error
+end
+
+class Ripper::TokenPattern::MatchData
+  def initialize(tokens, match); end
+
+  def string(n=T.unsafe(nil)); end
+end
+
+class Ripper::TokenPattern::MatchData
+end
+
+class Ripper::TokenPattern::MatchError
+end
+
+class Ripper::TokenPattern::MatchError
+end
+
+class Ripper::TokenPattern
+  def self.compile(*arg); end
+end
+
+class Ripper
+  def self.dedent_string(arg, arg1); end
+
+  def self.lex_state_name(arg); end
+
+  def self.token_match(src, pattern); end
+end
+
 module RuboCop::AST::CollectionNode
   def compact_blank(*args, &block); end
 
@@ -4616,33 +5144,6 @@ class RuboCop::Cop::FormulaCop
   def required_dependency?(param0); end
 
   def required_dependency_name?(param0, param1); end
-end
-
-class RuboCop::Cop::Performance::DeletePrefix
-  extend ::RuboCop::Cop::TargetRubyVersion
-end
-
-class RuboCop::Cop::Performance::DeleteSuffix
-  extend ::RuboCop::Cop::TargetRubyVersion
-end
-
-class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock
-  extend ::RuboCop::Cop::TargetRubyVersion
-end
-
-class RuboCop::Cop::RSpec::ChangeByZero
-  def expect_change_with_arguments(param0=T.unsafe(nil)); end
-
-  def expect_change_with_block(param0=T.unsafe(nil)); end
-
-  def on_send(node); end
-  MSG = ::T.let(nil, ::T.untyped)
-  MSG_COMPOUND = ::T.let(nil, ::T.untyped)
-  RESTRICT_ON_SEND = ::T.let(nil, ::T.untyped)
-end
-
-class RuboCop::Cop::RSpec::ChangeByZero
-  extend ::RuboCop::Cop::AutoCorrector
 end
 
 module RuboCop::RSpec::ExpectOffense
@@ -5904,6 +6405,223 @@ module Socket::Constants
   TCP_NOPUSH = ::T.let(nil, ::T.untyped)
 end
 
+class Spoom::Cli::Bump
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Cli::Helper
+  HIGHLIGHT_COLOR = ::T.let(nil, ::T.untyped)
+end
+
+module Spoom::Cli::Helper
+  extend ::T::Sig
+  extend ::T::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Cli::Main
+  extend ::T::Sig
+end
+
+module Spoom::Colorize
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Coverage::D3::Base
+  extend ::T::Sig
+  extend ::T::Helpers
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Coverage::D3
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Coverage::Snapshot
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Coverage::Template
+  extend ::T::Sig
+  extend ::T::Helpers
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Coverage
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::FileTree::Node
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::FileTree
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Git
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Client
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Diagnostic
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::DocumentSymbol
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Error::Diagnostics
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Hover
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Location
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Message
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Position
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::LSP::PrintableSymbol
+  extend ::T::Sig
+  extend ::T::Helpers
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::Range
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::ResponseError
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::LSP::SignatureHelp
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Printer
+  extend ::T::Sig
+  extend ::T::Helpers
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Sorbet::Config
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Sorbet::Errors::Error
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Sorbet::Errors::Parser
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Sorbet::Errors
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Sorbet::MetricsParser
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Sorbet::Sigils
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom::Sorbet
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class Spoom::Timeline
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Spoom
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class String
   def exclude?(string); end
 
@@ -5968,6 +6686,12 @@ class Tab
 end
 
 class Tap
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module Tapioca
+  extend ::T::Sig
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -6591,6 +7315,72 @@ module Webrobots
 end
 
 module Webrobots
+end
+
+module YARDSorbet::Directives
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class YARDSorbet::Handlers::AbstractDSLHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class YARDSorbet::Handlers::EnumsHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class YARDSorbet::Handlers::IncludeHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class YARDSorbet::Handlers::MixesInClassMethodsHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class YARDSorbet::Handlers::SigHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module YARDSorbet::Handlers::StructClassHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class YARDSorbet::Handlers::StructPropHandler
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module YARDSorbet::NodeUtils
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module YARDSorbet::SigToYARD
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module YARDSorbet::TagUtils
+  extend ::T::Sig
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Zlib::Deflate

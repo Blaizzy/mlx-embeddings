@@ -30,8 +30,8 @@ class ParallelTests::CLI
   def any_test_failed?(test_results); end
   def append_test_options(options, argv); end
   def detailed_duration(seconds); end
+  def execute_command_in_parallel(command, num_processes, options); end
   def execute_in_parallel(items, num_processes, options); end
-  def execute_shell_command_in_parallel(command, num_processes, options); end
   def extract_file_paths(argv); end
   def extract_test_options(argv); end
   def final_fail_message; end
