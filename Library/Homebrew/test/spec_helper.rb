@@ -35,7 +35,7 @@ require "find"
 require "byebug"
 require "timeout"
 
-$LOAD_PATH.push(File.expand_path("#{ENV["HOMEBREW_LIBRARY"]}/Homebrew/test/support/lib"))
+$LOAD_PATH.push(File.expand_path("#{ENV.fetch("HOMEBREW_LIBRARY")}/Homebrew/test/support/lib"))
 
 require_relative "../global"
 

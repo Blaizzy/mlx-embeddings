@@ -34,7 +34,7 @@ module Utils
             --data aip=1
             --data t=#{type}
             --data tid=#{analytics_id}
-            --data cid=#{ENV["HOMEBREW_ANALYTICS_USER_UUID"]}
+            --data cid=#{ENV.fetch("HOMEBREW_ANALYTICS_USER_UUID")}
             --data an=#{HOMEBREW_PRODUCT}
             --data av=#{HOMEBREW_VERSION}
           ]

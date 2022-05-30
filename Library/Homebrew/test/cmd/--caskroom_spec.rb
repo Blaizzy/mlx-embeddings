@@ -8,7 +8,7 @@ describe "brew --caskroom" do
 
   it "prints Homebrew's Caskroom", :integration_test do
     expect { brew_sh "--caskroom" }
-      .to output("#{ENV["HOMEBREW_PREFIX"]}/Caskroom\n").to_stdout
+      .to output("#{ENV.fetch("HOMEBREW_PREFIX")}/Caskroom\n").to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end

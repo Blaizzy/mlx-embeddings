@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-homebrew_bootsnap_enabled = !ENV["HOMEBREW_NO_BOOTSNAP"] && ENV["HOMEBREW_BOOTSNAP"]
+homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? && !ENV["HOMEBREW_BOOTSNAP"].nil?
 
 # portable ruby doesn't play nice with bootsnap
 # Can't use .exclude? here because we haven't required active_support yet.
@@ -24,14 +24,14 @@ if homebrew_bootsnap_enabled
       Homebrew.install_bundler_gems!(only_warn_on_failure: true)
 
       ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"
-      exec ENV["HOMEBREW_BREW_FILE"], *ARGV
+      exec ENV.fetch("HOMEBREW_BREW_FILE"), *ARGV
     end
   end
 
   ENV.delete("HOMEBREW_BOOTSNAP_RETRY")
 
   if defined?(Bootsnap)
-    cache = ENV["HOMEBREW_CACHE"] || ENV["HOMEBREW_DEFAULT_CACHE"]
+    cache = ENV.fetch("HOMEBREW_CACHE", nil) || ENV.fetch("HOMEBREW_DEFAULT_CACHE", nil)
     # Can't use .blank? here because we haven't required active_support yet.
     raise "Needs HOMEBREW_CACHE or HOMEBREW_DEFAULT_CACHE!" if cache.nil? || cache.empty? # rubocop:disable Rails/Blank
 

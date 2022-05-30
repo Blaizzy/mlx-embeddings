@@ -8,7 +8,7 @@ describe "brew --cellar" do
 
   it "prints Homebrew's Cellar", :integration_test do
     expect { brew_sh "--cellar" }
-      .to output("#{ENV["HOMEBREW_CELLAR"]}\n").to_stdout
+      .to output("#{ENV.fetch("HOMEBREW_CELLAR")}\n").to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end

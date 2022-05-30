@@ -82,7 +82,6 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       "HOMEBREW_BREW_FILE"        => HOMEBREW_PREFIX/"bin/brew",
       "HOMEBREW_INTEGRATION_TEST" => command_id_from_args(args),
       "HOMEBREW_TEST_TMPDIR"      => TEST_TMPDIR,
-      "HOMEBREW_DEVELOPER"        => ENV["HOMEBREW_DEVELOPER"],
       "HOMEBREW_DEV_CMD_RUN"      => "true",
       "GEM_HOME"                  => nil,
     )
@@ -127,7 +126,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
 
   def brew_sh(*args)
     Bundler.with_clean_env do
-      stdout, stderr, status = Open3.capture3("#{ENV["HOMEBREW_PREFIX"]}/bin/brew", *args)
+      stdout, stderr, status = Open3.capture3("#{ENV.fetch("HOMEBREW_PREFIX")}/bin/brew", *args)
       $stdout.print stdout
       $stderr.print stderr
       status
@@ -216,7 +215,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
 
       full_name = Tap.fetch(name).full_name
       # Check to see if the original Homebrew process has taps we can use.
-      system_tap_path = Pathname("#{ENV["HOMEBREW_LIBRARY"]}/Taps/#{full_name}")
+      system_tap_path = Pathname("#{ENV.fetch("HOMEBREW_LIBRARY")}/Taps/#{full_name}")
       if system_tap_path.exist?
         system "git", "clone", "--shared", system_tap_path, tap.path
         system "git", "-C", tap.path, "checkout", "master"

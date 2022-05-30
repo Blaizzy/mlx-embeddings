@@ -387,7 +387,7 @@ module Kernel
 
     ENV["DISPLAY"] = Homebrew::EnvConfig.display
 
-    with_env(DBUS_SESSION_BUS_ADDRESS: ENV["HOMEBREW_DBUS_SESSION_BUS_ADDRESS"]) do
+    with_env(DBUS_SESSION_BUS_ADDRESS: ENV.fetch("HOMEBREW_DBUS_SESSION_BUS_ADDRESS", nil)) do
       safe_system(browser, *args)
     end
   end

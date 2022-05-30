@@ -114,10 +114,10 @@ describe "globally-scoped helper methods" do
       ENV["LC_ALL"] = "en_US.UTF-8"
 
       with_custom_locale("C") do
-        expect(ENV["LC_ALL"]).to eq("C")
+        expect(ENV.fetch("LC_ALL")).to eq("C")
       end
 
-      expect(ENV["LC_ALL"]).to eq("en_US.UTF-8")
+      expect(ENV.fetch("LC_ALL")).to eq("en_US.UTF-8")
     end
   end
 

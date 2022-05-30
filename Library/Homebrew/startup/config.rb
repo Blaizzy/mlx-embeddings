@@ -51,5 +51,5 @@ end.freeze
 # The Ruby path and args to use for forked Ruby calls
 HOMEBREW_RUBY_EXEC_ARGS = [
   RUBY_PATH,
-  ENV["HOMEBREW_RUBY_WARNINGS"],
+  ENV.fetch("HOMEBREW_RUBY_WARNINGS"),
 ].freeze

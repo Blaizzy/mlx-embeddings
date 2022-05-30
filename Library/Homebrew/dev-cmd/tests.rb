@@ -57,15 +57,15 @@ module Homebrew
                                 reason: "reporting test flakiness")
     end
 
-    ENV["BUILDPULSE_ACCESS_KEY_ID"] = ENV["HOMEBREW_BUILDPULSE_ACCESS_KEY_ID"]
-    ENV["BUILDPULSE_SECRET_ACCESS_KEY"] = ENV["HOMEBREW_BUILDPULSE_SECRET_ACCESS_KEY"]
+    ENV["BUILDPULSE_ACCESS_KEY_ID"] = ENV.fetch("HOMEBREW_BUILDPULSE_ACCESS_KEY_ID")
+    ENV["BUILDPULSE_SECRET_ACCESS_KEY"] = ENV.fetch("HOMEBREW_BUILDPULSE_SECRET_ACCESS_KEY")
 
     ohai "Sending test results to BuildPulse"
 
     safe_system Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
                 "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
-                "--account-id", ENV["HOMEBREW_BUILDPULSE_ACCOUNT_ID"],
-                "--repository-id", ENV["HOMEBREW_BUILDPULSE_REPOSITORY_ID"]
+                "--account-id", ENV.fetch("HOMEBREW_BUILDPULSE_ACCOUNT_ID"),
+                "--repository-id", ENV.fetch("HOMEBREW_BUILDPULSE_REPOSITORY_ID")
   end
 
   def changed_test_files
@@ -212,7 +212,7 @@ module Homebrew
       ENV["HOMEBREW_TESTS_GEM_USER_DIR"] = gem_user_dir
 
       # Let `bundle` in PATH find its gem.
-      ENV["GEM_PATH"] = "#{ENV["GEM_PATH"]}:#{gem_user_dir}"
+      ENV["GEM_PATH"] = "#{ENV.fetch("GEM_PATH")}:#{gem_user_dir}"
 
       # Submit test flakiness information using BuildPulse
       # BUILDPULSE used in spec_helper.rb
