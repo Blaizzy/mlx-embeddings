@@ -134,9 +134,7 @@ class FormulaInstaller
 
   sig { returns(T::Boolean) }
   def build_bottle?
-    return false unless @build_bottle
-
-    !formula.bottle_disabled?
+    @build_bottle.present?
   end
 
   sig { params(output_warning: T::Boolean).returns(T::Boolean) }
@@ -146,7 +144,6 @@ class FormulaInstaller
     return false if build_from_source? || build_bottle? || interactive?
     return false if @cc
     return false unless options.empty?
-    return false if formula.bottle_disabled?
 
     unless formula.pour_bottle?
       if output_warning && formula.pour_bottle_check_unsatisfied_reason
@@ -249,8 +246,7 @@ class FormulaInstaller
     end
 
     if Homebrew.default_prefix? &&
-       !build_from_source? && !build_bottle? && !formula.head? &&
-       formula.tap&.core_tap? && !formula.bottle_unneeded? &&
+       !build_from_source? && !build_bottle? && !formula.head? && formula.tap&.core_tap? &&
        # Integration tests override homebrew-core locations
        ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
        !pour_bottle?
@@ -373,9 +369,7 @@ class FormulaInstaller
     lock
 
     start_time = Time.now
-    if !formula.bottle_unneeded? && !pour_bottle? && DevelopmentTools.installed?
-      Homebrew::Install.perform_build_from_source_checks
-    end
+    Homebrew::Install.perform_build_from_source_checks if !pour_bottle? && DevelopmentTools.installed?
 
     # Warn if a more recent version of this formula is available in the tap.
     begin
@@ -388,7 +382,7 @@ class FormulaInstaller
 
     check_conflicts
 
-    raise UnbottledError, [formula] if !pour_bottle? && !formula.bottle_unneeded? && !DevelopmentTools.installed?
+    raise UnbottledError, [formula] if !pour_bottle? && !DevelopmentTools.installed?
 
     unless ignore_deps?
       deps = compute_dependencies(use_cache: false)
@@ -520,7 +514,7 @@ class FormulaInstaller
     deps.map(&:first).map(&:to_formula).reject do |dep_f|
       next false unless dep_f.pour_bottle?
 
-      dep_f.bottle_unneeded? || dep_f.bottled?
+      dep_f.bottled?
     end
   end
 

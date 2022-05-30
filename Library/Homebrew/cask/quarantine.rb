@@ -43,9 +43,6 @@ module Cask
                                    print_stderr: false)
 
         case api_check.exit_status
-        when 5
-          odebug "This feature requires the macOS 10.10 SDK or higher."
-          :no_quarantine
         when 2
           odebug "Quarantine is available."
           :quarantine_available

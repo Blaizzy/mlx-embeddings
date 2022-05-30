@@ -481,25 +481,9 @@ module Homebrew
       return unless @new_formula_inclusive
       return unless @core_tap
 
-      return if formula.bottle_disabled?
-
       return unless formula.bottle_defined?
 
       new_formula_problem "New formulae in homebrew/core should not have a `bottle do` block"
-    end
-
-    def audit_bottle_disabled
-      return unless formula.bottle_disabled?
-
-      if !formula.bottle_disable_reason.valid?
-        problem "Unrecognized bottle modifier"
-      elsif @core_tap
-        if formula.bottle_unneeded?
-          problem "Formulae in homebrew/core should not use `bottle :unneeded`"
-        else
-          problem "Formulae in homebrew/core should not use `bottle :disabled`"
-        end
-      end
     end
 
     def audit_github_repository_archived

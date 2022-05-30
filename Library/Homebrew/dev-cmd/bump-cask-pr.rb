@@ -24,7 +24,6 @@ module Homebrew
              description: "Print what would be done rather than doing it."
       switch "--write-only",
              description: "Make the expected file modifications without taking any Git actions."
-      switch "--write", hidden: true
       switch "--commit",
              depends_on:  "--write-only",
              description: "When passed with `--write-only`, generate a new commit after writing changes "\
@@ -61,8 +60,6 @@ module Homebrew
 
   def bump_cask_pr
     args = bump_cask_pr_args.parse
-
-    odisabled "`brew bump-cask-pr --write`", "`brew bump-cask-pr --write-only`" if args.write?
 
     # This will be run by `brew style` later so run it first to not start
     # spamming during normal output.

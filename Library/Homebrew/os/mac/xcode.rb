@@ -30,8 +30,6 @@ module OS
         when "10.13" then "10.1"
         when "10.12" then "9.2"
         when "10.11" then "8.2.1"
-        when "10.10" then "7.2.1"
-        when "10.9"  then "6.2"
         else
           raise "macOS '#{MacOS.version}' is invalid" unless OS::Mac.version.prerelease?
 
@@ -343,9 +341,7 @@ module OS
         when "10.14" then "1100.0.33.17"
         when "10.13" then "1000.10.44.2"
         when "10.12" then "900.0.39.2"
-        when "10.11" then "800.0.42.1"
-        when "10.10" then "700.1.81"
-        else              "600.0.57"
+        else              "800.0.42.1"
         end
       end
 

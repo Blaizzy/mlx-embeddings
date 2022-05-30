@@ -5,8 +5,8 @@ class Formula
   extend Enumerable
 
   def self.each(&_block)
-    odeprecated "`Enumerable` methods on `Formula`",
-                "`Formula.all` (but avoid looping over all formulae, it's slow and insecure)"
+    odisabled "`Enumerable` methods on `Formula`",
+              "`Formula.all` (but avoid looping over all formulae, it's slow and insecure)"
 
     files.each do |file|
       yield Formulary.factory(file)

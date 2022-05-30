@@ -85,7 +85,6 @@ describe OS::Mac::Version do
   specify "#pretty_name" do
     expect(described_class.new("10.11").pretty_name).to eq("El Capitan")
     expect(described_class.new("10.14").pretty_name).to eq("Mojave")
-    expect(described_class.new("10.10").pretty_name).to eq("Yosemite")
   end
 
   specify "#requires_nehalem_cpu?" do

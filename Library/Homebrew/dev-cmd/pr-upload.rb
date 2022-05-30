@@ -90,7 +90,7 @@ module Homebrew
   def pr_upload
     args = pr_upload_args.parse
 
-    odeprecated "`brew pr-upload --github-org`", "`brew pr-upload` without `--github-org`" if args.github_org
+    odisabled "`brew pr-upload --github-org`", "`brew pr-upload` without `--github-org`" if args.github_org
 
     json_files = Dir["*.bottle.json"]
     odie "No bottle JSON files found in the current working directory" if json_files.blank?

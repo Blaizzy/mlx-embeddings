@@ -441,8 +441,8 @@ then
     HOMEBREW_OS_VERSION="macOS ${HOMEBREW_MACOS_VERSION}"
   fi
 
-  # Refuse to run on pre-Yosemite
-  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101000" ]]
+  # Refuse to run on pre-El Capitan
+  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101100" ]]
   then
     printf "ERROR: Your version of macOS (%s) is too old to run Homebrew!\\n" "${HOMEBREW_MACOS_VERSION}" >&2
     if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "100700" ]]
