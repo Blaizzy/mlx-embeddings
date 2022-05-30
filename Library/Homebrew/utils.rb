@@ -291,12 +291,12 @@ module Kernel
       ENV["HOMEBREW_DEBUG_INSTALL"] = f.full_name
     end
 
-    if ENV["SHELL"].include?("zsh") && (home = Dir.home).start_with?(HOMEBREW_TEMP.resolved_path.to_s)
+    if Utils::Shell.preferred == :zsh && (home = Dir.home).start_with?(HOMEBREW_TEMP.resolved_path.to_s)
       FileUtils.mkdir_p home
       FileUtils.touch "#{home}/.zshrc"
     end
 
-    Process.wait fork { exec ENV.fetch("SHELL") }
+    Process.wait fork { exec preferred_shell }
 
     return if $CHILD_STATUS.success?
     raise "Aborted due to non-zero exit status (#{$CHILD_STATUS.exitstatus})" if $CHILD_STATUS.exited?
@@ -606,6 +606,11 @@ module Kernel
     ensure
       ENV.update(old_values)
     end
+  end
+
+  sig { returns(String) }
+  def preferred_shell
+    ENV.fetch("SHELL", "/bin/sh")
   end
 
   sig { returns(String) }

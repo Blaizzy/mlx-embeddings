@@ -44,16 +44,18 @@ module Homebrew
     ENV["VERBOSE"] = "1" if args.verbose?
 
     if args.cmd.present?
-      safe_system(ENV["SHELL"], "-c", args.cmd)
+      safe_system(preferred_shell, "-c", args.cmd)
     elsif args.named.present?
-      safe_system(ENV["SHELL"], args.named.first)
+      safe_system(preferred_shell, args.named.first)
     else
-      subshell = if ENV["SHELL"].include?("zsh")
-        "PS1='brew %B%F{green}%~%f%b$ ' #{ENV["SHELL"]} -d -f"
-      elsif ENV["SHELL"].include?("bash")
-        "PS1=\"brew \\[\\033[1;32m\\]\\w\\[\\033[0m\\]$ \" #{ENV["SHELL"]} --noprofile --norc"
+      shell_type = Utils::Shell.preferred
+      subshell = case shell_type
+      when :zsh
+        "PS1='brew %B%F{green}%~%f%b$ ' #{preferred_shell} -d -f"
+      when :bash
+        "PS1=\"brew \\[\\033[1;32m\\]\\w\\[\\033[0m\\]$ \" #{preferred_shell} --noprofile --norc"
       else
-        "PS1=\"brew \\[\\033[1;32m\\]\\w\\[\\033[0m\\]$ \" #{ENV["SHELL"]}"
+        "PS1=\"brew \\[\\033[1;32m\\]\\w\\[\\033[0m\\]$ \" #{preferred_shell}"
       end
       puts <<~EOS
         Your shell has been configured to use Homebrew's build environment;
