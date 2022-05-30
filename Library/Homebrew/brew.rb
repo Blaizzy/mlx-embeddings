@@ -11,11 +11,7 @@ raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unle
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
 # check ruby version before requiring any modules.
-unless ENV["HOMEBREW_REQUIRED_RUBY_VERSION"]
-  raise "HOMEBREW_REQUIRED_RUBY_VERSION was not exported! Please call bin/brew directly!"
-end
-
-REQUIRED_RUBY_X, REQUIRED_RUBY_Y, = ENV["HOMEBREW_REQUIRED_RUBY_VERSION"].split(".").map(&:to_i)
+REQUIRED_RUBY_X, REQUIRED_RUBY_Y, = ENV.fetch("HOMEBREW_REQUIRED_RUBY_VERSION").split(".").map(&:to_i)
 RUBY_X, RUBY_Y, = RUBY_VERSION.split(".").map(&:to_i)
 if RUBY_X < REQUIRED_RUBY_X || (RUBY_X == REQUIRED_RUBY_X && RUBY_Y < REQUIRED_RUBY_Y)
   raise "Homebrew must be run under Ruby #{REQUIRED_RUBY_X}.#{REQUIRED_RUBY_Y}! " \
