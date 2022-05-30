@@ -87,12 +87,13 @@ module Homebrew
         sig {
           params(
             cask:    Cask::Cask,
+            url:     T.nilable(String),
             regex:   T.nilable(Regexp),
             _unused: T.nilable(T::Hash[Symbol, T.untyped]),
             block:   T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(cask:, regex: nil, **_unused, &block)
+        def self.find_versions(cask:, url: nil, regex: nil, **_unused, &block)
           if regex.present? && block.blank?
             raise ArgumentError, "#{T.must(name).demodulize} only supports a regex when using a `strategy` block"
           end
@@ -100,7 +101,16 @@ module Homebrew
 
           match_data = { matches: {}, regex: regex }
 
-          unversioned_cask_checker = UnversionedCaskChecker.new(cask)
+          if url && url != cask.url.to_s
+            cask_object_for_livecheck = Cask::Cask.new("livecheck-cask", config: cask.config) do
+              url url.to_s
+            end
+
+            unversioned_cask_checker = UnversionedCaskChecker.new(cask, livecheck_url: cask_object_for_livecheck)
+          else
+            unversioned_cask_checker = UnversionedCaskChecker.new(cask)
+          end
+
           items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
 
           versions_from_items(items, regex, &block).each do |version_text|
