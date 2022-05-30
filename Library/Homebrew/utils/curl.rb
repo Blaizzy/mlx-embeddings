@@ -417,7 +417,7 @@ module Utils
       @curl_supports_tls13 ||= Hash.new do |h, key|
         h[key] = quiet_system(curl_executable, "--tlsv1.3", "--head", "https://brew.sh/")
       end
-      @curl_supports_tls13[ENV["HOMEBREW_CURL"]]
+      @curl_supports_tls13[curl_path]
     end
 
     def http_status_ok?(status)
