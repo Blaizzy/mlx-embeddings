@@ -1084,12 +1084,12 @@ class FormulaInstaller
 
   sig { void }
   def post_install
-    args = %W[
-      nice #{RUBY_PATH}
-      #{ENV["HOMEBREW_RUBY_WARNINGS"]}
-      -I #{$LOAD_PATH.join(File::PATH_SEPARATOR)}
-      --
-      #{HOMEBREW_LIBRARY_PATH}/postinstall.rb
+    args = [
+      "nice",
+      *HOMEBREW_RUBY_EXEC_ARGS,
+      "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
+      "--",
+      HOMEBREW_LIBRARY_PATH/"postinstall.rb"
     ]
 
     # Use the formula from the keg if:

@@ -33,10 +33,9 @@ module Homebrew
     ruby_sys_args << "-e #{args.e}" if args.e
     ruby_sys_args += args.named
 
-    exec RUBY_PATH,
-         ENV["HOMEBREW_RUBY_WARNINGS"],
+    exec(*HOMEBREW_RUBY_EXEC_ARGS,
          "-I", $LOAD_PATH.join(File::PATH_SEPARATOR),
          "-rglobal", "-rdev-cmd/irb",
-         *ruby_sys_args
+         *ruby_sys_args)
   end
 end

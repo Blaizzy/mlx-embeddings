@@ -5,7 +5,7 @@ homebrew_bootsnap_enabled = !ENV["HOMEBREW_NO_BOOTSNAP"] && ENV["HOMEBREW_BOOTSN
 
 # portable ruby doesn't play nice with bootsnap
 # Can't use .exclude? here because we haven't required active_support yet.
-homebrew_bootsnap_enabled &&= !ENV["HOMEBREW_RUBY_PATH"].to_s.include?("/vendor/portable-ruby/") # rubocop:disable Rails/NegateInclude
+homebrew_bootsnap_enabled &&= !RUBY_PATH.to_s.include?("/vendor/portable-ruby/") # rubocop:disable Rails/NegateInclude
 
 homebrew_bootsnap_enabled &&= if ENV["HOMEBREW_MACOS_VERSION"]
   # Apple Silicon doesn't play nice with bootsnap
