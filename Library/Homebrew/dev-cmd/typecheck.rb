@@ -56,7 +56,10 @@ module Homebrew
           "webrobots", # RBI file is bugged
           "sorbet-static-and-runtime", # Unnecessary RBI - remove this entry with Tapioca 0.8
         ]
-        tapioca_args = ["--exclude", *excluded_gems]
+        typed_overrides = [
+          "msgpack:false", # Investigate removing this with Tapioca 0.8
+        ]
+        tapioca_args = ["--exclude", *excluded_gems, "--typed-overrides", *typed_overrides]
         tapioca_args << "--all" if args.all?
 
         ohai "Updating Tapioca RBI files..."
