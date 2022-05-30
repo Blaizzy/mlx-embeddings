@@ -12,7 +12,7 @@ module Homebrew
   module_function
 
   WATCHLIST_PATH = (
-    ENV["HOMEBREW_LIVECHECK_WATCHLIST"] ||
+    Homebrew::EnvConfig.livecheck_watchlist ||
     "#{Dir.home}/.brew_livecheck_watchlist"
   ).freeze
 
@@ -58,7 +58,7 @@ module Homebrew
 
     if args.debug? && args.verbose?
       puts args
-      puts ENV["HOMEBREW_LIVECHECK_WATCHLIST"] if ENV["HOMEBREW_LIVECHECK_WATCHLIST"].present?
+      puts Homebrew::EnvConfig.livecheck_watchlist if Homebrew::EnvConfig.livecheck_watchlist.present?
     end
 
     formulae_and_casks_to_check = if args.tap

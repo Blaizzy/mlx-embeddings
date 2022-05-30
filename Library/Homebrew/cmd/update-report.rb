@@ -54,9 +54,9 @@ module Homebrew
        ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
       ohai "Re-running `brew update` for linuxbrew-core migration"
 
-      if ENV["HOMEBREW_CORE_DEFAULT_GIT_REMOTE"] != ENV["HOMEBREW_CORE_GIT_REMOTE"]
+      if HOMEBREW_CORE_DEFAULT_GIT_REMOTE != Homebrew::EnvConfig.core_git_remote
         opoo <<~EOS
-          HOMEBREW_CORE_GIT_REMOTE was set: #{ENV["HOMEBREW_CORE_GIT_REMOTE"]}.
+          HOMEBREW_CORE_GIT_REMOTE was set: #{Homebrew::EnvConfig.core_git_remote}.
           It has been unset for the migration.
           You may need to change this from a linuxbrew-core mirror to a homebrew-core one.
 
@@ -64,9 +64,9 @@ module Homebrew
       end
       ENV.delete("HOMEBREW_CORE_GIT_REMOTE")
 
-      if ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"] != ENV["HOMEBREW_BOTTLE_DOMAIN"]
+      if HOMEBREW_BOTTLE_DEFAULT_DOMAIN != Homebrew::EnvConfig.bottle_domain
         opoo <<~EOS
-          HOMEBREW_BOTTLE_DOMAIN was set: #{ENV["HOMEBREW_BOTTLE_DOMAIN"]}.
+          HOMEBREW_BOTTLE_DOMAIN was set: #{Homebrew::EnvConfig.bottle_domain}.
           It has been unset for the migration.
           You may need to change this from a Linuxbrew package mirror to a Homebrew one.
 
@@ -142,7 +142,7 @@ module Homebrew
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
-    return if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+    return if Homebrew::EnvConfig.disable_load_formula?
 
     hub = ReporterHub.new
 
