@@ -94,6 +94,7 @@ end
 class Regexp::Expression::Base
   include ::Regexp::Expression::Shared
   include ::RuboCop::Ext::RegexpParser::Expression::Base
+  extend ::Regexp::Expression::Shared::ClassMethods
 
   def initialize(token, options = T.unsafe(nil)); end
 
@@ -387,6 +388,7 @@ end
 
 class Regexp::Expression::Quantifier
   include ::Regexp::Expression::Shared
+  extend ::Regexp::Expression::Shared::ClassMethods
 
   def initialize(*args); end
 
@@ -431,7 +433,6 @@ Regexp::Expression::Quantifier::MODES = T.let(T.unsafe(nil), Array)
 class Regexp::Expression::Root < ::Regexp::Expression::Subexpression
   class << self
     def build(options = T.unsafe(nil)); end
-    def build_token; end
   end
 end
 
@@ -441,8 +442,7 @@ class Regexp::Expression::Sequence < ::Regexp::Expression::Subexpression
   def ts; end
 
   class << self
-    def add_to(subexpression, params = T.unsafe(nil), active_opts = T.unsafe(nil)); end
-    def at_levels(level, set_level, conditional_level); end
+    def add_to(exp, params = T.unsafe(nil), active_opts = T.unsafe(nil)); end
   end
 end
 
@@ -458,6 +458,8 @@ class Regexp::Expression::SequenceOperation < ::Regexp::Expression::Subexpressio
 end
 
 module Regexp::Expression::Shared
+  mixes_in_class_methods ::Regexp::Expression::Shared::ClassMethods
+
   def ==(other); end
   def ===(other); end
   def base_length; end
@@ -475,6 +477,7 @@ module Regexp::Expression::Shared
   def terminal?; end
   def to_s(format = T.unsafe(nil)); end
   def to_str(format = T.unsafe(nil)); end
+  def token_class; end
   def type?(test_type); end
 
   private
@@ -485,6 +488,12 @@ module Regexp::Expression::Shared
   class << self
     def included(mod); end
   end
+end
+
+module Regexp::Expression::Shared::ClassMethods
+  def construct(params = T.unsafe(nil)); end
+  def construct_defaults; end
+  def token_class; end
 end
 
 class Regexp::Expression::Subexpression < ::Regexp::Expression::Base
