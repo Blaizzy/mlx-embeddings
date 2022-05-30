@@ -33,7 +33,7 @@ module Utils
     module_function
 
     def curl_executable(use_homebrew_curl: false)
-      return Pathname.new(ENV["HOMEBREW_BREWED_CURL_PATH"]) if use_homebrew_curl
+      return HOMEBREW_BREWED_CURL_PATH if use_homebrew_curl
 
       @curl_executable ||= HOMEBREW_SHIMS_PATH/"shared/curl"
     end

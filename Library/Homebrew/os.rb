@@ -43,7 +43,7 @@ module OS
     @kernel_name ||= Utils.safe_popen_read("uname", "-s").chomp
   end
 
-  ::OS_VERSION = ENV["HOMEBREW_OS_VERSION"]
+  ::OS_VERSION = ENV.fetch("HOMEBREW_OS_VERSION").freeze
 
   CI_GLIBC_VERSION = "2.23"
   CI_OS_VERSION = "Ubuntu 16.04"
@@ -54,8 +54,8 @@ module OS
     if !OS::Mac.version.prerelease? &&
        !OS::Mac.version.outdated_release? &&
        ARGV.none? { |v| v.start_with?("--cc=") } &&
-       (ENV["HOMEBREW_PREFIX"] == HOMEBREW_DEFAULT_PREFIX ||
-       (ENV["HOMEBREW_PREFIX"] == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX && Hardware::CPU.arm?))
+       (HOMEBREW_PREFIX == HOMEBREW_DEFAULT_PREFIX ||
+       (HOMEBREW_PREFIX == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX && Hardware::CPU.arm?))
       ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
     end
     PATH_OPEN = "/usr/bin/open"
