@@ -291,7 +291,7 @@ module Kernel
       ENV["HOMEBREW_DEBUG_INSTALL"] = f.full_name
     end
 
-    if ENV["SHELL"].include?("zsh") && (home = ENV["HOME"])&.start_with?(HOMEBREW_TEMP.resolved_path.to_s)
+    if ENV["SHELL"].include?("zsh") && (home = Dir.home).start_with?(HOMEBREW_TEMP.resolved_path.to_s)
       FileUtils.mkdir_p home
       FileUtils.touch "#{home}/.zshrc"
     end

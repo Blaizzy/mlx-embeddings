@@ -190,7 +190,7 @@ module Cask
           key = "language"
           value = T.cast(explicit.fetch(:languages, []), T::Array[String]).join(",")
         end
-        "#{key}: \"#{value.to_s.sub(/^#{ENV['HOME']}/, "~")}\""
+        "#{key}: \"#{value.to_s.sub(/^#{Dir.home}/, "~")}\""
       end.join(", ")
     end
 

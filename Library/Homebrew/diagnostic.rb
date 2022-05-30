@@ -70,7 +70,7 @@ module Homebrew
       end
 
       def user_tilde(path)
-        path.gsub(ENV["HOME"], "~")
+        path.gsub(Dir.home, "~")
       end
 
       sig { returns(String) }
@@ -766,7 +766,7 @@ module Homebrew
       end
 
       def check_for_pydistutils_cfg_in_home
-        return unless File.exist? "#{ENV["HOME"]}/.pydistutils.cfg"
+        return unless File.exist? "#{Dir.home}/.pydistutils.cfg"
 
         <<~EOS
           A '.pydistutils.cfg' file was found in $HOME, which may cause Python

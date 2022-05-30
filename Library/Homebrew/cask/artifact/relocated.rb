@@ -96,7 +96,7 @@ module Cask
       end
 
       def printable_target
-        target.to_s.sub(/^#{ENV['HOME']}(#{File::SEPARATOR}|$)/, "~/")
+        target.to_s.sub(/^#{Dir.home}(#{File::SEPARATOR}|$)/, "~/")
       end
     end
   end

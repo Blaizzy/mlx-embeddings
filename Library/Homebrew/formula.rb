@@ -2433,7 +2433,7 @@ class Formula
       GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
       GOPATH:        "#{HOMEBREW_CACHE}/go_mod_cache",
       CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
-      CURL_HOME:     ENV["CURL_HOME"] || ENV["HOME"],
+      CURL_HOME:     ENV.fetch("CURL_HOME") { Dir.home },
     }
   end
 
