@@ -203,6 +203,7 @@ RSpec.configure do |config|
     FormulaInstaller.clear_attempted
     FormulaInstaller.clear_installed
     FormulaInstaller.clear_fetched
+    Utils::Curl.clear_path_cache
 
     TEST_DIRECTORIES.each(&:mkpath)
 

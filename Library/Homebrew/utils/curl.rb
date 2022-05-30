@@ -42,6 +42,10 @@ module Utils
       @curl_path ||= Utils.popen_read(curl_executable, "--homebrew=print-path").chomp.presence
     end
 
+    def clear_path_cache
+      @curl_path = nil
+    end
+
     sig {
       params(
         extra_args:      T.untyped,

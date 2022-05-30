@@ -823,6 +823,7 @@ class FormulaInstaller
     if formula.name == "curl" &&
        !DevelopmentTools.curl_handles_most_https_certificates?
       ENV["HOMEBREW_CURL"] = formula.opt_bin/"curl"
+      Utils::Curl.clear_path_cache
     end
 
     caveats
