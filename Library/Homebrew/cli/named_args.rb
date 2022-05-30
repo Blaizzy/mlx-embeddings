@@ -134,6 +134,8 @@ module Homebrew
             contents = Homebrew::API::CaskSource.fetch(name)
           end
 
+          want_keg_like_cask = [:latest_kegs, :default_kegs, :kegs].include?(method)
+
           begin
             config = Cask::Config.from_args(@parent) if @cask_options
             cask = Cask::CaskLoader.load(contents || name, config: config)
@@ -146,11 +148,17 @@ module Homebrew
               opoo "Treating #{name} as a cask."
             end
 
+            # If we're trying to get a keg-like Cask, do our best to use the same cask
+            # file that was used for installation, if possible.
+            if want_keg_like_cask && (installed_caskfile = cask.installed_caskfile) && installed_caskfile.exist?
+              cask = Cask::CaskLoader.load(installed_caskfile)
+            end
+
             return cask
           rescue Cask::CaskUnreadableError => e
             # If we're trying to get a keg-like Cask, do our best to handle it
             # not being readable and return something that can be used.
-            if [:latest_kegs, :default_kegs, :kegs].include?(method)
+            if want_keg_like_cask
               cask_version = Cask::Cask.new(name, config: config).versions.first
               cask = Cask::Cask.new(name, config: config) do
                 version cask_version if cask_version
