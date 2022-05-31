@@ -37,7 +37,11 @@ describe Cask::Quarantine, :cask do
     end
 
     it "quarantines Cask audits" do
-      Cask::Cmd::Audit.run("local-transmission", "--download")
+      expect {
+        Cask::Cmd::Audit.run("local-transmission", "--download")
+      }.to not_raise_error
+       .and output(/audit for local-transmission: passed/).to_stdout
+       .and not_to_output.to_stderr
 
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
       cached_location = Cask::Download.new(local_transmission).fetch
@@ -148,7 +152,11 @@ describe Cask::Quarantine, :cask do
     end
 
     it "does not quarantine Cask audits" do
-      Cask::Cmd::Audit.run("local-transmission", "--download", "--no-quarantine")
+      expect {
+        Cask::Cmd::Audit.run("local-transmission", "--download", "--no-quarantine")
+      }.to not_raise_error
+       .and output(/audit for local-transmission: passed/).to_stdout
+       .and not_to_output.to_stderr
 
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
       cached_location = Cask::Download.new(local_transmission).fetch
