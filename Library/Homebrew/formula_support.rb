@@ -75,29 +75,4 @@ class KegOnlyReason
   end
 end
 
-# Used to annotate formulae that don't require compiling or cannot build a bottle.
-class BottleDisableReason
-  SUPPORTED_TYPES = [:unneeded, :disable].freeze
-
-  def initialize(type, reason)
-    @type = type
-    @reason = reason
-    odisabled "bottle :#{@type}" if valid?
-  end
-
-  def unneeded?
-    @type == :unneeded
-  end
-
-  def valid?
-    SUPPORTED_TYPES.include? @type
-  end
-
-  def to_s
-    return "This formula doesn't require compiling." if unneeded?
-
-    @reason
-  end
-end
-
 require "extend/os/formula_support"

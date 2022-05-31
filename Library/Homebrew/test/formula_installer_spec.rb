@@ -11,9 +11,6 @@ require "test/support/fixtures/testball_bottle"
 require "test/support/fixtures/failball"
 
 describe FormulaInstaller do
-  define_negated_matcher :need_bottle, :be_bottle_unneeded
-  alias_matcher :have_disabled_bottle, :be_bottle_disabled
-
   matcher :be_poured_from_bottle do
     match(&:poured_from_bottle)
   end
@@ -71,22 +68,6 @@ describe FormulaInstaller do
       expect(bin).to be_a_directory
       expect(bin.children.count).to eq(3)
       expect(f.prefix/".brew/testball.rb").to be_readable
-    end
-  end
-
-  specify "Formula installation with unneeded bottle" do
-    allow(DevelopmentTools).to receive(:installed?).and_return(false)
-
-    formula = Testball.new
-    allow(formula).to receive(:bottle_unneeded?).and_return(true)
-    allow(formula).to receive(:bottle_disabled?).and_return(true)
-
-    expect(formula).not_to be_bottled
-    expect(formula).not_to need_bottle
-    expect(formula).to have_disabled_bottle
-
-    temporary_install(formula) do |f|
-      expect(f).to be_latest_version_installed
     end
   end
 

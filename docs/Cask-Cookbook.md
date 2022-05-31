@@ -49,7 +49,7 @@ if MacOS.version <= :mojave        # symbolic name
 if MacOS.version <= "10.14"        # version string
 ```
 
-The available symbols for macOS versions are: `:yosemite`, `:el_capitan`, `:sierra`, `:high_sierra`, `:mojave`, `:catalina` and `:big_sur`. The corresponding numeric version strings should be given as major releases containing a single dot.
+The available symbols for macOS versions are: `:el_capitan`, `:sierra`, `:high_sierra`, `:mojave`, `:catalina` and `:big_sur`. The corresponding numeric version strings should be given as major releases containing a single dot.
 
 Note that in the official Homebrew Cask repositories only the symbolic names are allowed. The numeric comparison may only be used for third-party taps.
 
@@ -173,6 +173,7 @@ caveats
 Note that every stanza that has additional parameters (`:symbols` after a `,`) shall have them on separate lines, one per line, in alphabetical order. An exception is `target:` which typically consists of short lines.
 
 ## Stanzas
+
 ### Required Stanzas
 
 Each of the following stanzas is required for every Cask.
@@ -233,7 +234,6 @@ Each Cask must declare one or more *artifacts* (i.e. something to install).
 | `container nested:`    | no                            | Relative path to an inner container that must be extracted before moving on with the installation. This allows us to support dmg inside tar, zip inside dmg, etc.
 | `container type:`      | no                            | Symbol to override container-type autodetect. May be one of: `:air`, `:bz2`, `:cab`, `:dmg`, `:generic_unar`, `:gzip`, `:otf`, `:pkg`, `:rar`, `:seven_zip`, `:sit`, `:tar`, `:ttf`, `:xar`, `:zip`, `:naked`. (Example: [parse.rb](https://github.com/Homebrew/homebrew-cask/blob/312ae841f1f1b2ec07f4d88b7dfdd7fbdf8d4f94/Casks/parse.rb#L11))
 | `auto_updates`         | no                            | `true`. Assert the Cask artifacts auto-update. Use if `Check for Updates…` or similar is present in app menu, but not if it only opens a webpage and does not do the download and installation for you.
-
 
 ## Stanza descriptions
 
@@ -406,7 +406,7 @@ end
 
 `conflicts_with` is used to declare conflicts that keep a Cask from installing or working correctly.
 
-#### conflicts_with cask:
+#### conflicts_with cask
 
 The value should be another Cask token.
 
@@ -416,7 +416,7 @@ Example use: [`wireshark`](https://github.com/Homebrew/homebrew-cask/blob/903493
 conflicts_with cask: "wireshark-chmodbpf"
 ```
 
-#### conflicts_with formula:
+#### conflicts_with formula
 
 Note: `conflicts_with formula:` is a stub and is not yet functional.
 
@@ -433,7 +433,7 @@ conflicts_with formula: "macvim"
 `depends_on` is used to declare dependencies and requirements for a Cask.
 `depends_on` is not consulted until `install` is attempted.
 
-#### depends_on cask:
+#### depends_on cask
 
 The value should be another Cask token, needed by the current Cask.
 
@@ -443,7 +443,7 @@ Example use: [`cellery`](https://github.com/Homebrew/homebrew-cask/blob/4002df8f
 depends_on cask: "osxfuse"
 ```
 
-#### depends_on formula:
+#### depends_on formula
 
 The value should name a Homebrew Formula needed by the Cask.
 
@@ -453,7 +453,7 @@ Example use: some distributions are contained in archive formats such as `7z` wh
 depends_on formula: "unar"
 ```
 
-#### depends_on macos:
+#### depends_on macos
 
 ##### Requiring an Exact macOS Release
 
@@ -463,7 +463,6 @@ The available values for macOS releases are:
 
 | symbol             | corresponding release
 | -------------------|----------------------
-| `:yosemite`        | `10.10`
 | `:el_capitan`      | `10.11`
 | `:sierra`          | `10.12`
 | `:high_sierra`     | `10.13`
@@ -492,7 +491,7 @@ depends_on macos: ">= :big_sur"
 
 A comparison expression cannot be combined with any other form of `depends_on macos:`.
 
-#### depends_on arch:
+#### depends_on arch
 
 The value for `depends_on arch:` may be a symbol or an array of symbols, listing the hardware compatibility requirements for a Cask. The requirement is satisfied at install time if any one of multiple `arch:` value matches the user’s hardware.
 
@@ -531,57 +530,56 @@ depends_on arch: :arm64
 
 #### Dos and Don'ts
 
-- **Do** start with an uppercase letter.
+* **Do** start with an uppercase letter.
 
   ```diff
   - desc "sound and music editor"
   + desc "Sound and music editor"
   ```
 
-- **Do** be brief, i.e. use less than 80 characters.
+* **Do** be brief, i.e. use less than 80 characters.
 
   ```diff
   - desc "Sound and music editor which comes with effects, instruments, sounds and all kinds of creative features"
   + desc "Sound and music editor"
   ```
 
-- **Do** describe what the software does or is:
+* **Do** describe what the software does or is:
 
   ```diff
   - desc "Development of musical ideas made easy"
   + desc "Sound and music editor"
   ```
 
-- **Do not** include the platform. Casks only work on macOS, so this is redundant information.
+* **Do not** include the platform. Casks only work on macOS, so this is redundant information.
 
   ```diff
   - desc "Sound and music editor for macOS"
   + desc "Sound and music editor"
   ```
 
-- **Do not** include the Cask’s [name](#stanza-name).
+* **Do not** include the Cask’s [name](#stanza-name).
 
   ```diff
   - desc "Ableton Live is a sound and music editor"
   + desc "Sound and music editor"
   ```
 
-- **Do not** include the vendor. This should be added to the Cask’s [name](#stanza-name) instead.
-
+* **Do not** include the vendor. This should be added to the Cask’s [name](#stanza-name) instead.
 
   ```diff
   - desc "Sound and music editor made by Ableton"
   + desc "Sound and music editor"
   ```
 
-- **Do not** add user pronouns.
+* **Do not** add user pronouns.
 
   ```diff
   - desc "Edit your music files"
   + desc "Sound and music editor"
   ```
 
-- **Do not** use empty marketing jargon.
+* **Do not** use empty marketing jargon.
 
   ```diff
   - desc "Beautiful and powerful modern sound and music editor"
@@ -613,7 +611,7 @@ This stanza must always be accompanied by [`uninstall`](#stanza-uninstall).
 
 The `installer` stanza takes a series of key-value pairs, the first key of which must be `manual:` or `script:`.
 
-#### installer manual:
+#### installer manual
 
 `installer manual:` takes a single string value, describing a GUI installer which must be run by the user at a later time. The path may be absolute, or relative to the Cask. Example (from [nutstore.rb](https://github.com/Homebrew/homebrew-cask/blob/249ec31048591308e63e50f79dae01d2f933cccf/Casks/nutstore.rb#L9)):
 
@@ -621,7 +619,7 @@ The `installer` stanza takes a series of key-value pairs, the first key of which
 installer manual: "Nutstore Installer.app"
 ```
 
-#### installer script:
+#### installer script
 
 `installer script:` introduces a series of key-value pairs describing a command which will automate completion of the install. **It should never be used for interactive installations.** The form is similar to `uninstall script:`:
 
@@ -692,7 +690,6 @@ homepage "https://example.org/#{language}"
 
 Examples: [Firefox](https://github.com/Homebrew/homebrew-cask/blob/306b8fbd9502036f1ca742f70c569d8677b62403/Casks/firefox.rb#L4L74), [Battle.net](https://github.com/Homebrew/homebrew-cask/blob/306b8fbd9502036f1ca742f70c569d8677b62403/Casks/battle-net.rb#L5L17)
 
-
 #### Installation
 
 To install a cask in a specific language, you can pass the `--language=` option to `brew install`:
@@ -734,7 +731,6 @@ livecheck do
   regex(%r{href=.*?/MyApp-(\d+(?:\.\d+)*)\.zip}i)
 end
 ```
-
 
 The `header_match` strategy will try parsing a version from the filename (in the `Content-Disposition` header) and the final URL (in the `Location` header). If that doesn't work, a `regex` can be specified, e.g.:
 
@@ -807,7 +803,7 @@ pkg "AlinofTimer.pkg", allow_untrusted: true
 Running the  macOS command:
 
 ```bash
-$ installer -showChoicesXML -pkg '/path/to/my.pkg'
+installer -showChoicesXML -pkg '/path/to/my.pkg'
 ```
 
 will output an XML which you can use to extract the `choices:` values, as well as their equivalents to the GUI options.
@@ -815,6 +811,7 @@ will output an XML which you can use to extract the `choices:` values, as well a
 See [this pull request for wireshark-chmodbpf](https://github.com/Homebrew/homebrew-cask/pull/26997) and [this one for wine-staging](https://github.com/Homebrew/homebrew-cask/pull/27937) for some examples of the procedure.
 
 Example ([wireshark-chmodbpf.rb](https://github.com/Homebrew/homebrew-cask/blob/f95b8a8306b91fe9da7908b842f4a5fa80f7afe0/Casks/wireshark-chmodbpf.rb#L9-L26)):
+
 ```ruby
 pkg "Wireshark #{version} Intel 64.pkg",
     choices: [
@@ -837,6 +834,7 @@ pkg "Wireshark #{version} Intel 64.pkg",
 ```
 
 Example ([wine-staging.rb](https://github.com/Homebrew/homebrew-cask/blob/51b65f6a5a25a7f79af4d372e1a0bf1dc3849251/Casks/wine-staging.rb#L11-L18)):
+
 ```ruby
 pkg "winehq-staging-#{version}.pkg",
     choices: [
@@ -855,7 +853,7 @@ pkg "winehq-staging-#{version}.pkg",
 The `sha256` value is usually calculated by the command:
 
 ```bash
-$ shasum --algorithm 256 <file>
+shasum --algorithm 256 <file>
 ```
 
 #### Special Value `:no_check`
@@ -886,7 +884,7 @@ The value of `suite` is never an `.app` bundle, but a plain directory.
 
 `pkgutil:` is the easiest and most useful `uninstall` directive. See [Uninstall Key pkgutil:](#uninstall-key-pkgutil).
 
-#### `uninstall` Is Required for Casks That Install a pkg or installer manual:
+#### `uninstall` Is Required for Casks That Install a pkg or installer manual
 
 For most Casks, uninstall actions are determined automatically, and an explicit `uninstall` stanza is not needed. However, a Cask which uses the `pkg` or `installer manual:` stanzas will **not** know how to uninstall correctly unless an `uninstall` stanza is given.
 
@@ -907,11 +905,11 @@ Since `pkg` installers can do arbitrary things, different techniques are needed 
 * [`login_item:`](#uninstall-key-login_item) (string or array) - names of login items to remove
 * [`kext:`](#uninstall-key-kext) (string or array) - bundle ids of kexts to unload from the system
 * [`script:`](#uninstall-key-script) (string or hash) - relative path to an uninstall script to be run via sudo; use hash if args are needed
-  - `executable:` - relative path to an uninstall script to be run via sudo (required for hash form)
-  - `args:` - array of arguments to the uninstall script
-  - `input:` - array of lines of input to be sent to `stdin` of the script
-  - `must_succeed:` - set to `false` if the script is allowed to fail
-  - `sudo:` - set to `true` if the script needs `sudo`
+  * `executable:` - relative path to an uninstall script to be run via sudo (required for hash form)
+  * `args:` - array of arguments to the uninstall script
+  * `input:` - array of lines of input to be sent to `stdin` of the script
+  * `must_succeed:` - set to `false` if the script is allowed to fail
+  * `sudo:` - set to `true` if the script needs `sudo`
 * [`pkgutil:`](#uninstall-key-pkgutil) (string, regexp or array of strings and regexps) - strings or regexps matching bundle ids of packages to uninstall using `pkgutil`
 * [`delete:`](#uninstall-key-delete) (string or array) - single-quoted, absolute paths of files or directory trees to remove. `delete:` should only be used as a last resort. `pkgutil:` is strongly preferred.
 * `rmdir:` (string or array) - single-quoted, absolute paths of directories to remove if empty. Works recursively.
@@ -930,13 +928,13 @@ This is the most useful uninstall key. `pkgutil:` is often sufficient to complet
 IDs for the most recently-installed packages can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_recent_pkg_ids"
+"$(brew --repository homebrew/cask)/developer/bin/list_recent_pkg_ids"
 ```
 
 `pkgutil:` also accepts a regular expression match against multiple package IDs. The regular expressions are somewhat nonstandard. To test a `pkgutil:` regular expression against currently-installed packages, use the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_pkg_ids_by_regexp" <regular-expression>
+"$(brew --repository homebrew/cask)/developer/bin/list_pkg_ids_by_regexp" <regular-expression>
 ```
 
 #### List Files Associated With a pkg Id
@@ -944,7 +942,7 @@ $ "$(brew --repository homebrew/cask)/developer/bin/list_pkg_ids_by_regexp" <reg
 Once you know the ID for an installed package, (above), you can list all files on your system associated with that package ID using the macOS command:
 
 ```bash
-$ pkgutil --files <package.id.goes.here>
+pkgutil --files <package.id.goes.here>
 ```
 
 Listing the associated files can help you assess whether the package included any `launchctl` jobs or kernel extensions (kexts).
@@ -954,13 +952,13 @@ Listing the associated files can help you assess whether the package included an
 IDs for currently loaded `launchctl` jobs can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_loaded_launchjob_ids"
+"$(brew --repository homebrew/cask)/developer/bin/list_loaded_launchjob_ids"
 ```
 
 IDs for all installed `launchctl` jobs can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_installed_launchjob_ids"
+"$(brew --repository homebrew/cask)/developer/bin/list_installed_launchjob_ids"
 ```
 
 #### `uninstall` Key `quit:`
@@ -968,13 +966,13 @@ $ "$(brew --repository homebrew/cask)/developer/bin/list_installed_launchjob_ids
 Bundle IDs for currently running Applications can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_running_app_ids"
+"$(brew --repository homebrew/cask)/developer/bin/list_running_app_ids"
 ```
 
 Bundle IDs inside an Application bundle on disk can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_ids_in_app" '/path/to/application.app'
+"$(brew --repository homebrew/cask)/developer/bin/list_ids_in_app" '/path/to/application.app'
 ```
 
 #### `uninstall` Key `signal:`
@@ -1010,7 +1008,7 @@ Unlike `quit:` directives, Unix signals originate from the current user, not fro
 Login items associated with an Application bundle on disk can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_login_items_for_app" '/path/to/application.app'
+"$(brew --repository homebrew/cask)/developer/bin/list_login_items_for_app" '/path/to/application.app'
 ```
 
 Note that you will likely need to have opened the app at least once for any login items to be present.
@@ -1020,13 +1018,13 @@ Note that you will likely need to have opened the app at least once for any logi
 IDs for currently loaded kernel extensions can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_loaded_kext_ids"
+"$(brew --repository homebrew/cask)/developer/bin/list_loaded_kext_ids"
 ```
 
 IDs inside a kext bundle you have located on disk can be listed using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_id_in_kext" '/path/to/name.kext'
+"$(brew --repository homebrew/cask)/developer/bin/list_id_in_kext" '/path/to/name.kext'
 ```
 
 #### `uninstall` Key `script:`
@@ -1065,19 +1063,19 @@ Advanced users may wish to work with a `pkg` file manually, without having the p
 A list of files which may be installed from a `pkg` can be extracted using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_payload_in_pkg" '/path/to/my.pkg'
+"$(brew --repository homebrew/cask)/developer/bin/list_payload_in_pkg" '/path/to/my.pkg'
 ```
 
 Candidate application names helpful for determining the name of a Cask may be extracted from a `pkg` file using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_apps_in_pkg" '/path/to/my.pkg'
+"$(brew --repository homebrew/cask)/developer/bin/list_apps_in_pkg" '/path/to/my.pkg'
 ```
 
 Candidate package IDs which may be useful in a `pkgutil:` key may be extracted from a `pkg` file using the command:
 
 ```bash
-$ "$(brew --repository homebrew/cask)/developer/bin/list_ids_in_pkg" '/path/to/my.pkg'
+"$(brew --repository homebrew/cask)/developer/bin/list_ids_in_pkg" '/path/to/my.pkg'
 ```
 
 A fully manual method for finding bundle ids in a package file follows:
@@ -1127,7 +1125,7 @@ The parameter doesn’t mean you should trust the source blindly, but we only ap
 Web browsers may obscure the direct `url` download location for a variety of reasons. Homebrew Cask supplies a script which can read extended file attributes to extract the actual source URL for most files downloaded by a browser on macOS. The script usually emits multiple candidate URLs; you may have to test each of them:
 
 ```bash
-$ $(brew --repository homebrew/cask)/developer/bin/list_url_attributes_on_file <file>
+$(brew --repository homebrew/cask)/developer/bin/list_url_attributes_on_file <file>
 ```
 
 #### Subversion URLs
@@ -1182,7 +1180,7 @@ However, this typically involves an HTTP round trip to a landing site, which may
 
 ##### Writing the Block
 
-Similar to the `preflight`, `postflight`, `uninstall_preflight`, and `uninstall_postflight` blocks, the `url` stanza offers an optional _block syntax_:
+Similar to the `preflight`, `postflight`, `uninstall_preflight`, and `uninstall_postflight` blocks, the `url` stanza offers an optional *block syntax*:
 
 ```rb
 url "https://handbrake.fr/nightly.php" do |page|
@@ -1278,7 +1276,7 @@ Finally, there is `csv` that returns an array of comma-separated values. `csv`, 
 The `zap` stanza describes a more complete uninstallation of files associated with a Cask. The `zap` procedures will never be performed by default, but only if the user uses `--zap` on `uninstall`:
 
 ```bash
-$ brew uninstall --zap firefox
+brew uninstall --zap firefox
 ```
 
 `zap` stanzas may remove:
@@ -1312,8 +1310,6 @@ Manual creation can be facilitated with:
 * `sudo find / -iname "*<search item>*"`
 * An uninstaller tool such as [AppCleaner](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/appcleaner.rb).
 * Inspecting the usual suspects, i.e. `/Library/{'Application Support',LaunchAgents,LaunchDaemons,Frameworks,Logs,Preferences,PrivilegedHelperTools}` and `~/Library/{'Application Support',Caches,Containers,LaunchAgents,Logs,Preferences,'Saved Application State'}`.
-
-
 
 ---
 
@@ -1378,12 +1374,12 @@ Details of software names and brands will inevitably be lost in the conversion t
 
 * If the vendor provides an English localization string, that is preferred. Here are the places it may be found, in order of preference:
 
-  - `CFBundleDisplayName` in the main `Info.plist` file of the app bundle
-  - `CFBundleName` in the main `Info.plist` file of the app bundle
-  - `CFBundleDisplayName` in `InfoPlist.strings` of an `en.lproj` localization directory
-  - `CFBundleName` in `InfoPlist.strings` of an `en.lproj` localization directory
-  - `CFBundleDisplayName` in `InfoPlist.strings` of an `English.lproj` localization directory
-  - `CFBundleName` in `InfoPlist.strings` of an `English.lproj` localization directory
+  * `CFBundleDisplayName` in the main `Info.plist` file of the app bundle
+  * `CFBundleName` in the main `Info.plist` file of the app bundle
+  * `CFBundleDisplayName` in `InfoPlist.strings` of an `en.lproj` localization directory
+  * `CFBundleName` in `InfoPlist.strings` of an `en.lproj` localization directory
+  * `CFBundleDisplayName` in `InfoPlist.strings` of an `English.lproj` localization directory
+  * `CFBundleName` in `InfoPlist.strings` of an `English.lproj` localization directory
 
 * When there is no vendor localization string, romanize the name by transliteration or decomposition.
 

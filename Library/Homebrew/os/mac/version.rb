@@ -21,6 +21,8 @@ module OS
         high_sierra: "10.13",
         sierra:      "10.12",
         el_capitan:  "10.11",
+        # TODO: remove after 3.5.0 has been shipped and this is implicitly
+        # odisabled and we've cleaned up all tap references.
         yosemite:    "10.10",
       }.freeze
 

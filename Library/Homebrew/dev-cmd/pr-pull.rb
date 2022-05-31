@@ -312,7 +312,7 @@ module Homebrew
     return false if labels.include?("CI-syntax-only") || labels.include?("CI-no-bottles")
 
     changed_packages(tap, original_commit).any? do |f|
-      !f.instance_of?(Cask::Cask) && !f.bottle_unneeded? && !f.bottle_disabled?
+      !f.instance_of?(Cask::Cask)
     end
   end
 

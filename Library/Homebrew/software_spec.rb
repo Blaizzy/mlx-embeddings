@@ -27,7 +27,7 @@ class SoftwareSpec
 
   attr_reader :name, :full_name, :owner, :build, :resources, :patches, :options, :deprecated_flags,
               :deprecated_options, :dependency_collector, :bottle_specification, :compiler_failures,
-              :uses_from_macos_elements, :bottle_disable_reason
+              :uses_from_macos_elements
 
   def_delegators :@resource, :stage, :fetch, :verify_download_integrity, :source_modified_time, :download_name,
                  :cached_download, :clear_cache, :checksum, :mirrors, :specs, :using, :version, :mirror,
@@ -48,7 +48,6 @@ class SoftwareSpec
     @build = BuildOptions.new(Options.create(@flags), options)
     @compiler_failures = []
     @uses_from_macos_elements = []
-    @bottle_disable_reason = nil
   end
 
   def owner=(owner)
@@ -79,17 +78,6 @@ class SoftwareSpec
     dependency_collector.add(@resource)
   end
 
-  def bottle_unneeded?
-    return false unless @bottle_disable_reason
-
-    @bottle_disable_reason.unneeded?
-  end
-
-  sig { returns(T::Boolean) }
-  def bottle_disabled?
-    @bottle_disable_reason ? true : false
-  end
-
   def bottle_defined?
     !bottle_specification.collector.tags.empty?
   end
@@ -103,12 +91,8 @@ class SoftwareSpec
       (tag.present? || bottle_specification.compatible_locations? || owner.force_bottle)
   end
 
-  def bottle(disable_type = nil, disable_reason = nil, &block)
-    if disable_type
-      @bottle_disable_reason = BottleDisableReason.new(disable_type, disable_reason)
-    else
-      bottle_specification.instance_eval(&block)
-    end
+  def bottle(&block)
+    bottle_specification.instance_eval(&block)
   end
 
   def resource_defined?(name)

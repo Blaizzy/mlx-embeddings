@@ -100,7 +100,7 @@ module Homebrew
   def bump_formula_pr
     args = bump_formula_pr_args.parse
 
-    odeprecated "`brew bump-formula-pr --write`", "`brew bump-formula-pr --write-only`" if args.write?
+    odisabled "`brew bump-formula-pr --write`", "`brew bump-formula-pr --write-only`" if args.write?
 
     if args.revision.present? && args.tag.nil? && args.version.nil?
       raise UsageError, "`--revision` must be passed with either `--tag` or `--version`!"
