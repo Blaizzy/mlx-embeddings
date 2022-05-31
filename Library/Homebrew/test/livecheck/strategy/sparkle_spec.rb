@@ -10,18 +10,49 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   let(:appcast_url) { "https://www.example.com/example/appcast.xml" }
   let(:non_http_url) { "ftp://brew.sh/" }
 
-  let(:appcast_data) {
-    {
-      title:         "Version 1.2.3",
-      pub_date:      "Fri, 01 Jan 2021 01:23:45 +0000",
-      url:           "https://www.example.com/example/example.tar.gz",
-      short_version: "1.2.3",
-      version:       "1234",
-    }
+  let(:item_hash) {
+    [
+      {
+        title:         "Version 1.2.3",
+        pub_date:      "Fri, 01 Jan 2021 01:23:45 +0000",
+        url:           "https://www.example.com/example/example-1.2.3.tar.gz",
+        short_version: "1.2.3",
+        version:       "123",
+      },
+      {
+        title:         "Version 1.2.2",
+        pub_date:      "Not a parseable date string",
+        url:           "https://www.example.com/example/example-1.2.2.tar.gz",
+        short_version: "1.2.2",
+        version:       "122",
+      },
+    ]
   }
 
-  let(:appcast_xml) {
-    <<~EOS
+  let(:xml) {
+    first_item = <<~EOS
+      <item>
+        <title>#{item_hash[0][:title]}</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hash[0][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hash[0][:pub_date]}</pubDate>
+        <enclosure url="#{item_hash[0][:url]}" sparkle:shortVersionString="#{item_hash[0][:short_version]}" sparkle:version="#{item_hash[0][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+      </item>
+    EOS
+
+    second_item = <<~EOS
+      <item>
+        <title>#{item_hash[1][:title]}</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hash[1][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hash[1][:pub_date]}</pubDate>
+        <sparkle:version>#{item_hash[1][:version]}</sparkle:version>
+        <sparkle:shortVersionString>#{item_hash[1][:short_version]}</sparkle:shortVersionString>
+        <link>#{item_hash[1][:url]}</link>
+      </item>
+    EOS
+
+    appcast_xml = <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
         <channel>
@@ -29,30 +60,71 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           <link>#{appcast_url}</link>
           <description>Most recent changes with links to updates.</description>
           <language>en</language>
-          <item>
-            <title>#{appcast_data[:title]}</title>
-            <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-            <sparkle:releaseNotesLink>https://www.example.com/example/1.2.3.html</sparkle:releaseNotesLink>
-            <pubDate>#{appcast_data[:pub_date]}</pubDate>
-            <enclosure url="#{appcast_data[:url]}" sparkle:shortVersionString="#{appcast_data[:short_version]}" sparkle:version="#{appcast_data[:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
-          </item>
+          #{first_item}
+          #{second_item}
         </channel>
       </rss>
     EOS
+
+    extra_items = <<~EOS
+      #{first_item.sub(%r{<(enclosure[^>]+?)\s*?/>}, '<\1 os="not-osx" />')}
+      #{first_item.sub(/(<sparkle:minimumSystemVersion>)[^<]+?</m, '\1100<')}
+      #{first_item.sub(/(<sparkle:minimumSystemVersion>)[^<]+?</m, '\19000<')}
+      <item>
+      </item>
+    EOS
+
+    appcast_with_omitted_items = appcast_xml.sub("</item>", "</item>\n#{extra_items}")
+    no_versions_item =
+      appcast_xml
+        .sub(second_item, "")
+        .gsub(/sparkle:(shortVersionString|version)="[^"]+?"\s*/, "")
+        .sub(
+          "<title>#{item_hash[0][:title]}</title>",
+          "<title>Version</title>",
+        )
+    no_items = appcast_xml.sub(%r{<item>.+</item>}m, "")
+    undefined_namespace_xml = appcast_xml.sub(/\s*xmlns:sparkle="[^"]+?"/, "")
+
+    {
+      appcast:                    appcast_xml,
+      appcast_with_omitted_items: appcast_with_omitted_items,
+      no_versions_item:           no_versions_item,
+      no_items:                   no_items,
+      undefined_namespace:        undefined_namespace_xml,
+    }
   }
 
   let(:title_regex) { /Version\s+v?(\d+(?:\.\d+)+)\s*$/i }
 
-  let(:item) {
-    Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-      title:          appcast_data[:title],
-      pub_date:       Time.parse(appcast_data[:pub_date]),
-      url:            appcast_data[:url],
-      bundle_version: Homebrew::BundleVersion.new(appcast_data[:short_version], appcast_data[:version]),
-    )
+  let(:items) {
+    {
+      appcast:          [
+        Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+          title:          item_hash[0][:title],
+          pub_date:       Time.parse(item_hash[0][:pub_date]),
+          url:            item_hash[0][:url],
+          bundle_version: Homebrew::BundleVersion.new(item_hash[0][:short_version], item_hash[0][:version]),
+        ),
+        Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+          title:          item_hash[1][:title],
+          pub_date:       Time.new(0),
+          url:            item_hash[1][:url],
+          bundle_version: Homebrew::BundleVersion.new(item_hash[1][:short_version], item_hash[1][:version]),
+        ),
+      ],
+      no_versions_item: [
+        Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+          title:          "Version",
+          pub_date:       Time.parse(item_hash[0][:pub_date]),
+          url:            item_hash[0][:url],
+          bundle_version: nil,
+        ),
+      ],
+    }
   }
 
-  let(:versions) { [item.bundle_version.nice_version] }
+  let(:versions) { [items[:appcast][0].nice_version] }
 
   describe "::match?" do
     it "returns true for an HTTP URL" do
@@ -64,64 +136,114 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     end
   end
 
-  describe "::item_from_content" do
-    let(:item_from_appcast_xml) { sparkle.item_from_content(appcast_xml) }
+  describe "::items_from_content" do
+    let(:items_from_appcast_xml) { sparkle.items_from_content(xml[:appcast]) }
+    let(:first_item) { items_from_appcast_xml[0] }
 
     it "returns nil if content is blank" do
-      expect(sparkle.item_from_content("")).to be_nil
+      expect(sparkle.items_from_content("")).to eq([])
     end
 
-    it "returns an Item when given XML data" do
-      expect(item_from_appcast_xml).to be_a(Homebrew::Livecheck::Strategy::Sparkle::Item)
-      expect(item_from_appcast_xml).to eq(item)
-      expect(item_from_appcast_xml.title).to eq(appcast_data[:title])
-      expect(item_from_appcast_xml.pub_date).to eq(Time.parse(appcast_data[:pub_date]))
-      expect(item_from_appcast_xml.url).to eq(appcast_data[:url])
-      expect(item_from_appcast_xml.short_version).to eq(appcast_data[:short_version])
-      expect(item_from_appcast_xml.version).to eq(appcast_data[:version])
+    it "returns an array of Items when given XML data" do
+      expect(items_from_appcast_xml).to eq(items[:appcast])
+      expect(first_item.title).to eq(item_hash[0][:title])
+      expect(first_item.pub_date).to eq(Time.parse(item_hash[0][:pub_date]))
+      expect(first_item.url).to eq(item_hash[0][:url])
+      expect(first_item.short_version).to eq(item_hash[0][:short_version])
+      expect(first_item.version).to eq(item_hash[0][:version])
+
+      expect(sparkle.items_from_content(xml[:no_versions_item])).to eq(items[:no_versions_item])
     end
   end
 
   describe "::versions_from_content" do
+    let(:subbed_items) { items[:appcast].map { |item| item.nice_version.sub("1", "0") } }
+
     it "returns an array of version strings when given content" do
-      expect(sparkle.versions_from_content(appcast_xml)).to eq(versions)
+      expect(sparkle.versions_from_content(xml[:appcast])).to eq(versions)
+      expect(sparkle.versions_from_content(xml[:appcast_with_omitted_items])).to eq(versions)
+      expect(sparkle.versions_from_content(xml[:no_versions_item])).to eq([])
+      expect(sparkle.versions_from_content(xml[:undefined_namespace])).to eq(versions)
+    end
+
+    it "returns an empty array if no items are found" do
+      expect(sparkle.versions_from_content(xml[:no_items])).to eq([])
     end
 
     it "returns an array of version strings when given content and a block" do
       # Returning a string from block
       expect(
-        sparkle.versions_from_content(appcast_xml) do |item|
-          item.bundle_version&.nice_version&.sub("3", "4")
+        sparkle.versions_from_content(xml[:appcast]) do |item|
+          item.nice_version&.sub("1", "0")
         end,
-      ).to eq([item.bundle_version.nice_version.sub("3", "4")])
+      ).to eq([subbed_items[0]])
 
-      # Returning an array of strings from block (unlikely to be used)
-      expect(sparkle.versions_from_content(appcast_xml) { versions }).to eq(versions)
+      # Returning an array of strings from block
+      expect(
+        sparkle.versions_from_content(xml[:appcast]) do |items|
+          items.map { |item| item.nice_version&.sub("1", "0") }
+        end,
+      ).to eq(subbed_items)
     end
 
     it "returns an array of version strings when given content, a regex, and a block" do
-      # Returning a string from block
+      # Returning a string from the block
       expect(
-        sparkle.versions_from_content(appcast_xml, title_regex) do |item, regex|
+        sparkle.versions_from_content(xml[:appcast], title_regex) do |item, regex|
           item.title[regex, 1]
         end,
-      ).to eq([item.bundle_version.short_version])
+      ).to eq([items[:appcast][0].short_version])
 
-      # Returning an array of strings from block (unlikely to be used)
       expect(
-        sparkle.versions_from_content(appcast_xml, title_regex) do |item, regex|
+        sparkle.versions_from_content(xml[:appcast], title_regex) do |items, regex|
+          next if (item = items[0]).blank?
+
+          match = item&.title&.match(regex)
+          next if match.blank?
+
+          "#{match[1]},#{item.version}"
+        end,
+      ).to eq(["#{items[:appcast][0].short_version},#{items[:appcast][0].version}"])
+
+      # Returning an array of strings from the block
+      expect(
+        sparkle.versions_from_content(xml[:appcast], title_regex) do |item, regex|
           [item.title[regex, 1]]
         end,
-      ).to eq([item.bundle_version.short_version])
+      ).to eq([items[:appcast][0].short_version])
+
+      expect(
+        sparkle.versions_from_content(xml[:appcast], &:short_version),
+      ).to eq([items[:appcast][0].short_version])
+
+      expect(
+        sparkle.versions_from_content(xml[:appcast], title_regex) do |items, regex|
+          items.map { |item| item.title[regex, 1] }
+        end,
+      ).to eq(items[:appcast].map(&:short_version))
     end
 
     it "allows a nil return from a block" do
-      expect(sparkle.versions_from_content(appcast_xml) { next }).to eq([])
+      expect(
+        sparkle.versions_from_content(xml[:appcast]) do |item|
+          _ = item # To appease `brew style` without modifying arg name
+          next
+        end,
+      ).to eq([])
     end
 
     it "errors on an invalid return type from a block" do
-      expect { sparkle.versions_from_content(appcast_xml) { 123 } }
-        .to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
+      expect {
+        sparkle.versions_from_content(xml[:appcast]) do |item|
+          _ = item # To appease `brew style` without modifying arg name
+          123
+        end
+      }.to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
+    end
+
+    it "errors if the first block argument uses an unhandled name" do
+      expect { sparkle.versions_from_content(xml[:appcast]) { |something| something } }
+        .to raise_error("First argument of Sparkle `strategy` block must be `item` or `items`")
     end
   end
 end
