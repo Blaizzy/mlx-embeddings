@@ -416,9 +416,7 @@ class FormulaInstaller
 
     if formula.tap&.installed? && !formula.tap&.private?
       action = "#{formula.full_name} #{options}".strip
-      Utils::Analytics.report_event("install", action)
-
-      Utils::Analytics.report_event("install_on_request", action) if installed_on_request?
+      Utils::Analytics.report_event("install", action, on_request: installed_on_request?)
     end
 
     self.class.attempted << formula
