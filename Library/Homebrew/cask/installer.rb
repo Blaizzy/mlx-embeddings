@@ -397,7 +397,7 @@ module Cask
     end
 
     def save_download_sha
-      @cask.download_sha_path.atomic_write(@cask.new_download_sha)
+      @cask.download_sha_path.atomic_write(@cask.new_download_sha) if @cask.checksumable?
     end
 
     def uninstall
