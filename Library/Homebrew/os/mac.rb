@@ -32,7 +32,11 @@ module OS
     # using the standard Ruby Comparable methods.
     sig { returns(Version) }
     def full_version
-      @full_version ||= Version.new((ENV["HOMEBREW_MACOS_VERSION"]).chomp)
+      @full_version ||= if ENV["HOMEBREW_FAKE_EL_CAPITAN"] # for Portable Ruby building
+        Version.new("10.11.6")
+      else
+        Version.new((ENV["HOMEBREW_MACOS_VERSION"]).chomp)
+      end
     end
 
     sig { params(version: Version).void }
