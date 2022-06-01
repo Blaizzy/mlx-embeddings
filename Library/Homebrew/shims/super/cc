@@ -232,7 +232,7 @@ class Cmd
       if mac?
         sdk ||= enum.next
         # We set the sysroot for macOS SDKs
-        args << "-isysroot#{sdk}" unless sdk.downcase.include? "osx"
+        args << "-isysroot#{sdk}" if !sdk.downcase.include?("osx") && !sdk.empty?
       else
         args << arg
         args << enum.next unless sdk
