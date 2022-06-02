@@ -95,6 +95,8 @@ class FormulaOrCaskUnavailableError < RuntimeError
 
   sig { returns(String) }
   def did_you_mean
+    require "formula"
+
     similar_formula_names = Formula.fuzzy_search(name)
     return "" if similar_formula_names.blank?
 
