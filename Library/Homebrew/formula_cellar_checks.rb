@@ -291,8 +291,9 @@ module FormulaCellarChecks
 
     dot_brew_formula = formula.prefix/".brew/#{formula.name}.rb"
     return unless dot_brew_formula.exist?
-    # TODO: add methods to `utils/ast` to allow checking for method use
-    return unless dot_brew_formula.read.include? "ENV.runtime_cpu_detection"
+
+    require "utils/ast"
+    return unless Utils::AST::FormulaAST.new(dot_brew_formula.read).include_runtime_cpu_detection?
 
     # macOS `objdump` is a bit slow, so we prioritise llvm's `llvm-objdump` (~5.7x faster)
     # or binutils' `objdump` (~1.8x faster) if they are installed.
