@@ -155,7 +155,7 @@ module Homebrew
             end
 
             return cask
-          rescue Cask::CaskUnreadableError => e
+          rescue Cask::CaskUnreadableError, Cask::CaskInvalidError => e
             # If we're trying to get a keg-like Cask, do our best to handle it
             # not being readable and return something that can be used.
             if want_keg_like_cask
