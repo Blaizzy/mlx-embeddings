@@ -635,6 +635,12 @@ class Version
   end
   alias to_str to_s
 
+  sig { returns(T.self_type) }
+  def freeze
+    tokens # Determine and store tokens before freezing
+    super
+  end
+
   protected
 
   sig { returns(String) }
