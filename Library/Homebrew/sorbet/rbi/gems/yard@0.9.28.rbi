@@ -202,6 +202,7 @@ module YARD
     def ruby18?; end
     def ruby19?; end
     def ruby2?; end
+    def ruby31?; end
     def ruby3?; end
     def windows?; end
   end
@@ -2408,6 +2409,7 @@ class YARD::Parser::Ruby::ModuleNode < ::YARD::Parser::Ruby::KeywordNode
 end
 
 class YARD::Parser::Ruby::ParameterNode < ::YARD::Parser::Ruby::AstNode
+  def args_forward; end
   def block_param; end
   def double_splat_param; end
   def named_params; end
