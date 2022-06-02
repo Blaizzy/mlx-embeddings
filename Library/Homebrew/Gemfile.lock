@@ -192,7 +192,7 @@ GEM
     warning (1.2.1)
     webrick (1.7.0)
     webrobots (0.1.2)
-    yard (0.9.27)
+    yard (0.9.28)
       webrick (~> 1.7.0)
     yard-sorbet (0.6.1)
       sorbet-runtime (>= 0.5)
