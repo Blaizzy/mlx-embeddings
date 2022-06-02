@@ -75,6 +75,13 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     EOS
 
     appcast_with_omitted_items = appcast_xml.sub("</item>", "</item>\n#{extra_items}")
+    beta_channel_item = appcast_xml.sub(
+      first_item,
+      first_item.sub(
+        "</title",
+        "</title>\n<sparkle:channel>beta</sparkle:channel>",
+      ),
+    )
     no_versions_item =
       appcast_xml
         .sub(second_item, "")
@@ -89,6 +96,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     {
       appcast:                    appcast_xml,
       appcast_with_omitted_items: appcast_with_omitted_items,
+      beta_channel_item:          beta_channel_item,
       no_versions_item:           no_versions_item,
       no_items:                   no_items,
       undefined_namespace:        undefined_namespace_xml,
@@ -98,7 +106,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   let(:title_regex) { /Version\s+v?(\d+(?:\.\d+)+)\s*$/i }
 
   let(:items) {
-    {
+    items = {
       appcast:          [
         Homebrew::Livecheck::Strategy::Sparkle::Item.new(
           title:          item_hash[0][:title],
@@ -122,6 +130,12 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
         ),
       ],
     }
+
+    beta_channel_item = items[:appcast][0].clone
+    beta_channel_item.channel = "beta"
+    items[:beta_channel_item] = [beta_channel_item, items[:appcast][1].clone]
+
+    items
   }
 
   let(:versions) { [items[:appcast][0].nice_version] }
@@ -152,6 +166,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
       expect(first_item.short_version).to eq(item_hash[0][:short_version])
       expect(first_item.version).to eq(item_hash[0][:version])
 
+      expect(sparkle.items_from_content(xml[:beta_channel_item])).to eq(items[:beta_channel_item])
       expect(sparkle.items_from_content(xml[:no_versions_item])).to eq(items[:no_versions_item])
     end
   end
@@ -162,6 +177,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     it "returns an array of version strings when given content" do
       expect(sparkle.versions_from_content(xml[:appcast])).to eq(versions)
       expect(sparkle.versions_from_content(xml[:appcast_with_omitted_items])).to eq(versions)
+      expect(sparkle.versions_from_content(xml[:beta_channel_item])).to eq(versions)
       expect(sparkle.versions_from_content(xml[:no_versions_item])).to eq([])
       expect(sparkle.versions_from_content(xml[:undefined_namespace])).to eq(versions)
     end
@@ -184,6 +200,12 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           items.map { |item| item.nice_version&.sub("1", "0") }
         end,
       ).to eq(subbed_items)
+
+      expect(
+        sparkle.versions_from_content(xml[:beta_channel_item]) do |items|
+          items.find { |item| item.channel.nil? }&.nice_version
+        end,
+      ).to eq([items[:appcast][1].nice_version])
     end
 
     it "returns an array of version strings when given content, a regex, and a block" do

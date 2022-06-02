@@ -36,6 +36,8 @@ module Homebrew
         Item = Struct.new(
           # @api public
           :title,
+          # @api public
+          :channel,
           # @api private
           :pub_date,
           # @api public
@@ -102,6 +104,7 @@ module Homebrew
               os = enclosure["os"]
             end
 
+            channel = item.elements["channel"]&.text
             url ||= item.elements["link"]&.text
             short_version ||= item.elements["shortVersionString"]&.text&.strip
             version ||= item.elements["version"]&.text&.strip
@@ -135,6 +138,7 @@ module Homebrew
 
             data = {
               title:          title,
+              channel:        channel,
               pub_date:       pub_date,
               url:            url,
               bundle_version: bundle_version,
