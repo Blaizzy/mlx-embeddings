@@ -2995,17 +2995,9 @@ module Kernel
 
   def choose(*args, &block); end
 
-  def itself(); end
-
-  def object_id(); end
-
   def pretty_inspect(); end
 
   def say(*args, &block); end
-
-  def then(); end
-
-  def yield_self(); end
 end
 
 module Kernel
