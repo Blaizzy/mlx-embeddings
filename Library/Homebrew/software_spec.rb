@@ -384,7 +384,7 @@ class Bottle
     manifests = json["manifests"]
     raise ArgumentError, "Missing 'manifests' section." if manifests.blank?
 
-    manifests_annotations = manifests.map { |m| m["annotations"] }
+    manifests_annotations = manifests.map { |m| m["annotations"] }.compact
     raise ArgumentError, "Missing 'annotations' section." if manifests_annotations.blank?
 
     bottle_digest = @resource.checksum.hexdigest
