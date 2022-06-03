@@ -13,15 +13,41 @@ class MacOSRequirement < Requirement
 
   attr_reader :comparator, :version
 
+  # TODO: when Yosemite is removed here, keep these around as empty arrays so we
+  # can keep the deprecation/disabling code the same.
+  DISABLED_MACOS_VERSIONS = [].freeze
+  DEPRECATED_MACOS_VERSIONS = [
+    :yosemite,
+  ].freeze
+
   def initialize(tags = [], comparator: ">=")
-    @version = if comparator == "==" && tags.first.respond_to?(:map)
-      tags.shift.map { |s| MacOS::Version.from_symbol(s) }
-    else
-      MacOS::Version.from_symbol(tags.shift) unless tags.empty?
+    @version = begin
+      if comparator == "==" && tags.first.respond_to?(:map)
+        tags.first.map { |s| MacOS::Version.from_symbol(s) }
+      else
+        MacOS::Version.from_symbol(tags.first) unless tags.empty?
+      end
+    rescue MacOSVersionError => e
+      if DISABLED_MACOS_VERSIONS.include?(e.version)
+        odisabled "depends_on :macos => :#{e.version}"
+      elsif DEPRECATED_MACOS_VERSIONS.include?(e.version)
+        odeprecated "depends_on :macos => :#{e.version}"
+      else
+        raise
+      end
+
+      # Array of versions: remove the bad ones and try again.
+      if tags.first.respond_to?(:reject)
+        tags = [tags.first.reject { |s| s == e.version }, tags[1..]]
+        retry
+      end
+
+      # Otherwise fallback to the oldest allowed if comparator is >=.
+      MacOS::Version.new(MacOS::Version::OLDEST_ALLOWED) if comparator == ">="
     end
 
     @comparator = comparator
-    super(tags)
+    super(tags.drop(1))
   end
 
   def version_specified?
