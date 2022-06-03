@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "formula_versions"
 require "migrator"
 require "formulary"
 require "descriptions"
@@ -204,6 +203,7 @@ module Homebrew
         hub.dump(updated_formula_report: !args.auto_update?) unless args.quiet?
         hub.reporters.each(&:migrate_tap_migration)
         hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
+
         CacheStoreDatabase.use(:descriptions) do |db|
           DescriptionCacheStore.new(db)
                                .update_from_report!(hub)
@@ -211,32 +211,6 @@ module Homebrew
         CacheStoreDatabase.use(:cask_descriptions) do |db|
           CaskDescriptionCacheStore.new(db)
                                    .update_from_report!(hub)
-        end
-
-        if !args.auto_update? && !args.quiet?
-          outdated_formulae = Formula.installed.count(&:outdated?)
-          outdated_casks = Cask::Caskroom.casks.count(&:outdated?)
-          update_pronoun = if (outdated_formulae + outdated_casks) == 1
-            "it"
-          else
-            "them"
-          end
-          msg = ""
-          if outdated_formulae.positive?
-            msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{"formula".pluralize(outdated_formulae)}"
-          end
-          if outdated_casks.positive?
-            msg += " and " if msg.present?
-            msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{"cask".pluralize(outdated_casks)}"
-          end
-          if msg.present?
-            puts
-            puts <<~EOS
-              You have #{msg} installed.
-              You can upgrade #{update_pronoun} with #{Tty.bold}brew upgrade#{Tty.reset}
-              or list #{update_pronoun} with #{Tty.bold}brew outdated#{Tty.reset}.
-            EOS
-          end
         end
       end
       puts if args.auto_update?
@@ -368,24 +342,6 @@ class Reporter
         @report[status.to_sym] << full_name unless new_tap
       when "M"
         name = tap.formula_file_to_name(src)
-
-        # Skip filtering unchanged formulae versions by default (as it's slow).
-        unless Homebrew::EnvConfig.update_report_version_changed_formulae?
-          @report[:M] << name
-          next
-        end
-
-        begin
-          formula = Formulary.factory(tap.path/src)
-          new_version = formula.pkg_version
-          old_version = FormulaVersions.new(formula).formula_at_revision(@initial_revision, &:pkg_version)
-          next if new_version == old_version
-        rescue FormulaUnavailableError
-          # Don't care if the formula isn't available right now.
-          nil
-        rescue Exception => e # rubocop:disable Lint/RescueException
-          onoe "#{e.message}\n#{e.backtrace.join "\n"}" if Homebrew::EnvConfig.developer?
-        end
 
         @report[:M] << name
       when /^R\d{0,3}/
@@ -571,7 +527,7 @@ class ReporterHub
     @reporters = []
   end
 
-  def select_formula(key)
+  def select_formula_or_cask(key)
     @hash.fetch(key, [])
   end
 
@@ -586,70 +542,155 @@ class ReporterHub
   def dump(updated_formula_report: true)
     # Key Legend: Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
 
-    dump_formula_report :A, "New Formulae"
-    if updated_formula_report
-      dump_formula_report :M, "Updated Formulae"
-    else
-      updated = select_formula(:M).count
-      ohai "Updated Formulae", "Updated #{updated} #{"formula".pluralize(updated)}." if updated.positive?
+    unless Homebrew::EnvConfig.update_report_all_formulae?
+      dump_formula_or_cask_report :A, "New Formulae"
+      dump_formula_or_cask_report :AC, "New Casks"
+      dump_formula_or_cask_report :R, "Renamed Formulae"
     end
-    dump_formula_report :R, "Renamed Formulae"
-    dump_formula_report :D, "Deleted Formulae"
-    dump_formula_report :AC, "New Casks"
-    if updated_formula_report
-      dump_formula_report :MC, "Updated Casks"
+
+    dump_formula_or_cask_report :D, "Deleted Formulae"
+    dump_formula_or_cask_report :DC, "Deleted Casks"
+
+    outdated_formulae = nil
+    outdated_casks = nil
+
+    if updated_formula_report && Homebrew::EnvConfig.update_report_all_formulae?
+      dump_formula_or_cask_report :M, "Modified Formulae"
+      dump_formula_or_cask_report :MC, "Modified Casks"
+    elsif updated_formula_report
+      outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
+      output_dump_formula_or_cask_report "Outdated Formulae", outdated_formulae
+
+      outdated_casks = Cask::Caskroom.casks.select(&:outdated?).map(&:token)
+      output_dump_formula_or_cask_report "Outdated Casks", outdated_casks
+    elsif Homebrew::EnvConfig.update_report_all_formulae?
+      if (changed_formulae = select_formula_or_cask(:M).count) && changed_formulae.positive?
+        ohai "Modified Formulae", "Modified #{changed_formulae} #{"formula".pluralize(changed_formulae)}."
+      end
+
+      if (changed_casks = select_formula_or_cask(:MC).count) && changed_casks.positive?
+        ohai "Modified Casks", "Modified #{changed_casks} #{"cask".pluralize(changed_casks)}."
+      end
     else
-      updated = select_formula(:MC).count
-      ohai "Updated Casks", "Updated #{updated} #{"cask".pluralize(updated)}." if updated.positive?
+      outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
+      outdated_casks = Cask::Caskroom.casks.select(&:outdated?).map(&:token)
     end
-    dump_formula_report :DC, "Deleted Casks"
+
+    return if outdated_formulae.blank? && outdated_casks.blank?
+
+    outdated_formulae = outdated_formulae.count
+    outdated_casks = outdated_casks.count
+
+    update_pronoun = if (outdated_formulae + outdated_casks) == 1
+      "it"
+    else
+      "them"
+    end
+
+    msg = ""
+
+    if outdated_formulae.positive?
+      msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{"formula".pluralize(outdated_formulae)}"
+    end
+
+    if outdated_casks.positive?
+      msg += " and " if msg.present?
+      msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{"cask".pluralize(outdated_casks)}"
+    end
+
+    return if msg.blank?
+
+    puts
+    puts <<~EOS
+      You have #{msg} installed.
+      You can upgrade #{update_pronoun} with #{Tty.bold}brew upgrade#{Tty.reset}
+      or list #{update_pronoun} with #{Tty.bold}brew outdated#{Tty.reset}.
+    EOS
   end
 
   private
 
-  def dump_formula_report(key, title)
-    only_installed = !Homebrew::EnvConfig.update_report_all_formulae?
+  def dump_formula_or_cask_report(key, title)
+    report_all = Homebrew::EnvConfig.update_report_all_formulae?
 
-    formulae = select_formula(key).sort.map do |name, new_name|
-      # Format list items of renamed formulae
+    formulae_or_casks = select_formula_or_cask(key).sort.map do |name, new_name|
+      # Format list items of formulae
       case key
       when :R
-        unless only_installed
+        if report_all
           name = pretty_installed(name) if installed?(name)
           new_name = pretty_installed(new_name) if installed?(new_name)
           "#{name} -> #{new_name}"
         end
       when :A
-        name if !only_installed && !installed?(name)
+        name if report_all && !installed?(name)
       when :AC
-        name.split("/").last if !only_installed && !cask_installed?(name)
-      when :MC, :DC
+        name.split("/").last if report_all && !cask_installed?(name)
+      when :MC
         name = name.split("/").last
         if cask_installed?(name)
-          pretty_installed(name)
-        elsif !only_installed
+          if cask_outdated?(name)
+            pretty_outdated(name)
+          else
+            pretty_installed(name)
+          end
+        elsif report_all
+          name
+        end
+      when :DC
+        name = name.split("/").last
+        if cask_installed?(name)
+          pretty_uninstalled(name)
+        elsif report_all
+          name
+        end
+      when :M
+        if installed?(name)
+          if outdated?(name)
+            pretty_outdated(name)
+          else
+            pretty_installed(name)
+          end
+        elsif report_all
+          name
+        end
+      when :D
+        if installed?(name)
+          pretty_uninstalled(name)
+        elsif report_all
           name
         end
       else
-        if installed?(name)
-          pretty_installed(name)
-        elsif !only_installed
-          name
-        end
+        raise ArgumentError, ":#{key} passed to dump_formula_or_cask_report!"
       end
     end.compact
 
-    return if formulae.empty?
+    output_dump_formula_or_cask_report title, formulae_or_casks
+  end
 
-    # Dump formula list.
-    ohai title, Formatter.columns(formulae.sort)
+  def output_dump_formula_or_cask_report(title, formulae_or_casks)
+    return if formulae_or_casks.blank?
+
+    ohai title, Formatter.columns(formulae_or_casks.sort)
   end
 
   def installed?(formula)
     (HOMEBREW_CELLAR/formula.split("/").last).directory?
   end
 
+  def outdated?(formula)
+    Formula[formula].outdated?
+  rescue FormulaUnavailableError
+    false
+  end
+
   def cask_installed?(cask)
     (Cask::Caskroom.path/cask).directory?
+  end
+
+  def cask_outdated?(cask)
+    Cask::CaskLoader.load(cask).outdated?
+  rescue Cask::CaskError
+    false
   end
 end

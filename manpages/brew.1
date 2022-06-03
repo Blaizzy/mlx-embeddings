@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "May 2022" "Homebrew" "brew"
+.TH "BREW" "1" "June 2022" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS (or Linux)
@@ -3186,13 +3186,7 @@ Use this path as the temporary directory for building packages\. Changing this m
 \fBHOMEBREW_UPDATE_REPORT_ALL_FORMULAE\fR
 .
 .br
-If set, \fBbrew update\fR lists updates to all software\.
-.
-.TP
-\fBHOMEBREW_UPDATE_REPORT_VERSION_CHANGED_FORMULAE\fR
-.
-.br
-If set, \fBbrew update\fR only lists updates to formulae with differing versions\. Note this is slower than the default behaviour\.
+If set, \fBbrew update\fR lists changes to all formulae and cask files rather than only showing when they are installed or outdated\.
 .
 .TP
 \fBHOMEBREW_UPDATE_TO_TAG\fR

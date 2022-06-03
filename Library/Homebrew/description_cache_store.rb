@@ -48,13 +48,13 @@ class DescriptionCacheStore < CacheStore
     return populate_if_empty! if database.empty?
     return if report.empty?
 
-    renamings   = report.select_formula(:R)
-    alterations = report.select_formula(:A) +
-                  report.select_formula(:M) +
+    renamings   = report.select_formula_or_cask(:R)
+    alterations = report.select_formula_or_cask(:A) +
+                  report.select_formula_or_cask(:M) +
                   renamings.map(&:last)
 
     update_from_formula_names!(alterations)
-    delete_from_formula_names!(report.select_formula(:D) +
+    delete_from_formula_names!(report.select_formula_or_cask(:D) +
                                renamings.map(&:first))
   end
 
@@ -114,11 +114,11 @@ class CaskDescriptionCacheStore < DescriptionCacheStore
     return populate_if_empty! if database.empty?
     return if report.empty?
 
-    alterations = report.select_formula(:AC) +
-                  report.select_formula(:MC)
+    alterations = report.select_formula_or_cask(:AC) +
+                  report.select_formula_or_cask(:MC)
 
     update_from_cask_tokens!(alterations)
-    delete_from_cask_tokens!(report.select_formula(:DC))
+    delete_from_cask_tokens!(report.select_formula_or_cask(:DC))
   end
 
   # Use an array of cask tokens to update the {CaskDescriptionCacheStore}.

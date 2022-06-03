@@ -52,39 +52,39 @@ describe "brew update-report" do
     specify "without Formula changes" do
       perform_update("update_git_diff_output_without_formulae_changes")
 
-      expect(hub.select_formula(:M)).to be_empty
-      expect(hub.select_formula(:A)).to be_empty
-      expect(hub.select_formula(:D)).to be_empty
+      expect(hub.select_formula_or_cask(:M)).to be_empty
+      expect(hub.select_formula_or_cask(:A)).to be_empty
+      expect(hub.select_formula_or_cask(:D)).to be_empty
     end
 
     specify "with Formula changes" do
       perform_update("update_git_diff_output_with_formulae_changes")
 
-      expect(hub.select_formula(:M)).to eq(%w[xar yajl])
-      expect(hub.select_formula(:A)).to eq(%w[antiword bash-completion ddrescue dict lua])
+      expect(hub.select_formula_or_cask(:M)).to eq(%w[xar yajl])
+      expect(hub.select_formula_or_cask(:A)).to eq(%w[antiword bash-completion ddrescue dict lua])
     end
 
     specify "with removed Formulae" do
       perform_update("update_git_diff_output_with_removed_formulae")
 
-      expect(hub.select_formula(:D)).to eq(%w[libgsasl])
+      expect(hub.select_formula_or_cask(:D)).to eq(%w[libgsasl])
     end
 
     specify "with changed file type" do
       perform_update("update_git_diff_output_with_changed_filetype")
 
-      expect(hub.select_formula(:M)).to eq(%w[elixir])
-      expect(hub.select_formula(:A)).to eq(%w[libbson])
-      expect(hub.select_formula(:D)).to eq(%w[libgsasl])
+      expect(hub.select_formula_or_cask(:M)).to eq(%w[elixir])
+      expect(hub.select_formula_or_cask(:A)).to eq(%w[libbson])
+      expect(hub.select_formula_or_cask(:D)).to eq(%w[libgsasl])
     end
 
     specify "with renamed Formula" do
       allow(tap).to receive(:formula_renames).and_return("cv" => "progress")
       perform_update("update_git_diff_output_with_formula_rename")
 
-      expect(hub.select_formula(:A)).to be_empty
-      expect(hub.select_formula(:D)).to be_empty
-      expect(hub.select_formula(:R)).to eq([["cv", "progress"]])
+      expect(hub.select_formula_or_cask(:A)).to be_empty
+      expect(hub.select_formula_or_cask(:D)).to be_empty
+      expect(hub.select_formula_or_cask(:R)).to eq([["cv", "progress"]])
     end
 
     context "when updating a Tap other than the core Tap" do
@@ -101,34 +101,34 @@ describe "brew update-report" do
       specify "with restructured Tap" do
         perform_update("update_git_diff_output_with_restructured_tap")
 
-        expect(hub.select_formula(:A)).to be_empty
-        expect(hub.select_formula(:D)).to be_empty
-        expect(hub.select_formula(:R)).to be_empty
+        expect(hub.select_formula_or_cask(:A)).to be_empty
+        expect(hub.select_formula_or_cask(:D)).to be_empty
+        expect(hub.select_formula_or_cask(:R)).to be_empty
       end
 
       specify "with renamed Formula and restructured Tap" do
         allow(tap).to receive(:formula_renames).and_return("xchat" => "xchat2")
         perform_update("update_git_diff_output_with_formula_rename_and_restructuring")
 
-        expect(hub.select_formula(:A)).to be_empty
-        expect(hub.select_formula(:D)).to be_empty
-        expect(hub.select_formula(:R)).to eq([%w[foo/bar/xchat foo/bar/xchat2]])
+        expect(hub.select_formula_or_cask(:A)).to be_empty
+        expect(hub.select_formula_or_cask(:D)).to be_empty
+        expect(hub.select_formula_or_cask(:R)).to eq([%w[foo/bar/xchat foo/bar/xchat2]])
       end
 
       specify "with simulated 'homebrew/php' restructuring" do
         perform_update("update_git_diff_simulate_homebrew_php_restructuring")
 
-        expect(hub.select_formula(:A)).to be_empty
-        expect(hub.select_formula(:D)).to be_empty
-        expect(hub.select_formula(:R)).to be_empty
+        expect(hub.select_formula_or_cask(:A)).to be_empty
+        expect(hub.select_formula_or_cask(:D)).to be_empty
+        expect(hub.select_formula_or_cask(:R)).to be_empty
       end
 
       specify "with Formula changes" do
         perform_update("update_git_diff_output_with_tap_formulae_changes")
 
-        expect(hub.select_formula(:A)).to eq(%w[foo/bar/lua])
-        expect(hub.select_formula(:M)).to eq(%w[foo/bar/git])
-        expect(hub.select_formula(:D)).to be_empty
+        expect(hub.select_formula_or_cask(:A)).to eq(%w[foo/bar/lua])
+        expect(hub.select_formula_or_cask(:M)).to eq(%w[foo/bar/git])
+        expect(hub.select_formula_or_cask(:D)).to be_empty
       end
     end
   end
