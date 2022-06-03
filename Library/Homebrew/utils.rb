@@ -248,6 +248,16 @@ module Kernel
     end
   end
 
+  def pretty_outdated(f)
+    if !$stdout.tty?
+      f.to_s
+    elsif Homebrew::EnvConfig.no_emoji?
+      Formatter.error("#{Tty.bold}#{f} (outdated)#{Tty.reset}")
+    else
+      "#{Tty.bold}#{f} #{Formatter.warning("⚠")}#{Tty.reset}"
+    end
+  end
+
   def pretty_uninstalled(f)
     if !$stdout.tty?
       f.to_s
