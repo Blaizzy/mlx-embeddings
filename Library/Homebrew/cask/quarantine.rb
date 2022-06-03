@@ -27,6 +27,11 @@ module Cask
     end
     private :xattr
 
+    def swift_target_args
+      ["-target", "#{Hardware::CPU.arch}-apple-macosx#{MacOS.version}"]
+    end
+    private :swift_target_args
+
     sig { returns(Symbol) }
     def check_quarantine_support
       odebug "Checking quarantine support"
@@ -39,7 +44,7 @@ module Cask
         :no_swift
       else
         api_check = system_command(swift,
-                                   args:         [QUARANTINE_SCRIPT],
+                                   args:         [*swift_target_args, QUARANTINE_SCRIPT],
                                    print_stderr: false)
 
         case api_check.exit_status
@@ -116,6 +121,7 @@ module Cask
 
       quarantiner = system_command(swift,
                                    args:         [
+                                     *swift_target_args,
                                      QUARANTINE_SCRIPT,
                                      download_path,
                                      cask.url.to_s,
