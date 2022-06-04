@@ -2574,8 +2574,6 @@ module Homebrew::EnvConfig
 
   def self.update_report_all_formulae?(); end
 
-  def self.update_report_version_changed_formulae?(); end
-
   def self.update_to_tag?(); end
 
   def self.verbose?(); end
