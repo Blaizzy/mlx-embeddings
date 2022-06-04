@@ -681,7 +681,7 @@ Generally we'd rather you were specific about what files or directories need to 
 | **`fish_function`**   | `#{prefix}/share/fish/vendor_functions`        | `/usr/local/Cellar/foo/0.1/share/fish/vendor_functions`     |
 | **`bash_completion`** | `#{prefix}/etc/bash_completion.d`              | `/usr/local/Cellar/foo/0.1/etc/bash_completion.d`           |
 | **`zsh_completion`**  | `#{prefix}/share/zsh/site-functions`           | `/usr/local/Cellar/foo/0.1/share/zsh/site-functions`        |
-| **`zsh_completion`**  | `#{prefix}/share/fish/vendor_completions.d`    | `/usr/local/Cellar/foo/0.1/share/fish/vendor_completions.d` |
+| **`fish_completion`** | `#{prefix}/share/fish/vendor_completions.d`    | `/usr/local/Cellar/foo/0.1/share/fish/vendor_completions.d` |
 | **`etc`**             | `#{HOMEBREW_PREFIX}/etc`                       | `/usr/local/etc`                                            |
 | **`var`**             | `#{HOMEBREW_PREFIX}/var`                       | `/usr/local/var`                                            |
 | **`buildpath`**       | A temporary directory somewhere on your system | `/private/tmp/[formula-name]-0q2b/[formula-name]`           |
