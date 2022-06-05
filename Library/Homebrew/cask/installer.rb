@@ -403,7 +403,10 @@ module Cask
     def uninstall
       oh1 "Uninstalling Cask #{Formatter.identifier(@cask)}"
       uninstall_artifacts(clear: true)
-      remove_config_file if !reinstall? && !upgrade?
+      if !reinstall? && !upgrade?
+        remove_download_sha
+        remove_config_file
+      end
       purge_versioned_files
       purge_caskroom_path if force?
     end
@@ -411,6 +414,10 @@ module Cask
     def remove_config_file
       FileUtils.rm_f @cask.config_path
       @cask.config_path.parent.rmdir_if_possible
+    end
+
+    def remove_download_sha
+      FileUtils.rm_f @cask.download_sha_path if @cask.download_sha_path.exist?
     end
 
     def start_upgrade
