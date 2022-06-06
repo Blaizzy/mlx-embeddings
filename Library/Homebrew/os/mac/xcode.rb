@@ -23,6 +23,7 @@ module OS
       def latest_version(macos: MacOS.version)
         latest_stable = "13.4"
         case macos
+        when "13" then "14.0"
         when "12" then latest_stable
         when "11" then "13.2.1"
         when "10.15" then "12.4"
@@ -45,6 +46,7 @@ module OS
       sig { returns(String) }
       def minimum_version
         case MacOS.version
+        when "13" then "14.0"
         when "12" then "13.1"
         when "11" then "12.2"
         when "10.15" then "11.0"
@@ -243,6 +245,7 @@ module OS
         when "12.0.0" then "12.4"
         when "12.0.5" then "12.5.1"
         when "13.0.0" then "13.2.1"
+        when "14.0.0" then "14.0"
         else               "13.4"
         end
       end
@@ -340,6 +343,7 @@ module OS
       sig { returns(String) }
       def latest_clang_version
         case MacOS.version
+        when "13"    then "1400.0.17.3.1"
         when "12"    then "1316.0.21.2.5"
         when "11"    then "1300.0.29.30"
         when "10.15" then "1200.0.32.29"
@@ -356,6 +360,7 @@ module OS
       sig { returns(String) }
       def minimum_version
         case MacOS.version
+        when "13" then "14.0.0"
         when "12" then "13.0.0"
         when "11" then "12.5.0"
         when "10.15" then "11.0.0"

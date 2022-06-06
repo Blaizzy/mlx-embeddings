@@ -205,12 +205,19 @@ module Homebrew
       end
 
       def check_ruby_version
-        return if RUBY_VERSION == HOMEBREW_REQUIRED_RUBY_VERSION
+        # TODO: update portable-ruby to 2.6.9 when Ventura reaches RC
+        required_version = if MacOS.version >= :ventura &&
+                              ENV["HOMEBREW_RUBY_PATH"].to_s.exclude?("/vendor/portable-ruby/")
+          "2.6.9"
+        else
+          HOMEBREW_REQUIRED_RUBY_VERSION
+        end
+        return if RUBY_VERSION == required_version
         return if Homebrew::EnvConfig.developer? && OS::Mac.version.prerelease?
 
         <<~EOS
           Ruby version #{RUBY_VERSION} is unsupported on macOS #{MacOS.version}. Homebrew
-          is developed and tested on Ruby #{HOMEBREW_REQUIRED_RUBY_VERSION}, and may not work correctly
+          is developed and tested on Ruby #{required_version}, and may not work correctly
           on other Rubies. Patches are accepted as long as they don't cause breakage
           on supported Rubies.
         EOS
