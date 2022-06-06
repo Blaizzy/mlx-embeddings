@@ -199,7 +199,7 @@ module Utils
         return false if install_node.blank?
 
         install_node.each_node.any? do |node|
-          node.send_type? && node.receiver.const_name == "ENV" && node.method_name == :runtime_cpu_detection
+          node.send_type? && node.receiver&.const_name == "ENV" && node.method_name == :runtime_cpu_detection
         end
       end
 
