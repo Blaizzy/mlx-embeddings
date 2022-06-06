@@ -32,6 +32,7 @@ module Homebrew
     cd HOMEBREW_REPOSITORY
     pager = if Homebrew::EnvConfig.bat?
       ENV["BAT_CONFIG_PATH"] = Homebrew::EnvConfig.bat_config_path
+      ENV["BAT_THEME"] = Homebrew::EnvConfig.bat_theme
       ensure_formula_installed!(
         "bat",
         reason:           "displaying <formula>/<cask> source",

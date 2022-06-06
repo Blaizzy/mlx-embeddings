@@ -44,6 +44,10 @@ module Homebrew
         description:  "Use this as the `bat` configuration file.",
         default_text: "`$HOME/.config/bat/config`.",
       },
+      HOMEBREW_BAT_THEME:                        {
+        description:  "Use this as the `bat` theme for syntax highlighting.",
+        default_text: "`$BAT_THEME`.",
+      },
       HOMEBREW_BOOTSNAP:                         {
         description: "If set, use Bootsnap to speed up repeated `brew` calls. "\
                      "A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).",

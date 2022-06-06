@@ -1953,6 +1953,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* `$HOME/.config/bat/config`.
 
+- `HOMEBREW_BAT_THEME`
+  <br>Use this as the `bat` theme for syntax highlighting.
+
+  *Default:* `$BAT_THEME`.
+
 - `HOMEBREW_BOOTSNAP`
   <br>If set, use Bootsnap to speed up repeated `brew` calls. A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).
 
