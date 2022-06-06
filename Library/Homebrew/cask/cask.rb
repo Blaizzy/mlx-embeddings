@@ -173,13 +173,11 @@ module Cask
         version
       end
 
-      if greedy || greedy_latest || (greedy_auto_updates && auto_updates)
-        if latest_version.latest?
-          return versions if outdated_download_sha?
+      if latest_version.latest?
+        return versions if (greedy || greedy_latest) && outdated_download_sha?
 
-          return []
-        end
-      elsif auto_updates
+        return []
+      elsif auto_updates && !greedy && !greedy_auto_updates
         return []
       end
 

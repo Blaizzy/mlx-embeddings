@@ -134,7 +134,7 @@ describe Cask::Cask, :cask do
       shared_examples ":latest cask" do |greedy, outdated_sha, tap_version, expectations|
         expectations.each do |installed_version, expected_output|
           context "when versions #{installed_version} are installed and the " \
-                  "tap version is #{tap_version}, #{"not " unless greedy}greedy" \
+                  "tap version is #{tap_version}, #{"not " unless greedy}greedy " \
                   "and sha is #{"not " unless outdated_sha}outdated" do
             subject { cask.outdated_versions(greedy: greedy) }
 
@@ -160,7 +160,7 @@ describe Cask::Cask, :cask do
 
       describe "numbered version installed, :latest version in tap" do
         include_examples ":latest cask", false, false, "latest",
-                         ["1.2.3"] => ["1.2.3"]
+                         ["1.2.3"] => []
         include_examples ":latest cask", true, false, "latest",
                          ["1.2.3"] => []
         include_examples ":latest cask", true, true, "latest",
