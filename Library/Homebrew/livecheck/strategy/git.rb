@@ -52,23 +52,22 @@ module Homebrew
         # @return [Hash]
         sig { params(url: String, regex: T.nilable(Regexp)).returns(T::Hash[Symbol, T.untyped]) }
         def self.tag_info(url, regex = nil)
-          # Open3#capture3 is used here because we need to capture stderr
-          # output and handle it in an appropriate manner. Alternatives like
-          # SystemCommand always print errors (as well as debug output) and
-          # don't meet the same goals.
-          stdout_str, stderr_str, _status = Open3.capture3(
-            { "GIT_TERMINAL_PROMPT" => "0" }, "git", "ls-remote", "--tags", url
+          stdout, stderr, _status = system_command(
+            "git",
+            args:         ["ls-remote", "--tags", url],
+            env:          { "GIT_TERMINAL_PROMPT" => "0" },
+            print_stdout: false,
+            print_stderr: false,
+            debug:        false,
+            verbose:      false,
           )
 
           tags_data = { tags: [] }
-          tags_data[:messages] = stderr_str.split("\n") if stderr_str.present?
-          return tags_data if stdout_str.blank?
+          tags_data[:messages] = stderr.split("\n") if stderr.present?
+          return tags_data if stdout.blank?
 
-          # Isolate tag strings by removing leading/trailing text
-          stdout_str.gsub!(%r{^.*\trefs/tags/}, "")
-          stdout_str.gsub!("^{}", "")
-
-          tags = stdout_str.split("\n").uniq.sort
+          # Isolate tag strings and filter by regex
+          tags = stdout.gsub(%r{^.*\trefs/tags/|\^{}$}, "").split("\n").uniq.sort
           tags.select! { |t| t =~ regex } if regex
           tags_data[:tags] = tags
 
