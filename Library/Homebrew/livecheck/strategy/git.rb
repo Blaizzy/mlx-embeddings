@@ -101,13 +101,7 @@ module Homebrew
             return Strategy.handle_block_return(block_return_value)
           end
 
-          tags_only_debian = tags.all? { |tag| tag.start_with?("debian/") }
-
           tags.map do |tag|
-            # Skip tag if it has a 'debian/' prefix and upstream does not do
-            # only 'debian/' prefixed tags
-            next if tag =~ %r{^debian/} && !tags_only_debian
-
             if regex
               # Use the first capture group (the version)
               tag.scan(regex).first&.first
