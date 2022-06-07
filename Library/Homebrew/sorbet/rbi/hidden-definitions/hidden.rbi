@@ -2452,6 +2452,8 @@ module Homebrew::EnvConfig
 
   def self.bat_config_path(); end
 
+  def self.bat_theme(); end
+
   def self.bootsnap?(); end
 
   def self.bottle_domain(); end
