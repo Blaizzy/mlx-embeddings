@@ -148,7 +148,7 @@ module Homebrew
         generate_banner
       end
 
-      def switch(*names, description: nil, replacement: nil, env: nil, required_for: nil, depends_on: nil,
+      def switch(*names, description: nil, replacement: nil, env: nil, depends_on: nil,
                  method: :on, hidden: false)
         global_switch = names.first.is_a?(Symbol)
         return if global_switch
@@ -167,7 +167,7 @@ module Homebrew
         end
 
         names.each do |name|
-          set_constraints(name, required_for: required_for, depends_on: depends_on)
+          set_constraints(name, depends_on: depends_on)
         end
 
         env_value = env?(env)
@@ -204,8 +204,7 @@ module Homebrew
         end
       end
 
-      def flag(*names, description: nil, replacement: nil, required_for: nil,
-               depends_on: nil, hidden: false)
+      def flag(*names, description: nil, replacement: nil, depends_on: nil, hidden: false)
         required, flag_type = if names.any? { |name| name.end_with? "=" }
           [OptionParser::REQUIRED_ARGUMENT, :required_flag]
         else
@@ -226,7 +225,7 @@ module Homebrew
         end
 
         names.each do |name|
-          set_constraints(name, required_for: required_for, depends_on: depends_on)
+          set_constraints(name, depends_on: depends_on)
         end
       end
 
@@ -506,31 +505,25 @@ module Homebrew
         Formatter.format_help_text(desc, width: OPTION_DESC_WIDTH).split("\n")
       end
 
-      def set_constraints(name, depends_on:, required_for:)
-        secondary = option_to_name(name)
-        unless required_for.nil?
-          primary = option_to_name(required_for)
-          @constraints << [primary, secondary, :mandatory]
-        end
-
+      def set_constraints(name, depends_on:)
         return if depends_on.nil?
 
         primary = option_to_name(depends_on)
-        @constraints << [primary, secondary, :optional]
+        secondary = option_to_name(name)
+        @constraints << [primary, secondary]
       end
 
       def check_constraints
-        @constraints.each do |primary, secondary, constraint_type|
+        @constraints.each do |primary, secondary|
           primary_passed = option_passed?(primary)
           secondary_passed = option_passed?(secondary)
+
+          next if !secondary_passed || (primary_passed && secondary_passed)
 
           primary = name_to_option(primary)
           secondary = name_to_option(secondary)
 
-          if :mandatory.equal?(constraint_type) && primary_passed && !secondary_passed
-            raise OptionConstraintError.new(primary, secondary)
-          end
-          raise OptionConstraintError.new(primary, secondary, missing: true) if secondary_passed && !primary_passed
+          raise OptionConstraintError.new(primary, secondary, missing: true)
         end
       end
 
