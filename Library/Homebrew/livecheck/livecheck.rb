@@ -247,7 +247,7 @@ module Homebrew
         if skip_info.present?
           next skip_info if json
 
-          SkipConditions.print_skip_information(skip_info) unless quiet
+          SkipConditions.print_skip_information(skip_info) if !newer_only && !quiet
           next
         end
 
