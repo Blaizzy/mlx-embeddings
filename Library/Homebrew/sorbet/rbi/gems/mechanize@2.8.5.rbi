@@ -689,6 +689,7 @@ class Mechanize::HTTP::Agent
   def webrobots; end
 end
 
+Mechanize::HTTP::Agent::COOKIE_HEADERS = T.let(T.unsafe(nil), Array)
 Mechanize::HTTP::Agent::CREDENTIAL_HEADERS = T.let(T.unsafe(nil), Array)
 Mechanize::HTTP::Agent::POST_HEADERS = T.let(T.unsafe(nil), Array)
 Mechanize::HTTP::Agent::RobotsKey = T.let(T.unsafe(nil), Symbol)
