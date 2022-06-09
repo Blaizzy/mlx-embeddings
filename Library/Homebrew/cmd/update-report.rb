@@ -542,7 +542,7 @@ class ReporterHub
   def dump(updated_formula_report: true)
     # Key Legend: Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
 
-    unless Homebrew::EnvConfig.update_report_all_formulae?
+    if Homebrew::EnvConfig.update_report_all_formulae?
       dump_formula_or_cask_report :A, "New Formulae"
       dump_formula_or_cask_report :AC, "New Casks"
       dump_formula_or_cask_report :R, "Renamed Formulae"
@@ -617,15 +617,13 @@ class ReporterHub
       # Format list items of formulae
       case key
       when :R
-        if report_all
-          name = pretty_installed(name) if installed?(name)
-          new_name = pretty_installed(new_name) if installed?(new_name)
-          "#{name} -> #{new_name}"
-        end
+        name = pretty_installed(name) if installed?(name)
+        new_name = pretty_installed(new_name) if installed?(new_name)
+        "#{name} -> #{new_name}"
       when :A
-        name if report_all && !installed?(name)
+        name unless installed?(name)
       when :AC
-        name.split("/").last if report_all && !cask_installed?(name)
+        name.split("/").last unless cask_installed?(name)
       when :MC
         name = name.split("/").last
         if cask_installed?(name)
