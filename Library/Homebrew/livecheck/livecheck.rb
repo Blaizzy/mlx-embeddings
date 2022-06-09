@@ -245,9 +245,9 @@ module Homebrew
 
         skip_info ||= SkipConditions.skip_information(formula_or_cask, full_name: use_full_name, verbose: verbose)
         if skip_info.present?
-          next skip_info if json
+          next skip_info if json && !newer_only
 
-          SkipConditions.print_skip_information(skip_info) unless quiet
+          SkipConditions.print_skip_information(skip_info) if !newer_only && !quiet
           next
         end
 
@@ -285,6 +285,7 @@ module Homebrew
         if latest.blank?
           no_versions_msg = "Unable to get versions"
           raise Livecheck::Error, no_versions_msg unless json
+          next if quiet
 
           next version_info if version_info.is_a?(Hash) && version_info[:status] && version_info[:messages]
 
@@ -341,7 +342,7 @@ module Homebrew
 
         if json
           progress&.increment
-          status_hash(formula_or_cask, "error", [e.to_s], full_name: use_full_name, verbose: verbose)
+          status_hash(formula_or_cask, "error", [e.to_s], full_name: use_full_name, verbose: verbose) unless quiet
         elsif !quiet
           name = formula_or_cask_name(formula_or_cask, full_name: use_full_name)
           name += " (cask)" if ambiguous_casks.include?(formula_or_cask)
