@@ -4,8 +4,8 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The {ElectronBuilder} strategy fetches content at a URL and parses
-      # it as an electron-builder appcast in YAML format.
+      # The {ElectronBuilder} strategy fetches content at a URL and parses it
+      # as an electron-builder appcast in YAML format.
       #
       # This strategy is not applied automatically and it's necessary to use
       # `strategy :electron_builder` in a `livecheck` block to apply it.
@@ -35,6 +35,7 @@ module Homebrew
         # Parses YAML text and identifies versions in it.
         #
         # @param content [String] the YAML text to parse and check
+        # @param regex [Regexp, nil] a regex for use in a strategy block
         # @return [Array]
         sig {
           params(

@@ -6,8 +6,8 @@ require "bundle_version"
 module Homebrew
   module Livecheck
     module Strategy
-      # The {Sparkle} strategy fetches content at a URL and parses
-      # it as a Sparkle appcast in XML format.
+      # The {Sparkle} strategy fetches content at a URL and parses it as a
+      # Sparkle appcast in XML format.
       #
       # This strategy is not applied automatically and it's necessary to use
       # `strategy :sparkle` in a `livecheck` block to apply it.
@@ -60,7 +60,7 @@ module Homebrew
           delegate nice_version: :bundle_version
         end
 
-        # Identify version information from a Sparkle appcast.
+        # Identifies version information from a Sparkle appcast.
         #
         # @param content [String] the text of the Sparkle appcast
         # @return [Item, nil]
@@ -152,9 +152,12 @@ module Homebrew
           end.compact
         end
 
-        # Identify versions from content
+        # Uses `#items_from_content` to identify versions from the Sparkle
+        # appcast content or, if a block is provided, passes the content to
+        # the block to handle matching.
         #
-        # @param content [String] the content to pull version information from
+        # @param content [String] the content to check
+        # @param regex [Regexp, nil] a regex for use in a strategy block
         # @return [Array]
         sig {
           params(
@@ -186,6 +189,10 @@ module Homebrew
         end
 
         # Checks the content at the URL for new versions.
+        #
+        # @param url [String] the URL of the content to check
+        # @param regex [Regexp, nil] a regex for use in a strategy block
+        # @return [Hash]
         sig {
           params(
             url:     String,
