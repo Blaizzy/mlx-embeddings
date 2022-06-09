@@ -199,7 +199,7 @@ module Homebrew
             raise ArgumentError, "#{T.must(name).demodulize} only supports a regex when using a `strategy` block"
           end
 
-          match_data = { matches: {}, url: url }
+          match_data = { matches: {}, regex: regex, url: url }
 
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)

@@ -96,7 +96,7 @@ module Homebrew
           end
           raise ArgumentError, "The #{T.must(name).demodulize} strategy only supports casks." unless T.unsafe(cask)
 
-          match_data = { matches: {} }
+          match_data = { matches: {}, regex: regex }
 
           unversioned_cask_checker = UnversionedCaskChecker.new(cask)
           items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
