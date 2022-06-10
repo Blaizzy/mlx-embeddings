@@ -12,7 +12,7 @@ describe Homebrew::Livecheck::Strategy::Gnome do
   let(:generated) {
     {
       url:   "https://download.gnome.org/sources/abc/cache.json",
-      regex: /abc-(\d+(?:\.\d+)+)\.t/i,
+      regex: /abc-(\d+(?:\.\d+)*)\.t/i,
     }
   }
 
