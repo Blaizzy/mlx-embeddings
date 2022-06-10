@@ -64,7 +64,7 @@ module Homebrew
 
   module_function
 
-  BOTTLE_BLOCK_REGEX = /  bottle do.+?end\n\n/m.freeze
+  BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m.freeze
 
   sig { returns(CLI::Parser) }
   def extract_args
