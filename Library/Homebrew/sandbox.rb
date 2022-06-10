@@ -35,6 +35,7 @@ class Sandbox
 
   def allow_write(path, options = {})
     add_rule allow: true, operation: "file-write*", filter: path_filter(path, options[:type])
+    add_rule allow: true, operation: "file-write-setugid", filter: path_filter(path, options[:type])
   end
 
   def deny_write(path, options = {})
