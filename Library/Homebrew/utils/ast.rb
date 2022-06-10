@@ -190,19 +190,6 @@ module Utils
         tree_rewriter.insert_after(preceding_expr, "\n#{stanza_text(name, value, indent: 2)}")
       end
 
-      sig { returns(T::Boolean) }
-      def include_runtime_cpu_detection?
-        install_node = children.find do |child|
-          (child.is_a? RuboCop::AST::DefNode) && child.method_name == :install
-        end
-
-        return false if install_node.blank?
-
-        install_node.each_node.any? do |node|
-          node.send_type? && node.receiver&.const_name == "ENV" && node.method_name == :runtime_cpu_detection
-        end
-      end
-
       private
 
       sig { returns(String) }
