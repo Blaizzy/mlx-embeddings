@@ -4,8 +4,8 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The {ElectronBuilder} strategy fetches content at a URL and parses
-      # it as an electron-builder appcast in YAML format.
+      # The {ElectronBuilder} strategy fetches content at a URL and parses it
+      # as an electron-builder appcast in YAML format.
       #
       # This strategy is not applied automatically and it's necessary to use
       # `strategy :electron_builder` in a `livecheck` block to apply it.
@@ -35,6 +35,7 @@ module Homebrew
         # Parses YAML text and identifies versions in it.
         #
         # @param content [String] the YAML text to parse and check
+        # @param regex [Regexp, nil] a regex for use in a strategy block
         # @return [Array]
         sig {
           params(
@@ -75,7 +76,7 @@ module Homebrew
             raise ArgumentError, "#{T.must(name).demodulize} only supports a regex when using a `strategy` block"
           end
 
-          match_data = { matches: {}, url: url }
+          match_data = { matches: {}, regex: regex, url: url }
 
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)

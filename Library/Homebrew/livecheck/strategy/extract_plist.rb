@@ -58,6 +58,7 @@ module Homebrew
         # {UnversionedCaskChecker} version information.
         #
         # @param items [Hash] a hash of `Item`s containing version information
+        # @param regex [Regexp, nil] a regex for use in a strategy block
         # @return [Array]
         sig {
           params(
@@ -81,6 +82,7 @@ module Homebrew
         # versions from `plist` files.
         #
         # @param cask [Cask::Cask] the cask to check for version information
+        # @param regex [Regexp, nil] a regex for use in a strategy block
         # @return [Hash]
         sig {
           params(
@@ -96,7 +98,7 @@ module Homebrew
           end
           raise ArgumentError, "The #{T.must(name).demodulize} strategy only supports casks." unless T.unsafe(cask)
 
-          match_data = { matches: {} }
+          match_data = { matches: {}, regex: regex }
 
           unversioned_cask_checker = UnversionedCaskChecker.new(cask)
           items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }
