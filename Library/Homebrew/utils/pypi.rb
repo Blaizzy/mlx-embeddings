@@ -57,7 +57,7 @@ module PyPI
       else
         "https://pypi.org/pypi/#{@name}/json"
       end
-      out, _, status = curl_output metadata_url, "--location"
+      out, _, status = curl_output metadata_url, "--location", "--fail"
 
       return unless status.success?
 
