@@ -82,6 +82,8 @@ module Homebrew
         # versions from `plist` files.
         #
         # @param cask [Cask::Cask] the cask to check for version information
+        # @param url [String, nil] an alternative URL to check for version
+        #   information
         # @param regex [Regexp, nil] a regex for use in a strategy block
         # @return [Hash]
         sig {
@@ -99,7 +101,7 @@ module Homebrew
           end
           raise ArgumentError, "The #{T.must(name).demodulize} strategy only supports casks." unless T.unsafe(cask)
 
-          match_data = { matches: {}, regex: regex }
+          match_data = { matches: {}, regex: regex, url: url }
 
           if url && url != cask.url.to_s
             cask_object_for_livecheck = Cask::Cask.new("livecheck-cask", config: cask.config) do
