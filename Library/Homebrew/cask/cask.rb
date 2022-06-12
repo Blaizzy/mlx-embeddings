@@ -130,7 +130,7 @@ module Cask
     end
 
     def checksumable?
-      url.using.blank? || url.using == :post
+      DownloadStrategyDetector.detect(url.to_s, url.using) <= AbstractFileDownloadStrategy
     end
 
     def download_sha_path
