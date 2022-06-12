@@ -103,14 +103,14 @@ module Homebrew
 
           match_data = { matches: {}, regex: regex, url: url }
 
-          if url && url != cask.url.to_s
-            cask_object_for_livecheck = Cask::Cask.new("livecheck-cask", config: cask.config) do
-              url url.to_s
-            end
-
-            unversioned_cask_checker = UnversionedCaskChecker.new(cask, livecheck_url: cask_object_for_livecheck)
+          unversioned_cask_checker = if url.present? && url != cask.url.to_s
+            # Create a copy of the `cask` that uses the `livecheck` block URL
+            cask_copy = Cask::CaskLoader.load(cask.full_name)
+            cask_copy.allow_reassignment = true
+            cask_copy.url { url }
+            UnversionedCaskChecker.new(cask_copy)
           else
-            unversioned_cask_checker = UnversionedCaskChecker.new(cask)
+            UnversionedCaskChecker.new(cask)
           end
 
           items = unversioned_cask_checker.all_versions.transform_values { |v| Item.new(bundle_version: v) }

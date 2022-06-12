@@ -112,7 +112,7 @@ module Cask
     def set_unique_stanza(stanza, should_return)
       return instance_variable_get("@#{stanza}") if should_return
 
-      if instance_variable_defined?("@#{stanza}")
+      if !@cask.allow_reassignment && instance_variable_defined?("@#{stanza}")
         raise CaskInvalidError.new(cask, "'#{stanza}' stanza may only appear once.")
       end
 
@@ -137,7 +137,7 @@ module Cask
 
         return unless default
 
-        unless @language_blocks.default.nil?
+        if !@cask.allow_reassignment && @language_blocks.default.present?
           raise CaskInvalidError.new(cask, "Only one default language may be defined.")
         end
 
@@ -294,7 +294,9 @@ module Cask
       @livecheck ||= Livecheck.new(self)
       return @livecheck unless block
 
-      raise CaskInvalidError.new(cask, "'livecheck' stanza may only appear once.") if @livecheckable
+      if !@cask.allow_reassignment && @livecheckable
+        raise CaskInvalidError.new(cask, "'livecheck' stanza may only appear once.")
+      end
 
       @livecheckable = true
       @livecheck.instance_eval(&block)

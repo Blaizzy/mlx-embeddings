@@ -20,7 +20,7 @@ module Cask
 
     attr_reader :token, :sourcefile_path, :source, :config, :default_config
 
-    attr_accessor :download
+    attr_accessor :download, :allow_reassignment
 
     def self.all
       Tap.flat_map(&:cask_files).map do |f|
@@ -38,11 +38,12 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, allow_reassignment: false, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
       @tap = tap
+      @allow_reassignment = allow_reassignment
       @block = block
 
       @default_config = config || Config.new

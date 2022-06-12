@@ -15,21 +15,15 @@ module Homebrew
 
     sig {  returns(Cask::Cask) }
     attr_reader :cask
-    attr_reader :livecheck_url
 
-    sig { params(cask: Cask::Cask, livecheck_url: T.nilable(Cask::Cask)).void }
-    def initialize(cask, livecheck_url: nil)
+    sig { params(cask: Cask::Cask).void }
+    def initialize(cask)
       @cask = cask
-      @livecheck_url = livecheck_url
     end
 
     sig { returns(Cask::Installer) }
     def installer
-      @installer ||= if livecheck_url
-        Cask::Installer.new(livecheck_url, verify_download_integrity: false)
-      else
-        Cask::Installer.new(cask, verify_download_integrity: false)
-      end
+      @installer ||= Cask::Installer.new(cask, verify_download_integrity: false)
     end
 
     sig { returns(T::Array[Cask::Artifact::App]) }
