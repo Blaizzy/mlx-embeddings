@@ -811,10 +811,13 @@ end
 # @api public
 class GitDownloadStrategy < VCSDownloadStrategy
   def initialize(url, name, version, **meta)
+    # Needs to be before the call to `super`, as the VCSDownloadStrategy's
+    # constructor calls `cache_tag` and sets the cache path.
+    @only_paths = meta[:only_paths]
+
     super
     @ref_type ||= :branch
     @ref ||= "master"
-    @only_paths = meta[:only_paths]
   end
 
   # @see AbstractDownloadStrategy#source_modified_time
@@ -837,7 +840,11 @@ class GitDownloadStrategy < VCSDownloadStrategy
 
   sig { returns(String) }
   def cache_tag
-    "git"
+    if partial_clone_sparse_checkout?
+      "git-sparse"
+    else
+      "git"
+    end
   end
 
   sig { returns(Integer) }
