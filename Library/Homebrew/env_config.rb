@@ -336,7 +336,7 @@ module Homebrew
       },
       HOMEBREW_UPDATE_REPORT_ALL_FORMULAE:       {
         description: "If set, `brew update` lists changes to all formulae and cask files rather than only showing " \
-                     "when they are installed or outdated.",
+                     "when they are new and not installed or outdated and installed.",
         boolean:     true,
       },
       HOMEBREW_UPDATE_TO_TAG:                    {

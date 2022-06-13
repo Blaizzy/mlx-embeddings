@@ -542,12 +542,9 @@ class ReporterHub
   def dump(updated_formula_report: true)
     report_all = Homebrew::EnvConfig.update_report_all_formulae?
 
-    if report_all
-      dump_new_formula_report
-      dump_new_cask_report
-      dump_renamed_formula_report
-    end
-
+    dump_new_formula_report
+    dump_new_cask_report
+    dump_renamed_formula_report if report_all
     dump_deleted_formula_report(report_all)
     dump_deleted_cask_report(report_all)
 
