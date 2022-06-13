@@ -13,6 +13,9 @@ module Zeitwerk
     include Helpers
     include Config
 
+    MUTEX = Mutex.new
+    private_constant :MUTEX
+
     # Maps absolute paths for which an autoload has been set ---and not
     # executed--- to their corresponding parent class or module and constant
     # name.
@@ -144,15 +147,16 @@ module Zeitwerk
         end
 
         to_unload.each do |cpath, (abspath, (parent, cname))|
-          # We have to check cdef? in this condition. Reason is, constants whose
-          # file does not define them have to be kept in to_unload as explained
-          # in the implementation of on_file_autoloaded.
-          #
-          # If the constant is not defined, on_unload should not be triggered
-          # for it.
-          if !on_unload_callbacks.empty? && cdef?(parent, cname)
-            value = parent.const_get(cname)
-            run_on_unload_callbacks(cpath, value, abspath)
+          unless on_unload_callbacks.empty?
+            begin
+              value = cget(parent, cname)
+            rescue ::NameError
+              # Perhaps the user deleted the constant by hand, or perhaps an
+              # autoload failed to define the expected constant but the user
+              # rescued the exception.
+            else
+              run_on_unload_callbacks(cpath, value, abspath)
+            end
           end
 
           unload_cref(parent, cname)
@@ -196,14 +200,12 @@ module Zeitwerk
     # @raise [Zeitwerk::Error]
     # @sig () -> void
     def reload
-      if reloading_enabled?
-        unload
-        recompute_ignored_paths
-        recompute_collapse_dirs
-        setup
-      else
-        raise ReloadingDisabledError, "can't reload, please call loader.enable_reloading before setup"
-      end
+      raise ReloadingDisabledError unless reloading_enabled?
+
+      unload
+      recompute_ignored_paths
+      recompute_collapse_dirs
+      setup
     end
 
     # Eager loads all files in the root directories, recursively. Files do not
@@ -236,7 +238,7 @@ module Zeitwerk
               if cref = autoloads[abspath]
                 cget(*cref)
               end
-            elsif dir?(abspath) && !root_dirs.key?(abspath)
+            elsif !root_dirs.key?(abspath)
               if collapse?(abspath)
                 queue << [namespace, abspath]
               else
@@ -289,10 +291,6 @@ module Zeitwerk
       # @sig #call | #debug | nil
       attr_accessor :default_logger
 
-      # @private
-      # @sig Mutex
-      attr_accessor :mutex
-
       # This is a shortcut for
       #
       #   require "zeitwerk"
@@ -304,10 +302,13 @@ module Zeitwerk
       # except that this method returns the same object in subsequent calls from
       # the same file, in the unlikely case the gem wants to be able to reload.
       #
-      # @sig () -> Zeitwerk::Loader
-      def for_gem
+      # This method returns a subclass of Zeitwerk::Loader, but the exact type
+      # is private, client code can only rely on the interface.
+      #
+      # @sig (bool) -> Zeitwerk::GemLoader
+      def for_gem(warn_on_extra_files: true)
         called_from = caller_locations(1, 1).first.path
-        Registry.loader_for_gem(called_from)
+        Registry.loader_for_gem(called_from, warn_on_extra_files: warn_on_extra_files)
       end
 
       # Broadcasts `eager_load` to all loaders.
@@ -326,8 +327,6 @@ module Zeitwerk
       end
     end
 
-    self.mutex = Mutex.new
-
     private # -------------------------------------------------------------------------------------
 
     # @sig (String, Module) -> void
@@ -338,7 +337,7 @@ module Zeitwerk
             basename.delete_suffix!(".rb")
             cname = inflector.camelize(basename, abspath).to_sym
             autoload_file(parent, cname, abspath)
-          elsif dir?(abspath)
+          else
             # In a Rails application, `app/models/concerns` is a subdirectory of
             # `app/models`, but both of them are root directories.
             #
@@ -466,7 +465,7 @@ module Zeitwerk
 
     # @sig (String) -> void
     def raise_if_conflicting_directory(dir)
-      self.class.mutex.synchronize do
+      MUTEX.synchronize do
         Registry.loaders.each do |loader|
           next if loader == self
           next if loader.ignores?(dir)
