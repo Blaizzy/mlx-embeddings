@@ -34,7 +34,7 @@ module Homebrew
       switch "--linux-wheezy",
              description: "Use Debian Wheezy container for building the bottle on Linux."
 
-      conflicts "--macos", "--linux", "--linux-self-hosted"
+      conflicts "--linux", "--linux-self-hosted"
       named_args :formula, min: 1
     end
   end
@@ -47,8 +47,10 @@ module Homebrew
     ref = "master"
     workflow = args.workflow || "dispatch-build-bottle.yml"
 
-    runners = if (macos = args.macos&.compact_blank) && macos.present?
-      macos.map do |element|
+    runners = []
+
+    if (macos = args.macos&.compact_blank) && macos.present?
+      runners += macos.map do |element|
         # We accept runner name syntax (11-arm64) or bottle syntax (arm64_big_sur)
         os, arch = element.yield_self do |s|
           tag = Utils::Bottles::Tag.from_symbol(s.to_sym)
@@ -64,13 +66,15 @@ module Homebrew
           os.to_s
         end
       end
-    elsif args.linux?
-      ["ubuntu-latest"]
-    elsif args.linux_self_hosted?
-      ["linux-self-hosted-1"]
-    else
-      raise UsageError, "Must specify --macos or --linux or --linux-self-hosted option"
     end
+
+    if args.linux?
+      runners << "ubuntu-latest"
+    elsif args.linux_self_hosted?
+      runners << "linux-self-hosted-1"
+    end
+
+    raise UsageError, "Must specify --macos or --linux or --linux-self-hosted option" if runners.empty?
 
     args.named.to_resolved_formulae.each do |formula|
       # Required inputs

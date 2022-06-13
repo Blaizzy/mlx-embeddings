@@ -744,10 +744,10 @@ _brew_dispatch_build_bottle() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--issue[If specified, post a comment to this issue number if the job fails]' \
-    '(--macos --linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
-    '(--macos --linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
+    '(--linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
+    '(--linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
     '--linux-wheezy[Use Debian Wheezy container for building the bottle on Linux]' \
-    '(--linux --linux-self-hosted)--macos[Version(s) of macOS the bottle should be built for]' \
+    '--macos[Version(s) of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--timeout[Build timeout (in minutes, default: 60)]' \
