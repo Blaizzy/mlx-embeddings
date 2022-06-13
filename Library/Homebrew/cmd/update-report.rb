@@ -540,30 +540,30 @@ class ReporterHub
   delegate empty?: :@hash
 
   def dump(updated_formula_report: true)
-    # Key Legend: Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
+    report_all = Homebrew::EnvConfig.update_report_all_formulae?
 
-    unless Homebrew::EnvConfig.update_report_all_formulae?
-      dump_formula_or_cask_report :A, "New Formulae"
-      dump_formula_or_cask_report :AC, "New Casks"
-      dump_formula_or_cask_report :R, "Renamed Formulae"
+    if report_all
+      dump_new_formula_report
+      dump_new_cask_report
+      dump_renamed_formula_report
     end
 
-    dump_formula_or_cask_report :D, "Deleted Formulae"
-    dump_formula_or_cask_report :DC, "Deleted Casks"
+    dump_deleted_formula_report(report_all)
+    dump_deleted_cask_report(report_all)
 
     outdated_formulae = nil
     outdated_casks = nil
 
-    if updated_formula_report && Homebrew::EnvConfig.update_report_all_formulae?
-      dump_formula_or_cask_report :M, "Modified Formulae"
-      dump_formula_or_cask_report :MC, "Modified Casks"
+    if updated_formula_report && report_all
+      dump_modified_formula_report
+      dump_modified_cask_report
     elsif updated_formula_report
       outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
       output_dump_formula_or_cask_report "Outdated Formulae", outdated_formulae
 
       outdated_casks = Cask::Caskroom.casks.select(&:outdated?).map(&:token)
       output_dump_formula_or_cask_report "Outdated Casks", outdated_casks
-    elsif Homebrew::EnvConfig.update_report_all_formulae?
+    elsif report_all
       if (changed_formulae = select_formula_or_cask(:M).count) && changed_formulae.positive?
         ohai "Modified Formulae", "Modified #{changed_formulae} #{"formula".pluralize(changed_formulae)}."
       end
@@ -610,62 +610,88 @@ class ReporterHub
 
   private
 
-  def dump_formula_or_cask_report(key, title)
-    report_all = Homebrew::EnvConfig.update_report_all_formulae?
+  def dump_new_formula_report
+    formulae = select_formula_or_cask(:A).sort.map do |name|
+      name unless installed?(name)
+    end
 
-    formulae_or_casks = select_formula_or_cask(key).sort.map do |name, new_name|
-      # Format list items of formulae
-      case key
-      when :R
-        if report_all
-          name = pretty_installed(name) if installed?(name)
-          new_name = pretty_installed(new_name) if installed?(new_name)
-          "#{name} -> #{new_name}"
-        end
-      when :A
-        name if report_all && !installed?(name)
-      when :AC
-        name.split("/").last if report_all && !cask_installed?(name)
-      when :MC
-        name = name.split("/").last
-        if cask_installed?(name)
-          if cask_outdated?(name)
-            pretty_outdated(name)
-          else
-            pretty_installed(name)
-          end
-        elsif report_all
-          name
-        end
-      when :DC
-        name = name.split("/").last
-        if cask_installed?(name)
-          pretty_uninstalled(name)
-        elsif report_all
-          name
-        end
-      when :M
-        if installed?(name)
-          if outdated?(name)
-            pretty_outdated(name)
-          else
-            pretty_installed(name)
-          end
-        elsif report_all
-          name
-        end
-      when :D
-        if installed?(name)
-          pretty_uninstalled(name)
-        elsif report_all
-          name
-        end
-      else
-        raise ArgumentError, ":#{key} passed to dump_formula_or_cask_report!"
+    output_dump_formula_or_cask_report "New Formulae", formulae
+  end
+
+  def dump_new_cask_report
+    casks = select_formula_or_cask(:AC).sort.map do |name|
+      name.split("/").last unless cask_installed?(name)
+    end
+
+    output_dump_formula_or_cask_report "New Casks", casks
+  end
+
+  def dump_renamed_formula_report
+    formulae = select_formula_or_cask(:R).sort.map do |name, new_name|
+      name = pretty_installed(name) if installed?(name)
+      new_name = pretty_installed(new_name) if installed?(new_name)
+      "#{name} -> #{new_name}"
+    end
+
+    output_dump_formula_or_cask_report "Renamed Formulae", formulae
+  end
+
+  def dump_deleted_formula_report(report_all)
+    formulae = select_formula_or_cask(:D).sort.map do |name|
+      if installed?(name)
+        pretty_uninstalled(name)
+      elsif report_all
+        name
       end
     end.compact
 
-    output_dump_formula_or_cask_report title, formulae_or_casks
+    output_dump_formula_or_cask_report "Deleted Formulae", formulae
+  end
+
+  def dump_deleted_cask_report(report_all)
+    casks = select_formula_or_cask(:DC).sort.map do |name|
+      name = name.split("/").last
+      if cask_installed?(name)
+        pretty_uninstalled(name)
+      elsif report_all
+        name
+      end
+    end.compact
+
+    output_dump_formula_or_cask_report "Deleted Casks", casks
+  end
+
+  def dump_modified_formula_report
+    formulae = select_formula_or_cask(:M).sort.map do |name|
+      if installed?(name)
+        if outdated?(name)
+          pretty_outdated(name)
+        else
+          pretty_installed(name)
+        end
+      else
+        name
+      end
+    end
+
+    output_dump_formula_or_cask_report "Modified Formulae", formulae
+  end
+
+  def dump_modified_cask_report
+    casks = select_formula_or_cask(:MC).sort.map do |name|
+      name = name.split("/").last
+      if cask_installed?(name)
+        if cask_outdated?(name)
+          pretty_outdated(name)
+        else
+          pretty_installed(name)
+        end
+      else
+        name
+      end
+    end
+
+    output_dump_formula_or_cask_report "Modified Casks", casks
   end
 
   def output_dump_formula_or_cask_report(title, formulae_or_casks)
