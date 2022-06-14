@@ -752,7 +752,7 @@ EOS
     curl \
       "${CURL_DISABLE_CURLRC_ARGS[@]}" \
       --fail --compressed --silent --max-time 5 \
-      --location --output "${HOMEBREW_CACHE}/api/formula.json" \
+      --location --remote-time --output "${HOMEBREW_CACHE}/api/formula.json" \
       --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
       "https://formulae.brew.sh/api/formula.json"
     # TODO: we probably want to print an error if this fails.
