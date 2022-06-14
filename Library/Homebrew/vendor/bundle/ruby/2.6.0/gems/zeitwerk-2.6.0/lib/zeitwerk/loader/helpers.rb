@@ -15,16 +15,48 @@ module Zeitwerk::Loader::Helpers
 
   # @sig (String) { (String, String) -> void } -> void
   def ls(dir)
-    Dir.each_child(dir) do |basename|
+    children = Dir.children(dir)
+
+    # The order in which a directory is listed depends on the file system.
+    #
+    # Since client code may run in different platforms, it seems convenient to
+    # order directory entries. This provides consistent eager loading across
+    # platforms, for example.
+    children.sort!
+
+    children.each do |basename|
       next if hidden?(basename)
 
       abspath = File.join(dir, basename)
       next if ignored_paths.member?(abspath)
 
+      if dir?(abspath)
+        next unless has_at_least_one_ruby_file?(abspath)
+      else
+        next unless ruby?(abspath)
+      end
+
       # We freeze abspath because that saves allocations when passed later to
       # File methods. See #125.
       yield basename, abspath.freeze
     end
+  end
+
+  # @sig (String) -> bool
+  def has_at_least_one_ruby_file?(dir)
+    to_visit = [dir]
+
+    while dir = to_visit.shift
+      ls(dir) do |_basename, abspath|
+        if dir?(abspath)
+          to_visit << abspath
+        else
+          return true
+        end
+      end
+    end
+
+    false
   end
 
   # @sig (String) -> bool
@@ -37,7 +69,7 @@ module Zeitwerk::Loader::Helpers
     File.directory?(path)
   end
 
-  # @sig String -> bool
+  # @sig (String) -> bool
   def hidden?(basename)
     basename.start_with?(".")
   end

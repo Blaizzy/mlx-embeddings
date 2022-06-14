@@ -47,6 +47,20 @@ class Zeitwerk::GemInflector < ::Zeitwerk::Inflector
   def camelize(basename, abspath); end
 end
 
+class Zeitwerk::GemLoader < ::Zeitwerk::Loader
+  def initialize(root_file, warn_on_extra_files:); end
+
+  def setup; end
+
+  private
+
+  def warn_on_extra_files; end
+
+  class << self
+    def _new(root_file, warn_on_extra_files:); end
+  end
+end
+
 class Zeitwerk::Inflector
   def camelize(basename, _abspath); end
   def inflect(inflections); end
@@ -97,9 +111,7 @@ class Zeitwerk::Loader
     def default_logger; end
     def default_logger=(_arg0); end
     def eager_load_all; end
-    def for_gem; end
-    def mutex; end
-    def mutex=(_arg0); end
+    def for_gem(warn_on_extra_files: T.unsafe(nil)); end
   end
 end
 
@@ -165,6 +177,7 @@ module Zeitwerk::Loader::Helpers
   def cget(parent, cname); end
   def cpath(parent, cname); end
   def dir?(path); end
+  def has_at_least_one_ruby_file?(dir); end
   def hidden?(basename); end
   def log(message); end
   def ls(dir); end
@@ -172,6 +185,7 @@ module Zeitwerk::Loader::Helpers
   def strict_autoload_path(parent, cname); end
 end
 
+Zeitwerk::Loader::MUTEX = T.let(T.unsafe(nil), Thread::Mutex)
 class Zeitwerk::NameError < ::NameError; end
 
 module Zeitwerk::RealModName
@@ -183,12 +197,12 @@ Zeitwerk::RealModName::UNBOUND_METHOD_MODULE_NAME = T.let(T.unsafe(nil), Unbound
 module Zeitwerk::Registry
   class << self
     def autoloads; end
+    def gem_loaders_by_root_file; end
     def inception?(cpath); end
     def inceptions; end
     def loader_for(path); end
-    def loader_for_gem(root_file); end
+    def loader_for_gem(root_file, warn_on_extra_files:); end
     def loaders; end
-    def loaders_managing_gems; end
     def on_unload(loader); end
     def register_autoload(loader, abspath); end
     def register_inception(cpath, abspath, loader); end
@@ -198,5 +212,8 @@ module Zeitwerk::Registry
   end
 end
 
-class Zeitwerk::ReloadingDisabledError < ::Zeitwerk::Error; end
+class Zeitwerk::ReloadingDisabledError < ::Zeitwerk::Error
+  def initialize; end
+end
+
 Zeitwerk::VERSION = T.let(T.unsafe(nil), String)

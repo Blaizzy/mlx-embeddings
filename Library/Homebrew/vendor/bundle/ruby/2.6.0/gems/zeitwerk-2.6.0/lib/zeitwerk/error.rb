@@ -5,6 +5,9 @@ module Zeitwerk
   end
 
   class ReloadingDisabledError < Error
+    def initialize
+      super("can't reload, please call loader.enable_reloading before setup")
+    end
   end
 
   class NameError < ::NameError
