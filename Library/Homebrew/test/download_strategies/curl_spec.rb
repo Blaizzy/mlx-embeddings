@@ -131,15 +131,13 @@ describe CurlDownloadStrategy do
       let(:artifact_domain) { "https://mirror.example.com/oci" }
 
       context "with an asset hosted under example.com" do
-        let(:status) { instance_double(Process::Status, success?: true, exitstatus: 0) }
-
-        it "prefixes the URL unchanged" do
+        it "leaves the URL unchanged" do
           expect(strategy).to receive(:system_command).with(
             /curl/,
-            hash_including(args: array_including_cons("#{artifact_domain}/#{url}")),
+            hash_including(args: array_including_cons(url)),
           )
           .at_least(:once)
-          .and_return(SystemCommand::Result.new(["curl"], [""], status, secrets: []))
+          .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
           strategy.fetch
         end
