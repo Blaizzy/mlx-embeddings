@@ -435,6 +435,7 @@ module Formulary
           if (bottles_stable = json_formula["bottle"]["stable"]).present?
             bottle do
               root_url bottles_stable["root_url"]
+              rebuild bottles_stable["rebuild"]
               bottles_stable["files"].each do |tag, bottle_spec|
                 cellar = bottle_spec["cellar"]
                 cellar = cellar[1..].to_sym if cellar.start_with?(":")
