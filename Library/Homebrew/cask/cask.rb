@@ -6,7 +6,6 @@ require "cask/config"
 require "cask/dsl"
 require "cask/metadata"
 require "searchable"
-require "api"
 
 module Cask
   # An instance of a cask.
@@ -166,14 +165,7 @@ module Cask
       # special case: tap version is not available
       return [] if version.nil?
 
-      latest_version = if Homebrew::EnvConfig.install_from_api? &&
-                          (latest_cask_version = Homebrew::API::Versions.latest_cask_version(token))
-        DSL::Version.new latest_cask_version.to_s
-      else
-        version
-      end
-
-      if latest_version.latest?
+      if version.latest?
         return versions if (greedy || greedy_latest) && outdated_download_sha?
 
         return []
@@ -185,10 +177,10 @@ module Cask
       current   = installed.last
 
       # not outdated unless there is a different version on tap
-      return [] if current == latest_version
+      return [] if current == version
 
       # collect all installed versions that are different than tap version and return them
-      installed.reject { |v| v == latest_version }
+      installed.reject { |v| v == version }
     end
 
     def outdated_info(greedy, verbose, json, greedy_latest, greedy_auto_updates)

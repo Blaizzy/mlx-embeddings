@@ -213,15 +213,6 @@ module Homebrew
   def upgrade_outdated_casks(casks, args:)
     return false if args.formula?
 
-    if Homebrew::EnvConfig.install_from_api?
-      casks = casks.map do |cask|
-        next cask if cask.tap.present? && cask.tap != "homebrew/cask"
-        next cask unless Homebrew::API::CaskSource.available?(cask.token)
-
-        Cask::CaskLoader.load Homebrew::API::CaskSource.fetch(cask.token)
-      end
-    end
-
     Cask::Cmd::Upgrade.upgrade_casks(
       *casks,
       force:               args.force?,
