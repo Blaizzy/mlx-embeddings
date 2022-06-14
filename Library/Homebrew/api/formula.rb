@@ -29,7 +29,13 @@ module Homebrew
         sig { returns(Array) }
         def all_formulae
           @all_formulae ||= begin
-            download_formulae_if_needed
+            curl_args = %w[--compressed --silent https://formulae.brew.sh/api/formula.json]
+            if cached_formula_json_file.exist?
+              last_modified = cached_formula_json_file.mtime.utc
+              last_modified = last_modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
+              curl_args = ["--header", "If-Modified-Since: #{last_modified}", *curl_args]
+            end
+            curl_download(*curl_args, to: HOMEBREW_CACHE_API/"#{formula_api_path}.json", max_time: 5)
 
             json_formulae = JSON.parse(cached_formula_json_file.read)
 
@@ -37,20 +43,6 @@ module Homebrew
               [json_formula["name"], json_formula.except("name")]
             end
           end
-        end
-
-        private
-
-        sig { void }
-        def download_formulae_if_needed
-          curl_args = %w[--compressed --silent https://formulae.brew.sh/api/formula.json]
-          if cached_formula_json_file.exist?
-            last_modified = cached_formula_json_file.mtime.utc
-            last_modified = last_modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
-            curl_args = ["--header", "If-Modified-Since: #{last_modified}", *curl_args]
-          end
-
-          curl_download(*curl_args, to: HOMEBREW_CACHE_API/"#{formula_api_path}.json", max_time: 5)
         end
       end
     end
