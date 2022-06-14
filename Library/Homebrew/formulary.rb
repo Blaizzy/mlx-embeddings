@@ -447,10 +447,6 @@ module Formulary
     rescue FormulaClassUnavailableError => e
       raise TapFormulaClassUnavailableError.new(tap, name, e.path, e.class_name, e.class_list), "", e.backtrace
     rescue FormulaUnavailableError => e
-      if tap.core_tap? && Homebrew::EnvConfig.install_from_api?
-        raise CoreTapFormulaUnavailableError.new(name), "", e.backtrace
-      end
-
       raise TapFormulaUnavailableError.new(tap, name), "", e.backtrace
     end
 
@@ -469,10 +465,6 @@ module Formulary
     end
 
     def get_formula(*)
-      if !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
-        raise CoreTapFormulaUnavailableError, name
-      end
-
       raise FormulaUnavailableError, name
     end
   end
