@@ -28,25 +28,33 @@ module Formulary
     !@factory_cache.nil?
   end
 
-  def self.formula_class_defined?(path)
-    cache.key?(path)
+  def self.formula_class_defined_from_path?(path)
+    cache.key?(:path) && cache[:path].key?(path)
   end
 
-  def self.formula_class_get(path)
-    cache.fetch(path)
+  def self.formula_class_defined_from_api?(name)
+    cache.key?(:api) && cache[:api].key?(name)
+  end
+
+  def self.formula_class_get_from_path(path)
+    cache[:path].fetch(path)
+  end
+
+  def self.formula_class_get_from_api(name)
+    cache[:api].fetch(name)
   end
 
   def self.clear_cache
-    cache.each do |key, klass|
-      next if key == :formulary_factory
+    cache.each do |type, cached_objects|
+      next if type == :formulary_factory
 
-      namespace = klass.name.deconstantize
-      next if namespace.deconstantize != name
+      cached_objects.values.each do |klass|
+        namespace = klass.name.deconstantize
+        next if namespace.deconstantize != name
 
-      remove_const(namespace.demodulize)
+        remove_const(namespace.demodulize)
+      end
     end
-
-    remove_const("FormulaNamespaceAPI")
 
     super
   end
@@ -112,7 +120,97 @@ module Formulary
     contents = path.open("r") { |f| ensure_utf8_encoding(f).read }
     namespace = "FormulaNamespace#{Digest::MD5.hexdigest(path.to_s)}"
     klass = load_formula(name, path, contents, namespace, flags: flags, ignore_errors: ignore_errors)
-    cache[path] = klass
+    cache[:path] ||= {}
+    cache[:path][path] = klass
+  end
+
+  def self.load_formula_from_api(name, flags:, ignore_errors:)
+    namespace = "FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
+
+    mod = Module.new
+    remove_const(namespace) if const_defined?(namespace)
+    const_set(namespace, mod)
+
+    mod.const_set(:BUILD_FLAGS, flags)
+
+    class_s = Formulary.class_s(name)
+    json_formula = Homebrew::API::Formula.all_formulae[name]
+
+    klass = Class.new(::Formula) do
+      desc json_formula["desc"]
+      homepage json_formula["homepage"]
+      license json_formula["license"]
+      revision json_formula["revision"]
+      version_scheme json_formula["version_scheme"]
+
+      if (urls_stable = json_formula["urls"]["stable"]).present?
+        stable do
+          url urls_stable["url"]
+          version json_formula["versions"]["stable"]
+        end
+      end
+
+      if (bottles_stable = json_formula["bottle"]["stable"]).present?
+        bottle do
+          root_url bottles_stable["root_url"]
+          rebuild bottles_stable["rebuild"]
+          bottles_stable["files"].each do |tag, bottle_spec|
+            cellar = bottle_spec["cellar"]
+            cellar = cellar[1..].to_sym if cellar.start_with?(":")
+            sha256 cellar: cellar, tag.to_sym => bottle_spec["sha256"]
+          end
+        end
+      end
+
+      if (keg_only_reason = json_formula["keg_only_reason"]).present?
+        reason = keg_only_reason["reason"]
+        reason = reason[1..].to_sym if reason.start_with?(":")
+        keg_only reason, keg_only_reason["explanation"]
+      end
+
+      if (deprecation_date = json_formula["deprecation_date"]).present?
+        deprecate! date: deprecation_date, because: json_formula["deprecation_reason"]
+      end
+
+      if (disable_date = json_formula["disable_date"]).present?
+        disable! date: disable_date, because: json_formula["disable_reason"]
+      end
+
+      json_formula["build_dependencies"].each do |dep|
+        depends_on dep => :build
+      end
+
+      json_formula["dependencies"].each do |dep|
+        depends_on dep
+      end
+
+      json_formula["recommended_dependencies"].each do |dep|
+        depends_on dep => :recommended
+      end
+
+      json_formula["optional_dependencies"].each do |dep|
+        depends_on dep => :optional
+      end
+
+      json_formula["uses_from_macos"].each do |dep|
+        dep = dep.deep_transform_values(&:to_sym) if dep.is_a?(Hash)
+        uses_from_macos dep
+      end
+
+      def install
+        raise "Cannot build from source from abstract formula."
+      end
+
+      @caveats_string = json_formula["caveats"]
+      def caveats
+        @caveats_string
+      end
+    end
+
+    mod.const_set(class_s, klass)
+
+    cache[:api] ||= {}
+    cache[:api][name] = klass
   end
 
   def self.resolve(name, spec: nil, force_bottle: false, flags: [])
@@ -186,8 +284,8 @@ module Formulary
     end
 
     def klass(flags:, ignore_errors:)
-      load_file(flags: flags, ignore_errors: ignore_errors) unless Formulary.formula_class_defined?(path)
-      Formulary.formula_class_get(path)
+      load_file(flags: flags, ignore_errors: ignore_errors) unless Formulary.formula_class_defined_from_path?(path)
+      Formulary.formula_class_get_from_path(path)
     end
 
     private
@@ -403,93 +501,17 @@ module Formulary
     end
 
     def klass(flags:, ignore_errors:)
-      namespace = "FormulaNamespaceAPI"
-      mod = if Formulary.const_defined?(namespace)
-        Formulary.const_get(namespace)
-      else
-        Formulary.const_set(namespace, Module.new)
-      end
+      load_from_api(flags: flags, ignore_errors: ignore_errors) unless Formulary.formula_class_defined_from_api?(name)
+      Formulary.formula_class_get_from_api(name)
+    end
 
-      mod.send(:remove_const, :BUILD_FLAGS) if mod.const_defined?(:BUILD_FLAGS)
-      mod.const_set(:BUILD_FLAGS, flags)
+    private
 
-      class_s = Formulary.class_s(name)
-      if mod.const_defined?(class_s)
-        mod.const_get(class_s)
-      else
-        json_formula = Homebrew::API::Formula.all_formulae[name]
-        klass = Class.new(::Formula) do
-          desc json_formula["desc"]
-          homepage json_formula["homepage"]
-          license json_formula["license"]
-          revision json_formula["revision"]
-          version_scheme json_formula["version_scheme"]
+    def load_from_api(flags:, ignore_errors:)
+      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{name} from API" if debug?
+      # raise FormulaUnavailableError, name unless path.file?
 
-          if (urls_stable = json_formula["urls"]["stable"]).present?
-            stable do
-              url urls_stable["url"]
-              version json_formula["versions"]["stable"]
-            end
-          end
-
-          if (bottles_stable = json_formula["bottle"]["stable"]).present?
-            bottle do
-              root_url bottles_stable["root_url"]
-              rebuild bottles_stable["rebuild"]
-              bottles_stable["files"].each do |tag, bottle_spec|
-                cellar = bottle_spec["cellar"]
-                cellar = cellar[1..].to_sym if cellar.start_with?(":")
-                sha256 cellar: cellar, tag.to_sym => bottle_spec["sha256"]
-              end
-            end
-          end
-
-          if (keg_only_reason = json_formula["keg_only_reason"]).present?
-            reason = keg_only_reason["reason"]
-            reason = reason[1..].to_sym if reason.start_with?(":")
-            keg_only reason, keg_only_reason["explanation"]
-          end
-
-          if (deprecation_date = json_formula["deprecation_date"]).present?
-            deprecate! date: deprecation_date, because: json_formula["deprecation_reason"]
-          end
-
-          if (disable_date = json_formula["disable_date"]).present?
-            disable! date: disable_date, because: json_formula["disable_reason"]
-          end
-
-          json_formula["build_dependencies"].each do |dep|
-            depends_on dep => :build
-          end
-
-          json_formula["dependencies"].each do |dep|
-            depends_on dep
-          end
-
-          json_formula["recommended_dependencies"].each do |dep|
-            depends_on dep => :recommended
-          end
-
-          json_formula["optional_dependencies"].each do |dep|
-            depends_on dep => :optional
-          end
-
-          json_formula["uses_from_macos"].each do |dep|
-            dep = dep.deep_transform_values(&:to_sym) if dep.is_a?(Hash)
-            uses_from_macos dep
-          end
-
-          def install
-            raise "Cannot build from source from abstract formula."
-          end
-
-          @caveats_string = json_formula["caveats"]
-          def caveats
-            @caveats_string
-          end
-        end
-        mod.const_set(class_s, klass)
-      end
+      Formulary.load_formula_from_api(name, flags: flags, ignore_errors: ignore_errors)
     end
   end
 
