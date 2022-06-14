@@ -373,7 +373,7 @@ setup_curl() {
      "${HOMEBREW_BREWED_CURL_PATH}" --version &>/dev/null
   then
     HOMEBREW_CURL="${HOMEBREW_BREWED_CURL_PATH}"
-  elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_CURL_PATH}" ]]
+  elif [[ -n "${HOMEBREW_CURL_PATH}" ]]
   then
     HOMEBREW_CURL="${HOMEBREW_CURL_PATH}"
   else
@@ -388,7 +388,7 @@ setup_git() {
      "${HOMEBREW_PREFIX}/opt/git/bin/git" --version &>/dev/null
   then
     HOMEBREW_GIT="${HOMEBREW_PREFIX}/opt/git/bin/git"
-  elif [[ -n "${HOMEBREW_DEVELOPER}" && -x "${HOMEBREW_GIT_PATH}" ]]
+  elif [[ -n "${HOMEBREW_GIT_PATH}" ]]
   then
     HOMEBREW_GIT="${HOMEBREW_GIT_PATH}"
   else
@@ -512,12 +512,12 @@ else
   # shellcheck disable=SC2248
   if [[ "$(numeric "${curl_name_and_version##* }")" -lt "$(numeric "${HOMEBREW_MINIMUM_CURL_VERSION}")" ]]
   then
-    message="Please update your system curl.
+    message="Please update your system curl or set HOMEBREW_CURL_PATH to a newer version.
 Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
 Your curl version: ${curl_name_and_version##* }
 Your curl executable: $(type -p ${HOMEBREW_CURL})"
 
-    if [[ -z ${HOMEBREW_CURL_PATH} || -z ${HOMEBREW_DEVELOPER} ]]
+    if [[ -z ${HOMEBREW_CURL_PATH} ]]
     then
       HOMEBREW_SYSTEM_CURL_TOO_OLD=1
       HOMEBREW_FORCE_BREWED_CURL=1
@@ -541,11 +541,11 @@ Your curl executable: $(type -p ${HOMEBREW_CURL})"
   # shellcheck disable=SC2248
   if [[ "$(numeric "${major}.${minor}.${micro}.${build}")" -lt "$(numeric "${HOMEBREW_MINIMUM_GIT_VERSION}")" ]]
   then
-    message="Please update your system Git.
+    message="Please update your system Git or set HOMEBREW_GIT_PATH to a newer version.
 Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}
 Your Git version: ${major}.${minor}.${micro}.${build}
 Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
-    if [[ -z ${HOMEBREW_GIT_PATH} || -z ${HOMEBREW_DEVELOPER} ]]
+    if [[ -z ${HOMEBREW_GIT_PATH} ]]
     then
       HOMEBREW_FORCE_BREWED_GIT="1"
       if [[ -z ${HOMEBREW_GIT_WARNING} ]]
