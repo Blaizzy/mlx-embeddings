@@ -28,7 +28,8 @@ module Language
         end
         prepare_removed = pkg_json["scripts"]&.delete("prepare")
         prepack_removed = pkg_json["scripts"]&.delete("prepack")
-        package.atomic_write(JSON.pretty_generate(pkg_json)) if prepare_removed || prepack_removed
+        postpack_removed = pkg_json["scripts"]&.delete("postpack")
+        package.atomic_write(JSON.pretty_generate(pkg_json)) if prepare_removed || prepack_removed || postpack_removed
       end
       output = Utils.popen_read("npm", "pack", "--ignore-scripts")
       raise "npm failed to pack #{Dir.pwd}" if !$CHILD_STATUS.exitstatus.zero? || output.lines.empty?
