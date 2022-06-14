@@ -48,7 +48,7 @@ module Formulary
     cache.each do |type, cached_objects|
       next if type == :formulary_factory
 
-      cached_objects.values.each do |klass|
+      cached_objects.each_value do |klass|
         namespace = klass.name.deconstantize
         next if namespace.deconstantize != name
 
