@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "api/analytics"
-require "api/bottle"
 require "api/cask"
 require "api/cask-source"
 require "api/formula"
