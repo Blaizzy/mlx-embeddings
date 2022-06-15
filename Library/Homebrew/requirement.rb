@@ -103,7 +103,7 @@ class Requirement
     parent = satisfied_result_parent
     return unless parent
     return if ["#{HOMEBREW_PREFIX}/bin", "#{HOMEBREW_PREFIX}/bin"].include?(parent.to_s)
-    return if PATH.new(ENV["PATH"]).include?(parent.to_s)
+    return if PATH.new(ENV.fetch("PATH")).include?(parent.to_s)
 
     ENV.prepend_path("PATH", parent)
   end

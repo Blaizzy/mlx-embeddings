@@ -38,7 +38,7 @@ module Homebrew
     ENV.setup_build_environment
     if superenv?(args.env)
       # superenv stopped adding brew's bin but generally users will want it
-      ENV["PATH"] = PATH.new(ENV["PATH"]).insert(1, HOMEBREW_PREFIX/"bin")
+      ENV["PATH"] = PATH.new(ENV.fetch("PATH")).insert(1, HOMEBREW_PREFIX/"bin")
     end
 
     ENV["VERBOSE"] = "1" if args.verbose?

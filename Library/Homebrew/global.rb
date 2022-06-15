@@ -119,8 +119,8 @@ require "cli/args"
 
 require "PATH"
 
-ENV["HOMEBREW_PATH"] ||= ENV["PATH"]
-ORIGINAL_PATHS = PATH.new(ENV["HOMEBREW_PATH"]).map do |p|
+ENV["HOMEBREW_PATH"] ||= ENV.fetch("PATH")
+ORIGINAL_PATHS = PATH.new(ENV.fetch("HOMEBREW_PATH")).map do |p|
   Pathname.new(p).expand_path
 rescue
   nil

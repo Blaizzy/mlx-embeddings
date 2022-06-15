@@ -123,7 +123,7 @@ module Homebrew
       safe_system "git", "reset", "--hard", start_commit
 
       # update ENV["PATH"]
-      ENV["PATH"] = PATH.new(ENV["PATH"]).prepend(curdir/"bin")
+      ENV["PATH"] = PATH.new(ENV.fetch("PATH")).prepend(curdir/"bin")
 
       # run brew help to install portable-ruby (if needed)
       quiet_system "brew", "help"

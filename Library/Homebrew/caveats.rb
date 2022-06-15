@@ -78,7 +78,7 @@ class Caveats
 
       s << "  #{Utils::Shell.export_value("CPPFLAGS", "-I#{f.opt_include}")}\n" if f.include.directory?
 
-      if which("pkg-config", ENV["HOMEBREW_PATH"]) &&
+      if which("pkg-config", ORIGINAL_PATHS) &&
          ((f.lib/"pkgconfig").directory? || (f.share/"pkgconfig").directory?)
         s << <<~EOS
 
@@ -109,7 +109,7 @@ class Caveats
 
   def function_completion_caveats(shell)
     return unless keg
-    return unless which(shell.to_s, ENV["HOMEBREW_PATH"])
+    return unless which(shell.to_s, ORIGINAL_PATHS)
 
     completion_installed = keg.completion_installed?(shell)
     functions_installed = keg.functions_installed?(shell)

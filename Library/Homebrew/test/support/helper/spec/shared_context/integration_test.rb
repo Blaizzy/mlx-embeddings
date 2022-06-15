@@ -73,7 +73,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       env["PATH"],
       (HOMEBREW_LIBRARY_PATH/"test/support/helper/cmd").realpath.to_s,
       (HOMEBREW_PREFIX/"bin").realpath.to_s,
-      ENV["PATH"],
+      ENV.fetch("PATH"),
     ].compact.join(File::PATH_SEPARATOR)
 
     env.merge!(

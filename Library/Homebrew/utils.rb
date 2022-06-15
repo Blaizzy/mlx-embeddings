@@ -305,7 +305,7 @@ module Kernel
   end
 
   def with_homebrew_path(&block)
-    with_env(PATH: PATH.new(ENV["HOMEBREW_PATH"]), &block)
+    with_env(PATH: PATH.new(ORIGINAL_PATHS), &block)
   end
 
   def with_custom_locale(locale, &block)
@@ -329,7 +329,7 @@ module Kernel
     end
   end
 
-  def which(cmd, path = ENV["PATH"])
+  def which(cmd, path = ENV.fetch("PATH"))
     PATH.new(path).each do |p|
       begin
         pcmd = File.expand_path(cmd, p)
@@ -343,7 +343,7 @@ module Kernel
     nil
   end
 
-  def which_all(cmd, path = ENV["PATH"])
+  def which_all(cmd, path = ENV.fetch("PATH"))
     PATH.new(path).map do |p|
       begin
         pcmd = File.expand_path(cmd, p)
@@ -362,7 +362,7 @@ module Kernel
 
     # Find Atom, Sublime Text, VS Code, Textmate, BBEdit / TextWrangler, or vim
     editor = %w[atom subl code mate edit vim].find do |candidate|
-      candidate if which(candidate, ENV["HOMEBREW_PATH"])
+      candidate if which(candidate, ORIGINAL_PATHS)
     end
     editor ||= "vim"
 
@@ -499,7 +499,7 @@ module Kernel
 
     executable = [
       which(name),
-      which(name, ENV["HOMEBREW_PATH"]),
+      which(name, ORIGINAL_PATHS),
       HOMEBREW_PREFIX/"bin/#{name}",
     ].compact.first
     return executable if executable.exist?
@@ -508,11 +508,7 @@ module Kernel
   end
 
   def paths
-    @paths ||= PATH.new(ENV["HOMEBREW_PATH"]).map do |p|
-      File.expand_path(p).chomp("/")
-    rescue ArgumentError
-      onoe "The following PATH component is invalid: #{p}"
-    end.uniq.compact
+    @paths ||= ORIGINAL_PATHS.uniq.map(&:to_s)
   end
 
   def parse_author!(author)

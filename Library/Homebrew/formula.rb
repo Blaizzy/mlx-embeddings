@@ -421,9 +421,9 @@ class Formula
     return unless head.downloader.cached_location.exist?
 
     path = if ENV["HOMEBREW_ENV"]
-      ENV["PATH"]
+      ENV.fetch("PATH")
     else
-      ENV["HOMEBREW_PATH"]
+      PATH.new(ORIGINAL_PATHS)
     end
 
     with_env(PATH: path) do
@@ -1103,7 +1103,7 @@ class Formula
         TMP:           HOMEBREW_TEMP,
         _JAVA_OPTIONS: "-Djava.io.tmpdir=#{HOMEBREW_TEMP}",
         HOMEBREW_PATH: nil,
-        PATH:          ENV["HOMEBREW_PATH"],
+        PATH:          PATH.new(ORIGINAL_PATHS),
       }
 
       with_env(new_env) do
@@ -2077,7 +2077,7 @@ class Formula
       TEMP:          HOMEBREW_TEMP,
       TMP:           HOMEBREW_TEMP,
       TERM:          "dumb",
-      PATH:          PATH.new(ENV["PATH"], HOMEBREW_PREFIX/"bin"),
+      PATH:          PATH.new(ENV.fetch("PATH"), HOMEBREW_PREFIX/"bin"),
       HOMEBREW_PATH: nil,
     }.merge(common_stage_test_env)
     test_env[:_JAVA_OPTIONS] += " -Djava.io.tmpdir=#{HOMEBREW_TEMP}"

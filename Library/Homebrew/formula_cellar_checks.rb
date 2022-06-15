@@ -299,7 +299,7 @@ module FormulaCellarChecks
     objdump   = Formula["llvm"].opt_bin/"llvm-objdump" if Formula["llvm"].any_version_installed?
     objdump ||= Formula["binutils"].opt_bin/"objdump" if Formula["binutils"].any_version_installed?
     objdump ||= which("objdump")
-    objdump ||= which("objdump", ENV["HOMEBREW_PATH"])
+    objdump ||= which("objdump", ORIGINAL_PATHS)
 
     unless objdump
       return <<~EOS

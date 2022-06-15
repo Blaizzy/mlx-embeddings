@@ -274,17 +274,19 @@ describe "globally-scoped helper methods" do
 
   describe "#with_env" do
     it "sets environment variables within the block" do
-      expect(ENV["PATH"]).not_to eq("/bin")
+      expect(ENV.fetch("PATH")).not_to eq("/bin")
       with_env(PATH: "/bin") do
-        expect(ENV["PATH"]).to eq("/bin")
+        expect(ENV.fetch("PATH", nil)).to eq("/bin")
       end
     end
 
     it "restores ENV after the block" do
       with_env(PATH: "/bin") do
-        expect(ENV["PATH"]).to eq("/bin")
+        expect(ENV.fetch("PATH", nil)).to eq("/bin")
       end
-      expect(ENV["PATH"]).not_to eq("/bin")
+      path = ENV.fetch("PATH", nil)
+      expect(path).not_to be_nil
+      expect(path).not_to eq("/bin")
     end
 
     it "restores ENV if an exception is raised" do
@@ -294,7 +296,9 @@ describe "globally-scoped helper methods" do
         end
       }.to raise_error(StandardError)
 
-      expect(ENV["PATH"]).not_to eq("/bin")
+      path = ENV.fetch("PATH", nil)
+      expect(path).not_to be_nil
+      expect(path).not_to eq("/bin")
     end
   end
 

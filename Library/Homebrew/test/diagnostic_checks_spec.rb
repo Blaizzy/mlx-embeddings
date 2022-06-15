@@ -20,7 +20,7 @@ describe Homebrew::Diagnostic::Checks do
       FileUtils.chmod 0755, anaconda
       FileUtils.chmod 0755, python
 
-      ENV["PATH"] = "#{path}#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
+      ENV["PATH"] = "#{path}#{File::PATH_SEPARATOR}#{ENV.fetch("PATH")}"
 
       expect(checks.check_for_anaconda).to match("Anaconda")
     end
@@ -75,10 +75,12 @@ describe Homebrew::Diagnostic::Checks do
 
   specify "#check_user_path_3" do
     sbin = HOMEBREW_PREFIX/"sbin"
-    ENV["HOMEBREW_PATH"] =
+    (sbin/"something").mkpath
+
+    homebrew_path =
       "#{HOMEBREW_PREFIX}/bin#{File::PATH_SEPARATOR}" +
       ENV["HOMEBREW_PATH"].gsub(/(?:^|#{Regexp.escape(File::PATH_SEPARATOR)})#{Regexp.escape(sbin)}/, "")
-    (sbin/"something").mkpath
+    stub_const("ORIGINAL_PATHS", PATH.new(homebrew_path).map { |path| Pathname.new(path).expand_path }.compact)
 
     expect(checks.check_user_path_1).to be_nil
     expect(checks.check_user_path_2).to be_nil
@@ -93,8 +95,7 @@ describe Homebrew::Diagnostic::Checks do
       file = "#{path}/foo-config"
       FileUtils.touch file
       FileUtils.chmod 0755, file
-      ENV["HOMEBREW_PATH"] = ENV["PATH"] =
-        "#{path}#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
+      ENV["PATH"] = "#{path}#{File::PATH_SEPARATOR}#{ENV.fetch("PATH")}"
 
       expect(checks.check_for_config_scripts)
         .to match('"config" scripts exist')

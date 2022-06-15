@@ -1139,7 +1139,7 @@ class CVSDownloadStrategy < VCSDownloadStrategy
   private
 
   def env
-    { "PATH" => PATH.new("/usr/bin", Formula["cvs"].opt_bin, ENV["PATH"]) }
+    { "PATH" => PATH.new("/usr/bin", Formula["cvs"].opt_bin, ENV.fetch("PATH")) }
   end
 
   sig { returns(String) }
@@ -1214,7 +1214,7 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
   private
 
   def env
-    { "PATH" => PATH.new(Formula["mercurial"].opt_bin, ENV["PATH"]) }
+    { "PATH" => PATH.new(Formula["mercurial"].opt_bin, ENV.fetch("PATH")) }
   end
 
   sig { returns(String) }
@@ -1280,7 +1280,7 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
 
   def env
     {
-      "PATH"     => PATH.new(Formula["bazaar"].opt_bin, ENV["PATH"]),
+      "PATH"     => PATH.new(Formula["bazaar"].opt_bin, ENV.fetch("PATH")),
       "BZR_HOME" => HOMEBREW_TEMP,
     }
   end
@@ -1345,7 +1345,7 @@ class FossilDownloadStrategy < VCSDownloadStrategy
   private
 
   def env
-    { "PATH" => PATH.new(Formula["fossil"].opt_bin, ENV["PATH"]) }
+    { "PATH" => PATH.new(Formula["fossil"].opt_bin, ENV.fetch("PATH")) }
   end
 
   sig { returns(String) }

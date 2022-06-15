@@ -150,7 +150,7 @@ RSpec.configure do |config|
     skip "Subversion is not installed." unless quiet_system svn_shim, "--version"
 
     svn_shim_path = Pathname(Utils.popen_read(svn_shim, "--homebrew=print-path").chomp.presence)
-    svn_paths = PATH.new(ENV["PATH"])
+    svn_paths = PATH.new(ENV.fetch("PATH"))
     svn_paths.prepend(svn_shim_path.dirname)
 
     if OS.mac?
@@ -164,7 +164,7 @@ RSpec.configure do |config|
     svnadmin = which("svnadmin", svn_paths)
     skip "svnadmin is not installed." unless svnadmin
 
-    ENV["PATH"] = PATH.new(ENV["PATH"])
+    ENV["PATH"] = PATH.new(ENV.fetch("PATH"))
                       .append(svn.dirname)
                       .append(svnadmin.dirname)
   end

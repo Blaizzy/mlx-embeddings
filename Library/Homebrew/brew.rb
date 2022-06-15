@@ -53,8 +53,8 @@ begin
   args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
   Context.current = args.context
 
-  path = PATH.new(ENV["PATH"])
-  homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
+  path = PATH.new(ENV.fetch("PATH"))
+  homebrew_path = PATH.new(ENV.fetch("HOMEBREW_PATH"))
 
   # Add shared wrappers.
   path.prepend(HOMEBREW_SHIMS_PATH/"shared")
