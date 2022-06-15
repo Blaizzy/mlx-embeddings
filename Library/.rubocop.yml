@@ -122,6 +122,14 @@ Style/BarePercentLiterals:
 Style/CollectionMethods:
   Enabled: true
 
+# This is quite a large change, so don't enforce this yet for formulae.
+# We should consider doing so in the future, but be aware of the impact on third-party taps.
+Style/FetchEnvVar:
+  Exclude:
+    - "Taps/*/*/*.rb"
+    - "/**/Formula/*.rb"
+    - "**/Formula/*.rb"
+
 # Prefer tokens with type annotations for consistency
 # between formatting numbers and strings.
 Style/FormatStringToken:
