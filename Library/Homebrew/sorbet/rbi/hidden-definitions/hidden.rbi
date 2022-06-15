@@ -3174,35 +3174,35 @@ module Minitest::Expectations
 end
 
 class Minitest::Mock
-  def ===(*args, &b); end
+  def ===(*args, **kwargs, &b); end
 
   def __call(name, data); end
 
   def __respond_to?(*arg); end
 
-  def class(*args, &b); end
+  def class(*args, **kwargs, &b); end
 
-  def expect(name, retval, args=T.unsafe(nil), &blk); end
+  def expect(name, retval, args=T.unsafe(nil), **kwargs, &blk); end
 
   def initialize(delegator=T.unsafe(nil)); end
 
-  def inspect(*args, &b); end
+  def inspect(*args, **kwargs, &b); end
 
-  def instance_eval(*args, &b); end
+  def instance_eval(*args, **kwargs, &b); end
 
-  def instance_variables(*args, &b); end
+  def instance_variables(*args, **kwargs, &b); end
 
-  def method_missing(sym, *args, &block); end
+  def method_missing(sym, *args, **kwargs, &block); end
 
-  def object_id(*args, &b); end
+  def object_id(*args, **kwargs, &b); end
 
-  def public_send(*args, &b); end
+  def public_send(*args, **kwargs, &b); end
 
   def respond_to?(sym, include_private=T.unsafe(nil)); end
 
-  def send(*args, &b); end
+  def send(*args, **kwargs, &b); end
 
-  def to_s(*args, &b); end
+  def to_s(*args, **kwargs, &b); end
 
   def verify(); end
 end
@@ -3522,7 +3522,7 @@ class Object
 
   def __send!(*arg); end
 
-  def stub(name, val_or_callable, *block_args); end
+  def stub(name, val_or_callable, *block_args, **block_kwargs); end
 
   def to_yaml(options=T.unsafe(nil)); end
   ARGF = ::T.let(nil, ::T.untyped)

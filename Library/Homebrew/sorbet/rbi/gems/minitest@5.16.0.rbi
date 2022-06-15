@@ -11,6 +11,7 @@ module Minitest
     def autorun; end
     def backtrace_filter; end
     def backtrace_filter=(_arg0); end
+    def cattr_accessor(name); end
     def clock_time; end
     def extensions; end
     def extensions=(_arg0); end
@@ -26,6 +27,8 @@ module Minitest
     def reporter=(_arg0); end
     def run(args = T.unsafe(nil)); end
     def run_one_method(klass, method_name); end
+    def seed; end
+    def seed=(_arg0); end
   end
 end
 
@@ -131,8 +134,6 @@ class Minitest::CompositeReporter < ::Minitest::AbstractReporter
   def reporters=(_arg0); end
   def start; end
 end
-
-Minitest::ENCS = T.let(T.unsafe(nil), TrueClass)
 
 module Minitest::Guard
   def jruby?(platform = T.unsafe(nil)); end
@@ -291,6 +292,8 @@ class Minitest::Test < ::Minitest::Runnable
 
   def capture_exceptions; end
   def class_name; end
+  def neuter_exception(e); end
+  def new_exception(klass, msg, bt); end
   def run; end
   def sanitize_exception(e); end
   def with_info_handler(&block); end
