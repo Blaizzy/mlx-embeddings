@@ -93,6 +93,8 @@ module Homebrew
   def print_outdated(formulae_or_casks, args:)
     formulae_or_casks.each do |formula_or_cask|
       if formula_or_cask.is_a?(Formula)
+        next if args.greedy? || args.greedy_latest? || args.greedy_auto_updates?
+
         f = formula_or_cask
 
         if verbose?
