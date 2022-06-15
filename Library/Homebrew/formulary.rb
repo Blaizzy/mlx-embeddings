@@ -124,7 +124,7 @@ module Formulary
     cache[:path][path] = klass
   end
 
-  def self.load_formula_from_api(name, flags:, ignore_errors:)
+  def self.load_formula_from_api(name, flags:)
     namespace = "FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
 
     mod = Module.new
@@ -493,17 +493,17 @@ module Formulary
     end
 
     def klass(flags:, ignore_errors:)
-      load_from_api(flags: flags, ignore_errors: ignore_errors) unless Formulary.formula_class_defined_from_api?(name)
+      load_from_api(flags: flags) unless Formulary.formula_class_defined_from_api?(name)
       Formulary.formula_class_get_from_api(name)
     end
 
     private
 
-    def load_from_api(flags:, ignore_errors:)
+    def load_from_api(flags:)
       $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{name} from API" if debug?
       # raise FormulaUnavailableError, name unless path.file?
 
-      Formulary.load_formula_from_api(name, flags: flags, ignore_errors: ignore_errors)
+      Formulary.load_formula_from_api(name, flags: flags)
     end
   end
 
