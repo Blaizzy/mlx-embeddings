@@ -103,8 +103,6 @@ class Dependency
 
       deps.each do |dep|
         next if dependent.name == dep.name
-        # avoid downloading build dependency bottles
-        next if dep.build? && dependent.pour_bottle? && Homebrew::EnvConfig.install_from_api?
 
         case action(dependent, dep, &block)
         when :prune
