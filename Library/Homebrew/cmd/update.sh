@@ -748,7 +748,7 @@ EOS
   if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
   then
     mkdir -p "${HOMEBREW_CACHE}/api"
-    # TODO: etags?
+# TODO: use --header If-Modified-Since
     curl \
       "${CURL_DISABLE_CURLRC_ARGS[@]}" \
       --fail --compressed --silent --max-time 5 \
