@@ -108,6 +108,10 @@ module Homebrew
                      "use of `curlrc`.",
         boolean:     true,
       },
+      HOMEBREW_CURL_PATH:                        {
+        description: "Linux only: Set this value to a new enough `curl` executable for Homebrew to use.",
+        default:     "curl",
+      },
       HOMEBREW_CURL_RETRIES:                     {
         description: "Pass the given retry count to `--retry` when invoking `curl`(1).",
         default:     3,
@@ -199,6 +203,10 @@ module Homebrew
       },
       HOMEBREW_GIT_NAME:                         {
         description: "Set the Git author and committer name to this value.",
+      },
+      HOMEBREW_GIT_PATH:                         {
+        description: "Linux only: Set this value to a new enough `git` executable for Homebrew to use.",
+        default:     "git",
       },
       HOMEBREW_INSTALL_BADGE:                    {
         description:  "Print this text before the installation summary of each successful build.",
