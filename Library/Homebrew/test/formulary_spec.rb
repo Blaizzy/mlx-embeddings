@@ -236,11 +236,11 @@ describe Formulary do
               "reason"      => ":provided_by_macos",
               "explanation" => "",
             },
-            "build_dependencies"       => [],
-            "dependencies"             => [],
-            "recommended_dependencies" => [],
-            "optional_dependencies"    => [],
-            "uses_from_macos"          => [],
+            "build_dependencies"       => ["build_dep"],
+            "dependencies"             => ["dep"],
+            "recommended_dependencies" => ["recommended_dep"],
+            "optional_dependencies"    => ["optional_dep"],
+            "uses_from_macos"          => ["uses_from_macos_dep"],
             "caveats"                  => "",
           }.merge(extra_items),
         }
@@ -270,6 +270,8 @@ describe Formulary do
         formula = described_class.factory(formula_name)
         expect(formula).to be_kind_of(Formula)
         expect(formula.keg_only_reason.reason).to eq :provided_by_macos
+        expect(formula.deps.count).to eq 4
+        expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
         expect {
           formula.install
         }.to raise_error("Cannot build from source from abstract formula.")
