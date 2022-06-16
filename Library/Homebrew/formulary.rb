@@ -155,16 +155,14 @@ module Formulary
           root_url bottles_stable["root_url"]
           rebuild bottles_stable["rebuild"]
           bottles_stable["files"].each do |tag, bottle_spec|
-            cellar = bottle_spec["cellar"]
-            cellar = cellar[1..].to_sym if cellar.start_with?(":")
+            cellar = Formulary.convert_to_string_or_symbol bottle_spec["cellar"]
             sha256 cellar: cellar, tag.to_sym => bottle_spec["sha256"]
           end
         end
       end
 
       if (keg_only_reason = json_formula["keg_only_reason"]).present?
-        reason = keg_only_reason["reason"]
-        reason = reason[1..].to_sym if reason.start_with?(":")
+        reason = Formulary.convert_to_string_or_symbol keg_only_reason["reason"]
         keg_only reason, keg_only_reason["explanation"]
       end
 
@@ -255,6 +253,12 @@ module Formulary
     class_name.tr!("+", "x")
     class_name.sub!(/(.)@(\d)/, "\\1AT\\2")
     class_name
+  end
+
+  def self.convert_to_string_or_symbol(string)
+    return string[1..].to_sym if string.start_with?(":")
+
+    string
   end
 
   # A {FormulaLoader} returns instances of formulae.
@@ -501,7 +505,6 @@ module Formulary
 
     def load_from_api(flags:)
       $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{name} from API" if debug?
-      # raise FormulaUnavailableError, name unless path.file?
 
       Formulary.load_formula_from_api(name, flags: flags)
     end
