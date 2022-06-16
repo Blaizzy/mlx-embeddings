@@ -241,7 +241,7 @@ describe Formulary do
             "recommended_dependencies" => ["recommended_dep"],
             "optional_dependencies"    => ["optional_dep"],
             "uses_from_macos"          => ["uses_from_macos_dep"],
-            "caveats"                  => "",
+            "caveats"                  => "example caveat string",
           }.merge(extra_items),
         }
       end
@@ -276,6 +276,7 @@ describe Formulary do
           expect(formula.deps.count).to eq 5
         end
         expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
+        expect(formula.caveats).to eq "example caveat string"
         expect {
           formula.install
         }.to raise_error("Cannot build from source from abstract formula.")

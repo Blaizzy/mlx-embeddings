@@ -203,7 +203,7 @@ module Formulary
 
       @caveats_string = json_formula["caveats"]
       def caveats
-        @caveats_string
+        self.class.instance_variable_get(:@caveats_string)
       end
     end
 
