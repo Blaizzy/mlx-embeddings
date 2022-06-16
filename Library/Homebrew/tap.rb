@@ -142,8 +142,6 @@ class Tap
   # The remote repository name of this {Tap}.
   # e.g. `user/homebrew-repo`
   def remote_repo
-    raise TapUnavailableError, name unless installed?
-
     return unless remote
 
     @remote_repo ||= remote.delete_prefix("https://github.com/")
@@ -793,6 +791,12 @@ class CoreTap < Tap
     return if Homebrew::EnvConfig.install_from_api?
 
     safe_system HOMEBREW_BREW_FILE, "tap", instance.name
+  end
+
+  def remote
+    super if installed? || !Homebrew::EnvConfig.install_from_api?
+
+    Homebrew::EnvConfig.core_git_remote
   end
 
   # CoreTap never allows shallow clones (on request from GitHub).

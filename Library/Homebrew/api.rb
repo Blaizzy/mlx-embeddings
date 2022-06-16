@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "api/analytics"
-require "api/bottle"
 require "api/cask"
 require "api/cask-source"
 require "api/formula"
@@ -21,6 +20,7 @@ module Homebrew
     module_function
 
     API_DOMAIN = "https://formulae.brew.sh/api"
+    HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
 
     sig { params(endpoint: String, json: T::Boolean).returns(T.any(String, Hash)) }
     def fetch(endpoint, json: true)

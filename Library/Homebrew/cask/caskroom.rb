@@ -49,7 +49,8 @@ module Cask
         begin
           if (tap_path = CaskLoader.tap_paths(token).first)
             CaskLoader::FromTapPathLoader.new(tap_path).load(config: config)
-          elsif (caskroom_path = Pathname.glob(path.join(".metadata/*/*/*/*.rb")).first)
+          elsif (caskroom_path = Pathname.glob(path.join(".metadata/*/*/*/*.rb")).first) &&
+                (!Homebrew::EnvConfig.install_from_api? || !Homebrew::API::CaskSource.available?(token))
             CaskLoader::FromPathLoader.new(caskroom_path).load(config: config)
           else
             CaskLoader.load(token, config: config)

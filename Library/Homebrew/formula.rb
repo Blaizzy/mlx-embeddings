@@ -525,14 +525,7 @@ class Formula
   # exists and is not empty.
   # @private
   def latest_version_installed?
-    latest_prefix = if !head? && Homebrew::EnvConfig.install_from_api? &&
-                       (latest_pkg_version = Homebrew::API::Versions.latest_formula_version(name))
-      prefix latest_pkg_version
-    else
-      latest_installed_prefix
-    end
-
-    (dir = latest_prefix).directory? && !dir.children.empty?
+    (dir = latest_installed_prefix).directory? && !dir.children.empty?
   end
 
   # If at least one version of {Formula} is installed.
@@ -1352,11 +1345,6 @@ class Formula
     Formula.cache[:outdated_kegs][cache_key] ||= begin
       all_kegs = []
       current_version = T.let(false, T::Boolean)
-      latest_version = if !head? && Homebrew::EnvConfig.install_from_api? && (core_formula? || tap.blank?)
-        Homebrew::API::Versions.latest_formula_version(name) || pkg_version
-      else
-        pkg_version
-      end
 
       installed_kegs.each do |keg|
         all_kegs << keg
@@ -1364,8 +1352,8 @@ class Formula
         next if version.head?
 
         tab = Tab.for_keg(keg)
-        next if version_scheme > tab.version_scheme && latest_version != version
-        next if version_scheme == tab.version_scheme && latest_version > version
+        next if version_scheme > tab.version_scheme && pkg_version != version
+        next if version_scheme == tab.version_scheme && pkg_version > version
 
         # don't consider this keg current if there's a newer formula available
         next if follow_installed_alias? && new_formula_available?

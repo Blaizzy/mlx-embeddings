@@ -6,6 +6,8 @@ require "extend/cachable"
 require "tab"
 require "utils/bottles"
 
+require "active_support/core_ext/hash/deep_transform_values"
+
 # The {Formulary} is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.
 #
@@ -26,22 +28,32 @@ module Formulary
     !@factory_cache.nil?
   end
 
-  def self.formula_class_defined?(path)
-    cache.key?(path)
+  def self.formula_class_defined_from_path?(path)
+    cache.key?(:path) && cache[:path].key?(path)
   end
 
-  def self.formula_class_get(path)
-    cache.fetch(path)
+  def self.formula_class_defined_from_api?(name)
+    cache.key?(:api) && cache[:api].key?(name)
+  end
+
+  def self.formula_class_get_from_path(path)
+    cache[:path].fetch(path)
+  end
+
+  def self.formula_class_get_from_api(name)
+    cache[:api].fetch(name)
   end
 
   def self.clear_cache
-    cache.each do |key, klass|
-      next if key == :formulary_factory
+    cache.each do |type, cached_objects|
+      next if type == :formulary_factory
 
-      namespace = klass.name.deconstantize
-      next if namespace.deconstantize != name
+      cached_objects.each_value do |klass|
+        namespace = klass.name.deconstantize
+        next if namespace.deconstantize != name
 
-      remove_const(namespace.demodulize)
+        remove_const(namespace.demodulize)
+      end
     end
 
     super
@@ -108,7 +120,95 @@ module Formulary
     contents = path.open("r") { |f| ensure_utf8_encoding(f).read }
     namespace = "FormulaNamespace#{Digest::MD5.hexdigest(path.to_s)}"
     klass = load_formula(name, path, contents, namespace, flags: flags, ignore_errors: ignore_errors)
-    cache[path] = klass
+    cache[:path] ||= {}
+    cache[:path][path] = klass
+  end
+
+  def self.load_formula_from_api(name, flags:)
+    namespace = "FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
+
+    mod = Module.new
+    remove_const(namespace) if const_defined?(namespace)
+    const_set(namespace, mod)
+
+    mod.const_set(:BUILD_FLAGS, flags)
+
+    class_s = Formulary.class_s(name)
+    json_formula = Homebrew::API::Formula.all_formulae[name]
+
+    klass = Class.new(::Formula) do
+      desc json_formula["desc"]
+      homepage json_formula["homepage"]
+      license json_formula["license"]
+      revision json_formula["revision"]
+      version_scheme json_formula["version_scheme"]
+
+      if (urls_stable = json_formula["urls"]["stable"]).present?
+        stable do
+          url urls_stable["url"]
+          version json_formula["versions"]["stable"]
+        end
+      end
+
+      if (bottles_stable = json_formula["bottle"]["stable"]).present?
+        bottle do
+          root_url bottles_stable["root_url"]
+          rebuild bottles_stable["rebuild"]
+          bottles_stable["files"].each do |tag, bottle_spec|
+            cellar = Formulary.convert_to_string_or_symbol bottle_spec["cellar"]
+            sha256 cellar: cellar, tag.to_sym => bottle_spec["sha256"]
+          end
+        end
+      end
+
+      if (keg_only_reason = json_formula["keg_only_reason"]).present?
+        reason = Formulary.convert_to_string_or_symbol keg_only_reason["reason"]
+        keg_only reason, keg_only_reason["explanation"]
+      end
+
+      if (deprecation_date = json_formula["deprecation_date"]).present?
+        deprecate! date: deprecation_date, because: json_formula["deprecation_reason"]
+      end
+
+      if (disable_date = json_formula["disable_date"]).present?
+        disable! date: disable_date, because: json_formula["disable_reason"]
+      end
+
+      json_formula["build_dependencies"].each do |dep|
+        depends_on dep => :build
+      end
+
+      json_formula["dependencies"].each do |dep|
+        depends_on dep
+      end
+
+      json_formula["recommended_dependencies"].each do |dep|
+        depends_on dep => :recommended
+      end
+
+      json_formula["optional_dependencies"].each do |dep|
+        depends_on dep => :optional
+      end
+
+      json_formula["uses_from_macos"].each do |dep|
+        dep = dep.deep_transform_values(&:to_sym) if dep.is_a?(Hash)
+        uses_from_macos dep
+      end
+
+      def install
+        raise "Cannot build from source from abstract formula."
+      end
+
+      @caveats_string = json_formula["caveats"]
+      def caveats
+        @caveats_string
+      end
+    end
+
+    mod.const_set(class_s, klass)
+
+    cache[:api] ||= {}
+    cache[:api][name] = klass
   end
 
   def self.resolve(name, spec: nil, force_bottle: false, flags: [])
@@ -155,6 +255,12 @@ module Formulary
     class_name
   end
 
+  def self.convert_to_string_or_symbol(string)
+    return string[1..].to_sym if string.start_with?(":")
+
+    string
+  end
+
   # A {FormulaLoader} returns instances of formulae.
   # Subclasses implement loaders for particular sources of formulae.
   class FormulaLoader
@@ -182,8 +288,8 @@ module Formulary
     end
 
     def klass(flags:, ignore_errors:)
-      load_file(flags: flags, ignore_errors: ignore_errors) unless Formulary.formula_class_defined?(path)
-      Formulary.formula_class_get(path)
+      load_file(flags: flags, ignore_errors: ignore_errors) unless Formulary.formula_class_defined_from_path?(path)
+      Formulary.formula_class_get_from_path(path)
     end
 
     private
@@ -345,10 +451,6 @@ module Formulary
     rescue FormulaClassUnavailableError => e
       raise TapFormulaClassUnavailableError.new(tap, name, e.path, e.class_name, e.class_list), "", e.backtrace
     rescue FormulaUnavailableError => e
-      if tap.core_tap? && Homebrew::EnvConfig.install_from_api?
-        raise CoreTapFormulaUnavailableError.new(name), "", e.backtrace
-      end
-
       raise TapFormulaUnavailableError.new(tap, name), "", e.backtrace
     end
 
@@ -367,10 +469,6 @@ module Formulary
     end
 
     def get_formula(*)
-      if !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
-        raise CoreTapFormulaUnavailableError, name
-      end
-
       raise FormulaUnavailableError, name
     end
   end
@@ -392,6 +490,26 @@ module Formulary
     end
   end
 
+  # Load formulae from the API.
+  class FormulaAPILoader < FormulaLoader
+    def initialize(name)
+      super name, Formulary.core_path(name)
+    end
+
+    def klass(flags:, ignore_errors:)
+      load_from_api(flags: flags) unless Formulary.formula_class_defined_from_api?(name)
+      Formulary.formula_class_get_from_api(name)
+    end
+
+    private
+
+    def load_from_api(flags:)
+      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{name} from API" if debug?
+
+      Formulary.load_formula_from_api(name, flags: flags)
+    end
+  end
+
   # Return a {Formula} instance for the given reference.
   # `ref` is a string containing:
   #
@@ -404,12 +522,6 @@ module Formulary
     force_bottle: false, flags: [], ignore_errors: false
   )
     raise ArgumentError, "Formulae must have a ref!" unless ref
-
-    if Homebrew::EnvConfig.install_from_api? &&
-       @formula_name_local_bottle_path_map.present? &&
-       @formula_name_local_bottle_path_map.key?(ref)
-      ref = @formula_name_local_bottle_path_map[ref]
-    end
 
     cache_key = "#{ref}-#{spec}-#{alias_path}-#{from}"
     if factory_cached? && cache[:formulary_factory] &&
@@ -425,24 +537,6 @@ module Formulary
       cache[:formulary_factory][cache_key] ||= formula
     end
     formula
-  end
-
-  # Map a formula name to a local/fetched bottle archive. This mapping will be used by {Formulary::factory}
-  # to allow formulae to be loaded automatically from their local bottle archive without
-  # needing to exist in a tap or be passed as a complete path. For example,
-  # to map `hello` from its bottle archive:
-  # <pre>Formulary.map_formula_name_to_local_bottle_path "hello", HOMEBREW_CACHE/"hello--2.10"
-  # Formulary.factory "hello" # returns the hello formula from the local bottle archive
-  # </pre>
-  # @param formula_name the formula name string to map.
-  # @param local_bottle_path a path pointing to the target bottle archive.
-  def self.map_formula_name_to_local_bottle_path(formula_name, local_bottle_path)
-    unless Homebrew::EnvConfig.install_from_api?
-      raise UsageError, "HOMEBREW_INSTALL_FROM_API not set but required for #{__method__}!"
-    end
-
-    @formula_name_local_bottle_path_map ||= {}
-    @formula_name_local_bottle_path_map[formula_name] = Pathname(local_bottle_path).realpath
   end
 
   # Return a {Formula} instance for the given rack.
@@ -539,11 +633,9 @@ module Formulary
     when URL_START_REGEX
       return FromUrlLoader.new(ref)
     when HOMEBREW_TAP_FORMULA_REGEX
-      # If `homebrew/core` is specified and not installed, check whether the formula is already installed.
       if ref.start_with?("homebrew/core/") && !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
         name = ref.split("/", 3).last
-        possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{name}/.brew/#{name}.rb")
-        return FormulaLoader.new(name, possible_keg_formula) if possible_keg_formula.file?
+        return FormulaAPILoader.new(name) if Homebrew::API::Formula.all_formulae.key?(name)
       end
 
       return TapLoader.new(ref, from: from)
@@ -556,6 +648,12 @@ module Formulary
 
     possible_alias = CoreTap.instance.alias_dir/ref
     return AliasLoader.new(possible_alias) if possible_alias.file?
+
+    if !CoreTap.instance.installed? &&
+       Homebrew::EnvConfig.install_from_api? &&
+       Homebrew::API::Formula.all_formulae.key?(ref)
+      return FormulaAPILoader.new(ref)
+    end
 
     possible_tap_formulae = tap_paths(ref)
     raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae) if possible_tap_formulae.size > 1

@@ -218,11 +218,6 @@ class FormulaInstaller
   def verify_deps_exist
     begin
       compute_dependencies
-    rescue CoreTapFormulaUnavailableError => e
-      raise unless Homebrew::API::Bottle.available? e.name
-
-      Homebrew::API::Bottle.fetch_bottles(e.name)
-      retry
     rescue TapFormulaUnavailableError => e
       raise if e.tap.installed?
 

@@ -45,8 +45,8 @@ class CaskDependent
     end
   end
 
-  def recursive_dependencies(ignore_missing: false, &block)
-    Dependency.expand(self, ignore_missing: ignore_missing, &block)
+  def recursive_dependencies(&block)
+    Dependency.expand(self, &block)
   end
 
   def recursive_requirements(&block)

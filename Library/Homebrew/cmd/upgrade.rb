@@ -161,19 +161,6 @@ module Homebrew
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
 
-    if Homebrew::EnvConfig.install_from_api?
-      formulae_to_install.map! do |formula|
-        next formula if formula.head?
-        next formula if formula.tap.present? && !formula.core_formula?
-        next formula unless Homebrew::API::Bottle.available?(formula.name)
-
-        Homebrew::API::Bottle.fetch_bottles(formula.name)
-        Formulary.factory(formula.name)
-      rescue FormulaUnavailableError
-        formula
-      end
-    end
-
     if formulae_to_install.empty?
       oh1 "No packages to upgrade"
     else
@@ -225,15 +212,6 @@ module Homebrew
   sig { params(casks: T::Array[Cask::Cask], args: CLI::Args).returns(T::Boolean) }
   def upgrade_outdated_casks(casks, args:)
     return false if args.formula?
-
-    if Homebrew::EnvConfig.install_from_api?
-      casks = casks.map do |cask|
-        next cask if cask.tap.present? && cask.tap != "homebrew/cask"
-        next cask unless Homebrew::API::CaskSource.available?(cask.token)
-
-        Cask::CaskLoader.load Homebrew::API::CaskSource.fetch(cask.token)
-      end
-    end
 
     Cask::Cmd::Upgrade.upgrade_casks(
       *casks,
