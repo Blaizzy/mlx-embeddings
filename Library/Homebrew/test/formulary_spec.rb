@@ -272,11 +272,10 @@ describe Formulary do
         expect(formula.keg_only_reason.reason).to eq :provided_by_macos
         if OS.mac?
           expect(formula.deps.count).to eq 4
-          expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
         elsif OS.linux?
           expect(formula.deps.count).to eq 5
-          expect(formula.uses_from_macos_elements).to eq []
         end
+        expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
         expect {
           formula.install
         }.to raise_error("Cannot build from source from abstract formula.")
