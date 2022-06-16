@@ -2007,6 +2007,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_CURLRC`
   <br>If set, do not pass `--disable` when invoking `curl`(1), which disables the use of `curlrc`.
 
+- `HOMEBREW_CURL_PATH`
+  <br>Linux only: Set this value to a new enough `curl` executable for Homebrew to use.
+
+  *Default:* `curl`.
+
 - `HOMEBREW_CURL_RETRIES`
   <br>Pass the given retry count to `--retry` when invoking `curl`(1).
 
@@ -2078,6 +2083,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_GIT_NAME`
   <br>Set the Git author and committer name to this value.
+
+- `HOMEBREW_GIT_PATH`
+  <br>Linux only: Set this value to a new enough `git` executable for Homebrew to use.
+
+  *Default:* `git`.
 
 - `HOMEBREW_INSTALL_BADGE`
   <br>Print this text before the installation summary of each successful build.
