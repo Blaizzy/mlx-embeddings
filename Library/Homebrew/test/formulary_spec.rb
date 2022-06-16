@@ -345,6 +345,16 @@ describe Formulary do
     end
   end
 
+  describe "::convert_to_string_or_symbol" do
+    it "returns the original string if it doesn't start with a colon" do
+      expect(described_class.convert_to_string_or_symbol("foo")).to eq "foo"
+    end
+
+    it "returns a symbol if the original string starts with a colon" do
+      expect(described_class.convert_to_string_or_symbol(":foo")).to eq :foo
+    end
+  end
+
   describe "::convert_to_deprecate_disable_reason_string_or_symbol" do
     it "returns the original string if it isn't a preset reason" do
       expect(described_class.convert_to_deprecate_disable_reason_string_or_symbol("foo")).to eq "foo"
