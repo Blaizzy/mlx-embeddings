@@ -26,44 +26,6 @@ describe Formulary do
       end
     RUBY
   end
-  let(:formula_json_contents) do
-    {
-      formula_name => {
-        "desc"                     => "testball",
-        "homepage"                 => "https://example.com",
-        "license"                  => "MIT",
-        "revision"                 => 0,
-        "version_scheme"           => 0,
-        "versions"                 => { "stable" => "0.1" },
-        "urls"                     => {
-          "stable" => {
-            "url"      => "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz",
-            "tag"      => nil,
-            "revision" => nil,
-          },
-        },
-        "bottle"                   => {
-          "stable" => {
-            "rebuild"  => 0,
-            "root_url" => "file://#{bottle_dir}",
-            "files"    => {
-              Utils::Bottles.tag.to_s => {
-                "cellar" => ":any",
-                "url"    => "file://#{bottle_dir}/#{formula_name}",
-                "sha256" => "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149",
-              },
-            },
-          },
-        },
-        "build_dependencies"       => [],
-        "dependencies"             => [],
-        "recommended_dependencies" => [],
-        "optional_dependencies"    => [],
-        "uses_from_macos"          => [],
-        "caveats"                  => "",
-      },
-    }
-  end
   let(:bottle_dir) { Pathname.new("#{TEST_FIXTURE_DIR}/bottles") }
   let(:bottle) { bottle_dir/"testball_bottle-0.1.#{Utils::Bottles.tag}.bottle.tar.gz" }
 
@@ -241,14 +203,95 @@ describe Formulary do
     end
 
     context "when loading from the API" do
+      def formula_json_contents(extra_items = {})
+        {
+          formula_name => {
+            "desc"                     => "testball",
+            "homepage"                 => "https://example.com",
+            "license"                  => "MIT",
+            "revision"                 => 0,
+            "version_scheme"           => 0,
+            "versions"                 => { "stable" => "0.1" },
+            "urls"                     => {
+              "stable" => {
+                "url"      => "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz",
+                "tag"      => nil,
+                "revision" => nil,
+              },
+            },
+            "bottle"                   => {
+              "stable" => {
+                "rebuild"  => 0,
+                "root_url" => "file://#{bottle_dir}",
+                "files"    => {
+                  Utils::Bottles.tag.to_s => {
+                    "cellar" => ":any",
+                    "url"    => "file://#{bottle_dir}/#{formula_name}",
+                    "sha256" => "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149",
+                  },
+                },
+              },
+            },
+            "keg_only_reason"          => {
+              "reason"      => ":provided_by_macos",
+              "explanation" => "",
+            },
+            "build_dependencies"       => [],
+            "dependencies"             => [],
+            "recommended_dependencies" => [],
+            "optional_dependencies"    => [],
+            "uses_from_macos"          => [],
+            "caveats"                  => "",
+          }.merge(extra_items),
+        }
+      end
+
+      let(:deprecate_json) do
+        {
+          "deprecation_date"   => "2022-06-15",
+          "deprecation_reason" => "repo_archived",
+        }
+      end
+
+      let(:disable_json) do
+        {
+          "disable_date"   => "2022-06-15",
+          "disable_reason" => "repo_archived",
+        }
+      end
+
       before do
         allow(described_class).to receive(:loader_for).and_return(described_class::FormulaAPILoader.new(formula_name))
-        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents
       end
 
       it "returns a Formula when given a name" do
+        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents
+
         formula = described_class.factory(formula_name)
         expect(formula).to be_kind_of(Formula)
+        expect(formula.keg_only_reason.reason).to eq :provided_by_macos
+        expect {
+          formula.install
+        }.to raise_error("Cannot build from source from abstract formula.")
+      end
+
+      it "returns a deprecated Formula when given a name" do
+        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents(deprecate_json)
+
+        formula = described_class.factory(formula_name)
+        expect(formula).to be_kind_of(Formula)
+        expect(formula.deprecated?).to be true
+        expect {
+          formula.install
+        }.to raise_error("Cannot build from source from abstract formula.")
+      end
+
+      it "returns a disabled Formula when given a name" do
+        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents(disable_json)
+
+        formula = described_class.factory(formula_name)
+        expect(formula).to be_kind_of(Formula)
+        expect(formula.disabled?).to be true
         expect {
           formula.install
         }.to raise_error("Cannot build from source from abstract formula.")
