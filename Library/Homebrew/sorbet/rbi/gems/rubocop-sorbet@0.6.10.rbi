@@ -166,6 +166,11 @@ class RuboCop::Cop::Sorbet::ForbidTUnsafe < ::RuboCop::Cop::Cop
   def t_unsafe?(param0 = T.unsafe(nil)); end
 end
 
+class RuboCop::Cop::Sorbet::ForbidTUntyped < ::RuboCop::Cop::Cop
+  def on_send(node); end
+  def t_untyped?(param0 = T.unsafe(nil)); end
+end
+
 class RuboCop::Cop::Sorbet::ForbidUntypedStructProps < ::RuboCop::Cop::Cop
   def on_class(node); end
   def subclass_of_t_struct?(param0 = T.unsafe(nil)); end
