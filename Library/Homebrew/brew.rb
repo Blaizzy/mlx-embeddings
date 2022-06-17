@@ -107,6 +107,10 @@ begin
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
+    if Commands::INSTALL_FROM_API_FORBIDDEN_COMMANDS.include?(cmd) && Homebrew::EnvConfig.install_from_api?
+      odie "This command cannot be run while HOMEBREW_INSTALL_FROM_API is set!"
+    end
+
     Homebrew.send Commands.method_name(cmd)
   elsif (path = Commands.external_ruby_cmd_path(cmd))
     require?(path)
