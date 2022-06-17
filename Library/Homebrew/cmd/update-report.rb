@@ -610,7 +610,7 @@ class ReporterHub
   def dump_new_formula_report
     formulae = select_formula_or_cask(:A).sort.map do |name|
       name unless installed?(name)
-    end
+    end.compact
 
     output_dump_formula_or_cask_report "New Formulae", formulae
   end
@@ -618,7 +618,7 @@ class ReporterHub
   def dump_new_cask_report
     casks = select_formula_or_cask(:AC).sort.map do |name|
       name.split("/").last unless cask_installed?(name)
-    end
+    end.compact
 
     output_dump_formula_or_cask_report "New Casks", casks
   end
