@@ -143,7 +143,7 @@ GEM
       rubocop (>= 1.7.0, < 2.0)
     rubocop-rspec (2.11.1)
       rubocop (~> 1.19)
-    rubocop-sorbet (0.6.8)
+    rubocop-sorbet (0.6.10)
       rubocop (>= 0.90.0)
     ruby-macho (3.0.0)
     ruby-progressbar (1.11.0)
