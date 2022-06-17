@@ -52,7 +52,7 @@ module Homebrew
     if (macos = args.macos&.compact_blank) && macos.present?
       runners += macos.map do |element|
         # We accept runner name syntax (11-arm64) or bottle syntax (arm64_big_sur)
-        os, arch = element.yield_self do |s|
+        os, arch = element.then do |s|
           tag = Utils::Bottles::Tag.from_symbol(s.to_sym)
           [tag.to_macos_version, tag.arch]
         rescue ArgumentError, MacOSVersionError

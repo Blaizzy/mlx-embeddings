@@ -6,7 +6,7 @@ require "utils/user"
 describe User do
   subject { described_class.current }
 
-  it { is_expected.to eq ENV["USER"] }
+  it { is_expected.to eq ENV.fetch("USER") }
 
   describe "#gui?" do
     before do
@@ -17,8 +17,8 @@ describe User do
     context "when the current user is in a console session" do
       let(:who_output) {
         <<~EOS
-          #{ENV["USER"]}   console  Oct  1 11:23
-          #{ENV["USER"]}   ttys001  Oct  1 11:25
+          #{ENV.fetch("USER")}   console  Oct  1 11:23
+          #{ENV.fetch("USER")}   ttys001  Oct  1 11:25
         EOS
       }
 
@@ -28,8 +28,8 @@ describe User do
     context "when the current user is not in a console session" do
       let(:who_output) {
         <<~EOS
-          #{ENV["USER"]}   ttys001  Oct  1 11:25
-          fake_user        ttys002  Oct  1 11:27
+          #{ENV.fetch("USER")}   ttys001  Oct  1 11:25
+          fake_user              ttys002  Oct  1 11:27
         EOS
       }
 

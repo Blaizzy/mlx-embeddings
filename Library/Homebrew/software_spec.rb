@@ -508,8 +508,8 @@ class BottleSpecification
 
     prefix = Pathname(cellar).parent.to_s
 
-    cellar_relocatable = cellar.size >= HOMEBREW_CELLAR.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
-    prefix_relocatable = prefix.size >= HOMEBREW_PREFIX.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
+    cellar_relocatable = cellar.size >= HOMEBREW_CELLAR.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"].present?
+    prefix_relocatable = prefix.size >= HOMEBREW_PREFIX.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"].present?
 
     compatible_cellar = cellar == HOMEBREW_CELLAR.to_s || cellar_relocatable
     compatible_prefix = prefix == HOMEBREW_PREFIX.to_s || prefix_relocatable

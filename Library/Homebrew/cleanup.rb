@@ -391,7 +391,7 @@ module Homebrew
     end
 
     def cleanup_portable_ruby
-      rubies = [which("ruby"), which("ruby", ENV["HOMEBREW_PATH"])].compact
+      rubies = [which("ruby"), which("ruby", ORIGINAL_PATHS)].compact
       system_ruby = Pathname.new("/usr/bin/ruby")
       rubies << system_ruby if system_ruby.exist?
 

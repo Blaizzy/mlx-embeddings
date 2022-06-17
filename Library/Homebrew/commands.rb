@@ -93,11 +93,11 @@ module Commands
 
   # Ruby commands which are run by being `require`d.
   def external_ruby_cmd_path(cmd)
-    which("brew-#{cmd}.rb", PATH.new(ENV["PATH"]).append(Tap.cmd_directories))
+    which("brew-#{cmd}.rb", PATH.new(ENV.fetch("PATH")).append(Tap.cmd_directories))
   end
 
   def external_cmd_path(cmd)
-    which("brew-#{cmd}", PATH.new(ENV["PATH"]).append(Tap.cmd_directories))
+    which("brew-#{cmd}", PATH.new(ENV.fetch("PATH")).append(Tap.cmd_directories))
   end
 
   def path(cmd)

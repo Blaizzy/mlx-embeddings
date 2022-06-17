@@ -107,7 +107,6 @@ jobs:
           brew tap homebrew/cask-versions
           brew tap homebrew/command-not-found
           brew tap homebrew/formula-analytics
-          brew tap homebrew/linux-dev
           brew tap homebrew/portable-ruby
           brew tap homebrew/services
 
@@ -136,7 +135,6 @@ jobs:
                                          homebrew/autoupdate\
                                          homebrew/command-not-found \
                                          homebrew/formula-analytics \
-                                         homebrew/linux-dev \
                                          homebrew/portable-ruby
 
       - name: Run brew style on cask taps

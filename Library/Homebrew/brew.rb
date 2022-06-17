@@ -11,35 +11,14 @@ raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unle
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
 # check ruby version before requiring any modules.
-unless ENV["HOMEBREW_REQUIRED_RUBY_VERSION"]
-  raise "HOMEBREW_REQUIRED_RUBY_VERSION was not exported! Please call bin/brew directly!"
-end
-
-REQUIRED_RUBY_X, REQUIRED_RUBY_Y, = ENV["HOMEBREW_REQUIRED_RUBY_VERSION"].split(".").map(&:to_i)
+REQUIRED_RUBY_X, REQUIRED_RUBY_Y, = ENV.fetch("HOMEBREW_REQUIRED_RUBY_VERSION").split(".").map(&:to_i)
 RUBY_X, RUBY_Y, = RUBY_VERSION.split(".").map(&:to_i)
 if RUBY_X < REQUIRED_RUBY_X || (RUBY_X == REQUIRED_RUBY_X && RUBY_Y < REQUIRED_RUBY_Y)
   raise "Homebrew must be run under Ruby #{REQUIRED_RUBY_X}.#{REQUIRED_RUBY_Y}! " \
         "You're running #{RUBY_VERSION}."
 end
 
-# Also define here so we can rescue regardless of location.
-class MissingEnvironmentVariables < RuntimeError; end
-
-begin
-  require_relative "global"
-rescue MissingEnvironmentVariables => e
-  raise e if ENV["HOMEBREW_MISSING_ENV_RETRY"]
-
-  if ENV["HOMEBREW_DEVELOPER"]
-    $stderr.puts <<~EOS
-      Warning: #{e.message}
-      Retrying with `exec #{ENV["HOMEBREW_BREW_FILE"]}`!
-    EOS
-  end
-
-  ENV["HOMEBREW_MISSING_ENV_RETRY"] = "1"
-  exec ENV["HOMEBREW_BREW_FILE"], *ARGV
-end
+require_relative "global"
 
 begin
   trap("INT", std_trap) # restore default CTRL-C handler
@@ -74,8 +53,8 @@ begin
   args = Homebrew::CLI::Parser.new.parse(ARGV.dup.freeze, ignore_invalid_options: true)
   Context.current = args.context
 
-  path = PATH.new(ENV["PATH"])
-  homebrew_path = PATH.new(ENV["HOMEBREW_PATH"])
+  path = PATH.new(ENV.fetch("PATH"))
+  homebrew_path = PATH.new(ENV.fetch("HOMEBREW_PATH"))
 
   # Add shared wrappers.
   path.prepend(HOMEBREW_SHIMS_PATH/"shared")

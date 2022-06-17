@@ -70,7 +70,7 @@ module Homebrew
       end
 
       def user_tilde(path)
-        path.gsub(ENV["HOME"], "~")
+        path.gsub(Dir.home, "~")
       end
 
       sig { returns(String) }
@@ -541,7 +541,7 @@ module Homebrew
       end
 
       def check_git_version
-        minimum_version = ENV["HOMEBREW_MINIMUM_GIT_VERSION"]
+        minimum_version = ENV.fetch("HOMEBREW_MINIMUM_GIT_VERSION")
         return unless Utils::Git.available?
         return if Version.create(Utils::Git.version) >= Version.create(minimum_version)
 
@@ -668,7 +668,7 @@ module Homebrew
       end
 
       def check_tmpdir
-        tmpdir = ENV["TMPDIR"]
+        tmpdir = ENV.fetch("TMPDIR", nil)
         return if tmpdir.nil? || File.directory?(tmpdir)
 
         <<~EOS
@@ -766,7 +766,7 @@ module Homebrew
       end
 
       def check_for_pydistutils_cfg_in_home
-        return unless File.exist? "#{ENV["HOME"]}/.pydistutils.cfg"
+        return unless File.exist? "#{Dir.home}/.pydistutils.cfg"
 
         <<~EOS
           A '.pydistutils.cfg' file was found in $HOME, which may cause Python
@@ -828,7 +828,7 @@ module Homebrew
         cmd_map.reject! { |_cmd_name, cmd_paths| cmd_paths.size == 1 }
         return if cmd_map.empty?
 
-        if ENV["CI"] && cmd_map.keys.length == 1 &&
+        if ENV["CI"].present? && cmd_map.keys.length == 1 &&
            cmd_map.keys.first == "brew-test-bot"
           return
         end
@@ -1007,7 +1007,7 @@ module Homebrew
         add_info "Cask Environment Variables:", ((locale_variables + environment_variables).sort.each do |var|
           next unless ENV.key?(var)
 
-          var = %Q(#{var}="#{ENV[var]}")
+          var = %Q(#{var}="#{ENV.fetch(var)}")
           user_tilde(var)
         end)
       end

@@ -21,6 +21,9 @@ module OS
 
     raise "Loaded OS::Mac on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
+    VERSION = ENV.fetch("HOMEBREW_MACOS_VERSION").chomp.freeze
+    private_constant :VERSION
+
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
     sig { returns(Version) }
@@ -35,7 +38,7 @@ module OS
       @full_version ||= if ENV["HOMEBREW_FAKE_EL_CAPITAN"] # for Portable Ruby building
         Version.new("10.11.6")
       else
-        Version.new((ENV["HOMEBREW_MACOS_VERSION"]).chomp)
+        Version.new(VERSION)
       end
     end
 

@@ -124,7 +124,7 @@ module Utils
       gnupg_bin = HOMEBREW_PREFIX/"opt/gnupg/bin"
       return unless gnupg_bin.directory?
 
-      ENV["PATH"] = PATH.new(ENV["PATH"])
+      ENV["PATH"] = PATH.new(ENV.fetch("PATH"))
                         .prepend(gnupg_bin)
     end
 

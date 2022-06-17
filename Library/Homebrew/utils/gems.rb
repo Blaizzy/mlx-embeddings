@@ -18,7 +18,7 @@ module Homebrew
   end
 
   def gem_user_dir
-    ENV["HOMEBREW_TESTS_GEM_USER_DIR"] || Gem.user_dir
+    ENV.fetch("HOMEBREW_TESTS_GEM_USER_DIR", nil) || Gem.user_dir
   end
 
   def gem_user_bindir
@@ -60,7 +60,7 @@ module Homebrew
 
     # Set TMPDIR so Xcode's `make` doesn't fall back to `/var/tmp/`,
     # which may be not user-writable.
-    ENV["TMPDIR"] = ENV["HOMEBREW_TEMP"]
+    ENV["TMPDIR"] = ENV.fetch("HOMEBREW_TEMP", nil)
 
     return unless setup_path
 
@@ -108,7 +108,7 @@ module Homebrew
 
     odie_if_defined <<~EOS
       the '#{name}' gem is installed but couldn't find '#{executable}' in the PATH:
-        #{ENV["PATH"]}
+        #{ENV.fetch("PATH")}
     EOS
   end
 
@@ -129,11 +129,11 @@ module Homebrew
   end
 
   def install_bundler_gems!(only_warn_on_failure: false, setup_path: true, groups: [])
-    old_path = ENV["PATH"]
-    old_gem_path = ENV["GEM_PATH"]
-    old_gem_home = ENV["GEM_HOME"]
-    old_bundle_gemfile = ENV["BUNDLE_GEMFILE"]
-    old_bundle_with = ENV["BUNDLE_WITH"]
+    old_path = ENV.fetch("PATH", nil)
+    old_gem_path = ENV.fetch("GEM_PATH", nil)
+    old_gem_home = ENV.fetch("GEM_HOME", nil)
+    old_bundle_gemfile = ENV.fetch("BUNDLE_GEMFILE", nil)
+    old_bundle_with = ENV.fetch("BUNDLE_WITH", nil)
 
     install_bundler!
 

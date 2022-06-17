@@ -37,7 +37,7 @@ class Dependency
   alias eql? ==
 
   def hash
-    name.hash ^ tags.hash
+    [name, tags].hash
   end
 
   def to_formula

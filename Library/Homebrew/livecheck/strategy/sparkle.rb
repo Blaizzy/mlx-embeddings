@@ -110,7 +110,7 @@ module Homebrew
             version ||= item.elements["version"]&.text&.strip
 
             title = item.elements["title"]&.text&.strip
-            pub_date = item.elements["pubDate"]&.text&.strip&.presence&.yield_self do |date_string|
+            pub_date = item.elements["pubDate"]&.text&.strip&.presence&.then do |date_string|
               Time.parse(date_string)
             rescue ArgumentError
               # Omit unparseable strings (e.g. non-English dates)

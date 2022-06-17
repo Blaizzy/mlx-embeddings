@@ -26,7 +26,7 @@ module Language
     end
 
     def self.each_python(build, &block)
-      original_pythonpath = ENV["PYTHONPATH"]
+      original_pythonpath = ENV.fetch("PYTHONPATH", nil)
       pythons = { "python@3" => "python3",
                   "pypy"     => "pypy",
                   "pypy3"    => "pypy3" }

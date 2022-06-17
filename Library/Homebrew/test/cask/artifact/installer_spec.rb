@@ -34,7 +34,7 @@ describe Cask::Artifact::Installer, :cask do
         expect(command).to receive(:run!).with(
           executable,
           a_hash_including(
-            env: { "PATH" => PATH.new("#{HOMEBREW_PREFIX}/bin", "#{HOMEBREW_PREFIX}/sbin", ENV["PATH"]) },
+            env: { "PATH" => PATH.new("#{HOMEBREW_PREFIX}/bin", "#{HOMEBREW_PREFIX}/sbin", ENV.fetch("PATH")) },
           ),
         )
 

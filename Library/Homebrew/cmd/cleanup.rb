@@ -38,7 +38,7 @@ module Homebrew
   def cleanup
     args = cleanup_args.parse
 
-    days = args.prune.presence&.yield_self do |prune|
+    days = args.prune.presence&.then do |prune|
       case prune
       when /\A\d+\Z/
         prune.to_i

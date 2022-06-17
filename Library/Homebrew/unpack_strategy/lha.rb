@@ -29,7 +29,7 @@ module UnpackStrategy
     def extract_to_dir(unpack_dir, basename:, verbose:)
       system_command! "lha",
                       args:    ["xq2w=#{unpack_dir}", path],
-                      env:     { "PATH" => PATH.new(Formula["lha"].opt_bin, ENV["PATH"]) },
+                      env:     { "PATH" => PATH.new(Formula["lha"].opt_bin, ENV.fetch("PATH")) },
                       verbose: verbose
     end
   end

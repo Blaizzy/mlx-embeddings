@@ -118,7 +118,7 @@ class DevelopmentTools
     sig { returns(T::Hash[String, T.nilable(String)]) }
     def build_system_info
       {
-        "os"         => ENV["HOMEBREW_SYSTEM"],
+        "os"         => HOMEBREW_SYSTEM,
         "os_version" => OS_VERSION,
         "cpu_family" => Hardware::CPU.family.to_s,
       }
