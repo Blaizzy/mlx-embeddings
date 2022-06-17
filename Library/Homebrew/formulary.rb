@@ -167,11 +167,13 @@ module Formulary
       end
 
       if (deprecation_date = json_formula["deprecation_date"]).present?
-        deprecate! date: deprecation_date, because: json_formula["deprecation_reason"]
+        reason = Formulary.convert_to_deprecate_disable_reason_string_or_symbol json_formula["deprecation_reason"]
+        deprecate! date: deprecation_date, because: reason
       end
 
       if (disable_date = json_formula["disable_date"]).present?
-        disable! date: disable_date, because: json_formula["disable_reason"]
+        reason = Formulary.convert_to_deprecate_disable_reason_string_or_symbol json_formula["disable_reason"]
+        disable! date: disable_date, because: reason
       end
 
       json_formula["build_dependencies"].each do |dep|
@@ -201,7 +203,7 @@ module Formulary
 
       @caveats_string = json_formula["caveats"]
       def caveats
-        @caveats_string
+        self.class.instance_variable_get(:@caveats_string)
       end
     end
 
@@ -259,6 +261,12 @@ module Formulary
     return string[1..].to_sym if string.start_with?(":")
 
     string
+  end
+
+  def self.convert_to_deprecate_disable_reason_string_or_symbol(string)
+    return string unless DeprecateDisable::DEPRECATE_DISABLE_REASONS.keys.map(&:to_s).include?(string)
+
+    string.to_sym
   end
 
   # A {FormulaLoader} returns instances of formulae.

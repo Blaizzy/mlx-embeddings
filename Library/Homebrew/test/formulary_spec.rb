@@ -241,7 +241,7 @@ describe Formulary do
             "recommended_dependencies" => ["recommended_dep"],
             "optional_dependencies"    => ["optional_dep"],
             "uses_from_macos"          => ["uses_from_macos_dep"],
-            "caveats"                  => "",
+            "caveats"                  => "example caveat string",
           }.merge(extra_items),
         }
       end
@@ -256,7 +256,7 @@ describe Formulary do
       let(:disable_json) do
         {
           "disable_date"   => "2022-06-15",
-          "disable_reason" => "repo_archived",
+          "disable_reason" => "requires something else",
         }
       end
 
@@ -276,6 +276,7 @@ describe Formulary do
           expect(formula.deps.count).to eq 5
         end
         expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
+        expect(formula.caveats).to eq "example caveat string"
         expect {
           formula.install
         }.to raise_error("Cannot build from source from abstract formula.")
@@ -342,6 +343,27 @@ describe Formulary do
       name = "foo-bar"
       expect(described_class.core_path(name))
         .to eq(Pathname.new("#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core/Formula/#{name}.rb"))
+    end
+  end
+
+  describe "::convert_to_string_or_symbol" do
+    it "returns the original string if it doesn't start with a colon" do
+      expect(described_class.convert_to_string_or_symbol("foo")).to eq "foo"
+    end
+
+    it "returns a symbol if the original string starts with a colon" do
+      expect(described_class.convert_to_string_or_symbol(":foo")).to eq :foo
+    end
+  end
+
+  describe "::convert_to_deprecate_disable_reason_string_or_symbol" do
+    it "returns the original string if it isn't a preset reason" do
+      expect(described_class.convert_to_deprecate_disable_reason_string_or_symbol("foo")).to eq "foo"
+    end
+
+    it "returns a symbol if the original string is a preset reason" do
+      expect(described_class.convert_to_deprecate_disable_reason_string_or_symbol("does_not_build"))
+        .to eq :does_not_build
     end
   end
 end
