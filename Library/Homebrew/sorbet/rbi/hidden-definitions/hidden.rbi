@@ -2391,16 +2391,18 @@ module Hardware
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Hash
+  def deep_transform_values(&block); end
+
+  def deep_transform_values!(&block); end
+end
+
 module Homebrew
   MAX_PORT = ::T.let(nil, ::T.untyped)
   MIN_PORT = ::T.let(nil, ::T.untyped)
 end
 
 module Homebrew::API::Analytics
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::API::Bottle
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
@@ -2511,6 +2513,8 @@ module Homebrew::EnvConfig
   def self.git_email(); end
 
   def self.git_name(); end
+
+  def self.git_path(); end
 
   def self.github_api_token(); end
 
