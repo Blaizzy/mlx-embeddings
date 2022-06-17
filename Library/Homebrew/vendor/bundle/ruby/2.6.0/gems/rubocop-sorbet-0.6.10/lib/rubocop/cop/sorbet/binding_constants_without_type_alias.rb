@@ -65,7 +65,7 @@ module RuboCop
 
         def_node_matcher(:generic_parameter_decl_block_call?, <<-PATTERN)
           (block
-            (send nil? {:type_template :type_member}) ...
+            (send nil? {:type_template :type_member} ...) ...
           )
         PATTERN
 

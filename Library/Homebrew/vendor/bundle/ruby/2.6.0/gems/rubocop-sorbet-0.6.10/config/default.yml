@@ -97,6 +97,12 @@ Sorbet/ForbidTUnsafe:
   VersionAdded: 0.7.0
   VersionChanged: 0.7.0
 
+Sorbet/ForbidTUntyped:
+  Description: 'Forbid usage of T.untyped'
+  Enabled: false
+  VersionAdded: 0.6.9
+  VersionChanged: 0.7.0
+
 Sorbet/ForbidUntypedStructProps:
   Description: >-
                   Disallows use of `T.untyped` or `T.nilable(T.untyped)` as a
