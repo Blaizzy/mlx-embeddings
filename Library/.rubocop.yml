@@ -237,6 +237,10 @@ Rails/SafeNavigation:
   Enabled: true
 Rails/SafeNavigationWithBlank:
   Enabled: true
+Rails/StripHeredoc:
+  Enabled: true
+Rails/ToFormattedS:
+  Enabled: true
 
 # Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
