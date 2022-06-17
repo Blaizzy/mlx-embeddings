@@ -608,9 +608,7 @@ class ReporterHub
   private
 
   def dump_new_formula_report
-    formulae = select_formula_or_cask(:A).sort.map do |name|
-      name unless installed?(name)
-    end.compact
+    formulae = select_formula_or_cask(:A).sort.reject { |name| installed?(name) }
 
     output_dump_formula_or_cask_report "New Formulae", formulae
   end
