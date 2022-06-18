@@ -308,6 +308,7 @@ module Cask
     LIVECHECK_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#stanza-livecheck"
 
     def check_hosting_with_livecheck(livecheck_result:)
+      return if cask.discontinued? || cask.version.latest?
       return if block_url_offline? || cask.appcast || cask.livecheckable?
       return if livecheck_result == :auto_detected
 
@@ -315,7 +316,6 @@ module Cask
 
       case cask.url.to_s
       when %r{sourceforge.net/(\S+)}
-        return if cask.version.latest?
         return unless online?
 
         add_error "Download is hosted on SourceForge, #{add_livecheck}"
