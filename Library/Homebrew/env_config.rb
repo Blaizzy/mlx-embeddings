@@ -170,6 +170,10 @@ module Homebrew
                      "Automatically set if the system version of `git` is too old.",
         boolean:     true,
       },
+      HOMEBREW_FORCE_BREWED_SSH:                 {
+        description: "If set, always use a Homebrew-installed `ssh`(1) rather than the system version. ",
+        boolean:     true,
+      },
       HOMEBREW_FORCE_VENDOR_RUBY:                {
         description: "If set, always use Homebrew's vendored, relocatable Ruby version even if the system version " \
                      "of Ruby is new enough.",
@@ -319,6 +323,10 @@ module Homebrew
         description:  "If set, Homebrew will use the given config file instead of `~/.ssh/config` when fetching " \
                       "`git` repos over `ssh`.",
         default_text: "`$HOME/.ssh/config`",
+      },
+      HOMEBREW_SSH_PATH:                         {
+        description:  "Set this value to a new enough `ssh` executable for Homebrew to use.",
+        default_text: "ssh",
       },
       HOMEBREW_SKIP_OR_LATER_BOTTLES:            {
         description: "If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions " \
