@@ -2058,6 +2058,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_FORCE_BREWED_GIT`
   <br>If set, always use a Homebrew-installed `git`(1) rather than the system version. Automatically set if the system version of `git` is too old.
 
+- `HOMEBREW_FORCE_BREWED_SSH`
+  <br>If set, always use a Homebrew-installed `openssh`(1) rather than the system version.
+
 - `HOMEBREW_FORCE_VENDOR_RUBY`
   <br>If set, always use Homebrew's vendored, relocatable Ruby version even if the system version of Ruby is new enough.
 
@@ -2169,6 +2172,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, Homebrew will use the given config file instead of `~/.ssh/config` when fetching `git` repos over `ssh`.
 
   *Default:* `$HOME/.ssh/config`
+
+- `HOMEBREW_SSH_PATH`
+  <br>Set this value to a new enough `ssh` executable for Homebrew to use.
+
+  *Default:* `ssh`.
 
 - `HOMEBREW_SKIP_OR_LATER_BOTTLES`
   <br>If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions of macOS. This is useful in development on new macOS versions.
