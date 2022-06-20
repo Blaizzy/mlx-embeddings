@@ -37,13 +37,13 @@ module Homebrew
                           "formula is outdated. Otherwise, the repository's HEAD will only be checked for "\
                           "updates when a new stable or development version has been released."
       switch "--greedy",
-             description: "Print outdated casks with `auto_updates true` or `version :latest`."
+             description: "Print include outdated casks with `auto_updates true` or `version :latest`."
 
       switch "--greedy-latest",
-             description: "Print outdated casks including those with `version :latest`."
+             description: "Print include outdated casks including those with `version :latest`."
 
       switch "--greedy-auto-updates",
-             description: "Print outdated casks including those with `auto_updates true`."
+             description: "Print include outdated casks including those with `auto_updates true`."
 
       conflicts "--quiet", "--verbose", "--json"
       conflicts "--formula", "--cask"
@@ -93,8 +93,6 @@ module Homebrew
   def print_outdated(formulae_or_casks, args:)
     formulae_or_casks.each do |formula_or_cask|
       if formula_or_cask.is_a?(Formula)
-        next if args.greedy? || args.greedy_latest? || args.greedy_auto_updates?
-
         f = formula_or_cask
 
         if verbose?
