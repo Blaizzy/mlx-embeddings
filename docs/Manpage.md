@@ -489,11 +489,11 @@ information is displayed in interactive shells, and suppressed otherwise.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
-  Print outdated casks with `auto_updates true` or `version :latest`.
+  Also include outdated casks with `auto_updates true` or `version :latest`.
 * `--greedy-latest`:
-  Print outdated casks including those with `version :latest`.
+  Also include outdated casks including those with `version :latest`.
 * `--greedy-auto-updates`:
-  Print outdated casks including those with `auto_updates true`.
+  Also include outdated casks including those with `auto_updates true`.
 
 ### `pin` *`installed_formula`* [...]
 
