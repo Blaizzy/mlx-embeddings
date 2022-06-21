@@ -641,7 +641,7 @@ module Formulary
     when URL_START_REGEX
       return FromUrlLoader.new(ref)
     when HOMEBREW_TAP_FORMULA_REGEX
-      if ref.start_with?("homebrew/core/") && !CoreTap.instance.installed? && Homebrew::EnvConfig.install_from_api?
+      if ref.start_with?("homebrew/core/") && Homebrew::EnvConfig.install_from_api?
         name = ref.split("/", 3).last
         return FormulaAPILoader.new(name) if Homebrew::API::Formula.all_formulae.key?(name)
       end
@@ -651,17 +651,15 @@ module Formulary
 
     return FromPathLoader.new(ref) if File.extname(ref) == ".rb" && Pathname.new(ref).expand_path.exist?
 
+    if Homebrew::EnvConfig.install_from_api? && Homebrew::API::Formula.all_formulae.key?(ref)
+      return FormulaAPILoader.new(ref)
+    end
+
     formula_with_that_name = core_path(ref)
     return FormulaLoader.new(ref, formula_with_that_name) if formula_with_that_name.file?
 
     possible_alias = CoreTap.instance.alias_dir/ref
     return AliasLoader.new(possible_alias) if possible_alias.file?
-
-    if !CoreTap.instance.installed? &&
-       Homebrew::EnvConfig.install_from_api? &&
-       Homebrew::API::Formula.all_formulae.key?(ref)
-      return FormulaAPILoader.new(ref)
-    end
 
     possible_tap_formulae = tap_paths(ref)
     raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae) if possible_tap_formulae.size > 1

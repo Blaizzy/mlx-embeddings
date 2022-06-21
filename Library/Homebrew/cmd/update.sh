@@ -701,10 +701,7 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    # HOMEBREW_UPDATE_AUTO wasn't modified in subshell.
-    # shellcheck disable=SC2031
     if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
-       [[ -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ||
           "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
     then
