@@ -3526,7 +3526,7 @@ class Object
 
   def __send!(*arg); end
 
-  def stub(name, val_or_callable, *block_args, **block_kwargs); end
+  def stub(name, val_or_callable, *block_args, **block_kwargs, &block); end
 
   def to_yaml(options=T.unsafe(nil)); end
   ARGF = ::T.let(nil, ::T.untyped)
