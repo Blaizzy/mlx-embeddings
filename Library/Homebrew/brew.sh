@@ -404,9 +404,6 @@ setup_ssh() {
      "${HOMEBREW_BREWED_SSH_PATH}" -V &>/dev/null
   then
     HOMEBREW_SSH="${HOMEBREW_BREWED_SSH_PATH}"
-  elif [[ -n "${HOMEBREW_SSH_PATH}" ]]
-  then
-    HOMEBREW_SSH="${HOMEBREW_SSH_PATH}"
   else
     HOMEBREW_SSH="ssh"
   fi

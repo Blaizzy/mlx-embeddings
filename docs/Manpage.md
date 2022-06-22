@@ -2173,11 +2173,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* `$HOME/.ssh/config`
 
-- `HOMEBREW_SSH_PATH`
-  <br>Set this value to a new enough `ssh` executable for Homebrew to use.
-
-  *Default:* `ssh`.
-
 - `HOMEBREW_SKIP_OR_LATER_BOTTLES`
   <br>If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions of macOS. This is useful in development on new macOS versions.
 

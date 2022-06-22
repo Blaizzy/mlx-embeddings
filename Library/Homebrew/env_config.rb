@@ -324,10 +324,6 @@ module Homebrew
                       "`git` repos over `ssh`.",
         default_text: "`$HOME/.ssh/config`",
       },
-      HOMEBREW_SSH_PATH:                         {
-        description:  "Set this value to a new enough `ssh` executable for Homebrew to use.",
-        default_text: "ssh",
-      },
       HOMEBREW_SKIP_OR_LATER_BOTTLES:            {
         description: "If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions " \
                      "of macOS. This is useful in development on new macOS versions.",
