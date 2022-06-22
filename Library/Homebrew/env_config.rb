@@ -223,7 +223,7 @@ module Homebrew
       HOMEBREW_LIVECHECK_WATCHLIST:              {
         description:  "Consult this file for the list of formulae to check by default when no formula argument " \
                       "is passed to `brew livecheck`.",
-        default_text: "$HOME/.brew_livecheck_watchlist",
+        default_text: "`$HOME/.brew_livecheck_watchlist`",
         default:      "~/.brew_livecheck_watchlist",
       },
       HOMEBREW_LOGS:                             {
