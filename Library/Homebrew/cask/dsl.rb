@@ -281,7 +281,7 @@ module Cask
     end
 
     def discontinued?
-      @caveats&.discontinued?
+      @caveats&.discontinued? == true
     end
 
     # @api public
