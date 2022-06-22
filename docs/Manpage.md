@@ -2102,7 +2102,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
 
-  *Default:* `$HOME/.brew_livecheck_watchlist`.
+  *Default:* `$HOME/.brew_livecheck_watchlist`
 
 - `HOMEBREW_LOGS`
   <br>Use this directory to store log files.
