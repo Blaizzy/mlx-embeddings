@@ -11,10 +11,7 @@ module Homebrew
 
   module_function
 
-  WATCHLIST_PATH = (
-    Homebrew::EnvConfig.livecheck_watchlist ||
-    "#{Dir.home}/.brew_livecheck_watchlist"
-  ).freeze
+  WATCHLIST_PATH = File.expand_path(Homebrew::EnvConfig.livecheck_watchlist).freeze
 
   sig { returns(CLI::Parser) }
   def livecheck_args
