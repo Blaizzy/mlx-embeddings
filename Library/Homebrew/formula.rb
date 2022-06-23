@@ -28,7 +28,7 @@ require "tab"
 require "mktemp"
 require "find"
 require "utils/spdx"
-require "extend/on_os"
+require "extend/on_system"
 require "api"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
@@ -64,10 +64,11 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
-  include OnOS
   extend Forwardable
   extend Cachable
   extend Predicable
+
+  OnSystem.setup_methods! onto: self
 
   # @!method inreplace(paths, before = nil, after = nil)
   # @see Utils::Inreplace.inreplace
@@ -2470,7 +2471,6 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     include BuildEnvironment::DSL
-    include OnOS
 
     def method_added(method)
       super
@@ -2482,6 +2482,8 @@ class Formula
         define_method(:test_defined?) { true }
       end
     end
+
+    OnSystem.setup_methods! onto: self
 
     # The reason for why this software is not linked (by default) to
     # {::HOMEBREW_PREFIX}.
