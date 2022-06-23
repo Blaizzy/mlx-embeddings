@@ -35,7 +35,7 @@ jobs:
             github.event.action != 'closed' && github.event.pull_request.state != 'closed'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
+          github-token: ${{ secrets.HOMEBREW_BREW_TRIAGE_PULL_REQUESTS_TOKEN }}
           script: |
             async function approvePullRequest(pullRequestNumber) {
               const reviews = await approvalsByAuthenticatedUser(pullRequestNumber)
