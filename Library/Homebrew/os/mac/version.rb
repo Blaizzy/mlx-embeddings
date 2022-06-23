@@ -13,22 +13,10 @@ module OS
     class Version < ::Version
       extend T::Sig
 
-      # TODO: when removing symbols here, ensure that they are added to
-      # DEPRECATED_MACOS_VERSIONS in MacOSRequirement.
-      SYMBOLS = {
-        ventura:     "13",
-        monterey:    "12",
-        big_sur:     "11",
-        catalina:    "10.15",
-        mojave:      "10.14",
-        high_sierra: "10.13",
-        sierra:      "10.12",
-        el_capitan:  "10.11",
-      }.freeze
-
       # TODO: bump version when new macOS is released or announced
-      # and also update references in docs/Installation.md and
-      # https://github.com/Homebrew/install/blob/HEAD/install.sh
+      # and also update references in docs/Installation.md,
+      # https://github.com/Homebrew/install/blob/HEAD/install.sh and
+      # OS::Mac::Version (in HOMEBREW_LIBRARY/os.rb)
       NEWEST_UNSUPPORTED = "13"
       private_constant :NEWEST_UNSUPPORTED
 

@@ -13,12 +13,6 @@ module OS
 
     module_function
 
-    # rubocop:disable Naming/ConstantName
-    # rubocop:disable Style/MutableConstant
-    ::MacOS = OS::Mac
-    # rubocop:enable Naming/ConstantName
-    # rubocop:enable Style/MutableConstant
-
     raise "Loaded OS::Mac on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
     VERSION = ENV.fetch("HOMEBREW_MACOS_VERSION").chomp.freeze
