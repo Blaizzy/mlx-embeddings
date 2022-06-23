@@ -120,7 +120,9 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "variations": {
+            }
           },
           {
             "token": "local-transmission",
@@ -149,7 +151,9 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "variations": {
+            }
           },
           {
             "token": "multiple-versions",
@@ -160,11 +164,13 @@ describe Cask::Cmd::List, :cask do
             ],
             "desc": null,
             "homepage": "https://brew.sh/",
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.3/arm.zip",
             "appcast": null,
             "version": "1.2.3",
             "versions": {
-              "test_os": "1.2.0"
+              "big_sur": "1.2.0",
+              "catalina": "1.0.0",
+              "mojave": "1.0.0"
             },
             "installed": "1.2.3",
             "outdated": false,
@@ -179,7 +185,32 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "variations": {
+              "arm_big_sur": {
+                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/arm.zip",
+                "version": "1.2.0",
+                "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+              },
+              "intel_monterey": {
+                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.3/intel.zip"
+              },
+              "intel_big_sur": {
+                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/intel.zip",
+                "version": "1.2.0",
+                "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+              },
+              "intel_catalina": {
+                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
+                "version": "1.0.0",
+                "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
+              },
+              "intel_mojave": {
+                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
+                "version": "1.0.0",
+                "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
+              }
+            }
           },
           {
             "token": "third-party-cask",
@@ -208,7 +239,9 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "variations": {
+            }
           }
         ]
       EOS
@@ -217,10 +250,18 @@ describe Cask::Cmd::List, :cask do
     before do
       casks.map(&Cask::CaskLoader.method(:load)).each(&InstallHelper.method(:install_with_caskfile))
 
-      # Add a test OS to ensure that all cask versions are listed regardless of OS.
-      symbols = MacOS::Version::SYMBOLS.dup
-      symbols[:test_os] = "10.9"
+      # Use a more limited symbols list to shorten the variations hash
+      symbols = {
+        monterey: "12",
+        big_sur:  "11",
+        catalina: "10.15",
+        mojave:   "10.14",
+      }
       stub_const("MacOS::Version::SYMBOLS", symbols)
+
+      # For consistency, always run on Monterey and ARM
+      MacOS.full_version = "12"
+      allow(Hardware::CPU).to receive(:type).and_return(:arm)
     end
 
     it "of all installed Casks" do
