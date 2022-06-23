@@ -2058,6 +2058,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_FORCE_BREWED_GIT`
   <br>If set, always use a Homebrew-installed `git`(1) rather than the system version. Automatically set if the system version of `git` is too old.
 
+- `HOMEBREW_FORCE_BREWED_SSH`
+  <br>If set, always use a Homebrew-installed `ssh`(1) rather than the system version.
+
 - `HOMEBREW_FORCE_VENDOR_RUBY`
   <br>If set, always use Homebrew's vendored, relocatable Ruby version even if the system version of Ruby is new enough.
 
