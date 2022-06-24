@@ -246,10 +246,9 @@ describe Cask::Cmd::List, :cask do
         ]
       EOS
     }
+    let(:original_macos_version) { MacOS.full_version.to_s }
 
     before do
-      casks.map(&Cask::CaskLoader.method(:load)).each(&InstallHelper.method(:install_with_caskfile))
-
       # Use a more limited symbols list to shorten the variations hash
       symbols = {
         monterey: "12",
@@ -262,6 +261,12 @@ describe Cask::Cmd::List, :cask do
       # For consistency, always run on Monterey and ARM
       MacOS.full_version = "12"
       allow(Hardware::CPU).to receive(:type).and_return(:arm)
+
+      casks.map(&Cask::CaskLoader.method(:load)).each(&InstallHelper.method(:install_with_caskfile))
+    end
+
+    after do
+      MacOS.full_version = original_macos_version
     end
 
     it "of all installed Casks" do
