@@ -2506,6 +2506,8 @@ module Homebrew::EnvConfig
 
   def self.force_brewed_git?(); end
 
+  def self.force_brewed_ssh?(); end
+
   def self.force_vendor_ruby?(); end
 
   def self.ftp_proxy(); end
