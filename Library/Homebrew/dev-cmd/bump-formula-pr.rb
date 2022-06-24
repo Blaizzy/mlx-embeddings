@@ -275,7 +275,7 @@ module Homebrew
 
     if new_mirrors.present?
       replacement_pairs << [
-        /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
+        /^( +)(url "#{Regexp.escape(new_url)}"[^\n]*?\n)/m,
         "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
       ]
     end
@@ -293,7 +293,7 @@ module Homebrew
         ]
       elsif new_url.present?
         [
-          /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
+          /^( +)(url "#{Regexp.escape(new_url)}"[^\n]*?\n)/m,
           "\\1\\2\\1version \"#{new_version}\"\n",
         ]
       elsif new_revision.present?
