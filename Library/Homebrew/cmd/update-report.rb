@@ -239,14 +239,13 @@ module Homebrew
 
     puts
     ohai "Homebrew was updated to version #{new_repository_version}"
+    Settings.write "latesttag", new_repository_version
     if new_repository_version.split(".").last == "0"
-      Settings.write "latesttag", new_repository_version
       puts <<~EOS
         More detailed release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
       EOS
     elsif !args.quiet?
-      Settings.write "latesttag", new_repository_version
       puts <<~EOS
         The changelog can be found at:
           #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
