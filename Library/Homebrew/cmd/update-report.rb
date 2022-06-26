@@ -132,6 +132,8 @@ module Homebrew
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
+      Settings.write "latesttag", new_tag if new_tag != old_tag
+
       if old_tag.blank? || (new_tag == old_tag)
         puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       else
@@ -238,7 +240,6 @@ module Homebrew
 
     puts
     ohai "Homebrew was updated to version #{new_tag}"
-    Settings.write "latesttag", new_tag if new_tag != old_tag
     if new_tag.split(".").last == "0"
       puts <<~EOS
         More detailed release notes are available on the Homebrew Blog:
