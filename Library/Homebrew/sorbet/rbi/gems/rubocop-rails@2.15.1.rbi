@@ -53,6 +53,8 @@ module RuboCop::Cop::EnforceSuperclass
   end
 end
 
+RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
+
 module RuboCop::Cop::IndexMethod
   def on_block(node); end
   def on_csend(node); end
@@ -1902,7 +1904,7 @@ RuboCop::Cop::Rails::TimeZone::TIMEZONE_SPECIFIER = T.let(T.unsafe(nil), Regexp)
 
 class RuboCop::Cop::Rails::TimeZoneAssignment < ::RuboCop::Cop::Base
   def on_send(node); end
-  def time_zone_assignement?(param0 = T.unsafe(nil)); end
+  def time_zone_assignment?(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Rails::TimeZoneAssignment::MSG = T.let(T.unsafe(nil), String)
@@ -1913,6 +1915,7 @@ class RuboCop::Cop::Rails::ToFormattedS < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
   extend ::RuboCop::Cop::TargetRailsVersion
 
+  def on_csend(node); end
   def on_send(node); end
 end
 
@@ -2167,8 +2170,8 @@ end
 class RuboCop::Rails::SchemaLoader::Schema
   def initialize(ast); end
 
-  def add_indicies; end
-  def add_indicies_by(table_name:); end
+  def add_indices; end
+  def add_indices_by(table_name:); end
   def table_by(name:); end
   def tables; end
 
