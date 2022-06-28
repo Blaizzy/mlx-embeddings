@@ -20,7 +20,7 @@ module Homebrew
         Download a bottle (if available) or source packages for <formula>e
         and binaries for <cask>s. For files, also print SHA-256 checksums.
       EOS
-      flag "--bottle-tag",
+      flag "--bottle-tag=",
            description: "Download a bottle for given tag."
       switch "--HEAD",
              description: "Fetch HEAD version instead of stable version."
