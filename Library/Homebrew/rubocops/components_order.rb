@@ -87,7 +87,7 @@ module RuboCop
                 next if allowed_methods.include? method_names
               end
               offending_node(on_os_block)
-              message = "`#{method_name}` blocks within `resource` blocks must contain at least "\
+              message = "`#{method_name}` blocks within `resource` blocks must contain at least " \
                         "#{minimum_methods} and at most #{maximum_methods} (in order)."
               break
             end

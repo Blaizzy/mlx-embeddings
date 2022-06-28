@@ -58,22 +58,22 @@ module Homebrew
       switch "--no-rebuild",
              description: "If the formula specifies a rebuild version, remove it from the generated DSL."
       switch "--keep-old",
-             description: "If the formula specifies a rebuild version, attempt to preserve its value in the "\
+             description: "If the formula specifies a rebuild version, attempt to preserve its value in the " \
                           "generated DSL."
       switch "--json",
-             description: "Write bottle information to a JSON file, which can be used as the value for "\
+             description: "Write bottle information to a JSON file, which can be used as the value for " \
                           "`--merge`."
       switch "--merge",
-             description: "Generate an updated bottle block for a formula and optionally merge it into the "\
-                          "formula file. Instead of a formula name, requires the path to a JSON file generated with "\
+             description: "Generate an updated bottle block for a formula and optionally merge it into the " \
+                          "formula file. Instead of a formula name, requires the path to a JSON file generated with " \
                           "`brew bottle --json` <formula>."
       switch "--write",
              depends_on:  "--merge",
-             description: "Write changes to the formula file. A new commit will be generated unless "\
+             description: "Write changes to the formula file. A new commit will be generated unless " \
                           "`--no-commit` is passed."
       switch "--no-commit",
              depends_on:  "--write",
-             description: "When passed with `--write`, a new commit will not generated after writing changes "\
+             description: "When passed with `--write`, a new commit will not generated after writing changes " \
                           "to the formula file."
       switch "--only-json-tab",
              depends_on:  "--json",
@@ -83,7 +83,7 @@ module Homebrew
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       flag   "--root-url-using=",
-             description: "Use the specified download strategy class for downloading the bottle's URL instead of "\
+             description: "Use the specified download strategy class for downloading the bottle's URL instead of " \
                           "Homebrew's default."
 
       conflicts "--no-rebuild", "--keep-old"

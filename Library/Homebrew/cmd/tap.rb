@@ -28,14 +28,14 @@ module Homebrew
         using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
       EOS
       switch "--full",
-             description: "Convert a shallow clone to a full clone without untapping. Taps are only cloned as "\
+             description: "Convert a shallow clone to a full clone without untapping. Taps are only cloned as " \
                           "shallow clones if `--shallow` was originally passed.",
              replacement: false
       switch "--shallow",
              description: "Fetch tap as a shallow clone rather than a full clone. Useful for continuous integration.",
              replacement: false
       switch "--[no-]force-auto-update",
-             description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps "\
+             description: "Auto-update tap even if it is not hosted on GitHub. By default, only taps " \
                           "hosted on GitHub are auto-updated (for performance reasons)."
       switch "--custom-remote",
              description: "Install or change a tap with a custom remote. Useful for mirrors."

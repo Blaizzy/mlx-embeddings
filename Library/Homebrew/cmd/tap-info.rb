@@ -19,8 +19,8 @@ module Homebrew
       switch "--installed",
              description: "Show information on each installed tap."
       flag   "--json",
-             description: "Print a JSON representation of <tap>. Currently the default and only accepted "\
-                          "value for <version> is `v1`. See the docs for examples of using the JSON "\
+             description: "Print a JSON representation of <tap>. Currently the default and only accepted " \
+                          "value for <version> is `v1`. See the docs for examples of using the JSON " \
                           "output: <https://docs.brew.sh/Querying-Brew>"
 
       named_args :tap

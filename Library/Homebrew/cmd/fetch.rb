@@ -27,10 +27,10 @@ module Homebrew
       switch "-f", "--force",
              description: "Remove a previously cached version and re-fetch."
       switch "-v", "--verbose",
-             description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for "\
+             description: "Do a verbose VCS checkout, if the URL represents a VCS. This is useful for " \
                           "seeing if an existing VCS cache has been updated."
       switch "--retry",
-             description: "Retry if downloading fails or re-download if the checksum of a previously cached "\
+             description: "Retry if downloading fails or re-download if the checksum of a previously cached " \
                           "version no longer matches."
       switch "--deps",
              description: "Also download dependencies for any listed <formula>."
@@ -39,7 +39,7 @@ module Homebrew
       switch "--build-bottle",
              description: "Download source packages (for eventual bottling) rather than a bottle."
       switch "--force-bottle",
-             description: "Download a bottle if it exists for the current or newest version of macOS, "\
+             description: "Download a bottle if it exists for the current or newest version of macOS, " \
                           "even if it would not be used during installation."
       switch "--[no-]quarantine",
              description: "Disable/enable quarantining of downloads (default: enabled).",

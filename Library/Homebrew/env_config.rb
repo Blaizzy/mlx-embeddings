@@ -49,7 +49,7 @@ module Homebrew
         default_text: "`$BAT_THEME`.",
       },
       HOMEBREW_BOOTSNAP:                         {
-        description: "If set, use Bootsnap to speed up repeated `brew` calls. "\
+        description: "If set, use Bootsnap to speed up repeated `brew` calls. " \
                      "A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).",
         boolean:     true,
       },
@@ -184,7 +184,7 @@ module Homebrew
                      "developer commands may require additional permissions.",
       },
       HOMEBREW_GITHUB_PACKAGES_TOKEN:            {
-        description: "Use this GitHub personal access token when accessing the GitHub Packages Registry "\
+        description: "Use this GitHub personal access token when accessing the GitHub Packages Registry " \
                      "(where bottles may be stored).",
       },
       HOMEBREW_DOCKER_REGISTRY_BASIC_AUTH_TOKEN: {

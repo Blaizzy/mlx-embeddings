@@ -45,8 +45,8 @@ module Homebrew
              description: "Check all formulae and casks whether installed or not.",
              hidden:      true
       switch "--new", "--new-formula", "--new-cask",
-             description: "Run various additional style checks to determine if a new formula or cask is eligible "\
-                          "for Homebrew. This should be used when creating new formula and implies "\
+             description: "Run various additional style checks to determine if a new formula or cask is eligible " \
+                          "for Homebrew. This should be used when creating new formula and implies " \
                           "`--strict` and `--online`."
       switch "--[no-]appcast",
              description: "Audit the appcast."
@@ -59,26 +59,26 @@ module Homebrew
       switch "--display-cop-names",
              description: "Include the RuboCop cop name for each violation in the output."
       switch "--display-filename",
-             description: "Prefix every line of output with the file or formula name being audited, to "\
+             description: "Prefix every line of output with the file or formula name being audited, to " \
                           "make output easy to grep."
       switch "--display-failures-only",
              description: "Only display casks that fail the audit. This is the default for formulae."
       switch "--skip-style",
-             description: "Skip running non-RuboCop style checks. Useful if you plan on running "\
+             description: "Skip running non-RuboCop style checks. Useful if you plan on running " \
                           "`brew style` separately. Enabled by default unless a formula is specified by name."
       switch "-D", "--audit-debug",
              description: "Enable debugging and profiling of audit methods."
       comma_array "--only",
-                  description: "Specify a comma-separated <method> list to only run the methods named "\
+                  description: "Specify a comma-separated <method> list to only run the methods named " \
                                "`audit_`<method>."
       comma_array "--except",
-                  description: "Specify a comma-separated <method> list to skip running the methods named "\
+                  description: "Specify a comma-separated <method> list to skip running the methods named " \
                                "`audit_`<method>."
       comma_array "--only-cops",
-                  description: "Specify a comma-separated <cops> list to check for violations of only the listed "\
+                  description: "Specify a comma-separated <cops> list to check for violations of only the listed " \
                                "RuboCop cops."
       comma_array "--except-cops",
-                  description: "Specify a comma-separated <cops> list to skip checking for violations of the listed "\
+                  description: "Specify a comma-separated <cops> list to skip checking for violations of the listed " \
                                "RuboCop cops."
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."

@@ -22,14 +22,14 @@ module Homebrew
       switch "--no-compat",
              description: "Do not load the compatibility layer when running tests."
       switch "--online",
-             description: "Include tests that use the GitHub API and tests that use any of the taps for "\
+             description: "Include tests that use the GitHub API and tests that use any of the taps for " \
                           "official external commands."
       switch "--byebug",
              description: "Enable debugging using byebug."
       switch "--changed",
              description: "Only runs tests on files that were changed from the master branch."
       flag   "--only=",
-             description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a "\
+             description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a " \
                           "specific line."
       flag   "--seed=",
              description: "Randomise tests with the specified <value> instead of a random seed."

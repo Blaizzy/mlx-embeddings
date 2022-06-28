@@ -25,7 +25,7 @@ module RuboCop
             first_word = reason_text.split.first
 
             if reason_text.match?(/\A[A-Z]/)
-              problem "'#{first_word}' from the `conflicts_with` reason "\
+              problem "'#{first_word}' from the `conflicts_with` reason " \
                       "should be '#{first_word.downcase}'." do |corrector|
                 reason_text[0] = reason_text[0].downcase
                 corrector.replace(reason.source_range, "\"#{reason_text}\"")

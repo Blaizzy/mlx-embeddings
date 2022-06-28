@@ -24,7 +24,7 @@ describe "Satisfy Dependencies and Requirements", :cask do
       it {
         expect { install }.to raise_error(
           Cask::CaskCyclicDependencyError,
-          "Cask 'with-depends-on-cask-cyclic' includes cyclic dependencies "\
+          "Cask 'with-depends-on-cask-cyclic' includes cyclic dependencies " \
           "on other Casks: with-depends-on-cask-cyclic-helper",
         )
       }

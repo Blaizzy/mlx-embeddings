@@ -111,7 +111,7 @@ describe Cask::Cmd::Install, :cask do
       described_class.run("localcaffeine")
     }.to raise_error(
       Cask::CaskUnavailableError,
-      "Cask 'localcaffeine' is unavailable: No Cask with this name exists. "\
+      "Cask 'localcaffeine' is unavailable: No Cask with this name exists. " \
       "Did you mean 'local-caffeine'?",
     )
   end

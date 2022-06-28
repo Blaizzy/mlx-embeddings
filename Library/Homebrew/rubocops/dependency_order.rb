@@ -103,7 +103,7 @@ module RuboCop
 
             offending_node(node_1)
 
-            problem "dependency \"#{dependency_name(node_1)}\" (line #{l1}) should be put before dependency "\
+            problem "dependency \"#{dependency_name(node_1)}\" (line #{l1}) should be put before dependency " \
                     "\"#{dependency_name(node_2)}\" (line #{l2})" do |corrector|
               indentation = " " * (start_column(node_2) - line_start_column(node_2))
               line_breaks = "\n"

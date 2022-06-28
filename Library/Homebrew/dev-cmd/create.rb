@@ -46,8 +46,8 @@ module Homebrew
       switch "--rust",
              description: "Create a basic template for a Rust build."
       switch "--no-fetch",
-             description: "Homebrew will not download <URL> to the cache and will thus not add its SHA-256 "\
-                          "to the formula for you, nor will it check the GitHub API for GitHub projects "\
+             description: "Homebrew will not download <URL> to the cache and will thus not add its SHA-256 " \
+                          "to the formula for you, nor will it check the GitHub API for GitHub projects " \
                           "(to fill out its description and homepage)."
       switch "--HEAD",
              description: "Indicate that <URL> points to the package's repository rather than a file."

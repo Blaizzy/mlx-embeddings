@@ -28,7 +28,7 @@ module Homebrew
              description: "Remove all files associated with a <cask>. " \
                           "*May remove files which are shared between applications.*"
       switch "--ignore-dependencies",
-             description: "Don't fail uninstall, even if <formula> is a dependency of any installed "\
+             description: "Don't fail uninstall, even if <formula> is a dependency of any installed " \
                           "formulae."
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."

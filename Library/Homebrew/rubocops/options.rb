@@ -27,14 +27,14 @@ module RuboCop
             if option !~ /with(out)?-/ &&
                option != "cxx11" &&
                option != "universal"
-              problem "Options should begin with with/without."\
+              problem "Options should begin with with/without." \
                       " Migrate '--#{option}' with `deprecated_option`."
             end
 
             next unless option =~ /^with(out)?-(?:checks?|tests)$/
             next if depends_on?("check", :optional, :recommended)
 
-            problem "Use '--with#{Regexp.last_match(1)}-test' instead of '--#{option}'."\
+            problem "Use '--with#{Regexp.last_match(1)}-test' instead of '--#{option}'." \
                     " Migrate '--#{option}' with `deprecated_option`."
           end
 

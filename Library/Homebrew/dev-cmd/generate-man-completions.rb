@@ -23,9 +23,9 @@ module Homebrew
         Generate Homebrew's manpages and shell completions.
       EOS
       switch "--fail-if-not-changed",
-             description: "Return a failing status code if no changes are detected in the manpage outputs. "\
-                          "This can be used to notify CI when the manpages are out of date. Additionally, "\
-                          "the date used in new manpages will match those in the existing manpages (to allow "\
+             description: "Return a failing status code if no changes are detected in the manpage outputs. " \
+                          "This can be used to notify CI when the manpages are out of date. Additionally, " \
+                          "the date used in new manpages will match those in the existing manpages (to allow " \
                           "comparison without factoring in the date)."
       named_args :none
     end

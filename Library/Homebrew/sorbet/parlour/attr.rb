@@ -98,8 +98,8 @@ class Attr < Parlour::Plugin
         name = node.shift
         name = "self.#{name}" if sclass
         namespace.create_method(name, parameters: [
-          Parlour::RbiGenerator::Parameter.new("arg", type: "T.untyped", default: "T.unsafe(nil)"),
-        ], return_type: "T.untyped")
+                                        Parlour::RbiGenerator::Parameter.new("arg", type: "T.untyped", default: "T.unsafe(nil)"),
+                                      ], return_type: "T.untyped")
       when :attr_predicate
         name = node.shift
         name = "self.#{name}" if sclass
