@@ -13,6 +13,7 @@ inherit_mode:
 AllCops:
   TargetRubyVersion: 2.6
   DisplayCopNames: false
+  ActiveSupportExtensionsEnabled: true
   # enable all pending rubocops
   NewCops: enable
   Include:
