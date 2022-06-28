@@ -124,6 +124,20 @@ module Cask
     end
   end
 
+  # Error when a cask with the same name is found in multiple taps.
+  #
+  # @api private
+  class TapCaskAmbiguityError < CaskError
+    extend T::Sig
+
+    def initialize(ref, loaders)
+      super <<~EOS
+        Cask #{ref} exists in multiple taps:
+        #{loaders.map { |loader| "  #{loader.tap}/#{loader.token}" }.join("\n")}
+      EOS
+    end
+  end
+
   # Error when a cask already exists.
   #
   # @api private

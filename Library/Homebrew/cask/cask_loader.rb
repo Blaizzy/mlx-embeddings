@@ -236,10 +236,7 @@ module Cask
       when 2..Float::INFINITY
         loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
 
-        raise CaskError, <<~EOS
-          Cask #{ref} exists in multiple taps:
-          #{loaders.map { |loader| "  #{loader.tap}/#{loader.token}" }.join("\n")}
-        EOS
+        raise TapCaskAmbiguityError.new(ref, loaders)
       end
 
       possible_installed_cask = Cask.new(ref)
