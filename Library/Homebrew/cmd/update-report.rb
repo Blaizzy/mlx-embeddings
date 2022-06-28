@@ -240,17 +240,22 @@ module Homebrew
 
     puts
     ohai "Homebrew was updated to version #{new_tag}"
-    if new_tag.split(".").last == "0"
+    new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
+    old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
+    if old_tag.blank? || new_major_version > old_major_version \
+        || new_minor_version > old_minor_version
       puts <<~EOS
         More detailed release notes are available on the Homebrew Blog:
-          #{Formatter.url("https://brew.sh/blog/#{new_tag}")}
-      EOS
-    else
-      puts <<~EOS
-        The changelog can be found at:
-          #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
+          #{Formatter.url("https://brew.sh/blog/#{new_major_version}.#{new_minor_version}.0")}
       EOS
     end
+
+    return if new_patch_version.zero?
+
+    puts <<~EOS
+      The changelog can be found at:
+        #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
+    EOS
   end
 
   def shorten_revision(revision)
