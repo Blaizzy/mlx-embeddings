@@ -82,8 +82,8 @@ module Homebrew
         description: "Append these options to all `cask` commands. All `--*dir` options, " \
                      "`--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported. " \
                      "For example, you might add something like the following to your " \
-                     "`~/.profile`, `~/.bash_profile`, or `~/.zshenv`:\n\n" \
-                     '    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`',
+                     "`~/.profile`, `~/.bash_profile`, or `~/.zshenv`:" \
+                     '\n\n    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`',
       },
       HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS:       {
         description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will cleanup all formulae " \
@@ -258,7 +258,7 @@ module Homebrew
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK:    {
         description: "If set, do not check for broken linkage of dependents or outdated dependents after " \
                      "installing, upgrading or reinstalling formulae. This will result in fewer dependents " \
-                     " (and their dependencies) being upgraded or reinstalled but may result in more breakage " \
+                     "(and their dependencies) being upgraded or reinstalled but may result in more breakage " \
                      "from running `brew install <formula>` or `brew upgrade <formula>`.",
         boolean:     true,
       },

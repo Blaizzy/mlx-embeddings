@@ -65,8 +65,8 @@ module Homebrew
                           "`--merge`."
       switch "--merge",
              description: "Generate an updated bottle block for a formula and optionally merge it into the " \
-                          "formula file. Instead of a formula name, requires the path to a JSON file generated with " \
-                          "`brew bottle --json` <formula>."
+                          "formula file. Instead of a formula name, requires the path to a JSON file generated " \
+                          "with `brew bottle --json` <formula>."
       switch "--write",
              depends_on:  "--merge",
              description: "Write changes to the formula file. A new commit will be generated unless " \
