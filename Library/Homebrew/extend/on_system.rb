@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require "override"
+require "simulate_system"
 
 module OnSystem
   extend T::Sig
@@ -13,9 +13,9 @@ module OnSystem
 
   sig { params(arch: Symbol).returns(T::Boolean) }
   def arch_condition_met?(arch)
-    raise ArgumentError, "Invalid arch condition: #{arch.inspect}" unless ARCH_OPTIONS.include?(arch)
+    raise ArgumentError, "Invalid arch condition: #{arch.inspect}" if ARCH_OPTIONS.exclude?(arch)
 
-    current_arch = Homebrew::Override.arch || Hardware::CPU.type
+    current_arch = Homebrew::SimulateSystem.arch || Hardware::CPU.type
     arch == current_arch
   end
 
@@ -27,12 +27,12 @@ module OnSystem
     end
 
     if BASE_OS_OPTIONS.include?(os_name)
-      if Homebrew::Override.none?
+      if Homebrew::SimulateSystem.none?
         return OS.linux? if os_name == :linux
         return OS.mac? if os_name == :macos
       end
 
-      return Homebrew::Override.send("#{os_name}?")
+      return Homebrew::SimulateSystem.send("#{os_name}?")
     end
 
     raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOS::Version::SYMBOLS.key?(os_name)
@@ -42,7 +42,7 @@ module OnSystem
     end
 
     base_os = MacOS::Version.from_symbol(os_name)
-    current_os = MacOS::Version.from_symbol(Homebrew::Override.os || MacOS.version.to_sym)
+    current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.os || MacOS.version.to_sym)
 
     return current_os >= base_os if or_condition == :or_newer
     return current_os <= base_os if or_condition == :or_older

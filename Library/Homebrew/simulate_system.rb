@@ -2,15 +2,12 @@
 # frozen_string_literal: true
 
 module Homebrew
-  # Helper module for overriding machine-specific methods.
+  # Helper module for simulating different system condfigurations.
   #
   # @api private
-  class Override
+  class SimulateSystem
     class << self
       extend T::Sig
-
-      ARCH_OPTIONS = [:intel, :arm64].freeze
-      OS_OPTIONS = [:macos, :linux].freeze
 
       attr_reader :os, :arch
 

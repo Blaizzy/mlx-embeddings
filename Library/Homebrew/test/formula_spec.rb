@@ -1583,11 +1583,11 @@ describe Formula do
 
   describe "on_{os_version} blocks", :needs_macos do
     before do
-      Homebrew::Override.os = :monterey
+      Homebrew::SimulateSystem.os = :monterey
     end
 
     after do
-      Homebrew::Override.clear
+      Homebrew::SimulateSystem.clear
     end
 
     let(:f) do
@@ -1610,31 +1610,31 @@ describe Formula do
     end
 
     it "only calls code within `on_monterey`" do
-      Homebrew::Override.os = :monterey
+      Homebrew::SimulateSystem.os = :monterey
       f.brew { f.install }
       expect(f.test).to eq(1)
     end
 
     it "only calls code within `on_monterey :or_newer`" do
-      Homebrew::Override.os = :ventura
+      Homebrew::SimulateSystem.os = :ventura
       f.brew { f.install }
       expect(f.test).to eq(1)
     end
 
     it "only calls code within `on_big_sur`" do
-      Homebrew::Override.os = :big_sur
+      Homebrew::SimulateSystem.os = :big_sur
       f.brew { f.install }
       expect(f.test).to eq(2)
     end
 
     it "only calls code within `on_catalina`" do
-      Homebrew::Override.os = :catalina
+      Homebrew::SimulateSystem.os = :catalina
       f.brew { f.install }
       expect(f.test).to eq(3)
     end
 
     it "only calls code within `on_catalina :or_older`" do
-      Homebrew::Override.os = :mojave
+      Homebrew::SimulateSystem.os = :mojave
       f.brew { f.install }
       expect(f.test).to eq(3)
     end

@@ -255,8 +255,8 @@ module Cask
             # Big Sur is the first version of macOS that supports arm
             next if arch == :arm && MacOS::Version.from_symbol(os_name) < MacOS::Version.from_symbol(:big_sur)
 
-            Homebrew::Override.os = os_name
-            Homebrew::Override.arch = arch
+            Homebrew::SimulateSystem.os = os_name
+            Homebrew::SimulateSystem.arch = arch
 
             refresh
 
@@ -272,7 +272,7 @@ module Cask
         end
       end
 
-      Homebrew::Override.clear
+      Homebrew::SimulateSystem.clear
       refresh
 
       hash["variations"] = variations

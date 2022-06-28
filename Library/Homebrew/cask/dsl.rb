@@ -4,7 +4,6 @@
 require "locale"
 require "lazy_object"
 require "livecheck"
-require "override"
 
 require "cask/artifact"
 
