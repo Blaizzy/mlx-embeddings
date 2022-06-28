@@ -396,22 +396,8 @@ setup_git() {
   fi
 }
 
-setup_ssh() {
-  # This is set by the user environment.
-  # shellcheck disable=SC2154
-  HOMEBREW_BREWED_SSH_PATH="${HOMEBREW_PREFIX}/opt/openssh/bin/ssh"
-  if [[ -n "${HOMEBREW_FORCE_BREWED_SSH}" && -x "${HOMEBREW_BREWED_SSH_PATH}" ]] &&
-     "${HOMEBREW_BREWED_SSH_PATH}" -V &>/dev/null
-  then
-    HOMEBREW_SSH="${HOMEBREW_BREWED_SSH_PATH}"
-  else
-    HOMEBREW_SSH="ssh"
-  fi
-}
-
 setup_curl
 setup_git
-setup_ssh
 
 HOMEBREW_VERSION="$("${HOMEBREW_GIT}" -C "${HOMEBREW_REPOSITORY}" describe --tags --dirty --abbrev=7 2>/dev/null)"
 HOMEBREW_USER_AGENT_VERSION="${HOMEBREW_VERSION}"
@@ -809,9 +795,7 @@ setup-analytics
 # Use this configuration file instead of ~/.ssh/config when fetching git over SSH.
 if [[ -n "${HOMEBREW_SSH_CONFIG_PATH}" ]]
 then
-  export GIT_SSH_COMMAND="${HOMEBREW_SSH} -F${HOMEBREW_SSH_CONFIG_PATH}"
-else
-  export GIT_SSH_COMMAND="${HOMEBREW_SSH}"
+  export GIT_SSH_COMMAND="ssh -F${HOMEBREW_SSH_CONFIG_PATH}"
 fi
 
 if [[ -n "${HOMEBREW_DOCKER_REGISTRY_TOKEN}" ]]

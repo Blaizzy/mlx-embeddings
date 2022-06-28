@@ -170,10 +170,6 @@ module Homebrew
                      "Automatically set if the system version of `git` is too old.",
         boolean:     true,
       },
-      HOMEBREW_FORCE_BREWED_SSH:                 {
-        description: "If set, always use a Homebrew-installed `ssh`(1) rather than the system version. ",
-        boolean:     true,
-      },
       HOMEBREW_FORCE_VENDOR_RUBY:                {
         description: "If set, always use Homebrew's vendored, relocatable Ruby version even if the system version " \
                      "of Ruby is new enough.",
