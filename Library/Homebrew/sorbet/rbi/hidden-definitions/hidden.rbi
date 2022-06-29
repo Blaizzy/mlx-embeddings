@@ -2662,6 +2662,10 @@ module Homebrew::Livecheck::Strategy
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::SimulateSystem
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::Style::LineLocation
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -3623,7 +3627,7 @@ class Object
   def self.yaml_tag(url); end
 end
 
-module OnOS
+module OnSystem
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -4344,6 +4348,29 @@ end
 
 class Resource
   include ::FileUtils::StreamUtils_
+  def on_arm(&block); end
+
+  def on_big_sur(or_condition=T.unsafe(nil), &block); end
+
+  def on_catalina(or_condition=T.unsafe(nil), &block); end
+
+  def on_el_capitan(or_condition=T.unsafe(nil), &block); end
+
+  def on_high_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_intel(&block); end
+
+  def on_linux(&block); end
+
+  def on_macos(&block); end
+
+  def on_mojave(or_condition=T.unsafe(nil), &block); end
+
+  def on_monterey(or_condition=T.unsafe(nil), &block); end
+
+  def on_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
 
 class Resource::Partial
