@@ -12,13 +12,13 @@ require "utils/bottles"
 require "patch"
 require "compilers"
 require "os/mac/version"
-require "extend/on_os"
+require "extend/on_system"
 
 class SoftwareSpec
   extend T::Sig
 
   extend Forwardable
-  include OnOS
+  include OnSystem
 
   PREDEFINED_OPTIONS = {
     universal: Option.new("universal", "Build a universal binary"),
@@ -583,7 +583,7 @@ class BottleSpecification
 end
 
 class PourBottleCheck
-  include OnOS
+  include OnSystem
 
   def initialize(formula)
     @formula = formula

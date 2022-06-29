@@ -1580,4 +1580,117 @@ describe Formula do
       expect(f.test).to eq(2)
     end
   end
+
+  describe "on_{os_version} blocks", :needs_macos do
+    before do
+      Homebrew::SimulateSystem.os = :monterey
+    end
+
+    after do
+      Homebrew::SimulateSystem.clear
+    end
+
+    let(:f) do
+      Class.new(Testball) do
+        @test = 0
+        attr_reader :test
+
+        def install
+          on_monterey :or_newer do
+            @test = 1
+          end
+          on_big_sur do
+            @test = 2
+          end
+          on_catalina :or_older do
+            @test = 3
+          end
+        end
+      end.new
+    end
+
+    it "only calls code within `on_monterey`" do
+      Homebrew::SimulateSystem.os = :monterey
+      f.brew { f.install }
+      expect(f.test).to eq(1)
+    end
+
+    it "only calls code within `on_monterey :or_newer`" do
+      Homebrew::SimulateSystem.os = :ventura
+      f.brew { f.install }
+      expect(f.test).to eq(1)
+    end
+
+    it "only calls code within `on_big_sur`" do
+      Homebrew::SimulateSystem.os = :big_sur
+      f.brew { f.install }
+      expect(f.test).to eq(2)
+    end
+
+    it "only calls code within `on_catalina`" do
+      Homebrew::SimulateSystem.os = :catalina
+      f.brew { f.install }
+      expect(f.test).to eq(3)
+    end
+
+    it "only calls code within `on_catalina :or_older`" do
+      Homebrew::SimulateSystem.os = :mojave
+      f.brew { f.install }
+      expect(f.test).to eq(3)
+    end
+  end
+
+  describe "#on_arm" do
+    before do
+      allow(Hardware::CPU).to receive(:type).and_return(:arm)
+    end
+
+    let(:f) do
+      Class.new(Testball) do
+        @test = 0
+        attr_reader :test
+
+        def install
+          on_arm do
+            @test = 1
+          end
+          on_intel do
+            @test = 2
+          end
+        end
+      end.new
+    end
+
+    it "only calls code within on_arm" do
+      f.brew { f.install }
+      expect(f.test).to eq(1)
+    end
+  end
+
+  describe "#on_intel" do
+    before do
+      allow(Hardware::CPU).to receive(:type).and_return(:intel)
+    end
+
+    let(:f) do
+      Class.new(Testball) do
+        @test = 0
+        attr_reader :test
+
+        def install
+          on_arm do
+            @test = 1
+          end
+          on_intel do
+            @test = 2
+          end
+        end
+      end.new
+    end
+
+    it "only calls code within on_intel" do
+      f.brew { f.install }
+      expect(f.test).to eq(2)
+    end
+  end
 end

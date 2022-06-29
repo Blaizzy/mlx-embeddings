@@ -5,7 +5,7 @@ require "download_strategy"
 require "checksum"
 require "version"
 require "mktemp"
-require "extend/on_os"
+require "extend/on_system"
 
 # Resource is the fundamental representation of an external resource. The
 # primary formula download, along with other declared resources, are instances
@@ -17,7 +17,7 @@ class Resource
 
   include Context
   include FileUtils
-  include OnOS
+  include OnSystem
 
   attr_reader :mirrors, :specs, :using, :source_modified_time, :patches, :owner
   attr_writer :version

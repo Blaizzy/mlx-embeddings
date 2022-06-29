@@ -25,6 +25,8 @@ require "cask/dsl/version"
 require "cask/url"
 require "cask/utils"
 
+require "extend/on_system"
+
 module Cask
   # Class representing the domain-specific language used for casks.
   #
@@ -89,7 +91,12 @@ module Cask
       *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
     ]).freeze
 
+    extend Predicable
+    include OnSystem
+
     attr_reader :cask, :token
+
+    attr_predicate :on_system_blocks_exist?
 
     def initialize(cask)
       @cask = cask
@@ -112,10 +119,17 @@ module Cask
     def set_unique_stanza(stanza, should_return)
       return instance_variable_get("@#{stanza}") if should_return
 
-      if !@cask.allow_reassignment && instance_variable_defined?("@#{stanza}")
-        raise CaskInvalidError.new(cask, "'#{stanza}' stanza may only appear once.")
+      unless @cask.allow_reassignment
+        if instance_variable_defined?("@#{stanza}") && !@called_in_on_system_block
+          raise CaskInvalidError.new(cask, "'#{stanza}' stanza may only appear once.")
+        end
+
+        if instance_variable_defined?("@#{stanza}_set_in_block") && @called_in_on_system_block
+          raise CaskInvalidError.new(cask, "'#{stanza}' stanza may only be overridden once.")
+        end
       end
 
+      instance_variable_set("@#{stanza}_set_in_block", true) if @called_in_on_system_block
       instance_variable_set("@#{stanza}", yield)
     rescue CaskInvalidError
       raise
