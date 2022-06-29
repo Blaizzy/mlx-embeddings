@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "version"
-
 # Helper functions for querying operating system information.
 #
 # @api private

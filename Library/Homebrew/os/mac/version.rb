@@ -16,7 +16,7 @@ module OS
       # TODO: bump version when new macOS is released or announced
       # and also update references in docs/Installation.md,
       # https://github.com/Homebrew/install/blob/HEAD/install.sh and
-      # OS::Mac::Version (in HOMEBREW_LIBRARY/os.rb)
+      # MacOSVersions::SYMBOLS
       NEWEST_UNSUPPORTED = "13"
       private_constant :NEWEST_UNSUPPORTED
 

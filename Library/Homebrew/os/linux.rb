@@ -8,8 +8,6 @@ module OS
 
     module_function
 
-    ::MacOS = OS::Mac
-
     sig { returns(String) }
     def os_version
       if which("lsb_release")
@@ -32,6 +30,8 @@ module OS
   # rubocop:disable Style/Documentation
   module Mac
     module_function
+
+    ::MacOS = OS::Mac
 
     raise "Loaded OS::Linux on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
