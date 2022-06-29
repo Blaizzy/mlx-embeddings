@@ -18,7 +18,7 @@ class SoftwareSpec
   extend T::Sig
 
   extend Forwardable
-  include OnSystem
+  include OnSystem::MacOSAndLinux
 
   PREDEFINED_OPTIONS = {
     universal: Option.new("universal", "Build a universal binary"),
@@ -583,7 +583,7 @@ class BottleSpecification
 end
 
 class PourBottleCheck
-  include OnSystem
+  include OnSystem::MacOSAndLinux
 
   def initialize(formula)
     @formula = formula

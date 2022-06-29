@@ -56,7 +56,7 @@ module OnSystem
   end
 
   sig { params(base: Class).void }
-  def self.included(base)
+  def setup_arch_methods(base)
     ARCH_OPTIONS.each do |arch|
       base.define_method("on_#{arch}") do |&block|
         @on_system_blocks_exist = true
@@ -70,7 +70,10 @@ module OnSystem
         result
       end
     end
+  end
 
+  sig { params(base: Class).void }
+  def setup_base_os_methods(base)
     BASE_OS_OPTIONS.each do |base_os|
       base.define_method("on_#{base_os}") do |&block|
         @on_system_blocks_exist = true
@@ -84,7 +87,10 @@ module OnSystem
         result
       end
     end
+  end
 
+  sig { params(base: Class).void }
+  def setup_macos_methods(base)
     MacOSVersions::SYMBOLS.each_key do |os_name|
       base.define_method("on_#{os_name}") do |or_condition = nil, &block|
         @on_system_blocks_exist = true
@@ -98,6 +104,32 @@ module OnSystem
 
         result
       end
+    end
+  end
+
+  sig { params(_base: Class).void }
+  def self.included(_base)
+    raise "Do not include `OnSystem` directly. Instead, include `OnSystem::MacOSAndLinux` or `OnSystem::MacOSOnly`"
+  end
+
+  module MacOSAndLinux
+    extend T::Sig
+
+    sig { params(base: Class).void }
+    def self.included(base)
+      OnSystem.setup_arch_methods(base)
+      OnSystem.setup_base_os_methods(base)
+      OnSystem.setup_macos_methods(base)
+    end
+  end
+
+  module MacOSOnly
+    extend T::Sig
+
+    sig { params(base: Class).void }
+    def self.included(base)
+      OnSystem.setup_arch_methods(base)
+      OnSystem.setup_macos_methods(base)
     end
   end
 end
