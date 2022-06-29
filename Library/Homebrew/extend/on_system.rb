@@ -55,10 +55,10 @@ module OnSystem
     method_name.to_s.sub(/^on_/, "").to_sym
   end
 
-  sig { params(onto: Class, include_linux: T::Boolean).void }
-  def setup_methods!(onto:, include_linux: true)
+  sig { params(base: Class).void }
+  def self.included(base)
     ARCH_OPTIONS.each do |arch|
-      onto.define_method("on_#{arch}") do |&block|
+      base.define_method("on_#{arch}") do |&block|
         @on_system_blocks_exist = true
 
         return unless OnSystem.arch_condition_met? OnSystem.condition_from_method_name(__method__)
@@ -71,24 +71,22 @@ module OnSystem
       end
     end
 
-    if include_linux
-      BASE_OS_OPTIONS.each do |base_os|
-        onto.define_method("on_#{base_os}") do |&block|
-          @on_system_blocks_exist = true
+    BASE_OS_OPTIONS.each do |base_os|
+      base.define_method("on_#{base_os}") do |&block|
+        @on_system_blocks_exist = true
 
-          return unless OnSystem.os_condition_met? OnSystem.condition_from_method_name(__method__)
+        return unless OnSystem.os_condition_met? OnSystem.condition_from_method_name(__method__)
 
-          @called_in_on_system_block = true
-          result = block.call
-          @called_in_on_system_block = false
+        @called_in_on_system_block = true
+        result = block.call
+        @called_in_on_system_block = false
 
-          result
-        end
+        result
       end
     end
 
     MacOSVersions::SYMBOLS.each_key do |os_name|
-      onto.define_method("on_#{os_name}") do |or_condition = nil, &block|
+      base.define_method("on_#{os_name}") do |or_condition = nil, &block|
         @on_system_blocks_exist = true
 
         os_condition = OnSystem.condition_from_method_name __method__

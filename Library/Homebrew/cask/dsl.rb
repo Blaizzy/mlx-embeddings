@@ -92,6 +92,7 @@ module Cask
     ]).freeze
 
     extend Predicable
+    include OnSystem
 
     attr_reader :cask, :token
 
@@ -318,8 +319,6 @@ module Cask
     def livecheckable?
       @livecheckable == true
     end
-
-    OnSystem.setup_methods! onto: self, include_linux: false
 
     ORDINARY_ARTIFACT_CLASSES.each do |klass|
       define_method(klass.dsl_key) do |*args|

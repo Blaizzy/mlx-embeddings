@@ -17,8 +17,7 @@ class Resource
 
   include Context
   include FileUtils
-
-  OnSystem.setup_methods! onto: self
+  include OnSystem
 
   attr_reader :mirrors, :specs, :using, :source_modified_time, :patches, :owner
   attr_writer :version

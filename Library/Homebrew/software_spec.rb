@@ -18,13 +18,12 @@ class SoftwareSpec
   extend T::Sig
 
   extend Forwardable
+  include OnSystem
 
   PREDEFINED_OPTIONS = {
     universal: Option.new("universal", "Build a universal binary"),
     cxx11:     Option.new("c++11",     "Build using C++11 mode"),
   }.freeze
-
-  OnSystem.setup_methods! onto: self
 
   attr_reader :name, :full_name, :owner, :build, :resources, :patches, :options, :deprecated_flags,
               :deprecated_options, :dependency_collector, :bottle_specification, :compiler_failures,
@@ -584,7 +583,7 @@ class BottleSpecification
 end
 
 class PourBottleCheck
-  OnSystem.setup_methods! onto: self
+  include OnSystem
 
   def initialize(formula)
     @formula = formula
