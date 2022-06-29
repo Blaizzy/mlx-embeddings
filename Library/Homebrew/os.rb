@@ -50,25 +50,6 @@ module OS
   CI_GLIBC_VERSION = "2.23"
   CI_OS_VERSION = "Ubuntu 16.04"
 
-  module Mac
-    ::MacOS = OS::Mac
-
-    class Version < ::Version
-      # TODO: when removing symbols here, ensure that they are added to
-      # DEPRECATED_MACOS_VERSIONS in MacOSRequirement.
-      SYMBOLS = {
-        ventura:     "13",
-        monterey:    "12",
-        big_sur:     "11",
-        catalina:    "10.15",
-        mojave:      "10.14",
-        high_sierra: "10.13",
-        sierra:      "10.12",
-        el_capitan:  "10.11",
-      }.freeze
-    end
-  end
-
   if OS.mac?
     require "os/mac"
     # Don't tell people to report issues on unsupported configurations.

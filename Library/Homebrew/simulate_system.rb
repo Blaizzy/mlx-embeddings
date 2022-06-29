@@ -13,7 +13,7 @@ module Homebrew
 
       sig { params(new_os: Symbol).void }
       def os=(new_os)
-        os_options = [:macos, :linux, *MacOS::Version::SYMBOLS.keys]
+        os_options = [:macos, :linux, *MacOSVersions::SYMBOLS.keys]
         raise "Unknown OS: #{new_os}" unless os_options.include?(new_os)
 
         @os = new_os
@@ -38,7 +38,7 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def macos?
-        [:macos, *MacOS::Version::SYMBOLS.keys].include?(@os)
+        [:macos, *MacOSVersions::SYMBOLS.keys].include?(@os)
       end
 
       sig { returns(T::Boolean) }

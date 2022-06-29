@@ -94,7 +94,7 @@ module Cask
         version_os_hash = {}
         actual_version = MacOS.full_version.to_s
 
-        MacOS::Version::SYMBOLS.each do |os_name, os_version|
+        MacOSVersions::SYMBOLS.each do |os_name, os_version|
           MacOS.full_version = os_version
           cask = CaskLoader.load(token)
           version_os_hash[os_name] = cask.version if cask.version != version
@@ -251,7 +251,7 @@ module Cask
 
       if @dsl.on_system_blocks_exist?
         [:arm, :intel].each do |arch|
-          MacOS::Version::SYMBOLS.each_key do |os_name|
+          MacOSVersions::SYMBOLS.each_key do |os_name|
             # Big Sur is the first version of macOS that supports arm
             next if arch == :arm && MacOS::Version.from_symbol(os_name) < MacOS::Version.from_symbol(:big_sur)
 

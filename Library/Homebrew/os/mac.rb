@@ -13,6 +13,8 @@ module OS
 
     module_function
 
+    ::MacOS = OS::Mac
+
     raise "Loaded OS::Mac on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
     VERSION = ENV.fetch("HOMEBREW_MACOS_VERSION").chomp.freeze

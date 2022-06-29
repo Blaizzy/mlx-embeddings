@@ -72,6 +72,7 @@ HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.
 
 require "env_config"
 require "compat/early" unless Homebrew::EnvConfig.no_compat?
+require "macos_versions"
 require "os"
 require "messages"
 require "default_prefix"

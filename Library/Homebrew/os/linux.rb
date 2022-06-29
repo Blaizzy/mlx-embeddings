@@ -8,6 +8,8 @@ module OS
 
     module_function
 
+    ::MacOS = OS::Mac
+
     sig { returns(String) }
     def os_version
       if which("lsb_release")

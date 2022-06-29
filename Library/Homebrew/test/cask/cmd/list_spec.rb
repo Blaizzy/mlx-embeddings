@@ -256,7 +256,7 @@ describe Cask::Cmd::List, :cask do
         catalina: "10.15",
         mojave:   "10.14",
       }
-      stub_const("MacOS::Version::SYMBOLS", symbols)
+      stub_const("MacOSVersions::SYMBOLS", symbols)
 
       # For consistency, always run on Monterey and ARM
       MacOS.full_version = "12"

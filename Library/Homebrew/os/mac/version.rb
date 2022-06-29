@@ -30,7 +30,7 @@ module OS
 
       sig { params(version: Symbol).returns(T.attached_class) }
       def self.from_symbol(version)
-        str = SYMBOLS.fetch(version) { raise MacOSVersionError, version }
+        str = MacOSVersions::SYMBOLS.fetch(version) { raise MacOSVersionError, version }
         new(str)
       end
 
@@ -48,10 +48,10 @@ module OS
       sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
       def <=>(other)
         @comparison_cache.fetch(other) do
-          if SYMBOLS.key?(other) && to_sym == other
+          if MacOSVersions::SYMBOLS.key?(other) && to_sym == other
             0
           else
-            v = SYMBOLS.fetch(other) { other.to_s }
+            v = MacOSVersions::SYMBOLS.fetch(other) { other.to_s }
             @comparison_cache[other] = super(::Version.new(v))
           end
         end
@@ -69,7 +69,7 @@ module OS
 
       sig { returns(Symbol) }
       def to_sym
-        @to_sym ||= SYMBOLS.invert.fetch(strip_patch.to_s, :dunno)
+        @to_sym ||= MacOSVersions::SYMBOLS.invert.fetch(strip_patch.to_s, :dunno)
       end
 
       sig { returns(String) }

@@ -55,7 +55,7 @@ module Cask
         begin
           @macos = if args.count > 1
             MacOSRequirement.new([args], comparator: "==")
-          elsif MacOS::Version::SYMBOLS.key?(args.first)
+          elsif MacOSVersions::SYMBOLS.key?(args.first)
             MacOSRequirement.new([args.first], comparator: "==")
           elsif /^\s*(?<comparator><|>|[=<>]=)\s*:(?<version>\S+)\s*$/ =~ args.first
             MacOSRequirement.new([version.to_sym], comparator: comparator)

@@ -23,7 +23,7 @@ module OnSystem
   def os_condition_met?(os_name, or_condition = nil)
     if Homebrew::EnvConfig.simulate_macos_on_linux?
       return false if os_name == :linux
-      return true if [:macos, *MacOS::Version::SYMBOLS.keys].include?(os_name)
+      return true if [:macos, *MacOSVersions::SYMBOLS.keys].include?(os_name)
     end
 
     if BASE_OS_OPTIONS.include?(os_name)
@@ -35,7 +35,7 @@ module OnSystem
       return Homebrew::SimulateSystem.send("#{os_name}?")
     end
 
-    raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOS::Version::SYMBOLS.key?(os_name)
+    raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOSVersions::SYMBOLS.key?(os_name)
 
     if or_condition.present? && [:or_newer, :or_older].exclude?(or_condition)
       raise ArgumentError, "Invalid OS `or_*` condition: #{or_condition.inspect}"
@@ -87,7 +87,7 @@ module OnSystem
       end
     end
 
-    MacOS::Version::SYMBOLS.each_key do |os_name|
+    MacOSVersions::SYMBOLS.each_key do |os_name|
       onto.define_method("on_#{os_name}") do |or_condition = nil, &block|
         @on_system_blocks_exist = true
 
