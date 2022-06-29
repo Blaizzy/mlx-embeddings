@@ -3178,6 +3178,7 @@ class RuboCop::Cop::Layout::LineContinuationSpacing < ::RuboCop::Cop::Base
   def find_offensive_spacing(line); end
   def ignore_range?(backtick_range); end
   def investigate(line, line_number); end
+  def last_line(processed_source); end
   def message(_range); end
   def no_space_style?; end
   def space_style?; end
@@ -6546,6 +6547,7 @@ module RuboCop::Cop::MultilineElementIndentation
   def indent_base(left_brace, left_parenthesis); end
   def key_and_value_begin_on_same_line?(pair); end
   def node_beginning_with(left_brace); end
+  def right_sibling_begins_on_subsequent_line?(pair); end
 end
 
 module RuboCop::Cop::MultilineElementLineBreaks
