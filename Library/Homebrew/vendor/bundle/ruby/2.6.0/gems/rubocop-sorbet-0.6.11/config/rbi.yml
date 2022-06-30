@@ -25,6 +25,7 @@ Layout/ClassStructure:
   Enabled: true
   ExpectedOrder:
     - module_inclusion
+    - constants
     - macros
     - public_attribute_macros
     - protected_attribute_macros
@@ -34,7 +35,6 @@ Layout/ClassStructure:
     - protected_methods
     - private_methods
     - public_class_methods
-    - constants
 
 Layout/ClosingParenthesisIndentation:
   Enabled: true
@@ -129,6 +129,7 @@ Layout/ParameterAlignment:
 
 Layout/RedundantLineBreak:
   Enabled: true
+  InspectBlocks: true
 
 Layout/SpaceAfterColon:
   Enabled: true
@@ -230,6 +231,9 @@ Sorbet/ValidSigil:
   SuggestedStrictness: "true"
 
 ## Style
+
+Style/BlockDelimiters:
+  Enabled: true
 
 Style/ClassAndModuleChildren:
   Enabled: true
