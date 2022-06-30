@@ -6,6 +6,7 @@
 
 module RuboCop; end
 module RuboCop::Cop; end
+RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 module RuboCop::Cop::Sorbet; end
 
 class RuboCop::Cop::Sorbet::AllowIncompatibleOverride < ::RuboCop::Cop::Cop
