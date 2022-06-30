@@ -53,48 +53,42 @@ describe Resource do
     end
   end
 
-  describe Resource do
+  describe "#livecheck" do
+    it "returns nil if livecheck block is not set in resource" do
+      expect(resource.livecheck).to be_nil
+    end
+
     let(:r) do
-      livecheck do
-        url "https://brew.sh/foo-1.0.tar.gz"
-        regex(/foo/)
+      Resource.new do
+        url "https://brew.sh/test-0.0.1.tgz"
+        livecheck do
+          url "https://brew.sh/foo-1.0.tar.gz"
+          regex(/foo/)
+        end
       end
     end
 
-    let(:livecheckable_r) { described_class.new(r) }
+    it "when livecheck block is set" do
+      expect(r.livecheck.url).to eq("https://brew.sh/foo-1.0.tar.gz")
+      expect(r.livecheck.regex).to eq(/foo/)
+    end
+  end
 
-    describe "#livecheck" do
-      it "returns nil if not set" do
-        expect(livecheckable_r.livecheck).to be_nil
-      end
-
-      it "returns the string if set" do
-        livecheckable_r.livecheck("other-resource")
-        expect(livecheckable_r.livecheck).to eq("other-resource")
-      end
-
-      it "raises a TypeError if the argument isn't a String" do
-        expect {
-          livecheckable_r.livecheck(123)
-        }.to raise_error(TypeError, "Resource#livecheck expects a String")
-      end
+  describe "#livecheckable?" do
+    it "returns false if livecheck block is not set in resource" do
+      expect(resource.livecheckable?).to be false
     end
 
-    describe "#regex" do
-      it "returns nil if not set" do
-        expect(livecheckable_r.regex).to be_nil
+    specify "livecheck block defined in resources" do
+      r = Resource.new do
+        url "https://brew.sh/test-1.0.tbz"
+        livecheck do
+          url "https://brew.sh/foo-1.0.tar.gz"
+          regex(/foo/)
+        end
       end
 
-      it "returns the Regexp if set" do
-        livecheckable_r.regex(/foo/)
-        expect(livecheckable_r.regex).to eq(/foo/)
-      end
-
-      it "raises a TypeError if the argument isn't a Regexp" do
-        expect {
-          livecheckable_r.regex("foo")
-        }.to raise_error(TypeError, "Resource#livecheck#regex expects a Regexp")
-      end
+      expect(r.livecheckable?).to be true
     end
 
   end
