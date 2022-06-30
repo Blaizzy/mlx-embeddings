@@ -6,7 +6,7 @@ require "checksum"
 require "version"
 require "mktemp"
 require "livecheck"
-require "extend/on_os"
+require "extend/on_system"
 
 # Resource is the fundamental representation of an external resource. The
 # primary formula download, along with other declared resources, are instances
