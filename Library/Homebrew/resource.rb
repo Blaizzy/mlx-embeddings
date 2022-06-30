@@ -183,7 +183,7 @@ class Resource
   #   regex /foo-(\d+(?:\.\d+)+)\.tar/
   # end</pre>
   def livecheck(&block)
-    @livecheck ||= Livecheck.new(self)
+    @livecheck ||= Livecheck.new(self) if block
     return @livecheck unless block
 
     @livecheckable = true
