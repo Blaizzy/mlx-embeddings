@@ -5,6 +5,7 @@ require "download_strategy"
 require "checksum"
 require "version"
 require "mktemp"
+require "livecheck"
 require "extend/on_os"
 
 # Resource is the fundamental representation of an external resource. The
@@ -36,6 +37,8 @@ class Resource
     @checksum = nil
     @using = nil
     @patches = []
+    @livecheck = nil
+    @livecheckable = false
     instance_eval(&block) if block
   end
 
@@ -166,6 +169,32 @@ class Resource
       For your reference, the checksum is:
         sha256 "#{fn.sha256}"
     EOS
+  end
+
+  # @!attribute [w] livecheck
+  # {Livecheck} can be used to check for newer versions of the software.
+  # This method evaluates the DSL specified in the livecheck block of the
+  # {Resource} (if it exists) and sets the instance variables of a {Livecheck}
+  # object accordingly. This is used by `brew livecheck` to check for newer
+  # versions of the software.
+  #
+  # <pre>livecheck do
+  #   url "https://example.com/foo/releases"
+  #   regex /foo-(\d+(?:\.\d+)+)\.tar/
+  # end</pre>
+  def livecheck(&block)
+    @livecheck ||= Livecheck.new(self)
+    return @livecheck unless block
+
+    @livecheckable = true
+    @livecheck.instance_eval(&block)
+  end
+
+  # Whether a livecheck specification is defined or not.
+  # It returns true when a livecheck block is present in the {Resource} and
+  # false otherwise, and is used by livecheck.
+  def livecheckable?
+    @livecheckable == true
   end
 
   def sha256(val)
