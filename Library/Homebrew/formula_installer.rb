@@ -609,8 +609,6 @@ class FormulaInstaller
     if pour_bottle && !formula.bottled?(:all) && !Keg.bottle_dependencies.empty?
       bottle_deps = if Keg.bottle_dependencies.exclude?(formula.name)
         Keg.bottle_dependencies
-      elsif Keg.relocation_formulae.exclude?(formula.name)
-        Keg.relocation_formulae
       else
         []
       end

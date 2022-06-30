@@ -100,15 +100,8 @@ module Homebrew
       return merge(args: args)
     end
 
-    ensure_relocation_formulae_installed! unless args.skip_relocation?
     args.named.to_resolved_formulae(uniq: false).each do |f|
       bottle_formula f, args: args
-    end
-  end
-
-  def ensure_relocation_formulae_installed!
-    Keg.relocation_formulae.each do |f|
-      ensure_formula_installed!(f, latest: true)
     end
   end
 
