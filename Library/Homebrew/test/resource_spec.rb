@@ -58,17 +58,15 @@ describe Resource do
       expect(resource.livecheck).to be_nil
     end
 
-    let(:r) do
-      Resource.new do
+    specify "when livecheck block is set" do
+      r = described_class.new do
         url "https://brew.sh/test-0.0.1.tgz"
         livecheck do
           url "https://brew.sh/foo-1.0.tar.gz"
           regex(/foo/)
         end
       end
-    end
 
-    it "when livecheck block is set" do
       expect(r.livecheck.url).to eq("https://brew.sh/foo-1.0.tar.gz")
       expect(r.livecheck.regex).to eq(/foo/)
     end
@@ -80,7 +78,7 @@ describe Resource do
     end
 
     specify "livecheck block defined in resources" do
-      r = Resource.new do
+      r = described_class.new do
         url "https://brew.sh/test-1.0.tbz"
         livecheck do
           url "https://brew.sh/foo-1.0.tar.gz"
@@ -90,7 +88,6 @@ describe Resource do
 
       expect(r.livecheckable?).to be true
     end
-
   end
 
   describe "#version" do
