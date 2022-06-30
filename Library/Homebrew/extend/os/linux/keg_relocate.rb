@@ -87,8 +87,7 @@ class Keg
       gcc = Formulary.factory(CompilerSelector.preferred_gcc)
       if !Homebrew::EnvConfig.simulate_macos_on_linux? &&
          DevelopmentTools.non_apple_gcc_version("gcc") < gcc.version.to_i
-        formulae += gcc.recursive_dependencies.map(&:name)
-        formulae << gcc.name
+        formulae << gcc
       end
       formulae
     end
