@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "resource"
+require "livecheck"
 
 describe Resource do
   subject(:resource) { described_class.new("test") }
@@ -50,6 +51,52 @@ describe Resource do
       expect(resource.using).to eq(:git)
       expect(specs).to eq(using: :git, branch: "master")
     end
+  end
+
+  describe Resource do
+    let(:r) do
+      livecheck do
+        url "https://brew.sh/foo-1.0.tar.gz"
+        regex(/foo/)
+      end
+    end
+
+    let(:livecheckable_r) { described_class.new(r) }
+
+    describe "#livecheck" do
+      it "returns nil if not set" do
+        expect(livecheckable_r.livecheck).to be_nil
+      end
+
+      it "returns the string if set" do
+        livecheckable_r.livecheck("other-resource")
+        expect(livecheckable_r.livecheck).to eq("other-resource")
+      end
+
+      it "raises a TypeError if the argument isn't a String" do
+        expect {
+          livecheckable_r.livecheck(123)
+        }.to raise_error(TypeError, "Resource#livecheck expects a String")
+      end
+    end
+
+    describe "#regex" do
+      it "returns nil if not set" do
+        expect(livecheckable_r.regex).to be_nil
+      end
+
+      it "returns the Regexp if set" do
+        livecheckable_r.regex(/foo/)
+        expect(livecheckable_r.regex).to eq(/foo/)
+      end
+
+      it "raises a TypeError if the argument isn't a Regexp" do
+        expect {
+          livecheckable_r.regex("foo")
+        }.to raise_error(TypeError, "Resource#livecheck#regex expects a Regexp")
+      end
+    end
+
   end
 
   describe "#version" do
