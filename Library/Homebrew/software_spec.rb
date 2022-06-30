@@ -377,7 +377,7 @@ class Bottle
     json = begin
       JSON.parse(manifest_json)
     rescue JSON::ParserError
-      raise "The downloaded GitHub Packages manifest was corrupted or modified (it is not valid JSON): "\
+      raise "The downloaded GitHub Packages manifest was corrupted or modified (it is not valid JSON): " \
             "\n#{github_packages_manifest_resource.cached_download}"
     end
 

@@ -364,7 +364,7 @@ module RuboCop
             end
 
             offending_node(str)
-            problem "References to `#{content}` should "\
+            problem "References to `#{content}` should " \
                     "match the specified python dependency (`#{fix}`)" do |corrector|
               corrector.replace(str.source_range, "\"#{fix}\"")
             end

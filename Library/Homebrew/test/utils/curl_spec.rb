@@ -62,8 +62,8 @@ describe "Utils::Curl" do
         "cache-control"   => "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
         "expires"         => "Thu, 01 Jan 1970 00:00:01 GMT",
         "expect-ct"       => "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"",
-        "set-cookie"      => "__cf_bm=0123456789abcdef; path=/; expires=Wed, 31-Jan-20 01:23:45 GMT;" \
-                             " domain=www.example.com; HttpOnly; Secure; SameSite=None",
+        "set-cookie"      => "__cf_bm=0123456789abcdef; path=/; expires=Wed, 31-Jan-20 01:23:45 GMT; " \
+                             "domain=www.example.com; HttpOnly; Secure; SameSite=None",
         "server"          => "cloudflare",
         "cf-ray"          => "0123456789abcdef-IAD",
         "alt-svc"         => "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400",
@@ -77,8 +77,8 @@ describe "Utils::Curl" do
     details[:cloudflare][:multiple_cookies] = Marshal.load(Marshal.dump(details[:cloudflare][:single_cookie]))
     details[:cloudflare][:multiple_cookies][:headers]["set-cookie"] = [
       "first_cookie=for_testing",
-      "__cf_bm=abcdef0123456789; path=/; expires=Thu, 28-Apr-22 18:38:40 GMT; domain=www.example.com; HttpOnly;" \
-      " Secure; SameSite=None",
+      "__cf_bm=abcdef0123456789; path=/; expires=Thu, 28-Apr-22 18:38:40 GMT; domain=www.example.com; HttpOnly; " \
+      "Secure; SameSite=None",
       "last_cookie=also_for_testing",
     ]
 

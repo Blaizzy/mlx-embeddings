@@ -17,7 +17,7 @@ module Homebrew
         packages.
       EOS
       switch "-f", "--force",
-             description: "Treat installed <formula> and provided <formula> as if they are from "\
+             description: "Treat installed <formula> and provided <formula> as if they are from " \
                           "the same taps and migrate them anyway."
       switch "-n", "--dry-run",
              description: "Show what would be migrated, but do not actually migrate anything."

@@ -180,8 +180,8 @@ module Homebrew
       when :background, :standard, :interactive, :adaptive
         @process_type = value
       when Symbol
-        raise TypeError, "Service#process_type allows: "\
-                         "'#{PROCESS_TYPE_BACKGROUND}'/'#{PROCESS_TYPE_STANDARD}'/"\
+        raise TypeError, "Service#process_type allows: " \
+                         "'#{PROCESS_TYPE_BACKGROUND}'/'#{PROCESS_TYPE_STANDARD}'/" \
                          "'#{PROCESS_TYPE_INTERACTIVE}'/'#{PROCESS_TYPE_ADAPTIVE}'"
       else
         raise TypeError, "Service#process_type expects a Symbol"

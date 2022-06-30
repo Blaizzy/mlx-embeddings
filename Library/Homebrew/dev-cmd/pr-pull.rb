@@ -33,15 +33,15 @@ module Homebrew
              description: "If the formula specifies a rebuild version, " \
                           "attempt to preserve its value in the generated DSL."
       switch "--no-autosquash",
-             description: "Skip automatically reformatting and rewording commits in the pull request to our "\
+             description: "Skip automatically reformatting and rewording commits in the pull request to our " \
                           "preferred format."
       switch "--branch-okay",
              description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
       switch "--resolve",
-             description: "When a patch fails to apply, leave in progress and allow user to resolve, "\
+             description: "When a patch fails to apply, leave in progress and allow user to resolve, " \
                           "instead of aborting."
       switch "--warn-on-upload-failure",
-             description: "Warn instead of raising an error if the bottle upload fails. "\
+             description: "Warn instead of raising an error if the bottle upload fails. " \
                           "Useful for repairing bottle uploads that previously failed."
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
@@ -54,10 +54,10 @@ module Homebrew
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       flag   "--root-url-using=",
-             description: "Use the specified download strategy class for downloading the bottle's URL instead of "\
+             description: "Use the specified download strategy class for downloading the bottle's URL instead of " \
                           "Homebrew's default."
       comma_array "--workflows=",
-                  description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). "\
+                  description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). " \
                                "Can be a comma-separated list to include multiple workflows."
       comma_array "--ignore-missing-artifacts=",
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."

@@ -25,17 +25,17 @@ module Homebrew
       switch "--cask", "--casks",
              description: "List only casks, or treat all named arguments as casks."
       switch "--full-name",
-             description: "Print formulae with fully-qualified names. Unless `--full-name`, `--versions` "\
-                          "or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are "\
+             description: "Print formulae with fully-qualified names. Unless `--full-name`, `--versions` " \
+                          "or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are " \
                           "passed to `ls`(1) which produces the actual output."
       switch "--versions",
-             description: "Show the version number for installed formulae, or only the specified "\
+             description: "Show the version number for installed formulae, or only the specified " \
                           "formulae if <formula> are provided."
       switch "--multiple",
              depends_on:  "--versions",
              description: "Only show formulae with multiple versions installed."
       switch "--pinned",
-             description: "List only pinned formulae, or only the specified (pinned) "\
+             description: "List only pinned formulae, or only the specified (pinned) " \
                           "formulae if <formula> are provided. See also `pin`, `unpin`."
       # passed through to ls
       switch "-1",

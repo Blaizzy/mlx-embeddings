@@ -17,7 +17,7 @@ module Homebrew
         Requires write access to the repository.
       EOS
       switch "--no-autosquash",
-             description: "Skip automatically reformatting and rewording commits in the pull request "\
+             description: "Skip automatically reformatting and rewording commits in the pull request " \
                           "to the preferred format, even if supported on the target tap."
       flag   "--branch=",
              description: "Branch to publish to (default: `master`)."

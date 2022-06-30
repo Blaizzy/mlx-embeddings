@@ -24,7 +24,7 @@ module Homebrew
       switch "--no-commit",
              description: "Do not generate a new commit before uploading."
       switch "--warn-on-upload-failure",
-             description: "Warn instead of raising an error if the bottle upload fails. "\
+             description: "Warn instead of raising an error if the bottle upload fails. " \
                           "Useful for repairing bottle uploads that previously failed."
       switch "--upload-only",
              description: "Skip running `brew bottle` before uploading."
@@ -34,7 +34,7 @@ module Homebrew
       flag   "--root-url=",
              description: "Use the specified <URL> as the root of the bottle's URL instead of Homebrew's default."
       flag   "--root-url-using=",
-             description: "Use the specified download strategy class for downloading the bottle's URL instead of "\
+             description: "Use the specified download strategy class for downloading the bottle's URL instead of " \
                           "Homebrew's default."
 
       conflicts "--upload-only", "--keep-old"

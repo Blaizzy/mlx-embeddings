@@ -294,10 +294,10 @@ module Utils
           format "%#{count_width}s", count_header
         formatted_percent_header =
           format "%#{percent_width}s", percent_header
-        puts "#{formatted_index_header} | #{formatted_name_with_options_header} | "\
+        puts "#{formatted_index_header} | #{formatted_name_with_options_header} | " \
              "#{formatted_count_header} |  #{formatted_percent_header}"
 
-        columns_line = "#{"-"*index_width}:|-#{"-"*name_with_options_width}-|-"\
+        columns_line = "#{"-"*index_width}:|-#{"-"*name_with_options_width}-|-" \
                        "#{"-"*count_width}:|-#{"-"*percent_width}:"
         puts columns_line
 
@@ -330,7 +330,7 @@ module Utils
           format "%#{count_width}s", formatted_total_count
         formatted_total_percent_footer =
           format "%#{percent_width}s", formatted_total_percent
-        puts "#{formatted_total_footer} | #{formatted_blank_footer} | "\
+        puts "#{formatted_total_footer} | #{formatted_blank_footer} | " \
              "#{formatted_total_count_footer} | #{formatted_total_percent_footer}%"
       end
 

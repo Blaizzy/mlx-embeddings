@@ -32,10 +32,10 @@ module Homebrew
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
       comma_array "--only-cops",
-                  description: "Specify a comma-separated <cops> list to check for violations of only the "\
+                  description: "Specify a comma-separated <cops> list to check for violations of only the " \
                                "listed RuboCop cops."
       comma_array "--except-cops",
-                  description: "Specify a comma-separated <cops> list to skip checking for violations of the "\
+                  description: "Specify a comma-separated <cops> list to skip checking for violations of the " \
                                "listed RuboCop cops."
 
       conflicts "--formula", "--cask"

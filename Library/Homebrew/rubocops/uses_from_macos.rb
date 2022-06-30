@@ -63,7 +63,7 @@ module RuboCop
           find_method_with_args(body_node, :keg_only, :provided_by_macos) do
             return if PROVIDED_BY_MACOS_FORMULAE.include? @formula_name
 
-            problem "Formulae that are `keg_only :provided_by_macos` should be "\
+            problem "Formulae that are `keg_only :provided_by_macos` should be " \
                     "added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)"
           end
         end

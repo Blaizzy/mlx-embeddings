@@ -41,7 +41,7 @@ module Homebrew
       switch "--include-requirements",
              description: "Include requirements in addition to dependencies for <formula>."
       switch "--tree",
-             description: "Show dependencies as a tree. When given multiple formula arguments, "\
+             description: "Show dependencies as a tree. When given multiple formula arguments, " \
                           "show individual trees for each formula."
       switch "--graph",
              description: "Show dependencies as a directed graph."
@@ -49,16 +49,16 @@ module Homebrew
              depends_on:  "--graph",
              description: "Show text-based graph description in DOT format."
       switch "--annotate",
-             description: "Mark any build, test, optional, or recommended dependencies as "\
+             description: "Mark any build, test, optional, or recommended dependencies as " \
                           "such in the output."
       switch "--installed",
-             description: "List dependencies for formulae that are currently installed. If <formula> is "\
+             description: "List dependencies for formulae that are currently installed. If <formula> is " \
                           "specified, list only its dependencies that are currently installed."
       switch "--all",
              description: "List dependencies for all available formulae."
       switch "--for-each",
-             description: "Switch into the mode used by the `--all` option, but only list dependencies "\
-                          "for each provided <formula>, one formula per line. This is used for "\
+             description: "Switch into the mode used by the `--all` option, but only list dependencies " \
+                          "for each provided <formula>, one formula per line. This is used for " \
                           "debugging the `--installed`/`--all` display mode."
       switch "--formula", "--formulae",
              depends_on:  "--installed",

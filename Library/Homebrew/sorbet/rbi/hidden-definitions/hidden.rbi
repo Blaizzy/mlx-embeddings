@@ -1044,8 +1044,6 @@ end
 
 class Class
   def any_instance(); end
-
-  def json_creatable?(); end
 end
 
 class CompilerSelector::Compiler
@@ -2963,12 +2961,6 @@ class JSON::Ext::Parser
   def initialize(*arg); end
 end
 
-JSON::Parser = JSON::Ext::Parser
-
-JSON::State = JSON::Ext::Generator::State
-
-JSON::UnparserError = JSON::GeneratorError
-
 class Keg::ConflictError
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -3391,13 +3383,7 @@ end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
 
-class Net::HTTPInformation
-end
-
-Net::HTTPInformationCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPInformation
-end
+Net::HTTPInformationCode = Net::HTTPInformation
 
 class Net::HTTPLoopDetected
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -3457,13 +3443,7 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-class Net::HTTPSuccess
-end
-
-Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPSuccess
-end
+Net::HTTPSuccessCode = Net::HTTPSuccess
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -4969,10 +4949,15 @@ end
 module RuboCop::AST::NodePattern::Sets
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
+  SET_EXIST_EXISTS = ::T.let(nil, ::T.untyped)
+  SET_FILETEST_FILE_DIR_SHELL = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
+  SET__EQL_ = ::T.let(nil, ::T.untyped)
   SET__FETCH = ::T.let(nil, ::T.untyped)
+  SET___EQL_ETC = ::T.let(nil, ::T.untyped)
+  SET___EQL_INCLUDE = ::T.let(nil, ::T.untyped)
   SET_____2 = ::T.let(nil, ::T.untyped)
 end
 
