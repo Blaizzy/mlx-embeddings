@@ -39,7 +39,7 @@ module Cask
             executable_path,
             **args,
             env: { "PATH" => PATH.new(
-              HOMEBREW_PREFIX/"bin", HOMEBREW_PREFIX/"sbin", ENV["PATH"]
+              HOMEBREW_PREFIX/"bin", HOMEBREW_PREFIX/"sbin", ENV.fetch("PATH")
             ) },
           )
         end

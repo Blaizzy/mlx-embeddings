@@ -6,6 +6,7 @@ require "cask/config"
 require "cask/dsl"
 require "cask/metadata"
 require "searchable"
+require "utils/bottles"
 
 module Cask
   # An instance of a cask.
@@ -20,7 +21,7 @@ module Cask
 
     attr_reader :token, :sourcefile_path, :source, :config, :default_config
 
-    attr_accessor :download
+    attr_accessor :download, :allow_reassignment
 
     def self.all
       Tap.flat_map(&:cask_files).map do |f|
@@ -38,11 +39,12 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, allow_reassignment: false, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
       @tap = tap
+      @allow_reassignment = allow_reassignment
       @block = block
 
       @default_config = config || Config.new
@@ -57,6 +59,10 @@ module Cask
     def config=(config)
       @config = config
 
+      refresh
+    end
+
+    def refresh
       @dsl = DSL.new(self)
       return unless @block
 
@@ -88,7 +94,7 @@ module Cask
         version_os_hash = {}
         actual_version = MacOS.full_version.to_s
 
-        MacOS::Version::SYMBOLS.each do |os_name, os_version|
+        MacOSVersions::SYMBOLS.each do |os_name, os_version|
           MacOS.full_version = os_version
           cask = CaskLoader.load(token)
           version_os_hash[os_name] = cask.version if cask.version != version
@@ -213,7 +219,7 @@ module Cask
     end
     alias == eql?
 
-    def to_h
+    def to_hash
       {
         "token"          => token,
         "full_token"     => full_name,
@@ -237,11 +243,47 @@ module Cask
       }
     end
 
+    def to_h
+      hash = to_hash
+      variations = {}
+
+      hash_keys_to_skip = %w[outdated installed versions]
+
+      if @dsl.on_system_blocks_exist?
+        [:arm, :intel].each do |arch|
+          MacOSVersions::SYMBOLS.each_key do |os_name|
+            # Big Sur is the first version of macOS that supports arm
+            next if arch == :arm && MacOS::Version.from_symbol(os_name) < MacOS::Version.from_symbol(:big_sur)
+
+            Homebrew::SimulateSystem.os = os_name
+            Homebrew::SimulateSystem.arch = arch
+
+            refresh
+
+            bottle_tag = ::Utils::Bottles::Tag.new(system: os_name, arch: arch).to_sym
+            to_hash.each do |key, value|
+              next if hash_keys_to_skip.include? key
+              next if value.to_s == hash[key].to_s
+
+              variations[bottle_tag] ||= {}
+              variations[bottle_tag][key] = value
+            end
+          end
+        end
+      end
+
+      Homebrew::SimulateSystem.clear
+      refresh
+
+      hash["variations"] = variations
+      hash
+    end
+
     private
 
     def to_h_string_gsubs(string)
       string.to_s
-            .gsub(ENV["HOME"], "$HOME")
+            .gsub(Dir.home, "$HOME")
             .gsub(HOMEBREW_PREFIX, "$(brew --prefix)")
     end
 

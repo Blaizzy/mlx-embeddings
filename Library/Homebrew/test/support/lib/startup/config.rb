@@ -3,10 +3,10 @@
 
 raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
 
-HOMEBREW_BREW_FILE = Pathname.new(ENV["HOMEBREW_BREW_FILE"]).freeze
+HOMEBREW_BREW_FILE = Pathname.new(ENV.fetch("HOMEBREW_BREW_FILE")).freeze
 
 TEST_TMPDIR = ENV.fetch("HOMEBREW_TEST_TMPDIR") do |k|
-  dir = Dir.mktmpdir("homebrew-tests-", ENV["HOMEBREW_TEMP"] || "/tmp")
+  dir = Dir.mktmpdir("homebrew-tests-", ENV.fetch("HOMEBREW_TEMP"))
   at_exit do
     # Child processes inherit this at_exit handler, but we don't want them
     # to clean TEST_TMPDIR up prematurely (i.e., when they exit early for a test).
@@ -35,7 +35,7 @@ HOMEBREW_LOGS          = (HOMEBREW_PREFIX.parent/"logs").freeze
 HOMEBREW_TEMP          = (HOMEBREW_PREFIX.parent/"temp").freeze
 HOMEBREW_RUBY_EXEC_ARGS = [
   RUBY_PATH,
-  ENV["HOMEBREW_RUBY_WARNINGS"],
+  ENV.fetch("HOMEBREW_RUBY_WARNINGS"),
   "-I", HOMEBREW_LIBRARY_PATH/"test/support/lib"
 ].freeze
 

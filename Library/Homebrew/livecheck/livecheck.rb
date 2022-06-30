@@ -563,6 +563,7 @@ module Homebrew
 
     # Identifies the latest version of the formula and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
+    # rubocop:disable Metrics/CyclomaticComplexity
     sig {
       params(
         formula_or_cask:            T.any(Formula, Cask::Cask),
@@ -657,7 +658,7 @@ module Homebrew
         end
 
         if livecheck_strategy.present?
-          if livecheck_url.blank?
+          if livecheck_url.blank? && strategy.method(:find_versions).parameters.include?([:keyreq, :url])
             odebug "#{strategy_name} strategy requires a URL"
             next
           elsif livecheck_strategy != :page_match && strategies.exclude?(strategy)
@@ -768,6 +769,7 @@ module Homebrew
 
       nil
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
   end
   # rubocop:enable Metrics/ModuleLength
 end

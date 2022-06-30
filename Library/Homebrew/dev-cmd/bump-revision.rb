@@ -36,7 +36,7 @@ module Homebrew
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
-    ENV["PATH"] = ENV["HOMEBREW_PATH"]
+    ENV["PATH"] = PATH.new(ORIGINAL_PATHS).to_s
 
     args.named.to_formulae.each do |formula|
       current_revision = formula.revision

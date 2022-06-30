@@ -13,6 +13,7 @@ inherit_mode:
 AllCops:
   TargetRubyVersion: 2.6
   DisplayCopNames: false
+  ActiveSupportExtensionsEnabled: true
   # enable all pending rubocops
   NewCops: enable
   Include:
@@ -97,7 +98,7 @@ Naming/InclusiveLanguage:
         - "patches/13_fix_scope_for_show_slave_status_data.patch" # Used in formula `mytop`
 
 Naming/MethodName:
-  IgnoredPatterns:
+  AllowedPatterns:
     - '\A(fetch_)?HEAD\?\Z'
 
 # Both styles are used depending on context,
@@ -121,6 +122,14 @@ Style/BarePercentLiterals:
 # Use consistent style for better readability.
 Style/CollectionMethods:
   Enabled: true
+
+# This is quite a large change, so don't enforce this yet for formulae.
+# We should consider doing so in the future, but be aware of the impact on third-party taps.
+Style/FetchEnvVar:
+  Exclude:
+    - "Taps/*/*/*.rb"
+    - "/**/Formula/*.rb"
+    - "**/Formula/*.rb"
 
 # Prefer tokens with type annotations for consistency
 # between formatting numbers and strings.
@@ -389,7 +398,7 @@ Naming/MethodParameterName:
 Layout/LineLength:
   Max: 118
   # ignore manpage comments and long single-line strings
-  IgnoredPatterns:
+  AllowedPatterns:
     [
       "#: ",
       ' url "',

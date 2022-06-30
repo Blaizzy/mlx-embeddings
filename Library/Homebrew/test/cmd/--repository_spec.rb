@@ -8,7 +8,7 @@ describe "brew --repository" do
 
   it "prints Homebrew's repository", :integration_test do
     expect { brew_sh "--repository" }
-      .to output("#{ENV["HOMEBREW_REPOSITORY"]}\n").to_stdout
+      .to output("#{ENV.fetch("HOMEBREW_REPOSITORY")}\n").to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
   end

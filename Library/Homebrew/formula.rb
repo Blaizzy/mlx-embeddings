@@ -28,7 +28,7 @@ require "tab"
 require "mktemp"
 require "find"
 require "utils/spdx"
-require "extend/on_os"
+require "extend/on_system"
 require "api"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
@@ -64,7 +64,7 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
-  include OnOS
+  include OnSystem
   extend Forwardable
   extend Cachable
   extend Predicable
@@ -421,9 +421,9 @@ class Formula
     return unless head.downloader.cached_location.exist?
 
     path = if ENV["HOMEBREW_ENV"]
-      ENV["PATH"]
+      ENV.fetch("PATH")
     else
-      ENV["HOMEBREW_PATH"]
+      PATH.new(ORIGINAL_PATHS)
     end
 
     with_env(PATH: path) do
@@ -1103,7 +1103,7 @@ class Formula
         TMP:           HOMEBREW_TEMP,
         _JAVA_OPTIONS: "-Djava.io.tmpdir=#{HOMEBREW_TEMP}",
         HOMEBREW_PATH: nil,
-        PATH:          ENV["HOMEBREW_PATH"],
+        PATH:          PATH.new(ORIGINAL_PATHS),
       }
 
       with_env(new_env) do
@@ -2077,7 +2077,7 @@ class Formula
       TEMP:          HOMEBREW_TEMP,
       TMP:           HOMEBREW_TEMP,
       TERM:          "dumb",
-      PATH:          PATH.new(ENV["PATH"], HOMEBREW_PREFIX/"bin"),
+      PATH:          PATH.new(ENV.fetch("PATH"), HOMEBREW_PREFIX/"bin"),
       HOMEBREW_PATH: nil,
     }.merge(common_stage_test_env)
     test_env[:_JAVA_OPTIONS] += " -Djava.io.tmpdir=#{HOMEBREW_TEMP}"
@@ -2433,7 +2433,7 @@ class Formula
       GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
       GOPATH:        "#{HOMEBREW_CACHE}/go_mod_cache",
       CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
-      CURL_HOME:     ENV["CURL_HOME"] || ENV["HOME"],
+      CURL_HOME:     ENV.fetch("CURL_HOME") { Dir.home },
     }
   end
 
@@ -2470,7 +2470,7 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     include BuildEnvironment::DSL
-    include OnOS
+    include OnSystem
 
     def method_added(method)
       super

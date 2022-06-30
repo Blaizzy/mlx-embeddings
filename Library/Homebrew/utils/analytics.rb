@@ -34,7 +34,7 @@ module Utils
             --data aip=1
             --data t=#{type}
             --data tid=#{analytics_id}
-            --data cid=#{ENV["HOMEBREW_ANALYTICS_USER_UUID"]}
+            --data cid=#{ENV.fetch("HOMEBREW_ANALYTICS_USER_UUID")}
             --data an=#{HOMEBREW_PRODUCT}
             --data av=#{HOMEBREW_VERSION}
           ]
@@ -47,18 +47,19 @@ module Utils
             args << "--data" << "#{key}=#{value}"
           end
 
+          curl = Utils::Curl.curl_executable
+
           # Send analytics. Don't send or store any personally identifiable information.
           # https://docs.brew.sh/Analytics
           # https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
           # https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
           if ENV["HOMEBREW_ANALYTICS_DEBUG"]
             url = "https://www.google-analytics.com/debug/collect"
-            puts "#{ENV["HOMEBREW_CURL"]} #{args.join(" ")} #{url}"
-            puts Utils.popen_read ENV["HOMEBREW_CURL"], *args, url
+            puts "#{curl} #{args.join(" ")} #{url}"
+            puts Utils.popen_read(curl, *args, url)
           else
             pid = fork do
-              exec ENV["HOMEBREW_CURL"],
-                   *args,
+              exec curl, *args,
                    "--silent", "--output", "/dev/null",
                    "https://www.google-analytics.com/collect"
             end
@@ -293,10 +294,10 @@ module Utils
           format "%#{count_width}s", count_header
         formatted_percent_header =
           format "%#{percent_width}s", percent_header
-        puts "#{formatted_index_header} | #{formatted_name_with_options_header} | "\
+        puts "#{formatted_index_header} | #{formatted_name_with_options_header} | " \
              "#{formatted_count_header} |  #{formatted_percent_header}"
 
-        columns_line = "#{"-"*index_width}:|-#{"-"*name_with_options_width}-|-"\
+        columns_line = "#{"-"*index_width}:|-#{"-"*name_with_options_width}-|-" \
                        "#{"-"*count_width}:|-#{"-"*percent_width}:"
         puts columns_line
 
@@ -329,7 +330,7 @@ module Utils
           format "%#{count_width}s", formatted_total_count
         formatted_total_percent_footer =
           format "%#{percent_width}s", formatted_total_percent
-        puts "#{formatted_total_footer} | #{formatted_blank_footer} | "\
+        puts "#{formatted_total_footer} | #{formatted_blank_footer} | " \
              "#{formatted_total_count_footer} | #{formatted_total_percent_footer}%"
       end
 

@@ -18,16 +18,16 @@ module Homebrew
         provided, check all kegs. Raises an error if run on uninstalled formulae.
       EOS
       switch "--test",
-             description: "Show only missing libraries and exit with a non-zero status if any missing "\
+             description: "Show only missing libraries and exit with a non-zero status if any missing " \
                           "libraries are found."
       switch "--strict",
              depends_on:  "--test",
              description: "Exit with a non-zero status if any undeclared dependencies with linkage are found."
       switch "--reverse",
-             description: "For every library that a keg references, print its dylib path followed by the "\
+             description: "For every library that a keg references, print its dylib path followed by the " \
                           "binaries that link to it."
       switch "--cached",
-             description: "Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous "\
+             description: "Print the cached linkage values stored in `HOMEBREW_CACHE`, set by a previous " \
                           "`brew linkage` run."
 
       named_args :installed_formula

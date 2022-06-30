@@ -56,7 +56,7 @@ do
     shift
     break
   fi
-  if [[ "${arg}" == "-w" ]]
+  if [[ "${arg}" == "-w" || "${arg}" == "--write" ]]
   then
     shift
     INPLACE=1

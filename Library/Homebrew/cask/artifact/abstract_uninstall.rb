@@ -106,7 +106,7 @@ module Cask
               +"/Library/LaunchAgents/#{service}.plist",
               +"/Library/LaunchDaemons/#{service}.plist",
             ]
-            paths.each { |elt| elt.prepend(ENV["HOME"]).freeze } unless with_sudo
+            paths.each { |elt| elt.prepend(Dir.home).freeze } unless with_sudo
             paths = paths.map { |elt| Pathname(elt) }.select(&:exist?)
             paths.each do |path|
               command.run!("/bin/rm", args: ["-f", "--", path], sudo: with_sudo)

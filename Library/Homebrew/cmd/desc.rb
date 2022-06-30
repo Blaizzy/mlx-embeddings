@@ -22,13 +22,13 @@ module Homebrew
         first search, making that search slower than subsequent ones.
       EOS
       switch "-s", "--search",
-             description: "Search both names and descriptions for <text>. If <text> is flanked by "\
+             description: "Search both names and descriptions for <text>. If <text> is flanked by " \
                           "slashes, it is interpreted as a regular expression."
       switch "-n", "--name",
-             description: "Search just names for <text>. If <text> is flanked by slashes, it is "\
+             description: "Search just names for <text>. If <text> is flanked by slashes, it is " \
                           "interpreted as a regular expression."
       switch "-d", "--description",
-             description: "Search just descriptions for <text>. If <text> is flanked by slashes, "\
+             description: "Search just descriptions for <text>. If <text> is flanked by slashes, " \
                           "it is interpreted as a regular expression."
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."

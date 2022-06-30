@@ -130,7 +130,7 @@ module Homebrew
       Dir.mktmpdir do |dir|
         dir = Pathname(dir)
 
-        installer.yield_self do |i|
+        installer.then do |i|
           i.extract_primary_container(to: dir)
         rescue ErrorDuringExecution => e
           onoe e

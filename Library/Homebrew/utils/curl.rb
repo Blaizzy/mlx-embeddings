@@ -33,13 +33,17 @@ module Utils
     module_function
 
     def curl_executable(use_homebrew_curl: false)
-      return Pathname.new(ENV["HOMEBREW_BREWED_CURL_PATH"]) if use_homebrew_curl
+      return HOMEBREW_BREWED_CURL_PATH if use_homebrew_curl
 
       @curl_executable ||= HOMEBREW_SHIMS_PATH/"shared/curl"
     end
 
     def curl_path
       @curl_path ||= Utils.popen_read(curl_executable, "--homebrew=print-path").chomp.presence
+    end
+
+    def clear_path_cache
+      @curl_path = nil
     end
 
     sig {
@@ -413,7 +417,7 @@ module Utils
       @curl_supports_tls13 ||= Hash.new do |h, key|
         h[key] = quiet_system(curl_executable, "--tlsv1.3", "--head", "https://brew.sh/")
       end
-      @curl_supports_tls13[ENV["HOMEBREW_CURL"]]
+      @curl_supports_tls13[curl_path]
     end
 
     def http_status_ok?(status)

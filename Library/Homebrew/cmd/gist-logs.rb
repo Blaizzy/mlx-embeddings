@@ -25,10 +25,10 @@ module Homebrew
       switch "--with-hostname",
              description: "Include the hostname in the Gist."
       switch "-n", "--new-issue",
-             description: "Automatically create a new issue in the appropriate GitHub repository "\
+             description: "Automatically create a new issue in the appropriate GitHub repository " \
                           "after creating the Gist."
       switch "-p", "--private",
-             description: "The Gist will be marked private and will not appear in listings but will "\
+             description: "The Gist will be marked private and will not appear in listings but will " \
                           "be accessible with its link."
 
       named_args :formula, number: 1

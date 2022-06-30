@@ -41,7 +41,7 @@ module Homebrew
                           "or a shell inside the temporary build directory."
       switch "-f", "--force",
              description: "Install formulae without checking for previously installed keg-only or " \
-                          "non-migrated versions. When installing casks, overwrite existing files "\
+                          "non-migrated versions. When installing casks, overwrite existing files " \
                           "(binaries and symlinks are excluded, unless originally from the same cask)."
       switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
@@ -139,6 +139,10 @@ module Homebrew
 
   def install
     args = install_args.parse
+
+    if args.build_from_source? && Homebrew::EnvConfig.install_from_api?
+      raise UsageError, "--build-from-source is not supported when using HOMEBREW_INSTALL_FROM_API."
+    end
 
     if args.env.present?
       # Can't use `replacement: false` because `install_args` are used by

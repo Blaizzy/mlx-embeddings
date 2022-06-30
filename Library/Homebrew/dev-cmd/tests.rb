@@ -22,14 +22,14 @@ module Homebrew
       switch "--no-compat",
              description: "Do not load the compatibility layer when running tests."
       switch "--online",
-             description: "Include tests that use the GitHub API and tests that use any of the taps for "\
+             description: "Include tests that use the GitHub API and tests that use any of the taps for " \
                           "official external commands."
       switch "--byebug",
              description: "Enable debugging using byebug."
       switch "--changed",
              description: "Only runs tests on files that were changed from the master branch."
       flag   "--only=",
-             description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a "\
+             description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a " \
                           "specific line."
       flag   "--seed=",
              description: "Randomise tests with the specified <value> instead of a random seed."
@@ -57,15 +57,15 @@ module Homebrew
                                 reason: "reporting test flakiness")
     end
 
-    ENV["BUILDPULSE_ACCESS_KEY_ID"] = ENV["HOMEBREW_BUILDPULSE_ACCESS_KEY_ID"]
-    ENV["BUILDPULSE_SECRET_ACCESS_KEY"] = ENV["HOMEBREW_BUILDPULSE_SECRET_ACCESS_KEY"]
+    ENV["BUILDPULSE_ACCESS_KEY_ID"] = ENV.fetch("HOMEBREW_BUILDPULSE_ACCESS_KEY_ID")
+    ENV["BUILDPULSE_SECRET_ACCESS_KEY"] = ENV.fetch("HOMEBREW_BUILDPULSE_SECRET_ACCESS_KEY")
 
     ohai "Sending test results to BuildPulse"
 
     safe_system Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
                 "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
-                "--account-id", ENV["HOMEBREW_BUILDPULSE_ACCOUNT_ID"],
-                "--repository-id", ENV["HOMEBREW_BUILDPULSE_REPOSITORY_ID"]
+                "--account-id", ENV.fetch("HOMEBREW_BUILDPULSE_ACCOUNT_ID"),
+                "--repository-id", ENV.fetch("HOMEBREW_BUILDPULSE_REPOSITORY_ID")
   end
 
   def changed_test_files
@@ -212,7 +212,7 @@ module Homebrew
       ENV["HOMEBREW_TESTS_GEM_USER_DIR"] = gem_user_dir
 
       # Let `bundle` in PATH find its gem.
-      ENV["GEM_PATH"] = "#{ENV["GEM_PATH"]}:#{gem_user_dir}"
+      ENV["GEM_PATH"] = "#{ENV.fetch("GEM_PATH")}:#{gem_user_dir}"
 
       # Submit test flakiness information using BuildPulse
       # BUILDPULSE used in spec_helper.rb

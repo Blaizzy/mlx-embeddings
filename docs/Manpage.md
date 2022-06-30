@@ -489,11 +489,11 @@ information is displayed in interactive shells, and suppressed otherwise.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--greedy`:
-  Print outdated casks with `auto_updates true` or `version :latest`.
+  Also include outdated casks with `auto_updates true` or `version :latest`.
 * `--greedy-latest`:
-  Print outdated casks including those with `version :latest`.
+  Also include outdated casks including those with `version :latest`.
 * `--greedy-auto-updates`:
-  Print outdated casks including those with `auto_updates true`.
+  Also include outdated casks including those with `auto_updates true`.
 
 ### `pin` *`installed_formula`* [...]
 
@@ -1982,9 +1982,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* macOS: `$HOME/Library/Caches/Homebrew`, Linux: `$XDG_CACHE_HOME/Homebrew` or `$HOME/.cache/Homebrew`.
 
 - `HOMEBREW_CASK_OPTS`
-  <br>Append these options to all `cask` commands. All `--*dir` options, `--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported. For example, you might add something like the following to your `~/.profile`, `~/.bash_profile`, or `~/.zshenv`:
-
-    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`
+  <br>Append these options to all `cask` commands. All `--*dir` options, `--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported. For example, you might add something like the following to your `~/.profile`, `~/.bash_profile`, or `~/.zshenv`:\n\n    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`
 
 - `HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS`
   <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will cleanup all formulae when this number of days has passed.
@@ -2102,7 +2100,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
 
-  *Default:* `$HOME/.brew_livecheck_watchlist`.
+  *Default:* `$HOME/.brew_livecheck_watchlist`
 
 - `HOMEBREW_LOGS`
   <br>Use this directory to store log files.
@@ -2124,7 +2122,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not use Bootsnap to speed up repeated `brew` calls.
 
 - `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
-  <br>If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae. This will result in fewer dependents  (and their dependencies) being upgraded or reinstalled but may result in more breakage from running `brew install *`formula`*` or `brew upgrade *`formula`*`.
+  <br>If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running `brew install *`formula`*` or `brew upgrade *`formula`*`.
 
 - `HOMEBREW_NO_CLEANUP_FORMULAE`
   <br>A comma-separated list of formulae. Homebrew will refuse to clean up a formula if it appears on this list.

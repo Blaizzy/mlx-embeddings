@@ -19,9 +19,9 @@ describe Cask::Artifact::Pkg, :cask do
         sudo:         true,
         print_stdout: true,
         env:          {
-          "LOGNAME"  => ENV["USER"],
-          "USER"     => ENV["USER"],
-          "USERNAME" => ENV["USER"],
+          "LOGNAME"  => ENV.fetch("USER"),
+          "USER"     => ENV.fetch("USER"),
+          "USERNAME" => ENV.fetch("USER"),
         },
       )
 
@@ -68,9 +68,9 @@ describe Cask::Artifact::Pkg, :cask do
         sudo:         true,
         print_stdout: true,
         env:          {
-          "LOGNAME"  => ENV["USER"],
-          "USER"     => ENV["USER"],
-          "USERNAME" => ENV["USER"],
+          "LOGNAME"  => ENV.fetch("USER"),
+          "USER"     => ENV.fetch("USER"),
+          "USERNAME" => ENV.fetch("USER"),
         },
       )
 

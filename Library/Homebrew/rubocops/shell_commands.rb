@@ -113,7 +113,7 @@ module RuboCop
       class ExecShellMetacharacters < Base
         include HelperFunctions
 
-        MSG = "Don't use shell metacharacters in `exec`. "\
+        MSG = "Don't use shell metacharacters in `exec`. " \
               "Implement the logic in Ruby instead, using methods like `$stdout.reopen`."
 
         RESTRICT_ON_SEND = [:exec].freeze

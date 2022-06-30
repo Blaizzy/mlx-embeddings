@@ -12,13 +12,13 @@ require "utils/bottles"
 require "patch"
 require "compilers"
 require "os/mac/version"
-require "extend/on_os"
+require "extend/on_system"
 
 class SoftwareSpec
   extend T::Sig
 
   extend Forwardable
-  include OnOS
+  include OnSystem
 
   PREDEFINED_OPTIONS = {
     universal: Option.new("universal", "Build a universal binary"),
@@ -377,7 +377,7 @@ class Bottle
     json = begin
       JSON.parse(manifest_json)
     rescue JSON::ParserError
-      raise "The downloaded GitHub Packages manifest was corrupted or modified (it is not valid JSON): "\
+      raise "The downloaded GitHub Packages manifest was corrupted or modified (it is not valid JSON): " \
             "\n#{github_packages_manifest_resource.cached_download}"
     end
 
@@ -508,8 +508,8 @@ class BottleSpecification
 
     prefix = Pathname(cellar).parent.to_s
 
-    cellar_relocatable = cellar.size >= HOMEBREW_CELLAR.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
-    prefix_relocatable = prefix.size >= HOMEBREW_PREFIX.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"]
+    cellar_relocatable = cellar.size >= HOMEBREW_CELLAR.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"].present?
+    prefix_relocatable = prefix.size >= HOMEBREW_PREFIX.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"].present?
 
     compatible_cellar = cellar == HOMEBREW_CELLAR.to_s || cellar_relocatable
     compatible_prefix = prefix == HOMEBREW_PREFIX.to_s || prefix_relocatable
@@ -583,7 +583,7 @@ class BottleSpecification
 end
 
 class PourBottleCheck
-  include OnOS
+  include OnSystem
 
   def initialize(formula)
     @formula = formula

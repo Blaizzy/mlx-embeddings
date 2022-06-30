@@ -18,7 +18,7 @@ class Resource
 
   include Context
   include FileUtils
-  include OnOS
+  include OnSystem
 
   attr_reader :mirrors, :specs, :using, :source_modified_time, :patches, :owner
   attr_writer :version

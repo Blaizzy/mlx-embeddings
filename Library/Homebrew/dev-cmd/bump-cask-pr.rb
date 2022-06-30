@@ -26,7 +26,7 @@ module Homebrew
              description: "Make the expected file modifications without taking any Git actions."
       switch "--commit",
              depends_on:  "--write-only",
-             description: "When passed with `--write-only`, generate a new commit after writing changes "\
+             description: "When passed with `--write-only`, generate a new commit after writing changes " \
                           "to the cask file."
       switch "--no-audit",
              description: "Don't run `brew audit` before opening the PR."
@@ -67,7 +67,7 @@ module Homebrew
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
-    ENV["PATH"] = ENV["HOMEBREW_PATH"]
+    ENV["PATH"] = PATH.new(ORIGINAL_PATHS).to_s
 
     # Use the user's browser, too.
     ENV["BROWSER"] = Homebrew::EnvConfig.browser

@@ -22,7 +22,7 @@ module Homebrew
       switch "--patch",
              description: "Patches for <formula> will be applied to the unpacked source."
       switch "-g", "--git",
-             description: "Initialise a Git repository in the unpacked source. This is useful for creating "\
+             description: "Initialise a Git repository in the unpacked source. This is useful for creating " \
                           "patches for the software."
       switch "-f", "--force",
              description: "Overwrite the destination directory if it already exists."

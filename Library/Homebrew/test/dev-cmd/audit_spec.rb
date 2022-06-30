@@ -301,7 +301,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license id is the same "\
+      it "checks online and verifies that a standard license id is the same " \
          "as what is indicated on its Github repo", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
@@ -317,7 +317,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license id with AND is the same "\
+      it "checks online and verifies that a standard license id with AND is the same " \
          "as what is indicated on its Github repo", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
@@ -333,7 +333,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license id with WITH is the same "\
+      it "checks online and verifies that a standard license id with WITH is the same " \
          "as what is indicated on its Github repo", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
@@ -415,7 +415,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and detects that a formula-specified license is not "\
+      it "checks online and detects that a formula-specified license is not " \
          "the same as what is indicated on its Github repository", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
@@ -432,7 +432,7 @@ module Homebrew
           .to eq 'Formula license ["0BSD"] does not match GitHub license ["GPL-3.0"].'
       end
 
-      it "allows a formula-specified license that differs from its GitHub "\
+      it "allows a formula-specified license that differs from its GitHub " \
          "repository for formulae on the mismatched license allowlist", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
@@ -449,7 +449,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and detects that an array of license does not contain "\
+      it "checks online and detects that an array of license does not contain " \
          "what is indicated on its Github repository", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula
@@ -462,11 +462,11 @@ module Homebrew
                              online: true, core_tap: true, new_formula: true
 
         fa.audit_license
-        expect(fa.problems.first[:message]).to match "Formula license [\"0BSD\", \"MIT\"] "\
+        expect(fa.problems.first[:message]).to match "Formula license [\"0BSD\", \"MIT\"] " \
                                                      "does not match GitHub license [\"GPL-3.0\"]."
       end
 
-      it "checks online and verifies that an array of license contains "\
+      it "checks online and verifies that an array of license contains " \
          "what is indicated on its Github repository", :needs_network do
         formula_text = <<~RUBY
           class Cask < Formula

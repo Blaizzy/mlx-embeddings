@@ -31,7 +31,7 @@ module Homebrew
       switch "--auto-update", "--preinstall",
              description: "Run in 'auto-update' mode (faster, less output)."
       switch "-f", "--force",
-             description: "Treat installed and updated formulae as if they are from "\
+             description: "Treat installed and updated formulae as if they are from " \
                           "the same taps and migrate them anyway."
 
       hide_from_man_page!
@@ -54,9 +54,9 @@ module Homebrew
        ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
       ohai "Re-running `brew update` for linuxbrew-core migration"
 
-      if ENV["HOMEBREW_CORE_DEFAULT_GIT_REMOTE"] != ENV["HOMEBREW_CORE_GIT_REMOTE"]
+      if HOMEBREW_CORE_DEFAULT_GIT_REMOTE != Homebrew::EnvConfig.core_git_remote
         opoo <<~EOS
-          HOMEBREW_CORE_GIT_REMOTE was set: #{ENV["HOMEBREW_CORE_GIT_REMOTE"]}.
+          HOMEBREW_CORE_GIT_REMOTE was set: #{Homebrew::EnvConfig.core_git_remote}.
           It has been unset for the migration.
           You may need to change this from a linuxbrew-core mirror to a homebrew-core one.
 
@@ -64,9 +64,9 @@ module Homebrew
       end
       ENV.delete("HOMEBREW_CORE_GIT_REMOTE")
 
-      if ENV["HOMEBREW_BOTTLE_DEFAULT_DOMAIN"] != ENV["HOMEBREW_BOTTLE_DOMAIN"]
+      if HOMEBREW_BOTTLE_DEFAULT_DOMAIN != Homebrew::EnvConfig.bottle_domain
         opoo <<~EOS
-          HOMEBREW_BOTTLE_DOMAIN was set: #{ENV["HOMEBREW_BOTTLE_DOMAIN"]}.
+          HOMEBREW_BOTTLE_DOMAIN was set: #{Homebrew::EnvConfig.bottle_domain}.
           It has been unset for the migration.
           You may need to change this from a Linuxbrew package mirror to a Homebrew one.
 
@@ -142,14 +142,14 @@ module Homebrew
     end
 
     Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
-    return if ENV["HOMEBREW_DISABLE_LOAD_FORMULA"]
+    return if Homebrew::EnvConfig.disable_load_formula?
 
     hub = ReporterHub.new
 
     updated_taps = []
     Tap.each do |tap|
       next unless tap.git?
-      next if (tap.core_tap? || tap == "homebrew/cask") && Homebrew::EnvConfig.install_from_api? && args.auto_update?
+      next if (tap.core_tap? || tap == "homebrew/cask") && Homebrew::EnvConfig.install_from_api?
 
       if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
          Settings.read("linuxbrewmigrated") != "true"
@@ -239,14 +239,13 @@ module Homebrew
 
     puts
     ohai "Homebrew was updated to version #{new_repository_version}"
+    Settings.write "latesttag", new_repository_version
     if new_repository_version.split(".").last == "0"
-      Settings.write "latesttag", new_repository_version
       puts <<~EOS
         More detailed release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
       EOS
     elsif !args.quiet?
-      Settings.write "latesttag", new_repository_version
       puts <<~EOS
         The changelog can be found at:
           #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
@@ -608,9 +607,7 @@ class ReporterHub
   private
 
   def dump_new_formula_report
-    formulae = select_formula_or_cask(:A).sort.map do |name|
-      name unless installed?(name)
-    end.compact
+    formulae = select_formula_or_cask(:A).sort.reject { |name| installed?(name) }
 
     output_dump_formula_or_cask_report "New Formulae", formulae
   end

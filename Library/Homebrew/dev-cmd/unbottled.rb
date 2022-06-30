@@ -114,7 +114,7 @@ module Homebrew
       end.compact
       @sort = " (sorted by installs in the last 90 days; top 10,000 only)"
 
-      all_formulae = Formula
+      all_formulae = Formula.all
     end
 
     [formulae, all_formulae, formula_installs]

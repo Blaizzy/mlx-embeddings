@@ -47,14 +47,10 @@ module Cask
         token = path.basename.to_s
 
         begin
-          if (tap_path = CaskLoader.tap_paths(token).first)
-            CaskLoader::FromTapPathLoader.new(tap_path).load(config: config)
-          elsif (caskroom_path = Pathname.glob(path.join(".metadata/*/*/*/*.rb")).first) &&
-                (!Homebrew::EnvConfig.install_from_api? || !Homebrew::API::CaskSource.available?(token))
-            CaskLoader::FromPathLoader.new(caskroom_path).load(config: config)
-          else
-            CaskLoader.load(token, config: config)
-          end
+          CaskLoader.load(token, config: config)
+        rescue TapCaskAmbiguityError
+          tap_path = CaskLoader.tap_paths(token).first
+          CaskLoader::FromTapPathLoader.new(tap_path).load(config: config)
         rescue CaskUnavailableError
           # Don't blow up because of a single unavailable cask.
           nil

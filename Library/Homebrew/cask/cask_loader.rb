@@ -217,12 +217,15 @@ module Cask
         next unless loader_class.can_load?(ref)
 
         if loader_class == FromTapLoader && Homebrew::EnvConfig.install_from_api? &&
-           ref.start_with?("homebrew/cask/") && !Tap.fetch("homebrew/cask").installed? &&
-           Homebrew::API::CaskSource.available?(ref)
+           ref.start_with?("homebrew/cask/") && Homebrew::API::CaskSource.available?(ref)
           return FromContentLoader.new(Homebrew::API::CaskSource.fetch(ref))
         end
 
         return loader_class.new(ref)
+      end
+
+      if Homebrew::EnvConfig.install_from_api? && Homebrew::API::CaskSource.available?(ref)
+        return FromContentLoader.new(Homebrew::API::CaskSource.fetch(ref))
       end
 
       return FromTapPathLoader.new(default_path(ref)) if FromTapPathLoader.can_load?(default_path(ref))
@@ -233,14 +236,7 @@ module Cask
       when 2..Float::INFINITY
         loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
 
-        raise CaskError, <<~EOS
-          Cask #{ref} exists in multiple taps:
-          #{loaders.map { |loader| "  #{loader.tap}/#{loader.token}" }.join("\n")}
-        EOS
-      end
-
-      if Homebrew::EnvConfig.install_from_api? && Homebrew::API::CaskSource.available?(ref)
-        return FromContentLoader.new(Homebrew::API::CaskSource.fetch(ref))
+        raise TapCaskAmbiguityError.new(ref, loaders)
       end
 
       possible_installed_cask = Cask.new(ref)

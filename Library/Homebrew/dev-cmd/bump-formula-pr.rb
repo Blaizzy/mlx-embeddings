@@ -42,7 +42,7 @@ module Homebrew
       switch "--write", hidden: true
       switch "--commit",
              depends_on:  "--write-only",
-             description: "When passed with `--write-only`, generate a new commit after writing changes "\
+             description: "When passed with `--write-only`, generate a new commit after writing changes " \
                           "to the formula file."
       switch "--no-audit",
              description: "Don't run `brew audit` before opening the PR."
@@ -55,18 +55,18 @@ module Homebrew
       switch "--no-fork",
              description: "Don't try to fork the repository."
       comma_array "--mirror",
-                  description: "Use the specified <URL> as a mirror URL. If <URL> is a comma-separated list "\
+                  description: "Use the specified <URL> as a mirror URL. If <URL> is a comma-separated list " \
                                "of URLs, multiple mirrors will be added."
       flag   "--fork-org=",
              description: "Use the specified GitHub organization for forking."
       flag   "--version=",
-             description: "Use the specified <version> to override the value parsed from the URL or tag. Note "\
-                          "that `--version=0` can be used to delete an existing version override from a "\
+             description: "Use the specified <version> to override the value parsed from the URL or tag. Note " \
+                          "that `--version=0` can be used to delete an existing version override from a " \
                           "formula if it has become redundant."
       flag   "--message=",
              description: "Append <message> to the default pull request message."
       flag   "--url=",
-             description: "Specify the <URL> for the new download. If a <URL> is specified, the <SHA-256> "\
+             description: "Specify the <URL> for the new download. If a <URL> is specified, the <SHA-256> " \
                           "checksum of the new download should also be specified."
       flag   "--sha256=",
              depends_on:  "--url=",
@@ -74,12 +74,12 @@ module Homebrew
       flag   "--tag=",
              description: "Specify the new git commit <tag> for the formula."
       flag   "--revision=",
-             description: "Specify the new commit <revision> corresponding to the specified git <tag> "\
+             description: "Specify the new commit <revision> corresponding to the specified git <tag> " \
                           "or specified <version>."
       switch "-f", "--force",
              description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
       flag   "--python-package-name=",
-             description: "Use the specified <package-name> when finding Python resources for <formula>. "\
+             description: "Use the specified <package-name> when finding Python resources for <formula>. " \
                           "If no package name is specified, it will be inferred from the formula's stable URL."
       comma_array "--python-extra-packages=",
                   description: "Include these additional Python packages when finding resources."
@@ -108,7 +108,7 @@ module Homebrew
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
-    ENV["PATH"] = ENV["HOMEBREW_PATH"]
+    ENV["PATH"] = PATH.new(ORIGINAL_PATHS).to_s
 
     # Use the user's browser, too.
     ENV["BROWSER"] = Homebrew::EnvConfig.browser
@@ -275,7 +275,7 @@ module Homebrew
 
     if new_mirrors.present?
       replacement_pairs << [
-        /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
+        /^( +)(url "#{Regexp.escape(new_url)}"[^\n]*?\n)/m,
         "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
       ]
     end
@@ -293,7 +293,7 @@ module Homebrew
         ]
       elsif new_url.present?
         [
-          /^( +)(url "#{Regexp.escape(new_url)}"\n)/m,
+          /^( +)(url "#{Regexp.escape(new_url)}"[^\n]*?\n)/m,
           "\\1\\2\\1version \"#{new_version}\"\n",
         ]
       elsif new_revision.present?

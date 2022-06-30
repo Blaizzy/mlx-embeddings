@@ -734,7 +734,7 @@ then
 fi
 export HOMEBREW_BREW_GIT_REMOTE
 
-HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
+export HOMEBREW_CORE_DEFAULT_GIT_REMOTE="https://github.com/Homebrew/homebrew-core"
 if [[ -z "${HOMEBREW_CORE_GIT_REMOTE}" ]]
 then
   HOMEBREW_CORE_GIT_REMOTE="${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}"
@@ -746,34 +746,6 @@ if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]] ||
    [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.rb" ]]
 then
   export HOMEBREW_DEVELOPER_COMMAND="1"
-fi
-
-# Set HOMEBREW_DEVELOPER_MODE if this command will turn (or keep) developer mode on. This is the case if:
-# - The command being run is not `brew developer off`
-# - Any of the following are true
-#   - HOMEBREW_DEVELOPER is set
-#   - HOMEBREW_DEV_CMD_RUN is set
-#   - A developer command is being run
-#   - The command being run is `brew developer on`
-if [[ "${HOMEBREW_COMMAND}" != "developer" || ! $* =~ "off" ]] &&
-   [[ -n "${HOMEBREW_DEVELOPER}" ||
-      -n "${HOMEBREW_DEV_CMD_RUN}" ||
-      -n "${HOMEBREW_DEVELOPER_COMMAND}" ||
-      "${HOMEBREW_COMMAND}" == "developer" && $* =~ "on" ]]
-then
-  export HOMEBREW_DEVELOPER_MODE="1"
-fi
-
-if [[ -n "${HOMEBREW_INSTALL_FROM_API}" && -n "${HOMEBREW_DEVELOPER_COMMAND}" && "${HOMEBREW_COMMAND}" != "irb" ]]
-then
-  odie "Developer commands cannot be run while HOMEBREW_INSTALL_FROM_API is set!"
-elif [[ -n "${HOMEBREW_INSTALL_FROM_API}" && -n "${HOMEBREW_DEVELOPER_MODE}" ]]
-then
-  message="Developers should not have HOMEBREW_INSTALL_FROM_API set!
-Please unset HOMEBREW_INSTALL_FROM_API or turn developer mode off by running:
-  brew developer off
-"
-  opoo "${message}"
 fi
 
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
