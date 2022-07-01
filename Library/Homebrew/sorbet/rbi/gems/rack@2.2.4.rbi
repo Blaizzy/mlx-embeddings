@@ -872,6 +872,7 @@ class Rack::QueryParser::Params
   def to_params_hash; end
 end
 
+class Rack::QueryParser::ParamsTooDeepError < ::RangeError; end
 Rack::RACK_ERRORS = T.let(T.unsafe(nil), String)
 Rack::RACK_HIJACK = T.let(T.unsafe(nil), String)
 Rack::RACK_HIJACK_IO = T.let(T.unsafe(nil), String)
@@ -1610,6 +1611,8 @@ Rack::Utils::KeySpaceConstrainedParams = Rack::QueryParser::Params
 Rack::Utils::NULL_BYTE = T.let(T.unsafe(nil), String)
 Rack::Utils::PATH_SEPS = T.let(T.unsafe(nil), Regexp)
 Rack::Utils::ParameterTypeError = Rack::QueryParser::ParameterTypeError
+Rack::Utils::RFC2822_DAY_NAME = T.let(T.unsafe(nil), Array)
+Rack::Utils::RFC2822_MONTH_NAME = T.let(T.unsafe(nil), Array)
 Rack::Utils::STATUS_WITH_NO_ENTITY_BODY = T.let(T.unsafe(nil), Hash)
 Rack::Utils::SYMBOL_TO_STATUS_CODE = T.let(T.unsafe(nil), Hash)
 Rack::VERSION = T.let(T.unsafe(nil), Array)
