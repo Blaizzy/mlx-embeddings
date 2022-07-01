@@ -647,7 +647,7 @@ EOS
         echo "Fetching ${DIR}..."
       fi
 
-      local tmp_failure_file="${HOMEBREW_REPOSITORY}/.git/TMP_FETCH_FAILURES"
+      local tmp_failure_file="${DIR}/.git/TMP_FETCH_FAILURES"
       rm -f "${tmp_failure_file}"
 
       if [[ -n "${HOMEBREW_UPDATE_AUTO}" ]]
