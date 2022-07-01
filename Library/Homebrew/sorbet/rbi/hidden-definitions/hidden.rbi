@@ -3607,6 +3607,16 @@ class Object
   def self.yaml_tag(url); end
 end
 
+module OnSystem::MacOSAndLinux
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module OnSystem::MacOSOnly
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module OnSystem
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
