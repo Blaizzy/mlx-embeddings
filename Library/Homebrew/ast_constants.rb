@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "macos_versions"
+
 FORMULA_COMPONENT_PRECEDENCE_LIST = [
   [{ name: :include,   type: :method_call }],
   [{ name: :desc,      type: :method_call }],
@@ -28,6 +30,11 @@ FORMULA_COMPONENT_PRECEDENCE_LIST = [
   [{ name: :uses_from_macos, type: :method_call }],
   [{ name: :on_macos, type: :block_call }],
   [{ name: :on_linux, type: :block_call }],
+  [{ name: :on_arm, type: :block_call }],
+  [{ name: :on_intel, type: :block_call }],
+  *MacOSVersions::SYMBOLS.keys.map do |os_name|
+    [{ name: :"on_#{os_name}", type: :block_call }]
+  end,
   [{ name: :conflicts_with, type: :method_call }],
   [{ name: :skip_clean, type: :method_call }],
   [{ name: :cxxstdlib_check, type: :method_call }],
