@@ -236,7 +236,7 @@ module Homebrew
       EOS
     end
 
-    return if new_tag.blank? || new_tag == old_tag
+    return if new_tag.blank? || new_tag == old_tag || args.quiet?
 
     puts
     ohai "Homebrew was updated to version #{new_tag}"
@@ -245,7 +245,7 @@ module Homebrew
         More detailed release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_tag}")}
       EOS
-    elsif !args.quiet?
+    else
       puts <<~EOS
         The changelog can be found at:
           #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
