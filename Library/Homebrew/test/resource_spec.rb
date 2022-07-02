@@ -6,7 +6,7 @@ require "livecheck"
 
 describe Resource do
   subject(:resource) { described_class.new("test") }
-  
+
   let(:livecheck_resource) {
     described_class.new do
       url "https://brew.sh/test-0.0.1.tgz"
