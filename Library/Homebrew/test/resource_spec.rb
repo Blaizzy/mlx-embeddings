@@ -6,6 +6,18 @@ require "livecheck"
 
 describe Resource do
   subject(:resource) { described_class.new("test") }
+  
+  let(:livecheck_resource) {
+    described_class.new do
+      url "https://brew.sh/test-0.0.1.tgz"
+      sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+      livecheck do
+        url "https://brew.sh/foo-1.0.tar.gz"
+        regex(/foo/)
+      end
+    end
+  }
 
   describe "#url" do
     it "sets the URL" do
