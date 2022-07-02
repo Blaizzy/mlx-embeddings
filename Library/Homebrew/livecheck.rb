@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-# The {Livecheck} class implements the DSL methods used in a formula's or cask's
+# The {Livecheck} class implements the DSL methods used in a formula's, cask's or resource's
 # `livecheck` block and stores related instance variables. Most of these methods
 # also return the related instance variable when no argument is provided.
 #
@@ -11,13 +11,13 @@
 class Livecheck
   extend Forwardable
 
-  # A very brief description of why the formula/cask is skipped (e.g. `No longer
+  # A very brief description of why the formula/cask/resource is skipped (e.g. `No longer
   # developed or maintained`).
   # @return [String, nil]
   attr_reader :skip_msg
 
-  def initialize(formula_or_cask)
-    @formula_or_cask = formula_or_cask
+  def initialize(package_or_resource)
+    @package_or_resource = package_or_resource
     @referenced_cask_name = nil
     @referenced_formula_name = nil
     @regex = nil
