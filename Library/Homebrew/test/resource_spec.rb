@@ -82,15 +82,7 @@ describe Resource do
     end
 
     specify "livecheck block defined in resources" do
-      r = described_class.new do
-        url "https://brew.sh/test-1.0.tbz"
-        livecheck do
-          url "https://brew.sh/foo-1.0.tar.gz"
-          regex(/foo/)
-        end
-      end
-
-      expect(r.livecheckable?).to be true
+      expect(livecheck_resource.livecheckable?).to be true
     end
   end
 
