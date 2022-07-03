@@ -376,6 +376,13 @@ module Homebrew
         base[:StartCalendarInterval] = @cron.reject { |_, value| value == "*" }
       end
 
+      # Adding all session types has as the primary effect that if you initialise it through e.g. a Background session and you later "physically"
+      # sign in to the owning account (Aqua session), things shouldn't flip out.
+      # Also, we're not checking @process_type here because that is used to indicate process priority and not necessarily if it should run in a
+      # specific session type. Like database services could run with ProcessType Interactive so they have no resource limitations enforced
+      # upon them, but they aren't really interactive in the general sense.
+      base[:LimitLoadToSessionType] = ["Aqua", "Background", "LoginWindow", "StandardIO", "System"]
+
       base.to_plist
     end
 
