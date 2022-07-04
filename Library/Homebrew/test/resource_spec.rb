@@ -2,9 +2,22 @@
 # frozen_string_literal: true
 
 require "resource"
+require "livecheck"
 
 describe Resource do
   subject(:resource) { described_class.new("test") }
+
+  let(:livecheck_resource) {
+    described_class.new do
+      url "https://brew.sh/foo-1.0.tar.gz"
+      sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+      livecheck do
+        url "https://brew.sh/test/releases"
+        regex(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
+      end
+    end
+  }
 
   describe "#url" do
     it "sets the URL" do
@@ -49,6 +62,27 @@ describe Resource do
       expect(resource.specs).to eq(branch: "master")
       expect(resource.using).to eq(:git)
       expect(specs).to eq(using: :git, branch: "master")
+    end
+  end
+
+  describe "#livecheck" do
+    it "returns nil if livecheck block is not set in resource" do
+      expect(resource.livecheck).to be_nil
+    end
+
+    specify "when livecheck block is set" do
+      expect(livecheck_resource.livecheck.url).to eq("https://brew.sh/test/releases")
+      expect(livecheck_resource.livecheck.regex).to eq(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
+    end
+  end
+
+  describe "#livecheckable?" do
+    it "returns false if livecheck block is not set in resource" do
+      expect(resource.livecheckable?).to be false
+    end
+
+    specify "livecheck block defined in resources" do
+      expect(livecheck_resource.livecheckable?).to be true
     end
   end
 
