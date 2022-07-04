@@ -7,7 +7,6 @@ require "utils/topological_hash"
 
 require "cask/config"
 require "cask/download"
-require "cask/staged"
 require "cask/quarantine"
 
 require "cgi"
@@ -20,12 +19,6 @@ module Cask
     extend T::Sig
 
     extend Predicable
-    # TODO: it is unwise for Cask::Staged to be a module, when we are
-    #       dealing with both staged and unstaged casks here. This should
-    #       either be a class which is only sometimes instantiated, or there
-    #       should be explicit checks on whether staged state is valid in
-    #       every method.
-    include Staged
 
     def initialize(cask, command: SystemCommand, force: false,
                    skip_cask_deps: false, binaries: true, verbose: false,
