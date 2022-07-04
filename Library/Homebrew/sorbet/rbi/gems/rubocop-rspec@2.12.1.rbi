@@ -6,6 +6,7 @@
 
 module RuboCop; end
 module RuboCop::Cop; end
+RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 module RuboCop::Cop::RSpec; end
 
 class RuboCop::Cop::RSpec::AlignLeftLetBrace < ::RuboCop::Cop::RSpec::Base
@@ -167,6 +168,22 @@ end
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MAP = T.let(T.unsafe(nil), Hash)
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::RSpec::Capybara::SpecificMatcher < ::RuboCop::Cop::RSpec::Base
+  def first_argument(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def acceptable_pattern?(arg); end
+  def good_matcher(node, matcher); end
+  def message(node, matcher); end
+  def specific_matcher(arg); end
+end
+
+RuboCop::Cop::RSpec::Capybara::SpecificMatcher::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::Capybara::SpecificMatcher::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::RSpec::Capybara::SpecificMatcher::SPECIFIC_MATCHER = T.let(T.unsafe(nil), Hash)
+
 class RuboCop::Cop::RSpec::Capybara::VisibilityMatcher < ::RuboCop::Cop::RSpec::Base
   def on_send(node); end
   def visible_false?(param0 = T.unsafe(nil)); end
@@ -192,7 +209,7 @@ class RuboCop::Cop::RSpec::ChangeByZero < ::RuboCop::Cop::RSpec::Base
   private
 
   def autocorrect(corrector, node); end
-  def check_offence(node); end
+  def check_offense(node); end
   def compound_expectations?(node); end
 end
 
@@ -586,9 +603,11 @@ class RuboCop::Cop::RSpec::FactoryBot::CreateList < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::RSpec::FactoryBot::Language
   extend ::RuboCop::Cop::AutoCorrector
 
+  def arguments_include_method_call?(param0 = T.unsafe(nil)); end
   def factory_call(param0 = T.unsafe(nil)); end
   def factory_list_call(param0 = T.unsafe(nil)); end
-  def n_times_block_without_arg?(param0 = T.unsafe(nil)); end
+  def n_times_block?(param0 = T.unsafe(nil)); end
+  def n_times_block_with_arg_and_used?(param0 = T.unsafe(nil)); end
   def on_block(node); end
   def on_send(node); end
 
@@ -619,7 +638,7 @@ class RuboCop::Cop::RSpec::FactoryBot::CreateList::CreateListCorrector
   def call_with_block_replacement(node); end
   def format_block(node); end
   def format_multiline_block(node); end
-  def format_singeline_block(node); end
+  def format_singleline_block(node); end
   def node; end
 end
 
@@ -1171,6 +1190,15 @@ end
 
 RuboCop::Cop::RSpec::Rails::AvoidSetupHook::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::RSpec::Rails::HaveHttpStatus < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def match_status(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::RSpec::Rails::HaveHttpStatus::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::RSpec::Rails::HttpStatus < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
   extend ::RuboCop::Cop::AutoCorrector
@@ -1560,7 +1588,7 @@ class RuboCop::Cop::RSpec::VariableName < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
   include ::RuboCop::Cop::ConfigurableFormatting
   include ::RuboCop::Cop::ConfigurableNaming
-  include ::RuboCop::Cop::IgnoredPattern
+  include ::RuboCop::Cop::AllowedPattern
   include ::RuboCop::Cop::RSpec::Variable
 
   def on_send(node); end
