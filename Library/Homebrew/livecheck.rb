@@ -81,8 +81,9 @@ class Livecheck
 
   # Sets the `@skip` instance variable to `true` and sets the `@skip_msg`
   # instance variable if a `String` is provided. `@skip` is used to indicate
-  # that the formula/cask should be skipped and the `skip_msg` very briefly
-  # describes why it is skipped (e.g. "No longer developed or maintained").
+  # that the formula/cask/resource should be skipped and the `skip_msg` very
+  # briefly describes why it is skipped (e.g. "No longer developed or
+  # maintained").
   #
   # @param skip_msg [String] string describing why the formula/cask is skipped
   # @return [Boolean]
@@ -96,7 +97,7 @@ class Livecheck
     @skip = true
   end
 
-  # Should `livecheck` skip this formula/cask?
+  # Should `livecheck` skip this formula/cask/resource?
   def skip?
     @skip
   end
@@ -126,7 +127,7 @@ class Livecheck
   # Sets the `@url` instance variable to the provided argument or returns the
   # `@url` instance variable when no argument is provided. The argument can be
   # a `String` (a URL) or a supported `Symbol` corresponding to a URL in the
-  # formula/cask (e.g. `:stable`, `:homepage`, `:head`, `:url`).
+  # formula/cask/resource (e.g. `:stable`, `:homepage`, `:head`, `:url`).
   # @param val [String, Symbol] URL to check for version information
   # @return [String, nil]
   def url(val = nil)
@@ -140,7 +141,7 @@ class Livecheck
     end
   end
 
-  delegate version: :@formula_or_cask
+  delegate version: :@package_or_resource
   private :version
 
   # Returns a `Hash` of all instance variable values.
