@@ -9,12 +9,12 @@ describe Resource do
 
   let(:livecheck_resource) {
     described_class.new do
-      url "https://brew.sh/test-0.0.1.tgz"
+      url "https://brew.sh/foo-1.0.tar.gz"
       sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
       livecheck do
-        url "https://brew.sh/foo-1.0.tar.gz"
-        regex(/foo/)
+        url "https://brew.sh/test/releases"
+        regex(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
       end
     end
   }
@@ -71,8 +71,8 @@ describe Resource do
     end
 
     specify "when livecheck block is set" do
-      expect(livecheck_resource.livecheck.url).to eq("https://brew.sh/foo-1.0.tar.gz")
-      expect(livecheck_resource.livecheck.regex).to eq(/foo/)
+      expect(livecheck_resource.livecheck.url).to eq("https://brew.sh/test/releases")
+      expect(livecheck_resource.livecheck.regex).to eq(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
     end
   end
 
