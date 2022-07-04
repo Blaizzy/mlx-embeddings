@@ -115,7 +115,7 @@ module Homebrew
     install_core_tap_if_necessary
 
     updated = false
-    new_repository_version = nil
+    new_tag = nil
 
     initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
     current_revision = ENV["HOMEBREW_UPDATE_AFTER"].to_s
@@ -135,7 +135,6 @@ module Homebrew
       if old_tag.blank? || (new_tag == old_tag)
         puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       else
-        new_repository_version = new_tag
         puts "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
              "to #{new_tag} (#{shorten_revision(current_revision)})."
       end
@@ -235,20 +234,20 @@ module Homebrew
       EOS
     end
 
-    return if new_repository_version.blank?
+    return if new_tag.blank? || new_tag == old_tag
 
     puts
-    ohai "Homebrew was updated to version #{new_repository_version}"
-    Settings.write "latesttag", new_repository_version
-    if new_repository_version.split(".").last == "0"
+    ohai "Homebrew was updated to version #{new_tag}"
+    Settings.write "latesttag", new_tag if new_tag != old_tag
+    if new_tag.split(".").last == "0"
       puts <<~EOS
         More detailed release notes are available on the Homebrew Blog:
-          #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
+          #{Formatter.url("https://brew.sh/blog/#{new_tag}")}
       EOS
     elsif !args.quiet?
       puts <<~EOS
         The changelog can be found at:
-          #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
+          #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
       EOS
     end
   end
