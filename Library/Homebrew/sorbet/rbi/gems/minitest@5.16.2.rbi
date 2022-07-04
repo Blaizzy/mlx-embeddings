@@ -293,7 +293,7 @@ class Minitest::Test < ::Minitest::Runnable
   def capture_exceptions; end
   def class_name; end
   def neuter_exception(e); end
-  def new_exception(klass, msg, bt); end
+  def new_exception(klass, msg, bt, kill = T.unsafe(nil)); end
   def run; end
   def sanitize_exception(e); end
   def with_info_handler(&block); end
