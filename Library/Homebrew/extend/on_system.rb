@@ -41,6 +41,8 @@ module OnSystem
       raise ArgumentError, "Invalid OS `or_*` condition: #{or_condition.inspect}"
     end
 
+    return false if Homebrew::SimulateSystem.linux? || (Homebrew::SimulateSystem.none? && OS.linux?)
+
     base_os = MacOS::Version.from_symbol(os_name)
     current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.os || MacOS.version.to_sym)
 
