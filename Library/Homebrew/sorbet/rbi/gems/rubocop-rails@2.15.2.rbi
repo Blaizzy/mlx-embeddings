@@ -510,6 +510,7 @@ RuboCop::Cop::Rails::DefaultScope::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::DefaultScope::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::Delegate < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::VisibilityHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def delegate?(param0 = T.unsafe(nil)); end
@@ -521,9 +522,8 @@ class RuboCop::Cop::Rails::Delegate < ::RuboCop::Cop::Base
   def include_prefix_case?; end
   def method_name_matches?(method_name, body); end
   def prefixed_method_name(body); end
-  def private_or_protected_before(line); end
   def private_or_protected_delegation(node); end
-  def private_or_protected_inline(line); end
+  def private_or_protected_inline(node); end
   def register_offense(node); end
   def trivial_delegate?(def_node); end
 end
@@ -756,13 +756,16 @@ class RuboCop::Cop::Rails::ExpandedDateRange < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
   extend ::RuboCop::Cop::TargetRailsVersion
 
-  def expanded_date_range(param0 = T.unsafe(nil)); end
   def on_irange(node); end
 
   private
 
-  def same_receiver?(begin_node, end_node); end
-  def use_mapped_methods?(beginning_method, end_method); end
+  def allow?(begin_node, end_node); end
+  def any_arguments?(begin_node, end_node); end
+  def preferred_method(begin_node); end
+  def receiver_source(node); end
+  def register_offense(node, preferred_method); end
+  def same_argument?(begin_node, end_node); end
 end
 
 RuboCop::Cop::Rails::ExpandedDateRange::MAPPED_DATE_RANGE_METHODS = T.let(T.unsafe(nil), Hash)
