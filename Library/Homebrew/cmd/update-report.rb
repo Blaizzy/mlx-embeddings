@@ -137,7 +137,7 @@ module Homebrew
       if old_tag.blank? || (new_tag == old_tag)
         puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
       else
-        puts "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
+        ohai "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
              "to #{new_tag} (#{shorten_revision(current_revision)})."
       end
     end
@@ -239,13 +239,13 @@ module Homebrew
     return if new_tag.blank? || new_tag == old_tag || args.quiet?
 
     puts
-    ohai "Homebrew was updated to version #{new_tag}"
+
     new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
     old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
     if old_tag.blank? || new_major_version > old_major_version \
         || new_minor_version > old_minor_version
       puts <<~EOS
-        More detailed release notes are available on the Homebrew Blog:
+        The #{new_major_version}.#{new_minor_version}.0 release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_major_version}.#{new_minor_version}.0")}
       EOS
     end
@@ -253,7 +253,7 @@ module Homebrew
     return if new_patch_version.zero?
 
     puts <<~EOS
-      The changelog can be found at:
+      The #{new_tag} changelog can be found at:
         #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
     EOS
   end
