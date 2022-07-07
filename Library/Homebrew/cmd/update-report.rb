@@ -106,7 +106,7 @@ module Homebrew
 
     if Settings.read("donationmessage") != "true" && !args.quiet?
       ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
-      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
+      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n\n"
 
       # Consider the message possibly missed if not a TTY.
       Settings.write "donationmessage", true if $stdout.tty?
