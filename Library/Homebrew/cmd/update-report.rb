@@ -134,8 +134,11 @@ module Homebrew
 
       Settings.write "latesttag", new_tag if new_tag != old_tag
 
-      if old_tag.blank? || (new_tag == old_tag)
+      if new_tag == old_tag
         puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
+      elsif old_tag.blank?
+        ohai "Updated Homebrew from #{shorten_revision(initial_revision)} " \
+             "to #{new_tag} (#{shorten_revision(current_revision)})."
       else
         ohai "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
              "to #{new_tag} (#{shorten_revision(current_revision)})."
