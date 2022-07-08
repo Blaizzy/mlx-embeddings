@@ -861,6 +861,7 @@ end
 RuboCop::Cop::Bundler::DuplicatedGem::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Bundler::GemComment < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::VisibilityHelp
   include ::RuboCop::Cop::DefNode
   include ::RuboCop::Cop::GemDeclaration
 
@@ -1336,6 +1337,7 @@ end
 RuboCop::Cop::Corrector::NOOP_CONSUMER = T.let(T.unsafe(nil), Proc)
 
 module RuboCop::Cop::DefNode
+  include ::RuboCop::Cop::VisibilityHelp
   extend ::RuboCop::AST::NodePattern::Macros
 
   def non_public_modifier?(param0 = T.unsafe(nil)); end
@@ -1344,10 +1346,7 @@ module RuboCop::Cop::DefNode
 
   def non_public?(node); end
   def preceding_non_public_modifier?(node); end
-  def stripped_source_upto(index); end
 end
-
-RuboCop::Cop::DefNode::NON_PUBLIC_MODIFIERS = T.let(T.unsafe(nil), Array)
 
 module RuboCop::Cop::Documentation
   private
@@ -2797,7 +2796,7 @@ class RuboCop::Cop::Layout::FirstArrayElementIndentation < ::RuboCop::Cop::Base
   def base_description(indent_base_type); end
   def brace_alignment_style; end
   def check(array_node, left_parenthesis); end
-  def check_right_bracket(right_bracket, left_bracket, left_parenthesis); end
+  def check_right_bracket(right_bracket, first_elem, left_bracket, left_parenthesis); end
   def message(base_description); end
   def message_for_right_bracket(indent_base_type); end
 end
@@ -2835,7 +2834,7 @@ class RuboCop::Cop::Layout::FirstHashElementIndentation < ::RuboCop::Cop::Base
   def brace_alignment_style; end
   def check(hash_node, left_parenthesis); end
   def check_based_on_longest_key(hash_node, left_brace, left_parenthesis); end
-  def check_right_brace(right_brace, left_brace, left_parenthesis); end
+  def check_right_brace(right_brace, first_pair, left_brace, left_parenthesis); end
   def enforce_first_argument_with_fixed_indentation?; end
   def message(base_description); end
   def message_for_right_brace(indent_base_type); end
@@ -5127,10 +5126,11 @@ class RuboCop::Cop::Lint::NonAtomicFileOperation < ::RuboCop::Cop::Base
 
   private
 
+  def allowable_use_with_if?(if_node); end
   def autocorrect(corrector, node, range); end
   def force_option?(node); end
   def message(node); end
-  def offense(node, exist_node); end
+  def register_offense(node, exist_node); end
   def replacement_method(node); end
 end
 
@@ -6542,11 +6542,10 @@ module RuboCop::Cop::MultilineElementIndentation
   def detected_styles(actual_column, offset, left_parenthesis, left_brace); end
   def detected_styles_for_column(column, left_parenthesis, left_brace); end
   def each_argument_node(node, type); end
-  def hash_pair_where_value_beginning_with(left_brace); end
+  def hash_pair_where_value_beginning_with(left_brace, first); end
   def incorrect_style_detected(styles, first, base_column_type); end
-  def indent_base(left_brace, left_parenthesis); end
+  def indent_base(left_brace, first, left_parenthesis); end
   def key_and_value_begin_on_same_line?(pair); end
-  def node_beginning_with(left_brace); end
   def right_sibling_begins_on_subsequent_line?(pair); end
 end
 
@@ -8421,6 +8420,7 @@ RuboCop::Cop::Style::Documentation::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::DocumentationMethod < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::DocumentationComment
+  include ::RuboCop::Cop::VisibilityHelp
   include ::RuboCop::Cop::DefNode
 
   def module_function_node?(param0 = T.unsafe(nil)); end
@@ -11971,7 +11971,6 @@ class RuboCop::Cop::Style::TopLevelMethodDefinition < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Style::TopLevelMethodDefinition::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::Style::TopLevelMethodDefinition::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Style::TrailingBodyOnClass < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::Alignment
