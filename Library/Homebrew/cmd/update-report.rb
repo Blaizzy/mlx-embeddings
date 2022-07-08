@@ -106,7 +106,7 @@ module Homebrew
 
     if Settings.read("donationmessage") != "true" && !args.quiet?
       ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
-      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n"
+      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n\n"
 
       # Consider the message possibly missed if not a TTY.
       Settings.write "donationmessage", true if $stdout.tty?
@@ -115,7 +115,7 @@ module Homebrew
     install_core_tap_if_necessary
 
     updated = false
-    new_repository_version = nil
+    new_tag = nil
 
     initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
     current_revision = ENV["HOMEBREW_UPDATE_AFTER"].to_s
@@ -132,11 +132,15 @@ module Homebrew
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
       ).lines.first.chomp
 
-      if old_tag.blank? || (new_tag == old_tag)
-        puts "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
+      Settings.write "latesttag", new_tag if new_tag != old_tag
+
+      if new_tag == old_tag
+        ohai "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
+      elsif old_tag.blank?
+        ohai "Updated Homebrew from #{shorten_revision(initial_revision)} " \
+             "to #{new_tag} (#{shorten_revision(current_revision)})."
       else
-        new_repository_version = new_tag
-        puts "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
+        ohai "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
              "to #{new_tag} (#{shorten_revision(current_revision)})."
       end
     end
@@ -235,22 +239,26 @@ module Homebrew
       EOS
     end
 
-    return if new_repository_version.blank?
+    return if new_tag.blank? || new_tag == old_tag || args.quiet?
 
     puts
-    ohai "Homebrew was updated to version #{new_repository_version}"
-    Settings.write "latesttag", new_repository_version
-    if new_repository_version.split(".").last == "0"
+
+    new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
+    old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
+    if old_tag.blank? || new_major_version > old_major_version \
+        || new_minor_version > old_minor_version
       puts <<~EOS
-        More detailed release notes are available on the Homebrew Blog:
-          #{Formatter.url("https://brew.sh/blog/#{new_repository_version}")}
-      EOS
-    elsif !args.quiet?
-      puts <<~EOS
-        The changelog can be found at:
-          #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_repository_version}")}
+        The #{new_major_version}.#{new_minor_version}.0 release notes are available on the Homebrew Blog:
+          #{Formatter.url("https://brew.sh/blog/#{new_major_version}.#{new_minor_version}.0")}
       EOS
     end
+
+    return if new_patch_version.zero?
+
+    puts <<~EOS
+      The #{new_tag} changelog can be found at:
+        #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
+    EOS
   end
 
   def shorten_revision(revision)
