@@ -343,6 +343,10 @@ module Homebrew
         default_text: "macOS: `/private/tmp`, Linux: `/tmp`.",
         default:      HOMEBREW_DEFAULT_TEMP,
       },
+      HOMEBREW_UNINSTALL_AUTOREMOVE:             {
+        description: "If set, `brew autoremove` is run after every successful call to `brew uninstall`.",
+        boolean:     true,
+      },
       HOMEBREW_UPDATE_REPORT_ALL_FORMULAE:       {
         description: "If set, `brew update` lists changes to all formulae and cask files rather than only showing " \
                      "when they are new and not installed or outdated and installed.",

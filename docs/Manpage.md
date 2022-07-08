@@ -2184,6 +2184,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* macOS: `/private/tmp`, Linux: `/tmp`.
 
+- `HOMEBREW_UNINSTALL_AUTOREMOVE`
+  <br>If set, `brew autoremove` is run after every successful call to `brew uninstall`.
+
 - `HOMEBREW_UPDATE_REPORT_ALL_FORMULAE`
   <br>If set, `brew update` lists changes to all formulae and cask files rather than only showing when they are new and not installed or outdated and installed.
 
