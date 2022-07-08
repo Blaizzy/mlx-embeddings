@@ -1538,10 +1538,10 @@ describe Formula do
   describe "#on_macos", :needs_macos do
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_macos do
             @test = 1
           end
@@ -1561,10 +1561,10 @@ describe Formula do
   describe "#on_linux", :needs_linux do
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_macos do
             @test = 1
           end
@@ -1581,6 +1581,65 @@ describe Formula do
     end
   end
 
+  describe "#on_system" do
+    after do
+      Homebrew::SimulateSystem.clear
+    end
+
+    let(:f) do
+      Class.new(Testball) do
+        attr_reader :foo
+        attr_reader :bar
+
+        def install
+          @foo = 0
+          @bar = 0
+          on_system :linux, macos: :monterey do
+            @foo = 1
+          end
+          on_system :linux, macos: :big_sur_or_older do
+            @bar = 1
+          end
+        end
+      end.new
+    end
+
+    it "doesn't call code on Ventura" do
+      Homebrew::SimulateSystem.os = :ventura
+      f.brew { f.install }
+      expect(f.foo).to eq(0)
+      expect(f.bar).to eq(0)
+    end
+
+    it "calls code on Linux" do
+      Homebrew::SimulateSystem.os = :linux
+      f.brew { f.install }
+      expect(f.foo).to eq(1)
+      expect(f.bar).to eq(1)
+    end
+
+    it "calls code within `on_system :linux, macos: :monterey` on Monterey" do
+      Homebrew::SimulateSystem.os = :monterey
+      f.brew { f.install }
+      expect(f.foo).to eq(1)
+      expect(f.bar).to eq(0)
+    end
+
+    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Big Sur" do
+      Homebrew::SimulateSystem.os = :big_sur
+      f.brew { f.install }
+      expect(f.foo).to eq(0)
+      expect(f.bar).to eq(1)
+    end
+
+    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Catalina" do
+      Homebrew::SimulateSystem.os = :catalina
+      f.brew { f.install }
+      expect(f.foo).to eq(0)
+      expect(f.bar).to eq(1)
+    end
+  end
+
   describe "on_{os_version} blocks", :needs_macos do
     before do
       Homebrew::SimulateSystem.os = :monterey
@@ -1592,10 +1651,10 @@ describe Formula do
 
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_monterey :or_newer do
             @test = 1
           end
@@ -1647,10 +1706,10 @@ describe Formula do
 
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_arm do
             @test = 1
           end
@@ -1674,10 +1733,10 @@ describe Formula do
 
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_arm do
             @test = 1
           end

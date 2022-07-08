@@ -89,6 +89,25 @@ module OnSystem
         result
       end
     end
+
+    base.define_method(:on_system) do |linux, macos:, &block|
+      @on_system_blocks_exist = true
+
+      raise ArgumentError, "The first argument to `on_system` must be `:linux`" unless linux == :linux
+
+      os_version, or_condition = if macos.to_s.include?("_or_")
+        macos.to_s.split(/_(?=or_)/).map(&:to_sym)
+      else
+        [macos.to_sym, nil]
+      end
+      return if !OnSystem.os_condition_met?(os_version, or_condition) && !OnSystem.os_condition_met?(:linux)
+
+      @called_in_on_system_block = true
+      result = block.call
+      @called_in_on_system_block = false
+
+      result
+    end
   end
 
   sig { params(base: Class).void }
