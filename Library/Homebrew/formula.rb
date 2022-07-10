@@ -1625,16 +1625,20 @@ class Formula
   end
   private :extract_macho_slice_from
 
-  def generate_completions(base_name = name, shells = [:bash, :zsh, :fish], binary = bin/base_name, cmd = "completion", shell_as_flag = false)
+  def generate_completions(base_name = name,
+                           shells = [:bash, :zsh, :fish],
+                           binary = bin/base_name,
+                           cmd = "completion",
+                           shell_as_flag: false)
     completion_script_path_map = {
-      :bash => bash_completion/base_name,
-      :zsh => zsh_completion/"_#{base_name}",
-      :fish => fish_completion/"#{base_name}.fish",
+      bash: bash_completion/base_name,
+      zsh:  zsh_completion/"_#{base_name}",
+      fish: fish_completion/"#{base_name}.fish",
     }
 
     shells.each do |shell|
       script_path = completion_script_path_map[shell]
-      shell_parameter = shell_as_flag ? "--#{shell.to_s}" : shell.to_s
+      shell_parameter = shell_as_flag ? "--#{shell}" : shell.to_s
       script_path.dirname.mkpath
       script_path.write Utils.safe_popen_read(binary, cmd, shell_parameter)
     end
