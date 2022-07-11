@@ -1625,6 +1625,15 @@ class Formula
   end
   private :extract_macho_slice_from
 
+  # Generate shell completions for a formula for bash, zsh, and fish, using the formula's binary.
+  #
+  # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
+  # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
+  # @param binary [Pathname] the binary to use for generating the completion scripts. Defaults to the binary with the
+  # name of the formula.
+  # @param cmd [String] the command to pass to the `binary`. Defaults to 'completion'.
+  # @param shell_as_flag [Boolean] specify if `shells` should each be passed as flags to the `binary`.
+  # Defaults to `false`.
   sig {
     params(base_name: String, shells: T::Array[Symbol], binary: Pathname, cmd: String, shell_as_flag: T::Boolean).void
   }
