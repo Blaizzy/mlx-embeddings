@@ -446,7 +446,7 @@ class Keg
            /^gdk-pixbuf/,
            "ghc",
            /^gio/,
-           "lua",
+           /^lua/,
            /^mecab/,
            /^node/,
            /^ocaml/,
