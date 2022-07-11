@@ -1625,10 +1625,10 @@ class Formula
   end
   private :extract_macho_slice_from
 
-  def generate_completions(base_name = name,
-                           shells = [:bash, :zsh, :fish],
-                           binary = bin/base_name,
-                           cmd = "completion",
+  def generate_completions(base_name: name,
+                           shells: [:bash, :zsh, :fish],
+                           binary: bin/base_name,
+                           cmd: "completion",
                            shell_as_flag: false)
     completion_script_path_map = {
       bash: bash_completion/base_name,
