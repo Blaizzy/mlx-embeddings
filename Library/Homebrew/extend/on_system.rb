@@ -93,7 +93,7 @@ module OnSystem
     base.define_method(:on_system) do |linux, macos:, &block|
       @on_system_blocks_exist = true
 
-      raise ArgumentError, "The first argument to `on_system` must be `:linux`" unless linux == :linux
+      raise ArgumentError, "The first argument to `on_system` must be `:linux`" if linux != :linux
 
       os_version, or_condition = if macos.to_s.include?("_or_")
         macos.to_s.split(/_(?=or_)/).map(&:to_sym)

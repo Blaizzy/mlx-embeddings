@@ -1604,35 +1604,35 @@ describe Formula do
       end.new
     end
 
-    it "doesn't call code on Ventura" do
+    it "doesn't call code on Ventura", :needs_macos do
       Homebrew::SimulateSystem.os = :ventura
       f.brew { f.install }
       expect(f.foo).to eq(0)
       expect(f.bar).to eq(0)
     end
 
-    it "calls code on Linux" do
+    it "calls code on Linux", :needs_linux do
       Homebrew::SimulateSystem.os = :linux
       f.brew { f.install }
       expect(f.foo).to eq(1)
       expect(f.bar).to eq(1)
     end
 
-    it "calls code within `on_system :linux, macos: :monterey` on Monterey" do
+    it "calls code within `on_system :linux, macos: :monterey` on Monterey", :needs_macos do
       Homebrew::SimulateSystem.os = :monterey
       f.brew { f.install }
       expect(f.foo).to eq(1)
       expect(f.bar).to eq(0)
     end
 
-    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Big Sur" do
+    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Big Sur", :needs_macos do
       Homebrew::SimulateSystem.os = :big_sur
       f.brew { f.install }
       expect(f.foo).to eq(0)
       expect(f.bar).to eq(1)
     end
 
-    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Catalina" do
+    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Catalina", :needs_macos do
       Homebrew::SimulateSystem.os = :catalina
       f.brew { f.install }
       expect(f.foo).to eq(0)
