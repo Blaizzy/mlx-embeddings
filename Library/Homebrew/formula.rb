@@ -1625,6 +1625,9 @@ class Formula
   end
   private :extract_macho_slice_from
 
+  sig {
+    params(base_name: String, shells: T::Array[Symbol], binary: Pathname, cmd: String, shell_as_flag: T::Boolean).void
+  }
   def generate_completions(base_name: name,
                            shells: [:bash, :zsh, :fish],
                            binary: bin/base_name,
