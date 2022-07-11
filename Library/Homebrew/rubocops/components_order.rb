@@ -15,7 +15,7 @@ module RuboCop
         extend AutoCorrector
 
         def on_system_methods
-          @on_system_methods ||= [:intel, :arm, :macos, :linux, *MacOSVersions::SYMBOLS.keys].map do |m|
+          @on_system_methods ||= [:intel, :arm, :macos, :linux, :system, *MacOSVersions::SYMBOLS.keys].map do |m|
             :"on_#{m}"
           end
         end
