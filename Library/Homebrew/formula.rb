@@ -1706,7 +1706,7 @@ class Formula
     end.uniq(&:name)
   end
 
-  # An array of all installed {Formula} without dependents
+  # An array of all installed {Formula} without {Formula} dependents
   # @private
   def self.installed_formulae_with_no_dependents(formulae = installed)
     return [] if formulae.blank?
@@ -1718,6 +1718,37 @@ class Formula
     return [] if alias_path.nil?
 
     installed.select { |f| f.installed_alias_path == alias_path }
+  end
+
+  # An array of all installed {Formula} with {Cask} dependents.
+  # @private
+  def self.installed_formulae_with_cask_dependents
+    Cask::Caskroom.casks
+                  .flat_map { |cask| cask.depends_on[:formula] }
+                  .compact
+                  .map { |f| Formula[f] }
+                  .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
+  end
+
+  # An array of all installed {Formula} without {Formula} or {Cask} dependents
+  # that weren't installed on request.
+  # @private
+  def self.removable_formulae
+    formulae = installed
+    all_removable_formulae = T.let([], T::Array[Formula])
+
+    loop do
+      removable_formulae = installed_formulae_with_no_dependents(formulae).reject do |f|
+        Tab.for_keg(f.any_installed_keg).installed_on_request
+      end
+
+      break if removable_formulae.blank?
+
+      all_removable_formulae += removable_formulae
+      formulae -= removable_formulae
+    end
+
+    all_removable_formulae - installed_formulae_with_cask_dependents
   end
 
   # an array of all alias files of core {Formula}

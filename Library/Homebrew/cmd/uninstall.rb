@@ -81,6 +81,6 @@ module Homebrew
 
     return unless Homebrew::EnvConfig.uninstall_autoremove?
 
-    system HOMEBREW_BREW_FILE, "autoremove"
+    Uninstall.autoremove_kegs(Formula.removable_formulae)
   end
 end

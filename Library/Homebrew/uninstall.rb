@@ -97,6 +97,20 @@ module Homebrew
       end
     end
 
+    def autoremove_kegs(removable_formulae, dry_run: false)
+      return if removable_formulae.blank?
+
+      formulae_names = removable_formulae.map(&:full_name).sort
+
+      verb = dry_run ? "Would uninstall" : "Uninstalling"
+      oh1 "#{verb} #{formulae_names.count} unneeded #{"formula".pluralize(formulae_names.count)}:"
+      puts formulae_names.join("\n")
+      return if dry_run
+
+      kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
+      Uninstall.uninstall_kegs(kegs_by_rack)
+    end
+
     def handle_unsatisfied_dependents(kegs_by_rack, casks: [], ignore_dependencies: false, named_args: [])
       return if ignore_dependencies
 
