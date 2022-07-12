@@ -154,7 +154,7 @@ module I18n::Backend::Fallbacks
 
   private
 
-  def on_fallback(_original_locale, _fallback_locale, _key, _optoins); end
+  def on_fallback(_original_locale, _fallback_locale, _key, _options); end
 end
 
 module I18n::Backend::Flatten
@@ -333,6 +333,10 @@ module I18n::Backend::Pluralization
 
   def pluralizer(locale); end
   def pluralizers; end
+
+  private
+
+  def symbolic_count(count); end
 end
 
 class I18n::Backend::Simple
@@ -427,6 +431,7 @@ module I18n::Base
 
   def handle_exception(handling, exception, locale, key, options); end
   def normalize_key(key, separator); end
+  def translate_key(key, throw, raise, locale, backend, options); end
 end
 
 class I18n::Config
