@@ -52,7 +52,8 @@ module Homebrew
       "master"
     end
 
-    start_commit, end_commit = nil
+    start_commit = nil
+    end_commit = "HEAD"
     cd HOMEBREW_REPOSITORY do
       start_commit = if (commit = args.commit)
         commit
@@ -79,14 +80,13 @@ module Homebrew
         # ^0 ensures this points to the commit rather than the tag object.
         "#{previous_tag}^0"
       else
-        Utils.popen_read("git", "rev-parse", "origin/master").chomp
+        Utils.popen_read("git", "merge-base", "origin/master", end_commit).chomp
       end
       odie "Could not find start commit!" if start_commit.empty?
 
       start_commit = Utils.popen_read("git", "rev-parse", start_commit).chomp
       odie "Could not find start commit!" if start_commit.empty?
 
-      end_commit ||= "HEAD"
       end_commit = Utils.popen_read("git", "rev-parse", end_commit).chomp
       odie "Could not find end commit!" if end_commit.empty?
 
