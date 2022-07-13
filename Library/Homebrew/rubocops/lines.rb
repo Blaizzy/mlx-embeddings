@@ -415,6 +415,76 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that the `generate_completions` DSL is used.
+      #
+      # @api private
+      class GenerateCompletionsDSL < FormulaCop
+        extend AutoCorrector
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          install = find_method_def(body_node, :install)
+
+          correctable_shell_completion_node(install) do |node, shell, base_name, binary, cmd, shell_parameter|
+            next unless shell_parameter.match?(/(bash|zsh|fish)/) # generate_completions only applicable if shell is passed
+
+            base_name = base_name.delete_prefix("_").delete_suffix(".fish")
+            shell = shell.to_s.sub("_completion", "").to_sym
+            binary = binary.source
+            shell_parameter_stripped = shell_parameter.sub("bash", "").sub("zsh", "").sub("fish", "")
+            shell_prefix = if shell_parameter_stripped.empty?
+              nil
+            elsif shell_parameter_stripped == "--"
+              :flag
+            else
+              "\"#{shell_parameter_stripped}\""
+            end
+
+            replacement_args = %w[]
+            replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
+            replacement_args << "shells: [:#{shell}]"
+            replacement_args << "binary: #{binary}" unless binary.to_s == "bin/\"#{@formula_name}\""
+            replacement_args << "cmd: \"#{cmd}\"" unless cmd == "completion"
+            replacement_args << "shell_prefix: #{shell_prefix}" unless shell_prefix.nil?
+
+            offending_node(node)
+            replacement = "generate_completions(#{replacement_args.join(", ")})"
+            problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
+              corrector.replace(@offensive_node.source_range, replacement)
+            end
+          end
+
+          shell_completion_node(install) do |node|
+            offending_node(node)
+            problem "Use `generate_completions` DSL instead of `#{@offensive_node.source}`."
+          end
+        end
+
+        # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write Utils.safe_popen_read(foo, cmd, shell_parameter)
+        def_node_search :correctable_shell_completion_node, <<~EOS
+          $(send
+          (begin
+            (send
+              (send nil? ${:bash_completion :zsh_completion :fish_completion}) :/
+              (str $_))) :write
+          (send
+            (const nil? :Utils) :safe_popen_read
+            $(send
+              (send nil? :bin) :/
+              (str _))
+            (str $_)
+            (str $_)))
+        EOS
+
+        # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write output
+        def_node_search :shell_completion_node, <<~EOS
+        $(send
+          (begin
+            (send
+              (send nil? {:bash_completion :zsh_completion :fish_completion}) :/
+              (str _))) :write _)
+        EOS
+      end
+
       # This cop checks for other miscellaneous style violations.
       #
       # @api private
