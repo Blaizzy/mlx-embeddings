@@ -36,7 +36,7 @@ module Homebrew
                      "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
         default:     300,
       },
-      HOMEBREW_AUTOREMOVE:             {
+      HOMEBREW_AUTOREMOVE:                       {
         description: "If set, calls to `brew install`, `brew upgrade`, `brew reinstall` and `brew uninstall` " \
                      "will automatically remove unused formula dependents.",
         boolean:     true,

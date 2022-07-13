@@ -1,9 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-require "formula"
+require "autoremove"
 require "cli/parser"
-require "uninstall"
 
 module Homebrew
   module_function
@@ -23,6 +22,6 @@ module Homebrew
   def autoremove
     args = autoremove_args.parse
 
-    Uninstall.autoremove_kegs(Formula.removable_formulae, dry_run: args.dry_run?)
+    Autoremove.remove_unused_formulae(dry_run: args.dry_run?)
   end
 end

@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "autoremove"
 require "cli/parser"
 require "formula_installer"
 require "install"
@@ -111,6 +112,8 @@ module Homebrew
     upgrade_outdated_casks(casks, args: args) unless only_upgrade_formulae
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
+
+    Autoremove.remove_unused_formulae(dry_run: args.dry_run?) if Homebrew::EnvConfig.autoremove?
   end
 
   sig { params(formulae: T::Array[Formula], args: CLI::Args).returns(T::Boolean) }
