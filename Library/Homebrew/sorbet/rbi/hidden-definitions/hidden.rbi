@@ -4356,6 +4356,8 @@ class Resource
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
 
+  def on_system(linux, macos:, &block); end
+
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
 
