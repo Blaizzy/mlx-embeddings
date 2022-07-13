@@ -2442,6 +2442,8 @@ module Homebrew::EnvConfig
 
   def self.artifact_domain(); end
 
+  def self.autoremove?(); end
+
   def self.auto_update_secs(); end
 
   def self.bat?(); end
@@ -2571,8 +2573,6 @@ module Homebrew::EnvConfig
   def self.svn(); end
 
   def self.temp(); end
-
-  def self.uninstall_autoremove?(); end
 
   def self.update_report_all_formulae?(); end
 

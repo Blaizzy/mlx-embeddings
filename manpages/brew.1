@@ -2757,6 +2757,12 @@ Run \fBbrew update\fR once every \fBHOMEBREW_AUTO_UPDATE_SECS\fR seconds before 
 \fIDefault:\fR \fB300\fR\.
 .
 .TP
+\fBHOMEBREW_AUTOREMOVE\fR
+.
+.br
+If set, calls to \fBbrew install\fR, \fBbrew upgrade\fR, \fBbrew reinstall\fR and \fBbrew uninstall\fR will automatically remove unused formula dependents\.
+.
+.TP
 \fBHOMEBREW_BAT\fR
 .
 .br
@@ -3205,12 +3211,6 @@ Use this path as the temporary directory for building packages\. Changing this m
 .
 .IP
 \fIDefault:\fR macOS: \fB/private/tmp\fR, Linux: \fB/tmp\fR\.
-.
-.TP
-\fBHOMEBREW_UNINSTALL_AUTOREMOVE\fR
-.
-.br
-If set, \fBbrew autoremove\fR is run after every successful call to \fBbrew uninstall\fR\.
 .
 .TP
 \fBHOMEBREW_UPDATE_REPORT_ALL_FORMULAE\fR

@@ -36,6 +36,11 @@ module Homebrew
                      "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
         default:     300,
       },
+      HOMEBREW_AUTOREMOVE:             {
+        description: "If set, calls to `brew install`, `brew upgrade`, `brew reinstall` and `brew uninstall` " \
+                     "will automatically remove unused formula dependents.",
+        boolean:     true,
+      },
       HOMEBREW_BAT:                              {
         description: "If set, use `bat` for the `brew cat` command.",
         boolean:     true,
@@ -342,10 +347,6 @@ module Homebrew
                       "configurations.",
         default_text: "macOS: `/private/tmp`, Linux: `/tmp`.",
         default:      HOMEBREW_DEFAULT_TEMP,
-      },
-      HOMEBREW_UNINSTALL_AUTOREMOVE:             {
-        description: "If set, `brew autoremove` is run after every successful call to `brew uninstall`.",
-        boolean:     true,
       },
       HOMEBREW_UPDATE_REPORT_ALL_FORMULAE:       {
         description: "If set, `brew update` lists changes to all formulae and cask files rather than only showing " \

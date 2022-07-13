@@ -1945,6 +1945,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* `300`.
 
+- `HOMEBREW_AUTOREMOVE`
+  <br>If set, calls to `brew install`, `brew upgrade`, `brew reinstall` and `brew uninstall` will automatically remove unused formula dependents.
+
 - `HOMEBREW_BAT`
   <br>If set, use `bat` for the `brew cat` command.
 
@@ -2183,9 +2186,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Use this path as the temporary directory for building packages. Changing this may be needed if your system temporary directory and Homebrew prefix are on different volumes, as macOS has trouble moving symlinks across volumes when the target does not yet exist. This issue typically occurs when using FileVault or custom SSD configurations.
 
   *Default:* macOS: `/private/tmp`, Linux: `/tmp`.
-
-- `HOMEBREW_UNINSTALL_AUTOREMOVE`
-  <br>If set, `brew autoremove` is run after every successful call to `brew uninstall`.
 
 - `HOMEBREW_UPDATE_REPORT_ALL_FORMULAE`
   <br>If set, `brew update` lists changes to all formulae and cask files rather than only showing when they are new and not installed or outdated and installed.
