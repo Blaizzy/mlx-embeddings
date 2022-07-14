@@ -70,7 +70,7 @@ module Language
       quiet_system python, "-c", script
     end
 
-    def self.setup_install_args(prefix)
+    def self.setup_install_args(prefix, python = "python3")
       shim = <<~PYTHON
         import setuptools, tokenize
         __file__ = 'setup.py'
@@ -84,6 +84,7 @@ module Language
         install
         --prefix=#{prefix}
         --install-scripts=#{prefix}/bin
+        --install-lib=#{prefix/site_packages(python)}
         --single-version-externally-managed
         --record=installed.txt
       ]
