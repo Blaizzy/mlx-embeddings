@@ -333,10 +333,6 @@ module I18n::Backend::Pluralization
 
   def pluralizer(locale); end
   def pluralizers; end
-
-  private
-
-  def symbolic_count(count); end
 end
 
 class I18n::Backend::Simple
