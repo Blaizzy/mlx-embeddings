@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "autoremove"
 require "cask/config"
 require "cask/cmd"
 require "cask/cmd/install"
@@ -255,8 +254,6 @@ module Homebrew
     )
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
-
-    Autoremove.remove_unused_formulae if Homebrew::EnvConfig.autoremove?
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
          TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
     # Need to rescue before `FormulaUnavailableError` (superclass of this)

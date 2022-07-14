@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "autoremove"
 require "formula_installer"
 require "development_tools"
 require "messages"
@@ -153,7 +152,5 @@ module Homebrew
     end
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
-
-    Autoremove.remove_unused_formulae if Homebrew::EnvConfig.autoremove?
   end
 end

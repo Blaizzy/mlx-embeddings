@@ -37,7 +37,7 @@ module Homebrew
   def leaves
     args = leaves_args.parse
 
-    leaves_list = Formula.installed_formulae_with_no_dependents
+    leaves_list = Formula.installed_formulae_with_no_formula_dependents
 
     leaves_list.select!(&method(:installed_on_request?)) if args.installed_on_request?
     leaves_list.select!(&method(:installed_as_dependency?)) if args.installed_as_dependency?

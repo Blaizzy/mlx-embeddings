@@ -446,7 +446,7 @@ describe Formula do
     end
   end
 
-  describe "::installed_formulae_with_no_dependents" do
+  describe "::installed_formulae_with_no_formula_dependents" do
     let(:formula_is_dep) do
       formula "foo" do
         url "foo-1.1"
@@ -473,12 +473,12 @@ describe Formula do
     specify "without formulae parameter" do
       allow(described_class).to receive(:installed).and_return(formulae)
 
-      expect(described_class.installed_formulae_with_no_dependents)
+      expect(described_class.installed_formulae_with_no_formula_dependents)
           .to eq([formula_with_deps])
     end
 
     specify "with formulae parameter" do
-      expect(described_class.installed_formulae_with_no_dependents(formulae))
+      expect(described_class.installed_formulae_with_no_formula_dependents(formulae))
           .to eq([formula_with_deps])
     end
   end

@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "autoremove"
+require "cleanup"
 require "cli/parser"
 
 module Homebrew
@@ -22,6 +22,6 @@ module Homebrew
   def autoremove
     args = autoremove_args.parse
 
-    Autoremove.remove_unused_formulae(dry_run: args.dry_run?)
+    Cleanup.autoremove(dry_run: args.dry_run?)
   end
 end

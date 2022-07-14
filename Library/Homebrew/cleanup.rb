@@ -219,6 +219,9 @@ module Homebrew
                .each do |formula|
           cleanup_formula(formula, quiet: quiet, ds_store: false, cache_db: false)
         end
+
+        Cleanup.autoremove(dry_run: dry_run?) if Homebrew::EnvConfig.autoremove?
+
         cleanup_cache
         cleanup_logs
         cleanup_lockfiles
@@ -261,6 +264,8 @@ module Homebrew
           end
           cleanup_cask(cask) if cask
         end
+
+        Cleanup.autoremove(dry_run: dry_run?) if Homebrew::EnvConfig.autoremove?
       end
     end
 
@@ -518,6 +523,24 @@ module Homebrew
       print "Pruned #{n} symbolic links "
       print "and #{d} directories " if d.positive?
       puts "from #{HOMEBREW_PREFIX}"
+    end
+
+    def self.autoremove(dry_run: false)
+      removable_formulae = Formula.unused_formulae_with_no_dependents
+
+      return if removable_formulae.blank?
+
+      formulae_names = removable_formulae.map(&:full_name).sort
+
+      verb = dry_run ? "Would autoremove" : "Autoremoving"
+      oh1 "#{verb} #{formulae_names.count} unneeded #{"formula".pluralize(formulae_names.count)}:"
+      puts formulae_names.join("\n")
+      return if dry_run
+
+      require "uninstall"
+
+      kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
+      Uninstall.uninstall_kegs(kegs_by_rack)
     end
   end
 end

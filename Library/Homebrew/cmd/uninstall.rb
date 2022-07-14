@@ -79,6 +79,6 @@ module Homebrew
       )
     end
 
-    Autoremove.remove_unused_formulae if Homebrew::EnvConfig.autoremove?
+    Cleanup.autoremove if Homebrew::EnvConfig.autoremove?
   end
 end
