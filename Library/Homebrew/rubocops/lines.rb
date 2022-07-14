@@ -382,18 +382,40 @@ module RuboCop
         NO_ON_SYSTEM_METHOD_NAMES = [:install, :post_install].freeze
         NO_ON_SYSTEM_BLOCK_NAMES = [:service, :test].freeze
 
+        ON_ARCH_OPTIONS = [:intel, :arm].freeze
+        ON_BASE_OS_OPTIONS = [:macos, :linux].freeze
+        ON_MACOS_VERSION_OPTIONS = MacOSVersions::SYMBOLS.keys.freeze
+        ALL_SYSTEM_OPTIONS = [*ON_ARCH_OPTIONS, *ON_BASE_OS_OPTIONS, *ON_MACOS_VERSION_OPTIONS, :system].freeze
+
         MACOS_VERSION_CONDITIONALS = {
           "==" => nil,
           "<=" => :or_older,
           ">=" => :or_newer,
         }.freeze
 
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          on_arch_options = [:intel, :arm]
-          on_base_os_options = [:macos, :linux]
-          on_macos_version_options = MacOSVersions::SYMBOLS.keys
-          all_system_options = on_arch_options + on_base_os_options + on_macos_version_options
+        ON_SYSTEM_CONDITIONALS = [:<, :<=].freeze
 
+        def on_system_method_info(on_system_option)
+          info = {}
+          info[:method] = :"on_#{on_system_option}"
+          info[:if_module], info[:if_method] = if ON_ARCH_OPTIONS.include?(on_system_option)
+            ["Hardware::CPU", :"#{on_system_option}?"]
+          elsif ON_BASE_OS_OPTIONS.include?(on_system_option)
+            ["OS", on_system_option == :macos ? :mac? : :linux?]
+          else
+            ["MacOS", :version]
+          end
+          info[:on_system_string] = "on_#{on_system_option}"
+          info[:if_string] = if on_system_option == :system
+            "if OS.linux? || MacOS.version"
+          else
+            "if #{info[:if_module]}.#{info[:if_method]}"
+          end
+
+          info
+        end
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
           top_level_nodes_to_check = []
           NO_ON_SYSTEM_METHOD_NAMES.each do |formula_method_name|
             method_node = find_method_def(body_node, formula_method_name)
@@ -404,17 +426,8 @@ module RuboCop
             top_level_nodes_to_check << [formula_block_name, block_node] if block_node
           end
 
-          all_system_options.each do |on_system_option|
-            on_system_method = :"on_#{on_system_option}"
-            if_module_name, if_method_name = if on_arch_options.include?(on_system_option)
-              ["Hardware::CPU", :"#{on_system_option}?"]
-            elsif on_base_os_options.include?(on_system_option)
-              ["OS", on_system_option == :macos ? :mac? : :linux?]
-            else
-              ["MacOS", :version]
-            end
-            on_system_method_string = on_system_method.to_s
-            if_statement_string = "if #{if_module_name}.#{if_method_name}"
+          ALL_SYSTEM_OPTIONS.each do |on_system_option|
+            method_info = on_system_method_info(on_system_option)
 
             top_level_nodes_to_check.each do |top_level_name, top_level_node|
               top_level_node_string = if top_level_node.def_type?
@@ -423,23 +436,34 @@ module RuboCop
                 "#{top_level_name} do"
               end
 
-              find_every_method_call_by_name(top_level_node, on_system_method).each do |method|
-                if on_macos_version_options.include?(on_system_option)
-                  on_macos_version_method_call(method, on_method: on_system_method) do |on_method_parameters|
+              find_every_method_call_by_name(top_level_node, method_info[:method]).each do |method|
+                if ON_MACOS_VERSION_OPTIONS.include?(on_system_option)
+                  on_macos_version_method_call(method, on_method: method_info[:method]) do |on_method_parameters|
                     if on_method_parameters.empty?
-                      if_statement_string = "#{if_statement_string} == :#{on_system_option}"
+                      method_info[:if_string] = "if MacOS.version == :#{on_system_option}"
                     else
-                      on_system_method_string = "#{on_system_method} :#{on_method_parameters.first}"
+                      method_info[:on_system_string] = "#{method_info[:method]} :#{on_method_parameters.first}"
                       if_condition_operator = MACOS_VERSION_CONDITIONALS.key(on_method_parameters.first)
-                      if_statement_string = "#{if_statement_string} #{if_condition_operator} :#{on_system_option}"
+                      method_info[:if_string] = "if MacOS.version #{if_condition_operator} :#{on_system_option}"
                     end
+                  end
+                elsif method_info[:method] == :on_system
+                  on_system_method_call(method) do |macos_symbol|
+                    base_os, condition = macos_symbol.to_s.split(/_(?=or_)/).map(&:to_sym)
+                    method_info[:on_system_string] = if condition.present?
+                      "on_system :linux, macos: :#{base_os}_#{condition}"
+                    else
+                      "on_system :linux, macos: :#{base_os}"
+                    end
+                    if_condition_operator = MACOS_VERSION_CONDITIONALS.key(condition)
+                    method_info[:if_string] = "if OS.linux? || MacOS.version #{if_condition_operator} :#{base_os}"
                   end
                 end
 
                 offending_node(method)
 
-                problem "Don't use `#{on_system_method_string}` in `#{top_level_node_string}`, " \
-                        "use `#{if_statement_string}` instead." do |corrector|
+                problem "Don't use `#{method_info[:on_system_string]}` in `#{top_level_node_string}`, " \
+                        "use `#{method_info[:if_string]}` instead." do |corrector|
                   block_node = offending_node.parent
                   next if block_node.type != :block
 
@@ -447,21 +471,25 @@ module RuboCop
                   next if block_node.single_line?
 
                   source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
-                  corrector.replace(source_range, if_statement_string)
+                  corrector.replace(source_range, method_info[:if_string])
                 end
               end
             end
+          end
 
-            # Don't restrict OS.mac? or OS.linux? usage in taps; they don't care
-            # as much as we do about e.g. formulae.brew.sh generation, often use
-            # platform-specific URLs and we don't want to add DSLs to support
-            # that case.
-            next if formula_tap != "homebrew-core"
+          # Don't restrict OS.mac? or OS.linux? usage in taps; they don't care
+          # as much as we do about e.g. formulae.brew.sh generation, often use
+          # platform-specific URLs and we don't want to add DSLs to support
+          # that case.
+          return if formula_tap != "homebrew-core"
+
+          ALL_SYSTEM_OPTIONS.each do |on_system_option|
+            method_info = on_system_method_info(on_system_option)
 
             if_nodes_to_check = []
 
-            if on_arch_options.include?(on_system_option)
-              if_arch_node_search(body_node, arch: if_method_name) do |if_node, else_node|
+            if ON_ARCH_OPTIONS.include?(on_system_option)
+              if_arch_node_search(body_node, arch: method_info[:if_method]) do |if_node, else_node|
                 else_info = if else_node.present?
                   {
                     can_autocorrect:  true,
@@ -472,8 +500,8 @@ module RuboCop
 
                 if_nodes_to_check << [if_node, else_info]
               end
-            elsif on_base_os_options.include?(on_system_option)
-              if_base_os_node_search(body_node, base_os: if_method_name) do |if_node, else_node|
+            elsif ON_BASE_OS_OPTIONS.include?(on_system_option)
+              if_base_os_node_search(body_node, base_os: method_info[:if_method]) do |if_node, else_node|
                 else_info = if else_node.present?
                   {
                     can_autocorrect:  true,
@@ -486,10 +514,16 @@ module RuboCop
               end
             else
               if_macos_version_node_search(body_node, os_name: on_system_option) do |if_node, operator, else_node|
-                if operator != :== && MACOS_VERSION_CONDITIONALS.key?(operator.to_s)
-                  on_system_method_string = "#{on_system_method} :#{MACOS_VERSION_CONDITIONALS[operator.to_s]}"
+                if operator == :<
+                  method_info[:on_system_string] = "on_system"
+                elsif operator == :<=
+                  method_info[:on_system_string] = "on_system :linux, macos: :#{on_system_option}_or_older"
+                elsif operator != :== && MACOS_VERSION_CONDITIONALS.key?(operator.to_s)
+                  method_info[:on_system_string] = "#{method_info[:method]} " \
+                                                   ":#{MACOS_VERSION_CONDITIONALS[operator.to_s]}"
                 end
-                if_statement_string = "if #{if_module_name}.#{if_method_name} #{operator} :#{on_system_option}"
+                method_info[:if_string] = "if #{method_info[:if_module]}.#{method_info[:if_method]} #{operator} " \
+                                          ":#{on_system_option}"
                 if else_node.present? || !MACOS_VERSION_CONDITIONALS.key?(operator.to_s)
                   else_info = { can_autocorrect: false }
                 end
@@ -519,8 +553,8 @@ module RuboCop
 
               offending_node(if_node)
 
-              problem "Don't use `#{if_statement_string}`, " \
-                      "use `#{on_system_method_string} do` instead." do |corrector|
+              problem "Don't use `#{method_info[:if_string]}`, " \
+                      "use `#{method_info[:on_system_string]} do` instead." do |corrector|
                 # TODO: could fix corrector to handle this but punting for now.
                 next if if_node.unless?
 
@@ -528,11 +562,11 @@ module RuboCop
                   next unless else_info[:can_autocorrect]
 
                   corrector.replace(if_node.source_range,
-                                    "#{on_system_method_string} do\n#{if_node.body.source}\nend\n" \
+                                    "#{method_info[:on_system_string]} do\n#{if_node.body.source}\nend\n" \
                                     "#{else_info[:on_system_method]} do\n#{else_info[:node].source}\nend")
                 else
                   corrector.replace(if_node.source_range,
-                                    "#{on_system_method_string} do\n#{if_node.body.source}\nend")
+                                    "#{method_info[:on_system_string]} do\n#{if_node.body.source}\nend")
                 end
               end
             end
@@ -541,6 +575,10 @@ module RuboCop
 
         def_node_matcher :on_macos_version_method_call, <<~PATTERN
           (send nil? %on_method (sym ${:or_newer :or_older})?)
+        PATTERN
+
+        def_node_matcher :on_system_method_call, <<~PATTERN
+          (send nil? :on_system (sym :linux) (hash (pair (sym :macos) (sym $_))))
         PATTERN
 
         def_node_search :if_arch_node_search, <<~PATTERN

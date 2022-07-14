@@ -315,7 +315,7 @@ describe RuboCop::Cop::FormulaAudit::OnSystemConditionals do
         class Foo < Formula
           desc "foo"
           if MacOS.version <= :monterey
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Don't use `if MacOS.version <= :monterey`, use `on_monterey :or_older do` instead.
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Don't use `if MacOS.version <= :monterey`, use `on_system :linux, macos: :monterey_or_older do` instead.
             url 'https://brew.sh/mac-1.0.tgz'
           end
         end
@@ -324,7 +324,7 @@ describe RuboCop::Cop::FormulaAudit::OnSystemConditionals do
       expect_correction(<<~RUBY)
         class Foo < Formula
           desc "foo"
-          on_monterey :or_older do
+          on_system :linux, macos: :monterey_or_older do
         url 'https://brew.sh/mac-1.0.tgz'
         end
         end
@@ -336,7 +336,7 @@ describe RuboCop::Cop::FormulaAudit::OnSystemConditionals do
         class Foo < Formula
           desc "foo"
           if MacOS.version < :monterey
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Don't use `if MacOS.version < :monterey`, use `on_monterey do` instead.
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Don't use `if MacOS.version < :monterey`, use `on_system do` instead.
             url 'https://brew.sh/mac-1.0.tgz'
           end
         end
@@ -456,6 +456,35 @@ describe RuboCop::Cop::FormulaAudit::OnSystemConditionals do
       RUBY
     end
 
+    it "reports an offense when `on_system :linux, macos: :monterey_or_newer` is used in install method" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          def install
+            on_system :linux, macos: :monterey_or_newer do
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Don't use `on_system :linux, macos: :monterey_or_newer` in `def install`, use `if OS.linux? || MacOS.version >= :monterey` instead.
+              true
+            end
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          def install
+            if OS.linux? || MacOS.version >= :monterey
+              true
+            end
+          end
+        end
+      RUBY
+    end
+
     it "reports an offense when `on_monterey` is used in test block" do
       expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
         class Foo < Formula
@@ -478,6 +507,35 @@ describe RuboCop::Cop::FormulaAudit::OnSystemConditionals do
 
           test do
             if MacOS.version == :monterey
+              true
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "reports an offense when `on_system :linux, macos: :monterey` is used in test block" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          test do
+            on_system :linux, macos: :monterey do
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Don't use `on_system :linux, macos: :monterey` in `test do`, use `if OS.linux? || MacOS.version == :monterey` instead.
+              true
+            end
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          desc "foo"
+          url 'https://brew.sh/foo-1.0.tgz'
+
+          test do
+            if OS.linux? || MacOS.version == :monterey
               true
             end
           end

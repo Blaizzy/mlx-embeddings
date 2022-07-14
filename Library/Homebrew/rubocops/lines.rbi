@@ -7,6 +7,9 @@ module RuboCop
         sig { params(node: T.any, on_method: Symbol, block: T.proc.params(parameters: T::Array[T.any]).void).void }
         def on_macos_version_method_call(node, on_method:, &block); end
 
+        sig { params(node: T.any, block: T.proc.params(macos_symbol: Symbol).void).void }
+        def on_system_method_call(node, &block); end
+
         sig { params(node: T.any, arch: Symbol, block: T.proc.params(node: T.any, else_node: T.any).void).void }
         def if_arch_node_search(node, arch:, &block); end
 
