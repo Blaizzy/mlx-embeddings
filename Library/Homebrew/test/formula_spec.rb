@@ -446,40 +446,133 @@ describe Formula do
     end
   end
 
-  describe "::installed_formulae_with_no_formula_dependents" do
-    let(:formula_is_dep) do
-      formula "foo" do
-        url "foo-1.1"
+  shared_context "with formulae for dependency testing" do
+    let(:formula_with_deps) do
+      formula "zero" do
+        url "zero-1.0"
       end
     end
 
-    let(:formula_with_deps) do
-      formula "bar" do
-        url "bar-1.0"
+    let(:formula_is_dep1) do
+      formula "one" do
+        url "one-1.1"
+      end
+    end
+
+    let(:formula_is_dep2) do
+      formula "two" do
+        url "two-1.1"
       end
     end
 
     let(:formulae) do
       [
         formula_with_deps,
-        formula_is_dep,
+        formula_is_dep1,
+        formula_is_dep2,
       ]
     end
 
     before do
-      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([formula_is_dep])
+      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([formula_is_dep1,
+                                                                                     formula_is_dep2])
+      allow(formula_is_dep1).to receive(:runtime_formula_dependencies).and_return([formula_is_dep2])
     end
+  end
 
-    specify "without formulae parameter" do
-      allow(described_class).to receive(:installed).and_return(formulae)
+  describe "::formulae_with_no_formula_dependents" do
+    include_context "with formulae for dependency testing"
 
-      expect(described_class.installed_formulae_with_no_formula_dependents)
+    it "filters out dependencies" do
+      expect(described_class.formulae_with_no_formula_dependents(formulae))
           .to eq([formula_with_deps])
     end
+  end
 
-    specify "with formulae parameter" do
-      expect(described_class.installed_formulae_with_no_formula_dependents(formulae))
-          .to eq([formula_with_deps])
+  describe "::unused_formulae_with_no_formula_dependents" do
+    include_context "with formulae for dependency testing"
+
+    let(:tab_from_keg) { double }
+
+    before do
+      allow(Tab).to receive(:for_keg).and_return(tab_from_keg)
+    end
+
+    specify "installed on request" do
+      allow(tab_from_keg).to receive(:installed_on_request).and_return(true)
+      expect(described_class.unused_formulae_with_no_formula_dependents(formulae))
+          .to eq([])
+    end
+
+    specify "not installed on request" do
+      allow(tab_from_keg).to receive(:installed_on_request).and_return(false)
+      expect(described_class.unused_formulae_with_no_formula_dependents(formulae))
+          .to eq(formulae)
+    end
+  end
+
+  shared_context "with formulae and casks for dependency testing" do
+    include_context "with formulae for dependency testing"
+
+    require "cask/cask_loader"
+
+    let(:cask_one_dep) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "red" do
+          depends_on formula: "two"
+        end
+      RUBY
+    end
+
+    let(:cask_multiple_deps) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "blue" do
+          depends_on formula: "zero"
+        end
+      RUBY
+    end
+
+    let(:cask_no_deps1) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "green" do
+        end
+      RUBY
+    end
+
+    let(:cask_no_deps2) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "purple" do
+        end
+      RUBY
+    end
+
+    let(:casks_no_deps) { [cask_no_deps1, cask_no_deps2] }
+    let(:casks_one_dep) { [cask_no_deps1, cask_no_deps2, cask_one_dep] }
+    let(:casks_multiple_deps) { [cask_no_deps1, cask_no_deps2, cask_multiple_deps] }
+
+    before do
+      allow(described_class).to receive("[]").with("zero").and_return(formula_with_deps)
+      allow(described_class).to receive("[]").with("one").and_return(formula_is_dep1)
+      allow(described_class).to receive("[]").with("two").and_return(formula_is_dep2)
+    end
+  end
+
+  describe "::formulae_with_cask_dependents" do
+    include_context "with formulae and casks for dependency testing"
+
+    specify "no dependents" do
+      expect(described_class.formulae_with_cask_dependents(casks_no_deps))
+        .to eq([])
+    end
+
+    specify "one dependent" do
+      expect(described_class.formulae_with_cask_dependents(casks_one_dep))
+        .to eq([formula_is_dep2])
+    end
+
+    specify "multiple dependents" do
+      expect(described_class.formulae_with_cask_dependents(casks_multiple_deps))
+        .to eq(formulae)
     end
   end
 
