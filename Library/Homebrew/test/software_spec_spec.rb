@@ -171,5 +171,12 @@ describe SoftwareSpec do
       expect(spec.patches.count).to eq(1)
       expect(spec.patches.first.strip).to eq(:p1)
     end
+
+    it "doesn't add a patch with no url" do
+      spec.patch do
+        sha256 "7852a7a365f518b12a1afd763a6a80ece88ac7aeea3c9023aa6c1fe46ac5a1ae"
+      end
+      expect(spec.patches.empty?).to be true
+    end
   end
 end
