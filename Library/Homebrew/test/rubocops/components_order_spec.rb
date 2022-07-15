@@ -679,6 +679,130 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
+    it "reports an offense when a single `patch` block is inside the `on_arm` block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          on_arm do
+          ^^^^^^^^^ Nest `on_arm` blocks inside `patch` blocks when there is only one inner block.
+            patch do
+              url "https://brew.sh/patch1.tar.gz"
+              sha256 "2c39089f64d9d4c3e632f120894b36b68dcc8ae8c6f5130c0c2e6f5bb7aebf2f"
+            end
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+              patch do
+        on_arm do
+              url "https://brew.sh/patch1.tar.gz"
+              sha256 "2c39089f64d9d4c3e632f120894b36b68dcc8ae8c6f5130c0c2e6f5bb7aebf2f"
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "reports an offense when a single `resource` block is inside the `on_linux` block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          on_linux do
+          ^^^^^^^^^^^ Nest `on_linux` blocks inside `resource` blocks when there is only one inner block.
+            resource do
+              url "https://brew.sh/resource1.tar.gz"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+              resource do
+        on_linux do
+              url "https://brew.sh/resource1.tar.gz"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "reports an offense when a single `patch` block is inside the `on_monterey :or_newer` block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          on_monterey :or_newer do
+          ^^^^^^^^^^^^^^^^^^^^^^^^ Nest `on_monterey` blocks inside `patch` blocks when there is only one inner block.
+            patch do
+              url "https://brew.sh/patch1.tar.gz"
+              sha256 "2c39089f64d9d4c3e632f120894b36b68dcc8ae8c6f5130c0c2e6f5bb7aebf2f"
+            end
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+              patch do
+        on_monterey :or_newer do
+              url "https://brew.sh/patch1.tar.gz"
+              sha256 "2c39089f64d9d4c3e632f120894b36b68dcc8ae8c6f5130c0c2e6f5bb7aebf2f"
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "reports an offense when a single `resource` block is inside the `on_system` block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          on_system :linux, macos: :monterey_or_older do
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Nest `on_system` blocks inside `resource` blocks when there is only one inner block.
+            resource do
+              url "https://brew.sh/resource1.tar.gz"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+              resource do
+        on_system :linux, macos: :monterey_or_older do
+              url "https://brew.sh/resource1.tar.gz"
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+            end
+          end
+        end
+      RUBY
+    end
+
+    it "reports no offenses when a single `on_arm` block is inside the `on_macos` block" do
+      expect_no_offenses(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          on_macos do
+            on_arm do
+              resource do
+                url "https://brew.sh/resource1.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              end
+            end
+          end
+        end
+      RUBY
+    end
+
     context "when in a resource block" do
       it "reports no offenses for a valid `on_macos` and `on_linux` block" do
         expect_no_offenses(<<~RUBY)
