@@ -24,19 +24,52 @@ module Warning
 
     # Map of action symbols to procs that return the symbol
     ACTION_PROC_MAP = {
+      raise: proc{|_| :raise},
       default: proc{|_| :default},
       backtrace: proc{|_| :backtrace},
-      raise: proc{|_| :raise},
     }
     private_constant :ACTION_PROC_MAP
 
     # Clear all current ignored warnings, warning processors, and duplicate check cache.
     # Also disables deduplicating warnings if that is currently enabled.
+    #
+    # If a block is passed, the previous values are restored after the block exits.
+    #
+    # Examples:
+    #
+    #   # Clear warning state
+    #   Warning.clear
+    #
+    #   Warning.clear do
+    #     # Clear warning state inside the block
+    #     ...
+    #   end
+    #   # Previous warning state restored when block exists
     def clear
-      synchronize do
-        @ignore.clear
-        @process.clear
-        @dedup = false
+      if block_given?
+        ignore = process = dedup = nil
+        synchronize do
+          ignore = @ignore.dup
+          process = @process.dup
+          dedup = @dedup.dup
+        end
+
+        begin
+          clear
+          yield
+        ensure
+          synchronize do
+            @ignore = ignore
+            @process = process
+            @dedup = dedup
+          end
+        end
+      else
+        synchronize do
+          @ignore.clear
+          @process.clear
+          @dedup = false
+        end
       end
     end
 
@@ -144,6 +177,10 @@ module Warning
     #
     #   Warning.process(__FILE__, :missing_ivar=>:backtrace, :keyword_separation=>:raise)
     def process(path='', actions=nil, &block)
+      unless path.is_a?(String)
+        raise ArgumentError, "path must be a String (given an instance of #{path.class})"
+      end
+
       if block
         if actions
           raise ArgumentError, "cannot pass both actions and block to Warning.process"
@@ -173,14 +210,16 @@ module Warning
     if RUBY_VERSION >= '3.0'
       method_args = ', category: nil'
       super_ = "category ? super : super(str)"
+    # :nocov:
     else
       super_ = "super"
+    # :nocov:
     end
 
     class_eval(<<-END, __FILE__, __LINE__+1)
       def warn(str#{method_args})
         synchronize{@ignore.dup}.each do |path, regexp|
-          if str.start_with?(path) && str =~ regexp
+          if str.start_with?(path) && regexp.match?(str)
             return
           end
         end
@@ -198,7 +237,7 @@ module Warning
             if str.start_with?(path)
               if block.is_a?(Hash)
                 block.each do |regexp, blk|
-                  if str =~ regexp
+                  if regexp.match?(str)
                     throw :action, blk.call(str)
                   end
                 end
