@@ -162,7 +162,6 @@ GEM
     sorbet (0.5.10160)
       sorbet-static (= 0.5.10160)
     sorbet-runtime (0.5.10160)
-    sorbet-runtime-stub (0.2.0)
     sorbet-static (0.5.10160-universal-darwin-14)
     sorbet-static-and-runtime (0.5.10160)
       sorbet (= 0.5.10160)
@@ -235,7 +234,7 @@ DEPENDENCIES
   ruby-macho
   simplecov
   simplecov-cobertura
-  sorbet-runtime-stub
+  sorbet-runtime
   sorbet-static-and-runtime
   tapioca
   warning
