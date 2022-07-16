@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt
+#!/usr/bin/env ruby
 # typed: true
 # frozen_string_literal: true
 

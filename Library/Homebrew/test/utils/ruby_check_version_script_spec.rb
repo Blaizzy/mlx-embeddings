@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 describe Utils do
-  describe "ruby_check_version_script", :needs_linux do
+  describe "ruby_check_version_script" do
     subject do
       quiet_system "#{HOMEBREW_LIBRARY_PATH}/utils/ruby_check_version_script.rb", required_ruby_version
     end
