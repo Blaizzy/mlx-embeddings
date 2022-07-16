@@ -82,6 +82,7 @@ module RuboCop
           git
           groff
           gzip
+          less
           openssl
           perl
           php
