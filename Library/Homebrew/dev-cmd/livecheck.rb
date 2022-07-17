@@ -35,6 +35,8 @@ module Homebrew
              description: "Show the latest version only if it's newer than the formula/cask."
       switch "--json",
              description: "Output information in JSON format."
+      switch "-r", "--resources",
+             description: "Check resources with livecheck blocks."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
       switch "--formula", "--formulae",
