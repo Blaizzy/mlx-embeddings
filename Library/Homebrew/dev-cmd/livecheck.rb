@@ -69,6 +69,14 @@ module Homebrew
       formulae = args.cask? ? [] : Formula.installed
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
+    elsif args.resources?
+      resources = Formula.all do |formula|
+        formula.resources.any do |resource|
+          if resource.livecheckable?
+            p resource
+          end
+        end
+      end
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
@@ -95,6 +103,11 @@ module Homebrew
     else
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
+    p formulae_and_casks_to_check.class
+    p formulae_and_casks_to_check.length
+    p formulae_and_casks_to_check[0].class
+    p formulae_and_casks_to_check[0]
+
     formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
       formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
@@ -111,6 +124,6 @@ module Homebrew
       verbose:              args.verbose?,
     }.compact
 
-    Livecheck.run_checks(formulae_and_casks_to_check, **options)
+    # Livecheck.run_checks(formulae_and_casks_to_check, **options)
   end
 end
