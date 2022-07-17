@@ -73,10 +73,12 @@ module Homebrew
       resources = Formula.all do |formula|
         formula.resources.any do |resource|
           if resource.livecheckable?
-            p resource
+            resource
           end
         end
+        # formula.resources.filter? { |resource| !resource.livecheckable? }
       end
+      resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
