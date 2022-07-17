@@ -1946,7 +1946,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* `300`.
 
 - `HOMEBREW_AUTOREMOVE`
-  <br>If set, calls to `brew install`, `brew upgrade`, `brew reinstall` and `brew uninstall` will automatically remove unused formula dependents.
+  <br>If set, calls to `brew cleanup` and `brew uninstall` will automatically remove unused formula dependents and if HOMEBREW_NO_INSTALL_CLEANUP is not set, `brew cleanup` will start running `brew autoremove` periodically.
 
 - `HOMEBREW_BAT`
   <br>If set, use `bat` for the `brew cat` command.
@@ -2128,7 +2128,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running `brew install *`formula`*` or `brew upgrade *`formula`*`.
 
 - `HOMEBREW_NO_CLEANUP_FORMULAE`
-  <br>A comma-separated list of formulae. Homebrew will refuse to clean up a formula if it appears on this list.
+  <br>A comma-separated list of formulae. Homebrew will refuse to clean up or autoremove a formula if it appears on this list.
 
 - `HOMEBREW_NO_COLOR`
   <br>If set, do not print text with colour added.

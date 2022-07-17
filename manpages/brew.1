@@ -2760,7 +2760,7 @@ Run \fBbrew update\fR once every \fBHOMEBREW_AUTO_UPDATE_SECS\fR seconds before 
 \fBHOMEBREW_AUTOREMOVE\fR
 .
 .br
-If set, calls to \fBbrew install\fR, \fBbrew upgrade\fR, \fBbrew reinstall\fR and \fBbrew uninstall\fR will automatically remove unused formula dependents\.
+If set, calls to \fBbrew cleanup\fR and \fBbrew uninstall\fR will automatically remove unused formula dependents and if HOMEBREW_NO_INSTALL_CLEANUP is not set, \fBbrew cleanup\fR will start running \fBbrew autoremove\fR periodically\.
 .
 .TP
 \fBHOMEBREW_BAT\fR
@@ -3102,7 +3102,7 @@ If set, do not check for broken linkage of dependents or outdated dependents aft
 \fBHOMEBREW_NO_CLEANUP_FORMULAE\fR
 .
 .br
-A comma\-separated list of formulae\. Homebrew will refuse to clean up a formula if it appears on this list\.
+A comma\-separated list of formulae\. Homebrew will refuse to clean up or autoremove a formula if it appears on this list\.
 .
 .TP
 \fBHOMEBREW_NO_COLOR\fR

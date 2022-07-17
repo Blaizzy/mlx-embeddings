@@ -37,8 +37,9 @@ module Homebrew
         default:     300,
       },
       HOMEBREW_AUTOREMOVE:                       {
-        description: "If set, calls to `brew install`, `brew upgrade`, `brew reinstall` and `brew uninstall` " \
-                     "will automatically remove unused formula dependents.",
+        description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
+                     "remove unused formula dependents and if HOMEBREW_NO_INSTALL_CLEANUP is not set, " \
+                     "`brew cleanup` will start running `brew autoremove` periodically.",
         boolean:     true,
       },
       HOMEBREW_BAT:                              {
@@ -268,8 +269,8 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_CLEANUP_FORMULAE:              {
-        description: "A comma-separated list of formulae. Homebrew will refuse to clean up a " \
-                     "formula if it appears on this list.",
+        description: "A comma-separated list of formulae. Homebrew will refuse to clean up " \
+                     "or autoremove a formula if it appears on this list.",
       },
       HOMEBREW_NO_COLOR:                         {
         description:  "If set, do not print text with colour added.",
