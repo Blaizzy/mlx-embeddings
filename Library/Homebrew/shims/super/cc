@@ -292,6 +292,8 @@ class Cmd
     args.concat(optflags) unless runtime_cpu_detection?
     args.concat(archflags)
     args << "-std=#{@arg0}" if /c[89]9/.match?(@arg0)
+    # Add -nostdinc when building against glibc@2.13 to avoid mixing system and brewed glibc headers.
+    args << "-nostdinc" if @deps.include?("glibc@2.13")
     args
   end
 
@@ -326,6 +328,9 @@ class Cmd
     end
     args += rpath_flags("#{wl}-rpath=", rpath_paths)
     args += ["#{wl}--dynamic-linker=#{dynamic_linker_path}"] if dynamic_linker_path
+    # Use -rpath-link to make sure linker uses glibc@2.13 rather than the system glibc for indirect
+    # dependencies because -L will only handle direct dependencies.
+    args << "#{wl}-rpath-link=#{@opt}/glibc@2.13/lib" if @deps.include?("glibc@2.13")
     args
   end
 
