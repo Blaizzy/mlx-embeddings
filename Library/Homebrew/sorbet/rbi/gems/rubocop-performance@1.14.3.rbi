@@ -6,6 +6,7 @@
 
 module RuboCop; end
 module RuboCop::Cop; end
+RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 module RuboCop::Cop::Performance; end
 
 class RuboCop::Cop::Performance::AncestorsInclude < ::RuboCop::Cop::Base
