@@ -17,7 +17,7 @@ test_ruby() {
 # HOMEBREW_PATH is set by global.rb
 # shellcheck disable=SC2154
 find_ruby() {
-  if [[ -n "${HOMEBREW_MACOS}" ]]
+  if [[ -n "${HOMEBREW_MACOS}" && -z "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
   then
     echo "/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
   else

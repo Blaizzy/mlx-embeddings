@@ -64,7 +64,7 @@ class Formula
   include Utils::Shebang
   include Utils::Shell
   include Context
-  include OnSystem
+  include OnSystem::MacOSAndLinux
   extend Forwardable
   extend Cachable
   extend Predicable
@@ -2470,7 +2470,7 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     include BuildEnvironment::DSL
-    include OnSystem
+    include OnSystem::MacOSAndLinux
 
     def method_added(method)
       super

@@ -41,6 +41,8 @@ module OnSystem
       raise ArgumentError, "Invalid OS `or_*` condition: #{or_condition.inspect}"
     end
 
+    return false if Homebrew::SimulateSystem.linux? || (Homebrew::SimulateSystem.none? && OS.linux?)
+
     base_os = MacOS::Version.from_symbol(os_name)
     current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.os || MacOS.version.to_sym)
 
@@ -56,7 +58,7 @@ module OnSystem
   end
 
   sig { params(base: Class).void }
-  def self.included(base)
+  def setup_arch_methods(base)
     ARCH_OPTIONS.each do |arch|
       base.define_method("on_#{arch}") do |&block|
         @on_system_blocks_exist = true
@@ -70,7 +72,10 @@ module OnSystem
         result
       end
     end
+  end
 
+  sig { params(base: Class).void }
+  def setup_base_os_methods(base)
     BASE_OS_OPTIONS.each do |base_os|
       base.define_method("on_#{base_os}") do |&block|
         @on_system_blocks_exist = true
@@ -85,6 +90,28 @@ module OnSystem
       end
     end
 
+    base.define_method(:on_system) do |linux, macos:, &block|
+      @on_system_blocks_exist = true
+
+      raise ArgumentError, "The first argument to `on_system` must be `:linux`" if linux != :linux
+
+      os_version, or_condition = if macos.to_s.include?("_or_")
+        macos.to_s.split(/_(?=or_)/).map(&:to_sym)
+      else
+        [macos.to_sym, nil]
+      end
+      return if !OnSystem.os_condition_met?(os_version, or_condition) && !OnSystem.os_condition_met?(:linux)
+
+      @called_in_on_system_block = true
+      result = block.call
+      @called_in_on_system_block = false
+
+      result
+    end
+  end
+
+  sig { params(base: Class).void }
+  def setup_macos_methods(base)
     MacOSVersions::SYMBOLS.each_key do |os_name|
       base.define_method("on_#{os_name}") do |or_condition = nil, &block|
         @on_system_blocks_exist = true
@@ -98,6 +125,32 @@ module OnSystem
 
         result
       end
+    end
+  end
+
+  sig { params(_base: Class).void }
+  def self.included(_base)
+    raise "Do not include `OnSystem` directly. Instead, include `OnSystem::MacOSAndLinux` or `OnSystem::MacOSOnly`"
+  end
+
+  module MacOSAndLinux
+    extend T::Sig
+
+    sig { params(base: Class).void }
+    def self.included(base)
+      OnSystem.setup_arch_methods(base)
+      OnSystem.setup_base_os_methods(base)
+      OnSystem.setup_macos_methods(base)
+    end
+  end
+
+  module MacOSOnly
+    extend T::Sig
+
+    sig { params(base: Class).void }
+    def self.included(base)
+      OnSystem.setup_arch_methods(base)
+      OnSystem.setup_macos_methods(base)
     end
   end
 end

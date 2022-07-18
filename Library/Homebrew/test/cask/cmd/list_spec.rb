@@ -246,7 +246,7 @@ describe Cask::Cmd::List, :cask do
         ]
       EOS
     }
-    let(:original_macos_version) { MacOS.full_version.to_s }
+    let!(:original_macos_version) { MacOS.full_version.to_s }
 
     before do
       # Use a more limited symbols list to shorten the variations hash

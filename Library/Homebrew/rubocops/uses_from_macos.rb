@@ -43,6 +43,7 @@ module RuboCop
           net-snmp
           netcat
           openldap
+          pax
           pcsc-lite
           pod2man
           rpcgen
@@ -81,6 +82,7 @@ module RuboCop
           git
           groff
           gzip
+          less
           openssl
           perl
           php

@@ -367,12 +367,8 @@ class Keg
     []
   end
 
-  def self.relocation_formulae
-    []
-  end
-
   def self.bottle_dependencies
-    relocation_formulae
+    []
   end
 end
 

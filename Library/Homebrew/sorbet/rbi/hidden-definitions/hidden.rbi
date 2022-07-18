@@ -24,10 +24,6 @@ module ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
 end
 
-module ActiveSupport::VERSION
-  PRE = ::T.let(nil, ::T.untyped)
-end
-
 class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
@@ -3607,6 +3603,16 @@ class Object
   def self.yaml_tag(url); end
 end
 
+module OnSystem::MacOSAndLinux
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+module OnSystem::MacOSOnly
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module OnSystem
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -4350,6 +4356,8 @@ class Resource
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
 
+  def on_system(linux, macos:, &block); end
+
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
 
@@ -4949,16 +4957,9 @@ end
 module RuboCop::AST::NodePattern::Sets
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
-  SET_EXIST_EXISTS = ::T.let(nil, ::T.untyped)
-  SET_FILETEST_FILE_DIR_SHELL = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
-  SET__EQL_ = ::T.let(nil, ::T.untyped)
-  SET__FETCH = ::T.let(nil, ::T.untyped)
-  SET___EQL_ETC = ::T.let(nil, ::T.untyped)
-  SET___EQL_INCLUDE = ::T.let(nil, ::T.untyped)
-  SET_____2 = ::T.let(nil, ::T.untyped)
 end
 
 class RuboCop::Cask::AST::CaskHeader

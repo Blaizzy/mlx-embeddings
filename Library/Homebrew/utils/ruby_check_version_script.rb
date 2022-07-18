@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt
+#!/usr/bin/env ruby
 # typed: true
 # frozen_string_literal: true
 
@@ -17,7 +17,11 @@ ruby_version_major, ruby_version_minor, = ruby_version.canonical_segments
 homebrew_required_ruby_version_major, homebrew_required_ruby_version_minor, =
   homebrew_required_ruby_version.canonical_segments
 
-if ruby_version_major != homebrew_required_ruby_version_major ||
-   ruby_version_minor != homebrew_required_ruby_version_minor
+if !ENV.fetch("HOMEBREW_DEVELOPER", "").empty? &&
+   !ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty? &&
+   ruby_version >= homebrew_required_ruby_version
+  return
+elsif ruby_version_major != homebrew_required_ruby_version_major ||
+      ruby_version_minor != homebrew_required_ruby_version_minor
   abort
 end

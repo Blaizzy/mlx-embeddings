@@ -577,9 +577,8 @@ class FormulaInstaller
     unsatisfied_reqs
   end
 
-  def expand_dependencies
-    inherited_options = Hash.new { |hash, key| hash[key] = Options.new }
-    pour_bottle = pour_bottle?
+  def expand_dependencies_for_formula(formula, inherited_options)
+    any_bottle_used = false
 
     # Cache for this expansion only. FormulaInstaller has a lot of inputs which can alter expansion.
     cache_key = "FormulaInstaller-#{formula.full_name}-#{Time.now.to_f}"
@@ -600,26 +599,34 @@ class FormulaInstaller
       elsif dep.satisfied?(inherited_options[dep.name])
         Dependency.skip
       else
-        pour_bottle ||= install_bottle_for?(dep.to_formula, build)
+        any_bottle_used ||= install_bottle_for?(dep.to_formula, build)
       end
     end
 
+    [expanded_deps, any_bottle_used]
+  end
+
+  def expand_dependencies
+    inherited_options = Hash.new { |hash, key| hash[key] = Options.new }
+    any_bottle_used = pour_bottle?
+
+    expanded_deps, any_dep_bottle_used = expand_dependencies_for_formula(formula, inherited_options)
+    any_bottle_used ||= any_dep_bottle_used
+
     # We require some dependencies (glibc, GCC 5, etc.) if binaries were built.
     # Native binaries shouldn't exist in cross-platform `all` bottles.
-    if pour_bottle && !formula.bottled?(:all) && !Keg.bottle_dependencies.empty?
-      bottle_deps = if Keg.bottle_dependencies.exclude?(formula.name)
-        Keg.bottle_dependencies
-      elsif Keg.relocation_formulae.exclude?(formula.name)
-        Keg.relocation_formulae
-      else
-        []
+    if any_bottle_used && !formula.bottled?(:all) && !Keg.bottle_dependencies.empty?
+      all_bottle_deps = Keg.bottle_dependencies.flat_map do |bottle_dep|
+        bottle_dep.recursive_dependencies.map(&:name) + [bottle_dep.name]
       end
-      bottle_deps = bottle_deps.map { |formula| Dependency.new(formula) }
-                               .reject do |dep|
-        inherited_options[dep.name] |= inherited_options_for(dep)
-        dep.satisfied? inherited_options[dep.name]
+
+      if all_bottle_deps.exclude?(formula.name)
+        bottle_deps = Keg.bottle_dependencies.flat_map do |bottle_dep|
+          expanded_bottle_deps, = expand_dependencies_for_formula(bottle_dep, inherited_options)
+          expanded_bottle_deps
+        end
+        expanded_deps = Dependency.merge_repeats(bottle_deps + expanded_deps)
       end
-      expanded_deps = Dependency.merge_repeats(bottle_deps + expanded_deps)
     end
 
     expanded_deps.map { |dep| [dep, inherited_options[dep.name]] }
