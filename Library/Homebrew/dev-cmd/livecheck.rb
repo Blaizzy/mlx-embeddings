@@ -70,16 +70,8 @@ module Homebrew
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
     elsif args.resources?
-      formulae = Formula.all
-      resources = formulae do |formula|
-        formula.resources.each do |resource|
-          if resource.livecheckable?
-            resource
-          end
-        end
-        # formula.resources.filter? { |resource| !resource.livecheckable? }
-      end
-      resources
+      livecheckable_resources = Formula.all.select { |formula| formula.resources.any? { |resource| resource.livecheckable? } }
+      livecheckable_resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
