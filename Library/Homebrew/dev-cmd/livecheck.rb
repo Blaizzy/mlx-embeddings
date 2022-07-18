@@ -70,8 +70,7 @@ module Homebrew
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
     elsif args.resources?
-      formula_with_livecheckable_resources = Formula.all.select { |formula| formula.resources.any? { |resource| resource.livecheckable? } }
-      livecheckable_resources = formula_with_livecheckable_resources.map { |formula| formula.resources }.flatten.filter{ |resource| resource.livecheckable? }
+      livecheckable_resources = Formula.all.map { |formula| formula.resources }.flatten.filter{ |resource| resource.livecheckable? }
       livecheckable_resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
@@ -121,6 +120,6 @@ module Homebrew
       verbose:              args.verbose?,
     }.compact
 
-    # Livecheck.run_checks(formulae_and_casks_to_check, **options)
+    Livecheck.run_checks(formulae_and_casks_to_check, **options)
   end
 end
