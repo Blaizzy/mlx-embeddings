@@ -71,8 +71,7 @@ module Homebrew
       formulae + casks
     elsif args.resources?
       formula_with_livecheckable_resources = Formula.all.select { |formula| formula.resources.any? { |resource| resource.livecheckable? } }
-      livecheckable_resources = formula_with_livecheckable_resources.map { |formula| formula.resources }
-      # livecheckable_resources = formula_with_livecheckable_resources.map { |formula| formula.resources.filter { |resource| resource.livecheckable? } }
+      livecheckable_resources = formula_with_livecheckable_resources.map { |formula| formula.resources }.flatten.filter{ |resource| resource.livecheckable? }
       livecheckable_resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
@@ -104,7 +103,7 @@ module Homebrew
     p formulae_and_casks_to_check.class
     p formulae_and_casks_to_check.length
     p formulae_and_casks_to_check[0].class
-    p formulae_and_casks_to_check[0]
+    # p formulae_and_casks_to_check[0]
 
     formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
       formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
