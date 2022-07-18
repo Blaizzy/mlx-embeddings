@@ -102,7 +102,7 @@ module Homebrew
     p formulae_and_casks_to_check.class
     p formulae_and_casks_to_check.length
     p formulae_and_casks_to_check[0].class
-    # p formulae_and_casks_to_check[0]
+    p formulae_and_casks_to_check.map { |d| d.name }
 
     formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
       formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
@@ -120,6 +120,6 @@ module Homebrew
       verbose:              args.verbose?,
     }.compact
 
-    Livecheck.run_checks(formulae_and_casks_to_check, **options)
+    # Livecheck.run_checks(formulae_and_casks_to_check, **options)
   end
 end
