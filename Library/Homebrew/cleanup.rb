@@ -171,13 +171,18 @@ module Homebrew
       Cleanup.new.cleanup_formula(f)
     end
 
-    def self.puts_no_install_cleanup_disable_message_if_not_already!
+    def self.puts_no_install_cleanup_disable_message
       return if Homebrew::EnvConfig.no_env_hints?
       return if Homebrew::EnvConfig.no_install_cleanup?
-      return if @puts_no_install_cleanup_disable_message_if_not_already
 
       puts "Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP."
       puts "Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`)."
+    end
+
+    def self.puts_no_install_cleanup_disable_message_if_not_already!
+      return if @puts_no_install_cleanup_disable_message_if_not_already
+
+      puts_no_install_cleanup_disable_message
       @puts_no_install_cleanup_disable_message_if_not_already = true
     end
 
@@ -210,7 +215,7 @@ module Homebrew
         oh1 "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
       end
 
-      puts_no_install_cleanup_disable_message_if_not_already!
+      puts_no_install_cleanup_disable_message
       return if dry_run
 
       Cleanup.new.clean!(quiet: true, periodic: true)
