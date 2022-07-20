@@ -3,6 +3,18 @@
 
 # The top level module for TZInfo.
 module TZInfo
+  class << self
+    # Instructs the current {DataSource} to load all timezone and country data
+    # into memory (initializing the {DataSource} first if not previously
+    # accessed or set).
+    #
+    # This may be desirable in production environments to improve copy-on-write
+    # performance and to avoid flushing the constant cache every time a new
+    # timezone or country is loaded from {DataSources::RubyDataSource}.
+    def eager_load!
+      DataSource.get.eager_load!
+    end
+  end
 end
 
 # Object#untaint is a deprecated no-op in Ruby >= 2.7 and will be removed in

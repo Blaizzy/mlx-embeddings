@@ -3,5 +3,5 @@
 
 module TZInfo
   # The TZInfo version number.
-  VERSION = '2.0.4'
+  VERSION = '2.0.5'
 end

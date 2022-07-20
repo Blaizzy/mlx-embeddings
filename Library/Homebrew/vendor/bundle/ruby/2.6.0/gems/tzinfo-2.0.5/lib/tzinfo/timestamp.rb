@@ -3,10 +3,11 @@
 
 module TZInfo
   # A time represented as an `Integer` number of seconds since 1970-01-01
-  # 00:00:00 UTC (ignoring leap seconds), the fraction through the second
-  # (sub_second as a `Rational`) and an optional UTC offset. Like Ruby's `Time`
-  # class, {Timestamp} can distinguish between a local time with a zero offset
-  # and a time specified explicitly as UTC.
+  # 00:00:00 UTC (ignoring leap seconds and using the proleptic Gregorian
+  # calendar), the fraction through the second (sub_second as a `Rational`) and
+  # an optional UTC offset. Like Ruby's `Time` class, {Timestamp} can
+  # distinguish between a local time with a zero offset and a time specified
+  # explicitly as UTC.
   class Timestamp
     include Comparable
 
@@ -16,8 +17,8 @@ module TZInfo
     private_constant :JD_EPOCH
 
     class << self
-      # Returns a new {Timestamp} representing the (Gregorian calendar) date and
-      # time specified by the supplied parameters.
+      # Returns a new {Timestamp} representing the (proleptic Gregorian
+      # calendar) date and time specified by the supplied parameters.
       #
       # If `utc_offset` is `nil`, `:utc` or 0, the date and time parameters will
       # be interpreted as representing a UTC date and time. Otherwise the date
@@ -37,7 +38,7 @@ module TZInfo
       #   specified offset, an offset from UTC specified as an `Integer` number
       #   of seconds or the `Symbol` `:utc`).
       # @return [Timestamp] a new {Timestamp} representing the specified
-      #   (Gregorian calendar) date and time.
+      #   (proleptic Gregorian calendar) date and time.
       # @raise [ArgumentError] if either of `year`, `month`, `day`, `hour`,
       #   `minute`, or `second` is not an `Integer`.
       # @raise [ArgumentError] if `sub_second` is not a `Rational`, or the
@@ -84,7 +85,8 @@ module TZInfo
       # When called with a block, the {Timestamp} representation of `value` is
       # passed to the block. The block must then return a {Timestamp}, which
       # will be converted back to the type of the initial value. If the initial
-      # value was a {Timestamp}, the block result will just be returned.
+      # value was a {Timestamp}, the block result will be returned. If the
+      # initial value was a `DateTime`, a Gregorian `DateTime` will be returned.
       #
       # The UTC offset of `value` can either be preserved (the {Timestamp}
       # representation will have the same UTC offset as `value`), ignored (the
@@ -396,11 +398,11 @@ module TZInfo
       end
     end
 
-    # Converts this {Timestamp} to a `DateTime`.
+    # Converts this {Timestamp} to a Gregorian `DateTime`.
     #
-    # @return [DateTime] a DateTime representation of this {Timestamp}. If the
-    #   UTC offset of this {Timestamp} is not specified, a UTC `DateTime` will
-    #   be returned.
+    # @return [DateTime] a Gregorian `DateTime` representation of this
+    #   {Timestamp}. If the UTC offset of this {Timestamp} is not specified, a
+    #   UTC `DateTime` will be returned.
     def to_datetime
       new_datetime
     end
@@ -408,7 +410,7 @@ module TZInfo
     # Converts this {Timestamp} to an `Integer` number of seconds since
     # 1970-01-01 00:00:00 UTC (ignoring leap seconds).
     #
-    # @return [Integer] an Integer representation of this {Timestamp} (the
+    # @return [Integer] an `Integer` representation of this {Timestamp} (the
     #   number of seconds since 1970-01-01 00:00:00 UTC ignoring leap seconds).
     def to_i
       value
@@ -492,7 +494,9 @@ module TZInfo
     #
     # @private
     def new_datetime(klass = DateTime)
-      datetime = klass.jd(JD_EPOCH + ((@value.to_r + @sub_second) / 86400))
+      # Can't specify the start parameter unless the jd parameter is an exact number of days.
+      # Use #gregorian instead.
+      datetime = klass.jd(JD_EPOCH + ((@value.to_r + @sub_second) / 86400)).gregorian
       @utc_offset && @utc_offset != 0 ? datetime.new_offset(Rational(@utc_offset, 86400)) : datetime
     end
 
