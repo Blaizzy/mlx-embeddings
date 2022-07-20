@@ -292,8 +292,6 @@ class Cmd
     args.concat(optflags) unless runtime_cpu_detection?
     args.concat(archflags)
     args << "-std=#{@arg0}" if /c[89]9/.match?(@arg0)
-    # Add -nostdinc when building against glibc@2.13 to avoid mixing system and brewed glibc headers.
-    args << "-nostdinc" if @deps.include?("glibc@2.13")
     args
   end
 
@@ -306,7 +304,11 @@ class Cmd
   end
 
   def cppflags
-    path_flags("-isystem", isystem_paths) + path_flags("-I", include_paths)
+    args = []
+    args += path_flags("-isystem", isystem_paths) + path_flags("-I", include_paths)
+    # Add -nostdinc when building against glibc@2.13 to avoid mixing system and brewed glibc headers.
+    args << "-nostdinc" if @deps.include?("glibc@2.13")
+    args
   end
 
   def ldflags_mac(args)
@@ -324,7 +326,11 @@ class Cmd
   def ldflags_linux(args)
     unless mode == :ld
       wl = "-Wl,"
-      args << "-B#{@opt}/glibc/lib"
+      if @deps.include?("glibc@2.13")
+        args << "-B#{@opt}/glibc@2.13/lib"
+      else
+        args << "-B#{@opt}/glibc/lib"
+      end
     end
     args += rpath_flags("#{wl}-rpath=", rpath_paths)
     args += ["#{wl}--dynamic-linker=#{dynamic_linker_path}"] if dynamic_linker_path
