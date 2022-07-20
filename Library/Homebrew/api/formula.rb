@@ -30,10 +30,8 @@ module Homebrew
         def all_formulae
           @all_formulae ||= begin
             curl_args = %w[--compressed --silent https://formulae.brew.sh/api/formula.json]
-            if cached_formula_json_file.exist?
-              last_modified = cached_formula_json_file.mtime.utc
-              last_modified = last_modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
-              curl_args = ["--time-cond", last_modified, *curl_args] unless cached_formula_json_file.empty?
+            if cached_formula_json_file.exist? && !cached_formula_json_file.empty?
+              curl_args.prepend("--time-cond", cached_formula_json_file)
             end
             curl_download(*curl_args, to: HOMEBREW_CACHE_API/"#{formula_api_path}.json", max_time: 5)
 
