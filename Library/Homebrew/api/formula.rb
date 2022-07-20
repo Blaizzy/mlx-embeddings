@@ -33,7 +33,7 @@ module Homebrew
             if cached_formula_json_file.exist?
               last_modified = cached_formula_json_file.mtime.utc
               last_modified = last_modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
-              curl_args = ["--header", "If-Modified-Since: #{last_modified}", *curl_args]
+              curl_args = ["--time-cond", last_modified, *curl_args] unless cached_formula_json_file.empty?
             end
             curl_download(*curl_args, to: HOMEBREW_CACHE_API/"#{formula_api_path}.json", max_time: 5)
 
