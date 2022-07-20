@@ -556,6 +556,12 @@ EOS
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
+    # Git's fsmonitor daemon will not release our lock unless we stop it.
+    if git fsmonitor--daemon status &>/dev/null
+    then
+      git fsmonitor--daemon stop 2>/dev/null
+    fi
+
     if ! git config --local --get remote.origin.url &>/dev/null
     then
       opoo "No remote 'origin' in ${DIR}, skipping update!"
