@@ -19,6 +19,7 @@ gem "rspec-github", require: false
 gem "rspec-its", require: false
 gem "rspec_junit_formatter", require: false
 gem "rspec-retry", require: false
+gem "rspec-sorbet", require: false
 gem "rspec-wait", require: false
 gem "rubocop", require: false
 gem "rubocop-ast", require: false
@@ -28,7 +29,6 @@ gem "warning", require: false
 
 group :sorbet, optional: true do
   gem "parlour", require: false
-  gem "rspec-sorbet", require: false
   gem "sorbet-static-and-runtime", require: false
   gem "tapioca", require: false
 end
@@ -46,4 +46,4 @@ gem "rubocop-rails"
 gem "rubocop-rspec"
 gem "rubocop-sorbet"
 gem "ruby-macho"
-gem "sorbet-runtime-stub"
+gem "sorbet-runtime"
