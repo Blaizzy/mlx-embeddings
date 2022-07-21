@@ -1909,7 +1909,7 @@ class Formula
   end
 
   # @private
-  def to_hash
+  def to_hash_without_variations
     dependencies = deps
 
     hsh = {
@@ -2003,6 +2003,56 @@ class Formula
     end
 
     hsh
+  end
+
+  # @private
+  def to_hash
+    hash = to_hash_without_variations
+    variations = {}
+
+    hash_keys_to_skip = %w[installed linked_keg pinned outdated]
+    os_versions = MacOSVersions::SYMBOLS.keys.append :linux
+
+    if path.exist? && self.class.instance_eval { @on_system_blocks_exist }
+      formula_contents = path.read
+      [:arm, :intel].each do |arch|
+        os_versions.each do |os_name|
+          # Big Sur is the first version of macOS that supports arm
+          if os_name != :linux && arch == :arm &&
+             MacOS::Version.from_symbol(os_name) < MacOS::Version.from_symbol(:big_sur)
+            next
+          end
+
+          bottle_tag = if os_name == :linux
+            :linux
+          else
+            Utils::Bottles::Tag.new(system: os_name, arch: arch).to_sym
+          end
+
+          Homebrew::SimulateSystem.os = os_name
+          Homebrew::SimulateSystem.arch = arch
+
+          variations_namespace = Formulary.class_s("Variations#{bottle_tag.capitalize}")
+          variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
+                                                            flags: self.class.build_flags, ignore_errors: true)
+          variations_formula = variations_formula_class.new(name, path, :stable,
+                                                            alias_path: alias_path, force_bottle: force_bottle)
+
+          variations_formula.to_hash_without_variations.each do |key, value|
+            next if hash_keys_to_skip.include? key
+            next if value.to_s == hash[key].to_s
+
+            variations[bottle_tag] ||= {}
+            variations[bottle_tag][key] = value
+          end
+        end
+      end
+    end
+
+    Homebrew::SimulateSystem.clear
+
+    hash["variations"] = variations
+    hash
   end
 
   # @api private
