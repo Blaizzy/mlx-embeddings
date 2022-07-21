@@ -60,7 +60,7 @@ module Homebrew
       puts Homebrew::EnvConfig.livecheck_watchlist if Homebrew::EnvConfig.livecheck_watchlist.present?
     end
 
-    formulae_and_casks_to_check = if args.tap
+    package_and_resource_to_check = if args.tap
       tap = Tap.fetch(args.tap)
       formulae = args.cask? ? [] : tap.formula_files.map { |path| Formulary.factory(path) }
       casks = args.formula? ? [] : tap.cask_files.map { |path| Cask::CaskLoader.load(path) }
@@ -82,7 +82,7 @@ module Homebrew
       elsif args.cask?
         args.named.to_casks
       else
-        args.named.to_formulae_and_casks
+        args.named.to_package_and_resource
       end
     elsif File.exist?(WATCHLIST_PATH)
       begin
@@ -91,7 +91,7 @@ module Homebrew
                         .map(&:strip)
 
         named_args = T.unsafe(CLI::NamedArgs).new(*names, parent: args)
-        named_args.to_formulae_and_casks(ignore_unavailable: true)
+        named_args.to_package_and_resource(ignore_unavailable: true)
       rescue Errno::ENOENT => e
         onoe e
       end
@@ -99,16 +99,16 @@ module Homebrew
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
 
-    p formulae_and_casks_to_check.class
-    p formulae_and_casks_to_check.length
-    p formulae_and_casks_to_check[0].class
-    p formulae_and_casks_to_check.map { |d| d.name }
+    p package_and_resource_to_check.class
+    p package_and_resource_to_check.length
+    p package_and_resource_to_check[0].class
+    p package_and_resource_to_check.map { |d| d.name }
 
-    formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
-      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
+    package_and_resource_to_check = package_and_resource_to_check.sort_by do |package_or_resource|
+      package_or_resource.respond_to?(:token) ? package_or_resource.token : package_or_resource.name
     end
 
-    raise UsageError, "No formulae or casks to check." if formulae_and_casks_to_check.blank?
+    raise UsageError, "No formulae or casks to check." if package_and_resource_to_check.blank?
 
     options = {
       json:                 args.json?,
@@ -120,6 +120,6 @@ module Homebrew
       verbose:              args.verbose?,
     }.compact
 
-    # Livecheck.run_checks(formulae_and_casks_to_check, **options)
+    Livecheck.run_checks(package_and_resource_to_check[1..3], **options)
   end
 end
