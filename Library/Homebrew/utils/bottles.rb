@@ -169,14 +169,21 @@ module Utils
         [system, arch].hash
       end
 
+      def standardized_arch
+        return :x86_64 if [:x86_64, :intel].include? arch
+        return :arm64 if [:arm64, :arm].include? arch
+
+        arch
+      end
+
       sig { returns(Symbol) }
       def to_sym
         if system == :all && arch == :all
           :all
-        elsif macos? && arch == :x86_64
+        elsif macos? && [:x86_64, :intel].include?(arch)
           system
         else
-          "#{arch}_#{system}".to_sym
+          "#{standardized_arch}_#{system}".to_sym
         end
       end
 
@@ -201,6 +208,15 @@ module Utils
         true
       rescue MacOSVersionError
         false
+      end
+
+      sig { returns(T::Boolean) }
+      def valid_combination?
+        return true unless [:arm64, :arm].include? arch
+        return false if linux?
+
+        # Big Sur is the first version of macOS that runs on ARM
+        to_macos_version >= :big_sur
       end
 
       sig { returns(String) }

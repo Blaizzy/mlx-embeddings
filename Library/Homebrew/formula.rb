@@ -2010,40 +2010,29 @@ class Formula
     hash = to_hash_without_variations
     variations = {}
 
-    hash_keys_to_skip = %w[installed linked_keg pinned outdated]
-    os_versions = MacOSVersions::SYMBOLS.keys.append :linux
+    os_versions = [*MacOSVersions::SYMBOLS.keys, :linux]
 
-    if path.exist? && self.class.instance_eval { @on_system_blocks_exist }
+    if path.exist? && self.class.on_system_blocks_exist?
       formula_contents = path.read
-      [:arm, :intel].each do |arch|
+      [:arm64, :x86_64].each do |arch|
         os_versions.each do |os_name|
-          # Big Sur is the first version of macOS that supports arm
-          if os_name != :linux && arch == :arm &&
-             MacOS::Version.from_symbol(os_name) < MacOS::Version.from_symbol(:big_sur)
-            next
-          end
-
-          bottle_tag = if os_name == :linux
-            :linux
-          else
-            Utils::Bottles::Tag.new(system: os_name, arch: arch).to_sym
-          end
+          bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)
+          next unless bottle_tag.valid_combination?
 
           Homebrew::SimulateSystem.os = os_name
           Homebrew::SimulateSystem.arch = arch
 
-          variations_namespace = Formulary.class_s("Variations#{bottle_tag.capitalize}")
+          variations_namespace = Formulary.class_s("Variations#{bottle_tag.to_sym.capitalize}")
           variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
                                                             flags: self.class.build_flags, ignore_errors: true)
           variations_formula = variations_formula_class.new(name, path, :stable,
                                                             alias_path: alias_path, force_bottle: force_bottle)
 
           variations_formula.to_hash_without_variations.each do |key, value|
-            next if hash_keys_to_skip.include? key
             next if value.to_s == hash[key].to_s
 
-            variations[bottle_tag] ||= {}
-            variations[bottle_tag][key] = value
+            variations[bottle_tag.to_sym] ||= {}
+            variations[bottle_tag.to_sym][key] = value
           end
         end
       end
@@ -2519,6 +2508,7 @@ class Formula
 
   # The methods below define the formula DSL.
   class << self
+    extend Predicable
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux
 
@@ -2532,6 +2522,11 @@ class Formula
         define_method(:test_defined?) { true }
       end
     end
+
+    # Whether this formula contains OS/arch-specific blocks
+    # (e.g. `on_macos`, `on_arm`, `on_monterey :or_older`, `on_system :linux, macos: :big_sur_or_newer`).
+    # @private
+    attr_predicate :on_system_blocks_exist?
 
     # The reason for why this software is not linked (by default) to
     # {::HOMEBREW_PREFIX}.

@@ -187,25 +187,25 @@ describe Cask::Cmd::List, :cask do
             "container": null,
             "auto_updates": null,
             "variations": {
-              "arm_big_sur": {
+              "arm64_big_sur": {
                 "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/arm.zip",
                 "version": "1.2.0",
                 "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
               },
-              "intel_monterey": {
+              "monterey": {
                 "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.3/intel.zip"
               },
-              "intel_big_sur": {
+              "big_sur": {
                 "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/intel.zip",
                 "version": "1.2.0",
                 "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
               },
-              "intel_catalina": {
+              "catalina": {
                 "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
                 "version": "1.0.0",
                 "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
               },
-              "intel_mojave": {
+              "mojave": {
                 "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
                 "version": "1.0.0",
                 "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"

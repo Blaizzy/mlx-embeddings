@@ -36,4 +36,37 @@ describe Utils::Bottles::Tag do
     expect(tag.linux?).to be true
     expect(tag.to_sym).to eq(symbol)
   end
+
+  describe "#standardized_arch" do
+    it "returns :x86_64 for :intel" do
+      expect(described_class.new(system: :all, arch: :intel).standardized_arch).to eq(:x86_64)
+    end
+
+    it "returns :arm64 for :arm" do
+      expect(described_class.new(system: :all, arch: :arm).standardized_arch).to eq(:arm64)
+    end
+  end
+
+  describe "#valid_combination?" do
+    it "returns true for intel archs" do
+      tag = described_class.new(system: :big_sur, arch: :intel)
+      expect(tag.valid_combination?).to be true
+      tag = described_class.new(system: :linux, arch: :x86_64)
+      expect(tag.valid_combination?).to be true
+    end
+
+    it "returns false for arm archs and macos versions older than big_sur" do
+      tag = described_class.new(system: :catalina, arch: :arm64)
+      expect(tag.valid_combination?).to be false
+      tag = described_class.new(system: :mojave, arch: :arm)
+      expect(tag.valid_combination?).to be false
+    end
+
+    it "returns false for arm archs and linux " do
+      tag = described_class.new(system: :linux, arch: :arm64)
+      expect(tag.valid_combination?).to be false
+      tag = described_class.new(system: :linux, arch: :arm)
+      expect(tag.valid_combination?).to be false
+    end
+  end
 end
