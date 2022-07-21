@@ -247,6 +247,17 @@ module TZInfo
       raise_invalid_data_source('country_codes')
     end
 
+    # Loads all timezone and country data into memory.
+    #
+    # This may be desirable in production environments to improve copy-on-write
+    # performance and to avoid flushing the constant cache every time a new
+    # timezone or country is loaded from {DataSources::RubyDataSource}.
+    def eager_load!
+      timezone_identifiers.each {|identifier| load_timezone_info(identifier) }
+      country_codes.each {|code| load_country_info(code) }
+      nil
+    end
+
     # @return [String] a description of the {DataSource}.
     def to_s
       "Default DataSource"

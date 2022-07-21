@@ -116,14 +116,14 @@ module TZInfo
       # @param identifier [Array<string>] the component parts of a time zone
       #   identifier (split on /). This must have already been validated.
       def require_definition(identifier)
-        require_data(*(['definitions'] + identifier))
+        require_data('definitions', *identifier)
       end
 
       # Requires an index by its name.
       #
       # @param name [String] an index name.
       def require_index(name)
-        require_data(*['indexes', name])
+        require_data('indexes', name)
       end
 
       # Requires a file from tzinfo/data.
