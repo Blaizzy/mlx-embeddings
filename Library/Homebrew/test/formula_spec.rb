@@ -905,7 +905,7 @@ describe Formula do
     expect(h["versions"]["bottle"]).to be_truthy
   end
 
-  describe "#to_hash_with_variations" do
+  describe "#to_hash_with_variations", :needs_macos do
     let(:formula_path) { CoreTap.new.formula_dir/"foo-variations.rb" }
     let(:formula_content) do
       <<~RUBY
@@ -983,7 +983,7 @@ describe Formula do
       stub_const("MacOSVersions::SYMBOLS", symbols)
 
       # For consistency, always run on Monterey and ARM
-      MacOS.full_version = "12"
+      allow(MacOS).to receive(:version).and_return(MacOS::Version.new("12"))
       allow(Hardware::CPU).to receive(:type).and_return(:arm)
 
       formula_path.dirname.mkpath
