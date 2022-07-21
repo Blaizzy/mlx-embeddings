@@ -222,7 +222,6 @@ module Homebrew
       if args.bottle?
         { "formulae" => formulae.map(&:to_recursive_bottle_hash) }
       elsif args.variations?
-        opoo "a"
         {
           "formulae" => formulae.map(&:to_hash_with_variations),
           "casks"    => casks.map(&:to_hash_with_variations),
