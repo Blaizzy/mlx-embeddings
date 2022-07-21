@@ -62,7 +62,7 @@ describe Utils::Bottles::Tag do
       expect(tag.valid_combination?).to be false
     end
 
-    it "returns false for arm archs and linux " do
+    it "returns false for arm archs and linux" do
       tag = described_class.new(system: :linux, arch: :arm64)
       expect(tag.valid_combination?).to be false
       tag = described_class.new(system: :linux, arch: :arm)

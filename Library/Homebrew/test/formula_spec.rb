@@ -905,6 +905,99 @@ describe Formula do
     expect(h["versions"]["bottle"]).to be_truthy
   end
 
+  describe "#to_hash_with_variations" do
+    let(:formula_path) { CoreTap.new.formula_dir/"foo-variations.rb" }
+    let(:formula_content) do
+      <<~RUBY
+        class FooVariations < Formula
+          url "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
+          sha256 TESTBALL_SHA256
+
+          on_intel do
+            depends_on "intel-formula"
+          end
+
+          on_big_sur do
+            depends_on "big-sur-formula"
+          end
+
+          on_catalina :or_older do
+            depends_on "catalina-or-older-formula"
+          end
+
+          on_linux do
+            depends_on "linux-formula"
+          end
+        end
+      RUBY
+    end
+    let(:expected_variations) {
+      <<~JSON
+        {
+          "arm64_big_sur": {
+            "dependencies": [
+              "big-sur-formula"
+            ]
+          },
+          "monterey": {
+            "dependencies": [
+              "intel-formula"
+            ]
+          },
+          "big_sur": {
+            "dependencies": [
+              "intel-formula",
+              "big-sur-formula"
+            ]
+          },
+          "catalina": {
+            "dependencies": [
+              "intel-formula",
+              "catalina-or-older-formula"
+            ]
+          },
+          "mojave": {
+            "dependencies": [
+              "intel-formula",
+              "catalina-or-older-formula"
+            ]
+          },
+          "x86_64_linux": {
+            "dependencies": [
+              "intel-formula",
+              "linux-formula"
+            ]
+          }
+        }
+      JSON
+    }
+
+    before do
+      # Use a more limited symbols list to shorten the variations hash
+      symbols = {
+        monterey: "12",
+        big_sur:  "11",
+        catalina: "10.15",
+        mojave:   "10.14",
+      }
+      stub_const("MacOSVersions::SYMBOLS", symbols)
+
+      # For consistency, always run on Monterey and ARM
+      MacOS.full_version = "12"
+      allow(Hardware::CPU).to receive(:type).and_return(:arm)
+
+      formula_path.dirname.mkpath
+      formula_path.write formula_content
+    end
+
+    it "returns the correct variations hash" do
+      h = Formulary.factory("foo-variations").to_hash_with_variations
+
+      expect(h).to be_a(Hash)
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_variations.strip
+    end
+  end
+
   specify "#to_recursive_bottle_hash" do
     f1 = formula "foo" do
       url "foo-1.0"
