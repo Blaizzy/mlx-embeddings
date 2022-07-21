@@ -159,7 +159,7 @@ module Homebrew
     # `formulae_and_casks_to_check` array and prints the results.
     sig {
       params(
-        formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask)],
+        formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask, Resource)],
         full_name:                   T::Boolean,
         handle_name_conflict:        T::Boolean,
         json:                        T::Boolean,
