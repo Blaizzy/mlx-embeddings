@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+ruby ">= 2.6.0"
+
 # disallowed gems (should not be used)
 # * nokogiri - use rexml instead for XML parsing
 
@@ -32,7 +34,7 @@ group :sorbet, optional: true do
 end
 
 # vendored gems
-gem "activesupport", "< 7" # 7 requires Ruby 2.7
+gem "activesupport"
 gem "addressable"
 gem "concurrent-ruby"
 gem "did_you_mean" # remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
