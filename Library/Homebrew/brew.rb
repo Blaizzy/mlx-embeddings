@@ -107,7 +107,7 @@ begin
       blocked_tap = possible_tap && Tap.untapped_official_taps.include?(possible_tap.name)
       if blocked_tap
         [
-          "`brew #{cmd}` is unavailable because #{possible_tap.name} was manually untapped and cannot be retapped.",
+          "`brew #{cmd}` is unavailable because #{possible_tap.name} was manually untapped.",
           "Run `brew tap #{possible_tap.name}` to reenable `brew #{cmd}`.",
         ].each { |ln| onoe ln }
       end
