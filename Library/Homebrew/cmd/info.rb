@@ -61,6 +61,9 @@ module Homebrew
       switch "--all",
              depends_on:  "--json",
              description: "Print JSON of all available formulae."
+      switch "--variations",
+             depends_on:  "--json",
+             description: "Include the variations hash in each formula's JSON output."
       switch "-v", "--verbose",
              description: "Show more verbose analytics data for <formula>."
       switch "--formula", "--formulae",
@@ -202,6 +205,8 @@ module Homebrew
 
       if args.bottle?
         formulae.map(&:to_recursive_bottle_hash)
+      elsif args.variations?
+        formulae.map(&:to_hash_with_variations)
       else
         formulae.map(&:to_hash)
       end
@@ -216,6 +221,12 @@ module Homebrew
 
       if args.bottle?
         { "formulae" => formulae.map(&:to_recursive_bottle_hash) }
+      elsif args.variations?
+        opoo "a"
+        {
+          "formulae" => formulae.map(&:to_hash_with_variations),
+          "casks"    => casks.map(&:to_hash_with_variations),
+        }
       else
         {
           "formulae" => formulae.map(&:to_hash),

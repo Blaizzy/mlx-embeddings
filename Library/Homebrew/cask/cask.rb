@@ -219,7 +219,7 @@ module Cask
     end
     alias == eql?
 
-    def to_hash
+    def to_h
       {
         "token"          => token,
         "full_token"     => full_name,
@@ -243,8 +243,8 @@ module Cask
       }
     end
 
-    def to_h
-      hash = to_hash
+    def to_hash_with_variations
+      hash = to_h
       variations = {}
 
       hash_keys_to_skip = %w[outdated installed versions]
@@ -260,7 +260,7 @@ module Cask
 
             refresh
 
-            to_hash.each do |key, value|
+            to_h.each do |key, value|
               next if hash_keys_to_skip.include? key
               next if value.to_s == hash[key].to_s
 

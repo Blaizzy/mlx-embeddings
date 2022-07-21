@@ -1909,7 +1909,7 @@ class Formula
   end
 
   # @private
-  def to_hash_without_variations
+  def to_hash
     dependencies = deps
 
     hsh = {
@@ -2006,15 +2006,15 @@ class Formula
   end
 
   # @private
-  def to_hash
-    hash = to_hash_without_variations
+  def to_hash_with_variations
+    hash = to_hash
     variations = {}
 
     os_versions = [*MacOSVersions::SYMBOLS.keys, :linux]
 
     if path.exist? && self.class.on_system_blocks_exist?
       formula_contents = path.read
-      [:arm64, :x86_64].each do |arch|
+      [:arm, :intel].each do |arch|
         os_versions.each do |os_name|
           bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)
           next unless bottle_tag.valid_combination?
@@ -2028,7 +2028,7 @@ class Formula
           variations_formula = variations_formula_class.new(name, path, :stable,
                                                             alias_path: alias_path, force_bottle: force_bottle)
 
-          variations_formula.to_hash_without_variations.each do |key, value|
+          variations_formula.to_hash.each do |key, value|
             next if value.to_s == hash[key].to_s
 
             variations[bottle_tag.to_sym] ||= {}
