@@ -103,7 +103,15 @@ begin
     possible_tap = OFFICIAL_CMD_TAPS.find { |_, cmds| cmds.include?(cmd) }
     possible_tap = Tap.fetch(possible_tap.first) if possible_tap
 
-    if !possible_tap || possible_tap.installed? || Tap.untapped_official_taps.include?(possible_tap.name)
+    if !possible_tap ||
+       possible_tap.installed? ||
+       (blocked_tap = Tap.untapped_official_taps.include?(possible_tap.name))
+      if blocked_tap
+        onoe <<~EOS
+          `brew #{cmd}` is unavailable because #{possible_tap.name} was manually untapped.
+          Run `brew tap #{possible_tap.name}` to reenable `brew #{cmd}`.
+        EOS
+      end
       # Check for cask explicitly because it's very common in old guides
       odie "`brew cask` is no longer a `brew` command. Use `brew <command> --cask` instead." if cmd == "cask"
       odie "Unknown command: #{cmd}"
