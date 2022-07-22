@@ -219,7 +219,7 @@ module Cask
     end
     alias == eql?
 
-    def to_hash
+    def to_h
       {
         "token"          => token,
         "full_token"     => full_name,
@@ -243,8 +243,8 @@ module Cask
       }
     end
 
-    def to_h
-      hash = to_hash
+    def to_hash_with_variations
+      hash = to_h
       variations = {}
 
       hash_keys_to_skip = %w[outdated installed versions]
@@ -252,21 +252,20 @@ module Cask
       if @dsl.on_system_blocks_exist?
         [:arm, :intel].each do |arch|
           MacOSVersions::SYMBOLS.each_key do |os_name|
-            # Big Sur is the first version of macOS that supports arm
-            next if arch == :arm && MacOS::Version.from_symbol(os_name) < MacOS::Version.from_symbol(:big_sur)
+            bottle_tag = ::Utils::Bottles::Tag.new(system: os_name, arch: arch)
+            next unless bottle_tag.valid_combination?
 
             Homebrew::SimulateSystem.os = os_name
             Homebrew::SimulateSystem.arch = arch
 
             refresh
 
-            bottle_tag = ::Utils::Bottles::Tag.new(system: os_name, arch: arch).to_sym
-            to_hash.each do |key, value|
+            to_h.each do |key, value|
               next if hash_keys_to_skip.include? key
               next if value.to_s == hash[key].to_s
 
-              variations[bottle_tag] ||= {}
-              variations[bottle_tag][key] = value
+              variations[bottle_tag.to_sym] ||= {}
+              variations[bottle_tag.to_sym][key] = value
             end
           end
         end

@@ -295,6 +295,8 @@ If a *`formula`* or *`cask`* is provided, show summary of information about it.
   Print JSON of formulae that are currently installed.
 * `--all`:
   Print JSON of all available formulae.
+* `--variations`:
+  Include the variations hash in each formula's JSON output.
 * `-v`, `--verbose`:
   Show more verbose analytics data for *`formula`*.
 * `--formula`:
