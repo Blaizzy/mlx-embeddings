@@ -3157,12 +3157,14 @@ class RuboCop::Cop::Layout::LineContinuationLeadingSpace < ::RuboCop::Cop::Base
   private
 
   def continuation?(line); end
-  def investigate(first_line, second_line, range_start); end
-  def offense_range(range_start, matches); end
+  def enforced_style_leading?; end
+  def investigate_leading_style(first_line, end_of_first_line); end
+  def investigate_trailing_style(second_line, end_of_first_line); end
+  def leading_offense_range(end_of_first_line, matches); end
+  def message(_range); end
   def raw_lines(node); end
+  def trailing_offense_range(end_of_first_line, matches); end
 end
-
-RuboCop::Cop::Layout::LineContinuationLeadingSpace::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Layout::LineContinuationSpacing < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -3216,6 +3218,7 @@ class RuboCop::Cop::Layout::LineLength < ::RuboCop::Cop::Base
   def max=(value); end
   def on_array(node); end
   def on_block(node); end
+  def on_def(node); end
   def on_hash(node); end
   def on_investigation_end; end
   def on_new_investigation; end
@@ -3416,6 +3419,15 @@ RuboCop::Cop::Layout::MultilineMethodDefinitionBraceLayout::ALWAYS_NEW_LINE_MESS
 RuboCop::Cop::Layout::MultilineMethodDefinitionBraceLayout::ALWAYS_SAME_LINE_MESSAGE = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Layout::MultilineMethodDefinitionBraceLayout::NEW_LINE_MESSAGE = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Layout::MultilineMethodDefinitionBraceLayout::SAME_LINE_MESSAGE = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Layout::MultilineMethodParameterLineBreaks < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::MultilineElementLineBreaks
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_def(node); end
+end
+
+RuboCop::Cop::Layout::MultilineMethodParameterLineBreaks::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Layout::MultilineOperationIndentation < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -5128,14 +5140,21 @@ class RuboCop::Cop::Lint::NonAtomicFileOperation < ::RuboCop::Cop::Base
 
   def allowable_use_with_if?(if_node); end
   def autocorrect(corrector, node, range); end
+  def autocorrect_replace_method(corrector, node); end
+  def force_method?(node); end
+  def force_method_name?(node); end
   def force_option?(node); end
-  def message(node); end
+  def if_node_child?(node); end
+  def message_remove_file_exist_check(node); end
   def register_offense(node, exist_node); end
   def replacement_method(node); end
 end
 
+RuboCop::Cop::Lint::NonAtomicFileOperation::MAKE_FORCE_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Lint::NonAtomicFileOperation::MAKE_METHODS = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::Lint::NonAtomicFileOperation::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Lint::NonAtomicFileOperation::MSG_CHANGE_FORCE_METHOD = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Lint::NonAtomicFileOperation::MSG_REMOVE_FILE_EXIST_CHECK = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Lint::NonAtomicFileOperation::REMOVE_FORCE_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Lint::NonAtomicFileOperation::REMOVE_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Lint::NonAtomicFileOperation::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
@@ -5554,6 +5573,13 @@ end
 
 RuboCop::Cop::Lint::RequireParentheses::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Lint::RequireRangeParentheses < ::RuboCop::Cop::Base
+  def on_erange(node); end
+  def on_irange(node); end
+end
+
+RuboCop::Cop::Lint::RequireRangeParentheses::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Lint::RequireRelativeSelfPath < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
@@ -5605,6 +5631,7 @@ RuboCop::Cop::Lint::ReturnInVoidContext::MSG = T.let(T.unsafe(nil), String)
 class RuboCop::Cop::Lint::SafeNavigationChain < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::AllowedMethods
   include ::RuboCop::Cop::NilMethods
+  extend ::RuboCop::Cop::AutoCorrector
   extend ::RuboCop::Cop::TargetRubyVersion
 
   def bad_method?(param0 = T.unsafe(nil)); end
@@ -5612,6 +5639,8 @@ class RuboCop::Cop::Lint::SafeNavigationChain < ::RuboCop::Cop::Base
 
   private
 
+  def add_safe_navigation_operator(offense_range:, send_node:); end
+  def autocorrect(corrector, offense_range:, send_node:); end
   def method_chain(node); end
 end
 
@@ -7127,11 +7156,16 @@ module RuboCop::Cop::PercentArray
   private
 
   def allowed_bracket_array?(node); end
+  def build_bracketed_array_with_appropriate_whitespace(elements:, node:); end
+  def build_message_for_bracketed_array(preferred_array_code); end
   def check_bracketed_array(node, literal_prefix); end
   def check_percent_array(node); end
   def comments_in_array?(node); end
   def invalid_percent_array_contents?(_node); end
   def invalid_percent_array_context?(node); end
+  def whitespace_between(node); end
+  def whitespace_leading(node); end
+  def whitespace_trailing(node); end
 end
 
 module RuboCop::Cop::PercentLiteral
@@ -8551,6 +8585,16 @@ end
 
 RuboCop::Cop::Style::EmptyElse::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Style::EmptyHeredoc < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::Heredoc
+  include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_heredoc(node); end
+end
+
+RuboCop::Cop::Style::EmptyHeredoc::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Style::EmptyLambdaParameter < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::EmptyParameter
   include ::RuboCop::Cop::RangeHelp
@@ -8791,47 +8835,25 @@ RuboCop::Cop::Style::ExponentialNotation::MESSAGES = T.let(T.unsafe(nil), Hash)
 class RuboCop::Cop::Style::FetchEnvVar < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
-  def block_control?(param0 = T.unsafe(nil)); end
   def env_with_bracket?(param0 = T.unsafe(nil)); end
-  def offensive_nodes(param0); end
   def on_send(node); end
-  def operand_of_or?(param0 = T.unsafe(nil)); end
 
   private
 
   def allowable_use?(node); end
   def allowed_var?(node); end
   def assigned?(node); end
-  def configured_indentation; end
-  def conterpart_rhs_of(node); end
-  def default_nil(node, name_node); end
-  def default_rhs(node, name_node); end
-  def default_rhs_in_outer_or(node, name_node); end
-  def default_rhs_in_same_or(node, name_node); end
-  def default_to_rhs?(node); end
-  def first_line_of(source); end
-  def left_end_of_or_chains?(node); end
   def message_chained_with_dot?(node); end
-  def message_template_for(rhs); end
-  def new_code_default_nil(name_node); end
-  def new_code_default_rhs(node, name_node); end
-  def new_code_default_rhs_multiline(node, name_node); end
-  def new_code_default_rhs_single_line(node, name_node); end
+  def new_code(name_node); end
   def offensive?(node); end
-  def or_chain_root(node); end
+  def or_lhs?(node); end
   def partial_matched?(node, condition); end
-  def rhs_can_be_default_value?(node); end
-  def rhs_is_block_control?(node); end
-  def right_end_of_or_chains?(node); end
   def used_as_flag?(node); end
   def used_if_condition_in_body(node); end
   def used_in_condition?(node, condition); end
 end
 
-RuboCop::Cop::Style::FetchEnvVar::MSG_DEFAULT_NIL = T.let(T.unsafe(nil), String)
-RuboCop::Cop::Style::FetchEnvVar::MSG_DEFAULT_RHS_MULTILINE_BLOCK = T.let(T.unsafe(nil), String)
-RuboCop::Cop::Style::FetchEnvVar::MSG_DEFAULT_RHS_SECOND_ARG_OF_FETCH = T.let(T.unsafe(nil), String)
-RuboCop::Cop::Style::FetchEnvVar::MSG_DEFAULT_RHS_SINGLE_LINE_BLOCK = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Style::FetchEnvVar::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::FileRead < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -11453,8 +11475,10 @@ class RuboCop::Cop::Style::Semicolon < ::RuboCop::Cop::Base
   def check_for_line_terminator_or_opener; end
   def each_semicolon; end
   def expressions_per_line(exprs); end
+  def find_range_node(token_before_semicolon); end
   def find_semicolon_positions(line); end
-  def register_semicolon(line, column, after_expression); end
+  def range_nodes; end
+  def register_semicolon(line, column, after_expression, token_before_semicolon = T.unsafe(nil)); end
   def tokens_for_lines; end
 
   class << self
@@ -11971,6 +11995,7 @@ class RuboCop::Cop::Style::TopLevelMethodDefinition < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Style::TopLevelMethodDefinition::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Style::TopLevelMethodDefinition::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Style::TrailingBodyOnClass < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::Alignment
