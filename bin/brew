@@ -75,7 +75,7 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR PATH TMUX DBUS_SESSION_BUS_ADDRESS
+for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR}" ]] && continue
@@ -108,6 +108,11 @@ if [[ -z "${CI}" ]] && [[ -n "${TF_BUILD}" || -n "${JENKINS_HOME}" ]]
 then
   export CI="1"
 fi
+
+# save the existing user path as HOMEBREW_PATH so it can be queried by
+# e.g. brew doctor later.
+HOMEBREW_PATH="${PATH}"
+export HOMEBREW_PATH
 
 # set from user environment
 # shellcheck disable=SC2154
