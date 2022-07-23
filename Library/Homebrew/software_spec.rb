@@ -162,12 +162,25 @@ class SoftwareSpec
     add_dep_option(dep) if dep
   end
 
-  def uses_from_macos(spec, _bounds = {})
-    spec = [spec.dup.shift].to_h if spec.is_a?(Hash)
+  def uses_from_macos(deps, bounds = {})
+    if deps.is_a?(Hash)
+      bounds = deps.dup
+      deps = [bounds.shift].to_h
+    end
 
-    @uses_from_macos_elements << spec
+    @uses_from_macos_elements << deps
 
-    depends_on(spec)
+    # Linux simulating macOS. Assume oldest macOS version.
+    return if Homebrew::EnvConfig.simulate_macos_on_linux? && !bounds.key?(:since)
+
+    # macOS new enough for dependency to not be required.
+    if Homebrew::SimulateSystem.treat_as_macos?
+      current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
+      since_os = MacOS::Version.from_symbol(bounds[:since]) if bounds.key?(:since)
+      return if current_os >= since_os
+    end
+
+    depends_on deps
   end
 
   def uses_from_macos_names
