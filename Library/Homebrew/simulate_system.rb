@@ -32,18 +32,30 @@ module Homebrew
       end
 
       sig { returns(T::Boolean) }
-      def none?
-        @os.nil? && @arch.nil?
-      end
+      def treat_as_macos?
+        return OS.mac? if @os.blank?
 
-      sig { returns(T::Boolean) }
-      def macos?
         [:macos, *MacOSVersions::SYMBOLS.keys].include?(@os)
       end
 
       sig { returns(T::Boolean) }
-      def linux?
+      def treat_as_linux?
+        return OS.linux? if @os.blank?
+
         @os == :linux
+      end
+
+      sig { returns(Symbol) }
+      def current_arch
+        @arch || Hardware::CPU.type
+      end
+
+      sig { returns(Symbol) }
+      def current_os
+        return @os if @os.present?
+        return :linux if OS.linux?
+
+        MacOS.version.to_sym
       end
     end
   end
