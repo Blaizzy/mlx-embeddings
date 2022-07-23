@@ -3215,6 +3215,8 @@ class Formula
 
     # Permit links to certain libraries that don't exist. Available on Linux only.
     def ignore_missing_libraries(*)
+      return if Homebrew::SimulateSystem.linux?
+
       raise FormulaSpecificationError, "#{__method__} is available on Linux only"
     end
 
