@@ -442,7 +442,9 @@ module RuboCop
             replacement_args = %w[]
             replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
             replacement_args << "shells: [:#{shell}]"
-            replacement_args << "binary: #{binary}" unless binary.to_s == "bin/\"#{@formula_name}\""
+            if binary.to_s != "bin/\"#{@formula_name}\"" && binary.to_s != "bin/\"#{base_name}\""
+              replacement_args << "binary: #{binary}"
+            end
             replacement_args << "cmd: \"#{cmd}\"" unless cmd == "completion"
             replacement_args << "shell_prefix: #{shell_prefix}" unless shell_prefix.nil?
 
