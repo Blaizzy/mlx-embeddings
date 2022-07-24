@@ -180,6 +180,14 @@ describe Homebrew::Service do
         \t<true/>
         \t<key>LegacyTimers</key>
         \t<true/>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProcessType</key>
         \t<string>Interactive</string>
         \t<key>ProgramArguments</key>
@@ -221,6 +229,14 @@ describe Homebrew::Service do
         <dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -262,6 +278,14 @@ describe Homebrew::Service do
         <dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -289,6 +313,14 @@ describe Homebrew::Service do
         <dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -318,6 +350,14 @@ describe Homebrew::Service do
         <dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -356,6 +396,14 @@ describe Homebrew::Service do
         \t</dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -387,6 +435,14 @@ describe Homebrew::Service do
         \t</dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
@@ -418,6 +474,14 @@ describe Homebrew::Service do
         \t</dict>
         \t<key>Label</key>
         \t<string>homebrew.mxcl.formula_name</string>
+        \t<key>LimitLoadToSessionType</key>
+        \t<array>
+        \t\t<string>Aqua</string>
+        \t\t<string>Background</string>
+        \t\t<string>LoginWindow</string>
+        \t\t<string>StandardIO</string>
+        \t\t<string>System</string>
+        \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
         \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>

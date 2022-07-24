@@ -49,6 +49,7 @@ class Formula
   def env; end
   def conflicts; end
 
+  def self.on_system_blocks_exist?; end
   # This method is included by `OnSystem`
   def self.on_macos(&block); end
 end
