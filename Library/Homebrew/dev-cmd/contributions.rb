@@ -51,7 +51,7 @@ module Homebrew
       end
 
       repo_path = find_repo_path_for_repo(repo)
-      return ofail "Couldn't find repo #{repo} locally. Do you have it tapped?" unless Dir.exist?(repo_path)
+      return ofail "Couldn't find repo #{repo} locally. Run `brew tap homebrew/#{repo}`." unless repo_path.exist?
 
       commits += git_log_cmd("author", repo_path, args)
       coauthorships += git_log_cmd("coauthorships", repo_path, args)
@@ -76,16 +76,9 @@ module Homebrew
 
   sig { params(repo: String).returns(T.nilable(String)) }
   def find_repo_path_for_repo(repo)
-    case repo
-    when "brew"
-      HOMEBREW_REPOSITORY
-    when "core"
-      "#{HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core"
-    when "cask"
-      "#{HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-cask"
-    when "bundle"
-      "#{HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-bundle"
-    end
+    return HOMEBREW_REPOSITORY if repo == "brew"
+
+    Tap.fetch("homebrew", repo).path
   end
 
   sig { params(kind: String, repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
