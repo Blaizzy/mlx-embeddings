@@ -46,14 +46,15 @@ module Homebrew
     coauthorships = 0
 
     args[:repos].each do |repo|
-      repo_location = find_repo_path_for_repo(repo)
-      unless repo_location
-        return ofail "Couldn't find location for #{repo}. Do you have it tapped, or is there a typo? " \
-                     "We only support #{SUPPORTED_REPOS.join(", ")} repos so far."
+      if SUPPORTED_REPOS.exclude?(repo)
+        return ofail "Unsupported repo: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
       end
 
-      commits += git_log_cmd("author", repo_location, args)
-      coauthorships += git_log_cmd("coauthorships", repo_location, args)
+      repo_path = find_repo_path_for_repo(repo)
+      return ofail "Couldn't find repo #{repo} locally. Do you have it tapped?" unless Dir.exist?(repo_path)
+
+      commits += git_log_cmd("author", repo_path, args)
+      coauthorships += git_log_cmd("coauthorships", repo_path, args)
     end
 
     sentence = "Person #{args[:email]} directly authored #{commits} commits"
@@ -87,9 +88,9 @@ module Homebrew
     end
   end
 
-  sig { params(kind: String, repo_location: String, args: Homebrew::CLI::Args).returns(Integer) }
-  def git_log_cmd(kind, repo_location, args)
-    cmd = "git -C #{repo_location} log --oneline"
+  sig { params(kind: String, repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
+  def git_log_cmd(kind, repo_path, args)
+    cmd = "git -C #{repo_path} log --oneline"
     cmd += " --author=#{args[:email]}" if kind == "author"
     cmd += " --format='%(trailers:key=Co-authored-by:)'" if kind == "coauthorships"
     cmd += " --before=#{args[:to]}" if args[:to]
