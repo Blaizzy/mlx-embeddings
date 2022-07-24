@@ -37,7 +37,7 @@ module Homebrew
   def contributions
     args = contributions_args.parse
 
-    return ofail "`--repos` is required." if args.repos.empty?
+    return ofail "`--repos` is required." if args[:repos].empty?
 
     commits = 0
     coauthorships = 0
@@ -50,8 +50,8 @@ module Homebrew
       repo_path = find_repo_path_for_repo(repo)
       return ofail "Couldn't find repo #{repo} locally. Run `brew tap homebrew/#{repo}`." unless repo_path.exist?
 
-      commits += git_log_author_cmd(repo_path, args)
-      coauthorships += git_log_coauthor_cmd(repo_path, args)
+      commits += git_log_author_cmd(T.must(repo_path), args)
+      coauthorships += git_log_coauthor_cmd(T.must(repo_path), args)
     end
 
     sentence = "Person #{args.named.first} directly authored #{commits} commits"
@@ -71,14 +71,14 @@ module Homebrew
     puts sentence
   end
 
-  sig { params(repo: String).returns(T.nilable(String)) }
+  sig { params(repo: String).returns(Pathname) }
   def find_repo_path_for_repo(repo)
     return HOMEBREW_REPOSITORY if repo == "brew"
 
     Tap.fetch("homebrew", repo).path
   end
 
-  sig { params(repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
+  sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_author_cmd(repo_path, args)
     cmd = "git -C #{repo_path} log --oneline --author=#{args.named.first}"
     cmd += " --before=#{args[:to]}" if args[:to]
@@ -87,7 +87,7 @@ module Homebrew
     `#{cmd} | wc -l`.strip.to_i
   end
 
-  sig { params(repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
+  sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_coauthor_cmd(repo_path, args)
     cmd = "git -C #{repo_path} log --oneline"
     cmd += " --format='%(trailers:key=Co-authored-by:)'"
