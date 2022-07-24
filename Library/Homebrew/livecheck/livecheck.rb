@@ -353,7 +353,13 @@ module Homebrew
           next info
         end
 
-        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
+        if resources_only
+          #@todo: modify print_latest_version for resources
+          onoe "#{Tty.blue}Debug info for resources is in progress!#{Tty.reset}"
+        else
+          print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
+        end
+
         nil
       rescue => e
         Homebrew.failed = true
@@ -489,7 +495,7 @@ module Homebrew
       when :head, :stable
         # Not sure how to handle this ?
         # Do I have to add :stable / :head in Resources' as well (like it's being implemented in Formula ?)
-        package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula)
+        package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula) || package_or_resource.is_a?(Resource)
       when :homepage
         package_or_resource.homepage
       end
