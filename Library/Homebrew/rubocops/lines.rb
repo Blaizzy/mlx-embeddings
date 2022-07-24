@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "macos_versions"
 require "rubocops/extend/formula"
 
 module RuboCop
@@ -375,61 +376,171 @@ module RuboCop
       # This cop makes sure that OS conditionals are consistent.
       #
       # @api private
-      class OSConditionals < FormulaCop
+      class OnSystemConditionals < FormulaCop
         extend AutoCorrector
 
+        NO_ON_SYSTEM_METHOD_NAMES = [:install, :post_install].freeze
+        NO_ON_SYSTEM_BLOCK_NAMES = [:service, :test].freeze
+
+        ON_ARCH_OPTIONS = [:intel, :arm].freeze
+        ON_BASE_OS_OPTIONS = [:macos, :linux].freeze
+        ON_MACOS_VERSION_OPTIONS = MacOSVersions::SYMBOLS.keys.freeze
+        ALL_SYSTEM_OPTIONS = [*ON_ARCH_OPTIONS, *ON_BASE_OS_OPTIONS, *ON_MACOS_VERSION_OPTIONS, :system].freeze
+
+        MACOS_VERSION_CONDITIONALS = {
+          "==" => nil,
+          "<=" => :or_older,
+          ">=" => :or_newer,
+        }.freeze
+
+        ON_SYSTEM_CONDITIONALS = [:<, :<=].freeze
+
+        def on_system_method_info(on_system_option)
+          info = {}
+          info[:method] = :"on_#{on_system_option}"
+          info[:if_module], info[:if_method] = if ON_ARCH_OPTIONS.include?(on_system_option)
+            ["Hardware::CPU", :"#{on_system_option}?"]
+          elsif ON_BASE_OS_OPTIONS.include?(on_system_option)
+            ["OS", on_system_option == :macos ? :mac? : :linux?]
+          else
+            ["MacOS", :version]
+          end
+          info[:on_system_string] = "on_#{on_system_option}"
+          info[:if_string] = if on_system_option == :system
+            "if OS.linux? || MacOS.version"
+          else
+            "if #{info[:if_module]}.#{info[:if_method]}"
+          end
+
+          info
+        end
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
-          no_on_os_method_names = [:install, :post_install].freeze
-          no_on_os_block_names = [:service, :test].freeze
-          [[:on_macos, :mac?], [:on_linux, :linux?]].each do |on_method_name, if_method_name|
-            if_method_and_class = "if OS.#{if_method_name}"
-            no_on_os_method_names.each do |formula_method_name|
-              method_node = find_method_def(body_node, formula_method_name)
-              next unless method_node
-              next unless method_called_ever?(method_node, on_method_name)
+          top_level_nodes_to_check = []
+          NO_ON_SYSTEM_METHOD_NAMES.each do |formula_method_name|
+            method_node = find_method_def(body_node, formula_method_name)
+            top_level_nodes_to_check << [formula_method_name, method_node] if method_node
+          end
+          NO_ON_SYSTEM_BLOCK_NAMES.each do |formula_block_name|
+            block_node = find_block(body_node, formula_block_name)
+            top_level_nodes_to_check << [formula_block_name, block_node] if block_node
+          end
 
-              problem "Don't use '#{on_method_name}' in 'def #{formula_method_name}', " \
-                      "use '#{if_method_and_class}' instead." do |corrector|
-                block_node = offending_node.parent
-                next if block_node.type != :block
+          ALL_SYSTEM_OPTIONS.each do |on_system_option|
+            method_info = on_system_method_info(on_system_option)
 
-                # TODO: could fix corrector to handle this but punting for now.
-                next if block_node.single_line?
+            top_level_nodes_to_check.each do |top_level_name, top_level_node|
+              top_level_node_string = if top_level_node.def_type?
+                "def #{top_level_name}"
+              else
+                "#{top_level_name} do"
+              end
 
-                source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
-                corrector.replace(source_range, if_method_and_class)
+              find_every_method_call_by_name(top_level_node, method_info[:method]).each do |method|
+                if ON_MACOS_VERSION_OPTIONS.include?(on_system_option)
+                  on_macos_version_method_call(method, on_method: method_info[:method]) do |on_method_parameters|
+                    if on_method_parameters.empty?
+                      method_info[:if_string] = "if MacOS.version == :#{on_system_option}"
+                    else
+                      method_info[:on_system_string] = "#{method_info[:method]} :#{on_method_parameters.first}"
+                      if_condition_operator = MACOS_VERSION_CONDITIONALS.key(on_method_parameters.first)
+                      method_info[:if_string] = "if MacOS.version #{if_condition_operator} :#{on_system_option}"
+                    end
+                  end
+                elsif method_info[:method] == :on_system
+                  on_system_method_call(method) do |macos_symbol|
+                    base_os, condition = macos_symbol.to_s.split(/_(?=or_)/).map(&:to_sym)
+                    method_info[:on_system_string] = if condition.present?
+                      "on_system :linux, macos: :#{base_os}_#{condition}"
+                    else
+                      "on_system :linux, macos: :#{base_os}"
+                    end
+                    if_condition_operator = MACOS_VERSION_CONDITIONALS.key(condition)
+                    method_info[:if_string] = "if OS.linux? || MacOS.version #{if_condition_operator} :#{base_os}"
+                  end
+                end
+
+                offending_node(method)
+
+                problem "Don't use `#{method_info[:on_system_string]}` in `#{top_level_node_string}`, " \
+                        "use `#{method_info[:if_string]}` instead." do |corrector|
+                  block_node = offending_node.parent
+                  next if block_node.type != :block
+
+                  # TODO: could fix corrector to handle this but punting for now.
+                  next if block_node.single_line?
+
+                  source_range = offending_node.source_range.join(offending_node.parent.loc.begin)
+                  corrector.replace(source_range, method_info[:if_string])
+                end
+              end
+            end
+          end
+
+          # Don't restrict OS.mac? or OS.linux? usage in taps; they don't care
+          # as much as we do about e.g. formulae.brew.sh generation, often use
+          # platform-specific URLs and we don't want to add DSLs to support
+          # that case.
+          return if formula_tap != "homebrew-core"
+
+          ALL_SYSTEM_OPTIONS.each do |on_system_option|
+            method_info = on_system_method_info(on_system_option)
+
+            if_nodes_to_check = []
+
+            if ON_ARCH_OPTIONS.include?(on_system_option)
+              if_arch_node_search(body_node, arch: method_info[:if_method]) do |if_node, else_node|
+                else_info = if else_node.present?
+                  {
+                    can_autocorrect:  true,
+                    on_system_method: on_system_option == :intel ? "on_arm" : "on_intel",
+                    node:             else_node,
+                  }
+                end
+
+                if_nodes_to_check << [if_node, else_info]
+              end
+            elsif ON_BASE_OS_OPTIONS.include?(on_system_option)
+              if_base_os_node_search(body_node, base_os: method_info[:if_method]) do |if_node, else_node|
+                else_info = if else_node.present?
+                  {
+                    can_autocorrect:  true,
+                    on_system_method: on_system_option == :macos ? "on_linux" : "on_macos",
+                    node:             else_node,
+                  }
+                end
+
+                if_nodes_to_check << [if_node, else_info]
+              end
+            else
+              if_macos_version_node_search(body_node, os_name: on_system_option) do |if_node, operator, else_node|
+                if operator == :<
+                  method_info[:on_system_string] = "on_system"
+                elsif operator == :<=
+                  method_info[:on_system_string] = "on_system :linux, macos: :#{on_system_option}_or_older"
+                elsif operator != :== && MACOS_VERSION_CONDITIONALS.key?(operator.to_s)
+                  method_info[:on_system_string] = "#{method_info[:method]} " \
+                                                   ":#{MACOS_VERSION_CONDITIONALS[operator.to_s]}"
+                end
+                method_info[:if_string] = "if #{method_info[:if_module]}.#{method_info[:if_method]} #{operator} " \
+                                          ":#{on_system_option}"
+                if else_node.present? || !MACOS_VERSION_CONDITIONALS.key?(operator.to_s)
+                  else_info = { can_autocorrect: false }
+                end
+
+                if_nodes_to_check << [if_node, else_info]
               end
             end
 
-            no_on_os_block_names.each do |formula_block_name|
-              block_node = find_block(body_node, formula_block_name)
-              next unless block_node
-              next unless block_method_called_in_block?(block_node, on_method_name)
-
-              problem "Don't use '#{on_method_name}' in '#{formula_block_name} do', " \
-                      "use '#{if_method_and_class}' instead." do |corrector|
-                # TODO: could fix corrector to handle this but punting for now.
-                next if offending_node.single_line?
-
-                source_range = offending_node.send_node.source_range.join(offending_node.body.source_range.begin)
-                corrector.replace(source_range, "#{if_method_and_class}\n")
-              end
-            end
-
-            # Don't restrict OS.mac? or OS.linux? usage in taps; they don't care
-            # as much as we do about e.g. formulae.brew.sh generation, often use
-            # platform-specific URLs and we don't want to add DSLs to support
-            # that case.
-            next if formula_tap != "homebrew-core"
-
-            find_instance_method_call(body_node, "OS", if_method_name) do |method|
+            if_nodes_to_check.each do |if_node, else_info|
+              # TODO: check to see if it's legal
               valid = T.let(false, T::Boolean)
-              method.each_ancestor do |ancestor|
+              if_node.each_ancestor do |ancestor|
                 valid_method_names = case ancestor.type
                 when :def
-                  no_on_os_method_names
+                  NO_ON_SYSTEM_METHOD_NAMES
                 when :block
-                  no_on_os_block_names
+                  NO_ON_SYSTEM_BLOCK_NAMES
                 else
                   next
                 end
@@ -440,19 +551,47 @@ module RuboCop
               end
               next if valid
 
-              offending_node(method)
-              problem "Don't use '#{if_method_and_class}', use '#{on_method_name} do' instead." do |corrector|
-                if_node = method.parent
-                next if if_node.type != :if
+              offending_node(if_node)
 
+              problem "Don't use `#{method_info[:if_string]}`, " \
+                      "use `#{method_info[:on_system_string]} do` instead." do |corrector|
                 # TODO: could fix corrector to handle this but punting for now.
                 next if if_node.unless?
 
-                corrector.replace(if_node.source_range, "#{on_method_name} do\n#{if_node.body.source}\nend")
+                if else_info.present?
+                  next unless else_info[:can_autocorrect]
+
+                  corrector.replace(if_node.source_range,
+                                    "#{method_info[:on_system_string]} do\n#{if_node.body.source}\nend\n" \
+                                    "#{else_info[:on_system_method]} do\n#{else_info[:node].source}\nend")
+                else
+                  corrector.replace(if_node.source_range,
+                                    "#{method_info[:on_system_string]} do\n#{if_node.body.source}\nend")
+                end
               end
             end
           end
         end
+
+        def_node_matcher :on_macos_version_method_call, <<~PATTERN
+          (send nil? %on_method (sym ${:or_newer :or_older})?)
+        PATTERN
+
+        def_node_matcher :on_system_method_call, <<~PATTERN
+          (send nil? :on_system (sym :linux) (hash (pair (sym :macos) (sym $_))))
+        PATTERN
+
+        def_node_search :if_arch_node_search, <<~PATTERN
+          $(if (send (const (const nil? :Hardware) :CPU) %arch) _ $_)
+        PATTERN
+
+        def_node_search :if_base_os_node_search, <<~PATTERN
+          $(if (send (const nil? :OS) %base_os) _ $_)
+        PATTERN
+
+        def_node_search :if_macos_version_node_search, <<~PATTERN
+          $(if (send (send (const nil? :MacOS) :version) ${:== :<= :< :>= :> :!=} (sym %os_name)) _ $_)
+        PATTERN
       end
 
       # This cop checks for other miscellaneous style violations.
