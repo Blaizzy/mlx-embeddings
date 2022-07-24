@@ -1660,7 +1660,7 @@ class Formula
       end
 
       script_path.dirname.mkpath
-      script_path.write Utils.safe_popen_read(binary, cmd, shell_parameter)
+      script_path.write Utils.safe_popen_read({ "SHELL" => shell }, binary, cmd, shell_parameter)
     end
   end
 
