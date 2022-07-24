@@ -159,19 +159,20 @@ module Homebrew
     # `formulae_and_casks_to_check` array and prints the results.
     sig {
       params(
-        formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask, Resource)],
-        full_name:                   T::Boolean,
-        handle_name_conflict:        T::Boolean,
-        json:                        T::Boolean,
-        newer_only:                  T::Boolean,
-        debug:                       T::Boolean,
-        quiet:                       T::Boolean,
-        verbose:                     T::Boolean,
+        formulae_and_casks_to_check:  T::Array[T.any(Formula, Cask::Cask)],
+        full_name:                    T::Boolean,
+        handle_name_conflict:         T::Boolean,
+        resources_only:               T::Boolean,
+        json:                         T::Boolean,
+        newer_only:                   T::Boolean,
+        debug:                        T::Boolean,
+        quiet:                        T::Boolean,
+        verbose:                      T::Boolean,
       ).void
     }
     def run_checks(
       formulae_and_casks_to_check,
-      full_name: false, handle_name_conflict: false, json: false, newer_only: false,
+      full_name: false, handle_name_conflict: false, resources_only: false, json: false, newer_only: false,
       debug: false, quiet: false, verbose: false
     )
       load_other_tap_strategies(formulae_and_casks_to_check)
@@ -253,6 +254,9 @@ module Homebrew
 
         formula&.head&.downloader&.shutup!
 
+        # Check resources if "--resources" flag was given
+
+
         # Use the `stable` version for comparison except for installed
         # head-only formulae. A formula with `stable` and `head` that's
         # installed using `--head` will still use the `stable` version for
@@ -267,18 +271,33 @@ module Homebrew
           Version.new(formula_or_cask.version)
         end
 
+        p "Formula: #{formula_or_cask_name(formula_or_cask, full_name: use_full_name)}"
+        p "Current: #{current.to_s}"
+
         current_str = current.to_s
         current = LivecheckVersion.create(formula_or_cask, current)
 
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
         else
-          version_info = latest_version(
-            formula_or_cask,
-            referenced_formula_or_cask: referenced_formula_or_cask,
-            livecheck_references: livecheck_references,
-            json: json, full_name: use_full_name, verbose: verbose, debug: debug
-          )
+          if resources_only
+            version_info = resource_version(
+              formula_or_cask,
+              referenced_formula: referenced_formula_or_cask,
+              livecheck_references: livecheck_references,
+              json: json,
+              full_name: use_full_name,
+              verbose: verbose,
+              debug: debug
+            )
+          else
+            version_info = latest_version(
+              formula_or_cask,
+              referenced_formula_or_cask: referenced_formula_or_cask,
+              livecheck_references: livecheck_references,
+              json: json, full_name: use_full_name, verbose: verbose, debug: debug
+            )
+          end
           version_info[:latest] if version_info.present?
         end
 
@@ -368,13 +387,15 @@ module Homebrew
       puts JSON.pretty_generate(formulae_checked.compact)
     end
 
-    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), full_name: T::Boolean).returns(String) }
+    sig { params(formula_or_cask: T.any(Formula, Cask::Cask, Resource), full_name: T::Boolean).returns(String) }
     def formula_or_cask_name(formula_or_cask, full_name: false)
       case formula_or_cask
       when Formula
         formula_name(formula_or_cask, full_name: full_name)
       when Cask::Cask
         cask_name(formula_or_cask, full_name: full_name)
+      when Resource
+        resource_name(formula_or_cask, full_name: full_name)
       else
         T.absurd(formula_or_cask)
       end
@@ -392,6 +413,13 @@ module Homebrew
     sig { params(formula: Formula, full_name: T::Boolean).returns(String) }
     def formula_name(formula, full_name: false)
       full_name ? formula.full_name : formula.name
+    end
+
+    # Returns the fully-qualified name of a resource if the `full_name` argument is
+    # provided; returns the name otherwise.
+    sig { params(resource: Resource, full_name: T::Boolean).returns(String) }
+    def resource_name(resource, full_name: false)
+      full_name ? resource.full_name : resource.name
     end
 
     sig {
@@ -449,41 +477,48 @@ module Homebrew
     sig {
       params(
         livecheck_url:   T.any(String, Symbol),
-        formula_or_cask: T.any(Formula, Cask::Cask),
+        package_or_resource: T.any(Formula, Cask::Cask, Resource),
       ).returns(T.nilable(String))
     }
-    def livecheck_url_to_string(livecheck_url, formula_or_cask)
+    def livecheck_url_to_string(livecheck_url, package_or_resource)
       case livecheck_url
       when String
         livecheck_url
       when :url
-        formula_or_cask.url&.to_s if formula_or_cask.is_a?(Cask::Cask)
+        package_or_resource.url&.to_s if package_or_resource.is_a?(Cask::Cask)
       when :head, :stable
-        formula_or_cask.send(livecheck_url)&.url if formula_or_cask.is_a?(Formula)
+        package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula) || package_or_resource.is_a?(Resource)
       when :homepage
-        formula_or_cask.homepage
+        package_or_resource.homepage
       end
     end
 
     # Returns an Array containing the formula/cask URLs that can be used by livecheck.
-    sig { params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Array[String]) }
-    def checkable_urls(formula_or_cask)
+    sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource)).returns(T::Array[String]) }
+    def checkable_urls(package_or_resource)
       urls = []
 
-      case formula_or_cask
-      when Formula
-        if formula_or_cask.stable
-          urls << formula_or_cask.stable.url
-          urls.concat(formula_or_cask.stable.mirrors)
+      case package_or_resource
+      when Resource
+        if package_or_resource.stable
+          urls << package_or_resource.stable.url
+          urls.concat(package_or_resource.stable.mirrors)
         end
-        urls << formula_or_cask.head.url if formula_or_cask.head
-        urls << formula_or_cask.homepage if formula_or_cask.homepage
+        urls << package_or_resource.head.url if package_or_resource.head
+        urls << package_or_resource.homepage if package_or_resource.homepage
+      when Formula
+        if package_or_resource.stable
+          urls << package_or_resource.stable.url
+          urls.concat(package_or_resource.stable.mirrors)
+        end
+        urls << package_or_resource.head.url if package_or_resource.head
+        urls << package_or_resource.homepage if package_or_resource.homepage
       when Cask::Cask
-        urls << formula_or_cask.appcast.to_s if formula_or_cask.appcast
-        urls << formula_or_cask.url.to_s if formula_or_cask.url
-        urls << formula_or_cask.homepage if formula_or_cask.homepage
+        urls << package_or_resource.appcast.to_s if package_or_resource.appcast
+        urls << package_or_resource.url.to_s if package_or_resource.url
+        urls << package_or_resource.homepage if package_or_resource.homepage
       else
-        T.absurd(formula_or_cask)
+        T.absurd(package_or_resource)
       end
 
       urls.compact.uniq
@@ -560,6 +595,216 @@ module Homebrew
 
       homebrew_curl_root_domains.include?(url_root_domain)
     end
+
+    #==================================================================================
+
+    # Identifies the latest version of the resources and returns a Hash containing
+    # the version information. Returns nil if a latest version couldn't be found.
+    sig {
+      params(
+        formula_with_resources:     T.any(Formula),
+        referenced_formula:         T.nilable(T.any(Formula)),
+        livecheck_references:       T::Array[T.any(Formula, Cask::Cask)],
+        json:                       T::Boolean,
+        full_name:                  T::Boolean,
+        verbose:                    T::Boolean,
+        debug:                      T::Boolean,
+      ).returns(T.nilable(Hash))
+    }
+    def resource_version(
+      formula_with_resources,
+      referenced_formula: nil,
+      livecheck_references: [],
+      json: false,
+      full_name: false,
+      verbose: false,
+      debug: false
+    )
+      formula_with_resources.resources.each_with_index do |resource, i|
+        has_livecheckable = resource.livecheckable?
+
+        #@todo: for now, only check resources with livecheck block
+        if has_livecheckable
+          livecheck = resource.livecheck
+          # referenced_livecheck = referenced_formula_or_cask&.livecheck
+          livecheck_url = livecheck.url
+          livecheck_regex = livecheck.regex
+          livecheck_strategy = livecheck.strategy
+          livecheck_strategy_block = livecheck.strategy_block
+
+          livecheck_url_string = livecheck_url_to_string(
+            livecheck_url,
+            resource,
+          )
+
+          urls = [livecheck_url_string] if livecheck_url_string
+          urls ||= checkable_urls(resource)
+
+        end
+
+        if debug
+          puts "Resource:          #{resource_name(resource, full_name: full_name)}"
+          puts "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
+        end
+
+      end
+
+
+
+
+
+
+      # checked_urls = []
+      # # rubocop:disable Metrics/BlockLength
+      # urls.each_with_index do |original_url, i|
+      #   # Only preprocess the URL when it's appropriate
+      #   url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
+      #     original_url
+      #   else
+      #     preprocess_url(original_url)
+      #   end
+      #   next if checked_urls.include?(url)
+
+      #   strategies = Strategy.from_url(
+      #     url,
+      #     livecheck_strategy: livecheck_strategy,
+      #     url_provided:       livecheck_url.present?,
+      #     regex_provided:     livecheck_regex.present?,
+      #     block_provided:     livecheck_strategy_block.present?,
+      #   )
+      #   strategy = Strategy.from_symbol(livecheck_strategy) || strategies.first
+      #   strategy_name = livecheck_strategy_names[strategy]
+
+      #   if debug
+      #     puts
+      #     if livecheck_url.is_a?(Symbol)
+      #       # This assumes the URL symbol will fit within the available space
+      #       puts "URL (#{livecheck_url}):".ljust(18, " ") + original_url
+      #     else
+      #       puts "URL:              #{original_url}"
+      #     end
+      #     puts "URL (processed):  #{url}" if url != original_url
+      #     if strategies.present? && verbose
+      #       puts "Strategies:       #{strategies.map { |s| livecheck_strategy_names[s] }.join(", ")}"
+      #     end
+      #     puts "Strategy:         #{strategy.blank? ? "None" : strategy_name}"
+      #     puts "Regex:            #{livecheck_regex.inspect}" if livecheck_regex.present?
+      #   end
+
+      #   if livecheck_strategy.present?
+      #     if livecheck_url.blank? && strategy.method(:find_versions).parameters.include?([:keyreq, :url])
+      #       odebug "#{strategy_name} strategy requires a URL"
+      #       next
+      #     elsif livecheck_strategy != :page_match && strategies.exclude?(strategy)
+      #       odebug "#{strategy_name} strategy does not apply to this URL"
+      #       next
+      #     end
+      #   end
+
+      #   next if strategy.blank?
+
+      #   homebrew_curl = case strategy_name
+      #   when "PageMatch", "HeaderMatch"
+      #     use_homebrew_curl?((referenced_formula_or_cask || formula_or_cask), url)
+      #   end
+      #   puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
+
+      #   strategy_data = strategy.find_versions(
+      #     url:           url,
+      #     regex:         livecheck_regex,
+      #     homebrew_curl: homebrew_curl,
+      #     cask:          cask,
+      #     &livecheck_strategy_block
+      #   )
+      #   match_version_map = strategy_data[:matches]
+      #   regex = strategy_data[:regex]
+      #   messages = strategy_data[:messages]
+      #   checked_urls << url
+
+      #   if messages.is_a?(Array) && match_version_map.blank?
+      #     puts messages unless json
+      #     next if i + 1 < urls.length
+
+      #     return status_hash(formula_or_cask, "error", messages, full_name: full_name, verbose: verbose)
+      #   end
+
+      #   if debug
+      #     if strategy_data[:url].present? && strategy_data[:url] != url
+      #       puts "URL (strategy):   #{strategy_data[:url]}"
+      #     end
+      #     puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url].present?
+      #     if strategy_data[:regex].present? && strategy_data[:regex] != livecheck_regex
+      #       puts "Regex (strategy): #{strategy_data[:regex].inspect}"
+      #     end
+      #     puts "Cached?:          Yes" if strategy_data[:cached] == true
+      #   end
+
+      #   match_version_map.delete_if do |_match, version|
+      #     next true if version.blank?
+      #     next false if has_livecheckable
+
+      #     UNSTABLE_VERSION_KEYWORDS.any? do |rejection|
+      #       version.to_s.include?(rejection)
+      #     end
+      #   end
+
+      #   next if match_version_map.blank?
+
+      #   if debug
+      #     puts
+      #     puts "Matched Versions:"
+
+      #     if verbose
+      #       match_version_map.each do |match, version|
+      #         puts "#{match} => #{version.inspect}"
+      #       end
+      #     else
+      #       puts match_version_map.values.join(", ")
+      #     end
+      #   end
+
+      #   version_info = {
+      #     latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),
+      #   }
+
+      #   if json && verbose
+      #     version_info[:meta] = {}
+
+      #     if livecheck_references.present?
+      #       version_info[:meta][:references] = livecheck_references.map do |ref_formula_or_cask|
+      #         case ref_formula_or_cask
+      #         when Formula
+      #           { formula: formula_name(ref_formula_or_cask, full_name: full_name) }
+      #         when Cask::Cask
+      #           { cask: cask_name(ref_formula_or_cask, full_name: full_name) }
+      #         end
+      #       end
+      #     end
+
+      #     version_info[:meta][:url] = {}
+      #     version_info[:meta][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
+      #     version_info[:meta][:url][:original] = original_url
+      #     version_info[:meta][:url][:processed] = url if url != original_url
+      #     if strategy_data[:url].present? && strategy_data[:url] != url
+      #       version_info[:meta][:url][:strategy] = strategy_data[:url]
+      #     end
+      #     version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
+      #     version_info[:meta][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
+
+      #     version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
+      #     version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
+      #     version_info[:meta][:regex] = regex.inspect if regex.present?
+      #     version_info[:meta][:cached] = true if strategy_data[:cached] == true
+      #   end
+
+      #   return version_info
+      # end
+      # rubocop:enable Metrics/BlockLength
+
+      nil
+    end
+
+    #==================================================================================
 
     # Identifies the latest version of the formula and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
