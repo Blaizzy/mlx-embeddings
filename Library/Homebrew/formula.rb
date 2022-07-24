@@ -1638,11 +1638,11 @@ class Formula
     params(base_name: String, shells: T::Array[Symbol], binary: Pathname, cmd: String,
            shell_prefix: T.nilable(T.any(Symbol, String))).void
   }
-  def generate_completions(base_name: name,
-                           shells: [:bash, :zsh, :fish],
-                           binary: bin/base_name,
-                           cmd: "completion",
-                           shell_prefix: nil)
+  def generate_completions_from_executable(base_name: name,
+                                           shells: [:bash, :zsh, :fish],
+                                           executable: bin/base_name,
+                                           cmd: "completion",
+                                           shell_parameter: nil)
     completion_script_path_map = {
       bash: bash_completion/base_name,
       zsh:  zsh_completion/"_#{base_name}",
@@ -1651,16 +1651,16 @@ class Formula
 
     shells.each do |shell|
       script_path = completion_script_path_map[shell]
-      shell_parameter = if shell_prefix.nil?
+      shell_parameter = if shell_parameter.nil?
         shell.to_s
-      elsif shell_prefix == :flag
+      elsif shell_parameter == :flag
         "--#{shell}"
       else
-        "#{shell_prefix}#{shell}"
+        "#{shell_parameter}#{shell}"
       end
 
       script_path.dirname.mkpath
-      script_path.write Utils.safe_popen_read({ "SHELL" => shell }, binary, cmd, shell_parameter)
+      script_path.write Utils.safe_popen_read({ "SHELL" => shell }, executable, cmd, shell_parameter)
     end
   end
 
