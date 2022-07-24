@@ -243,7 +243,7 @@ module Homebrew
     elsif new_tag.present?
       [
         [
-          formula_spec.specs[:tag],
+          /#{formula_spec.specs[:tag]}(?=")/,
           new_tag,
         ],
         [
@@ -283,8 +283,8 @@ module Homebrew
     if forced_version && new_version != "0"
       replacement_pairs << if old_contents.include?("version \"#{old_formula_version}\"")
         [
-          old_formula_version.to_s,
-          new_version,
+          "version \"#{old_formula_version}\"",
+          "version \"#{new_version}\"",
         ]
       elsif new_mirrors.present?
         [

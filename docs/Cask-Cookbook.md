@@ -108,7 +108,7 @@ cask "<cask-token>" do
 [`<cask-token>`](#token-reference) should match the Cask filename, without the `.rb` extension,
 enclosed in single quotes.
 
-There are currently some arbitrary limitations on Cask tokens which are in the process of being removed. The Travis bot will catch any errors during the transition.
+There are currently some arbitrary limitations on Cask tokens which are in the process of being removed. GitHub Actions will catch any errors during the transition.
 
 ## Stanza order
 

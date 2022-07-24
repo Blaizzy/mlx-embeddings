@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+ruby ">= 2.6.0"
+
 # disallowed gems (should not be used)
 # * nokogiri - use rexml instead for XML parsing
 
@@ -17,6 +19,7 @@ gem "rspec-github", require: false
 gem "rspec-its", require: false
 gem "rspec_junit_formatter", require: false
 gem "rspec-retry", require: false
+gem "rspec-sorbet", require: false
 gem "rspec-wait", require: false
 gem "rubocop", require: false
 gem "rubocop-ast", require: false
@@ -26,13 +29,12 @@ gem "warning", require: false
 
 group :sorbet, optional: true do
   gem "parlour", require: false
-  gem "rspec-sorbet", require: false
   gem "sorbet-static-and-runtime", require: false
   gem "tapioca", require: false
 end
 
 # vendored gems
-gem "activesupport", "< 7" # 7 requires Ruby 2.7
+gem "activesupport"
 gem "addressable"
 gem "concurrent-ruby"
 gem "did_you_mean" # remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
@@ -44,4 +46,4 @@ gem "rubocop-rails"
 gem "rubocop-rspec"
 gem "rubocop-sorbet"
 gem "ruby-macho"
-gem "sorbet-runtime-stub"
+gem "sorbet-runtime"

@@ -18,7 +18,7 @@ class SoftwareSpec
   extend T::Sig
 
   extend Forwardable
-  include OnSystem
+  include OnSystem::MacOSAndLinux
 
   PREDEFINED_OPTIONS = {
     universal: Option.new("universal", "Build a universal binary"),
@@ -205,6 +205,8 @@ class SoftwareSpec
 
   def patch(strip = :p1, src = nil, &block)
     p = Patch.create(strip, src, &block)
+    return if p.is_a?(ExternalPatch) && p.url.blank?
+
     dependency_collector.add(p.resource) if p.is_a? ExternalPatch
     patches << p
   end
@@ -583,7 +585,7 @@ class BottleSpecification
 end
 
 class PourBottleCheck
-  include OnSystem
+  include OnSystem::MacOSAndLinux
 
   def initialize(formula)
     @formula = formula

@@ -88,7 +88,7 @@ module Homebrew
   def tests
     args = tests_args.parse
 
-    Homebrew.install_bundler_gems!(groups: ["sorbet"])
+    Homebrew.install_bundler_gems!
 
     require "byebug" if args.byebug?
 

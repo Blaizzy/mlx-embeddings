@@ -102,7 +102,15 @@ module Cask
           casks.select do |cask|
             raise CaskNotInstalledError, cask if !cask.installed? && !force
 
-            cask.outdated?(greedy: true)
+            if cask.outdated?(greedy: true)
+              true
+            elsif cask.version.latest?
+              opoo "Not upgrading #{cask.token}, the downloaded artifact has not changed"
+              false
+            else
+              opoo "Not upgrading #{cask.token}, the latest version is already installed"
+              false
+            end
           end
         end
 

@@ -75,7 +75,7 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR PATH TMUX DBUS_SESSION_BUS_ADDRESS
+for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR}" ]] && continue
@@ -109,6 +109,11 @@ then
   export CI="1"
 fi
 
+# save the existing user path as HOMEBREW_PATH so it can be queried by
+# e.g. brew doctor later.
+HOMEBREW_PATH="${PATH}"
+export HOMEBREW_PATH
+
 # set from user environment
 # shellcheck disable=SC2154
 if [[ -z "${HOMEBREW_NO_ENV_FILTERING}" ]]
@@ -120,9 +125,7 @@ then
     HOME SHELL PATH TERM TERMINFO TERMINFO_DIRS COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
     http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY
     GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED
-    GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF
-    # TODO: remove the below after a few days
-    GITHUB_ACTIONS_HOMEBREW_MACOS_SELF_HOSTED
+    GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_ATTEMPT GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF
   )
   # Filter all but the specific variables.
   for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"

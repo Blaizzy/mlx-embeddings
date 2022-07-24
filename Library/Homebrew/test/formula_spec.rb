@@ -905,6 +905,99 @@ describe Formula do
     expect(h["versions"]["bottle"]).to be_truthy
   end
 
+  describe "#to_hash_with_variations", :needs_macos do
+    let(:formula_path) { CoreTap.new.formula_dir/"foo-variations.rb" }
+    let(:formula_content) do
+      <<~RUBY
+        class FooVariations < Formula
+          url "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
+          sha256 TESTBALL_SHA256
+
+          on_intel do
+            depends_on "intel-formula"
+          end
+
+          on_big_sur do
+            depends_on "big-sur-formula"
+          end
+
+          on_catalina :or_older do
+            depends_on "catalina-or-older-formula"
+          end
+
+          on_linux do
+            depends_on "linux-formula"
+          end
+        end
+      RUBY
+    end
+    let(:expected_variations) {
+      <<~JSON
+        {
+          "arm64_big_sur": {
+            "dependencies": [
+              "big-sur-formula"
+            ]
+          },
+          "monterey": {
+            "dependencies": [
+              "intel-formula"
+            ]
+          },
+          "big_sur": {
+            "dependencies": [
+              "intel-formula",
+              "big-sur-formula"
+            ]
+          },
+          "catalina": {
+            "dependencies": [
+              "intel-formula",
+              "catalina-or-older-formula"
+            ]
+          },
+          "mojave": {
+            "dependencies": [
+              "intel-formula",
+              "catalina-or-older-formula"
+            ]
+          },
+          "x86_64_linux": {
+            "dependencies": [
+              "intel-formula",
+              "linux-formula"
+            ]
+          }
+        }
+      JSON
+    }
+
+    before do
+      # Use a more limited symbols list to shorten the variations hash
+      symbols = {
+        monterey: "12",
+        big_sur:  "11",
+        catalina: "10.15",
+        mojave:   "10.14",
+      }
+      stub_const("MacOSVersions::SYMBOLS", symbols)
+
+      # For consistency, always run on Monterey and ARM
+      allow(MacOS).to receive(:version).and_return(MacOS::Version.new("12"))
+      allow(Hardware::CPU).to receive(:type).and_return(:arm)
+
+      formula_path.dirname.mkpath
+      formula_path.write formula_content
+    end
+
+    it "returns the correct variations hash" do
+      h = Formulary.factory("foo-variations").to_hash_with_variations
+
+      expect(h).to be_a(Hash)
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_variations.strip
+    end
+  end
+
   specify "#to_recursive_bottle_hash" do
     f1 = formula "foo" do
       url "foo-1.0"
@@ -1538,10 +1631,10 @@ describe Formula do
   describe "#on_macos", :needs_macos do
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_macos do
             @test = 1
           end
@@ -1561,10 +1654,10 @@ describe Formula do
   describe "#on_linux", :needs_linux do
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_macos do
             @test = 1
           end
@@ -1581,6 +1674,65 @@ describe Formula do
     end
   end
 
+  describe "#on_system" do
+    after do
+      Homebrew::SimulateSystem.clear
+    end
+
+    let(:f) do
+      Class.new(Testball) do
+        attr_reader :foo
+        attr_reader :bar
+
+        def install
+          @foo = 0
+          @bar = 0
+          on_system :linux, macos: :monterey do
+            @foo = 1
+          end
+          on_system :linux, macos: :big_sur_or_older do
+            @bar = 1
+          end
+        end
+      end.new
+    end
+
+    it "doesn't call code on Ventura", :needs_macos do
+      Homebrew::SimulateSystem.os = :ventura
+      f.brew { f.install }
+      expect(f.foo).to eq(0)
+      expect(f.bar).to eq(0)
+    end
+
+    it "calls code on Linux", :needs_linux do
+      Homebrew::SimulateSystem.os = :linux
+      f.brew { f.install }
+      expect(f.foo).to eq(1)
+      expect(f.bar).to eq(1)
+    end
+
+    it "calls code within `on_system :linux, macos: :monterey` on Monterey", :needs_macos do
+      Homebrew::SimulateSystem.os = :monterey
+      f.brew { f.install }
+      expect(f.foo).to eq(1)
+      expect(f.bar).to eq(0)
+    end
+
+    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Big Sur", :needs_macos do
+      Homebrew::SimulateSystem.os = :big_sur
+      f.brew { f.install }
+      expect(f.foo).to eq(0)
+      expect(f.bar).to eq(1)
+    end
+
+    it "calls code within `on_system :linux, macos: :big_sur_or_older` on Catalina", :needs_macos do
+      Homebrew::SimulateSystem.os = :catalina
+      f.brew { f.install }
+      expect(f.foo).to eq(0)
+      expect(f.bar).to eq(1)
+    end
+  end
+
   describe "on_{os_version} blocks", :needs_macos do
     before do
       Homebrew::SimulateSystem.os = :monterey
@@ -1592,10 +1744,10 @@ describe Formula do
 
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_monterey :or_newer do
             @test = 1
           end
@@ -1647,10 +1799,10 @@ describe Formula do
 
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_arm do
             @test = 1
           end
@@ -1674,10 +1826,10 @@ describe Formula do
 
     let(:f) do
       Class.new(Testball) do
-        @test = 0
         attr_reader :test
 
         def install
+          @test = 0
           on_arm do
             @test = 1
           end

@@ -198,7 +198,7 @@ class LinkageChecker
             # In macOS Big Sur and later, system libraries do not exist on-disk and instead exist in a cache.
             # If dlopen finds the dylib, then the linkage is not broken.
             @system_dylibs << dylib
-          else
+          elsif !system_framework?(dylib)
             @broken_dylibs << dylib
           end
         else
@@ -306,11 +306,13 @@ class LinkageChecker
   def harmless_broken_link?(dylib)
     # libgcc_s_* is referenced by programs that use the Java Service Wrapper,
     # and is harmless on x86(_64) machines
-    return true if [
+    [
       "/usr/lib/libgcc_s_ppc64.1.dylib",
       "/opt/local/lib/libgcc/libgcc_s.1.dylib",
     ].include?(dylib)
+  end
 
+  def system_framework?(dylib)
     dylib.start_with?("/System/Library/Frameworks/")
   end
 

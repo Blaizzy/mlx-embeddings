@@ -120,9 +120,7 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null,
-            "variations": {
-            }
+            "auto_updates": null
           },
           {
             "token": "local-transmission",
@@ -151,9 +149,7 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null,
-            "variations": {
-            }
+            "auto_updates": null
           },
           {
             "token": "multiple-versions",
@@ -185,32 +181,7 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null,
-            "variations": {
-              "arm_big_sur": {
-                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/arm.zip",
-                "version": "1.2.0",
-                "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
-              },
-              "intel_monterey": {
-                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.3/intel.zip"
-              },
-              "intel_big_sur": {
-                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/intel.zip",
-                "version": "1.2.0",
-                "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
-              },
-              "intel_catalina": {
-                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
-                "version": "1.0.0",
-                "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
-              },
-              "intel_mojave": {
-                "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
-                "version": "1.0.0",
-                "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
-              }
-            }
+            "auto_updates": null
           },
           {
             "token": "third-party-cask",
@@ -239,14 +210,12 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null,
-            "variations": {
-            }
+            "auto_updates": null
           }
         ]
       EOS
     }
-    let(:original_macos_version) { MacOS.full_version.to_s }
+    let!(:original_macos_version) { MacOS.full_version.to_s }
 
     before do
       # Use a more limited symbols list to shorten the variations hash

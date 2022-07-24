@@ -92,7 +92,7 @@ module Cask
     ]).freeze
 
     extend Predicable
-    include OnSystem
+    include OnSystem::MacOSOnly
 
     attr_reader :cask, :token
 

@@ -100,15 +100,8 @@ module Homebrew
       return merge(args: args)
     end
 
-    ensure_relocation_formulae_installed! unless args.skip_relocation?
     args.named.to_resolved_formulae(uniq: false).each do |f|
       bottle_formula f, args: args
-    end
-  end
-
-  def ensure_relocation_formulae_installed!
-    Keg.relocation_formulae.each do |f|
-      ensure_formula_installed!(f, latest: true)
     end
   end
 
@@ -268,6 +261,7 @@ module Homebrew
   def formula_ignores(f)
     ignores = []
     cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
+    prefix_regex = Regexp.escape(HOMEBREW_PREFIX)
 
     # Ignore matches to go keg, because all go binaries are statically linked.
     any_go_deps = f.deps.any? do |dep|
@@ -282,7 +276,7 @@ module Homebrew
     # On Linux, GCC installation can be moved so long as the whole directory tree is moved together:
     # https://gcc-help.gcc.gnu.narkive.com/GnwuCA7l/moving-gcc-from-the-installation-path-is-it-allowed.
     when Version.formula_optionally_versioned_regex(:gcc)
-      %r{#{cellar_regex}/gcc} if OS.linux?
+      Regexp.union(%r{#{cellar_regex}/gcc}, %r{#{prefix_regex}/opt/gcc}) if OS.linux?
     # binutils is relocatable for the same reason: https://github.com/Homebrew/brew/pull/11899#issuecomment-906804451.
     when Version.formula_optionally_versioned_regex(:binutils)
       %r{#{cellar_regex}/binutils} if OS.linux?

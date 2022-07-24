@@ -312,6 +312,7 @@ _brew_abv() {
       --installed
       --json
       --quiet
+      --variations
       --verbose
       "
       return
@@ -1044,6 +1045,7 @@ _brew_info() {
       --installed
       --json
       --quiet
+      --variations
       --verbose
       "
       return
