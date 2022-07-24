@@ -53,8 +53,8 @@ module Homebrew
       repo_path = find_repo_path_for_repo(repo)
       return ofail "Couldn't find repo #{repo} locally. Run `brew tap homebrew/#{repo}`." unless repo_path.exist?
 
-      commits += git_log_cmd("author", repo_path, args)
-      coauthorships += git_log_cmd("coauthorships", repo_path, args)
+      commits += git_log_author_cmd(repo_path, args)
+      coauthorships += git_log_coauthor_cmd(repo_path, args)
     end
 
     sentence = "Person #{args[:email]} directly authored #{commits} commits"
@@ -81,14 +81,22 @@ module Homebrew
     Tap.fetch("homebrew", repo).path
   end
 
-  sig { params(kind: String, repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
-  def git_log_cmd(kind, repo_path, args)
-    cmd = "git -C #{repo_path} log --oneline"
-    cmd += " --author=#{args[:email]}" if kind == "author"
-    cmd += " --format='%(trailers:key=Co-authored-by:)'" if kind == "coauthorships"
+  sig { params(repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
+  def git_log_author_cmd(repo_path, args)
+    cmd = "git -C #{repo_path} log --oneline --author=#{args[:email]}"
     cmd += " --before=#{args[:to]}" if args[:to]
     cmd += " --after=#{args[:from]}" if args[:from]
-    cmd += " | grep #{args[:email]}" if kind == "coauthorships"
+
+    `#{cmd} | wc -l`.strip.to_i
+  end
+
+  sig { params(repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
+  def git_log_coauthor_cmd(repo_path, args)
+    cmd = "git -C #{repo_path} log --oneline"
+    cmd += " --format='%(trailers:key=Co-authored-by:)'"
+    cmd += " --before=#{args[:to]}" if args[:to]
+    cmd += " --after=#{args[:from]}" if args[:from]
+    cmd += " | grep #{args[:email]}"
 
     `#{cmd} | wc -l`.strip.to_i
   end
