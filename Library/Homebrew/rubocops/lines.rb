@@ -415,7 +415,7 @@ module RuboCop
         end
       end
 
-      # This cop makes sure that the `generate_completions` DSL is used.
+      # This cop makes sure that the `generate_completions_from_executable` DSL is used.
       #
       # @api private
       class GenerateCompletionsDSL < FormulaCop
@@ -424,14 +424,15 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           install = find_method_def(body_node, :install)
 
-          correctable_shell_completion_node(install) do |node, shell, base_name, binary, cmd, shell_parameter|
-            next unless shell_parameter.match?(/(bash|zsh|fish)/) # generate_completions only applicable if shell is passed
+          correctable_shell_completion_node(install) do |node, shell, base_name, executable, cmd, shell_parameter|
+            # generate_completions_from_executable only applicable if shell is passed
+            next unless shell_parameter.match?(/(bash|zsh|fish)/)
 
             base_name = base_name.delete_prefix("_").delete_suffix(".fish")
             shell = shell.to_s.sub("_completion", "").to_sym
-            binary = binary.source
+            executable = executable.source
             shell_parameter_stripped = shell_parameter.sub("bash", "").sub("zsh", "").sub("fish", "")
-            shell_prefix = if shell_parameter_stripped.empty?
+            shell_parameter_format = if shell_parameter_stripped.empty?
               nil
             elsif shell_parameter_stripped == "--"
               :flag
@@ -444,17 +445,17 @@ module RuboCop
             replacement_args = %w[]
             replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
             replacement_args << "shells: [:#{shell}]"
-            if binary.to_s != "bin/\"#{@formula_name}\"" && binary.to_s != "bin/\"#{base_name}\""
-              replacement_args << "binary: #{binary}"
+            if executable.to_s != "bin/\"#{@formula_name}\"" && executable.to_s != "bin/\"#{base_name}\""
+              replacement_args << "executable: #{executable}"
             end
             replacement_args << "cmd: \"#{cmd}\"" unless cmd == "completion"
-            replacement_args << "shell_prefix: #{shell_prefix}" unless shell_prefix.nil?
+            replacement_args << "shell_parameter_format: #{shell_parameter_format}" unless shell_parameter_format.nil?
 
             offending_node(node)
             replacement = if replacement_args.blank?
-              "generate_completions"
+              "generate_completions_from_executable"
             else
-              "generate_completions(#{replacement_args.join(", ")})"
+              "generate_completions_from_executable(#{replacement_args.join(", ")})"
             end
             problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
               corrector.replace(@offensive_node.source_range, replacement)
@@ -463,7 +464,7 @@ module RuboCop
 
           shell_completion_node(install) do |node|
             offending_node(node)
-            problem "Use `generate_completions` DSL instead of `#{@offensive_node.source}`."
+            problem "Use `generate_completions_from_executable` DSL instead of `#{@offensive_node.source}`."
           end
         end
 
