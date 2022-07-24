@@ -435,6 +435,8 @@ module RuboCop
               nil
             elsif shell_parameter_stripped == "--"
               :flag
+            elsif shell_parameter_stripped == "--shell="
+              :arg
             else
               "\"#{shell_parameter_stripped}\""
             end
