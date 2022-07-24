@@ -1642,7 +1642,7 @@ class Formula
                                            shells: [:bash, :zsh, :fish],
                                            executable: bin/base_name,
                                            cmd: "completion",
-                                           shell_parameter: nil)
+                                           shell_parameter_format: nil)
     completion_script_path_map = {
       bash: bash_completion/base_name,
       zsh:  zsh_completion/"_#{base_name}",
@@ -1651,12 +1651,16 @@ class Formula
 
     shells.each do |shell|
       script_path = completion_script_path_map[shell]
-      shell_parameter = if shell_parameter.nil?
+      shell_parameter = if shell_parameter_format.nil?
         shell.to_s
-      elsif shell_parameter == :flag
+      elsif shell_parameter_format == :flag
         "--#{shell}"
+      elsif shell_parameter_format == :arg
+        "--shell=#{shell}"
+      elsif shell_parameter_format == :none
+        nil
       else
-        "#{shell_parameter}#{shell}"
+        "#{shell_parameter_format}#{shell}"
       end
 
       script_path.dirname.mkpath
