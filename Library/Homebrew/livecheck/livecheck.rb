@@ -760,7 +760,7 @@ module Homebrew
             end
 
             version_info = {
-              latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),
+              latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) }),
             }
 
             if json && verbose
@@ -793,7 +793,7 @@ module Homebrew
               version_info[:meta][:cached] = true if strategy_data[:cached] == true
             end
 
-            puts "Version Info:     #{}"
+            puts "Version Info:     #{version_info}"
 
             return version_info
           end
