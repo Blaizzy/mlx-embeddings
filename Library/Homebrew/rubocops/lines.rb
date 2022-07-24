@@ -449,7 +449,11 @@ module RuboCop
             replacement_args << "shell_prefix: #{shell_prefix}" unless shell_prefix.nil?
 
             offending_node(node)
-            replacement = "generate_completions(#{replacement_args.join(", ")})"
+            replacement = if replacement_args.blank?
+              "generate_completions"
+            else
+              "generate_completions(#{replacement_args.join(", ")})"
+            end
             problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
               corrector.replace(@offensive_node.source_range, replacement)
             end
