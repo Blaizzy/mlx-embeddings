@@ -429,7 +429,7 @@ module RuboCop
             next unless shell_parameter.match?(/(bash|zsh|fish)/)
 
             base_name = base_name.delete_prefix("_").delete_suffix(".fish")
-            shell = shell.to_s.sub("_completion", "").to_sym
+            shell = shell.to_s.delete_suffix("_completion").to_sym
             executable = executable.source
             shell_parameter_stripped = shell_parameter.sub("bash", "").sub("zsh", "").sub("fish", "")
             shell_parameter_format = if shell_parameter_stripped.empty?
@@ -452,11 +452,9 @@ module RuboCop
             replacement_args << "shell_parameter_format: #{shell_parameter_format}" unless shell_parameter_format.nil?
 
             offending_node(node)
-            replacement = if replacement_args.blank?
-              "generate_completions_from_executable"
-            else
-              "generate_completions_from_executable(#{replacement_args.join(", ")})"
-            end
+            replacement = "generate_completions_from_executable"
+            replacement += "(#{replacement_args.join(", ")})" unless replacement_args.blank?
+
             problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
               corrector.replace(@offensive_node.source_range, replacement)
             end
@@ -486,11 +484,11 @@ module RuboCop
 
         # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write output
         def_node_search :shell_completion_node, <<~EOS
-        $(send
-          (begin
-            (send
-              (send nil? {:bash_completion :zsh_completion :fish_completion}) :/
-              (str _))) :write _)
+          $(send
+            (begin
+              (send
+                (send nil? {:bash_completion :zsh_completion :fish_completion}) :/
+                (str _))) :write _)
         EOS
       end
 
