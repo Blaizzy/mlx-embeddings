@@ -70,8 +70,8 @@ module Homebrew
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
     elsif args.resources?
-      livecheckable_resources = Formula.all.map { |formula| formula.resources }.flatten.filter{ |resource| resource.livecheckable? }
-      livecheckable_resources
+      formula_with_resources = Formula.all.select { |formula| formula.resources.any? }
+      formula_with_resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
@@ -99,10 +99,10 @@ module Homebrew
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
 
-    p package_and_resource_to_check.class
-    p package_and_resource_to_check.length
-    p package_and_resource_to_check[0].class
-    p package_and_resource_to_check.map { |d| d.name }
+    # p package_and_resource_to_check.class
+    # p package_and_resource_to_check.length
+    # p package_and_resource_to_check[0].class
+    # p package_and_resource_to_check.map { |d| d.name }
 
     package_and_resource_to_check = package_and_resource_to_check.sort_by do |package_or_resource|
       package_or_resource.respond_to?(:token) ? package_or_resource.token : package_or_resource.name
