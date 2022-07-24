@@ -14,13 +14,10 @@ module Homebrew
   def contributions_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `contributions`
+        `contributions [email]`
 
         Contributions to Homebrew repos for a user.
       EOS
-
-      flag "--email=",
-           description: "A user's email address that they commit with."
 
       flag "--from=",
            description: "Date (ISO-8601 format) to start searching contributions."
@@ -32,7 +29,7 @@ module Homebrew
                   description: "The Homebrew repositories to search for contributions in. " \
                                "Comma separated. Supported repos: #{SUPPORTED_REPOS.join(", ")}."
 
-      named_args :none
+      named_args :email
     end
   end
 
@@ -40,7 +37,7 @@ module Homebrew
   def contributions
     args = contributions_args.parse
 
-    return ofail "`--repos` and `--email` are required." if !args[:repos] || !args[:email]
+    return ofail "`--repos` is required." if args.repos.empty?
 
     commits = 0
     coauthorships = 0
@@ -57,7 +54,7 @@ module Homebrew
       coauthorships += git_log_coauthor_cmd(repo_path, args)
     end
 
-    sentence = "Person #{args[:email]} directly authored #{commits} commits"
+    sentence = "Person #{args.named.first} directly authored #{commits} commits"
     sentence += " and co-authored #{coauthorships} commits"
     sentence += " to #{args[:repos].join(", ")}"
     sentence += if args[:from] && args[:to]
@@ -83,7 +80,7 @@ module Homebrew
 
   sig { params(repo_path: String, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_author_cmd(repo_path, args)
-    cmd = "git -C #{repo_path} log --oneline --author=#{args[:email]}"
+    cmd = "git -C #{repo_path} log --oneline --author=#{args.named.first}"
     cmd += " --before=#{args[:to]}" if args[:to]
     cmd += " --after=#{args[:from]}" if args[:from]
 
@@ -96,7 +93,7 @@ module Homebrew
     cmd += " --format='%(trailers:key=Co-authored-by:)'"
     cmd += " --before=#{args[:to]}" if args[:to]
     cmd += " --after=#{args[:from]}" if args[:from]
-    cmd += " | grep #{args[:email]}"
+    cmd += " | grep #{args.named.first}"
 
     `#{cmd} | wc -l`.strip.to_i
   end
