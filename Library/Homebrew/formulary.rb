@@ -136,9 +136,10 @@ module Formulary
     class_s = Formulary.class_s(name)
     json_formula = Homebrew::API::Formula.all_formulae[name]
 
-    bottle_tag = Utils::Bottles.tag.to_s
-    if json_formula.key?("variations") && json_formula["variations"].key?(bottle_tag)
-      json_formula = json_formula.merge(json_formula["variations"][bottle_tag])
+    if (bottle_tag = Utils::Bottles.tag.to_s.presence) && 
+       (variations = json_formula["variations"].presence) &&   
+       (variation = variations[bottle_tag].presence)
+      json_formula = json_formula.merge(variation)
     end
 
     uses_from_macos_names = json_formula["uses_from_macos"].map do |dep|
