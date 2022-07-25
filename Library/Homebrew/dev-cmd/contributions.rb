@@ -54,9 +54,9 @@ module Homebrew
       coauthorships += git_log_coauthor_cmd(T.must(repo_path), args)
     end
 
-    sentence = "Person #{args.named.first} directly authored #{commits} commits" \
-               " and co-authored #{coauthorships} commits" \
-               " to #{args[:repos].join(", ")}"
+    sentence = "Person #{args.named.first} directly authored #{commits} commits " \
+               "and co-authored #{coauthorships} commits " \
+               "to #{args[:repos].join(", ")}"
     sentence += if args[:from] && args[:to]
       " between #{args[:from]} and #{args[:to]}"
     elsif args[:from]
