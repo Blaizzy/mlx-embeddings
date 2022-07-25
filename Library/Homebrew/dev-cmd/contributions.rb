@@ -29,7 +29,7 @@ module Homebrew
                   description: "The Homebrew repositories to search for contributions in. " \
                                "Comma separated. Supported repos: #{SUPPORTED_REPOS.join(", ")}."
 
-      named_args :email
+      named_args :email, number: 1
     end
   end
 
