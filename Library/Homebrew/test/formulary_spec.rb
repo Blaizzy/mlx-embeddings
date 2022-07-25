@@ -270,6 +270,16 @@ describe Formulary do
         }
       end
 
+      let(:linux_variations_json) do
+        {
+          "variations" => {
+            "x86_64_linux" => {
+              "dependencies" => ["dep", "uses_from_macos_dep"],
+            },
+          },
+        }
+      end
+
       before do
         allow(described_class).to receive(:loader_for).and_return(described_class::FormulaAPILoader.new(formula_name))
       end
@@ -316,6 +326,16 @@ describe Formulary do
 
       it "returns a Formula with variations when given a name", :needs_macos do
         allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents(variations_json)
+        allow(Utils::Bottles).to receive(:tag).and_return(:arm64_monterey)
+
+        formula = described_class.factory(formula_name)
+        expect(formula).to be_kind_of(Formula)
+        expect(formula.deps.count).to eq 5
+        expect(formula.deps.map(&:name).include?("variations_dep")).to be true
+      end
+
+      it "returns a Formula without duplicated deps and uses_from_macos with variations on Linux", :needs_linux do
+        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents(linux_variations_json)
         allow(Utils::Bottles).to receive(:tag).and_return(:arm64_monterey)
 
         formula = described_class.factory(formula_name)
