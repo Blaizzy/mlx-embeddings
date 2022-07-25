@@ -39,6 +39,7 @@ class FormulaInstaller
   attr_predicate :installed_as_dependency?, :installed_on_request?
   attr_predicate :show_summary_heading?, :show_header?
   attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :overwrite?, :keep_tmp?
+  attr_predicate :debug_symbols?
   attr_predicate :verbose?, :debug?, :quiet?
 
   def initialize(
@@ -71,6 +72,8 @@ class FormulaInstaller
     @force = force
     @overwrite = overwrite
     @keep_tmp = keep_tmp
+    # Just for this proof of concept
+    @debug_symbols = keep_tmp
     @link_keg = !formula.keg_only? || link_keg
     @show_header = show_header
     @ignore_deps = ignore_deps
@@ -802,6 +805,8 @@ class FormulaInstaller
       post_install
     end
 
+    dsymutil(keg) if debug_symbols?
+
     # Updates the cache for a particular formula after doing an install
     CacheStoreDatabase.use(:linkage) do |db|
       break unless db.created?
@@ -1325,5 +1330,15 @@ class FormulaInstaller
       #{formula.name}'s licenses are all forbidden by HOMEBREW_FORBIDDEN_LICENSES:
         #{SPDX.license_expression_to_string formula.license}.
     EOS
+  end
+
+  sig { params(keg: Keg).void }
+  def dsymutil(keg)
+    keg.dsymutil
+  # TODO
+  # rescue Keg::DsymError => e
+  rescue RuntimeError => e
+    ofail "Failed to extract debugging symbols for #{formula.full_name}"
+    puts e
   end
 end

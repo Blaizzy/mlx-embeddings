@@ -483,6 +483,8 @@ class Keg
     ObserverPathnameExtension.n
   end
 
+  def dsymutil; end
+
   def remove_oldname_opt_record
     return unless oldname_opt_record
     return if oldname_opt_record.resolved_path != path
@@ -530,6 +532,8 @@ class Keg
   end
 
   def codesign_patched_binary(file); end
+
+  def dsymutil_binary(file); end
 
   private
 
