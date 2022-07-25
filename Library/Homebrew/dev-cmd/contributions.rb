@@ -84,7 +84,7 @@ module Homebrew
     cmd += " --before=#{args[:to]}" if args[:to]
     cmd += " --after=#{args[:from]}" if args[:from]
 
-    `#{cmd} | wc -l`.strip.to_i
+    Utils.safe_popen_read(cmd).lines.count
   end
 
   sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
@@ -95,6 +95,6 @@ module Homebrew
     cmd += " --after=#{args[:from]}" if args[:from]
     cmd += " | grep #{args.named.first}"
 
-    `#{cmd} | wc -l`.strip.to_i
+    Utils.safe_popen_read(cmd).lines.count
   end
 end
