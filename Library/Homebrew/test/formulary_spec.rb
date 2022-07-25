@@ -335,7 +335,8 @@ describe Formulary do
       end
 
       it "returns a Formula without duplicated deps and uses_from_macos with variations on Linux", :needs_linux do
-        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return formula_json_contents(linux_variations_json)
+        allow(Homebrew::API::Formula)
+          .to receive(:all_formulae).and_return formula_json_contents(linux_variations_json)
         allow(Utils::Bottles).to receive(:tag).and_return(:arm64_monterey)
 
         formula = described_class.factory(formula_name)
