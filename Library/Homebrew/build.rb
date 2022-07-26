@@ -79,10 +79,11 @@ class Build
       ENV.deps = formula_deps
       ENV.run_time_deps = run_time_deps
       ENV.setup_build_environment(
-        formula:      formula,
-        cc:           args.cc,
-        build_bottle: args.build_bottle?,
-        bottle_arch:  args.bottle_arch,
+        formula:       formula,
+        cc:            args.cc,
+        build_bottle:  args.build_bottle?,
+        bottle_arch:   args.bottle_arch,
+        debug_symbols: args.debug_symbols?,
       )
       reqs.each do |req|
         req.modify_build_environment(
@@ -96,6 +97,7 @@ class Build
         cc:           args.cc,
         build_bottle: args.build_bottle?,
         bottle_arch:  args.bottle_arch,
+        debug_symbols: args.debug_symbols?,
       )
       reqs.each do |req|
         req.modify_build_environment(

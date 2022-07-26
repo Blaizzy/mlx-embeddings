@@ -57,7 +57,14 @@ module Superenv
       testing_formula: T::Boolean,
     ).void
   }
-  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
+  def setup_build_environment(
+    formula: nil,
+    cc: nil,
+    build_bottle: false,
+    bottle_arch: nil,
+    testing_formula: false,
+    debug_symbols: false
+  )
     super
     send(compiler)
 
@@ -86,6 +93,8 @@ module Superenv
     self["HOMEBREW_LIBRARY_PATHS"] = determine_library_paths
     self["HOMEBREW_DEPENDENCIES"] = determine_dependencies
     self["HOMEBREW_FORMULA_PREFIX"] = @formula.prefix unless @formula.nil?
+
+    set_debug_symbols if debug_symbols
 
     # The HOMEBREW_CCCFG ENV variable is used by the ENV/cc tool to control
     # compiler flag stripping. It consists of a string of characters which act
@@ -283,9 +292,7 @@ module Superenv
 
   sig { returns(String) }
   def determine_cccfg
-    # TODO: temporarily hard code symbol generation
-    # ""
-    "D"
+    ""
   end
 
   public
@@ -335,8 +342,7 @@ module Superenv
   end
 
   sig { void }
-  def debug_symbols
-    # TODO: how do I get this method called?
+  def set_debug_symbols
     append_to_cccfg "D" if OS.mac?
   end
 

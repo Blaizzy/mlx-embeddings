@@ -85,7 +85,14 @@ module Superenv
   end
 
   # @private
-  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
+  def setup_build_environment(
+    formula: nil,
+    cc: nil,
+    build_bottle: false,
+    bottle_arch: nil,
+    testing_formula: false,
+    debug_symbols: false
+  )
     sdk = formula ? MacOS.sdk_for_formula(formula) : MacOS.sdk
     is_xcode_sdk = sdk&.source == :xcode
 
@@ -102,7 +109,8 @@ module Superenv
 
     generic_setup_build_environment(
       formula: formula, cc: cc, build_bottle: build_bottle,
-      bottle_arch: bottle_arch, testing_formula: testing_formula
+      bottle_arch: bottle_arch, testing_formula: testing_formula,
+      debug_symbols: debug_symbols,
     )
 
     # Filter out symbols known not to be defined since GNU Autotools can't
