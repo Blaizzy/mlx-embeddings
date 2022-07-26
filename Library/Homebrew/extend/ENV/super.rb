@@ -100,6 +100,7 @@ module Superenv
     # d - Don't strip -march=<target>. Use only in formulae that
     #     have runtime detection of CPU features.
     # w - Pass -no_weak_imports to the linker
+    # D - Generate debugging information
     #
     # These flags will also be present:
     # a - apply fix for apr-1-config path
@@ -282,7 +283,9 @@ module Superenv
 
   sig { returns(String) }
   def determine_cccfg
-    ""
+    # TODO: temporarily hard code symbol generation
+    # ""
+    "D"
   end
 
   public
@@ -329,6 +332,12 @@ module Superenv
   sig { void }
   def libcxx
     append_to_cccfg "g" if compiler == :clang
+  end
+
+  sig { void }
+  def debug_symbols
+    # TODO: how do I get this method called?
+    append_to_cccfg "D" if OS.mac?
   end
 
   # @private

@@ -401,8 +401,7 @@ class Cmd
   end
 
   def debug_symbols?
-    mac?
-    # && config.include?("D")
+    config.include?("D")
   end
 
   def canonical_path(path)
