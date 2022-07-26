@@ -603,13 +603,13 @@ EOS
           # Only try to `git fetch` when the upstream tags have changed
           # (so the API does not return 304: unmodified).
           GITHUB_API_ETAG="$(sed -n 's/^ETag: "\([a-f0-9]\{32\}\)".*/\1/p' ".git/GITHUB_HEADERS" 2>/dev/null)"
-          GITHUB_API_ACCEPT="application/vnd.github.v3+json"
+          GITHUB_API_ACCEPT="application/vnd.github+json"
           GITHUB_API_ENDPOINT="tags"
         else
           # Only try to `git fetch` when the upstream branch is at a different SHA
           # (so the API does not return 304: unmodified).
           GITHUB_API_ETAG="$(git rev-parse "refs/remotes/origin/${UPSTREAM_BRANCH_DIR}")"
-          GITHUB_API_ACCEPT="application/vnd.github.v3.sha"
+          GITHUB_API_ACCEPT="application/vnd.github.sha"
           GITHUB_API_ENDPOINT="commits/${UPSTREAM_BRANCH_DIR}"
         fi
 
