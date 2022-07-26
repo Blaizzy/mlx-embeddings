@@ -315,6 +315,9 @@ module SharedEnvExtension
   sig { void }
   def permit_arch_flags; end
 
+  sig { void }
+  def debug_symbols; end
+
   # @private
   sig { params(cc: T.any(Symbol, String)).returns(T::Boolean) }
   def compiler_any_clang?(cc = compiler)

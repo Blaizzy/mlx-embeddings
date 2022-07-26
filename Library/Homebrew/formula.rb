@@ -1273,11 +1273,11 @@ class Formula
   # Yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a {Mktemp} staging context.
   # @private
-  def brew(fetch: true, keep_tmp: false, interactive: false)
+  def brew(fetch: true, keep_tmp: false, debug_symbols: false, interactive: false)
     @prefix_returns_versioned_prefix = true
     active_spec.fetch if fetch
     stage(interactive: interactive) do |staging|
-      staging.retain! if keep_tmp
+      staging.retain! if keep_tmp || debug_symbols
 
       prepare_patches
       fetch_patches if fetch

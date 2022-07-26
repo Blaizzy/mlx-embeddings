@@ -127,9 +127,10 @@ class Build
       formula.update_head_version
 
       formula.brew(
-        fetch:       false,
-        keep_tmp:    args.keep_tmp?,
-        interactive: args.interactive?,
+        fetch:         false,
+        keep_tmp:      args.keep_tmp?,
+        debug_symbols: args.debug_symbols?,
+        interactive:   args.interactive?,
       ) do
         with_env(
           # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,

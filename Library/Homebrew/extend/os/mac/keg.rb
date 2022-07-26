@@ -67,7 +67,7 @@ class Keg
     binary_executable_or_library_files.each do |file|
       odebug "Extracting symbols #{file}"
 
-      result = system_command("dsymutil", args: [file])
+      result = system_command("dsymutil", args: [file], print_stderr: false)
       next if result.success?
 
       # If it fails again, error out

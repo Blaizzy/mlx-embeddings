@@ -57,6 +57,11 @@ module Homebrew
         [:switch, "--keep-tmp", {
           description: "Retain the temporary files created during installation.",
         }],
+        [:switch, "--debug-symbols", {
+          depends_on:  "--build-from-source",
+          description: "Generates debugging symbols during build. Source will be in temporary directory " \
+                       "which is retained. (see --keep-tmp)",
+        }],
         [:switch, "--display-times", {
           env:         :display_install_times,
           description: "Print install times for each formula at the end of the run.",
@@ -115,6 +120,7 @@ module Homebrew
         build_from_source_formulae: args.build_from_source_formulae,
         interactive:                args.interactive?,
         keep_tmp:                   args.keep_tmp?,
+        debug_symbols:              args.debug_symbols?,
         force:                      args.force?,
         debug:                      args.debug?,
         quiet:                      args.quiet?,
@@ -132,6 +138,7 @@ module Homebrew
       build_from_source_formulae: args.build_from_source_formulae,
       interactive:                args.interactive?,
       keep_tmp:                   args.keep_tmp?,
+      debug_symbols:              args.debug_symbols?,
       force:                      args.force?,
       debug:                      args.debug?,
       quiet:                      args.quiet?,

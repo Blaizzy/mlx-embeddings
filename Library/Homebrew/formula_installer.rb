@@ -59,6 +59,7 @@ class FormulaInstaller
     git: false,
     interactive: false,
     keep_tmp: false,
+    debug_symbols: false,
     cc: nil,
     options: Options.new,
     force: false,
@@ -72,8 +73,7 @@ class FormulaInstaller
     @force = force
     @overwrite = overwrite
     @keep_tmp = keep_tmp
-    # Just for this proof of concept
-    @debug_symbols = keep_tmp
+    @debug_symbols = debug_symbols
     @link_keg = !formula.keg_only? || link_keg
     @show_header = show_header
     @ignore_deps = ignore_deps
@@ -691,6 +691,7 @@ class FormulaInstaller
       include_test_formulae:      @include_test_formulae,
       build_from_source_formulae: @build_from_source_formulae,
       keep_tmp:                   keep_tmp?,
+      debug_symbols:              debug_symbols?,
       force:                      force?,
       debug:                      debug?,
       quiet:                      quiet?,
@@ -744,6 +745,7 @@ class FormulaInstaller
         include_test_formulae:      @include_test_formulae,
         build_from_source_formulae: @build_from_source_formulae,
         keep_tmp:                   keep_tmp?,
+        debug_symbols:              debug_symbols?,
         force:                      force?,
         debug:                      debug?,
         quiet:                      quiet?,
@@ -877,6 +879,9 @@ class FormulaInstaller
     args << "--debug" if debug?
     args << "--cc=#{@cc}" if @cc
     args << "--keep-tmp" if keep_tmp?
+    args << "--debug-symbols" if debug_symbols?
+    # Avoids dependecy error on flag
+    args << "--build-from-source" if build_from_source? && debug_symbols?
 
     if @env.present?
       args << "--env=#{@env}"
