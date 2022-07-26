@@ -879,9 +879,11 @@ class FormulaInstaller
     args << "--debug" if debug?
     args << "--cc=#{@cc}" if @cc
     args << "--keep-tmp" if keep_tmp?
-    args << "--debug-symbols" if debug_symbols?
-    # Avoids dependecy error on flag
-    args << "--build-from-source" if build_from_source? && debug_symbols?
+
+    if debug_symbols?
+      args << "--debug-symbols"
+      args << "--build-from-source"
+    end
 
     if @env.present?
       args << "--env=#{@env}"
