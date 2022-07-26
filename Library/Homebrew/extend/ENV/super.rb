@@ -55,6 +55,7 @@ module Superenv
       build_bottle:    T.nilable(T::Boolean),
       bottle_arch:     T.nilable(String),
       testing_formula: T::Boolean,
+      debug_symbols:   T.nilable(T::Boolean),
     ).void
   }
   def setup_build_environment(

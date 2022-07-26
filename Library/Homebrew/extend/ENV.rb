@@ -33,11 +33,12 @@ module EnvActivation
 
   sig {
     params(
-      env:          T.nilable(String),
-      cc:           T.nilable(String),
-      build_bottle: T::Boolean,
-      bottle_arch:  T.nilable(String),
-      _block:       T.proc.returns(T.untyped),
+      env:           T.nilable(String),
+      cc:            T.nilable(String),
+      build_bottle:  T::Boolean,
+      bottle_arch:   T.nilable(String),
+      debug_symbols: T.nilable(T::Boolean),
+      _block:        T.proc.returns(T.untyped),
     ).returns(T.untyped)
   }
   def with_build_environment(
