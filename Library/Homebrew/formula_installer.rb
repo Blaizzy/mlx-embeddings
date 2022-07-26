@@ -1342,8 +1342,6 @@ class FormulaInstaller
   sig { params(keg: Keg).void }
   def dsymutil(keg)
     keg.dsymutil
-  # TODO
-  # rescue Keg::DsymError => e
   rescue RuntimeError => e
     ofail "Failed to extract debugging symbols for #{formula.full_name}"
     puts e
