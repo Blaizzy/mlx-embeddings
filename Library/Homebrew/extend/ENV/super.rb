@@ -343,7 +343,7 @@ module Superenv
 
   sig { void }
   def set_debug_symbols
-    append_to_cccfg "D" if OS.mac?
+    append_to_cccfg "D"
   end
 
   # @private
