@@ -21,7 +21,7 @@ module Stdenv
     generic_setup_build_environment(
       formula: formula, cc: cc, build_bottle: build_bottle,
       bottle_arch: bottle_arch, testing_formula: testing_formula,
-      debug_symbols: debug_symbols,
+      debug_symbols: debug_symbols
     )
 
     append "LDFLAGS", "-Wl,-headerpad_max_install_names"

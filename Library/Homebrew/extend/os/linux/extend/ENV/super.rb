@@ -26,7 +26,7 @@ module Superenv
     generic_setup_build_environment(
       formula: formula, cc: cc, build_bottle: build_bottle,
       bottle_arch: bottle_arch, testing_formula: testing_formula,
-      debug_symbols: debug_symbols,
+      debug_symbols: debug_symbols
     )
     self["HOMEBREW_OPTIMIZATION_LEVEL"] = "O2"
     self["HOMEBREW_DYNAMIC_LINKER"] = determine_dynamic_linker_path

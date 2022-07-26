@@ -54,7 +54,7 @@ module EnvActivation
     T.cast(tmp_env, T.any(Superenv, Stdenv))
      .setup_build_environment(
        cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch,
-       debug_symbols: debug_symbols,
+       debug_symbols: debug_symbols
      )
     replace(tmp_env)
 

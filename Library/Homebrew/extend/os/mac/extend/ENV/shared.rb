@@ -15,7 +15,7 @@ module SharedEnvExtension
     generic_shared_setup_build_environment(
       formula: formula, cc: cc, build_bottle: build_bottle,
       bottle_arch: bottle_arch, testing_formula: testing_formula,
-      debug_symbols: debug_symbols,
+      debug_symbols: debug_symbols
     )
 
     # Normalise the system Perl version used, where multiple may be available

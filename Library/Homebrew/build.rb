@@ -93,10 +93,10 @@ class Build
       deps.each(&:modify_build_environment)
     else
       ENV.setup_build_environment(
-        formula:      formula,
-        cc:           args.cc,
-        build_bottle: args.build_bottle?,
-        bottle_arch:  args.bottle_arch,
+        formula:       formula,
+        cc:            args.cc,
+        build_bottle:  args.build_bottle?,
+        bottle_arch:   args.bottle_arch,
         debug_symbols: args.debug_symbols?,
       )
       reqs.each do |req|
