@@ -271,9 +271,6 @@ module Homebrew
           Version.new(formula_or_cask.version)
         end
 
-        p "Formula: #{formula_or_cask_name(formula_or_cask, full_name: use_full_name)}"
-        p "Current: #{current.to_s}"
-
         current_str = current.to_s
         current = LivecheckVersion.create(formula_or_cask, current)
 
@@ -307,19 +304,7 @@ module Homebrew
               debug: debug
             )
 
-            # odebug "resource_version_info: #{resource_version_info}"
-
             latest_resources = resource_version_info.map { |resource| { name: resource[:name], version: resource[:latest] } }
-
-            if debug || verbose
-              puts <<~EOS
-
-              ----------
-
-              EOS
-              odebug "Current Resources: #{current_resources}"
-              odebug "Latest Resources: #{latest_resources}"
-            end
 
           else
             # In case we don't have any resources for that Formula/Cask
@@ -381,46 +366,42 @@ module Homebrew
           next info
         end
 
-        if check_resources
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
 
+        if check_resources && has_resources
           resources_info = []
-
-          if has_resources
-            latest_resources_names = latest_resources.map { |r| r[:name] }
-            current_resources.each_with_index do |resource, i|
-
-              current = resource[:version]
-              current_str = current.to_s
-              latest = if latest_resources_names.include?(resource[:name].to_s)
-                res = latest_resources.detect { |r| r[:name].to_s == resource[:name].to_s }
-                res[:version]
-              else
-                current
-              end
-              latest_str = latest.to_s
-
-              is_newer_than_upstream = current > latest
-              is_outdated = (current != latest) && !is_newer_than_upstream
-
-              info = {}
-              info[:resource] = resource[:name]
-              info[:livecheckable] = resource[:livecheckable]
-              info[:version] = {
-                current:             current_str,
-                latest:              latest_str,
-                newer_than_upstream: is_newer_than_upstream,
-                outdated: is_outdated,
-              }
-              resources_info << info
+          latest_resources_names = latest_resources.map { |r| r[:name] }
+          current_resources.each_with_index do |resource, i|
+            current = resource[:version]
+            current_str = current.to_s
+            latest = if latest_resources_names.include?(resource[:name].to_s)
+              res = latest_resources.detect { |r| r[:name].to_s == resource[:name].to_s }
+              res[:version]
+            else
+              current
             end
+            latest_str = latest.to_s
+
+            is_newer_than_upstream = current > latest
+            is_outdated = (current != latest) && !is_newer_than_upstream
+
+            info = {}
+            info[:resource] = resource[:name]
+            info[:livecheckable] = resource[:livecheckable]
+            info[:version] = {
+              current:             current_str,
+              latest:              latest_str,
+              newer_than_upstream: is_newer_than_upstream,
+              outdated: is_outdated,
+            }
+            resources_info << info
           end
+          puts <<~EOS
 
+          ----------
 
-          #@todo: modify print_latest_version for resources
-          onoe "#{Tty.blue}Debug info for resources is in progress!#{Tty.reset}"
+          EOS
           print_latest_resource_version(resources_info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
-        else
-          print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
         end
 
         nil
@@ -524,7 +505,6 @@ module Homebrew
     # Formats and prints the livecheck result for a resource (for a given Formula or Cask).
     sig { params(resources_info: Array(Hash), verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
     def print_latest_resource_version(resources_info, verbose:, ambiguous_cask: false)
-      odebug "resources_info:   #{resources_info}"
       resources_info.each_with_index do |info, i|
         resource_s = "#{Tty.blue}#{info[:resource]}#{Tty.reset}"
         resource_s += " (livecheckable)" if info[:livecheckable] && verbose
@@ -738,10 +718,6 @@ module Homebrew
           urls = [livecheck_url_string] if livecheck_url_string
           urls ||= checkable_urls(resource)
 
-          if debug
-            odebug "URLs:       #{urls}"
-          end
-
           checked_urls = []
 
           urls.each_with_index do |original_url, i|
@@ -876,9 +852,6 @@ module Homebrew
               resource_version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
               resource_version_info[:meta][:regex] = regex.inspect if regex.present?
               resource_version_info[:meta][:cached] = true if strategy_data[:cached] == true
-            end
-            if debug
-              odebug "Resource Version Info:     #{resource_version_info}"
             end
             resources_version << resource_version_info
           end
