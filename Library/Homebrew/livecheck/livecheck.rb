@@ -294,11 +294,6 @@ module Homebrew
 
           has_resources = formula_or_cask.resources.any?
 
-          # In case we don't have any resources for that Formula/Cask
-          if !has_resources && (debug || verbose)
-            onoe "No resources to check for '#{formula_or_cask_name(formula_or_cask, full_name: full_name)}'"
-          end
-
           # Only check current and latest versions of resources if we have resources to check against
           if has_resources
 
@@ -312,18 +307,20 @@ module Homebrew
               debug: debug
             )
 
-            latest_resources = resource_version_info.map { |resource| { name: resource.name, version: resource.latest } }
+            odebug "resource_version_info: #{resource_version_info}"
 
+            # latest_resources = resource_version_info.map { |resource| { name: resource.name, version: resource.latest } }
 
+            if debug || verbose
+              odebug "Current Resources: #{current_resources}"
+              odebug "Latest Resources: #{latest_resources}"
+            end
 
-          end
-
-
-
-
-          if debug && has_resources
-            odebug "Current Resources: #{current_resources}"
-            odebug "Latest Resources: #{latest_resources}"
+          else
+            # In case we don't have any resources for that Formula/Cask
+            if debug || verbose
+              onoe "No resources to check for '#{formula_or_cask_name(formula_or_cask, full_name: full_name)}'"
+            end
           end
         end
 
@@ -638,7 +635,7 @@ module Homebrew
         full_name:                  T::Boolean,
         verbose:                    T::Boolean,
         debug:                      T::Boolean,
-      ).returns(T.nilable(Hash))
+      ).returns(Array(T.nilable(Hash)))
     }
     def resource_version(
       formula_or_cask,
@@ -647,6 +644,7 @@ module Homebrew
       verbose: false,
       debug: false
     )
+      resources_version = []
       formula_or_cask.resources.each_with_index do |resource, i|
         has_livecheckable = resource.livecheckable?
 
@@ -813,11 +811,11 @@ module Homebrew
             if debug
               odebug "Resource Version Info:     #{resource_version_info}"
             end
-            return resource_version_info
+            resources_version << resource_version_info
           end
         end
       end
-      nil
+      resources_version
     end
 
     #==================================================================================
