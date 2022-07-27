@@ -11,7 +11,9 @@ module Homebrew
 
       include Comparable
 
-      sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource), version: Version).returns(LivecheckVersion) }
+      sig {
+        params(package_or_resource: T.any(Formula, Cask::Cask, Resource), version: Version).returns(LivecheckVersion)
+      }
       def self.create(package_or_resource, version)
         versions = case package_or_resource
         when Resource
