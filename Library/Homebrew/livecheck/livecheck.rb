@@ -287,9 +287,23 @@ module Homebrew
             json: json, full_name: use_full_name, verbose: verbose, debug: debug
           )
           version_info[:latest] if version_info.present?
+        end
 
-          # In case "--resources" flag is passed as well
-          if check_resources
+        # Check current and latest resources (if "--resources" flag is given)
+        if check_resources
+
+          has_resources = formula_or_cask.resources.any?
+
+          # In case we don't have any resources for that Formula/Cask
+          if !has_resources && (debug || verbose)
+            onoe "No resources to check for '#{formula_or_cask_name(formula_or_cask, full_name: full_name)}'"
+          end
+
+          # Only check current and latest versions of resources if we have resources to check against
+          if has_resources
+
+            current_resources = formula_or_cask.resources.map { |resource| { name: resource.name, version: resource.version } }
+
             resource_version_info = resource_version(
               formula_or_cask,
               json: json,
@@ -297,6 +311,19 @@ module Homebrew
               verbose: verbose,
               debug: debug
             )
+
+            latest_resources = resource_version_info.map { |resource| { name: resource.name, version: resource.latest } }
+
+
+
+          end
+
+
+
+
+          if debug && has_resources
+            odebug "Current Resources: #{current_resources}"
+            odebug "Latest Resources: #{latest_resources}"
           end
         end
 
@@ -703,8 +730,6 @@ module Homebrew
             end
             puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
 
-            # p "strategy.method(:find_versions).parameters:      #{strategy.method(:find_versions).parameters}"
-
             strategy_data = strategy.find_versions(
               url:           url,
               regex:         livecheck_regex,
@@ -712,10 +737,10 @@ module Homebrew
               &livecheck_strategy_block
             )
 
-            # p strategy_data
-
             match_version_map = strategy_data[:matches]
-            p "match_version_map:         #{match_version_map}"
+            if debug
+              odebug "match_version_map:         #{match_version_map}"
+            end
             regex = strategy_data[:regex]
             messages = strategy_data[:messages]
             checked_urls << url
@@ -762,60 +787,36 @@ module Homebrew
               end
             end
 
-            version_info = {
+            resource_version_info = {
+              name: resource_name(resource, full_name: full_name),
               latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) }),
             }
 
             if json && verbose
-              version_info[:meta] = {}
-
-              if livecheck_references.present?
-                version_info[:meta][:references] = livecheck_references.map do |ref_formula_or_cask|
-                  case ref_formula_or_cask
-                  when Formula
-                    { formula: formula_name(ref_formula_or_cask, full_name: full_name) }
-                  when Cask::Cask
-                    { cask: cask_name(ref_formula_or_cask, full_name: full_name) }
-                  end
-                end
-              end
-
-              version_info[:meta][:url] = {}
-              version_info[:meta][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
-              version_info[:meta][:url][:original] = original_url
-              version_info[:meta][:url][:processed] = url if url != original_url
+              resource_version_info[:meta] = {}
+              resource_version_info[:meta][:name] = resource_name(resource, full_name: full_name) if resource
+              resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
+              resource_version_info[:meta][:url] = {}
+              resource_version_info[:meta][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
+              resource_version_info[:meta][:url][:original] = original_url
+              resource_version_info[:meta][:url][:processed] = url if url != original_url
               if strategy_data[:url].present? && strategy_data[:url] != url
-                version_info[:meta][:url][:strategy] = strategy_data[:url]
+                resource_version_info[:meta][:url][:strategy] = strategy_data[:url]
               end
-              version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
-              version_info[:meta][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
-
-              version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
-              version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
-              version_info[:meta][:regex] = regex.inspect if regex.present?
-              version_info[:meta][:cached] = true if strategy_data[:cached] == true
+              resource_version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
+              resource_version_info[:meta][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
+              resource_version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
+              resource_version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
+              resource_version_info[:meta][:regex] = regex.inspect if regex.present?
+              resource_version_info[:meta][:cached] = true if strategy_data[:cached] == true
             end
-
-            puts "Version Info:     #{version_info}"
-
-            return version_info
+            if debug
+              odebug "Resource Version Info:     #{resource_version_info}"
+            end
+            return resource_version_info
           end
-
-
         end
-
-
       end
-
-
-
-
-
-
-      # rubocop:disable Metrics/BlockLength
-
-      #rubocop:enable Metrics/BlockLength
-
       nil
     end
 
@@ -946,7 +947,7 @@ module Homebrew
         # p strategy_data
 
         match_version_map = strategy_data[:matches]
-        p "match_version_map:       #{match_version_map}"
+        # p "match_version_map:       #{match_version_map}"
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]
         checked_urls << url
