@@ -243,8 +243,8 @@ module Homebrew
     elsif new_tag.present?
       [
         [
-          /#{formula_spec.specs[:tag]}(?=")/,
-          new_tag,
+          /tag:(\s+")#{formula_spec.specs[:tag]}(?=")/,
+          "tag:\\1#{new_tag}\\2",
         ],
         [
           formula_spec.specs[:revision],
