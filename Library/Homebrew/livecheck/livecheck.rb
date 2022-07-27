@@ -254,9 +254,6 @@ module Homebrew
 
         formula&.head&.downloader&.shutup!
 
-        # Check resources if "--resources" flag was given
-
-
         # Use the `stable` version for comparison except for installed
         # head-only formulae. A formula with `stable` and `head` that's
         # installed using `--head` will still use the `stable` version for
@@ -291,7 +288,7 @@ module Homebrew
 
           has_resources = formula_or_cask.resources.any?
 
-          # Only check current and latest versions of resources if we have resources to check against
+          # Only check current and latest versions if we have resources to check against
           if has_resources
 
             current_resources = formula_or_cask.resources.map { |resource| { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? } }
@@ -304,7 +301,7 @@ module Homebrew
               debug: debug
             )
 
-            latest_resources = resource_version_info.map { |resource| { name: resource[:name], version: resource[:latest] } }
+            latest_resources = resource_version_info.map { |resource| { name: resource[:resource], version: resource[:version][:latest] } }
 
           else
             # In case we don't have any resources for that Formula/Cask
@@ -356,6 +353,8 @@ module Homebrew
         info[:meta][:head_only] = true if formula&.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
+        info[:resources] = resource_version_info if check_resources
+
         next if newer_only && !info[:version][:outdated]
 
         has_a_newer_upstream_version ||= true
@@ -366,6 +365,13 @@ module Homebrew
           next info
         end
 
+        if check_resources && has_resources && debug
+          puts <<~EOS
+
+          ----------
+
+          EOS
+        end
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
 
         if check_resources && has_resources
@@ -396,11 +402,6 @@ module Homebrew
             }
             resources_info << info
           end
-          puts <<~EOS
-
-          ----------
-
-          EOS
           print_latest_resource_version(resources_info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
         end
 
@@ -474,28 +475,31 @@ module Homebrew
 
     sig {
       params(
-        formula_or_cask: T.any(Formula, Cask::Cask),
+        package_or_resource: T.any(Formula, Cask::Cask, Resource),
         status_str:      String,
         messages:        T.nilable(T::Array[String]),
         full_name:       T::Boolean,
         verbose:         T::Boolean,
       ).returns(Hash)
     }
-    def status_hash(formula_or_cask, status_str, messages = nil, full_name: false, verbose: false)
-      formula = formula_or_cask if formula_or_cask.is_a?(Formula)
-      cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
+    def status_hash(package_or_resource, status_str, messages = nil, full_name: false, verbose: false)
+      formula = package_or_resource if package_or_resource.is_a?(Formula)
+      cask = package_or_resource if package_or_resource.is_a?(Cask::Cask)
+      resource = package_or_resource if package_or_resource.is_a?(Resource)
 
       status_hash = {}
       if formula
         status_hash[:formula] = formula_name(formula, full_name: full_name)
       elsif cask
-        status_hash[:cask] = cask_name(formula_or_cask, full_name: full_name)
+        status_hash[:cask] = cask_name(package_or_resource, full_name: full_name)
+      elsif resource
+        status_hash[:resource] = resource_name(package_or_resource, full_name: full_name)
       end
       status_hash[:status] = status_str
       status_hash[:messages] = messages if messages.is_a?(Array)
 
       status_hash[:meta] = {
-        livecheckable: formula_or_cask.livecheckable?,
+        livecheckable: package_or_resource.livecheckable?,
       }
       status_hash[:meta][:head_only] = true if formula&.head_only?
 
@@ -521,7 +525,7 @@ module Homebrew
           info[:version][:latest]
         end
 
-        puts "#{resource_s}: #{current_s} ==> #{latest_s}"
+        puts "-- #{resource_s}: #{current_s} ==> #{latest_s}"
       end
     end
 
@@ -668,10 +672,8 @@ module Homebrew
       homebrew_curl_root_domains.include?(url_root_domain)
     end
 
-    #==================================================================================
-
-    # Identifies the latest version of the resources and returns a Hash containing
-    # the version information. Returns nil if a latest version couldn't be found.
+    # Identifies the latest version of the resources in a given Formulae/Casks and returns an Array of Hash containing
+    # the version information for all the resources. Returns an Array with nil value if a latest version couldn't be found for a given resource.
     sig {
       params(
         formula_or_cask:            T.any(Formula, Cask::Cask),
@@ -702,7 +704,14 @@ module Homebrew
           odebug "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
         end
 
-        # For now, only check resources with livecheck block
+        resource_version_info = {
+          resource: resource_name(resource, full_name: full_name),
+          version: {
+            current: resource.version,
+          },
+        }
+
+        # Check resources with livecheck block (will be updated in the future)
         if has_livecheckable
           livecheck = resource.livecheck
           livecheck_url = livecheck.url
@@ -781,9 +790,6 @@ module Homebrew
             )
 
             match_version_map = strategy_data[:matches]
-            # if debug
-            #   odebug "match_version_map:         #{match_version_map}"
-            # end
             regex = strategy_data[:regex]
             messages = strategy_data[:messages]
             checked_urls << url
@@ -792,7 +798,7 @@ module Homebrew
               puts messages unless json
               next if i + 1 < urls.length
 
-              return status_hash(formula_or_cask, "error", messages, full_name: full_name, verbose: verbose)
+              return status_hash(resource, "error", messages, full_name: full_name, verbose: verbose)
             end
 
             if debug
@@ -830,37 +836,44 @@ module Homebrew
               end
             end
 
-            resource_version_info = {
-              name: resource_name(resource, full_name: full_name),
-              latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) }),
-            }
+            resource_version_info[:version][:latest] = Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) })
 
             if json && verbose
               resource_version_info[:meta] = {}
-              resource_version_info[:meta][:name] = resource_name(resource, full_name: full_name) if resource
               resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
+              if has_livecheckable
+                resource_version_info[:meta][:livecheck] = {}
+                resource_version_info[:meta][:livecheck][:url] = {}
+                resource_version_info[:meta][:livecheck][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
+                if strategy_data[:url].present? && strategy_data[:url] != url
+                  resource_version_info[:meta][:livecheck][:url][:strategy] = strategy_data[:url]
+                end
+                resource_version_info[:meta][:livecheck][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
+                resource_version_info[:meta][:livecheck][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
+                resource_version_info[:meta][:livecheck][:strategy] = strategy.present? ? strategy_name : nil
+                resource_version_info[:meta][:livecheck][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
+                resource_version_info[:meta][:livecheck][:regex] = regex.inspect if regex.present?
+                resource_version_info[:meta][:livecheck][:cached] = true if strategy_data[:cached] == true
+
+              end
               resource_version_info[:meta][:url] = {}
-              resource_version_info[:meta][:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
               resource_version_info[:meta][:url][:original] = original_url
               resource_version_info[:meta][:url][:processed] = url if url != original_url
-              if strategy_data[:url].present? && strategy_data[:url] != url
-                resource_version_info[:meta][:url][:strategy] = strategy_data[:url]
-              end
-              resource_version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
-              resource_version_info[:meta][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
-              resource_version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
-              resource_version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
-              resource_version_info[:meta][:regex] = regex.inspect if regex.present?
-              resource_version_info[:meta][:cached] = true if strategy_data[:cached] == true
             end
-            resources_version << resource_version_info
           end
+          resources_version << resource_version_info
+        else
+          # If there's no livecheck block in resource
+          resource_version_info[:version][:latest] = resource.version
+          if json && verbose
+            resource_version_info[:meta] = {}
+            resource_version_info[:meta][:url] = resource.url.to_s
+          end
+          resources_version << resource_version_info
         end
       end
       resources_version
     end
-
-    #==================================================================================
 
     # Identifies the latest version of the formula and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
@@ -984,10 +997,7 @@ module Homebrew
           &livecheck_strategy_block
         )
 
-        # p strategy_data
-
         match_version_map = strategy_data[:matches]
-        # p "match_version_map:       #{match_version_map}"
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]
         checked_urls << url
