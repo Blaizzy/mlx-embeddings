@@ -60,7 +60,7 @@ module Homebrew
       puts Homebrew::EnvConfig.livecheck_watchlist if Homebrew::EnvConfig.livecheck_watchlist.present?
     end
 
-    package_and_resource_to_check = if args.tap
+    formulae_and_casks_to_check = if args.tap
       tap = Tap.fetch(args.tap)
       formulae = args.cask? ? [] : tap.formula_files.map { |path| Formulary.factory(path) }
       casks = args.formula? ? [] : tap.cask_files.map { |path| Cask::CaskLoader.load(path) }
@@ -96,11 +96,11 @@ module Homebrew
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
 
-    package_and_resource_to_check = package_and_resource_to_check.sort_by do |package_or_resource|
-      package_or_resource.respond_to?(:token) ? package_or_resource.token : package_or_resource.name
+    formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
+      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
 
-    raise UsageError, "No formulae or casks to check." if package_and_resource_to_check.blank?
+    raise UsageError, "No formulae or casks to check." if formulae_and_casks_to_check.blank?
 
     options = {
       json:                 args.json?,
@@ -113,6 +113,6 @@ module Homebrew
       verbose:              args.verbose?,
     }.compact
 
-    Livecheck.run_checks(package_and_resource_to_check, **options)
+    Livecheck.run_checks(formulae_and_casks_to_check, **options)
   end
 end
