@@ -297,7 +297,7 @@ module Homebrew
           # Only check current and latest versions of resources if we have resources to check against
           if has_resources
 
-            current_resources = formula_or_cask.resources.map { |resource| { name: resource.name, version: resource.version } }
+            current_resources = formula_or_cask.resources.map { |resource| { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? } }
 
             resource_version_info = resource_version(
               formula_or_cask,
@@ -307,11 +307,16 @@ module Homebrew
               debug: debug
             )
 
-            odebug "resource_version_info: #{resource_version_info}"
+            # odebug "resource_version_info: #{resource_version_info}"
 
-            # latest_resources = resource_version_info.map { |resource| { name: resource.name, version: resource.latest } }
+            latest_resources = resource_version_info.map { |resource| { name: resource[:name], version: resource[:latest] } }
 
             if debug || verbose
+              puts <<~EOS
+
+              ----------
+
+              EOS
               odebug "Current Resources: #{current_resources}"
               odebug "Latest Resources: #{latest_resources}"
             end
@@ -377,8 +382,43 @@ module Homebrew
         end
 
         if check_resources
+
+          resources_info = []
+
+          if has_resources
+            latest_resources_names = latest_resources.map { |r| r[:name] }
+            current_resources.each_with_index do |resource, i|
+
+              current = resource[:version]
+              current_str = current.to_s
+              latest = if latest_resources_names.include?(resource[:name].to_s)
+                res = latest_resources.detect { |r| r[:name].to_s == resource[:name].to_s }
+                res[:version]
+              else
+                current
+              end
+              latest_str = latest.to_s
+
+              is_newer_than_upstream = current > latest
+              is_outdated = (current != latest) && !is_newer_than_upstream
+
+              info = {}
+              info[:resource] = resource[:name]
+              info[:livecheckable] = resource[:livecheckable]
+              info[:version] = {
+                current:             current_str,
+                latest:              latest_str,
+                newer_than_upstream: is_newer_than_upstream,
+                outdated: is_outdated,
+              }
+              resources_info << info
+            end
+          end
+
+
           #@todo: modify print_latest_version for resources
           onoe "#{Tty.blue}Debug info for resources is in progress!#{Tty.reset}"
+          print_latest_resource_version(resources_info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
         else
           print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
         end
@@ -479,6 +519,30 @@ module Homebrew
       status_hash[:meta][:head_only] = true if formula&.head_only?
 
       status_hash
+    end
+
+    # Formats and prints the livecheck result for a resource (for a given Formula or Cask).
+    sig { params(resources_info: Array(Hash), verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
+    def print_latest_resource_version(resources_info, verbose:, ambiguous_cask: false)
+      odebug "resources_info:   #{resources_info}"
+      resources_info.each_with_index do |info, i|
+        resource_s = "#{Tty.blue}#{info[:resource]}#{Tty.reset}"
+        resource_s += " (livecheckable)" if info[:livecheckable] && verbose
+
+        current_s = if info[:version][:newer_than_upstream]
+          "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
+        else
+          info[:version][:current]
+        end
+
+        latest_s = if info[:version][:outdated]
+          "#{Tty.green}#{info[:version][:latest]}#{Tty.reset}"
+        else
+          info[:version][:latest]
+        end
+
+        puts "#{resource_s}: #{current_s} ==> #{latest_s}"
+      end
     end
 
     # Formats and prints the livecheck result for a formula.
@@ -649,6 +713,11 @@ module Homebrew
         has_livecheckable = resource.livecheckable?
 
         if debug
+          puts <<~EOS
+
+          ----------
+
+          EOS
           odebug "Resource:          #{resource_name(resource, full_name: full_name)}"
           odebug "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
         end
@@ -736,9 +805,9 @@ module Homebrew
             )
 
             match_version_map = strategy_data[:matches]
-            if debug
-              odebug "match_version_map:         #{match_version_map}"
-            end
+            # if debug
+            #   odebug "match_version_map:         #{match_version_map}"
+            # end
             regex = strategy_data[:regex]
             messages = strategy_data[:messages]
             checked_urls << url
