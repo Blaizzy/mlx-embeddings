@@ -36,7 +36,7 @@ module Homebrew
       switch "--json",
              description: "Output information in JSON format."
       switch "-r", "--resources",
-             description: "Check resources with livecheck blocks."
+             description: "Check resources with livecheck blocks for a given formulae/casks."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
       switch "--formula", "--formulae",
@@ -69,10 +69,6 @@ module Homebrew
       formulae = args.cask? ? [] : Formula.installed
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
-    # elsif args.resources?
-    #   # formula_with_resources = Formula.all.select { |formula| formula.resources.any? }
-    #   formula_with_resources = Formula.all.select { |formula| formula.resources.any? { |resource| resource.livecheckable? } }
-    #   formula_with_resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
@@ -99,11 +95,6 @@ module Homebrew
     else
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
-
-    # p package_and_resource_to_check.class
-    # p package_and_resource_to_check.length
-    # p package_and_resource_to_check[0].class
-    # p package_and_resource_to_check.map { |d| d.name }
 
     package_and_resource_to_check = package_and_resource_to_check.sort_by do |package_or_resource|
       package_or_resource.respond_to?(:token) ? package_or_resource.token : package_or_resource.name
