@@ -492,6 +492,56 @@ module RuboCop
         EOS
       end
 
+      # This cop makes sure that the `generate_completions_from_executable` DSL is used with only
+      # a single, combined call for all shells.
+      #
+      # @api private
+      class SingleGenerateCompletionsDSLCall < FormulaCop
+        extend AutoCorrector
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          install = find_method_def(body_node, :install)
+
+          methods = find_every_method_call_by_name(install, :generate_completions_from_executable)
+          return if methods.length <= 1
+
+          offenses = []
+          shells = []
+          methods.each do |method|
+            next unless method.source.include?("shells:")
+
+            shells << method.source.match(/shells: \[(:bash|:zsh|:fish)\]/).captures.first
+            offenses << method
+          end
+
+          return if offenses.blank?
+
+          offenses[0...-1].each do |node|
+            offending_node(node)
+            problem "Use a single `generate_completions_from_executable` call
+                         combining all specified shells" do |corrector|
+              corrector.replace(@offensive_node.source_range, "")
+            end
+          end
+
+          offending_node(offenses.last)
+          replacement = if (shells - %w[:bash :zsh :fish]).empty?
+            @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/, "")
+                           .gsub(",,", ",")
+                           .sub(", )", ")")
+                           .sub("(, ", "(")
+                           .sub("()", "")
+          else
+            @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/,
+                                       "shells: [#{shells.join(", ")}]")
+          end
+
+          problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
+            corrector.replace(@offensive_node.source_range, replacement)
+          end
+        end
+      end
+
       # This cop checks for other miscellaneous style violations.
       #
       # @api private
