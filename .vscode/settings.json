@@ -23,7 +23,5 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.shellcheck": true,
     }
-  },
-  "git.mergeEditor": true,
-  "merge-conflict.autoNavigateNextConflict.enabled": true
+  }
 }
