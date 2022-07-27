@@ -493,9 +493,11 @@ module Homebrew
       when :url
         package_or_resource.url&.to_s if package_or_resource.is_a?(Cask::Cask) || package_or_resource.is_a?(Resource)
       when :head, :stable
+        # Resource's "url" is considered "stable" by default. And some resources may contain in "head" block as well
+        package_or_resource.send(:url)&.to_s if package_or_resource.is_a?(Resource)
         # Not sure how to handle this ?
         # Do I have to add :stable / :head in Resources' as well (like it's being implemented in Formula ?)
-        package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula) || package_or_resource.is_a?(Resource)
+        package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula)
       when :homepage
         package_or_resource.homepage
       end
@@ -702,7 +704,7 @@ module Homebrew
             next if strategy.blank?
             homebrew_curl = case strategy_name
             when "PageMatch", "HeaderMatch"
-              use_homebrew_curl?((referenced_formula_or_cask || formula_or_cask), url)
+              use_homebrew_curl?(resource, url)
             end
             puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
 
