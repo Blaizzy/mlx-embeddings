@@ -367,13 +367,13 @@ module Homebrew
           next info
         end
 
-        if check_resources && has_resources && debug
-          puts <<~EOS
+        # if check_resources && has_resources && debug
+        #   puts <<~EOS
 
-            ----------
+        #     ----------
 
-          EOS
-        end
+        #   EOS
+        # end
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
 
         if check_resources && has_resources
@@ -404,8 +404,11 @@ module Homebrew
             }
             resources_info << info
           end
-          print_latest_resource_version(resources_info, verbose:        verbose,
-                                                        ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
+          print_latest_resource_version(
+            resources_info,
+            verbose: verbose,
+            ambiguous_cask: ambiguous_casks.include?(formula_or_cask)
+          )
         end
 
         nil
@@ -675,218 +678,212 @@ module Homebrew
       homebrew_curl_root_domains.include?(url_root_domain)
     end
 
-    # Identifies the latest version of the resources in a given Formulae/Casks and returns an Array of Hash containing
-    # the version information for all the resources. Returns an Array with nil value if a latest version
+    # Identifies the latest version of the resource in a given Formulae/Casks and returns a Hash containing
+    # the version information for a resource. Returns a nil value if a latest version
     # couldn't be found for a given resource.
     sig {
       params(
-        formula_or_cask: T.any(Formula, Cask::Cask),
-        json:            T::Boolean,
-        full_name:       T::Boolean,
-        verbose:         T::Boolean,
-        debug:           T::Boolean,
-      ).returns(Array(T.nilable(Hash)))
+        resource:  T.any(Resource),
+        json:      T::Boolean,
+        full_name: T::Boolean,
+        verbose:   T::Boolean,
+        debug:     T::Boolean,
+      ).returns(T.nilable(Hash))
     }
     def resource_version(
-      formula_or_cask,
+      resource,
       json: false,
       full_name: false,
       verbose: false,
       debug: false
     )
-      resources_version = []
-      formula_or_cask.resources.each do |resource|
-        has_livecheckable = resource.livecheckable?
+      has_livecheckable = resource.livecheckable?
 
-        if debug
-          puts <<~EOS
+      if debug
+        puts <<~EOS
 
-            ----------
+        EOS
+        odebug "Resource:          #{resource_name(resource, full_name: full_name)}"
+        odebug "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
+      end
 
-          EOS
-          odebug "Resource:          #{resource_name(resource, full_name: full_name)}"
-          odebug "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
-        end
+      resource_version_info = {
+        resource: resource_name(resource, full_name: full_name),
+        version:  {
+          current: resource.version,
+        },
+      }
 
-        resource_version_info = {
-          resource: resource_name(resource, full_name: full_name),
-          version:  {
-            current: resource.version,
-          },
-        }
+      # Check resources with livecheck block (will be updated in the future)
+      if has_livecheckable
+        livecheck = resource.livecheck
+        livecheck_url = livecheck.url
+        livecheck_regex = livecheck.regex
+        livecheck_strategy = livecheck.strategy
+        livecheck_strategy_block = livecheck.strategy_block
 
-        # Check resources with livecheck block (will be updated in the future)
-        if has_livecheckable
-          livecheck = resource.livecheck
-          livecheck_url = livecheck.url
-          livecheck_regex = livecheck.regex
-          livecheck_strategy = livecheck.strategy
-          livecheck_strategy_block = livecheck.strategy_block
+        livecheck_url_string = livecheck_url_to_string(
+          livecheck_url,
+          resource,
+        )
 
-          livecheck_url_string = livecheck_url_to_string(
-            livecheck_url,
-            resource,
+        urls = [livecheck_url_string] if livecheck_url_string
+        urls ||= checkable_urls(resource)
+
+        checked_urls = []
+
+        urls.each_with_index do |original_url, i|
+          # Only preprocess the URL when it's appropriate
+          url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
+            original_url
+          else
+            preprocess_url(original_url)
+          end
+          next if checked_urls.include?(url)
+
+          strategies = Strategy.from_url(
+            url,
+            livecheck_strategy: livecheck_strategy,
+            url_provided:       livecheck_url.present?,
+            regex_provided:     livecheck_regex.present?,
+            block_provided:     livecheck_strategy_block.present?,
           )
 
-          urls = [livecheck_url_string] if livecheck_url_string
-          urls ||= checkable_urls(resource)
+          strategy = Strategy.from_symbol(livecheck_strategy) || strategies.first
+          strategy_name = livecheck_strategy_names[strategy]
 
-          checked_urls = []
-
-          urls.each_with_index do |original_url, i|
-            # Only preprocess the URL when it's appropriate
-            url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
-              original_url
+          if debug
+            puts
+            if livecheck_url.is_a?(Symbol)
+              # This assumes the URL symbol will fit within the available space
+              puts "URL (#{livecheck_url}):".ljust(18, " ") + original_url
             else
-              preprocess_url(original_url)
+              puts "URL:              #{original_url}"
             end
-            next if checked_urls.include?(url)
-
-            strategies = Strategy.from_url(
-              url,
-              livecheck_strategy: livecheck_strategy,
-              url_provided:       livecheck_url.present?,
-              regex_provided:     livecheck_regex.present?,
-              block_provided:     livecheck_strategy_block.present?,
-            )
-
-            strategy = Strategy.from_symbol(livecheck_strategy) || strategies.first
-            strategy_name = livecheck_strategy_names[strategy]
-
-            if debug
-              puts
-              if livecheck_url.is_a?(Symbol)
-                # This assumes the URL symbol will fit within the available space
-                puts "URL (#{livecheck_url}):".ljust(18, " ") + original_url
-              else
-                puts "URL:              #{original_url}"
-              end
-              puts "URL (processed):  #{url}" if url != original_url
-              if strategies.present? && verbose
-                puts "Strategies:       #{strategies.map { |s| livecheck_strategy_names[s] }.join(", ")}"
-              end
-              puts "Strategy:         #{strategy.blank? ? "None" : strategy_name}"
-              puts "Regex:            #{livecheck_regex.inspect}" if livecheck_regex.present?
+            puts "URL (processed):  #{url}" if url != original_url
+            if strategies.present? && verbose
+              puts "Strategies:       #{strategies.map { |s| livecheck_strategy_names[s] }.join(", ")}"
             end
-
-            if livecheck_strategy.present?
-              if livecheck_url.blank? && strategy.method(:find_versions).parameters.include?([:keyreq, :url])
-                odebug "#{strategy_name} strategy requires a URL"
-                next
-              elsif livecheck_strategy != :page_match && strategies.exclude?(strategy)
-                odebug "#{strategy_name} strategy does not apply to this URL"
-                next
-              end
-            end
-            next if strategy.blank?
-
-            homebrew_curl = case strategy_name
-            when "PageMatch", "HeaderMatch"
-              use_homebrew_curl?(resource, url)
-            end
-            puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
-            strategy_data = strategy.find_versions(
-              url: url, regex: livecheck_regex,
-              homebrew_curl: homebrew_curl, &livecheck_strategy_block
-            )
-            match_version_map = strategy_data[:matches]
-            regex = strategy_data[:regex]
-            messages = strategy_data[:messages]
-            checked_urls << url
-
-            if messages.is_a?(Array) && match_version_map.blank?
-              puts messages unless json
-              next if i + 1 < urls.length
-
-              return status_hash(resource, "error", messages, full_name: full_name, verbose: verbose)
-            end
-
-            if debug
-              if strategy_data[:url].present? && strategy_data[:url] != url
-                puts "URL (strategy):   #{strategy_data[:url]}"
-              end
-              puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url].present?
-              if strategy_data[:regex].present? && strategy_data[:regex] != livecheck_regex
-                puts "Regex (strategy): #{strategy_data[:regex].inspect}"
-              end
-              puts "Cached?:          Yes" if strategy_data[:cached] == true
-            end
-
-            match_version_map.delete_if do |_match, version|
-              next true if version.blank?
-              next false if has_livecheckable
-
-              UNSTABLE_VERSION_KEYWORDS.any? do |rejection|
-                version.to_s.include?(rejection)
-              end
-            end
-
-            next if match_version_map.blank?
-
-            if debug
-              puts
-              puts "Matched Versions:"
-
-              if verbose
-                match_version_map.each do |match, version|
-                  puts "#{match} => #{version.inspect}"
-                end
-              else
-                puts match_version_map.values.join(", ")
-              end
-            end
-
-            resource_version_info[:version][:latest] = Version.new(match_version_map.values.max_by do |v|
-                                                                     LivecheckVersion.create(resource, v)
-                                                                   end)
-
-            next unless json && verbose
-
-            resource_version_info[:meta] = {}
-            resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
-            if has_livecheckable
-              resource_version_info[:meta][:livecheck] = {}
-              resource_version_info[:meta][:livecheck][:url] = {}
-              if livecheck_url.is_a?(Symbol) && livecheck_url_string
-                resource_version_info[:meta][:livecheck][:url][:symbol] =
-                  livecheck_url
-              end
-              if strategy_data[:url].present? && strategy_data[:url] != url
-                resource_version_info[:meta][:livecheck][:url][:strategy] = strategy_data[:url]
-              end
-              if strategy_data[:final_url]
-                resource_version_info[:meta][:livecheck][:url][:final] =
-                  strategy_data[:final_url]
-              end
-              if homebrew_curl.present?
-                resource_version_info[:meta][:livecheck][:url][:homebrew_curl] =
-                  homebrew_curl
-              end
-              resource_version_info[:meta][:livecheck][:strategy] = strategy.present? ? strategy_name : nil
-              if strategies.present?
-                resource_version_info[:meta][:livecheck][:strategies] = strategies.map do |s|
-                  livecheck_strategy_names[s]
-                end
-              end
-              resource_version_info[:meta][:livecheck][:regex] = regex.inspect if regex.present?
-              resource_version_info[:meta][:livecheck][:cached] = true if strategy_data[:cached] == true
-
-            end
-            resource_version_info[:meta][:url] = {}
-            resource_version_info[:meta][:url][:original] = original_url
-            resource_version_info[:meta][:url][:processed] = url if url != original_url
+            puts "Strategy:         #{strategy.blank? ? "None" : strategy_name}"
+            puts "Regex:            #{livecheck_regex.inspect}" if livecheck_regex.present?
           end
-        else
-          # If there's no livecheck block in resource
-          resource_version_info[:version][:latest] = resource.version
-          if json && verbose
-            resource_version_info[:meta] = {}
-            resource_version_info[:meta][:url] = resource.url.to_s
+
+          if livecheck_strategy.present?
+            if livecheck_url.blank? && strategy.method(:find_versions).parameters.include?([:keyreq, :url])
+              odebug "#{strategy_name} strategy requires a URL"
+              next
+            elsif livecheck_strategy != :page_match && strategies.exclude?(strategy)
+              odebug "#{strategy_name} strategy does not apply to this URL"
+              next
+            end
           end
+          next if strategy.blank?
+
+          homebrew_curl = case strategy_name
+          when "PageMatch", "HeaderMatch"
+            use_homebrew_curl?(resource, url)
+          end
+          puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
+          strategy_data = strategy.find_versions(
+            url: url, regex: livecheck_regex,
+            homebrew_curl: homebrew_curl, &livecheck_strategy_block
+          )
+          match_version_map = strategy_data[:matches]
+          regex = strategy_data[:regex]
+          messages = strategy_data[:messages]
+          checked_urls << url
+
+          if messages.is_a?(Array) && match_version_map.blank?
+            puts messages unless json
+            next if i + 1 < urls.length
+
+            return status_hash(resource, "error", messages, full_name: full_name, verbose: verbose)
+          end
+
+          if debug
+            if strategy_data[:url].present? && strategy_data[:url] != url
+              puts "URL (strategy):   #{strategy_data[:url]}"
+            end
+            puts "URL (final):      #{strategy_data[:final_url]}" if strategy_data[:final_url].present?
+            if strategy_data[:regex].present? && strategy_data[:regex] != livecheck_regex
+              puts "Regex (strategy): #{strategy_data[:regex].inspect}"
+            end
+            puts "Cached?:          Yes" if strategy_data[:cached] == true
+          end
+
+          match_version_map.delete_if do |_match, version|
+            next true if version.blank?
+            next false if has_livecheckable
+
+            UNSTABLE_VERSION_KEYWORDS.any? do |rejection|
+              version.to_s.include?(rejection)
+            end
+          end
+
+          next if match_version_map.blank?
+
+          if debug
+            puts
+            puts "Matched Versions:"
+
+            if verbose
+              match_version_map.each do |match, version|
+                puts "#{match} => #{version.inspect}"
+              end
+            else
+              puts match_version_map.values.join(", ")
+            end
+          end
+
+          resource_version_info[:version][:latest] = Version.new(match_version_map.values.max_by do |v|
+                                                                   LivecheckVersion.create(resource, v)
+                                                                 end)
+
+          next unless json
+
+          resource_version_info[:meta] = {}
+          resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
+          if has_livecheckable
+            resource_version_info[:meta][:livecheck] = {}
+            resource_version_info[:meta][:livecheck][:url] = {}
+            if livecheck_url.is_a?(Symbol) && livecheck_url_string
+              resource_version_info[:meta][:livecheck][:url][:symbol] =
+                livecheck_url
+            end
+            if strategy_data[:url].present? && strategy_data[:url] != url
+              resource_version_info[:meta][:livecheck][:url][:strategy] = strategy_data[:url]
+            end
+            if strategy_data[:final_url]
+              resource_version_info[:meta][:livecheck][:url][:final] =
+                strategy_data[:final_url]
+            end
+            if homebrew_curl.present?
+              resource_version_info[:meta][:livecheck][:url][:homebrew_curl] =
+                homebrew_curl
+            end
+            resource_version_info[:meta][:livecheck][:strategy] = strategy.present? ? strategy_name : nil
+            if strategies.present?
+              resource_version_info[:meta][:livecheck][:strategies] = strategies.map do |s|
+                livecheck_strategy_names[s]
+              end
+            end
+            resource_version_info[:meta][:livecheck][:regex] = regex.inspect if regex.present?
+            resource_version_info[:meta][:livecheck][:cached] = true if strategy_data[:cached] == true
+
+          end
+          resource_version_info[:meta][:url] = {}
+          resource_version_info[:meta][:url][:original] = original_url
+          resource_version_info[:meta][:url][:processed] = url if url != original_url
         end
-        resources_version << resource_version_info
+      else
+        # If there's no livecheck block in resource
+        resource_version_info[:version][:latest] = resource.version
+        if json && verbose
+          resource_version_info[:meta] = {}
+          resource_version_info[:meta][:url] = resource.url.to_s
+        end
       end
-      resources_version
+      resource_version_info
     end
 
     # Identifies the latest version of the formula and returns a Hash containing
