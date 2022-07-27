@@ -162,7 +162,7 @@ module Homebrew
         formulae_and_casks_to_check:  T::Array[T.any(Formula, Cask::Cask)],
         full_name:                    T::Boolean,
         handle_name_conflict:         T::Boolean,
-        resources_only:               T::Boolean,
+        check_resources:              T::Boolean,
         json:                         T::Boolean,
         newer_only:                   T::Boolean,
         debug:                        T::Boolean,
@@ -172,7 +172,7 @@ module Homebrew
     }
     def run_checks(
       formulae_and_casks_to_check,
-      full_name: false, handle_name_conflict: false, resources_only: false, json: false, newer_only: false,
+      full_name: false, handle_name_conflict: false, check_resources: false, json: false, newer_only: false,
       debug: false, quiet: false, verbose: false
     )
       load_other_tap_strategies(formulae_and_casks_to_check)
@@ -280,25 +280,24 @@ module Homebrew
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
         else
-          if resources_only
-            version_info = resource_version(
+          version_info = latest_version(
+            formula_or_cask,
+            referenced_formula_or_cask: referenced_formula_or_cask,
+            livecheck_references: livecheck_references,
+            json: json, full_name: use_full_name, verbose: verbose, debug: debug
+          )
+          version_info[:latest] if version_info.present?
+
+          # In case "--resources" flag is passed as well
+          if check_resources
+            resource_version_info = resource_version(
               formula_or_cask,
-              referenced_formula: referenced_formula_or_cask,
-              livecheck_references: livecheck_references,
               json: json,
               full_name: use_full_name,
               verbose: verbose,
               debug: debug
             )
-          else
-            version_info = latest_version(
-              formula_or_cask,
-              referenced_formula_or_cask: referenced_formula_or_cask,
-              livecheck_references: livecheck_references,
-              json: json, full_name: use_full_name, verbose: verbose, debug: debug
-            )
           end
-          version_info[:latest] if version_info.present?
         end
 
         if latest.blank?
@@ -353,7 +352,7 @@ module Homebrew
           next info
         end
 
-        if resources_only
+        if check_resources
           #@todo: modify print_latest_version for resources
           onoe "#{Tty.blue}Debug info for resources is in progress!#{Tty.reset}"
         else
@@ -607,9 +606,7 @@ module Homebrew
     # the version information. Returns nil if a latest version couldn't be found.
     sig {
       params(
-        formula_with_resources:     T.any(Formula),
-        referenced_formula:         T.nilable(T.any(Formula)),
-        livecheck_references:       T::Array[T.any(Formula, Cask::Cask)],
+        formula_or_cask:            T.any(Formula, Cask::Cask),
         json:                       T::Boolean,
         full_name:                  T::Boolean,
         verbose:                    T::Boolean,
@@ -617,26 +614,23 @@ module Homebrew
       ).returns(T.nilable(Hash))
     }
     def resource_version(
-      formula_with_resources,
-      referenced_formula: nil,
-      livecheck_references: [],
+      formula_or_cask,
       json: false,
       full_name: false,
       verbose: false,
       debug: false
     )
-      formula_with_resources.resources.each_with_index do |resource, i|
+      formula_or_cask.resources.each_with_index do |resource, i|
         has_livecheckable = resource.livecheckable?
 
         if debug
-          puts "Resource:          #{resource_name(resource, full_name: full_name)}"
-          puts "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
+          odebug "Resource:          #{resource_name(resource, full_name: full_name)}"
+          odebug "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
         end
 
-        #@todo: for now, only check resources with livecheck block
+        # For now, only check resources with livecheck block
         if has_livecheckable
           livecheck = resource.livecheck
-          # referenced_livecheck = referenced_formula_or_cask&.livecheck
           livecheck_url = livecheck.url
           livecheck_regex = livecheck.regex
           livecheck_strategy = livecheck.strategy
@@ -650,7 +644,9 @@ module Homebrew
           urls = [livecheck_url_string] if livecheck_url_string
           urls ||= checkable_urls(resource)
 
-          puts "URLs:       #{urls}"
+          if debug
+            odebug "URLs:       #{urls}"
+          end
 
           checked_urls = []
 
@@ -662,7 +658,6 @@ module Homebrew
               preprocess_url(original_url)
             end
             next if checked_urls.include?(url)
-
 
             strategies = Strategy.from_url(
               url,
