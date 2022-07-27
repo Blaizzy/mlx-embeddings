@@ -69,10 +69,10 @@ module Homebrew
       formulae = args.cask? ? [] : Formula.installed
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
-    elsif args.resources?
-      # formula_with_resources = Formula.all.select { |formula| formula.resources.any? }
-      formula_with_resources = Formula.all.select { |formula| formula.resources.any? { |resource| resource.livecheckable? } }
-      formula_with_resources
+    # elsif args.resources?
+    #   # formula_with_resources = Formula.all.select { |formula| formula.resources.any? }
+    #   formula_with_resources = Formula.all.select { |formula| formula.resources.any? { |resource| resource.livecheckable? } }
+    #   formula_with_resources
     elsif args.all?
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
@@ -83,7 +83,7 @@ module Homebrew
       elsif args.cask?
         args.named.to_casks
       else
-        args.named.to_package_and_resource
+        args.named.to_formulae_and_casks
       end
     elsif File.exist?(WATCHLIST_PATH)
       begin
@@ -92,7 +92,7 @@ module Homebrew
                         .map(&:strip)
 
         named_args = T.unsafe(CLI::NamedArgs).new(*names, parent: args)
-        named_args.to_package_and_resource(ignore_unavailable: true)
+        named_args.to_formulae_and_casks(ignore_unavailable: true)
       rescue Errno::ENOENT => e
         onoe e
       end
@@ -115,7 +115,7 @@ module Homebrew
       json:                 args.json?,
       full_name:            args.full_name?,
       handle_name_conflict: !args.formula? && !args.cask?,
-      resources_only:       args.resources?,
+      check_resources:      args.resources?,
       newer_only:           args.newer_only?,
       quiet:                args.quiet?,
       debug:                args.debug?,
