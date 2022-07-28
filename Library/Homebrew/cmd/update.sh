@@ -556,12 +556,6 @@ EOS
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
-    # Git's fsmonitor daemon will not release our lock unless we stop it.
-    if git fsmonitor--daemon status &>/dev/null
-    then
-      git fsmonitor--daemon stop 2>/dev/null
-    fi
-
     if ! git config --local --get remote.origin.url &>/dev/null
     then
       opoo "No remote 'origin' in ${DIR}, skipping update!"
@@ -746,6 +740,9 @@ EOS
       merge_or_rebase "${DIR}" "${TAP_VAR}" "${UPSTREAM_BRANCH}"
       [[ -n "${HOMEBREW_VERBOSE}" ]] && echo
     fi
+
+    # Git's fsmonitor daemon will not release our lock unless we stop it.
+    git fsmonitor--daemon stop 2>/dev/null
   done
 
   if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
