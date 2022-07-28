@@ -66,7 +66,7 @@ module Homebrew
 
     sentence = "Person #{args.named.first} directly authored #{commits} commits " \
                "and co-authored #{coauthorships} commits " \
-               "across #{all_repos ? "all Homebrew repos" : repos.join(", ")}"
+               "across #{all_repos ? "all Homebrew repos" : repos.to_sentence}"
     sentence += if args[:from] && args[:to]
       " between #{args[:from]} and #{args[:to]}"
     elsif args[:from]
