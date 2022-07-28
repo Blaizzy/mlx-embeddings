@@ -368,7 +368,14 @@ class Keg
   end
 
   def self.bottle_dependencies
-    []
+    return [] unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
+
+    @bottle_dependencies ||= begin
+      formulae = []
+      gcc = Formulary.factory(CompilerSelector.preferred_gcc)
+      formulae << gcc if DevelopmentTools.non_apple_gcc_version("gcc") < gcc.version.to_i
+      formulae
+    end
   end
 end
 
