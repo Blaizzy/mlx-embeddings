@@ -80,21 +80,20 @@ module Homebrew
 
   sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_author_cmd(repo_path, args)
-    cmd = "git -C #{repo_path} log --oneline --author=#{args.named.first}"
-    cmd += " --before=#{args[:to]}" if args[:to]
-    cmd += " --after=#{args[:from]}" if args[:from]
+    cmd = ["git", "-C", repo_path, "log", "--oneline", "--author=#{args.named.first}"]
+    cmd << "--before=#{args[:to]}" if args[:to]
+    cmd << "--after=#{args[:from]}" if args[:from]
 
-    Utils.safe_popen_read(cmd).lines.count
+    Utils.safe_popen_read(*cmd).lines.count
   end
 
   sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_coauthor_cmd(repo_path, args)
-    cmd = "git -C #{repo_path} log --oneline"
-    cmd += " --format='%(trailers:key=Co-authored-by:)'"
-    cmd += " --before=#{args[:to]}" if args[:to]
-    cmd += " --after=#{args[:from]}" if args[:from]
-    cmd += " | grep #{args.named.first}"
+    cmd = ["git", "-C", repo_path, "log", "--oneline"]
+    cmd << "--format='%(trailers:key=Co-authored-by:)'"
+    cmd << "--before=#{args[:to]}" if args[:to]
+    cmd << "--after=#{args[:from]}" if args[:from]
 
-    Utils.safe_popen_read(cmd).lines.count
+    Utils.safe_popen_read(*cmd).lines.select { |l| l.include?(args.named.first) }.length
   end
 end
