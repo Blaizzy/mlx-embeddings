@@ -53,7 +53,7 @@ module Homebrew
       end
 
       repo_path = find_repo_path_for_repo(repo)
-      if !repo_path.exist?
+      unless repo_path.exist?
         next if repo == "versions" # This tap is deprecated, tapping it will error.
 
         opoo "Couldn't find repo #{repo} locally. Tapping it now..."
@@ -104,6 +104,6 @@ module Homebrew
     cmd << "--before=#{args[:to]}" if args[:to]
     cmd << "--after=#{args[:from]}" if args[:from]
 
-    Utils.safe_popen_read(*cmd).lines.select { |l| l.include?(args.named.first) }.length
+    Utils.safe_popen_read(*cmd).lines.count { |l| l.include?(args.named.first) }
   end
 end
