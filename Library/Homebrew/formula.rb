@@ -3214,10 +3214,17 @@ class Formula
     end
 
     # Permit links to certain libraries that don't exist. Available on Linux only.
-    def ignore_missing_libraries(*)
-      return if Homebrew::SimulateSystem.linux?
+    def ignore_missing_libraries(*libs)
+      unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
+        raise FormulaSpecificationError, "#{__method__} is available on Linux only"
+      end
 
-      raise FormulaSpecificationError, "#{__method__} is available on Linux only"
+      libraries = libs.flatten
+      if libraries.any? { |x| !x.is_a?(String) && !x.is_a?(Regexp) }
+        raise FormulaSpecificationError, "#{__method__} can handle Strings and Regular Expressions only"
+      end
+
+      allowed_missing_libraries.merge(libraries)
     end
 
     # @private
