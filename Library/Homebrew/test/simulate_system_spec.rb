@@ -8,63 +8,63 @@ describe Homebrew::SimulateSystem do
     described_class.clear
   end
 
-  describe "::treat_as_macos?" do
+  describe "::simulating_or_running_on_macos?" do
     it "returns true on macOS", :needs_macos do
       described_class.clear
-      expect(described_class.treat_as_macos?).to be true
+      expect(described_class.simulating_or_running_on_macos?).to be true
     end
 
     it "returns false on Linux", :needs_linux do
       described_class.clear
-      expect(described_class.treat_as_macos?).to be false
+      expect(described_class.simulating_or_running_on_macos?).to be false
     end
 
     it "returns false on macOS when simulating Linux", :needs_macos do
       described_class.clear
       described_class.os = :linux
-      expect(described_class.treat_as_macos?).to be false
+      expect(described_class.simulating_or_running_on_macos?).to be false
     end
 
     it "returns true on Linux when simulating a generic macOS version", :needs_linux do
       described_class.clear
       described_class.os = :macos
-      expect(described_class.treat_as_macos?).to be true
+      expect(described_class.simulating_or_running_on_macos?).to be true
     end
 
     it "returns true on Linux when simulating a specific macOS version", :needs_linux do
       described_class.clear
       described_class.os = :monterey
-      expect(described_class.treat_as_macos?).to be true
+      expect(described_class.simulating_or_running_on_macos?).to be true
     end
   end
 
-  describe "::treat_as_linux?" do
+  describe "::simulating_or_running_on_linux?" do
     it "returns true on Linux", :needs_linux do
       described_class.clear
-      expect(described_class.treat_as_linux?).to be true
+      expect(described_class.simulating_or_running_on_linux?).to be true
     end
 
     it "returns false on macOS", :needs_macos do
       described_class.clear
-      expect(described_class.treat_as_linux?).to be false
+      expect(described_class.simulating_or_running_on_linux?).to be false
     end
 
     it "returns true on macOS when simulating Linux", :needs_macos do
       described_class.clear
       described_class.os = :linux
-      expect(described_class.treat_as_linux?).to be true
+      expect(described_class.simulating_or_running_on_linux?).to be true
     end
 
     it "returns false on Linux when simulating a generic macOS version", :needs_linux do
       described_class.clear
       described_class.os = :macos
-      expect(described_class.treat_as_linux?).to be false
+      expect(described_class.simulating_or_running_on_linux?).to be false
     end
 
     it "returns false on Linux when simulating a specific macOS version", :needs_linux do
       described_class.clear
       described_class.os = :monterey
-      expect(described_class.treat_as_linux?).to be false
+      expect(described_class.simulating_or_running_on_linux?).to be false
     end
   end
 

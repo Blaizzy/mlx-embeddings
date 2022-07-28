@@ -174,7 +174,7 @@ class SoftwareSpec
     return if Homebrew::EnvConfig.simulate_macos_on_linux? && !bounds.key?(:since)
 
     # macOS new enough for dependency to not be required.
-    if Homebrew::SimulateSystem.treat_as_macos?
+    if Homebrew::SimulateSystem.simulating_or_running_on_macos?
       current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
       since_os = MacOS::Version.from_symbol(bounds[:since]) if bounds.key?(:since)
       return if current_os >= since_os

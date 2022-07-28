@@ -32,14 +32,14 @@ module Homebrew
       end
 
       sig { returns(T::Boolean) }
-      def treat_as_macos?
+      def simulating_or_running_on_macos?
         return OS.mac? if @os.blank?
 
         [:macos, *MacOSVersions::SYMBOLS.keys].include?(@os)
       end
 
       sig { returns(T::Boolean) }
-      def treat_as_linux?
+      def simulating_or_running_on_linux?
         return OS.linux? if @os.blank?
 
         @os == :linux
