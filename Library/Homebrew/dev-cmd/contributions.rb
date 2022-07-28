@@ -8,7 +8,11 @@ module Homebrew
 
   module_function
 
-  SUPPORTED_REPOS = %w[brew core cask bundle].freeze
+  SUPPORTED_REPOS = (
+      %w[brew core cask] +
+      OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") } +
+      OFFICIAL_CASK_TAPS
+    ).freeze
 
   sig { returns(CLI::Parser) }
   def contributions_args
@@ -25,9 +29,14 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
+      flag "--all",
+           description: "Show contributions across all official Homebrew formula, cask and command repos."
+
       comma_array "--repos=",
                   description: "The Homebrew repositories to search for contributions in. " \
                                "Comma separated. Supported repos: #{SUPPORTED_REPOS.join(", ")}."
+
+      conflicts "--all", "--repos"
 
       named_args :email, number: 1
     end
@@ -37,18 +46,22 @@ module Homebrew
   def contributions
     args = contributions_args.parse
 
-    return ofail "`--repos` is required." if args[:repos].empty?
-
     commits = 0
     coauthorships = 0
 
-    args[:repos].each do |repo|
-      if SUPPORTED_REPOS.exclude?(repo)
+    repos = args[:repos] || SUPPORTED_REPOS
+    repos.each do |repo|
+      if !args[:all] && SUPPORTED_REPOS.exclude?(repo)
         return ofail "Unsupported repo: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
       end
 
       repo_path = find_repo_path_for_repo(repo)
-      return ofail "Couldn't find repo #{repo} locally. Run `brew tap homebrew/#{repo}`." unless repo_path.exist?
+      if !repo_path.exist?
+        next if repo == "versions" # This tap is deprecated, tapping it will error.
+
+        opoo "Couldn't find repo #{repo} locally. Tapping it now..."
+        Utils.safe_system("brew", "tap", repo_path) # TODO: Figure out why `exit code 1` happens here.
+      end
 
       commits += git_log_author_cmd(T.must(repo_path), args)
       coauthorships += git_log_coauthor_cmd(T.must(repo_path), args)
@@ -56,7 +69,7 @@ module Homebrew
 
     sentence = "Person #{args.named.first} directly authored #{commits} commits " \
                "and co-authored #{coauthorships} commits " \
-               "to #{args[:repos].join(", ")}"
+               "to #{args[:all] ? "all Homebrew repos" : repos.join(", ")}"
     sentence += if args[:from] && args[:to]
       " between #{args[:from]} and #{args[:to]}"
     elsif args[:from]
