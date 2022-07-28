@@ -29,14 +29,10 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      flag "--all",
-           description: "Show contributions across all official Homebrew formula, cask and command repos."
-
       comma_array "--repos=",
                   description: "The Homebrew repositories to search for contributions in. " \
-                               "Comma separated. Supported repos: #{SUPPORTED_REPOS.join(", ")}."
-
-      conflicts "--all", "--repos"
+                               "Comma separated. Pass `all` to search all repos. " \
+                               "Supported repos: #{SUPPORTED_REPOS.join(", ")}."
 
       named_args :email, number: 1
     end
@@ -49,9 +45,10 @@ module Homebrew
     commits = 0
     coauthorships = 0
 
-    repos = args[:repos] || SUPPORTED_REPOS
+    all_repos = args[:repos].first == "all"
+    repos = all_repos ? SUPPORTED_REPOS : args[:repos]
     repos.each do |repo|
-      if !args[:all] && SUPPORTED_REPOS.exclude?(repo)
+      if SUPPORTED_REPOS.exclude?(repo)
         return ofail "Unsupported repo: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
       end
 
@@ -69,7 +66,7 @@ module Homebrew
 
     sentence = "Person #{args.named.first} directly authored #{commits} commits " \
                "and co-authored #{coauthorships} commits " \
-               "to #{args[:all] ? "all Homebrew repos" : repos.join(", ")}"
+               "across #{all_repos ? "all Homebrew repos" : repos.join(", ")}"
     sentence += if args[:from] && args[:to]
       " between #{args[:from]} and #{args[:to]}"
     elsif args[:from]
