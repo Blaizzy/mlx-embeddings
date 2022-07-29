@@ -56,7 +56,7 @@ module Homebrew
         next if repo == "versions" # This tap is deprecated, tapping it will error.
 
         opoo "Repository #{repo} not yet tapped! Tapping it now..."
-        Utils.safe_system("brew", "tap", repo_path) # TODO: Figure out why `exit code 1` happens here.
+        Tap.fetch("homebrew", repo).install
       end
 
       commits += git_log_author_cmd(T.must(repo_path), args)
