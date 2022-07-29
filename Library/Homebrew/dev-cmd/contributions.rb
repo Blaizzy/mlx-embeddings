@@ -40,12 +40,13 @@ module Homebrew
   sig { returns(NilClass) }
   def contributions
     args = contributions_args.parse
+    return ofail "Please specify `--repositories` to search, or `--repositories=all`." unless args[:repositories].empty?
 
     commits = 0
     coauthorships = 0
 
-    all_repos = args[:repositories].first == "all"
-    repos = all_repos ? SUPPORTED_REPOS : args[:repositories]
+    all_repos = args.repositories.first == "all"
+    repos = all_repos ? SUPPORTED_REPOS : args.repositories
     repos.each do |repo|
       if SUPPORTED_REPOS.exclude?(repo)
         return ofail "Unsupported repository: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
@@ -66,12 +67,12 @@ module Homebrew
     sentence = "Person #{args.named.first} directly authored #{commits} commits " \
                "and co-authored #{coauthorships} commits " \
                "across #{all_repos ? "all Homebrew repos" : repos.to_sentence}"
-    sentence += if args[:from] && args[:to]
-      " between #{args[:from]} and #{args[:to]}"
-    elsif args[:from]
-      " after #{args[:from]}"
-    elsif args[:to]
-      " before #{args[:to]}"
+    sentence += if args.from && args.to
+      " between #{args.from} and #{args.to}"
+    elsif args.from
+      " after #{args.from}"
+    elsif args.to
+      " before #{args.to}"
     else
       " in all time"
     end
@@ -90,8 +91,8 @@ module Homebrew
   sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_author_cmd(repo_path, args)
     cmd = ["git", "-C", repo_path, "log", "--oneline", "--author=#{args.named.first}"]
-    cmd << "--before=#{args[:to]}" if args[:to]
-    cmd << "--after=#{args[:from]}" if args[:from]
+    cmd << "--before=#{args.to}" if args.to
+    cmd << "--after=#{args.from}" if args.from
 
     Utils.safe_popen_read(*cmd).lines.count
   end
@@ -100,8 +101,8 @@ module Homebrew
   def git_log_coauthor_cmd(repo_path, args)
     cmd = ["git", "-C", repo_path, "log", "--oneline"]
     cmd << "--format='%(trailers:key=Co-authored-by:)'"
-    cmd << "--before=#{args[:to]}" if args[:to]
-    cmd << "--after=#{args[:from]}" if args[:from]
+    cmd << "--before=#{args.to}" if args.to
+    cmd << "--after=#{args.from}" if args.from
 
     Utils.safe_popen_read(*cmd).lines.count { |l| l.include?(args.named.first) }
   end
