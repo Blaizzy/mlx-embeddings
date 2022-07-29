@@ -28,10 +28,10 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      comma_array "--repos=",
+      comma_array "--repositories=",
                   description: "The Homebrew repositories to search for contributions in. " \
-                               "Comma separated. Pass `all` to search all repos. " \
-                               "Supported repos: #{SUPPORTED_REPOS.join(", ")}."
+                               "Comma separated. Pass `all` to search all repositories. " \
+                               "Supported repositories: #{SUPPORTED_REPOS.join(", ")}."
 
       named_args :email, number: 1
     end
@@ -44,18 +44,18 @@ module Homebrew
     commits = 0
     coauthorships = 0
 
-    all_repos = args[:repos].first == "all"
-    repos = all_repos ? SUPPORTED_REPOS : args[:repos]
+    all_repos = args[:repositories].first == "all"
+    repos = all_repos ? SUPPORTED_REPOS : args[:repositories]
     repos.each do |repo|
       if SUPPORTED_REPOS.exclude?(repo)
-        return ofail "Unsupported repo: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
+        return ofail "Unsupported repository: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
       end
 
       repo_path = find_repo_path_for_repo(repo)
       unless repo_path.exist?
         next if repo == "versions" # This tap is deprecated, tapping it will error.
 
-        opoo "Couldn't find repo #{repo} locally. Tapping it now..."
+        opoo "Repository #{repo} not yet tapped! Tapping it now..."
         Utils.safe_system("brew", "tap", repo_path) # TODO: Figure out why `exit code 1` happens here.
       end
 
