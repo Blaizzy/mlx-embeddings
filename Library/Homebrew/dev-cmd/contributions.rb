@@ -8,11 +8,11 @@ module Homebrew
 
   module_function
 
-  SUPPORTED_REPOS = (
-      %w[brew core cask] +
-      OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") } +
-      OFFICIAL_CASK_TAPS
-    ).freeze
+  SUPPORTED_REPOS = [
+    %w[brew core cask],
+    OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") },
+    OFFICIAL_CASK_TAPS,
+  ].flatten.freeze
 
   sig { returns(CLI::Parser) }
   def contributions_args
