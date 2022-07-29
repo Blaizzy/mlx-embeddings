@@ -310,7 +310,7 @@ module Homebrew
           if dep_f.deprecated? && !formula.deprecated? && !formula.disabled?
             problem <<~EOS
               Dependency '#{dep.name}' is deprecated but has un-deprecated dependents. Either
-              un-deprecate '#{dep.name}' or deprecate all of its dependents.
+              un-deprecate '#{dep.name}' or deprecate it and all of its dependents.
             EOS
           end
 
