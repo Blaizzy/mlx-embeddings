@@ -483,7 +483,7 @@ class Keg
     ObserverPathnameExtension.n
   end
 
-  def dsymutil; end
+  def prepare_debug_symbols; end
 
   def remove_oldname_opt_record
     return unless oldname_opt_record

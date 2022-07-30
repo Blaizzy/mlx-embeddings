@@ -807,7 +807,7 @@ class FormulaInstaller
       post_install
     end
 
-    dsymutil(keg) if debug_symbols?
+    keg.prepare_debug_symbols if debug_symbols?
 
     # Updates the cache for a particular formula after doing an install
     CacheStoreDatabase.use(:linkage) do |db|
@@ -1337,13 +1337,5 @@ class FormulaInstaller
       #{formula.name}'s licenses are all forbidden by HOMEBREW_FORBIDDEN_LICENSES:
         #{SPDX.license_expression_to_string formula.license}.
     EOS
-  end
-
-  sig { params(keg: Keg).void }
-  def dsymutil(keg)
-    keg.dsymutil
-  rescue RuntimeError => e
-    ofail "Failed to extract debugging symbols for #{formula.full_name}"
-    puts e
   end
 end

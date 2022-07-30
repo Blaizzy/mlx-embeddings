@@ -63,7 +63,7 @@ class Keg
     EOS
   end
 
-  def dsymutil
+  def prepare_debug_symbols
     binary_executable_or_library_files.each do |file|
       odebug "Extracting symbols #{file}"
 
