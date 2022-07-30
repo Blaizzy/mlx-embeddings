@@ -58,14 +58,8 @@ module Superenv
       debug_symbols:   T.nilable(T::Boolean),
     ).void
   }
-  def setup_build_environment(
-    formula: nil,
-    cc: nil,
-    build_bottle: false,
-    bottle_arch: nil,
-    testing_formula: false,
-    debug_symbols: false
-  )
+  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false,
+                              debug_symbols: false)
     super
     send(compiler)
 
