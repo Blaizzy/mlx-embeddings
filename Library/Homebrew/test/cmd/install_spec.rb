@@ -72,4 +72,14 @@ describe "brew install" do
       .and be_a_success
     expect(HOMEBREW_CELLAR/"testball1/HEAD-d5eb689/foo/test").not_to be_a_file
   end
+
+  it "installs formulae with debug symbols", :integration_test do
+    setup_test_formula "testball1"
+
+    expect { brew "install", "testball1", "--debug-symbols", "-s" }
+      .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}o).to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+    expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
+  end
 end
