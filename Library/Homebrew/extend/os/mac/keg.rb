@@ -71,7 +71,7 @@ class Keg
       next if result.success?
 
       # If it fails again, error out
-      onoe <<~EOS
+      ofail <<~EOS
         Failed to extract symbols from #{file}:
         #{result.stderr}
       EOS
