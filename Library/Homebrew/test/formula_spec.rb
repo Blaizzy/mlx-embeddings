@@ -483,6 +483,16 @@ describe Formula do
     end
   end
 
+  describe "::inreplace" do
+    specify "raises build error on failure" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+      end
+
+      expect { f.inreplace([]) }.to raise_error(BuildError)
+    end
+  end
+
   describe "::installed_with_alias_path" do
     specify "with alias path with nil" do
       expect(described_class.installed_with_alias_path(nil)).to be_empty

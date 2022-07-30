@@ -69,9 +69,6 @@ class Formula
   extend Cachable
   extend Predicable
 
-  # @!method inreplace(paths, before = nil, after = nil)
-  # @see Utils::Inreplace.inreplace
-
   # The name of this {Formula}.
   # e.g. `this-formula`
   attr_reader :name
@@ -2168,6 +2165,12 @@ class Formula
   #   system "make", "install"
   # end</pre>
   def install; end
+
+  def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
+    super(paths, before, after, audit_result)
+  rescue Utils::Inreplace::Error
+    raise BuildError.new(self, "inreplace", paths, nil)
+  end
 
   protected
 
