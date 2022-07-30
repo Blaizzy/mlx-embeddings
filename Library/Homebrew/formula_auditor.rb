@@ -307,6 +307,13 @@ module Homebrew
             EOS
           end
 
+          if dep_f.deprecated? && !formula.deprecated? && !formula.disabled?
+            problem <<~EOS
+              Dependency '#{dep.name}' is deprecated but has un-deprecated dependents. Either
+              un-deprecate '#{dep.name}' or deprecate it and all of its dependents.
+            EOS
+          end
+
           # we want to allow uses_from_macos for aliases but not bare dependencies
           if self.class.aliases.include?(dep.name) && spec.uses_from_macos_names.exclude?(dep.name)
             problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
