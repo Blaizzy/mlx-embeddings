@@ -136,6 +136,18 @@ module Formulary
     class_s = Formulary.class_s(name)
     json_formula = Homebrew::API::Formula.all_formulae[name]
 
+    if (bottle_tag = Utils::Bottles.tag.to_s.presence) &&
+       (variations = json_formula["variations"].presence) &&
+       (variation = variations[bottle_tag].presence)
+      json_formula = json_formula.merge(variation)
+    end
+
+    uses_from_macos_names = json_formula["uses_from_macos"].map do |dep|
+      next dep unless dep.is_a? Hash
+
+      dep.keys.first
+    end
+
     klass = Class.new(::Formula) do
       desc json_formula["desc"]
       homepage json_formula["homepage"]
@@ -176,20 +188,18 @@ module Formulary
         disable! date: disable_date, because: reason
       end
 
-      json_formula["build_dependencies"].each do |dep|
-        depends_on dep => :build
-      end
-
       json_formula["dependencies"].each do |dep|
+        next if uses_from_macos_names.include? dep
+
         depends_on dep
       end
 
-      json_formula["recommended_dependencies"].each do |dep|
-        depends_on dep => :recommended
-      end
+      [:build, :recommended, :optional].each do |type|
+        json_formula["#{type}_dependencies"].each do |dep|
+          next if uses_from_macos_names.include? dep
 
-      json_formula["optional_dependencies"].each do |dep|
-        depends_on dep => :optional
+          depends_on dep => type
+        end
       end
 
       json_formula["uses_from_macos"].each do |dep|

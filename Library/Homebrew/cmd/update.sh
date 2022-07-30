@@ -556,6 +556,9 @@ EOS
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
+    # Git's fsmonitor prevents the release of our locks
+    git config --bool core.fsmonitor false
+
     if ! git config --local --get remote.origin.url &>/dev/null
     then
       opoo "No remote 'origin' in ${DIR}, skipping update!"

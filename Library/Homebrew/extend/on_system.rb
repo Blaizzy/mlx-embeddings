@@ -15,8 +15,7 @@ module OnSystem
   def arch_condition_met?(arch)
     raise ArgumentError, "Invalid arch condition: #{arch.inspect}" if ARCH_OPTIONS.exclude?(arch)
 
-    current_arch = Homebrew::SimulateSystem.arch || Hardware::CPU.type
-    arch == current_arch
+    arch == Homebrew::SimulateSystem.current_arch
   end
 
   sig { params(os_name: Symbol, or_condition: T.nilable(Symbol)).returns(T::Boolean) }
@@ -26,14 +25,7 @@ module OnSystem
       return true if [:macos, *MacOSVersions::SYMBOLS.keys].include?(os_name)
     end
 
-    if BASE_OS_OPTIONS.include?(os_name)
-      if Homebrew::SimulateSystem.none?
-        return OS.linux? if os_name == :linux
-        return OS.mac? if os_name == :macos
-      end
-
-      return Homebrew::SimulateSystem.send("#{os_name}?")
-    end
+    return Homebrew::SimulateSystem.send("simulating_or_running_on_#{os_name}?") if BASE_OS_OPTIONS.include?(os_name)
 
     raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOSVersions::SYMBOLS.key?(os_name)
 
@@ -41,10 +33,10 @@ module OnSystem
       raise ArgumentError, "Invalid OS `or_*` condition: #{or_condition.inspect}"
     end
 
-    return false if Homebrew::SimulateSystem.linux? || (Homebrew::SimulateSystem.none? && OS.linux?)
+    return false if Homebrew::SimulateSystem.simulating_or_running_on_linux?
 
     base_os = MacOS::Version.from_symbol(os_name)
-    current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.os || MacOS.version.to_sym)
+    current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
 
     return current_os >= base_os if or_condition == :or_newer
     return current_os <= base_os if or_condition == :or_older
