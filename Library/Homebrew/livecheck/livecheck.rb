@@ -849,6 +849,8 @@ module Homebrew
           resource_version_info[:meta][:url] = resource.url.to_s
         end
       end
+      resource_version_info[:version][:newer_than_upstream] = resource_version_info[:version][:current] > resource_version_info[:version][:latest]
+      resource_version_info[:version][:outdated] = resource_version_info[:version][:current] < resource_version_info[:version][:latest]
       resource_version_info
     end
 
