@@ -1276,7 +1276,7 @@ class Formula
   def brew(fetch: true, keep_tmp: false, debug_symbols: false, interactive: false)
     @prefix_returns_versioned_prefix = true
     active_spec.fetch if fetch
-    stage(interactive: interactive) do |staging|
+    stage(interactive: interactive, debug_symbols: debug_symbols) do |staging|
       staging.retain! if keep_tmp || debug_symbols
 
       prepare_patches
@@ -2437,8 +2437,8 @@ class Formula
     }
   end
 
-  def stage(interactive: false)
-    active_spec.stage do |staging|
+  def stage(interactive: false, debug_symbols: false)
+    active_spec.stage(debug_symbols: debug_symbols) do |staging|
       @source_modified_time = active_spec.source_modified_time
       @buildpath = Pathname.pwd
       env_home = buildpath/".brew_home"
