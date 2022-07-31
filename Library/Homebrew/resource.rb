@@ -5,7 +5,6 @@ require "download_strategy"
 require "checksum"
 require "version"
 require "mktemp"
-require "mksource"
 require "livecheck"
 require "extend/on_system"
 
@@ -237,7 +236,7 @@ class Resource
   protected
 
   def stage_resource(prefix, debug_symbols: false, &block)
-    debug_symbols ? Mksource.new(prefix).run(&block) : Mktemp.new(prefix).run(&block)
+    Mktemp.new(prefix, retain_in_sources: debug_symbols).run(&block)
   end
 
   private

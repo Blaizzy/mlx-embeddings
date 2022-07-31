@@ -13,7 +13,8 @@ class Mktemp
 
   def initialize(prefix, opts = {})
     @prefix = prefix
-    @retain = opts[:retain]
+    @retain_in_sources = opts[:retain_in_sources]
+    @retain = opts[:retain] || @retain_in_sources
     @quiet = false
   end
 
@@ -40,7 +41,13 @@ class Mktemp
   end
 
   def run
-    @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", HOMEBREW_TEMP))
+    if @retain_in_sources
+      root = "#{HOMEBREW_CACHE}/Sources"
+      FileUtils.mkdir_p root
+    else
+      root = HOMEBREW_TEMP
+    end
+    @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", root))
 
     # Make sure files inside the temporary directory have the same group as the
     # brew instance.
