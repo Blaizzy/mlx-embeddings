@@ -527,10 +527,8 @@ module RuboCop
           offending_node(offenses.last)
           replacement = if (%w[:bash :zsh :fish] - shells).empty?
             @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/, "")
-                           .gsub(",,", ",")
-                           .sub(", )", ")")
-                           .sub("(, ", "(")
-                           .sub("()", "")
+                           .sub(", )", ")") # clean up dangling trailing comma
+                           .sub("(, ", "(") # clean up dangling leading comma
           else
             @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/,
                                        "shells: [#{shells.join(", ")}]")
