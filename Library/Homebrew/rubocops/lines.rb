@@ -435,9 +435,9 @@ module RuboCop
             shell_parameter_format = if shell_parameter_stripped.empty?
               nil
             elsif shell_parameter_stripped == "--"
-              ":flag"
+              :flag
             elsif shell_parameter_stripped == "--shell="
-              ":arg"
+              :arg
             else
               "\"#{shell_parameter_stripped}\""
             end
@@ -449,7 +449,7 @@ module RuboCop
               replacement_args << "executable: #{executable}"
             end
             replacement_args << "cmd: \"#{cmd}\"" unless cmd == "completion"
-            replacement_args << "shell_parameter_format: #{shell_parameter_format}" unless shell_parameter_format.nil?
+            replacement_args << "shell_parameter_format: #{shell_parameter_format.inspect}" unless shell_parameter_format.nil?
 
             offending_node(node)
             replacement = "generate_completions_from_executable(#{replacement_args.join(", ")})"
