@@ -29,6 +29,11 @@ class Mktemp
     @retain
   end
 
+  # True if the source files should be retained.
+  def retain_in_sources?
+    @retain_in_sources
+  end
+
   # Instructs this Mktemp to not emit messages when retention is triggered.
   sig { void }
   def quiet!
@@ -73,7 +78,10 @@ class Mktemp
       ignore_interrupts { chmod_rm_rf(tmpdir) } unless retain?
     end
   ensure
-    ohai "Temporary files retained at:", @tmpdir.to_s if retain? && !@tmpdir.nil? && !@quiet
+    if retain? && !@tmpdir.nil? && !@quiet
+      message = retain_in_sources? ? "Source files for debugging available at:" : "Temporary files retained at:"
+      ohai message, @tmpdir.to_s
+    end
   end
 
   private
