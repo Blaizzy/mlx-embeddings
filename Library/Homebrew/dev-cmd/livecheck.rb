@@ -36,7 +36,7 @@ module Homebrew
       switch "--json",
              description: "Output information in JSON format."
       switch "-r", "--resources",
-             description: "Check resources with livecheck blocks for a given formulae/casks."
+             description: "Also check resources for formulae."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
       switch "--formula", "--formulae",
