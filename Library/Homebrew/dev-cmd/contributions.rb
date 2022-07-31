@@ -17,9 +17,13 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` [<email>]"
+      usage_banner "`contributions` <email> <repo1,repo2|all>"
       description <<~EOS
         Contributions to Homebrew repos for a user.
+
+        The second argument is a comma-separated list of repos to search.
+        Specify <all> to search all repositories.
+        Supported repositories: #{SUPPORTED_REPOS.join(", ")}.
       EOS
 
       flag "--from=",
@@ -28,25 +32,20 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      comma_array "--repositories=",
-                  description: "The Homebrew repositories to search for contributions in. " \
-                               "Comma separated. Pass `all` to search all repositories. " \
-                               "Supported repositories: #{SUPPORTED_REPOS.join(", ")}."
-
-      named_args :email, number: 1
+      named_args [:email, :repositories], min: 2, max: 2
     end
   end
 
   sig { returns(NilClass) }
   def contributions
     args = contributions_args.parse
-    return ofail "Please specify `--repositories` to search, or `--repositories=all`." unless args[:repositories].empty?
 
     commits = 0
     coauthorships = 0
 
-    all_repos = args.repositories.first == "all"
-    repos = all_repos ? SUPPORTED_REPOS : args.repositories
+    all_repos = args.named.last == "all"
+    repos = all_repos ? SUPPORTED_REPOS : args.named.last.split(",")
+
     repos.each do |repo|
       if SUPPORTED_REPOS.exclude?(repo)
         return ofail "Unsupported repository: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
