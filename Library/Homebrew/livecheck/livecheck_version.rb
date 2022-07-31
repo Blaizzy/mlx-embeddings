@@ -16,9 +16,7 @@ module Homebrew
       }
       def self.create(package_or_resource, version)
         versions = case package_or_resource
-        when Resource
-          [version]
-        when Formula
+        when Formula, Resource
           [version]
         when Cask::Cask
           version.to_s.split(/[,:]/).map { |s| Version.new(s) }
