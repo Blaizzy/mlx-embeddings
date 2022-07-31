@@ -693,8 +693,8 @@ module Homebrew
         puts <<~EOS
 
         EOS
-        odebug "Resource:          #{resource_name(resource, full_name: full_name)}"
-        odebug "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
+        puts "Resource:          #{resource_name(resource, full_name: full_name)}"
+        puts "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
       end
 
       resource_version_info = {
