@@ -1625,18 +1625,19 @@ class Formula
   end
   private :extract_macho_slice_from
 
-  # Generate shell completions for a formula for bash, zsh, and fish, using the formula's binary.
+  # Generate shell completions for a formula for bash, zsh, and fish, using the formula's executable.
   #
   # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
   # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
-  # @param binary [Pathname] the binary to use for generating the completion scripts. Defaults to the binary with the
-  # name of the formula.
+  # @param executable [Pathname] the executable to use for generating the completion scripts. Defaults to the
+  # executable with the name of the formula.
   # @param cmd [String] the command to pass to the `binary`. Defaults to 'completion'.
-  # @param shell_as_flag [Boolean] specify if `shells` should each be passed as flags to the `binary`.
-  # Defaults to `false`.
+  # @param shell_parameter_format [String]/[Symbol] specify how `shells` should each be passed
+  # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none].
+  # Defaults to plainly passing the shell.
   sig {
-    params(base_name: String, shells: T::Array[Symbol], binary: Pathname, cmd: String,
-           shell_prefix: T.nilable(T.any(Symbol, String))).void
+    params(base_name: String, shells: T::Array[Symbol], executable: Pathname, cmd: String,
+           shell_parameter_format: T.nilable(T.any(Symbol, String))).void
   }
   def generate_completions_from_executable(base_name: name,
                                            shells: [:bash, :zsh, :fish],
