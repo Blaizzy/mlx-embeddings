@@ -306,11 +306,6 @@ module Homebrew
             latest_resources = resource_version_info.map do |resource|
               { name: resource[:resource], version: resource[:version][:latest] }
             end
-
-          elsif debug || verbose
-            # In case we don't have any resources for that Formula/Cask
-            onoe "No resources to check for '#{formula_or_cask_name(formula_or_cask, full_name: full_name)}'"
-          end
         end
 
         if latest.blank?
