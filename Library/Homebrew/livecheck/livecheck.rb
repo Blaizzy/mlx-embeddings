@@ -284,28 +284,23 @@ module Homebrew
         end
 
         # Check current and latest resources (if "--resources" flag is given)
-        if check_resources
+        # Only check current and latest versions if we have resources to check against
+        if check_resources && formula_or_cask.resources.present?
+          current_resources = formula_or_cask.resources.map do |resource|
+            { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? }
+          end
 
-          has_resources = formula_or_cask.resources.any?
+          resource_version_info = resource_version(
+            formula_or_cask,
+            json:      json,
+            full_name: use_full_name,
+            verbose:   verbose,
+            debug:     debug,
+          )
 
-          # Only check current and latest versions if we have resources to check against
-          if has_resources
+          latest_resources = resource_version_info.map do |resource|
+            { name: resource[:resource], version: resource[:version][:latest] }
 
-            current_resources = formula_or_cask.resources.map do |resource|
-              { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? }
-            end
-
-            resource_version_info = resource_version(
-              formula_or_cask,
-              json:      json,
-              full_name: use_full_name,
-              verbose:   verbose,
-              debug:     debug,
-            )
-
-            latest_resources = resource_version_info.map do |resource|
-              { name: resource[:resource], version: resource[:version][:latest] }
-            end
         end
 
         if latest.blank?
