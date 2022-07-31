@@ -452,8 +452,7 @@ module RuboCop
             replacement_args << "shell_parameter_format: #{shell_parameter_format}" unless shell_parameter_format.nil?
 
             offending_node(node)
-            replacement = "generate_completions_from_executable"
-            replacement += "(#{replacement_args.join(", ")})" unless replacement_args.blank?
+            replacement = "generate_completions_from_executable(#{replacement_args.join(", ")})"
 
             problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
               corrector.replace(@offensive_node.source_range, replacement)
