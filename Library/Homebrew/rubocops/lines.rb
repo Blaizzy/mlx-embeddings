@@ -525,7 +525,7 @@ module RuboCop
           end
 
           offending_node(offenses.last)
-          replacement = if (shells - %w[:bash :zsh :fish]).empty?
+          replacement = if (%w[:bash :zsh :fish] - shells).empty?
             @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/, "")
                            .gsub(",,", ",")
                            .sub(", )", ")")
