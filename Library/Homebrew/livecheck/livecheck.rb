@@ -521,7 +521,7 @@ module Homebrew
           info[:version][:latest]
         end
 
-        puts "-- #{resource_s}: #{current_s} ==> #{latest_s}"
+        puts "  #{resource_s}: #{current_s} ==> #{latest_s}"
       end
     end
 
