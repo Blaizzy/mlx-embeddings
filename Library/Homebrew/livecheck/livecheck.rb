@@ -498,29 +498,6 @@ module Homebrew
       status_hash
     end
 
-    # Formats and prints the livecheck result for a resource (for a given Formula or Cask).
-    sig { params(resources_info: Array(Hash), verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
-    def print_latest_resource_version(resources_info, verbose:, ambiguous_cask: false)
-      resources_info.each_with_index do |info, _i|
-        resource_s = "#{Tty.blue}#{info[:resource]}#{Tty.reset}"
-        resource_s += " (livecheckable)" if info[:livecheckable] && verbose
-
-        current_s = if info[:version][:newer_than_upstream]
-          "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
-        else
-          info[:version][:current]
-        end
-
-        latest_s = if info[:version][:outdated]
-          "#{Tty.green}#{info[:version][:latest]}#{Tty.reset}"
-        else
-          info[:version][:latest]
-        end
-
-        puts "  #{resource_s}: #{current_s} ==> #{latest_s}"
-      end
-    end
-
     # Formats and prints the livecheck result for a formula/cask/resource.
     sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean, check_resource: T::Boolean).void }
     def print_latest_version(info, verbose:, ambiguous_cask: false, check_resource: false)
