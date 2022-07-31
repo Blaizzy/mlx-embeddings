@@ -290,17 +290,20 @@ module Homebrew
             { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? }
           end
 
-          resource_version_info = resource_version(
-            formula_or_cask,
-            json:      json,
-            full_name: use_full_name,
-            verbose:   verbose,
-            debug:     debug,
-          )
+          resource_version_info = formula_or_cask.resources.map do |resource|
+            resource_info = resource_version(
+              resource,
+              json: json,
+              full_name: use_full_name,
+              verbose: verbose,
+              debug: debug,
+            )
+            resource_info
+          end
 
           latest_resources = resource_version_info.map do |resource|
             { name: resource[:resource], version: resource[:version][:latest] }
-
+          end
         end
 
         if latest.blank?
