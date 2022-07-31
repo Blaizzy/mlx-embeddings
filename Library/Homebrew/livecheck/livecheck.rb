@@ -360,19 +360,12 @@ module Homebrew
           next info
         end
 
-        # if check_resources && has_resources && debug
-        #   puts <<~EOS
-
-        #     ----------
-
-        #   EOS
-        # end
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
 
-        if check_resources && has_resources
+        if check_resources && formula_or_cask.resources.present?
           resources_info = []
           latest_resources_names = latest_resources.map { |r| r[:name] }
-          current_resources.each_with_index do |resource, _i|
+          current_resources.each_with_index do |resource|
             current = resource[:version]
             current_str = current.to_s
             latest = if latest_resources_names.include?(resource[:name].to_s)
@@ -528,12 +521,14 @@ module Homebrew
       end
     end
 
-    # Formats and prints the livecheck result for a formula.
-    sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
-    def print_latest_version(info, verbose:, ambiguous_cask: false)
-      formula_or_cask_s = "#{Tty.blue}#{info[:formula] || info[:cask]}#{Tty.reset}"
-      formula_or_cask_s += " (cask)" if ambiguous_cask
-      formula_or_cask_s += " (guessed)" if !info[:meta][:livecheckable] && verbose
+    # Formats and prints the livecheck result for a formula/cask/resource.
+    sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean, check_resource: T::Boolean).void }
+    def print_latest_version(info, verbose:, ambiguous_cask: false, check_resource: false)
+      package_or_resource_s = "  " if check_resource
+      package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
+      package_or_resource_s += " (cask)" if ambiguous_cask && !check_resource
+      package_or_resource_s += " (guessed)" if !info[:meta][:livecheckable] && !check_resource && verbose
+      package_or_resource_s += " (livecheckable)" if check_resource && info[:livecheckable] && verbose
 
       current_s = if info[:version][:newer_than_upstream]
         "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
@@ -547,7 +542,7 @@ module Homebrew
         info[:version][:latest]
       end
 
-      puts "#{formula_or_cask_s}: #{current_s} ==> #{latest_s}"
+      puts "#{package_or_resource_s}: #{current_s} ==> #{latest_s}"
     end
 
     sig {
