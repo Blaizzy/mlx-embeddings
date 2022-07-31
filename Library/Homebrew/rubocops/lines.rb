@@ -431,7 +431,7 @@ module RuboCop
             base_name = base_name.delete_prefix("_").delete_suffix(".fish")
             shell = shell.to_s.delete_suffix("_completion").to_sym
             executable = executable.source
-            shell_parameter_stripped = shell_parameter.sub("bash", "").sub("zsh", "").sub("fish", "")
+            shell_parameter_stripped = shell_parameter.delete_suffix("bash").delete_suffix("zsh").delete_suffix("fish")
             shell_parameter_format = if shell_parameter_stripped.empty?
               nil
             elsif shell_parameter_stripped == "--"
