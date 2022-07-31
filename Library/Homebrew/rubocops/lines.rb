@@ -519,7 +519,8 @@ module RuboCop
             offending_node(node)
             problem "Use a single `generate_completions_from_executable` call
                          combining all specified shells" do |corrector|
-              corrector.replace(@offensive_node.source_range, "")
+              # adjust range by +1 to also include & remove trailing \n
+              corrector.replace(@offensive_node.source_range.adjust(end_pos: 1), "")
             end
           end
 
