@@ -1659,7 +1659,7 @@ class Formula
       elsif shell_parameter_format == :arg
         "--shell=#{shell}"
       elsif shell_parameter_format == :none
-        nil
+        ""
       else
         "#{shell_parameter_format}#{shell}"
       end
