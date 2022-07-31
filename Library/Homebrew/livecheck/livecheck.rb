@@ -360,12 +360,12 @@ module Homebrew
           next info
         end
 
-        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask), check_resource: false)
 
         if check_resources && formula_or_cask.resources.present?
           resources_info = []
           latest_resources_names = latest_resources.map { |r| r[:name] }
-          current_resources.each_with_index do |resource|
+          current_resources.each do |resource|
             current = resource[:version]
             current_str = current.to_s
             latest = if latest_resources_names.include?(resource[:name].to_s)
@@ -390,11 +390,14 @@ module Homebrew
             }
             resources_info << info
           end
-          print_latest_resource_version(
-            resources_info,
-            verbose: verbose,
-            ambiguous_cask: ambiguous_casks.include?(formula_or_cask)
-          )
+          resources_info.each do |info|
+            print_latest_version(
+              info,
+              verbose: verbose,
+              ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
+              check_resource: true,
+            )
+          end
         end
 
         nil
@@ -535,10 +538,8 @@ module Homebrew
       when :url
         package_or_resource.url&.to_s if package_or_resource.is_a?(Cask::Cask) || package_or_resource.is_a?(Resource)
       when :head, :stable
-        # Resource's "url" is considered "stable" by default. And some resources may contain in "head" block as well
+        # Since resource's "url" is considered "stable" by default. And some resources may contain in "head" block as well
         package_or_resource.send(:url)&.to_s if package_or_resource.is_a?(Resource)
-        # Not sure how to handle this ?
-        # Do I have to add :stable / :head in Resources' as well (like it's being implemented in Formula ?)
         package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula)
       when :homepage
         package_or_resource.homepage
