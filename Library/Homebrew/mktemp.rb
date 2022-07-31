@@ -42,12 +42,13 @@ class Mktemp
 
   def run
     if @retain_in_sources
-      root = "#{HOMEBREW_CACHE}/Sources"
-      FileUtils.mkdir_p root
+      source_dir = "#{HOMEBREW_CACHE}/Sources/#{@prefix.tr "@", "AT"}"
+      chmod_rm_rf(source_dir) # clear out previous (otherwise not sure what happens)
+      FileUtils.mkdir_p(source_dir)
+      @tmpdir = Pathname.new(source_dir)
     else
-      root = HOMEBREW_TEMP
+      @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", HOMEBREW_TEMP))
     end
-    @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", root))
 
     # Make sure files inside the temporary directory have the same group as the
     # brew instance.
