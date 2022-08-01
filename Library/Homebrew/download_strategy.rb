@@ -1280,7 +1280,7 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
 
   def env
     {
-      "PATH"     => PATH.new(Formula["bazaar"].opt_bin, ENV.fetch("PATH")),
+      "PATH"     => PATH.new(Formula["breezy"].opt_bin, ENV.fetch("PATH")),
       "BZR_HOME" => HOMEBREW_TEMP,
     }
   end
