@@ -269,7 +269,7 @@ module Homebrew
         end
 
         current_str = current.to_s
-        current = LivecheckVersion.create(formula_or_cask, current)
+        current = T.let(LivecheckVersion.create(formula_or_cask, current), T.untyped)
 
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
@@ -321,7 +321,7 @@ module Homebrew
         end
 
         latest_str = latest.to_s
-        latest = LivecheckVersion.create(formula_or_cask, latest)
+        latest = T.let(LivecheckVersion.create(formula_or_cask, latest), T.untyped)
 
         is_outdated = if formula&.head_only?
           # A HEAD-only formula is considered outdated if the latest upstream
