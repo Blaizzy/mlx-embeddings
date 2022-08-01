@@ -359,7 +359,7 @@ module Homebrew
           info.except!(:meta) unless verbose
           next info
         end
-
+        puts if debug
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
 check_resource: false)
 
