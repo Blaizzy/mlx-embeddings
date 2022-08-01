@@ -31,7 +31,11 @@ module OnSystem
     return false if Homebrew::SimulateSystem.simulating_or_running_on_linux?
 
     base_os = MacOS::Version.from_symbol(os_name)
-    current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
+    current_os = if Homebrew::SimulateSystem.current_os == :macos
+      Version::NULL
+    else
+      MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
+    end
 
     return current_os >= base_os if or_condition == :or_newer
     return current_os <= base_os if or_condition == :or_older
