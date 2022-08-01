@@ -17,9 +17,11 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` <email> <repo1,repo2|all>"
+      usage_banner "`contributions` <email|name> <repo1,repo2|all>"
       description <<~EOS
         Contributions to Homebrew repos for a user.
+
+        The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
 
         The second argument is a comma-separated list of repos to search.
         Specify <all> to search all repositories.
@@ -32,7 +34,7 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      named_args [:email, :repositories], min: 2, max: 2
+      named_args [:email, :name, :repositories], min: 2, max: 2
     end
   end
 
