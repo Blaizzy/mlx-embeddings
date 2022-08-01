@@ -80,6 +80,7 @@ describe "brew install" do
       .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}o).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
-    expect(HOMEBREW_CELLAR/"testball1/0.1/foo/test").not_to be_a_file
+    expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test").to be_a_file
+    expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test.dSYM").to be_a_directory if OS.mac?
   end
 end
