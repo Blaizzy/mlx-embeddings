@@ -76,7 +76,7 @@ describe "brew install" do
   it "installs formulae with debug symbols", :integration_test do
     setup_test_formula "testball1"
 
-    expect { brew "install", "testball1", "--debug-symbols", "-s" }
+    expect { brew "install", "testball1", "--debug-symbols", "--build-from-source" }
       .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}o).to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
