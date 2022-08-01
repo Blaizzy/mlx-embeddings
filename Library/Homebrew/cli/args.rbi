@@ -31,6 +31,9 @@ module Homebrew
       def newer_only?; end
 
       sig { returns(T::Boolean) }
+      def resources?; end
+
+      sig { returns(T::Boolean) }
       def full_name?; end
 
       sig { returns(T::Boolean) }
