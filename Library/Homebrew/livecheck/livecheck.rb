@@ -293,10 +293,10 @@ module Homebrew
           resource_version_info = formula_or_cask.resources.map do |resource|
             resource_info = resource_version(
               resource,
-              json: json,
+              json:      json,
               full_name: use_full_name,
-              verbose: verbose,
-              debug: debug,
+              verbose:   verbose,
+              debug:     debug,
             )
             resource_info
           end
@@ -360,7 +360,8 @@ module Homebrew
           next info
         end
 
-        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask), check_resource: false)
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
+check_resource: false)
 
         if check_resources && formula_or_cask.resources.present?
           resources_info = []
@@ -381,7 +382,7 @@ module Homebrew
 
             info = {}
             info[:resource] = resource[:name]
-            info[:meta] = { livecheckable: resource[:livecheckable], }
+            info[:meta] = { livecheckable: resource[:livecheckable] }
             info[:version] = {
               current:             current_str,
               latest:              latest_str,
@@ -390,10 +391,10 @@ module Homebrew
             }
             resources_info << info
           end
-          resources_info.each do |info|
+          resources_info.each do |r_info|
             print_latest_version(
-              info,
-              verbose: verbose,
+              r_info,
+              verbose:        verbose,
               ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
               check_resource: true,
             )
@@ -538,7 +539,8 @@ module Homebrew
       when :url
         package_or_resource.url&.to_s if package_or_resource.is_a?(Cask::Cask) || package_or_resource.is_a?(Resource)
       when :head, :stable
-        # Since resource's "url" is considered "stable" by default. And some resources may contain in "head" block as well
+        # Since resource's "url" is considered "stable" by default.
+        # And some resources may contain in "head" block as well
         package_or_resource.send(:url)&.to_s if package_or_resource.is_a?(Resource)
         package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula)
       when :homepage
@@ -785,7 +787,6 @@ module Homebrew
               version.to_s.include?(rejection)
             end
           end
-
           next if match_version_map.blank?
 
           if debug
@@ -804,14 +805,11 @@ module Homebrew
           resource_version_info[:version][:latest] = Version.new(match_version_map.values.max_by do |v|
                                                                    LivecheckVersion.create(resource, v)
                                                                  end)
-
           next unless json
 
-          resource_version_info[:meta] = {}
-          resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
+          resource_version_info[:meta] = { livecheckable: has_livecheckable ? "Yes" : "No" }
           if has_livecheckable
-            resource_version_info[:meta][:livecheck] = {}
-            resource_version_info[:meta][:livecheck][:url] = {}
+            resource_version_info[:meta][:livecheck] = { url: {} }
             if livecheck_url.is_a?(Symbol) && livecheck_url_string
               resource_version_info[:meta][:livecheck][:url][:symbol] =
                 livecheck_url
@@ -823,10 +821,7 @@ module Homebrew
               resource_version_info[:meta][:livecheck][:url][:final] =
                 strategy_data[:final_url]
             end
-            if homebrew_curl.present?
-              resource_version_info[:meta][:livecheck][:url][:homebrew_curl] =
-                homebrew_curl
-            end
+            resource_version_info[:meta][:livecheck][:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
             resource_version_info[:meta][:livecheck][:strategy] = strategy.present? ? strategy_name : nil
             if strategies.present?
               resource_version_info[:meta][:livecheck][:strategies] = strategies.map do |s|
@@ -835,22 +830,19 @@ module Homebrew
             end
             resource_version_info[:meta][:livecheck][:regex] = regex.inspect if regex.present?
             resource_version_info[:meta][:livecheck][:cached] = true if strategy_data[:cached] == true
-
           end
-          resource_version_info[:meta][:url] = {}
-          resource_version_info[:meta][:url][:original] = original_url
+          resource_version_info[:meta][:url] = { original: original_url }
           resource_version_info[:meta][:url][:processed] = url if url != original_url
         end
       else
         # If there's no livecheck block in resource
         resource_version_info[:version][:latest] = resource.version
-        if json && verbose
-          resource_version_info[:meta] = {}
-          resource_version_info[:meta][:url] = resource.url.to_s
-        end
+        resource_version_info[:meta] = { url: resource.url.to_s } if json && verbose
       end
-      resource_version_info[:version][:newer_than_upstream] = resource_version_info[:version][:current] > resource_version_info[:version][:latest]
-      resource_version_info[:version][:outdated] = resource_version_info[:version][:current] < resource_version_info[:version][:latest]
+      resource_version_info[:version][:newer_than_upstream] =
+        resource_version_info[:version][:current] > resource_version_info[:version][:latest]
+      resource_version_info[:version][:outdated] =
+        resource_version_info[:version][:current] < resource_version_info[:version][:latest]
       resource_version_info
     end
 
