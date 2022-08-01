@@ -668,9 +668,7 @@ check_resource: false)
       has_livecheckable = resource.livecheckable?
 
       if debug
-        puts <<~EOS
-
-        EOS
+        puts "\n\n"
         puts "Resource:          #{resource_name(resource, full_name: full_name)}"
         puts "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
       end
