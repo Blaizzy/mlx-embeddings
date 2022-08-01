@@ -20,6 +20,7 @@ module Homebrew
 
   module_function
 
+  # rubocop:disable Metrics/BlockLength
   sig { returns(CLI::Parser) }
   def install_args
     Homebrew::CLI::Parser.new do
@@ -141,6 +142,7 @@ module Homebrew
       named_args [:formula, :cask], min: 1
     end
   end
+  # rubocop:enable Metrics/BlockLength
 
   def install
     args = install_args.parse
