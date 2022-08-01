@@ -19,6 +19,8 @@ module Cask
                  description: "Audit the appcast"
           switch "--[no-]token-conflicts",
                  description: "Audit for token conflicts"
+          switch "--[no-]signing",
+                 description: "Audit for signed apps, which is required on ARM"
           switch "--[no-]strict",
                  description: "Run additional, stricter style checks"
           switch "--[no-]online",
@@ -50,6 +52,7 @@ module Cask
           appcast:               args.appcast?,
           online:                args.online?,
           strict:                args.strict?,
+          signing:               args.signing?,
           new_cask:              args.new_cask?,
           token_conflicts:       args.token_conflicts?,
           quarantine:            args.quarantine?,
@@ -71,6 +74,7 @@ module Cask
         appcast: nil,
         online: nil,
         strict: nil,
+        signing: nil,
         new_cask: nil,
         token_conflicts: nil,
         quarantine: nil,
@@ -84,6 +88,7 @@ module Cask
           audit_appcast:         appcast,
           audit_online:          online,
           audit_strict:          strict,
+          audit_signing:         signing,
           audit_new_cask:        new_cask,
           audit_token_conflicts: token_conflicts,
           quarantine:            quarantine,
