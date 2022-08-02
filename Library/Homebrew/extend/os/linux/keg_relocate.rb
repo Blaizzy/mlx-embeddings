@@ -32,6 +32,7 @@ class Keg
 
       lib_path = "#{new_prefix}/lib"
       rpath << lib_path unless rpath.include? lib_path
+      rpath.prepend HOMEBREW_PREFIX/"opt/gcc/lib/current" if rpath.any? { |rp| rp.match?(%r{lib/gcc/\d+$}) }
 
       rpath.join(":")
     end
