@@ -13,8 +13,8 @@ class Mktemp
 
   def initialize(prefix, opts = {})
     @prefix = prefix
-    @retain_in_sources = opts[:retain_in_sources]
-    @retain = opts[:retain] || @retain_in_sources
+    @retain_in_cache = opts[:retain_in_cache]
+    @retain = opts[:retain] || @retain_in_cache
     @quiet = false
   end
 
@@ -30,8 +30,8 @@ class Mktemp
   end
 
   # True if the source files should be retained.
-  def retain_in_sources?
-    @retain_in_sources
+  def retain_in_cache?
+    @retain_in_cache
   end
 
   # Instructs this Mktemp to not emit messages when retention is triggered.
@@ -46,7 +46,7 @@ class Mktemp
   end
 
   def run
-    if @retain_in_sources
+    if @retain_in_cache
       source_dir = "#{HOMEBREW_CACHE}/Sources/#{@prefix.tr "@", "AT"}"
       chmod_rm_rf(source_dir) # clear out previous (otherwise not sure what happens)
       FileUtils.mkdir_p(source_dir)
@@ -79,7 +79,7 @@ class Mktemp
     end
   ensure
     if retain? && !@tmpdir.nil? && !@quiet
-      message = retain_in_sources? ? "Source files for debugging available at:" : "Temporary files retained at:"
+      message = retain_in_cache? ? "Source files for debugging available at:" : "Temporary files retained at:"
       ohai message, @tmpdir.to_s
     end
   end

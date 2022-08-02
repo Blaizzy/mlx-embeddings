@@ -236,7 +236,7 @@ class Resource
   protected
 
   def stage_resource(prefix, debug_symbols: false, &block)
-    Mktemp.new(prefix, retain_in_sources: debug_symbols).run(&block)
+    Mktemp.new(prefix, retain_in_cache: debug_symbols).run(&block)
   end
 
   private
