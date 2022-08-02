@@ -82,5 +82,6 @@ describe "brew install" do
       .and be_a_success
     expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test").to be_a_file
     expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test.dSYM").to be_a_directory if OS.mac?
+    expect(HOMEBREW_CACHE/"Sources/testball1").to be_a_directory
   end
 end
