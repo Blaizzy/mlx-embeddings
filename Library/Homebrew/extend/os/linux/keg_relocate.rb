@@ -32,7 +32,13 @@ class Keg
 
       lib_path = "#{new_prefix}/lib"
       rpath << lib_path unless rpath.include? lib_path
-      rpath.prepend HOMEBREW_PREFIX/"opt/gcc/lib/current" if rpath.any? { |rp| rp.match?(%r{lib/gcc/\d+$}) }
+
+      # Add GCC's lib directory (as of GCC 12+) to RPATH when there is existing linkage.
+      # This fixes linkage for newly-poured bottles.
+      # TODO: Replace with
+      #   rpath.map! { |path| path = path.sub(%r{lib/gcc/\d+$}, "lib/gcc/current") }
+      # when Homebrew/homebrew-core#106755 is merged.
+      rpath.prepend HOMEBREW_PREFIX/"opt/gcc/lib/gcc/current" if rpath.any? { |rp| rp.match?(%r{lib/gcc/\d+$}) }
 
       rpath.join(":")
     end
