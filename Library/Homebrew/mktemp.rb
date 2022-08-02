@@ -46,13 +46,14 @@ class Mktemp
   end
 
   def run
+    prefix_name = @prefix.tr "@", "AT"
     if @retain_in_cache
-      source_dir = "#{HOMEBREW_CACHE}/Sources/#{@prefix.tr "@", "AT"}"
+      source_dir = "#{HOMEBREW_CACHE}/Sources/#{prefix_name}"
       chmod_rm_rf(source_dir) # clear out previous (otherwise not sure what happens)
       FileUtils.mkdir_p(source_dir)
       @tmpdir = Pathname.new(source_dir)
     else
-      @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", HOMEBREW_TEMP))
+      @tmpdir = Pathname.new(Dir.mktmpdir("#{prefix_name}-", HOMEBREW_TEMP))
     end
 
     # Make sure files inside the temporary directory have the same group as the
