@@ -368,6 +368,45 @@ module Homebrew
     end
   end
 
+  def pr_check_conflicts(name, tap_remote_repo, pr)
+    hash_template = proc.new { |h, k| h[k] = [] }
+    long_build_pr_files = GitHub.search_issues(
+      "org:#{name}", repo: tap_remote_repo, state: "open", label: "\"no long build conflict\""
+    ).each_with_object(Hash.new(hash_template)) do |long_build_pr, hash|
+      number = long_build_pr["number"]
+      GitHub.get_pull_request_changed_files(name, tap_remote_repo, number).each do |file|
+        key = file["filename"]
+        hash[key] << number
+      end
+    end
+
+    this_pr_files = GitHub.get_pull_request_changed_files(name, tap_remote_repo, pr)
+
+    conflicts = this_pr_files.each_with_object(Hash.new(hash_template)) do |file, hash|
+      filename = file["filename"]
+      next unless long_build_pr_files.key?(filename)
+
+      long_build_pr_files[filename].each do |pr_number|
+        key = "#{tap_remote_repo}/pull/#{pr_number}"
+        hash[key] << filename
+      end
+    end
+    return if conflicts.blank?
+
+    # Raise an error, display the conflicting PR. For example:
+    # Error: You are trying to merge a pull request that conflicts with a long running build in:
+    #  {
+    #    "homebrew-core/pull/98809": [
+    #     "Formula/icu4c.rb",
+    #     "Formula/node@10.rb"
+    #    ]
+    #  }
+    odie <<~EOS
+      You are trying to merge a pull request that conflicts with a long running build in:
+        #{JSON.pretty_generate(conflicts)}
+    EOS
+  end
+
   def pr_pull
     args = pr_pull_args.parse
 
@@ -396,6 +435,8 @@ module Homebrew
       if !tap.path.git_default_origin_branch? || args.branch_okay? || args.clean?
         opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
       end
+
+      pr_check_conflicts(user, repo, pr)
 
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
