@@ -369,7 +369,7 @@ module Homebrew
   end
 
   def pr_check_conflicts(name, tap_remote_repo, pr)
-    hash_template = proc.new { |h, k| h[k] = [] }
+    hash_template = proc { |h, k| h[k] = [] }
     long_build_pr_files = GitHub.search_issues(
       "org:#{name}", repo: tap_remote_repo, state: "open", label: "\"no long build conflict\""
     ).each_with_object(Hash.new(hash_template)) do |long_build_pr, hash|
