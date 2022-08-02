@@ -35,10 +35,15 @@ class Keg
 
       # Add GCC's lib directory (as of GCC 12+) to RPATH when there is existing linkage.
       # This fixes linkage for newly-poured bottles.
-      # TODO: Replace with
-      #   rpath.map! { |path| path = path.sub(%r{lib/gcc/\d+$}, "lib/gcc/current") }
-      # when Homebrew/homebrew-core#106755 is merged.
-      rpath.prepend HOMEBREW_PREFIX/"opt/gcc/lib/gcc/current" if rpath.any? { |rp| rp.match?(%r{lib/gcc/\d+$}) }
+      if !name.match?(Version.formula_optionally_versioned_regex(:gcc)) &&
+         rpath.any? { |rp| rp.match?(%r{lib/gcc/\d+$}) }
+        # TODO: Replace with
+        #   rpath.map! { |path| path = path.sub(%r{lib/gcc/\d+$}, "lib/gcc/current") }
+        # when
+        #   1. Homebrew/homebrew-core#106755 is merged
+        #   2. No formula has a runtime dependency on a versioned GCC (see `envoy.rb`)
+        rpath.prepend HOMEBREW_PREFIX/"opt/gcc/lib/gcc/current"
+      end
 
       rpath.join(":")
     end
