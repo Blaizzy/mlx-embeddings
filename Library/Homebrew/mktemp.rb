@@ -78,7 +78,7 @@ class Mktemp
       ignore_interrupts { chmod_rm_rf(tmpdir) } unless retain?
     end
   ensure
-    if retain? && !@tmpdir.nil? && !@quiet
+    if retain? && @tmpdir.present? && !@quiet
       message = retain_in_cache? ? "Source files for debugging available at:" : "Temporary files retained at:"
       ohai message, @tmpdir.to_s
     end
