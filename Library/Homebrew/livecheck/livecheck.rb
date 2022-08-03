@@ -361,7 +361,7 @@ module Homebrew
         end
         puts if debug
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
-check_resource: false)
+resource: false)
 
         if check_resources && formula_or_cask.resources.present?
           resources_info = []
@@ -396,7 +396,7 @@ check_resource: false)
               r_info,
               verbose:        verbose,
               ambiguous_cask: false,
-              resource: true,
+              resource:       true,
             )
           end
         end
