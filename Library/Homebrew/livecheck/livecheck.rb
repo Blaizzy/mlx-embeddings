@@ -395,7 +395,7 @@ check_resource: false)
             print_latest_version(
               r_info,
               verbose:        verbose,
-              ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
+              ambiguous_cask: false,
               check_resource: true,
             )
           end
