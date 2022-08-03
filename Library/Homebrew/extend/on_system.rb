@@ -32,6 +32,8 @@ module OnSystem
 
     base_os = MacOS::Version.from_symbol(os_name)
     current_os = if Homebrew::SimulateSystem.current_os == :macos
+      # Assume the oldest macOS version when simulating a generic macOS version
+      # Version::NULL is always treated as less than any other version.
       Version::NULL
     else
       MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
