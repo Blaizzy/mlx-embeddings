@@ -348,21 +348,6 @@ module Homebrew
         info[:meta][:head_only] = true if formula&.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
-        info[:resources] = resource_version_info if check_resources
-
-        next if newer_only && !info[:version][:outdated]
-
-        has_a_newer_upstream_version ||= true
-
-        if json
-          progress&.increment
-          info.except!(:meta) unless verbose
-          next info
-        end
-        puts if debug
-        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
-resource: false)
-
         if check_resources && formula_or_cask.resources.present?
           resources_info = []
           latest_resources_names = latest_resources.map { |r| r[:name] }
@@ -391,6 +376,22 @@ resource: false)
             }
             resources_info << info
           end
+          info[:resources] = resources_info
+        end
+
+        next if newer_only && !info[:version][:outdated]
+
+        has_a_newer_upstream_version ||= true
+
+        if json
+          progress&.increment
+          info.except!(:meta) unless verbose
+          next info
+        end
+        puts if debug
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask), resource: false)
+
+        if check_resources && formula_or_cask.resources.present?
           resources_info.each do |r_info|
             print_latest_version(
               r_info,
@@ -650,7 +651,7 @@ resource: false)
     # couldn't be found for a given resource.
     sig {
       params(
-        resource:  T.any(Resource),
+        resource:  Resource,
         json:      T::Boolean,
         full_name: T::Boolean,
         verbose:   T::Boolean,
