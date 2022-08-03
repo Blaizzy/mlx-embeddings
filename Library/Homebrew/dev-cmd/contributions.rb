@@ -17,24 +17,24 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` <email|name> <repo1,repo2|all>"
+      usage_banner "`contributions` <email|name>"
       description <<~EOS
         Contributions to Homebrew repos for a user.
 
         The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
-
-        The second argument is a comma-separated list of repos to search.
-        Specify <all> to search all repositories.
-        Supported repositories: #{SUPPORTED_REPOS.join(", ")}.
       EOS
 
+      comma_array "--repositories",
+                  description: "Specify a comma-separated (no spaces) list of repositories to search. " \
+                               "Supported repositories: #{SUPPORTED_REPOS.join(", ")}. " \
+                               "Omitting this flag, or specifying `--repositories=all`, will search all repositories."
       flag "--from=",
            description: "Date (ISO-8601 format) to start searching contributions."
 
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      named_args min: 2, max: 2
+      named_args min: 1, max: 1
     end
   end
 
@@ -45,8 +45,8 @@ module Homebrew
     commits = 0
     coauthorships = 0
 
-    all_repos = args.named.last == "all"
-    repos = all_repos ? SUPPORTED_REPOS : args.named.last.split(",")
+    all_repos = args.repositories.nil? || args.repositories.include?("all")
+    repos = all_repos ? SUPPORTED_REPOS : args.repositories
 
     repos.each do |repo|
       if SUPPORTED_REPOS.exclude?(repo)
