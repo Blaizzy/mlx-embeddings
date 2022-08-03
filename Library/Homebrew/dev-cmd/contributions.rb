@@ -17,7 +17,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` <email|name>"
+      usage_banner "`contributions` <email|name> [<--repositories>`=`]"
       description <<~EOS
         Contributions to Homebrew repos for a user.
 
@@ -34,7 +34,7 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      named_args min: 1, max: 1
+      named_args number: 1
     end
   end
 
