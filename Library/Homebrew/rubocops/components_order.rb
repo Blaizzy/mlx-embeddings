@@ -14,12 +14,6 @@ module RuboCop
       class ComponentsOrder < FormulaCop
         extend AutoCorrector
 
-        def on_system_methods
-          @on_system_methods ||= [:intel, :arm, :macos, :linux, :system, *MacOSVersions::SYMBOLS.keys].map do |m|
-            :"on_#{m}"
-          end
-        end
-
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           @present_components, @offensive_nodes = check_order(FORMULA_COMPONENT_PRECEDENCE_LIST, body_node)
 
