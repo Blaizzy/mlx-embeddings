@@ -505,11 +505,10 @@ check_resource: false)
     # Formats and prints the livecheck result for a formula/cask/resource.
     sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean, resource: T::Boolean).void }
     def print_latest_version(info, verbose:, ambiguous_cask: false, resource: false)
-      package_or_resource_s = check_resource ? "  " : ""
+      package_or_resource_s = resource ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
-      package_or_resource_s += " (cask)" if ambiguous_cask && !check_resource
-      package_or_resource_s += " (guessed)" if !info[:meta][:livecheckable] && !check_resource && verbose
-      package_or_resource_s += " (livecheckable)" if check_resource && info[:meta][:livecheckable] && verbose
+      package_or_resource_s += " (cask)" if ambiguous_cask
+      package_or_resource_s += " (guessed)" if !info[:meta][:livecheckable] && verbose
 
       current_s = if info[:version][:newer_than_upstream]
         "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
