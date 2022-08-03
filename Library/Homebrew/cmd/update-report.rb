@@ -294,7 +294,7 @@ module Homebrew
 
   def migrate_gcc_dependents_if_needed
     return if OS.mac?
-    return if Settings.read("gcc.dep.rpaths.migrated") == "true"
+    return if Settings.read("gcc-rpaths.fixed") == "true"
 
     Formula.installed.each do |formula|
       next unless formula.tap&.core_tap?
@@ -309,7 +309,7 @@ module Homebrew
       nil
     end
 
-    Settings.write "gcc.dep.rpaths.migrated", true
+    Settings.write "gcc-rpaths.fixed", true
   end
 end
 
