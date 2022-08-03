@@ -11,7 +11,7 @@ module Homebrew
   SUPPORTED_REPOS = [
     %w[brew core cask],
     OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") },
-    OFFICIAL_CASK_TAPS,
+    OFFICIAL_CASK_TAPS.reject { |t| t == "cask" },
   ].flatten.freeze
 
   sig { returns(CLI::Parser) }
@@ -55,7 +55,6 @@ module Homebrew
 
       repo_path = find_repo_path_for_repo(repo)
       unless repo_path.exist?
-        next if repo == "versions" # This tap is deprecated, tapping it will error.
 
         opoo "Repository #{repo} not yet tapped! Tapping it now..."
         Tap.fetch("homebrew", repo).install
