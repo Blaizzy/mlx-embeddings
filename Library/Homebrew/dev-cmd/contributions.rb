@@ -38,7 +38,7 @@ module Homebrew
     end
   end
 
-  sig { returns(NilClass) }
+  sig { void }
   def contributions
     args = contributions_args.parse
 
