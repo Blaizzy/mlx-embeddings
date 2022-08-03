@@ -294,18 +294,10 @@ module Homebrew
 
   def migrate_gcc_dependents_if_needed
     return if OS.mac?
-
-    # TODO: Remove this block when GCC 12 ships.
-    begin
-      return if Formula["gcc"].version < 12
-    rescue FormulaUnavailableError
-      return if Homebrew::EnvConfig.install_from_api?
-    end
-
-    return if Settings.read("gcc.dependents.migrated") == "true"
+    return if Settings.read("gcc.dep.rpaths.migrated") == "true"
 
     Formula.installed.each do |formula|
-      next unless formula.tap.core_tap?
+      next unless formula.tap&.core_tap?
       next unless formula.recursive_dependencies.map(&:name).include? "gcc"
 
       keg = formula.installed_kegs.last
@@ -317,7 +309,7 @@ module Homebrew
       nil
     end
 
-    Settings.write "gcc.dependents.migrated", true
+    Settings.write "gcc.dep.rpaths.migrated", true
   end
 end
 
