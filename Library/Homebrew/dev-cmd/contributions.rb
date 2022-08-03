@@ -65,7 +65,7 @@ module Homebrew
       coauthorships += git_log_coauthor_cmd(T.must(repo_path), args)
     end
 
-    sentence = "Person #{args.named.first} directly authored #{commits} commits " \
+    sentence = "#{args.named.first} directly authored #{commits} commits " \
                "and co-authored #{coauthorships} commits " \
                "across #{all_repos ? "all Homebrew repos" : repos.to_sentence}"
     sentence += if args.from && args.to
