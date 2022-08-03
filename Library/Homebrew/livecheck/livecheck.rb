@@ -396,7 +396,7 @@ check_resource: false)
               r_info,
               verbose:        verbose,
               ambiguous_cask: false,
-              check_resource: true,
+              resource: true,
             )
           end
         end
