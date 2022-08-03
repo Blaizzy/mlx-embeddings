@@ -368,26 +368,26 @@ module Homebrew
     end
   end
 
-  def pr_check_conflicts(name, tap_remote_repo, pr)
+  def pr_check_conflicts(user, repo, pr)
     hash_template = proc { |h, k| h[k] = [] }
     long_build_pr_files = GitHub.search_issues(
-      "org:#{name}", repo: tap_remote_repo, state: "open", label: "\"no long build conflict\""
+      "org:#{user}", repo: repo, state: "open", label: "\"no long build conflict\""
     ).each_with_object(Hash.new(hash_template)) do |long_build_pr, hash|
       number = long_build_pr["number"]
-      GitHub.get_pull_request_changed_files(name, tap_remote_repo, number).each do |file|
+      GitHub.get_pull_request_changed_files("#{user}/#{repo}", number).each do |file|
         key = file["filename"]
         hash[key] << number
       end
     end
 
-    this_pr_files = GitHub.get_pull_request_changed_files(name, tap_remote_repo, pr)
+    this_pr_files = GitHub.get_pull_request_changed_files("#{user}/#{repo}", pr)
 
     conflicts = this_pr_files.each_with_object(Hash.new(hash_template)) do |file, hash|
       filename = file["filename"]
       next unless long_build_pr_files.key?(filename)
 
       long_build_pr_files[filename].each do |pr_number|
-        key = "#{tap_remote_repo}/pull/#{pr_number}"
+        key = "#{user}/#{repo}/pull/#{pr_number}"
         hash[key] << filename
       end
     end
