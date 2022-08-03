@@ -1539,6 +1539,24 @@ Treat all named arguments as casks\.
 .SS "\fBcommand\fR \fIcommand\fR [\.\.\.]"
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
+.SS "\fBcontributions\fR \fIemail|name\fR [\fI\-\-repositories\fR\fB=\fR]"
+Contributions to Homebrew repos for a user\.
+.
+.P
+The first argument is a name (e\.g\. "BrewTestBot") or an email address (e\.g\. "brewtestbot@brew\.sh")\.
+.
+.TP
+\fB\-\-repositories\fR
+Specify a comma\-separated (no spaces) list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBautoupdate\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-drivers\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\.Omitting this flag, or specifying \fB\-\-repositories=all\fR, will search all repositories\.
+.
+.TP
+\fB\-\-from\fR
+Date (ISO\-8601 format) to start searching contributions\.
+.
+.TP
+\fB\-\-to\fR
+Date (ISO\-8601 format) to stop searching contributions\.
+.
 .SS "\fBcreate\fR [\fIoptions\fR] \fIURL\fR"
 Generate a formula or, with \fB\-\-cask\fR, a cask for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttps://rubydoc\.brew\.sh/Formula\fR
 .

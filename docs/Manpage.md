@@ -1081,6 +1081,19 @@ Display the source of a *`formula`* or *`cask`*.
 
 Display the path to the file being used when invoking `brew` *`cmd`*.
 
+### `contributions` *`email|name`* [*`--repositories`*`=`]
+
+Contributions to Homebrew repos for a user.
+
+The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
+
+* `--repositories`:
+  Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`.Omitting this flag, or specifying `--repositories=all`, will search all repositories.
+* `--from`:
+  Date (ISO-8601 format) to start searching contributions.
+* `--to`:
+  Date (ISO-8601 format) to stop searching contributions.
+
 ### `create` [*`options`*] *`URL`*
 
 Generate a formula or, with `--cask`, a cask for the downloadable file at *`URL`*
