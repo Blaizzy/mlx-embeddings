@@ -26,7 +26,7 @@ module Homebrew
 
       comma_array "--repositories",
                   description: "Specify a comma-separated (no spaces) list of repositories to search. " \
-                               "Supported repositories: #{SUPPORTED_REPOS.join(", ")}. " \
+                               "Supported repositories: #{SUPPORTED_REPOS.map { |t| "`#{t}`" }.to_sentence}." \
                                "Omitting this flag, or specifying `--repositories=all`, will search all repositories."
       flag "--from=",
            description: "Date (ISO-8601 format) to start searching contributions."
