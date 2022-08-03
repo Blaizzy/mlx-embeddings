@@ -34,7 +34,7 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
-      named_args [:email, :name, :repositories], min: 2, max: 2
+      named_args min: 2, max: 2
     end
   end
 
