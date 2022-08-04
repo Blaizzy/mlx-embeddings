@@ -554,7 +554,7 @@ on_linux do
 end
 ```
 
-Components can also be declared for specific macOS versions or version ranges. For example, to declare a dependency only on High Sierra, nest the `depends_on` call inside an `on_high_sierra` block. Add an `:or_older` or `:or_newer` parameter to the `on_high_sierra` method to add the dependency to all macOS versions that meet the condition. For example, to add `gettext` as a build dependency on Mojave and all macOS versions that are newer than Mojave, use:
+Components can also be declared for specific macOS versions or version ranges. For example, to declare a dependency only on High Sierra, nest the `depends_on` call inside an `on_high_sierra` block. Add an `:or_older` or `:or_newer` parameter to the `on_high_sierra` method to add the dependency to all macOS versions that meet the condition. For example, to add `gettext` as a build dependency on Mojave and all later macOS versions, use:
 
 ```ruby
 on_mojave :or_newer do
@@ -574,7 +574,7 @@ To check multiple conditions, nest the corresponding blocks. For example, the fo
 
 ```ruby
 on_macos do
-  on_intel do
+  on_arm do
     depends_on "gettext" => :build
   end
 end
@@ -582,7 +582,7 @@ end
 
 #### Inside `def install` and `test do`
 
-Inside `def install` and `test` do, don't use these `on_*` methods. Instead, use `if` statements and the following conditionals:
+Inside `def install` and `test do`, don't use these `on_*` methods. Instead, use `if` statements and the following conditionals:
 
 * `OS.mac?` and `OS.linux?` return `true` or `false` based on the OS
 * `Hardware::CPU.intel?` and `Hardware::CPU.arm?` return `true` or `false` based on the arch
