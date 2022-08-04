@@ -544,6 +544,52 @@ Instead of `git diff | pbcopy`, for some editors `git diff >> path/to/your/formu
 
 If anything isn’t clear, you can usually figure it out by `grep`ping the `$(brew --repository homebrew/core)` directory. Please submit a pull request to amend this document if you think it will help!
 
+### Handling different system configurations
+
+Often, formulae need different dependencies, resources, patches, conflicts, deprecations or `keg_only` statuses on different OSes and arches. In these cases, the components can be nested inside `on_macos`, `on_linux`, `on_arm` or `on_intel` blocks. For example, here's how to add `gcc` as a Linux-only dependency:
+
+```ruby
+on_linux do
+  depends_on "gcc"
+end
+```
+
+Components can also be declared only for specific macOS versions or version ranges. For example, to declare a dependency only on High Sierra, nest the `depends_on` call inside an `on_high_sierra` block. Add an `:or_older` or `:or_newer` parameter to the `on_high_sierra` method to add the dependency to all macOS versions that meet the condition. For example, to add `gettext` as a build dependency on Mojave and all macOS versions that are newer than Mojave, use:
+
+```ruby
+on_mojave :or_newer do
+  depends_on "gettext" => :build
+end
+```
+
+Sometimes, a dependency is needed on certain macOS versions and on Linux. In these cases, a special `on_system` method can be used:
+
+```ruby
+on_system :linux, macos: :sierra_or_older do
+  depends_on "gettext" => :build
+end
+```
+
+To check multiple conditions, nest the corresponding blocks. For example, the following code adds a `gettext` build dependency only on an ARM and macOS:
+
+```ruby
+on_macos do
+  on_intel do
+    depends_on "gettext" => :build
+  end
+end
+```
+
+#### Inside `def install` and `test do`
+
+Inside `def install` and `test` do, don't use these `on_*` methods. Instead, use `if` statements and the following conditionals:
+
+* `OS.mac?` and `OS.linux?` return `true` or `false` based on the OS
+* `Hardware::CPU.intel?` and `Hardware::CPU.arm?` return `true` or `false` based on the arch
+* `MacOS.version` returns the current macOS version. Use `==`, `<=` or `>=` to compare to symbols corresponding to macOS versions (e.g. `if MacOS.version >= :mojave`)
+
+See [`rust`](https://github.com/Homebrew/homebrew-core/blob/fe831237a7c24033a48f588a1578ba54f953f922/Formula/rust.rb#L72) for an example.
+
 ### `livecheck` blocks
 
 When `brew livecheck` is unable to identify versions for a formula, we can control its behavior using a `livecheck` block. Here is a simple example to check a page for links containing a filename like `example-1.2.tar.gz`:
