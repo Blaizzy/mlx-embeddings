@@ -2442,6 +2442,8 @@ module Homebrew::EnvConfig
 
   def self.artifact_domain(); end
 
+  def self.autoremove?(); end
+
   def self.auto_update_secs(); end
 
   def self.bat?(); end
