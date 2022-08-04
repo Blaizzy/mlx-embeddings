@@ -332,6 +332,23 @@ module Homebrew
       end
 
       return unless @core_tap
+
+      # Prevent formulae from declaring Linux-only dependencies on GCC,
+      # or else its dependency tree grows out of control.
+      on_linux_deps = formula.to_hash_with_variations.dig("variations", :x86_64_linux, "dependencies")
+      if on_linux_deps&.include? "gcc"
+        bad_gcc_dep = @strict || begin
+          fv = FormulaVersions.new(formula)
+          prev_on_linux_deps = fv.formula_at_revision("origin/HEAD") do |prev_f|
+            prev_f.to_hash_with_variations.dig("variations", :x86_64_linux, "dependencies")
+          end
+
+          prev_on_linux_deps&.exclude? "gcc"
+        end
+
+        problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
+      end
+
       return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
