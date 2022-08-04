@@ -554,7 +554,7 @@ on_linux do
 end
 ```
 
-Components can also be declared only for specific macOS versions or version ranges. For example, to declare a dependency only on High Sierra, nest the `depends_on` call inside an `on_high_sierra` block. Add an `:or_older` or `:or_newer` parameter to the `on_high_sierra` method to add the dependency to all macOS versions that meet the condition. For example, to add `gettext` as a build dependency on Mojave and all macOS versions that are newer than Mojave, use:
+Components can also be declared for specific macOS versions or version ranges. For example, to declare a dependency only on High Sierra, nest the `depends_on` call inside an `on_high_sierra` block. Add an `:or_older` or `:or_newer` parameter to the `on_high_sierra` method to add the dependency to all macOS versions that meet the condition. For example, to add `gettext` as a build dependency on Mojave and all macOS versions that are newer than Mojave, use:
 
 ```ruby
 on_mojave :or_newer do
@@ -562,7 +562,7 @@ on_mojave :or_newer do
 end
 ```
 
-Sometimes, a dependency is needed on certain macOS versions and on Linux. In these cases, a special `on_system` method can be used:
+Sometimes, a dependency is needed on certain macOS versions *and* on Linux. In these cases, a special `on_system` method can be used:
 
 ```ruby
 on_system :linux, macos: :sierra_or_older do
@@ -570,7 +570,7 @@ on_system :linux, macos: :sierra_or_older do
 end
 ```
 
-To check multiple conditions, nest the corresponding blocks. For example, the following code adds a `gettext` build dependency only on an ARM and macOS:
+To check multiple conditions, nest the corresponding blocks. For example, the following code adds a `gettext` build dependency when on ARM *and* macOS:
 
 ```ruby
 on_macos do
