@@ -369,41 +369,43 @@ module Homebrew
   end
 
   def pr_check_conflicts(user, repo, pr)
-    hash_template = proc { |h, k| h[k] = [] }
     long_build_pr_files = GitHub.search_issues(
       "org:#{user}", repo: repo, state: "open", label: "\"no long build conflict\""
-    ).each_with_object(Hash.new(hash_template)) do |long_build_pr, hash|
+    ).each_with_object({}) do |long_build_pr, hash|
       number = long_build_pr["number"]
       GitHub.get_pull_request_changed_files("#{user}/#{repo}", number).each do |file|
         key = file["filename"]
+        hash[key] ||= []
         hash[key] << number
       end
     end
 
     this_pr_files = GitHub.get_pull_request_changed_files("#{user}/#{repo}", pr)
 
-    conflicts = this_pr_files.each_with_object(Hash.new(hash_template)) do |file, hash|
+    conflicts = this_pr_files.each_with_object({}) do |file, hash|
       filename = file["filename"]
       next unless long_build_pr_files.key?(filename)
 
       long_build_pr_files[filename].each do |pr_number|
         key = "#{user}/#{repo}/pull/#{pr_number}"
+        hash[key] ||= []
         hash[key] << filename
       end
     end
+
     return if conflicts.blank?
 
     # Raise an error, display the conflicting PR. For example:
     # Error: You are trying to merge a pull request that conflicts with a long running build in:
-    #  {
-    #    "homebrew-core/pull/98809": [
-    #     "Formula/icu4c.rb",
-    #     "Formula/node@10.rb"
-    #    ]
-    #  }
+    # {
+    #   "homebrew-core/pull/98809": [
+    #    "Formula/icu4c.rb",
+    #    "Formula/node@10.rb"
+    #   ]
+    # }
     odie <<~EOS
       You are trying to merge a pull request that conflicts with a long running build in:
-        #{JSON.pretty_generate(conflicts)}
+      #{JSON.pretty_generate(conflicts)}
     EOS
   end
 
