@@ -92,16 +92,4 @@ class Keg
     end
     elf_files
   end
-
-  def self.bottle_dependencies
-    @bottle_dependencies ||= begin
-      formulae = []
-      gcc = Formulary.factory(CompilerSelector.preferred_gcc)
-      if !Homebrew::EnvConfig.simulate_macos_on_linux? &&
-         DevelopmentTools.non_apple_gcc_version("gcc") < gcc.version.to_i
-        formulae << gcc
-      end
-      formulae
-    end
-  end
 end
