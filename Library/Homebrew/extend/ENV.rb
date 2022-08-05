@@ -46,7 +46,7 @@ module EnvActivation
     tmp_env = to_hash.dup.extend(EnvActivation)
     T.cast(tmp_env, EnvActivation).activate_extensions!(env: env)
     T.cast(tmp_env, T.any(Superenv, Stdenv))
-     .setup_build_environment(cc: cc, build_bottle:  build_bottle, bottle_arch:   bottle_arch,
+     .setup_build_environment(cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch,
                               debug_symbols: debug_symbols)
     replace(tmp_env)
 
