@@ -373,7 +373,7 @@ module Homebrew
       "org:#{user}", repo: repo, state: "open", label: "\"no long build conflict\""
     ).each_with_object({}) do |long_build_pr, hash|
       number = long_build_pr["number"]
-      next if number == pr
+      next if number == pr.to_i
 
       GitHub.get_pull_request_changed_files("#{user}/#{repo}", number).each do |file|
         key = file["filename"]
