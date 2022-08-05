@@ -8,9 +8,6 @@ class Keg
     # Patching the dynamic linker of glibc breaks it.
     return if name.match? Version.formula_optionally_versioned_regex(:glibc)
 
-    # Patching patchelf fails with "Text file busy" or SIGBUS.
-    return if name == "patchelf"
-
     old_prefix, new_prefix = relocation.replacement_pair_for(:prefix)
 
     elf_files.each do |file|
