@@ -50,7 +50,7 @@ class Mktemp
     @tmpdir = if retain_in_cache?
       tmpdir = HOMEBREW_CACHE/"Sources/#{prefix_name}"
       chmod_rm_rf(tmpdir) # clear out previous staging directory
-      tmpdir.parent.mkpath
+      tmpdir.mkpath
       tmpdir
     else
       Pathname.new(Dir.mktmpdir("#{prefix_name}-", HOMEBREW_TEMP))
