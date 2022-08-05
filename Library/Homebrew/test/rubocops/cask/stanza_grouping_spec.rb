@@ -41,6 +41,22 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
     include_examples "does not report any offenses"
   end
 
+  context "when no stanzas or variable assignments are incorrectly grouped" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when one stanza is incorrectly grouped" do
     let(:source) do
       <<-CASK.undent
@@ -66,6 +82,78 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
         line:     3,
         column:   0,
         source:   "\n",
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
+  context "when the arch stanza is incorrectly grouped" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  missing_line_msg,
+        severity: :convention,
+        line:     3,
+        column:   0,
+        source:   "  version :latest",
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
+  context "when one variable assignment is incorrectly grouped" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  missing_line_msg,
+        severity: :convention,
+        line:     4,
+        column:   0,
+        source:   "  version :latest",
       }]
     end
 
@@ -132,6 +220,94 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
         message:  missing_line_msg,
         severity: :convention,
         line:     11,
+        column:   0,
+        source:   "  uninstall :quit => 'com.example.foo',",
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
+  context "when many stanzas and variable assignments are incorrectly grouped" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+
+          platform = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          version :latest
+          sha256 :no_check
+          url 'https://foo.brew.sh/foo.zip'
+
+          name 'Foo'
+
+          homepage 'https://foo.brew.sh'
+
+          app 'Foo.app'
+          uninstall :quit => 'com.example.foo',
+                    :kext => 'com.example.foo.kextextension'
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          platform = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+
+          version :latest
+          sha256 :no_check
+
+          url 'https://foo.brew.sh/foo.zip'
+          name 'Foo'
+          homepage 'https://foo.brew.sh'
+
+          app 'Foo.app'
+
+          uninstall :quit => 'com.example.foo',
+                    :kext => 'com.example.foo.kextextension'
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  extra_line_msg,
+        severity: :convention,
+        line:     4,
+        column:   0,
+        source:   "\n",
+      }, {
+        message:  missing_line_msg,
+        severity: :convention,
+        line:     6,
+        column:   0,
+        source:   "  version :latest",
+      }, {
+        message:  missing_line_msg,
+        severity: :convention,
+        line:     8,
+        column:   0,
+        source:   "  url 'https://foo.brew.sh/foo.zip'",
+      }, {
+        message:  extra_line_msg,
+        severity: :convention,
+        line:     9,
+        column:   0,
+        source:   "\n",
+      }, {
+        message:  extra_line_msg,
+        severity: :convention,
+        line:     11,
+        column:   0,
+        source:   "\n",
+      }, {
+        message:  missing_line_msg,
+        severity: :convention,
+        line:     15,
         column:   0,
         source:   "  uninstall :quit => 'com.example.foo',",
       }]
@@ -267,6 +443,52 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
           sha256 :no_check
 
           # comment with an empty line between
+
+          # comment directly above
+          postflight do
+            puts 'We have liftoff!'
+          end
+
+          url 'https://foo.brew.sh/foo.zip'
+          name 'Foo'
+
+          app 'Foo.app'
+        end
+      CASK
+    end
+
+    include_examples "autocorrects source"
+  end
+
+  context "when a stanza has a comment and there is a variable assignment" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          # comment with an empty line between
+          version :latest
+          sha256 :no_check
+
+          # comment directly above
+          postflight do
+            puts 'We have liftoff!'
+          end
+          url 'https://foo.brew.sh/foo.zip'
+          name 'Foo'
+          app 'Foo.app'
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+
+          # comment with an empty line between
+          version :latest
+          sha256 :no_check
 
           # comment directly above
           postflight do
