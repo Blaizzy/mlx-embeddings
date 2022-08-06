@@ -48,10 +48,10 @@ class Mktemp
   def run
     prefix_name = @prefix.tr "@", "AT"
     @tmpdir = if retain_in_cache?
-      tmpdir = HOMEBREW_CACHE/"Sources/#{prefix_name}"
+      tmp_dir = HOMEBREW_CACHE/"Sources/#{prefix_name}"
       chmod_rm_rf(tmpdir) # clear out previous staging directory
-      tmpdir.mkpath
-      tmpdir
+      tmp_dir.mkpath
+      tmp_dir
     else
       Pathname.new(Dir.mktmpdir("#{prefix_name}-", HOMEBREW_TEMP))
     end
@@ -68,15 +68,15 @@ class Mktemp
       Process.gid
     end
     begin
-      chown(nil, group_id, tmpdir)
+      chown(nil, group_id, @tmpdir)
     rescue Errno::EPERM
-      opoo "Failed setting group \"#{Etc.getgrgid(group_id).name}\" on #{tmpdir}"
+      opoo "Failed setting group \"#{Etc.getgrgid(group_id).name}\" on #{@tmpdir}"
     end
 
     begin
       Dir.chdir(tmpdir) { yield self }
     ensure
-      ignore_interrupts { chmod_rm_rf(tmpdir) } unless retain?
+      ignore_interrupts { chmod_rm_rf(@tmpdir) } unless retain?
     end
   ensure
     if retain? && @tmpdir.present? && !@quiet
