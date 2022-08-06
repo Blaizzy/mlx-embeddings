@@ -1081,6 +1081,19 @@ Display the source of a *`formula`* or *`cask`*.
 
 Display the path to the file being used when invoking `brew` *`cmd`*.
 
+### `contributions` *`email|name`* [*`--repositories`*`=`]
+
+Contributions to Homebrew repos for a user.
+
+The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
+
+* `--repositories`:
+  Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`.Omitting this flag, or specifying `--repositories=all`, will search all repositories.
+* `--from`:
+  Date (ISO-8601 format) to start searching contributions.
+* `--to`:
+  Date (ISO-8601 format) to stop searching contributions.
+
 ### `create` [*`options`*] *`URL`*
 
 Generate a formula or, with `--cask`, a cask for the downloadable file at *`URL`*
@@ -1947,6 +1960,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* `300`.
 
+- `HOMEBREW_AUTOREMOVE`
+  <br>If set, calls to `brew cleanup` and `brew uninstall` will automatically remove unused formula dependents and if HOMEBREW_NO_INSTALL_CLEANUP is not set, `brew cleanup` will start running `brew autoremove` periodically.
+
 - `HOMEBREW_BAT`
   <br>If set, use `bat` for the `brew cat` command.
 
@@ -2127,7 +2143,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running `brew install *`formula`*` or `brew upgrade *`formula`*`.
 
 - `HOMEBREW_NO_CLEANUP_FORMULAE`
-  <br>A comma-separated list of formulae. Homebrew will refuse to clean up a formula if it appears on this list.
+  <br>A comma-separated list of formulae. Homebrew will refuse to clean up or autoremove a formula if it appears on this list.
 
 - `HOMEBREW_NO_COLOR`
   <br>If set, do not print text with colour added.

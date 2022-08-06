@@ -105,7 +105,7 @@ module Homebrew
       # Ideally `ca-certificates` would not be excluded here, but sourcing a HTTP mirror was tricky.
       # Instead, we have logic elsewhere to pass `--insecure` to curl when downloading the certs.
       # TODO: try remove the OS/env conditional
-      if (OS.mac? || Homebrew::EnvConfig.simulate_macos_on_linux?) && spec_name == :stable &&
+      if Homebrew::SimulateSystem.simulating_or_running_on_macos? && spec_name == :stable &&
          owner.name != "ca-certificates" && curl_dep && !urls.find { |u| u.start_with?("http://") }
         problem "should always include at least one HTTP mirror"
       end

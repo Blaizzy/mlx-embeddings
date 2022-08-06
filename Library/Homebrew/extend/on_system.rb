@@ -20,11 +20,6 @@ module OnSystem
 
   sig { params(os_name: Symbol, or_condition: T.nilable(Symbol)).returns(T::Boolean) }
   def os_condition_met?(os_name, or_condition = nil)
-    if Homebrew::EnvConfig.simulate_macos_on_linux?
-      return false if os_name == :linux
-      return true if [:macos, *MacOSVersions::SYMBOLS.keys].include?(os_name)
-    end
-
     return Homebrew::SimulateSystem.send("simulating_or_running_on_#{os_name}?") if BASE_OS_OPTIONS.include?(os_name)
 
     raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOSVersions::SYMBOLS.key?(os_name)
@@ -36,7 +31,13 @@ module OnSystem
     return false if Homebrew::SimulateSystem.simulating_or_running_on_linux?
 
     base_os = MacOS::Version.from_symbol(os_name)
-    current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
+    current_os = if Homebrew::SimulateSystem.current_os == :macos
+      # Assume the oldest macOS version when simulating a generic macOS version
+      # Version::NULL is always treated as less than any other version.
+      Version::NULL
+    else
+      MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
+    end
 
     return current_os >= base_os if or_condition == :or_newer
     return current_os <= base_os if or_condition == :or_older

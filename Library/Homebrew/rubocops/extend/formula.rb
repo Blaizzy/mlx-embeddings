@@ -198,6 +198,12 @@ module RuboCop
 
         @file_path !~ Regexp.union(paths_to_exclude)
       end
+
+      def on_system_methods
+        @on_system_methods ||= [:intel, :arm, :macos, :linux, :system, *MacOSVersions::SYMBOLS.keys].map do |m|
+          :"on_#{m}"
+        end
+      end
     end
   end
 end

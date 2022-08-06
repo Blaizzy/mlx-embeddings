@@ -47,10 +47,10 @@ need_vendored_ruby() {
   if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]
   then
     return 0
-  elif [[ -n "${HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH}" ]]
+  elif [[ -n "${HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH}" && -z "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
   then
     return 1
-  elif [[ -z "${HOMEBREW_MACOS}" ]] && test_ruby "${HOMEBREW_RUBY_PATH}"
+  elif [[ -z "${HOMEBREW_MACOS}" || -n "${HOMEBREW_USE_RUBY_FROM_PATH}" ]] && test_ruby "${HOMEBREW_RUBY_PATH}"
   then
     return 1
   else
