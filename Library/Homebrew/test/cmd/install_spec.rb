@@ -83,7 +83,7 @@ describe "brew install" do
     expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test").to be_a_file
     expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test.dSYM").to be_a_directory if OS.mac?
     if OS.linux?
-      expect { system_command("objdump", "-h", "${HOMEBREW_CELLAR}/testball1/0.1/bin/test") }
+      expect { system_command("objdump", args: ["-h", "${HOMEBREW_CELLAR}/testball1/0.1/bin/test"]) }
         .to output(/\.debug/).to_stdout
     end
     expect(HOMEBREW_CACHE/"Sources/testball1").to be_a_directory
