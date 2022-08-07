@@ -37,6 +37,5 @@ describe Homebrew::Livecheck::LivecheckVersion do
     expect(described_class.create(resource, Version.new("1.0,100:1426778671")).versions).to eq ["1.0,100:1426778671"]
     expect(described_class.create(resource, Version.new("0.17.0,20210111183933,226")).versions)
       .to eq ["0.17.0,20210111183933,226"]
-
   end
 end

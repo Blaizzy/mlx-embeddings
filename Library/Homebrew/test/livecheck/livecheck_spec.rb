@@ -11,7 +11,6 @@ describe Homebrew::Livecheck do
   let(:homepage_url) { "https://brew.sh" }
   let(:livecheck_url) { "https://formulae.brew.sh/api/formula/ruby.json" }
   let(:stable_url) { "https://brew.sh/test-0.0.1.tgz" }
-  let(:resource_url) { "https://brew.sh/foo-1.0.tar.gz" }
 
   let(:f) do
     formula("test") do
@@ -24,15 +23,6 @@ describe Homebrew::Livecheck do
         url "https://formulae.brew.sh/api/formula/ruby.json"
         regex(/"stable":"(\d+(?:\.\d+)+)"/i)
       end
-    end
-  end
-
-  let(:f_r) do
-    formula("test") do
-      desc "Test formula with a resource"
-      homepage "https://brew.sh"
-      url "https://brew.sh/test-0.0.1.tgz"
-      head "https://github.com/Homebrew/brew.git"
 
       resource "foo" do
         url "https://brew.sh/foo-1.0.tar.gz"
@@ -46,7 +36,7 @@ describe Homebrew::Livecheck do
     end
   end
 
-  let(:r) { f_r.resources.first }
+  let(:r) { f.resources.first }
 
   let(:c) do
     Cask::CaskLoader.load(+<<-RUBY)
@@ -64,15 +54,6 @@ describe Homebrew::Livecheck do
         end
       end
     RUBY
-  end
-
-  let(:f_duplicate_urls) do
-    formula("test_duplicate_urls") do
-      desc "Test formula with a duplicate URL"
-      homepage "https://github.com/Homebrew/brew.git"
-      url "https://brew.sh/test-0.0.1.tgz"
-      head "https://github.com/Homebrew/brew.git"
-    end
   end
 
   describe "::resolve_livecheck_reference" do
@@ -126,10 +107,11 @@ describe Homebrew::Livecheck do
           },
         })
     end
+
     it "returns a hash containing the livecheck status for a resource" do
       expect(livecheck.status_hash(r, "error", ["Unable to get versions"]))
         .to eq({
-          resource:  "foo",
+          resource: "foo",
           status:   "error",
           messages: ["Unable to get versions"],
           meta:     {
@@ -141,15 +123,6 @@ describe Homebrew::Livecheck do
 
   describe "::livecheck_url_to_string" do
     let(:f_livecheck_url) do
-      formula("test_livecheck_url") do
-        desc "Test Livecheck URL formula"
-        homepage "https://brew.sh"
-        url "https://brew.sh/test-0.0.1.tgz"
-        head "https://github.com/Homebrew/brew.git"
-      end
-    end
-
-    let(:f_r_livecheck_url) do
       formula("test_livecheck_url") do
         desc "Test Livecheck URL formula"
         homepage "https://brew.sh"
@@ -168,7 +141,7 @@ describe Homebrew::Livecheck do
       end
     end
 
-    let(:r_livecheck_url) { f_r_livecheck_url.resources.first }
+    let(:r_livecheck_url) { f_livecheck_url.resources.first }
 
     let(:c_livecheck_url) do
       Cask::CaskLoader.load(+<<-RUBY)
@@ -230,6 +203,16 @@ describe Homebrew::Livecheck do
   end
 
   describe "::checkable_urls" do
+    let(:resource_url) { "https://brew.sh/foo-1.0.tar.gz" }
+    let(:f_duplicate_urls) do
+      formula("test_duplicate_urls") do
+        desc "Test formula with a duplicate URL"
+        homepage "https://github.com/Homebrew/brew.git"
+        url "https://brew.sh/test-0.0.1.tgz"
+        head "https://github.com/Homebrew/brew.git"
+      end
+    end
+
     it "returns the list of URLs to check" do
       expect(livecheck.checkable_urls(f)).to eq([stable_url, head_url, homepage_url])
       expect(livecheck.checkable_urls(c)).to eq([cask_url, homepage_url])
@@ -252,15 +235,6 @@ describe Homebrew::Livecheck do
           url "https://formulae.brew.sh/api/formula/ruby.json"
           regex(/"stable":"(\d+(?:\.\d+)+)"/i)
         end
-      end
-    end
-
-    let(:f_r_homebrew_curl) do
-      formula("test_homebrew_curl") do
-        desc "Test homebrew_curl formula"
-        homepage "https://brew.sh"
-        url "https://brew.sh/test-0.0.1.tgz"
-        head "https://github.com/Homebrew/brew.git"
 
         resource "foo" do
           url "https://brew.sh/foo-1.0.tar.gz", using: :homebrew_curl
@@ -274,7 +248,7 @@ describe Homebrew::Livecheck do
       end
     end
 
-    let(:r_homebrew_curl) { f_r_homebrew_curl.resources.first }
+    let(:r_homebrew_curl) { f_homebrew_curl.resources.first }
 
     let(:c_homebrew_curl) do
       Cask::CaskLoader.load(+<<-RUBY)
