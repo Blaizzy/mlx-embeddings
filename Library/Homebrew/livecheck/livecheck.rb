@@ -645,7 +645,7 @@ module Homebrew
       homebrew_curl_root_domains.include?(url_root_domain)
     end
 
-    # Identifies the latest version of the resource in a given Formulae/Casks and returns a Hash containing
+    # Identifies the latest version of the resource in a given Formulae and returns a Hash containing
     # the version information for a resource. Returns a nil value if a latest version
     # couldn't be found for a given resource.
     sig {
