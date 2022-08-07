@@ -285,7 +285,7 @@ module Homebrew
 
         # Check current and latest resources (if "--resources" flag is given)
         # Only check current and latest versions if we have resources to check against
-        if check_resources && formula_or_cask.resources.present?
+        if check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
           current_resources = formula_or_cask.resources.map do |resource|
             { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? }
           end
@@ -348,7 +348,7 @@ module Homebrew
         info[:meta][:head_only] = true if formula&.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
-        if check_resources && formula_or_cask.resources.present?
+        if check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
           resources_info = []
           latest_resources_names = latest_resources.map { |r| r[:name] }
           current_resources.each do |resource|
@@ -365,16 +365,16 @@ module Homebrew
             is_newer_than_upstream = current > latest
             is_outdated = (current != latest) && !is_newer_than_upstream
 
-            info = {}
-            info[:resource] = resource[:name]
-            info[:meta] = { livecheckable: resource[:livecheckable] }
-            info[:version] = {
+            res_info = {}
+            res_info[:resource] = resource[:name]
+            res_info[:meta] = { livecheckable: resource[:livecheckable] }
+            res_info[:version] = {
               current:             current_str,
               latest:              latest_str,
               newer_than_upstream: is_newer_than_upstream,
               outdated:            is_outdated,
             }
-            resources_info << info
+            resources_info << res_info
           end
           info[:resources] = resources_info
         end
