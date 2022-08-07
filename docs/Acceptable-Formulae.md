@@ -7,7 +7,7 @@ own!
 
 ### Supported platforms in `homebrew/core`
 
-The formula needs to build and pass tests on the latest 3 supported macOS versions ([x86_64 and Apple Silicon/ARM](Installation.md#macos-requirements)) and on x86_64 Linux.
+The formula needs to build and pass tests on the latest 3 supported macOS versions ([x86_64 and Apple Silicon/ARM](Installation.md#macos-requirements)) and on x86_64 [Linux](Linux-CI.md).
 Please have a look at the continuous integration jobs on a pull request in `homebrew/core` to see the full list of OSs.
 If upstream does not support one of these platforms, an exception can be made and the formula can be disabled for that platform.
 
