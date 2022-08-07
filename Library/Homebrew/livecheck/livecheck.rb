@@ -285,11 +285,8 @@ module Homebrew
 
         # Check current and latest resources (if "--resources" flag is given)
         # Only check current and latest versions if we have resources to check against
-        if check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
-          # current_resources = formula_or_cask.resources.map do |resource|
-          #   { name: resource.name, version: resource.version, livecheckable: resource.livecheckable? }
-          # end
-
+        check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
+        if check_for_resources
           resource_version_info = formula_or_cask.resources.map do |resource|
             resource_info = resource_version(
               resource,
@@ -300,12 +297,6 @@ module Homebrew
             )
             resource_info
           end
-
-          # p "resource_version_info: #{resource_version_info}"
-
-          # latest_resources = resource_version_info.map do |resource|
-          #   { name: resource[:resource], version: resource[:version][:latest] }
-          # end
         end
 
         if latest.blank?
@@ -350,37 +341,7 @@ module Homebrew
         info[:meta][:head_only] = true if formula&.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
-
-        if check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
-          info[:resources] = resource_version_info
-          # resources_info = []
-          # latest_resources_names = latest_resources.map { |r| r[:name] }
-          # current_resources.each do |resource|
-          #   current = resource[:version]
-          #   current_str = current.to_s
-          #   latest = if latest_resources_names.include?(resource[:name].to_s)
-          #     res = latest_resources.find { |r| r[:name].to_s == resource[:name].to_s }
-          #     res[:version]
-          #   else
-          #     current
-          #   end
-          #   latest_str = latest.to_s
-
-          #   is_newer_than_upstream = current > latest
-          #   is_outdated = (current != latest) && !is_newer_than_upstream
-
-          #   res_info = {}
-          #   res_info[:resource] = resource[:name]
-          #   res_info[:version] = {
-          #     current:             current_str,
-          #     latest:              latest_str,
-          #     newer_than_upstream: is_newer_than_upstream,
-          #     outdated:            is_outdated,
-          #   }
-          #   resources_info << res_info
-          # end
-          # info[:resources] = resources_info
-        end
+        info[:resources] = resource_version_info if check_for_resources
 
         next if newer_only && !info[:version][:outdated]
 
@@ -394,7 +355,7 @@ module Homebrew
         puts if debug
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask), resource: false)
 
-        if check_resources && formula_or_cask.resources.present?
+        if check_for_resources
           resource_version_info.each do |r_info|
             print_latest_version(
               r_info,
@@ -512,7 +473,7 @@ module Homebrew
       package_or_resource_s = resource ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
       package_or_resource_s += " (cask)" if ambiguous_cask
-      package_or_resource_s += " (guessed)" if verbose && !info[:meta][:livecheckable]
+      package_or_resource_s += " (guessed)" if verbose && !resource && !info[:meta][:livecheckable]
 
       current_s = if info[:version][:newer_than_upstream]
         "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
@@ -798,7 +759,6 @@ module Homebrew
 
         res_current = resource.version
         res_latest = Version.new(match_version_map.values.max_by do |v| LivecheckVersion.create(resource, v) end)
-
         is_newer_than_upstream = res_current > res_latest
         is_outdated = (res_current != res_latest) && !is_newer_than_upstream
 
@@ -817,15 +777,13 @@ module Homebrew
           if has_livecheckable
             res_livecheck = { url: {} }
             if livecheck_url.is_a?(Symbol) && livecheck_url_string
-              res_livecheck[:url][:symbol] =
-                livecheck_url
+              res_livecheck[:url][:symbol] = livecheck_url
             end
             if strategy_data[:url].present? && strategy_data[:url] != url
               res_livecheck[:url][:strategy] = strategy_data[:url]
             end
             if strategy_data[:final_url]
-              res_livecheck[:url][:final] =
-                strategy_data[:final_url]
+              res_livecheck[:url][:final] = strategy_data[:final_url]
             end
             res_livecheck[:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
             res_livecheck[:strategy] = strategy.present? ? strategy_name : nil
