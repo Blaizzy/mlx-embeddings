@@ -467,7 +467,7 @@ module Homebrew
     # provided; returns the name otherwise.
     sig { params(resource: Resource, full_name: T::Boolean).returns(String) }
     def resource_name(resource, full_name: false)
-      full_name ? resource.full_name : resource.name
+      full_name ? resource.download_name : resource.name
     end
 
     sig {
