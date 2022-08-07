@@ -26,6 +26,27 @@ describe Homebrew::Livecheck do
     end
   end
 
+  let(:f_r) do
+    formula("test") do
+      desc "Test formula with a resource"
+      homepage "https://brew.sh"
+      url "https://brew.sh/test-0.0.1.tgz"
+      head "https://github.com/Homebrew/brew.git"
+
+      resource "foo" do
+        url "https://brew.sh/foo-1.0.tar.gz"
+        sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+        livecheck do
+          url "https://brew.sh/test/releases"
+          regex(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
+        end
+      end
+    end
+  end
+
+  let(:r) { f_r.resources.first }
+
   let(:c) do
     Cask::CaskLoader.load(+<<-RUBY)
       cask "test" do
@@ -72,6 +93,16 @@ describe Homebrew::Livecheck do
     end
   end
 
+  describe "::resource_name" do
+    it "returns the name of the resource" do
+      expect(livecheck.resource_name(r)).to eq("foo")
+    end
+
+    it "returns the full name of the resource" do
+      expect(livecheck.resource_name(r, full_name: true)).to eq("test--foo")
+    end
+  end
+
   describe "::cask_name" do
     it "returns the token of the cask" do
       expect(livecheck.cask_name(c)).to eq("test")
@@ -83,10 +114,21 @@ describe Homebrew::Livecheck do
   end
 
   describe "::status_hash" do
-    it "returns a hash containing the livecheck status" do
+    it "returns a hash containing the livecheck status for a formula" do
       expect(livecheck.status_hash(f, "error", ["Unable to get versions"]))
         .to eq({
           formula:  "test",
+          status:   "error",
+          messages: ["Unable to get versions"],
+          meta:     {
+            livecheckable: true,
+          },
+        })
+    end
+    it "returns a hash containing the livecheck status for a resource" do
+      expect(livecheck.status_hash(r, "error", ["Unable to get versions"]))
+        .to eq({
+          resource:  "foo",
           status:   "error",
           messages: ["Unable to get versions"],
           meta:     {
