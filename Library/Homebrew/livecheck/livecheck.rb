@@ -513,7 +513,7 @@ resource: false)
       end
     end
 
-    # Returns an Array containing the formula/cask URLs that can be used by livecheck.
+    # Returns an Array containing the formula/resource/cask URLs that can be used by livecheck.
     sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource)).returns(T::Array[String]) }
     def checkable_urls(package_or_resource)
       urls = []
@@ -804,10 +804,11 @@ resource: false)
         res_livecheck[:cached] = true if strategy_data[:cached] == true
         resource_version_info[:meta][:livecheck] = res_livecheck
       end
+      # rubocop:enable Metrics/BlockLength
       resource_version_info
     end
 
-    # Identifies the latest version of the formula and returns a Hash containing
+    # Identifies the latest version of the formula/cask and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
     # rubocop:disable Metrics/CyclomaticComplexity
     sig {
