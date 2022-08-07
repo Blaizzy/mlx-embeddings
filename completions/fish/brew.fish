@@ -948,11 +948,12 @@ __fish_brew_complete_arg 'list; and not __fish_seen_argument -l cask -l casks' -
 __fish_brew_complete_arg 'list; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_installed)'
 
 
-__fish_brew_complete_cmd 'livecheck' 'Check for newer versions of formulae and/or casks from upstream'
+__fish_brew_complete_cmd 'livecheck' 'Check for newer versions of formulae, resources and/or casks from upstream'
 __fish_brew_complete_arg 'livecheck' -l all -d 'Check all available formulae/casks'
 __fish_brew_complete_arg 'livecheck' -l cask -d 'Only check casks'
 __fish_brew_complete_arg 'livecheck' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'livecheck' -l formula -d 'Only check formulae'
+__fish_brew_complete_arg 'livecheck' -l resources -d 'Also check resources for formulae'
 __fish_brew_complete_arg 'livecheck' -l full-name -d 'Print formulae/casks with fully-qualified names'
 __fish_brew_complete_arg 'livecheck' -l help -d 'Show this message'
 __fish_brew_complete_arg 'livecheck' -l installed -d 'Check formulae/casks that are currently installed'
