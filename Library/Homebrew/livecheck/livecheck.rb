@@ -269,7 +269,6 @@ module Homebrew
         end
 
         current_str = current.to_s
-        current = T.let(LivecheckVersion.create(formula_or_cask, current), T.untyped)
 
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
@@ -314,7 +313,6 @@ module Homebrew
         end
 
         latest_str = latest.to_s
-        latest = T.let(LivecheckVersion.create(formula_or_cask, latest), T.untyped)
 
         is_outdated = if formula&.head_only?
           # A HEAD-only formula is considered outdated if the latest upstream
@@ -453,9 +451,9 @@ resource: false)
       if formula
         status_hash[:formula] = formula_name(formula, full_name: full_name)
       elsif cask
-        status_hash[:cask] = cask_name(package_or_resource, full_name: full_name)
+        status_hash[:cask] = cask_name(cask, full_name: full_name)
       elsif resource
-        status_hash[:resource] = resource_name(package_or_resource, full_name: full_name)
+        status_hash[:resource] = resource_name(resource, full_name: full_name)
       end
       status_hash[:status] = status_str
       status_hash[:messages] = messages if messages.is_a?(Array)
@@ -509,7 +507,7 @@ resource: false)
         package_or_resource.send(:url)&.to_s if package_or_resource.is_a?(Resource)
         package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula)
       when :homepage
-        package_or_resource.homepage
+        package_or_resource.homepage unless package_or_resource.is_a?(Resource)
       end
     end
 
@@ -582,29 +580,34 @@ resource: false)
       url
     end
 
-    # livecheck should fetch a URL using brewed curl if the formula/cask
+    # livecheck should fetch a URL using brewed curl if the formula/resource/cask
     # contains a `stable`/`url` or `head` URL `using: :homebrew_curl` that
     # shares the same root domain.
-    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), url: String).returns(T::Boolean) }
-    def use_homebrew_curl?(formula_or_cask, url)
+    sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource), url: String).returns(T::Boolean) }
+    def use_homebrew_curl?(package_or_resource, url)
       url_root_domain = Addressable::URI.parse(url)&.domain
       return false if url_root_domain.blank?
 
       # Collect root domains of URLs with `using: :homebrew_curl`
       homebrew_curl_root_domains = []
-      case formula_or_cask
+      case package_or_resource
       when Formula
         [:stable, :head].each do |spec_name|
-          next unless (spec = formula_or_cask.send(spec_name))
+          next unless (spec = package_or_resource.send(spec_name))
           next unless spec.using == :homebrew_curl
 
           domain = Addressable::URI.parse(spec.url)&.domain
           homebrew_curl_root_domains << domain if domain.present?
         end
       when Cask::Cask
-        return false unless formula_or_cask.url.using == :homebrew_curl
+        return false unless package_or_resource.url.using == :homebrew_curl
 
-        domain = Addressable::URI.parse(formula_or_cask.url.to_s)&.domain
+        domain = Addressable::URI.parse(package_or_resource.url.to_s)&.domain
+        homebrew_curl_root_domains << domain if domain.present?
+      when Resource
+        return false unless package_or_resource.url == :homebrew_curl
+
+        domain = Addressable::URI.parse(package_or_resource.url.to_s)&.domain
         homebrew_curl_root_domains << domain if domain.present?
       end
 
