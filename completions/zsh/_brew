@@ -152,6 +152,7 @@ __brew_internal_commands() {
     'commands:Show lists of built-in and external commands'
     'completions:Control whether Homebrew automatically links external tap shell completion files'
     'config:Show Homebrew and system configuration info useful for debugging'
+    'contributions:Contributions to Homebrew repos for a user'
     'create:Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
     'deps:Show dependencies for formula'
     'desc:Display formula'\''s name and one-line description'
@@ -649,6 +650,18 @@ _brew_config() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
+# brew contributions
+_brew_contributions() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--from[Date (ISO-8601 format) to start searching contributions]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--repositories[Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`.Omitting this flag, or specifying `--repositories=all`, will search all repositories]' \
+    '--to[Date (ISO-8601 format) to stop searching contributions]' \
     '--verbose[Make some output more verbose]'
 }
 

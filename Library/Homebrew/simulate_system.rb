@@ -9,7 +9,14 @@ module Homebrew
     class << self
       extend T::Sig
 
-      attr_reader :os, :arch
+      attr_reader :arch
+
+      sig { returns(T.nilable(Symbol)) }
+      def os
+        return :macos if @os.blank? && !OS.mac? && Homebrew::EnvConfig.simulate_macos_on_linux?
+
+        @os
+      end
 
       sig { params(new_os: Symbol).void }
       def os=(new_os)
@@ -33,16 +40,16 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def simulating_or_running_on_macos?
-        return OS.mac? if @os.blank?
+        return OS.mac? if os.blank?
 
-        [:macos, *MacOSVersions::SYMBOLS.keys].include?(@os)
+        [:macos, *MacOSVersions::SYMBOLS.keys].include?(os)
       end
 
       sig { returns(T::Boolean) }
       def simulating_or_running_on_linux?
-        return OS.linux? if @os.blank?
+        return OS.linux? if os.blank?
 
-        @os == :linux
+        os == :linux
       end
 
       sig { returns(Symbol) }
@@ -52,7 +59,7 @@ module Homebrew
 
       sig { returns(Symbol) }
       def current_os
-        return @os if @os.present?
+        return T.must(os) if os.present?
         return :linux if OS.linux?
 
         MacOS.version.to_sym

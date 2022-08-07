@@ -150,6 +150,20 @@ describe SoftwareSpec do
         expect(spec.deps.first.tags).to include(:build)
       end
 
+      it "ignores dependencies with HOMEBREW_SIMULATE_MACOS_ON_LINUX" do
+        ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"] = "1"
+        spec.uses_from_macos("foo")
+
+        expect(spec.deps).to be_empty
+      end
+
+      it "ignores dependencies with tags with HOMEBREW_SIMULATE_MACOS_ON_LINUX" do
+        ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"] = "1"
+        spec.uses_from_macos("foo" => :build)
+
+        expect(spec.deps).to be_empty
+      end
+
       it "ignores OS version specifications" do
         spec.uses_from_macos("foo", since: :mojave)
         spec.uses_from_macos("bar" => :build, :since => :mojave)

@@ -480,7 +480,7 @@ module GitHub
   def check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, args:, version: nil)
     pull_requests = fetch_pull_requests(name, tap_remote_repo, state: state, version: version).select do |pr|
       get_pull_request_changed_files(
-        name, tap_remote_repo, pr["number"]
+        tap_remote_repo, pr["number"]
       ).any? { |f| f["filename"] == file }
     end
     return if pull_requests.blank?
@@ -502,8 +502,8 @@ module GitHub
     end
   end
 
-  def get_pull_request_changed_files(name, tap_remote_repo, pr)
-    API.open_rest(url_to("repos", name, tap_remote_repo, "pulls", pr, "files"))
+  def get_pull_request_changed_files(tap_remote_repo, pr)
+    API.open_rest(url_to("repos", tap_remote_repo, "pulls", pr, "files"))
   end
 
   def forked_repo_info!(tap_remote_repo, org: nil)

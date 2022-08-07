@@ -529,6 +529,16 @@ __fish_brew_complete_arg 'config' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'config' -l verbose -d 'Make some output more verbose'
 
 
+__fish_brew_complete_cmd 'contributions' 'Contributions to Homebrew repos for a user'
+__fish_brew_complete_arg 'contributions' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'contributions' -l from -d 'Date (ISO-8601 format) to start searching contributions'
+__fish_brew_complete_arg 'contributions' -l help -d 'Show this message'
+__fish_brew_complete_arg 'contributions' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'contributions' -l repositories -d 'Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`.Omitting this flag, or specifying `--repositories=all`, will search all repositories'
+__fish_brew_complete_arg 'contributions' -l to -d 'Date (ISO-8601 format) to stop searching contributions'
+__fish_brew_complete_arg 'contributions' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'create' 'Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
 __fish_brew_complete_arg 'create' -l HEAD -d 'Indicate that URL points to the package\'s repository rather than a file'
 __fish_brew_complete_arg 'create' -l autotools -d 'Create a basic template for an Autotools-style build'

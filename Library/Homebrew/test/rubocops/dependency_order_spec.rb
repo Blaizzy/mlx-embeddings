@@ -114,6 +114,34 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
         end
       RUBY
     end
+
+    it "reports and corrects wrong conditional order within a system block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+          url "https://brew.sh/foo-1.0.tgz"
+          on_arm do
+            uses_from_macos "apple" if build.with? "foo"
+            uses_from_macos "bar"
+            ^^^^^^^^^^^^^^^^^^^^^ dependency "bar" (line 6) should be put before dependency "apple" (line 5)
+            uses_from_macos "foo" => :optional
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dependency "foo" (line 7) should be put before dependency "apple" (line 5)
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+          url "https://brew.sh/foo-1.0.tgz"
+          on_arm do
+            uses_from_macos "bar"
+            uses_from_macos "foo" => :optional
+            uses_from_macos "apple" if build.with? "foo"
+          end
+        end
+      RUBY
+    end
   end
 
   context "when auditing `depends_on`" do
@@ -221,6 +249,34 @@ describe RuboCop::Cop::FormulaAudit::DependencyOrder do
           depends_on "bar" => [:build, :test]
           depends_on "foo" => :build
           depends_on "apple"
+        end
+      RUBY
+    end
+
+    it "reports and corrects wrong conditional order within a system block" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+          url "https://brew.sh/foo-1.0.tgz"
+          on_linux do
+            depends_on "apple" if build.with? "foo"
+            depends_on "bar"
+            ^^^^^^^^^^^^^^^^ dependency "bar" (line 6) should be put before dependency "apple" (line 5)
+            depends_on "foo" => :optional
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dependency "foo" (line 7) should be put before dependency "apple" (line 5)
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          homepage "https://brew.sh"
+          url "https://brew.sh/foo-1.0.tgz"
+          on_linux do
+            depends_on "bar"
+            depends_on "foo" => :optional
+            depends_on "apple" if build.with? "foo"
+          end
         end
       RUBY
     end
