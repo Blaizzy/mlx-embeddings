@@ -353,7 +353,8 @@ module Homebrew
           next info
         end
         puts if debug
-        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask), resource: false)
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
+resource: false)
 
         if check_for_resources
           resource_version_info.each do |r_info|
@@ -758,47 +759,44 @@ module Homebrew
         end
 
         res_current = resource.version
-        res_latest = Version.new(match_version_map.values.max_by do |v| LivecheckVersion.create(resource, v) end)
+        res_latest = Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) })
         is_newer_than_upstream = res_current > res_latest
         is_outdated = (res_current != res_latest) && !is_newer_than_upstream
 
         resource_version_info = {
           resource: resource_name(resource, full_name: full_name),
           version:  {
-            current: res_current.to_s,
-            latest: res_latest.to_s,
+            current:             res_current.to_s,
+            latest:              res_latest.to_s,
             newer_than_upstream: is_newer_than_upstream,
             outdated:            is_outdated,
           },
         }
 
-        if json && verbose
-          resource_version_info[:meta] = { url: { original: original_url } }
-          resource_version_info[:meta][:url][:processed] = url if url != original_url
-          resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
-          if has_livecheckable
-            res_livecheck = { url: { original: livecheck_url } }
-            if livecheck_url.is_a?(Symbol) && livecheck_url_string
-              res_livecheck[:url][:symbol] = livecheck_url
-            end
-            if strategy_data[:url].present? && strategy_data[:url] != url
-              res_livecheck[:url][:strategy] = strategy_data[:url]
-            end
-            if strategy_data[:final_url]
-              res_livecheck[:url][:final] = strategy_data[:final_url]
-            end
-            res_livecheck[:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
-            res_livecheck[:strategy] = strategy.present? ? strategy_name : nil
-            if strategies.present?
-              res_livecheck[:strategies] = strategies.map do |s|
-                livecheck_strategy_names[s]
-              end
-            end
-            res_livecheck[:regex] = regex.inspect if regex.present?
-            res_livecheck[:cached] = true if strategy_data[:cached] == true
-            resource_version_info[:meta][:livecheck] = res_livecheck
+        next unless json
+        next unless verbose
+
+        resource_version_info[:meta] = { url: { original: original_url } }
+        resource_version_info[:meta][:url][:processed] = url if url != original_url
+        resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
+        next unless has_livecheckable
+
+        res_livecheck = { url: { original: livecheck_url } }
+        res_livecheck[:url][:symbol] = livecheck_url if livecheck_url.is_a?(Symbol) && livecheck_url_string
+        if strategy_data[:url].present? && strategy_data[:url] != url
+          res_livecheck[:url][:strategy] = strategy_data[:url]
+        end
+        res_livecheck[:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
+        res_livecheck[:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
+        res_livecheck[:strategy] = strategy.present? ? strategy_name : nil
+        if strategies.present?
+          res_livecheck[:strategies] = strategies.map do |s|
+            livecheck_strategy_names[s]
           end
         end
+        res_livecheck[:regex] = regex.inspect if regex.present?
+        res_livecheck[:cached] = true if strategy_data[:cached] == true
+        resource_version_info[:meta][:livecheck] = res_livecheck
       end
       resource_version_info
     end
