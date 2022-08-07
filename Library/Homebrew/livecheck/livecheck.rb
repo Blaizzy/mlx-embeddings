@@ -659,6 +659,7 @@ resource: false)
 
       checked_urls = []
 
+      # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
         # Only preprocess the URL when it's appropriate
         url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
