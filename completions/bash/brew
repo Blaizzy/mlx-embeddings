@@ -1330,6 +1330,7 @@ _brew_livecheck() {
       --cask
       --debug
       --formula
+      --resources
       --full-name
       --help
       --installed
