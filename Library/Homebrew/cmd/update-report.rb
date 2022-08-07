@@ -298,7 +298,14 @@ module Homebrew
 
     Formula.installed.each do |formula|
       next unless formula.tap&.core_tap?
-      next unless formula.recursive_dependencies.map(&:name).include? "gcc"
+
+      recursive_runtime_dependencies = Dependency.expand(
+        formula,
+        cache_key: "update-report",
+      ) do |_, dependency|
+        Dependency.prune if dependency.build? || dependency.test?
+      end
+      next unless recursive_runtime_dependencies.map(&:name).include? "gcc"
 
       keg = formula.installed_kegs.last
       tab = Tab.for_keg(keg)
