@@ -206,6 +206,15 @@ describe Homebrew::Livecheck do
 
       c_livecheck_url.livecheck.url(:url)
       expect(livecheck.livecheck_url_to_string(cask_url, c_livecheck_url)).to eq(cask_url)
+
+      r_livecheck_url.livecheck.url(:url)
+      expect(livecheck.livecheck_url_to_string(cask_url, r_livecheck_url)).to eq(cask_url)
+
+      r_livecheck_url.livecheck.url(:head)
+      expect(livecheck.livecheck_url_to_string(head_url, r_livecheck_url)).to eq(head_url)
+
+      r_livecheck_url.livecheck.url(:stable)
+      expect(livecheck.livecheck_url_to_string(stable_url, r_livecheck_url)).to eq(stable_url)
     end
 
     it "returns nil when not given a string or valid symbol" do
