@@ -148,6 +148,26 @@ describe Homebrew::Livecheck do
       end
     end
 
+    let(:f_r_livecheck_url) do
+      formula("test_livecheck_url") do
+        desc "Test Livecheck URL formula"
+        homepage "https://brew.sh"
+        url "https://brew.sh/test-0.0.1.tgz"
+        head "https://github.com/Homebrew/brew.git"
+        resource "foo" do
+          url "https://brew.sh/foo-1.0.tar.gz"
+          sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+          livecheck do
+            url "https://brew.sh/test/releases"
+            regex(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
+          end
+        end
+      end
+    end
+
+    let(:r_livecheck_url) { f_r_livecheck_url.resources.first }
+
     let(:c_livecheck_url) do
       Cask::CaskLoader.load(+<<-RUBY)
         cask "test_livecheck_url" do
@@ -161,9 +181,14 @@ describe Homebrew::Livecheck do
       RUBY
     end
 
-    it "returns a URL string when given a livecheck_url string" do
+    it "returns a URL string when given a livecheck_url string for formula" do
       f_livecheck_url.livecheck.url(livecheck_url)
       expect(livecheck.livecheck_url_to_string(livecheck_url, f_livecheck_url)).to eq(livecheck_url)
+    end
+
+    it "returns a URL string when given a livecheck_url string for resource" do
+      r_livecheck_url.livecheck.url(livecheck_url)
+      expect(livecheck.livecheck_url_to_string(livecheck_url, r_livecheck_url)).to eq(livecheck_url)
     end
 
     it "returns a URL symbol when given a valid livecheck_url symbol" do
