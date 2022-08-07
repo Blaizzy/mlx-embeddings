@@ -236,9 +236,7 @@ module Cask
       when 2..Float::INFINITY
         loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
 
-        raise TapCaskAmbiguityError.new(ref, loaders) if loaders.map(&:tap).map(&:name).uniq.size == 1
-
-        return FromTapPathLoader.new(possible_tap_casks.first)
+        raise TapCaskAmbiguityError.new(ref, loaders)
       end
 
       possible_installed_cask = Cask.new(ref)

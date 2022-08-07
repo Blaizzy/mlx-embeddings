@@ -96,7 +96,7 @@ module Cask
 
         MacOSVersions::SYMBOLS.each do |os_name, os_version|
           MacOS.full_version = os_version
-          cask = CaskLoader.load(token)
+          cask = CaskLoader.load(full_name)
           version_os_hash[os_name] = cask.version if cask.version != version
         end
 
