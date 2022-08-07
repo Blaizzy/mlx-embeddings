@@ -11,6 +11,7 @@ describe Homebrew::Livecheck do
   let(:homepage_url) { "https://brew.sh" }
   let(:livecheck_url) { "https://formulae.brew.sh/api/formula/ruby.json" }
   let(:stable_url) { "https://brew.sh/test-0.0.1.tgz" }
+  let(:resource_url) { "https://brew.sh/foo-1.0.tar.gz" }
 
   let(:f) do
     formula("test") do
@@ -220,8 +221,10 @@ describe Homebrew::Livecheck do
     it "returns nil when not given a string or valid symbol" do
       expect(livecheck.livecheck_url_to_string(nil, f_livecheck_url)).to be_nil
       expect(livecheck.livecheck_url_to_string(nil, c_livecheck_url)).to be_nil
+      expect(livecheck.livecheck_url_to_string(nil, r_livecheck_url)).to be_nil
       expect(livecheck.livecheck_url_to_string(:invalid_symbol, f_livecheck_url)).to be_nil
       expect(livecheck.livecheck_url_to_string(:invalid_symbol, c_livecheck_url)).to be_nil
+      expect(livecheck.livecheck_url_to_string(:invalid_symbol, r_livecheck_url)).to be_nil
     end
   end
 
@@ -229,6 +232,7 @@ describe Homebrew::Livecheck do
     it "returns the list of URLs to check" do
       expect(livecheck.checkable_urls(f)).to eq([stable_url, head_url, homepage_url])
       expect(livecheck.checkable_urls(c)).to eq([cask_url, homepage_url])
+      expect(livecheck.checkable_urls(r)).to eq([resource_url])
       expect(livecheck.checkable_urls(f_duplicate_urls)).to eq([stable_url, head_url])
     end
   end
