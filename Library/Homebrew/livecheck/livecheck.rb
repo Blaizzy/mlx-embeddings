@@ -773,9 +773,11 @@ module Homebrew
         }
 
         if json && verbose
-          resource_version_info[:meta] = { livecheckable: has_livecheckable ? "Yes" : "No" }
+          resource_version_info[:meta] = { url: { original: original_url } }
+          resource_version_info[:meta][:url][:processed] = url if url != original_url
+          resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
           if has_livecheckable
-            res_livecheck = { url: {} }
+            res_livecheck = { url: { original: livecheck_url } }
             if livecheck_url.is_a?(Symbol) && livecheck_url_string
               res_livecheck[:url][:symbol] = livecheck_url
             end
@@ -796,8 +798,6 @@ module Homebrew
             res_livecheck[:cached] = true if strategy_data[:cached] == true
             resource_version_info[:meta][:livecheck] = res_livecheck
           end
-          resource_version_info[:meta][:url] = { original: original_url }
-          resource_version_info[:meta][:url][:processed] = url if url != original_url
         end
       end
       resource_version_info
