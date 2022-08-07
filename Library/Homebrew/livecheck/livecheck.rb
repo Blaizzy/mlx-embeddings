@@ -367,7 +367,6 @@ module Homebrew
 
             res_info = {}
             res_info[:resource] = resource[:name]
-            res_info[:meta] = { livecheckable: resource[:livecheckable] }
             res_info[:version] = {
               current:             current_str,
               latest:              latest_str,
@@ -509,7 +508,7 @@ module Homebrew
       package_or_resource_s = resource ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
       package_or_resource_s += " (cask)" if ambiguous_cask
-      package_or_resource_s += " (guessed)" if !info[:meta][:livecheckable] && verbose
+      package_or_resource_s += " (guessed)" if verbose && !info[:meta][:livecheckable]
 
       current_s = if info[:version][:newer_than_upstream]
         "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
