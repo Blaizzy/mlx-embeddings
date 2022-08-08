@@ -70,7 +70,7 @@ module Utils
         Pathname(path).atomic_write(s.inreplace_string)
       end
 
-      raise Utils::Inreplace::Error, errors unless errors.empty?
+      raise Utils::Inreplace::Error, errors if errors.present?
     end
 
     # @api private
@@ -86,7 +86,7 @@ module Utils
 
         contents.gsub!(old, new)
       end
-      raise Utils::Inreplace::Error, path => contents.errors unless contents.errors.empty?
+      raise Utils::Inreplace::Error, path => contents.errors if contents.errors.present?
 
       Pathname(path).atomic_write(contents.inreplace_string) unless read_only_run
       contents.inreplace_string
