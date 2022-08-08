@@ -90,6 +90,7 @@ module Cask
     end
 
     def os_versions
+      # TODO: use #to_hash_with_variations instead once all casks use on_system blocks
       @os_versions ||= begin
         version_os_hash = {}
         actual_version = MacOS.full_version.to_s
