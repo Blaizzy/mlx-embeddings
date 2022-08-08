@@ -156,24 +156,33 @@ module Homebrew
 
     def self.install_formula_clean!(f, dry_run: false)
       return if Homebrew::EnvConfig.no_install_cleanup?
+      return unless f.latest_version_installed?
+      return if skip_clean_formula?(f)
 
-      cleanup = Cleanup.new(dry_run: dry_run)
-      if cleanup.periodic_clean_due?
-        cleanup.periodic_clean!
-      elsif f.latest_version_installed? && !Cleanup.skip_clean_formula?(f)
+      if dry_run
+        ohai "Would run `brew cleanup #{f}`"
+      else
         ohai "Running `brew cleanup #{f}`..."
-        puts_no_install_cleanup_disable_message_if_not_already!
-        cleanup.cleanup_formula(f)
       end
+
+      puts_no_install_cleanup_disable_message_if_not_already!
+      return if dry_run
+
+      Cleanup.new.cleanup_formula(f)
     end
 
-    def self.puts_no_install_cleanup_disable_message_if_not_already!
+    def self.puts_no_install_cleanup_disable_message
       return if Homebrew::EnvConfig.no_env_hints?
       return if Homebrew::EnvConfig.no_install_cleanup?
-      return if @puts_no_install_cleanup_disable_message_if_not_already
 
       puts "Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP."
       puts "Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`)."
+    end
+
+    def self.puts_no_install_cleanup_disable_message_if_not_already!
+      return if @puts_no_install_cleanup_disable_message_if_not_already
+
+      puts_no_install_cleanup_disable_message
       @puts_no_install_cleanup_disable_message_if_not_already = true
     end
 
@@ -184,7 +193,7 @@ module Homebrew
       skip_clean_formulae.include?(f.name) || (skip_clean_formulae & f.aliases).present?
     end
 
-    def periodic_clean_due?
+    def self.periodic_clean_due?
       return false if Homebrew::EnvConfig.no_install_cleanup?
 
       unless PERIODIC_CLEAN_FILE.exist?
@@ -196,19 +205,20 @@ module Homebrew
       PERIODIC_CLEAN_FILE.mtime < CLEANUP_DEFAULT_DAYS.days.ago
     end
 
-    def periodic_clean!
-      return false unless periodic_clean_due?
+    def self.periodic_clean!(dry_run: false)
+      return if Homebrew::EnvConfig.no_install_cleanup?
+      return unless periodic_clean_due?
 
-      if dry_run?
-        ohai "Would run `brew cleanup` which has not been run in the last #{CLEANUP_DEFAULT_DAYS} days"
+      if dry_run
+        oh1 "Would run `brew cleanup` which has not been run in the last #{CLEANUP_DEFAULT_DAYS} days"
       else
-        ohai "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
+        oh1 "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
       end
 
-      Cleanup.puts_no_install_cleanup_disable_message_if_not_already!
-      return if dry_run?
+      puts_no_install_cleanup_disable_message
+      return if dry_run
 
-      clean!(quiet: true, periodic: true)
+      Cleanup.new.clean!(quiet: true, periodic: true)
     end
 
     def clean!(quiet: false, periodic: false)
