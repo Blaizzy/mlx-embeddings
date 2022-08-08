@@ -90,13 +90,14 @@ module Cask
     end
 
     def os_versions
+      # TODO: use #to_hash_with_variations instead once all casks use on_system blocks
       @os_versions ||= begin
         version_os_hash = {}
         actual_version = MacOS.full_version.to_s
 
         MacOSVersions::SYMBOLS.each do |os_name, os_version|
           MacOS.full_version = os_version
-          cask = CaskLoader.load(token)
+          cask = CaskLoader.load(full_name)
           version_os_hash[os_name] = cask.version if cask.version != version
         end
 

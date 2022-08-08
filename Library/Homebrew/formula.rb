@@ -69,9 +69,6 @@ class Formula
   extend Cachable
   extend Predicable
 
-  # @!method inreplace(paths, before = nil, after = nil)
-  # @see Utils::Inreplace.inreplace
-
   # The name of this {Formula}.
   # e.g. `this-formula`
   attr_reader :name
@@ -2200,6 +2197,30 @@ class Formula
   #   system "make", "install"
   # end</pre>
   def install; end
+
+  # Sometimes we have to change a bit before we install. Mostly we
+  # prefer a patch, but if you need the {Formula#prefix prefix} of
+  # this formula in the patch you have to resort to `inreplace`,
+  # because in the patch you don't have access to any variables
+  # defined by the formula, as only `HOMEBREW_PREFIX` is available
+  # in the {DATAPatch embedded patch}.
+  #
+  # `inreplace` supports regular expressions:
+  # <pre>inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"</pre>
+  #
+  # `inreplace` supports blocks:
+  # <pre>inreplace "Makefile" do |s|
+  #   s.gsub! "/usr/local", HOMEBREW_PREFIX.to_s
+  # end
+  # </pre>
+  #
+  # @see Utils::Inreplace.inreplace
+  # @api public
+  def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
+    super(paths, before, after, audit_result)
+  rescue Utils::Inreplace::Error
+    raise BuildError.new(self, "inreplace", paths, nil)
+  end
 
   protected
 

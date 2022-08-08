@@ -151,6 +151,8 @@ module Homebrew
       )
     end
 
+    Cleanup.periodic_clean!
+
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 end
