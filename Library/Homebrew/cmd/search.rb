@@ -82,6 +82,11 @@ module Homebrew
       search_names(query, string_or_regex, args)
     end
 
+    if args.verbose?
+      puts
+      puts "Check 'brew desc' to list packages with short description."
+    end
+
     print_regex_help(args)
   end
 
