@@ -111,7 +111,8 @@ module Language
           raise ShebangDetectionError.new("Python", "formula has multiple Python dependencies")
         end
 
-        python_shebang_rewrite_info(Formula[python_deps.first].opt_bin/"python3")
+        python_dep = python_deps.first
+        python_shebang_rewrite_info(Formula[python_dep].opt_bin/python_dep.sub("@", ""))
       end
     end
 
