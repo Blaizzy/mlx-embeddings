@@ -250,14 +250,7 @@ module Cask
       set_unique_stanza(:arch, should_return) do
         @on_system_blocks_exist = true
 
-        # If arm and intel are arrays and one isn't specified, default to an array that is the same size as the other
-        empty_value = Array.new(arm&.count || intel&.count) if arm.is_a?(Array) || intel.is_a?(Array)
-
-        if OnSystem.arch_condition_met? :arm
-          arm || empty_value
-        elsif OnSystem.arch_condition_met? :intel
-          intel || empty_value
-        end
+        on_arch_conditional(arm: arm, intel: intel)
       end
     end
 

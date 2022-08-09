@@ -160,7 +160,7 @@ describe Cask::Cmd::List, :cask do
             ],
             "desc": null,
             "homepage": "https://brew.sh/",
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.3/arm.zip",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin-arm64/1.2.3/arm.zip",
             "appcast": null,
             "version": "1.2.3",
             "versions": {
