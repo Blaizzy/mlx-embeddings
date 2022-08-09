@@ -65,6 +65,13 @@ module OnSystem
         result
       end
     end
+
+    base.define_method(:on_arch_conditional) do |arm:, intel:|
+      @on_system_blocks_exist = true
+
+      return arm if OnSystem.arch_condition_met? :arm
+      return intel if OnSystem.arch_condition_met? :intel
+    end
   end
 
   sig { params(base: Class).void }

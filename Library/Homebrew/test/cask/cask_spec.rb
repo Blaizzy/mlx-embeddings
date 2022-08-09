@@ -218,25 +218,25 @@ describe Cask::Cask, :cask do
       <<~JSON
         {
           "arm64_big_sur": {
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/arm.zip",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin-arm64/1.2.0/arm.zip",
             "version": "1.2.0",
             "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
           },
           "monterey": {
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.3/intel.zip"
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.2.3/intel.zip"
           },
           "big_sur": {
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.2.0/intel.zip",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.2.0/intel.zip",
             "version": "1.2.0",
             "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
           },
           "catalina": {
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.0.0/intel.zip",
             "version": "1.0.0",
             "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
           },
           "mojave": {
-            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/1.0.0/intel.zip",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.0.0/intel.zip",
             "version": "1.0.0",
             "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
           }

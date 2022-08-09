@@ -143,7 +143,8 @@ class Livecheck
   end
 
   delegate version: :@package_or_resource
-  private :version
+  delegate arch: :@package_or_resource
+  private :version, :arch
 
   # Returns a `Hash` of all instance variable values.
   # @return [Hash]
