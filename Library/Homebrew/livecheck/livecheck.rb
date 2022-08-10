@@ -284,8 +284,8 @@ module Homebrew
 
         # Check current and latest resources (if "--resources" flag is given)
         # Only check current and latest versions if we have resources to check against
-        check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
-        if check_for_resources
+        check_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
+        if check_resources
           resource_version_info = formula_or_cask.resources.map do |resource|
             resource_info = resource_version(
               resource,
@@ -339,7 +339,7 @@ module Homebrew
         info[:meta][:head_only] = true if formula&.head_only?
         info[:meta].merge!(version_info[:meta]) if version_info.present? && version_info.key?(:meta)
 
-        info[:resources] = resource_version_info if check_for_resources
+        info[:resources] = resource_version_info if check_resources
 
         next if newer_only && !info[:version][:outdated]
 
@@ -354,7 +354,7 @@ module Homebrew
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
 resource: false)
 
-        if check_for_resources
+        if check_resources
           resource_version_info.each do |r_info|
             print_latest_version(
               r_info,
