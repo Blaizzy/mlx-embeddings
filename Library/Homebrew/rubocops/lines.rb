@@ -431,7 +431,10 @@ module RuboCop
             base_name = base_name.delete_prefix("_").delete_suffix(".fish")
             shell = shell.to_s.delete_suffix("_completion").to_sym
             executable = executable.source
-            shell_parameter_stripped = shell_parameter.delete_suffix("bash").delete_suffix("zsh").delete_suffix("fish")
+            shell_parameter_stripped = shell_parameter
+                                       .delete_suffix("bash")
+                                       .delete_suffix("zsh")
+                                       .delete_suffix("fish")
             shell_parameter_format = if shell_parameter_stripped.empty?
               nil
             elsif shell_parameter_stripped == "--"
@@ -447,7 +450,9 @@ module RuboCop
             replacement_args << subcmd.inspect
             replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
             replacement_args << "shells: [:#{shell}]"
-            replacement_args << "shell_parameter_format: #{shell_parameter_format.inspect}" unless shell_parameter_format.nil?
+            unless shell_parameter_format.nil?
+              replacement_args << "shell_parameter_format: #{shell_parameter_format.inspect}"
+            end
 
             offending_node(node)
             replacement = "generate_completions_from_executable(#{replacement_args.join(", ")})"
@@ -463,7 +468,7 @@ module RuboCop
           end
         end
 
-        # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write Utils.safe_popen_read(foo, subcmd, shell_parameter)
+        # match ({bash,zsh,fish}_completion/"_?foo{.fish}?").write Utils.safe_popen_read(foo, subcmd, shell_parameter)
         def_node_search :correctable_shell_completion_node, <<~EOS
           $(send
           (begin
