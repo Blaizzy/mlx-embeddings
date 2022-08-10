@@ -1634,6 +1634,48 @@ class Formula
   # @param shell_parameter_format [String, Symbol] specify how `shells` should each be passed
   # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none].
   # Defaults to plainly passing the shell.
+  #
+  # @example Using default values for optional arguments
+  #   generate_completions_from_executable(bin/"foo", "completions")
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #
+  # (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
+  #
+  # (fish_completion/"foo.fish").write Utils.safe_popen_read({ "SHELL" => "fish" }, bin/"foo", "completions", "fish")
+  #
+  # @example Selecting shells and using a different base_name
+  #    generate_completions_from_executable(bin/"foo", "completions", shells: [:bash, :zsh], base_name: "bar")
+  # translates to
+  #
+  # (bash_completion/"bar").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #
+  # (zsh_completion/"_bar").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
+  #
+  # @example Using predefined shell_parameter_format :flag
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :flag, shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--bash")
+  #
+  # @example Using predefined shell_parameter_format :arg
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :arg, shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--shell=bash")
+  #
+  # @example Using predefined shell_parameter_format :none
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :none, shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions")
+  #
+  # @example Using custom shell_parameter_format
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: "--selected-shell=", shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--selected-shell=bash")
   sig {
     params(executable: Pathname, subcmd: String, base_name: String, shells: T::Array[Symbol],
            shell_parameter_format: T.nilable(T.any(Symbol, String))).void
