@@ -1628,10 +1628,10 @@ class Formula
   # Generate shell completions for a formula for bash, zsh, and fish, using the formula's executable.
   #
   # @param executable [Pathname] the executable to use for generating the completion scripts.
-  # @param subcmd [String] the command to pass to the `executable`.
+  # @param subcmd [String] the subcommand to pass to the `executable`.
   # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
   # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
-  # @param shell_parameter_format [String]/[Symbol] specify how `shells` should each be passed
+  # @param shell_parameter_format [String, Symbol] specify how `shells` should each be passed
   # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none].
   # Defaults to plainly passing the shell.
   sig {
