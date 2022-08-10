@@ -1996,7 +1996,7 @@ describe Formula do
       }.to raise_error("ignore_missing_libraries is available on Linux only")
     end
   end
-  
+
   describe "#generate_completions_from_executable" do
     let(:f) do
       Class.new(Testball) do
