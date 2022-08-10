@@ -218,8 +218,6 @@ module Homebrew
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
-        onoe "'--resources' flag does not work with a Cask" if check_resources && formula_or_cask.is_a?(Cask::Cask)
-
         use_full_name = full_name || ambiguous_names.include?(formula_or_cask)
         name = formula_or_cask_name(formula_or_cask, full_name: use_full_name)
 
