@@ -307,6 +307,13 @@ module Homebrew
             EOS
           end
 
+          if dep_f.deprecated? && !formula.deprecated? && !formula.disabled?
+            problem <<~EOS
+              Dependency '#{dep.name}' is deprecated but has un-deprecated dependents. Either
+              un-deprecate '#{dep.name}' or deprecate it and all of its dependents.
+            EOS
+          end
+
           # we want to allow uses_from_macos for aliases but not bare dependencies
           if self.class.aliases.include?(dep.name) && spec.uses_from_macos_names.exclude?(dep.name)
             problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
@@ -329,7 +336,7 @@ module Homebrew
 
       # The number of conflicts on Linux is absurd.
       # TODO: remove this and check these there too.
-      return if OS.linux? && !Homebrew::EnvConfig.simulate_macos_on_linux?
+      return if Homebrew::SimulateSystem.simulating_or_running_on_linux?
 
       recursive_runtime_formulae = formula.runtime_formula_dependencies(undeclared: false)
       version_hash = {}
@@ -410,13 +417,11 @@ module Homebrew
     end
 
     def audit_glibc
-      return if formula.name != "glibc"
       return unless @core_tap
+      return if formula.name != "glibc"
+      return if [OS::CI_GLIBC_VERSION, "2.27", "2.31", "2.35"].include?(formula.version.to_s)
 
-      version = formula.version.to_s
-      return if version == OS::CI_GLIBC_VERSION
-
-      problem "The glibc version must be #{version}, as this is the version used by our CI on Linux. " \
+      problem "The glibc version must be #{OS::CI_GLIBC_VERSION}, as this is the version used by our CI on Linux. " \
               "Glibc is for users who have a system Glibc with a lower version, " \
               "which allows them to use our Linux bottles, which were compiled against system Glibc on CI."
     end

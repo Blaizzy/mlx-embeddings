@@ -121,6 +121,7 @@ class Resource
   # is a {ResourceStageContext}.
   # A target or a block must be given, but not both.
   def unpack(target = nil)
+    current_working_directory = Pathname.pwd
     mktemp(download_name) do |staging|
       downloader.stage do
         @source_modified_time = downloader.source_modified_time
@@ -129,6 +130,7 @@ class Resource
           yield ResourceStageContext.new(self, staging)
         elsif target
           target = Pathname(target)
+          target = current_working_directory/target if target.relative?
           target.install Pathname.pwd.children
         end
       end

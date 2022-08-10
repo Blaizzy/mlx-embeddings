@@ -211,4 +211,64 @@ describe Cask::Cask, :cask do
       end
     end
   end
+
+  describe "#to_hash_with_variations" do
+    let!(:original_macos_version) { MacOS.full_version.to_s }
+    let(:expected_variations) {
+      <<~JSON
+        {
+          "arm64_big_sur": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin-arm64/1.2.0/arm.zip",
+            "version": "1.2.0",
+            "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+          },
+          "monterey": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.2.3/intel.zip"
+          },
+          "big_sur": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.2.0/intel.zip",
+            "version": "1.2.0",
+            "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+          },
+          "catalina": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.0.0/intel.zip",
+            "version": "1.0.0",
+            "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
+          },
+          "mojave": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin/1.0.0/intel.zip",
+            "version": "1.0.0",
+            "sha256": "1866dfa833b123bb8fe7fa7185ebf24d28d300d0643d75798bc23730af734216"
+          }
+        }
+      JSON
+    }
+
+    before do
+      # Use a more limited symbols list to shorten the variations hash
+      symbols = {
+        monterey: "12",
+        big_sur:  "11",
+        catalina: "10.15",
+        mojave:   "10.14",
+      }
+      stub_const("MacOSVersions::SYMBOLS", symbols)
+
+      # For consistency, always run on Monterey and ARM
+      MacOS.full_version = "12"
+      allow(Hardware::CPU).to receive(:type).and_return(:arm)
+    end
+
+    after do
+      MacOS.full_version = original_macos_version
+    end
+
+    it "returns the correct variations hash" do
+      c = Cask::CaskLoader.load("multiple-versions")
+      h = c.to_hash_with_variations
+
+      expect(h).to be_a(Hash)
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_variations.strip
+    end
+  end
 end

@@ -78,10 +78,10 @@ Homebrew provides pre-built binary packages for many formulae. These are referre
 
 If available, bottled binaries will be used by default except under the following conditions:
 
-* Options were passed to the install command, i.e. `brew install <formula>` will use a bottled version of the formula, but `brew install --enable-bar <formula>` will trigger a source build.
 * The `--build-from-source` option is invoked.
 * No bottle is available for the machine's currently running OS version. (Bottles for macOS are generated only for supported macOS versions.)
 * Homebrew is installed to a prefix other than the default (although some bottles support this).
+* Formula options were passed to the install command. For example, `brew install <formula>` will try to find a bottled binary, but `brew install --with-foo <formula>` will trigger a source build.
 
 We aim to bottle everything.
 

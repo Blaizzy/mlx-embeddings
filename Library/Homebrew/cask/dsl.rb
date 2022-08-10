@@ -243,6 +243,17 @@ module Cask
       end
     end
 
+    # @api public
+    def arch(arm: nil, intel: nil)
+      should_return = arm.blank? && intel.blank?
+
+      set_unique_stanza(:arch, should_return) do
+        @on_system_blocks_exist = true
+
+        on_arch_conditional(arm: arm, intel: intel)
+      end
+    end
+
     # `depends_on` uses a load method so that multiple stanzas can be merged.
     # @api public
     def depends_on(*args)

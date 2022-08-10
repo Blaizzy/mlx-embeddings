@@ -150,8 +150,7 @@
 **/vendor/bundle/ruby/*/gems/simplecov-*/
 **/vendor/bundle/ruby/*/gems/simplecov-html-*/
 **/vendor/bundle/ruby/*/gems/sorbet-*/
-**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
-!**/vendor/bundle/ruby/*/gems/sorbet-runtime-stub-*/
+!**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/spoom-*/
 **/vendor/bundle/ruby/*/gems/stackprof-*/
 **/vendor/bundle/ruby/*/gems/strscan-*/

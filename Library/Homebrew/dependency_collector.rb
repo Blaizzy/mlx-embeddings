@@ -161,7 +161,7 @@ class DependencyCollector
     elsif strategy <= FossilDownloadStrategy
       Dependency.new("fossil", tags)
     elsif strategy <= BazaarDownloadStrategy
-      Dependency.new("bazaar", tags)
+      Dependency.new("breezy", tags)
     elsif strategy <= CVSDownloadStrategy
       cvs_dep_if_needed(tags)
     elsif strategy < AbstractDownloadStrategy

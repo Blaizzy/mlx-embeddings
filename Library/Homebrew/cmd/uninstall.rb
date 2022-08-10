@@ -50,6 +50,11 @@ module Homebrew
       all_kegs:           args.force?,
     )
 
+    # If ignore_unavailable is true and the named args
+    # are a series of invalid kegs and casks,
+    # #to_kegs_to_casks will return empty arrays.
+    return if all_kegs.blank? && casks.blank?
+
     kegs_by_rack = all_kegs.group_by(&:rack)
 
     Uninstall.uninstall_kegs(
@@ -73,5 +78,7 @@ module Homebrew
         force:   args.force?,
       )
     end
+
+    Cleanup.autoremove if Homebrew::EnvConfig.autoremove?
   end
 end

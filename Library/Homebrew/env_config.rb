@@ -36,6 +36,12 @@ module Homebrew
                      "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
         default:     300,
       },
+      HOMEBREW_AUTOREMOVE:                       {
+        description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
+                     "remove unused formula dependents and if HOMEBREW_NO_INSTALL_CLEANUP is not set, " \
+                     "`brew cleanup` will start running `brew autoremove` periodically.",
+        boolean:     true,
+      },
       HOMEBREW_BAT:                              {
         description: "If set, use `bat` for the `brew cat` command.",
         boolean:     true,
@@ -263,8 +269,8 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_CLEANUP_FORMULAE:              {
-        description: "A comma-separated list of formulae. Homebrew will refuse to clean up a " \
-                     "formula if it appears on this list.",
+        description: "A comma-separated list of formulae. Homebrew will refuse to clean up " \
+                     "or autoremove a formula if it appears on this list.",
       },
       HOMEBREW_NO_COLOR:                         {
         description:  "If set, do not print text with colour added.",

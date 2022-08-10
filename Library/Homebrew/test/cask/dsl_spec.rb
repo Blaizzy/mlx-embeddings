@@ -305,6 +305,38 @@ describe Cask::DSL, :cask do
     end
   end
 
+  describe "arch stanza" do
+    let(:token) { "invalid/invalid-two-arch" }
+
+    it "prevents defining multiple arches" do
+      expect { cask }.to raise_error(Cask::CaskInvalidError, /'arch' stanza may only appear once/)
+    end
+
+    context "when no intel value is specified" do
+      let(:token) { "arch-arm-only" }
+
+      context "when running on arm" do
+        before do
+          allow(Hardware::CPU).to receive(:type).and_return(:arm)
+        end
+
+        it "returns the value" do
+          expect(cask.url.to_s).to eq "file://#{TEST_FIXTURE_DIR}/cask/caffeine-arm.zip"
+        end
+      end
+
+      context "when running on intel" do
+        before do
+          allow(Hardware::CPU).to receive(:type).and_return(:intel)
+        end
+
+        it "defaults to `nil` for the other when no arrays are passed" do
+          expect(cask.url.to_s).to eq "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip"
+        end
+      end
+    end
+  end
+
   describe "appcast stanza" do
     let(:token) { "with-appcast" }
 
