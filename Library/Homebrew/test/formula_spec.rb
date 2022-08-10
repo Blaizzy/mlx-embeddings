@@ -1693,4 +1693,28 @@ describe Formula do
       expect(f.test).to eq(2)
     end
   end
+
+  describe "#generate_completions_from_executable" do
+    let(:f) do
+      Class.new(Testball) do
+        def install
+          bin.mkpath
+          (bin/"foo").write <<-EOF
+            echo completion
+          EOF
+
+          FileUtils.chmod "+x", bin/"foo"
+
+          generate_completions_from_executable(bin/"foo", "test")
+        end
+      end.new
+    end
+
+    it "generates completion scripts" do
+      f.brew { f.install }
+      expect(f.bash_completion/"foo").to be_a_file
+      expect(f.zsh_completion/"_foo").to be_a_file
+      expect(f.fish_completion/"foo.fish").to be_a_file
+    end
+  end
 end
