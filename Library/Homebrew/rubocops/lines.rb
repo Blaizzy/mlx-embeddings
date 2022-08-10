@@ -424,7 +424,7 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           install = find_method_def(body_node, :install)
 
-          correctable_shell_completion_node(install) do |node, shell, base_name, executable, cmd, shell_parameter|
+          correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter|
             # generate_completions_from_executable only applicable if shell is passed
             next unless shell_parameter.match?(/(bash|zsh|fish)/)
 
@@ -443,12 +443,10 @@ module RuboCop
             end
 
             replacement_args = %w[]
+            replacement_args << executable
+            replacement_args << subcmd.inspect
             replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
             replacement_args << "shells: [:#{shell}]"
-            if executable.to_s != "bin/\"#{@formula_name}\"" && executable.to_s != "bin/\"#{base_name}\""
-              replacement_args << "executable: #{executable}"
-            end
-            replacement_args << "cmd: \"#{cmd}\"" unless cmd == "completion"
             replacement_args << "shell_parameter_format: #{shell_parameter_format.inspect}" unless shell_parameter_format.nil?
 
             offending_node(node)
@@ -465,7 +463,7 @@ module RuboCop
           end
         end
 
-        # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write Utils.safe_popen_read(foo, cmd, shell_parameter)
+        # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write Utils.safe_popen_read(foo, subcmd, shell_parameter)
         def_node_search :correctable_shell_completion_node, <<~EOS
           $(send
           (begin
