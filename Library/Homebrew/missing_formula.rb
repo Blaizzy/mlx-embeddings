@@ -89,6 +89,12 @@ module Homebrew
           uconv is part of the icu4c formula:
             brew install icu4c
         EOS
+        when "postgresql", "postgres" then <<~EOS
+          postgresql breaks existing databases on upgrade without human intervention.
+
+          See a more specific version to install with:
+            brew formulae | grep postgresql@
+        EOS
         end
       end
       alias generic_disallowed_reason disallowed_reason
