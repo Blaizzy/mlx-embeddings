@@ -519,10 +519,10 @@ module RuboCop
 
           T.must(offenses[0...-1]).each do |node|
             offending_node(node)
-            problem "Use a single `generate_completions_from_executable` call
-                         combining all specified shells" do |corrector|
-              # adjust range by +1 to also include & remove trailing \n
-              corrector.replace(@offensive_node.source_range.adjust(end_pos: 1), "")
+            problem "Use a single `generate_completions_from_executable` " \
+                    "call combining all specified shells." do |corrector|
+              # adjust range by -4 and +1 to also include & remove leading spaces and trailing \n
+              corrector.replace(@offensive_node.source_range.adjust(begin_pos: -4, end_pos: 1), "")
             end
           end
 
