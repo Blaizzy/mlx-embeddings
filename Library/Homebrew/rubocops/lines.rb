@@ -532,6 +532,7 @@ module RuboCop
             @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/, "")
                            .sub(", )", ")") # clean up dangling trailing comma
                            .sub("(, ", "(") # clean up dangling leading comma
+                           .sub(", , ", ", ") # clean up dangling enclosed comma
           else
             @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/,
                                        "shells: [#{shells.join(", ")}]")
