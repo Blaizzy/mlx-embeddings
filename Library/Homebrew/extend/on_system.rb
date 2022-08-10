@@ -66,7 +66,7 @@ module OnSystem
       end
     end
 
-    base.define_method(:on_arch_conditional) do |arm:, intel:|
+    base.define_method(:on_arch_conditional) do |arm: nil, intel: nil|
       @on_system_blocks_exist = true
 
       return arm if OnSystem.arch_condition_met? :arm
