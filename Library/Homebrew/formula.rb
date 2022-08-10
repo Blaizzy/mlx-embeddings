@@ -1631,18 +1631,18 @@ class Formula
   # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
   # @param executable [Pathname] the executable to use for generating the completion scripts. Defaults to the
   # executable with the name of the formula.
-  # @param cmd [String] the command to pass to the `binary`. Defaults to 'completion'.
+  # @param subcmd [String] the command to pass to the `executable`. Defaults to 'completion'.
   # @param shell_parameter_format [String]/[Symbol] specify how `shells` should each be passed
   # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none].
   # Defaults to plainly passing the shell.
   sig {
-    params(base_name: String, shells: T::Array[Symbol], executable: Pathname, cmd: String,
+    params(base_name: String, shells: T::Array[Symbol], executable: Pathname, subcmd: String,
            shell_parameter_format: T.nilable(T.any(Symbol, String))).void
   }
   def generate_completions_from_executable(base_name: name,
                                            shells: [:bash, :zsh, :fish],
                                            executable: bin/base_name,
-                                           cmd: "completion",
+                                           subcmd: "completion",
                                            shell_parameter_format: nil)
     completion_script_path_map = {
       bash: bash_completion/base_name,
@@ -1665,7 +1665,7 @@ class Formula
       end
 
       script_path.dirname.mkpath
-      script_path.write Utils.safe_popen_read({ "SHELL" => shell.to_s }, executable, cmd, shell_parameter)
+      script_path.write Utils.safe_popen_read({ "SHELL" => shell.to_s }, executable, subcmd, shell_parameter)
     end
   end
 
