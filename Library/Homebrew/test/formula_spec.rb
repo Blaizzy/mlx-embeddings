@@ -2015,9 +2015,9 @@ describe Formula do
 
     it "generates completion scripts" do
       f.brew { f.install }
-      expect(f.bash_completion/"foo").to be_a_file
-      expect(f.zsh_completion/"_foo").to be_a_file
-      expect(f.fish_completion/"foo.fish").to be_a_file
+      expect(f.bash_completion/"testball").to be_a_file
+      expect(f.zsh_completion/"_testball").to be_a_file
+      expect(f.fish_completion/"testball.fish").to be_a_file
     end
   end
 end
