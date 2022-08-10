@@ -518,7 +518,7 @@ module RuboCop
 
           return if offenses.blank?
 
-          offenses[0...-1].each do |node|
+          T.must(offenses[0...-1]).each do |node|
             offending_node(node)
             problem "Use a single `generate_completions_from_executable` call
                          combining all specified shells" do |corrector|

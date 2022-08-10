@@ -5098,6 +5098,12 @@ class RuboCop::Cop::FormulaAudit::DeprecateDisableReason
   def reason(param0); end
 end
 
+class RuboCop::Cop::FormulaAudit::GenerateCompletionsDSL
+  def correctable_shell_completion_node(param0); end
+
+  def shell_completion_node(param0); end
+end
+
 class RuboCop::Cop::FormulaAudit::GitUrls
   def url_has_revision?(param0=T.unsafe(nil)); end
 end
