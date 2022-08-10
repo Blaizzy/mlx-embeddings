@@ -430,7 +430,6 @@ module RuboCop
 
             base_name = base_name.delete_prefix("_").delete_suffix(".fish")
             shell = shell.to_s.delete_suffix("_completion").to_sym
-            executable = executable.source
             shell_parameter_stripped = shell_parameter
                                        .delete_suffix("bash")
                                        .delete_suffix("zsh")
@@ -446,8 +445,8 @@ module RuboCop
             end
 
             replacement_args = %w[]
-            replacement_args << executable
-            replacement_args << subcmd.inspect
+            replacement_args << executable.source
+            replacement_args << subcmd.source
             replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
             replacement_args << "shells: [:#{shell}]"
             unless shell_parameter_format.nil?
@@ -480,7 +479,7 @@ module RuboCop
             $(send
               (send nil? :bin) :/
               (str _))
-            (str $_)
+            $(str _)
             (str $_)))
         EOS
 
