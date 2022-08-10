@@ -1663,7 +1663,8 @@ class Formula
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :arg, shells: [:bash])
   # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--shell=bash")
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
+  #                                                     "completions", "--shell=bash")
   #
   # @example Using predefined shell_parameter_format :none
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :none, shells: [:bash])
@@ -1672,10 +1673,12 @@ class Formula
   # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions")
   #
   # @example Using custom shell_parameter_format
-  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: "--selected-shell=", shells: [:bash])
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: "--selected-shell=",
+  #                                        shells: [:bash])
   # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--selected-shell=bash")
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
+  #                                                     "completions", "--selected-shell=bash")
   sig {
     params(executable: Pathname, subcmd: String, base_name: String, shells: T::Array[Symbol],
            shell_parameter_format: T.nilable(T.any(Symbol, String))).void
