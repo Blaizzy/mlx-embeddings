@@ -401,7 +401,7 @@ module RuboCop
           info[:if_module], info[:if_method] = if ON_ARCH_OPTIONS.include?(on_system_option)
             ["Hardware::CPU", :"#{on_system_option}?"]
           elsif ON_BASE_OS_OPTIONS.include?(on_system_option)
-            ["OS", on_system_option == :macos ? :mac? : :linux?]
+            ["OS", (on_system_option == :macos) ? :mac? : :linux?]
           else
             ["MacOS", :version]
           end
@@ -493,7 +493,7 @@ module RuboCop
                 else_info = if else_node.present?
                   {
                     can_autocorrect:  true,
-                    on_system_method: on_system_option == :intel ? "on_arm" : "on_intel",
+                    on_system_method: (on_system_option == :intel) ? "on_arm" : "on_intel",
                     node:             else_node,
                   }
                 end
@@ -505,7 +505,7 @@ module RuboCop
                 else_info = if else_node.present?
                   {
                     can_autocorrect:  true,
-                    on_system_method: on_system_option == :macos ? "on_linux" : "on_macos",
+                    on_system_method: (on_system_option == :macos) ? "on_linux" : "on_macos",
                     node:             else_node,
                   }
                 end
