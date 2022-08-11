@@ -424,7 +424,7 @@ module RuboCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           install = find_method_def(body_node, :install)
 
-          correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter|
+          correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter| # rubocop:disable Metrics/ParameterLists
             # generate_completions_from_executable only applicable if shell is passed
             next unless shell_parameter.match?(/(bash|zsh|fish)/)
 
