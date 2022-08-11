@@ -252,7 +252,7 @@ class Tap
     if official? && DEPRECATED_OFFICIAL_TAPS.include?(repo)
       odie "#{name} was deprecated. This tap is now empty and all its contents were either deleted or migrated."
     elsif user == "caskroom" || name == "phinze/cask"
-      new_repo = repo == "cask" ? "cask" : "cask-#{repo}"
+      new_repo = (repo == "cask") ? "cask" : "cask-#{repo}"
       odie "#{name} was moved. Tap homebrew/#{new_repo} instead."
     end
 

@@ -72,6 +72,9 @@ class LinkageChecker
     @unwanted_system_dylibs = @system_dylibs.reject do |s|
       SYSTEM_LIBRARY_ALLOWLIST.include? File.basename(s)
     end
-    @undeclared_deps -= [CompilerSelector.preferred_gcc, "glibc"]
+    # FIXME: Remove this when these dependencies are injected correctly (e.g. through `DependencyCollector`)
+    # See discussion at
+    #   https://github.com/Homebrew/brew/pull/13577
+    @undeclared_deps -= [CompilerSelector.preferred_gcc, "glibc", "gcc"]
   end
 end

@@ -156,11 +156,11 @@ module Homebrew
     end
 
     if new_hash.present? && cask.language.blank? # avoid repeated replacement for multilanguage cask
-      hash_regex = old_hash == :no_check ? ":no_check" : "[\"']#{Regexp.escape(old_hash.to_s)}[\"']"
+      hash_regex = (old_hash == :no_check) ? ":no_check" : "[\"']#{Regexp.escape(old_hash.to_s)}[\"']"
 
       replacement_pairs << [
         /sha256\s+#{hash_regex}/m,
-        "sha256 #{new_hash == :no_check ? ":no_check" : "\"#{new_hash}\""}",
+        "sha256 #{(new_hash == :no_check) ? ":no_check" : "\"#{new_hash}\""}",
       ]
     end
 

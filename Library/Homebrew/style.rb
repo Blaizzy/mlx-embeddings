@@ -49,7 +49,7 @@ module Homebrew
                     .partition { |f| f.realpath == HOMEBREW_BREW_FILE.realpath || f.extname == ".sh" }
 
       rubocop_result = if shell_files.any? && ruby_files.none?
-        output_type == :json ? [] : true
+        (output_type == :json) ? [] : true
       else
         run_rubocop(ruby_files, output_type,
                     fix: fix,
@@ -60,7 +60,7 @@ module Homebrew
       end
 
       shellcheck_result = if ruby_files.any? && shell_files.none?
-        output_type == :json ? [] : true
+        (output_type == :json) ? [] : true
       else
         run_shellcheck(shell_files, output_type, fix: fix)
       end
