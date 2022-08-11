@@ -462,6 +462,9 @@ module RuboCop
           end
 
           shell_completion_node(install) do |node|
+            next if node.source.include?("<<~") # skip heredoc completion scripts
+            next if node.source.match?(/{.*=>.*}/) # skip commands needing custom ENV variables
+
             offending_node(node)
             problem "Use `generate_completions_from_executable` DSL instead of `#{@offensive_node.source}`."
           end
