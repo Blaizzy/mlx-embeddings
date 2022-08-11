@@ -583,7 +583,7 @@ resource: false)
     # livecheck should fetch a URL using brewed curl if the formula/resource/cask
     # contains a `stable`/`url` or `head` URL `using: :homebrew_curl` that
     # shares the same root domain.
-    sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource), url: String).returns(T::Boolean) }
+    sig { params(package_or_resource: T.any(Formula, Cask::Cask), url: String).returns(T::Boolean) }
     def use_homebrew_curl?(package_or_resource, url)
       url_root_domain = Addressable::URI.parse(url)&.domain
       return false if url_root_domain.blank?
@@ -601,11 +601,6 @@ resource: false)
         end
       when Cask::Cask
         return false unless package_or_resource.url.using == :homebrew_curl
-
-        domain = Addressable::URI.parse(package_or_resource.url.to_s)&.domain
-        homebrew_curl_root_domains << domain if domain.present?
-      when Resource
-        return false unless package_or_resource.url == :homebrew_curl
 
         domain = Addressable::URI.parse(package_or_resource.url.to_s)&.domain
         homebrew_curl_root_domains << domain if domain.present?
@@ -707,14 +702,9 @@ resource: false)
         end
         next if strategy.blank?
 
-        homebrew_curl = case strategy_name
-        when "PageMatch", "HeaderMatch"
-          use_homebrew_curl?(resource, url)
-        end
-        puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
         strategy_data = strategy.find_versions(
           url: url, regex: livecheck_regex,
-          homebrew_curl: homebrew_curl, &livecheck_strategy_block
+          homebrew_curl: false, &livecheck_strategy_block
         )
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
@@ -791,7 +781,6 @@ resource: false)
           res_livecheck[:url][:strategy] = strategy_data[:url]
         end
         res_livecheck[:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
-        res_livecheck[:url][:homebrew_curl] = homebrew_curl if homebrew_curl.present?
         res_livecheck[:strategy] = strategy.present? ? strategy_name : nil
         if strategies.present?
           res_livecheck[:strategies] = strategies.map do |s|

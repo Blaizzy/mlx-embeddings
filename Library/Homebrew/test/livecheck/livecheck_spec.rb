@@ -81,7 +81,7 @@ describe Homebrew::Livecheck do
     end
 
     it "returns the full name of the resource" do
-      expect(livecheck.resource_name(r, full_name: true)).to eq("test--foo")
+      expect(livecheck.resource_name(r, full_name: true)).to eq("foo")
     end
   end
 
@@ -235,20 +235,8 @@ describe Homebrew::Livecheck do
           url "https://formulae.brew.sh/api/formula/ruby.json"
           regex(/"stable":"(\d+(?:\.\d+)+)"/i)
         end
-
-        resource "foo" do
-          url "https://brew.sh/foo-1.0.tar.gz", using: :homebrew_curl
-          sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-
-          livecheck do
-            url "https://brew.sh/test/releases"
-            regex(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
-          end
-        end
       end
     end
-
-    let(:r_homebrew_curl) { f_homebrew_curl.resources.first }
 
     let(:c_homebrew_curl) do
       Cask::CaskLoader.load(+<<-RUBY)
@@ -282,13 +270,6 @@ describe Homebrew::Livecheck do
       expect(livecheck.use_homebrew_curl?(c_homebrew_curl, example_url)).to be(false)
     end
 
-    it "returns `false` if a `using: homebrew_curl` is present in a resource url" do
-      expect(livecheck.use_homebrew_curl?(r_homebrew_curl, livecheck_url)).to be(false)
-      expect(livecheck.use_homebrew_curl?(r_homebrew_curl, homepage_url)).to be(false)
-      expect(livecheck.use_homebrew_curl?(r_homebrew_curl, stable_url)).to be(false)
-      expect(livecheck.use_homebrew_curl?(r_homebrew_curl, example_url)).to be(false)
-    end
-
     it "returns `false` if a `using: homebrew_curl` URL is not present" do
       expect(livecheck.use_homebrew_curl?(f, livecheck_url)).to be(false)
       expect(livecheck.use_homebrew_curl?(f, homepage_url)).to be(false)
@@ -302,7 +283,6 @@ describe Homebrew::Livecheck do
 
     it "returns `false` if URL string does not contain a domain" do
       expect(livecheck.use_homebrew_curl?(f_homebrew_curl, "test")).to be(false)
-      expect(livecheck.use_homebrew_curl?(r_homebrew_curl, "test")).to be(false)
     end
   end
 
