@@ -1624,8 +1624,8 @@ class Formula
 
   # Generate shell completions for a formula for bash, zsh, and fish, using the formula's executable.
   #
-  # @param executable [Pathname] the executable to use for generating the completion scripts.
-  # @param subcmd [String] the subcommand(s) to pass to the `executable`, if any. Defaults to `nil`.
+  # @param commands [Pathname, String] the path to the executable and any passed subcommand(s)
+  # to use for generating the completion scripts.
   # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
   # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
   # @param shell_parameter_format [String, Symbol] specify how `shells` should each be passed
@@ -1677,11 +1677,10 @@ class Formula
   # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
   #                                                     "completions", "--selected-shell=bash")
   sig {
-    params(executable: Pathname, subcmd: T.nilable(T.any(String, T::Array[String])), base_name: String, shells: T::Array[Symbol],
+    params(commands: T.any(Pathname, String), base_name: String, shells: T::Array[Symbol],
            shell_parameter_format: T.nilable(T.any(Symbol, String))).void
   }
-  def generate_completions_from_executable(executable,
-                                           subcmd = nil,
+  def generate_completions_from_executable(*commands,
                                            base_name: name,
                                            shells: [:bash, :zsh, :fish],
                                            shell_parameter_format: nil)
@@ -1706,8 +1705,7 @@ class Formula
       end
 
       popen_read_args = %w[]
-      popen_read_args << executable
-      popen_read_args << subcmd if subcmd.present?
+      popen_read_args << commands
       popen_read_args << shell_parameter
       popen_read_args.flatten!
 
