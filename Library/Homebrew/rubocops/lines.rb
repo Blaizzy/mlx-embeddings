@@ -517,7 +517,14 @@ module RuboCop
 
           return if offenses.blank?
 
-          T.must(offenses[0...-1]).each do |node|
+          T.must(offenses[0...-1]).each_with_index do |node, i|
+            # executable and subcmd have to be the same to be combined
+            if node.arguments.first != offenses[i + 1].arguments.first ||
+               node.arguments.second != offenses[i + 1].arguments.second
+              shells.delete_at(i)
+              next
+            end
+
             offending_node(node)
             problem "Use a single `generate_completions_from_executable` " \
                     "call combining all specified shells." do |corrector|
@@ -525,6 +532,8 @@ module RuboCop
               corrector.replace(@offensive_node.source_range.adjust(begin_pos: -4, end_pos: 1), "")
             end
           end
+
+          return if shells.length <= 1 # no shells to combine left
 
           offending_node(offenses.last)
           replacement = if (%w[:bash :zsh :fish] - shells).empty?
