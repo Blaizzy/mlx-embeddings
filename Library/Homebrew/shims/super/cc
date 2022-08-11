@@ -305,7 +305,11 @@ class Cmd
   end
 
   def cppflags
-    path_flags("-isystem", isystem_paths) + path_flags("-I", include_paths)
+    args = []
+    args += path_flags("-isystem", isystem_paths) + path_flags("-I", include_paths)
+    # Add -nostdinc when building against glibc@2.13 to avoid mixing system and brewed glibc headers.
+    args << "-nostdinc" if @deps.include?("glibc@2.13")
+    args
   end
 
   def ldflags_mac(args)
@@ -323,10 +327,17 @@ class Cmd
   def ldflags_linux(args)
     unless mode == :ld
       wl = "-Wl,"
-      args << "-B#{@opt}/glibc/lib"
+      if @deps.include?("glibc@2.13")
+        args << "-B#{@opt}/glibc@2.13/lib"
+      else
+        args << "-B#{@opt}/glibc/lib"
+      end
     end
     args += rpath_flags("#{wl}-rpath=", rpath_paths)
     args += ["#{wl}--dynamic-linker=#{dynamic_linker_path}"] if dynamic_linker_path
+    # Use -rpath-link to make sure linker uses glibc@2.13 rather than the system glibc for indirect
+    # dependencies because -L will only handle direct dependencies.
+    args << "#{wl}-rpath-link=#{@opt}/glibc@2.13/lib" if @deps.include?("glibc@2.13")
     args
   end
 

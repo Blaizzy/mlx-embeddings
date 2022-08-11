@@ -260,6 +260,8 @@ module Homebrew
       verbose:                    args.verbose?,
     )
 
+    Cleanup.periodic_clean!
+
     Homebrew.messages.display_messages(display_times: args.display_times?)
   rescue FormulaUnreadableError, FormulaClassUnavailableError,
          TapFormulaUnreadableError, TapFormulaClassUnavailableError => e

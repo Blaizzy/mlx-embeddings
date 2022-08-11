@@ -1034,7 +1034,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
 
     output, _, status = curl_output(
       "--silent", "--head", "--location",
-      "-H", "Accept: application/vnd.github.v3.sha",
+      "-H", "Accept: application/vnd.github.sha",
       "https://api.github.com/repos/#{@user}/#{@repo}/commits/#{@ref}"
     )
 
@@ -1051,7 +1051,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
 
     output, _, status = curl_output(
       "--silent", "--head", "--location",
-      "-H", "Accept: application/vnd.github.v3.sha",
+      "-H", "Accept: application/vnd.github.sha",
       "https://api.github.com/repos/#{@user}/#{@repo}/commits/#{commit}"
     )
 
@@ -1280,7 +1280,7 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
 
   def env
     {
-      "PATH"     => PATH.new(Formula["bazaar"].opt_bin, ENV.fetch("PATH")),
+      "PATH"     => PATH.new(Formula["breezy"].opt_bin, ENV.fetch("PATH")),
       "BZR_HOME" => HOMEBREW_TEMP,
     }
   end

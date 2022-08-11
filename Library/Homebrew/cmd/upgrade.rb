@@ -115,6 +115,8 @@ module Homebrew
     upgrade_outdated_formulae(formulae, args: args) unless only_upgrade_casks
     upgrade_outdated_casks(casks, args: args) unless only_upgrade_formulae
 
+    Cleanup.periodic_clean!(dry_run: args.dry_run?)
+
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 

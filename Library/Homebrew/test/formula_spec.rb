@@ -446,40 +446,143 @@ describe Formula do
     end
   end
 
-  describe "::installed_formulae_with_no_dependents" do
-    let(:formula_is_dep) do
-      formula "foo" do
-        url "foo-1.1"
+  shared_context "with formulae for dependency testing" do
+    let(:formula_with_deps) do
+      formula "zero" do
+        url "zero-1.0"
       end
     end
 
-    let(:formula_with_deps) do
-      formula "bar" do
-        url "bar-1.0"
+    let(:formula_is_dep1) do
+      formula "one" do
+        url "one-1.1"
+      end
+    end
+
+    let(:formula_is_dep2) do
+      formula "two" do
+        url "two-1.1"
       end
     end
 
     let(:formulae) do
       [
         formula_with_deps,
-        formula_is_dep,
+        formula_is_dep1,
+        formula_is_dep2,
       ]
     end
 
     before do
-      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([formula_is_dep])
+      allow(formula_with_deps).to receive(:runtime_formula_dependencies).and_return([formula_is_dep1,
+                                                                                     formula_is_dep2])
+      allow(formula_is_dep1).to receive(:runtime_formula_dependencies).and_return([formula_is_dep2])
     end
+  end
 
-    specify "without formulae parameter" do
-      allow(described_class).to receive(:installed).and_return(formulae)
+  describe "::formulae_with_no_formula_dependents" do
+    include_context "with formulae for dependency testing"
 
-      expect(described_class.installed_formulae_with_no_dependents)
+    it "filters out dependencies" do
+      expect(described_class.formulae_with_no_formula_dependents(formulae))
           .to eq([formula_with_deps])
     end
+  end
 
-    specify "with formulae parameter" do
-      expect(described_class.installed_formulae_with_no_dependents(formulae))
-          .to eq([formula_with_deps])
+  describe "::unused_formulae_with_no_formula_dependents" do
+    include_context "with formulae for dependency testing"
+
+    let(:tab_from_keg) { double }
+
+    before do
+      allow(Tab).to receive(:for_keg).and_return(tab_from_keg)
+    end
+
+    specify "installed on request" do
+      allow(tab_from_keg).to receive(:installed_on_request).and_return(true)
+      expect(described_class.unused_formulae_with_no_formula_dependents(formulae))
+          .to eq([])
+    end
+
+    specify "not installed on request" do
+      allow(tab_from_keg).to receive(:installed_on_request).and_return(false)
+      expect(described_class.unused_formulae_with_no_formula_dependents(formulae))
+          .to eq(formulae)
+    end
+  end
+
+  shared_context "with formulae and casks for dependency testing" do
+    include_context "with formulae for dependency testing"
+
+    require "cask/cask_loader"
+
+    let(:cask_one_dep) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "red" do
+          depends_on formula: "two"
+        end
+      RUBY
+    end
+
+    let(:cask_multiple_deps) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "blue" do
+          depends_on formula: "zero"
+        end
+      RUBY
+    end
+
+    let(:cask_no_deps1) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "green" do
+        end
+      RUBY
+    end
+
+    let(:cask_no_deps2) do
+      Cask::CaskLoader.load(+<<-RUBY)
+        cask "purple" do
+        end
+      RUBY
+    end
+
+    let(:casks_no_deps) { [cask_no_deps1, cask_no_deps2] }
+    let(:casks_one_dep) { [cask_no_deps1, cask_no_deps2, cask_one_dep] }
+    let(:casks_multiple_deps) { [cask_no_deps1, cask_no_deps2, cask_multiple_deps] }
+
+    before do
+      allow(described_class).to receive("[]").with("zero").and_return(formula_with_deps)
+      allow(described_class).to receive("[]").with("one").and_return(formula_is_dep1)
+      allow(described_class).to receive("[]").with("two").and_return(formula_is_dep2)
+    end
+  end
+
+  describe "::formulae_with_cask_dependents" do
+    include_context "with formulae and casks for dependency testing"
+
+    specify "no dependents" do
+      expect(described_class.formulae_with_cask_dependents(casks_no_deps))
+        .to eq([])
+    end
+
+    specify "one dependent" do
+      expect(described_class.formulae_with_cask_dependents(casks_one_dep))
+        .to eq([formula_is_dep2])
+    end
+
+    specify "multiple dependents" do
+      expect(described_class.formulae_with_cask_dependents(casks_multiple_deps))
+        .to eq(formulae)
+    end
+  end
+
+  describe "::inreplace" do
+    specify "raises build error on failure" do
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+      end
+
+      expect { f.inreplace([]) }.to raise_error(BuildError)
     end
   end
 
@@ -903,6 +1006,99 @@ describe Formula do
     expect(h["tap"]).to eq("homebrew/core")
     expect(h["versions"]["stable"]).to eq("1.0")
     expect(h["versions"]["bottle"]).to be_truthy
+  end
+
+  describe "#to_hash_with_variations", :needs_macos do
+    let(:formula_path) { CoreTap.new.formula_dir/"foo-variations.rb" }
+    let(:formula_content) do
+      <<~RUBY
+        class FooVariations < Formula
+          url "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
+          sha256 TESTBALL_SHA256
+
+          on_intel do
+            depends_on "intel-formula"
+          end
+
+          on_big_sur do
+            depends_on "big-sur-formula"
+          end
+
+          on_catalina :or_older do
+            depends_on "catalina-or-older-formula"
+          end
+
+          on_linux do
+            depends_on "linux-formula"
+          end
+        end
+      RUBY
+    end
+    let(:expected_variations) {
+      <<~JSON
+        {
+          "arm64_big_sur": {
+            "dependencies": [
+              "big-sur-formula"
+            ]
+          },
+          "monterey": {
+            "dependencies": [
+              "intel-formula"
+            ]
+          },
+          "big_sur": {
+            "dependencies": [
+              "intel-formula",
+              "big-sur-formula"
+            ]
+          },
+          "catalina": {
+            "dependencies": [
+              "intel-formula",
+              "catalina-or-older-formula"
+            ]
+          },
+          "mojave": {
+            "dependencies": [
+              "intel-formula",
+              "catalina-or-older-formula"
+            ]
+          },
+          "x86_64_linux": {
+            "dependencies": [
+              "intel-formula",
+              "linux-formula"
+            ]
+          }
+        }
+      JSON
+    }
+
+    before do
+      # Use a more limited symbols list to shorten the variations hash
+      symbols = {
+        monterey: "12",
+        big_sur:  "11",
+        catalina: "10.15",
+        mojave:   "10.14",
+      }
+      stub_const("MacOSVersions::SYMBOLS", symbols)
+
+      # For consistency, always run on Monterey and ARM
+      allow(MacOS).to receive(:version).and_return(MacOS::Version.new("12"))
+      allow(Hardware::CPU).to receive(:type).and_return(:arm)
+
+      formula_path.dirname.mkpath
+      formula_path.write formula_content
+    end
+
+    it "returns the correct variations hash" do
+      h = Formulary.factory("foo-variations").to_hash_with_variations
+
+      expect(h).to be_a(Hash)
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_variations.strip
+    end
   end
 
   specify "#to_recursive_bottle_hash" do
@@ -1750,6 +1946,54 @@ describe Formula do
     it "only calls code within on_intel" do
       f.brew { f.install }
       expect(f.test).to eq(2)
+    end
+  end
+
+  describe "#ignore_missing_libraries" do
+    after do
+      Homebrew::SimulateSystem.clear
+    end
+
+    it "adds library to allowed_missing_libraries on Linux", :needs_linux do
+      Homebrew::SimulateSystem.clear
+      f = formula do
+        url "foo-1.0"
+
+        ignore_missing_libraries "bar.so"
+      end
+      expect(f.class.allowed_missing_libraries.to_a).to eq(["bar.so"])
+    end
+
+    it "adds library to allowed_missing_libraries on macOS when simulating Linux", :needs_macos do
+      Homebrew::SimulateSystem.os = :linux
+      f = formula do
+        url "foo-1.0"
+
+        ignore_missing_libraries "bar.so"
+      end
+      expect(f.class.allowed_missing_libraries.to_a).to eq(["bar.so"])
+    end
+
+    it "raises an error on macOS", :needs_macos do
+      Homebrew::SimulateSystem.clear
+      expect {
+        formula do
+          url "foo-1.0"
+
+          ignore_missing_libraries "bar.so"
+        end
+      }.to raise_error("ignore_missing_libraries is available on Linux only")
+    end
+
+    it "raises an error on Linux when simulating macOS", :needs_linux do
+      Homebrew::SimulateSystem.os = :macos
+      expect {
+        formula do
+          url "foo-1.0"
+
+          ignore_missing_libraries "bar.so"
+        end
+      }.to raise_error("ignore_missing_libraries is available on Linux only")
     end
   end
 end

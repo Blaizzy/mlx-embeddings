@@ -303,6 +303,15 @@ module Homebrew
       sig { returns(T.nilable(String)) }
       def screen_saverdir; end
 
+      sig { returns(T::Array[String])}
+      def repositories; end
+
+      sig { returns(T.nilable(String)) }
+      def from; end
+
+      sig { returns(T.nilable(String)) }
+      def to; end
+
       sig { returns(T.nilable(T::Array[String])) }
       def groups; end
 

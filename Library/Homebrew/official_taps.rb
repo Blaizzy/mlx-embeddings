@@ -3,7 +3,9 @@
 
 OFFICIAL_CASK_TAPS = %w[
   cask
-  versions
+  cask-drivers
+  cask-fonts
+  cask-versions
 ].freeze
 
 OFFICIAL_CMD_TAPS = {

@@ -156,35 +156,44 @@ module Homebrew
 
     def self.install_formula_clean!(f, dry_run: false)
       return if Homebrew::EnvConfig.no_install_cleanup?
+      return unless f.latest_version_installed?
+      return if skip_clean_formula?(f)
 
-      cleanup = Cleanup.new(dry_run: dry_run)
-      if cleanup.periodic_clean_due?
-        cleanup.periodic_clean!
-      elsif f.latest_version_installed? && !cleanup.skip_clean_formula?(f)
+      if dry_run
+        ohai "Would run `brew cleanup #{f}`"
+      else
         ohai "Running `brew cleanup #{f}`..."
-        puts_no_install_cleanup_disable_message_if_not_already!
-        cleanup.cleanup_formula(f)
       end
+
+      puts_no_install_cleanup_disable_message_if_not_already!
+      return if dry_run
+
+      Cleanup.new.cleanup_formula(f)
     end
 
-    def self.puts_no_install_cleanup_disable_message_if_not_already!
+    def self.puts_no_install_cleanup_disable_message
       return if Homebrew::EnvConfig.no_env_hints?
       return if Homebrew::EnvConfig.no_install_cleanup?
-      return if @puts_no_install_cleanup_disable_message_if_not_already
 
       puts "Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP."
       puts "Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`)."
+    end
+
+    def self.puts_no_install_cleanup_disable_message_if_not_already!
+      return if @puts_no_install_cleanup_disable_message_if_not_already
+
+      puts_no_install_cleanup_disable_message
       @puts_no_install_cleanup_disable_message_if_not_already = true
     end
 
-    def skip_clean_formula?(f)
+    def self.skip_clean_formula?(f)
       return false if Homebrew::EnvConfig.no_cleanup_formulae.blank?
 
       skip_clean_formulae = Homebrew::EnvConfig.no_cleanup_formulae.split(",")
       skip_clean_formulae.include?(f.name) || (skip_clean_formulae & f.aliases).present?
     end
 
-    def periodic_clean_due?
+    def self.periodic_clean_due?
       return false if Homebrew::EnvConfig.no_install_cleanup?
 
       unless PERIODIC_CLEAN_FILE.exist?
@@ -196,29 +205,33 @@ module Homebrew
       PERIODIC_CLEAN_FILE.mtime < CLEANUP_DEFAULT_DAYS.days.ago
     end
 
-    def periodic_clean!
-      return false unless periodic_clean_due?
+    def self.periodic_clean!(dry_run: false)
+      return if Homebrew::EnvConfig.no_install_cleanup?
+      return unless periodic_clean_due?
 
-      if dry_run?
-        ohai "Would run `brew cleanup` which has not been run in the last #{CLEANUP_DEFAULT_DAYS} days"
+      if dry_run
+        oh1 "Would run `brew cleanup` which has not been run in the last #{CLEANUP_DEFAULT_DAYS} days"
       else
-        ohai "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
+        oh1 "`brew cleanup` has not been run in the last #{CLEANUP_DEFAULT_DAYS} days, running now..."
       end
 
-      Cleanup.puts_no_install_cleanup_disable_message_if_not_already!
-      return if dry_run?
+      puts_no_install_cleanup_disable_message
+      return if dry_run
 
-      clean!(quiet: true, periodic: true)
+      Cleanup.new.clean!(quiet: true, periodic: true)
     end
 
     def clean!(quiet: false, periodic: false)
       if args.empty?
         Formula.installed
                .sort_by(&:name)
-               .reject { |f| skip_clean_formula?(f) }
+               .reject { |f| Cleanup.skip_clean_formula?(f) }
                .each do |formula|
           cleanup_formula(formula, quiet: quiet, ds_store: false, cache_db: false)
         end
+
+        Cleanup.autoremove(dry_run: dry_run?) if Homebrew::EnvConfig.autoremove?
+
         cleanup_cache
         cleanup_logs
         cleanup_lockfiles
@@ -253,7 +266,7 @@ module Homebrew
             nil
           end
 
-          if formula && skip_clean_formula?(formula)
+          if formula && Cleanup.skip_clean_formula?(formula)
             onoe "Refusing to clean #{formula} because it is listed in " \
                  "#{Tty.bold}HOMEBREW_NO_CLEANUP_FORMULAE#{Tty.reset}!"
           elsif formula
@@ -518,6 +531,37 @@ module Homebrew
       print "Pruned #{n} symbolic links "
       print "and #{d} directories " if d.positive?
       puts "from #{HOMEBREW_PREFIX}"
+    end
+
+    def self.autoremove(dry_run: false)
+      require "cask/caskroom"
+
+      # If this runs after install, uninstall, reinstall or upgrade,
+      # the cache of installed formulae may no longer be valid.
+      Formula.clear_cache unless dry_run
+
+      # Remove formulae listed in HOMEBREW_NO_CLEANUP_FORMULAE.
+      formulae = Formula.installed.reject(&method(:skip_clean_formula?))
+      casks = Cask::Caskroom.casks
+
+      removable_formulae = Formula.unused_formulae_with_no_dependents(formulae, casks)
+
+      return if removable_formulae.blank?
+
+      formulae_names = removable_formulae.map(&:full_name).sort
+
+      verb = dry_run ? "Would autoremove" : "Autoremoving"
+      oh1 "#{verb} #{formulae_names.count} unneeded #{"formula".pluralize(formulae_names.count)}:"
+      puts formulae_names.join("\n")
+      return if dry_run
+
+      require "uninstall"
+
+      kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
+      Uninstall.uninstall_kegs(kegs_by_rack)
+
+      # The installed formula cache will be invalid after uninstalling.
+      Formula.clear_cache
     end
   end
 end

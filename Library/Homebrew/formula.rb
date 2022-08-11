@@ -69,9 +69,6 @@ class Formula
   extend Cachable
   extend Predicable
 
-  # @!method inreplace(paths, before = nil, after = nil)
-  # @see Utils::Inreplace.inreplace
-
   # The name of this {Formula}.
   # e.g. `this-formula`
   attr_reader :name
@@ -1706,12 +1703,44 @@ class Formula
     end.uniq(&:name)
   end
 
-  # An array of all installed {Formula} without dependents
+  # An array of all installed {Formula} with {Cask} dependents.
   # @private
-  def self.installed_formulae_with_no_dependents(formulae = installed)
+  def self.formulae_with_cask_dependents(casks)
+    casks.flat_map { |cask| cask.depends_on[:formula] }
+         .compact
+         .map { |f| Formula[f] }
+         .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
+  end
+
+  # An array of all installed {Formula} without {Formula} dependents
+  # @private
+  def self.formulae_with_no_formula_dependents(formulae)
     return [] if formulae.blank?
 
     formulae - formulae.flat_map(&:runtime_formula_dependencies)
+  end
+
+  # Recursive function that returns an array of {Formula} without
+  # {Formula} dependents that weren't installed on request.
+  # @private
+  def self.unused_formulae_with_no_formula_dependents(formulae)
+    unused_formulae = formulae_with_no_formula_dependents(formulae).reject do |f|
+      Tab.for_keg(f.any_installed_keg).installed_on_request
+    end
+
+    if unused_formulae.present?
+      unused_formulae += unused_formulae_with_no_formula_dependents(formulae - unused_formulae)
+    end
+
+    unused_formulae
+  end
+
+  # An array of {Formula} without {Formula} or {Cask}
+  # dependents that weren't installed on request.
+  # @private
+  def self.unused_formulae_with_no_dependents(formulae, casks)
+    unused_formulae = unused_formulae_with_no_formula_dependents(formulae)
+    unused_formulae - formulae_with_cask_dependents(casks)
   end
 
   def self.installed_with_alias_path(alias_path)
@@ -2005,6 +2034,45 @@ class Formula
     hsh
   end
 
+  # @private
+  def to_hash_with_variations
+    hash = to_hash
+    variations = {}
+
+    os_versions = [*MacOSVersions::SYMBOLS.keys, :linux]
+
+    if path.exist? && self.class.on_system_blocks_exist?
+      formula_contents = path.read
+      [:arm, :intel].each do |arch|
+        os_versions.each do |os_name|
+          bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)
+          next unless bottle_tag.valid_combination?
+
+          Homebrew::SimulateSystem.os = os_name
+          Homebrew::SimulateSystem.arch = arch
+
+          variations_namespace = Formulary.class_s("Variations#{bottle_tag.to_sym.capitalize}")
+          variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
+                                                            flags: self.class.build_flags, ignore_errors: true)
+          variations_formula = variations_formula_class.new(name, path, :stable,
+                                                            alias_path: alias_path, force_bottle: force_bottle)
+
+          variations_formula.to_hash.each do |key, value|
+            next if value.to_s == hash[key].to_s
+
+            variations[bottle_tag.to_sym] ||= {}
+            variations[bottle_tag.to_sym][key] = value
+          end
+        end
+      end
+    end
+
+    Homebrew::SimulateSystem.clear
+
+    hash["variations"] = variations
+    hash
+  end
+
   # @api private
   # Generate a hash to be used to install a formula from a JSON file
   def to_recursive_bottle_hash(top_level: true)
@@ -2129,6 +2197,30 @@ class Formula
   #   system "make", "install"
   # end</pre>
   def install; end
+
+  # Sometimes we have to change a bit before we install. Mostly we
+  # prefer a patch, but if you need the {Formula#prefix prefix} of
+  # this formula in the patch you have to resort to `inreplace`,
+  # because in the patch you don't have access to any variables
+  # defined by the formula, as only `HOMEBREW_PREFIX` is available
+  # in the {DATAPatch embedded patch}.
+  #
+  # `inreplace` supports regular expressions:
+  # <pre>inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"</pre>
+  #
+  # `inreplace` supports blocks:
+  # <pre>inreplace "Makefile" do |s|
+  #   s.gsub! "/usr/local", HOMEBREW_PREFIX.to_s
+  # end
+  # </pre>
+  #
+  # @see Utils::Inreplace.inreplace
+  # @api public
+  def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
+    super(paths, before, after, audit_result)
+  rescue Utils::Inreplace::Error
+    raise BuildError.new(self, "inreplace", paths, nil)
+  end
 
   protected
 
@@ -2469,6 +2561,7 @@ class Formula
 
   # The methods below define the formula DSL.
   class << self
+    extend Predicable
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux
 
@@ -2482,6 +2575,11 @@ class Formula
         define_method(:test_defined?) { true }
       end
     end
+
+    # Whether this formula contains OS/arch-specific blocks
+    # (e.g. `on_macos`, `on_arm`, `on_monterey :or_older`, `on_system :linux, macos: :big_sur_or_newer`).
+    # @private
+    attr_predicate :on_system_blocks_exist?
 
     # The reason for why this software is not linked (by default) to
     # {::HOMEBREW_PREFIX}.
@@ -3169,8 +3267,17 @@ class Formula
     end
 
     # Permit links to certain libraries that don't exist. Available on Linux only.
-    def ignore_missing_libraries(*)
-      raise FormulaSpecificationError, "#{__method__} is available on Linux only"
+    def ignore_missing_libraries(*libs)
+      unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
+        raise FormulaSpecificationError, "#{__method__} is available on Linux only"
+      end
+
+      libraries = libs.flatten
+      if libraries.any? { |x| !x.is_a?(String) && !x.is_a?(Regexp) }
+        raise FormulaSpecificationError, "#{__method__} can handle Strings and Regular Expressions only"
+      end
+
+      allowed_missing_libraries.merge(libraries)
     end
 
     # @private

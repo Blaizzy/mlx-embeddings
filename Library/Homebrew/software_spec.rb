@@ -162,12 +162,27 @@ class SoftwareSpec
     add_dep_option(dep) if dep
   end
 
-  def uses_from_macos(spec, _bounds = {})
-    spec = [spec.dup.shift].to_h if spec.is_a?(Hash)
+  def uses_from_macos(deps, bounds = {})
+    if deps.is_a?(Hash)
+      bounds = deps.dup
+      deps = [bounds.shift].to_h
+    end
 
-    @uses_from_macos_elements << spec
+    @uses_from_macos_elements << deps
 
-    depends_on(spec)
+    # Check whether macOS is new enough for dependency to not be required.
+    if Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      # Assume the oldest macOS version when simulating a generic macOS version
+      return if Homebrew::SimulateSystem.current_os == :macos && !bounds.key?(:since)
+
+      if Homebrew::SimulateSystem.current_os != :macos
+        current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
+        since_os = MacOS::Version.from_symbol(bounds[:since]) if bounds.key?(:since)
+        return if current_os >= since_os
+      end
+    end
+
+    depends_on deps
   end
 
   def uses_from_macos_names
@@ -205,6 +220,8 @@ class SoftwareSpec
 
   def patch(strip = :p1, src = nil, &block)
     p = Patch.create(strip, src, &block)
+    return if p.is_a?(ExternalPatch) && p.url.blank?
+
     dependency_collector.add(p.resource) if p.is_a? ExternalPatch
     patches << p
   end

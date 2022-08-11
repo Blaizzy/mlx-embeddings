@@ -312,6 +312,7 @@ _brew_abv() {
       --installed
       --json
       --quiet
+      --variations
       --verbose
       "
       return
@@ -661,6 +662,25 @@ _brew_config() {
       --debug
       --help
       --quiet
+      --verbose
+      "
+      return
+      ;;
+    *)
+  esac
+}
+
+_brew_contributions() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --from
+      --help
+      --quiet
+      --repositories
+      --to
       --verbose
       "
       return
@@ -1044,6 +1064,7 @@ _brew_info() {
       --installed
       --json
       --quiet
+      --variations
       --verbose
       "
       return
@@ -2477,6 +2498,7 @@ _brew() {
     commands) _brew_commands ;;
     completions) _brew_completions ;;
     config) _brew_config ;;
+    contributions) _brew_contributions ;;
     create) _brew_create ;;
     deps) _brew_deps ;;
     desc) _brew_desc ;;

@@ -7,7 +7,7 @@ require "utils/shebang"
 describe Language::Python::Shebang do
   let(:file) { Tempfile.new("python-shebang") }
   let(:python_f) do
-    formula "python" do
+    formula "python@3.11" do
       url "https://brew.sh/python-1.0.tgz"
     end
   end
@@ -15,7 +15,7 @@ describe Language::Python::Shebang do
     formula "foo" do
       url "https://brew.sh/foo-1.0.tgz"
 
-      depends_on "python"
+      depends_on "python@3.11"
     end
   end
 
@@ -37,7 +37,7 @@ describe Language::Python::Shebang do
       Utils::Shebang.rewrite_shebang described_class.detected_python_shebang(f), file
 
       expect(File.read(file)).to eq <<~EOS
-        #!#{HOMEBREW_PREFIX}/opt/python/bin/python3
+        #!#{HOMEBREW_PREFIX}/opt/python@3.11/bin/python3.11
         a
         b
         c
