@@ -175,7 +175,7 @@ __brew_internal_commands() {
     'link:Symlink all of formula'\''s installed files into Homebrew'\''s prefix'
     'linkage:Check the library links from the given formula kegs'
     'list:List all installed formulae and casks'
-    'livecheck:Check for newer versions of formulae, resources and/or casks from upstream'
+    'livecheck:Check for newer versions of formulae and/or casks from upstream'
     'log:Show the `git log` for formula or cask, or show the log for the Homebrew repository if no formula or cask is provided'
     'migrate:Migrate renamed packages to new names, where formula are old names of packages'
     'missing:Check the given formula kegs for missing dependencies'
@@ -1180,7 +1180,6 @@ _brew_livecheck() {
     '--quiet[Suppress warnings, don'\''t print a progress bar for JSON output]' \
     '(--all --installed)--tap[Check formulae/casks within the given tap, specified as user`/`repo]' \
     '--verbose[Make some output more verbose]' \
-    '--resources[Also check resources for formulae]' \
     - formula \
     '(--cask)--formula[Only check formulae]' \
     '*::formula:__brew_formulae' \

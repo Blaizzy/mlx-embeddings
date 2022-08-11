@@ -1,29 +1,27 @@
 # `brew livecheck`
 
-The `brew livecheck` command finds the newest version of a formula, resource or cask's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
+The `brew livecheck` command finds the newest version of a formula or cask's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
 
 ## Behavior
 
 When livecheck isn't given instructions for how to check for upstream versions, it does the following by default:
 
-1. For __formulae__: Collect the `stable`, `head` and `homepage` URLs, in that order. For __casks__: Collect the `appcast`, `url` and `homepage` URLs, in that order. For __resource__: Collect the `url` (since resource's url is considered `stable` by default)
-2. Determine if any strategies apply to the first URL. If not, try the next URL.
-3. If a strategy can be applied, use it to check for new versions.
-4. Return the newest version (or an error if versions could not be found at any available URLs).
+1. For formulae: Collect the `head`, `stable`, and `homepage` URLs, in that order. For casks: Collect the `url` and `homepage` URLs, in that order.
+1. Determine if any strategies apply to the first URL. If not, try the next URL.
+1. If a strategy can be applied, use it to check for new versions.
+1. Return the newest version (or an error if versions could not be found at any available URLs).
 
 It's sometimes necessary to override this default behavior to create a working check. If a source doesn't provide the newest version, we need to check a different one. If livecheck doesn't correctly match version text, we need to provide an appropriate regex or `strategy` block.
 
-This can be accomplished by adding a `livecheck` block to the formula/resource/cask. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
+This can be accomplished by adding a `livecheck` block to the formula/cask. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
 
 ## Creating a check
 
-1. **Use the debug output to understand the situation**. `brew livecheck --debug <formula>|<cask>` provides information about which URLs livecheck tries, any strategies that apply, matched versions, etc. `brew livecheck --debug --resources <formula>` will provides livecheck's debug information about the resources as well.
+1. **Use the debug output to understand the situation**. `brew livecheck --debug <formula>|<cask>` provides information about which URLs livecheck tries, any strategies that apply, matched versions, etc.
 
-> Note: `--resources` flag only works with Formulae.
+1. **Research available sources to select a URL**. Try removing the file name from `stable`/`url`, to see if this is a directory listing page. If that doesn't work, try to find a page that links to the file (e.g. a download page). If it's not possible to find the newest version on the website, try checking other sources from the formula/cask. When necessary, search for other sources outside of the formula/cask.
 
-2. **Research available sources to select a URL**. Try removing the file name from `stable`/`url`, to see if this is a directory listing page. If that doesn't work, try to find a page that links to the file (e.g. a download page). If it's not possible to find the newest version on the website, try checking other sources from the formula/cask. When necessary, search for other sources outside of the formula/cask.
-
-3. **Create a regex, if necessary**. If the check works without a regex and wouldn't benefit from having one, it's usually fine to omit it. More information on creating regexes can be found in the [regex guidelines](#regex-guidelines) section.
+1. **Create a regex, if necessary**. If the check works without a regex and wouldn't benefit from having one, it's usually fine to omit it. More information on creating regexes can be found in the [regex guidelines](#regex-guidelines) section.
 
 ### General guidelines
 
