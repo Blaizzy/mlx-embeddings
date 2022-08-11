@@ -1704,8 +1704,13 @@ class Formula
         "#{shell_parameter_format}#{shell}"
       end
 
+      popen_read_args = %w[]
+      popen_read_args << commands
+      popen_read_args << shell_parameter
+      popen_read_args.flatten!
+
       script_path.dirname.mkpath
-      script_path.write Utils.safe_popen_read({ "SHELL" => shell.to_s }, *commands, shell_parameter)
+      script_path.write Utils.safe_popen_read({ "SHELL" => shell.to_s }, *popen_read_args)
     end
   end
 
