@@ -74,15 +74,7 @@ describe "brew install" do
   end
 
   it "installs formulae with debug symbols", :integration_test do
-    setup_test_formula "testball1", <<~RUBY
-      def install
-        prefix.install Dir["*"]
-        (buildpath/"test.c").write \
-        "#include <stdio.h>\\nint main(){printf(\\"test\\");return 0;}"
-        bin.mkpath
-        system ENV.cc, "test.c", "-o", bin/"test"
-      end
-    RUBY
+    setup_test_formula "testball1"
 
     expect { brew "install", "testball1", "--debug-symbols", "--build-from-source" }
       .to output(%r{#{HOMEBREW_CELLAR}/testball1/0\.1}o).to_stdout
@@ -90,11 +82,6 @@ describe "brew install" do
       .and be_a_success
     expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test").to be_a_file
     expect(HOMEBREW_CELLAR/"testball1/0.1/bin/test.dSYM/Contents/Resources/DWARF/test").to be_a_file if OS.mac?
-    if OS.linux?
-      # raise system_command("ls", args: ["-lasR", HOMEBREW_CELLAR/"testball1/0.1"]).merged_output
-      # expect { system_command("objdump", args: ["-h", HOMEBREW_CELLAR/"testball1/0.1/bin/test"]) }
-      #   .to output(/\.debug/).to_stdout
-    end
     expect(HOMEBREW_CACHE/"Sources/testball1").to be_a_directory
   end
 end
