@@ -398,15 +398,13 @@ resource: false)
       puts JSON.pretty_generate(formulae_checked.compact)
     end
 
-    sig { params(formula_or_cask: T.any(Formula, Cask::Cask, Resource), full_name: T::Boolean).returns(String) }
+    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), full_name: T::Boolean).returns(String) }
     def formula_or_cask_name(formula_or_cask, full_name: false)
       case formula_or_cask
       when Formula
         formula_name(formula_or_cask, full_name: full_name)
       when Cask::Cask
         cask_name(formula_or_cask, full_name: full_name)
-      when Resource
-        resource_name(formula_or_cask, full_name: full_name)
       else
         T.absurd(formula_or_cask)
       end
@@ -424,13 +422,6 @@ resource: false)
     sig { params(formula: Formula, full_name: T::Boolean).returns(String) }
     def formula_name(formula, full_name: false)
       full_name ? formula.full_name : formula.name
-    end
-
-    # Returns the fully-qualified name of a resource if the `full_name` argument is
-    # provided; returns the name otherwise.
-    sig { params(resource: Resource, full_name: T::Boolean).returns(String) }
-    def resource_name(resource, full_name: false)
-      resource.name
     end
 
     sig {
@@ -453,7 +444,7 @@ resource: false)
       elsif cask
         status_hash[:cask] = cask_name(cask, full_name: full_name)
       elsif resource
-        status_hash[:resource] = resource_name(resource, full_name: full_name)
+        status_hash[:resource] = resource.name
       end
       status_hash[:status] = status_str
       status_hash[:messages] = messages if messages.is_a?(Array)
@@ -632,7 +623,7 @@ resource: false)
 
       if debug
         puts "\n\n"
-        puts "Resource:          #{resource_name(resource, full_name: full_name)}"
+        puts "Resource:          #{resource.name}"
         puts "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
       end
 
@@ -758,7 +749,7 @@ resource: false)
         is_outdated = (res_current != res_latest) && !is_newer_than_upstream
 
         resource_version_info = {
-          resource: resource_name(resource, full_name: full_name),
+          resource: resource.name,
           version:  {
             current:             res_current.to_s,
             latest:              res_latest.to_s,

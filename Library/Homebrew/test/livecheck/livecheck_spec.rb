@@ -75,16 +75,6 @@ describe Homebrew::Livecheck do
     end
   end
 
-  describe "::resource_name" do
-    it "returns the name of the resource" do
-      expect(livecheck.resource_name(r)).to eq("foo")
-    end
-
-    it "returns the full name of the resource" do
-      expect(livecheck.resource_name(r, full_name: true)).to eq("foo")
-    end
-  end
-
   describe "::cask_name" do
     it "returns the token of the cask" do
       expect(livecheck.cask_name(c)).to eq("test")
