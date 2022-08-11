@@ -405,7 +405,7 @@ module Homebrew
       cmd = command.join(" ")
 
       options = []
-      options << "Type=#{@launch_only_once == true ? "oneshot" : "simple"}"
+      options << "Type=#{(@launch_only_once == true) ? "oneshot" : "simple"}"
       options << "ExecStart=#{cmd}"
 
       options << "Restart=always" if @keep_alive.present? && @keep_alive[:always].present?
@@ -441,8 +441,8 @@ module Homebrew
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
 
       if @run_type == RUN_TYPE_CRON
-        minutes = @cron[:Minute] == "*" ? "*" : format("%02d", @cron[:Minute])
-        hours   = @cron[:Hour] == "*" ? "*" : format("%02d", @cron[:Hour])
+        minutes = (@cron[:Minute] == "*") ? "*" : format("%02d", @cron[:Minute])
+        hours   = (@cron[:Hour] == "*") ? "*" : format("%02d", @cron[:Hour])
         options << "OnCalendar=#{@cron[:Weekday]}-*-#{@cron[:Month]}-#{@cron[:Day]} #{hours}:#{minutes}:00"
       end
 
