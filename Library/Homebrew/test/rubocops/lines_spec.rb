@@ -63,7 +63,7 @@ describe RuboCop::Cop::FormulaAudit::GenerateCompletionsDSL do
   subject(:cop) { described_class.new }
 
   it "reports an offense when writing to a shell completions file directly" do
-    expect_offense(<<~RUBY)
+    expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
       class Foo < Formula
         name "foo"
 
