@@ -76,6 +76,37 @@ describe RuboCop::Cop::Cask::Variables do
     include_examples "autocorrects source"
   end
 
+  context "when there is an arch variable that doesn't use strings" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch = Hardware::CPU.intel? ? :darwin : :darwin_arm64
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: :darwin_arm64, intel: :darwin
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  "Use `arch arm: :darwin_arm64, intel: :darwin` instead of " \
+                  "`arch = Hardware::CPU.intel? ? :darwin : :darwin_arm64`",
+        severity: :convention,
+        line:     2,
+        column:   2,
+        source:   "arch = Hardware::CPU.intel? ? :darwin : :darwin_arm64",
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
   context "when there is an arch with an empty string" do
     let(:source) do
       <<-CASK.undent
