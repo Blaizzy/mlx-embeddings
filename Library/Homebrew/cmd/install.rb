@@ -93,8 +93,7 @@ module Homebrew
         }],
         [:switch, "--debug-symbols", {
           depends_on:  "--build-from-source",
-          description: "Generate debug symbols on build. Source will be retained in a temporary directory. " \
-                       "(see --keep-tmp)",
+          description: "Generate debug symbols on build. Source will be retained in a cache directory. ",
         }],
         [:switch, "--build-bottle", {
           description: "Prepare the formula for eventual bottling during installation, skipping any " \
