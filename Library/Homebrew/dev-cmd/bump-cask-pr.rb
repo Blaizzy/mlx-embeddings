@@ -138,8 +138,10 @@ module Homebrew
           replacement_pairs << fetch_cask(tmp_contents, config: lang_config)
         end
 
+        # TODO: Use SimulateSystem once all casks use on_system blocks
         if tmp_contents.include?("Hardware::CPU.intel?")
           other_intel = !Hardware::CPU.intel?
+          Homebrew::SimulateSystem.arch = other_intel ? :intel : :arm
           other_contents = tmp_contents.gsub("Hardware::CPU.intel?", other_intel.to_s)
           other_cask = Cask::CaskLoader.load(other_contents)
 
@@ -151,6 +153,8 @@ module Homebrew
             lang_config = other_cask.config.merge(Cask::Config.new(explicit: { languages: [language] }))
             replacement_pairs << fetch_cask(other_contents, config: lang_config)
           end
+
+          Homebrew::SimulateSystem.clear
         end
       end
     end
