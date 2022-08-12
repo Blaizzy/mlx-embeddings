@@ -103,16 +103,22 @@ module Language
         )
       end
 
-      def detected_python_shebang(formula = self)
-        python_deps = formula.deps.map(&:name).grep(/^python(@.*)?$/)
+      def detected_python_shebang(formula = self, use_python_from_path: false)
+        python_path = if use_python_from_path
+          "/usr/bin/env python3"
+        else
+          python_deps = formula.deps.map(&:name).grep(/^python(@.*)?$/)
 
-        raise ShebangDetectionError.new("Python", "formula does not depend on Python") if python_deps.empty?
-        if python_deps.length > 1
-          raise ShebangDetectionError.new("Python", "formula has multiple Python dependencies")
+          raise ShebangDetectionError.new("Python", "formula does not depend on Python") if python_deps.empty?
+          if python_deps.length > 1
+            raise ShebangDetectionError.new("Python", "formula has multiple Python dependencies")
+          end
+
+          python_dep = python_deps.first
+          Formula[python_dep].opt_bin/python_dep.sub("@", "")
         end
 
-        python_dep = python_deps.first
-        python_shebang_rewrite_info(Formula[python_dep].opt_bin/python_dep.sub("@", ""))
+        python_shebang_rewrite_info(python_path)
       end
     end
 
