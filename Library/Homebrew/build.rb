@@ -79,10 +79,11 @@ class Build
       ENV.deps = formula_deps
       ENV.run_time_deps = run_time_deps
       ENV.setup_build_environment(
-        formula:      formula,
-        cc:           args.cc,
-        build_bottle: args.build_bottle?,
-        bottle_arch:  args.bottle_arch,
+        formula:       formula,
+        cc:            args.cc,
+        build_bottle:  args.build_bottle?,
+        bottle_arch:   args.bottle_arch,
+        debug_symbols: args.debug_symbols?,
       )
       reqs.each do |req|
         req.modify_build_environment(
@@ -92,10 +93,11 @@ class Build
       deps.each(&:modify_build_environment)
     else
       ENV.setup_build_environment(
-        formula:      formula,
-        cc:           args.cc,
-        build_bottle: args.build_bottle?,
-        bottle_arch:  args.bottle_arch,
+        formula:       formula,
+        cc:            args.cc,
+        build_bottle:  args.build_bottle?,
+        bottle_arch:   args.bottle_arch,
+        debug_symbols: args.debug_symbols?,
       )
       reqs.each do |req|
         req.modify_build_environment(
@@ -127,9 +129,10 @@ class Build
       formula.update_head_version
 
       formula.brew(
-        fetch:       false,
-        keep_tmp:    args.keep_tmp?,
-        interactive: args.interactive?,
+        fetch:         false,
+        keep_tmp:      args.keep_tmp?,
+        debug_symbols: args.debug_symbols?,
+        interactive:   args.interactive?,
       ) do
         with_env(
           # For head builds, HOMEBREW_FORMULA_PREFIX should include the commit,

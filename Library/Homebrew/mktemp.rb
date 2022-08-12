@@ -13,7 +13,8 @@ class Mktemp
 
   def initialize(prefix, opts = {})
     @prefix = prefix
-    @retain = opts[:retain]
+    @retain_in_cache = opts[:retain_in_cache]
+    @retain = opts[:retain] || @retain_in_cache
     @quiet = false
   end
 
@@ -28,6 +29,11 @@ class Mktemp
     @retain
   end
 
+  # True if the source files should be retained.
+  def retain_in_cache?
+    @retain_in_cache
+  end
+
   # Instructs this Mktemp to not emit messages when retention is triggered.
   sig { void }
   def quiet!
@@ -40,7 +46,15 @@ class Mktemp
   end
 
   def run
-    @tmpdir = Pathname.new(Dir.mktmpdir("#{@prefix.tr "@", "AT"}-", HOMEBREW_TEMP))
+    prefix_name = @prefix.tr "@", "AT"
+    @tmpdir = if retain_in_cache?
+      tmp_dir = HOMEBREW_CACHE/"Sources/#{prefix_name}"
+      chmod_rm_rf(tmpdir) # clear out previous staging directory
+      tmp_dir.mkpath
+      tmp_dir
+    else
+      Pathname.new(Dir.mktmpdir("#{prefix_name}-", HOMEBREW_TEMP))
+    end
 
     # Make sure files inside the temporary directory have the same group as the
     # brew instance.
@@ -54,18 +68,21 @@ class Mktemp
       Process.gid
     end
     begin
-      chown(nil, group_id, tmpdir)
+      chown(nil, group_id, @tmpdir)
     rescue Errno::EPERM
-      opoo "Failed setting group \"#{Etc.getgrgid(group_id).name}\" on #{tmpdir}"
+      opoo "Failed setting group \"#{Etc.getgrgid(group_id).name}\" on #{@tmpdir}"
     end
 
     begin
       Dir.chdir(tmpdir) { yield self }
     ensure
-      ignore_interrupts { chmod_rm_rf(tmpdir) } unless retain?
+      ignore_interrupts { chmod_rm_rf(@tmpdir) } unless retain?
     end
   ensure
-    ohai "Temporary files retained at:", @tmpdir.to_s if retain? && !@tmpdir.nil? && !@quiet
+    if retain? && @tmpdir.present? && !@quiet
+      message = retain_in_cache? ? "Source files for debugging available at:" : "Temporary files retained at:"
+      ohai message, @tmpdir.to_s
+    end
   end
 
   private

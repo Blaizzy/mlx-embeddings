@@ -89,14 +89,14 @@ class Resource
   # dir using {Mktemp} so that works with all subtypes.
   #
   # @api public
-  def stage(target = nil, &block)
+  def stage(target = nil, debug_symbols: false, &block)
     raise ArgumentError, "target directory or block is required" if !target && block.blank?
 
     prepare_patches
     fetch_patches(skip_downloaded: true)
     fetch unless downloaded?
 
-    unpack(target, &block)
+    unpack(target, debug_symbols: debug_symbols, &block)
   end
 
   def prepare_patches
@@ -120,9 +120,9 @@ class Resource
   # If block is given, yield to that block with `|stage|`, where stage
   # is a {ResourceStageContext}.
   # A target or a block must be given, but not both.
-  def unpack(target = nil)
+  def unpack(target = nil, debug_symbols: false)
     current_working_directory = Pathname.pwd
-    mktemp(download_name) do |staging|
+    stage_resource(download_name, debug_symbols: debug_symbols) do |staging|
       downloader.stage do
         @source_modified_time = downloader.source_modified_time
         apply_patches
@@ -235,8 +235,8 @@ class Resource
 
   protected
 
-  def mktemp(prefix, &block)
-    Mktemp.new(prefix).run(&block)
+  def stage_resource(prefix, debug_symbols: false, &block)
+    Mktemp.new(prefix, retain_in_cache: debug_symbols).run(&block)
   end
 
   private

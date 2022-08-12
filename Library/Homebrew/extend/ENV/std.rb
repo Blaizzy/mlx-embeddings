@@ -21,9 +21,11 @@ module Stdenv
       build_bottle:    T.nilable(T::Boolean),
       bottle_arch:     T.nilable(String),
       testing_formula: T::Boolean,
+      debug_symbols:   T.nilable(T::Boolean),
     ).void
   }
-  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
+  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false,
+                              debug_symbols: false)
     super
 
     self["HOMEBREW_ENV"] = "std"

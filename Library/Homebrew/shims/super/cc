@@ -292,6 +292,7 @@ class Cmd
     args.concat(optflags) unless runtime_cpu_detection?
     args.concat(archflags)
     args << "-std=#{@arg0}" if /c[89]9/.match?(@arg0)
+    args << "-g" if debug_symbols?
     args
   end
 
@@ -408,6 +409,10 @@ class Cmd
 
   def no_weak_imports?
     config.include?("w")
+  end
+
+  def debug_symbols?
+    config.include?("D")
   end
 
   def canonical_path(path)

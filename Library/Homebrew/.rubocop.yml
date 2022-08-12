@@ -21,6 +21,7 @@ Metrics/BlockLength:
     # TODO: extract more of the bottling logic
     - "dev-cmd/bottle.rb"
     - "test/**/*"
+    - "cmd/install.rb"
 Metrics/BlockNesting:
   Max: 5
 Metrics/ClassLength:
