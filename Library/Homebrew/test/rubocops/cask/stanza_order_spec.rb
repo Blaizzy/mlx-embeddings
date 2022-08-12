@@ -25,8 +25,11 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     let(:source) do
       <<-CASK.undent
         cask 'foo' do
+          arch arm: "arm", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
           version :latest
           sha256 :no_check
+          foo = "bar"
         end
       CASK
     end
@@ -64,6 +67,136 @@ describe RuboCop::Cop::Cask::StanzaOrder do
         line:     3,
         column:   2,
         source:   "version :latest",
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
+  context "when the arch stanza is out of order" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          version :latest
+          sha256 :no_check
+          arch arm: "arm", intel: "x86_64"
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm", intel: "x86_64"
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  "`version` stanza out of order",
+        severity: :convention,
+        line:     2,
+        column:   2,
+        source:   "version :latest",
+      }, {
+        message:  "`sha256` stanza out of order",
+        severity: :convention,
+        line:     3,
+        column:   2,
+        source:   "sha256 :no_check",
+      }, {
+        message:  "`arch` stanza out of order",
+        severity: :convention,
+        line:     4,
+        column:   2,
+        source:   'arch arm: "arm", intel: "x86_64"',
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
+  context "when an arch variable assignment is out of order" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm", intel: "x86_64"
+          sha256 :no_check
+          version :latest
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  "`sha256` stanza out of order",
+        severity: :convention,
+        line:     3,
+        column:   2,
+        source:   "sha256 :no_check",
+      }, {
+        message:  "`on_arch_conditional` stanza out of order",
+        severity: :convention,
+        line:     5,
+        column:   2,
+        source:   'folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"',
+      }]
+    end
+
+    include_examples "reports offenses"
+
+    include_examples "autocorrects source"
+  end
+
+  context "when an arch variable assignment is above the arch stanza" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          arch arm: "arm", intel: "x86_64"
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          arch arm: "arm", intel: "x86_64"
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
+          version :latest
+          sha256 :no_check
+        end
+      CASK
+    end
+    let(:expected_offenses) do
+      [{
+        message:  "`on_arch_conditional` stanza out of order",
+        severity: :convention,
+        line:     2,
+        column:   2,
+        source:   'folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"',
+      }, {
+        message:  "`arch` stanza out of order",
+        severity: :convention,
+        line:     3,
+        column:   2,
+        source:   'arch arm: "arm", intel: "x86_64"',
       }]
     end
 
@@ -184,6 +317,41 @@ describe RuboCop::Cop::Cask::StanzaOrder do
         cask 'foo' do
           version :latest
           sha256 :no_check # comment on same line
+          # comment with an empty line between
+
+          # comment directly above
+          postflight do
+            puts 'We have liftoff!'
+          end
+        end
+      CASK
+    end
+
+    include_examples "autocorrects source"
+  end
+
+  context "when a variable assignment is out of order with a comment" do
+    let(:source) do
+      <<-CASK.undent
+        cask 'foo' do
+          version :latest
+          sha256 :no_check
+          # comment with an empty line between
+
+          # comment directly above
+          postflight do
+            puts 'We have liftoff!'
+          end
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin" # comment on same line
+        end
+      CASK
+    end
+    let(:correct_source) do
+      <<-CASK.undent
+        cask 'foo' do
+          folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin" # comment on same line
+          version :latest
+          sha256 :no_check
           # comment with an empty line between
 
           # comment directly above

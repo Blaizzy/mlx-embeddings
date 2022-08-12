@@ -15,8 +15,11 @@ module RuboCop
       def_node_matcher :val_node,    "{(pair _ $_) (hash (pair _ $_) ...)}"
 
       def_node_matcher :cask_block?, "(block (send nil? :cask _) args ...)"
+      def_node_matcher :arch_variable?, "(lvasgn _ (send nil? :on_arch_conditional ...))"
 
       def stanza?
+        return true if arch_variable?
+
         (send_type? || block_type?) && STANZA_ORDER.include?(method_name)
       end
 
@@ -24,7 +27,7 @@ module RuboCop
         loc.is_a?(Parser::Source::Map::Heredoc)
       end
 
-      def expression
+      def location_expression
         base_expression = loc.expression
         descendants.select(&:heredoc?).reduce(base_expression) do |expr, node|
           expr.join(node.loc.heredoc_end)
