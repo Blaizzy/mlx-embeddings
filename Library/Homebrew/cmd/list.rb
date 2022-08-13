@@ -70,14 +70,6 @@ module Homebrew
   def list
     args = list_args.parse
 
-    # Unbrewed uses the PREFIX, which will exist
-    # Things below use the CELLAR, which doesn't until the first formula is installed.
-    unless HOMEBREW_CELLAR.exist?
-      raise NoSuchKegError, args.named.first if args.named.present? && !args.cask?
-
-      return
-    end
-
     if args.full_name?
       unless args.cask?
         formula_names = args.no_named? ? Formula.installed : args.named.to_resolved_formulae
@@ -112,12 +104,10 @@ module Homebrew
       if !args.cask? && HOMEBREW_CELLAR.exist? && HOMEBREW_CELLAR.children.any?
         ohai "Formulae" if $stdout.tty? && !args.formula?
         safe_system "ls", *ls_args, HOMEBREW_CELLAR
+        puts if $stdout.tty? && !args.formula?
       end
       if !args.formula? && Cask::Caskroom.any_casks_installed?
-        if $stdout.tty? && !args.cask?
-          puts
-          ohai "Casks"
-        end
+        ohai "Casks" if $stdout.tty? && !args.cask?
         safe_system "ls", *ls_args, Cask::Caskroom.path
       end
     else
