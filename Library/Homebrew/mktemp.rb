@@ -49,7 +49,7 @@ class Mktemp
     prefix_name = @prefix.tr "@", "AT"
     @tmpdir = if retain_in_cache?
       tmp_dir = HOMEBREW_CACHE/"Sources/#{prefix_name}"
-      chmod_rm_rf(tmpdir) # clear out previous staging directory
+      chmod_rm_rf(tmp_dir) # clear out previous staging directory
       tmp_dir.mkpath
       tmp_dir
     else
