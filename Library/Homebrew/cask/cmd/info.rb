@@ -79,7 +79,7 @@ module Cask
       end
 
       def self.title_info(cask)
-        title = "#{cask.token}: #{cask.version}"
+        title = "#{oh1_title(cask.token)}: #{cask.version}"
         title += " (auto_updates)" if cask.auto_updates
         title
       end

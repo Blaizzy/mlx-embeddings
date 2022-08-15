@@ -8,7 +8,7 @@ describe Cask::Cmd::Info, :cask do
     expect {
       described_class.run("local-transmission")
     }.to output(<<~EOS).to_stdout
-      local-transmission: 2.61
+      ==> local-transmission: 2.61
       https://transmissionbt.com/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
@@ -25,7 +25,7 @@ describe Cask::Cmd::Info, :cask do
     expect {
       described_class.run("with-auto-updates")
     }.to output(<<~EOS).to_stdout
-      with-auto-updates: 1.0 (auto_updates)
+      ==> with-auto-updates: 1.0 (auto_updates)
       https://brew.sh/autoupdates
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-auto-updates.rb
@@ -41,7 +41,7 @@ describe Cask::Cmd::Info, :cask do
   describe "given multiple Casks" do
     let(:expected_output) {
       <<~EOS
-        local-caffeine: 1.2.3
+        ==> local-caffeine: 1.2.3
         https://brew.sh/
         Not installed
         From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-caffeine.rb
@@ -52,7 +52,7 @@ describe Cask::Cmd::Info, :cask do
         ==> Artifacts
         Caffeine.app (App)
 
-        local-transmission: 2.61
+        ==> local-transmission: 2.61
         https://transmissionbt.com/
         Not installed
         From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/local-transmission.rb
@@ -76,7 +76,7 @@ describe Cask::Cmd::Info, :cask do
     expect {
       described_class.run("with-caveats")
     }.to output(<<~EOS).to_stdout
-      with-caveats: 1.2.3
+      ==> with-caveats: 1.2.3
       https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-caveats.rb
@@ -103,7 +103,7 @@ describe Cask::Cmd::Info, :cask do
     expect {
       described_class.run("with-conditional-caveats")
     }.to output(<<~EOS).to_stdout
-      with-conditional-caveats: 1.2.3
+      ==> with-conditional-caveats: 1.2.3
       https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-conditional-caveats.rb
@@ -120,7 +120,7 @@ describe Cask::Cmd::Info, :cask do
     expect {
       described_class.run("with-languages")
     }.to output(<<~EOS).to_stdout
-      with-languages: 1.2.3
+      ==> with-languages: 1.2.3
       https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/with-languages.rb
@@ -139,7 +139,7 @@ describe Cask::Cmd::Info, :cask do
     expect {
       described_class.run("without-languages")
     }.to output(<<~EOS).to_stdout
-      without-languages: 1.2.3
+      ==> without-languages: 1.2.3
       https://brew.sh/
       Not installed
       From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/without-languages.rb
