@@ -55,22 +55,23 @@ class BuildEnvironment
   ].freeze
   private_constant :KEYS
 
-  sig { params(env: T.untyped).returns(T::Array[String]) }
+  sig { params(env: T::Hash[String, T.nilable(T.any(String, Pathname))]).returns(T::Array[String]) }
   def self.keys(env)
     KEYS & env.keys
   end
 
-  sig { params(env: T.untyped, f: IO).void }
+  sig { params(env: T::Hash[String, T.nilable(T.any(String, Pathname))], f: IO).void }
   def self.dump(env, f = $stdout)
     keys = self.keys(env)
     keys -= %w[CC CXX OBJC OBJCXX] if env["CC"] == env["HOMEBREW_CC"]
 
     keys.each do |key|
       value = env.fetch(key)
+
       s = +"#{key}: #{value}"
       case key
       when "CC", "CXX", "LD"
-        s << " => #{Pathname.new(value).realpath}" if File.symlink?(value)
+        s << " => #{Pathname.new(value).realpath}" if value.present? && File.symlink?(value)
       end
       s.freeze
       f.puts s
