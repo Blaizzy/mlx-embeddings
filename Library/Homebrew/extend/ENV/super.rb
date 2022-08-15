@@ -125,7 +125,10 @@ module Superenv
 
   sig { returns(T::Array[Pathname]) }
   def homebrew_extra_paths
+    # Reverse sort by version so that we prefer the newest when there are multiple.
     deps.select { |d| d.name.match? Version.formula_optionally_versioned_regex(:python) }
+        .sort_by(&:version)
+        .reverse
         .map { |d| d.opt_libexec/"bin" }
   end
   alias generic_homebrew_extra_paths homebrew_extra_paths
