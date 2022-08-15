@@ -56,7 +56,8 @@ module Cask
         require_sha: nil,
         quarantine: nil,
         quiet: nil,
-        zap: nil
+        zap: nil,
+        dry_run: nil
       )
         odie "Installing casks is supported only on macOS" unless OS.mac?
 
@@ -69,6 +70,7 @@ module Cask
           quarantine:     quarantine,
           quiet:          quiet,
           zap:            zap,
+          dry_run:        dry_run,
         }.compact
 
         options[:quarantine] = true if options[:quarantine].nil?
