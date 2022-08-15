@@ -26,7 +26,7 @@ module Superenv
   end
 
   def homebrew_extra_paths
-    paths = []
+    paths = generic_homebrew_extra_paths
     paths += %w[binutils make].map do |f|
       bin = Formulary.factory(f).opt_bin
       bin if bin.directory?
