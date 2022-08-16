@@ -28,6 +28,11 @@ module Homebrew
       @service_block = block
     end
 
+    sig { returns(Formula) }
+    def f
+      @formula
+    end
+
     sig { params(command: T.nilable(T.any(T::Array[String], String, Pathname))).returns(T.nilable(Array)) }
     def run(command = nil)
       case T.unsafe(command)
