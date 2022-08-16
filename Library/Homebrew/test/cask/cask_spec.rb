@@ -214,7 +214,7 @@ describe Cask::Cask, :cask do
 
   describe "#to_hash_with_variations" do
     let!(:original_macos_version) { MacOS.full_version.to_s }
-    let(:expected_variations) {
+    let(:expected_versions_variations) {
       <<~JSON
         {
           "arm64_big_sur": {
@@ -243,6 +243,28 @@ describe Cask::Cask, :cask do
         }
       JSON
     }
+    let(:expected_sha256_variations) {
+      <<~JSON
+        {
+          "monterey": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine-intel.zip",
+            "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+          },
+          "big_sur": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine-intel.zip",
+            "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+          },
+          "catalina": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine-intel.zip",
+            "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+          },
+          "mojave": {
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine-intel.zip",
+            "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+          }
+        }
+      JSON
+    }
 
     before do
       # Use a more limited symbols list to shorten the variations hash
@@ -263,12 +285,20 @@ describe Cask::Cask, :cask do
       MacOS.full_version = original_macos_version
     end
 
-    it "returns the correct variations hash" do
+    it "returns the correct variations hash for a cask with multiple versions" do
       c = Cask::CaskLoader.load("multiple-versions")
       h = c.to_hash_with_variations
 
       expect(h).to be_a(Hash)
-      expect(JSON.pretty_generate(h["variations"])).to eq expected_variations.strip
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_versions_variations.strip
+    end
+
+    it "returns the correct variations hash for a cask different sha256s on each arch" do
+      c = Cask::CaskLoader.load("sha256-arch")
+      h = c.to_hash_with_variations
+
+      expect(h).to be_a(Hash)
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_sha256_variations.strip
     end
   end
 end
