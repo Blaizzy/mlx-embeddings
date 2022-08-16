@@ -39,6 +39,9 @@ module RuboCop
 
             audit_on_system_blocks(stanza.stanza_node, stanza.stanza_name)
           end
+
+          audit_arch_conditionals(cask_body)
+          simplify_sha256_stanzas
         end
 
         private
@@ -46,6 +49,33 @@ module RuboCop
         attr_reader :cask_block
 
         def_delegators :cask_block, :toplevel_stanzas, :cask_body
+
+        def simplify_sha256_stanzas
+          nodes = {}
+
+          sha256_on_arch_stanzas(cask_body) do |node, method, value|
+            nodes[method.to_s.delete_prefix("on_").to_sym] = { node: node, value: value }
+          end
+
+          return if !nodes.key?(:arm) || !nodes.key?(:intel)
+
+          offending_node(nodes[:arm][:node])
+          replacement_string = "sha256 arm: #{nodes[:arm][:value].inspect}, intel: #{nodes[:intel][:value].inspect}"
+
+          problem "Use `#{replacement_string}` instead of nesting the `sha256` stanzas in " \
+                  "`on_intel` and `on_arm` blocks" do |corrector|
+            corrector.replace(nodes[:arm][:node].source_range, replacement_string)
+            corrector.replace(nodes[:intel][:node].source_range, "")
+          end
+        end
+
+        def_node_search :sha256_on_arch_stanzas, <<~PATTERN
+          $(block
+            (send nil? ${:on_intel :on_arm})
+            (args)
+            (send nil? :sha256
+              (str $_)))
+        PATTERN
       end
     end
   end
