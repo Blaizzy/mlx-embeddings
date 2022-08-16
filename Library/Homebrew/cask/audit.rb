@@ -26,7 +26,7 @@ module Cask
                    token_conflicts: nil, online: nil, strict: nil, signing: nil,
                    new_cask: nil)
 
-      # `new_cask` implies `online`, `token_conflicts`, `strict` and signing
+      # `new_cask` implies `online`, `token_conflicts`, `strict` and `signing`
       online = new_cask if online.nil?
       strict = new_cask if strict.nil?
       signing = new_cask if signing.nil?
