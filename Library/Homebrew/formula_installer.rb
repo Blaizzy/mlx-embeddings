@@ -40,7 +40,7 @@ class FormulaInstaller
   attr_predicate :show_summary_heading?, :show_header?
   attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :overwrite?, :keep_tmp?
   attr_predicate :debug_symbols?
-  attr_predicate :verbose?, :debug?, :quiet?
+  attr_predicate :verbose?, :debug?, :quiet?, :dry_run?
 
   def initialize(
     formula,
@@ -66,7 +66,8 @@ class FormulaInstaller
     overwrite: false,
     debug: false,
     quiet: false,
-    verbose: false
+    verbose: false,
+    dry_run: false
   )
     @formula = formula
     @env = env
@@ -90,6 +91,7 @@ class FormulaInstaller
     @verbose = verbose
     @quiet = quiet
     @debug = debug
+    @dry_run = dry_run
     @installed_as_dependency = installed_as_dependency
     @installed_on_request = installed_on_request
     @options = options
@@ -696,6 +698,7 @@ class FormulaInstaller
       debug:                      debug?,
       quiet:                      quiet?,
       verbose:                    verbose?,
+      dry_run:                    dry_run?,
     )
     fi.prelude
     fi.fetch
@@ -1182,6 +1185,10 @@ class FormulaInstaller
     return if self.class.fetched.include?(formula)
 
     fetch_dependencies
+    if dry_run?
+      puts "#{Formatter.identifier(formula.full_name)} would be installed"
+      return
+    end
 
     return if only_deps?
 
