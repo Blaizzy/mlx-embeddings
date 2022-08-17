@@ -70,14 +70,33 @@ module Cask
           quarantine:     quarantine,
           quiet:          quiet,
           zap:            zap,
-          dry_run:        dry_run,
         }.compact
 
         options[:quarantine] = true if options[:quarantine].nil?
 
+        if dry_run
+          casks_to_install = casks.reject(&:installed?)
+          if casks_to_install.present?
+            ohai "Would install #{casks_to_install.count} #{"package".pluralize(casks_to_install.count)}:"
+            puts casks_to_install.map(&:full_name).join(" ")
+          end
+        end
+
         require "cask/installer"
 
         casks.each do |cask|
+          if dry_run
+            dep_names = CaskDependent.new(cask)
+                                     .runtime_dependencies
+                                     .reject(&:installed?)
+                                     .map(&:to_formula)
+                                     .map(&:name)
+            if dep_names.present?
+              ohai "Would install #{dep_names.count} #{"dependency".pluralize(dep_names.count)} for #{cask.full_name}:"
+              puts dep_names.join(" ")
+            end
+            next
+          end
           Installer.new(cask, **options).install
         rescue CaskAlreadyInstalledError => e
           opoo e.message

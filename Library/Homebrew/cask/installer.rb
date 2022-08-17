@@ -24,7 +24,7 @@ module Cask
                    skip_cask_deps: false, binaries: true, verbose: false,
                    zap: false, require_sha: false, upgrade: false,
                    installed_as_dependency: false, quarantine: true,
-                   verify_download_integrity: true, quiet: false, dry_run: false)
+                   verify_download_integrity: true, quiet: false)
       @cask = cask
       @command = command
       @force = force
@@ -39,12 +39,11 @@ module Cask
       @quarantine = quarantine
       @verify_download_integrity = verify_download_integrity
       @quiet = quiet
-      @dry_run = dry_run
     end
 
     attr_predicate :binaries?, :force?, :skip_cask_deps?, :require_sha?,
                    :reinstall?, :upgrade?, :verbose?, :zap?, :installed_as_dependency?,
-                   :quarantine?, :quiet?, :dry_run?
+                   :quarantine?, :quiet?
 
     def self.caveats(cask)
       odebug "Printing caveats"
@@ -97,13 +96,9 @@ module Cask
       check_conflicts
 
       print caveats
-      if dry_run?
-        puts "#{Formatter.identifier(@cask)} would be installed"
-        exit
-      end
+
       fetch
       uninstall_existing_cask if reinstall?
-
       backup if force? && @cask.staged_path.exist? && @cask.metadata_versioned_path.exist?
 
       oh1 "Installing Cask #{Formatter.identifier(@cask)}"
