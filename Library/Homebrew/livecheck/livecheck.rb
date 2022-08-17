@@ -269,6 +269,7 @@ module Homebrew
         end
 
         current_str = current.to_s
+        current = LivecheckVersion.create(formula_or_cask, current)
 
         latest = if formula&.head_only?
           formula.head.downloader.fetch_last_commit
@@ -287,14 +288,13 @@ module Homebrew
         check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
         if check_for_resources
           resource_version_info = formula_or_cask.resources.map do |resource|
-            resource_info = resource_version(
+            resource_version(
               resource,
               json:      json,
               full_name: use_full_name,
               verbose:   verbose,
               debug:     debug,
             )
-            resource_info
           end
         end
 
@@ -313,6 +313,7 @@ module Homebrew
         end
 
         latest_str = latest.to_s
+        latest = LivecheckVersion.create(formula_or_cask, latest)
 
         is_outdated = if formula&.head_only?
           # A HEAD-only formula is considered outdated if the latest upstream
@@ -623,8 +624,8 @@ resource: false)
 
       if debug
         puts "\n\n"
-        puts "Resource:          #{resource.name}"
-        puts "Livecheckable?:    #{has_livecheckable ? "Yes" : "No"}"
+        puts "Resource:         #{resource.name}"
+        puts "Livecheckable?:   #{has_livecheckable ? "Yes" : "No"}"
       end
 
       resource_version_info = {}
