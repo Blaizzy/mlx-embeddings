@@ -571,7 +571,7 @@ module Cask
       Dir.mktmpdir do |tmpdir|
         tmpdir = Pathname(tmpdir)
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
-        cask.artifacts.each do |artifact|
+        artifacts.each do |artifact|
           result = system_command("codesign", args: [
             "--verify",
             tmpdir/artifact.source.basename,
