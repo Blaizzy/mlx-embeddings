@@ -278,7 +278,7 @@ module Homebrew
       dry_run: false
     )
       formula_installers = formulae_to_install.map do |f|
-        Migrator.migrate_if_needed(f, force: force)
+        Migrator.migrate_if_needed(f, force: force, dry_run: dry_run)
         build_options = f.build
 
         fi = FormulaInstaller.new(
@@ -305,8 +305,10 @@ module Homebrew
         )
 
         begin
-          fi.prelude
-          fi.fetch
+          unless dry_run
+            fi.prelude
+            fi.fetch
+          end
           fi
         rescue CannotInstallFormulaError => e
           ofail e.message
@@ -317,6 +319,14 @@ module Homebrew
         end
       end.compact
 
+      if dry_run
+        formulae_name_to_install = formulae_to_install.map(&:name)
+        if formulae_name_to_install.present?
+          ohai "Would install #{formulae_name_to_install.count} #{"package".pluralize(formulae_name_to_install.count)}:"
+          puts formulae_name_to_install.join(" ")
+        end
+      end
+
       formula_installers.each do |fi|
         install_formula(fi)
         Cleanup.install_formula_clean!(fi.formula)
@@ -326,11 +336,27 @@ module Homebrew
     def install_formula(formula_installer)
       f = formula_installer.formula
 
+      if formula_installer.dry_run?
+        print_dry_run_dependencies(f, formula_installer.compute_dependencies)
+        return
+      end
+
       upgrade = f.linked? && f.outdated? && !f.head? && !Homebrew::EnvConfig.no_install_upgrade?
 
       Upgrade.install_formula(formula_installer, upgrade: upgrade)
     end
     private_class_method :install_formula
+
+    def print_dry_run_dependencies(formula, dependencies)
+      return unless dependencies.present?
+
+      plural = "dependency".pluralize(dependencies.count)
+      ohai "Would install #{dependencies.count} #{plural} for #{formula.name}:"
+      formula_names =  dependencies.map(&:first).map(&:to_formula).map(&:name)
+      puts formula_names.join(" ")
+    end
+
+    private_class_method :print_dry_run_dependencies
   end
 end
 

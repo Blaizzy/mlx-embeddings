@@ -208,7 +208,6 @@ module Homebrew
       # possible for the existing build to interfere with the build we are about to
       # do! Seriously, it happens!
       kegs.each(&:unlink) if kegs.present?
-      return if formula_installer.dry_run?
 
       formula_installer.install
       formula_installer.finish

@@ -1185,10 +1185,6 @@ class FormulaInstaller
     return if self.class.fetched.include?(formula)
 
     fetch_dependencies
-    if dry_run?
-      puts "#{Formatter.identifier(formula.full_name)} would be installed"
-      return
-    end
 
     return if only_deps?
 
