@@ -322,7 +322,8 @@ module Homebrew
       if dry_run
         formulae_name_to_install = formulae_to_install.map(&:name)
         if formulae_name_to_install.present?
-          ohai "Would install #{formulae_name_to_install.count} #{"package".pluralize(formulae_name_to_install.count)}:"
+          plural = "package".pluralize(casks_to_install.count)
+          ohai "Would install #{formulae_name_to_install.count} #{plural}:"
           puts formulae_name_to_install.join(" ")
         end
       end
@@ -348,11 +349,11 @@ module Homebrew
     private_class_method :install_formula
 
     def print_dry_run_dependencies(formula, dependencies)
-      return unless dependencies.present?
+      return if dependencies.empry?
 
       plural = "dependency".pluralize(dependencies.count)
       ohai "Would install #{dependencies.count} #{plural} for #{formula.name}:"
-      formula_names =  dependencies.map(&:first).map(&:to_formula).map(&:name)
+      formula_names = dependencies.map(&:first).map(&:to_formula).map(&:name)
       puts formula_names.join(" ")
     end
 
