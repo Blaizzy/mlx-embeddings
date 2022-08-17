@@ -572,10 +572,15 @@ module Cask
         tmpdir = Pathname(tmpdir)
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
         artifacts.each do |artifact|
-          result = system_command("codesign", args: [
-            "--verify",
-            tmpdir/artifact.source.basename,
-          ], print_stderr: false)
+          path = case artifact
+          when Artifact::Moved
+            tmpdir/artifact.source.basename
+          when Artifact::Pkg
+            artifact.path
+          end
+          next unless path.exist?
+
+          result = system_command("codesign", args: ["--verify", path], print_stderr: false)
           add_warning result.merged_output unless result.success?
         end
       end
