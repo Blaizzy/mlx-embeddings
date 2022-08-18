@@ -521,9 +521,12 @@ module RuboCop
           return if offenses.blank?
 
           T.must(offenses[0...-1]).each_with_index do |node, i|
-            # executable and subcmd have to be the same to be combined
-            if node.arguments.first != offenses[i + 1].arguments.first ||
-               node.arguments.second != offenses[i + 1].arguments.second
+            # commands have to be the same to be combined
+            # send_type? matches `bin/"foo"`, str_type? matches remaining command parts,
+            # the rest are kwargs we need to filter out
+            method_commands = node.arguments.filter { |arg| arg.send_type? || arg.str_type? }
+            next_method_commands = offenses[i + 1].arguments.filter { |arg| arg.send_type? || arg.str_type? }
+            unless method_commands == next_method_commands
               shells.delete_at(i)
               next
             end
