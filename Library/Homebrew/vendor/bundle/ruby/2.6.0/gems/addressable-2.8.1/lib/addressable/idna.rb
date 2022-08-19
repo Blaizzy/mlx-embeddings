@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# encoding:utf-8
 #--
 # Copyright (C) Bob Aman
 #
@@ -18,15 +17,10 @@
 #++
 
 
-# Used to prevent the class/module from being loaded more than once
-if !defined?(Addressable::VERSION)
-  module Addressable
-    module VERSION
-      MAJOR = 2
-      MINOR = 8
-      TINY  = 0
-
-      STRING = [MAJOR, MINOR, TINY].join('.')
-    end
-  end
+begin
+  require "addressable/idna/native"
+rescue LoadError
+  # libidn or the idn gem was not available, fall back on a pure-Ruby
+  # implementation...
+  require "addressable/idna/pure"
 end

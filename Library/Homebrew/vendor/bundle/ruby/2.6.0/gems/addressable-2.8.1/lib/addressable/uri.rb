@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# encoding:utf-8
 #--
 # Copyright (C) Bob Aman
 #
@@ -38,20 +37,26 @@ module Addressable
     ##
     # Container for the character classes specified in
     # <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.
+    #
+    # Note: Concatenated and interpolated `String`s are not affected by the
+    #       `frozen_string_literal` directive and must be frozen explicitly.
+    #
+    #       Interpolated `String`s *were* frozen this way before Ruby 3.0:
+    #       https://bugs.ruby-lang.org/issues/17104
     module CharacterClasses
       ALPHA = "a-zA-Z"
       DIGIT = "0-9"
       GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@"
       SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\="
-      RESERVED = GEN_DELIMS + SUB_DELIMS
-      UNRESERVED = ALPHA + DIGIT + "\\-\\.\\_\\~"
-      PCHAR = UNRESERVED + SUB_DELIMS + "\\:\\@"
-      SCHEME = ALPHA + DIGIT + "\\-\\+\\."
-      HOST = UNRESERVED + SUB_DELIMS + "\\[\\:\\]"
-      AUTHORITY = PCHAR + "\\[\\:\\]"
-      PATH = PCHAR + "\\/"
-      QUERY = PCHAR + "\\/\\?"
-      FRAGMENT = PCHAR + "\\/\\?"
+      RESERVED = (GEN_DELIMS + SUB_DELIMS).freeze
+      UNRESERVED = (ALPHA + DIGIT + "\\-\\.\\_\\~").freeze
+      PCHAR = (UNRESERVED + SUB_DELIMS + "\\:\\@").freeze
+      SCHEME = (ALPHA + DIGIT + "\\-\\+\\.").freeze
+      HOST = (UNRESERVED + SUB_DELIMS + "\\[\\:\\]").freeze
+      AUTHORITY = (PCHAR + "\\[\\:\\]").freeze
+      PATH = (PCHAR + "\\/").freeze
+      QUERY = (PCHAR + "\\/\\?").freeze
+      FRAGMENT = (PCHAR + "\\/\\?").freeze
     end
 
     module NormalizeCharacterClasses
@@ -469,19 +474,13 @@ module Addressable
           "Expected Class (String or Addressable::URI), " +
           "got #{return_type.inspect}"
       end
-      uri = uri.dup
-      # Seriously, only use UTF-8. I'm really not kidding!
-      uri.force_encoding("utf-8")
 
-      unless leave_encoded.empty?
-        leave_encoded = leave_encoded.dup.force_encoding("utf-8")
-      end
-
-      result = uri.gsub(/%[0-9a-f]{2}/iu) do |sequence|
+      result = uri.gsub(/%[0-9a-f]{2}/i) do |sequence|
         c = sequence[1..3].to_i(16).chr
-        c.force_encoding("utf-8")
+        c.force_encoding(sequence.encoding)
         leave_encoded.include?(c) ? sequence : c
       end
+
       result.force_encoding("utf-8")
       if return_type == String
         return result
@@ -561,10 +560,10 @@ module Addressable
         leave_re = if leave_encoded.length > 0
           character_class = "#{character_class}%" unless character_class.include?('%')
 
-          "|%(?!#{leave_encoded.chars.map do |char|
+          "|%(?!#{leave_encoded.chars.flat_map do |char|
             seq = SEQUENCE_ENCODING_TABLE[char]
             [seq.upcase, seq.downcase]
-          end.flatten.join('|')})"
+          end.join('|')})"
         end
 
         character_class = if leave_re
@@ -900,7 +899,7 @@ module Addressable
         end
       end
       # All normalized values should be UTF-8
-      @normalized_scheme.force_encoding(Encoding::UTF_8) if @normalized_scheme
+      force_utf8_encoding_if_needed(@normalized_scheme)
       @normalized_scheme
     end
 
@@ -955,7 +954,7 @@ module Addressable
         end
       end
       # All normalized values should be UTF-8
-      @normalized_user.force_encoding(Encoding::UTF_8) if @normalized_user
+      force_utf8_encoding_if_needed(@normalized_user)
       @normalized_user
     end
 
@@ -1012,9 +1011,7 @@ module Addressable
         end
       end
       # All normalized values should be UTF-8
-      if @normalized_password
-        @normalized_password.force_encoding(Encoding::UTF_8)
-      end
+      force_utf8_encoding_if_needed(@normalized_password)
       @normalized_password
     end
 
@@ -1082,9 +1079,7 @@ module Addressable
         end
       end
       # All normalized values should be UTF-8
-      if @normalized_userinfo
-        @normalized_userinfo.force_encoding(Encoding::UTF_8)
-      end
+      force_utf8_encoding_if_needed(@normalized_userinfo)
       @normalized_userinfo
     end
 
@@ -1151,9 +1146,7 @@ module Addressable
         end
       end
       # All normalized values should be UTF-8
-      if @normalized_host && !@normalized_host.empty?
-        @normalized_host.force_encoding(Encoding::UTF_8)
-      end
+      force_utf8_encoding_if_needed(@normalized_host)
       @normalized_host
     end
 
@@ -1271,9 +1264,7 @@ module Addressable
         authority
       end
       # All normalized values should be UTF-8
-      if @normalized_authority
-        @normalized_authority.force_encoding(Encoding::UTF_8)
-      end
+      force_utf8_encoding_if_needed(@normalized_authority)
       @normalized_authority
     end
 
@@ -1507,7 +1498,7 @@ module Addressable
         site_string
       end
       # All normalized values should be UTF-8
-      @normalized_site.force_encoding(Encoding::UTF_8) if @normalized_site
+      force_utf8_encoding_if_needed(@normalized_site)
       @normalized_site
     end
 
@@ -1570,7 +1561,7 @@ module Addressable
         result
       end
       # All normalized values should be UTF-8
-      @normalized_path.force_encoding(Encoding::UTF_8) if @normalized_path
+      force_utf8_encoding_if_needed(@normalized_path)
       @normalized_path
     end
 
@@ -1646,7 +1637,7 @@ module Addressable
         component == "" ? nil : component
       end
       # All normalized values should be UTF-8
-      @normalized_query.force_encoding(Encoding::UTF_8) if @normalized_query
+      force_utf8_encoding_if_needed(@normalized_query)
       @normalized_query
     end
 
@@ -1842,9 +1833,7 @@ module Addressable
         component == "" ? nil : component
       end
       # All normalized values should be UTF-8
-      if @normalized_fragment
-        @normalized_fragment.force_encoding(Encoding::UTF_8)
-      end
+      force_utf8_encoding_if_needed(@normalized_fragment)
       @normalized_fragment
     end
 
@@ -2440,30 +2429,35 @@ module Addressable
     def self.normalize_path(path)
       # Section 5.2.4 of RFC 3986
 
-      return nil if path.nil?
+      return if path.nil?
       normalized_path = path.dup
-      begin
-        mod = nil
+      loop do
         mod ||= normalized_path.gsub!(RULE_2A, SLASH)
 
         pair = normalized_path.match(RULE_2B_2C)
-        parent, current = pair[1], pair[2] if pair
+        if pair
+          parent  = pair[1]
+          current = pair[2]
+        else
+          parent  = nil
+          current = nil
+        end
+
+        regexp = "/#{Regexp.escape(parent.to_s)}/\\.\\./|"
+        regexp += "(/#{Regexp.escape(current.to_s)}/\\.\\.$)"
+
         if pair && ((parent != SELF_REF && parent != PARENT) ||
             (current != SELF_REF && current != PARENT))
-          mod ||= normalized_path.gsub!(
-            Regexp.new(
-              "/#{Regexp.escape(parent.to_s)}/\\.\\./|" +
-              "(/#{Regexp.escape(current.to_s)}/\\.\\.$)"
-            ), SLASH
-          )
+          mod ||= normalized_path.gsub!(Regexp.new(regexp), SLASH)
         end
 
         mod ||= normalized_path.gsub!(RULE_2D, EMPTY_STR)
         # Non-standard, removes prefixed dotted segments from path.
         mod ||= normalized_path.gsub!(RULE_PREFIXED_PARENT, SLASH)
-      end until mod.nil?
+        break if mod.nil?
+      end
 
-      return normalized_path
+      normalized_path
     end
 
     ##
@@ -2551,6 +2545,16 @@ module Addressable
     def remove_composite_values
       remove_instance_variable(:@uri_string) if defined?(@uri_string)
       remove_instance_variable(:@hash) if defined?(@hash)
+    end
+
+    ##
+    # Converts the string to be UTF-8 if it is not already UTF-8
+    #
+    # @api private
+    def force_utf8_encoding_if_needed(str)
+      if str && str.encoding != Encoding::UTF_8
+        str.force_encoding(Encoding::UTF_8)
+      end
     end
   end
 end
