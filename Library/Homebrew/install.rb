@@ -322,7 +322,7 @@ module Homebrew
       if dry_run
         formulae_name_to_install = formulae_to_install.map(&:name)
         if formulae_name_to_install.present?
-          plural = "package".pluralize(casks_to_install.count)
+          plural = "package".pluralize(formulae_name_to_install.count)
           ohai "Would install #{formulae_name_to_install.count} #{plural}:"
           puts formulae_name_to_install.join(" ")
         end
