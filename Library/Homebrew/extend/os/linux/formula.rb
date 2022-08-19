@@ -3,7 +3,7 @@
 
 class Formula
   undef shared_library
-  undef rpath
+  undef loader_path
   undef deuniversalize_machos
 
   sig { params(name: String, version: T.nilable(T.any(String, Integer))).returns(String) }
@@ -17,8 +17,8 @@ class Formula
   end
 
   sig { returns(String) }
-  def rpath
-    "'$ORIGIN/../lib'"
+  def loader_path
+    "$ORIGIN"
   end
 
   sig { params(targets: T.nilable(T.any(Pathname, String))).void }
