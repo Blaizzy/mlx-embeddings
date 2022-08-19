@@ -2003,7 +2003,7 @@ class Formula
     # `any_installed_keg` and `runtime_dependencies` `select`s ensure
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
-    Formula.cache[:runtime_installed_formula_dependents] = {}
+    Formula.cache[:runtime_installed_formula_dependents] ||= {}
     Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
                                                                                .select(&:any_installed_keg)
                                                                                .select(&:runtime_dependencies)
