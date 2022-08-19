@@ -344,6 +344,10 @@ module Homebrew
       recursive_runtime_formulae.each do |f|
         name = f.name
         unversioned_name, = name.split("@")
+        # Allow use of the full versioned name (e.g. `python@3.99`) or an unversioned alias (`python`).
+        next if formula.tap&.audit_exception :versioned_formula_dependent_conflicts_allowlist, name
+        next if formula.tap&.audit_exception :versioned_formula_dependent_conflicts_allowlist, unversioned_name
+
         version_hash[unversioned_name] ||= Set.new
         version_hash[unversioned_name] << name
         next if version_hash[unversioned_name].length < 2
