@@ -81,24 +81,24 @@ module Cask
             ohai "Would install #{casks_to_install.count} #{plural}:"
             puts casks_to_install.map(&:full_name).join(" ")
           end
-        end
-
-        require "cask/installer"
-
-        casks.each do |cask|
-          if dry_run
+          casks.each do |cask|
             dep_names = CaskDependent.new(cask)
                                      .runtime_dependencies
                                      .reject(&:installed?)
                                      .map(&:to_formula)
                                      .map(&:name)
-            if dep_names.present?
-              plural = "dependency".pluralize(dep_names.count)
-              ohai "Would install #{dep_names.count} #{plural} for #{cask.full_name}:"
-              puts dep_names.join(" ")
-            end
-            next
+            next if dep_names.blank?
+
+            plural = "dependency".pluralize(dep_names.count)
+            ohai "Would install #{dep_names.count} #{plural} for #{cask.full_name}:"
+            puts dep_names.join(" ")
           end
+          return
+        end
+
+        require "cask/installer"
+
+        casks.each do |cask|
           Installer.new(cask, **options).install
         rescue CaskAlreadyInstalledError => e
           opoo e.message

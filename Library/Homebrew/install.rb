@@ -301,7 +301,6 @@ module Homebrew
           debug:                      debug,
           quiet:                      quiet,
           verbose:                    verbose,
-          dry_run:                    dry_run,
         )
 
         begin
@@ -325,7 +324,13 @@ module Homebrew
           plural = "package".pluralize(formulae_name_to_install.count)
           ohai "Would install #{formulae_name_to_install.count} #{plural}:"
           puts formulae_name_to_install.join(" ")
+
+          formula_installers.each do |fi|
+            f = fi.formula
+            print_dry_run_dependencies(f, fi.compute_dependencies)
+          end
         end
+        return
       end
 
       formula_installers.each do |fi|
@@ -337,11 +342,6 @@ module Homebrew
     def install_formula(formula_installer)
       f = formula_installer.formula
 
-      if formula_installer.dry_run?
-        print_dry_run_dependencies(f, formula_installer.compute_dependencies)
-        return
-      end
-
       upgrade = f.linked? && f.outdated? && !f.head? && !Homebrew::EnvConfig.no_install_upgrade?
 
       Upgrade.install_formula(formula_installer, upgrade: upgrade)
@@ -349,7 +349,7 @@ module Homebrew
     private_class_method :install_formula
 
     def print_dry_run_dependencies(formula, dependencies)
-      return if dependencies.empry?
+      return if dependencies.empty?
 
       plural = "dependency".pluralize(dependencies.count)
       ohai "Would install #{dependencies.count} #{plural} for #{formula.name}:"
