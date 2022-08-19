@@ -428,7 +428,6 @@ module Homebrew
         next if !use_system_ruby && portable_ruby_latest_version == path.basename.to_s
 
         portable_rubies_to_remove << path
-        puts "Would remove: #{path} (#{path.abv})" if dry_run?
       end
 
       return if portable_rubies_to_remove.empty?
@@ -440,20 +439,16 @@ module Homebrew
         puts Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "clean", "-ffqx", bundler_path).chomp
       end
 
-      return if dry_run?
-
-      FileUtils.rm_rf portable_rubies_to_remove
+      portable_rubies_to_remove.each do |portable_ruby|
+        cleanup_path(portable_ruby) { portable_ruby.rmtree }
+      end
     end
 
     def cleanup_bootsnap
       bootsnap = cache/"bootsnap"
       return unless bootsnap.exist?
 
-      if dry_run?
-        puts "Would remove: #{bootsnap} (#{bootsnap.abv})"
-      else
-        FileUtils.rm_rf bootsnap
-      end
+      cleanup_path(bootsnap) { bootsnap.rmtree }
     end
 
     def cleanup_cache_db(rack = nil)
