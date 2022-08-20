@@ -263,7 +263,10 @@ module Homebrew
             next
           end
 
-          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname
+          # FIXME: Remove `glib-utils` exemption when the following PRs are merged:
+          #   https://github.com/Homebrew/homebrew-core/pull/108307
+          #   https://github.com/Homebrew/homebrew-core/pull/108497
+          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname && dep_f.oldname != "glib-utils"
             problem "Dependency '#{dep.name}' was renamed; use new name '#{dep_f.name}'."
           end
 
