@@ -189,8 +189,8 @@ module Homebrew
     def self.skip_clean_formula?(f)
       return false if Homebrew::EnvConfig.no_cleanup_formulae.blank?
 
-      skip_clean_formulae = Homebrew::EnvConfig.no_cleanup_formulae.split(",")
-      skip_clean_formulae.include?(f.name) || (skip_clean_formulae & f.aliases).present?
+      @skip_clean_formulae ||= Homebrew::EnvConfig.no_cleanup_formulae.split(",")
+      @skip_clean_formulae.include?(f.name) || (@skip_clean_formulae & f.aliases).present?
     end
 
     def self.periodic_clean_due?
@@ -535,8 +535,12 @@ module Homebrew
       # the cache of installed formulae may no longer be valid.
       Formula.clear_cache unless dry_run
 
-      # Remove formulae listed in HOMEBREW_NO_CLEANUP_FORMULAE.
-      formulae = Formula.installed.reject(&method(:skip_clean_formula?))
+      formulae = Formula.installed
+      # Remove formulae listed in HOMEBREW_NO_CLEANUP_FORMULAE and their dependencies.
+      if Homebrew::EnvConfig.no_cleanup_formulae.present?
+        formulae -= formulae.select(&method(:skip_clean_formula?))
+                            .flat_map { |f| [f, *f.runtime_formula_dependencies] }
+      end
       casks = Cask::Caskroom.casks
 
       removable_formulae = Formula.unused_formulae_with_no_dependents(formulae, casks)
