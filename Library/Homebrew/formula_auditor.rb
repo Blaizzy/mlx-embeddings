@@ -333,21 +333,11 @@ module Homebrew
 
       return unless @core_tap
 
-      # Prevent formulae from declaring Linux-only dependencies on GCC,
-      # or else its dependency tree grows out of control.
-      on_linux_deps = formula.to_hash_with_variations.dig("variations", :x86_64_linux, "dependencies")
-      if on_linux_deps&.include? "gcc"
-        bad_gcc_dep = @strict || begin
-          fv = FormulaVersions.new(formula)
-          prev_on_linux_deps = fv.formula_at_revision("origin/HEAD") do |prev_f|
-            prev_f.to_hash_with_variations.dig("variations", :x86_64_linux, "dependencies")
-          end
-
-          prev_on_linux_deps&.exclude? "gcc"
-        end
-
-        problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
-      end
+      bad_gcc_dep = linux_only_gcc_dep?(formula) && (@strict || begin
+        fv = FormulaVersions.new(formula)
+        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
+      end)
+      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
 
       return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
@@ -864,6 +854,17 @@ module Homebrew
 
     def head_only?(formula)
       formula.head && formula.stable.nil?
+    end
+
+    def linux_only_gcc_dep?(formula)
+      # TODO: Make this check work when running on Linux and not simulating macOS too.
+      return false unless Homebrew::SimulateSystem.simulating_or_running_on_macos?
+
+      formula_hash = formula.to_hash_with_variations
+      deps = formula_hash["dependencies"]
+      linux_deps = formula_hash.dig("variations", :x86_64_linux, "dependencies")
+
+      deps.exclude?("gcc") && linux_deps&.include?("gcc")
     end
   end
 end
