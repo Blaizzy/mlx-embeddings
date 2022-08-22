@@ -1572,9 +1572,23 @@ class Formula
   end
 
   # Executable/Library RPATH according to platform conventions.
+  #
+  # Optionally specify a `source` or `target` depending on the location
+  # of the file containing the RPATH command and where its target is located.
+  #
+  # <pre>
+  # rpath #=> "@loader_path/../lib"
+  # rpath(target: frameworks) #=> "@loader_path/../Frameworks"
+  # rpath(source: libexec/"bin") #=> "@loader_path/../../lib"
+  # </pre>
+  sig { params(source: Pathname, target: Pathname).returns(String) }
+  def rpath(source: bin, target: lib)
+    "#{loader_path}/#{target.relative_path_from(source)}"
+  end
+
   sig { returns(String) }
-  def rpath
-    "@loader_path/../lib"
+  def loader_path
+    "@loader_path"
   end
 
   # Creates a new `Time` object for use in the formula as the build time.
