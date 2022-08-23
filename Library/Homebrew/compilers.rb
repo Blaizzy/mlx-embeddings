@@ -172,7 +172,7 @@ class CompilerSelector
   def compiler_version(name)
     case name.to_s
     when "gcc", GNU_GCC_REGEXP
-      versions.non_apple_gcc_version(name.to_s)
+      versions.gcc_version(name.to_s)
     else
       versions.send("#{name}_build_version")
     end

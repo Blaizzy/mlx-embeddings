@@ -149,7 +149,7 @@ describe Formula do
       end
     end
 
-    it "returns true by default" do
+    it "returns array with versioned formulae" do
       FileUtils.touch f.path
       FileUtils.touch f2.path
       allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
