@@ -435,16 +435,26 @@ class Formula
   end
 
   # If this is a `@`-versioned formula.
+  sig { returns(T::Boolean) }
   def versioned_formula?
     name.include?("@")
   end
 
-  # Returns any `@`-versioned formulae for any formula (including versioned formulae).
-  def versioned_formulae
-    Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
+  # Returns any `@`-versioned formulae names for any formula (including versioned formulae).
+  sig { returns(T::Array[String]) }
+  def versioned_formulae_names
+    @versioned_formulae_names ||= Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
       next if versioned_path == path
 
-      Formula[versioned_path.basename(".rb").to_s]
+      versioned_path.basename(".rb").to_s
+    end.compact.sort
+  end
+
+  # Returns any `@`-versioned Formula objects for any Formula (including versioned formulae).
+  sig { returns(T::Array[Formula]) }
+  def versioned_formulae
+    @versioned_formulae ||= versioned_formulae_names.map do |name|
+      Formula[name]
     rescue FormulaUnavailableError
       nil
     end.compact.sort_by(&:version).reverse

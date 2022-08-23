@@ -78,8 +78,8 @@ class DevelopmentTools
     end
 
     sig { params(cc: String).returns(Version) }
-    def non_apple_gcc_version(cc)
-      (@non_apple_gcc_version ||= {}).fetch(cc) do
+    def gcc_version(cc)
+      (@gcc_version ||= {}).fetch(cc) do
         path = HOMEBREW_PREFIX/"opt/#{CompilerSelector.preferred_gcc}/bin"/cc
         path = locate(cc) unless path.exist?
         version = if path &&
@@ -88,14 +88,14 @@ class DevelopmentTools
         else
           Version::NULL
         end
-        @non_apple_gcc_version[cc] = version
+        @gcc_version[cc] = version
       end
     end
 
     sig { void }
     def clear_version_cache
       @clang_version = @clang_build_version = nil
-      @non_apple_gcc_version = {}
+      @gcc_version = {}
     end
 
     sig { returns(T::Boolean) }

@@ -433,11 +433,12 @@ module Homebrew
     def audit_glibc
       return unless @core_tap
       return if formula.name != "glibc"
-      return if [OS::CI_GLIBC_VERSION, "2.27", "2.31", "2.35"].include?(formula.version.to_s)
+      # Also allow LINUX_GLIBC_NEXT_CI_VERSION for when we're upgrading.
+      return if [OS::LINUX_GLIBC_CI_VERSION, OS::LINUX_GLIBC_NEXT_CI_VERSION].include?(formula.version.to_s)
 
-      problem "The glibc version must be #{OS::CI_GLIBC_VERSION}, as this is the version used by our CI on Linux. " \
-              "Glibc is for users who have a system Glibc with a lower version, " \
-              "which allows them to use our Linux bottles, which were compiled against system Glibc on CI."
+      problem "The glibc version must be #{OS::LINUX_GLIBC_CI_VERSION}, as needed by our CI on Linux. " \
+              "The glibc formula is for users who have a system glibc with a lower version, " \
+              "which allows them to use our Linux bottles, which were compiled against system glibc on CI."
     end
 
     ELASTICSEARCH_KIBANA_RELICENSED_VERSION = "7.11"

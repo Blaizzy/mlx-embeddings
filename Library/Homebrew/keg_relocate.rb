@@ -373,7 +373,7 @@ class Keg
     @bottle_dependencies ||= begin
       formulae = []
       gcc = Formulary.factory(CompilerSelector.preferred_gcc)
-      formulae << gcc if DevelopmentTools.non_apple_gcc_version("gcc") < gcc.version.to_i
+      formulae << gcc if DevelopmentTools.gcc_version("gcc") < gcc.version.to_i
       formulae
     end
   end
