@@ -52,8 +52,9 @@ class LinkageChecker
     display_deprecated_warning(strict: strict)
   end
 
-  def broken_library_linkage?(strict: false)
-    generic_broken_library_linkage?(strict: strict) || (fail_on_libcrypt1?(strict: strict) && @libcrypt_found)
+  def broken_library_linkage?(test: false, strict: false)
+    generic_broken_library_linkage?(test: test, strict: strict) ||
+      (fail_on_libcrypt1?(strict: strict) && @libcrypt_found)
   end
 
   private
