@@ -51,7 +51,7 @@ module Homebrew
     if shell.nil?
       BuildEnvironment.dump ENV
     else
-      BuildEnvironment.keys(ENV).each do |key|
+      BuildEnvironment.keys(ENV.to_h).each do |key|
         puts Utils::Shell.export_value(key, ENV.fetch(key), shell)
       end
     end

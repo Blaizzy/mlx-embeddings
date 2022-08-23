@@ -435,16 +435,26 @@ class Formula
   end
 
   # If this is a `@`-versioned formula.
+  sig { returns(T::Boolean) }
   def versioned_formula?
     name.include?("@")
   end
 
-  # Returns any `@`-versioned formulae for any formula (including versioned formulae).
-  def versioned_formulae
-    Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
+  # Returns any `@`-versioned formulae names for any formula (including versioned formulae).
+  sig { returns(T::Array[String]) }
+  def versioned_formulae_names
+    @versioned_formulae_names ||= Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
       next if versioned_path == path
 
-      Formula[versioned_path.basename(".rb").to_s]
+      versioned_path.basename(".rb").to_s
+    end.compact.sort
+  end
+
+  # Returns any `@`-versioned Formula objects for any Formula (including versioned formulae).
+  sig { returns(T::Array[Formula]) }
+  def versioned_formulae
+    @versioned_formulae ||= versioned_formulae_names.map do |name|
+      Formula[name]
     rescue FormulaUnavailableError
       nil
     end.compact.sort_by(&:version).reverse
@@ -1270,11 +1280,11 @@ class Formula
   # Yields |self,staging| with current working directory set to the uncompressed tarball
   # where staging is a {Mktemp} staging context.
   # @private
-  def brew(fetch: true, keep_tmp: false, interactive: false)
+  def brew(fetch: true, keep_tmp: false, debug_symbols: false, interactive: false)
     @prefix_returns_versioned_prefix = true
     active_spec.fetch if fetch
-    stage(interactive: interactive) do |staging|
-      staging.retain! if keep_tmp
+    stage(interactive: interactive, debug_symbols: debug_symbols) do |staging|
+      staging.retain! if keep_tmp || debug_symbols
 
       prepare_patches
       fetch_patches if fetch
@@ -1572,9 +1582,23 @@ class Formula
   end
 
   # Executable/Library RPATH according to platform conventions.
+  #
+  # Optionally specify a `source` or `target` depending on the location
+  # of the file containing the RPATH command and where its target is located.
+  #
+  # <pre>
+  # rpath #=> "@loader_path/../lib"
+  # rpath(target: frameworks) #=> "@loader_path/../Frameworks"
+  # rpath(source: libexec/"bin") #=> "@loader_path/../../lib"
+  # </pre>
+  sig { params(source: Pathname, target: Pathname).returns(String) }
+  def rpath(source: bin, target: lib)
+    "#{loader_path}/#{target.relative_path_from(source)}"
+  end
+
   sig { returns(String) }
-  def rpath
-    "@loader_path/../lib"
+  def loader_path
+    "@loader_path"
   end
 
   # Creates a new `Time` object for use in the formula as the build time.
@@ -1621,6 +1645,98 @@ class Formula
     end
   end
   private :extract_macho_slice_from
+
+  # Generate shell completions for a formula for bash, zsh, and fish, using the formula's executable.
+  #
+  # @param commands [Pathname, String] the path to the executable and any passed subcommand(s)
+  # to use for generating the completion scripts.
+  # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
+  # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
+  # @param shell_parameter_format [String, Symbol] specify how `shells` should each be passed
+  # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none].
+  # Defaults to plainly passing the shell.
+  #
+  # @example Using default values for optional arguments
+  #   generate_completions_from_executable(bin/"foo", "completions")
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #
+  # (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
+  #
+  # (fish_completion/"foo.fish").write Utils.safe_popen_read({ "SHELL" => "fish" }, bin/"foo", "completions", "fish")
+  #
+  # @example Selecting shells and using a different base_name
+  #    generate_completions_from_executable(bin/"foo", "completions", shells: [:bash, :zsh], base_name: "bar")
+  # translates to
+  #
+  # (bash_completion/"bar").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #
+  # (zsh_completion/"_bar").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
+  #
+  # @example Using predefined shell_parameter_format :flag
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :flag, shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--bash")
+  #
+  # @example Using predefined shell_parameter_format :arg
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :arg, shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
+  #                                                     "completions", "--shell=bash")
+  #
+  # @example Using predefined shell_parameter_format :none
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :none, shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions")
+  #
+  # @example Using custom shell_parameter_format
+  #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: "--selected-shell=",
+  #                                        shells: [:bash])
+  # translates to
+  #
+  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
+  #                                                     "completions", "--selected-shell=bash")
+  sig {
+    params(commands: T.any(Pathname, String), base_name: String, shells: T::Array[Symbol],
+           shell_parameter_format: T.nilable(T.any(Symbol, String))).void
+  }
+  def generate_completions_from_executable(*commands,
+                                           base_name: name,
+                                           shells: [:bash, :zsh, :fish],
+                                           shell_parameter_format: nil)
+    completion_script_path_map = {
+      bash: bash_completion/base_name,
+      zsh:  zsh_completion/"_#{base_name}",
+      fish: fish_completion/"#{base_name}.fish",
+    }
+
+    shells.each do |shell|
+      script_path = completion_script_path_map[shell]
+      shell_parameter = if shell_parameter_format.nil?
+        shell.to_s
+      elsif shell_parameter_format == :flag
+        "--#{shell}"
+      elsif shell_parameter_format == :arg
+        "--shell=#{shell}"
+      elsif shell_parameter_format == :none
+        ""
+      else
+        "#{shell_parameter_format}#{shell}"
+      end
+
+      popen_read_args = %w[]
+      popen_read_args << commands
+      popen_read_args << shell_parameter
+      popen_read_args.flatten!
+
+      script_path.dirname.mkpath
+      script_path.write Utils.safe_popen_read({ "SHELL" => shell.to_s }, *popen_read_args)
+    end
+  end
 
   # an array of all core {Formula} names
   # @private
@@ -1911,7 +2027,7 @@ class Formula
     # `any_installed_keg` and `runtime_dependencies` `select`s ensure
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
-    Formula.cache[:runtime_installed_formula_dependents] = {}
+    Formula.cache[:runtime_installed_formula_dependents] ||= {}
     Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
                                                                                .select(&:any_installed_keg)
                                                                                .select(&:runtime_dependencies)
@@ -2219,7 +2335,7 @@ class Formula
   def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
     super(paths, before, after, audit_result)
   rescue Utils::Inreplace::Error
-    raise BuildError.new(self, "inreplace", paths, nil)
+    raise BuildError.new(self, "inreplace", paths, {})
   end
 
   protected
@@ -2529,8 +2645,8 @@ class Formula
     }
   end
 
-  def stage(interactive: false)
-    active_spec.stage do |staging|
+  def stage(interactive: false, debug_symbols: false)
+    active_spec.stage(debug_symbols: debug_symbols) do |staging|
       @source_modified_time = active_spec.source_modified_time
       @buildpath = Pathname.pwd
       env_home = buildpath/".brew_home"

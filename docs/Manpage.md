@@ -344,6 +344,8 @@ is already installed but outdated.
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
+* `--debug-symbols`:
+  Generate debug symbols on build. Source will be retained in a cache directory. 
 * `--build-bottle`:
   Prepare the formula for eventual bottling during installation, skipping any post-install steps.
 * `--bottle-arch`:
@@ -545,6 +547,8 @@ reinstalled formulae or, every 30 days, for all formulae.
   Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
+* `--debug-symbols`:
+  Generate debug symbols on build. Source will be retained in a cache directory. 
 * `--display-times`:
   Print install times for each formula at the end of the run.
 * `-g`, `--git`:
@@ -729,6 +733,8 @@ upgraded formulae or, every 30 days, for all formulae.
   Set a successful exit status even if pinned formulae are not upgraded.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
+* `--debug-symbols`:
+  Generate debug symbols on build. Source will be retained in a cache directory. 
 * `--display-times`:
   Print install times for each package at the end of the run.
 * `--cask`:

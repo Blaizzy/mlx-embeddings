@@ -230,8 +230,13 @@ module Cask
     end
 
     # @api public
-    def sha256(arg = nil)
-      set_unique_stanza(:sha256, arg.nil?) do
+    def sha256(arg = nil, arm: nil, intel: nil)
+      should_return = arg.nil? && arm.nil? && intel.nil?
+
+      set_unique_stanza(:sha256, should_return) do
+        @on_system_blocks_exist = true if arm.present? || intel.present?
+
+        arg ||= on_arch_conditional(arm: arm, intel: intel)
         case arg
         when :no_check
           arg
@@ -245,7 +250,7 @@ module Cask
 
     # @api public
     def arch(arm: nil, intel: nil)
-      should_return = arm.blank? && intel.blank?
+      should_return = arm.nil? && intel.nil?
 
       set_unique_stanza(:arch, should_return) do
         @on_system_blocks_exist = true

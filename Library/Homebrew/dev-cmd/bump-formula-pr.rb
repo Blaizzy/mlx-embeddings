@@ -39,7 +39,6 @@ module Homebrew
              hidden:      true
       switch "--write-only",
              description: "Make the expected file modifications without taking any Git actions."
-      switch "--write", hidden: true
       switch "--commit",
              depends_on:  "--write-only",
              description: "When passed with `--write-only`, generate a new commit after writing changes " \
@@ -87,7 +86,6 @@ module Homebrew
                   description: "Exclude these Python packages when finding resources."
 
       conflicts "--dry-run", "--write-only"
-      conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"
       conflicts "--no-audit", "--online"
       conflicts "--url", "--tag"
@@ -99,8 +97,6 @@ module Homebrew
 
   def bump_formula_pr
     args = bump_formula_pr_args.parse
-
-    odisabled "`brew bump-formula-pr --write`", "`brew bump-formula-pr --write-only`" if args.write?
 
     if args.revision.present? && args.tag.nil? && args.version.nil?
       raise UsageError, "`--revision` must be passed with either `--tag` or `--version`!"

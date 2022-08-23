@@ -1091,6 +1091,7 @@ _brew_instal() {
       --cc
       --colorpickerdir
       --debug
+      --debug-symbols
       --dictionarydir
       --display-times
       --fetch-HEAD
@@ -1149,6 +1150,7 @@ _brew_install() {
       --cc
       --colorpickerdir
       --debug
+      --debug-symbols
       --dictionarydir
       --display-times
       --fetch-HEAD
@@ -1708,6 +1710,7 @@ _brew_reinstall() {
       --cask
       --colorpickerdir
       --debug
+      --debug-symbols
       --dictionarydir
       --display-times
       --fontdir
@@ -2360,6 +2363,7 @@ _brew_upgrade() {
       --cask
       --colorpickerdir
       --debug
+      --debug-symbols
       --dictionarydir
       --display-times
       --dry-run

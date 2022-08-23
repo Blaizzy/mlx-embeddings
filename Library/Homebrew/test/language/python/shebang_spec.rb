@@ -21,7 +21,7 @@ describe Language::Python::Shebang do
 
   before do
     file.write <<~EOS
-      #!/usr/bin/env python3
+      #!/usr/bin/python2
       a
       b
       c
@@ -34,10 +34,21 @@ describe Language::Python::Shebang do
   describe "#detected_python_shebang" do
     it "can be used to replace Python shebangs" do
       expect(Formulary).to receive(:factory).with(python_f.name).and_return(python_f)
-      Utils::Shebang.rewrite_shebang described_class.detected_python_shebang(f), file
+      Utils::Shebang.rewrite_shebang described_class.detected_python_shebang(f, use_python_from_path: false), file
 
       expect(File.read(file)).to eq <<~EOS
         #!#{HOMEBREW_PREFIX}/opt/python@3.11/bin/python3.11
+        a
+        b
+        c
+      EOS
+    end
+
+    it "can be pointed to a `python3` in PATH" do
+      Utils::Shebang.rewrite_shebang described_class.detected_python_shebang(f, use_python_from_path: true), file
+
+      expect(File.read(file)).to eq <<~EOS
+        #!/usr/bin/env python3
         a
         b
         c

@@ -483,6 +483,8 @@ class Keg
     ObserverPathnameExtension.n
   end
 
+  def prepare_debug_symbols; end
+
   def remove_oldname_opt_record
     return unless oldname_opt_record
     return if oldname_opt_record.resolved_path != path

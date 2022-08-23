@@ -15,6 +15,7 @@ module Cask
       audit_online: nil,
       audit_new_cask: nil,
       audit_strict: nil,
+      audit_signing: nil,
       audit_token_conflicts: nil,
       quarantine: nil,
       any_named_args: nil,
@@ -29,6 +30,7 @@ module Cask
         audit_online:          audit_online,
         audit_new_cask:        audit_new_cask,
         audit_strict:          audit_strict,
+        audit_signing:         audit_signing,
         audit_token_conflicts: audit_token_conflicts,
         quarantine:            quarantine,
         any_named_args:        any_named_args,
@@ -46,6 +48,7 @@ module Cask
       audit_appcast: nil,
       audit_online: nil,
       audit_strict: nil,
+      audit_signing: nil,
       audit_token_conflicts: nil,
       audit_new_cask: nil,
       quarantine: nil,
@@ -60,6 +63,7 @@ module Cask
       @audit_online = audit_online
       @audit_new_cask = audit_new_cask
       @audit_strict = audit_strict
+      @audit_signing = audit_signing
       @quarantine = quarantine
       @audit_token_conflicts = audit_token_conflicts
       @any_named_args = any_named_args
@@ -133,6 +137,7 @@ module Cask
         appcast:         @audit_appcast,
         online:          @audit_online,
         strict:          @audit_strict,
+        signing:         @audit_signing,
         new_cask:        @audit_new_cask,
         token_conflicts: @audit_token_conflicts,
         download:        @audit_download,

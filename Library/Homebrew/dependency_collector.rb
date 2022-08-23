@@ -30,12 +30,23 @@ class DependencyCollector
     @requirements = Requirements.new
   end
 
+  def initialize_copy(other)
+    super
+    @deps = @deps.dup
+    @requirements = @requirements.dup
+  end
+
   def add(spec)
     case dep = fetch(spec)
     when Dependency
       @deps << dep
     when Requirement
       @requirements << dep
+    when nil
+      # no-op when we have a nil value
+      nil
+    else
+      raise ArgumentError, "DependencyCollector#add passed something that isn't a Dependency or Requirement!"
     end
     dep
   end
@@ -63,7 +74,7 @@ class DependencyCollector
     Dependency.new("git", tags)
   end
 
-  def brewed_curl_dep_if_needed(tags)
+  def curl_dep_if_needed(tags)
     Dependency.new("curl", tags)
   end
 
@@ -148,7 +159,7 @@ class DependencyCollector
     strategy = spec.download_strategy
 
     if strategy <= HomebrewCurlDownloadStrategy
-      @deps << brewed_curl_dep_if_needed(tags)
+      @deps << curl_dep_if_needed(tags)
       parse_url_spec(spec.url, tags)
     elsif strategy <= CurlDownloadStrategy
       parse_url_spec(spec.url, tags)

@@ -205,5 +205,12 @@ describe "ENV" do
         expect(env["HOMEBREW_CCCFG"]).to include("g")
       end
     end
+
+    describe "#set_debug_symbols" do
+      it "sets the debug symbols flag" do
+        env.set_debug_symbols
+        expect(env["HOMEBREW_CCCFG"]).to include("D")
+      end
+    end
   end
 end

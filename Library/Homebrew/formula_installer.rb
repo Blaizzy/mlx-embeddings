@@ -39,6 +39,7 @@ class FormulaInstaller
   attr_predicate :installed_as_dependency?, :installed_on_request?
   attr_predicate :show_summary_heading?, :show_header?
   attr_predicate :force_bottle?, :ignore_deps?, :only_deps?, :interactive?, :git?, :force?, :overwrite?, :keep_tmp?
+  attr_predicate :debug_symbols?
   attr_predicate :verbose?, :debug?, :quiet?
 
   def initialize(
@@ -58,6 +59,7 @@ class FormulaInstaller
     git: false,
     interactive: false,
     keep_tmp: false,
+    debug_symbols: false,
     cc: nil,
     options: Options.new,
     force: false,
@@ -71,6 +73,7 @@ class FormulaInstaller
     @force = force
     @overwrite = overwrite
     @keep_tmp = keep_tmp
+    @debug_symbols = debug_symbols
     @link_keg = !formula.keg_only? || link_keg
     @show_header = show_header
     @ignore_deps = ignore_deps
@@ -688,6 +691,7 @@ class FormulaInstaller
       include_test_formulae:      @include_test_formulae,
       build_from_source_formulae: @build_from_source_formulae,
       keep_tmp:                   keep_tmp?,
+      debug_symbols:              debug_symbols?,
       force:                      force?,
       debug:                      debug?,
       quiet:                      quiet?,
@@ -741,6 +745,7 @@ class FormulaInstaller
         include_test_formulae:      @include_test_formulae,
         build_from_source_formulae: @build_from_source_formulae,
         keep_tmp:                   keep_tmp?,
+        debug_symbols:              debug_symbols?,
         force:                      force?,
         debug:                      debug?,
         quiet:                      quiet?,
@@ -801,6 +806,8 @@ class FormulaInstaller
     else
       post_install
     end
+
+    keg.prepare_debug_symbols if debug_symbols?
 
     # Updates the cache for a particular formula after doing an install
     CacheStoreDatabase.use(:linkage) do |db|
@@ -872,6 +879,11 @@ class FormulaInstaller
     args << "--debug" if debug?
     args << "--cc=#{@cc}" if @cc
     args << "--keep-tmp" if keep_tmp?
+
+    if debug_symbols?
+      args << "--debug-symbols"
+      args << "--build-from-source"
+    end
 
     if @env.present?
       args << "--env=#{@env}"

@@ -21,11 +21,11 @@ module RuboCop
 
         alias stanza_node method_node
 
-        def_delegator :stanza_node, :method_name, :stanza_name
         def_delegator :stanza_node, :parent, :parent_node
+        def_delegator :stanza_node, :arch_variable?
 
         def source_range
-          stanza_node.expression
+          stanza_node.location_expression
         end
 
         def source_range_with_comments
@@ -37,6 +37,12 @@ module RuboCop
         def_delegator :source_range, :source
         def_delegator :source_range_with_comments, :source,
                       :source_with_comments
+
+        def stanza_name
+          return :on_arch_conditional if arch_variable?
+
+          stanza_node.method_name
+        end
 
         def stanza_group
           Constants::STANZA_GROUP_HASH[stanza_name]

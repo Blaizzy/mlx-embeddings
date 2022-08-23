@@ -411,6 +411,53 @@ describe Cask::Audit, :cask do
       end
     end
 
+    describe "signing checks" do
+      let(:download_double) { instance_double(Cask::Download) }
+      let(:unpack_double) { instance_double(UnpackStrategy::Zip) }
+
+      before do
+        allow(audit).to receive(:download).and_return(download_double)
+        allow(audit).to receive(:signing?).and_return(true)
+        allow(audit).to receive(:check_https_availability)
+      end
+
+      context "when cask is not using a signed artifact" do
+        let(:cask) do
+          tmp_cask "signing-cask-test", <<~RUBY
+            cask 'signing-cask-test' do
+              version '1.0'
+              url "https://brew.sh/index.html"
+              binary 'Audit.app'
+            end
+          RUBY
+        end
+
+        it "does not fail" do
+          expect(download_double).not_to receive(:fetch)
+          expect(UnpackStrategy).not_to receive(:detect)
+          expect(run).not_to warn_with(/Audit\.app/)
+        end
+      end
+
+      context "when cask is using a signed artifact" do
+        let(:cask) do
+          tmp_cask "signing-cask-test", <<~RUBY
+            cask 'signing-cask-test' do
+              version '1.0'
+              url "https://brew.sh/"
+              pkg 'Audit.app'
+            end
+          RUBY
+        end
+
+        it "does not fail since no extract" do
+          allow(download_double).to receive(:fetch).and_return(Pathname.new("/tmp/test.zip"))
+          allow(UnpackStrategy).to receive(:detect).and_return(nil)
+          expect(run).not_to warn_with(/Audit\.app/)
+        end
+      end
+    end
+
     describe "livecheck should be skipped" do
       let(:online) { true }
       let(:message) { /Version '[^']*' differs from '[^']*' retrieved by livecheck\./ }
@@ -888,7 +935,7 @@ describe Cask::Audit, :cask do
     end
 
     describe "audit of downloads" do
-      let(:cask_token) { "with-binary" }
+      let(:cask_token) { "basic-cask" }
       let(:cask) { Cask::CaskLoader.load(cask_token) }
       let(:download_double) { instance_double(Cask::Download) }
       let(:message) { "Download Failed" }
@@ -896,10 +943,11 @@ describe Cask::Audit, :cask do
       before do
         allow(audit).to receive(:download).and_return(download_double)
         allow(audit).to receive(:check_https_availability)
+        allow(UnpackStrategy).to receive(:detect).and_return(nil)
       end
 
       it "when download and verification succeed it does not fail" do
-        expect(download_double).to receive(:fetch)
+        expect(download_double).to receive(:fetch).and_return(Pathname.new("/tmp/test.zip"))
         expect(run).to pass
       end
 

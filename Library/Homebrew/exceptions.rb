@@ -466,9 +466,19 @@ end
 
 # Raised when an error occurs during a formula build.
 class BuildError < RuntimeError
+  extend T::Sig
+
   attr_reader :cmd, :args, :env
   attr_accessor :formula, :options
 
+  sig {
+    params(
+      formula: T.nilable(Formula),
+      cmd:     T.any(String, Pathname),
+      args:    T::Array[T.any(String, Pathname, Integer)],
+      env:     T::Hash[String, T.untyped],
+    ).void
+  }
   def initialize(formula, cmd, args, env)
     @formula = formula
     @cmd = cmd
@@ -478,10 +488,12 @@ class BuildError < RuntimeError
     super "Failed executing: #{cmd} #{pretty_args}".strip
   end
 
+  sig { returns(T::Array[T.untyped]) }
   def issues
     @issues ||= fetch_issues
   end
 
+  sig { returns(T::Array[T.untyped]) }
   def fetch_issues
     GitHub.issues_for_formula(formula.name, tap: formula.tap, state: "open")
   rescue GitHub::API::RateLimitExceededError => e
@@ -489,6 +501,7 @@ class BuildError < RuntimeError
     []
   end
 
+  sig { params(verbose: T::Boolean).void }
   def dump(verbose: false)
     puts
 

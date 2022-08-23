@@ -263,7 +263,10 @@ module Homebrew
             next
           end
 
-          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname
+          # FIXME: Remove `glib-utils` exemption when the following PRs are merged:
+          #   https://github.com/Homebrew/homebrew-core/pull/108307
+          #   https://github.com/Homebrew/homebrew-core/pull/108497
+          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname && dep_f.oldname != "glib-utils"
             problem "Dependency '#{dep.name}' was renamed; use new name '#{dep_f.name}'."
           end
 
@@ -332,6 +335,13 @@ module Homebrew
       end
 
       return unless @core_tap
+
+      bad_gcc_dep = linux_only_gcc_dep?(formula) && (@strict || begin
+        fv = FormulaVersions.new(formula)
+        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
+      end)
+      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
+
       return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
@@ -344,6 +354,10 @@ module Homebrew
       recursive_runtime_formulae.each do |f|
         name = f.name
         unversioned_name, = name.split("@")
+        # Allow use of the full versioned name (e.g. `python@3.99`) or an unversioned alias (`python`).
+        next if formula.tap&.audit_exception :versioned_formula_dependent_conflicts_allowlist, name
+        next if formula.tap&.audit_exception :versioned_formula_dependent_conflicts_allowlist, unversioned_name
+
         version_hash[unversioned_name] ||= Set.new
         version_hash[unversioned_name] << name
         next if version_hash[unversioned_name].length < 2
@@ -419,11 +433,12 @@ module Homebrew
     def audit_glibc
       return unless @core_tap
       return if formula.name != "glibc"
-      return if [OS::CI_GLIBC_VERSION, "2.27", "2.31", "2.35"].include?(formula.version.to_s)
+      # Also allow LINUX_GLIBC_NEXT_CI_VERSION for when we're upgrading.
+      return if [OS::LINUX_GLIBC_CI_VERSION, OS::LINUX_GLIBC_NEXT_CI_VERSION].include?(formula.version.to_s)
 
-      problem "The glibc version must be #{OS::CI_GLIBC_VERSION}, as this is the version used by our CI on Linux. " \
-              "Glibc is for users who have a system Glibc with a lower version, " \
-              "which allows them to use our Linux bottles, which were compiled against system Glibc on CI."
+      problem "The glibc version must be #{OS::LINUX_GLIBC_CI_VERSION}, as needed by our CI on Linux. " \
+              "The glibc formula is for users who have a system glibc with a lower version, " \
+              "which allows them to use our Linux bottles, which were compiled against system glibc on CI."
     end
 
     ELASTICSEARCH_KIBANA_RELICENSED_VERSION = "7.11"
@@ -847,6 +862,17 @@ module Homebrew
 
     def head_only?(formula)
       formula.head && formula.stable.nil?
+    end
+
+    def linux_only_gcc_dep?(formula)
+      # TODO: Make this check work when running on Linux and not simulating macOS too.
+      return false unless Homebrew::SimulateSystem.simulating_or_running_on_macos?
+
+      formula_hash = formula.to_hash_with_variations
+      deps = formula_hash["dependencies"]
+      linux_deps = formula_hash.dig("variations", :x86_64_linux, "dependencies")
+
+      deps.exclude?("gcc") && linux_deps&.include?("gcc")
     end
   end
 end

@@ -88,3 +88,5 @@ Flaky test detection and tracking is provided by [BuildPulse](https://buildpulse
 Homebrew is generously supported by [Substack](https://github.com/substackinc), [Randy Reddig](https://github.com/ydnar), [embark-studios](https://github.com/embark-studios), [CodeCrafters](https://github.com/codecrafters-io) and many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
 
 [![Substack](https://github.com/substackinc.png?size=64)](https://github.com/substackinc)
+
+[![Mercedes-Benz Group](https://github.com/mercedes-benz.png?size=64)](https://github.com/mercedes-benz)

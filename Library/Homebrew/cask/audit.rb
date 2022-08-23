@@ -20,28 +20,31 @@ module Cask
 
     attr_reader :cask, :download
 
-    attr_predicate :appcast?, :new_cask?, :strict?, :online?, :token_conflicts?
+    attr_predicate :appcast?, :new_cask?, :strict?, :signing?, :online?, :token_conflicts?
 
     def initialize(cask, appcast: nil, download: nil, quarantine: nil,
-                   token_conflicts: nil, online: nil, strict: nil,
+                   token_conflicts: nil, online: nil, strict: nil, signing: nil,
                    new_cask: nil)
 
-      # `new_cask` implies `online` and `strict`
+      # `new_cask` implies `online`, `token_conflicts`, `strict` and `signing`
       online = new_cask if online.nil?
       strict = new_cask if strict.nil?
+      signing = new_cask if signing.nil?
+      token_conflicts = new_cask if token_conflicts.nil?
 
       # `online` implies `appcast` and `download`
       appcast = online if appcast.nil?
       download = online if download.nil?
 
-      # `new_cask` implies `token_conflicts`
-      token_conflicts = new_cask if token_conflicts.nil?
+      # `signing` implies `download`
+      download = signing if download.nil?
 
       @cask = cask
       @appcast = appcast
       @download = Download.new(cask, quarantine: quarantine) if download
       @online = online
       @strict = strict
+      @signing = signing
       @new_cask = new_cask
       @token_conflicts = token_conflicts
     end
@@ -81,6 +84,7 @@ module Cask
       check_github_repository_archived
       check_github_prerelease_version
       check_bitbucket_repository
+      check_signing
       self
     rescue => e
       odebug e, e.backtrace
@@ -548,6 +552,38 @@ module Cask
       download.fetch
     rescue => e
       add_error "download not possible: #{e}"
+    end
+
+    def check_signing
+      return if !signing? || download.blank? || cask.url.blank?
+
+      odebug "Auditing signing"
+      odebug cask.artifacts
+      artifacts = cask.artifacts.select { |k| k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::App) }
+
+      return if artifacts.empty?
+
+      downloaded_path = download.fetch
+      primary_container = UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
+
+      return if primary_container.nil?
+
+      Dir.mktmpdir do |tmpdir|
+        tmpdir = Pathname(tmpdir)
+        primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
+        artifacts.each do |artifact|
+          path = case artifact
+          when Artifact::Moved
+            tmpdir/artifact.source.basename
+          when Artifact::Pkg
+            artifact.path
+          end
+          next unless path.exist?
+
+          result = system_command("codesign", args: ["--verify", path], print_stderr: false)
+          add_warning result.merged_output unless result.success?
+        end
+      end
     end
 
     def check_livecheck_version

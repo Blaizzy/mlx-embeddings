@@ -91,6 +91,9 @@ module Homebrew
       def keep_tmp?; end
 
       sig { returns(T::Boolean) }
+      def debug_symbols?; end
+
+      sig { returns(T::Boolean) }
       def overwrite?; end
 
       sig { returns(T::Boolean) }

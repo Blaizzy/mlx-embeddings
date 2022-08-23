@@ -18,6 +18,15 @@ then
   exit 1
 fi
 
+# Fail fast with concise message when requesting unfiltered environment.
+# This is basically odisabled so can be removed at any major release afterwards
+# and definitely if this is still here in 2023.
+if [ -n "${HOMEBREW_NO_ENV_FILTERING}" ]
+then
+  echo "Error: HOMEBREW_NO_ENV_FILTERING was deprecated for over a year and has now been removed (because it breaks many things)!" >&2
+  exit 1
+fi
+
 quiet_cd() {
   cd "$@" &>/dev/null || return
 }
@@ -75,7 +84,7 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS
+for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR}" ]] && continue
@@ -114,32 +123,24 @@ fi
 HOMEBREW_PATH="${PATH}"
 export HOMEBREW_PATH
 
-# set from user environment
-# shellcheck disable=SC2154
-if [[ -z "${HOMEBREW_NO_ENV_FILTERING}" ]]
-then
-  PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+# filter the user environment
+PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 
-  FILTERED_ENV=()
-  ENV_VAR_NAMES=(
-    HOME SHELL PATH TERM TERMINFO TERMINFO_DIRS COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
-    http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY
-    GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED
-    GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_ATTEMPT GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF
-  )
-  # Filter all but the specific variables.
-  for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"
-  do
-    # Skip if variable value is empty.
-    [[ -z "${!VAR}" ]] && continue
+FILTERED_ENV=()
+ENV_VAR_NAMES=(
+  HOME SHELL PATH TERM TERMINFO TERMINFO_DIRS COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
+  http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY
+  GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED
+  GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_ATTEMPT GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF
+)
+# Filter all but the specific variables.
+for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"
+do
+  # Skip if variable value is empty.
+  [[ -z "${!VAR}" ]] && continue
 
-    FILTERED_ENV+=("${VAR}=${!VAR}")
-  done
-  unset VAR ENV_VAR_NAMES
+  FILTERED_ENV+=("${VAR}=${!VAR}")
+done
+unset VAR ENV_VAR_NAMES
 
-  exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "${HOMEBREW_LIBRARY}/Homebrew/brew.sh" "$@"
-else
-  echo "Warning: HOMEBREW_NO_ENV_FILTERING is undocumented, deprecated and will be removed in a future Homebrew release (because it breaks many things)!" >&2
-
-  source "${HOMEBREW_LIBRARY}/Homebrew/brew.sh"
-fi
+exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "${HOMEBREW_LIBRARY}/Homebrew/brew.sh" "$@"

@@ -80,11 +80,16 @@ class LinkageChecker
   alias generic_display_test_output display_test_output
   private :generic_display_test_output
 
-  sig { params(strict: T::Boolean).returns(T::Boolean) }
-  def broken_library_linkage?(strict: false)
-    issues = [@broken_deps, @unwanted_system_dylibs, @version_conflict_deps]
-    issues += [@undeclared_deps, @files_missing_rpaths] if strict
-    [issues, unexpected_broken_dylibs, unexpected_present_dylibs].flatten.any?(&:present?)
+  sig { params(test: T::Boolean, strict: T::Boolean).returns(T::Boolean) }
+  def broken_library_linkage?(test: false, strict: false)
+    raise ArgumentError, "Strict linkage checking requires test mode to be enabled." if strict && !test
+
+    issues = [@broken_deps, unexpected_broken_dylibs]
+    if test
+      issues += [@unwanted_system_dylibs, @version_conflict_deps, unexpected_present_dylibs]
+      issues += [@undeclared_deps, @files_missing_rpaths] if strict
+    end
+    issues.any?(&:present?)
   end
   alias generic_broken_library_linkage? broken_library_linkage?
   private :generic_broken_library_linkage?

@@ -62,4 +62,19 @@ class Keg
       #{result.stderr}
     EOS
   end
+
+  def prepare_debug_symbols
+    binary_executable_or_library_files.each do |file|
+      odebug "Extracting symbols #{file}"
+
+      result = system_command("dsymutil", args: [file], print_stderr: false)
+      next if result.success?
+
+      # If it fails again, error out
+      ofail <<~EOS
+        Failed to extract symbols from #{file}:
+        #{result.stderr}
+      EOS
+    end
+  end
 end

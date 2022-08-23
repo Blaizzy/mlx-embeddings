@@ -189,8 +189,8 @@ module Homebrew
     def self.skip_clean_formula?(f)
       return false if Homebrew::EnvConfig.no_cleanup_formulae.blank?
 
-      skip_clean_formulae = Homebrew::EnvConfig.no_cleanup_formulae.split(",")
-      skip_clean_formulae.include?(f.name) || (skip_clean_formulae & f.aliases).present?
+      @skip_clean_formulae ||= Homebrew::EnvConfig.no_cleanup_formulae.split(",")
+      @skip_clean_formulae.include?(f.name) || (@skip_clean_formulae & f.aliases).present?
     end
 
     def self.periodic_clean_due?
@@ -428,7 +428,6 @@ module Homebrew
         next if !use_system_ruby && portable_ruby_latest_version == path.basename.to_s
 
         portable_rubies_to_remove << path
-        puts "Would remove: #{path} (#{path.abv})" if dry_run?
       end
 
       return if portable_rubies_to_remove.empty?
@@ -440,20 +439,16 @@ module Homebrew
         puts Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "clean", "-ffqx", bundler_path).chomp
       end
 
-      return if dry_run?
-
-      FileUtils.rm_rf portable_rubies_to_remove
+      portable_rubies_to_remove.each do |portable_ruby|
+        cleanup_path(portable_ruby) { portable_ruby.rmtree }
+      end
     end
 
     def cleanup_bootsnap
       bootsnap = cache/"bootsnap"
       return unless bootsnap.exist?
 
-      if dry_run?
-        puts "Would remove: #{bootsnap} (#{bootsnap.abv})"
-      else
-        FileUtils.rm_rf bootsnap
-      end
+      cleanup_path(bootsnap) { bootsnap.rmtree }
     end
 
     def cleanup_cache_db(rack = nil)
@@ -540,8 +535,12 @@ module Homebrew
       # the cache of installed formulae may no longer be valid.
       Formula.clear_cache unless dry_run
 
-      # Remove formulae listed in HOMEBREW_NO_CLEANUP_FORMULAE.
-      formulae = Formula.installed.reject(&method(:skip_clean_formula?))
+      formulae = Formula.installed
+      # Remove formulae listed in HOMEBREW_NO_CLEANUP_FORMULAE and their dependencies.
+      if Homebrew::EnvConfig.no_cleanup_formulae.present?
+        formulae -= formulae.select(&method(:skip_clean_formula?))
+                            .flat_map { |f| [f, *f.runtime_formula_dependencies] }
+      end
       casks = Cask::Caskroom.casks
 
       removable_formulae = Formula.unused_formulae_with_no_dependents(formulae, casks)

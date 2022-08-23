@@ -149,7 +149,7 @@ describe Formula do
       end
     end
 
-    it "returns true by default" do
+    it "returns array with versioned formulae" do
       FileUtils.touch f.path
       FileUtils.touch f2.path
       allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
@@ -1994,6 +1994,30 @@ describe Formula do
           ignore_missing_libraries "bar.so"
         end
       }.to raise_error("ignore_missing_libraries is available on Linux only")
+    end
+  end
+
+  describe "#generate_completions_from_executable" do
+    let(:f) do
+      Class.new(Testball) do
+        def install
+          bin.mkpath
+          (bin/"foo").write <<-EOF
+            echo completion
+          EOF
+
+          FileUtils.chmod "+x", bin/"foo"
+
+          generate_completions_from_executable(bin/"foo", "test")
+        end
+      end.new
+    end
+
+    it "generates completion scripts" do
+      f.brew { f.install }
+      expect(f.bash_completion/"testball").to be_a_file
+      expect(f.zsh_completion/"_testball").to be_a_file
+      expect(f.fish_completion/"testball.fish").to be_a_file
     end
   end
 end

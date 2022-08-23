@@ -119,6 +119,7 @@ module Homebrew
     if args.retry? && @test_failed.add?(f)
       oh1 "Testing #{f.full_name} (again)"
       f.clear_cache
+      ENV["RUST_BACKTRACE"] = "full"
       true
     else
       Homebrew.failed = true

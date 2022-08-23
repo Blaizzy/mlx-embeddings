@@ -55,9 +55,11 @@ module Superenv
       build_bottle:    T.nilable(T::Boolean),
       bottle_arch:     T.nilable(String),
       testing_formula: T::Boolean,
+      debug_symbols:   T.nilable(T::Boolean),
     ).void
   }
-  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false)
+  def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false,
+                              debug_symbols: false)
     super
     send(compiler)
 
@@ -87,6 +89,8 @@ module Superenv
     self["HOMEBREW_DEPENDENCIES"] = determine_dependencies
     self["HOMEBREW_FORMULA_PREFIX"] = @formula.prefix unless @formula.nil?
 
+    set_debug_symbols if debug_symbols
+
     # The HOMEBREW_CCCFG ENV variable is used by the ENV/cc tool to control
     # compiler flag stripping. It consists of a string of characters which act
     # as flags. Some of these flags are mutually exclusive.
@@ -100,6 +104,7 @@ module Superenv
     # d - Don't strip -march=<target>. Use only in formulae that
     #     have runtime detection of CPU features.
     # w - Pass -no_weak_imports to the linker
+    # D - Generate debugging information
     #
     # These flags will also be present:
     # a - apply fix for apr-1-config path
@@ -125,8 +130,13 @@ module Superenv
 
   sig { returns(T::Array[Pathname]) }
   def homebrew_extra_paths
-    []
+    # Reverse sort by version so that we prefer the newest when there are multiple.
+    deps.select { |d| d.name.match? Version.formula_optionally_versioned_regex(:python) }
+        .sort_by(&:version)
+        .reverse
+        .map { |d| d.opt_libexec/"bin" }
   end
+  alias generic_homebrew_extra_paths homebrew_extra_paths
 
   sig { returns(T.nilable(PATH)) }
   def determine_path
@@ -329,6 +339,11 @@ module Superenv
   sig { void }
   def libcxx
     append_to_cccfg "g" if compiler == :clang
+  end
+
+  sig { void }
+  def set_debug_symbols
+    append_to_cccfg "D"
   end
 
   # @private

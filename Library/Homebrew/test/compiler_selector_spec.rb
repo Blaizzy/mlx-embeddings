@@ -18,7 +18,7 @@ describe CompilerSelector do
   end
 
   before do
-    allow(versions).to receive(:non_apple_gcc_version) do |name|
+    allow(versions).to receive(:gcc_version) do |name|
       case name
       when "gcc-7" then Version.create("7.1")
       when "gcc-6" then Version.create("6.1")

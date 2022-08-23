@@ -274,7 +274,7 @@ module Homebrew
     attrs << "pinned at #{f.pinned_version}" if f.pinned?
     attrs << "keg-only" if f.keg_only?
 
-    puts "#{f.full_name}: #{specs * ", "}#{" [#{attrs * ", "}]" unless attrs.empty?}"
+    puts "#{oh1_title(f.full_name)}: #{specs * ", "}#{" [#{attrs * ", "}]" unless attrs.empty?}"
     puts f.desc if f.desc
     puts Formatter.url(f.homepage) if f.homepage
 
