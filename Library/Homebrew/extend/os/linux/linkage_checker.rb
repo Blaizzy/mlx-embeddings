@@ -10,7 +10,6 @@ class LinkageChecker
     libanl.so.1
     libatomic.so.1
     libc.so.6
-    libcrypt.so.1
     libdl.so.2
     libm.so.6
     libmvec.so.1
@@ -29,17 +28,10 @@ class LinkageChecker
   def display_deprecated_warning(strict: false)
     return unless @libcrypt_found
 
-    # Steps when moving this to `odisabled`:
-    # - Remove `libcrypt.so.1` from SYSTEM_LIBRARY_ALLOWLIST above.
-    # - Remove the `disable` and `disable_for_developer` kwargs here.
-    # - Remove `broken_library_linkage?` override below and the generic alias in HOMEBREW_LIBRARY/linkage_checker.rb.
-    # - Remove `fail_on_libcrypt1?`.
-    # Steps when removing this entirely (assuming the above has already been done):
+    # Steps when removing this entirely:
     # - Remove the `display_` overrides here and the associated generic aliases in HOMEBREW_LIBRARY/linkage_checker.rb
     # - Remove the setting of `@libcrypt_found` in `check_dylibs` below.
-    odeprecated "linkage to libcrypt.so.1", "libcrypt.so.2 in the libxcrypt formula",
-                disable:                fail_on_libcrypt1?(strict: strict),
-                disable_for_developers: false
+    odisabled "linkage to libcrypt.so.1", "libcrypt.so.2 in the libxcrypt formula"
   end
 
   def display_normal_output
@@ -53,15 +45,10 @@ class LinkageChecker
   end
 
   def broken_library_linkage?(test: false, strict: false)
-    generic_broken_library_linkage?(test: test, strict: strict) ||
-      (fail_on_libcrypt1?(strict: strict) && @libcrypt_found)
+    generic_broken_library_linkage?(test: test, strict: strict)
   end
 
   private
-
-  def fail_on_libcrypt1?(strict:)
-    strict || ENV["HOMEBREW_DISALLOW_LIBCRYPT1"].present?
-  end
 
   def check_dylibs(rebuild_cache:)
     generic_check_dylibs(rebuild_cache: rebuild_cache)
