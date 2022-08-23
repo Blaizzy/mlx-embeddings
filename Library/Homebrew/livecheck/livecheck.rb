@@ -290,10 +290,9 @@ module Homebrew
           resource_version_info = formula_or_cask.resources.map do |resource|
             resource_version(
               resource,
-              json:      json,
-              full_name: use_full_name,
-              verbose:   verbose,
-              debug:     debug,
+              json:    json,
+              verbose: verbose,
+              debug:   debug,
             )
           end
         end
@@ -349,19 +348,18 @@ module Homebrew
         if json
           progress&.increment
           info.except!(:meta) unless verbose
+          resource_version_info.map! { |r| r.except!(:meta) } if check_for_resources && !verbose
           next info
         end
         puts if debug
-        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
-resource: false)
+        print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
 
         if check_for_resources
           resource_version_info.each do |r_info|
             print_latest_version(
               r_info,
-              verbose:        verbose,
-              ambiguous_cask: false,
-              resource:       true,
+              verbose:  verbose,
+              resource: true,
             )
           end
         end
@@ -464,7 +462,7 @@ resource: false)
       package_or_resource_s = resource ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
       package_or_resource_s += " (cask)" if ambiguous_cask
-      package_or_resource_s += " (guessed)" if verbose && !resource && !info[:meta][:livecheckable]
+      package_or_resource_s += " (guessed)" if verbose && !info[:meta][:livecheckable]
 
       current_s = if info[:version][:newer_than_upstream]
         "#{Tty.red}#{info[:version][:current]}#{Tty.reset}"
@@ -606,17 +604,15 @@ resource: false)
     # couldn't be found for a given resource.
     sig {
       params(
-        resource:  Resource,
-        json:      T::Boolean,
-        full_name: T::Boolean,
-        verbose:   T::Boolean,
-        debug:     T::Boolean,
+        resource: Resource,
+        json:     T::Boolean,
+        verbose:  T::Boolean,
+        debug:    T::Boolean,
       ).returns(T.nilable(Hash))
     }
     def resource_version(
       resource,
       json: false,
-      full_name: false,
       verbose: false,
       debug: false
     )
@@ -707,7 +703,7 @@ resource: false)
           puts messages unless json
           next if i + 1 < urls.length
 
-          return status_hash(resource, "error", messages, full_name: full_name, verbose: verbose)
+          return status_hash(resource, "error", messages, verbose: verbose)
         end
 
         if debug
@@ -759,12 +755,9 @@ resource: false)
           },
         }
 
-        next unless json
-        next unless verbose
-
         resource_version_info[:meta] = { url: { original: original_url } }
         resource_version_info[:meta][:url][:processed] = url if url != original_url
-        resource_version_info[:meta][:livecheckable] = has_livecheckable ? "Yes" : "No"
+        resource_version_info[:meta][:livecheckable] = has_livecheckable
         next unless has_livecheckable
 
         res_livecheck = { url: { original: livecheck_url } }
