@@ -879,7 +879,7 @@ module Homebrew
       return false if linux_deps.exclude?("gcc")
 
       variations = formula_hash["variations"]
-      # The formula has no variations, so all versions depend on GCC.
+      # The formula has no variations, so all OS-version-arch triples depend on GCC.
       return false if variations.blank?
 
       # FIXME: This returns a false positive for formulae that do, for example:
@@ -889,7 +889,7 @@ module Homebrew
       # end
       # ```
       variations_deps = []
-      formula_hash["variations"].each_value do |data|
+      variations.each_value do |data|
         variations_deps += data["dependencies"]
       end
       variations_deps.uniq!
