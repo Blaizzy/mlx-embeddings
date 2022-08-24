@@ -888,11 +888,10 @@ module Homebrew
       #   depends_on "gcc"
       # end
       # ```
-      variations_deps = []
-      variations.each_value do |data|
-        variations_deps += data["dependencies"]
-      end
-      variations_deps.uniq!
+      variations_deps = variations.values
+                                  .flat_map { |data| data["dependencies"] }
+                                  .compact
+                                  .uniq
 
       variations_deps.exclude?("gcc")
     end
