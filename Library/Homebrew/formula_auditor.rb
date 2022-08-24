@@ -876,15 +876,25 @@ module Homebrew
 
       formula_hash = formula.to_hash_with_variations
       linux_deps = formula_hash["dependencies"]
-      variations_deps = []
-      formula_hash["variations"].map do |variation, data|
-        next if variation == :x86_64_linux
+      return false if linux_deps.exclude?("gcc")
 
+      variations = formula_hash["variations"]
+      # The formula has no variations, so all versions depend on GCC.
+      return false if variations.blank?
+
+      # FIXME: This returns a false positive for formulae that do, for example:
+      # ```ruby
+      # on_system :linux, macos: :catalina_or_newer do
+      #   depends_on "gcc"
+      # end
+      # ```
+      variations_deps = []
+      formula_hash["variations"].each_value do |data|
         variations_deps += data["dependencies"]
       end
       variations_deps.uniq!
 
-      linux_deps.include?("gcc") && variations_deps&.exclude?("gcc")
+      variations_deps.exclude?("gcc")
     end
   end
 end
