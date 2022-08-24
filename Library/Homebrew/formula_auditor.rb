@@ -882,18 +882,20 @@ module Homebrew
       # The formula has no variations, so all OS-version-arch triples depend on GCC.
       return false if variations.blank?
 
-      # FIXME: This returns a false positive for formulae that do, for example:
-      # ```ruby
-      # on_system :linux, macos: :catalina_or_newer do
-      #   depends_on "gcc"
-      # end
-      # ```
-      variations_deps = variations.values
-                                  .flat_map { |data| data["dependencies"] }
-                                  .compact
-                                  .uniq
+      MacOSVersions::SYMBOLS.each_key do |macos_version|
+        [:arm, :intel].each do |arch|
+          bottle_tag = Utils::Bottles::Tag.new(system: macos_version, arch: arch)
+          next unless bottle_tag.valid_combination?
 
-      variations_deps.exclude?("gcc")
+          variation = variations[bottle_tag.to_sym]
+          # This variation does not exist, so it must match Linux.
+          return false if variation.blank?
+          # We found a non-Linux variation that depends on GCC.
+          return false if variation["dependencies"]&.include?("gcc")
+        end
+      end
+
+      true
     end
   end
 end
