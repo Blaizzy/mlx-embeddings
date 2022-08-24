@@ -335,13 +335,6 @@ module Homebrew
       end
 
       return unless @core_tap
-
-      bad_gcc_dep = linux_only_gcc_dep?(formula) && (@strict || begin
-        fv = FormulaVersions.new(formula)
-        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
-      end)
-      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
-
       return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
@@ -413,6 +406,20 @@ module Homebrew
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         problem "Ambiguous conflicting formula #{conflict.name.inspect}."
       end
+    end
+
+    def audit_gcc_dependency
+      return unless @core_tap
+      return unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
+      return unless linux_only_gcc_dep?(formula)
+
+      bad_gcc_dep = @strict || begin
+        fv = FormulaVersions.new(formula)
+        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
+      end
+      return unless bad_gcc_dep
+
+      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC."
     end
 
     def audit_postgresql
@@ -865,14 +872,19 @@ module Homebrew
     end
 
     def linux_only_gcc_dep?(formula)
-      # TODO: Make this check work when running on Linux and not simulating macOS too.
-      return false unless Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      odie "`#linux_only_gcc_dep?` works only on Linux!" if Homebrew::SimulateSystem.simulating_or_running_on_macos?
 
       formula_hash = formula.to_hash_with_variations
-      deps = formula_hash["dependencies"]
-      linux_deps = formula_hash.dig("variations", :x86_64_linux, "dependencies")
+      linux_deps = formula_hash["dependencies"]
+      variations_deps = []
+      formula_hash["variations"].map do |variation, data|
+        next if variation == :x86_64_linux
 
-      deps.exclude?("gcc") && linux_deps&.include?("gcc")
+        variations_deps += data["dependencies"]
+      end
+      variations_deps.uniq!
+
+      linux_deps.include?("gcc") && variations_deps&.exclude?("gcc")
     end
   end
 end
