@@ -181,6 +181,9 @@ class Formula
 
   # @private
   def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+    # Only allow instances of subclasses. The base class does not hold any spec information (URLs etc).
+    raise "Do not call `Formula.new' directly without a subclass." unless self.class < Formula
+
     @name = name
     @path = path
     @alias_path = alias_path
