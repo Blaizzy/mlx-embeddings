@@ -19,8 +19,10 @@ module RuboCop
 
       def stanza?
         return true if arch_variable?
+        return false if !send_type? && !block_type?
+        return true if ON_SYSTEM_METHODS.include?(method_name)
 
-        (send_type? || block_type?) && STANZA_ORDER.include?(method_name)
+        STANZA_ORDER.include?(method_name)
       end
 
       def heredoc?
