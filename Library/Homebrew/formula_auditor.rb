@@ -332,13 +332,6 @@ module Homebrew
       end
 
       return unless @core_tap
-
-      bad_gcc_dep = linux_only_gcc_dep?(formula) && (@strict || begin
-        fv = FormulaVersions.new(formula)
-        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
-      end)
-      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
-
       return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
@@ -410,6 +403,22 @@ module Homebrew
       rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         problem "Ambiguous conflicting formula #{conflict.name.inspect}."
       end
+    end
+
+    def audit_gcc_dependency
+      return unless @git
+      return unless @core_tap
+      return if !@strict && !formula.tap.git? # git log is required for non-strict audit
+      return unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
+      return unless linux_only_gcc_dep?(formula)
+
+      bad_gcc_dep = @strict || begin
+        fv = FormulaVersions.new(formula)
+        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
+      end
+      return unless bad_gcc_dep
+
+      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC."
     end
 
     def audit_postgresql
@@ -862,14 +871,27 @@ module Homebrew
     end
 
     def linux_only_gcc_dep?(formula)
-      # TODO: Make this check work when running on Linux and not simulating macOS too.
-      return false unless Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      odie "`#linux_only_gcc_dep?` works only on Linux!" if Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      return false if formula.deps.map(&:name).exclude?("gcc")
 
-      formula_hash = formula.to_hash_with_variations
-      deps = formula_hash["dependencies"]
-      linux_deps = formula_hash.dig("variations", :x86_64_linux, "dependencies")
+      variations = formula.to_hash_with_variations["variations"]
+      # The formula has no variations, so all OS-version-arch triples depend on GCC.
+      return false if variations.blank?
 
-      deps.exclude?("gcc") && linux_deps&.include?("gcc")
+      MacOSVersions::SYMBOLS.each_key do |macos_version|
+        [:arm, :intel].each do |arch|
+          bottle_tag = Utils::Bottles::Tag.new(system: macos_version, arch: arch)
+          next unless bottle_tag.valid_combination?
+
+          variation = variations[bottle_tag.to_sym]
+          # This variation does not exist, so it must match Linux.
+          return false if variation.blank?
+          # We found a non-Linux variation that depends on GCC.
+          return false if variation["dependencies"]&.include?("gcc")
+        end
+      end
+
+      true
     end
   end
 end
