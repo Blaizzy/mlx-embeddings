@@ -491,6 +491,13 @@ class Tap
     end
   end
 
+  # An array of all versioned {Formula} files of this {Tap}.
+  def versioned_formula_files
+    @versioned_formula_files ||= formula_files.select do |file|
+      file.basename(".rb").to_s =~ /@[\d.]+$/
+    end
+  end
+
   # An array of all {Cask} files of this {Tap}.
   def cask_files
     @cask_files ||= if cask_dir.directory?
