@@ -142,7 +142,7 @@ describe Formulary do
       before do
         allow(described_class).to receive(:loader_for).and_call_original
         stub_formula_loader formula("gcc") { url "gcc-1.0" }
-        stub_formula_loader formula("gcc@5") { url "gcc-5.0" }
+        stub_formula_loader formula("gcc@11") { url "gcc-11.0" }
       end
 
       let(:installed_formula) { described_class.factory(formula_path) }
