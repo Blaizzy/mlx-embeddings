@@ -283,14 +283,13 @@ module Cask
 
     def artifacts_list
       artifacts.map do |artifact|
-        if artifact.is_a? Artifact::AbstractFlightBlock
-          { type: artifact.summarize }
+        key, value = if artifact.is_a? Artifact::AbstractFlightBlock
+          artifact.summarize
         else
-          {
-            type: artifact.class.dsl_key,
-            args: to_h_gsubs(artifact.to_args),
-          }
+          [artifact.class.dsl_key, to_h_gsubs(artifact.to_args)]
         end
+
+        { key => value }
       end
     end
 

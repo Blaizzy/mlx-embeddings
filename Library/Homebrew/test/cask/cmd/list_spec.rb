@@ -107,14 +107,12 @@ describe Cask::Cmd::List, :cask do
             "sha256": "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
             "artifacts": [
               {
-                "type": "app",
-                "args": [
+                "app": [
                   "Caffeine.app"
                 ]
               },
               {
-                "type": "zap",
-                "args": [
+                "zap": [
                   {
                     "trash": "$HOME/support/fixtures/cask/caffeine/org.example.caffeine.plist"
                   }
@@ -147,8 +145,7 @@ describe Cask::Cmd::List, :cask do
             "sha256": "e44ffa103fbf83f55c8d0b1bea309a43b2880798dae8620b1ee8da5e1095ec68",
             "artifacts": [
               {
-                "type": "app",
-                "args": [
+                "app": [
                   "Transmission.app"
                 ]
               }
@@ -182,8 +179,7 @@ describe Cask::Cmd::List, :cask do
             "sha256": "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
             "artifacts": [
               {
-                "type": "app",
-                "args": [
+                "app": [
                   "Caffeine.app"
                 ]
               }
@@ -214,8 +210,7 @@ describe Cask::Cmd::List, :cask do
             "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b",
             "artifacts": [
               {
-                "type": "app",
-                "args": [
+                "app": [
                   "ThirdParty.app"
                 ]
               }
