@@ -88,6 +88,15 @@ module RuboCop
                                  else_method: else_method, else_node: else_node)
           end
         end
+
+        [:arch, :arm?, :intel?].each do |method|
+          hardware_cpu_search(body_node, method: method) do |method_node|
+            next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+
+            offending_node(method_node)
+            problem "Don't use `#{method_node.source}`, use `on_arm` and `on_intel` blocks instead."
+          end
+        end
       end
 
       def audit_base_os_conditionals(body_node, allowed_methods: [], allowed_blocks: [])
@@ -178,6 +187,10 @@ module RuboCop
 
       def_node_matcher :on_system_method_call, <<~PATTERN
         (send nil? :on_system (sym :linux) (hash (pair (sym :macos) (sym $_))))
+      PATTERN
+
+      def_node_search :hardware_cpu_search, <<~PATTERN
+        (send (const (const nil? :Hardware) :CPU) %method)
       PATTERN
 
       def_node_search :if_arch_node_search, <<~PATTERN

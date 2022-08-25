@@ -262,4 +262,80 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       include_examples "does not report any offenses"
     end
   end
+
+  context "when auditing loose `Hardware::CPU` method calls" do
+    context "when there is a `Hardware::CPU.arm?` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            if Hardware::CPU.arm? && other_condition
+              sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
+            else
+              sha256 "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+            end
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `Hardware::CPU.arm?`, use `on_arm` and `on_intel` blocks instead.",
+          severity: :convention,
+          line:     2,
+          column:   5,
+          source:   "Hardware::CPU.arm?",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+
+    context "when there is a `Hardware::CPU.intel?` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            if Hardware::CPU.intel? && other_condition
+              sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
+            else
+              sha256 "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
+            end
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `Hardware::CPU.intel?`, use `on_arm` and `on_intel` blocks instead.",
+          severity: :convention,
+          line:     2,
+          column:   5,
+          source:   "Hardware::CPU.intel?",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+
+    context "when there is a `Hardware::CPU.arch` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            version "1.2.3"
+            sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
+
+            url "https://example.com/foo-\#{version}-\#{Hardware::CPU.arch}.zip"
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `Hardware::CPU.arch`, use `on_arm` and `on_intel` blocks instead.",
+          severity: :convention,
+          line:     5,
+          column:   44,
+          source:   "Hardware::CPU.arch",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+  end
 end
