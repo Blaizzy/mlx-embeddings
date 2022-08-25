@@ -106,13 +106,19 @@ describe Cask::Cmd::List, :cask do
             "outdated": false,
             "sha256": "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
             "artifacts": [
-              [
-                "Caffeine.app"
-              ],
               {
-                "trash": "$HOME/support/fixtures/cask/caffeine/org.example.caffeine.plist",
-                "signal": {
-                }
+                "type": "app",
+                "args": [
+                  "Caffeine.app"
+                ]
+              },
+              {
+                "type": "zap",
+                "args": [
+                  {
+                    "trash": "$HOME/support/fixtures/cask/caffeine/org.example.caffeine.plist"
+                  }
+                ]
               }
             ],
             "caveats": null,
@@ -140,9 +146,12 @@ describe Cask::Cmd::List, :cask do
             "outdated": false,
             "sha256": "e44ffa103fbf83f55c8d0b1bea309a43b2880798dae8620b1ee8da5e1095ec68",
             "artifacts": [
-              [
-                "Transmission.app"
-              ]
+              {
+                "type": "app",
+                "args": [
+                  "Transmission.app"
+                ]
+              }
             ],
             "caveats": null,
             "depends_on": {
@@ -172,9 +181,12 @@ describe Cask::Cmd::List, :cask do
             "outdated": false,
             "sha256": "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
             "artifacts": [
-              [
-                "Caffeine.app"
-              ]
+              {
+                "type": "app",
+                "args": [
+                  "Caffeine.app"
+                ]
+              }
             ],
             "caveats": null,
             "depends_on": {
@@ -201,9 +213,12 @@ describe Cask::Cmd::List, :cask do
             "outdated": false,
             "sha256": "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b",
             "artifacts": [
-              [
-                "ThirdParty.app"
-              ]
+              {
+                "type": "app",
+                "args": [
+                  "ThirdParty.app"
+                ]
+              }
             ],
             "caveats": null,
             "depends_on": {
