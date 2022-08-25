@@ -581,11 +581,9 @@ class FormulaInstaller
   end
 
   def expand_dependencies_for_formula(formula, inherited_options)
-    any_bottle_used = false
-
     # Cache for this expansion only. FormulaInstaller has a lot of inputs which can alter expansion.
     cache_key = "FormulaInstaller-#{formula.full_name}-#{Time.now.to_f}"
-    expanded_deps = Dependency.expand(formula, cache_key: cache_key) do |dependent, dep|
+    Dependency.expand(formula, cache_key: cache_key) do |dependent, dep|
       inherited_options[dep.name] |= inherited_options_for(dep)
       build = effective_build_options_for(
         dependent,
@@ -601,36 +599,14 @@ class FormulaInstaller
         Dependency.prune
       elsif dep.satisfied?(inherited_options[dep.name])
         Dependency.skip
-      else
-        any_bottle_used ||= install_bottle_for?(dep.to_formula, build)
       end
     end
-
-    [expanded_deps, any_bottle_used]
   end
 
   def expand_dependencies
     inherited_options = Hash.new { |hash, key| hash[key] = Options.new }
-    any_bottle_used = pour_bottle?
 
-    expanded_deps, any_dep_bottle_used = expand_dependencies_for_formula(formula, inherited_options)
-    any_bottle_used ||= any_dep_bottle_used
-
-    # We require some dependencies (glibc, GCC 5, etc.) if binaries were built.
-    # Native binaries shouldn't exist in cross-platform `all` bottles.
-    if any_bottle_used && !formula.bottled?(:all) && !Keg.bottle_dependencies.empty?
-      all_bottle_deps = Keg.bottle_dependencies.flat_map do |bottle_dep|
-        bottle_dep.recursive_dependencies.map(&:name) + [bottle_dep.name]
-      end
-
-      if all_bottle_deps.exclude?(formula.name)
-        bottle_deps = Keg.bottle_dependencies.flat_map do |bottle_dep|
-          expanded_bottle_deps, = expand_dependencies_for_formula(bottle_dep, inherited_options)
-          expanded_bottle_deps
-        end
-        expanded_deps = Dependency.merge_repeats(bottle_deps + expanded_deps)
-      end
-    end
+    expanded_deps = expand_dependencies_for_formula(formula, inherited_options)
 
     expanded_deps.map { |dep| [dep, inherited_options[dep.name]] }
   end

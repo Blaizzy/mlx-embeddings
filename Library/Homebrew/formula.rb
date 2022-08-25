@@ -262,8 +262,12 @@ class Formula
     return unless spec.url
 
     spec.owner = self
+    add_global_deps_to_spec(spec)
     instance_variable_set("@#{name}", spec)
   end
+
+  sig { params(spec: SoftwareSpec).void }
+  def add_global_deps_to_spec(spec); end
 
   def determine_active_spec(requested)
     spec = send(requested) || stable || head
@@ -443,7 +447,7 @@ class Formula
   # Returns any `@`-versioned formulae names for any formula (including versioned formulae).
   sig { returns(T::Array[String]) }
   def versioned_formulae_names
-    @versioned_formulae_names ||= Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
+    Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
       next if versioned_path == path
 
       versioned_path.basename(".rb").to_s
@@ -453,7 +457,7 @@ class Formula
   # Returns any `@`-versioned Formula objects for any Formula (including versioned formulae).
   sig { returns(T::Array[Formula]) }
   def versioned_formulae
-    @versioned_formulae ||= versioned_formulae_names.map do |name|
+    versioned_formulae_names.map do |name|
       Formula[name]
     rescue FormulaUnavailableError
       nil
