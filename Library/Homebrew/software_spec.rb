@@ -50,6 +50,11 @@ class SoftwareSpec
     @uses_from_macos_elements = []
   end
 
+  def initialize_copy(other)
+    super
+    @dependency_collector = @dependency_collector.dup
+  end
+
   def owner=(owner)
     @name = owner.name
     @full_name = owner.full_name

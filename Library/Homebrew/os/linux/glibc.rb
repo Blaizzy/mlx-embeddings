@@ -44,6 +44,11 @@ module OS
       def below_minimum_version?
         system_version < minimum_version
       end
+
+      sig { returns(T::Boolean) }
+      def below_ci_version?
+        system_version < LINUX_GLIBC_CI_VERSION
+      end
     end
   end
 end
