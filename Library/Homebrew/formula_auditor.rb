@@ -406,9 +406,8 @@ module Homebrew
     end
 
     def audit_gcc_dependency
-      return unless @git
       return unless @core_tap
-      return if !@strict && !formula.tap.git? # git log is required for non-strict audit
+      return if !@strict && !@git && !formula.tap.git? # git log is required for non-strict audit
       return unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
       return unless linux_only_gcc_dep?(formula)
 
