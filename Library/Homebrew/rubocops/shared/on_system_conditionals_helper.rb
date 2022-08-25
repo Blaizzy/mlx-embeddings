@@ -135,6 +135,13 @@ module RuboCop
             if_statement_problem(if_node, "if MacOS.version #{operator} :#{macos_version_option}",
                                  on_system_method_string, autocorrect: autocorrect)
           end
+
+          macos_version_comparison_search(body_node, os_version: macos_version_option) do |method_node|
+            next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+
+            offending_node(method_node)
+            problem "Don't use `#{method_node.source}`, use `on_{macos_version}` blocks instead."
+          end
         end
       end
 
@@ -191,6 +198,10 @@ module RuboCop
 
       def_node_search :hardware_cpu_search, <<~PATTERN
         (send (const (const nil? :Hardware) :CPU) %method)
+      PATTERN
+
+      def_node_search :macos_version_comparison_search, <<~PATTERN
+        (send (send (const nil? :MacOS) :version) {:== :<= :< :>= :> :!=} (sym %os_version))
       PATTERN
 
       def_node_search :if_arch_node_search, <<~PATTERN
