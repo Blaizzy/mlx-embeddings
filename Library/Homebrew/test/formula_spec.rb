@@ -149,11 +149,15 @@ describe Formula do
       end
     end
 
+    before do
+      allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
+      allow(Formulary).to receive(:factory).with(f2.name).and_return(f2)
+      allow(f.tap).to receive(:versioned_formula_files).and_return([f2.path])
+    end
+
     it "returns array with versioned formulae" do
       FileUtils.touch f.path
       FileUtils.touch f2.path
-      allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
-      allow(Formulary).to receive(:factory).with(f2.name).and_return(f2)
       expect(f.versioned_formulae).to eq [f2]
     end
 
