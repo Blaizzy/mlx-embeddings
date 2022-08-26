@@ -52,7 +52,7 @@ class DependencyCollector
       # This is an arbitrary number picked based on testing the current tree
       # depth and just to ensure that this doesn't loop indefinitely if we
       # introduce a circular dependency by mistake.
-      maximum_tree_depth = 10
+      maximum_tree_depth = 20
       current_tree_depth = 0
 
       deps = Formula[global_dep_name].deps
