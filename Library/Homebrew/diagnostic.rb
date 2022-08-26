@@ -591,7 +591,11 @@ module Homebrew
 
       def check_coretap_integrity
         coretap = CoreTap.instance
-        return if !coretap.installed? && EnvConfig.install_from_api?
+        unless coretap.installed?
+          return if EnvConfig.install_from_api?
+
+          CoreTap.ensure_installed!
+        end
 
         broken_tap(coretap) || examine_git_origin(coretap.path, Homebrew::EnvConfig.core_git_remote)
       end
