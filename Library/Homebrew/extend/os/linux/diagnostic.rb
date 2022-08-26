@@ -144,6 +144,7 @@ module Homebrew
         gcc_dependents = Formula.installed.select do |formula|
           next false unless formula.tap&.core_tap?
 
+          # FIXME: This includes formulae that have no runtime dependency on GCC.
           formula.recursive_dependencies.map(&:name).include? "gcc"
         rescue TapFormulaUnavailableError
           false
@@ -153,7 +154,7 @@ module Homebrew
         badly_linked = gcc_dependents.select do |dependent|
           keg = Keg.new(dependent.prefix)
           keg.binary_executable_or_library_files.any? do |binary|
-            paths = binary.rpath.split(":")
+            paths = binary.rpaths
             versioned_linkage = paths.any? { |path| path.match?(%r{lib/gcc/\d+$}) }
             unversioned_linkage = paths.any? { |path| path.match?(%r{lib/gcc/current$}) }
 
