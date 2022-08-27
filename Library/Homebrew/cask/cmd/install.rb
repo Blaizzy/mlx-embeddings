@@ -75,9 +75,8 @@ module Cask
         options[:quarantine] = true if options[:quarantine].nil?
 
         if dry_run
-          casks_to_install = casks.reject(&:installed?)
-          if casks_to_install.present?
-            plural = "package".pluralize(casks_to_install.count)
+          if (casks_to_install = casks.reject(&:installed?).presence)
+            plural = "cask".pluralize(casks_to_install.count)
             ohai "Would install #{casks_to_install.count} #{plural}:"
             puts casks_to_install.map(&:full_name).join(" ")
           end

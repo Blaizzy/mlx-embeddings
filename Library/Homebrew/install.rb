@@ -319,9 +319,8 @@ module Homebrew
       end.compact
 
       if dry_run
-        formulae_name_to_install = formulae_to_install.map(&:name)
-        if formulae_name_to_install.present?
-          plural = "package".pluralize(formulae_name_to_install.count)
+        if (formulae_name_to_install = formulae_to_install.map(&:name))
+          plural = "formula".pluralize(formulae_name_to_install.count)
           ohai "Would install #{formulae_name_to_install.count} #{plural}:"
           puts formulae_name_to_install.join(" ")
 
