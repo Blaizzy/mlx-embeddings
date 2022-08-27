@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "active_support/core_ext/object/deep_dup"
+
 module Cask
   module Artifact
     # Abstract superclass for all artifacts.
@@ -127,8 +129,9 @@ module Cask
 
       attr_reader :cask
 
-      def initialize(cask)
+      def initialize(cask, *dsl_args)
         @cask = cask
+        @dsl_args = dsl_args.deep_dup
       end
 
       def config
@@ -138,6 +141,10 @@ module Cask
       sig { returns(String) }
       def to_s
         "#{summarize} (#{self.class.english_name})"
+      end
+
+      def to_args
+        @dsl_args.reject(&:blank?)
       end
     end
   end

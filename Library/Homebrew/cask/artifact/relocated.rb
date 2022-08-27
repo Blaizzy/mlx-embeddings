@@ -42,12 +42,13 @@ module Cask
       attr_reader :source, :target
 
       sig {
-        params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target: T.nilable(T.any(String, Pathname)))
+        params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target_hash: String)
           .void
       }
-      def initialize(cask, source, target: nil)
-        super(cask)
+      def initialize(cask, source, **target_hash)
+        super(cask, source, **target_hash)
 
+        target = target_hash[:target]
         @source_string = source.to_s
         @target_string = target.to_s
         source = cask.staged_path.join(source)

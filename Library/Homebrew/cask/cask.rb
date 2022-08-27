@@ -235,7 +235,7 @@ module Cask
         "installed"      => versions.last,
         "outdated"       => outdated?,
         "sha256"         => sha256,
-        "artifacts"      => artifacts.map(&method(:to_h_gsubs)),
+        "artifacts"      => artifacts_list,
         "caveats"        => (to_h_string_gsubs(caveats) unless caveats.empty?),
         "depends_on"     => depends_on,
         "conflicts_with" => conflicts_with,
@@ -280,6 +280,18 @@ module Cask
     end
 
     private
+
+    def artifacts_list
+      artifacts.map do |artifact|
+        key, value = if artifact.is_a? Artifact::AbstractFlightBlock
+          artifact.summarize
+        else
+          [artifact.class.dsl_key, to_h_gsubs(artifact.to_args)]
+        end
+
+        { key => value }
+      end
+    end
 
     def to_h_string_gsubs(string)
       string.to_s
