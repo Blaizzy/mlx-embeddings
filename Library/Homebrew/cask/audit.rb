@@ -585,7 +585,7 @@ module Cask
           next if result.success?
 
           # Only fail if signature is wrong, not when no signature is present at all.
-          next result.stderr.include?("not signed at all")
+          next if result.stderr.include?("not signed at all")
 
           add_warning "Signature verification failed: #{result.merged_output}"
         end
