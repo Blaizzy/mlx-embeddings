@@ -584,10 +584,16 @@ module Cask
 
           next if result.success?
 
-          # Only fail if signature is wrong, not when no signature is present at all.
-          next if result.stderr.include?("not signed at all")
+          message = "Signature verification failed:\n#{result.merged_output}\nmacOS on ARM requires applications " \
+                    "to be signed. Please contact the upstream developer to let them know they should "
 
-          add_warning "Signature verification failed: #{result.merged_output}"
+          message += if result.stderr.include?("not signed at all")
+            "sign their app."
+          else
+            "fix the signature of their app."
+          end
+
+          add_warning message
         end
       end
     end
