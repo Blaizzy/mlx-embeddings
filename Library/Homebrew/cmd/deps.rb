@@ -286,8 +286,14 @@ module Homebrew
       end
 
       display_s = "#{tree_lines} #{dep_display_name(dep, args: args)}"
+
+      # Detect circular dependencies and consider them a failure if present.
       is_circular = dep_stack.include?(dep.name)
-      display_s = "#{display_s} (CIRCULAR DEPENDENCY)" if is_circular
+      if is_circular
+        display_s = "#{display_s} (CIRCULAR DEPENDENCY)"
+        Homebrew.failed = true
+      end
+
       puts "#{prefix}#{display_s}"
 
       next if !recursive || is_circular
