@@ -13,9 +13,9 @@ class DependencyCollector
   sig { params(related_formula_names: T::Set[String]).returns(T.nilable(Dependency)) }
   def gcc_dep_if_needed(related_formula_names)
     return unless DevelopmentTools.system_gcc_too_old?
+    return if building_global_dep_tree?
     return if related_formula_names.include?(GCC)
     return if global_dep_tree[GCC]&.intersect?(related_formula_names)
-    return if global_dep_tree[GLIBC]&.intersect?(related_formula_names) # gcc depends on glibc
 
     Dependency.new(GCC)
   end
@@ -23,6 +23,8 @@ class DependencyCollector
   sig { params(related_formula_names: T::Set[String]).returns(T.nilable(Dependency)) }
   def glibc_dep_if_needed(related_formula_names)
     return unless OS::Linux::Glibc.below_ci_version?
+    return if building_global_dep_tree?
+    return if related_formula_names.include?(GLIBC)
     return if global_dep_tree[GLIBC]&.intersect?(related_formula_names)
 
     Dependency.new(GLIBC)
@@ -33,44 +35,54 @@ class DependencyCollector
   GLIBC = "glibc"
   GCC = CompilerSelector.preferred_gcc.freeze
 
+  sig { void }
+  def init_global_dep_tree_if_needed!
+    return unless DevelopmentTools.build_system_too_old?
+    return if building_global_dep_tree?
+    return unless global_dep_tree.empty?
+
+    building_global_dep_tree!
+    global_dep_tree[GLIBC] = Set.new(global_deps_for(GLIBC))
+    # gcc depends on glibc
+    global_dep_tree[GCC] = Set.new([*global_deps_for(GCC), GLIBC, *@@global_dep_tree[GLIBC]])
+    built_global_dep_tree!
+  end
+
+  sig { params(name: String).returns(T::Array[String]) }
+  def global_deps_for(name)
+    @global_deps_for ||= {}
+    # Always strip out glibc and gcc from all parts of dependency tree when
+    # we're calculating their dependency trees. Other parts of Homebrew will
+    # catch any circular dependencies.
+    @global_deps_for[name] ||= Formula[name].deps.map(&:name).flat_map do |dep|
+      [dep, *global_deps_for(dep)].compact
+    end.uniq
+  end
+
   # Use class variables to avoid this expensive logic needing to be done more
   # than once.
   # rubocop:disable Style/ClassVars
   @@global_dep_tree = {}
-
-  sig { void }
-  def init_global_dep_tree_if_needed!
-    return unless DevelopmentTools.build_system_too_old?
-    return if @@global_dep_tree.present?
-
-    # Defined in precedence order (gcc depends on glibc).
-    global_deps = [GLIBC, GCC].freeze
-
-    @@global_dep_tree = global_deps.to_h { |name| [name, Set.new([name])] }
-
-    global_deps.each do |global_dep_name|
-      # This is an arbitrary number picked based on testing the current tree
-      # depth and just to ensure that this doesn't loop indefinitely if we
-      # introduce a circular dependency by mistake.
-      maximum_tree_depth = 20
-      current_tree_depth = 0
-
-      deps = Formula[global_dep_name].deps
-      while deps.present?
-        current_tree_depth += 1
-        if current_tree_depth > maximum_tree_depth
-          raise "maximum tree depth (#{maximum_tree_depth}) exceeded calculating #{global_dep_name} dependency tree!"
-        end
-
-        @@global_dep_tree[global_dep_name].merge(deps.map(&:name))
-        deps = deps.flat_map { |dep| dep.to_formula.deps }
-      end
-    end
-  end
+  @@building_global_dep_tree = false
 
   sig { returns(T::Hash[String, T::Set[String]]) }
   def global_dep_tree
     @@global_dep_tree
+  end
+
+  sig { void }
+  def building_global_dep_tree!
+    @@building_global_dep_tree = true
+  end
+
+  sig { void }
+  def built_global_dep_tree!
+    @@building_global_dep_tree = false
+  end
+
+  sig { returns(T::Boolean) }
+  def building_global_dep_tree?
+    @@building_global_dep_tree.present?
   end
   # rubocop:enable Style/ClassVars
 end
