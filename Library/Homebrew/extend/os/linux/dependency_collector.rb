@@ -12,7 +12,8 @@ class DependencyCollector
 
   sig { params(related_formula_names: T::Set[String]).returns(T.nilable(Dependency)) }
   def gcc_dep_if_needed(related_formula_names)
-    return unless DevelopmentTools.system_gcc_too_old?
+    # gcc is required for libgcc_s.so.1 if glibc or gcc are too old
+    return unless DevelopmentTools.build_system_too_old?
     return if building_global_dep_tree?
     return if related_formula_names.include?(GCC)
     return if global_dep_tree[GCC]&.intersect?(related_formula_names)
