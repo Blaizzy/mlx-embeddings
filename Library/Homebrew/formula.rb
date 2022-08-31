@@ -2695,6 +2695,7 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     extend Predicable
+    extend T::Sig
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux
 
@@ -2903,8 +2904,9 @@ class Formula
     #
     # Formulae which should not be bottled should be tagged with:
     # <pre>bottle :disable, "reasons"</pre>
-    def bottle(*args, &block)
-      stable.bottle(*args, &block)
+    sig { params(block: T.proc.bind(BottleSpecification).void).void }
+    def bottle(&block)
+      stable.bottle(&block)
     end
 
     # @private
