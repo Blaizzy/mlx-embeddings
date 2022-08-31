@@ -13,30 +13,54 @@ test_ruby() {
     "${HOMEBREW_REQUIRED_RUBY_VERSION}" 2>/dev/null
 }
 
+can_use_ruby_from_path() {
+  if [[ -n "${HOMEBREW_DEVELOPER}" && -n "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
+  then
+    return 0
+  fi
+
+  return 1
+}
+
+find_first_valid_ruby() {
+  local ruby_exec
+  while IFS= read -r ruby_exec
+  do
+    if test_ruby "${ruby_exec}"
+    then
+      echo "${ruby_exec}"
+      break
+    fi
+  done
+}
+
 # HOMEBREW_MACOS is set by brew.sh
 # HOMEBREW_PATH is set by global.rb
 # shellcheck disable=SC2154
 find_ruby() {
-  if [[ -n "${HOMEBREW_MACOS}" && -z "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
+  if [[ -n "${HOMEBREW_MACOS}" ]] && ! can_use_ruby_from_path
   then
     echo "/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby"
   else
-    local ruby_exec
-    while read -r ruby_exec
-    do
-      if test_ruby "${ruby_exec}"
-      then
-        echo "${ruby_exec}"
-        break
-      fi
-    done < <(
+    local valid_ruby
+
+    # Prioritise rubies from the filtered path (/usr/bin etc) unless explicitly overridden.
+    if ! can_use_ruby_from_path
+    then
       # function which() is set by brew.sh
       # it is aliased to `type -P`
       # shellcheck disable=SC2230
-      which -a ruby
+      valid_ruby=$(find_first_valid_ruby < <(which -a ruby))
+    fi
+
+    if [[ -z "${valid_ruby}" ]]
+    then
+      # Same as above
       # shellcheck disable=SC2230
-      PATH="${HOMEBREW_PATH}" which -a ruby
-    )
+      valid_ruby=$(find_first_valid_ruby < <(PATH="${HOMEBREW_PATH}" which -a ruby))
+    fi
+
+    echo "${valid_ruby}"
   fi
 }
 
@@ -47,10 +71,10 @@ need_vendored_ruby() {
   if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]
   then
     return 0
-  elif [[ -n "${HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH}" && -z "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
+  elif [[ -n "${HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH}" ]] && ! can_use_ruby_from_path
   then
     return 1
-  elif [[ -z "${HOMEBREW_MACOS}" || -n "${HOMEBREW_USE_RUBY_FROM_PATH}" ]] && test_ruby "${HOMEBREW_RUBY_PATH}"
+  elif ([[ -z "${HOMEBREW_MACOS}" ]] || can_use_ruby_from_path) && test_ruby "${HOMEBREW_RUBY_PATH}"
   then
     return 1
   else
