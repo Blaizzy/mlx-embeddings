@@ -20,7 +20,7 @@ concurrency:
 jobs:
   syntax:
     if: github.repository == 'Homebrew/brew'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -52,7 +52,7 @@ jobs:
     name: tap syntax (Linux)
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -146,7 +146,7 @@ jobs:
 
   vendored-gems:
     name: vendored gems (Linux)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -167,7 +167,7 @@ jobs:
 
   docker:
     needs: syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -191,7 +191,7 @@ jobs:
   tests:
     name: ${{ matrix.name }}
     needs: syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
@@ -244,7 +244,7 @@ jobs:
 
   test-default-formula-linux:
     name: test default formula (Linux)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       HOMEBREW_BOOTSNAP: 1
     steps:
