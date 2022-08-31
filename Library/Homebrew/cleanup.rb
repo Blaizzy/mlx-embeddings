@@ -531,6 +531,7 @@ module Homebrew
 
       unused_pyc_files += pyc_files.reject { |k,| seen_non_pyc_file[k] }
                                    .values
+                                   .flatten
       return if unused_pyc_files.blank?
 
       unused_pyc_files.each do |pyc|
