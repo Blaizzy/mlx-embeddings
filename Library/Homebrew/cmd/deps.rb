@@ -61,10 +61,8 @@ module Homebrew
                           "for each provided <formula>, one formula per line. This is used for " \
                           "debugging the `--installed`/`--all` display mode."
       switch "--formula", "--formulae",
-             depends_on:  "--installed",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
-             depends_on:  "--installed",
              description: "Treat all named arguments as casks."
 
       conflicts "--tree", "--graph"
