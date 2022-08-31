@@ -140,10 +140,10 @@ Show dependencies for *`formula`*. Additional options specific to *`formula`*
 may be appended to the command. When given multiple formula arguments,
 show the intersection of dependencies for each formula.
 
-* `-n`:
+* `-n`, `--topological`:
   Sort dependencies in topological order.
-* `--1`:
-  Only show dependencies one level down, instead of recursing.
+* `-1`, `--direct`:
+  Show only the direct dependencies declared in the formula.
 * `--union`:
   Show the union of dependencies for multiple *`formula`*, instead of the intersection.
 * `--full-name`:
