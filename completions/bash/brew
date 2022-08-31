@@ -728,11 +728,11 @@ _brew_deps() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --1
       --all
       --annotate
       --cask
       --debug
+      --direct
       --dot
       --for-each
       --formula
@@ -746,10 +746,10 @@ _brew_deps() {
       --installed
       --quiet
       --skip-recommended
+      --topological
       --tree
       --union
       --verbose
-      -n
       "
       return
       ;;
