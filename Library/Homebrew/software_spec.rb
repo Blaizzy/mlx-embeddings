@@ -354,7 +354,7 @@ class Bottle
     @cellar = tag_spec.cellar
     @rebuild = spec.rebuild
 
-    @resource.version = formula.pkg_version
+    @resource.version = formula.pkg_version.to_s
     @resource.checksum = tag_spec.checksum
 
     @fetch_tab_retried = false
