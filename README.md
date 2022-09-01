@@ -85,8 +85,4 @@ Flaky test detection and tracking is provided by [BuildPulse](https://buildpulse
 [![DNSimple](https://cdn.dnsimple.com/assets/resolving-with-us/logo-light.png)](https://dnsimple.com/resolving/homebrew#gh-light-mode-only)
 [![DNSimple](https://cdn.dnsimple.com/assets/resolving-with-us/logo-dark.png)](https://dnsimple.com/resolving/homebrew#gh-dark-mode-only)
 
-Homebrew is generously supported by [Substack](https://github.com/substackinc), [Randy Reddig](https://github.com/ydnar), [embark-studios](https://github.com/embark-studios), [CodeCrafters](https://github.com/codecrafters-io) and many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
-
-[![Substack](https://github.com/substackinc.png?size=64)](https://github.com/substackinc)
-
-[![Mercedes-Benz Group](https://github.com/mercedes-benz.png?size=64)](https://github.com/mercedes-benz)
+Homebrew is generously supported by [Randy Reddig](https://github.com/ydnar), [Codecademy](https://github.com/Codecademy), [Appwrite](https://github.com/appwrite), [embark-studios](https://github.com/embark-studios) and many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew).
