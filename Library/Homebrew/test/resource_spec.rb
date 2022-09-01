@@ -66,10 +66,6 @@ describe Resource do
   end
 
   describe "#livecheck" do
-    it "returns nil if livecheck block is not set in resource" do
-      expect(resource.livecheck).to be_nil
-    end
-
     specify "when livecheck block is set" do
       expect(livecheck_resource.livecheck.url).to eq("https://brew.sh/test/releases")
       expect(livecheck_resource.livecheck.regex).to eq(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)

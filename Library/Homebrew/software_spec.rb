@@ -36,6 +36,7 @@ class SoftwareSpec
   def_delegators :@resource, :sha256
 
   def initialize(flags: [])
+    # Ensure this is synced with `initialize_dup` and `freeze` (excluding simple objects like integers and booleans)
     @resource = Resource.new
     @resources = {}
     @dependency_collector = DependencyCollector.new
@@ -50,9 +51,36 @@ class SoftwareSpec
     @uses_from_macos_elements = []
   end
 
-  def initialize_copy(other)
+  def initialize_dup(other)
     super
+    @resource = @resource.dup
+    @resources = @resources.dup
     @dependency_collector = @dependency_collector.dup
+    @bottle_specification = @bottle_specification.dup
+    @patches = @patches.dup
+    @options = @options.dup
+    @flags = @flags.dup
+    @deprecated_flags = @deprecated_flags.dup
+    @deprecated_options = @deprecated_options.dup
+    @build = @build.dup
+    @compiler_failures = @compiler_failures.dup
+    @uses_from_macos_elements = @uses_from_macos_elements.dup
+  end
+
+  def freeze
+    @resource.freeze
+    @resources.freeze
+    @dependency_collector.freeze
+    @bottle_specification.freeze
+    @patches.freeze
+    @options.freeze
+    @flags.freeze
+    @deprecated_flags.freeze
+    @deprecated_options.freeze
+    @build.freeze
+    @compiler_failures.freeze
+    @uses_from_macos_elements.freeze
+    super
   end
 
   def owner=(owner)

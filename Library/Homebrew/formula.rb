@@ -181,6 +181,14 @@ class Formula
 
   # @private
   def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+    # Only allow instances of subclasses. The base class does not hold any spec information (URLs etc).
+    raise "Do not call `Formula.new' directly without a subclass." unless self.class < Formula
+
+    # Stop any subsequent modification of a formula's definition.
+    # Changes do not propagate to existing instances of formulae.
+    # Now that we have an instance, it's too late to make any changes to the class-level definition.
+    self.class.freeze
+
     @name = name
     @path = path
     @alias_path = alias_path
@@ -2692,8 +2700,25 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     extend Predicable
+    extend T::Sig
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux
+
+    # Initialise instance variables for each subclass. These need to be initialised before the class is frozen,
+    # and some DSL may never be called so it can't be done lazily.
+    def inherited(child)
+      super
+      child.instance_eval do
+        # Ensure this is synced with `freeze`
+        @stable = SoftwareSpec.new(flags: build_flags)
+        @head = HeadSoftwareSpec.new(flags: build_flags)
+        @livecheck = Livecheck.new(self)
+        @conflicts = []
+        @skip_clean_paths = Set.new
+        @link_overwrite_paths = Set.new
+        @allowed_missing_libraries = Set.new
+      end
+    end
 
     def method_added(method)
       super
@@ -2704,6 +2729,16 @@ class Formula
       when :test
         define_method(:test_defined?) { true }
       end
+    end
+
+    def freeze
+      specs.each(&:freeze)
+      @livecheck.freeze
+      @conflicts.freeze
+      @skip_clean_paths.freeze
+      @link_overwrite_paths.freeze
+      @allowed_missing_libraries.freeze
+      super
     end
 
     # Whether this formula contains OS/arch-specific blocks
@@ -2786,6 +2821,18 @@ class Formula
     # @private
     attr_reader :plist_manual
 
+    # @private
+    attr_reader :conflicts
+
+    # @private
+    attr_reader :skip_clean_paths
+
+    # @private
+    attr_reader :link_overwrite_paths
+
+    # @private
+    attr_reader :allowed_missing_libraries
+
     # If `pour_bottle?` returns `false` the user-visible reason to display for
     # why they cannot use the bottle.
     # @private
@@ -2816,7 +2863,7 @@ class Formula
     # A list of the {.stable} and {.head} {SoftwareSpec}s.
     # @private
     def specs
-      @specs ||= [stable, head].freeze
+      [stable, head].freeze
     end
 
     # @!attribute [w] url
@@ -2900,8 +2947,9 @@ class Formula
     #
     # Formulae which should not be bottled should be tagged with:
     # <pre>bottle :disable, "reasons"</pre>
-    def bottle(*args, &block)
-      stable.bottle(*args, &block)
+    sig { params(block: T.proc.bind(BottleSpecification).void).void }
+    def bottle(&block)
+      stable.bottle(&block)
     end
 
     # @private
@@ -2932,7 +2980,6 @@ class Formula
     #   depends_on "libffi"
     # end</pre>
     def stable(&block)
-      @stable ||= SoftwareSpec.new(flags: build_flags)
       return @stable unless block
 
       @stable.instance_eval(&block)
@@ -2951,7 +2998,6 @@ class Formula
     # or (if autodetect fails):
     # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", using: :hg</pre>
     def head(val = nil, specs = {}, &block)
-      @head ||= HeadSoftwareSpec.new(flags: build_flags)
       if block
         @head.instance_eval(&block)
       elsif val
@@ -3102,11 +3148,6 @@ class Formula
       @plist_manual = options[:manual]
     end
 
-    # @private
-    def conflicts
-      @conflicts ||= []
-    end
-
     # One or more formulae that conflict with this one and why.
     # <pre>conflicts_with "imagemagick", because: "both install `convert` binaries"</pre>
     def conflicts_with(*names)
@@ -3125,11 +3166,6 @@ class Formula
       paths.flatten!
       # Specifying :all is deprecated and will become an error
       skip_clean_paths.merge(paths)
-    end
-
-    # @private
-    def skip_clean_paths
-      @skip_clean_paths ||= Set.new
     end
 
     # Software that will not be symlinked into the `brew --prefix` and will
@@ -3235,7 +3271,6 @@ class Formula
     #   regex /foo-(\d+(?:\.\d+)+)\.tar/
     # end</pre>
     def livecheck(&block)
-      @livecheck ||= Livecheck.new(self)
       return @livecheck unless block
 
       @livecheckable = true
@@ -3391,11 +3426,6 @@ class Formula
       link_overwrite_paths.merge(paths)
     end
 
-    # @private
-    def link_overwrite_paths
-      @link_overwrite_paths ||= Set.new
-    end
-
     # Permit links to certain libraries that don't exist. Available on Linux only.
     def ignore_missing_libraries(*libs)
       unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
@@ -3408,11 +3438,6 @@ class Formula
       end
 
       allowed_missing_libraries.merge(libraries)
-    end
-
-    # @private
-    def allowed_missing_libraries
-      @allowed_missing_libraries ||= Set.new
     end
   end
 end

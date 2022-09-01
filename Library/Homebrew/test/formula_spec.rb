@@ -832,15 +832,15 @@ describe Formula do
     specify "service complicated" do
       f = formula do
         url "https://brew.sh/test-1.0.tbz"
-      end
 
-      f.class.service do
-        run [opt_bin/"beanstalkd"]
-        run_type :immediate
-        error_log_path var/"log/beanstalkd.error.log"
-        log_path var/"log/beanstalkd.log"
-        working_dir var
-        keep_alive true
+        service do
+          run [opt_bin/"beanstalkd"]
+          run_type :immediate
+          error_log_path var/"log/beanstalkd.error.log"
+          log_path var/"log/beanstalkd.log"
+          working_dir var
+          keep_alive true
+        end
       end
       expect(f.service).not_to be_nil
     end

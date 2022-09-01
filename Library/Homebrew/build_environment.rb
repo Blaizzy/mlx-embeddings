@@ -33,9 +33,17 @@ class BuildEnvironment
   module DSL
     extend T::Sig
 
+    # Initialise @env for each class which may use this DSL (e.g. each formula subclass).
+    # `env` may never be called, and it needs to be initialised before the class is frozen.
+    def inherited(child)
+      super
+      child.instance_eval do
+        @env = BuildEnvironment.new
+      end
+    end
+
     sig { params(settings: Symbol).returns(BuildEnvironment) }
     def env(*settings)
-      @env ||= BuildEnvironment.new
       @env.merge(settings)
     end
   end
