@@ -239,13 +239,13 @@ class Resource
     @download_strategy = DownloadStrategyDetector.detect(url, using)
     @specs.merge!(specs)
     @downloader = nil
+    @version = detect_version(@version)
   end
 
   def version(val = nil)
-    @version ||= begin
-      version = detect_version(val)
-      version.null? ? nil : version
-    end
+    return @version if val.nil?
+
+    @version = detect_version(val)
   end
 
   def mirror(val)
@@ -266,15 +266,15 @@ class Resource
   private
 
   def detect_version(val)
-    return Version::NULL if val.nil? && url.nil?
-
-    case val
-    when nil     then Version.detect(url, **specs)
+    version = case val
+    when nil     then url.nil? ? Version::NULL : Version.detect(url, **specs)
     when String  then Version.create(val)
     when Version then val
     else
       raise TypeError, "version '#{val.inspect}' should be a string"
     end
+
+    version.null? ? nil : version
   end
 
   # A resource containing a Go package.
