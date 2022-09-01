@@ -274,7 +274,7 @@ class Resource
       raise TypeError, "version '#{val.inspect}' should be a string"
     end
 
-    version.null? ? nil : version
+    version unless version.null?
   end
 
   # A resource containing a Go package.
