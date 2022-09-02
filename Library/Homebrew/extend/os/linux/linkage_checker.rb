@@ -80,5 +80,7 @@ class LinkageChecker
     @unwanted_system_dylibs = @system_dylibs.reject do |s|
       SYSTEM_LIBRARY_ALLOWLIST.include? File.basename(s)
     end
+
+    @undeclared_deps.delete("gcc")
   end
 end
