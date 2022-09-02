@@ -13,7 +13,7 @@ module Homebrew
   URL_TIER_AMOUNT = 1000
 
   sig { returns(CLI::Parser) }
-  def sponsors_args
+  def update_sponsors_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Update the list of GitHub Sponsors in the `Homebrew/brew` README.
@@ -35,8 +35,8 @@ module Homebrew
     "https://github.com/#{s["login"]}"
   end
 
-  def sponsors
-    sponsors_args.parse
+  def update_sponsors
+    update_sponsors_args.parse
 
     named_sponsors = []
     logo_sponsors = []
@@ -68,7 +68,7 @@ module Homebrew
       "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "README.md"
     ]
     if diff.status.success?
-      puts "No changes to list of sponsors."
+      ofail "No changes to list of sponsors."
     else
       puts "List of sponsors updated in the README."
     end

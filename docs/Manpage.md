@@ -1198,12 +1198,9 @@ a formula from a tap that is not `homebrew/core` use its fully-qualified form of
 
 Display the path where *`formula`* is located.
 
-### `generate-man-completions` [*`--fail-if-not-changed`*]
+### `generate-man-completions`
 
 Generate Homebrew's manpages and shell completions.
-
-* `--fail-if-not-changed`:
-  Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date).
 
 ### `install-bundler-gems` [*`--groups`*`=`]
 
@@ -1411,10 +1408,6 @@ which build systems would not find otherwise.
 * `-c`, `--cmd`:
   Execute commands in a non-interactive shell.
 
-### `sponsors`
-
-Update the list of GitHub Sponsors in the `Homebrew/brew` README.
-
 ### `style` [*`options`*] [*`file`*|*`tap`*|*`formula`*|*`cask`* ...]
 
 Check formulae or files for conformance to Homebrew style guidelines.
@@ -1503,8 +1496,6 @@ Check for typechecking errors using Sorbet.
   Regenerate all RBI files rather than just updated gems.
 * `--suggest-typed`:
   Try upgrading `typed` sigils.
-* `--fail-if-not-changed`:
-  Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update.
 * `--dir`:
   Typecheck all files in a specific directory.
 * `--file`:
@@ -1537,12 +1528,9 @@ working directory.
 * `-f`, `--force`:
   Overwrite the destination directory if it already exists.
 
-### `update-license-data` [*`--fail-if-not-changed`*]
+### `update-license-data`
 
 Update SPDX license data in the Homebrew repository.
-
-* `--fail-if-not-changed`:
-  Return a failing status code if current license data's version is the same as the upstream. This can be used to notify CI when the SPDX license data is out of date.
 
 ### `update-maintainers`
 
@@ -1566,6 +1554,10 @@ Update versions for PyPI resource blocks in *`formula`*.
   Include these additional packages when finding resources.
 * `--exclude-packages`:
   Exclude these packages when finding resources.
+
+### `update-sponsors`
+
+Update the list of GitHub Sponsors in the `Homebrew/brew` README.
 
 ### `update-test` [*`options`*]
 

@@ -976,7 +976,6 @@ _brew_generate_man_completions() {
     -*)
       __brewcomp "
       --debug
-      --fail-if-not-changed
       --help
       --quiet
       --verbose
@@ -1880,22 +1879,6 @@ _brew_sh() {
   __brew_complete_files
 }
 
-_brew_sponsors() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "${cur}" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-    *)
-  esac
-}
-
 _brew_style() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -1993,7 +1976,6 @@ _brew_tc() {
       --all
       --debug
       --dir
-      --fail-if-not-changed
       --file
       --fix
       --help
@@ -2062,7 +2044,6 @@ _brew_typecheck() {
       --all
       --debug
       --dir
-      --fail-if-not-changed
       --file
       --fix
       --help
@@ -2262,7 +2243,6 @@ _brew_update_license_data() {
     -*)
       __brewcomp "
       --debug
-      --fail-if-not-changed
       --help
       --quiet
       --verbose
@@ -2321,6 +2301,22 @@ _brew_update_report() {
       --auto-update
       --debug
       --force
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *)
+  esac
+}
+
+_brew_update_sponsors() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
       --help
       --quiet
       --verbose
@@ -2552,7 +2548,6 @@ _brew() {
     ruby) _brew_ruby ;;
     search) _brew_search ;;
     sh) _brew_sh ;;
-    sponsors) _brew_sponsors ;;
     style) _brew_style ;;
     tap) _brew_tap ;;
     tap-info) _brew_tap_info ;;
@@ -2574,6 +2569,7 @@ _brew() {
     update-maintainers) _brew_update_maintainers ;;
     update-python-resources) _brew_update_python_resources ;;
     update-report) _brew_update_report ;;
+    update-sponsors) _brew_update_sponsors ;;
     update-test) _brew_update_test ;;
     upgrade) _brew_upgrade ;;
     uses) _brew_uses ;;

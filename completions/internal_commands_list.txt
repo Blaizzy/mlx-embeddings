@@ -79,7 +79,6 @@ ruby
 search
 sh
 shellenv
-sponsors
 style
 tap
 tap-info
@@ -100,6 +99,7 @@ update-license-data
 update-maintainers
 update-python-resources
 update-reset
+update-sponsors
 update-test
 upgrade
 uses
