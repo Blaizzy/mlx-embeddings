@@ -1752,7 +1752,7 @@ class Formula
 
       popen_read_args = %w[]
       popen_read_args << commands
-      popen_read_args << shell_parameter unless shell_parameter.blank?
+      popen_read_args << shell_parameter if shell_parameter.present?
       popen_read_args.flatten!
 
       script_path.dirname.mkpath
