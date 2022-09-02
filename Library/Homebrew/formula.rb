@@ -1745,14 +1745,14 @@ class Formula
       elsif shell_parameter_format == :arg
         "--shell=#{shell}"
       elsif shell_parameter_format == :none
-        ""
+        nil
       else
         "#{shell_parameter_format}#{shell}"
       end
 
       popen_read_args = %w[]
       popen_read_args << commands
-      popen_read_args << shell_parameter
+      popen_read_args << shell_parameter unless shell_parameter.nil?
       popen_read_args.flatten!
 
       script_path.dirname.mkpath
