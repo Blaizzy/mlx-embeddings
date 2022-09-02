@@ -547,7 +547,7 @@ EOS
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
     if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
-       [[ -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
+       [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ]]
     then
       continue
@@ -705,6 +705,7 @@ EOS
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
     if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
+       [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ||
           "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
     then
@@ -748,11 +749,11 @@ EOS
   if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
   then
     mkdir -p "${HOMEBREW_CACHE}/api"
-    # TODO: use --header If-Modified-Since
     curl \
       "${CURL_DISABLE_CURLRC_ARGS[@]}" \
       --fail --compressed --silent --max-time 5 \
       --location --remote-time --output "${HOMEBREW_CACHE}/api/formula.json" \
+      --time-cond "${HOMEBREW_CACHE}/api/formula.json" \
       --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
       "https://formulae.brew.sh/api/formula.json"
     # TODO: we probably want to print an error if this fails.
