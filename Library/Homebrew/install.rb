@@ -326,7 +326,7 @@ module Homebrew
 
           formula_installers.each do |fi|
             f = fi.formula
-            print_dry_run_dependencies(f, fi.compute_dependencies)
+            print_dry_run_dependencies(f, fi.compute_dependencies, &:name)
           end
         end
         return
@@ -347,16 +347,14 @@ module Homebrew
     end
     private_class_method :install_formula
 
-    def print_dry_run_dependencies(formula, dependencies)
+    def print_dry_run_dependencies(formula, dependencies, &block)
       return if dependencies.empty?
 
       plural = "dependency".pluralize(dependencies.count)
       ohai "Would install #{dependencies.count} #{plural} for #{formula.name}:"
-      formula_names = dependencies.map(&:first).map(&:to_formula).map(&:name)
+      formula_names = dependencies.map(&:first).map(&:to_formula).map(&block)
       puts formula_names.join(" ")
     end
-
-    private_class_method :print_dry_run_dependencies
   end
 end
 
