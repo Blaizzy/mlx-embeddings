@@ -121,8 +121,8 @@ module Homebrew
     if new_version.present?
       if new_version.latest?
         opoo "Ignoring specified `--sha256=` argument." if new_hash.present?
-        new_hash = :no_check
-      elsif new_hash.nil? || cask.languages.present?
+        replacement_pairs << [old_hash, ":no_check"]
+      elsif old_hash != :no_check && (new_hash.nil? || cask.languages.present?)
         tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
                                                         replacement_pairs.uniq.compact,
                                                         read_only_run: true,
@@ -131,41 +131,32 @@ module Homebrew
         tmp_cask = Cask::CaskLoader.load(tmp_contents)
         tmp_config = tmp_cask.config
 
-        new_hash = fetch_cask(tmp_contents)[1] if old_hash != :no_check && new_hash.nil?
+        [:arm, :intel].each do |arch|
+          Homebrew::SimulateSystem.arch = arch
 
-        cask.languages.each do |language|
-          lang_config = tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
-          replacement_pairs << fetch_cask(tmp_contents, config: lang_config)
-        end
+          languages = cask.languages
+          languages = [nil] if languages.empty?
+          languages.each do |language|
+            new_hash_config = if language.blank?
+              tmp_config
+            else
+              tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
+            end
 
-        # TODO: remove the `Hardware::CPU.intel?` substitution once no casks use the conditional
-        other_intel = !Hardware::CPU.intel?
-        Homebrew::SimulateSystem.arch = other_intel ? :intel : :arm
-        other_contents = tmp_contents.gsub("Hardware::CPU.intel?", other_intel.to_s)
-        other_cask = Cask::CaskLoader.load(other_contents)
+            new_hash_cask = Cask::CaskLoader.load(tmp_contents)
+            new_hash_cask.config = new_hash_config
+            old_hash = new_hash_cask.sha256.to_s
 
-        if other_cask.url.to_s != tmp_cask.url.to_s
-          if other_cask.sha256 != :no_check && other_cask.language.blank?
-            replacement_pairs << fetch_cask(other_contents)
+            cask_download = Cask::Download.new(new_hash_cask, quarantine: true)
+            download = cask_download.fetch(verify_download_integrity: false)
+            Utils::Tar.validate_file(download)
+
+            replacement_pairs << [new_hash_cask.sha256.to_s, download.sha256]
           end
 
-          other_cask.languages.each do |language|
-            lang_config = other_cask.config.merge(Cask::Config.new(explicit: { languages: [language] }))
-            replacement_pairs << fetch_cask(other_contents, config: lang_config)
-          end
+          Homebrew::SimulateSystem.clear
         end
-
-        Homebrew::SimulateSystem.clear
       end
-    end
-
-    if new_hash.present? && cask.language.blank? # avoid repeated replacement for multilanguage cask
-      hash_regex = (old_hash == :no_check) ? ":no_check" : "[\"']#{Regexp.escape(old_hash.to_s)}[\"']"
-
-      replacement_pairs << [
-        /#{hash_regex}/m,
-        ((new_hash == :no_check) ? ":no_check" : "\"#{new_hash}\"").to_s,
-      ]
     end
 
     Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
