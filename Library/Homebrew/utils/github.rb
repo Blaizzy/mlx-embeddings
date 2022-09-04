@@ -30,6 +30,12 @@ module GitHub
     API.open_rest(url_to("repos", repo, "check-runs"), data: data)
   end
 
+  def issues(repo:, **filters)
+    uri = url_to("repos", repo, "issues")
+    uri.query = URI.encode_www_form(filters)
+    API.open_rest(uri)
+  end
+
   def search_issues(query, **qualifiers)
     search("issues", query, **qualifiers)
   end
@@ -153,7 +159,7 @@ module GitHub
     API.open_rest(uri) { |json| json["private"] }
   end
 
-  def query_string(*main_params, **qualifiers)
+  def search_query_string(*main_params, **qualifiers)
     params = main_params
 
     params += qualifiers.flat_map do |key, value|
@@ -169,7 +175,7 @@ module GitHub
 
   def search(entity, *queries, **qualifiers)
     uri = url_to "search", entity
-    uri.query = query_string(*queries, **qualifiers)
+    uri.query = search_query_string(*queries, **qualifiers)
     API.open_rest(uri) { |json| json.fetch("items", []) }
   end
 

@@ -368,28 +368,32 @@ module Homebrew
     end
   end
 
-  def pr_check_conflicts(user, repo, pr)
-    long_build_pr_files = GitHub.search_issues(
-      "org:#{user}", repo: repo, state: "open", label: "\"no long build conflict\""
+  def pr_check_conflicts(repo, pr)
+    long_build_pr_files = GitHub.issues(
+      repo: repo, state: "open", labels: "no long build conflict",
     ).each_with_object({}) do |long_build_pr, hash|
+      next unless long_build_pr.key?("pull_request")
+
       number = long_build_pr["number"]
       next if number == pr.to_i
 
-      GitHub.get_pull_request_changed_files("#{user}/#{repo}", number).each do |file|
+      GitHub.get_pull_request_changed_files(repo, number).each do |file|
         key = file["filename"]
         hash[key] ||= []
         hash[key] << number
       end
     end
 
-    this_pr_files = GitHub.get_pull_request_changed_files("#{user}/#{repo}", pr)
+    return if long_build_pr_files.blank?
+
+    this_pr_files = GitHub.get_pull_request_changed_files(repo, pr)
 
     conflicts = this_pr_files.each_with_object({}) do |file, hash|
       filename = file["filename"]
       next unless long_build_pr_files.key?(filename)
 
       long_build_pr_files[filename].each do |pr_number|
-        key = "#{user}/#{repo}/pull/#{pr_number}"
+        key = "#{repo}/pull/#{pr_number}"
         hash[key] ||= []
         hash[key] << filename
       end
@@ -440,7 +444,7 @@ module Homebrew
         opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
       end
 
-      pr_check_conflicts(user, repo, pr)
+      pr_check_conflicts("#{user}/#{repo}", pr)
 
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
