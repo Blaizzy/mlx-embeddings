@@ -196,7 +196,6 @@ __brew_internal_commands() {
     'search:Perform a substring search of cask tokens and formula names for text'
     'sh:Enter an interactive shell for Homebrew'\''s build environment'
     'shellenv:Print export statements'
-    'sponsors:Update the list of GitHub Sponsors in the `Homebrew/brew` README'
     'style:Check formulae or files for conformance to Homebrew style guidelines'
     'tap:Tap a formula repository'
     'tap-info:Show detailed information about one or more taps'
@@ -216,6 +215,7 @@ __brew_internal_commands() {
     'update-python-resources:Update versions for PyPI resource blocks in formula'
     'update-report:The Ruby implementation of `brew update`'
     'update-reset:Fetch and reset Homebrew and all tap repositories (or any specified repository) using `git`(1) to their latest `origin/HEAD`'
+    'update-sponsors:Update the list of GitHub Sponsors in the `Homebrew/brew` README'
     'update-test:Run a test of `brew update` with a new repository clone'
     'upgrade:Upgrade outdated casks and outdated, unpinned formulae using the same options they were originally installed with, plus any appended brew formula options'
     'uses:Show formulae and casks that specify formula as a dependency; that is, show dependents of formula'
@@ -882,7 +882,6 @@ _brew_formula() {
 _brew_generate_man_completions() {
   _arguments \
     '--debug[Display any debugging information]' \
-    '--fail-if-not-changed[Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
@@ -1570,15 +1569,6 @@ _brew_sh() {
     '*::file:__brew_formulae_or_ruby_files'
 }
 
-# brew sponsors
-_brew_sponsors() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
-}
-
 # brew style
 _brew_style() {
   _arguments \
@@ -1653,7 +1643,6 @@ _brew_tc() {
     '--all[Regenerate all RBI files rather than just updated gems]' \
     '--debug[Display any debugging information]' \
     '(--file)--dir[Typecheck all files in a specific directory]' \
-    '--fail-if-not-changed[Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update]' \
     '(--dir)--file[Typecheck a single file]' \
     '--fix[Automatically fix type errors]' \
     '--help[Show this message]' \
@@ -1702,7 +1691,6 @@ _brew_typecheck() {
     '--all[Regenerate all RBI files rather than just updated gems]' \
     '--debug[Display any debugging information]' \
     '(--file)--dir[Typecheck all files in a specific directory]' \
-    '--fail-if-not-changed[Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update]' \
     '(--dir)--file[Typecheck a single file]' \
     '--fix[Automatically fix type errors]' \
     '--help[Show this message]' \
@@ -1841,7 +1829,6 @@ _brew_update() {
 _brew_update_license_data() {
   _arguments \
     '--debug[Display any debugging information]' \
-    '--fail-if-not-changed[Return a failing status code if current license data'\''s version is the same as the upstream. This can be used to notify CI when the SPDX license data is out of date]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
@@ -1880,6 +1867,15 @@ _brew_update_report() {
     '--auto-update[Run in '\''auto-update'\'' mode (faster, less output)]' \
     '--debug[Display any debugging information]' \
     '--force[Treat installed and updated formulae as if they are from the same taps and migrate them anyway]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
+# brew update-sponsors
+_brew_update_sponsors() {
+  _arguments \
+    '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'

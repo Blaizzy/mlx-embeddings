@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "August 2022" "Homebrew" "brew"
+.TH "BREW" "1" "September 2022" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS (or Linux)
@@ -1712,12 +1712,8 @@ Overwrite the destination formula if it already exists\.
 .SS "\fBformula\fR \fIformula\fR [\.\.\.]"
 Display the path where \fIformula\fR is located\.
 .
-.SS "\fBgenerate\-man\-completions\fR [\fI\-\-fail\-if\-not\-changed\fR]"
+.SS "\fBgenerate\-man\-completions\fR"
 Generate Homebrew\'s manpages and shell completions\.
-.
-.TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
 .SS "\fBinstall\-bundler\-gems\fR [\fI\-\-groups\fR\fB=\fR]"
 Install Homebrew\'s Bundler gems\.
@@ -2011,9 +2007,6 @@ Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
 \fB\-c\fR, \fB\-\-cmd\fR
 Execute commands in a non\-interactive shell\.
 .
-.SS "\fBsponsors\fR"
-Update the list of GitHub Sponsors in the \fBHomebrew/brew\fR README\.
-.
 .SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR|\fIcask\fR \.\.\.]"
 Check formulae or files for conformance to Homebrew style guidelines\.
 .
@@ -2148,10 +2141,6 @@ Regenerate all RBI files rather than just updated gems\.
 Try upgrading \fBtyped\fR sigils\.
 .
 .TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update\.
-.
-.TP
 \fB\-\-dir\fR
 Typecheck all files in a specific directory\.
 .
@@ -2197,12 +2186,8 @@ Initialise a Git repository in the unpacked source\. This is useful for creating
 \fB\-f\fR, \fB\-\-force\fR
 Overwrite the destination directory if it already exists\.
 .
-.SS "\fBupdate\-license\-data\fR [\fI\-\-fail\-if\-not\-changed\fR]"
+.SS "\fBupdate\-license\-data\fR"
 Update SPDX license data in the Homebrew repository\.
-.
-.TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if current license data\'s version is the same as the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
 .
 .SS "\fBupdate\-maintainers\fR"
 Update the list of maintainers in the \fBHomebrew/brew\fR README\.
@@ -2237,6 +2222,9 @@ Include these additional packages when finding resources\.
 .TP
 \fB\-\-exclude\-packages\fR
 Exclude these packages when finding resources\.
+.
+.SS "\fBupdate\-sponsors\fR"
+Update the list of GitHub Sponsors in the \fBHomebrew/brew\fR README\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.

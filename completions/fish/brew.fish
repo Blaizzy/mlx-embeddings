@@ -716,7 +716,6 @@ __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 __fish_brew_complete_cmd 'generate-man-completions' 'Generate Homebrew\'s manpages and shell completions'
 __fish_brew_complete_arg 'generate-man-completions' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'generate-man-completions' -l fail-if-not-changed -d 'Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)'
 __fish_brew_complete_arg 'generate-man-completions' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-man-completions' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'generate-man-completions' -l verbose -d 'Make some output more verbose'
@@ -1289,13 +1288,6 @@ __fish_brew_complete_arg 'sh' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'sh' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'sponsors' 'Update the list of GitHub Sponsors in the `Homebrew/brew` README'
-__fish_brew_complete_arg 'sponsors' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'sponsors' -l help -d 'Show this message'
-__fish_brew_complete_arg 'sponsors' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'sponsors' -l verbose -d 'Make some output more verbose'
-
-
 __fish_brew_complete_cmd 'style' 'Check formulae or files for conformance to Homebrew style guidelines'
 __fish_brew_complete_arg 'style' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'style' -l debug -d 'Display any debugging information'
@@ -1352,7 +1344,6 @@ __fish_brew_complete_cmd 'tc' 'Check for typechecking errors using Sorbet'
 __fish_brew_complete_arg 'tc' -l all -d 'Regenerate all RBI files rather than just updated gems'
 __fish_brew_complete_arg 'tc' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'tc' -l dir -d 'Typecheck all files in a specific directory'
-__fish_brew_complete_arg 'tc' -l fail-if-not-changed -d 'Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update'
 __fish_brew_complete_arg 'tc' -l file -d 'Typecheck a single file'
 __fish_brew_complete_arg 'tc' -l fix -d 'Automatically fix type errors'
 __fish_brew_complete_arg 'tc' -l help -d 'Show this message'
@@ -1394,7 +1385,6 @@ __fish_brew_complete_cmd 'typecheck' 'Check for typechecking errors using Sorbet
 __fish_brew_complete_arg 'typecheck' -l all -d 'Regenerate all RBI files rather than just updated gems'
 __fish_brew_complete_arg 'typecheck' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'typecheck' -l dir -d 'Typecheck all files in a specific directory'
-__fish_brew_complete_arg 'typecheck' -l fail-if-not-changed -d 'Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update'
 __fish_brew_complete_arg 'typecheck' -l file -d 'Typecheck a single file'
 __fish_brew_complete_arg 'typecheck' -l fix -d 'Automatically fix type errors'
 __fish_brew_complete_arg 'typecheck' -l help -d 'Show this message'
@@ -1504,7 +1494,6 @@ __fish_brew_complete_arg 'update' -l verbose -d 'Print the directories checked a
 
 __fish_brew_complete_cmd 'update-license-data' 'Update SPDX license data in the Homebrew repository'
 __fish_brew_complete_arg 'update-license-data' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'update-license-data' -l fail-if-not-changed -d 'Return a failing status code if current license data\'s version is the same as the upstream. This can be used to notify CI when the SPDX license data is out of date'
 __fish_brew_complete_arg 'update-license-data' -l help -d 'Show this message'
 __fish_brew_complete_arg 'update-license-data' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'update-license-data' -l verbose -d 'Make some output more verbose'
@@ -1539,6 +1528,13 @@ __fish_brew_complete_arg 'update-report' -l force -d 'Treat installed and update
 __fish_brew_complete_arg 'update-report' -l help -d 'Show this message'
 __fish_brew_complete_arg 'update-report' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'update-report' -l verbose -d 'Make some output more verbose'
+
+
+__fish_brew_complete_cmd 'update-sponsors' 'Update the list of GitHub Sponsors in the `Homebrew/brew` README'
+__fish_brew_complete_arg 'update-sponsors' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'update-sponsors' -l help -d 'Show this message'
+__fish_brew_complete_arg 'update-sponsors' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'update-sponsors' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'update-test' 'Run a test of `brew update` with a new repository clone'

@@ -27,6 +27,7 @@ module Homebrew
              depends_on:  "--update",
              description: "Try upgrading `typed` sigils."
       switch "--fail-if-not-changed",
+             hidden:      true,
              description: "Return a failing status code if all gems are up to date " \
                           "and gem definitions do not need a tapioca update."
       flag   "--dir=",
@@ -51,6 +52,8 @@ module Homebrew
 
     HOMEBREW_LIBRARY_PATH.cd do
       if args.update?
+        odeprecated "brew typecheck --update --fail-if-not-changed" if args.fail_if_not_changed?
+
         excluded_gems = [
           "did_you_mean", # RBI file is already provided by Sorbet
           "webrobots", # RBI file is bugged
@@ -99,8 +102,6 @@ module Homebrew
             path.atomic_write contents.sub(/\A(\s*#\s*typed:\s*)(?:[^\s]+)/, "\\1#{new_level}")
           end
         end
-
-        Homebrew.failed = system("git", "diff", "--stat", "--exit-code") if args.fail_if_not_changed?
 
         return
       end
