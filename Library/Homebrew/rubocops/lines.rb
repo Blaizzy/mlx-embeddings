@@ -423,6 +423,7 @@ module RuboCop
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           install = find_method_def(body_node, :install)
+          return if install.blank?
 
           correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter| # rubocop:disable Metrics/ParameterLists
             # generate_completions_from_executable only applicable if shell is passed
@@ -505,6 +506,7 @@ module RuboCop
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           install = find_method_def(body_node, :install)
+          return if install.blank?
 
           methods = find_every_method_call_by_name(install, :generate_completions_from_executable)
           return if methods.length <= 1
