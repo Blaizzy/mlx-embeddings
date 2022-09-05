@@ -441,7 +441,7 @@ module RuboCop
             elsif shell_parameter_stripped == "--shell="
               :arg
             else
-              "\"#{shell_parameter_stripped}\""
+              shell_parameter_stripped
             end
 
             replacement_args = %w[]
