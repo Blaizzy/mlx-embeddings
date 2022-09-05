@@ -245,7 +245,8 @@ class Tap
   #   logic that skips non-GitHub repositories during auto-updates.
   # @param quiet [Boolean] If set, suppress all output.
   # @param custom_remote [Boolean] If set, change the tap's remote if already installed.
-  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false)
+  # @param verify [Boolean] If set, verify all the formula, casks and aliases in the tap are valid.
+  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false, verify: false)
     require "descriptions"
     require "readall"
 
@@ -306,9 +307,8 @@ class Tap
 
     begin
       safe_system "git", *args
-      # TODO: 3.6.0: consider if we want to actually read all contents of tap or odeprecate.
 
-      if !Readall.valid_tap?(self, aliases: true) && !Homebrew::EnvConfig.developer?
+      if verify && !Readall.valid_tap?(self, aliases: true) && !Homebrew::EnvConfig.developer?
         raise "Cannot tap #{name}: invalid syntax in tap!"
       end
     rescue Interrupt, RuntimeError
@@ -807,7 +807,7 @@ class CoreTap < Tap
   end
 
   # CoreTap never allows shallow clones (on request from GitHub).
-  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false)
+  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false, verify: false)
     remote = Homebrew::EnvConfig.core_git_remote # set by HOMEBREW_CORE_GIT_REMOTE
     requested_remote = clone_target || remote
 

@@ -20,9 +20,8 @@ module Homebrew
              description: "Silence all non-critical errors."
       switch "--update",
              description: "Update RBI files."
-      switch "--all",
-             depends_on:  "--update",
-             description: "Regenerate all RBI files rather than just updated gems."
+      switch "--update-all",
+             description: "Update all RBI files rather than just updated gems."
       switch "--suggest-typed",
              depends_on:  "--update",
              description: "Try upgrading `typed` sigils."
@@ -51,7 +50,7 @@ module Homebrew
     Homebrew.install_bundler_gems!(groups: ["sorbet"])
 
     HOMEBREW_LIBRARY_PATH.cd do
-      if args.update?
+      if args.update? || args.update_all?
         odeprecated "brew typecheck --update --fail-if-not-changed" if args.fail_if_not_changed?
 
         excluded_gems = [
@@ -63,7 +62,7 @@ module Homebrew
           "msgpack:false", # Investigate removing this with Tapioca 0.8
         ]
         tapioca_args = ["--exclude", *excluded_gems, "--typed-overrides", *typed_overrides]
-        tapioca_args << "--all" if args.all?
+        tapioca_args << "--all" if args.update_all?
 
         ohai "Updating Tapioca RBI files..."
         safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
