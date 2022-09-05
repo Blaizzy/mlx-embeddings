@@ -1806,7 +1806,10 @@ class Formula
   # this should only be used when users specify `--all` to a command
   # @private
   def self.all
-    # TODO: 3.6.0: consider checking ARGV for --all
+    # TODO: uncomment for 3.7.0 and ideally avoid using ARGV by moving to e.g. CLI::Parser
+    # if !ARGV.include?("--eval-all") && !Homebrew::EnvConfig.eval_all?
+    #   odeprecated "Formula#all without --all or HOMEBREW_EVAL_ALL"
+    # end
 
     files.map do |file|
       Formulary.factory(file)

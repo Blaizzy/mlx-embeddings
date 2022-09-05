@@ -54,8 +54,11 @@ module Homebrew
       switch "--installed",
              description: "List dependencies for formulae that are currently installed. If <formula> is " \
                           "specified, list only its dependencies that are currently installed."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to list " \
+                          "their dependencies."
       switch "--all",
-             description: "List dependencies for all available formulae."
+             hidden:      true
       switch "--for-each",
              description: "Switch into the mode used by the `--all` option, but only list dependencies " \
                           "for each provided <formula>, one formula per line. This is used for " \
@@ -66,6 +69,7 @@ module Homebrew
              description: "Treat all named arguments as casks."
 
       conflicts "--tree", "--graph"
+      conflicts "--installed", "--eval-all"
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
       formula_options
@@ -76,6 +80,15 @@ module Homebrew
 
   def deps
     args = deps_args.parse
+
+    all = args.eval_all?
+    if args.all?
+      unless all
+        odeprecated "brew deps --all",
+                    "brew deps --eval-all or HOMEBREW_EVAL_ALL"
+      end
+      all = true
+    end
 
     Formulary.enable_factory_cache!
 
@@ -118,7 +131,7 @@ module Homebrew
 
       puts_deps_tree dependents, recursive: recursive, args: args
       return
-    elsif args.all?
+    elsif all
       puts_deps sorted_dependents(Formula.all + Cask::Cask.all), recursive: recursive, args: args
       return
     elsif !args.no_named? && args.for_each?

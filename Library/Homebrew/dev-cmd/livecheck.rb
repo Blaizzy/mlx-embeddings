@@ -24,13 +24,15 @@ module Homebrew
         `~/.brew_livecheck_watchlist`.
       EOS
       switch "--full-name",
-             description: "Print formulae/casks with fully-qualified names."
+             description: "Print formulae and casks with fully-qualified names."
       flag   "--tap=",
-             description: "Check formulae/casks within the given tap, specified as <user>`/`<repo>."
+             description: "Check formulae and casks within the given tap, specified as <user>`/`<repo>."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to check them."
       switch "--all",
-             description: "Check all available formulae/casks."
+             hidden: true
       switch "--installed",
-             description: "Check formulae/casks that are currently installed."
+             description: "Check formulae and casks that are currently installed."
       switch "--newer-only",
              description: "Show the latest version only if it's newer than the formula/cask."
       switch "--json",
@@ -43,7 +45,7 @@ module Homebrew
              description: "Only check casks."
 
       conflicts "--debug", "--json"
-      conflicts "--tap=", "--all", "--installed"
+      conflicts "--tap=", "--eval-all", "--installed"
       conflicts "--cask", "--formula"
 
       named_args [:formula, :cask]
@@ -52,6 +54,12 @@ module Homebrew
 
   def livecheck
     args = livecheck_args.parse
+
+    all = args.eval_all?
+    if args.all?
+      odeprecated "brew livecheck --all", "brew livecheck --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
+      all = true
+    end
 
     if args.debug? && args.verbose?
       puts args
@@ -67,7 +75,7 @@ module Homebrew
       formulae = args.cask? ? [] : Formula.installed
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
-    elsif args.all?
+    elsif all
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
       formulae + casks

@@ -210,8 +210,8 @@ Mark any build, test, optional, or recommended dependencies as such in the outpu
 List dependencies for formulae that are currently installed\. If \fIformula\fR is specified, list only its dependencies that are currently installed\.
 .
 .TP
-\fB\-\-all\fR
-List dependencies for all available formulae\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to list their dependencies\.
 .
 .TP
 \fB\-\-for\-each\fR
@@ -226,7 +226,7 @@ Treat all named arguments as formulae\.
 Treat all named arguments as casks\.
 .
 .SS "\fBdesc\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR|\fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
-Display \fIformula\fR\'s name and one\-line description\. Formula descriptions are cached; the cache is created on the first search, making that search slower than subsequent ones\.
+Display \fIformula\fR\'s name and one\-line description\. The cache is created on the first search, making that search slower than subsequent ones\.
 .
 .TP
 \fB\-s\fR, \fB\-\-search\fR
@@ -239,6 +239,10 @@ Search just names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is in
 .TP
 \fB\-d\fR, \fB\-\-description\fR
 Search just descriptions for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to search their descriptions\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .TP
 \fB\-\-formula\fR
@@ -381,8 +385,8 @@ Print a JSON representation\. Currently the default value for \fIversion\fR is \
 Print JSON of formulae that are currently installed\.
 .
 .TP
-\fB\-\-all\fR
-Print JSON of all available formulae\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to print their JSON\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .TP
 \fB\-\-variations\fR
@@ -653,8 +657,8 @@ Show all options on a single line separated by spaces\.
 Show options for formulae that are currently installed\.
 .
 .TP
-\fB\-\-all\fR
-Show options for all available formulae\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to show their options\.
 .
 .TP
 \fB\-\-command\fR
@@ -705,7 +709,7 @@ Pin the specified \fIformula\fR, preventing them from being upgraded when issuin
 .SS "\fBpostinstall\fR \fIinstalled_formula\fR [\.\.\.]"
 Rerun the post\-install steps for \fIformula\fR\.
 .
-.SS "\fBreadall\fR [\fI\-\-aliases\fR] [\fI\-\-syntax\fR] [\fItap\fR \.\.\.]"
+.SS "\fBreadall\fR [\fIoptions\fR] [\fItap\fR \.\.\.]"
 Import all items from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all items when making significant changes to \fBformula\.rb\fR, testing the performance of loading all items or checking if any current formulae/casks have Ruby issues\.
 .
 .TP
@@ -715,6 +719,10 @@ Verify any alias symlinks in each tap\.
 .TP
 \fB\-\-syntax\fR
 Syntax\-check all of Homebrew\'s Ruby files (if no \fB<tap>\fR is passed)\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .SS "\fBreinstall\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR [\.\.\.]"
 Uninstall and then reinstall a \fIformula\fR or \fIcask\fR using the same options it was originally installed with, plus any appended options specific to a \fIformula\fR\.
@@ -809,6 +817,10 @@ Search online and locally for casks\.
 Search for formulae with a description matching \fItext\fR and casks with a name or description matching \fItext\fR\.
 .
 .TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to search their descriptions\. Implied if HOMEBREW_EVAL_ALL is set\.
+.
+.TP
 \fB\-\-pull\-request\fR
 Search for GitHub pull requests containing \fItext\fR\.
 .
@@ -885,6 +897,10 @@ Migrate tapped formulae from symlink\-based to directory\-based structure\.
 .TP
 \fB\-\-list\-pinned\fR
 List all pinned taps\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all the formulae, casks and aliases in the new tap to check validity\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .SS "\fBtap\-info\fR [\fI\-\-installed\fR] [\fI\-\-json\fR] [\fItap\fR \.\.\.]"
 Show detailed information about one or more \fItap\fRs\.
@@ -1066,6 +1082,10 @@ Resolve more than one level of dependencies\.
 Only list formulae and casks that are currently installed\.
 .
 .TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to show their dependents\.
+.
+.TP
 \fB\-\-include\-build\fR
 Include all formulae that specify \fIformula\fR as \fB:build\fR type dependency\.
 .
@@ -1199,6 +1219,10 @@ Run additional, slower style checks that require a network connection\.
 .TP
 \fB\-\-installed\fR
 Only check formulae and casks that are currently installed\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to audit them\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .TP
 \fB\-\-new\fR
@@ -1412,7 +1436,7 @@ Ignore duplicate open PRs\.
 Create a pull request to update \fIformula\fR with a new URL or a new tag\.
 .
 .P
-If a \fIURL\fR is specified, the \fISHA\-256\fR checksum of the new download should also be specified\. A best effort to determine the \fISHA\-256\fR and \fIformula\fR name will be made if either or both values are not supplied by the user\.
+If a \fIURL\fR is specified, the \fISHA\-256\fR checksum of the new download should also be specified\. A best effort to determine the \fISHA\-256\fR will be made if not supplied by the user\.
 .
 .P
 If a \fItag\fR is specified, the Git commit \fIrevision\fR corresponding to that tag should also be specified\. A best effort to determine the \fIrevision\fR will be made if the value is not supplied by the user\.
@@ -1760,19 +1784,19 @@ If no formula or cask argument is passed, the list of formulae and casks to chec
 .
 .TP
 \fB\-\-full\-name\fR
-Print formulae/casks with fully\-qualified names\.
+Print formulae and casks with fully\-qualified names\.
 .
 .TP
 \fB\-\-tap\fR
-Check formulae/casks within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
+Check formulae and casks within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
 .
 .TP
-\fB\-\-all\fR
-Check all available formulae/casks\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to check them\.
 .
 .TP
 \fB\-\-installed\fR
-Check formulae/casks that are currently installed\.
+Check formulae and casks that are currently installed\.
 .
 .TP
 \fB\-\-newer\-only\fR
@@ -2133,8 +2157,8 @@ Silence all non\-critical errors\.
 Update RBI files\.
 .
 .TP
-\fB\-\-all\fR
-Regenerate all RBI files rather than just updated gems\.
+\fB\-\-update\-all\fR
+Update all RBI files rather than just updated gems\.
 .
 .TP
 \fB\-\-suggest\-typed\fR
@@ -2164,8 +2188,12 @@ Use the specified bottle tag (e\.g\. \fBbig_sur\fR) instead of the current OS\.
 Skip getting analytics data and sort by number of dependents instead\.
 .
 .TP
-\fB\-\-all\fR
+\fB\-\-total\fR
 Print the number of unbottled and total formulae\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to check them\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .SS "\fBunpack\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Unpack the source files for \fIformula\fR into subdirectories of the current working directory\.
@@ -2957,6 +2985,12 @@ Use this editor when editing a single formula, or several formulae in the same d
 .
 .IP
 \fIDefault:\fR \fB$EDITOR\fR or \fB$VISUAL\fR\.
+.
+.TP
+\fBHOMEBREW_EVAL_ALL\fR
+.
+.br
+If set, \fBbrew\fR commands evaluate all formulae and casks, executing their arbitrary code, by default without requiring \-\-eval\-all\. Required to cache formula and cask descriptions\.
 .
 .TP
 \fBHOMEBREW_FAIL_LOG_LINES\fR

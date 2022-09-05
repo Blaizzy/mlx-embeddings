@@ -2574,6 +2574,8 @@ module Homebrew::EnvConfig
 
   def self.temp(); end
 
+  def self.eval_all?(); end
+
   def self.update_report_all_formulae?(); end
 
   def self.update_to_tag?(); end

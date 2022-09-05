@@ -44,6 +44,10 @@ module Homebrew
       switch "--desc",
              description: "Search for formulae with a description matching <text> and casks with " \
                           "a name or description matching <text>."
+      switch "--eval-all",
+             depends_on:  "--desc",
+             description: "Evaluate all available formulae and casks, whether installed or not, to search their " \
+                          "descriptions. Implied if HOMEBREW_EVAL_ALL is set."
       switch "--pull-request",
              description: "Search for GitHub pull requests containing <text>."
       switch "--open",
@@ -75,6 +79,9 @@ module Homebrew
     string_or_regex = query_regexp(query)
 
     if args.desc?
+      if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+        odeprecated "brew search --desc", "brew search --desc --eval-all or HOMEBREW_EVAL_ALL"
+      end
       search_descriptions(string_or_regex, args)
     elsif args.pull_request?
       search_pull_requests(query, args)

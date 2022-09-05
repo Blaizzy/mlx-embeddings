@@ -43,6 +43,9 @@ module Homebrew
              description: "Migrate tapped formulae from symlink-based to directory-based structure."
       switch "--list-pinned",
              description: "List all pinned taps."
+      switch "--eval-all",
+             description: "Evaluate all the formulae, casks and aliases in the new tap to check validity. " \
+                          "Implied if HOMEBREW_EVAL_ALL is set."
 
       named_args :tap, max: 2
     end
@@ -65,7 +68,8 @@ module Homebrew
         tap.install clone_target:      args.named.second,
                     force_auto_update: args.force_auto_update?,
                     custom_remote:     args.custom_remote?,
-                    quiet:             args.quiet?
+                    quiet:             args.quiet?,
+                    verify:            args.eval_all? || Homebrew::EnvConfig.eval_all?
       rescue TapRemoteMismatchError, TapNoCustomRemoteError => e
         odie e
       rescue TapAlreadyTappedError

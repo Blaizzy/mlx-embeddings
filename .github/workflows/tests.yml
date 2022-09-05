@@ -82,13 +82,13 @@ jobs:
           brew update-test --commit=HEAD
 
       - name: Run brew readall on all taps
-        run: brew readall --aliases
+        run: brew readall --eval-all --aliases
 
       - name: Run brew style on homebrew-core for Linux
         run: brew style --display-cop-names homebrew/core
 
       - name: Run brew audit --skip-style on all taps
-        run: brew audit --skip-style --except=version --display-failures-only
+        run: brew audit --eval-all --skip-style --except=version --display-failures-only
 
       - name: Set up all Homebrew taps
         run: |
@@ -301,7 +301,7 @@ jobs:
                             Library/Taps/homebrew/homebrew-services
 
       - name: Run brew readall on all taps
-        run: brew readall --aliases
+        run: brew readall --eval-all --aliases
 
       - name: Install brew tests dependencies
         run: brew install subversion curl
