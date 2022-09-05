@@ -7,8 +7,11 @@ on:
       - master
   schedule:
     - cron: "0 0 * * *"
+  workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   spdx:
     if: github.repository == 'Homebrew/brew'
