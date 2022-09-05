@@ -76,6 +76,29 @@ describe RuboCop::Cop::FormulaAudit do
       RUBY
     end
 
+    it "reports an offense when writing to a shell completions file using a custom flag for the shell parameter" do
+      expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          name "foo"
+
+          def install
+            (bash_completion/"foo").write Utils.safe_popen_read(bin/"foo", "completions", "--completion-script-bash")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `generate_completions_from_executable(bin/"foo", "completions", shells: [:bash], shell_parameter_format: "--completion-script-")` instead of `(bash_completion/"foo").write Utils.safe_popen_read(bin/"foo", "completions", "--completion-script-bash")`.
+          end
+        end
+      RUBY
+
+      expect_correction(<<~RUBY)
+        class Foo < Formula
+          name "foo"
+
+          def install
+            generate_completions_from_executable(bin/"foo", "completions", shells: [:bash], shell_parameter_format: "--completion-script-")
+          end
+        end
+      RUBY
+    end
+
     it "reports an offense when writing to a completions file indirectly" do
       expect_offense(<<~RUBY)
         class Foo < Formula
