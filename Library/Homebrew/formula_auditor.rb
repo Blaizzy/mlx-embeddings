@@ -52,14 +52,16 @@ module Homebrew
 
     def audit_file
       if formula.core_formula? && @versioned_formula
+        unversioned_name = formula.name.gsub(/@.*$/, "")
+
+        # ignore when an unversioned formula doesn't exist after an explicit rename
+        return if formula.tap.formula_renames.key?(unversioned_name)
+
+        # build this ourselves as we want e.g. homebrew/core to be present
+        full_name = "#{formula.tap}/#{unversioned_name}"
+
         unversioned_formula = begin
-          # build this ourselves as we want e.g. homebrew/core to be present
-          full_name = if formula.tap
-            "#{formula.tap}/#{formula.name}"
-          else
-            formula.name
-          end
-          Formulary.factory(full_name.gsub(/@.*$/, "")).path
+          Formulary.factory(full_name).path
         rescue FormulaUnavailableError, TapFormulaAmbiguityError,
                TapFormulaWithOldnameAmbiguityError
           Pathname.new formula.path.to_s.gsub(/@.*\.rb$/, ".rb")
