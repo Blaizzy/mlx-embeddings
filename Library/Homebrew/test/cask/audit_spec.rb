@@ -33,15 +33,13 @@ describe Cask::Audit, :cask do
   let(:cask) { instance_double(Cask::Cask) }
   let(:new_cask) { nil }
   let(:online) { nil }
-  let(:only) { [] }
   let(:strict) { nil }
   let(:token_conflicts) { nil }
   let(:audit) {
     described_class.new(cask, online:          online,
                               strict:          strict,
                               new_cask:        new_cask,
-                              token_conflicts: token_conflicts,
-                              only:            only)
+                              token_conflicts: token_conflicts)
   }
 
   describe "#new" do
@@ -134,7 +132,6 @@ describe Cask::Audit, :cask do
 
     describe "token validation" do
       let(:strict) { true }
-      let(:only) { ["token_valid"] }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
           cask '#{cask_token}' do
@@ -231,7 +228,6 @@ describe Cask::Audit, :cask do
 
     describe "token bad words" do
       let(:new_cask) { true }
-      let(:only) { ["token_bad_words", "reverse_migration"] }
       let(:online) { false }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
@@ -347,7 +343,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "locale validation" do
-      let(:only) { ["languages"] }
       let(:cask) do
         tmp_cask "locale-cask-test", <<~RUBY
           cask 'locale-cask-test' do
@@ -395,7 +390,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "pkg allow_untrusted checks" do
-      let(:only) { ["untrusted_pkg"] }
       let(:message) { "allow_untrusted is not permitted in official Homebrew Cask taps" }
 
       context "when the Cask has no pkg stanza" do
@@ -418,7 +412,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "signing checks" do
-      let(:only) { ["signing"] }
       let(:download_double) { instance_double(Cask::Download) }
       let(:unpack_double) { instance_double(UnpackStrategy::Zip) }
 
@@ -466,7 +459,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "livecheck should be skipped" do
-      let(:only) { ["livecheck_version"] }
       let(:online) { true }
       let(:message) { /Version '[^']*' differs from '[^']*' retrieved by livecheck\./ }
 
@@ -520,7 +512,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "when the Cask stanza requires uninstall" do
-      let(:only) { ["stanza_requires_uninstall"] }
       let(:message) { "installer and pkg stanzas require an uninstall stanza" }
 
       context "when the Cask does not require an uninstall" do
@@ -690,14 +681,12 @@ describe Cask::Audit, :cask do
       let(:message) { "you should use version :latest instead of version 'latest'" }
 
       context "when version is 'latest'" do
-        let(:only) { ["no_string_version_latest"] }
         let(:cask_token) { "version-latest-string" }
 
         it { is_expected.to fail_with(message) }
       end
 
       context "when version is :latest" do
-        let(:only) { ["sha256_no_check_if_latest"] }
         let(:cask_token) { "version-latest-with-checksum" }
 
         it { is_expected.not_to fail_with(message) }
@@ -706,21 +695,18 @@ describe Cask::Audit, :cask do
 
     describe "sha256 checks" do
       context "when version is :latest and sha256 is not :no_check" do
-        let(:only) { ["sha256_no_check_if_latest"] }
         let(:cask_token) { "version-latest-with-checksum" }
 
         it { is_expected.to fail_with("you should use sha256 :no_check when version is :latest") }
       end
 
       context "when sha256 is not a legal SHA-256 digest" do
-        let(:only) { ["sha256_actually_256"] }
         let(:cask_token) { "invalid-sha256" }
 
         it { is_expected.to fail_with("sha256 string must be of 64 hexadecimal characters") }
       end
 
       context "when sha256 is sha256 for empty string" do
-        let(:only) { ["sha256_invalid"] }
         let(:cask_token) { "sha256-for-empty-string" }
 
         it { is_expected.to fail_with(/cannot use the sha256 for an empty string/) }
@@ -728,7 +714,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "hosting with livecheck checks" do
-      let(:only) { ["hosting_with_livecheck"] }
       let(:message) { /please add a livecheck/ }
 
       context "when the download does not use hosting with a livecheck" do
@@ -776,7 +761,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "latest with appcast checks" do
-      let(:only) { ["latest_with_appcast_or_livecheck"] }
       let(:message) { "Casks with an `appcast` should not use `version :latest`." }
 
       context "when the Cask is :latest and does not have an appcast" do
@@ -799,8 +783,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "denylist checks" do
-      let(:only) { ["denylist"] }
-
       context "when the Cask is not on the denylist" do
         let(:cask_token) { "adobe-air" }
 
@@ -823,7 +805,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "latest with auto_updates checks" do
-      let(:only) { ["latest_with_auto_updates"] }
       let(:message) { "Casks with `version :latest` should not use `auto_updates`." }
 
       context "when the Cask is :latest and does not have auto_updates" do
@@ -852,7 +833,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "preferred download URL formats" do
-      let(:only) { ["download_url_format"] }
       let(:message) { /URL format incorrect/ }
 
       context "with incorrect SourceForge URL format" do
@@ -887,8 +867,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "generic artifact checks" do
-      let(:only) { ["generic_artifacts"] }
-
       context "with relative target" do
         let(:cask_token) { "generic-artifact-relative-target" }
 
@@ -909,8 +887,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "url checks" do
-      let(:only) { %w[unnecessary_verified missing_verified no_match] }
-
       context "with a block" do
         let(:cask_token) { "booby-trap" }
 
@@ -924,7 +900,7 @@ describe Cask::Audit, :cask do
           let(:online) { false }
 
           it "does not evaluate the block" do
-            expect(run).not_to fail_with(/Boom/)
+            expect(run).not_to pass
           end
         end
 
@@ -939,7 +915,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "token conflicts" do
-      let(:only) { ["token_conflicts"] }
       let(:cask_token) { "with-binary" }
       let(:token_conflicts) { true }
 
@@ -960,7 +935,6 @@ describe Cask::Audit, :cask do
     end
 
     describe "audit of downloads" do
-      let(:only) { ["download"] }
       let(:cask_token) { "basic-cask" }
       let(:cask) { Cask::CaskLoader.load(cask_token) }
       let(:download_double) { instance_double(Cask::Download) }
@@ -985,7 +959,6 @@ describe Cask::Audit, :cask do
 
     context "when an exception is raised" do
       let(:cask) { instance_double(Cask::Cask) }
-      let(:only) { ["description_present"] }
 
       it "fails the audit" do
         expect(cask).to receive(:tap).and_raise(StandardError.new)
@@ -993,8 +966,7 @@ describe Cask::Audit, :cask do
       end
     end
 
-    describe "checking description" do
-      let(:only) { ["description_present"] }
+    describe "without description" do
       let(:cask_token) { "without-description" }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
@@ -1024,132 +996,131 @@ describe Cask::Audit, :cask do
           expect(run).to warn_with(/should have a description/)
         end
       end
+    end
 
-      context "with description" do
-        let(:cask_token) { "with-description" }
-        let(:cask) do
-          tmp_cask cask_token.to_s, <<~RUBY
-            cask "#{cask_token}" do
-              version "1.0"
-              sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
-              url "https://brew.sh/\#{version}.zip"
-              name "Audit"
-              desc "Cask Auditor"
-              homepage "https://brew.sh/"
-              app "Audit.app"
-            end
-          RUBY
-        end
+    context "with description" do
+      let(:cask_token) { "with-description" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask "#{cask_token}" do
+            version "1.0"
+            sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
+            url "https://brew.sh/\#{version}.zip"
+            name "Audit"
+            desc "Cask Auditor"
+            homepage "https://brew.sh/"
+            app "Audit.app"
+          end
+        RUBY
+      end
 
-        it "passes" do
-          expect(run).to pass
-        end
+      it "passes" do
+        expect(run).to pass
       end
     end
 
-    describe "checking verified" do
-      let(:only) { %w[unnecessary_verified missing_verified no_match required_stanzas] }
+    context "when the url matches the homepage" do
       let(:cask_token) { "foo" }
-
-      context "when the url matches the homepage" do
-        let(:cask) do
-          tmp_cask cask_token.to_s, <<~RUBY
-            cask '#{cask_token}' do
-              version '1.0'
-              sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
-              url 'https://foo.brew.sh/foo.zip'
-              name 'Audit'
-              desc 'Audit Description'
-              homepage 'https://foo.brew.sh'
-              app 'Audit.app'
-            end
-          RUBY
-        end
-
-        it { is_expected.to pass }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.0'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://foo.brew.sh/foo.zip'
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://foo.brew.sh'
+            app 'Audit.app'
+          end
+        RUBY
       end
 
-      context "when the url does not match the homepage" do
-        let(:cask) do
-          tmp_cask cask_token.to_s, <<~RUBY
-            cask '#{cask_token}' do
-              version "1.8.0_72,8.13.0.5"
-              sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
-              url "https://brew.sh/foo-\#{version.after_comma}.zip"
-              name "Audit"
-              desc "Audit Description"
-              homepage "https://foo.example.org"
-              app "Audit.app"
-            end
-          RUBY
-        end
+      it { is_expected.to pass }
+    end
 
-        it { is_expected.to fail_with(/a 'verified' parameter has to be added/) }
+    context "when the url does not match the homepage" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version "1.8.0_72,8.13.0.5"
+            sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
+            url "https://brew.sh/foo-\#{version.after_comma}.zip"
+            name "Audit"
+            desc "Audit Description"
+            homepage "https://foo.example.org"
+            app "Audit.app"
+          end
+        RUBY
       end
 
-      context "when the url does not match the homepage with verified" do
-        let(:cask) do
-          tmp_cask cask_token.to_s, <<~RUBY
-            cask "#{cask_token}" do
-              version "1.8.0_72,8.13.0.5"
-              sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
-              url "https://brew.sh/foo-\#{version.after_comma}.zip", verified: "brew.sh"
-              name "Audit"
-              desc "Audit Description"
-              homepage "https://foo.example.org"
-              app "Audit.app"
-            end
-          RUBY
-        end
+      it { is_expected.to fail_with(/a 'verified' parameter has to be added/) }
+    end
 
-        it { is_expected.to pass }
+    context "when the url does not match the homepage with verified" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask "#{cask_token}" do
+            version "1.8.0_72,8.13.0.5"
+            sha256 "8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a"
+            url "https://brew.sh/foo-\#{version.after_comma}.zip", verified: "brew.sh"
+            name "Audit"
+            desc "Audit Description"
+            homepage "https://foo.example.org"
+            app "Audit.app"
+          end
+        RUBY
       end
 
-      context "when there is no homepage" do
-        let(:cask) do
-          tmp_cask cask_token.to_s, <<~RUBY
-            cask '#{cask_token}' do
-              version '1.8.0_72,8.13.0.5'
-              sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
-              url 'https://brew.sh/foo.zip'
-              name 'Audit'
-              desc 'Audit Description'
-              app 'Audit.app'
-            end
-          RUBY
-        end
+      it { is_expected.to pass }
+    end
 
-        it { is_expected.to fail_with(/a homepage stanza is required/) }
+    context "when there is no homepage" do
+      let(:cask_token) { "foo" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url 'https://brew.sh/foo.zip'
+            name 'Audit'
+            desc 'Audit Description'
+            app 'Audit.app'
+          end
+        RUBY
       end
 
-      context "when url is lazy" do
-        let(:strict) { true }
-        let(:cask_token) { "with-lazy" }
-        let(:cask) do
-          tmp_cask cask_token.to_s, <<~RUBY
-            cask '#{cask_token}' do
-              version '1.8.0_72,8.13.0.5'
-              sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
-              url do
-                ['https://brew.sh/foo.zip', {referer: 'https://example.com', cookies: {'foo' => 'bar'}}]
-              end
-              name 'Audit'
-              desc 'Audit Description'
-              homepage 'https://brew.sh'
-              app 'Audit.app'
+      it { is_expected.to fail_with(/a homepage stanza is required/) }
+    end
+
+    context "when url is lazy" do
+      let(:strict) { true }
+      let(:cask_token) { "with-lazy" }
+      let(:cask) do
+        tmp_cask cask_token.to_s, <<~RUBY
+          cask '#{cask_token}' do
+            version '1.8.0_72,8.13.0.5'
+            sha256 '8dd95daa037ac02455435446ec7bc737b34567afe9156af7d20b2a83805c1d8a'
+            url do
+              ['https://brew.sh/foo.zip', {referer: 'https://example.com', cookies: {'foo' => 'bar'}}]
             end
-          RUBY
-        end
+            name 'Audit'
+            desc 'Audit Description'
+            homepage 'https://brew.sh'
+            app 'Audit.app'
+          end
+        RUBY
+      end
 
-        it { is_expected.to pass }
+      it { is_expected.to pass }
 
-        it "receives a referer" do
-          expect(audit.cask.url.referer).to eq "https://example.com"
-        end
+      it "receives a referer" do
+        expect(audit.cask.url.referer).to eq "https://example.com"
+      end
 
-        it "receives cookies" do
-          expect(audit.cask.url.cookies).to eq "foo" => "bar"
-        end
+      it "receives cookies" do
+        expect(audit.cask.url.cookies).to eq "foo" => "bar"
       end
     end
   end
