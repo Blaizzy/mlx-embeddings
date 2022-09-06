@@ -162,17 +162,17 @@ module Homebrew
   end
 
   def retry_fetch?(f, args:)
-    @fetch_failed ||= Hash.new { |h, k| h[k] = 1 }
-    if args.retry? && (@fetch_failed[f] < FETCH_MAX_TRIES)
-      wait = 2 ** @fetch_failed[f]
-      remaining = FETCH_MAX_TRIES - @fetch_failed[f]
+    @fetch_tries ||= Hash.new { |h, k| h[k] = 1 }
+    if args.retry? && (@fetch_tries[f] < FETCH_MAX_TRIES)
+      wait = 2 ** @fetch_tries[f]
+      remaining = FETCH_MAX_TRIES - @fetch_tries[f]
       what = "try".pluralize(remaining)
 
       ohai "Retrying download in #{wait}s... (#{remaining} #{what} left)"
       sleep wait
 
       f.clear_cache
-      @fetch_failed[f] += 1
+      @fetch_tries[f] += 1
       true
     else
       Homebrew.failed = true
