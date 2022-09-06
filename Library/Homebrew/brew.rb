@@ -120,8 +120,9 @@ begin
     # Unset HOMEBREW_HELP to avoid confusing the tap
     with_env HOMEBREW_HELP: nil do
       tap_commands = []
-      cgroup = Utils.popen_read("cat", "/proc/1/cgroup")
-      if %w[azpl_job actions_job docker garden kubepods].none? { |container| cgroup.include?(container) }
+      if File.exist?("/.dockerenv") ||
+         ((cgroup = Utils.popen_read("cat", "/proc/1/cgroup").presence) &&
+          %w[azpl_job actions_job docker garden kubepods].none? { |type| cgroup.include?(type) })
         brew_uid = HOMEBREW_BREW_FILE.stat.uid
         tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
       end
