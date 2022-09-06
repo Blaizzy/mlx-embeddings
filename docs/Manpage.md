@@ -234,7 +234,7 @@ and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 * `-v`, `--verbose`:
   Do a verbose VCS checkout, if the URL represents a VCS. This is useful for seeing if an existing VCS cache has been updated.
 * `--retry`:
-  Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches.
+  Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches. Tries at most 5 times with exponential backoff.
 * `--deps`:
   Also download dependencies for any listed *`formula`*.
 * `-s`, `--build-from-source`:
