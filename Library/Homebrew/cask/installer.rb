@@ -98,6 +98,7 @@ module Cask
       print caveats
       fetch
       uninstall_existing_cask if reinstall?
+
       backup if force? && @cask.staged_path.exist? && @cask.metadata_versioned_path.exist?
 
       oh1 "Installing Cask #{Formatter.identifier(@cask)}"
