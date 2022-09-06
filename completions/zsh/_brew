@@ -860,7 +860,7 @@ _brew_fetch() {
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quiet[Make some output more quiet]' \
-    '--retry[Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches]' \
+    '--retry[Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches. Tries at most 5 times with exponential backoff]' \
     '--verbose[Do a verbose VCS checkout, if the URL represents a VCS. This is useful for seeing if an existing VCS cache has been updated]' \
     - formula \
     '(--cask)--formula[Treat all named arguments as formulae]' \
