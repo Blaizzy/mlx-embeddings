@@ -415,6 +415,151 @@ module RuboCop
         end
       end
 
+      # This cop makes sure that the `generate_completions_from_executable` DSL is used.
+      #
+      # @api private
+      class GenerateCompletionsDSL < FormulaCop
+        extend AutoCorrector
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          install = find_method_def(body_node, :install)
+          return if install.blank?
+
+          correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter| # rubocop:disable Metrics/ParameterLists
+            # generate_completions_from_executable only applicable if shell is passed
+            next unless shell_parameter.match?(/(bash|zsh|fish)/)
+
+            base_name = base_name.delete_prefix("_").delete_suffix(".fish")
+            shell = shell.to_s.delete_suffix("_completion").to_sym
+            shell_parameter_stripped = shell_parameter
+                                       .delete_suffix("bash")
+                                       .delete_suffix("zsh")
+                                       .delete_suffix("fish")
+            shell_parameter_format = if shell_parameter_stripped.empty?
+              nil
+            elsif shell_parameter_stripped == "--"
+              :flag
+            elsif shell_parameter_stripped == "--shell="
+              :arg
+            else
+              shell_parameter_stripped
+            end
+
+            replacement_args = %w[]
+            replacement_args << executable.source
+            replacement_args << subcmd.source
+            replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
+            replacement_args << "shells: [:#{shell}]"
+            unless shell_parameter_format.nil?
+              replacement_args << "shell_parameter_format: #{shell_parameter_format.inspect}"
+            end
+
+            offending_node(node)
+            replacement = "generate_completions_from_executable(#{replacement_args.join(", ")})"
+
+            problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
+              corrector.replace(@offensive_node.source_range, replacement)
+            end
+          end
+
+          shell_completion_node(install) do |node|
+            next if node.source.include?("<<~") # skip heredoc completion scripts
+            next if node.source.match?(/{.*=>.*}/) # skip commands needing custom ENV variables
+
+            offending_node(node)
+            problem "Use `generate_completions_from_executable` DSL instead of `#{@offensive_node.source}`."
+          end
+        end
+
+        # match ({bash,zsh,fish}_completion/"_?foo{.fish}?").write Utils.safe_popen_read(foo, subcmd, shell_parameter)
+        def_node_search :correctable_shell_completion_node, <<~EOS
+          $(send
+          (begin
+            (send
+              (send nil? ${:bash_completion :zsh_completion :fish_completion}) :/
+              (str $_))) :write
+          (send
+            (const nil? :Utils) :safe_popen_read
+            $(send
+              (send nil? :bin) :/
+              (str _))
+            $(str _)
+            (str $_)))
+        EOS
+
+        # matches ({bash,zsh,fish}_completion/"_?foo{.fish}?").write output
+        def_node_search :shell_completion_node, <<~EOS
+          $(send
+            (begin
+              (send
+                (send nil? {:bash_completion :zsh_completion :fish_completion}) :/
+                (str _))) :write _)
+        EOS
+      end
+
+      # This cop makes sure that the `generate_completions_from_executable` DSL is used with only
+      # a single, combined call for all shells.
+      #
+      # @api private
+      class SingleGenerateCompletionsDSLCall < FormulaCop
+        extend AutoCorrector
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          install = find_method_def(body_node, :install)
+          return if install.blank?
+
+          methods = find_every_method_call_by_name(install, :generate_completions_from_executable)
+          return if methods.length <= 1
+
+          offenses = []
+          shells = []
+          methods.each do |method|
+            next unless method.source.include?("shells:")
+
+            shells << method.source.match(/shells: \[(:bash|:zsh|:fish)\]/).captures.first
+            offenses << method
+          end
+
+          return if offenses.blank?
+
+          T.must(offenses[0...-1]).each_with_index do |node, i|
+            # commands have to be the same to be combined
+            # send_type? matches `bin/"foo"`, str_type? matches remaining command parts,
+            # the rest are kwargs we need to filter out
+            method_commands = node.arguments.filter { |arg| arg.send_type? || arg.str_type? }
+            next_method_commands = offenses[i + 1].arguments.filter { |arg| arg.send_type? || arg.str_type? }
+            unless method_commands == next_method_commands
+              shells.delete_at(i)
+              next
+            end
+
+            offending_node(node)
+            problem "Use a single `generate_completions_from_executable` " \
+                    "call combining all specified shells." do |corrector|
+              # adjust range by -4 and +1 to also include & remove leading spaces and trailing \n
+              corrector.replace(@offensive_node.source_range.adjust(begin_pos: -4, end_pos: 1), "")
+            end
+          end
+
+          return if shells.length <= 1 # no shells to combine left
+
+          offending_node(offenses.last)
+          replacement = if (%w[:bash :zsh :fish] - shells).empty?
+            @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/, "")
+                           .sub(", )", ")") # clean up dangling trailing comma
+                           .sub("(, ", "(") # clean up dangling leading comma
+                           .sub(", , ", ", ") # clean up dangling enclosed comma
+          else
+            @offensive_node.source.sub(/shells: \[(:bash|:zsh|:fish)\]/,
+                                       "shells: [#{shells.join(", ")}]")
+          end
+
+          problem "Use `#{replacement}` instead of `#{@offensive_node.source}`." do |corrector|
+            corrector.replace(@offensive_node.source_range, replacement)
+          end
+        end
+      end
+
       # This cop checks for other miscellaneous style violations.
       #
       # @api private
