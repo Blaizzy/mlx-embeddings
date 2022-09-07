@@ -359,6 +359,18 @@ fi
 ##### Now, do everything else (that may be a bit slower).
 #####
 
+# Docker image deprecation
+if [[ -f "${HOMEBREW_REPOSITORY}/.docker-deprecate" ]]
+then
+  DOCKER_DEPRECATION_MESSAGE="$(cat "${HOMEBREW_REPOSITORY}/.docker-deprecate")"
+  if [[ -n "${GITHUB_ACTIONS}" ]]
+  then
+    echo "::warning::${DOCKER_DEPRECATION_MESSAGE}" >&2
+  else
+    opoo "${DOCKER_DEPRECATION_MESSAGE}"
+  fi
+fi
+
 # USER isn't always set so provide a fall back for `brew` and subprocesses.
 export USER="${USER:-$(id -un)}"
 
