@@ -9,8 +9,8 @@ module Homebrew
 
   module_function
 
-  NAMED_TIER_AMOUNT = 100
-  URL_TIER_AMOUNT = 1000
+  NAMED_MONTHLY_AMOUNT = 100
+  URL_MONTHLY_AMOUNT = 1000
 
   sig { returns(CLI::Parser) }
   def update_sponsors_args
@@ -23,16 +23,16 @@ module Homebrew
     end
   end
 
-  def sponsor_name(s)
-    s["name"] || s["login"]
+  def sponsor_name(sponsor)
+    sponsor[:name] || sponsor[:login]
   end
 
-  def sponsor_logo(s)
-    "https://github.com/#{s["login"]}.png?size=64"
+  def sponsor_logo(sponsor)
+    "https://github.com/#{sponsor[:login]}.png?size=64"
   end
 
-  def sponsor_url(s)
-    "https://github.com/#{s["login"]}"
+  def sponsor_url(sponsor)
+    "https://github.com/#{sponsor[:login]}"
   end
 
   def update_sponsors
@@ -41,18 +41,13 @@ module Homebrew
     named_sponsors = []
     logo_sponsors = []
 
-    GitHub.sponsors_by_tier("Homebrew").each do |tier|
-      if tier["tier"] >= NAMED_TIER_AMOUNT
-        named_sponsors += tier["sponsors"].map do |s|
-          "[#{sponsor_name(s)}](#{sponsor_url(s)})"
-        end
-      end
+    GitHub.sponsorships("Homebrew").each do |s|
+      largest_monthly_amount = [s[:monthly_amount], s[:closest_tier_monthly_amount]].compact.max
+      named_sponsors << "[#{sponsor_name(s)}](#{sponsor_url(s)})" if largest_monthly_amount >= NAMED_MONTHLY_AMOUNT
 
-      next if tier["tier"] < URL_TIER_AMOUNT
+      next if largest_monthly_amount < URL_MONTHLY_AMOUNT
 
-      logo_sponsors += tier["sponsors"].map do |s|
-        "[![#{sponsor_name(s)}](#{sponsor_logo(s)})](#{sponsor_url(s)})"
-      end
+      logo_sponsors << "[![#{sponsor_name(s)}](#{sponsor_logo(s)})](#{sponsor_url(s)})"
     end
 
     named_sponsors << "many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew)"
