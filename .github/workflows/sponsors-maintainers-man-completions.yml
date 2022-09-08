@@ -45,7 +45,7 @@ jobs:
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ runner.os }}-rubygems-
 
-      - name: Update maintainers, manpage and completions
+      - name: Update sponsors, maintainers, manpage and completions
         id: update
         run: |
           git fetch origin
@@ -69,7 +69,7 @@ jobs:
             git checkout --no-track -B "${BRANCH}" origin/master
           fi
 
-          if brew sponsors
+          if brew update-sponsors
           then
             git add "${GITHUB_WORKSPACE}/README.md"
             git commit -m "Update sponsors." \
@@ -109,7 +109,7 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.HOMEBREW_BREW_UPDATE_MAINTAINERS_TOKEN }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.HOMEBREW_BREW_UPDATE_SPONSORS_MAINTAINERS_TOKEN }}
           HOMEBREW_GPG_PASSPHRASE: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY_PASSPHRASE }}
 
       - name: Push commits

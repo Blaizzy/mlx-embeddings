@@ -40,15 +40,18 @@ module Homebrew
 
     named_sponsors = []
     logo_sponsors = []
+    largest_monthly_amount = 0
 
     GitHub.sponsorships("Homebrew").each do |s|
-      largest_monthly_amount = [s[:monthly_amount], s[:closest_tier_monthly_amount]].compact.max
+      largest_monthly_amount = [s[:monthly_amount], s[:closest_tier_monthly_amount]].max
       named_sponsors << "[#{sponsor_name(s)}](#{sponsor_url(s)})" if largest_monthly_amount >= NAMED_MONTHLY_AMOUNT
 
       next if largest_monthly_amount < URL_MONTHLY_AMOUNT
 
       logo_sponsors << "[![#{sponsor_name(s)}](#{sponsor_logo(s)})](#{sponsor_url(s)})"
     end
+
+    odie "No sponsorships amounts found! Ensure you have sufficient permissions!" if largest_monthly_amount.zero?
 
     named_sponsors << "many other users and organisations via [GitHub Sponsors](https://github.com/sponsors/Homebrew)"
 
