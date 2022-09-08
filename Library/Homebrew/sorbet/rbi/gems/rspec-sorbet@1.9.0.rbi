@@ -47,8 +47,9 @@ module RSpec::Sorbet::Doubles
 
   private
 
-  def call_validation_error_handler(_signature, opts); end
+  def call_validation_error_handler(signature, opts); end
   def double_message_with_ellipsis?(message); end
+  def handle_call_validation_error(signature, opts); end
   def inline_type_error_handler(error); end
   def typed_array_message?(message); end
   def unable_to_check_type_for_message?(message); end
