@@ -3908,10 +3908,6 @@ class Parser::Ruby26
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
 end
 
-class Pathname
-  include ::MachOShim
-end
-
 class PkgVersion
   def major(*args, &block); end
 
