@@ -444,7 +444,9 @@ module GitHub
       current_sponsorships = result["data"]["organization"]["sponsorshipsAsMaintainer"]
 
       # The organisations mentioned above will show up as nil nodes.
-      sponsorships += current_sponsorships["nodes"].compact
+      if (nodes = current_sponsorships["nodes"].compact.presence)
+        sponsorships += nodes
+      end
 
       if (page_info = current_sponsorships["pageInfo"].presence) &&
          page_info["hasNextPage"].presence
@@ -460,16 +462,17 @@ module GitHub
     end
 
     sponsorships.map do |sponsorship|
-      closest_tier_monthly_amount = sponsorship["tier"].fetch("closestLesserValueTier", nil)
-                                                      &.fetch("monthlyPriceInDollars", nil)
-      monthly_amount = sponsorship["tier"]["monthlyPriceInDollars"]
       sponsor = sponsorship["sponsorEntity"]
+      tier = sponsorship["tier"].presence || {}
+      monthly_amount = tier["monthlyPriceInDollars"].presence || 0
+      closest_tier = tier["closestLesserValueTier"].presence || {}
+      closest_tier_monthly_amount = closest_tier["monthlyPriceInDollars"].presence || 0
 
       {
         name:                        sponsor["name"].presence || sponsor["login"],
         login:                       sponsor["login"],
         monthly_amount:              monthly_amount,
-        closest_tier_monthly_amount: closest_tier_monthly_amount || 0,
+        closest_tier_monthly_amount: closest_tier_monthly_amount,
       }
     end
   end
