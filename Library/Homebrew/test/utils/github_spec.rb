@@ -57,14 +57,6 @@ describe GitHub do
     end
   end
 
-  describe "::sponsors_by_tier", :needs_network do
-    it "errors on an unauthenticated token" do
-      expect {
-        described_class.sponsors_by_tier("Homebrew")
-      }.to raise_error(/INSUFFICIENT_SCOPES|FORBIDDEN|token needs the 'admin:org' scope/)
-    end
-  end
-
   describe "::get_artifact_url", :needs_network do
     it "fails to find a nonexistent workflow" do
       expect {

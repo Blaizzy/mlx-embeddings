@@ -403,59 +403,75 @@ module GitHub
     result["organization"]["team"]["members"]["nodes"].to_h { |member| [member["login"], member["name"]] }
   end
 
-  def sponsors_by_tier(user)
-    query = <<~EOS
-        { organization(login: "#{user}") {
-          sponsorsListing {
-            tiers(first: 10, orderBy: {field: MONTHLY_PRICE_IN_CENTS, direction: DESC}) {
+  def sponsorships(user)
+    has_next_page = true
+    after = ""
+    sponsorships = []
+    errors = []
+    while has_next_page
+      query = <<~EOS
+          { organization(login: "#{user}") {
+            sponsorshipsAsMaintainer(first: 100 #{after}) {
+              pageInfo {
+                startCursor
+                hasNextPage
+                endCursor
+              }
+              totalCount
               nodes {
-                monthlyPriceInDollars
-                adminInfo {
-                  sponsorships(first: 100, includePrivate: true) {
-                    totalCount
-                    nodes {
-                      privacyLevel
-                      sponsorEntity {
-                        __typename
-                        ... on Organization { login name }
-                        ... on User { login name }
-                      }
-                    }
+                tier {
+                  monthlyPriceInDollars
+                  closestLesserValueTier {
+                    monthlyPriceInDollars
                   }
+                }
+                sponsorEntity {
+                  __typename
+                  ... on Organization { login name }
+                  ... on User { login name }
                 }
               }
             }
           }
         }
-      }
-    EOS
-    result = API.open_graphql(query, scopes: ["admin:org", "user"])
+      EOS
+      # Some organisations do not permit themselves to be queried through the
+      # API like this and raise an error so handle these errors later.
+      # This has been reported to GitHub.
+      result = API.open_graphql(query, scopes: ["user"], raise_errors: false)
+      errors += result["errors"] if result["errors"].present?
 
-    tiers = result["organization"]["sponsorsListing"]["tiers"]["nodes"]
+      current_sponsorships = result["data"]["organization"]["sponsorshipsAsMaintainer"]
 
-    tiers.map do |t|
-      tier = t["monthlyPriceInDollars"]
-      raise API::Error, "Your token needs the 'admin:org' scope to access this API" if t["adminInfo"].nil?
+      # The organisations mentioned above will show up as nil nodes.
+      sponsorships += current_sponsorships["nodes"].compact
 
-      sponsorships = t["adminInfo"]["sponsorships"]
-      count = sponsorships["totalCount"]
-      sponsors = sponsorships["nodes"].map do |sponsor|
-        next unless sponsor["privacyLevel"] == "PUBLIC"
+      if (page_info = current_sponsorships["pageInfo"].presence) &&
+         page_info["hasNextPage"].presence
+        after = %Q(, after: "#{page_info["endCursor"]}")
+      else
+        has_next_page = false
+      end
+    end
 
-        se = sponsor["sponsorEntity"]
-        {
-          "name"  => se["name"].presence || sponsor["login"],
-          "login" => se["login"],
-          "type"  => se["__typename"].downcase,
-        }
-      end.compact
+    # Only raise errors if we didn't get any sponsorships.
+    if sponsorships.blank? && errors.present?
+      raise API::Error, errors.map { |e| "#{e["type"]}: #{e["message"]}" }.join("\n")
+    end
+
+    sponsorships.map do |sponsorship|
+      closest_tier_monthly_amount = sponsorship["tier"].fetch("closestLesserValueTier", nil)
+                                                      &.fetch("monthlyPriceInDollars", nil)
+      monthly_amount = sponsorship["tier"]["monthlyPriceInDollars"]
+      sponsor = sponsorship["sponsorEntity"]
 
       {
-        "tier"     => tier,
-        "count"    => count,
-        "sponsors" => sponsors,
+        name:                        sponsor["name"].presence || sponsor["login"],
+        login:                       sponsor["login"],
+        monthly_amount:              monthly_amount,
+        closest_tier_monthly_amount: closest_tier_monthly_amount || 0,
       }
-    end.compact
+    end
   end
 
   def get_repo_license(user, repo)
