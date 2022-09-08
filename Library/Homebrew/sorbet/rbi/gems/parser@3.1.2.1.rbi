@@ -1430,6 +1430,7 @@ end
 class Parser::Source::Range
   include ::Comparable
   include ::RuboCop::AST::Ext::Range
+  include ::RuboCop::Ext::Range
 
   def initialize(source_buffer, begin_pos, end_pos); end
 

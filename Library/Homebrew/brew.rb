@@ -7,6 +7,7 @@ if ENV["HOMEBREW_STACKPROF"]
 end
 
 raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
+raise "#{__FILE__} must not be loaded via `require`." if $PROGRAM_NAME != __FILE__
 
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 

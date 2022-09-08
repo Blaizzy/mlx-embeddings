@@ -1288,6 +1288,7 @@ class Nokogiri::XML::Reader
   def attribute(_arg0); end
   def attribute_at(_arg0); end
   def attribute_count; end
+  def attribute_hash; end
   def attribute_nodes; end
   def attributes; end
   def attributes?; end

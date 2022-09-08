@@ -51,10 +51,12 @@ class Bootsnap::InvalidConfiguration < ::StandardError; end
 
 module Bootsnap::LoadPathCache
   class << self
+    def enabled?; end
     def load_path_cache; end
     def loaded_features_index; end
     def setup(cache_path:, development_mode:); end
     def supported?; end
+    def unload!; end
   end
 end
 
@@ -63,7 +65,7 @@ Bootsnap::LoadPathCache::CACHED_EXTENSIONS = T.let(T.unsafe(nil), Array)
 class Bootsnap::LoadPathCache::Cache
   def initialize(store, path_obj, development_mode: T.unsafe(nil)); end
 
-  def find(feature, try_extensions: T.unsafe(nil)); end
+  def find(feature); end
   def load_dir(dir); end
   def push_paths(sender, *paths); end
   def reinitialize(path_obj = T.unsafe(nil)); end
@@ -76,7 +78,7 @@ class Bootsnap::LoadPathCache::Cache
   def maybe_append_extension(feature); end
   def now; end
   def push_paths_locked(*paths); end
-  def search_index(feature, try_extensions: T.unsafe(nil)); end
+  def search_index(feature); end
   def stale?; end
   def try_ext(feature); end
   def try_index(feature); end
@@ -88,7 +90,8 @@ Bootsnap::LoadPathCache::Cache::BUILTIN_FEATURES = T.let(T.unsafe(nil), Hash)
 
 module Bootsnap::LoadPathCache::ChangeObserver
   class << self
-    def register(observer, arr); end
+    def register(arr, observer); end
+    def unregister(arr); end
   end
 end
 
