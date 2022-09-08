@@ -220,6 +220,7 @@ class Addressable::URI
 
   protected
 
+  def force_utf8_encoding_if_needed(str); end
   def remove_composite_values; end
   def replace_self(uri); end
   def split_path(path); end

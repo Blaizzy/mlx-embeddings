@@ -151,8 +151,8 @@ RBI::VERSION = T.let(T.unsafe(nil), String)
 
 module T::Generic::TypeStoragePatch
   def [](*types); end
-  def type_member(variance = T.unsafe(nil), fixed: T.unsafe(nil), lower: T.unsafe(nil), upper: T.unsafe(nil), &blk); end
-  def type_template(variance = T.unsafe(nil), fixed: T.unsafe(nil), lower: T.unsafe(nil), upper: T.unsafe(nil), &blk); end
+  def type_member(variance = T.unsafe(nil), fixed: T.unsafe(nil), lower: T.unsafe(nil), upper: T.unsafe(nil), &bounds_proc); end
+  def type_template(variance = T.unsafe(nil), fixed: T.unsafe(nil), lower: T.unsafe(nil), upper: T.unsafe(nil), &bounds_proc); end
 end
 
 module T::Types::Simple::GenericPatch
@@ -1678,10 +1678,11 @@ class Tapioca::TypeVariableModule < ::Module
       variance: ::Symbol,
       fixed: T.untyped,
       lower: T.untyped,
-      upper: T.untyped
+      upper: T.untyped,
+      bounds_proc: T.nilable(T.proc.returns(T::Hash[::Symbol, T.untyped]))
     ).void
   end
-  def initialize(context, type, variance, fixed: T.unsafe(nil), lower: T.unsafe(nil), upper: T.unsafe(nil)); end
+  def initialize(context, type, variance, fixed, lower, upper, bounds_proc); end
 
   sig { returns(::Tapioca::TypeVariable) }
   def coerce_to_type_variable; end
@@ -1693,6 +1694,15 @@ class Tapioca::TypeVariableModule < ::Module
   def serialize; end
 
   private
+
+  sig do
+    params(
+      fixed: T.untyped,
+      lower: T.untyped,
+      upper: T.untyped
+    ).returns(T.proc.returns(T::Hash[::Symbol, T.untyped]))
+  end
+  def build_bounds_proc(fixed, lower, upper); end
 
   sig do
     type_parameters(:Result)

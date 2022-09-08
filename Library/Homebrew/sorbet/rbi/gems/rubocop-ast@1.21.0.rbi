@@ -1679,6 +1679,7 @@ class RuboCop::AST::RegexpNode < ::RuboCop::AST::Node
   def delimiter?(char); end
   def delimiters; end
   def extended?; end
+  def fixed_encoding?; end
   def ignore_case?; end
   def interpolation?; end
   def multiline_mode?; end
@@ -1771,6 +1772,7 @@ class RuboCop::AST::Token
   def column; end
   def comma?; end
   def comment?; end
+  def dot?; end
   def end?; end
   def end_pos; end
   def equal_sign?; end
