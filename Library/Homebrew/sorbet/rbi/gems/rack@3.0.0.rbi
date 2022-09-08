@@ -150,7 +150,7 @@ class Rack::Builder
   def call(env); end
   def freeze_app; end
   def map(path, &block); end
-  def run(app); end
+  def run(app = T.unsafe(nil), &block); end
   def to_app; end
   def use(middleware, *args, &block); end
   def warmup(prc = T.unsafe(nil), &block); end
@@ -161,9 +161,9 @@ class Rack::Builder
 
   class << self
     def app(default_app = T.unsafe(nil), &block); end
-    def load_file(path, opts = T.unsafe(nil)); end
+    def load_file(path); end
     def new_from_string(builder_script, file = T.unsafe(nil)); end
-    def parse_file(config, opts = T.unsafe(nil)); end
+    def parse_file(path); end
   end
 end
 
@@ -221,7 +221,7 @@ class Rack::CommonLogger
   private
 
   def extract_content_length(headers); end
-  def log(env, status, header, began_at); end
+  def log(env, status, response_headers, began_at); end
 end
 
 Rack::CommonLogger::FORMAT = T.let(T.unsafe(nil), String)
@@ -281,6 +281,8 @@ class Rack::Deflater::GzipStream
   def write(data); end
 end
 
+Rack::Deflater::GzipStream::BUFFER_LENGTH = T.let(T.unsafe(nil), Integer)
+
 class Rack::Directory
   def initialize(root, app = T.unsafe(nil)); end
 
@@ -319,7 +321,6 @@ class Rack::ETag
   private
 
   def digest_body(body); end
-  def etag_body?(body); end
   def etag_status?(status); end
   def skip_caching?(headers); end
 end
@@ -381,10 +382,6 @@ class Rack::Files
   def fail(status, body, headers = T.unsafe(nil)); end
   def filesize(path); end
   def mime_type(path, default_mime); end
-
-  class << self
-    def method_added(name); end
-  end
 end
 
 Rack::Files::ALLOWED_VERBS = T.let(T.unsafe(nil), Array)
@@ -426,40 +423,6 @@ Rack::HTTPS = T.let(T.unsafe(nil), String)
 Rack::HTTP_COOKIE = T.let(T.unsafe(nil), String)
 Rack::HTTP_HOST = T.let(T.unsafe(nil), String)
 Rack::HTTP_PORT = T.let(T.unsafe(nil), String)
-Rack::HTTP_VERSION = T.let(T.unsafe(nil), String)
-
-module Rack::Handler
-  class << self
-    def default; end
-    def get(server); end
-    def pick(server_names); end
-    def register(server, klass); end
-    def try_require(prefix, const_name); end
-  end
-end
-
-class Rack::Handler::CGI
-  class << self
-    def run(app, **options); end
-    def send_body(body); end
-    def send_headers(status, headers); end
-    def serve(app); end
-  end
-end
-
-Rack::Handler::SERVER_NAMES = T.let(T.unsafe(nil), Array)
-
-class Rack::Handler::WEBrick < ::WEBrick::HTTPServlet::AbstractServlet
-  def initialize(server, app); end
-
-  def service(req, res); end
-
-  class << self
-    def run(app, **options); end
-    def shutdown; end
-    def valid_options; end
-  end
-end
 
 class Rack::Head
   def initialize(app); end
@@ -467,36 +430,77 @@ class Rack::Head
   def call(env); end
 end
 
+class Rack::Headers < ::Hash
+  def [](key); end
+  def []=(key, value); end
+  def assoc(key); end
+  def compare_by_identity; end
+  def delete(key); end
+  def dig(key, *a); end
+  def fetch(key, *default, &block); end
+  def fetch_values(*a); end
+  def has_key?(key); end
+  def include?(key); end
+  def invert; end
+  def key?(key); end
+  def member?(key); end
+  def merge(hash, &block); end
+  def merge!(hash, &block); end
+  def reject(&block); end
+  def replace(hash); end
+  def select(&block); end
+  def slice(*a); end
+  def store(key, value); end
+  def to_proc; end
+  def transform_keys(&block); end
+  def transform_keys!; end
+  def transform_values(&block); end
+  def update(hash, &block); end
+  def values_at(*keys); end
+
+  private
+
+  def downcase_key(key); end
+
+  class << self
+    def [](*items); end
+  end
+end
+
 Rack::LINK = T.let(T.unsafe(nil), String)
 
 class Rack::Lint
-  include ::Rack::Lint::Assertion
-
   def initialize(app); end
 
-  def _call(env); end
   def call(env = T.unsafe(nil)); end
+end
+
+class Rack::Lint::LintError < ::RuntimeError; end
+
+class Rack::Lint::Wrapper
+  def initialize(app, env); end
+
+  def call(stream); end
   def check_content_length(status, headers); end
   def check_content_type(status, headers); end
-  def check_env(env); end
+  def check_environment(env); end
   def check_error(error); end
-  def check_headers(header); end
+  def check_header_value(key, value); end
+  def check_headers(headers); end
   def check_hijack(env); end
   def check_hijack_response(headers, env); end
   def check_input(input); end
   def check_status(status); end
   def close; end
   def each; end
-  def verify_content_length(bytes); end
+  def respond_to?(name, *_arg1); end
+  def response; end
+  def to_ary; end
+  def verify_content_length(size); end
+  def verify_to_path; end
 end
 
-module Rack::Lint::Assertion
-  def assert(message); end
-end
-
-class Rack::Lint::ErrorWrapper
-  include ::Rack::Lint::Assertion
-
+class Rack::Lint::Wrapper::ErrorWrapper
   def initialize(error); end
 
   def close(*args); end
@@ -505,38 +509,31 @@ class Rack::Lint::ErrorWrapper
   def write(str); end
 end
 
-class Rack::Lint::HijackWrapper
-  include ::Rack::Lint::Assertion
-  extend ::Forwardable
-
-  def initialize(io); end
-
-  def close(*args, &block); end
-  def close_read(*args, &block); end
-  def close_write(*args, &block); end
-  def closed?(*args, &block); end
-  def flush(*args, &block); end
-  def read(*args, &block); end
-  def read_nonblock(*args, &block); end
-  def write(*args, &block); end
-  def write_nonblock(*args, &block); end
-end
-
-Rack::Lint::HijackWrapper::REQUIRED_METHODS = T.let(T.unsafe(nil), Array)
-
-class Rack::Lint::InputWrapper
-  include ::Rack::Lint::Assertion
-
+class Rack::Lint::Wrapper::InputWrapper
   def initialize(input); end
 
   def close(*args); end
   def each(*args); end
   def gets(*args); end
   def read(*args); end
-  def rewind(*args); end
 end
 
-class Rack::Lint::LintError < ::RuntimeError; end
+class Rack::Lint::Wrapper::StreamWrapper
+  extend ::Forwardable
+
+  def initialize(stream); end
+
+  def <<(*args, &block); end
+  def close(*args, &block); end
+  def close_read(*args, &block); end
+  def close_write(*args, &block); end
+  def closed?(*args, &block); end
+  def flush(*args, &block); end
+  def read(*args, &block); end
+  def write(*args, &block); end
+end
+
+Rack::Lint::Wrapper::StreamWrapper::REQUIRED_METHODS = T.let(T.unsafe(nil), Array)
 
 class Rack::Lock
   def initialize(app, mutex = T.unsafe(nil)); end
@@ -653,7 +650,7 @@ end
 module Rack::Multipart
   class << self
     def build_multipart(params, first = T.unsafe(nil)); end
-    def extract_multipart(req, params = T.unsafe(nil)); end
+    def extract_multipart(request, params = T.unsafe(nil)); end
     def parse_multipart(env, params = T.unsafe(nil)); end
   end
 end
@@ -671,6 +668,8 @@ Rack::Multipart::EXTENDED_OTHER_NAME = T.let(T.unsafe(nil), Regexp)
 Rack::Multipart::EXTENDED_OTHER_PARAMETER = T.let(T.unsafe(nil), Regexp)
 Rack::Multipart::EXTENDED_OTHER_VALUE = T.let(T.unsafe(nil), Regexp)
 Rack::Multipart::EXTENDED_PARAMETER = T.let(T.unsafe(nil), Regexp)
+class Rack::Multipart::EmptyContentError < ::EOFError; end
+class Rack::Multipart::Error < ::StandardError; end
 
 class Rack::Multipart::Generator
   def initialize(params, first = T.unsafe(nil)); end
@@ -695,21 +694,21 @@ class Rack::Multipart::MultipartPartLimitError < ::Errno::EMFILE; end
 class Rack::Multipart::Parser
   def initialize(boundary, tempfile, bufsize, query_parser); end
 
-  def on_read(content); end
+  def parse(io); end
   def result; end
   def state; end
 
   private
 
   def consume_boundary; end
-  def full_boundary; end
+  def dequote(str); end
   def get_filename(head); end
   def handle_consume_token; end
   def handle_empty_content!(content); end
   def handle_fast_forward; end
   def handle_mime_body; end
   def handle_mime_head; end
-  def run_parser; end
+  def read_data(io, outbuf); end
   def tag_multipart_encoding(filename, content_type, name, body); end
 
   class << self
@@ -718,14 +717,12 @@ class Rack::Multipart::Parser
   end
 end
 
-Rack::Multipart::Parser::BOUNDARY_REGEX = T.let(T.unsafe(nil), Regexp)
 Rack::Multipart::Parser::BUFSIZE = T.let(T.unsafe(nil), Integer)
 
 class Rack::Multipart::Parser::BoundedIO
   def initialize(io, content_length); end
 
   def read(size, outbuf = T.unsafe(nil)); end
-  def rewind; end
 end
 
 Rack::Multipart::Parser::CHARSET = T.let(T.unsafe(nil), String)
@@ -807,23 +804,30 @@ class Rack::NullLogger
   def datetime_format; end
   def datetime_format=(datetime_format); end
   def debug(progname = T.unsafe(nil), &block); end
+  def debug!; end
   def debug?; end
   def error(progname = T.unsafe(nil), &block); end
+  def error!; end
   def error?; end
   def fatal(progname = T.unsafe(nil), &block); end
+  def fatal!; end
   def fatal?; end
   def formatter; end
   def formatter=(formatter); end
   def info(progname = T.unsafe(nil), &block); end
+  def info!; end
   def info?; end
   def level; end
   def level=(level); end
+  def log(severity, message = T.unsafe(nil), progname = T.unsafe(nil), &block); end
   def progname; end
   def progname=(progname); end
+  def reopen(logdev = T.unsafe(nil)); end
   def sev_threshold; end
   def sev_threshold=(sev_threshold); end
   def unknown(progname = T.unsafe(nil), &block); end
   def warn(progname = T.unsafe(nil), &block); end
+  def warn!; end
   def warn?; end
 end
 
@@ -835,25 +839,24 @@ Rack::PUT = T.let(T.unsafe(nil), String)
 Rack::QUERY_STRING = T.let(T.unsafe(nil), String)
 
 class Rack::QueryParser
-  def initialize(params_class, key_space_limit, param_depth_limit); end
+  def initialize(params_class, _key_space_limit = T.unsafe(nil), param_depth_limit); end
 
-  def key_space_limit; end
   def make_params; end
   def new_depth_limit(param_depth_limit); end
-  def new_space_limit(key_space_limit); end
-  def normalize_params(params, name, v, depth); end
+  def normalize_params(params, name, v, _depth = T.unsafe(nil)); end
   def param_depth_limit; end
-  def parse_nested_query(qs, d = T.unsafe(nil)); end
-  def parse_query(qs, d = T.unsafe(nil), &unescaper); end
+  def parse_nested_query(qs, separator = T.unsafe(nil)); end
+  def parse_query(qs, separator = T.unsafe(nil), &unescaper); end
 
   private
 
+  def _normalize_params(params, name, v, depth); end
   def params_hash_has_key?(hash, key); end
   def params_hash_type?(obj); end
   def unescape(s); end
 
   class << self
-    def make_default(key_space_limit, param_depth_limit); end
+    def make_default(_key_space_limit = T.unsafe(nil), param_depth_limit); end
   end
 end
 
@@ -863,7 +866,7 @@ class Rack::QueryParser::InvalidParameterError < ::ArgumentError; end
 class Rack::QueryParser::ParameterTypeError < ::TypeError; end
 
 class Rack::QueryParser::Params
-  def initialize(limit); end
+  def initialize; end
 
   def [](key); end
   def []=(key, value); end
@@ -875,15 +878,12 @@ end
 class Rack::QueryParser::ParamsTooDeepError < ::RangeError; end
 Rack::RACK_ERRORS = T.let(T.unsafe(nil), String)
 Rack::RACK_HIJACK = T.let(T.unsafe(nil), String)
-Rack::RACK_HIJACK_IO = T.let(T.unsafe(nil), String)
 Rack::RACK_INPUT = T.let(T.unsafe(nil), String)
 Rack::RACK_IS_HIJACK = T.let(T.unsafe(nil), String)
 Rack::RACK_LOGGER = T.let(T.unsafe(nil), String)
 Rack::RACK_METHODOVERRIDE_ORIGINAL_METHOD = T.let(T.unsafe(nil), String)
 Rack::RACK_MULTIPART_BUFFER_SIZE = T.let(T.unsafe(nil), String)
 Rack::RACK_MULTIPART_TEMPFILE_FACTORY = T.let(T.unsafe(nil), String)
-Rack::RACK_MULTIPROCESS = T.let(T.unsafe(nil), String)
-Rack::RACK_MULTITHREAD = T.let(T.unsafe(nil), String)
 Rack::RACK_RECURSIVE_INCLUDE = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_COOKIE_HASH = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_COOKIE_STRING = T.let(T.unsafe(nil), String)
@@ -892,10 +892,9 @@ Rack::RACK_REQUEST_FORM_INPUT = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_FORM_VARS = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_QUERY_HASH = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_QUERY_STRING = T.let(T.unsafe(nil), String)
-Rack::RACK_RUNONCE = T.let(T.unsafe(nil), String)
+Rack::RACK_RESPONSE_FINISHED = T.let(T.unsafe(nil), String)
 Rack::RACK_SESSION = T.let(T.unsafe(nil), String)
 Rack::RACK_SESSION_OPTIONS = T.let(T.unsafe(nil), String)
-Rack::RACK_SESSION_UNPACKED_COOKIE_DATA = T.let(T.unsafe(nil), String)
 Rack::RACK_SHOWSTATUS_DETAIL = T.let(T.unsafe(nil), String)
 Rack::RACK_TEMPFILES = T.let(T.unsafe(nil), String)
 Rack::RACK_URL_SCHEME = T.let(T.unsafe(nil), String)
@@ -941,8 +940,12 @@ class Rack::Request
   def xhr?; end
 
   class << self
+    def forwarded_priority; end
+    def forwarded_priority=(_arg0); end
     def ip_filter; end
     def ip_filter=(_arg0); end
+    def x_forwarded_proto_priority; end
+    def x_forwarded_proto_priority=(_arg0); end
   end
 end
 
@@ -997,7 +1000,6 @@ module Rack::Request::Helpers
   def logger; end
   def media_type; end
   def media_type_params; end
-  def multithread?; end
   def options?; end
   def params; end
   def parseable_data?; end
@@ -1034,8 +1036,9 @@ module Rack::Request::Helpers
 
   def allowed_scheme(header); end
   def default_session; end
-  def extract_proto_header(header); end
+  def forwarded_priority; end
   def forwarded_scheme; end
+  def get_http_forwarded(token); end
   def parse_http_accept_header(header); end
   def parse_multipart; end
   def parse_query(qs, d = T.unsafe(nil)); end
@@ -1044,11 +1047,14 @@ module Rack::Request::Helpers
   def split_authority(authority); end
   def split_header(value); end
   def wrap_ipv6(host); end
+  def x_forwarded_proto_priority; end
 end
 
 Rack::Request::Helpers::AUTHORITY = T.let(T.unsafe(nil), Regexp)
 Rack::Request::Helpers::DEFAULT_PORTS = T.let(T.unsafe(nil), Hash)
 Rack::Request::Helpers::FORM_DATA_MEDIA_TYPES = T.let(T.unsafe(nil), Array)
+Rack::Request::Helpers::FORWARDED_SCHEME_HEADERS = T.let(T.unsafe(nil), Hash)
+Rack::Request::Helpers::HTTP_FORWARDED = T.let(T.unsafe(nil), String)
 Rack::Request::Helpers::HTTP_X_FORWARDED_FOR = T.let(T.unsafe(nil), String)
 Rack::Request::Helpers::HTTP_X_FORWARDED_HOST = T.let(T.unsafe(nil), String)
 Rack::Request::Helpers::HTTP_X_FORWARDED_PORT = T.let(T.unsafe(nil), String)
@@ -1056,7 +1062,6 @@ Rack::Request::Helpers::HTTP_X_FORWARDED_PROTO = T.let(T.unsafe(nil), String)
 Rack::Request::Helpers::HTTP_X_FORWARDED_SCHEME = T.let(T.unsafe(nil), String)
 Rack::Request::Helpers::HTTP_X_FORWARDED_SSL = T.let(T.unsafe(nil), String)
 Rack::Request::Helpers::PARSEABLE_DATA_MEDIA_TYPES = T.let(T.unsafe(nil), Array)
-Rack::Request::SCHEME_WHITELIST = T.let(T.unsafe(nil), Array)
 
 class Rack::Response
   include ::Rack::Response::Helpers
@@ -1064,7 +1069,7 @@ class Rack::Response
   def initialize(body = T.unsafe(nil), status = T.unsafe(nil), headers = T.unsafe(nil)); end
 
   def [](key); end
-  def []=(key, v); end
+  def []=(key, value); end
   def body; end
   def body=(_arg0); end
   def chunked?; end
@@ -1080,7 +1085,7 @@ class Rack::Response
   def length; end
   def length=(_arg0); end
   def redirect(target, status = T.unsafe(nil)); end
-  def set_header(key, v); end
+  def set_header(key, value); end
   def status; end
   def status=(_arg0); end
   def to_a(&block); end
@@ -1095,11 +1100,11 @@ Rack::Response::CHUNKED = T.let(T.unsafe(nil), String)
 
 module Rack::Response::Helpers
   def accepted?; end
-  def add_header(key, v); end
+  def add_header(key, value); end
   def bad_request?; end
   def cache!(duration = T.unsafe(nil), directive: T.unsafe(nil)); end
   def cache_control; end
-  def cache_control=(v); end
+  def cache_control=(value); end
   def client_error?; end
   def content_length; end
   def content_type; end
@@ -1108,7 +1113,7 @@ module Rack::Response::Helpers
   def delete_cookie(key, value = T.unsafe(nil)); end
   def do_not_cache!; end
   def etag; end
-  def etag=(v); end
+  def etag=(value); end
   def forbidden?; end
   def include?(header); end
   def informational?; end
@@ -1120,15 +1125,17 @@ module Rack::Response::Helpers
   def method_not_allowed?; end
   def moved_permanently?; end
   def no_content?; end
+  def not_acceptable?; end
   def not_found?; end
   def ok?; end
   def precondition_failed?; end
   def redirect?; end
   def redirection?; end
+  def request_timeout?; end
   def server_error?; end
   def set_cookie(key, value); end
   def set_cookie_header; end
-  def set_cookie_header=(v); end
+  def set_cookie_header=(value); end
   def successful?; end
   def unauthorized?; end
   def unprocessable?; end
@@ -1148,7 +1155,7 @@ class Rack::Response::Raw
   def get_header(key); end
   def has_header?(key); end
   def headers; end
-  def set_header(key, v); end
+  def set_header(key, value); end
   def status; end
   def status=(_arg0); end
 end
@@ -1163,11 +1170,18 @@ class Rack::RewindableInput
   def gets; end
   def read(*args); end
   def rewind; end
+  def size; end
 
   private
 
   def filesystem_has_posix_semantics?; end
   def make_rewindable; end
+end
+
+class Rack::RewindableInput::Middleware
+  def initialize(app); end
+
+  def call(env); end
 end
 
 class Rack::Runtime
@@ -1194,238 +1208,6 @@ class Rack::Sendfile
   def map_accel_path(env, path); end
   def variation(env); end
 end
-
-class Rack::Server
-  def initialize(options = T.unsafe(nil)); end
-
-  def app; end
-  def default_options; end
-  def middleware; end
-  def options; end
-  def options=(_arg0); end
-  def server; end
-  def start(&block); end
-
-  private
-
-  def build_app(app); end
-  def build_app_and_options_from_config; end
-  def build_app_from_string; end
-  def check_pid!; end
-  def daemonize_app; end
-  def handle_profiling(heapfile, profile_mode, filename); end
-  def make_profile_name(filename); end
-  def opt_parser; end
-  def parse_options(args); end
-  def pidfile_process_status; end
-  def wrapped_app; end
-  def write_pid; end
-
-  class << self
-    def default_middleware_by_environment; end
-    def logging_middleware; end
-    def middleware; end
-    def start(options = T.unsafe(nil)); end
-  end
-end
-
-class Rack::Server::Options
-  def handler_opts(options); end
-  def parse!(args); end
-end
-
-module Rack::Session; end
-module Rack::Session::Abstract; end
-
-class Rack::Session::Abstract::ID < ::Rack::Session::Abstract::Persisted
-  def delete_session(req, sid, options); end
-  def find_session(req, sid); end
-  def write_session(req, sid, session, options); end
-
-  class << self
-    def inherited(klass); end
-  end
-end
-
-class Rack::Session::Abstract::Persisted
-  def initialize(app, options = T.unsafe(nil)); end
-
-  def call(env); end
-  def commit_session(req, res); end
-  def context(env, app = T.unsafe(nil)); end
-  def default_options; end
-  def key; end
-  def sid_secure; end
-
-  private
-
-  def commit_session?(req, session, options); end
-  def cookie_value(data); end
-  def current_session_id(req); end
-  def delete_session(req, sid, options); end
-  def extract_session_id(request); end
-  def find_session(env, sid); end
-  def force_options?(options); end
-  def forced_session_update?(session, options); end
-  def generate_sid(secure = T.unsafe(nil)); end
-  def initialize_sid; end
-  def load_session(req); end
-  def loaded_session?(session); end
-  def make_request(env); end
-  def prepare_session(req); end
-  def security_matches?(request, options); end
-  def session_class; end
-  def session_exists?(req); end
-  def set_cookie(request, res, cookie); end
-  def write_session(req, sid, session, options); end
-end
-
-Rack::Session::Abstract::Persisted::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
-
-class Rack::Session::Abstract::PersistedSecure < ::Rack::Session::Abstract::Persisted
-  def extract_session_id(*_arg0); end
-  def generate_sid(*_arg0); end
-
-  private
-
-  def cookie_value(data); end
-  def session_class; end
-end
-
-class Rack::Session::Abstract::PersistedSecure::SecureSessionHash < ::Rack::Session::Abstract::SessionHash
-  def [](key); end
-end
-
-class Rack::Session::Abstract::SessionHash
-  include ::Enumerable
-
-  def initialize(store, req); end
-
-  def [](key); end
-  def []=(key, value); end
-  def clear; end
-  def delete(key); end
-  def destroy; end
-  def dig(key, *keys); end
-  def each(&block); end
-  def empty?; end
-  def exists?; end
-  def fetch(key, default = T.unsafe(nil), &block); end
-  def has_key?(key); end
-  def id; end
-  def id=(_arg0); end
-  def include?(key); end
-  def inspect; end
-  def key?(key); end
-  def keys; end
-  def loaded?; end
-  def merge!(hash); end
-  def options; end
-  def replace(hash); end
-  def store(key, value); end
-  def to_hash; end
-  def update(hash); end
-  def values; end
-
-  private
-
-  def load!; end
-  def load_for_read!; end
-  def load_for_write!; end
-  def stringify_keys(other); end
-
-  class << self
-    def find(req); end
-    def set(req, session); end
-    def set_options(req, options); end
-  end
-end
-
-Rack::Session::Abstract::SessionHash::Unspecified = T.let(T.unsafe(nil), Object)
-
-class Rack::Session::Cookie < ::Rack::Session::Abstract::PersistedSecure
-  def initialize(app, options = T.unsafe(nil)); end
-
-  def coder; end
-
-  private
-
-  def delete_session(req, session_id, options); end
-  def digest_match?(data, digest); end
-  def extract_session_id(request); end
-  def find_session(req, sid); end
-  def generate_hmac(data, secret); end
-  def persistent_session_id!(data, sid = T.unsafe(nil)); end
-  def secure?(options); end
-  def unpacked_cookie_data(request); end
-  def write_session(req, session_id, session, options); end
-end
-
-class Rack::Session::Cookie::Base64
-  def decode(str); end
-  def encode(str); end
-end
-
-class Rack::Session::Cookie::Base64::JSON < ::Rack::Session::Cookie::Base64
-  def decode(str); end
-  def encode(obj); end
-end
-
-class Rack::Session::Cookie::Base64::Marshal < ::Rack::Session::Cookie::Base64
-  def decode(str); end
-  def encode(str); end
-end
-
-class Rack::Session::Cookie::Base64::ZipJSON < ::Rack::Session::Cookie::Base64
-  def decode(str); end
-  def encode(obj); end
-end
-
-class Rack::Session::Cookie::Identity
-  def decode(str); end
-  def encode(str); end
-end
-
-class Rack::Session::Cookie::SessionId
-  def initialize(session_id, cookie_value); end
-
-  def cookie_value; end
-end
-
-class Rack::Session::Pool < ::Rack::Session::Abstract::PersistedSecure
-  def initialize(app, options = T.unsafe(nil)); end
-
-  def delete_session(req, session_id, options); end
-  def find_session(req, sid); end
-  def generate_sid; end
-  def mutex; end
-  def pool; end
-  def with_lock(req); end
-  def write_session(req, session_id, new_session, options); end
-
-  private
-
-  def get_session_with_fallback(sid); end
-end
-
-Rack::Session::Pool::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
-
-class Rack::Session::SessionId
-  def initialize(public_id); end
-
-  def cookie_value; end
-  def empty?; end
-  def inspect; end
-  def private_id; end
-  def public_id; end
-  def to_s; end
-
-  private
-
-  def hash_sid(sid); end
-end
-
-Rack::Session::SessionId::ID_VERSION = T.let(T.unsafe(nil), Integer)
 
 class Rack::ShowExceptions
   def initialize(app); end
@@ -1498,22 +1280,25 @@ module Rack::Utils
   def byte_ranges(env, size); end
   def clean_path_info(path_info); end
   def clock_time; end
-  def delete_cookie_header!(header, key, value = T.unsafe(nil)); end
+  def delete_cookie_header!(headers, key, value = T.unsafe(nil)); end
+  def delete_set_cookie_header(key, value = T.unsafe(nil)); end
+  def delete_set_cookie_header!(header, key, value = T.unsafe(nil)); end
   def escape(s); end
   def escape_html(string); end
   def escape_path(s); end
+  def forwarded_values(forwarded_header); end
   def get_byte_ranges(http_range, size); end
   def make_delete_cookie_header(header, key, value); end
   def parse_cookies(env); end
-  def parse_cookies_header(header); end
+  def parse_cookies_header(value); end
   def parse_nested_query(qs, d = T.unsafe(nil)); end
   def parse_query(qs, d = T.unsafe(nil), &unescaper); end
   def q_values(q_value_header); end
-  def rfc2109(time); end
   def rfc2822(time); end
   def secure_compare(a, b); end
   def select_best_encoding(available_encodings, accept_encoding); end
-  def set_cookie_header!(header, key, value); end
+  def set_cookie_header(key, value); end
+  def set_cookie_header!(headers, key, value); end
   def status_code(status); end
   def unescape(s, encoding = T.unsafe(nil)); end
   def unescape_path(s); end
@@ -1530,10 +1315,13 @@ module Rack::Utils
     def clock_time; end
     def default_query_parser; end
     def default_query_parser=(_arg0); end
-    def delete_cookie_header!(header, key, value = T.unsafe(nil)); end
+    def delete_cookie_header!(headers, key, value = T.unsafe(nil)); end
+    def delete_set_cookie_header(key, value = T.unsafe(nil)); end
+    def delete_set_cookie_header!(header, key, value = T.unsafe(nil)); end
     def escape(s); end
     def escape_html(string); end
     def escape_path(s); end
+    def forwarded_values(forwarded_header); end
     def get_byte_ranges(http_range, size); end
     def key_space_limit; end
     def key_space_limit=(v); end
@@ -1543,15 +1331,15 @@ module Rack::Utils
     def param_depth_limit; end
     def param_depth_limit=(v); end
     def parse_cookies(env); end
-    def parse_cookies_header(header); end
+    def parse_cookies_header(value); end
     def parse_nested_query(qs, d = T.unsafe(nil)); end
     def parse_query(qs, d = T.unsafe(nil), &unescaper); end
     def q_values(q_value_header); end
-    def rfc2109(time); end
     def rfc2822(time); end
     def secure_compare(a, b); end
     def select_best_encoding(available_encodings, accept_encoding); end
-    def set_cookie_header!(header, key, value); end
+    def set_cookie_header(key, value); end
+    def set_cookie_header!(headers, key, value); end
     def status_code(status); end
     def unescape(s, encoding = T.unsafe(nil)); end
     def unescape_path(s); end
@@ -1577,32 +1365,10 @@ Rack::Utils::ESCAPE_HTML_PATTERN = T.let(T.unsafe(nil), Regexp)
 Rack::Utils::HTTP_STATUS_CODES = T.let(T.unsafe(nil), Hash)
 
 class Rack::Utils::HeaderHash < ::Hash
-  def initialize(hash = T.unsafe(nil)); end
-
-  def [](k); end
-  def []=(k, v); end
-  def clear; end
-  def delete(k); end
-  def each; end
-  def has_key?(k); end
-  def include?(k); end
-  def key?(k); end
-  def member?(k); end
-  def merge(other); end
-  def merge!(other); end
-  def replace(other); end
-  def to_hash; end
-
-  protected
-
-  def names; end
-
-  private
-
-  def initialize_copy(other); end
-
   class << self
     def [](headers); end
+    def allocate; end
+    def new(hash = T.unsafe(nil)); end
   end
 end
 
@@ -1611,14 +1377,8 @@ Rack::Utils::KeySpaceConstrainedParams = Rack::QueryParser::Params
 Rack::Utils::NULL_BYTE = T.let(T.unsafe(nil), String)
 Rack::Utils::PATH_SEPS = T.let(T.unsafe(nil), Regexp)
 Rack::Utils::ParameterTypeError = Rack::QueryParser::ParameterTypeError
-Rack::Utils::RFC2822_DAY_NAME = T.let(T.unsafe(nil), Array)
-Rack::Utils::RFC2822_MONTH_NAME = T.let(T.unsafe(nil), Array)
+Rack::Utils::ParamsTooDeepError = Rack::QueryParser::ParamsTooDeepError
 Rack::Utils::STATUS_WITH_NO_ENTITY_BODY = T.let(T.unsafe(nil), Hash)
 Rack::Utils::SYMBOL_TO_STATUS_CODE = T.let(T.unsafe(nil), Hash)
 Rack::VERSION = T.let(T.unsafe(nil), Array)
-
-class WEBrick::HTTPResponse
-  def rack; end
-  def rack=(_arg0); end
-  def setup_header; end
-end
+Rack::VERSION_STRING = T.let(T.unsafe(nil), String)
