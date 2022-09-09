@@ -53,6 +53,7 @@ module RuboCop::Cop::EnforceSuperclass
   end
 end
 
+RuboCop::Cop::IgnoredMethods = RuboCop::Cop::AllowedMethods
 RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 
 module RuboCop::Cop::IndexMethod
@@ -124,6 +125,25 @@ module RuboCop::Cop::MigrationsHelper
 end
 
 module RuboCop::Cop::Rails; end
+
+class RuboCop::Cop::Rails::ActionControllerFlashBeforeRender < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def action_controller?(param0); end
+  def flash_assignment?(param0); end
+  def on_send(flash_node); end
+  def render?(param0); end
+
+  private
+
+  def find_ancestor(node, type:); end
+  def followed_by_render?(flash_node); end
+  def inherit_action_controller_base?(node); end
+  def instance_method_or_block?(node); end
+end
+
+RuboCop::Cop::Rails::ActionControllerFlashBeforeRender::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::ActionControllerFlashBeforeRender::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::ActionControllerTestCase < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -216,6 +236,16 @@ end
 RuboCop::Cop::Rails::ActiveSupportAliases::ALIASES = T.let(T.unsafe(nil), Hash)
 RuboCop::Cop::Rails::ActiveSupportAliases::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::ActiveSupportAliases::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::ActiveSupportOnLoad < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+end
+
+RuboCop::Cop::Rails::ActiveSupportOnLoad::LOAD_HOOKS = T.let(T.unsafe(nil), Hash)
+RuboCop::Cop::Rails::ActiveSupportOnLoad::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::ActiveSupportOnLoad::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::AddColumnIndex < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -545,7 +575,7 @@ class RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods < ::RuboCop::Cop::
   extend ::RuboCop::Cop::AutoCorrector
 
   def any_manipulation?(param0 = T.unsafe(nil)); end
-  def errors_keys?(param0 = T.unsafe(nil)); end
+  def errors_deprecated?(param0 = T.unsafe(nil)); end
   def messages_details_assignment?(param0 = T.unsafe(nil)); end
   def messages_details_manipulation?(param0 = T.unsafe(nil)); end
   def on_send(node); end
@@ -561,9 +591,11 @@ class RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods < ::RuboCop::Cop::
   def offense_range(node, receiver); end
   def receiver_matcher(node); end
   def replacement(node, receiver); end
+  def skip_autocorrect?(node); end
 end
 
-RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::AUTOCORECTABLE_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::AUTOCORRECTABLE_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::INCOMPATIBLE_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::MANIPULATIVE_METHODS = T.let(T.unsafe(nil), Set)
 RuboCop::Cop::Rails::DeprecatedActiveModelErrorsMethods::MSG = T.let(T.unsafe(nil), String)
 
@@ -837,6 +869,8 @@ RuboCop::Cop::Rails::FindById::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::FindEach < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ActiveRecordHelper
+  include ::RuboCop::Cop::AllowedMethods
+  include ::RuboCop::Cop::AllowedPattern
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_send(node); end
@@ -851,6 +885,24 @@ end
 RuboCop::Cop::Rails::FindEach::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::FindEach::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::FindEach::SCOPE_METHODS = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::FreezeTime < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+  def time_now?(param0 = T.unsafe(nil)); end
+  def zoned_time_now?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def current_time?(node, method_name); end
+  def current_time_with_convert?(node, method_name); end
+end
+
+RuboCop::Cop::Rails::FreezeTime::CONV_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Rails::FreezeTime::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::FreezeTime::NOW_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Rails::FreezeTime::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::HasAndBelongsToMany < ::RuboCop::Cop::Base
   def on_send(node); end
@@ -1486,12 +1538,13 @@ class RuboCop::Cop::Rails::RedundantReceiverInWithOptions < ::RuboCop::Cop::Base
   def all_block_nodes_in(param0); end
   def all_send_nodes_in(param0); end
   def on_block(node); end
-  def with_options?(param0 = T.unsafe(nil)); end
+  def on_numblock(node); end
 
   private
 
-  def autocorrect(corrector, node); end
+  def autocorrect(corrector, send_node, node); end
   def block_argument_range(node); end
+  def redundant_receiver?(send_nodes, node); end
   def same_value?(arg_node, recv_node); end
   def search_begin_pos_of_space_before_block_argument(begin_pos); end
 end
@@ -1517,6 +1570,7 @@ class RuboCop::Cop::Rails::ReflectionClassName < ::RuboCop::Cop::Base
   private
 
   def reflection_class_value?(class_value); end
+  def str_assigned?(reflection_class_name); end
 end
 
 RuboCop::Cop::Rails::ReflectionClassName::ALLOWED_REFLECTION_CLASS_TYPES = T.let(T.unsafe(nil), Array)
@@ -1621,6 +1675,7 @@ class RuboCop::Cop::Rails::ReversibleMigration < ::RuboCop::Cop::Base
   def drop_table_call(param0 = T.unsafe(nil)); end
   def irreversible_schema_statement_call(param0 = T.unsafe(nil)); end
   def on_block(node); end
+  def on_numblock(node); end
   def on_send(node); end
   def remove_column_call(param0 = T.unsafe(nil)); end
   def remove_columns_call(param0 = T.unsafe(nil)); end
@@ -1671,6 +1726,26 @@ end
 
 RuboCop::Cop::Rails::RootJoinChain::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::RootJoinChain::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
+
+class RuboCop::Cop::Rails::RootPathnameMethods < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+  def pathname_method(param0 = T.unsafe(nil)); end
+  def rails_root?(param0 = T.unsafe(nil)); end
+  def rails_root_pathname?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def evidence(node); end
+end
+
+RuboCop::Cop::Rails::RootPathnameMethods::DIR_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::Cop::Rails::RootPathnameMethods::FILE_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::Cop::Rails::RootPathnameMethods::FILE_TEST_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::Cop::Rails::RootPathnameMethods::FILE_UTILS_METHODS = T.let(T.unsafe(nil), Set)
+RuboCop::Cop::Rails::RootPathnameMethods::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::RootPathnameMethods::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
 
 class RuboCop::Cop::Rails::RootPublicPath < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -1925,6 +2000,31 @@ end
 RuboCop::Cop::Rails::ToFormattedS::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::ToFormattedS::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Rails::ToSWithArgument < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
+
+  def on_csend(node); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::Rails::ToSWithArgument::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::ToSWithArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::TopLevelHashWithIndifferentAccess < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
+
+  def on_const(node); end
+  def top_level_hash_with_indifferent_access?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def autocorrect(corrector, node); end
+end
+
+RuboCop::Cop::Rails::TopLevelHashWithIndifferentAccess::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Rails::TransactionExitStatement < ::RuboCop::Cop::Base
   def exit_statements(param0); end
   def on_send(node); end
@@ -2083,6 +2183,31 @@ end
 
 RuboCop::Cop::Rails::WhereExists::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::WhereExists::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::WhereMissing < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
+
+  def missing_relationship(param0); end
+  def on_send(node); end
+  def where_node_and_argument(param0); end
+
+  private
+
+  def message(node, where_argument); end
+  def multi_condition?(where_arg); end
+  def register_offense(node, where_node, where_argument, range); end
+  def remove_where_method(corrector, node, where_node); end
+  def replace_range(child); end
+  def replace_where_method(corrector, where_node); end
+  def root_receiver(node); end
+  def same_line?(left_joins_node, where_node); end
+  def same_relationship?(where, left_joins); end
+end
+
+RuboCop::Cop::Rails::WhereMissing::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::WhereMissing::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::WhereNot < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
