@@ -40,6 +40,12 @@ module Homebrew
       symlink_gcc_libs
     end
 
+    def global_post_install
+      generic_global_post_install
+      symlink_ld_so
+      symlink_gcc_libs
+    end
+
     def check_cpu
       return if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
       return if Hardware::CPU.arm?

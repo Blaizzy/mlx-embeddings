@@ -775,6 +775,8 @@ class FormulaInstaller
 
     fix_dynamic_linkage(keg) if !@poured_bottle || !formula.bottle_specification.skip_relocation?
 
+    Homebrew::Install.global_post_install
+
     if build_bottle?
       ohai "Not running 'post_install' as we're building a bottle"
       puts "You can run it manually using:"
