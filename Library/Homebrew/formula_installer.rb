@@ -1163,6 +1163,8 @@ class FormulaInstaller
 
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
+    elsif Homebrew::EnvConfig.install_from_api?
+      odie "Unable to build #{formula.name} from source with HOMEBREW_INSTALL_FROM_API."
     else
       formula.fetch_patches
       formula.resources.each(&:fetch)
