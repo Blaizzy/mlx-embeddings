@@ -42,7 +42,7 @@ module Cask
       attr_reader :source, :target
 
       sig {
-        params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target_hash: String)
+        params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target_hash: T.any(String, Pathname))
           .void
       }
       def initialize(cask, source, **target_hash)
