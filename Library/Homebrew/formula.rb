@@ -1853,12 +1853,21 @@ class Formula
          .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
   end
 
-  # An array of all installed {Formula} without {Formula} dependents
+  # An array of all installed {Formula} without runtime {Formula}
+  # dependents for bottles and without build {Formula} dependents
+  # for those built from source.
   # @private
   def self.formulae_with_no_formula_dependents(formulae)
     return [] if formulae.blank?
 
-    formulae - formulae.flat_map(&:runtime_formula_dependencies)
+    formulae - formulae.each_with_object([]) do |formula, dependents|
+      dependents.concat(formula.runtime_formula_dependencies)
+
+      # Include build dependencies when the formula is not a bottle
+      unless Tab.for_keg(formula.any_installed_keg).poured_from_bottle
+        dependents.concat(formula.deps.select(&:build?).map(&:to_formula))
+      end
+    end
   end
 
   # Recursive function that returns an array of {Formula} without
