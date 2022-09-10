@@ -881,11 +881,14 @@ module Homebrew
           bottle_tag = Utils::Bottles::Tag.new(system: macos_version, arch: arch)
           next unless bottle_tag.valid_combination?
 
-          variation = variations[bottle_tag.to_sym]
-          # This variation does not exist, so it must match Linux.
-          return false if variation.blank?
+          variation_dependencies = variations.dig(bottle_tag.to_sym, "dependencies")
+          # This variation either:
+          #   1. does not exist
+          #   2. has no variation-specific dependencies
+          # In either case, it matches Linux.
+          return false if variation_dependencies.blank?
           # We found a non-Linux variation that depends on GCC.
-          return false if variation["dependencies"]&.include?("gcc")
+          return false if variation_dependencies.include?("gcc")
         end
       end
 
