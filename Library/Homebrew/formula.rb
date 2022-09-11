@@ -2704,6 +2704,10 @@ class Formula
       super
     end
 
+    # Whether this formula was loaded using the formulae.brew.sh API
+    # @private
+    attr_accessor :loaded_from_api
+
     # Whether this formula contains OS/arch-specific blocks
     # (e.g. `on_macos`, `on_arm`, `on_monterey :or_older`, `on_system :linux, macos: :big_sur_or_newer`).
     # @private
