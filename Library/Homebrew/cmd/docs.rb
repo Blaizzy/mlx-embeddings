@@ -12,7 +12,7 @@ module Homebrew
   def docs_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Open Homebrew's docs (https://docs.brew.sh) in a browser.
+        Open Homebrew's online documentation (https://docs.brew.sh) in a browser.
       EOS
     end
   end
