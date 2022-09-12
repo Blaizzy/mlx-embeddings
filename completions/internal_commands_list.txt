@@ -32,6 +32,7 @@ deps
 desc
 developer
 dispatch-build-bottle
+docs
 doctor
 dr
 edit

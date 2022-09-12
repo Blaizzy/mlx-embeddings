@@ -158,6 +158,7 @@ __brew_internal_commands() {
     'desc:Display formula'\''s name and one-line description'
     'developer:Control Homebrew'\''s developer mode'
     'dispatch-build-bottle:Build bottles for these formulae with GitHub Actions'
+    'docs:Open Homebrew'\''s online documentation (https://docs'
     'doctor:Check your system for potential problems'
     'edit:Open a formula or cask in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the Homebrew repository for editing if no formula is provided'
     'extract:Look through repository history to find the most recent version of formula and create a copy in tap'
@@ -773,6 +774,15 @@ _brew_dispatch_build_bottle() {
     '--workflow[Dispatch specified workflow (default: `dispatch-build-bottle.yml`)]' \
     - formula \
     '*::formula:__brew_formulae'
+}
+
+# brew docs
+_brew_docs() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
 }
 
 # brew doctor
