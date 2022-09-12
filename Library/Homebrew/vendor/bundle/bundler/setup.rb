@@ -72,7 +72,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/x86_64-darwin-1
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rdiscount-2.2.0.2/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rexml-3.2.5/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ronn-0.7.3/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-support-3.11.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-support-3.11.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-core-3.11.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-expectations-3.11.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/rspec-mocks-3.11.1/lib"
