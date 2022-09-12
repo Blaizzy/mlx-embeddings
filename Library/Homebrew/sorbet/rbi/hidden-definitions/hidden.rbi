@@ -19,6 +19,10 @@ module ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
 end
 
+module ActiveSupport::VERSION
+  PRE = ::T.let(nil, ::T.untyped)
+end
+
 class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
@@ -3556,6 +3560,7 @@ class Object
   HOMEBREW_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
+  HOMEBREW_DOCS_WWW = ::T.let(nil, ::T.untyped)
   HOMEBREW_GITHUB_PACKAGES_AUTH = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
