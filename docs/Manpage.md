@@ -207,6 +207,10 @@ branch instead of the latest stable version along with some other behaviour chan
 `brew developer` (`on`|`off`)
 <br>Turn Homebrew's developer mode on or off respectively.
 
+### `docs`
+
+Open Homebrew's online documentation (https://docs.brew.sh) in a browser.
+
 ### `doctor`, `dr` [*`--list-checks`*] [*`--audit-debug`*] [*`diagnostic_check`* ...]
 
 Check your system for potential problems. Will exit with a non-zero status
