@@ -875,6 +875,7 @@ class RSpec::Matchers::BuiltIn::ContainExactly < ::RSpec::Matchers::BuiltIn::Bas
   def description; end
   def failure_message; end
   def failure_message_when_negated; end
+  def matches?(actual); end
 
   private
 
