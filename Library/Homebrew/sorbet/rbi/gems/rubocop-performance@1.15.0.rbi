@@ -6,6 +6,7 @@
 
 module RuboCop; end
 module RuboCop::Cop; end
+RuboCop::Cop::IgnoredMethods = RuboCop::Cop::AllowedMethods
 RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 module RuboCop::Cop::Performance; end
 
@@ -494,6 +495,7 @@ class RuboCop::Cop::Performance::RedundantMatch < ::RuboCop::Cop::Base
   private
 
   def autocorrect(corrector, node); end
+  def autocorrectable?(node); end
 end
 
 RuboCop::Cop::Performance::RedundantMatch::MSG = T.let(T.unsafe(nil), String)
@@ -552,10 +554,11 @@ class RuboCop::Cop::Performance::RedundantSortBlock < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_block(node); end
+  def on_numblock(node); end
 
   private
 
-  def message(var_a, var_b); end
+  def register_offense(send, node); end
 end
 
 RuboCop::Cop::Performance::RedundantSortBlock::MSG = T.let(T.unsafe(nil), String)
@@ -704,10 +707,11 @@ class RuboCop::Cop::Performance::SortReverse < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_block(node); end
+  def on_numblock(node); end
 
   private
 
-  def message(var_a, var_b); end
+  def register_offense(send, node); end
 end
 
 RuboCop::Cop::Performance::SortReverse::MSG = T.let(T.unsafe(nil), String)
@@ -834,6 +838,7 @@ class RuboCop::Cop::Performance::TimesMap < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_block(node); end
+  def on_numblock(node); end
   def on_send(node); end
   def times_map_call(param0 = T.unsafe(nil)); end
 
@@ -892,6 +897,7 @@ module RuboCop::Cop::SortBlock
 
   def replaceable_body?(param0 = T.unsafe(nil), param1, param2); end
   def sort_with_block?(param0 = T.unsafe(nil)); end
+  def sort_with_numblock?(param0 = T.unsafe(nil)); end
 
   private
 
