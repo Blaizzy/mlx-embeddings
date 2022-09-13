@@ -99,7 +99,7 @@ describe Tab do
     tab = described_class.new(homebrew_version: "1.2.3")
     expect(tab.parsed_homebrew_version).to eq("1.2.3")
     expect(tab.parsed_homebrew_version).to be < "1.2.3-1-g12789abdf"
-    expect(tab.parsed_homebrew_version).to be_kind_of(Version)
+    expect(tab.parsed_homebrew_version).to be_a(Version)
 
     tab.homebrew_version = "1.2.4-567-g12789abdf"
     expect(tab.parsed_homebrew_version).to be > "1.2.4"

@@ -19,7 +19,7 @@ describe Cask::Artifact::PostflightBlock, :cask do
       end
 
       expect(called).to be true
-      expect(yielded_arg).to be_kind_of(Cask::DSL::Postflight)
+      expect(yielded_arg).to be_a(Cask::DSL::Postflight)
     end
   end
 
@@ -40,7 +40,7 @@ describe Cask::Artifact::PostflightBlock, :cask do
       end
 
       expect(called).to be true
-      expect(yielded_arg).to be_kind_of(Cask::DSL::UninstallPostflight)
+      expect(yielded_arg).to be_a(Cask::DSL::UninstallPostflight)
     end
   end
 end
