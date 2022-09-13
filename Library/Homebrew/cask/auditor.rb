@@ -144,7 +144,6 @@ module Cask
         quarantine:      @quarantine,
       )
       audit.run!
-      audit
     end
 
     def language_blocks
