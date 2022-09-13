@@ -196,6 +196,13 @@ module Homebrew
       if formula.license.present?
         licenses, exceptions = SPDX.parse_license_expression formula.license
 
+        sspl_licensed = licenses.any? { |license| license.to_s.start_with?("SSPL") }
+        if sspl_licensed && @core_tap
+          problem <<~EOS
+            Formula #{formula.name} is SSPL-licensed. Software under the SSPL must not be packaged in homebrew/core.
+          EOS
+        end
+
         non_standard_licenses = licenses.reject { |license| SPDX.valid_license? license }
         if non_standard_licenses.present?
           problem <<~EOS
