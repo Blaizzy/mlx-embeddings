@@ -126,11 +126,11 @@ module Homebrew
         if debug
           # Print the chain of references for debugging
           puts "Reference Chain:"
-          puts formula_or_cask_name(first_formula_or_cask, full_name: full_name)
+          puts package_or_resource_name(first_formula_or_cask, full_name: full_name)
 
           references << referenced_formula_or_cask
           references.each do |ref_formula_or_cask|
-            puts formula_or_cask_name(ref_formula_or_cask, full_name: full_name)
+            puts package_or_resource_name(ref_formula_or_cask, full_name: full_name)
           end
         end
 
@@ -179,17 +179,18 @@ module Homebrew
 
       ambiguous_casks = []
       if handle_name_conflict
-        ambiguous_casks = formulae_and_casks_to_check.group_by { |item| formula_or_cask_name(item, full_name: true) }
-                                                     .values
-                                                     .select { |items| items.length > 1 }
-                                                     .flatten
-                                                     .select { |item| item.is_a?(Cask::Cask) }
+        ambiguous_casks = formulae_and_casks_to_check \
+                          .group_by { |item| package_or_resource_name(item, full_name: true) }
+                          .values
+                          .select { |items| items.length > 1 }
+                          .flatten
+                          .select { |item| item.is_a?(Cask::Cask) }
       end
 
       ambiguous_names = []
       unless full_name
         ambiguous_names =
-          (formulae_and_casks_to_check - ambiguous_casks).group_by { |item| formula_or_cask_name(item) }
+          (formulae_and_casks_to_check - ambiguous_casks).group_by { |item| package_or_resource_name(item) }
                                                          .values
                                                          .select { |items| items.length > 1 }
                                                          .flatten
@@ -219,7 +220,7 @@ module Homebrew
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
 
         use_full_name = full_name || ambiguous_names.include?(formula_or_cask)
-        name = formula_or_cask_name(formula_or_cask, full_name: use_full_name)
+        name = package_or_resource_name(formula_or_cask, full_name: use_full_name)
 
         referenced_formula_or_cask, livecheck_references =
           resolve_livecheck_reference(formula_or_cask, full_name: use_full_name, debug: debug)
@@ -244,11 +245,31 @@ module Homebrew
           )
         end
 
+        # Check current and latest resources (if "--resources" flag is given)
+        # Only check current and latest versions if we have resources to check against
+        check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
+        if check_for_resources
+          resource_version_info = formula_or_cask.resources.map do |resource|
+            res_skip_info ||= SkipConditions.skip_information(resource, verbose: verbose)
+            if res_skip_info.present?
+              res_skip_info
+            else
+              resource_version(
+                resource,
+                json:    json,
+                verbose: verbose,
+                debug:   debug,
+              )
+            end
+          end.compact
+        end
+
         skip_info ||= SkipConditions.skip_information(formula_or_cask, full_name: use_full_name, verbose: verbose)
         if skip_info.present?
           next skip_info if json && !newer_only
 
           SkipConditions.print_skip_information(skip_info) if !newer_only && !quiet
+          print_resources_info(resource_version_info, verbose: verbose) if check_for_resources
           next
         end
 
@@ -281,20 +302,6 @@ module Homebrew
             json: json, full_name: use_full_name, verbose: verbose, debug: debug
           )
           version_info[:latest] if version_info.present?
-        end
-
-        # Check current and latest resources (if "--resources" flag is given)
-        # Only check current and latest versions if we have resources to check against
-        check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
-        if check_for_resources
-          resource_version_info = formula_or_cask.resources.map do |resource|
-            resource_version(
-              resource,
-              json:    json,
-              verbose: verbose,
-              debug:   debug,
-            )
-          end
         end
 
         if latest.blank?
@@ -353,17 +360,7 @@ module Homebrew
         end
         puts if debug
         print_latest_version(info, verbose: verbose, ambiguous_cask: ambiguous_casks.include?(formula_or_cask))
-
-        if check_for_resources
-          resource_version_info.each do |r_info|
-            print_latest_version(
-              r_info,
-              verbose:  verbose,
-              resource: true,
-            )
-          end
-        end
-
+        print_resources_info(resource_version_info, verbose: verbose) if check_for_resources
         nil
       rescue => e
         Homebrew.failed = true
@@ -373,12 +370,17 @@ module Homebrew
           progress&.increment
           status_hash(formula_or_cask, "error", [e.to_s], full_name: use_full_name, verbose: verbose) unless quiet
         elsif !quiet
-          name = formula_or_cask_name(formula_or_cask, full_name: use_full_name)
+          name = package_or_resource_name(formula_or_cask, full_name: use_full_name)
           name += " (cask)" if ambiguous_casks.include?(formula_or_cask)
 
           onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"
           $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
+        end
+        if check_for_resources
+          next if resource_version_info.blank?
+          next unless resource_version_info.empty?
+          print_resources_info(resource_version_info, verbose: verbose)
         end
       end
       # rubocop:enable Metrics/BlockLength
@@ -397,15 +399,17 @@ module Homebrew
       puts JSON.pretty_generate(formulae_checked.compact)
     end
 
-    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), full_name: T::Boolean).returns(String) }
-    def formula_or_cask_name(formula_or_cask, full_name: false)
-      case formula_or_cask
+    sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource), full_name: T::Boolean).returns(String) }
+    def package_or_resource_name(package_or_resource, full_name: false)
+      case package_or_resource
       when Formula
-        formula_name(formula_or_cask, full_name: full_name)
+        formula_name(package_or_resource, full_name: full_name)
       when Cask::Cask
-        cask_name(formula_or_cask, full_name: full_name)
+        cask_name(package_or_resource, full_name: full_name)
+      when Resource
+        package_or_resource.name
       else
-        T.absurd(formula_or_cask)
+        T.absurd(package_or_resource)
       end
     end
 
@@ -458,7 +462,7 @@ module Homebrew
 
     # Formats and prints the livecheck result for a formula/cask/resource.
     sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean, resource: T::Boolean).void }
-    def print_latest_version(info, verbose:, ambiguous_cask: false, resource: false)
+    def print_latest_version(info, verbose:false, ambiguous_cask: false, resource: false)
       package_or_resource_s = resource ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
       package_or_resource_s += " (cask)" if ambiguous_cask
@@ -477,6 +481,22 @@ module Homebrew
       end
 
       puts "#{package_or_resource_s}: #{current_s} ==> #{latest_s}"
+    end
+
+    # Prints the livecheck result for a resources for a given Formula.
+    sig { params(info: Hash, verbose: T::Boolean).void }
+    def print_resources_info(info, verbose:false)
+      info.each do |r_info|
+        if r_info.is_a?(Hash) && r_info[:status] && r_info[:messages]
+          SkipConditions.print_skip_information(r_info)
+        else
+          print_latest_version(
+            r_info,
+            verbose:  verbose,
+            resource: true,
+          )
+        end
+      end
     end
 
     sig {
@@ -742,6 +762,11 @@ module Homebrew
 
         res_current = resource.version
         res_latest = Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) })
+
+        if res_latest.to_s.blank?
+          return status_hash(resource, "error", ["Unable to get versions"], verbose: verbose)
+        end
+
         is_newer_than_upstream = res_current > res_latest
         is_outdated = (res_current != res_latest) && !is_newer_than_upstream
 
@@ -775,6 +800,14 @@ module Homebrew
         res_livecheck[:regex] = regex.inspect if regex.present?
         res_livecheck[:cached] = true if strategy_data[:cached] == true
         resource_version_info[:meta][:livecheck] = res_livecheck
+      rescue => e
+        Homebrew.failed = true
+        if json
+          status_hash(resource, "error", [e.to_s], verbose: verbose)
+        elsif onoe "#{Tty.blue}#{resource.name}#{Tty.reset}: #{e}"
+          $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
+          nil
+        end
       end
       # rubocop:enable Metrics/BlockLength
       resource_version_info
@@ -950,6 +983,7 @@ module Homebrew
         end
 
         version_info = {
+          # latest: {},
           latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),
         }
 

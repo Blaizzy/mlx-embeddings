@@ -268,7 +268,7 @@ module Homebrew
         elsif skip_hash[:cask].is_a?(String)
           skip_hash[:cask]
         elsif skip_hash[:resource].is_a?(String)
-          skip_hash[:resource]
+          "  #{skip_hash[:resource]}"
         end
         return unless name
 
