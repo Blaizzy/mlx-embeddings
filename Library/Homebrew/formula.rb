@@ -1844,46 +1844,6 @@ class Formula
     end.uniq(&:name)
   end
 
-  # An array of all installed {Formula} with {Cask} dependents.
-  # @private
-  def self.formulae_with_cask_dependents(casks)
-    casks.flat_map { |cask| cask.depends_on[:formula] }
-         .compact
-         .map { |f| Formula[f] }
-         .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
-  end
-
-  # An array of all installed {Formula} without {Formula} dependents
-  # @private
-  def self.formulae_with_no_formula_dependents(formulae)
-    return [] if formulae.blank?
-
-    formulae - formulae.flat_map(&:runtime_formula_dependencies)
-  end
-
-  # Recursive function that returns an array of {Formula} without
-  # {Formula} dependents that weren't installed on request.
-  # @private
-  def self.unused_formulae_with_no_formula_dependents(formulae)
-    unused_formulae = formulae_with_no_formula_dependents(formulae).reject do |f|
-      Tab.for_keg(f.any_installed_keg).installed_on_request
-    end
-
-    if unused_formulae.present?
-      unused_formulae += unused_formulae_with_no_formula_dependents(formulae - unused_formulae)
-    end
-
-    unused_formulae
-  end
-
-  # An array of {Formula} without {Formula} or {Cask}
-  # dependents that weren't installed on request.
-  # @private
-  def self.unused_formulae_with_no_dependents(formulae, casks)
-    unused_formulae = unused_formulae_with_no_formula_dependents(formulae)
-    unused_formulae - formulae_with_cask_dependents(casks)
-  end
-
   def self.installed_with_alias_path(alias_path)
     return [] if alias_path.nil?
 
