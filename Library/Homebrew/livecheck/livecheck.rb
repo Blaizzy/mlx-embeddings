@@ -251,16 +251,12 @@ module Homebrew
         if check_for_resources
           resource_version_info = formula_or_cask.resources.map do |resource|
             res_skip_info ||= SkipConditions.skip_information(resource, verbose: verbose)
-            if res_skip_info.present?
-              res_skip_info
-            else
-              resource_version(
-                resource,
-                json:    json,
-                verbose: verbose,
-                debug:   debug,
-              )
-            end
+            res_skip_info.presence || resource_version(
+              resource,
+              json:    json,
+              verbose: verbose,
+              debug:   debug,
+            )
           end.compact
         end
 
@@ -380,6 +376,7 @@ module Homebrew
         if check_for_resources
           next if resource_version_info.blank?
           next unless resource_version_info.empty?
+
           print_resources_info(resource_version_info, verbose: verbose)
         end
       end
@@ -462,7 +459,7 @@ module Homebrew
 
     # Formats and prints the livecheck result for a formula/cask/resource.
     sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean, resource: T::Boolean).void }
-    def print_latest_version(info, verbose:false, ambiguous_cask: false, resource: false)
+    def print_latest_version(info, verbose: false, ambiguous_cask: false, resource: false)
       package_or_resource_s = resource ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
       package_or_resource_s += " (cask)" if ambiguous_cask
@@ -485,7 +482,7 @@ module Homebrew
 
     # Prints the livecheck result for a resources for a given Formula.
     sig { params(info: Hash, verbose: T::Boolean).void }
-    def print_resources_info(info, verbose:false)
+    def print_resources_info(info, verbose: false)
       info.each do |r_info|
         if r_info.is_a?(Hash) && r_info[:status] && r_info[:messages]
           SkipConditions.print_skip_information(r_info)
@@ -763,9 +760,7 @@ module Homebrew
         res_current = resource.version
         res_latest = Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) })
 
-        if res_latest.to_s.blank?
-          return status_hash(resource, "error", ["Unable to get versions"], verbose: verbose)
-        end
+        return status_hash(resource, "error", ["Unable to get versions"], verbose: verbose) if res_latest.to_s.blank?
 
         is_newer_than_upstream = res_current > res_latest
         is_outdated = (res_current != res_latest) && !is_newer_than_upstream
