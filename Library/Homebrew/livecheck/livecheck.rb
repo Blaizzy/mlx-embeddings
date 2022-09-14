@@ -307,7 +307,11 @@ module Homebrew
 
           next version_info if version_info.is_a?(Hash) && version_info[:status] && version_info[:messages]
 
-          next status_hash(formula_or_cask, "error", [no_versions_msg], full_name: use_full_name, verbose: verbose)
+          latest_info = status_hash(formula_or_cask, "error", [no_versions_msg], full_name: use_full_name,
+                                                                                 verbose:   verbose)
+          latest_info[:resources] = resource_version_info if check_for_resources
+
+          next latest_info
         end
 
         if (m = latest.to_s.match(/(.*)-release$/)) && !current.to_s.match(/.*-release$/)
@@ -373,12 +377,7 @@ module Homebrew
           $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
           nil
         end
-        if check_for_resources
-          next if resource_version_info.blank?
-          next unless resource_version_info.empty?
-
-          print_resources_info(resource_version_info, verbose: verbose)
-        end
+        print_resources_info(resource_version_info, verbose: verbose) if check_for_resources
       end
       # rubocop:enable Metrics/BlockLength
 
