@@ -136,6 +136,9 @@ module Homebrew
       def all?; end
 
       sig { returns(T::Boolean) }
+      def eval_all?; end
+
+      sig { returns(T::Boolean) }
       def full?; end
 
       sig { returns(T::Boolean) }

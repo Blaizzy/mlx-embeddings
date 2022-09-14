@@ -33,7 +33,7 @@ module Homebrew
             if cached_formula_json_file.exist? && !cached_formula_json_file.empty?
               curl_args.prepend("--time-cond", cached_formula_json_file)
             end
-            curl_download(*curl_args, to: HOMEBREW_CACHE_API/"#{formula_api_path}.json", max_time: 5)
+            curl_download(*curl_args, to: cached_formula_json_file, max_time: 5)
 
             json_formulae = JSON.parse(cached_formula_json_file.read)
 

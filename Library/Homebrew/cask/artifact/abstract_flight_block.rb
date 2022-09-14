@@ -32,6 +32,10 @@ module Cask
         abstract_phase(self.class.uninstall_dsl_key)
       end
 
+      def summarize
+        directives.keys.map(&:to_s).join(", ")
+      end
+
       private
 
       def class_for_dsl_key(dsl_key)
@@ -43,10 +47,6 @@ module Cask
         return if (block = directives[dsl_key]).nil?
 
         class_for_dsl_key(dsl_key).new(cask).instance_eval(&block)
-      end
-
-      def summarize
-        directives.keys.map(&:to_s).join(", ")
       end
     end
   end

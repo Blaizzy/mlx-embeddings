@@ -19,7 +19,7 @@ describe Cask::Artifact::PreflightBlock, :cask do
       end
 
       expect(called).to be true
-      expect(yielded_arg).to be_kind_of Cask::DSL::Preflight
+      expect(yielded_arg).to be_a Cask::DSL::Preflight
     end
   end
 
@@ -40,7 +40,7 @@ describe Cask::Artifact::PreflightBlock, :cask do
       end
 
       expect(called).to be true
-      expect(yielded_arg).to be_kind_of Cask::DSL::UninstallPreflight
+      expect(yielded_arg).to be_a Cask::DSL::UninstallPreflight
     end
   end
 end

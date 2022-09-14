@@ -21,6 +21,18 @@ class DevelopmentTools
       :gcc
     end
 
+    sig { returns(T::Boolean) }
+    def build_system_too_old?
+      return @build_system_too_old if defined? @build_system_too_old
+
+      @build_system_too_old = (system_gcc_too_old? || OS::Linux::Glibc.below_ci_version?)
+    end
+
+    sig { returns(T::Boolean) }
+    def system_gcc_too_old?
+      gcc_version("gcc") < OS::LINUX_GCC_CI_VERSION
+    end
+
     sig { returns(T::Hash[String, T.nilable(String)]) }
     def build_system_info
       generic_build_system_info.merge({

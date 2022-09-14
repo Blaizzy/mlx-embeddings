@@ -19,8 +19,11 @@ module Homebrew
              description: "Show all options on a single line separated by spaces."
       switch "--installed",
              description: "Show options for formulae that are currently installed."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to show their " \
+                          "options."
       switch "--all",
-             description: "Show options for all available formulae."
+             hidden: true
       flag   "--command=",
              description: "Show options for the specified <command>."
 
@@ -33,7 +36,13 @@ module Homebrew
   def options
     args = options_args.parse
 
+    all = args.eval_all?
     if args.all?
+      odeprecated "brew info --all", "brew info --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
+      all = true
+    end
+
+    if all
       puts_options Formula.all.sort, args: args
     elsif args.installed?
       puts_options Formula.installed.sort, args: args

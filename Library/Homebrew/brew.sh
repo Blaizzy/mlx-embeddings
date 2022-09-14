@@ -197,6 +197,7 @@ check-run-command-as-root() {
   [[ "$(id -u)" == 0 ]] || return
 
   # Allow Azure Pipelines/GitHub Actions/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
+  [[ -f /.dockerenv ]] && return
   [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|actions_job|docker|garden|kubepods" -q /proc/1/cgroup && return
 
   # Homebrew Services may need `sudo` for system-wide daemons.
@@ -357,6 +358,18 @@ fi
 #####
 ##### Now, do everything else (that may be a bit slower).
 #####
+
+# Docker image deprecation
+if [[ -f "${HOMEBREW_REPOSITORY}/.docker-deprecate" ]]
+then
+  DOCKER_DEPRECATION_MESSAGE="$(cat "${HOMEBREW_REPOSITORY}/.docker-deprecate")"
+  if [[ -n "${GITHUB_ACTIONS}" ]]
+  then
+    echo "::warning::${DOCKER_DEPRECATION_MESSAGE}" >&2
+  else
+    opoo "${DOCKER_DEPRECATION_MESSAGE}"
+  fi
+fi
 
 # USER isn't always set so provide a fall back for `brew` and subprocesses.
 export USER="${USER:-$(id -un)}"

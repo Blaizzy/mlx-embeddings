@@ -14,7 +14,7 @@ module Cask
       def self.from_args(cask, *args)
         raise CaskInvalidError.new(cask.token, "'stage_only' takes only a single argument: true") if args != [true]
 
-        new(cask)
+        new(cask, true)
       end
 
       sig { returns(T::Array[T::Boolean]) }

@@ -49,7 +49,7 @@ module RuboCop
           stanzas.sort do |s1, s2|
             i1 = stanza_order_index(s1)
             i2 = stanza_order_index(s2)
-            if i1 == i2
+            if i1 == i2 || i1.blank? || i2.blank?
               i1 = stanzas.index(s1)
               i2 = stanzas.index(s2)
             end

@@ -26,14 +26,23 @@ class DependencyCollector
 
   sig { void }
   def initialize
+    # Ensure this is synced with `initialize_dup` and `freeze` (excluding simple objects like integers and booleans)
     @deps = Dependencies.new
     @requirements = Requirements.new
+
+    init_global_dep_tree_if_needed!
   end
 
-  def initialize_copy(other)
+  def initialize_dup(other)
     super
     @deps = @deps.dup
     @requirements = @requirements.dup
+  end
+
+  def freeze
+    @deps.freeze
+    @requirements.freeze
+    super
   end
 
   def add(spec)
@@ -67,6 +76,12 @@ class DependencyCollector
     spec, tags = spec.is_a?(Hash) ? spec.first : spec
     parse_spec(spec, Array(tags))
   end
+
+  sig { params(related_formula_names: T::Array[String]).returns(T.nilable(Dependency)) }
+  def gcc_dep_if_needed(related_formula_names); end
+
+  sig { params(related_formula_names: T::Array[String]).returns(T.nilable(Dependency)) }
+  def glibc_dep_if_needed(related_formula_names); end
 
   def git_dep_if_needed(tags)
     return if Utils::Git.available?
@@ -109,6 +124,9 @@ class DependencyCollector
   end
 
   private
+
+  sig { void }
+  def init_global_dep_tree_if_needed!; end
 
   def parse_spec(spec, tags)
     case spec

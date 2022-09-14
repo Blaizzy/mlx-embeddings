@@ -99,6 +99,16 @@ class DevelopmentTools
     end
 
     sig { returns(T::Boolean) }
+    def build_system_too_old?
+      false
+    end
+
+    sig { returns(T::Boolean) }
+    def system_gcc_too_old?
+      false
+    end
+
+    sig { returns(T::Boolean) }
     def ca_file_handles_most_https_certificates?
       # The system CA file is too old for some modern HTTPS certificates on
       # older OS versions.

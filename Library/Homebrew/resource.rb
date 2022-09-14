@@ -29,6 +29,7 @@ class Resource
   attr_accessor :name
 
   def initialize(name = nil, &block)
+    # Ensure this is synced with `initialize_dup` and `freeze` (excluding simple objects like integers and booleans)
     @name = name
     @url = nil
     @version = nil
@@ -37,9 +38,33 @@ class Resource
     @checksum = nil
     @using = nil
     @patches = []
-    @livecheck = nil
+    @livecheck = Livecheck.new(self)
     @livecheckable = false
     instance_eval(&block) if block
+  end
+
+  def initialize_dup(other)
+    super
+    @name = @name.dup
+    @version = @version.dup
+    @mirrors = @mirrors.dup
+    @specs = @specs.dup
+    @checksum = @checksum.dup
+    @using = @using.dup
+    @patches = @patches.dup
+    @livecheck = @livecheck.dup
+  end
+
+  def freeze
+    @name.freeze
+    @version.freeze
+    @mirrors.freeze
+    @specs.freeze
+    @checksum.freeze
+    @using.freeze
+    @patches.freeze
+    @livecheck.freeze
+    super
   end
 
   def owner=(owner)
@@ -185,7 +210,6 @@ class Resource
   #   regex /foo-(\d+(?:\.\d+)+)\.tar/
   # end</pre>
   def livecheck(&block)
-    @livecheck ||= Livecheck.new(self) if block
     return @livecheck unless block
 
     @livecheckable = true
@@ -215,13 +239,13 @@ class Resource
     @download_strategy = DownloadStrategyDetector.detect(url, using)
     @specs.merge!(specs)
     @downloader = nil
+    @version = detect_version(@version)
   end
 
   def version(val = nil)
-    @version ||= begin
-      version = detect_version(val)
-      version.null? ? nil : version
-    end
+    return @version if val.nil?
+
+    @version = detect_version(val)
   end
 
   def mirror(val)
@@ -242,15 +266,15 @@ class Resource
   private
 
   def detect_version(val)
-    return Version::NULL if val.nil? && url.nil?
-
-    case val
-    when nil     then Version.detect(url, **specs)
+    version = case val
+    when nil     then url.nil? ? Version::NULL : Version.detect(url, **specs)
     when String  then Version.create(val)
     when Version then val
     else
       raise TypeError, "version '#{val.inspect}' should be a string"
     end
+
+    version unless version.null?
   end
 
   # A resource containing a Go package.

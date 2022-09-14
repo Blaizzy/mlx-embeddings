@@ -364,4 +364,41 @@ describe Homebrew::Cleanup do
       end
     end
   end
+
+  describe "::cleanup_python_site_packages" do
+    context "when cleaning up Python modules" do
+      let(:foo_module) { (HOMEBREW_PREFIX/"lib/python3.99/site-packages/foo") }
+      let(:foo_pycache) { (foo_module/"__pycache__") }
+      let(:foo_pyc) { (foo_pycache/"foo.cypthon-399.pyc") }
+
+      before do
+        foo_pycache.mkpath
+        FileUtils.touch foo_pyc
+      end
+
+      it "cleans up stray `*.pyc` files" do
+        cleanup.cleanup_python_site_packages
+        expect(foo_pyc).not_to exist
+      end
+
+      it "retains `*.pyc` files of installed modules" do
+        FileUtils.touch foo_module/"__init__.py"
+
+        cleanup.cleanup_python_site_packages
+        expect(foo_pyc).to exist
+      end
+    end
+
+    it "cleans up stale `*.pyc` files in the top-level `__pycache__`" do
+      pycache = HOMEBREW_PREFIX/"lib/python3.99/site-packages/__pycache__"
+      foo_pyc = pycache/"foo.cypthon-3.99.pyc"
+      pycache.mkpath
+      FileUtils.touch foo_pyc
+
+      allow_any_instance_of(Pathname).to receive(:ctime).and_return(Time.now - (2 * 60 * 60 * 24))
+      allow_any_instance_of(Pathname).to receive(:mtime).and_return(Time.now - (2 * 60 * 60 * 24))
+      described_class.new(days: 1).cleanup_python_site_packages
+      expect(foo_pyc).not_to exist
+    end
+  end
 end

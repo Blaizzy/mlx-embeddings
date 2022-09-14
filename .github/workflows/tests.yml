@@ -20,7 +20,7 @@ concurrency:
 jobs:
   syntax:
     if: github.repository == 'Homebrew/brew'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -52,7 +52,7 @@ jobs:
     name: tap syntax (Linux)
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -82,13 +82,13 @@ jobs:
           brew update-test --commit=HEAD
 
       - name: Run brew readall on all taps
-        run: brew readall --aliases
+        run: brew readall --eval-all --aliases
 
       - name: Run brew style on homebrew-core for Linux
         run: brew style --display-cop-names homebrew/core
 
       - name: Run brew audit --skip-style on all taps
-        run: brew audit --skip-style --except=version --display-failures-only
+        run: brew audit --eval-all --skip-style --except=version --display-failures-only
 
       - name: Set up all Homebrew taps
         run: |
@@ -146,7 +146,7 @@ jobs:
 
   vendored-gems:
     name: vendored gems (Linux)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -167,31 +167,62 @@ jobs:
 
   docker:
     needs: syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Build Docker image
-        run: docker build -t brew --build-arg=version=16.04 .
+        run: |
+          docker build -t brew --build-arg=version=22.04 \
+               --label org.opencontainers.image.created="$(date --rfc-3339=seconds --utc)" \
+               --label org.opencontainers.image.url="https://brew.sh" \
+               --label org.opencontainers.image.documentation="https://docs.brew.sh" \
+               --label org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}" \
+               --label org.opencontainers.image.revision="${GITHUB_SHA}" \
+               --label org.opencontainers.image.vendor="${GITHUB_REPOSITORY_OWNER}" \
+               --label org.opencontainers.image.licenses="BSD-2-Clause" \
+               .
 
       - name: Deploy the Docker image to GitHub Packages and Docker Hub
         if: github.ref == 'refs/heads/master'
         run: |
           echo ${{secrets.HOMEBREW_BREW_GITHUB_PACKAGES_TOKEN}} |
             docker login ghcr.io -u BrewTestBot --password-stdin
-          docker tag brew "ghcr.io/homebrew/ubuntu16.04:master"
-          docker push "ghcr.io/homebrew/ubuntu16.04:master"
+          docker tag brew "ghcr.io/homebrew/ubuntu22.04:master"
+          docker push "ghcr.io/homebrew/ubuntu22.04:master"
           echo ${{secrets.HOMEBREW_BREW_DOCKER_TOKEN}} |
             docker login -u brewtestbot --password-stdin
-          docker tag brew "homebrew/ubuntu16.04:master"
+          docker tag brew "homebrew/ubuntu22.04:master"
+          docker push "homebrew/ubuntu22.04:master"
+
+      - name: Build deprecated 16.04 Docker image
+        run: |
+          echo "homebrew/ubuntu16.04:master is deprecated and will soon be retired. Use homebrew/ubuntu22.04:master or homebrew/ubuntu16.04 or homebrew/brew. For CI, homebrew/ubuntu22.04:master is recommended." > .docker-deprecate
+          docker build -t brew-deprecated --build-arg=version=16.04 \
+               --label org.opencontainers.image.created="$(date --rfc-3339=seconds --utc)" \
+               --label org.opencontainers.image.url="https://brew.sh" \
+               --label org.opencontainers.image.documentation="https://docs.brew.sh" \
+               --label org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}" \
+               --label org.opencontainers.image.revision="${GITHUB_SHA}" \
+               --label org.opencontainers.image.vendor="${GITHUB_REPOSITORY_OWNER}" \
+               --label org.opencontainers.image.licenses="BSD-2-Clause" \
+               --label org.opencontainers.image.support.end-of-support="2022-09-07T00:00:00Z" \
+               .
+
+      - name: Deploy the deprecated 16.04 Docker image to GitHub Packages and Docker Hub
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker tag brew-deprecated "ghcr.io/homebrew/ubuntu16.04:master"
+          docker push "ghcr.io/homebrew/ubuntu16.04:master"
+          docker tag brew-deprecated "homebrew/ubuntu16.04:master"
           docker push "homebrew/ubuntu16.04:master"
 
   tests:
     name: ${{ matrix.name }}
     needs: syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
@@ -244,7 +275,7 @@ jobs:
 
   test-default-formula-linux:
     name: test default formula (Linux)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       HOMEBREW_BOOTSNAP: 1
     steps:
@@ -301,7 +332,7 @@ jobs:
                             Library/Taps/homebrew/homebrew-services
 
       - name: Run brew readall on all taps
-        run: brew readall --aliases
+        run: brew readall --eval-all --aliases
 
       - name: Install brew tests dependencies
         run: brew install subversion curl

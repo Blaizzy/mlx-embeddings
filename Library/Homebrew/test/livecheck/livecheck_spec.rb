@@ -113,11 +113,15 @@ describe Homebrew::Livecheck do
 
   describe "::livecheck_url_to_string" do
     let(:f_livecheck_url) do
+      homepage_url_s = homepage_url
+      stable_url_s = stable_url
+      head_url_s = head_url
+
       formula("test_livecheck_url") do
         desc "Test Livecheck URL formula"
-        homepage "https://brew.sh"
-        url "https://brew.sh/test-0.0.1.tgz"
-        head "https://github.com/Homebrew/brew.git"
+        homepage homepage_url_s
+        url stable_url_s
+        head head_url_s
 
         resource "foo" do
           url "https://brew.sh/foo-1.0.tar.gz"
@@ -147,30 +151,19 @@ describe Homebrew::Livecheck do
     end
 
     it "returns a URL string when given a livecheck_url string for formula" do
-      f_livecheck_url.livecheck.url(livecheck_url)
       expect(livecheck.livecheck_url_to_string(livecheck_url, f_livecheck_url)).to eq(livecheck_url)
     end
 
     it "returns a URL string when given a livecheck_url string for resource" do
-      r_livecheck_url.livecheck.url(livecheck_url)
       expect(livecheck.livecheck_url_to_string(livecheck_url, r_livecheck_url)).to eq(livecheck_url)
     end
 
     it "returns a URL symbol when given a valid livecheck_url symbol" do
-      f_livecheck_url.livecheck.url(:head)
-      expect(livecheck.livecheck_url_to_string(head_url, f_livecheck_url)).to eq(head_url)
-
-      f_livecheck_url.livecheck.url(:homepage)
-      expect(livecheck.livecheck_url_to_string(homepage_url, f_livecheck_url)).to eq(homepage_url)
-
-      c_livecheck_url.livecheck.url(:homepage)
-      expect(livecheck.livecheck_url_to_string(homepage_url, c_livecheck_url)).to eq(homepage_url)
-
-      f_livecheck_url.livecheck.url(:stable)
-      expect(livecheck.livecheck_url_to_string(stable_url, f_livecheck_url)).to eq(stable_url)
-
-      c_livecheck_url.livecheck.url(:url)
-      expect(livecheck.livecheck_url_to_string(cask_url, c_livecheck_url)).to eq(cask_url)
+      expect(livecheck.livecheck_url_to_string(:head, f_livecheck_url)).to eq(head_url)
+      expect(livecheck.livecheck_url_to_string(:homepage, f_livecheck_url)).to eq(homepage_url)
+      expect(livecheck.livecheck_url_to_string(:homepage, c_livecheck_url)).to eq(homepage_url)
+      expect(livecheck.livecheck_url_to_string(:stable, f_livecheck_url)).to eq(stable_url)
+      expect(livecheck.livecheck_url_to_string(:url, c_livecheck_url)).to eq(cask_url)
 
       r_livecheck_url.livecheck.url(:url)
       expect(livecheck.livecheck_url_to_string(cask_url, r_livecheck_url)).to eq(cask_url)

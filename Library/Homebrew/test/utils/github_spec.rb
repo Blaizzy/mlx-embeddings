@@ -15,19 +15,19 @@ describe GitHub do
     end
   end
 
-  describe "::query_string" do
+  describe "::search_query_string" do
     it "builds a query with the given hash parameters formatted as key:value" do
-      query = described_class.query_string(user: "Homebrew", repo: "brew")
+      query = described_class.search_query_string(user: "Homebrew", repo: "brew")
       expect(query).to eq("q=user%3AHomebrew+repo%3Abrew&per_page=100")
     end
 
     it "adds a variable number of top-level string parameters to the query when provided" do
-      query = described_class.query_string("value1", "value2", user: "Homebrew")
+      query = described_class.search_query_string("value1", "value2", user: "Homebrew")
       expect(query).to eq("q=value1+value2+user%3AHomebrew&per_page=100")
     end
 
     it "turns array values into multiple key:value parameters" do
-      query = described_class.query_string(user: ["Homebrew", "caskroom"])
+      query = described_class.search_query_string(user: ["Homebrew", "caskroom"])
       expect(query).to eq("q=user%3AHomebrew+user%3Acaskroom&per_page=100")
     end
   end
@@ -54,14 +54,6 @@ describe GitHub do
     it "gets the usernames of all publicly visible members of the organisation" do
       response = described_class.public_member_usernames("Homebrew")
       expect(response).to be_a(Array)
-    end
-  end
-
-  describe "::sponsors_by_tier", :needs_network do
-    it "errors on an unauthenticated token" do
-      expect {
-        described_class.sponsors_by_tier("Homebrew")
-      }.to raise_error(/INSUFFICIENT_SCOPES|FORBIDDEN|token needs the 'admin:org' scope/)
     end
   end
 

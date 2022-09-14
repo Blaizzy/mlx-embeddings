@@ -72,7 +72,7 @@ module Cask
       attr_reader :path, :args
 
       def initialize(cask, **args)
-        super(cask)
+        super(cask, **args)
 
         if args.key?(:manual)
           @path = Pathname(args[:manual])

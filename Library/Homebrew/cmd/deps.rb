@@ -22,10 +22,10 @@ module Homebrew
         may be appended to the command. When given multiple formula arguments,
         show the intersection of dependencies for each formula.
       EOS
-      switch "-n",
+      switch "-n", "--topological",
              description: "Sort dependencies in topological order."
-      switch "--1",
-             description: "Only show dependencies one level down, instead of recursing."
+      switch "-1", "--direct", "--declared", "--1",
+             description: "Show only the direct dependencies declared in the formula."
       switch "--union",
              description: "Show the union of dependencies for multiple <formula>, instead of the intersection."
       switch "--full-name",
@@ -54,20 +54,22 @@ module Homebrew
       switch "--installed",
              description: "List dependencies for formulae that are currently installed. If <formula> is " \
                           "specified, list only its dependencies that are currently installed."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to list " \
+                          "their dependencies."
       switch "--all",
-             description: "List dependencies for all available formulae."
+             hidden:      true
       switch "--for-each",
              description: "Switch into the mode used by the `--all` option, but only list dependencies " \
                           "for each provided <formula>, one formula per line. This is used for " \
                           "debugging the `--installed`/`--all` display mode."
       switch "--formula", "--formulae",
-             depends_on:  "--installed",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
-             depends_on:  "--installed",
              description: "Treat all named arguments as casks."
 
       conflicts "--tree", "--graph"
+      conflicts "--installed", "--eval-all"
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
       formula_options
@@ -79,9 +81,18 @@ module Homebrew
   def deps
     args = deps_args.parse
 
+    all = args.eval_all?
+    if args.all?
+      unless all
+        odeprecated "brew deps --all",
+                    "brew deps --eval-all or HOMEBREW_EVAL_ALL"
+      end
+      all = true
+    end
+
     Formulary.enable_factory_cache!
 
-    recursive = !args.send(:"1?")
+    recursive = !args.direct?
     installed = args.installed? || dependents(args.named.to_formulae_and_casks).all?(&:any_version_installed?)
 
     @use_runtime_dependencies = installed && recursive &&
@@ -120,7 +131,7 @@ module Homebrew
 
       puts_deps_tree dependents, recursive: recursive, args: args
       return
-    elsif args.all?
+    elsif all
       puts_deps sorted_dependents(Formula.all + Cask::Cask.all), recursive: recursive, args: args
       return
     elsif !args.no_named? && args.for_each?
@@ -149,7 +160,7 @@ module Homebrew
     condense_requirements(all_deps, args: args)
     all_deps.map! { |d| dep_display_name(d, args: args) }
     all_deps.uniq!
-    all_deps.sort! unless args.n?
+    all_deps.sort! unless args.topological?
     puts all_deps
   end
 
@@ -286,8 +297,14 @@ module Homebrew
       end
 
       display_s = "#{tree_lines} #{dep_display_name(dep, args: args)}"
+
+      # Detect circular dependencies and consider them a failure if present.
       is_circular = dep_stack.include?(dep.name)
-      display_s = "#{display_s} (CIRCULAR DEPENDENCY)" if is_circular
+      if is_circular
+        display_s = "#{display_s} (CIRCULAR DEPENDENCY)"
+        Homebrew.failed = true
+      end
+
       puts "#{prefix}#{display_s}"
 
       next if !recursive || is_circular

@@ -12,7 +12,8 @@ describe Requirements do
     end
 
     it "merges duplicate requirements" do
-      requirements << Requirement.new << Requirement.new
+      klass = Class.new(Requirement)
+      requirements << klass.new << klass.new
       expect(requirements.count).to eq(1)
     end
   end

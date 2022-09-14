@@ -235,6 +235,7 @@ module Homebrew
         cleanup_cache
         cleanup_logs
         cleanup_lockfiles
+        cleanup_python_site_packages
         prune_prefix_symlinks_and_directories
 
         unless dry_run?
@@ -482,6 +483,55 @@ module Homebrew
             # don't care if we can't delete a .DS_Store
             nil
           end
+    end
+
+    def cleanup_python_site_packages
+      pyc_files = Hash.new { |h, k| h[k] = [] }
+      seen_non_pyc_file = Hash.new { |h, k| h[k] = false }
+      unused_pyc_files = []
+
+      HOMEBREW_PREFIX.glob("lib/python*/site-packages").each do |site_packages|
+        site_packages.each_child do |child|
+          next unless child.directory?
+          # TODO: Work out a sensible way to clean up pip's, setuptools', and wheel's
+          #       {dist,site}-info directories. Alternatively, consider always removing
+          #       all `-info` directories, because we may not be making use of them.
+          next if child.basename.to_s.end_with?("-info")
+
+          # Clean up old *.pyc files in the top-level __pycache__.
+          if child.basename.to_s == "__pycache__"
+            child.find do |path|
+              next unless path.extname == ".pyc"
+              next unless path.prune?(days)
+
+              unused_pyc_files << path
+            end
+
+            next
+          end
+
+          # Look for directories that contain only *.pyc files.
+          child.find do |path|
+            next if path.directory?
+
+            if path.extname == ".pyc"
+              pyc_files[child] << path
+            else
+              seen_non_pyc_file[child] = true
+              break
+            end
+          end
+        end
+      end
+
+      unused_pyc_files += pyc_files.reject { |k,| seen_non_pyc_file[k] }
+                                   .values
+                                   .flatten
+      return if unused_pyc_files.blank?
+
+      unused_pyc_files.each do |pyc|
+        cleanup_path(pyc) { pyc.unlink }
+      end
     end
 
     def prune_prefix_symlinks_and_directories

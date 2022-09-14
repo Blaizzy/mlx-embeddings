@@ -276,6 +276,7 @@ _brew__s() {
       --debian
       --debug
       --desc
+      --eval-all
       --fedora
       --fink
       --formula
@@ -300,12 +301,12 @@ _brew_abv() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --analytics
       --cask
       --category
       --days
       --debug
+      --eval-all
       --formula
       --github
       --help
@@ -352,6 +353,7 @@ _brew_audit() {
       --display-cop-names
       --display-failures-only
       --display-filename
+      --eval-all
       --except
       --except-cops
       --fix
@@ -728,12 +730,12 @@ _brew_deps() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --1
-      --all
       --annotate
       --cask
       --debug
+      --direct
       --dot
+      --eval-all
       --for-each
       --formula
       --full-name
@@ -746,10 +748,10 @@ _brew_deps() {
       --installed
       --quiet
       --skip-recommended
+      --topological
       --tree
       --union
       --verbose
-      -n
       "
       return
       ;;
@@ -767,6 +769,7 @@ _brew_desc() {
       --cask
       --debug
       --description
+      --eval-all
       --formula
       --help
       --name
@@ -823,6 +826,22 @@ _brew_dispatch_build_bottle() {
     *)
   esac
   __brew_complete_formulae
+}
+
+_brew_docs() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *)
+  esac
 }
 
 _brew_doctor() {
@@ -976,7 +995,6 @@ _brew_generate_man_completions() {
     -*)
       __brewcomp "
       --debug
-      --fail-if-not-changed
       --help
       --quiet
       --verbose
@@ -1052,12 +1070,12 @@ _brew_info() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --analytics
       --cask
       --category
       --days
       --debug
+      --eval-all
       --formula
       --github
       --help
@@ -1233,9 +1251,9 @@ _brew_lc() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --cask
       --debug
+      --eval-all
       --formula
       --full-name
       --help
@@ -1347,9 +1365,9 @@ _brew_livecheck() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --cask
       --debug
+      --eval-all
       --formula
       --full-name
       --help
@@ -1484,10 +1502,10 @@ _brew_options() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --command
       --compact
       --debug
+      --eval-all
       --help
       --installed
       --quiet
@@ -1686,6 +1704,7 @@ _brew_readall() {
       __brewcomp "
       --aliases
       --debug
+      --eval-all
       --help
       --quiet
       --syntax
@@ -1842,6 +1861,7 @@ _brew_search() {
       --debian
       --debug
       --desc
+      --eval-all
       --fedora
       --fink
       --formula
@@ -1880,22 +1900,6 @@ _brew_sh() {
   __brew_complete_files
 }
 
-_brew_sponsors() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  case "${cur}" in
-    -*)
-      __brewcomp "
-      --debug
-      --help
-      --quiet
-      --verbose
-      "
-      return
-      ;;
-    *)
-  esac
-}
-
 _brew_style() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -1930,6 +1934,7 @@ _brew_tap() {
       __brewcomp "
       --custom-remote
       --debug
+      --eval-all
       --force-auto-update
       --help
       --list-pinned
@@ -1990,10 +1995,8 @@ _brew_tc() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --debug
       --dir
-      --fail-if-not-changed
       --file
       --fix
       --help
@@ -2001,6 +2004,7 @@ _brew_tc() {
       --quiet
       --suggest-typed
       --update
+      --update-all
       --verbose
       "
       return
@@ -2059,10 +2063,8 @@ _brew_typecheck() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --debug
       --dir
-      --fail-if-not-changed
       --file
       --fix
       --help
@@ -2070,6 +2072,7 @@ _brew_typecheck() {
       --quiet
       --suggest-typed
       --update
+      --update-all
       --verbose
       "
       return
@@ -2083,12 +2086,13 @@ _brew_unbottled() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --all
       --debug
       --dependents
+      --eval-all
       --help
       --quiet
       --tag
+      --total
       --verbose
       "
       return
@@ -2262,7 +2266,6 @@ _brew_update_license_data() {
     -*)
       __brewcomp "
       --debug
-      --fail-if-not-changed
       --help
       --quiet
       --verbose
@@ -2321,6 +2324,22 @@ _brew_update_report() {
       --auto-update
       --debug
       --force
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *)
+  esac
+}
+
+_brew_update_sponsors() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
       --help
       --quiet
       --verbose
@@ -2412,6 +2431,7 @@ _brew_uses() {
       __brewcomp "
       --cask
       --debug
+      --eval-all
       --formula
       --help
       --include-build
@@ -2508,6 +2528,7 @@ _brew() {
     desc) _brew_desc ;;
     developer) _brew_developer ;;
     dispatch-build-bottle) _brew_dispatch_build_bottle ;;
+    docs) _brew_docs ;;
     doctor) _brew_doctor ;;
     dr) _brew_dr ;;
     edit) _brew_edit ;;
@@ -2552,7 +2573,6 @@ _brew() {
     ruby) _brew_ruby ;;
     search) _brew_search ;;
     sh) _brew_sh ;;
-    sponsors) _brew_sponsors ;;
     style) _brew_style ;;
     tap) _brew_tap ;;
     tap-info) _brew_tap_info ;;
@@ -2574,6 +2594,7 @@ _brew() {
     update-maintainers) _brew_update_maintainers ;;
     update-python-resources) _brew_update_python_resources ;;
     update-report) _brew_update_report ;;
+    update-sponsors) _brew_update_sponsors ;;
     update-test) _brew_update_test ;;
     upgrade) _brew_upgrade ;;
     uses) _brew_uses ;;

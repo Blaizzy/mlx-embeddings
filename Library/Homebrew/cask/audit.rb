@@ -581,7 +581,19 @@ module Cask
           next unless path.exist?
 
           result = system_command("codesign", args: ["--verify", path], print_stderr: false)
-          add_warning result.merged_output unless result.success?
+
+          next if result.success?
+
+          message = "Signature verification failed:\n#{result.merged_output}\nmacOS on ARM requires applications " \
+                    "to be signed. Please contact the upstream developer to let them know they should "
+
+          message += if result.stderr.include?("not signed at all")
+            "sign their app."
+          else
+            "fix the signature of their app."
+          end
+
+          add_warning message
         end
       end
     end

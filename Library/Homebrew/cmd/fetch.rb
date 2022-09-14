@@ -13,6 +13,8 @@ module Homebrew
 
   module_function
 
+  FETCH_MAX_TRIES = 5
+
   sig { returns(CLI::Parser) }
   def fetch_args
     Homebrew::CLI::Parser.new do
@@ -31,7 +33,8 @@ module Homebrew
                           "seeing if an existing VCS cache has been updated."
       switch "--retry",
              description: "Retry if downloading fails or re-download if the checksum of a previously cached " \
-                          "version no longer matches."
+                          "version no longer matches. Tries at most #{FETCH_MAX_TRIES} times with " \
+                          "exponential backoff."
       switch "--deps",
              description: "Also download dependencies for any listed <formula>."
       switch "-s", "--build-from-source",
@@ -159,10 +162,17 @@ module Homebrew
   end
 
   def retry_fetch?(f, args:)
-    @fetch_failed ||= Set.new
-    if args.retry? && @fetch_failed.add?(f)
-      ohai "Retrying download"
+    @fetch_tries ||= Hash.new { |h, k| h[k] = 1 }
+    if args.retry? && (@fetch_tries[f] < FETCH_MAX_TRIES)
+      wait = 2 ** @fetch_tries[f]
+      remaining = FETCH_MAX_TRIES - @fetch_tries[f]
+      what = "try".pluralize(remaining)
+
+      ohai "Retrying download in #{wait}s... (#{remaining} #{what} left)"
+      sleep wait
+
       f.clear_cache
+      @fetch_tries[f] += 1
       true
     else
       Homebrew.failed = true

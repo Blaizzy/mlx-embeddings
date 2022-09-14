@@ -153,6 +153,11 @@ module Homebrew
                       "editors will do strange things in this case.",
         default_text: "`$EDITOR` or `$VISUAL`.",
       },
+      HOMEBREW_EVAL_ALL:                         {
+        description: "If set, `brew` commands evaluate all formulae and casks, executing their arbitrary code, by " \
+                     "default without requiring --eval-all. Required to cache formula and cask descriptions.",
+        boolean:     true,
+      },
       HOMEBREW_FAIL_LOG_LINES:                   {
         description: "Output this many lines of output on formula `system` failures.",
         default:     15,

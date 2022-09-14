@@ -52,14 +52,16 @@ module Homebrew
 
     def audit_file
       if formula.core_formula? && @versioned_formula
+        unversioned_name = formula.name.gsub(/@.*$/, "")
+
+        # ignore when an unversioned formula doesn't exist after an explicit rename
+        return if formula.tap.formula_renames.key?(unversioned_name)
+
+        # build this ourselves as we want e.g. homebrew/core to be present
+        full_name = "#{formula.tap}/#{unversioned_name}"
+
         unversioned_formula = begin
-          # build this ourselves as we want e.g. homebrew/core to be present
-          full_name = if formula.tap
-            "#{formula.tap}/#{formula.name}"
-          else
-            formula.name
-          end
-          Formulary.factory(full_name.gsub(/@.*$/, "")).path
+          Formulary.factory(full_name).path
         rescue FormulaUnavailableError, TapFormulaAmbiguityError,
                TapFormulaWithOldnameAmbiguityError
           Pathname.new formula.path.to_s.gsub(/@.*\.rb$/, ".rb")
@@ -194,6 +196,13 @@ module Homebrew
       if formula.license.present?
         licenses, exceptions = SPDX.parse_license_expression formula.license
 
+        sspl_licensed = licenses.any? { |license| license.to_s.start_with?("SSPL") }
+        if sspl_licensed && @core_tap
+          problem <<~EOS
+            Formula #{formula.name} is SSPL-licensed. Software under the SSPL must not be packaged in homebrew/core.
+          EOS
+        end
+
         non_standard_licenses = licenses.reject { |license| SPDX.valid_license? license }
         if non_standard_licenses.present?
           problem <<~EOS
@@ -263,10 +272,7 @@ module Homebrew
             next
           end
 
-          # FIXME: Remove `glib-utils` exemption when the following PRs are merged:
-          #   https://github.com/Homebrew/homebrew-core/pull/108307
-          #   https://github.com/Homebrew/homebrew-core/pull/108497
-          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname && dep_f.oldname != "glib-utils"
+          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname
             problem "Dependency '#{dep.name}' was renamed; use new name '#{dep_f.name}'."
           end
 
@@ -335,13 +341,6 @@ module Homebrew
       end
 
       return unless @core_tap
-
-      bad_gcc_dep = linux_only_gcc_dep?(formula) && (@strict || begin
-        fv = FormulaVersions.new(formula)
-        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
-      end)
-      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC." if bad_gcc_dep
-
       return if formula.tap&.audit_exception :versioned_dependencies_conflicts_allowlist, formula.name
 
       # The number of conflicts on Linux is absurd.
@@ -415,6 +414,21 @@ module Homebrew
       end
     end
 
+    def audit_gcc_dependency
+      return unless @core_tap
+      return if !@strict && !(@git && formula.tap.git?) # git log is required for non-strict audit
+      return unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
+      return unless linux_only_gcc_dep?(formula)
+
+      bad_gcc_dep = @strict || begin
+        fv = FormulaVersions.new(formula)
+        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
+      end
+      return unless bad_gcc_dep
+
+      problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC."
+    end
+
     def audit_postgresql
       return unless formula.name == "postgresql"
       return unless @core_tap
@@ -477,13 +491,10 @@ module Homebrew
 
       return unless DevelopmentTools.curl_handles_most_https_certificates?
 
-      use_homebrew_curl = false
-      %w[Stable HEAD].each do |name|
-        spec_name = name.downcase.to_sym
-        next unless (spec = formula.send(spec_name))
+      use_homebrew_curl = [:stable, :head].any? do |spec_name|
+        next false unless (spec = formula.send(spec_name))
 
-        use_homebrew_curl = spec.using == :homebrew_curl
-        break if use_homebrew_curl
+        spec.using == :homebrew_curl
       end
 
       if (http_content_problem = curl_check_http_content(homepage,
@@ -865,14 +876,30 @@ module Homebrew
     end
 
     def linux_only_gcc_dep?(formula)
-      # TODO: Make this check work when running on Linux and not simulating macOS too.
-      return false unless Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      odie "`#linux_only_gcc_dep?` works only on Linux!" if Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      return false if formula.deps.map(&:name).exclude?("gcc")
 
-      formula_hash = formula.to_hash_with_variations
-      deps = formula_hash["dependencies"]
-      linux_deps = formula_hash.dig("variations", :x86_64_linux, "dependencies")
+      variations = formula.to_hash_with_variations["variations"]
+      # The formula has no variations, so all OS-version-arch triples depend on GCC.
+      return false if variations.blank?
 
-      deps.exclude?("gcc") && linux_deps&.include?("gcc")
+      MacOSVersions::SYMBOLS.each_key do |macos_version|
+        [:arm, :intel].each do |arch|
+          bottle_tag = Utils::Bottles::Tag.new(system: macos_version, arch: arch)
+          next unless bottle_tag.valid_combination?
+
+          variation_dependencies = variations.dig(bottle_tag.to_sym, "dependencies")
+          # This variation either:
+          #   1. does not exist
+          #   2. has no variation-specific dependencies
+          # In either case, it matches Linux.
+          return false if variation_dependencies.blank?
+          # We found a non-Linux variation that depends on GCC.
+          return false if variation_dependencies.include?("gcc")
+        end
+      end
+
+      true
     end
   end
 end

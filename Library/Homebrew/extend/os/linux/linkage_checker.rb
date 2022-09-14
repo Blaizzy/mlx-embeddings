@@ -80,9 +80,14 @@ class LinkageChecker
     @unwanted_system_dylibs = @system_dylibs.reject do |s|
       SYSTEM_LIBRARY_ALLOWLIST.include? File.basename(s)
     end
-    # FIXME: Remove this when these dependencies are injected correctly (e.g. through `DependencyCollector`)
-    # See discussion at
-    #   https://github.com/Homebrew/brew/pull/13577
-    @undeclared_deps -= [CompilerSelector.preferred_gcc, "glibc", "gcc"]
+
+    # We build all formulae with an RPATH that includes the gcc formula's runtime lib directory.
+    # See: https://github.com/Homebrew/brew/blob/e689cc07/Library/Homebrew/extend/os/linux/extend/ENV/super.rb#L53
+    # This results in formulae showing linkage with gcc whenever it is installed, even if no dependency is declared.
+    # See discussions at:
+    #   https://github.com/Homebrew/brew/pull/13659
+    #   https://github.com/Homebrew/brew/pull/13796
+    # TODO: Find a nicer way to handle this. (e.g. examining the ELF file to determine the required libstdc++.)
+    @undeclared_deps.delete("gcc")
   end
 end

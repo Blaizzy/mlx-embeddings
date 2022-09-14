@@ -149,11 +149,15 @@ describe Formula do
       end
     end
 
+    before do
+      allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
+      allow(Formulary).to receive(:factory).with(f2.name).and_return(f2)
+      allow(f.tap).to receive(:versioned_formula_files).and_return([f2.path])
+    end
+
     it "returns array with versioned formulae" do
       FileUtils.touch f.path
       FileUtils.touch f2.path
-      allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
-      allow(Formulary).to receive(:factory).with(f2.name).and_return(f2)
       expect(f.versioned_formulae).to eq [f2]
     end
 
@@ -237,7 +241,7 @@ describe Formula do
   specify "#prefix" do
     f = Testball.new
     expect(f.prefix).to eq(HOMEBREW_CELLAR/f.name/"0.1")
-    expect(f.prefix).to be_kind_of(Pathname)
+    expect(f.prefix).to be_a(Pathname)
   end
 
   example "revised prefix" do
@@ -666,8 +670,8 @@ describe Formula do
       url "foo-1.0"
     end
 
-    expect(f.class.stable).to be_kind_of(SoftwareSpec)
-    expect(f.class.head).to be_kind_of(SoftwareSpec)
+    expect(f.class.stable).to be_a(SoftwareSpec)
+    expect(f.class.head).to be_a(SoftwareSpec)
   end
 
   specify "instance specs have different references" do
@@ -828,15 +832,15 @@ describe Formula do
     specify "service complicated" do
       f = formula do
         url "https://brew.sh/test-1.0.tbz"
-      end
 
-      f.class.service do
-        run [opt_bin/"beanstalkd"]
-        run_type :immediate
-        error_log_path var/"log/beanstalkd.error.log"
-        log_path var/"log/beanstalkd.log"
-        working_dir var
-        keep_alive true
+        service do
+          run [opt_bin/"beanstalkd"]
+          run_type :immediate
+          error_log_path var/"log/beanstalkd.error.log"
+          log_path var/"log/beanstalkd.log"
+          working_dir var
+          keep_alive true
+        end
       end
       expect(f.service).not_to be_nil
     end
