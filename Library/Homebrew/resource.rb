@@ -78,8 +78,11 @@ class Resource
   end
 
   def downloader
-    @downloader ||= download_strategy.new(url, download_name, version,
-                                          mirrors: mirrors.dup, **specs)
+    return @downloader if @downloader.present?
+
+    url, *mirrors = determine_url_mirrors
+    @downloader = download_strategy.new(url, download_name, version,
+                                        mirrors: mirrors, **specs)
   end
 
   # Removes /s from resource names; this allows Go package names
@@ -275,6 +278,23 @@ class Resource
     end
 
     version unless version.null?
+  end
+
+  def determine_url_mirrors
+    extra_urls = []
+
+    # glibc-bootstrap
+    if url.start_with?("https://github.com/Homebrew/glibc-bootstrap/releases/download")
+      if Homebrew::EnvConfig.artifact_domain.present?
+        extra_urls << url.sub("https://github.com", Homebrew::EnvConfig.artifact_domain)
+      end
+      if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
+        tag, filename = url.split("/").last(2)
+        extra_urls << "#{Homebrew::EnvConfig.bottle_domain}/glibc-bootstrap/#{tag}/#{filename}"
+      end
+    end
+
+    [*extra_urls, url, *mirrors].uniq
   end
 
   # A resource containing a Go package.
