@@ -123,6 +123,7 @@ describe Cask::Audit, :cask do
     let(:cask) { Cask::CaskLoader.load(cask_token) }
 
     describe "required stanzas" do
+      let(:only) { ["required_stanzas"] }
       %w[version sha256 url name homepage].each do |stanza|
         context "when missing #{stanza}" do
           let(:cask_token) { "missing-#{stanza}" }
