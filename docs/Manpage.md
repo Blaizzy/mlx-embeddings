@@ -1866,6 +1866,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Don't pass `--online` to `brew audit` and skip `brew livecheck`.
 * `--skip-dependents`:
   Don't test any dependents.
+* `--skip-livecheck`:
+  Don't test livecheck.
 * `--skip-recursive-dependents`:
   Only test the direct dependents.
 * `--only-cleanup-before`:
