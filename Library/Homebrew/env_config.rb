@@ -318,6 +318,10 @@ module Homebrew
                      "outdated.",
         boolean:     true,
       },
+      HOMEBREW_PIP_INDEX_URL:                    {
+        description:  "If set, `brew install <formula>` will use this URL to download PyPI package resources.",
+        default_text: "`https://pypi.org/simple`.",
+      },
       HOMEBREW_PRY:                              {
         description: "If set, use Pry for the `brew irb` command.",
         boolean:     true,

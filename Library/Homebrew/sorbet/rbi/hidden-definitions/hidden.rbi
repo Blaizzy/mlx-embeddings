@@ -2655,6 +2655,8 @@ module Homebrew::EnvConfig
 
   def self.no_proxy(); end
 
+  def self.pip_index_url(); end
+
   def self.pry?(); end
 
   def self.simulate_macos_on_linux?(); end
