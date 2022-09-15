@@ -26,7 +26,7 @@ module Homebrew
           Homebrew::API.fetch "#{formula_api_path}/#{name}.json"
         end
 
-        sig { returns(Array) }
+        sig { returns(Hash) }
         def all_formulae
           @all_formulae ||= begin
             curl_args = %w[--compressed --silent https://formulae.brew.sh/api/formula.json]
@@ -37,10 +37,22 @@ module Homebrew
 
             json_formulae = JSON.parse(cached_formula_json_file.read)
 
+            @all_aliases = {}
             json_formulae.to_h do |json_formula|
+              json_formula["aliases"].each do |alias_name|
+                @all_aliases[alias_name] = json_formula["name"]
+              end
+
               [json_formula["name"], json_formula.except("name")]
             end
           end
+        end
+
+        sig { returns(Hash) }
+        def all_aliases
+          all_formulae if @all_aliases.blank?
+
+          @all_aliases
         end
       end
     end
