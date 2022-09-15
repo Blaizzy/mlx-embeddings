@@ -1202,6 +1202,7 @@ class FormulaInstaller
     tab.unused_options = []
     tab.built_as_bottle = true
     tab.poured_from_bottle = true
+    tab.loaded_from_api = formula.class.loaded_from_api
     tab.installed_as_dependency = installed_as_dependency?
     tab.installed_on_request = installed_on_request?
     tab.time = Time.now.to_i

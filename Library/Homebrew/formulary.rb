@@ -217,6 +217,7 @@ module Formulary
       end
     end
 
+    klass.loaded_from_api = true
     mod.const_set(class_s, klass)
 
     cache[:api] ||= {}
