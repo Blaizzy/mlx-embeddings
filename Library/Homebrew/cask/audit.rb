@@ -793,6 +793,9 @@ module Cask
       else
         host_uri.host
       end
+
+      return false if homepage.blank?
+
       home = homepage.downcase
       if (split_host = host.split(".")).length >= 3
         host = split_host[-2..].join(".")
