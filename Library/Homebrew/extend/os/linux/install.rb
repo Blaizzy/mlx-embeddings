@@ -20,7 +20,8 @@ module Homebrew
     ].freeze
     private_constant :DYNAMIC_LINKERS
 
-    GCC_VERSION_SUFFIX = OS::LINUX_GCC_CI_VERSION.delete_suffix(".0").freeze
+    PREFERRED_GCC_RUNTIME_VERSION = OS::LINUX_PREFERRED_GCC_RUNTIME_FORMULA.split("@").last.freeze
+    private_constant :PREFERRED_GCC_RUNTIME_VERSION
 
     # We link GCC runtime libraries that are not specificaly used for Fortran,
     # which are linked by the GCC formula.  We only use the versioned shared libraries
@@ -77,10 +78,10 @@ module Homebrew
     private_class_method :symlink_ld_so
 
     def symlink_gcc_libs
-      gcc_opt_prefix = HOMEBREW_PREFIX/"opt/#{OS::LINUX_PREFERRED_GCC_FORMULA}"
+      gcc_opt_prefix = HOMEBREW_PREFIX/"opt/#{OS::LINUX_PREFERRED_GCC_RUNTIME_FORMULA}"
 
       GCC_RUNTIME_LIBS.each do |library|
-        gcc_library = gcc_opt_prefix/"lib/gcc/#{GCC_VERSION_SUFFIX}/#{library}"
+        gcc_library = gcc_opt_prefix/"lib/gcc/#{PREFERRED_GCC_RUNTIME_VERSION}/#{library}"
         gcc_library_symlink = HOMEBREW_PREFIX/"lib/#{library}"
         # Skip if the link target doesn't exist.
         next unless gcc_library.readable?

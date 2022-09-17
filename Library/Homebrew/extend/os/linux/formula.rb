@@ -33,6 +33,7 @@ class Formula
       dependency_collector = spec.dependency_collector
       related_formula_names = Set.new([
         name,
+        *aliases,
         *versioned_formulae_names,
       ])
       [
