@@ -25,6 +25,17 @@ export HOMEBREW_CORE_GIT_REMOTE="..."  # put your Git mirror of Homebrew/homebre
 
 The default Git remote will be used if the corresponding environment variable is unset.
 
+## Skip Tap Cloning
+
+You can instruct Homebrew to skip cloning the Homebrew/homebrew-core tap during installation by setting `HOMEBREW_INSTALL_FROM_API` in your shell environment with this script:
+
+```bash
+export HOMEBREW_INSTALL_FROM_API=1
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+```
+
+This will make Homebrew install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew’s API instead of local checkouts of these repositories.
+
 ## Alternative Installs
 
 ### Linux or Windows 10 Subsystem for Linux
