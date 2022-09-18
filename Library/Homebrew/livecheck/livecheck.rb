@@ -318,7 +318,10 @@ module Homebrew
 
           latest_info = status_hash(formula_or_cask, "error", [no_versions_msg], full_name: use_full_name,
                                                                                  verbose:   verbose)
-          latest_info[:resources] = resource_version_info if check_for_resources
+          if check_for_resources
+            resource_version_info.map! { |r| r.except!(:meta) } unless verbose
+            latest_info[:resources] = resource_version_info
+          end
 
           next latest_info
         end
