@@ -27,7 +27,7 @@ The default Git remote will be used if the corresponding environment variable is
 
 ## Skip Tap Cloning (beta)
 
-You can instruct Homebrew to skip cloning the Homebrew/homebrew-core tap during installation by setting `HOMEBREW_INSTALL_FROM_API` in your shell environment with this script:
+You can instruct Homebrew to skip cloning the Homebrew/homebrew-core tap during installation by setting the beta `HOMEBREW_INSTALL_FROM_API` environment variable with the following:
 
 ```bash
 export HOMEBREW_INSTALL_FROM_API=1
