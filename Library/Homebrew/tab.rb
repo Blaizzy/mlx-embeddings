@@ -31,6 +31,7 @@ class Tab < OpenStruct
       "installed_as_dependency" => false,
       "installed_on_request"    => false,
       "poured_from_bottle"      => false,
+      "loaded_from_api"         => false,
       "time"                    => Time.now.to_i,
       "source_modified_time"    => formula.source_modified_time.to_i,
       "compiler"                => compiler,
@@ -189,6 +190,7 @@ class Tab < OpenStruct
       "installed_as_dependency" => false,
       "installed_on_request"    => false,
       "poured_from_bottle"      => false,
+      "loaded_from_api"         => false,
       "time"                    => nil,
       "source_modified_time"    => 0,
       "stdlib"                  => nil,
@@ -332,6 +334,7 @@ class Tab < OpenStruct
       "unused_options"          => unused_options.as_flags,
       "built_as_bottle"         => built_as_bottle,
       "poured_from_bottle"      => poured_from_bottle,
+      "loaded_from_api"         => loaded_from_api,
       "installed_as_dependency" => installed_as_dependency,
       "installed_on_request"    => installed_on_request,
       "changed_files"           => changed_files&.map(&:to_s),
@@ -384,6 +387,7 @@ class Tab < OpenStruct
       "Built from source"
     end
 
+    s << "using the formulae.brew.sh API" if loaded_from_api
     s << Time.at(time).strftime("on %Y-%m-%d at %H:%M:%S") if time
 
     unless used_options.empty?

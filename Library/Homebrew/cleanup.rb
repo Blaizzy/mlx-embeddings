@@ -579,6 +579,7 @@ module Homebrew
     end
 
     def self.autoremove(dry_run: false)
+      require "utils/autoremove"
       require "cask/caskroom"
 
       # If this runs after install, uninstall, reinstall or upgrade,
@@ -593,7 +594,7 @@ module Homebrew
       end
       casks = Cask::Caskroom.casks
 
-      removable_formulae = Formula.unused_formulae_with_no_dependents(formulae, casks)
+      removable_formulae = Utils::Autoremove.removable_formulae(formulae, casks)
 
       return if removable_formulae.blank?
 
