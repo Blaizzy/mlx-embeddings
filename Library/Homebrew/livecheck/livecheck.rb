@@ -157,6 +157,8 @@ module Homebrew
 
     # Executes the livecheck logic for each formula/cask in the
     # `formulae_and_casks_to_check` array and prints the results.
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     sig {
       params(
         formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask)],
@@ -406,6 +408,8 @@ module Homebrew
 
       puts JSON.pretty_generate(formulae_checked.compact)
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource), full_name: T::Boolean).returns(String) }
     def package_or_resource_name(package_or_resource, full_name: false)
@@ -492,10 +496,10 @@ module Homebrew
     end
 
     # Prints the livecheck result for a resources for a given Formula.
-    sig { params(info: Hash, verbose: T::Boolean).void }
+    sig { params(info: T::Array[Hash], verbose: T::Boolean).void }
     def print_resources_info(info, verbose: false)
       info.each do |r_info|
-        if r_info.is_a?(Hash) && r_info[:status] && r_info[:messages]
+        if r_info[:status] && r_info[:messages]
           SkipConditions.print_skip_information(r_info)
         else
           print_latest_version(
@@ -598,29 +602,29 @@ module Homebrew
       url
     end
 
-    # livecheck should fetch a URL using brewed curl if the formula/resource/cask
+    # livecheck should fetch a URL using brewed curl if the formula/cask
     # contains a `stable`/`url` or `head` URL `using: :homebrew_curl` that
     # shares the same root domain.
-    sig { params(package_or_resource: T.any(Formula, Cask::Cask), url: String).returns(T::Boolean) }
-    def use_homebrew_curl?(package_or_resource, url)
+    sig { params(formula_or_cask: T.any(Formula, Cask::Cask), url: String).returns(T::Boolean) }
+    def use_homebrew_curl?(formula_or_cask, url)
       url_root_domain = Addressable::URI.parse(url)&.domain
       return false if url_root_domain.blank?
 
       # Collect root domains of URLs with `using: :homebrew_curl`
       homebrew_curl_root_domains = []
-      case package_or_resource
+      case formula_or_cask
       when Formula
         [:stable, :head].each do |spec_name|
-          next unless (spec = package_or_resource.send(spec_name))
+          next unless (spec = formula_or_cask.send(spec_name))
           next unless spec.using == :homebrew_curl
 
           domain = Addressable::URI.parse(spec.url)&.domain
           homebrew_curl_root_domains << domain if domain.present?
         end
       when Cask::Cask
-        return false unless package_or_resource.url.using == :homebrew_curl
+        return false unless formula_or_cask.url.using == :homebrew_curl
 
-        domain = Addressable::URI.parse(package_or_resource.url.to_s)&.domain
+        domain = Addressable::URI.parse(formula_or_cask.url.to_s)&.domain
         homebrew_curl_root_domains << domain if domain.present?
       end
 
