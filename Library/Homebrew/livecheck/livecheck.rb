@@ -640,7 +640,7 @@ module Homebrew
         json:     T::Boolean,
         verbose:  T::Boolean,
         debug:    T::Boolean,
-      ).returns(T.nilable(Hash))
+      ).returns(Hash)
     }
     def resource_version(
       resource,
