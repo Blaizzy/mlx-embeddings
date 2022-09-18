@@ -9,6 +9,8 @@
 
 # HOMEBREW_CELLAR and HOMEBREW_PREFIX are set by extend/ENV/super.rb
 # HOMEBREW_REPOSITORY is set by bin/brew
+# Trailing colon in MANPATH adds default man dirs to search path in Linux, does no harm in macOS.
+# Please do not submit PRs to remove it!
 # shellcheck disable=SC2154
 homebrew-shellenv() {
   if [[ "${HOMEBREW_PATH%%:"${HOMEBREW_PREFIX}"/sbin*}" == "${HOMEBREW_PREFIX}/bin" ]]

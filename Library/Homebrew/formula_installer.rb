@@ -1165,7 +1165,7 @@ class FormulaInstaller
 
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
-    elsif Homebrew::EnvConfig.install_from_api?
+    elsif formula.core_formula? && Homebrew::EnvConfig.install_from_api?
       odie "Unable to build #{formula.name} from source with HOMEBREW_INSTALL_FROM_API."
     else
       formula.fetch_patches
@@ -1202,6 +1202,7 @@ class FormulaInstaller
     tab.unused_options = []
     tab.built_as_bottle = true
     tab.poured_from_bottle = true
+    tab.loaded_from_api = formula.class.loaded_from_api
     tab.installed_as_dependency = installed_as_dependency?
     tab.installed_on_request = installed_on_request?
     tab.time = Time.now.to_i
