@@ -251,13 +251,22 @@ module Homebrew
         if check_for_resources
           resource_version_info = formula_or_cask.resources.map do |resource|
             res_skip_info ||= SkipConditions.skip_information(resource, verbose: verbose)
-            res_skip_info.presence || resource_version(
-              resource,
-              json:    json,
-              verbose: verbose,
-              debug:   debug,
-            )
-          end.compact
+            if res_skip_info.present?
+              res_skip_info
+            else
+              res_version_info = resource_version(
+                resource,
+                json:    json,
+                verbose: verbose,
+                debug:   debug,
+              )
+              if res_version_info.empty?
+                status_hash(resource, "error", ["Unable to get versions"], verbose: verbose)
+              else
+                res_version_info
+              end
+            end
+          end.compact_blank
         end
 
         skip_info ||= SkipConditions.skip_information(formula_or_cask, full_name: use_full_name, verbose: verbose)
@@ -704,6 +713,7 @@ module Homebrew
             next
           end
         end
+        puts if debug && strategy.blank?
         next if strategy.blank?
 
         strategy_data = strategy.find_versions(
