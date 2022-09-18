@@ -25,7 +25,7 @@ export HOMEBREW_CORE_GIT_REMOTE="..."  # put your Git mirror of Homebrew/homebre
 
 The default Git remote will be used if the corresponding environment variable is unset.
 
-## Skip Tap Cloning
+## Skip Tap Cloning (beta)
 
 You can instruct Homebrew to skip cloning the Homebrew/homebrew-core tap during installation by setting `HOMEBREW_INSTALL_FROM_API` in your shell environment with this script:
 
