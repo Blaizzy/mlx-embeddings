@@ -64,13 +64,18 @@ module Homebrew
 
     def symlink_ld_so
       brew_ld_so = HOMEBREW_PREFIX/"lib/ld.so"
-      return if brew_ld_so.readable?
 
       ld_so = HOMEBREW_PREFIX/"opt/glibc/lib/ld-linux-x86-64.so.2"
       unless ld_so.readable?
         ld_so = DYNAMIC_LINKERS.find { |s| File.executable? s }
-        raise "Unable to locate the system's dynamic linker" unless ld_so
+        if ld_so.blank?
+          raise "Unable to locate the system's dynamic linker" unless brew_ld_so.readable?
+
+          return
+        end
       end
+
+      return if brew_ld_so.readable? && (brew_ld_so.readlink == ld_so)
 
       FileUtils.mkdir_p HOMEBREW_PREFIX/"lib"
       FileUtils.ln_sf ld_so, brew_ld_so
