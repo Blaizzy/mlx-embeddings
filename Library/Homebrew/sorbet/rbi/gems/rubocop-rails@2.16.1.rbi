@@ -1728,8 +1728,10 @@ RuboCop::Cop::Rails::RootJoinChain::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::RootJoinChain::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
 
 class RuboCop::Cop::Rails::RootPathnameMethods < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
+  def dir_glob?(param0 = T.unsafe(nil)); end
   def on_send(node); end
   def pathname_method(param0 = T.unsafe(nil)); end
   def rails_root?(param0 = T.unsafe(nil)); end
@@ -1737,7 +1739,10 @@ class RuboCop::Cop::Rails::RootPathnameMethods < ::RuboCop::Cop::Base
 
   private
 
+  def build_path_glob(path, method); end
   def evidence(node); end
+  def include_interpolation?(arguments); end
+  def join_arguments(arguments); end
 end
 
 RuboCop::Cop::Rails::RootPathnameMethods::DIR_METHODS = T.let(T.unsafe(nil), Set)
