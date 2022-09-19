@@ -65,7 +65,7 @@ module Homebrew
     def symlink_ld_so
       brew_ld_so = HOMEBREW_PREFIX/"lib/ld.so"
 
-      ld_so = HOMEBREW_PREFIX/"opt/glibc/lib/ld-linux-x86-64.so.2"
+      ld_so = HOMEBREW_PREFIX/"opt/glibc/bin/ld.so"
       unless ld_so.readable?
         ld_so = DYNAMIC_LINKERS.find { |s| File.executable? s }
         if ld_so.blank?
@@ -84,7 +84,7 @@ module Homebrew
 
     def setup_preferred_gcc_libs
       gcc_opt_prefix = HOMEBREW_PREFIX/"opt/#{OS::LINUX_PREFERRED_GCC_RUNTIME_FORMULA}"
-      glibc_installed = (HOMEBREW_PREFIX/"opt/glibc/lib/ld-linux-x86-64.so.2").readable?
+      glibc_installed = (HOMEBREW_PREFIX/"opt/glibc/bin/ld.so").readable?
 
       return unless gcc_opt_prefix.readable?
 
