@@ -8,10 +8,15 @@ class DevelopmentTools
     sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
       (@locate ||= {}).fetch(tool) do |key|
-        @locate[key] = if (path = HOMEBREW_PREFIX/"bin/#{tool}").executable?
-          path
-        elsif File.executable?(path = "/usr/bin/#{tool}")
-          Pathname.new path
+        @locate[key] = if build_system_too_old? &&
+                          (binutils_path = HOMEBREW_PREFIX/"opt/binutils/bin/#{tool}").executable?
+          binutils_path
+        elsif build_system_too_old? && (glibc_path = HOMEBREW_PREFIX/"opt/glibc/bin/#{tool}").executable?
+          glibc_path
+        elsif (homebrew_path = HOMEBREW_PREFIX/"bin/#{tool}").executable?
+          homebrew_path
+        elsif File.executable?(system_path = "/usr/bin/#{tool}")
+          Pathname.new system_path
         end
       end
     end
@@ -30,7 +35,7 @@ class DevelopmentTools
 
     sig { returns(T::Boolean) }
     def system_gcc_too_old?
-      gcc_version("gcc") < OS::LINUX_GCC_CI_VERSION
+      gcc_version("/usr/bin/gcc") < OS::LINUX_GCC_CI_VERSION
     end
 
     sig { returns(T::Hash[String, T.nilable(String)]) }
