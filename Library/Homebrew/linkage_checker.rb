@@ -311,9 +311,12 @@ class LinkageChecker
   def harmless_broken_link?(dylib)
     # libgcc_s_* is referenced by programs that use the Java Service Wrapper,
     # and is harmless on x86(_64) machines
+    # dyld will fall back to Apple libc++ if LLVM's is not available.
     [
       "/usr/lib/libgcc_s_ppc64.1.dylib",
       "/opt/local/lib/libgcc/libgcc_s.1.dylib",
+      # TODO: Report linkage with `/usr/lib/libc++.1.dylib` when this link is broken.
+      "#{HOMEBREW_PREFIX}/opt/llvm/lib/libc++.1.dylib",
     ].include?(dylib)
   end
 
