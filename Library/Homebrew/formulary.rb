@@ -670,7 +670,8 @@ module Formulary
       return TapLoader.new(ref, from: from)
     end
 
-    return FromPathLoader.new(ref) if File.extname(ref) == ".rb" && Pathname.new(ref).expand_path.exist?
+    pathname_ref = Pathname.new(ref)
+    return FromPathLoader.new(ref) if File.extname(ref) == ".rb" && pathname_ref.expand_path.exist?
 
     if Homebrew::EnvConfig.install_from_api?
       return FormulaAPILoader.new(ref) if Homebrew::API::Formula.all_formulae.key?(ref)
@@ -680,8 +681,12 @@ module Formulary
     formula_with_that_name = core_path(ref)
     return FormulaLoader.new(ref, formula_with_that_name) if formula_with_that_name.file?
 
-    possible_alias = core_alias_path(ref)
-    return AliasLoader.new(possible_alias) if possible_alias.file?
+    possible_alias = if pathname_ref.absolute?
+      pathname_ref
+    else
+      core_alias_path(ref)
+    end
+    return AliasLoader.new(possible_alias) if possible_alias.symlink?
 
     possible_tap_formulae = tap_paths(ref)
     raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae) if possible_tap_formulae.size > 1
