@@ -35,7 +35,10 @@ class DevelopmentTools
 
     sig { returns(T::Boolean) }
     def system_gcc_too_old?
-      gcc_version("/usr/bin/gcc") < OS::LINUX_GCC_CI_VERSION
+      gcc = "/usr/bin/gcc"
+      return true unless File.exist?(gcc)
+
+      gcc_version(gcc) < OS::LINUX_GCC_CI_VERSION
     end
 
     sig { returns(T::Hash[String, T.nilable(String)]) }
