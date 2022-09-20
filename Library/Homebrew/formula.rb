@@ -2070,6 +2070,10 @@ class Formula
       "dependencies"             => dependencies.reject(&:optional?)
                                                 .reject(&:recommended?)
                                                 .reject(&:build?)
+                                                .reject(&:test?)
+                                                .map(&:name)
+                                                .uniq,
+      "test_dependencies"        => dependencies.select(&:test?)
                                                 .map(&:name)
                                                 .uniq,
       "recommended_dependencies" => dependencies.select(&:recommended?)
