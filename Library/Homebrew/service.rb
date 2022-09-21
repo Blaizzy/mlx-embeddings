@@ -401,7 +401,7 @@ module Homebrew
         Description=Homebrew generated unit for #{@formula.name}
 
         [Install]
-        WantedBy=multi-user.target
+        WantedBy=default.target
 
         [Service]
       EOS
