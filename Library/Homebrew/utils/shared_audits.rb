@@ -10,6 +10,8 @@ module SharedAudits
   include Utils::Curl
   extend Utils::Curl
 
+  URL_TYPE_HOMEPAGE = "homepage URL"
+
   module_function
 
   def github_repo_data(user, repo)

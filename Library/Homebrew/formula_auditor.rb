@@ -498,7 +498,7 @@ module Homebrew
       end
 
       if (http_content_problem = curl_check_http_content(homepage,
-                                                         "homepage URL",
+                                                         SharedAudits::URL_TYPE_HOMEPAGE,
                                                          user_agents:       [:browser, :default],
                                                          check_content:     true,
                                                          strict:            @strict,

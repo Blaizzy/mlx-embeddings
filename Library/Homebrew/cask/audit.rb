@@ -716,7 +716,7 @@ module Cask
 
       return unless cask.homepage
 
-      validate_url_for_https_availability(cask.homepage, "homepage URL", cask.token, cask.tap,
+      validate_url_for_https_availability(cask.homepage, SharedAudits::URL_TYPE_HOMEPAGE, cask.token, cask.tap,
                                           user_agents:   [:browser, :default],
                                           check_content: true,
                                           strict:        strict?)
