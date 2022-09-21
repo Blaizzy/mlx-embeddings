@@ -59,9 +59,9 @@ module Stdenv
 
     begin
       send(compiler)
-    rescue CompilerSelectionError => e
+    rescue CompilerSelectionError
       # We don't care if our compiler fails to build the formula during `brew test`.
-      raise e unless testing_formula
+      raise unless testing_formula
 
       send(DevelopmentTools.default_compiler)
     end
