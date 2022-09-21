@@ -194,7 +194,7 @@ module Formulary
         depends_on dep
       end
 
-      [:build, :recommended, :optional].each do |type|
+      [:build, :test, :recommended, :optional].each do |type|
         json_formula["#{type}_dependencies"].each do |dep|
           next if uses_from_macos_names.include? dep
 
