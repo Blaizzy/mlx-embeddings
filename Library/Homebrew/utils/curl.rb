@@ -293,11 +293,11 @@ module Utils
         # https://github.com/Homebrew/brew/issues/13789
         # If the `:homepage` of a formula is private, it will fail an `audit`
         # since there's no way to specify a `strategy` with `using:` and
-        # Github does not authorize access to the web ui using token
+        # GitHub does not authorize access to the web UI using token
         #
         # Strategy:
-        # If the `:homepage` 404s, it's a github link, and we have a token--
-        # check the API for the repository existing (which does use tokens)
+        # If the `:homepage` 404s, it's a GitHub link, and we have a token then
+        # check the API (which does use tokens) for the repository
         repo_details = url.match(%r{https?://github\.com/(?<user>[^/]+)/(?<repo>[^/]+)/?.*})
         check_github_api = url_type == SharedAudits::URL_TYPE_HOMEPAGE &&
                            details[:status_code] == "404" &&
