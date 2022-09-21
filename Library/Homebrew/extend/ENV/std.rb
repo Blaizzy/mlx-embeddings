@@ -57,7 +57,14 @@ module Stdenv
     # Os is the default Apple uses for all its stuff so let's trust them
     define_cflags "-Os #{SAFE_CFLAGS_FLAGS}"
 
-    send(compiler)
+    begin
+      send(compiler)
+    rescue CompilerSelectionError => e
+      # We don't care if our compiler fails to build the formula during `brew test`.
+      raise e unless testing_formula
+
+      send(DevelopmentTools.default_compiler)
+    end
 
     return unless cc&.match?(GNU_GCC_REGEXP)
 
