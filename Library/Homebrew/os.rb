@@ -50,7 +50,8 @@ module OS
   LINUX_GLIBC_CI_VERSION = "2.35"
   LINUX_GLIBC_NEXT_CI_VERSION = "2.35"
   LINUX_GCC_CI_VERSION = "11.0"
-  LINUX_PREFERRED_GCC_FORMULA = "gcc@11"
+  LINUX_PREFERRED_GCC_COMPILER_FORMULA = "gcc@11" # https://packages.ubuntu.com/jammy/gcc
+  LINUX_PREFERRED_GCC_RUNTIME_FORMULA = "gcc@12" # https://packages.ubuntu.com/jammy/libstdc++6
 
   if OS.mac?
     require "os/mac"

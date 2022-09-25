@@ -498,7 +498,7 @@ module Homebrew
       end
 
       if (http_content_problem = curl_check_http_content(homepage,
-                                                         "homepage URL",
+                                                         SharedAudits::URL_TYPE_HOMEPAGE,
                                                          user_agents:       [:browser, :default],
                                                          check_content:     true,
                                                          strict:            @strict,
@@ -892,8 +892,9 @@ module Homebrew
           # This variation either:
           #   1. does not exist
           #   2. has no variation-specific dependencies
-          # In either case, it matches Linux.
-          return false if variation_dependencies.blank?
+          # In either case, it matches Linux. We must check for `nil` because an empty
+          # array indicates that this variation does not depend on GCC.
+          return false if variation_dependencies.nil?
           # We found a non-Linux variation that depends on GCC.
           return false if variation_dependencies.include?("gcc")
         end

@@ -2195,6 +2195,11 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_NO_INSTALL_UPGRADE`
   <br>If set, `brew install *`formula`*` will not upgrade `*`formula`*` if it is installed but outdated.
 
+- `HOMEBREW_PIP_INDEX_URL`
+  <br>If set, `brew install *`formula`*` will use this URL to download PyPI package resources.
+
+  *Default:* `https://pypi.org/simple`.
+
 - `HOMEBREW_PRY`
   <br>If set, use Pry for the `brew irb` command.
 

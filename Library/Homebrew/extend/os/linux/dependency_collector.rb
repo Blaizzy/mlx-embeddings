@@ -34,7 +34,7 @@ class DependencyCollector
   private
 
   GLIBC = "glibc"
-  GCC = CompilerSelector.preferred_gcc.freeze
+  GCC = OS::LINUX_PREFERRED_GCC_RUNTIME_FORMULA
 
   sig { void }
   def init_global_dep_tree_if_needed!

@@ -238,6 +238,7 @@ describe Formulary do
             },
             "build_dependencies"       => ["build_dep"],
             "dependencies"             => ["dep"],
+            "test_dependencies"        => ["test_dep"],
             "recommended_dependencies" => ["recommended_dep"],
             "optional_dependencies"    => ["optional_dep"],
             "uses_from_macos"          => ["uses_from_macos_dep"],
@@ -291,9 +292,9 @@ describe Formulary do
         expect(formula).to be_a(Formula)
         expect(formula.keg_only_reason.reason).to eq :provided_by_macos
         if OS.mac?
-          expect(formula.deps.count).to eq 4
-        elsif OS.linux?
           expect(formula.deps.count).to eq 5
+        elsif OS.linux?
+          expect(formula.deps.count).to eq 6
         end
         expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
         expect(formula.caveats).to eq "example caveat string"
@@ -329,7 +330,7 @@ describe Formulary do
 
         formula = described_class.factory(formula_name)
         expect(formula).to be_a(Formula)
-        expect(formula.deps.count).to eq 5
+        expect(formula.deps.count).to eq 6
         expect(formula.deps.map(&:name).include?("variations_dep")).to be true
       end
 
@@ -339,7 +340,7 @@ describe Formulary do
 
         formula = described_class.factory(formula_name)
         expect(formula).to be_a(Formula)
-        expect(formula.deps.count).to eq 5
+        expect(formula.deps.count).to eq 6
         expect(formula.deps.map(&:name).include?("uses_from_macos_dep")).to be true
       end
     end
