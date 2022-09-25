@@ -43,10 +43,15 @@ module RuboCop
         PATTERN
 
         def on_send(node)
-          child_node, method_name = *node.first_argument.children
+          child_node, method_name, time_argument = *node.first_argument.children
+          return if time_argument || !child_node
           return unless current_time?(child_node, method_name) || current_time_with_convert?(child_node, method_name)
 
-          add_offense(node) { |corrector| corrector.replace(node, 'freeze_time') }
+          add_offense(node) do |corrector|
+            last_argument = node.last_argument
+            freeze_time_method = last_argument.block_pass_type? ? "freeze_time(#{last_argument.source})" : 'freeze_time'
+            corrector.replace(node, freeze_time_method)
+          end
         end
 
         private

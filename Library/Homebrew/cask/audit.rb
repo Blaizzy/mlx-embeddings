@@ -716,7 +716,7 @@ module Cask
 
       return unless cask.homepage
 
-      validate_url_for_https_availability(cask.homepage, "homepage URL", cask.token, cask.tap,
+      validate_url_for_https_availability(cask.homepage, SharedAudits::URL_TYPE_HOMEPAGE, cask.token, cask.tap,
                                           user_agents:   [:browser, :default],
                                           check_content: true,
                                           strict:        strict?)
@@ -793,6 +793,9 @@ module Cask
       else
         host_uri.host
       end
+
+      return false if homepage.blank?
+
       home = homepage.downcase
       if (split_host = host.split(".")).length >= 3
         host = split_host[-2..].join(".")

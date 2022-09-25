@@ -869,7 +869,7 @@ module Homebrew
       resource_version_info = {}
 
       livecheck = resource.livecheck
-      livecheck_url = has_livecheckable ? livecheck.url : resource.url
+      livecheck_url = livecheck.url
       livecheck_regex = livecheck.regex
       livecheck_strategy = livecheck.strategy
       livecheck_strategy_block = livecheck.strategy_block
