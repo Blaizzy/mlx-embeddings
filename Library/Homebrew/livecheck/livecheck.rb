@@ -247,37 +247,11 @@ module Homebrew
           )
         end
 
-        # Check current and latest resources (if "--resources" flag is given)
-        # Only check current and latest versions if we have resources to check against
-        check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
-        if check_for_resources
-          resource_version_info = formula_or_cask.resources.map do |resource|
-            res_skip_info ||= SkipConditions.skip_information(resource, verbose: verbose)
-            if res_skip_info.present?
-              res_skip_info
-            else
-              res_version_info = resource_version(
-                resource,
-                json:    json,
-                debug:   debug,
-                quiet:   quiet,
-                verbose: verbose,
-              )
-              if res_version_info.empty?
-                status_hash(resource, "error", ["Unable to get versions"], verbose: verbose)
-              else
-                res_version_info
-              end
-            end
-          end.compact_blank
-        end
-
         skip_info ||= SkipConditions.skip_information(formula_or_cask, full_name: use_full_name, verbose: verbose)
         if skip_info.present?
           next skip_info if json && !newer_only
 
           SkipConditions.print_skip_information(skip_info) if !newer_only && !quiet
-          print_resources_info(resource_version_info, verbose: verbose) if check_for_resources
           next
         end
 
@@ -310,6 +284,31 @@ module Homebrew
             json: json, full_name: use_full_name, verbose: verbose, debug: debug
           )
           version_info[:latest] if version_info.present?
+        end
+
+        # Check current and latest resources (if "--resources" flag is given)
+        # Only check current and latest versions if we have resources to check against
+        check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
+        if check_for_resources
+          resource_version_info = formula_or_cask.resources.map do |resource|
+            res_skip_info ||= SkipConditions.skip_information(resource, verbose: verbose)
+            if res_skip_info.present?
+              res_skip_info
+            else
+              res_version_info = resource_version(
+                resource,
+                json:    json,
+                debug:   debug,
+                quiet:   quiet,
+                verbose: verbose,
+              )
+              if res_version_info.empty?
+                status_hash(resource, "error", ["Unable to get versions"], verbose: verbose)
+              else
+                res_version_info
+              end
+            end
+          end.compact_blank
         end
 
         if latest.blank?
@@ -526,9 +525,6 @@ module Homebrew
       when :url
         package_or_resource.url&.to_s if package_or_resource.is_a?(Cask::Cask) || package_or_resource.is_a?(Resource)
       when :head, :stable
-        # Since resource's "url" is considered "stable" by default.
-        # And some resources may contain in "head" block as well
-        package_or_resource.send(:url)&.to_s if package_or_resource.is_a?(Resource)
         package_or_resource.send(livecheck_url)&.url if package_or_resource.is_a?(Formula)
       when :homepage
         package_or_resource.homepage unless package_or_resource.is_a?(Resource)
