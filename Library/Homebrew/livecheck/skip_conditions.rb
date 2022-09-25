@@ -33,7 +33,7 @@ module Homebrew
           stable_from_internet_archive = stable_url.match?(%r{https?://web\.archive\.org/}i)
         end
 
-        skip_message = if package_or_resource.livecheck&.skip_msg.present?
+        skip_message = if package_or_resource.livecheck.skip_msg.present?
           package_or_resource.livecheck.skip_msg
         elsif !livecheckable
           if stable_from_google_code_archive
@@ -45,7 +45,7 @@ module Homebrew
           end
         end
 
-        return {} if !package_or_resource.livecheck&.skip? && skip_message.blank?
+        return {} if !package_or_resource.livecheck.skip? && skip_message.blank?
 
         skip_messages = skip_message ? [skip_message] : nil
         Livecheck.status_hash(package_or_resource, "skipped", skip_messages, full_name: full_name, verbose: verbose)
@@ -172,7 +172,7 @@ module Homebrew
         :cask_url_unversioned,
       ].freeze
 
-      # Skip conditions for resource
+      # Skip conditions for resource.
       RESOURCE_CHECKS = [
         :package_or_resource_skip,
       ].freeze

@@ -11,6 +11,7 @@ describe Homebrew::Livecheck do
   let(:homepage_url) { "https://brew.sh" }
   let(:livecheck_url) { "https://formulae.brew.sh/api/formula/ruby.json" }
   let(:stable_url) { "https://brew.sh/test-0.0.1.tgz" }
+  let(:resource_url) { "https://brew.sh/foo-1.0.tar.gz" }
 
   let(:f) do
     formula("test") do
@@ -116,6 +117,7 @@ describe Homebrew::Livecheck do
       homepage_url_s = homepage_url
       stable_url_s = stable_url
       head_url_s = head_url
+      resource_url_s = resource_url
 
       formula("test_livecheck_url") do
         desc "Test Livecheck URL formula"
@@ -124,7 +126,7 @@ describe Homebrew::Livecheck do
         head head_url_s
 
         resource "foo" do
-          url "https://brew.sh/foo-1.0.tar.gz"
+          url resource_url_s
           sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
           livecheck do
@@ -164,15 +166,7 @@ describe Homebrew::Livecheck do
       expect(livecheck.livecheck_url_to_string(:homepage, c_livecheck_url)).to eq(homepage_url)
       expect(livecheck.livecheck_url_to_string(:stable, f_livecheck_url)).to eq(stable_url)
       expect(livecheck.livecheck_url_to_string(:url, c_livecheck_url)).to eq(cask_url)
-
-      r_livecheck_url.livecheck.url(:url)
-      expect(livecheck.livecheck_url_to_string(cask_url, r_livecheck_url)).to eq(cask_url)
-
-      r_livecheck_url.livecheck.url(:head)
-      expect(livecheck.livecheck_url_to_string(head_url, r_livecheck_url)).to eq(head_url)
-
-      r_livecheck_url.livecheck.url(:stable)
-      expect(livecheck.livecheck_url_to_string(stable_url, r_livecheck_url)).to eq(stable_url)
+      expect(livecheck.livecheck_url_to_string(:url, r_livecheck_url)).to eq(resource_url)
     end
 
     it "returns nil when not given a string or valid symbol" do
