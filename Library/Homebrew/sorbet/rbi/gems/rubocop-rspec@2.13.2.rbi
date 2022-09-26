@@ -182,6 +182,7 @@ class RuboCop::Cop::RSpec::Capybara::SpecificFinders < ::RuboCop::Cop::RSpec::Ba
   private
 
   def attribute?(arg); end
+  def end_pos(node); end
   def offense_range(node); end
   def on_attr(node, arg); end
   def on_id(node, arg); end
@@ -1235,6 +1236,7 @@ RuboCop::Cop::RSpec::NestedGroups::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::NoExpectationExample < ::RuboCop::Cop::RSpec::Base
   def including_any_expectation?(param0); end
+  def including_any_skip_example?(param0); end
   def on_block(node); end
   def on_numblock(node); end
   def regular_or_focused_example?(param0 = T.unsafe(nil)); end
