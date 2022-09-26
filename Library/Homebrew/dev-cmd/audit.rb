@@ -141,6 +141,12 @@ module Homebrew
       args.named.to_formulae_and_casks
           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
     end
+
+    if audit_formulae.empty? && audit_casks.empty?
+      ofail "No matching formulae or casks to audit!"
+      return
+    end
+
     style_files = args.named.to_paths unless skip_style
 
     only_cops = args.only_cops
