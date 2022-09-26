@@ -143,7 +143,7 @@ module Homebrew
     end
 
     if audit_formulae.empty? && audit_casks.empty?
-      ofail "No audits to perform"
+      ofail "No matching formulae or casks to audit!"
       return
     end
 
