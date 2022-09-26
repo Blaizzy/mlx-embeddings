@@ -309,6 +309,7 @@ module Homebrew
               end
             end
           end.compact_blank
+          Homebrew.failed = true if resource_version_info.any? { |info| info[:status] == "error" }
         end
 
         if latest.blank?
@@ -501,7 +502,6 @@ module Homebrew
       info.each do |r_info|
         if r_info[:status] && r_info[:messages]
           SkipConditions.print_skip_information(r_info)
-          Homebrew.failed = true
         else
           print_latest_version(
             r_info,
