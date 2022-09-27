@@ -8,11 +8,16 @@ module Regexp::Expression; end
 
 class Regexp::Expression::Alternation < ::Regexp::Expression::SequenceOperation
   def alternatives; end
+  def human_name; end
   def match_length; end
 end
 
 Regexp::Expression::Alternation::OPERAND = Regexp::Expression::Alternative
-class Regexp::Expression::Alternative < ::Regexp::Expression::Sequence; end
+
+class Regexp::Expression::Alternative < ::Regexp::Expression::Sequence
+  def human_name; end
+end
+
 module Regexp::Expression::Anchor; end
 Regexp::Expression::Anchor::BOL = Regexp::Expression::Anchor::BeginningOfLine
 Regexp::Expression::Anchor::BOS = Regexp::Expression::Anchor::BeginningOfString
@@ -21,27 +26,64 @@ class Regexp::Expression::Anchor::Base < ::Regexp::Expression::Base
   def match_length; end
 end
 
-class Regexp::Expression::Anchor::BeginningOfLine < ::Regexp::Expression::Anchor::Base; end
-class Regexp::Expression::Anchor::BeginningOfString < ::Regexp::Expression::Anchor::Base; end
+class Regexp::Expression::Anchor::BeginningOfLine < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Anchor::BeginningOfString < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
 Regexp::Expression::Anchor::EOL = Regexp::Expression::Anchor::EndOfLine
 Regexp::Expression::Anchor::EOS = Regexp::Expression::Anchor::EndOfString
 Regexp::Expression::Anchor::EOSobEOL = Regexp::Expression::Anchor::EndOfStringOrBeforeEndOfLine
-class Regexp::Expression::Anchor::EndOfLine < ::Regexp::Expression::Anchor::Base; end
-class Regexp::Expression::Anchor::EndOfString < ::Regexp::Expression::Anchor::Base; end
-class Regexp::Expression::Anchor::EndOfStringOrBeforeEndOfLine < ::Regexp::Expression::Anchor::Base; end
-class Regexp::Expression::Anchor::MatchStart < ::Regexp::Expression::Anchor::Base; end
-class Regexp::Expression::Anchor::NonWordBoundary < ::Regexp::Expression::Anchor::Base; end
-class Regexp::Expression::Anchor::WordBoundary < ::Regexp::Expression::Anchor::Base; end
+
+class Regexp::Expression::Anchor::EndOfLine < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Anchor::EndOfString < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Anchor::EndOfStringOrBeforeEndOfLine < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Anchor::MatchStart < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Anchor::NonWordBoundary < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Anchor::WordBoundary < ::Regexp::Expression::Anchor::Base
+  def human_name; end
+end
+
 module Regexp::Expression::Assertion; end
 
 class Regexp::Expression::Assertion::Base < ::Regexp::Expression::Group::Base
   def match_length; end
 end
 
-class Regexp::Expression::Assertion::Lookahead < ::Regexp::Expression::Assertion::Base; end
-class Regexp::Expression::Assertion::Lookbehind < ::Regexp::Expression::Assertion::Base; end
-class Regexp::Expression::Assertion::NegativeLookahead < ::Regexp::Expression::Assertion::Base; end
-class Regexp::Expression::Assertion::NegativeLookbehind < ::Regexp::Expression::Assertion::Base; end
+class Regexp::Expression::Assertion::Lookahead < ::Regexp::Expression::Assertion::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Assertion::Lookbehind < ::Regexp::Expression::Assertion::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Assertion::NegativeLookahead < ::Regexp::Expression::Assertion::Base
+  def human_name; end
+end
+
+class Regexp::Expression::Assertion::NegativeLookbehind < ::Regexp::Expression::Assertion::Base
+  def human_name; end
+end
+
 module Regexp::Expression::Backreference; end
 
 class Regexp::Expression::Backreference::Base < ::Regexp::Expression::Base
@@ -57,11 +99,14 @@ end
 class Regexp::Expression::Backreference::Name < ::Regexp::Expression::Backreference::Base
   def initialize(token, options = T.unsafe(nil)); end
 
+  def human_name; end
   def name; end
   def reference; end
 end
 
-class Regexp::Expression::Backreference::NameCall < ::Regexp::Expression::Backreference::Name; end
+class Regexp::Expression::Backreference::NameCall < ::Regexp::Expression::Backreference::Name
+  def human_name; end
+end
 
 class Regexp::Expression::Backreference::NameRecursionLevel < ::Regexp::Expression::Backreference::Name
   def initialize(token, options = T.unsafe(nil)); end
@@ -72,14 +117,20 @@ end
 class Regexp::Expression::Backreference::Number < ::Regexp::Expression::Backreference::Base
   def initialize(token, options = T.unsafe(nil)); end
 
+  def human_name; end
   def number; end
   def reference; end
 end
 
-class Regexp::Expression::Backreference::NumberCall < ::Regexp::Expression::Backreference::Number; end
-class Regexp::Expression::Backreference::NumberCallRelative < ::Regexp::Expression::Backreference::NumberRelative; end
+class Regexp::Expression::Backreference::NumberCall < ::Regexp::Expression::Backreference::Number
+  def human_name; end
+end
 
-class Regexp::Expression::Backreference::NumberRecursionLevel < ::Regexp::Expression::Backreference::Number
+class Regexp::Expression::Backreference::NumberCallRelative < ::Regexp::Expression::Backreference::NumberRelative
+  def human_name; end
+end
+
+class Regexp::Expression::Backreference::NumberRecursionLevel < ::Regexp::Expression::Backreference::NumberRelative
   def initialize(token, options = T.unsafe(nil)); end
 
   def recursion_level; end
@@ -88,6 +139,7 @@ end
 class Regexp::Expression::Backreference::NumberRelative < ::Regexp::Expression::Backreference::Number
   def effective_number; end
   def effective_number=(_arg0); end
+  def human_name; end
   def reference; end
 end
 
@@ -125,7 +177,6 @@ class Regexp::Expression::Base
   def options=(_arg0); end
   def possessive?; end
   def quantifier; end
-  def quantifier=(_arg0); end
   def quantify(*args); end
   def quantity; end
   def reluctant?; end
@@ -175,10 +226,12 @@ class Regexp::Expression::CharacterSet < ::Regexp::Expression::Subexpression
 end
 
 class Regexp::Expression::CharacterSet::IntersectedSequence < ::Regexp::Expression::Sequence
+  def human_name; end
   def match_length; end
 end
 
 class Regexp::Expression::CharacterSet::Intersection < ::Regexp::Expression::SequenceOperation
+  def human_name; end
   def match_length; end
 end
 
@@ -187,6 +240,7 @@ Regexp::Expression::CharacterSet::Intersection::OPERAND = Regexp::Expression::Ch
 class Regexp::Expression::CharacterSet::Range < ::Regexp::Expression::Subexpression
   def <<(exp); end
   def complete?; end
+  def human_name; end
   def match_length; end
   def parts; end
   def starts_at; end
@@ -194,7 +248,10 @@ class Regexp::Expression::CharacterSet::Range < ::Regexp::Expression::Subexpress
 end
 
 module Regexp::Expression::CharacterType; end
-class Regexp::Expression::CharacterType::Any < ::Regexp::Expression::CharacterType::Base; end
+
+class Regexp::Expression::CharacterType::Any < ::Regexp::Expression::CharacterType::Base
+  def human_name; end
+end
 
 class Regexp::Expression::CharacterType::Base < ::Regexp::Expression::Base
   def match_length; end
@@ -210,11 +267,19 @@ class Regexp::Expression::CharacterType::NonSpace < ::Regexp::Expression::Charac
 class Regexp::Expression::CharacterType::NonWord < ::Regexp::Expression::CharacterType::Base; end
 class Regexp::Expression::CharacterType::Space < ::Regexp::Expression::CharacterType::Base; end
 class Regexp::Expression::CharacterType::Word < ::Regexp::Expression::CharacterType::Base; end
-class Regexp::Expression::Comment < ::Regexp::Expression::FreeSpace; end
+
+class Regexp::Expression::Comment < ::Regexp::Expression::FreeSpace
+  def human_name; end
+end
+
 module Regexp::Expression::Conditional; end
-class Regexp::Expression::Conditional::Branch < ::Regexp::Expression::Sequence; end
+
+class Regexp::Expression::Conditional::Branch < ::Regexp::Expression::Sequence
+  def human_name; end
+end
 
 class Regexp::Expression::Conditional::Condition < ::Regexp::Expression::Base
+  def human_name; end
   def match_length; end
   def reference; end
   def referenced_expression; end
@@ -232,6 +297,7 @@ class Regexp::Expression::Conditional::Expression < ::Regexp::Expression::Subexp
   def branches; end
   def condition; end
   def condition=(exp); end
+  def human_name; end
   def match_length; end
   def parts; end
   def reference; end
@@ -328,6 +394,7 @@ end
 
 class Regexp::Expression::Group::Capture < ::Regexp::Expression::Group::Base
   def capturing?; end
+  def human_name; end
   def identifier; end
   def number; end
   def number=(_arg0); end
@@ -343,6 +410,7 @@ end
 class Regexp::Expression::Group::Named < ::Regexp::Expression::Group::Capture
   def initialize(token, options = T.unsafe(nil)); end
 
+  def human_name; end
   def identifier; end
   def name; end
 
@@ -354,6 +422,7 @@ end
 class Regexp::Expression::Group::Options < ::Regexp::Expression::Group::Base
   def option_changes; end
   def option_changes=(_arg0); end
+  def quantify(*args); end
 
   private
 
@@ -371,10 +440,12 @@ end
 module Regexp::Expression::Keep; end
 
 class Regexp::Expression::Keep::Mark < ::Regexp::Expression::Base
+  def human_name; end
   def match_length; end
 end
 
 class Regexp::Expression::Literal < ::Regexp::Expression::Base
+  def human_name; end
   def match_length; end
 end
 
@@ -406,7 +477,6 @@ class Regexp::Expression::Quantifier
   def options=(_arg0); end
   def possessive?; end
   def quantifier; end
-  def quantifier=(_arg0); end
   def reluctant?; end
   def set_level; end
   def set_level=(_arg0); end
@@ -431,6 +501,8 @@ end
 Regexp::Expression::Quantifier::MODES = T.let(T.unsafe(nil), Array)
 
 class Regexp::Expression::Root < ::Regexp::Expression::Subexpression
+  def human_name; end
+
   class << self
     def build(options = T.unsafe(nil)); end
   end
@@ -466,12 +538,15 @@ module Regexp::Expression::Shared
   def coded_offset; end
   def eql?(other); end
   def full_length; end
+  def human_name; end
   def is?(test_token, test_type = T.unsafe(nil)); end
   def nesting_level=(lvl); end
   def offset; end
   def one_of?(scope, top = T.unsafe(nil)); end
+  def optional?; end
   def parts; end
   def quantified?; end
+  def quantifier=(qtf); end
   def quantifier_affix(expression_format); end
   def starts_at; end
   def terminal?; end
@@ -620,6 +695,7 @@ class Regexp::Expression::UnicodeProperty::XPosixPunct < ::Regexp::Expression::U
 class Regexp::Expression::UnicodeProperty::Xdigit < ::Regexp::Expression::UnicodeProperty::Base; end
 
 class Regexp::Expression::WhiteSpace < ::Regexp::Expression::FreeSpace
+  def human_name; end
   def merge(exp); end
 end
 
