@@ -872,10 +872,7 @@ module Homebrew
       livecheck_strategy = livecheck.strategy
       livecheck_strategy_block = livecheck.strategy_block
 
-      livecheck_url_string = livecheck_url_to_string(
-        livecheck_url,
-        resource,
-      )
+      livecheck_url_string = livecheck_url_to_string(livecheck_url, resource)
 
       urls = [livecheck_url_string] if livecheck_url_string
       urls ||= checkable_urls(resource)
@@ -1001,8 +998,7 @@ module Homebrew
 
         resource_version_info[:meta] = { livecheckable: has_livecheckable, url: {} }
         if livecheck_url.is_a?(Symbol) && livecheck_url_string
-          resource_version_info[:meta][:url][:symbol] =
-            livecheck_url
+          resource_version_info[:meta][:url][:symbol] = livecheck_url
         end
         resource_version_info[:meta][:url][:original] = original_url
         resource_version_info[:meta][:url][:processed] = url if url != original_url
