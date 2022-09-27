@@ -472,9 +472,9 @@ module Homebrew
     end
 
     # Formats and prints the livecheck result for a formula/cask/resource.
-    sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean, resource: T::Boolean).void }
-    def print_latest_version(info, verbose: false, ambiguous_cask: false, resource: false)
-      package_or_resource_s = resource ? "  " : ""
+    sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
+    def print_latest_version(info, verbose: false, ambiguous_cask: false)
+      package_or_resource_s = info[:resource].present? ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
       package_or_resource_s += " (cask)" if ambiguous_cask
       package_or_resource_s += " (guessed)" if verbose && !info[:meta][:livecheckable]
@@ -501,11 +501,7 @@ module Homebrew
         if r_info[:status] && r_info[:messages]
           SkipConditions.print_skip_information(r_info)
         else
-          print_latest_version(
-            r_info,
-            verbose:  verbose,
-            resource: true,
-          )
+          print_latest_version(r_info, verbose: verbose)
         end
       end
     end
