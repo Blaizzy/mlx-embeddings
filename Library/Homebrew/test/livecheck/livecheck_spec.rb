@@ -152,11 +152,11 @@ describe Homebrew::Livecheck do
       RUBY
     end
 
-    it "returns a URL string when given a livecheck_url string for formula" do
+    it "returns a URL string when given a livecheck_url string for a formula" do
       expect(livecheck.livecheck_url_to_string(livecheck_url, f_livecheck_url)).to eq(livecheck_url)
     end
 
-    it "returns a URL string when given a livecheck_url string for resource" do
+    it "returns a URL string when given a livecheck_url string for a resource" do
       expect(livecheck.livecheck_url_to_string(livecheck_url, r_livecheck_url)).to eq(livecheck_url)
     end
 

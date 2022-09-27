@@ -286,8 +286,6 @@ module Homebrew
           version_info[:latest] if version_info.present?
         end
 
-        # Check current and latest resources (if "--resources" flag is given)
-        # Only check current and latest versions if we have resources to check against
         check_for_resources = check_resources && formula_or_cask.is_a?(Formula) && formula_or_cask.resources.present?
         if check_for_resources
           resource_version_info = formula_or_cask.resources.map do |resource|
@@ -531,7 +529,7 @@ module Homebrew
       end
     end
 
-    # Returns an Array containing the formula/resource/cask URLs that can be used by livecheck.
+    # Returns an Array containing the formula/cask/resource URLs that can be used by livecheck.
     sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource)).returns(T::Array[String]) }
     def checkable_urls(package_or_resource)
       urls = []

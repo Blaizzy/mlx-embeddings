@@ -172,7 +172,7 @@ module Homebrew
         :cask_url_unversioned,
       ].freeze
 
-      # Skip conditions for resource.
+      # Skip conditions for resources.
       RESOURCE_CHECKS = [
         :package_or_resource_skip,
       ].freeze
