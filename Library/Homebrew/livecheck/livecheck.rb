@@ -494,7 +494,7 @@ module Homebrew
       puts "#{package_or_resource_s}: #{current_s} ==> #{latest_s}"
     end
 
-    # Prints the livecheck result for a resources for a given Formula.
+    # Prints the livecheck result for the resources of a given Formula.
     sig { params(info: T::Array[Hash], verbose: T::Boolean).void }
     def print_resources_info(info, verbose: false)
       info.each do |r_info|
@@ -832,9 +832,8 @@ module Homebrew
     end
     # rubocop:enable Metrics/CyclomaticComplexity
 
-    # Identifies the latest version of the resource in a given Formulae and returns a Hash containing
-    # the version information for a resource. Returns a nil value if a latest version
-    # couldn't be found for a given resource.
+    # Identifies the latest version of a resource and returns a Hash containing the
+    # version information. Returns nil if a latest version couldn't be found.
     sig {
       params(
         resource: Resource,
