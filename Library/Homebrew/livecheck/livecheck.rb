@@ -779,7 +779,6 @@ module Homebrew
             version.to_s.include?(rejection)
           end
         end
-
         next if match_version_map.blank?
 
         if debug
@@ -878,7 +877,6 @@ module Homebrew
       urls ||= checkable_urls(resource)
 
       checked_urls = []
-
       # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
         # Only preprocess the URL when it's appropriate
@@ -896,7 +894,6 @@ module Homebrew
           regex_provided:     livecheck_regex.present?,
           block_provided:     livecheck_strategy_block.present?,
         )
-
         strategy = Strategy.from_symbol(livecheck_strategy) || strategies.first
         strategy_name = livecheck_strategy_names[strategy]
 
@@ -929,8 +926,10 @@ module Homebrew
         next if strategy.blank?
 
         strategy_data = strategy.find_versions(
-          url: url, regex: livecheck_regex,
-          homebrew_curl: false, &livecheck_strategy_block
+          url:           url,
+          regex:         livecheck_regex,
+          homebrew_curl: false,
+          &livecheck_strategy_block
         )
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
@@ -1008,9 +1007,7 @@ module Homebrew
         resource_version_info[:meta][:url][:final] = strategy_data[:final_url] if strategy_data[:final_url]
         resource_version_info[:meta][:strategy] = strategy.present? ? strategy_name : nil
         if strategies.present?
-          resource_version_info[:meta][:strategies] = strategies.map do |s|
-            livecheck_strategy_names[s]
-          end
+          resource_version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] }
         end
         resource_version_info[:meta][:regex] = regex.inspect if regex.present?
         resource_version_info[:meta][:cached] = true if strategy_data[:cached] == true
