@@ -49,7 +49,7 @@ jobs:
           vale docs/
 
   tap-syntax:
-    name: tap syntax (Linux)
+    name: tap syntax
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-22.04
@@ -145,7 +145,7 @@ jobs:
                                          homebrew/cask-versions
 
   vendored-gems:
-    name: vendored gems (Linux)
+    name: vendored gems
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
@@ -222,16 +222,23 @@ jobs:
   tests:
     name: ${{ matrix.name }}
     needs: syntax
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
         include:
           - name: tests (no-compatibility mode)
             test-flags: --no-compat --online --coverage
+            runs-on: ubuntu-22.04
           - name: tests (generic OS)
             test-flags: --generic --online --coverage
-          - name: tests (Linux)
+            runs-on: ubuntu-22.04
+          - name: tests (Ubuntu 22.04)
             test-flags: --online --coverage
+            runs-on: ubuntu-22.04
+          # Enable later once this can be fixed.
+          # - name: tests (Ubuntu 18.04)
+          #   test-flags: --online --coverage
+          #   runs-on: ubuntu-18.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -274,10 +281,19 @@ jobs:
           files: Library/Homebrew/test/coverage/coverage.xml
 
   test-default-formula-linux:
-    name: test default formula (Linux)
-    runs-on: ubuntu-22.04
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runs-on }}
     env:
       HOMEBREW_BOOTSNAP: 1
+    strategy:
+      matrix:
+        include:
+          - name: test default formula (Ubuntu 22.04)
+            test-flags: --online --coverage
+            runs-on: ubuntu-22.04
+          - name: test default formula (Ubuntu 18.04)
+            test-flags: --online --coverage
+            runs-on: ubuntu-18.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -291,7 +307,7 @@ jobs:
     name: test everything (macOS)
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
-    runs-on: macos-latest
+    runs-on: macos-12
     env:
       HOMEBREW_BOOTSNAP: 1
     steps:
