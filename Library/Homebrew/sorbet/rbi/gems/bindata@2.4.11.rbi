@@ -456,6 +456,10 @@ class BinData::DelayedIO < ::BinData::Base
   def do_num_bytes; end
   def do_read(io); end
   def do_write(io); end
+  def eval_parameter(key, overrides = T.unsafe(nil)); end
+  def eval_parameter_with_delayed_io(key, overrides = T.unsafe(nil)); end
+  def eval_parameter_without_delayed_io(key, overrides = T.unsafe(nil)); end
+  def include_obj?; end
   def initialize_instance; end
   def method_missing(symbol, *args, &block); end
   def num_bytes; end
