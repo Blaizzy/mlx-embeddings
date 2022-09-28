@@ -508,18 +508,9 @@ else
   : "${HOMEBREW_OS_VERSION:=$(uname -r)}"
   HOMEBREW_OS_USER_AGENT_VERSION="${HOMEBREW_OS_VERSION}"
 
-  # This is set by the user environment.
-  # shellcheck disable=SC2154
-  if [[ -n "${HOMEBREW_ON_DEBIAN7}" ]]
-  then
-    # Special version for our debian 7 docker container used to build binutils
-    HOMEBREW_MINIMUM_CURL_VERSION="7.25.0"
-    HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD="1"
-    HOMEBREW_FORCE_BREWED_CA_CERTIFICATES="1"
-  else
-    # Ensure the system Curl is a version that supports modern HTTPS certificates.
-    HOMEBREW_MINIMUM_CURL_VERSION="7.41.0"
-  fi
+  # Ensure the system Curl is a version that supports modern HTTPS certificates.
+  HOMEBREW_MINIMUM_CURL_VERSION="7.41.0"
+
   curl_version_output="$(${HOMEBREW_CURL} --version 2>/dev/null)"
   curl_name_and_version="${curl_version_output%% (*}"
   # shellcheck disable=SC2248
