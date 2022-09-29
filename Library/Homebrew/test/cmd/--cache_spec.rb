@@ -17,7 +17,7 @@ describe "brew --cache" do
       .and be_a_success
   end
 
-  it "prints the cache files for a given Cask", :integration_test do
+  it "prints the cache files for a given Cask", :integration_test, :needs_macos do
     expect { brew "--cache", cask_path("local-caffeine") }
       .to output(%r{#{HOMEBREW_CACHE}/downloads/[\da-f]{64}--caffeine\.zip}o).to_stdout
       .and output(/Treating #{Regexp.escape(cask_path("local-caffeine"))} as a cask/).to_stderr

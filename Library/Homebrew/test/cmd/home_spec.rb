@@ -34,7 +34,7 @@ describe "brew home" do
       .and be_a_success
   end
 
-  it "opens the homepage for a given Cask", :integration_test do
+  it "opens the homepage for a given Cask", :integration_test, :needs_macos do
     expect { brew "home", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
       .to output(/#{local_caffeine_homepage}/).to_stdout
       .and output(/Treating #{Regexp.escape(local_caffeine_path)} as a cask/).to_stderr
