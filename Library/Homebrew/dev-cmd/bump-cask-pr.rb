@@ -188,19 +188,6 @@ module Homebrew
     GitHub.create_bump_pr(pr_info, args: args)
   end
 
-  def fetch_cask(contents, config: nil)
-    cask = Cask::CaskLoader.load(contents)
-    cask.config = config if config.present?
-    old_hash = cask.sha256.to_s
-
-    cask_download = Cask::Download.new(cask, quarantine: true)
-    download = cask_download.fetch(verify_download_integrity: false)
-    Utils::Tar.validate_file(download)
-    new_hash = download.sha256
-
-    [old_hash, new_hash]
-  end
-
   def check_open_pull_requests(cask, args:)
     tap_remote_repo = cask.tap.remote_repo || cask.tap.full_name
     GitHub.check_for_duplicate_pull_requests(cask.token, tap_remote_repo,
