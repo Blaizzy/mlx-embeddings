@@ -7,6 +7,7 @@ class LinkageChecker
   # Libraries provided by glibc and gcc.
   SYSTEM_LIBRARY_ALLOWLIST = %w[
     ld-linux-x86-64.so.2
+    ld-linux-aarch64.so.1
     libanl.so.1
     libatomic.so.1
     libc.so.6
