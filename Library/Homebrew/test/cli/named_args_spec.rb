@@ -67,7 +67,7 @@ describe Homebrew::CLI::NamedArgs do
   end
 
   describe "#to_formulae_and_casks" do
-    it "returns formulae and casks" do
+    it "returns formulae and casks", :dev_on_linux do
       stub_formula_loader foo, call_original: true
       stub_cask_loader baz, call_original: true
 
@@ -121,10 +121,10 @@ describe Homebrew::CLI::NamedArgs do
     it "raises an error when formula is absent and cask is available on linux", :needs_linux do
       stub_cask_loader foo_cask
 
-      expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaOrCaskUnavailableError)
+      expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaUnavailableError)
     end
 
-    it "returns formula when formula is present and cask is unreadable" do
+    it "returns formula when formula is present and cask is unreadable", :dev_on_linux do
       stub_formula_loader foo
       setup_unredable_cask "foo"
 
@@ -140,7 +140,7 @@ describe Homebrew::CLI::NamedArgs do
       expect { described_class.new("foo").to_formulae_and_casks }.to output(/Failed to load formula: foo/).to_stderr
     end
 
-    it "raises an error when formula is absent and cask is unreadable" do
+    it "raises an error when formula is absent and cask is unreadable", :dev_on_linux do
       setup_unredable_cask "foo"
 
       expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(Cask::CaskUnreadableError)

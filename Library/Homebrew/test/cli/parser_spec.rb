@@ -570,13 +570,11 @@ describe Homebrew::CLI::Parser do
       end
     end
 
-    it "throws an error for normal users" do
-      allow(Homebrew::EnvConfig).to receive(:developer?).and_return(false)
+    it "throws an error by default" do
       expect { parser.parse(["--cask"]) }.to raise_error UsageError, /Casks are not supported on Linux/
     end
 
-    it "only warns developers" do
-      allow(Homebrew::EnvConfig).to receive(:developer?).and_return(true)
+    it "only warns developers", :dev_on_linux do
       expect { parser.parse(["--cask"]) }.not_to raise_error
     end
   end

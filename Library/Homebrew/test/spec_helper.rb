@@ -181,7 +181,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :dev_on_linux) do
-    Allow(Homebrew::EnvConfig).to receive(:developer?).and_return(true) if OS.linux?
+    allow(Homebrew::EnvConfig).to receive(:developer?).and_return(true) if OS.linux?
   end
 
   config.around do |example|
