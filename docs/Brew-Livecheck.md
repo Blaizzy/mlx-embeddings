@@ -1,6 +1,6 @@
 # `brew livecheck`
 
-The `brew livecheck` command finds the newest version of a formula or cask's software software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
+The `brew livecheck` command finds the newest version of a formula or cask's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
 
 ## Behavior
 
