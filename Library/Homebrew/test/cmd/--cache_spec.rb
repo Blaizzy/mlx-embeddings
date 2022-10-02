@@ -28,7 +28,7 @@ describe "brew --cache" do
       .and be_a_success
   end
 
-  it "prints the cache files for a given Formula and Cask", :integration_test do
+  it "prints the cache files for a given Formula and Cask", :integration_test, :dev_on_linux do
     expect { brew "--cache", testball, cask_path("local-caffeine") }
       .to output(
         %r{

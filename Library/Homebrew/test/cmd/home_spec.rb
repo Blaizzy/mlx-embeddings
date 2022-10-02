@@ -45,7 +45,7 @@ describe "brew home" do
       .and be_a_success
   end
 
-  it "opens the homepages for a given formula and Cask", :integration_test do
+  it "opens the homepages for a given formula and Cask", :integration_test, :dev_on_linux do
     setup_test_formula "testballhome"
 
     expect { brew "home", "testballhome", local_caffeine_path, "HOMEBREW_BROWSER" => "echo" }
