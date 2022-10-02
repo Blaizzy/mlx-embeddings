@@ -37,6 +37,8 @@ module Homebrew
              description: "Show the latest version only if it's newer than the formula/cask."
       switch "--json",
              description: "Output information in JSON format."
+      switch "-r", "--resources",
+             description: "Also check resources for formulae."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
       switch "--formula", "--formulae",
@@ -101,6 +103,7 @@ module Homebrew
     else
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
+
     formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
       formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
@@ -111,6 +114,7 @@ module Homebrew
       json:                 args.json?,
       full_name:            args.full_name?,
       handle_name_conflict: !args.formula? && !args.cask?,
+      check_resources:      args.resources?,
       newer_only:           args.newer_only?,
       quiet:                args.quiet?,
       debug:                args.debug?,
