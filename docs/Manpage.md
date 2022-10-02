@@ -1267,6 +1267,8 @@ casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
   Show the latest version only if it's newer than the formula/cask.
 * `--json`:
   Output information in JSON format.
+* `-r`, `--resources`:
+  Also check resources for formulae.
 * `-q`, `--quiet`:
   Suppress warnings, don't print a progress bar for JSON output.
 * `--formula`:

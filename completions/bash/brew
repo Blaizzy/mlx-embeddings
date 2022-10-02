@@ -1261,6 +1261,7 @@ _brew_lc() {
       --json
       --newer-only
       --quiet
+      --resources
       --tap
       --verbose
       "
@@ -1375,6 +1376,7 @@ _brew_livecheck() {
       --json
       --newer-only
       --quiet
+      --resources
       --tap
       --verbose
       "
