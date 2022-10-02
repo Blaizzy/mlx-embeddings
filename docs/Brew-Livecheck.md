@@ -1,6 +1,6 @@
 # `brew livecheck`
 
-The `brew livecheck` command finds the newest version of a formula, cask or resource's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
+The `brew livecheck` command finds the newest version of a formula or cask's software software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
 
 ## Behavior
 
@@ -17,9 +17,7 @@ This can be accomplished by adding a `livecheck` block to the formula/cask/resou
 
 ## Creating a check
 
-1. **Use the debug output to understand the situation**. `brew livecheck --debug <formula>|<cask>` provides information about which URLs livecheck tries, any strategies that apply, matched versions, etc. `brew livecheck --debug --resources <formula>` will provides livecheck's debug information about the resources as well.
-
-> Note: `--resources` flag only works with Formulae.
+1. **Use the debug output to understand the situation**. `brew livecheck --debug <formula>|<cask>` provides information about which URLs livecheck tries, any strategies that apply, matched versions, etc.
 
 1. **Research available sources to select a URL**. Try removing the file name from `stable`/`url`, to see if this is a directory listing page. If that doesn't work, try to find a page that links to the file (e.g. a download page). If it's not possible to find the newest version on the website, try checking other sources from the formula/cask. When necessary, search for other sources outside of the formula/cask.
 
