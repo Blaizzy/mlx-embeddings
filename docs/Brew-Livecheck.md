@@ -6,7 +6,7 @@ The `brew livecheck` command finds the newest version of a formula or cask's sof
 
 When livecheck isn't given instructions for how to check for upstream versions, it does the following by default:
 
-1. For __formulae__: Collect the `stable`, `head` and `homepage` URLs, in that order. For __casks__: Collect the `appcast`, `url` and `homepage` URLs, in that order. For __resource__: Collect the `url` (since resource's url is considered `stable` by default)
+1. For formulae: Collect the `stable`, `head`, and `homepage` URLs, in that order (resources simply use their `url`). For casks: Collect the `url` and `homepage` URLs, in that order.
 1. Determine if any strategies apply to the first URL. If not, try the next URL.
 1. If a strategy can be applied, use it to check for new versions.
 1. Return the newest version (or an error if versions could not be found at any available URLs).
