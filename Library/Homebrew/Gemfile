@@ -2,7 +2,11 @@
 
 source "https://rubygems.org"
 
-ruby ">= 2.6.0"
+if ENV.fetch("HOMEBREW_DEVELOPER", "").empty? || ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty?
+  ruby "~> 2.6.0"
+else
+  ruby ">= 2.6.0"
+end
 
 # disallowed gems (should not be used)
 # * nokogiri - use rexml instead for XML parsing

@@ -45,8 +45,13 @@ module OS
 
   ::OS_VERSION = ENV.fetch("HOMEBREW_OS_VERSION").freeze
 
-  CI_GLIBC_VERSION = "2.23"
-  CI_OS_VERSION = "Ubuntu 16.04"
+  # See Linux-CI.md
+  LINUX_CI_OS_VERSION = "Ubuntu 22.04"
+  LINUX_GLIBC_CI_VERSION = "2.35"
+  LINUX_GLIBC_NEXT_CI_VERSION = "2.35"
+  LINUX_GCC_CI_VERSION = "11.0"
+  LINUX_PREFERRED_GCC_COMPILER_FORMULA = "gcc@11" # https://packages.ubuntu.com/jammy/gcc
+  LINUX_PREFERRED_GCC_RUNTIME_FORMULA = "gcc"
 
   if OS.mac?
     require "os/mac"

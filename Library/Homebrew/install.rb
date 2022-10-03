@@ -30,6 +30,10 @@ module Homebrew
       Diagnostic.checks(:build_from_source_checks, fatal: all_fatal)
     end
 
+    def global_post_install; end
+    alias generic_global_post_install global_post_install
+    module_function :generic_global_post_install
+
     def check_prefix
       if (Hardware::CPU.intel? || Hardware::CPU.in_rosetta2?) &&
          HOMEBREW_PREFIX.to_s == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX

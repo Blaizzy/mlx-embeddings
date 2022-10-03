@@ -41,9 +41,11 @@ module Homebrew
              description: "Run additional, slower style checks that require a network connection."
       switch "--installed",
              description: "Only check formulae and casks that are currently installed."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to audit them. " \
+                          "Implied if HOMEBREW_EVAL_ALL is set."
       switch "--all",
-             description: "Check all formulae and casks whether installed or not.",
-             hidden:      true
+             hidden: true
       switch "--new", "--new-formula", "--new-cask",
              description: "Run various additional style checks to determine if a new formula or cask is eligible " \
                           "for Homebrew. This should be used when creating new formula and implies " \
@@ -118,8 +120,6 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    # TODO: 3.6.0: odeprecate not specifying args.all?, require args.installed?
-
     audit_formulae, audit_casks = if args.tap
       Tap.fetch(args.tap).then do |tap|
         [
@@ -131,12 +131,22 @@ module Homebrew
       no_named_args = true
       [Formula.installed, Cask::Caskroom.casks]
     elsif args.no_named?
+      if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+        odeprecated "brew audit",
+                    "brew audit --eval-all or HOMEBREW_EVAL_ALL"
+      end
       no_named_args = true
       [Formula.all, Cask::Cask.all]
     else
       args.named.to_formulae_and_casks
           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
     end
+
+    if audit_formulae.empty? && audit_casks.empty?
+      ofail "No matching formulae or casks to audit!"
+      return
+    end
+
     style_files = args.named.to_paths unless skip_style
 
     only_cops = args.only_cops

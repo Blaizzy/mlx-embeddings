@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "delegate"
-require "cask_dependent"
 
 # A collection of dependencies.
 #

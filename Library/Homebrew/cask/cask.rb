@@ -24,6 +24,11 @@ module Cask
     attr_accessor :download, :allow_reassignment
 
     def self.all
+      # TODO: uncomment for 3.7.0 and ideally avoid using ARGV by moving to e.g. CLI::Parser
+      # if !ARGV.include?("--eval-all") && !Homebrew::EnvConfig.eval_all?
+      #   odeprecated "Cask::Cask#all without --all or HOMEBREW_EVAL_ALL"
+      # end
+
       Tap.flat_map(&:cask_files).map do |f|
         CaskLoader::FromTapPathLoader.new(f).load(config: nil)
       rescue CaskUnreadableError => e
@@ -235,7 +240,7 @@ module Cask
         "installed"      => versions.last,
         "outdated"       => outdated?,
         "sha256"         => sha256,
-        "artifacts"      => artifacts.map(&method(:to_h_gsubs)),
+        "artifacts"      => artifacts_list,
         "caveats"        => (to_h_string_gsubs(caveats) unless caveats.empty?),
         "depends_on"     => depends_on,
         "conflicts_with" => conflicts_with,
@@ -280,6 +285,18 @@ module Cask
     end
 
     private
+
+    def artifacts_list
+      artifacts.map do |artifact|
+        key, value = if artifact.is_a? Artifact::AbstractFlightBlock
+          artifact.summarize
+        else
+          [artifact.class.dsl_key, to_h_gsubs(artifact.to_args)]
+        end
+
+        { key => value }
+      end
+    end
 
     def to_h_string_gsubs(string)
       string.to_s

@@ -30,11 +30,16 @@ describe BuildEnvironment do
   end
 
   describe BuildEnvironment::DSL do
-    subject(:build_environment_dsl) { double.extend(described_class) }
+    let(:build_environment_dsl) do
+      klass = described_class
+      Class.new do
+        extend(klass)
+      end
+    end
 
     context "with a single argument" do
-      before do
-        build_environment_dsl.instance_eval do
+      subject do
+        Class.new(build_environment_dsl) do
           env :std
         end
       end

@@ -10,7 +10,7 @@ describe Tty do
 
   describe "::width" do
     it "returns an Integer" do
-      expect(described_class.width).to be_kind_of(Integer)
+      expect(described_class.width).to be_a(Integer)
     end
 
     it "cannot be negative" do

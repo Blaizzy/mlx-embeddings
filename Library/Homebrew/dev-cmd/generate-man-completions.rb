@@ -23,6 +23,7 @@ module Homebrew
         Generate Homebrew's manpages and shell completions.
       EOS
       switch "--fail-if-not-changed",
+             hidden:      true,
              description: "Return a failing status code if no changes are detected in the manpage outputs. " \
                           "This can be used to notify CI when the manpages are out of date. Additionally, " \
                           "the date used in new manpages will match those in the existing manpages (to allow " \
@@ -34,27 +35,30 @@ module Homebrew
   def generate_man_completions
     args = generate_man_completions_args.parse
 
+    odeprecated "brew generate-man-completions --fail-if-not-changed" if args.fail_if_not_changed?
+
     Commands.rebuild_internal_commands_completion_list
-    regenerate_man_pages(preserve_date: args.fail_if_not_changed?, quiet: args.quiet?)
+    regenerate_man_pages(quiet: args.quiet?)
     Completions.update_shell_completions!
 
     diff = system_command "git", args: [
       "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "docs/Manpage.md", "manpages", "completions"
     ]
-
-    return unless diff.status.success?
-
-    puts "No changes to manpage or completions output detected."
-    Homebrew.failed = true if args.fail_if_not_changed?
+    if diff.status.success?
+      ofail "No changes to manpage or completions."
+    else
+      puts "Manpage and completions updated."
+    end
   end
 
-  def regenerate_man_pages(preserve_date:, quiet:)
+  # TODO: move this method and all called functions to manpages.rb
+  def regenerate_man_pages(quiet:)
     Homebrew.install_bundler_gems!
 
     markup = build_man_page(quiet: quiet)
-    convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md", preserve_date: preserve_date)
+    convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md")
     markup = I18n.transliterate(markup, locale: :en)
-    convert_man_page(markup, TARGET_MAN_PATH/"brew.1", preserve_date: preserve_date)
+    convert_man_page(markup, TARGET_MAN_PATH/"brew.1")
   end
 
   def build_man_page(quiet:)
@@ -94,13 +98,13 @@ module Homebrew
     path.basename.to_s.sub(/\.(rb|sh)$/, "").sub(/^--/, "~~")
   end
 
-  def convert_man_page(markup, target, preserve_date:)
+  def convert_man_page(markup, target)
     manual = target.basename(".1")
     organisation = "Homebrew"
 
-    # Set the manpage date to the existing one if we're checking for changes.
+    # Set the manpage date to the existing one if we're updating.
     # This avoids the only change being e.g. a new date.
-    date = if preserve_date && target.extname == ".1" && target.exist?
+    date = if target.extname == ".1" && target.exist?
       /"(\d{1,2})" "([A-Z][a-z]+) (\d{4})" "#{organisation}" "#{manual}"/ =~ target.read
       Date.parse("#{Regexp.last_match(1)} #{Regexp.last_match(2)} #{Regexp.last_match(3)}")
     else

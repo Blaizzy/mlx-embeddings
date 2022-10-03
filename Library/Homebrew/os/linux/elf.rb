@@ -97,7 +97,7 @@ module ELFShim
   # An array of runtime search path entries, such as:
   # ["/lib", "/usr/lib", "/usr/local/lib"]
   def rpaths
-    rpath.split(":")
+    Array(rpath&.split(":"))
   end
 
   def interpreter

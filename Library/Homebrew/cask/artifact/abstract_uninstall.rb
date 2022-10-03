@@ -40,7 +40,7 @@ module Cask
       def initialize(cask, directives)
         directives.assert_valid_keys!(*ORDERED_DIRECTIVES)
 
-        super(cask)
+        super(cask, **directives)
         directives[:signal] = Array(directives[:signal]).flatten.each_slice(2).to_a
         @directives = directives
 

@@ -6,7 +6,7 @@ require "livecheck/livecheck"
 module Homebrew
   module Livecheck
     # The `Livecheck::SkipConditions` module primarily contains methods that
-    # check for various formula/cask conditions where a check should be skipped.
+    # check for various formula/cask/resource conditions where a check should be skipped.
     #
     # @api private
     module SkipConditions
@@ -16,14 +16,14 @@ module Homebrew
 
       sig {
         params(
-          formula_or_cask: T.any(Formula, Cask::Cask),
-          livecheckable:   T::Boolean,
-          full_name:       T::Boolean,
-          verbose:         T::Boolean,
+          package_or_resource: T.any(Formula, Cask::Cask, Resource),
+          livecheckable:       T::Boolean,
+          full_name:           T::Boolean,
+          verbose:             T::Boolean,
         ).returns(Hash)
       }
-      def formula_or_cask_skip(formula_or_cask, livecheckable, full_name: false, verbose: false)
-        formula = formula_or_cask if formula_or_cask.is_a?(Formula)
+      def package_or_resource_skip(package_or_resource, livecheckable, full_name: false, verbose: false)
+        formula = package_or_resource if package_or_resource.is_a?(Formula)
 
         if (stable_url = formula&.stable&.url)
           stable_is_gist = stable_url.match?(%r{https?://gist\.github(?:usercontent)?\.com/}i)
@@ -33,8 +33,8 @@ module Homebrew
           stable_from_internet_archive = stable_url.match?(%r{https?://web\.archive\.org/}i)
         end
 
-        skip_message = if formula_or_cask.livecheck.skip_msg.present?
-          formula_or_cask.livecheck.skip_msg
+        skip_message = if package_or_resource.livecheck.skip_msg.present?
+          package_or_resource.livecheck.skip_msg
         elsif !livecheckable
           if stable_from_google_code_archive
             "Stable URL is from Google Code Archive"
@@ -45,10 +45,10 @@ module Homebrew
           end
         end
 
-        return {} if !formula_or_cask.livecheck.skip? && skip_message.blank?
+        return {} if !package_or_resource.livecheck.skip? && skip_message.blank?
 
         skip_messages = skip_message ? [skip_message] : nil
-        Livecheck.status_hash(formula_or_cask, "skipped", skip_messages, full_name: full_name, verbose: verbose)
+        Livecheck.status_hash(package_or_resource, "skipped", skip_messages, full_name: full_name, verbose: verbose)
       end
 
       sig {
@@ -157,7 +157,7 @@ module Homebrew
 
       # Skip conditions for formulae.
       FORMULA_CHECKS = [
-        :formula_or_cask_skip,
+        :package_or_resource_skip,
         :formula_head_only,
         :formula_deprecated,
         :formula_disabled,
@@ -166,76 +166,85 @@ module Homebrew
 
       # Skip conditions for casks.
       CASK_CHECKS = [
-        :formula_or_cask_skip,
+        :package_or_resource_skip,
         :cask_discontinued,
         :cask_version_latest,
         :cask_url_unversioned,
       ].freeze
 
-      # If a formula/cask should be skipped, we return a hash from
+      # Skip conditions for resources.
+      RESOURCE_CHECKS = [
+        :package_or_resource_skip,
+      ].freeze
+
+      # If a formula/cask/resource should be skipped, we return a hash from
       # `Livecheck#status_hash`, which contains a `status` type and sometimes
       # error `messages`.
       sig {
         params(
-          formula_or_cask: T.any(Formula, Cask::Cask),
-          full_name:       T::Boolean,
-          verbose:         T::Boolean,
+          package_or_resource: T.any(Formula, Cask::Cask, Resource),
+          full_name:           T::Boolean,
+          verbose:             T::Boolean,
         ).returns(Hash)
       }
-      def skip_information(formula_or_cask, full_name: false, verbose: false)
-        livecheckable = formula_or_cask.livecheckable?
+      def skip_information(package_or_resource, full_name: false, verbose: false)
+        livecheckable = package_or_resource.livecheckable?
 
-        checks = case formula_or_cask
+        checks = case package_or_resource
         when Formula
           FORMULA_CHECKS
         when Cask::Cask
           CASK_CHECKS
+        when Resource
+          RESOURCE_CHECKS
         end
         return {} unless checks
 
         checks.each do |method_name|
-          skip_hash = send(method_name, formula_or_cask, livecheckable, full_name: full_name, verbose: verbose)
+          skip_hash = send(method_name, package_or_resource, livecheckable, full_name: full_name, verbose: verbose)
           return skip_hash if skip_hash.present?
         end
 
         {}
       end
 
-      # Skip conditions for formulae/casks referenced in a `livecheck` block
+      # Skip conditions for formulae/casks/resources referenced in a `livecheck` block
       # are treated differently than normal. We only respect certain skip
       # conditions (returning the related hash) and others are treated as
       # errors.
       sig {
         params(
-          livecheck_formula_or_cask:     T.any(Formula, Cask::Cask),
-          original_formula_or_cask_name: String,
-          full_name:                     T::Boolean,
-          verbose:                       T::Boolean,
+          livecheck_package_or_resource:     T.any(Formula, Cask::Cask, Resource),
+          original_package_or_resource_name: String,
+          full_name:                         T::Boolean,
+          verbose:                           T::Boolean,
         ).returns(T.nilable(Hash))
       }
       def referenced_skip_information(
-        livecheck_formula_or_cask,
-        original_formula_or_cask_name,
+        livecheck_package_or_resource,
+        original_package_or_resource_name,
         full_name: false,
         verbose: false
       )
         skip_info = SkipConditions.skip_information(
-          livecheck_formula_or_cask,
+          livecheck_package_or_resource,
           full_name: full_name,
           verbose:   verbose,
         )
         return if skip_info.blank?
 
-        referenced_name = Livecheck.formula_or_cask_name(livecheck_formula_or_cask, full_name: full_name)
-        referenced_type = case livecheck_formula_or_cask
+        referenced_name = Livecheck.package_or_resource_name(livecheck_package_or_resource, full_name: full_name)
+        referenced_type = case livecheck_package_or_resource
         when Formula
           :formula
         when Cask::Cask
           :cask
+        when Resource
+          :resource
         end
 
         if skip_info[:status] != "error" &&
-           !(skip_info[:status] == "skipped" && livecheck_formula_or_cask.livecheck.skip?)
+           !(skip_info[:status] == "skipped" && livecheck_package_or_resource.livecheck.skip?)
           error_msg_end = if skip_info[:status] == "skipped"
             "automatically skipped"
           else
@@ -245,7 +254,7 @@ module Homebrew
           raise "Referenced #{referenced_type} (#{referenced_name}) is #{error_msg_end}"
         end
 
-        skip_info[referenced_type] = original_formula_or_cask_name
+        skip_info[referenced_type] = original_package_or_resource_name
         skip_info
       end
 
@@ -258,6 +267,8 @@ module Homebrew
           skip_hash[:formula]
         elsif skip_hash[:cask].is_a?(String)
           skip_hash[:cask]
+        elsif skip_hash[:resource].is_a?(String)
+          "  #{skip_hash[:resource]}"
         end
         return unless name
 

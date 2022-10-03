@@ -72,17 +72,18 @@ module Homebrew
 
       ambiguous_casks = []
       if !args.formula? && !args.cask?
-        ambiguous_casks = formulae_and_casks.group_by { |item| Livecheck.formula_or_cask_name(item, full_name: true) }
-                                            .values
-                                            .select { |items| items.length > 1 }
-                                            .flatten
-                                            .select { |item| item.is_a?(Cask::Cask) }
+        ambiguous_casks = formulae_and_casks \
+                          .group_by { |item| Livecheck.package_or_resource_name(item, full_name: true) }
+                          .values
+                          .select { |items| items.length > 1 }
+                          .flatten
+                          .select { |item| item.is_a?(Cask::Cask) }
       end
 
       ambiguous_names = []
       unless args.full_name?
         ambiguous_names =
-          (formulae_and_casks - ambiguous_casks).group_by { |item| Livecheck.formula_or_cask_name(item) }
+          (formulae_and_casks - ambiguous_casks).group_by { |item| Livecheck.package_or_resource_name(item) }
                                                 .values
                                                 .select { |items| items.length > 1 }
                                                 .flatten
@@ -92,7 +93,7 @@ module Homebrew
         puts if i.positive?
 
         use_full_name = args.full_name? || ambiguous_names.include?(formula_or_cask)
-        name = Livecheck.formula_or_cask_name(formula_or_cask, full_name: use_full_name)
+        name = Livecheck.package_or_resource_name(formula_or_cask, full_name: use_full_name)
         repository = if formula_or_cask.is_a?(Formula)
           if formula_or_cask.head_only?
             ohai name
@@ -157,7 +158,7 @@ module Homebrew
           rescue
             next
           end
-          name = Livecheck.formula_or_cask_name(formula_or_cask)
+          name = Livecheck.package_or_resource_name(formula_or_cask)
           ambiguous_cask = begin
             formula_or_cask.is_a?(Cask::Cask) && !args.cask? && Formula[name]
           rescue FormulaUnavailableError
@@ -178,7 +179,7 @@ module Homebrew
   end
 
   def livecheck_result(formula_or_cask)
-    name = Livecheck.formula_or_cask_name(formula_or_cask)
+    name = Livecheck.package_or_resource_name(formula_or_cask)
 
     referenced_formula_or_cask, =
       Livecheck.resolve_livecheck_reference(formula_or_cask, full_name: false, debug: false)

@@ -29,6 +29,7 @@ class Resource
   attr_accessor :name
 
   def initialize(name = nil, &block)
+    # Ensure this is synced with `initialize_dup` and `freeze` (excluding simple objects like integers and booleans)
     @name = name
     @url = nil
     @version = nil
@@ -37,9 +38,33 @@ class Resource
     @checksum = nil
     @using = nil
     @patches = []
-    @livecheck = nil
+    @livecheck = Livecheck.new(self)
     @livecheckable = false
     instance_eval(&block) if block
+  end
+
+  def initialize_dup(other)
+    super
+    @name = @name.dup
+    @version = @version.dup
+    @mirrors = @mirrors.dup
+    @specs = @specs.dup
+    @checksum = @checksum.dup
+    @using = @using.dup
+    @patches = @patches.dup
+    @livecheck = @livecheck.dup
+  end
+
+  def freeze
+    @name.freeze
+    @version.freeze
+    @mirrors.freeze
+    @specs.freeze
+    @checksum.freeze
+    @using.freeze
+    @patches.freeze
+    @livecheck.freeze
+    super
   end
 
   def owner=(owner)
@@ -53,8 +78,11 @@ class Resource
   end
 
   def downloader
-    @downloader ||= download_strategy.new(url, download_name, version,
-                                          mirrors: mirrors.dup, **specs)
+    return @downloader if @downloader.present?
+
+    url, *mirrors = determine_url_mirrors
+    @downloader = download_strategy.new(url, download_name, version,
+                                        mirrors: mirrors, **specs)
   end
 
   # Removes /s from resource names; this allows Go package names
@@ -185,7 +213,6 @@ class Resource
   #   regex /foo-(\d+(?:\.\d+)+)\.tar/
   # end</pre>
   def livecheck(&block)
-    @livecheck ||= Livecheck.new(self) if block
     return @livecheck unless block
 
     @livecheckable = true
@@ -215,13 +242,13 @@ class Resource
     @download_strategy = DownloadStrategyDetector.detect(url, using)
     @specs.merge!(specs)
     @downloader = nil
+    @version = detect_version(@version)
   end
 
   def version(val = nil)
-    @version ||= begin
-      version = detect_version(val)
-      version.null? ? nil : version
-    end
+    return @version if val.nil?
+
+    @version = detect_version(val)
   end
 
   def mirror(val)
@@ -242,15 +269,40 @@ class Resource
   private
 
   def detect_version(val)
-    return Version::NULL if val.nil? && url.nil?
-
-    case val
-    when nil     then Version.detect(url, **specs)
+    version = case val
+    when nil     then url.nil? ? Version::NULL : Version.detect(url, **specs)
     when String  then Version.create(val)
     when Version then val
     else
       raise TypeError, "version '#{val.inspect}' should be a string"
     end
+
+    version unless version.null?
+  end
+
+  def determine_url_mirrors
+    extra_urls = []
+
+    # glibc-bootstrap
+    if url.start_with?("https://github.com/Homebrew/glibc-bootstrap/releases/download")
+      if Homebrew::EnvConfig.artifact_domain.present?
+        extra_urls << url.sub("https://github.com", Homebrew::EnvConfig.artifact_domain)
+      end
+      if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
+        tag, filename = url.split("/").last(2)
+        extra_urls << "#{Homebrew::EnvConfig.bottle_domain}/glibc-bootstrap/#{tag}/#{filename}"
+      end
+    end
+
+    # PyPI packages: PEP 503 – Simple Repository API <https://peps.python.org/pep-0503>
+    if Homebrew::EnvConfig.pip_index_url.present?
+      pip_index_base_url = Homebrew::EnvConfig.pip_index_url.chomp("/").chomp("/simple")
+      %w[https://files.pythonhosted.org https://pypi.org].each do |base_url|
+        extra_urls << url.sub(base_url, pip_index_base_url) if url.start_with?("#{base_url}/packages")
+      end
+    end
+
+    [*extra_urls, url, *mirrors].uniq
   end
 
   # A resource containing a Go package.

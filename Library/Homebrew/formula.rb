@@ -181,6 +181,14 @@ class Formula
 
   # @private
   def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+    # Only allow instances of subclasses. The base class does not hold any spec information (URLs etc).
+    raise "Do not call `Formula.new' directly without a subclass." unless self.class < Formula
+
+    # Stop any subsequent modification of a formula's definition.
+    # Changes do not propagate to existing instances of formulae.
+    # Now that we have an instance, it's too late to make any changes to the class-level definition.
+    self.class.freeze
+
     @name = name
     @path = path
     @alias_path = alias_path
@@ -262,8 +270,12 @@ class Formula
     return unless spec.url
 
     spec.owner = self
+    add_global_deps_to_spec(spec)
     instance_variable_set("@#{name}", spec)
   end
+
+  sig { params(spec: SoftwareSpec).void }
+  def add_global_deps_to_spec(spec); end
 
   def determine_active_spec(requested)
     spec = send(requested) || stable || head
@@ -435,16 +447,36 @@ class Formula
   end
 
   # If this is a `@`-versioned formula.
+  sig { returns(T::Boolean) }
   def versioned_formula?
     name.include?("@")
   end
 
-  # Returns any `@`-versioned formulae for any formula (including versioned formulae).
-  def versioned_formulae
-    Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb")).map do |versioned_path|
+  # Returns any `@`-versioned formulae names for any formula (including versioned formulae).
+  sig { returns(T::Array[String]) }
+  def versioned_formulae_names
+    versioned_paths = if tap
+      # Faster path, due to `tap.versioned_formula_files` caching.
+      name_prefix = "#{name.gsub(/(@[\d.]+)?$/, "")}@"
+      tap.versioned_formula_files.select do |file|
+        file.basename.to_s.start_with?(name_prefix)
+      end
+    else
+      Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb"))
+    end
+
+    versioned_paths.map do |versioned_path|
       next if versioned_path == path
 
-      Formula[versioned_path.basename(".rb").to_s]
+      versioned_path.basename(".rb").to_s
+    end.compact.sort
+  end
+
+  # Returns any `@`-versioned Formula objects for any Formula (including versioned formulae).
+  sig { returns(T::Array[Formula]) }
+  def versioned_formulae
+    versioned_formulae_names.map do |name|
+      Formula[name]
     rescue FormulaUnavailableError
       nil
     end.compact.sort_by(&:version).reverse
@@ -1572,9 +1604,23 @@ class Formula
   end
 
   # Executable/Library RPATH according to platform conventions.
+  #
+  # Optionally specify a `source` or `target` depending on the location
+  # of the file containing the RPATH command and where its target is located.
+  #
+  # <pre>
+  # rpath #=> "@loader_path/../lib"
+  # rpath(target: frameworks) #=> "@loader_path/../Frameworks"
+  # rpath(source: libexec/"bin") #=> "@loader_path/../../lib"
+  # </pre>
+  sig { params(source: Pathname, target: Pathname).returns(String) }
+  def rpath(source: bin, target: lib)
+    "#{loader_path}/#{target.relative_path_from(source)}"
+  end
+
   sig { returns(String) }
-  def rpath
-    "@loader_path/../lib"
+  def loader_path
+    "@loader_path"
   end
 
   # Creates a new `Time` object for use in the formula as the build time.
@@ -1699,14 +1745,14 @@ class Formula
       elsif shell_parameter_format == :arg
         "--shell=#{shell}"
       elsif shell_parameter_format == :none
-        ""
+        nil
       else
         "#{shell_parameter_format}#{shell}"
       end
 
       popen_read_args = %w[]
       popen_read_args << commands
-      popen_read_args << shell_parameter
+      popen_read_args << shell_parameter if shell_parameter.present?
       popen_read_args.flatten!
 
       script_path.dirname.mkpath
@@ -1760,7 +1806,10 @@ class Formula
   # this should only be used when users specify `--all` to a command
   # @private
   def self.all
-    # TODO: 3.6.0: consider checking ARGV for --all
+    # TODO: uncomment for 3.7.0 and ideally avoid using ARGV by moving to e.g. CLI::Parser
+    # if !ARGV.include?("--eval-all") && !Homebrew::EnvConfig.eval_all?
+    #   odeprecated "Formula#all without --all or HOMEBREW_EVAL_ALL"
+    # end
 
     files.map do |file|
       Formulary.factory(file)
@@ -1793,46 +1842,6 @@ class Formula
     rescue
       []
     end.uniq(&:name)
-  end
-
-  # An array of all installed {Formula} with {Cask} dependents.
-  # @private
-  def self.formulae_with_cask_dependents(casks)
-    casks.flat_map { |cask| cask.depends_on[:formula] }
-         .compact
-         .map { |f| Formula[f] }
-         .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
-  end
-
-  # An array of all installed {Formula} without {Formula} dependents
-  # @private
-  def self.formulae_with_no_formula_dependents(formulae)
-    return [] if formulae.blank?
-
-    formulae - formulae.flat_map(&:runtime_formula_dependencies)
-  end
-
-  # Recursive function that returns an array of {Formula} without
-  # {Formula} dependents that weren't installed on request.
-  # @private
-  def self.unused_formulae_with_no_formula_dependents(formulae)
-    unused_formulae = formulae_with_no_formula_dependents(formulae).reject do |f|
-      Tab.for_keg(f.any_installed_keg).installed_on_request
-    end
-
-    if unused_formulae.present?
-      unused_formulae += unused_formulae_with_no_formula_dependents(formulae - unused_formulae)
-    end
-
-    unused_formulae
-  end
-
-  # An array of {Formula} without {Formula} or {Cask}
-  # dependents that weren't installed on request.
-  # @private
-  def self.unused_formulae_with_no_dependents(formulae, casks)
-    unused_formulae = unused_formulae_with_no_formula_dependents(formulae)
-    unused_formulae - formulae_with_cask_dependents(casks)
   end
 
   def self.installed_with_alias_path(alias_path)
@@ -2003,7 +2012,7 @@ class Formula
     # `any_installed_keg` and `runtime_dependencies` `select`s ensure
     # that we don't end up with something `Formula#runtime_dependencies` can't
     # read from a `Tab`.
-    Formula.cache[:runtime_installed_formula_dependents] = {}
+    Formula.cache[:runtime_installed_formula_dependents] ||= {}
     Formula.cache[:runtime_installed_formula_dependents][full_name] ||= Formula.installed
                                                                                .select(&:any_installed_keg)
                                                                                .select(&:runtime_dependencies)
@@ -2061,6 +2070,10 @@ class Formula
       "dependencies"             => dependencies.reject(&:optional?)
                                                 .reject(&:recommended?)
                                                 .reject(&:build?)
+                                                .reject(&:test?)
+                                                .map(&:name)
+                                                .uniq,
+      "test_dependencies"        => dependencies.select(&:test?)
                                                 .map(&:name)
                                                 .uniq,
       "recommended_dependencies" => dependencies.select(&:recommended?)
@@ -2654,8 +2667,25 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     extend Predicable
+    extend T::Sig
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux
+
+    # Initialise instance variables for each subclass. These need to be initialised before the class is frozen,
+    # and some DSL may never be called so it can't be done lazily.
+    def inherited(child)
+      super
+      child.instance_eval do
+        # Ensure this is synced with `freeze`
+        @stable = SoftwareSpec.new(flags: build_flags)
+        @head = HeadSoftwareSpec.new(flags: build_flags)
+        @livecheck = Livecheck.new(self)
+        @conflicts = []
+        @skip_clean_paths = Set.new
+        @link_overwrite_paths = Set.new
+        @allowed_missing_libraries = Set.new
+      end
+    end
 
     def method_added(method)
       super
@@ -2667,6 +2697,20 @@ class Formula
         define_method(:test_defined?) { true }
       end
     end
+
+    def freeze
+      specs.each(&:freeze)
+      @livecheck.freeze
+      @conflicts.freeze
+      @skip_clean_paths.freeze
+      @link_overwrite_paths.freeze
+      @allowed_missing_libraries.freeze
+      super
+    end
+
+    # Whether this formula was loaded using the formulae.brew.sh API
+    # @private
+    attr_accessor :loaded_from_api
 
     # Whether this formula contains OS/arch-specific blocks
     # (e.g. `on_macos`, `on_arm`, `on_monterey :or_older`, `on_system :linux, macos: :big_sur_or_newer`).
@@ -2748,6 +2792,18 @@ class Formula
     # @private
     attr_reader :plist_manual
 
+    # @private
+    attr_reader :conflicts
+
+    # @private
+    attr_reader :skip_clean_paths
+
+    # @private
+    attr_reader :link_overwrite_paths
+
+    # @private
+    attr_reader :allowed_missing_libraries
+
     # If `pour_bottle?` returns `false` the user-visible reason to display for
     # why they cannot use the bottle.
     # @private
@@ -2778,7 +2834,7 @@ class Formula
     # A list of the {.stable} and {.head} {SoftwareSpec}s.
     # @private
     def specs
-      @specs ||= [stable, head].freeze
+      [stable, head].freeze
     end
 
     # @!attribute [w] url
@@ -2862,8 +2918,9 @@ class Formula
     #
     # Formulae which should not be bottled should be tagged with:
     # <pre>bottle :disable, "reasons"</pre>
-    def bottle(*args, &block)
-      stable.bottle(*args, &block)
+    sig { params(block: T.proc.bind(BottleSpecification).void).void }
+    def bottle(&block)
+      stable.bottle(&block)
     end
 
     # @private
@@ -2894,7 +2951,6 @@ class Formula
     #   depends_on "libffi"
     # end</pre>
     def stable(&block)
-      @stable ||= SoftwareSpec.new(flags: build_flags)
       return @stable unless block
 
       @stable.instance_eval(&block)
@@ -2913,7 +2969,6 @@ class Formula
     # or (if autodetect fails):
     # <pre>head "https://hg.is.awesome.but.git.has.won.example.com/", using: :hg</pre>
     def head(val = nil, specs = {}, &block)
-      @head ||= HeadSoftwareSpec.new(flags: build_flags)
       if block
         @head.instance_eval(&block)
       elsif val
@@ -3064,11 +3119,6 @@ class Formula
       @plist_manual = options[:manual]
     end
 
-    # @private
-    def conflicts
-      @conflicts ||= []
-    end
-
     # One or more formulae that conflict with this one and why.
     # <pre>conflicts_with "imagemagick", because: "both install `convert` binaries"</pre>
     def conflicts_with(*names)
@@ -3087,11 +3137,6 @@ class Formula
       paths.flatten!
       # Specifying :all is deprecated and will become an error
       skip_clean_paths.merge(paths)
-    end
-
-    # @private
-    def skip_clean_paths
-      @skip_clean_paths ||= Set.new
     end
 
     # Software that will not be symlinked into the `brew --prefix` and will
@@ -3197,7 +3242,6 @@ class Formula
     #   regex /foo-(\d+(?:\.\d+)+)\.tar/
     # end</pre>
     def livecheck(&block)
-      @livecheck ||= Livecheck.new(self)
       return @livecheck unless block
 
       @livecheckable = true
@@ -3353,11 +3397,6 @@ class Formula
       link_overwrite_paths.merge(paths)
     end
 
-    # @private
-    def link_overwrite_paths
-      @link_overwrite_paths ||= Set.new
-    end
-
     # Permit links to certain libraries that don't exist. Available on Linux only.
     def ignore_missing_libraries(*libs)
       unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
@@ -3370,11 +3409,6 @@ class Formula
       end
 
       allowed_missing_libraries.merge(libraries)
-    end
-
-    # @private
-    def allowed_missing_libraries
-      @allowed_missing_libraries ||= Set.new
     end
   end
 end

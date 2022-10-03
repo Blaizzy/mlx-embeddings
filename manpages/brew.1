@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "BREW" "1" "August 2022" "Homebrew" "brew"
+.TH "BREW" "1" "September 2022" "Homebrew" "brew"
 .
 .SH "NAME"
 \fBbrew\fR \- The Missing Package Manager for macOS (or Linux)
@@ -154,12 +154,12 @@ Show Homebrew and system configuration info useful for debugging\. If you file a
 Show dependencies for \fIformula\fR\. Additional options specific to \fIformula\fR may be appended to the command\. When given multiple formula arguments, show the intersection of dependencies for each formula\.
 .
 .TP
-\fB\-n\fR
+\fB\-n\fR, \fB\-\-topological\fR
 Sort dependencies in topological order\.
 .
 .TP
-\fB\-\-1\fR
-Only show dependencies one level down, instead of recursing\.
+\fB\-1\fR, \fB\-\-direct\fR
+Show only the direct dependencies declared in the formula\.
 .
 .TP
 \fB\-\-union\fR
@@ -210,8 +210,8 @@ Mark any build, test, optional, or recommended dependencies as such in the outpu
 List dependencies for formulae that are currently installed\. If \fIformula\fR is specified, list only its dependencies that are currently installed\.
 .
 .TP
-\fB\-\-all\fR
-List dependencies for all available formulae\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to list their dependencies\.
 .
 .TP
 \fB\-\-for\-each\fR
@@ -226,7 +226,7 @@ Treat all named arguments as formulae\.
 Treat all named arguments as casks\.
 .
 .SS "\fBdesc\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR|\fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
-Display \fIformula\fR\'s name and one\-line description\. Formula descriptions are cached; the cache is created on the first search, making that search slower than subsequent ones\.
+Display \fIformula\fR\'s name and one\-line description\. The cache is created on the first search, making that search slower than subsequent ones\.
 .
 .TP
 \fB\-s\fR, \fB\-\-search\fR
@@ -239,6 +239,10 @@ Search just names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is in
 .TP
 \fB\-d\fR, \fB\-\-description\fR
 Search just descriptions for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to search their descriptions\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .TP
 \fB\-\-formula\fR
@@ -258,6 +262,9 @@ Control Homebrew\'s developer mode\. When developer mode is enabled, \fBbrew upd
 .P
 \fBbrew developer\fR (\fBon\fR|\fBoff\fR)
     Turn Homebrew\'s developer mode on or off respectively\.
+.
+.SS "\fBdocs\fR"
+Open Homebrew\'s online documentation (https://docs\.brew\.sh) in a browser\.
 .
 .SS "\fBdoctor\fR, \fBdr\fR [\fI\-\-list\-checks\fR] [\fI\-\-audit\-debug\fR] [\fIdiagnostic_check\fR \.\.\.]"
 Check your system for potential problems\. Will exit with a non\-zero status if any potential problems are found\. Please note that these warnings are just used to help the Homebrew maintainers with debugging if you file an issue\. If everything you use Homebrew for is working fine: please don\'t worry or file an issue; just ignore this\.
@@ -291,7 +298,7 @@ Do a verbose VCS checkout, if the URL represents a VCS\. This is useful for seei
 .
 .TP
 \fB\-\-retry\fR
-Retry if downloading fails or re\-download if the checksum of a previously cached version no longer matches\.
+Retry if downloading fails or re\-download if the checksum of a previously cached version no longer matches\. Tries at most 5 times with exponential backoff\.
 .
 .TP
 \fB\-\-deps\fR
@@ -381,8 +388,8 @@ Print a JSON representation\. Currently the default value for \fIversion\fR is \
 Print JSON of formulae that are currently installed\.
 .
 .TP
-\fB\-\-all\fR
-Print JSON of all available formulae\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to print their JSON\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .TP
 \fB\-\-variations\fR
@@ -653,8 +660,8 @@ Show all options on a single line separated by spaces\.
 Show options for formulae that are currently installed\.
 .
 .TP
-\fB\-\-all\fR
-Show options for all available formulae\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to show their options\.
 .
 .TP
 \fB\-\-command\fR
@@ -705,7 +712,7 @@ Pin the specified \fIformula\fR, preventing them from being upgraded when issuin
 .SS "\fBpostinstall\fR \fIinstalled_formula\fR [\.\.\.]"
 Rerun the post\-install steps for \fIformula\fR\.
 .
-.SS "\fBreadall\fR [\fI\-\-aliases\fR] [\fI\-\-syntax\fR] [\fItap\fR \.\.\.]"
+.SS "\fBreadall\fR [\fIoptions\fR] [\fItap\fR \.\.\.]"
 Import all items from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all items when making significant changes to \fBformula\.rb\fR, testing the performance of loading all items or checking if any current formulae/casks have Ruby issues\.
 .
 .TP
@@ -715,6 +722,10 @@ Verify any alias symlinks in each tap\.
 .TP
 \fB\-\-syntax\fR
 Syntax\-check all of Homebrew\'s Ruby files (if no \fB<tap>\fR is passed)\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .SS "\fBreinstall\fR [\fIoptions\fR] \fIformula\fR|\fIcask\fR [\.\.\.]"
 Uninstall and then reinstall a \fIformula\fR or \fIcask\fR using the same options it was originally installed with, plus any appended options specific to a \fIformula\fR\.
@@ -809,6 +820,10 @@ Search online and locally for casks\.
 Search for formulae with a description matching \fItext\fR and casks with a name or description matching \fItext\fR\.
 .
 .TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to search their descriptions\. Implied if HOMEBREW_EVAL_ALL is set\.
+.
+.TP
 \fB\-\-pull\-request\fR
 Search for GitHub pull requests containing \fItext\fR\.
 .
@@ -885,6 +900,10 @@ Migrate tapped formulae from symlink\-based to directory\-based structure\.
 .TP
 \fB\-\-list\-pinned\fR
 List all pinned taps\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all the formulae, casks and aliases in the new tap to check validity\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .SS "\fBtap\-info\fR [\fI\-\-installed\fR] [\fI\-\-json\fR] [\fItap\fR \.\.\.]"
 Show detailed information about one or more \fItap\fRs\.
@@ -1066,6 +1085,10 @@ Resolve more than one level of dependencies\.
 Only list formulae and casks that are currently installed\.
 .
 .TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to show their dependents\.
+.
+.TP
 \fB\-\-include\-build\fR
 Include all formulae that specify \fIformula\fR as \fB:build\fR type dependency\.
 .
@@ -1199,6 +1222,10 @@ Run additional, slower style checks that require a network connection\.
 .TP
 \fB\-\-installed\fR
 Only check formulae and casks that are currently installed\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to audit them\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .TP
 \fB\-\-new\fR
@@ -1412,7 +1439,7 @@ Ignore duplicate open PRs\.
 Create a pull request to update \fIformula\fR with a new URL or a new tag\.
 .
 .P
-If a \fIURL\fR is specified, the \fISHA\-256\fR checksum of the new download should also be specified\. A best effort to determine the \fISHA\-256\fR and \fIformula\fR name will be made if either or both values are not supplied by the user\.
+If a \fIURL\fR is specified, the \fISHA\-256\fR checksum of the new download should also be specified\. A best effort to determine the \fISHA\-256\fR will be made if not supplied by the user\.
 .
 .P
 If a \fItag\fR is specified, the Git commit \fIrevision\fR corresponding to that tag should also be specified\. A best effort to determine the \fIrevision\fR will be made if the value is not supplied by the user\.
@@ -1712,12 +1739,8 @@ Overwrite the destination formula if it already exists\.
 .SS "\fBformula\fR \fIformula\fR [\.\.\.]"
 Display the path where \fIformula\fR is located\.
 .
-.SS "\fBgenerate\-man\-completions\fR [\fI\-\-fail\-if\-not\-changed\fR]"
+.SS "\fBgenerate\-man\-completions\fR"
 Generate Homebrew\'s manpages and shell completions\.
-.
-.TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if no changes are detected in the manpage outputs\. This can be used to notify CI when the manpages are out of date\. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)\.
 .
 .SS "\fBinstall\-bundler\-gems\fR [\fI\-\-groups\fR\fB=\fR]"
 Install Homebrew\'s Bundler gems\.
@@ -1764,19 +1787,19 @@ If no formula or cask argument is passed, the list of formulae and casks to chec
 .
 .TP
 \fB\-\-full\-name\fR
-Print formulae/casks with fully\-qualified names\.
+Print formulae and casks with fully\-qualified names\.
 .
 .TP
 \fB\-\-tap\fR
-Check formulae/casks within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
+Check formulae and casks within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\fR\.
 .
 .TP
-\fB\-\-all\fR
-Check all available formulae/casks\.
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to check them\.
 .
 .TP
 \fB\-\-installed\fR
-Check formulae/casks that are currently installed\.
+Check formulae and casks that are currently installed\.
 .
 .TP
 \fB\-\-newer\-only\fR
@@ -1785,6 +1808,10 @@ Show the latest version only if it\'s newer than the formula/cask\.
 .TP
 \fB\-\-json\fR
 Output information in JSON format\.
+.
+.TP
+\fB\-r\fR, \fB\-\-resources\fR
+Also check resources for formulae\.
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
@@ -2011,9 +2038,6 @@ Use the standard \fBPATH\fR instead of superenv\'s when \fBstd\fR is passed\.
 \fB\-c\fR, \fB\-\-cmd\fR
 Execute commands in a non\-interactive shell\.
 .
-.SS "\fBsponsors\fR"
-Update the list of GitHub Sponsors in the \fBHomebrew/brew\fR README\.
-.
 .SS "\fBstyle\fR [\fIoptions\fR] [\fIfile\fR|\fItap\fR|\fIformula\fR|\fIcask\fR \.\.\.]"
 Check formulae or files for conformance to Homebrew style guidelines\.
 .
@@ -2140,16 +2164,12 @@ Silence all non\-critical errors\.
 Update RBI files\.
 .
 .TP
-\fB\-\-all\fR
-Regenerate all RBI files rather than just updated gems\.
+\fB\-\-update\-all\fR
+Update all RBI files rather than just updated gems\.
 .
 .TP
 \fB\-\-suggest\-typed\fR
 Try upgrading \fBtyped\fR sigils\.
-.
-.TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update\.
 .
 .TP
 \fB\-\-dir\fR
@@ -2175,8 +2195,12 @@ Use the specified bottle tag (e\.g\. \fBbig_sur\fR) instead of the current OS\.
 Skip getting analytics data and sort by number of dependents instead\.
 .
 .TP
-\fB\-\-all\fR
+\fB\-\-total\fR
 Print the number of unbottled and total formulae\.
+.
+.TP
+\fB\-\-eval\-all\fR
+Evaluate all available formulae and casks, whether installed or not, to check them\. Implied if HOMEBREW_EVAL_ALL is set\.
 .
 .SS "\fBunpack\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Unpack the source files for \fIformula\fR into subdirectories of the current working directory\.
@@ -2197,12 +2221,8 @@ Initialise a Git repository in the unpacked source\. This is useful for creating
 \fB\-f\fR, \fB\-\-force\fR
 Overwrite the destination directory if it already exists\.
 .
-.SS "\fBupdate\-license\-data\fR [\fI\-\-fail\-if\-not\-changed\fR]"
+.SS "\fBupdate\-license\-data\fR"
 Update SPDX license data in the Homebrew repository\.
-.
-.TP
-\fB\-\-fail\-if\-not\-changed\fR
-Return a failing status code if current license data\'s version is the same as the upstream\. This can be used to notify CI when the SPDX license data is out of date\.
 .
 .SS "\fBupdate\-maintainers\fR"
 Update the list of maintainers in the \fBHomebrew/brew\fR README\.
@@ -2237,6 +2257,9 @@ Include these additional packages when finding resources\.
 .TP
 \fB\-\-exclude\-packages\fR
 Exclude these packages when finding resources\.
+.
+.SS "\fBupdate\-sponsors\fR"
+Update the list of GitHub Sponsors in the \fBHomebrew/brew\fR README\.
 .
 .SS "\fBupdate\-test\fR [\fIoptions\fR]"
 Run a test of \fBbrew update\fR with a new repository clone\. If no options are passed, use \fBorigin/master\fR as the start commit\.
@@ -2653,6 +2676,10 @@ Don\'t pass \fB\-\-online\fR to \fBbrew audit\fR and skip \fBbrew livecheck\fR\.
 Don\'t test any dependents\.
 .
 .TP
+\fB\-\-skip\-livecheck\fR
+Don\'t test livecheck\.
+.
+.TP
 \fB\-\-skip\-recursive\-dependents\fR
 Only test the direct dependents\.
 .
@@ -2971,6 +2998,12 @@ Use this editor when editing a single formula, or several formulae in the same d
 \fIDefault:\fR \fB$EDITOR\fR or \fB$VISUAL\fR\.
 .
 .TP
+\fBHOMEBREW_EVAL_ALL\fR
+.
+.br
+If set, \fBbrew\fR commands evaluate all formulae and casks, executing their arbitrary code, by default without requiring \-\-eval\-all\. Required to cache formula and cask descriptions\.
+.
+.TP
 \fBHOMEBREW_FAIL_LOG_LINES\fR
 .
 .br
@@ -3194,6 +3227,15 @@ If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will nev
 .
 .br
 If set, \fBbrew install <formula>\fR will not upgrade \fB<formula>\fR if it is installed but outdated\.
+.
+.TP
+\fBHOMEBREW_PIP_INDEX_URL\fR
+.
+.br
+If set, \fBbrew install <formula>\fR will use this URL to download PyPI package resources\.
+.
+.IP
+\fIDefault:\fR \fBhttps://pypi\.org/simple\fR\.
 .
 .TP
 \fBHOMEBREW_PRY\fR

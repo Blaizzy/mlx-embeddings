@@ -74,7 +74,7 @@ module Homebrew
         test-bot:
           strategy:
             matrix:
-              os: [ubuntu-latest, macos-latest]
+              os: [ubuntu-22.04, macos-12]
           runs-on: ${{ matrix.os }}
           steps:
             - name: Set up Homebrew
@@ -119,7 +119,7 @@ module Homebrew
       jobs:
         pr-pull:
           if: contains(github.event.pull_request.labels.*.name, '#{label}')
-          runs-on: ubuntu-latest
+          runs-on: ubuntu-22.04
           steps:
             - name: Set up Homebrew
               uses: Homebrew/actions/setup-homebrew@master

@@ -24,7 +24,7 @@ describe FormulaInstaller do
 
     stub_formula_loader formula
     stub_formula_loader formula("gcc") { url "gcc-1.0" }
-    stub_formula_loader formula("gcc@5") { url "gcc-5.0" }
+    stub_formula_loader formula("gcc@11") { url "gcc-11.0" }
 
     fi = FormulaInstaller.new(formula)
     fi.fetch

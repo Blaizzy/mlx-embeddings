@@ -18,8 +18,8 @@ module Homebrew
         Create a pull request to update <formula> with a new URL or a new tag.
 
         If a <URL> is specified, the <SHA-256> checksum of the new download should also
-        be specified. A best effort to determine the <SHA-256> and <formula> name will
-        be made if either or both values are not supplied by the user.
+        be specified. A best effort to determine the <SHA-256> will be made if not supplied
+        by the user.
 
         If a <tag> is specified, the Git commit <revision> corresponding to that tag
         should also be specified. A best effort to determine the <revision> will be made
@@ -34,12 +34,8 @@ module Homebrew
       EOS
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
-      switch "--all",
-             description: "Read all formulae if necessary to determine URL.",
-             hidden:      true
       switch "--write-only",
              description: "Make the expected file modifications without taking any Git actions."
-      switch "--write", hidden: true
       switch "--commit",
              depends_on:  "--write-only",
              description: "When passed with `--write-only`, generate a new commit after writing changes " \
@@ -87,11 +83,9 @@ module Homebrew
                   description: "Exclude these Python packages when finding resources."
 
       conflicts "--dry-run", "--write-only"
-      conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--strict"
       conflicts "--no-audit", "--online"
       conflicts "--url", "--tag"
-      conflicts "--installed", "--all"
 
       named_args :formula, max: 1
     end
@@ -99,8 +93,6 @@ module Homebrew
 
   def bump_formula_pr
     args = bump_formula_pr_args.parse
-
-    odisabled "`brew bump-formula-pr --write`", "`brew bump-formula-pr --write-only`" if args.write?
 
     if args.revision.present? && args.tag.nil? && args.version.nil?
       raise UsageError, "`--revision` must be passed with either `--tag` or `--version`!"
@@ -114,9 +106,7 @@ module Homebrew
     ENV["BROWSER"] = Homebrew::EnvConfig.browser
 
     formula = args.named.to_formulae.first
-
     new_url = args.url
-    formula ||= determine_formula_from_url(new_url) if new_url.present?
     raise FormulaUnspecifiedError if formula.blank?
 
     odie "This formula is disabled!" if formula.disabled?
@@ -370,27 +360,6 @@ module Homebrew
       pr_message:       pr_message,
     }
     GitHub.create_bump_pr(pr_info, args: args)
-  end
-
-  def determine_formula_from_url(url)
-    # Split the new URL on / and find any formulae that have the same URL
-    # except for the last component, but don't try to match any more than the
-    # first five components since sometimes the last component isn't the only
-    # one to change.
-    url_split = url.split("/")
-    maximum_url_components_to_match = 5
-    components_to_match = [url_split.count - 1, maximum_url_components_to_match].min
-    base_url = url_split.first(components_to_match).join("/")
-    base_url = /#{Regexp.escape(base_url)}/
-    guesses = []
-    # TODO: 3.6.0: odeprecate not specifying args.all?
-    Formula.all.each do |f|
-      guesses << f if f.stable&.url&.match(base_url)
-    end
-    return guesses.shift if guesses.count == 1
-    return if guesses.count <= 1
-
-    odie "Couldn't guess formula for sure; could be one of these:\n#{guesses.map(&:name).join(", ")}"
   end
 
   def determine_mirror(url)

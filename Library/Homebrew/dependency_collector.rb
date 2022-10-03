@@ -26,8 +26,23 @@ class DependencyCollector
 
   sig { void }
   def initialize
+    # Ensure this is synced with `initialize_dup` and `freeze` (excluding simple objects like integers and booleans)
     @deps = Dependencies.new
     @requirements = Requirements.new
+
+    init_global_dep_tree_if_needed!
+  end
+
+  def initialize_dup(other)
+    super
+    @deps = @deps.dup
+    @requirements = @requirements.dup
+  end
+
+  def freeze
+    @deps.freeze
+    @requirements.freeze
+    super
   end
 
   def add(spec)
@@ -36,6 +51,11 @@ class DependencyCollector
       @deps << dep
     when Requirement
       @requirements << dep
+    when nil
+      # no-op when we have a nil value
+      nil
+    else
+      raise ArgumentError, "DependencyCollector#add passed something that isn't a Dependency or Requirement!"
     end
     dep
   end
@@ -57,13 +77,19 @@ class DependencyCollector
     parse_spec(spec, Array(tags))
   end
 
+  sig { params(related_formula_names: T::Array[String]).returns(T.nilable(Dependency)) }
+  def gcc_dep_if_needed(related_formula_names); end
+
+  sig { params(related_formula_names: T::Array[String]).returns(T.nilable(Dependency)) }
+  def glibc_dep_if_needed(related_formula_names); end
+
   def git_dep_if_needed(tags)
     return if Utils::Git.available?
 
     Dependency.new("git", tags)
   end
 
-  def brewed_curl_dep_if_needed(tags)
+  def curl_dep_if_needed(tags)
     Dependency.new("curl", tags)
   end
 
@@ -98,6 +124,9 @@ class DependencyCollector
   end
 
   private
+
+  sig { void }
+  def init_global_dep_tree_if_needed!; end
 
   def parse_spec(spec, tags)
     case spec
@@ -148,7 +177,7 @@ class DependencyCollector
     strategy = spec.download_strategy
 
     if strategy <= HomebrewCurlDownloadStrategy
-      @deps << brewed_curl_dep_if_needed(tags)
+      @deps << curl_dep_if_needed(tags)
       parse_url_spec(spec.url, tags)
     elsif strategy <= CurlDownloadStrategy
       parse_url_spec(spec.url, tags)

@@ -16,7 +16,7 @@ permissions:
 jobs:
   tapioca:
     if: github.repository == 'Homebrew/brew'
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -46,12 +46,13 @@ jobs:
           if git ls-remote --exit-code --heads origin "${BRANCH}"
           then
             git checkout "${BRANCH}"
-            git reset --hard origin/master
+            git checkout "${GITHUB_WORKSPACE}/Library/Homebrew/sorbet"
           else
             git checkout --no-track -B "${BRANCH}" origin/master
           fi
 
-          if brew typecheck --update --fail-if-not-changed
+          brew typecheck --update
+          if ! git diff --stat --exit-code "${GITHUB_WORKSPACE}/Library/Homebrew/sorbet"
           then
             git add "${GITHUB_WORKSPACE}/Library/Homebrew/sorbet"
             git commit -m "sorbet: Update RBI files." \

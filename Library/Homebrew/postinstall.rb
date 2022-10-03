@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+raise "#{__FILE__} must not be loaded via `require`." if $PROGRAM_NAME != __FILE__
+
 old_trap = trap("INT") { exit! 130 }
 
 require_relative "global"

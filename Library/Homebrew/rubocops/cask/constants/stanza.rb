@@ -55,6 +55,8 @@ module RuboCop
         end.freeze
 
       STANZA_ORDER = STANZA_GROUPS.flatten.freeze
+
+      ON_SYSTEM_METHODS = [:arm, :intel, *MacOSVersions::SYMBOLS.keys].map { |option| :"on_#{option}" }.freeze
     end
   end
 end

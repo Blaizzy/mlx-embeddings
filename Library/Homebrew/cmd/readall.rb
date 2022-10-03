@@ -3,6 +3,7 @@
 
 require "readall"
 require "cli/parser"
+require "env_config"
 
 module Homebrew
   extend T::Sig
@@ -22,6 +23,9 @@ module Homebrew
              description: "Verify any alias symlinks in each tap."
       switch "--syntax",
              description: "Syntax-check all of Homebrew's Ruby files (if no `<tap>` is passed)."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not. " \
+                          "Implied if HOMEBREW_EVAL_ALL is set."
 
       named_args :tap
     end
@@ -39,6 +43,9 @@ module Homebrew
 
     options = { aliases: args.aliases? }
     taps = if args.no_named?
+      if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+        odeprecated "brew readall", "brew readall --eval-all or HOMEBREW_EVAL_ALL"
+      end
       Tap
     else
       args.named.to_installed_taps

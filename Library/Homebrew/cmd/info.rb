@@ -58,9 +58,13 @@ module Homebrew
       switch "--installed",
              depends_on:  "--json",
              description: "Print JSON of formulae that are currently installed."
-      switch "--all",
+      switch "--eval-all",
              depends_on:  "--json",
-             description: "Print JSON of all available formulae."
+             description: "Evaluate all available formulae and casks, whether installed or not, to print their " \
+                          "JSON. Implied if HOMEBREW_EVAL_ALL is set."
+      switch "--all",
+             hidden:     true,
+             depends_on: "--json"
       switch "--variations",
              depends_on:  "--json",
              description: "Include the variations hash in each formula's JSON output."
@@ -71,6 +75,7 @@ module Homebrew
       switch "--cask", "--casks",
              description: "Treat all named arguments as casks."
 
+      conflicts "--installed", "--eval-all"
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
 
@@ -103,7 +108,13 @@ module Homebrew
 
       print_analytics(args: args)
     elsif args.json
-      print_json(args: args)
+      all = args.eval_all?
+      if !all && args.all? && !Homebrew::EnvConfig.eval_all?
+        odeprecated "brew info --all", "brew info --eval-all or HOMEBREW_EVAL_ALL"
+        all = true
+      end
+
+      print_json(all, args: args)
     elsif args.github?
       raise FormulaOrCaskUnspecifiedError if args.no_named?
 
@@ -187,15 +198,15 @@ module Homebrew
     version_hash[version]
   end
 
-  sig { params(args: CLI::Args).void }
-  def print_json(args:)
-    raise FormulaOrCaskUnspecifiedError if !(args.all? || args.installed?) && args.no_named?
+  sig { params(all: T::Boolean, args: CLI::Args).void }
+  def print_json(all, args:)
+    raise FormulaOrCaskUnspecifiedError if !(all || args.installed?) && args.no_named?
 
     json = case json_version(args.json)
     when :v1, :default
       raise UsageError, "cannot specify --cask with --json=v1!" if args.cask?
 
-      formulae = if args.all?
+      formulae = if all
         Formula.all.sort
       elsif args.installed?
         Formula.installed.sort
@@ -211,7 +222,7 @@ module Homebrew
         formulae.map(&:to_hash)
       end
     when :v2
-      formulae, casks = if args.all?
+      formulae, casks = if all
         [Formula.all.sort, Cask::Cask.all.sort_by(&:full_name)]
       elsif args.installed?
         [Formula.installed.sort, Cask::Caskroom.casks.sort_by(&:full_name)]

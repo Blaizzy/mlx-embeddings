@@ -24,17 +24,21 @@ module Homebrew
         `~/.brew_livecheck_watchlist`.
       EOS
       switch "--full-name",
-             description: "Print formulae/casks with fully-qualified names."
+             description: "Print formulae and casks with fully-qualified names."
       flag   "--tap=",
-             description: "Check formulae/casks within the given tap, specified as <user>`/`<repo>."
+             description: "Check formulae and casks within the given tap, specified as <user>`/`<repo>."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to check them."
       switch "--all",
-             description: "Check all available formulae/casks."
+             hidden: true
       switch "--installed",
-             description: "Check formulae/casks that are currently installed."
+             description: "Check formulae and casks that are currently installed."
       switch "--newer-only",
              description: "Show the latest version only if it's newer than the formula/cask."
       switch "--json",
              description: "Output information in JSON format."
+      switch "-r", "--resources",
+             description: "Also check resources for formulae."
       switch "-q", "--quiet",
              description: "Suppress warnings, don't print a progress bar for JSON output."
       switch "--formula", "--formulae",
@@ -43,7 +47,7 @@ module Homebrew
              description: "Only check casks."
 
       conflicts "--debug", "--json"
-      conflicts "--tap=", "--all", "--installed"
+      conflicts "--tap=", "--eval-all", "--installed"
       conflicts "--cask", "--formula"
 
       named_args [:formula, :cask]
@@ -52,6 +56,12 @@ module Homebrew
 
   def livecheck
     args = livecheck_args.parse
+
+    all = args.eval_all?
+    if args.all?
+      odeprecated "brew livecheck --all", "brew livecheck --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
+      all = true
+    end
 
     if args.debug? && args.verbose?
       puts args
@@ -67,7 +77,7 @@ module Homebrew
       formulae = args.cask? ? [] : Formula.installed
       casks = args.formula? ? [] : Cask::Caskroom.casks
       formulae + casks
-    elsif args.all?
+    elsif all
       formulae = args.cask? ? [] : Formula.all
       casks = args.formula? ? [] : Cask::Cask.all
       formulae + casks
@@ -93,6 +103,7 @@ module Homebrew
     else
       raise UsageError, "A watchlist file is required when no arguments are given."
     end
+
     formulae_and_casks_to_check = formulae_and_casks_to_check.sort_by do |formula_or_cask|
       formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
     end
@@ -103,6 +114,7 @@ module Homebrew
       json:                 args.json?,
       full_name:            args.full_name?,
       handle_name_conflict: !args.formula? && !args.cask?,
+      check_resources:      args.resources?,
       newer_only:           args.newer_only?,
       quiet:                args.quiet?,
       debug:                args.debug?,

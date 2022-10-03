@@ -69,7 +69,7 @@ module Homebrew
     end
 
     if args.linux?
-      runners << "ubuntu-latest"
+      runners << "ubuntu-22.04"
     elsif args.linux_self_hosted?
       runners << "linux-self-hosted-1"
     end

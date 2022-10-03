@@ -50,7 +50,7 @@ module Homebrew
 
         if args.test?
           result.display_test_output(strict: args.strict?)
-          Homebrew.failed = true if result.broken_library_linkage?(strict: args.strict?)
+          Homebrew.failed = true if result.broken_library_linkage?(test: true, strict: args.strict?)
         elsif args.reverse?
           result.display_reverse_output
         else

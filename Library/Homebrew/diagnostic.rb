@@ -591,7 +591,11 @@ module Homebrew
 
       def check_coretap_integrity
         coretap = CoreTap.instance
-        return if !coretap.installed? && EnvConfig.install_from_api?
+        unless coretap.installed?
+          return if EnvConfig.install_from_api?
+
+          CoreTap.ensure_installed!
+        end
 
         broken_tap(coretap) || examine_git_origin(coretap.path, Homebrew::EnvConfig.core_git_remote)
       end
@@ -1045,11 +1049,11 @@ module Homebrew
         when :quarantine_available
           nil
         when :xattr_broken
-          "There's no working version of `xattr` on this system."
+          "No Cask quarantine support available: there's no working version of `xattr` on this system."
         when :no_swift
-          "Swift is not available on this system."
+          "No Cask quarantine support available: there's no available version of `swift` on this system."
         else
-          "Unknown support status"
+          "No Cask quarantine support available: unknown reason."
         end
       end
 

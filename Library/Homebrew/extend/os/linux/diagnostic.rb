@@ -139,6 +139,35 @@ module Homebrew
           e.g. by using homebrew instead).
         EOS
       end
+
+      def check_gcc_dependent_linkage
+        gcc_dependents = Formula.installed.select do |formula|
+          next false unless formula.tap&.core_tap?
+
+          # FIXME: This includes formulae that have no runtime dependency on GCC.
+          formula.recursive_dependencies.map(&:name).include? "gcc"
+        rescue TapFormulaUnavailableError
+          false
+        end
+        return if gcc_dependents.empty?
+
+        badly_linked = gcc_dependents.select do |dependent|
+          keg = Keg.new(dependent.prefix)
+          keg.binary_executable_or_library_files.any? do |binary|
+            paths = binary.rpaths
+            versioned_linkage = paths.any? { |path| path.match?(%r{lib/gcc/\d+$}) }
+            unversioned_linkage = paths.any? { |path| path.match?(%r{lib/gcc/current$}) }
+
+            versioned_linkage && !unversioned_linkage
+          end
+        end
+        return if badly_linked.empty?
+
+        inject_file_list badly_linked, <<~EOS
+          Formulae which link to GCC through a versioned path were found. These formulae
+          are prone to breaking when GCC is updated. You should `brew reinstall` these formulae:
+        EOS
+      end
     end
   end
 end

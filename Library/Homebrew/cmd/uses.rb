@@ -30,9 +30,11 @@ module Homebrew
              description: "Resolve more than one level of dependencies."
       switch "--installed",
              description: "Only list formulae and casks that are currently installed."
+      switch "--eval-all",
+             description: "Evaluate all available formulae and casks, whether installed or not, to show " \
+                          "their dependents."
       switch "--all",
-             description: "List all formulae and casks whether installed or not.",
-             hidden:      true
+             hidden: true
       switch "--include-build",
              description: "Include all formulae that specify <formula> as `:build` type dependency."
       switch "--include-test",
@@ -88,8 +90,6 @@ module Homebrew
     show_formulae_and_casks = !args.formula? && !args.cask?
     includes, ignores = args_includes_ignores(args)
 
-    # TODO: 3.6.0: odeprecate not specifying args.all?, require args.installed?
-
     deps = []
     if use_runtime_dependents
       if show_formulae_and_casks || args.formula?
@@ -106,6 +106,18 @@ module Homebrew
 
       deps
     else
+      all = args.eval_all?
+      if args.all?
+        unless all
+          odeprecated "brew uses --all",
+                      "brew uses --eval-all or HOMEBREW_EVAL_ALL"
+        end
+        all = true
+      end
+
+      if !args.installed? && !(all || Homebrew::EnvConfig.eval_all?)
+        odeprecated "brew uses", "brew uses --eval-all or HOMEBREW_EVAL_ALL"
+      end
       if show_formulae_and_casks || args.formula?
         deps += args.installed? ? Formula.installed : Formula.all
       end

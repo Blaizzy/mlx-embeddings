@@ -7,6 +7,7 @@ if ENV["HOMEBREW_STACKPROF"]
 end
 
 raise "HOMEBREW_BREW_FILE was not exported! Please call bin/brew directly!" unless ENV["HOMEBREW_BREW_FILE"]
+raise "#{__FILE__} must not be loaded via `require`." if $PROGRAM_NAME != __FILE__
 
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
@@ -86,7 +87,8 @@ begin
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
-    if Commands::INSTALL_FROM_API_FORBIDDEN_COMMANDS.include?(cmd) && Homebrew::EnvConfig.install_from_api?
+    if Commands::INSTALL_FROM_API_FORBIDDEN_COMMANDS.include?(cmd) &&
+       Homebrew::EnvConfig.install_from_api? && !Homebrew::EnvConfig.developer?
       odie "This command cannot be run while HOMEBREW_INSTALL_FROM_API is set!"
     end
 
@@ -120,8 +122,9 @@ begin
     # Unset HOMEBREW_HELP to avoid confusing the tap
     with_env HOMEBREW_HELP: nil do
       tap_commands = []
-      cgroup = Utils.popen_read("cat", "/proc/1/cgroup")
-      if %w[azpl_job actions_job docker garden kubepods].none? { |container| cgroup.include?(container) }
+      if File.exist?("/.dockerenv") ||
+         ((cgroup = Utils.popen_read("cat", "/proc/1/cgroup").presence) &&
+          %w[azpl_job actions_job docker garden kubepods].none? { |type| cgroup.include?(type) })
         brew_uid = HOMEBREW_BREW_FILE.stat.uid
         tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
       end

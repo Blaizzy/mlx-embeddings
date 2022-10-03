@@ -150,7 +150,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first[:message]).to match <<~EOS
+        expect(fa.problems.first[:message]).to eq <<~EOS
           Formula foo contains deprecated SPDX licenses: ["GPL-1.0"].
           You may need to add `-only` or `-or-later` for GNU licenses (e.g. `GPL`, `LGPL`, `AGPL`, `GFDL`).
           For a list of valid licenses check: https://spdx.org/licenses/
@@ -196,7 +196,7 @@ module Homebrew
         RUBY
 
         fa.audit_license
-        expect(fa.problems.first[:message]).to match <<~EOS
+        expect(fa.problems.first[:message]).to eq <<~EOS
           Formula foo contains deprecated SPDX licenses: ["GPL-1.0"].
           You may need to add `-only` or `-or-later` for GNU licenses (e.g. `GPL`, `LGPL`, `AGPL`, `GFDL`).
           For a list of valid licenses check: https://spdx.org/licenses/
