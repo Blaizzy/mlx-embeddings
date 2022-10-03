@@ -2130,7 +2130,7 @@ class Formula
         "used_options"            => tab.used_options.as_flags,
         "built_as_bottle"         => tab.built_as_bottle,
         "poured_from_bottle"      => tab.poured_from_bottle,
-        "time"                    => Time.at(tab.time).strftime("%Y-%m-%d %H:%M:%S"),
+        "time"                    => tab.time,
         "runtime_dependencies"    => tab.runtime_dependencies,
         "installed_as_dependency" => tab.installed_as_dependency,
         "installed_on_request"    => tab.installed_on_request,
