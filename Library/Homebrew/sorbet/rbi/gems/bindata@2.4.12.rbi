@@ -456,9 +456,6 @@ class BinData::DelayedIO < ::BinData::Base
   def do_num_bytes; end
   def do_read(io); end
   def do_write(io); end
-  def eval_parameter(key, overrides = T.unsafe(nil)); end
-  def eval_parameter_with_delayed_io(key, overrides = T.unsafe(nil)); end
-  def eval_parameter_without_delayed_io(key, overrides = T.unsafe(nil)); end
   def include_obj?; end
   def initialize_instance; end
   def method_missing(symbol, *args, &block); end
@@ -1037,6 +1034,7 @@ class BinData::Struct < ::BinData::Base
   def find_index_of(obj); end
   def find_obj_for_name(name); end
   def include_obj?(obj); end
+  def include_obj_for_io?(obj); end
   def instantiate_all_objs; end
   def instantiate_obj_at(index); end
   def sum_num_bytes_below_index(index); end
