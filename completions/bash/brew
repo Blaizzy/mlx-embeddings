@@ -1112,6 +1112,7 @@ _brew_instal() {
       --debug-symbols
       --dictionarydir
       --display-times
+      --dry-run
       --fetch-HEAD
       --fontdir
       --force
@@ -1171,6 +1172,7 @@ _brew_install() {
       --debug-symbols
       --dictionarydir
       --display-times
+      --dry-run
       --fetch-HEAD
       --fontdir
       --force
