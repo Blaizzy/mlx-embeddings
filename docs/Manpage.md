@@ -329,6 +329,8 @@ is already installed but outdated.
   Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask).
 * `-v`, `--verbose`:
   Print the verification and postinstall steps.
+* `-n`, `--dry-run`:
+  Show what would be installed, but do not actually install anything.
 * `--formula`:
   Treat all named arguments as formulae.
 * `--ignore-dependencies`:
