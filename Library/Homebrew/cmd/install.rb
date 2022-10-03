@@ -45,6 +45,8 @@ module Homebrew
                           "(binaries and symlinks are excluded, unless originally from the same cask)."
       switch "-v", "--verbose",
              description: "Print the verification and postinstall steps."
+      switch "-n", "--dry-run",
+             description: "Show what would be installed, but do not actually install anything."
       [
         [:switch, "--formula", "--formulae", {
           description: "Treat all named arguments as formulae.",
@@ -193,6 +195,7 @@ module Homebrew
         skip_cask_deps: args.skip_cask_deps?,
         quarantine:     args.quarantine?,
         quiet:          args.quiet?,
+        dry_run:        args.dry_run?,
       )
     end
 
@@ -242,6 +245,7 @@ module Homebrew
       debug:                      args.debug?,
       quiet:                      args.quiet?,
       verbose:                    args.verbose?,
+      dry_run:                    args.dry_run?,
     )
 
     Upgrade.check_installed_dependents(
@@ -257,9 +261,10 @@ module Homebrew
       debug:                      args.debug?,
       quiet:                      args.quiet?,
       verbose:                    args.verbose?,
+      dry_run:                    args.dry_run?,
     )
 
-    Cleanup.periodic_clean!
+    Cleanup.periodic_clean!(dry_run: args.dry_run?)
 
     Homebrew.messages.display_messages(display_times: args.display_times?)
   rescue FormulaUnreadableError, FormulaClassUnavailableError,

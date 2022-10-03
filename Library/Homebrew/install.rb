@@ -278,10 +278,11 @@ module Homebrew
       overwrite: false,
       debug: false,
       quiet: false,
-      verbose: false
+      verbose: false,
+      dry_run: false
     )
       formula_installers = formulae_to_install.map do |f|
-        Migrator.migrate_if_needed(f, force: force)
+        Migrator.migrate_if_needed(f, force: force, dry_run: dry_run)
         build_options = f.build
 
         fi = FormulaInstaller.new(
@@ -307,8 +308,10 @@ module Homebrew
         )
 
         begin
-          fi.prelude
-          fi.fetch
+          unless dry_run
+            fi.prelude
+            fi.fetch
+          end
           fi
         rescue CannotInstallFormulaError => e
           ofail e.message
@@ -318,6 +321,20 @@ module Homebrew
           nil
         end
       end.compact
+
+      if dry_run
+        if (formulae_name_to_install = formulae_to_install.map(&:name))
+          plural = "formula".pluralize(formulae_name_to_install.count)
+          ohai "Would install #{formulae_name_to_install.count} #{plural}:"
+          puts formulae_name_to_install.join(" ")
+
+          formula_installers.each do |fi|
+            f = fi.formula
+            print_dry_run_dependencies(f, fi.compute_dependencies, &:name)
+          end
+        end
+        return
+      end
 
       formula_installers.each do |fi|
         install_formula(fi)
@@ -333,6 +350,15 @@ module Homebrew
       Upgrade.install_formula(formula_installer, upgrade: upgrade)
     end
     private_class_method :install_formula
+
+    def print_dry_run_dependencies(formula, dependencies, &block)
+      return if dependencies.empty?
+
+      plural = "dependency".pluralize(dependencies.count)
+      ohai "Would install #{dependencies.count} #{plural} for #{formula.name}:"
+      formula_names = dependencies.map(&:first).map(&:to_formula).map(&block)
+      puts formula_names.join(" ")
+    end
   end
 end
 

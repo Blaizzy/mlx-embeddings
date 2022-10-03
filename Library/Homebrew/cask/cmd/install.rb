@@ -56,7 +56,8 @@ module Cask
         require_sha: nil,
         quarantine: nil,
         quiet: nil,
-        zap: nil
+        zap: nil,
+        dry_run: nil
       )
         odie "Installing casks is supported only on macOS" unless OS.mac?
 
@@ -72,6 +73,27 @@ module Cask
         }.compact
 
         options[:quarantine] = true if options[:quarantine].nil?
+
+        if dry_run
+          if (casks_to_install = casks.reject(&:installed?).presence)
+            plural = "cask".pluralize(casks_to_install.count)
+            ohai "Would install #{casks_to_install.count} #{plural}:"
+            puts casks_to_install.map(&:full_name).join(" ")
+          end
+          casks.each do |cask|
+            dep_names = CaskDependent.new(cask)
+                                     .runtime_dependencies
+                                     .reject(&:installed?)
+                                     .map(&:to_formula)
+                                     .map(&:name)
+            next if dep_names.blank?
+
+            plural = "dependency".pluralize(dep_names.count)
+            ohai "Would install #{dep_names.count} #{plural} for #{cask.full_name}:"
+            puts dep_names.join(" ")
+          end
+          return
+        end
 
         require "cask/installer"
 
