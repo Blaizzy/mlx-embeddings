@@ -12,7 +12,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/activesupport-6.1.7/l
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/public_suffix-5.0.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/addressable-2.8.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/ast-2.4.2/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/bindata-2.4.11/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/bindata-2.4.12/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/universal-darwin-21/2.6.0/msgpack-1.6.0"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/msgpack-1.6.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/extensions/universal-darwin-21/2.6.0/bootsnap-1.13.0"
