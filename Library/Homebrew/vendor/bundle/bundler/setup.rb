@@ -7,7 +7,7 @@ $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/concurrent-ruby-1.1.1
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/i18n-1.12.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/minitest-5.16.3/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/tzinfo-2.0.5/lib"
-$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/zeitwerk-2.6.0/lib"
+$:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/zeitwerk-2.6.1/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/activesupport-6.1.7/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/public_suffix-5.0.0/lib"
 $:.unshift "#{path}/../#{ruby_engine}/#{ruby_version}/gems/addressable-2.8.1/lib"
