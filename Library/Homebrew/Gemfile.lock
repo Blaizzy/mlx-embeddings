@@ -198,7 +198,7 @@ GEM
     yard-sorbet (0.6.1)
       sorbet-runtime (>= 0.5)
       yard (>= 0.9)
-    zeitwerk (2.6.0)
+    zeitwerk (2.6.1)
 
 PLATFORMS
   ruby
