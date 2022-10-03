@@ -6,14 +6,14 @@ The `brew livecheck` command finds the newest version of a formula or cask's sof
 
 When livecheck isn't given instructions for how to check for upstream versions, it does the following by default:
 
-1. For formulae: Collect the `head`, `stable`, and `homepage` URLs, in that order. For casks: Collect the `url` and `homepage` URLs, in that order.
+1. For formulae: Collect the `stable`, `head`, and `homepage` URLs, in that order (resources simply use their `url`). For casks: Collect the `url` and `homepage` URLs, in that order.
 1. Determine if any strategies apply to the first URL. If not, try the next URL.
 1. If a strategy can be applied, use it to check for new versions.
 1. Return the newest version (or an error if versions could not be found at any available URLs).
 
 It's sometimes necessary to override this default behavior to create a working check. If a source doesn't provide the newest version, we need to check a different one. If livecheck doesn't correctly match version text, we need to provide an appropriate regex or `strategy` block.
 
-This can be accomplished by adding a `livecheck` block to the formula/cask. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
+This can be accomplished by adding a `livecheck` block to the formula/cask/resource. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
 
 ## Creating a check
 
