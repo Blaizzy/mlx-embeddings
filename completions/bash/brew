@@ -1112,6 +1112,7 @@ _brew_instal() {
       --debug-symbols
       --dictionarydir
       --display-times
+      --dry-run
       --fetch-HEAD
       --fontdir
       --force
@@ -1171,6 +1172,7 @@ _brew_install() {
       --debug-symbols
       --dictionarydir
       --display-times
+      --dry-run
       --fetch-HEAD
       --fontdir
       --force
@@ -1261,6 +1263,7 @@ _brew_lc() {
       --json
       --newer-only
       --quiet
+      --resources
       --tap
       --verbose
       "
@@ -1375,6 +1378,7 @@ _brew_livecheck() {
       --json
       --newer-only
       --quiet
+      --resources
       --tap
       --verbose
       "

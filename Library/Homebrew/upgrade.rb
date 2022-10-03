@@ -94,22 +94,6 @@ module Homebrew
                                                 .map { |k| Keg.new(k.resolved_path) }
     end
 
-    def print_dry_run_dependencies(formula, fi_deps)
-      return if fi_deps.empty?
-
-      plural = "dependency".pluralize(fi_deps.count)
-      ohai "Would upgrade #{fi_deps.count} #{plural} for #{formula.full_specified_name}:"
-      formulae_upgrades = fi_deps.map(&:first).map(&:to_formula).map do |f|
-        name = f.full_specified_name
-        if f.optlinked?
-          "#{name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
-        else
-          "#{name} #{f.pkg_version}"
-        end
-      end
-      puts formulae_upgrades.join(", ")
-    end
-
     def print_upgrade_message(formula, fi_options)
       version_upgrade = if formula.optlinked?
         "#{Keg.new(formula.opt_prefix).version} -> #{formula.pkg_version}"
@@ -178,7 +162,14 @@ module Homebrew
       formula = formula_installer.formula
 
       if dry_run
-        print_dry_run_dependencies(formula, formula_installer.compute_dependencies)
+        Install.print_dry_run_dependencies(formula, formula_installer.compute_dependencies) do |f|
+          name = f.full_specified_name
+          if f.optlinked?
+            "#{name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"
+          else
+            "#{name} #{f.pkg_version}"
+          end
+        end
         return
       end
 

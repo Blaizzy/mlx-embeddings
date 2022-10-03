@@ -983,6 +983,7 @@ _brew_instal() {
     '(--cask)--debug-symbols[Generate debug symbols on build. Source will be retained in a cache directory. ]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
     '(--cask)--display-times[Print install times for each package at the end of the run]' \
+    '--dry-run[Show what would be installed, but do not actually install anything]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
@@ -1037,6 +1038,7 @@ _brew_install() {
     '(--cask)--debug-symbols[Generate debug symbols on build. Source will be retained in a cache directory. ]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
     '(--cask)--display-times[Print install times for each package at the end of the run]' \
+    '--dry-run[Show what would be installed, but do not actually install anything]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
@@ -1107,6 +1109,7 @@ _brew_lc() {
     '(--debug)--json[Output information in JSON format]' \
     '--newer-only[Show the latest version only if it'\''s newer than the formula/cask]' \
     '--quiet[Suppress warnings, don'\''t print a progress bar for JSON output]' \
+    '--resources[Also check resources for formulae]' \
     '(--eval-all --installed)--tap[Check formulae and casks within the given tap, specified as user`/`repo]' \
     '--verbose[Make some output more verbose]' \
     - formula \
@@ -1192,6 +1195,7 @@ _brew_livecheck() {
     '(--debug)--json[Output information in JSON format]' \
     '--newer-only[Show the latest version only if it'\''s newer than the formula/cask]' \
     '--quiet[Suppress warnings, don'\''t print a progress bar for JSON output]' \
+    '--resources[Also check resources for formulae]' \
     '(--eval-all --installed)--tap[Check formulae and casks within the given tap, specified as user`/`repo]' \
     '--verbose[Make some output more verbose]' \
     - formula \
