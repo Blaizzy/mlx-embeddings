@@ -67,7 +67,7 @@ describe Homebrew::CLI::NamedArgs do
   end
 
   describe "#to_formulae_and_casks" do
-    it "returns formulae and casks" do
+    it "returns formulae and casks", :dev_on_linux do
       stub_formula_loader foo, call_original: true
       stub_cask_loader baz, call_original: true
 
@@ -118,7 +118,13 @@ describe Homebrew::CLI::NamedArgs do
       expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaOrCaskUnavailableError)
     end
 
-    it "returns formula when formula is present and cask is unreadable" do
+    it "raises an error when formula is absent and cask is available on linux", :needs_linux do
+      stub_cask_loader foo_cask
+
+      expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(FormulaUnavailableError)
+    end
+
+    it "returns formula when formula is present and cask is unreadable", :dev_on_linux do
       stub_formula_loader foo
       setup_unredable_cask "foo"
 
@@ -126,7 +132,7 @@ describe Homebrew::CLI::NamedArgs do
       expect { described_class.new("foo").to_formulae_and_casks }.to output(/Failed to load cask: foo/).to_stderr
     end
 
-    it "returns cask when formula is unreadable and cask is present" do
+    it "returns cask when formula is unreadable and cask is present", :dev_on_linux do
       setup_unredable_formula "foo"
       stub_cask_loader foo_cask
 
@@ -134,7 +140,7 @@ describe Homebrew::CLI::NamedArgs do
       expect { described_class.new("foo").to_formulae_and_casks }.to output(/Failed to load formula: foo/).to_stderr
     end
 
-    it "raises an error when formula is absent and cask is unreadable" do
+    it "raises an error when formula is absent and cask is unreadable", :dev_on_linux do
       setup_unredable_cask "foo"
 
       expect { described_class.new("foo").to_formulae_and_casks }.to raise_error(Cask::CaskUnreadableError)
@@ -156,7 +162,7 @@ describe Homebrew::CLI::NamedArgs do
   end
 
   describe "#to_resolved_formulae_to_casks" do
-    it "returns resolved formulae, as well as casks" do
+    it "returns resolved formulae, as well as casks", :dev_on_linux do
       allow(Formulary).to receive(:resolve).and_call_original
       allow(Formulary).to receive(:resolve).with("foo", any_args).and_return foo
       stub_cask_loader baz, call_original: true
@@ -245,7 +251,7 @@ describe Homebrew::CLI::NamedArgs do
       (HOMEBREW_CELLAR/"foo/1.0").mkpath
     end
 
-    it "returns kegs, as well as casks" do
+    it "returns kegs, as well as casks", :dev_on_linux do
       stub_cask_loader baz, call_original: true
 
       kegs, casks = described_class.new("foo", "baz").to_kegs_to_casks
@@ -279,7 +285,7 @@ describe Homebrew::CLI::NamedArgs do
       allow(Cask::CaskLoader).to receive(:path).and_call_original
     end
 
-    it "returns taps, cask formula and existing paths" do
+    it "returns taps, cask formula and existing paths", :dev_on_linux do
       expect(Formulary).to receive(:path).with("foo").and_return(formula_path)
       expect(Cask::CaskLoader).to receive(:path).with("baz").and_return(cask_path)
 
@@ -287,7 +293,7 @@ describe Homebrew::CLI::NamedArgs do
         .to eq [Tap.fetch("homebrew/core").path, formula_path, cask_path, existing_path]
     end
 
-    it "returns both cask and formula paths if they exist" do
+    it "returns both cask and formula paths if they exist", :dev_on_linux do
       expect(Formulary).to receive(:path).with("foo").and_return(formula_path)
       expect(Cask::CaskLoader).to receive(:path).with("baz").and_return(cask_path)
 
@@ -304,6 +310,12 @@ describe Homebrew::CLI::NamedArgs do
       expect(Cask::CaskLoader).to receive(:path).with("foo").and_return(cask_path)
 
       expect(described_class.new("foo", "baz").to_paths(only: :cask)).to eq [cask_path, Cask::CaskLoader.path("baz")]
+    end
+
+    it "returns only formulae by default on linux", :needs_linux do
+      expect(Formulary).to receive(:path).with("foo").and_return(formula_path)
+
+      expect(described_class.new("foo", "baz").to_paths).to eq [formula_path, Formulary.path("baz")]
     end
   end
 

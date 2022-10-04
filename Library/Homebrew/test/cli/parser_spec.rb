@@ -562,4 +562,20 @@ describe Homebrew::CLI::Parser do
       expect { parser.parse(["--not-a-command"]) }.to raise_error(OptionParser::InvalidOption, /--not-a-command/)
     end
   end
+
+  describe "--cask on linux", :needs_linux do
+    subject(:parser) do
+      described_class.new do
+        switch "--cask"
+      end
+    end
+
+    it "throws an error by default" do
+      expect { parser.parse(["--cask"]) }.to raise_error UsageError, /Casks are not supported on Linux/
+    end
+
+    it "only warns developers", :dev_on_linux do
+      expect { parser.parse(["--cask"]) }.not_to raise_error
+    end
+  end
 end
