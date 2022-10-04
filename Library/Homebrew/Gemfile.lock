@@ -10,7 +10,7 @@ GEM
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
-    bindata (2.4.11)
+    bindata (2.4.12)
     bootsnap (1.13.0)
       msgpack (~> 1.2)
     byebug (11.1.3)
