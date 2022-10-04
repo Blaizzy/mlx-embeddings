@@ -96,7 +96,6 @@ module Homebrew
       end
 
       def only_formula_or_cask
-        return :formula if OS.linux? && !Homebrew::EnvConfig.developer?
         return :formula if formula? && !cask?
         return :cask if cask? && !formula?
       end
@@ -153,3 +152,5 @@ module Homebrew
     end
   end
 end
+
+require "extend/os/args"
