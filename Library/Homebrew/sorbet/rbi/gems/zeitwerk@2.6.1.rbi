@@ -133,7 +133,7 @@ module Zeitwerk::Loader::Config
   def collapse(*glob_patterns); end
   def collapse_dirs; end
   def collapse_glob_patterns; end
-  def dirs; end
+  def dirs(namespaces: T.unsafe(nil)); end
   def do_not_eager_load(*paths); end
   def eager_load_exclusions; end
   def enable_reloading; end

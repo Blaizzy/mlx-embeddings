@@ -5,18 +5,19 @@ require "securerandom"
 
 module Zeitwerk::Loader::Config
   # Absolute paths of the root directories. Stored in a hash to preserve
-  # order, easily handle duplicates, and also be able to have a fast lookup,
-  # needed for detecting nested paths.
+  # order, easily handle duplicates, have a fast lookup needed for detecting
+  # nested paths, and store custom namespaces as values.
   #
-  #   "/Users/fxn/blog/app/assets"   => true,
-  #   "/Users/fxn/blog/app/channels" => true,
+  #   "/Users/fxn/blog/app/assets"   => Object,
+  #   "/Users/fxn/blog/app/channels" => Object,
+  #   "/Users/fxn/blog/adapters"     => ActiveJob::QueueAdapters,
   #   ...
   #
   # This is a private collection maintained by the loader. The public
   # interface for it is `push_dir` and `dirs`.
   #
   # @private
-  # @sig Hash[String, true]
+  # @sig Hash[String, Module]
   attr_reader :root_dirs
 
   # @sig #camelize
@@ -136,12 +137,20 @@ module Zeitwerk::Loader::Config
     @tag = tag.to_s
   end
 
-  # Absolute paths of the root directories. This is a read-only collection,
-  # please push here via `push_dir`.
+  # If `namespaces` is falsey (default), returns an array with the absolute
+  # paths of the root directories as strings. If truthy, returns a hash table
+  # instead. Keys are the absolute paths of the root directories as strings,
+  # values are their corresponding namespaces, class or module objects.
   #
-  # @sig () -> Array[String]
-  def dirs
-    root_dirs.keys.freeze
+  # These are read-only collections, please add to them with `push_dir`.
+  #
+  # @sig () -> Array[String] | Hash[String, Module]
+  def dirs(namespaces: false)
+    if namespaces
+      root_dirs.clone
+    else
+      root_dirs.keys
+    end.freeze
   end
 
   # You need to call this method before setup in order to be able to reload.
