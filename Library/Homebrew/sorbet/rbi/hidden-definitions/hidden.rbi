@@ -2686,18 +2686,6 @@ class Homebrew::FormulaCreator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Homebrew::Livecheck::Strategy::ExtractPlist::Item
-  def short_version(*args, &block); end
-
-  def version(*args, &block); end
-end
-
-class Homebrew::Livecheck::Strategy::ExtractPlist::Item
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
 class Homebrew::Livecheck::Strategy::Sparkle::Item
   def nice_version(*args, &block); end
 
@@ -2740,7 +2728,6 @@ module Homebrew
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
   extend ::FileUtils::StreamUtils_
-  extend ::Homebrew::Search::Extension
 end
 
 module HostEnvironmentSimulatorHelper
@@ -3543,12 +3530,10 @@ class Object
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
-  COMMAND_DESC_WIDTH = ::T.let(nil, ::T.untyped)
   CROSS_COMPILING = ::T.let(nil, ::T.untyped)
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
   FORMULA_COMPONENT_PRECEDENCE_LIST = ::T.let(nil, ::T.untyped)
-  HIDDEN_DESC_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLES_EXTNAME_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
   HOMEBREW_BREWED_CURL_PATH = ::T.let(nil, ::T.untyped)
@@ -3601,8 +3586,6 @@ class Object
   LINUXBREW_CORE_MIGRATION_LIST = ::T.let(nil, ::T.untyped)
   OFFICIAL_CASK_TAPS = ::T.let(nil, ::T.untyped)
   OFFICIAL_CMD_TAPS = ::T.let(nil, ::T.untyped)
-  OPTION_DESC_WIDTH = ::T.let(nil, ::T.untyped)
-  ORIGINAL_PATHS = ::T.let(nil, ::T.untyped)
   OS_VERSION = ::T.let(nil, ::T.untyped)
   PATCH_A_CONTENTS = ::T.let(nil, ::T.untyped)
   PATCH_A_SHA256 = ::T.let(nil, ::T.untyped)
@@ -3632,7 +3615,6 @@ class Object
   TESTBALL_PATCHES_URL = ::T.let(nil, ::T.untyped)
   TESTBALL_SHA256 = ::T.let(nil, ::T.untyped)
   TESTBALL_URL = ::T.let(nil, ::T.untyped)
-  TEST_DIRECTORIES = ::T.let(nil, ::T.untyped)
   TEST_FIXTURE_DIR = ::T.let(nil, ::T.untyped)
   TEST_SHA1 = ::T.let(nil, ::T.untyped)
   TEST_SHA256 = ::T.let(nil, ::T.untyped)
@@ -4173,22 +4155,6 @@ class RSpec::Expectations::MultipleExpectationsNotMetError
   include ::RSpec::Core::MultipleExceptionError::InterfaceTag
 end
 
-module RSpec::Matchers
-  def a_json_string(*expected, &block_arg); end
-
-  def a_string_containing(*args, &block); end
-
-  def array_including_cons(*expected, &block_arg); end
-
-  def be_a_failure(*args, &block); end
-
-  def have_failed(*args, &block); end
-
-  def not_raise_error(*args, &block); end
-
-  def not_to_output(*args, &block); end
-end
-
 module Racc
   Racc_No_Extensions = ::T.let(nil, ::T.untyped)
 end
@@ -4221,10 +4187,6 @@ end
 
 module Readline
   def self.completion_quote_character(); end
-end
-
-class ReporterHub
-  def empty?(*args, &block); end
 end
 
 class Requirements
