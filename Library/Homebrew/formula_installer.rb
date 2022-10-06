@@ -268,12 +268,18 @@ class FormulaInstaller
 
       if message
         message += <<~EOS
-          You can try to install from source with:
+          If you're feeling brave, you can try to install from source with:
             brew install --build-from-source #{formula}
-          Please note building from source is unsupported. You will encounter build
-          failures with some formulae. If you experience any issues please create pull
-          requests instead of asking for help on Homebrew's GitHub, Twitter or any other
-          official channels.
+
+          It is expected behaviour that most formulae will fail to build from source.
+          It is expected behaviour that Homebrew will be buggy and slow when building from source.
+          Do not create any issues about failures building from source on Homebrew's GitHub repositories.
+          Do not create any issues building from source even if you think this message is unrelated.
+          Any opened issues will be immediately closed without response.
+          Do not ask for help building from source from MacHomebrew on Twitter.
+          You may ask for help building from source in Homebrew's discussions but are unlikely to receive a response.
+          If building from source fails, try to figure out the problem yourself and submit a fix as a pull request.
+          We will review it but may or may not accept it.
         EOS
         raise CannotInstallFormulaError, message
       end
