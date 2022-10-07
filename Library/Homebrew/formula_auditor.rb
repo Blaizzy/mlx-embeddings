@@ -731,7 +731,7 @@ module Homebrew
       newest_committed_revision = nil
       newest_committed_url = nil
 
-      fv.rev_list("origin/master") do |rev|
+      fv.rev_list("origin/HEAD") do |rev|
         begin
           fv.formula_at_revision(rev) do |f|
             stable = f.stable
