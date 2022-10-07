@@ -3642,19 +3642,6 @@ class OpenSSL::BN
   def negative?(); end
 end
 
-module OpenSSL::KDF
-end
-
-class OpenSSL::KDF::KDFError
-end
-
-class OpenSSL::KDF::KDFError
-end
-
-module OpenSSL::KDF
-  def self.pbkdf2_hmac(*arg); end
-end
-
 class OpenSSL::OCSP::Request
   def signed?(); end
 end
@@ -6700,9 +6687,6 @@ class URI::File
   DEFAULT_PORT = ::T.let(nil, ::T.untyped)
 end
 
-class URI::File
-end
-
 class URI::HTTP
   def buffer_open(buf, proxy, options); end
 end
@@ -6744,10 +6728,6 @@ end
 class URI::MailTo
   def initialize(*arg); end
 end
-
-URI::Parser = URI::RFC2396_Parser
-
-URI::REGEXP = URI::RFC2396_REGEXP
 
 class URI::RFC2396_Parser
   def initialize(opts=T.unsafe(nil)); end

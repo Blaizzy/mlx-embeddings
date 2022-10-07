@@ -68,12 +68,12 @@ class Version
       NULL_TOKEN
     end
 
-    sig { override.returns(Version) }
+    sig { override.returns(T.self_type) }
     def major_minor
       self
     end
 
-    sig { override.returns(Version) }
+    sig { override.returns(T.self_type) }
     def major_minor_patch
       self
     end
