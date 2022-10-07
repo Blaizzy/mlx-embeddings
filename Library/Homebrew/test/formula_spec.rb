@@ -1480,7 +1480,7 @@ describe Formula do
         testball_repo.cd do
           FileUtils.touch "LICENSE"
 
-          system("git", "init")
+          system("git", "-c", "init.defaultBranch=master", "init")
           system("git", "add", "--all")
           system("git", "commit", "-m", "Initial commit")
         end

@@ -927,7 +927,7 @@ module Homebrew
 
         tap_path.cd do
           system "git", "fetch"
-          system "git", "reset", "--hard", "origin/master"
+          system "git", "reset", "--hard", "origin/HEAD"
         end
       end
 

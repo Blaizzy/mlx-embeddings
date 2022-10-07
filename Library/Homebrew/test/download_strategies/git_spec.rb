@@ -23,7 +23,7 @@ describe GitDownloadStrategy do
   end
 
   def setup_git_repo
-    system "git", "init"
+    system "git", "-c", "init.defaultBranch=master", "init"
     system "git", "remote", "add", "origin", "https://github.com/Homebrew/homebrew-foo"
     FileUtils.touch "README"
     git_commit_all

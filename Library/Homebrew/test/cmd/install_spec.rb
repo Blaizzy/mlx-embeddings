@@ -45,7 +45,7 @@ describe "brew install" do
     repo_path.join("bin").mkpath
 
     repo_path.cd do
-      system "git", "init"
+      system "git", "-c", "init.defaultBranch=master", "init"
       system "git", "remote", "add", "origin", "https://github.com/Homebrew/homebrew-foo"
       FileUtils.touch "bin/something.bin"
       FileUtils.touch "README"
