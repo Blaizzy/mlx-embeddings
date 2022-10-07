@@ -555,7 +555,7 @@ describe Homebrew::Service do
         Description=Homebrew generated unit for formula_name
 
         [Install]
-        WantedBy=multi-user.target
+        WantedBy=default.target
 
         [Service]
         Type=simple
@@ -588,7 +588,7 @@ describe Homebrew::Service do
         Description=Homebrew generated unit for formula_name
 
         [Install]
-        WantedBy=multi-user.target
+        WantedBy=default.target
 
         [Service]
         Type=oneshot
