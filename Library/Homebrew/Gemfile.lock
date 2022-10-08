@@ -56,15 +56,17 @@ GEM
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2022.0105)
-    mini_portile2 (2.8.0)
     minitest (5.16.3)
     msgpack (1.6.0)
     mustache (1.1.1)
     net-http-digest_auth (1.4.1)
     net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
-    nokogiri (1.13.8)
-      mini_portile2 (~> 2.8.0)
+    nokogiri (1.13.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.13.8-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.13.8-x86_64-linux)
       racc (~> 1.4)
     parallel (1.22.1)
     parallel_tests (3.13.0)
@@ -163,6 +165,15 @@ GEM
       sorbet-static (= 0.5.10461)
     sorbet-runtime (0.5.10461)
     sorbet-static (0.5.10461-universal-darwin-14)
+    sorbet-static (0.5.10461-universal-darwin-15)
+    sorbet-static (0.5.10461-universal-darwin-16)
+    sorbet-static (0.5.10461-universal-darwin-17)
+    sorbet-static (0.5.10461-universal-darwin-18)
+    sorbet-static (0.5.10461-universal-darwin-19)
+    sorbet-static (0.5.10461-universal-darwin-20)
+    sorbet-static (0.5.10461-universal-darwin-21)
+    sorbet-static (0.5.10461-universal-darwin-22)
+    sorbet-static (0.5.10461-x86_64-linux)
     sorbet-static-and-runtime (0.5.10461)
       sorbet (= 0.5.10461)
       sorbet-runtime (= 0.5.10461)
@@ -201,7 +212,9 @@ GEM
     zeitwerk (2.6.1)
 
 PLATFORMS
-  ruby
+  arm64-darwin
+  x86_64-darwin
+  x86_64-linux
 
 DEPENDENCIES
   activesupport
@@ -244,4 +257,4 @@ RUBY VERSION
    ruby 2.6.8p205
 
 BUNDLED WITH
-   1.17.3
+   2.3.23
