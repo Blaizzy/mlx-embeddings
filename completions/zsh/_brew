@@ -1990,6 +1990,7 @@ _brew_vendor_gems() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
+    '--no-commit[Do not generate a new commit upon completion]' \
     '--quiet[Make some output more quiet]' \
     '--update[Update all vendored Gems to the latest version]' \
     '--verbose[Make some output more verbose]'

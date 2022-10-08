@@ -2462,6 +2462,7 @@ _brew_vendor_gems() {
       __brewcomp "
       --debug
       --help
+      --no-commit
       --quiet
       --update
       --verbose
