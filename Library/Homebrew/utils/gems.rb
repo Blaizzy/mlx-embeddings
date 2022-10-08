@@ -129,6 +129,7 @@ module Homebrew
     old_gem_home = ENV.fetch("GEM_HOME", nil)
     old_bundle_gemfile = ENV.fetch("BUNDLE_GEMFILE", nil)
     old_bundle_with = ENV.fetch("BUNDLE_WITH", nil)
+    old_bundle_frozen = ENV.fetch("BUNDLE_FROZEN", nil)
 
     install_bundler!
 
@@ -140,6 +141,7 @@ module Homebrew
 
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
     ENV["BUNDLE_WITH"] = groups.join(" ")
+    ENV["BUNDLE_FROZEN"] = "true"
 
     if @bundle_installed_groups != groups
       bundle = File.join(find_in_path("bundle"), "bundle")
@@ -180,6 +182,7 @@ module Homebrew
       ENV["GEM_HOME"] = old_gem_home
       ENV["BUNDLE_GEMFILE"] = old_bundle_gemfile
       ENV["BUNDLE_WITH"] = old_bundle_with
+      ENV["BUNDLE_FROZEN"] = old_bundle_frozen
     end
   end
 end
