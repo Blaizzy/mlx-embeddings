@@ -60,6 +60,7 @@ module Homebrew
     paths = ENV.fetch("PATH").split(":")
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     paths.unshift(Gem.bindir) unless paths.include?(Gem.bindir)
+    paths.unshift(HOMEBREW_SHIMS_PATH/"ruby") unless paths.include?(HOMEBREW_SHIMS_PATH/"ruby")
     ENV["PATH"] = paths.compact.join(":")
 
     # Set envs so the above binaries can be invoked.

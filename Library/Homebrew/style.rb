@@ -263,7 +263,11 @@ module Homebrew
         HOMEBREW_REPOSITORY/"Dockerfile",
         *HOMEBREW_LIBRARY.glob("Homebrew/*.sh"),
         *HOMEBREW_LIBRARY.glob("Homebrew/shims/**/*").map(&:realpath).uniq
-                         .reject { |path| path.directory? || path.basename.to_s == "cc" },
+                         .reject(&:directory?)
+                         .reject { |path| path.basename.to_s == "cc" }
+                         .select do |path|
+                           %r{^#! ?/bin/(?:ba)?sh( |$)}.match?(path.read(13)) || path.extname == ".sh"
+                         end,
         *HOMEBREW_LIBRARY.glob("Homebrew/{dev-,}cmd/*.sh"),
         *HOMEBREW_LIBRARY.glob("Homebrew/{cask/,}utils/*.sh"),
       ]
