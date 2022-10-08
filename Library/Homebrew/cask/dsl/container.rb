@@ -16,7 +16,7 @@ module Cask
 
       attr_accessor(*VALID_KEYS, :pairs)
 
-      def initialize(pairs = {})
+      def initialize(**pairs)
         @pairs = pairs
         pairs.each do |key, value|
           raise "invalid container key: #{key.inspect}" unless VALID_KEYS.include?(key)

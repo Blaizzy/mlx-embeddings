@@ -107,7 +107,7 @@ class SoftwareSpec
   def url(val = nil, specs = {})
     return @resource.url if val.nil?
 
-    @resource.url(val, specs)
+    @resource.url(val, **specs)
     dependency_collector.add(@resource)
   end
 
@@ -467,10 +467,11 @@ class Bottle
 
       image_name = GitHubPackages.image_formula_name(@name)
       image_tag = GitHubPackages.image_version_rebuild(version_rebuild)
-      resource.url("#{root_url}/#{image_name}/manifests/#{image_tag}", {
+      resource.url(
+        "#{root_url}/#{image_name}/manifests/#{image_tag}",
         using:   CurlGitHubPackagesDownloadStrategy,
         headers: ["Accept: application/vnd.oci.image.index.v1+json"],
-      })
+      )
       resource.downloader.resolved_basename = "#{name}-#{version_rebuild}.bottle_manifest.json"
       resource
     end
@@ -501,7 +502,7 @@ class Bottle
 
     filename = Filename.create(resource.owner, @tag, @spec.rebuild)
     path, resolved_basename = Utils::Bottles.path_resolved_basename(val, name, resource.checksum, filename)
-    @resource.url("#{val}/#{path}", select_download_strategy(specs))
+    @resource.url("#{val}/#{path}", **select_download_strategy(specs))
     @resource.downloader.resolved_basename = resolved_basename if resolved_basename.present?
   end
 end

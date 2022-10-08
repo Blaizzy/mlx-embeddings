@@ -367,8 +367,9 @@ module Homebrew
       end
 
       def cask_options
-        self.class.global_cask_options.each do |method, *args, **options|
-          send(method, *args, **options)
+        self.class.global_cask_options.each do |args|
+          options = args.pop
+          send(*args, **options)
           conflicts "--formula", args.last
         end
         @cask_options = true

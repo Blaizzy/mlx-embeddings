@@ -121,16 +121,18 @@ module Homebrew
         [:switch, "--overwrite", {
           description: "Delete files that already exist in the prefix while linking.",
         }],
-      ].each do |*args, **options|
+      ].each do |args|
+        options = args.pop
         send(*args, **options)
         conflicts "--cask", args.last
       end
       formula_options
       [
         [:switch, "--cask", "--casks", { description: "Treat all named arguments as casks." }],
-        *Cask::Cmd::AbstractCommand::OPTIONS,
-        *Cask::Cmd::Install::OPTIONS,
-      ].each do |*args, **options|
+        *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
+        *Cask::Cmd::Install::OPTIONS.map(&:dup),
+      ].each do |args|
+        options = args.pop
         send(*args, **options)
         conflicts "--formula", args.last
       end
