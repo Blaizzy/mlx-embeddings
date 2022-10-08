@@ -17,14 +17,6 @@ module Homebrew
     "#{RbConfig::CONFIG["prefix"]}/bin"
   end
 
-  def gem_user_dir
-    ENV.fetch("HOMEBREW_TESTS_GEM_USER_DIR", nil) || Gem.user_dir
-  end
-
-  def gem_user_bindir
-    "#{gem_user_dir}/bin"
-  end
-
   def ohai_if_defined(message)
     if defined?(ohai)
       $stderr.ohai message
@@ -50,9 +42,9 @@ module Homebrew
     end
   end
 
-  def setup_gem_environment!(gem_home: nil, gem_bindir: nil, setup_path: true)
+  def setup_gem_environment!(setup_path: true)
     # Match where our bundler gems are.
-    gem_home ||= "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
+    gem_home = "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
     Gem.paths = {
       "GEM_HOME" => gem_home,
       "GEM_PATH" => gem_home,
@@ -65,10 +57,9 @@ module Homebrew
     return unless setup_path
 
     # Add necessary Ruby and Gem binary directories to `PATH`.
-    gem_bindir ||= Gem.bindir
     paths = ENV.fetch("PATH").split(":")
-    paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
+    paths.unshift(Gem.bindir) unless paths.include?(Gem.bindir)
     ENV["PATH"] = paths.compact.join(":")
 
     # Set envs so the above binaries can be invoked.
@@ -123,7 +114,7 @@ module Homebrew
       raise "Installing and using Bundler is currently only supported on Ruby 2.6."
     end
 
-    setup_gem_environment!(gem_home: gem_user_dir, gem_bindir: gem_user_bindir)
+    setup_gem_environment!
     install_gem_setup_path!(
       "bundler",
       version:               HOMEBREW_BUNDLER_VERSION,

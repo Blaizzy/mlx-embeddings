@@ -208,12 +208,6 @@ module Homebrew
 
       puts "Randomized with seed #{seed}"
 
-      # Let tests find `bundle` in the actual location.
-      ENV["HOMEBREW_TESTS_GEM_USER_DIR"] = gem_user_dir
-
-      # Let `bundle` in PATH find its gem.
-      ENV["GEM_PATH"] = "#{ENV.fetch("GEM_PATH")}:#{gem_user_dir}"
-
       # Submit test flakiness information using BuildPulse
       # BUILDPULSE used in spec_helper.rb
       if use_buildpulse?
