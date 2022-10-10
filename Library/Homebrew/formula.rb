@@ -1615,6 +1615,10 @@ class Formula
   # </pre>
   sig { params(source: Pathname, target: Pathname).returns(String) }
   def rpath(source: bin, target: lib)
+    unless target.to_s.start_with?(HOMEBREW_PREFIX)
+      raise "rpath `target` should only be used for paths inside HOMEBREW_PREFIX!"
+    end
+
     "#{loader_path}/#{target.relative_path_from(source)}"
   end
 
