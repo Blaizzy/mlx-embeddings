@@ -56,6 +56,8 @@ homebrew-update-reset() {
       opoo "No remote 'origin' in ${DIR}, skipping update and reset!"
       continue
     fi
+    git -C "${DIR}" config --bool core.autocrlf false
+    git -C "${DIR}" config --bool core.symlinks true
     ohai "Fetching ${DIR}..."
     git -C "${DIR}" fetch --force --tags origin
     git -C "${DIR}" remote set-head origin --auto >/dev/null

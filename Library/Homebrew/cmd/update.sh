@@ -45,6 +45,7 @@ git_init_if_necessary() {
     trap '{ rm -rf .git; exit 1; }' EXIT
     git init
     git config --bool core.autocrlf false
+    git config --bool core.symlinks true
     if [[ "${HOMEBREW_BREW_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_BREW_GIT_REMOTE}" ]]
     then
       echo "HOMEBREW_BREW_GIT_REMOTE set: using ${HOMEBREW_BREW_GIT_REMOTE} for Homebrew/brew Git remote URL."
@@ -67,6 +68,7 @@ git_init_if_necessary() {
     trap '{ rm -rf .git; exit 1; }' EXIT
     git init
     git config --bool core.autocrlf false
+    git config --bool core.symlinks true
     if [[ "${HOMEBREW_CORE_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_CORE_GIT_REMOTE}" ]]
     then
       echo "HOMEBREW_CORE_GIT_REMOTE set: using ${HOMEBREW_CORE_GIT_REMOTE} for Homebrew/core Git remote URL."
@@ -269,7 +271,10 @@ EOS
   export HOMEBREW_UPDATE_BEFORE"${TAP_VAR}"="${INITIAL_REVISION}"
 
   # ensure we don't munge line endings on checkout
-  git config core.autocrlf false
+  git config --bool core.autocrlf false
+
+  # make sure symlinks are saved as-is
+  git config --bool core.symlinks true
 
   if [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -n "${HOMEBREW_LINUXBREW_CORE_MIGRATION}" ]]
   then
