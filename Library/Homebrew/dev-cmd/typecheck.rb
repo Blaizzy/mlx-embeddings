@@ -67,8 +67,7 @@ module Homebrew
         ohai "Updating Tapioca RBI files..."
         safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
         safe_system "bundle", "exec", "parlour"
-        safe_system "bundle", "exec", "srb", "rbi", "hidden-definitions"
-        safe_system "bundle", "exec", "srb", "rbi", "todo"
+        safe_system "bundle", "exec", "tapioca", "todo"
 
         if args.suggest_typed?
           result = system_command(
