@@ -236,6 +236,7 @@ DEPENDENCIES
   simplecov-cobertura
   sorbet-runtime
   sorbet-static-and-runtime
+  spoom
   tapioca
   warning
 

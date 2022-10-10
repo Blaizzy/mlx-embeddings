@@ -70,35 +70,8 @@ module Homebrew
         safe_system "bundle", "exec", "tapioca", "todo"
 
         if args.suggest_typed?
-          result = system_command(
-            "bundle",
-            args:         ["exec", "--", "srb", "tc", "--suggest-typed", "--typed=strict",
-                           "--isolate-error-code=7022"],
-            print_stderr: false,
-          )
-
-          allowed_changes = {
-            "false" => ["true", "strict"],
-            "true"  => ["strict"],
-          }
-
-          # Workaround for `srb tc rbi suggest-typed`, which currently fails get to a converging state.
-          result.stderr.scan(/^(.*\.rb):\d+:\s+You could add `#\s*typed:\s*(.*?)`/).each do |path, new_level|
-            path = Pathname(path)
-
-            next unless path.file?
-
-            contents = path.read
-
-            next unless (match = contents.match(/\A\s*#\s*typed:\s*([^\s]+)/))
-
-            existing_level = match[1]
-
-            next unless allowed_changes.fetch(existing_level, []).include?(new_level)
-
-            puts "#{path}: #{existing_level} -> #{new_level}"
-            path.atomic_write contents.sub(/\A(\s*#\s*typed:\s*)(?:[^\s]+)/, "\\1#{new_level}")
-          end
+          ohai "Bumping Sorbet `typed` sigils..."
+          safe_system "bundle", "exec", "spoom", "bump"
         end
 
         return
