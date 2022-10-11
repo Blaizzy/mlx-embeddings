@@ -1710,6 +1710,7 @@ _brew_readall() {
       --debug
       --eval-all
       --help
+      --no-simulate
       --quiet
       --syntax
       --verbose

@@ -1180,6 +1180,7 @@ __fish_brew_complete_arg 'readall' -l aliases -d 'Verify any alias symlinks in e
 __fish_brew_complete_arg 'readall' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'readall' -l eval-all -d 'Evaluate all available formulae and casks, whether installed or not. Implied if HOMEBREW_EVAL_ALL is set'
 __fish_brew_complete_arg 'readall' -l help -d 'Show this message'
+__fish_brew_complete_arg 'readall' -l no-simulate -d 'Don\'t simulate other system configurations when checking formulae and casks'
 __fish_brew_complete_arg 'readall' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'readall' -l syntax -d 'Syntax-check all of Homebrew\'s Ruby files (if no `tap` is passed)'
 __fish_brew_complete_arg 'readall' -l verbose -d 'Make some output more verbose'
