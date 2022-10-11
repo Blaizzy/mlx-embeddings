@@ -1439,6 +1439,7 @@ _brew_readall() {
     '--debug[Display any debugging information]' \
     '--eval-all[Evaluate all available formulae and casks, whether installed or not. Implied if HOMEBREW_EVAL_ALL is set]' \
     '--help[Show this message]' \
+    '--no-simulate[Don'\''t simulate other system configurations when checking formulae and casks]' \
     '--quiet[Make some output more quiet]' \
     '--syntax[Syntax-check all of Homebrew'\''s Ruby files (if no `tap` is passed)]' \
     '--verbose[Make some output more verbose]' \

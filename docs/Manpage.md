@@ -528,6 +528,8 @@ all items or checking if any current formulae/casks have Ruby issues.
   Syntax-check all of Homebrew's Ruby files (if no `*`tap`*` is passed).
 * `--eval-all`:
   Evaluate all available formulae and casks, whether installed or not. Implied if HOMEBREW_EVAL_ALL is set.
+* `--no-simulate`:
+  Don't simulate other system configurations when checking formulae and casks.
 
 ### `reinstall` [*`options`*] *`formula`*|*`cask`* [...]
 

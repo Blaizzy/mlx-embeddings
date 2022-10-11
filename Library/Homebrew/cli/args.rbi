@@ -151,6 +151,9 @@ module Homebrew
       def syntax?; end
 
       sig { returns(T::Boolean) }
+      def no_simulate?; end
+
+      sig { returns(T::Boolean) }
       def ignore_non_pypi_packages?; end
 
       sig { returns(T::Boolean) }

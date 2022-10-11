@@ -26,6 +26,8 @@ module Homebrew
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not. " \
                           "Implied if HOMEBREW_EVAL_ALL is set."
+      switch "--no-simulate",
+             description: "Don't simulate other system configurations when checking formulae and casks."
 
       named_args :tap
     end
@@ -41,7 +43,7 @@ module Homebrew
       Homebrew.failed = true unless Readall.valid_ruby_syntax?(ruby_files)
     end
 
-    options = { aliases: args.aliases? }
+    options = { aliases: args.aliases?, no_simulate: args.no_simulate? }
     taps = if args.no_named?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
         odeprecated "brew readall", "brew readall --eval-all or HOMEBREW_EVAL_ALL"
