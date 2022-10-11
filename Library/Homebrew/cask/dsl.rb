@@ -6,6 +6,7 @@ require "lazy_object"
 require "livecheck"
 
 require "cask/artifact"
+require "cask/artifact_set"
 
 require "cask/caskroom"
 require "cask/exceptions"
@@ -207,14 +208,14 @@ module Cask
     end
 
     # @api public
-    def appcast(*args)
-      set_unique_stanza(:appcast, args.empty?) { DSL::Appcast.new(*args) }
+    def appcast(*args, **kwargs)
+      set_unique_stanza(:appcast, args.empty? && kwargs.empty?) { DSL::Appcast.new(*args, **kwargs) }
     end
 
     # @api public
-    def container(*args)
-      set_unique_stanza(:container, args.empty?) do
-        DSL::Container.new(*args)
+    def container(**kwargs)
+      set_unique_stanza(:container, kwargs.empty?) do
+        DSL::Container.new(**kwargs)
       end
     end
 
@@ -261,12 +262,12 @@ module Cask
 
     # `depends_on` uses a load method so that multiple stanzas can be merged.
     # @api public
-    def depends_on(*args)
+    def depends_on(**kwargs)
       @depends_on ||= DSL::DependsOn.new
-      return @depends_on if args.empty?
+      return @depends_on if kwargs.empty?
 
       begin
-        @depends_on.load(*args)
+        @depends_on.load(**kwargs)
       rescue RuntimeError => e
         raise CaskInvalidError.new(cask, e)
       end
@@ -274,13 +275,13 @@ module Cask
     end
 
     # @api public
-    def conflicts_with(*args)
+    def conflicts_with(**kwargs)
       # TODO: remove this constraint, and instead merge multiple conflicts_with stanzas
-      set_unique_stanza(:conflicts_with, args.empty?) { DSL::ConflictsWith.new(*args) }
+      set_unique_stanza(:conflicts_with, kwargs.empty?) { DSL::ConflictsWith.new(**kwargs) }
     end
 
     def artifacts
-      @artifacts ||= SortedSet.new
+      @artifacts ||= ArtifactSet.new
     end
 
     def caskroom_path
@@ -337,13 +338,13 @@ module Cask
     end
 
     ORDINARY_ARTIFACT_CLASSES.each do |klass|
-      define_method(klass.dsl_key) do |*args|
+      define_method(klass.dsl_key) do |*args, **kwargs|
         if [*artifacts.map(&:class), klass].include?(Artifact::StageOnly) &&
            (artifacts.map(&:class) & ACTIVATABLE_ARTIFACT_CLASSES).any?
           raise CaskInvalidError.new(cask, "'stage_only' must be the only activatable artifact.")
         end
 
-        artifacts.add(klass.from_args(cask, *args))
+        artifacts.add(klass.from_args(cask, *args, **kwargs))
       rescue CaskInvalidError
         raise
       rescue => e

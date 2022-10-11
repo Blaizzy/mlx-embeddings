@@ -24,12 +24,12 @@ class SystemCommand
   module Mixin
     extend T::Sig
 
-    def system_command(*args)
-      T.unsafe(SystemCommand).run(*args)
+    def system_command(executable, **options)
+      SystemCommand.run(executable, **options)
     end
 
-    def system_command!(*args)
-      T.unsafe(SystemCommand).run!(*args)
+    def system_command!(command, **options)
+      SystemCommand.run!(command, **options)
     end
   end
 
@@ -37,11 +37,11 @@ class SystemCommand
   extend Predicable
 
   def self.run(executable, **options)
-    T.unsafe(self).new(executable, **options).run!
+    new(executable, **options).run!
   end
 
   def self.run!(command, **options)
-    T.unsafe(self).run(command, **options, must_succeed: true)
+    run(command, **options, must_succeed: true)
   end
 
   sig { returns(SystemCommand::Result) }

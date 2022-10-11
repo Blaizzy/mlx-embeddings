@@ -24,8 +24,9 @@ module Cask
           switch "--force",
                  description: "Force overwriting existing files."
 
-          OPTIONS.each do |option|
-            send(*option)
+          OPTIONS.map(&:dup).each do |option|
+            kwargs = option.pop
+            send(*option, **kwargs)
           end
 
           instance_eval(&block) if block

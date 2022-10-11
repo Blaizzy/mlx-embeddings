@@ -119,6 +119,10 @@ module Homebrew
   end
 
   def install_bundler!
+    if Gem.ruby_version >= Gem::Version.new("2.7")
+      raise "Installing and using Bundler is currently only supported on Ruby 2.6."
+    end
+
     setup_gem_environment!(gem_home: gem_user_dir, gem_bindir: gem_user_bindir)
     install_gem_setup_path!(
       "bundler",

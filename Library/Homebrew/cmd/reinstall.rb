@@ -68,18 +68,20 @@ module Homebrew
         [:switch, "-g", "--git", {
           description: "Create a Git repository, useful for creating patches to the software.",
         }],
-      ].each do |options|
-        send(*options)
-        conflicts "--cask", options[-2]
+      ].each do |args|
+        options = args.pop
+        send(*args, **options)
+        conflicts "--cask", args.last
       end
       formula_options
       [
         [:switch, "--cask", "--casks", { description: "Treat all named arguments as casks." }],
-        *Cask::Cmd::AbstractCommand::OPTIONS,
-        *Cask::Cmd::Install::OPTIONS,
-      ].each do |options|
-        send(*options)
-        conflicts "--formula", options[-2]
+        *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
+        *Cask::Cmd::Install::OPTIONS.map(&:dup),
+      ].each do |args|
+        options = args.pop
+        send(*args, **options)
+        conflicts "--formula", args.last
       end
       cask_options
 

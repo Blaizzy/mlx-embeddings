@@ -156,6 +156,12 @@ module Cask
         version { gsub(DIVIDER_REGEX, "") }
       end
 
+      # @api public
+      sig { params(separator: T.nilable(String)).returns(T.self_type) }
+      def chomp(separator = nil)
+        version { to_s.chomp(T.unsafe(separator)) }
+      end
+
       private
 
       sig { returns(T.self_type) }

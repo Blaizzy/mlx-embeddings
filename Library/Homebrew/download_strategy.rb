@@ -594,7 +594,7 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
     # GitHub Packages authorization header.
     # HOMEBREW_GITHUB_PACKAGES_AUTH set in brew.sh
     meta[:headers] << "Authorization: #{HOMEBREW_GITHUB_PACKAGES_AUTH}"
-    super(url, name, version, meta)
+    super(url, name, version, **meta)
   end
 
   private
