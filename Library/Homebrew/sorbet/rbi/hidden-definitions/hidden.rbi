@@ -983,29 +983,29 @@ class Cask::Config
 end
 
 class Cask::DSL
-  def app(*args); end
+  def app(*args, **kwargs); end
 
-  def artifact(*args); end
+  def artifact(*args, **kwargs); end
 
-  def audio_unit_plugin(*args); end
+  def audio_unit_plugin(*args, **kwargs); end
 
-  def binary(*args); end
+  def binary(*args, **kwargs); end
 
-  def colorpicker(*args); end
+  def colorpicker(*args, **kwargs); end
 
-  def dictionary(*args); end
+  def dictionary(*args, **kwargs); end
 
-  def font(*args); end
+  def font(*args, **kwargs); end
 
-  def input_method(*args); end
+  def input_method(*args, **kwargs); end
 
-  def installer(*args); end
+  def installer(*args, **kwargs); end
 
-  def internet_plugin(*args); end
+  def internet_plugin(*args, **kwargs); end
 
-  def manpage(*args); end
+  def manpage(*args, **kwargs); end
 
-  def mdimporter(*args); end
+  def mdimporter(*args, **kwargs); end
 
   def on_arch_conditional(arm: T.unsafe(nil), intel: T.unsafe(nil)); end
 
@@ -1029,35 +1029,35 @@ class Cask::DSL
 
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 
-  def pkg(*args); end
+  def pkg(*args, **kwargs); end
 
   def postflight(&block); end
 
   def preflight(&block); end
 
-  def prefpane(*args); end
+  def prefpane(*args, **kwargs); end
 
-  def qlplugin(*args); end
+  def qlplugin(*args, **kwargs); end
 
-  def screen_saver(*args); end
+  def screen_saver(*args, **kwargs); end
 
-  def service(*args); end
+  def service(*args, **kwargs); end
 
-  def stage_only(*args); end
+  def stage_only(*args, **kwargs); end
 
-  def suite(*args); end
+  def suite(*args, **kwargs); end
 
-  def uninstall(*args); end
+  def uninstall(*args, **kwargs); end
 
   def uninstall_postflight(&block); end
 
   def uninstall_preflight(&block); end
 
-  def vst3_plugin(*args); end
+  def vst3_plugin(*args, **kwargs); end
 
-  def vst_plugin(*args); end
+  def vst_plugin(*args, **kwargs); end
 
-  def zap(*args); end
+  def zap(*args, **kwargs); end
 end
 
 class Cask::DSL::Caveats
