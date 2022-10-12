@@ -34,6 +34,7 @@ gem "warning", require: false
 group :sorbet, optional: true do
   gem "parlour", require: false
   gem "sorbet-static-and-runtime", require: false
+  gem "spoom", require: false
   gem "tapioca", require: false
 end
 
