@@ -761,8 +761,11 @@ EOS
       --time-cond "${HOMEBREW_CACHE}/api/formula.json" \
       --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
       "https://formulae.brew.sh/api/formula.json"
-    # TODO: we probably want to print an error if this fails.
-    # TODO: set HOMEBREW_UPDATED or HOMEBREW_UPDATE_FAILED
+    exit_code=$?
+    if [[ ${exit_code} -ne 0 ]]
+    then
+      echo "download formula.json failed!" >>"${update_failed_file}"
+    fi
   fi
 
   safe_cd "${HOMEBREW_REPOSITORY}"
