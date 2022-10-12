@@ -43,10 +43,10 @@ jobs:
           gh pr checkout '${{ github.event.pull_request.number || github.event.inputs.pull_request }}'
 
           branch="$(git branch --show-current)"
-          echo "::set-output name=branch::${branch}"
+          echo "branch=${branch}" >> $GITHUB_OUTPUT
 
           gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
-          echo "::set-output name=gem_name::${gem_name}"
+          echo "gem_name=${gem_name}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
