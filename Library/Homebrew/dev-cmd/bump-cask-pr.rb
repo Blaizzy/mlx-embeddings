@@ -78,14 +78,14 @@ module Homebrew
     odie "This cask's tap is not a Git repository!" unless cask.tap.git?
 
     new_version = args.version
-    new_version = :latest if ["latest", ":latest"].include?(new_version)
+    new_version = :latest if ["latest", ":latest"].include? new_version
     new_version = Cask::DSL::Version.new(new_version) if new_version.present?
     new_base_url = args.url
     new_hash = args.sha256
     new_hash = :no_check if ["no_check", ":no_check"].include? new_hash
 
     if new_version.nil? && new_base_url.nil? && new_hash.nil?
-      raise UsageError, "No --version=/--url=/--sha256= argument specified!"
+      raise UsageError, "No `--version=`, `--url=` or `--sha256=` argument specified!"
     end
 
     old_version = cask.version
@@ -104,6 +104,52 @@ module Homebrew
         /version\s+#{old_version_regex}/m,
         "version #{new_version.latest? ? ":latest" : "\"#{new_version}\""}",
       ]
+      if new_version.latest? || new_hash == :no_check
+        opoo "Ignoring specified `--sha256=` argument." if new_hash.is_a? String
+        replacement_pairs << [/"#{old_hash}"/, ":no_check"] if old_hash != :no_check
+      elsif old_hash != :no_check
+        if new_hash.nil? || cask.languages.present?
+          if new_hash.present? && cask.languages.present?
+            opoo "Multiple hash replacements required; ignoring specified `--sha256=` argument."
+          end
+          tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
+                                                          replacement_pairs.uniq.compact,
+                                                          read_only_run: true,
+                                                          silent:        true)
+
+          tmp_cask = Cask::CaskLoader.load(tmp_contents)
+          tmp_config = tmp_cask.config
+
+          [:arm, :intel].each do |arch|
+            Homebrew::SimulateSystem.arch = arch
+
+            languages = cask.languages
+            languages = [nil] if languages.empty?
+            languages.each do |language|
+              new_hash_config = if language.blank?
+                tmp_config
+              else
+                tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
+              end
+
+              new_hash_cask = Cask::CaskLoader.load(tmp_contents)
+              new_hash_cask.config = new_hash_config
+              old_hash = new_hash_cask.sha256.to_s
+
+              cask_download = Cask::Download.new(new_hash_cask, quarantine: true)
+              download = cask_download.fetch(verify_download_integrity: false)
+              Utils::Tar.validate_file(download)
+
+              replacement_pairs << [new_hash_cask.sha256.to_s, download.sha256]
+            end
+
+            Homebrew::SimulateSystem.clear
+          end
+        elsif new_hash.present?
+          opoo "Cask contains multiple hashes; only updating hash for current arch." if cask.on_system_blocks_exist?
+          replacement_pairs << [old_hash.to_s, new_hash]
+        end
+      end
     end
 
     if new_base_url.present?
@@ -116,47 +162,6 @@ module Homebrew
         /#{Regexp.escape(old_base_url)}/,
         new_base_url,
       ]
-    end
-
-    if new_version.present?
-      if new_version.latest?
-        opoo "Ignoring specified `--sha256=` argument." if new_hash.present?
-        replacement_pairs << [old_hash, ":no_check"]
-      elsif old_hash != :no_check && (new_hash.nil? || cask.languages.present?)
-        tmp_contents = Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
-                                                        replacement_pairs.uniq.compact,
-                                                        read_only_run: true,
-                                                        silent:        true)
-
-        tmp_cask = Cask::CaskLoader.load(tmp_contents)
-        tmp_config = tmp_cask.config
-
-        [:arm, :intel].each do |arch|
-          Homebrew::SimulateSystem.arch = arch
-
-          languages = cask.languages
-          languages = [nil] if languages.empty?
-          languages.each do |language|
-            new_hash_config = if language.blank?
-              tmp_config
-            else
-              tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
-            end
-
-            new_hash_cask = Cask::CaskLoader.load(tmp_contents)
-            new_hash_cask.config = new_hash_config
-            old_hash = new_hash_cask.sha256.to_s
-
-            cask_download = Cask::Download.new(new_hash_cask, quarantine: true)
-            download = cask_download.fetch(verify_download_integrity: false)
-            Utils::Tar.validate_file(download)
-
-            replacement_pairs << [new_hash_cask.sha256.to_s, download.sha256]
-          end
-
-          Homebrew::SimulateSystem.clear
-        end
-      end
     end
 
     Utils::Inreplace.inreplace_pairs(cask.sourcefile_path,
