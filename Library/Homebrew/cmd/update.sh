@@ -754,6 +754,10 @@ EOS
   if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
   then
     mkdir -p "${HOMEBREW_CACHE}/api"
+    if [[ -f "${HOMEBREW_CACHE}/api/formula.json" ]]
+    then
+      INITIAL_JSON_SHASUM="$(shasum -a 256 "${HOMEBREW_CACHE}"/api/formula.json)"
+    fi
     curl \
       "${CURL_DISABLE_CURLRC_ARGS[@]}" \
       --fail --compressed --silent --max-time 5 \
@@ -761,9 +765,15 @@ EOS
       --time-cond "${HOMEBREW_CACHE}/api/formula.json" \
       --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
       "https://formulae.brew.sh/api/formula.json"
-    exit_code=$?
-    if [[ ${exit_code} -ne 0 ]]
+    curl_exit_code=$?
+    if [[ ${curl_exit_code} -eq 0 ]]
     then
+      CURRENT_JSON_SHASUM="$(shasum -a 256 "${HOMEBREW_CACHE}"/api/formula.json)"
+      if [[ "${INITIAL_JSON_SHASUM}" != "${CURRENT_JSON_SHASUM}" ]]
+      then
+        HOMEBREW_UPDATED="1"
+      fi
+    else
       echo "download formula.json failed!" >>"${update_failed_file}"
     fi
   fi
