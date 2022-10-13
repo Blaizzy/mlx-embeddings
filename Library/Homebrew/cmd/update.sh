@@ -756,7 +756,14 @@ EOS
     mkdir -p "${HOMEBREW_CACHE}/api"
     if [[ -f "${HOMEBREW_CACHE}/api/formula.json" ]]
     then
-      INITIAL_JSON_SHASUM="$(shasum -a 256 "${HOMEBREW_CACHE}"/api/formula.json)"
+      INITIAL_JSON_SHASUM="$(
+        ruby <<EOSCRIPT
+require 'digest/sha2'
+digest = Digest::SHA256.new
+File.open('${HOMEBREW_CACHE}/api/formula.json') { |f| digest.update(f.read) }
+puts digest.hexdigest
+EOSCRIPT
+      )"
     fi
     curl \
       "${CURL_DISABLE_CURLRC_ARGS[@]}" \
@@ -768,7 +775,14 @@ EOS
     curl_exit_code=$?
     if [[ ${curl_exit_code} -eq 0 ]]
     then
-      CURRENT_JSON_SHASUM="$(shasum -a 256 "${HOMEBREW_CACHE}"/api/formula.json)"
+      CURRENT_JSON_SHASUM="$(
+        ruby <<EOSCRIPT
+require 'digest/sha2'
+digest = Digest::SHA256.new
+File.open('${HOMEBREW_CACHE}/api/formula.json') { |f| digest.update(f.read) }
+puts digest.hexdigest
+EOSCRIPT
+      )"
       if [[ "${INITIAL_JSON_SHASUM}" != "${CURRENT_JSON_SHASUM}" ]]
       then
         HOMEBREW_UPDATED="1"
