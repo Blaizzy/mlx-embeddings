@@ -44,7 +44,7 @@ module ELFTools
         end
         val = val.to_s.upcase
         prefix = module_name.split('::')[-1]
-        val = prefix + '_' + val unless val.start_with?(prefix)
+        val = "#{prefix}_#{val}" unless val.start_with?(prefix)
         val = val.to_sym
         raise ArgumentError, "No constants in #{module_name} named \"#{val}\"" unless mod.const_defined?(val)
 

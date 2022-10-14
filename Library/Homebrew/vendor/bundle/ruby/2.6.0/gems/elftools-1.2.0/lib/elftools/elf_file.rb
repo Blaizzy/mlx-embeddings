@@ -318,7 +318,7 @@ module ELFTools
       patches.each do |pos, val|
         all[pos, val.size] = val
       end
-      IO.binwrite(filename, all)
+      File.binwrite(filename, all)
     end
 
     private

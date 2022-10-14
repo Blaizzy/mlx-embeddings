@@ -11,9 +11,9 @@ module ELFTools
     # The base structure to define common methods.
     class ELFStruct < BinData::Record
       # DRY. Many fields have different type in different arch.
-      CHOICE_SIZE_T = {
-        selection: :elf_class, choices: { 32 => :uint32, 64 => :uint64 }
-      }.freeze
+      CHOICE_SIZE_T = proc do |t = 'uint'|
+        { selection: :elf_class, choices: { 32 => :"#{t}32", 64 => :"#{t}64" }, copy_on_change: true }
+      end
 
       attr_accessor :elf_class # @return [Integer] 32 or 64.
       attr_accessor :offset # @return [Integer] The file offset of this header.
@@ -23,6 +23,9 @@ module ELFTools
       def patches
         @patches ||= {}
       end
+
+      # BinData hash(Snapshot) that behaves like HashWithIndifferentAccess
+      alias to_h snapshot
 
       class << self
         # Hooks the constructor.
@@ -51,7 +54,7 @@ module ELFTools
         # Gets the endianness of current class.
         # @return [:little, :big] The endianness.
         def self_endian
-          bindata_name[-2..-1] == 'be' ? :big : :little
+          bindata_name[-2..] == 'be' ? :big : :little
         end
 
         # Packs an integer to string.
@@ -89,9 +92,9 @@ module ELFTools
       uint16 :e_machine
       uint32 :e_version
       # entry point
-      choice :e_entry, **CHOICE_SIZE_T
-      choice :e_phoff, **CHOICE_SIZE_T
-      choice :e_shoff, **CHOICE_SIZE_T
+      choice :e_entry, **CHOICE_SIZE_T['uint']
+      choice :e_phoff, **CHOICE_SIZE_T['uint']
+      choice :e_shoff, **CHOICE_SIZE_T['uint']
       uint32 :e_flags
       uint16 :e_ehsize # size of this header
       uint16 :e_phentsize # size of each segment
@@ -106,14 +109,14 @@ module ELFTools
       endian :big_and_little
       uint32 :sh_name
       uint32 :sh_type
-      choice :sh_flags, **CHOICE_SIZE_T
-      choice :sh_addr, **CHOICE_SIZE_T
-      choice :sh_offset, **CHOICE_SIZE_T
-      choice :sh_size, **CHOICE_SIZE_T
+      choice :sh_flags, **CHOICE_SIZE_T['uint']
+      choice :sh_addr, **CHOICE_SIZE_T['uint']
+      choice :sh_offset, **CHOICE_SIZE_T['uint']
+      choice :sh_size, **CHOICE_SIZE_T['uint']
       uint32 :sh_link
       uint32 :sh_info
-      choice :sh_addralign, **CHOICE_SIZE_T
-      choice :sh_entsize, **CHOICE_SIZE_T
+      choice :sh_addralign, **CHOICE_SIZE_T['uint']
+      choice :sh_entsize, **CHOICE_SIZE_T['uint']
     end
 
     # Program header structure for 32-bit.
@@ -187,25 +190,30 @@ module ELFTools
     # Dynamic tag header.
     class ELF_Dyn < ELFStruct
       endian :big_and_little
-      choice :d_tag, selection: :elf_class, choices: { 32 => :int32, 64 => :int64 }
+      choice :d_tag, **CHOICE_SIZE_T['int']
       # This is an union type named +d_un+ in original source,
       # simplify it to be +d_val+ here.
-      choice :d_val, **CHOICE_SIZE_T
+      choice :d_val, **CHOICE_SIZE_T['uint']
     end
 
     # Rel header in .rel section.
     class ELF_Rel < ELFStruct
       endian :big_and_little
-      choice :r_offset, **CHOICE_SIZE_T
-      choice :r_info, **CHOICE_SIZE_T
+      choice :r_offset, **CHOICE_SIZE_T['uint']
+      choice :r_info, **CHOICE_SIZE_T['uint']
+
+      # Compatibility with ELF_Rela, both can be used interchangeably
+      def r_addend
+        nil
+      end
     end
 
     # Rela header in .rela section.
     class ELF_Rela < ELFStruct
       endian :big_and_little
-      choice :r_offset, **CHOICE_SIZE_T
-      choice :r_info, **CHOICE_SIZE_T
-      choice :r_addend, selection: :elf_class, choices: { 32 => :int32, 64 => :int64 }
+      choice :r_offset, **CHOICE_SIZE_T['uint']
+      choice :r_info, **CHOICE_SIZE_T['uint']
+      choice :r_addend, **CHOICE_SIZE_T['int']
     end
   end
 end
