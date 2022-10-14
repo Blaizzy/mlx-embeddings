@@ -87,6 +87,7 @@ module Cask
       :discontinued?,
       :livecheck,
       :livecheckable?,
+      :on_system_blocks_exist?,
       *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
       *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
       *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
