@@ -9,20 +9,13 @@ require "English"
 
 module Homebrew
   # Keep in sync with the `Gemfile.lock`'s BUNDLED WITH.
-  HOMEBREW_BUNDLER_VERSION = "1.17.3"
+  # After updating this, run `brew vendor-gems --update=--bundler`.
+  HOMEBREW_BUNDLER_VERSION = "2.3.23"
 
   module_function
 
   def ruby_bindir
     "#{RbConfig::CONFIG["prefix"]}/bin"
-  end
-
-  def gem_user_dir
-    ENV.fetch("HOMEBREW_TESTS_GEM_USER_DIR", nil) || Gem.user_dir
-  end
-
-  def gem_user_bindir
-    "#{gem_user_dir}/bin"
   end
 
   def ohai_if_defined(message)
@@ -50,9 +43,9 @@ module Homebrew
     end
   end
 
-  def setup_gem_environment!(gem_home: nil, gem_bindir: nil, setup_path: true)
+  def setup_gem_environment!(setup_path: true)
     # Match where our bundler gems are.
-    gem_home ||= "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
+    gem_home = "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
     Gem.paths = {
       "GEM_HOME" => gem_home,
       "GEM_PATH" => gem_home,
@@ -65,10 +58,10 @@ module Homebrew
     return unless setup_path
 
     # Add necessary Ruby and Gem binary directories to `PATH`.
-    gem_bindir ||= Gem.bindir
     paths = ENV.fetch("PATH").split(":")
-    paths.unshift(gem_bindir) unless paths.include?(gem_bindir)
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
+    paths.unshift(Gem.bindir) unless paths.include?(Gem.bindir)
+    paths.unshift(HOMEBREW_SHIMS_PATH/"ruby") unless paths.include?(HOMEBREW_SHIMS_PATH/"ruby")
     ENV["PATH"] = paths.compact.join(":")
 
     # Set envs so the above binaries can be invoked.
@@ -123,7 +116,7 @@ module Homebrew
       raise "Installing and using Bundler is currently only supported on Ruby 2.6."
     end
 
-    setup_gem_environment!(gem_home: gem_user_dir, gem_bindir: gem_user_bindir)
+    setup_gem_environment!
     install_gem_setup_path!(
       "bundler",
       version:               HOMEBREW_BUNDLER_VERSION,
@@ -138,6 +131,7 @@ module Homebrew
     old_gem_home = ENV.fetch("GEM_HOME", nil)
     old_bundle_gemfile = ENV.fetch("BUNDLE_GEMFILE", nil)
     old_bundle_with = ENV.fetch("BUNDLE_WITH", nil)
+    old_bundle_frozen = ENV.fetch("BUNDLE_FROZEN", nil)
 
     install_bundler!
 
@@ -149,6 +143,7 @@ module Homebrew
 
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
     ENV["BUNDLE_WITH"] = groups.join(" ")
+    ENV["BUNDLE_FROZEN"] = "true"
 
     if @bundle_installed_groups != groups
       bundle = File.join(find_in_path("bundle"), "bundle")
@@ -189,6 +184,7 @@ module Homebrew
       ENV["GEM_HOME"] = old_gem_home
       ENV["BUNDLE_GEMFILE"] = old_bundle_gemfile
       ENV["BUNDLE_WITH"] = old_bundle_with
+      ENV["BUNDLE_FROZEN"] = old_bundle_frozen
     end
   end
 end

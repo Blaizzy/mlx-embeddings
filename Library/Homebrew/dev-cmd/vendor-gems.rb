@@ -17,6 +17,8 @@ module Homebrew
 
       comma_array "--update",
                   description: "Update all vendored Gems to the latest version."
+      switch      "--no-commit",
+                  description: "Do not generate a new commit upon completion."
 
       named_args :none
     end
@@ -36,8 +38,10 @@ module Homebrew
         ohai "bundle update"
         safe_system "bundle", "update", *args.update
 
-        ohai "git add Gemfile.lock"
-        system "git", "add", "Gemfile.lock"
+        unless args.no_commit?
+          ohai "git add Gemfile.lock"
+          system "git", "add", "Gemfile.lock"
+        end
       end
 
       ohai "bundle install --standalone"
@@ -46,14 +50,16 @@ module Homebrew
       ohai "bundle pristine"
       safe_system "bundle", "pristine"
 
-      ohai "git add vendor/bundle"
-      system "git", "add", "vendor/bundle"
+      unless args.no_commit?
+        ohai "git add vendor/bundle"
+        system "git", "add", "vendor/bundle"
 
-      Utils::Git.set_name_email!
-      Utils::Git.setup_gpg!
+        Utils::Git.set_name_email!
+        Utils::Git.setup_gpg!
 
-      ohai "git commit"
-      system "git", "commit", "--message", "brew vendor-gems: commit updates."
+        ohai "git commit"
+        system "git", "commit", "--message", "brew vendor-gems: commit updates."
+      end
     end
   end
 end

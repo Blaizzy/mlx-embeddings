@@ -1632,6 +1632,7 @@ __fish_brew_complete_arg 'uses; and not __fish_seen_argument -l cask -l casks' -
 __fish_brew_complete_cmd 'vendor-gems' 'Install and commit Homebrew\'s vendored gems'
 __fish_brew_complete_arg 'vendor-gems' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'vendor-gems' -l help -d 'Show this message'
+__fish_brew_complete_arg 'vendor-gems' -l no-commit -d 'Do not generate a new commit upon completion'
 __fish_brew_complete_arg 'vendor-gems' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'vendor-gems' -l update -d 'Update all vendored Gems to the latest version'
 __fish_brew_complete_arg 'vendor-gems' -l verbose -d 'Make some output more verbose'

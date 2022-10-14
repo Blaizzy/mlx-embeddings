@@ -2288,12 +2288,16 @@ Use the specified \fIcommit\fR as the start commit\.
 \fB\-\-before\fR
 Use the commit at the specified \fIdate\fR as the start commit\.
 .
-.SS "\fBvendor\-gems\fR [\fI\-\-update\fR\fB=\fR]"
+.SS "\fBvendor\-gems\fR [\fI\-\-update\fR\fB=\fR] [\fI\-\-no\-commit\fR]"
 Install and commit Homebrew\'s vendored gems\.
 .
 .TP
 \fB\-\-update\fR
 Update all vendored Gems to the latest version\.
+.
+.TP
+\fB\-\-no\-commit\fR
+Do not generate a new commit upon completion\.
 .
 .SH "GLOBAL CASK OPTIONS"
 These options are applicable to the \fBinstall\fR, \fBreinstall\fR, and \fBupgrade\fR subcommands with the \fB\-\-cask\fR flag\.
