@@ -774,7 +774,7 @@ EOS
         HOMEBREW_UPDATED="1"
       fi
     else
-      echo "download formula.json failed!" >>"${update_failed_file}"
+      echo "Failed to download formula.json!" >>"${update_failed_file}"
     fi
   fi
 
