@@ -2987,6 +2987,8 @@ class Cask::Cask
 
   def mdimporter(&block); end
 
+  def on_system_blocks_exist?(&block); end
+
   def pkg(&block); end
 
   def postflight(&block); end
