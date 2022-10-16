@@ -47,8 +47,7 @@ If you're using an older distribution of Linux, installing your first package wi
 
 ## Requirements
 
-- **GCC** 4.7.0 or newer
-- **Linux** 2.6.32 or newer
+- **Linux** 3.2 or newer
 - **Glibc** 2.13 or newer
 - **64-bit x86_64** CPU
 
@@ -65,7 +64,6 @@ To install build tools, paste at a terminal prompt:
   ```sh
   sudo yum groupinstall 'Development Tools'
   sudo yum install procps-ng curl file git
-  sudo yum install libxcrypt-compat # needed by Fedora 30 and up
   ```
 
 ### ARM
