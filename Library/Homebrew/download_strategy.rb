@@ -580,6 +580,13 @@ class HomebrewCurlDownloadStrategy < CurlDownloadStrategy
 
     curl_download resolved_url, to: to, try_partial: @try_partial, timeout: timeout, use_homebrew_curl: true
   end
+
+  def curl_output(*args, **options)
+    raise HomebrewCurlDownloadStrategyError, url unless Formula["curl"].any_version_installed?
+
+    options[:use_homebrew_curl] = true
+    super(*args, **options)
+  end
 end
 
 # Strategy for downloading a file from an GitHub Packages URL.
