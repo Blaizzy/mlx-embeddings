@@ -10,7 +10,7 @@ require "English"
 module Homebrew
   # Keep in sync with the `Gemfile.lock`'s BUNDLED WITH.
   # After updating this, run `brew vendor-gems --update=--bundler`.
-  HOMEBREW_BUNDLER_VERSION = "2.3.23"
+  HOMEBREW_BUNDLER_VERSION = "2.3.24"
 
   module_function
 
