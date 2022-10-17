@@ -42,7 +42,6 @@ end
 gem "activesupport"
 gem "addressable"
 gem "concurrent-ruby"
-gem "did_you_mean" # remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
 gem "mechanize"
 gem "patchelf"
 gem "plist"
@@ -52,3 +51,8 @@ gem "rubocop-rspec"
 gem "rubocop-sorbet"
 gem "ruby-macho"
 gem "sorbet-runtime"
+
+# remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
+install_if -> { RUBY_VERSION < "2.7" } do
+  gem "did_you_mean"
+end

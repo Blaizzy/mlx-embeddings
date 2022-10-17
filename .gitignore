@@ -31,6 +31,7 @@
 **/vendor/bundle/ruby/*/cache
 **/vendor/bundle/ruby/*/extensions
 **/vendor/bundle/ruby/*/gems/*/*
+**/vendor/bundle/ruby/*/plugins
 **/vendor/bundle/ruby/*/specifications
 
 # Ignore YARD files
