@@ -120,14 +120,15 @@ module RuboCop
             end
           end
           on_system_allowed_methods = %w[
-            depends_on
-            patch
-            resource
-            deprecate!
+            livecheck
+            keg_only
             disable!
+            deprecate!
+            depends_on
             conflicts_with
             fails_with
-            keg_only
+            resource
+            patch
             ignore_missing_libraries
           ]
           on_system_allowed_methods += on_system_methods.map(&:to_s)
