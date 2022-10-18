@@ -35,8 +35,9 @@ module Cask
           switch "--dry-run",
                  description: "Show what would be upgraded, but do not actually upgrade anything."
 
-          OPTIONS.each do |option|
-            send(*option)
+          OPTIONS.map(&:dup).each do |option|
+            kwargs = option.pop
+            send(*option, **kwargs)
           end
         end
       end

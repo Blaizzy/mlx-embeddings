@@ -51,7 +51,7 @@ describe Homebrew::Settings do
     end
 
     it "returns if the repo doesn't have a configuration file" do
-      expect { described_class.write("foo", repo: HOMEBREW_REPOSITORY/"bar") }.not_to raise_error
+      expect { described_class.write("foo", false, repo: HOMEBREW_REPOSITORY/"bar") }.not_to raise_error
     end
   end
 

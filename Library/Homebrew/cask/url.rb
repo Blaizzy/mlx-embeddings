@@ -223,7 +223,7 @@ class URL < Delegator
     return @raw_interpolated_url if defined?(@raw_interpolated_url)
 
     @raw_interpolated_url =
-      Pathname(@caller_location.absolute_path)
+      Pathname(@caller_location.path)
       .each_line.drop(@caller_location.lineno - 1)
       .first&.then { |line| line[/url\s+"([^"]+)"/, 1] }
   end

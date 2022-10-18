@@ -58,7 +58,7 @@ describe Resource do
 
     it "does not mutate the specifications hash" do
       specs = { using: :git, branch: "master" }
-      resource.url("foo", specs)
+      resource.url("foo", **specs)
       expect(resource.specs).to eq(branch: "master")
       expect(resource.using).to eq(:git)
       expect(specs).to eq(using: :git, branch: "master")

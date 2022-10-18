@@ -25,7 +25,7 @@ module Homebrew
         begin
           Homebrew.send(cmd_args_method_name) if require?(cmd_path)
         rescue NoMethodError => e
-          raise if e.name != cmd_args_method_name
+          raise if e.name.to_sym != cmd_args_method_name
 
           nil
         end

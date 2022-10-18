@@ -181,15 +181,15 @@ describe SPDX do
     end
 
     it "returns multiple licenses with :any" do
-      expect(described_class.license_expression_to_string(any_of: ["MIT", "0BSD"])).to eq "MIT or 0BSD"
+      expect(described_class.license_expression_to_string({ any_of: ["MIT", "0BSD"] })).to eq "MIT or 0BSD"
     end
 
     it "returns multiple licenses with :all" do
-      expect(described_class.license_expression_to_string(all_of: ["MIT", "0BSD"])).to eq "MIT and 0BSD"
+      expect(described_class.license_expression_to_string({ all_of: ["MIT", "0BSD"] })).to eq "MIT and 0BSD"
     end
 
     it "returns multiple licenses with plus" do
-      expect(described_class.license_expression_to_string(any_of: ["MIT", "EPL-1.0+"])).to eq "MIT or EPL-1.0+"
+      expect(described_class.license_expression_to_string({ any_of: ["MIT", "EPL-1.0+"] })).to eq "MIT or EPL-1.0+"
     end
 
     it "returns license and exception" do

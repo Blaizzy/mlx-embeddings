@@ -182,7 +182,7 @@ module Homebrew
     end
 
     # Check style in a single batch run up front for performance
-    style_offenses = Style.check_style_json(style_files, style_options) if style_files
+    style_offenses = Style.check_style_json(style_files, **style_options) if style_files
     # load licenses
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
