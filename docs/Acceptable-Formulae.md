@@ -1,16 +1,18 @@
 # Acceptable Formulae
 
-Some formulae should not go in [homebrew/core](https://github.com/Homebrew/homebrew-core). But there are additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can start their own!
+Some formulae should not go in [homebrew/core](https://github.com/Homebrew/homebrew-core). But there are additional [Interesting Taps and Forks](Interesting-Taps-and-Forks.md) and anyone can [start their own](How-to-Create-and-Maintain-a-Tap.md)!
 
-### Supported platforms in `homebrew/core`
+## Requirements for `homebrew/core`
+
+### Supported platforms
 
 The formula needs to build and pass tests on the latest 3 supported macOS versions ([x86_64 and Apple Silicon/ARM](Installation.md#macos-requirements)) and on x86_64 [Linux](Linux-CI.md). Please have a look at the continuous integration jobs on a pull request in `homebrew/core` to see the full list of OSs. If upstream does not support one of these platforms, an exception can be made and the formula can be disabled for that platform.
 
-### Dupes in `homebrew/core`
+### Duplicates of system packages
 
 We now accept stuff that comes with macOS as long as it uses `keg_only :provided_by_macos` to be keg-only by default.
 
-### Versioned formulae in `homebrew/core`
+### Versioned formulae
 
 We now accept versioned formulae as long as they [meet the requirements](Versions.md).
 
@@ -20,15 +22,13 @@ Software that can upgrade itself does not integrate well with Homebrew's own upg
 
 ### We don’t like install scripts that download unversioned things
 
-We don't like install scripts that are pulling from the `master` branch of Git repositories or unversioned, unchecksummed tarballs. These should use `resource` blocks with specific revisions or checksummed tarballs instead. Note that we now allow tools like `cargo`, `gem` and `pip` to download specifically versioned libraries during installation.
+We don't like install scripts that are pulling from the master branch of Git repositories or unversioned, unchecksummed tarballs. These should use `resource` blocks with specific revisions or checksummed tarballs instead. Note that we now allow tools like `cargo`, `gem` and `pip` to download specifically versioned libraries during installation.
 
 ### We don’t like binary formulae
 
-Our policy is that formulae in the core tap ([homebrew/core](https://github.com/Homebrew/homebrew-core)) must be open-source with an [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLicenses) and either built from source or produce cross-platform binaries (e.g. Java, Mono). Binary-only formulae should go to [homebrew/cask](https://github.com/Homebrew/homebrew-cask).
+Our policy is that formulae in the core tap ([homebrew/core](https://github.com/Homebrew/homebrew-core)) must be open-source with a [Debian Free Software Guidelines license](https://wiki.debian.org/DFSGLicenses) and either built from source or producing cross-platform binaries (e.g. Java, Mono). Binary-only formulae should go in [homebrew/cask](https://github.com/Homebrew/homebrew-cask).
 
-Additionally, [homebrew/core](https://github.com/Homebrew/homebrew-core) formulae must also not depend on casks or any other proprietary software.
-
-This includes automatic installation of casks at runtime.
+Additionally, core formulae must also not depend on casks or any other proprietary software. This includes automatic installation of casks at runtime.
 
 ### Stable versions
 
@@ -41,8 +41,8 @@ We don’t accept software without a tagged version because they regularly break
 The software in question must:
 
 * be maintained (i.e. the last release wasn't ages ago, it works without patching on all Homebrew-supported OS versions and has no outstanding, unpatched security vulnerabilities)
-* be known
 * be stable (e.g. not declared "unstable" or "beta" by upstream)
+* be known
 * be used
 * have a homepage
 
@@ -70,13 +70,13 @@ Clang is the default C/C++ compiler on macOS (and has been for a long time). Sof
 
 We're a package manager so we want to do things like resolve dependencies and set up applications for our users. If things require too much manual intervention then they aren't useful in a package manager.
 
-## Stuff that requires vendored versions of Homebrew formulae
+### Stuff that requires vendored versions of Homebrew formulae
 
-Homebrew formulae should avoid having multiple, separate, upstream projects bundled together in a single package to avoid shipping outdated/insecure versions of software that is already a formula. Veracode's [State of Software Security report](https://www.veracode.com/blog/research/announcing-state-software-security-v11-open-source-edition) concludes
+Homebrew formulae should avoid having multiple, separate, upstream projects bundled together in a single package to avoid shipping outdated/insecure versions of software that is already a formula. Veracode's [State of Software Security report](https://www.veracode.com/blog/research/announcing-state-software-security-v11-open-source-edition) concludes:
 > In fact, 79% of the time, developers never update third-party libraries after including them in a codebase.
 
 For more info see [Debian's](https://www.debian.org/doc/debian-policy/ch-source.html#s-embeddedfiles) and [Fedora's](https://docs.fedoraproject.org/en-US/packaging-guidelines/#bundling) stances on this.
 
-### Sometimes there are exceptions
+## Sometimes there are exceptions
 
 Even if all criteria are met we may not accept the formula. Documentation tends to lag behind current decision-making. Although some rejections may seem arbitrary or strange they are based on years of experience making Homebrew work acceptably for our users.

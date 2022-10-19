@@ -1,6 +1,6 @@
 # `brew livecheck`
 
-The `brew livecheck` command finds the newest version of a formula or cask's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy.html) to identify versions from various sources, such as Git repositories, websites, etc.
+The `brew livecheck` command finds the newest version of a formula or cask's software by checking upstream. Livecheck has [strategies](https://rubydoc.brew.sh/Homebrew/Livecheck/Strategy) to identify versions from various sources, such as Git repositories, websites, etc.
 
 ## Behavior
 
@@ -13,21 +13,21 @@ When livecheck isn't given instructions for how to check for upstream versions, 
 
 It's sometimes necessary to override this default behavior to create a working check. If a source doesn't provide the newest version, we need to check a different one. If livecheck doesn't correctly match version text, we need to provide an appropriate regex or `strategy` block.
 
-This can be accomplished by adding a `livecheck` block to the formula/cask/resource. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck.html).
+This can be accomplished by adding a `livecheck` block to the formula/cask/resource. For more information on the available methods, please refer to the [`Livecheck` class documentation](https://rubydoc.brew.sh/Livecheck).
 
 ## Creating a check
 
 1. **Use the debug output to understand the situation**. `brew livecheck --debug <formula>|<cask>` provides information about which URLs livecheck tries, any strategies that apply, matched versions, etc.
 
-1. **Research available sources to select a URL**. Try removing the file name from `stable`/`url`, to see if this is a directory listing page. If that doesn't work, try to find a page that links to the file (e.g. a download page). If it's not possible to find the newest version on the website, try checking other sources from the formula/cask. When necessary, search for other sources outside of the formula/cask.
+1. **Research available sources to select a URL**. Try removing the file name from `stable`/`url` to see if it provides a directory listing page. If that doesn't work, try to find a page that links to the file (e.g. a download page). If it's not possible to find the newest version on the website, try checking other sources from the formula/cask. When necessary, search for other sources outside of the formula/cask.
 
 1. **Create a regex, if necessary**. If the check works without a regex and wouldn't benefit from having one, it's usually fine to omit it. More information on creating regexes can be found in the [regex guidelines](#regex-guidelines) section.
 
 ### General guidelines
 
-* **Only use `strategy` when it's necessary**. For example, if livecheck is already using `Git` for a URL, it's not necessary to use `strategy :git`. However, if `Git` applies to a URL but we need to use `PageMatch`, it's necessary to specify `strategy :page_match`.
+* **Only use `strategy` when it's necessary**. For example, if livecheck is already using the `Git` strategy for a URL, it's not necessary to use `strategy :git`. However, if `Git` applies to a URL but we need to use `PageMatch`, it's necessary to specify `strategy :page_match`.
 
-* **Only use the `GithubLatest` strategy when it's necessary and correct**. `github.com` rate limits requests and we try to minimize our use of this strategy to avoid hitting the rate limit on CI or when using `brew livecheck --tap` on large taps (e.g. homebrew/core). The `Git` strategy is often sufficient and we only need to use `GithubLatest` when the "latest" release is different than the newest version from the tags.
+* **Only use the `GithubLatest` strategy when it's necessary and correct**. GitHub rate-limits requests so we try to minimize our use of this strategy to avoid hitting the rate limit on CI or when using `brew livecheck --tap` on large taps (e.g. `homebrew/core`). The `Git` strategy is often sufficient and we only need to use `GithubLatest` when the "latest" release is different than the newest version from the tags.
 
 ### URL guidelines
 

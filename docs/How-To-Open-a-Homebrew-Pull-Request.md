@@ -1,8 +1,8 @@
-# How To Open a Homebrew Pull Request
+# How to Open a Homebrew Pull Request
 
 The following commands are used by Homebrew contributors to set up a fork of Homebrew's Git repository on GitHub, create a new branch and create a GitHub pull request ("PR") of the changes in that branch.
 
-Depending on the change you want to make, you need to send the pull request to the appropriate one of Homebrew's main repositories. If you want to submit a change to Homebrew core code (the `brew` implementation), you should open the pull request on [Homebrew/brew](https://github.com/Homebrew/brew). If you want to submit a change for a formula, you should open the pull request on the [homebrew/core](https://github.com/Homebrew/homebrew-core) tap, for casks you should open the pull request on the [homebrew/cask](https://github.com/Homebrew/homebrew-cask) tap or another [official tap](https://github.com/Homebrew), based on the formula type.
+The type of change you want to make influences which of Homebrew's main repositories you'll need to send your pull request to. If you want to submit a change to Homebrew's core code (the `brew` implementation), you should open a pull request on [Homebrew/brew](https://github.com/Homebrew/brew). If you want to submit a change for a formula, you should open a pull request on the [homebrew/core](https://github.com/Homebrew/homebrew-core) tap, while for casks you should open the pull request on the [homebrew/cask](https://github.com/Homebrew/homebrew-cask) tap or another [official tap](https://github.com/Homebrew), based on the formula type.
 
 ## Submit a new version of an existing formula
 
@@ -70,7 +70,7 @@ Depending on the change you want to make, you need to send the pull request to t
 
 ## Create your pull request from a new branch
 
-To make a new branch and submit it for review, create a GitHub pull request with the following steps:
+To make changes on a new branch and submit it for review, create a GitHub pull request with the following steps:
 
 1. Check out the `master` branch:
 

@@ -10,25 +10,25 @@ Bindings are a special case of libraries that allow Python code to interact with
 
 Homebrew is happy to accept applications that are built in Python, whether the apps are available from PyPI or not. Homebrew generally won't accept libraries that can be installed correctly with `pip install foo`. Bindings may be installed for packages that provide them, especially if equivalent functionality isn't available through pip.
 
-Applications should unconditionally bundle all of their Python-language dependencies and libraries and should install any unsatisfied dependencies; these strategies are discussed in depth in the following sections.
+Applications should unconditionally bundle all their Python-language dependencies and libraries and should install any unsatisfied dependencies; these strategies are discussed in depth in the following sections.
 
 ## Applications
 
-### Python declarations
+### Python declarations for applications
 
 Formulae for apps that require Python 3 **should** declare an unconditional dependency on `"python@3.x"`. These apps **must** work with the current Homebrew Python 3.x formula.
 
 Applications that are compatible with Python 2 **should** use the Apple-provided system Python in `/usr/bin` on systems that provide Python 2.7. No explicit Python dependency is needed since `/usr/bin` is always in `PATH` for Homebrew formulae.
 
-### Installing
+### Installing applications
 
-Applications should be installed into a Python [virtualenv](https://virtualenv.pypa.io/en/stable/) environment rooted in `libexec`. This prevents the app's Python modules from contaminating the system site-packages and vice versa.
+Applications should be installed into a Python [virtualenv](https://virtualenv.pypa.io/en/stable/) environment rooted in `libexec`. This prevents the app's Python modules from contaminating the system `site-packages` and vice versa.
 
-All of the Python module dependencies of the application (and their dependencies, recursively) should be declared as `resource`s in the formula and installed into the virtualenv, as well. Each dependency should be explicitly specified; please do not rely on `setup.py` or `pip` to perform automatic dependency resolution, for the [reasons described here](Acceptable-Formulae.md#we-dont-like-install-scripts-that-download-unversioned-things).
+All the Python module dependencies of the application (and their dependencies, recursively) should be declared as [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method)s in the formula and installed into the virtualenv as well. Each dependency should be explicitly specified; please do not rely on `setup.py` or `pip` to perform automatic dependency resolution, for the [reasons described here](Acceptable-Formulae.md#we-dont-like-install-scripts-that-download-unversioned-things).
 
 You can use `brew update-python-resources` to help you write resource stanzas. To use it, simply run `brew update-python-resources <formula>`. Sometimes, `brew update-python-resources` won't be able to automatically update the resources. If this happens, try running `brew update-python-resources --print-only <formula>` to print the resource stanzas instead of applying the changes directly to the file. You can then copy and paste resources as needed.
 
-If using `brew update-python-resources` doesn't work, you can use [homebrew-pypi-poet](https://pypi.python.org/pypi/homebrew-pypi-poet) to help you write resource stanzas. To use it, set up a virtualenv and install your package and all its dependencies. Then, `pip install homebrew-pypi-poet` into the same virtualenv. Running `poet some_package` will generate the necessary resource stanzas. You can do this like:
+If using `brew update-python-resources` doesn't work, you can use [homebrew-pypi-poet](https://github.com/tdsmith/homebrew-pypi-poet) to help you write resource stanzas. To use it, set up a virtualenv and install your package and all its dependencies. Then, `pip install homebrew-pypi-poet` into the same virtualenv. Running `poet some_package` will generate the necessary resource stanzas. You can do this like:
 
 ```sh
 # Use a temporary directory for the virtual environment
@@ -75,7 +75,7 @@ def install
 end
 ```
 
-### Example
+### Example formula
 
 Installing a formula with dependencies will look like this:
 
@@ -86,13 +86,13 @@ class Foo < Formula
   url "..."
 
   resource "six" do
-    url "https://pypi.python.org/packages/source/s/six/six-1.9.0.tar.gz"
-    sha256 "e24052411fc4fbd1f672635537c3fc2330d9481b18c0317695b46259512c91d5"
+    url "https://files.pythonhosted.org/packages/71/39/171f1c67cd00715f190ba0b100d606d440a28c93c7714febeca8b79af85e/six-1.16.0.tar.gz"
+    sha256 "1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"
   end
 
   resource "parsedatetime" do
-    url "https://pypi.python.org/packages/source/p/parsedatetime/parsedatetime-1.4.tar.gz"
-    sha256 "09bfcd8f3c239c75e77b3ff05d782ab2c1aed0892f250ce2adf948d4308fe9dc"
+    url "https://files.pythonhosted.org/packages/a8/20/cb587f6672dbe585d101f590c3871d16e7aec5a576a1694997a3777312ac/parsedatetime-2.6.tar.gz"
+    sha256 "4cb368fbb18a0b7231f4d76119165451c8d2e35951455dfee97c62a87b04d455"
   end
 
   def install
@@ -121,7 +121,7 @@ To add bindings for Python 3, please add `depends_on "python@3.x"` to work with 
 
 Build Python 2 bindings with the system Python by default (don't add an option) and they should be usable with any binary-compatible Python. If that isn't the case, it's an upstream bug; [here's some advice for resolving it](https://blog.tim-smith.us/2015/09/python-extension-modules-os-x/).
 
-### Dependencies
+### Dependencies for bindings
 
 Bindings should follow the same advice for Python module dependencies as libraries; see below for more.
 
@@ -147,39 +147,39 @@ Sometimes we have to edit a `Makefile` on-the-fly to use our prefix for the Pyth
 
 ## Libraries
 
-### Python declarations
+### Python declarations for libraries
 
 Libraries built for Python 3 should include `depends_on "python@3.x"`, which will bottle against Homebrew's Python 3.x. Python 2.x libraries must function when they are installed against either the system Python or brewed Python.
 
-Python 2 libraries need a `uses_from_macos "python@2"` declaration; they will be built with the system Python, but should still be usable with any other Python 2.7. If this is not the case, it's an upstream bug; [here's some advice for resolving it](https://blog.tim-smith.us/2015/09/python-extension-modules-os-x/).
+Python 2 libraries need a `uses_from_macos "python@2"` declaration; they will be built with the system Python, but should still be usable with any other Python 2.7. If not, it's an upstream bug; [here's some advice for resolving it](https://blog.tim-smith.us/2015/09/python-extension-modules-os-x/).
 
-### Installing
+### Installing libraries
 
-Libraries may be installed to `libexec` and added to `sys.path` by writing a `.pth` file (named like "homebrew-foo.pth") to the `prefix` site-packages. This simplifies the ensuing drama if `pip` is accidentally used to upgrade a Homebrew-installed package and prevents the accumulation of stale .pyc files in Homebrew's site-packages.
+Libraries may be installed to `libexec` and added to `sys.path` by writing a `.pth` file (named like "homebrew-foo.pth") to the `prefix` site-packages. This simplifies the ensuing drama if pip is accidentally used to upgrade a Homebrew-installed package and prevents the accumulation of stale `.pyc` files in Homebrew's site-packages.
 
 Most formulae presently just install to `prefix`.
 
-### Dependencies
+### Dependencies for libraries
 
-The dependencies of libraries must be installed so that they are importable. To minimise the potential for linking conflicts, dependencies should be installed to `libexec/<vendor>` and added to `sys.path` by writing a second `.pth` file (named like "homebrew-foo-dependencies.pth") to the `prefix` site-packages.
+Library dependencies must be installed so that they are importable. To minimise the potential for linking conflicts, dependencies should be installed to `libexec/<vendor>` and added to `sys.path` by writing a second `.pth` file (named like "homebrew-foo-dependencies.pth") to the `prefix` site-packages.
 
 ## Further down the rabbit hole
 
 Additional commentary that explains why Homebrew does some of the things it does.
 
-### setuptools vs. distutils vs. pip
+### Setuptools vs. Distutils vs. pip
 
-Distutils is a module in the Python standard library that provides developers a basic package management API. Setuptools is a module distributed outside the standard library that extends distutils. It is a convention that Python packages provide a `setup.py` that calls the `setup()` function from either distutils or setuptools.
+Distutils is a module in the Python standard library that provides developers a basic package management API. Setuptools is a module distributed outside the standard library that extends Distutils. It is a convention that Python packages provide a `setup.py` that calls the `setup()` function from either Distutils or Setuptools.
 
-Setuptools provides the `easy_install` command, which is an end-user package management tool that fetches and installs packages from PyPI, the Python Package Index. `pip` is another, newer end-user package management tool, which is also provided outside the standard library. While pip supplants `easy_install`, pip does not replace the other functionality of the setuptools module.
+Setuptools provides the `easy_install` command, which is an end-user package management tool that fetches and installs packages from PyPI, the Python Package Index. `pip` is another, newer end-user package management tool, which is also provided outside the standard library. While pip supplants `easy_install`, it does not replace the other functionality of the Setuptools module.
 
-Distutils and pip use a "flat" installation hierarchy that installs modules as individual files under site-packages while `easy_install` installs zipped eggs to site-packages instead.
+Distutils and pip use a "flat" installation hierarchy that installs modules as individual files under `site-packages` while `easy_install` installs zipped eggs to `site-packages` instead.
 
-Distribute (not to be confused with distutils) is an obsolete fork of setuptools. Distlib is a package maintained outside the standard library which is used by pip for some low-level packaging operations and is not relevant to most `setup.py` users.
+Distribute (not to be confused with Distutils) is an obsolete fork of Setuptools. Distlib is a package maintained outside the standard library which is used by pip for some low-level packaging operations and is not relevant to most `setup.py` users.
 
 ### Running `setup.py`
 
-In the event that a formula needs to interact with `setup.py` instead of calling `pip`, Homebrew provides a helper method, `Language::Python.setup_install_args`, which returns useful arguments for invoking `setup.py`. Your formula should use this instead of invoking `setup.py` explicitly. The syntax is:
+For when a formula needs to interact with `setup.py` instead of calling `pip`, Homebrew provides the helper method `Language::Python.setup_install_args` which returns useful arguments for invoking `setup.py`. Your formula should use this instead of invoking `setup.py` explicitly. The syntax is:
 
 ```ruby
 system Formula["python@3.x"].opt_bin/"python3", *Language::Python.setup_install_args(prefix)
@@ -189,7 +189,7 @@ where `prefix` is the destination prefix (usually `libexec` or `prefix`).
 
 ### What is `--single-version-externally-managed`?
 
-`--single-version-externally-managed` ("SVEM") is a setuptools-only [argument to `setup.py install`](https://setuptools.readthedocs.io/en/latest/setuptools.html?#install-run-easy-install-or-old-style-installation). The primary effect of SVEM is to use distutils to perform the install instead of using setuptools' `easy_install`.
+`--single-version-externally-managed` ("SVEM") is a Setuptools-only [argument to `setup.py install`](https://setuptools.readthedocs.io/en/latest/setuptools.html?#install-run-easy-install-or-old-style-installation). The primary effect of SVEM is using Distutils to perform the install instead of Setuptools' `easy_install`.
 
 `easy_install` does a few things that we need to avoid:
 
@@ -197,17 +197,17 @@ where `prefix` is the destination prefix (usually `libexec` or `prefix`).
 * upgrades dependencies in `sys.path` in-place
 * writes `.pth` and `site.py` files which aren't useful for us and cause link conflicts
 
-Setuptools requires that SVEM is used in conjunction with `--record`, which provides a list of files that can later be used to uninstall the package. We don't need or want this because Homebrew can manage uninstallation but since setuptools demands it we comply. The Homebrew convention is to call the record file "installed.txt".
+Setuptools requires that SVEM be used in conjunction with `--record`, which provides a list of files that can later be used to uninstall the package. We don't need or want this because Homebrew can manage uninstallation, but since Setuptools demands it we comply. The Homebrew convention is to name the record file "installed.txt".
 
-Detecting whether a `setup.py` uses `setup()` from setuptools or distutils is difficult, but we always need to pass this flag to setuptools-based scripts. `pip` faces the same problem that we do and forces `setup()` to use the setuptools version by loading a shim around `setup.py` that imports setuptools before doing anything else. Since setuptools monkey-patches distutils and replaces its `setup` function, this provides a single, consistent interface. We have borrowed this code and use it in `Language::Python.setup_install_args`.
+Detecting whether a `setup.py` uses `setup()` from Setuptools or Distutils is difficult, but we always need to pass this flag to Setuptools-based scripts. `pip` faces the same problem that we do and forces `setup()` to use the Setuptools version by loading a shim around `setup.py` that imports Setuptools before doing anything else. Since Setuptools monkey-patches Distutils and replaces its `setup` function, this provides a single, consistent interface. We have borrowed this code and use it in `Language::Python.setup_install_args`.
 
 ### `--prefix` vs `--root`
 
-`setup.py` accepts a slightly bewildering array of installation options. The correct switch for Homebrew is `--prefix`, which automatically sets the `--install-foo` family of options using sane POSIX-y values.
+`setup.py` accepts a slightly bewildering array of installation options. The correct switch for Homebrew is `--prefix`, which automatically sets the `--install-foo` family of options with sane POSIX-y values.
 
-`--root` [is used](https://mail.python.org/pipermail/distutils-sig/2010-November/017099.html) when installing into a prefix that will not become part of the final installation location of the files, like when building a .rpm or binary distribution. When using a `setup.py`-based setuptools, `--root` has the side effect of activating `--single-version-externally-managed`. It is not safe to use `--root` with an empty `--prefix` because the `root` is removed from paths when byte-compiling modules.
+`--root` [is used](https://mail.python.org/pipermail/distutils-sig/2010-November/017099.html) when installing into a prefix that will not become part of the final installation location of the files, like when building a RPM or binary distribution. When using a `setup.py`-based Setuptools, `--root` has the side effect of activating `--single-version-externally-managed`. It is not safe to use `--root` with an empty `--prefix` because the `root` is removed from paths when byte-compiling modules.
 
-It is probably safe to use `--prefix` with `--root=/`, which should work with either setuptools or distutils-based `setup.py`'s but is kinda ugly.
+It is probably safe to use `--prefix` with `--root=/`, which should work with either Setuptools- or Distutils-based `setup.py`'s, but it's kinda ugly.
 
 ### `pip` vs. `setup.py`
 

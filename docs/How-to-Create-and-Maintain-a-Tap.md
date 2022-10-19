@@ -8,15 +8,15 @@ A tap is usually a Git repository available online, but you can use anything as 
 
 The `brew tap-new` command can be used to create a new tap along with some template files.
 
-Tap formulae follow the same format as the core’s ones, and can be added under either the `Formula` subdirectory, the `HomebrewFormula` subdirectory or the repository’s root. The first available directory is used, other locations will be ignored. We recommend use of subdirectories because it makes the repository organisation easier to grasp, and top-level files are not mixed with formulae.
+Tap formulae follow the same format as the core’s ones, and can be added under either the `Formula` subdirectory, the `HomebrewFormula` subdirectory or the repository’s root. The first available directory is used, other locations will be ignored. We recommend the use of subdirectories because it makes the repository organisation easier to grasp, and top-level files are not mixed with formulae.
 
 See [homebrew/core](https://github.com/Homebrew/homebrew-core) for an example of a tap with a `Formula` subdirectory.
 
-## Naming your formulae to avoid clashes
+### Naming your formulae to avoid clashes
 
-If your formulae have the same name as Homebrew/homebrew-core formulae they cannot be installed side-by-side. If you wish to create a different version of a formula that's in Homebrew/homebrew-core (e.g. with `option`s) consider giving it a different name e.g. `nginx-full` for more fully-featured `nginx` formula. This will allow both `nginx` and `nginx-full` to be installed at the same time (assuming one is `keg_only` or the linked files do not clash).
+If a formula in your tap has the same name as a Homebrew/homebrew-core formula they cannot be installed side-by-side. If you wish to create a different version of a formula that's in Homebrew/homebrew-core (e.g. with `option`s) consider giving it a different name; e.g. `nginx-full` for a more full-featured `nginx` formula. This will allow both `nginx` and `nginx-full` to be installed at the same time (assuming one is [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) or the linked files do not clash).
 
-### Installing
+## Installing
 
 If it’s on GitHub, users can install any of your formulae with `brew install user/repo/formula`. Homebrew will automatically add your `github.com/user/homebrew-repo` tap before installing the formula. `user/repo/formula` points to the `github.com/user/homebrew-repo/**/formula.rb` file here.
 

@@ -7,7 +7,7 @@ image: https://brew.sh/assets/img/brewtestbot.png
 
 `brew test-bot` is the name for the automated review and testing system funded by [our Kickstarter in 2013](https://www.kickstarter.com/projects/homebrew/brew-test-bot).
 
-It comprises three Mac Pros hosting virtual machines that run the [`test-bot.rb`](https://github.com/Homebrew/homebrew-test-bot/) external command to perform automated testing of commits to the master branch, pull requests and custom builds requested by maintainers.
+It comprises three Mac Pros hosting virtual machines, several M1 Mac minis and some cloud Ubuntu instances that run the [`test-bot.rb`](https://github.com/Homebrew/homebrew-test-bot) external command to perform automated testing of commits to the master branch, pull requests and custom builds requested by maintainers.
 
 ## Pull Requests
 
