@@ -99,6 +99,23 @@ Don't follow the advice here but fix by using
 `Language::Python.setup_install_args` in the formula as described in
 [Python for Formula Authors](Python-for-Formula-Authors.md).
 
+## Installation fails with "unknown revision or path not in the working tree"
+
+When installing Homebrew, if the initial download fails with something like:
+
+    error: Not a valid ref: refs/remotes/origin/master
+    fatal: ambiguous argument 'refs/remotes/origin/master': unknown revision or path not in the working tree.
+    Use '--' to separate paths from revisions, like this:
+    'git <command> [<revision>...] -- [<file>...]'
+
+Or:
+
+    fatal: the remote end hung up unexpectedly
+    fatal: early EOF
+    fatal: index-pack failed
+
+This is an issue in the connection between your machine and GitHub, rather than a bug in Homebrew itself. See this [discussion topic](https://github.com/orgs/Homebrew/discussions/666) for a number of solutions others have found, such as using a wired connection or a VPN, or disabling network monitoring tools.
+
 ## Upgrading macOS
 
 Upgrading macOS can cause errors like the following:
