@@ -1,4 +1,4 @@
-# Homebrew Shell Completion
+# `brew` Shell Completion
 
 Homebrew comes with completion definitions for the `brew` command. Some packages also provide completion definitions for their own programs.
 

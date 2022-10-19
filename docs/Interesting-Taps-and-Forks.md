@@ -1,4 +1,4 @@
-# Interesting Taps & Forks
+# Interesting Taps and Forks
 
 A [tap](Taps.md) is Homebrew-speak for a Git repository containing additional formulae.
 
