@@ -84,7 +84,7 @@ Uninstallation is documented in the [FAQ](FAQ.md).
 
 <a name="1"><sup>1</sup></a> For 32-bit or PPC support see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 
-<a name="2"><sup>2</sup></a> 11 or higher is recommended, while 10.12–10.15 are supported on a best-effort basis. For 10.4–10.6 see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
+<a name="2"><sup>2</sup></a> 11 or higher is recommended, while 10.11–10.15 are supported on a best-effort basis. For 10.4–10.6 see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 
 <a name="3"><sup>3</sup></a> Most formulae require a compiler. A handful require a full Xcode installation. You can install Xcode, the CLT, or both; Homebrew supports all three configurations. Downloading Xcode may require an Apple Developer account on older versions of Mac OS X. Sign up for free at [Apple's website](https://developer.apple.com/register/index.action).
 
