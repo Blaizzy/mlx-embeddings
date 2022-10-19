@@ -146,9 +146,8 @@ module Homebrew
       return if specs[:tag].present?
 
       branch = Utils.popen_read("git", "ls-remote", "--symref", url, "HEAD")
-                    .match(%r{ref: refs/heads/(.*?)\s+HEAD})[1]
-
-      return if branch == specs[:branch]
+                    .match(%r{ref: refs/heads/(.*?)\s+HEAD})&.to_a&.second
+      return if branch.blank? || branch == specs[:branch]
 
       problem "Use `branch: \"#{branch}\"` to specify the default branch"
     end
