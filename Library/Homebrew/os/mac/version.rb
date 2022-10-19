@@ -17,13 +17,13 @@ module OS
       # and also update references in docs/Installation.md,
       # https://github.com/Homebrew/install/blob/HEAD/install.sh and
       # MacOSVersions::SYMBOLS
-      NEWEST_UNSUPPORTED = "13"
+      NEWEST_UNSUPPORTED = "14"
       private_constant :NEWEST_UNSUPPORTED
 
       # TODO: bump version when new macOS is released and also update
       # references in docs/Installation.md and
       # https://github.com/Homebrew/install/blob/HEAD/install.sh
-      OLDEST_SUPPORTED = "10.15"
+      OLDEST_SUPPORTED = "11"
       private_constant :OLDEST_SUPPORTED
 
       OLDEST_ALLOWED = "10.11"
