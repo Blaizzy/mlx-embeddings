@@ -132,6 +132,7 @@ module Homebrew
     old_bundle_gemfile = ENV.fetch("BUNDLE_GEMFILE", nil)
     old_bundle_with = ENV.fetch("BUNDLE_WITH", nil)
     old_bundle_frozen = ENV.fetch("BUNDLE_FROZEN", nil)
+    old_sdkroot = ENV.fetch("SDKROOT", nil)
 
     install_bundler!
 
@@ -144,6 +145,13 @@ module Homebrew
     ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
     ENV["BUNDLE_WITH"] = groups.join(" ")
     ENV["BUNDLE_FROZEN"] = "true"
+
+    # System Ruby does not pick up the correct SDK by default.
+    if ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]
+      macos_major = ENV.fetch("HOMEBREW_MACOS_VERSION").partition(".").first
+      sdkroot = "/Library/Developer/CommandLineTools/SDKs/MacOSX#{macos_major}.sdk"
+      ENV["SDKROOT"] = sdkroot if Dir.exist?(sdkroot)
+    end
 
     if @bundle_installed_groups != groups
       bundle = File.join(find_in_path("bundle"), "bundle")
@@ -186,5 +194,6 @@ module Homebrew
       ENV["BUNDLE_WITH"] = old_bundle_with
       ENV["BUNDLE_FROZEN"] = old_bundle_frozen
     end
+    ENV["SDKROOT"] = old_sdkroot
   end
 end
