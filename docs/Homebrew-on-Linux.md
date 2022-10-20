@@ -15,16 +15,17 @@ The Homebrew package manager may be used on Linux and [Windows Subsystem for Lin
 
 ## Features
 
-- Can install software to your home directory and so does not require *sudo*
 - Install software not packaged by your host distribution
 - Install up-to-date versions of software when your host distribution is old
 - Use the same package manager to manage your macOS, Linux, and Windows systems
 
 ## Install
 
-Instructions for a supported install of Homebrew on Linux are on the [homepage](https://brew.sh).
+Instructions for the best, supported install of Homebrew on Linux are on the [homepage](https://brew.sh).
 
-The installation script installs Homebrew to `/home/linuxbrew/.linuxbrew` using *sudo* if possible and within your home directory at `~/.linuxbrew` otherwise. Homebrew does not use *sudo* after installation. Using `/home/linuxbrew/.linuxbrew` allows the use of more binary packages (bottles) than installing in your personal home directory.
+The installation script installs Homebrew to `/home/linuxbrew/.linuxbrew` using *sudo* if possible and within your home directory at `~/.linuxbrew` otherwise. Homebrew does not use *sudo* after installation. Using `/home/linuxbrew/.linuxbrew` allows the use of most binary packages (bottles) which will not work when installing in e.g. your personal home directory.
+
+Technically, you can install Homebrew wherever you want. However, you shouldn't install outside the default, supported, best prefix. Many things will need to be built from source outside the default prefix. Building from source is slow, energy-inefficient, buggy and unsupported. The main reason Homebrew just works is **because** we use bottles (binary packages) and most of these require using the default prefix. If you decide to use another prefix: don't open any issues, even if you think they are unrelated to your prefix choice. They will be closed without response.
 
 The prefix `/home/linuxbrew/.linuxbrew` was chosen so that users without admin access can ask an admin to create a `linuxbrew` role account and still benefit from precompiled binaries. If you do not yourself have admin privileges, consider asking your admin staff to create a `linuxbrew` role account for you with home directory set to `/home/linuxbrew`.
 
@@ -68,15 +69,15 @@ To install build tools, paste at a terminal prompt:
   sudo yum install libxcrypt-compat # needed by Fedora 30 and up
   ```
 
-### ARM
+### ARM (unsupported)
 
-Homebrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but no binary packages (bottles) are available. Support for ARM is on a best-effort basis. Pull requests are welcome to improve the experience on ARM platforms.
+Homebrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but as they lack binary packages (bottles) they are unsupported. Pull requests are welcome to improve the experience on ARM platforms.
 
 You may need to install your own Ruby using your system package manager, a PPA, or `rbenv/ruby-build` as we no longer distribute a Homebrew Portable Ruby for ARM.
 
-### 32-bit x86
+### 32-bit x86 (incompatible)
 
-Homebrew does not currently support 32-bit x86 platforms. It would be possible for Homebrew to work on 32-bit x86 platforms with some effort. An interested and dedicated person could maintain a fork of Homebrew to develop support for 32-bit x86.
+Homebrew does not run at all on 32-bit x86 platforms.
 
 ### Windows Subsystem for Linux (WSL) 1
 

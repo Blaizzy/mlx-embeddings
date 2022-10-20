@@ -2,7 +2,7 @@
 
 Instructions for a supported install of Homebrew are on the [homepage](https://brew.sh).
 
-This script installs Homebrew to its preferred prefix (`/usr/local` for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux) so that [you don’t need sudo](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you `brew install`. It is a careful script; it can be run even if you have stuff installed in the preferred prefix already. It tells you exactly what it will do before it does it too. You have to confirm everything it will do before it starts.
+This script installs Homebrew to its default, supported, best prefix (`/usr/local` for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux) so that [you don’t need `sudo` after Homebrew's initial installation](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you `brew install`. This prefix is required for most bottles (binary packages) to be used. It is a careful script; it can be run even if you have stuff installed in the preferred prefix already. It tells you exactly what it will do before it does it too. You have to confirm everything it will do before it starts.
 
 ## macOS Requirements
 
@@ -36,21 +36,21 @@ export HOMEBREW_INSTALL_FROM_API=1
 
 This will make Homebrew install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew’s API instead of local checkouts of these repositories.
 
+## Unattended installation
+
+If you want a non-interactive run of the Homebrew installer that doesn't prompt for passwords (e.g. in automation scripts), prepend [`NONINTERACTIVE=1`](https://github.com/Homebrew/install/#install-homebrew-on-macos-or-linux) to the installation command.
+
 ## Alternative Installs
 
 ### Linux or Windows 10 Subsystem for Linux
 
 Check out [the Homebrew on Linux installation documentation](Homebrew-on-Linux.md).
 
-### Untar anywhere
+### Untar anywhere (unsupported)
 
-Just extract (or `git clone`) Homebrew wherever you want. Just avoid:
+Technically, you can just extract (or `git clone`) Homebrew wherever you want. However, you shouldn't install outside the default, supported, best prefix. Many things will need to be built from source outside the default prefix. Building from source is slow, energy-inefficient, buggy and unsupported. The main reason Homebrew just works is **because** we use bottles (binary packages) and most of these require using the default prefix. If you decide to use another prefix: don't open any issues, even if you think they are unrelated to your prefix choice. They will be closed without response.
 
-* Directories with names that contain spaces. Homebrew itself can handle spaces, but many build scripts cannot.
-* `/tmp` subdirectories because Homebrew gets upset.
-* `/sw` and `/opt/local` because build scripts get confused when Homebrew is there instead of Fink or MacPorts, respectively.
-
-However do yourself a favour and use the installer to install to the default prefix. Some things may not build when installed elsewhere. One of the reasons Homebrew just works relative to the competition is **because** we recommend installing here. *Pick another prefix at your peril!*
+**TL;DR: pick another prefix at your peril!**
 
 ```sh
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
@@ -70,13 +70,15 @@ brew update --force --quiet
 chmod -R go-w "$(brew --prefix)/share/zsh"
 ```
 
-### Multiple installations
+Make sure you avoid installing into:
+
+* Directories with names that contain spaces. Homebrew itself can handle spaces, but many build scripts cannot.
+* `/tmp` subdirectories because Homebrew gets upset.
+* `/sw` and `/opt/local` because build scripts get confused when Homebrew is there instead of Fink or MacPorts, respectively.
+
+### Multiple installations (unsupported)
 
 Create a Homebrew installation wherever you extract the tarball. Whichever `brew` command is called is where the packages will be installed. You can use this as you see fit, e.g. to have a system set of libs in the default prefix and tweaked formulae for development in `~/homebrew`.
-
-### Unattended installation
-
-If you want a non-interactive run of the Homebrew installer that doesn't prompt for passwords (e.g. in automation scripts), prepend [`NONINTERACTIVE=1`](https://github.com/Homebrew/install/#install-homebrew-on-macos-or-linux) to the installation command.
 
 ## Uninstallation
 
@@ -84,8 +86,8 @@ Uninstallation is documented in the [FAQ](FAQ.md).
 
 <a name="1"><sup>1</sup></a> For 32-bit or PPC support see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 
-<a name="2"><sup>2</sup></a> 11 or higher is recommended, while 10.11–10.15 are supported on a best-effort basis. For 10.4–10.6 see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
+<a name="2"><sup>2</sup></a> macOS 11 (Ventura) or higher is best and supported, 10.11 (El Capitan) – 10.14 (Mojave) are unsupported but may work and 10.10 (Yosemite) and older will not run Homebrew at all. For 10.4 (Tiger) – 10.6 (Snow Leopard) see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 
-<a name="3"><sup>3</sup></a> Most formulae require a compiler. A handful require a full Xcode installation. You can install Xcode, the CLT, or both; Homebrew supports all three configurations. Downloading Xcode may require an Apple Developer account on older versions of Mac OS X. Sign up for free at [Apple's website](https://developer.apple.com/register/index.action).
+<a name="3"><sup>3</sup></a> You may need to install Xcode, the CLT, or both depending on the formula, to install a bottle (binary package) which is the only supported configuration. Downloading Xcode may require an Apple Developer account on older versions of Mac OS X. Sign up for free at [Apple's website](https://developer.apple.com/register/index.action).
 
-<a name="4"><sup>4</sup></a> The one-liner installation method found on [brew.sh](https://brew.sh) requires the Bourne-again shell, i.e. `bash`. Notably, `zsh`, `fish`, `tcsh` and `csh` will not work.
+<a name="4"><sup>4</sup></a> The one-liner installation method found on [brew.sh](https://brew.sh) uses the Bourne-again shell at `/bin/bash`. Notably, `zsh`, `fish`, `tcsh` and `csh` will not work.
