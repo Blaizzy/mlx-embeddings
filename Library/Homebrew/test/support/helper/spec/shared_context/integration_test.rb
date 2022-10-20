@@ -116,7 +116,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       ruby_args << (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path.to_s
     end
 
-    Bundler.with_clean_env do
+    Bundler.with_unbundled_env do
       stdout, stderr, status = Open3.capture3(env, *@ruby_args, *args)
       $stdout.print stdout
       $stderr.print stderr
@@ -125,7 +125,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
   end
 
   def brew_sh(*args)
-    Bundler.with_clean_env do
+    Bundler.with_unbundled_env do
       stdout, stderr, status = Open3.capture3("#{ENV.fetch("HOMEBREW_PREFIX")}/bin/brew", *args)
       $stdout.print stdout
       $stderr.print stderr
