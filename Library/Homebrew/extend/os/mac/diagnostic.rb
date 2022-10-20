@@ -205,10 +205,10 @@ module Homebrew
       end
 
       def check_ruby_version
-        # TODO: update portable-ruby to 2.6.9 when Ventura reaches RC
+        # TODO: update portable-ruby to 2.6.10 when Ventura reaches RC
         required_version = if MacOS.version >= :ventura &&
                               ENV["HOMEBREW_RUBY_PATH"].to_s.exclude?("/vendor/portable-ruby/")
-          "2.6.9"
+          "2.6.10"
         else
           HOMEBREW_REQUIRED_RUBY_VERSION
         end

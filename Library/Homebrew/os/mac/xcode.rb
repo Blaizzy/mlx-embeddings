@@ -246,7 +246,7 @@ module OS
         when "12.0.5" then "12.5.1"
         when "13.0.0" then "13.2.1"
         when "13.1.6" then "13.4.1"
-        else               "14.0.1"
+        else               "14.1"
         end
       end
 
@@ -343,7 +343,7 @@ module OS
       sig { returns(String) }
       def latest_clang_version
         case MacOS.version
-        when "13"    then "1400.0.29.201"
+        when "13"    then "1400.0.29.202"
         when "12"    then "1316.0.21.2.5"
         when "11"    then "1300.0.29.30"
         when "10.15" then "1200.0.32.29"
