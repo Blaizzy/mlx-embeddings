@@ -2,7 +2,7 @@
 
 Is your favorite software missing from Homebrew? Then you're the perfect person to resolve this problem.
 
-If you want to add software that is either closed source or a GUI-only program, you will want to follow the guide for [Casks](#casks). Otherwise follow the guide for [Formulae](#formulae). See also: [Homebrew Terminology](Formula-Cookbook.md#homebrew-terminology)
+If you want to add software that is either closed source or a GUI-only program, you will want to follow the guide for [Casks](#casks). Otherwise follow the guide for [Formulae](#formulae) (see also: [Homebrew Terminology](Formula-Cookbook.md#homebrew-terminology)).
 
 Before you start, please check the open pull requests for [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core/pulls) or [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-cask/pulls) to make sure no one else beat you to the punch.
 
@@ -34,7 +34,7 @@ If you're stuck, ask for help on GitHub or [Homebrew/discussions](https://github
 
 ### Submitting the formula
 
-You're finally ready to submit your formula to the [homebrew-core](https://github.com/Homebrew/homebrew-core/) repository. If you haven't done this before, you can refer to the [How to Open a Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation for help. Maintainers will review the pull request and provide feedback about any areas that need to be addressed before the formula can be added to Homebrew.
+You're finally ready to submit your formula to the [homebrew-core](https://github.com/Homebrew/homebrew-core) repository. If you haven't done this before, you can refer to the [How to Open a Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation for help. Maintainers will review the pull request and provide feedback about any areas that need to be addressed before the formula can be added to Homebrew.
 
 If you've made it this far, congratulations on submitting a Homebrew formula! We appreciate the hard work you put into this and you can take satisfaction in knowing that your work may benefit other Homebrew users as well.
 
@@ -166,7 +166,7 @@ Fill in the following stanzas for your cask:
 | ------------------ | ----------- |
 | `version`          | application version
 | `sha256`           | SHA-256 checksum of the file downloaded from `url`, calculated by the command `shasum -a 256 <file>`. Can be suppressed by using the special value `:no_check`. (see [`sha256` Stanza Details](Cask-Cookbook.md#stanza-sha256))
-| `url`              | URL to the `.dmg`/`.zip`/`.tgz`/`.tbz2` file that contains the application.<br />A [`verified` parameter](Cask-Cookbook.md#when-url-and-homepage-domains-differ-add-verified) must be added if the hostnames in the `url` and `homepage` stanzas differ. [Block syntax](Cask-Cookbook.md#using-a-block-to-defer-code-execution) is available for URLs that change on every visit
+| `url`              | URL to the `.dmg`/`.zip`/`.tgz`/`.tbz2` file that contains the application.<br />A [`verified` parameter](Cask-Cookbook.md#when-url-and-homepage-domains-differ-add-verified) must be added if the hostnames in the `url` and `homepage` stanzas differ. [Block syntax](Cask-Cookbook.md#using-a-block-to-defer-code-execution) is available for URLs that change on every visit.
 | `name`             | the full and proper name defined by the vendor, and any useful alternate names (see [`name` Stanza Details](Cask-Cookbook.md#stanza-name))
 | `desc`             | one-line description of the software (see [`desc` Stanza Details](Cask-Cookbook.md#stanza-desc))
 | `homepage`         | application homepage; used for the `brew home` command
@@ -179,7 +179,7 @@ Other commonly used stanzas are:
 | `livecheck`        | Ruby block describing how to find updates for this cask (see [`livecheck` Stanza Details](Cask-Cookbook.md#stanza-livecheck))
 | `pkg`              | relative path to a `.pkg` file containing the distribution (see [`pkg` Stanza Details](Cask-Cookbook.md#stanza-pkg))
 | `caveats`          | a string or Ruby block providing the user with cask-specific information at install time (see [`caveats` Stanza Details](Cask-Cookbook.md#stanza-caveats))
-| `uninstall`        | procedures to uninstall a cask. Optional unless the `pkg` stanza is used. (see [`uninstall` Stanza Details](Cask-Cookbook.md#stanza-uninstall))
+| `uninstall`        | procedures to uninstall a cask; optional unless the `pkg` stanza is used (see [`uninstall` Stanza Details](Cask-Cookbook.md#stanza-uninstall))
 | `zap`              | additional procedures for a more complete uninstall, including configuration files and shared resources (see [`zap` Stanza Details](Cask-Cookbook.md#stanza-zap))
 
 Additional [`artifact` stanzas](Cask-Cookbook.md#at-least-one-artifact-stanza-is-also-required) may be needed for special use cases. Even more special-use stanzas are listed at [Optional Stanzas](Cask-Cookbook.md#optional-stanzas).
@@ -203,9 +203,9 @@ Example:
 1. The folder `TexmakerMacosxLion` contains the application `texmaker.app`.
 1. So, the `app` stanza should include the subfolder as a relative path:
 
-  ```ruby
-  app "TexmakerMacosxLion/texmaker.app"
-  ```
+   ```ruby
+   app "TexmakerMacosxLion/texmaker.app"
+   ```
 
 ### Testing and auditing the cask
 

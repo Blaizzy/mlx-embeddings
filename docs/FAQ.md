@@ -1,4 +1,4 @@
-# FAQ
+# FAQ (Frequently Asked Questions)
 
 ## Is there a glossary of terms around?
 

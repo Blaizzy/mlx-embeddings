@@ -2,7 +2,7 @@
 
 Instructions for a supported install of Homebrew are on the [homepage](https://brew.sh).
 
-This script installs Homebrew to its default, supported, best prefix (`/usr/local` for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux) so that [you don’t need `sudo` after Homebrew's initial installation](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you `brew install`. This prefix is required for most bottles (binary packages) to be used. It is a careful script; it can be run even if you have stuff installed in the preferred prefix already. It tells you exactly what it will do before it does it too. You have to confirm everything it will do before it starts.
+This script installs Homebrew to its default, supported, best prefix (`/usr/local` for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux) so that [you don’t need *sudo* after Homebrew's initial installation](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you `brew install`. This prefix is required for most bottles (binary packages) to be used. It is a careful script; it can be run even if you have stuff installed in the preferred prefix already. It tells you exactly what it will do before it does it too. You have to confirm everything it will do before it starts.
 
 ## macOS Requirements
 
@@ -34,7 +34,7 @@ export HOMEBREW_INSTALL_FROM_API=1
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
-This will make Homebrew install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew’s API instead of local checkouts of these repositories.
+This will make Homebrew install formulae and casks from the `homebrew/core` and `homebrew/cask` taps using Homebrew’s API instead of local checkouts of these repositories.
 
 ## Unattended installation
 
@@ -56,13 +56,13 @@ Technically, you can just extract (or `git clone`) Homebrew wherever you want. H
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 ```
 
-or
+or:
 
 ```sh
 git clone https://github.com/Homebrew/brew homebrew
 ```
 
-then
+then:
 
 ```sh
 eval "$(homebrew/bin/brew shellenv)"
