@@ -225,6 +225,9 @@ RSpec.configure do |config|
       if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
+      else
+        # don't retry when focusing/debugging
+        config.default_retry_count = 0
       end
       $stdin.reopen(File::NULL)
 
