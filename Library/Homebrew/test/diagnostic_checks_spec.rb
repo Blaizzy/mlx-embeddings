@@ -91,11 +91,12 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_for_config_scripts" do
-    mktmpdir do |path|
-      file = "#{path}/foo-config"
+    mktmpdir do |tmp|
+      file = "#{tmp}/foo-config"
       FileUtils.touch file
       FileUtils.chmod 0755, file
-      ENV["PATH"] = "#{path}#{File::PATH_SEPARATOR}#{ENV.fetch("PATH")}"
+      homebrew_path = "#{tmp}#{File::PATH_SEPARATOR}#{ENV.fetch("PATH")}"
+      stub_const("ORIGINAL_PATHS", PATH.new(homebrew_path).map { |path| Pathname.new(path).expand_path }.compact)
 
       expect(checks.check_for_config_scripts)
         .to match('"config" scripts exist')
