@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 describe Cask::DSL::Appcast do
-  subject(:appcast) { described_class.new(url, params) }
+  subject(:appcast) { described_class.new(url, **params) }
 
   let(:url) { "https://brew.sh" }
   let(:uri) { URI(url) }

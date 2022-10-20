@@ -412,7 +412,7 @@ module Utils
             # Unknown charset in Content-Type header
           end
         end
-        file_contents = File.read(file.path, open_args)
+        file_contents = File.read(file.path, **open_args)
         file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
       end
 

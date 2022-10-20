@@ -174,7 +174,7 @@ module Homebrew
 
           if block
             block_return_value = case block.parameters[0]
-            when [:opt, :item], [:rest]
+            when [:opt, :item], [:rest], [:req]
               regex.present? ? yield(item, regex) : yield(item)
             when [:opt, :items]
               regex.present? ? yield(items, regex) : yield(items)

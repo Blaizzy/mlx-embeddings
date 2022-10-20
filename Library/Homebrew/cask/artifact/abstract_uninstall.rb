@@ -307,7 +307,7 @@ module Cask
           return
         end
 
-        command.run(executable_path, script_arguments)
+        command.run(executable_path, **script_arguments)
         sleep 1
       end
 
@@ -430,11 +430,11 @@ module Cask
         success
       end
 
-      def uninstall_rmdir(*args)
+      def uninstall_rmdir(*args, **kwargs)
         return if args.empty?
 
         ohai "Removing directories if empty:"
-        recursive_rmdir(*args)
+        recursive_rmdir(*args, **kwargs)
       end
     end
   end

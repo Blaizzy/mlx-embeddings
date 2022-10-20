@@ -124,7 +124,7 @@ describe SystemCommand do
 
     shared_examples "it returns '1 2 3 4 5 6'" do
       describe "its result" do
-        subject { described_class.run(command, options) }
+        subject { described_class.run(command, **options) }
 
         it { is_expected.to be_a_success }
         its(:stdout) { is_expected.to eq([1, 3, 5, nil].join("\n")) }
@@ -136,7 +136,7 @@ describe SystemCommand do
       it "echoes only STDERR" do
         expected = [2, 4, 6].map { |i| "#{i}\n" }.join
         expect {
-          described_class.run(command, options)
+          described_class.run(command, **options)
         }.to output(expected).to_stderr
       end
 
@@ -149,7 +149,7 @@ describe SystemCommand do
       end
 
       it "echoes both STDOUT and STDERR" do
-        expect { described_class.run(command, options) }
+        expect { described_class.run(command, **options) }
           .to output("1\n3\n5\n").to_stdout
           .and output("2\n4\n6\n").to_stderr
       end
@@ -164,7 +164,7 @@ describe SystemCommand do
 
       it "echoes nothing" do
         expect {
-          described_class.run(command, options)
+          described_class.run(command, **options)
         }.to output("").to_stdout
       end
 
@@ -179,7 +179,7 @@ describe SystemCommand do
       it "echoes only STDOUT" do
         expected = [1, 3, 5].map { |i| "#{i}\n" }.join
         expect {
-          described_class.run(command, options)
+          described_class.run(command, **options)
         }.to output(expected).to_stdout
       end
 
@@ -198,7 +198,7 @@ describe SystemCommand do
 
     it "returns without deadlocking" do
       wait(30).for {
-        described_class.run(command, options)
+        described_class.run(command, **options)
       }.to be_a_success
     end
   end
