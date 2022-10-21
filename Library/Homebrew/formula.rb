@@ -2107,6 +2107,7 @@ class Formula
         "url"      => stable.url,
         "tag"      => stable.specs[:tag],
         "revision" => stable.specs[:revision],
+        "checksum" => stable.checksum&.to_s,
       }
 
       hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
