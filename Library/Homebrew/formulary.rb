@@ -159,6 +159,7 @@ module Formulary
         stable do
           url urls_stable["url"]
           version json_formula["versions"]["stable"]
+          sha256 urls_stable["checksum"] if urls_stable["checksum"].present?
         end
       end
 
