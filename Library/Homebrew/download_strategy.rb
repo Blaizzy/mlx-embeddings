@@ -813,7 +813,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
   def initialize(url, name, version, **meta)
     # Needs to be before the call to `super`, as the VCSDownloadStrategy's
     # constructor calls `cache_tag` and sets the cache path.
-    @only_paths = meta[:only_paths]
+    @only_path = meta[:only_path]
 
     super
     @ref_type ||= :branch
@@ -889,7 +889,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
   end
 
   def partial_clone_sparse_checkout?
-    return false if @only_paths.blank?
+    return false if @only_path.blank?
 
     Utils::Git.supports_partial_clone_sparse_checkout?
   end
@@ -1052,8 +1052,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
              args:  ["config", "core.sparseCheckout", "true"],
              chdir: cached_location
 
-    sparse_checkout_paths = "#{@only_paths.join("\n")}\n"
-    (git_dir/"info"/"sparse-checkout").atomic_write(sparse_checkout_paths)
+    (git_dir/"info"/"sparse-checkout").atomic_write("#{@only_path}\n")
   end
 end
 

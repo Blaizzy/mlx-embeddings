@@ -15,7 +15,7 @@ class URL < Delegator
                 :verified, :using,
                 :tag, :branch, :revisions, :revision,
                 :trust_cert, :cookies, :referer, :header, :user_agent,
-                :data, :only_paths
+                :data, :only_path
 
     extend Forwardable
     def_delegators :uri, :path, :scheme, :to_s
@@ -36,7 +36,7 @@ class URL < Delegator
         header:     T.nilable(String),
         user_agent: T.nilable(T.any(Symbol, String)),
         data:       T.nilable(T::Hash[String, String]),
-        only_paths: T.nilable(T::Array[String]),
+        only_path:  T.nilable(String),
       ).void
     }
     def initialize(
@@ -53,7 +53,7 @@ class URL < Delegator
       header: nil,
       user_agent: nil,
       data: nil,
-      only_paths: nil
+      only_path: nil
     )
 
       @uri = URI(uri)
@@ -71,7 +71,7 @@ class URL < Delegator
       specs[:header]     = @header     = header
       specs[:user_agent] = @user_agent = user_agent || :default
       specs[:data]       = @data       = data
-      specs[:only_paths] = @only_paths = only_paths
+      specs[:only_path]  = @only_path  = only_path
 
       @specs = specs.compact
     end
@@ -159,7 +159,7 @@ class URL < Delegator
       header:          T.nilable(String),
       user_agent:      T.nilable(T.any(Symbol, String)),
       data:            T.nilable(T::Hash[String, String]),
-      only_paths:      T.nilable(T::Array[String]),
+      only_path:       T.nilable(String),
       caller_location: Thread::Backtrace::Location,
       dsl:             T.nilable(Cask::DSL),
       block:           T.nilable(T.proc.params(arg0: T.all(String, BlockDSL::PageWithURL)).returns(T.untyped)),
@@ -179,7 +179,7 @@ class URL < Delegator
     header: nil,
     user_agent: nil,
     data: nil,
-    only_paths: nil,
+    only_path: nil,
     caller_location: T.must(caller_locations).fetch(0),
     dsl: nil,
     &block
@@ -207,7 +207,7 @@ class URL < Delegator
         header:     header,
         user_agent: user_agent,
         data:       data,
-        only_paths: only_paths,
+        only_path:  only_path,
       )
     end
     )
