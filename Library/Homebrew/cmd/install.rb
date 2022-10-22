@@ -140,6 +140,7 @@ module Homebrew
 
       conflicts "--ignore-dependencies", "--only-dependencies"
       conflicts "--build-from-source", "--build-bottle", "--force-bottle"
+      conflicts "--adopt", "--force"
 
       named_args [:formula, :cask], min: 1
     end
@@ -193,6 +194,7 @@ module Homebrew
         binaries:       args.binaries?,
         verbose:        args.verbose?,
         force:          args.force?,
+        adopt:          args.adopt?,
         require_sha:    args.require_sha?,
         skip_cask_deps: args.skip_cask_deps?,
         quarantine:     args.quarantine?,

@@ -97,6 +97,7 @@ module Homebrew
       cask_options
 
       conflicts "--build-from-source", "--force-bottle"
+      conflicts "--adopt", "--force"
 
       named_args [:outdated_formula, :outdated_cask]
     end
@@ -226,6 +227,7 @@ module Homebrew
     Cask::Cmd::Upgrade.upgrade_casks(
       *casks,
       force:               args.force?,
+      adopt:               args.adopt?,
       greedy:              args.greedy?,
       greedy_latest:       args.greedy_latest?,
       greedy_auto_updates: args.greedy_auto_updates?,
