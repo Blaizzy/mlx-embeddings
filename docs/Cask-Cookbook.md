@@ -1138,6 +1138,18 @@ In rare cases, a distribution may not be available over ordinary HTTP/S. Subvers
 | `revision:`        | a string identifying the subversion revision to download
 | `trust_cert:`      | set to `true` to automatically trust the certificate presented by the server (avoiding an interactive prompt)
 
+#### Git URLs
+
+Artifacts also may be distributed via git repositories. URLs that end in `.git` are automatically assumed to be git repositories, and the following key/value pairs may be appended to `url`:
+
+| key                | value       |
+| ------------------ | ----------- |
+| `using:`           | the symbol `:git` is the only legal value
+| `tag:`             | a string identifying the git tag to download
+| `revision:`        | a string identifying the git revision to download
+| `branch:`          | a string identifying the git branch to download
+| `only_path:`       | a path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can signficantly speed up downloads. If provided, artifact paths are relative to this path.
+
 #### SourceForge/OSDN URLs
 
 SourceForge and OSDN (formerly `SourceForge.JP`) projects are common ways to distribute binaries, but they provide many different styles of URLs to get to the goods.
