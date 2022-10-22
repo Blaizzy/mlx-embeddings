@@ -124,7 +124,7 @@ module Homebrew
 
             bundle_version = BundleVersion.new(short_version, version) if short_version || version
 
-            next if os && os != "osx"
+            next if os && !((os == "osx") || (os == "macos"))
 
             if (minimum_system_version = item.elements["minimumSystemVersion"]&.text&.gsub(/\A\D+|\D+\z/, ""))
               macos_minimum_system_version = begin

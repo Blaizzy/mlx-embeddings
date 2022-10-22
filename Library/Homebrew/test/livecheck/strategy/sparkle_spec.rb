@@ -7,60 +7,8 @@ require "bundle_version"
 describe Homebrew::Livecheck::Strategy::Sparkle do
   subject(:sparkle) { described_class }
 
-  let(:appcast_url) { "https://www.example.com/example/appcast.xml" }
-  let(:non_http_url) { "ftp://brew.sh/" }
-
-  let(:item_hash) {
-    [
-      {
-        title:         "Version 1.2.3",
-        pub_date:      "Fri, 01 Jan 2021 01:23:45 +0000",
-        url:           "https://www.example.com/example/example-1.2.3.tar.gz",
-        short_version: "1.2.3",
-        version:       "123",
-      },
-      {
-        title:         "Version 1.2.2",
-        pub_date:      "Not a parseable date string",
-        url:           "https://www.example.com/example/example-1.2.2.tar.gz",
-        short_version: "1.2.2",
-        version:       "122",
-      },
-    ]
-  }
-
-  let(:xml) {
-    first_item = <<~EOS
-      <item>
-        <title>#{item_hash[0][:title]}</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hash[0][:short_version]}.html</sparkle:releaseNotesLink>
-        <pubDate>#{item_hash[0][:pub_date]}</pubDate>
-        <enclosure url="#{item_hash[0][:url]}" sparkle:shortVersionString="#{item_hash[0][:short_version]}" sparkle:version="#{item_hash[0][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
-      </item>
-    EOS
-
-    second_item = <<~EOS
-      <item>
-        <title>#{item_hash[1][:title]}</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hash[1][:short_version]}.html</sparkle:releaseNotesLink>
-        <pubDate>#{item_hash[1][:pub_date]}</pubDate>
-        <sparkle:version>#{item_hash[1][:version]}</sparkle:version>
-        <sparkle:shortVersionString>#{item_hash[1][:short_version]}</sparkle:shortVersionString>
-        <link>#{item_hash[1][:url]}</link>
-      </item>
-    EOS
-
-    items_to_omit = <<~EOS
-      #{first_item.sub(%r{<(enclosure[^>]+?)\s*?/>}, '<\1 os="not-osx" />')}
-      #{first_item.sub(/(<sparkle:minimumSystemVersion>)[^<]+?</m, '\1100<')}
-      #{first_item.sub(/(<sparkle:minimumSystemVersion>)[^<]+?</m, '\19000<')}
-      <item>
-      </item>
-    EOS
-
-    appcast = <<~EOS
+  def create_appcast_xml(items_str = "")
+    <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
         <channel>
@@ -68,30 +16,132 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           <link>#{appcast_url}</link>
           <description>Most recent changes with links to updates.</description>
           <language>en</language>
-          #{first_item}
-          #{second_item}
+          #{items_str}
         </channel>
       </rss>
     EOS
+  end
 
-    omitted_items = appcast.sub("</item>", "</item>\n#{items_to_omit}")
+  let(:appcast_url) { "https://www.example.com/example/appcast.xml" }
+  let(:non_http_url) { "ftp://brew.sh/" }
+
+  # The `item_hashes` data is used to create test appcast XML and expected
+  # `Sparkle::Item` objects.
+  let(:item_hashes) {
+    {
+      v123: {
+        title:         "Version 1.2.3",
+        pub_date:      "Fri, 01 Jan 2021 01:23:45 +0000",
+        url:           "https://www.example.com/example/example-1.2.3.tar.gz",
+        short_version: "1.2.3",
+        version:       "123",
+      },
+      v122: {
+        title:         "Version 1.2.2",
+        pub_date:      "Not a parseable date string",
+        url:           "https://www.example.com/example/example-1.2.2.tar.gz",
+        short_version: "1.2.2",
+        version:       "122",
+      },
+      v121: {
+        title:         "Version 1.2.1",
+        pub_date:      "Thu, 31 Dec 2020 01:23:45 +0000",
+        url:           "https://www.example.com/example/example-1.2.1.tar.gz",
+        short_version: "1.2.1",
+        version:       "121",
+      },
+      v120: {
+        title:         "Version 1.2.0",
+        pub_date:      "Wed, 30 Dec 2020 01:23:45 +0000",
+        url:           "https://www.example.com/example/example-1.2.0.tar.gz",
+        short_version: "1.2.0",
+        version:       "120",
+      },
+    }
+  }
+
+  let(:xml) {
+    v123_item = <<~EOS
+      <item>
+        <title>#{item_hashes[:v123][:title]}</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v123][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hashes[:v123][:pub_date]}</pubDate>
+        <enclosure url="#{item_hashes[:v123][:url]}" sparkle:shortVersionString="#{item_hashes[:v123][:short_version]}" sparkle:version="#{item_hashes[:v123][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+      </item>
+    EOS
+
+    v122_item = <<~EOS
+      <item>
+        <title>#{item_hashes[:v122][:title]}</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v122][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hashes[:v122][:pub_date]}</pubDate>
+        <sparkle:version>#{item_hashes[:v122][:version]}</sparkle:version>
+        <sparkle:shortVersionString>#{item_hashes[:v122][:short_version]}</sparkle:shortVersionString>
+        <link>#{item_hashes[:v122][:url]}</link>
+      </item>
+    EOS
+
+    v121_item_with_osx_os = <<~EOS
+      <item>
+        <title>#{item_hashes[:v121][:title]}</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v121][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hashes[:v121][:pub_date]}</pubDate>
+        <enclosure os="osx" url="#{item_hashes[:v121][:url]}" sparkle:shortVersionString="#{item_hashes[:v121][:short_version]}" sparkle:version="#{item_hashes[:v121][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+      </item>
+    EOS
+
+    v120_item_with_macos_os = <<~EOS
+      <item>
+        <title>#{item_hashes[:v120][:title]}</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v120][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hashes[:v120][:pub_date]}</pubDate>
+        <enclosure os="macos" url="#{item_hashes[:v120][:url]}" sparkle:shortVersionString="#{item_hashes[:v120][:short_version]}" sparkle:version="#{item_hashes[:v120][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+      </item>
+    EOS
+
+    # This main `appcast` data is intended as a relatively normal example.
+    # As such, it also serves as a base for some other test data.
+    appcast = create_appcast_xml <<~EOS
+      #{v123_item}
+      #{v122_item}
+      #{v121_item_with_osx_os}
+      #{v120_item_with_macos_os}
+    EOS
+
+    omitted_items = create_appcast_xml <<~EOS
+      #{v123_item.sub(%r{<(enclosure[^>]+?)\s*?/>}, '<\1 os="not-osx-or-macos" />')}
+      #{v123_item.sub(/(<sparkle:minimumSystemVersion>)[^<]+?</m, '\1100<')}
+      <item>
+      </item>
+    EOS
+
+    # Set the first item in a copy of `appcast` to the "beta" channel, to test
+    # filtering items by channel using a `strategy` block.
     beta_channel_item = appcast.sub(
-      first_item,
-      first_item.sub(
-        "</title",
+      v123_item,
+      v123_item.sub(
+        "</title>",
         "</title>\n<sparkle:channel>beta</sparkle:channel>",
       ),
     )
-    no_versions_item =
-      appcast
-        .sub(second_item, "")
-        .gsub(/sparkle:(shortVersionString|version)="[^"]+?"\s*/, "")
-        .sub(
-          "<title>#{item_hash[0][:title]}</title>",
-          "<title>Version</title>",
-        )
-    no_items = appcast.sub(%r{<item>.+</item>}m, "")
-    undefined_namespace = appcast.sub(/\s*xmlns:sparkle="[^"]+?"/, "")
+
+    no_versions_item = create_appcast_xml <<~EOS
+      <item>
+        <title>Version</title>
+        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v123][:short_version]}.html</sparkle:releaseNotesLink>
+        <pubDate>#{item_hashes[:v123][:pub_date]}</pubDate>
+        <enclosure url="#{item_hashes[:v123][:url]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+      </item>
+    EOS
+
+    no_items = create_appcast_xml
+
+    undefined_namespace = appcast.sub(/\s*xmlns:sparkle="[^"]+"/, "")
 
     {
       appcast:             appcast,
@@ -106,36 +156,74 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   let(:title_regex) { /Version\s+v?(\d+(?:\.\d+)+)\s*$/i }
 
   let(:items) {
-    items = {
-      appcast: [
-        Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-          title:          item_hash[0][:title],
-          pub_date:       Time.parse(item_hash[0][:pub_date]),
-          url:            item_hash[0][:url],
-          bundle_version: Homebrew::BundleVersion.new(item_hash[0][:short_version], item_hash[0][:version]),
-        ),
-        Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-          title:          item_hash[1][:title],
-          pub_date:       Time.new(0),
-          url:            item_hash[1][:url],
-          bundle_version: Homebrew::BundleVersion.new(item_hash[1][:short_version], item_hash[1][:version]),
-        ),
+    {
+      v123: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+        title:          item_hashes[:v123][:title],
+        pub_date:       Time.parse(item_hashes[:v123][:pub_date]),
+        url:            item_hashes[:v123][:url],
+        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v123][:short_version],
+                                                    item_hashes[:v123][:version]),
+      ),
+      v122: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+        title:          item_hashes[:v122][:title],
+        # `#items_from_content` falls back to a default `pub_date` when
+        # one isn't provided or can't be successfully parsed.
+        pub_date:       Time.new(0),
+        url:            item_hashes[:v122][:url],
+        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v122][:short_version],
+                                                    item_hashes[:v122][:version]),
+      ),
+      v121: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+        title:          item_hashes[:v121][:title],
+        pub_date:       Time.parse(item_hashes[:v121][:pub_date]),
+        url:            item_hashes[:v121][:url],
+        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v121][:short_version],
+                                                    item_hashes[:v121][:version]),
+      ),
+      v120: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+        title:          item_hashes[:v120][:title],
+        pub_date:       Time.parse(item_hashes[:v120][:pub_date]),
+        url:            item_hashes[:v120][:url],
+        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v120][:short_version],
+                                                    item_hashes[:v120][:version]),
+      ),
+    }
+  }
+
+  let(:item_arrays) {
+    item_arrays = {
+      appcast:        [
+        items[:v123],
+        items[:v122],
+        items[:v121],
+        items[:v120],
+      ],
+      appcast_sorted: [
+        items[:v123],
+        items[:v121],
+        items[:v120],
+        items[:v122],
       ],
     }
 
-    beta_channel_item = items[:appcast][0].clone
+    beta_channel_item = items[:v123].clone
     beta_channel_item.channel = "beta"
-    items[:beta_channel_item] = [beta_channel_item, items[:appcast][1].clone]
+    item_arrays[:beta_channel_item] = [
+      beta_channel_item,
+      items[:v122],
+      items[:v121],
+      items[:v120],
+    ]
 
-    no_versions_item = items[:appcast][0].clone
+    no_versions_item = items[:v123].clone
     no_versions_item.title = "Version"
     no_versions_item.bundle_version = nil
-    items[:no_versions_item] = [no_versions_item]
+    item_arrays[:no_versions_item] = [no_versions_item]
 
-    items
+    item_arrays
   }
 
-  let(:versions) { [items[:appcast][0].nice_version] }
+  let(:versions) { [items[:v123].nice_version] }
 
   describe "::match?" do
     it "returns true for an HTTP URL" do
@@ -149,31 +237,34 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
 
   describe "::items_from_content" do
     let(:items_from_appcast) { sparkle.items_from_content(xml[:appcast]) }
-    let(:first_item) { items_from_appcast[0] }
 
     it "returns nil if content is blank" do
       expect(sparkle.items_from_content("")).to eq([])
     end
 
     it "returns an array of Items when given XML data" do
-      expect(items_from_appcast).to eq(items[:appcast])
-      expect(first_item.title).to eq(item_hash[0][:title])
-      expect(first_item.pub_date).to eq(Time.parse(item_hash[0][:pub_date]))
-      expect(first_item.url).to eq(item_hash[0][:url])
-      expect(first_item.short_version).to eq(item_hash[0][:short_version])
-      expect(first_item.version).to eq(item_hash[0][:version])
+      expect(items_from_appcast).to eq(item_arrays[:appcast])
+      expect(items_from_appcast[0].title).to eq(item_hashes[:v123][:title])
+      expect(items_from_appcast[0].pub_date).to eq(Time.parse(item_hashes[:v123][:pub_date]))
+      expect(items_from_appcast[0].url).to eq(item_hashes[:v123][:url])
+      expect(items_from_appcast[0].short_version).to eq(item_hashes[:v123][:short_version])
+      expect(items_from_appcast[0].version).to eq(item_hashes[:v123][:version])
 
-      expect(sparkle.items_from_content(xml[:beta_channel_item])).to eq(items[:beta_channel_item])
-      expect(sparkle.items_from_content(xml[:no_versions_item])).to eq(items[:no_versions_item])
+      expect(sparkle.items_from_content(xml[:beta_channel_item])).to eq(item_arrays[:beta_channel_item])
+      expect(sparkle.items_from_content(xml[:no_versions_item])).to eq(item_arrays[:no_versions_item])
     end
   end
 
+  # `#versions_from_content` sorts items by `pub_date` and `bundle_version`, so
+  # these tests have to account for this behavior in the expected output.
+  # For example, the version 122 item doesn't have a parseable `pub_date` and
+  # the substituted default will cause it to be sorted last.
   describe "::versions_from_content" do
-    let(:subbed_items) { items[:appcast].map { |item| item.nice_version.sub("1", "0") } }
+    let(:subbed_items) { item_arrays[:appcast_sorted].map { |item| item.nice_version.sub("1", "0") } }
 
     it "returns an array of version strings when given content" do
       expect(sparkle.versions_from_content(xml[:appcast])).to eq(versions)
-      expect(sparkle.versions_from_content(xml[:omitted_items])).to eq(versions)
+      expect(sparkle.versions_from_content(xml[:omitted_items])).to eq([])
       expect(sparkle.versions_from_content(xml[:beta_channel_item])).to eq(versions)
       expect(sparkle.versions_from_content(xml[:no_versions_item])).to eq([])
       expect(sparkle.versions_from_content(xml[:undefined_namespace])).to eq(versions)
@@ -202,7 +293,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
         sparkle.versions_from_content(xml[:beta_channel_item]) do |items|
           items.find { |item| item.channel.nil? }&.nice_version
         end,
-      ).to eq([items[:appcast][1].nice_version])
+      ).to eq([items[:v121].nice_version])
     end
 
     it "returns an array of version strings when given content, a regex, and a block" do
@@ -211,7 +302,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
         sparkle.versions_from_content(xml[:appcast], title_regex) do |item, regex|
           item.title[regex, 1]
         end,
-      ).to eq([item_hash[0][:short_version]])
+      ).to eq([item_hashes[:v123][:short_version]])
 
       expect(
         sparkle.versions_from_content(xml[:appcast], title_regex) do |items, regex|
@@ -222,24 +313,24 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
 
           "#{match[1]},#{item.version}"
         end,
-      ).to eq(["#{item_hash[0][:short_version]},#{item_hash[0][:version]}"])
+      ).to eq(["#{item_hashes[:v123][:short_version]},#{item_hashes[:v123][:version]}"])
 
       # Returning an array of strings from the block
       expect(
         sparkle.versions_from_content(xml[:appcast], title_regex) do |item, regex|
           [item.title[regex, 1]]
         end,
-      ).to eq([item_hash[0][:short_version]])
+      ).to eq([item_hashes[:v123][:short_version]])
 
       expect(
         sparkle.versions_from_content(xml[:appcast], &:short_version),
-      ).to eq([item_hash[0][:short_version]])
+      ).to eq([item_hashes[:v123][:short_version]])
 
       expect(
         sparkle.versions_from_content(xml[:appcast], title_regex) do |items, regex|
           items.map { |item| item.title[regex, 1] }
         end,
-      ).to eq(items[:appcast].map(&:short_version))
+      ).to eq(item_arrays[:appcast_sorted].map(&:short_version))
     end
 
     it "allows a nil return from a block" do
