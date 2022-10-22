@@ -51,7 +51,9 @@ module Cask
         target = target_hash[:target]
         @source_string = source.to_s
         @target_string = target.to_s
-        source = cask.staged_path.join(source)
+        base_path = cask.staged_path
+        base_path = base_path.join(cask.url.only_path) if cask.url && cask.url.only_path.present?
+        source = base_path.join(source)
         @source = source
         target ||= source.basename
         @target = resolve_target(target)
