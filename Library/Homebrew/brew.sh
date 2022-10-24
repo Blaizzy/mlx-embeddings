@@ -724,7 +724,7 @@ then
 fi
 
 # Disable Ruby options we don't need.
-RUBY_DISABLE_OPTIONS="--disable=rubyopt"
+RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
 
 if [[ -z "${HOMEBREW_RUBY_WARNINGS}" ]]
 then

@@ -44,6 +44,9 @@ module Homebrew
   end
 
   def setup_gem_environment!(setup_path: true)
+    require "rubygems"
+    raise "RubyGems too old!" if Gem::Version.new(Gem::VERSION) < Gem::Version.new("2.2.0")
+
     # Match where our bundler gems are.
     gem_home = "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"
     Gem.paths = {
