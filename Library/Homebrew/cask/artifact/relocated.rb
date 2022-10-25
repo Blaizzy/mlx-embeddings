@@ -52,7 +52,7 @@ module Cask
         @source_string = source.to_s
         @target_string = target.to_s
         base_path = cask.staged_path
-        base_path = base_path.join(cask.url.only_path) if cask.url && cask.url.only_path.present?
+        base_path = base_path.join(cask.url.only_path) if cask.url&.only_path.present?
         source = base_path.join(source)
         @source = source
         target ||= source.basename
