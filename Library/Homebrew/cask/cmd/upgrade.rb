@@ -13,10 +13,6 @@ module Cask
       extend T::Sig
 
       OPTIONS = [
-        [:switch, "--adopt", {
-          description: "Adopt existing artifacts in the destination that are identical to those being installed. " \
-                       "Cannot be combined with --force.",
-        }],
         [:switch, "--skip-cask-deps", {
           description: "Skip installing cask dependencies.",
         }],
@@ -70,7 +66,6 @@ module Cask
           casks:               Cask,
           args:                Homebrew::CLI::Args,
           force:               T.nilable(T::Boolean),
-          adopt:               T.nilable(T::Boolean),
           greedy:              T.nilable(T::Boolean),
           greedy_latest:       T.nilable(T::Boolean),
           greedy_auto_updates: T.nilable(T::Boolean),
@@ -86,7 +81,6 @@ module Cask
         *casks,
         args:,
         force: false,
-        adopt: false,
         greedy: false,
         greedy_latest: false,
         greedy_auto_updates: false,
@@ -162,7 +156,7 @@ module Cask
         upgradable_casks.each do |(old_cask, new_cask)|
           upgrade_cask(
             old_cask, new_cask,
-            binaries: binaries, force: force, adopt: adopt, skip_cask_deps: skip_cask_deps, verbose: verbose,
+            binaries: binaries, force: force, skip_cask_deps: skip_cask_deps, verbose: verbose,
             quarantine: quarantine, require_sha: require_sha
           )
         rescue => e
@@ -177,7 +171,7 @@ module Cask
 
       def self.upgrade_cask(
         old_cask, new_cask,
-        binaries:, force:, adopt:, quarantine:, require_sha:, skip_cask_deps:, verbose:
+        binaries:, force:, quarantine:, require_sha:, skip_cask_deps:, verbose:
       )
         require "cask/installer"
 
@@ -201,7 +195,6 @@ module Cask
           binaries:       binaries,
           verbose:        verbose,
           force:          force,
-          adopt:          adopt,
           skip_cask_deps: skip_cask_deps,
           require_sha:    require_sha,
           upgrade:        true,
