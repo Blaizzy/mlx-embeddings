@@ -811,6 +811,10 @@ end
 # @api public
 class GitDownloadStrategy < VCSDownloadStrategy
   def initialize(url, name, version, **meta)
+    # Needs to be before the call to `super`, as the VCSDownloadStrategy's
+    # constructor calls `cache_tag` and sets the cache path.
+    @only_path = meta[:only_path]
+
     super
     @ref_type ||= :branch
     @ref ||= "master"
@@ -836,7 +840,11 @@ class GitDownloadStrategy < VCSDownloadStrategy
 
   sig { returns(String) }
   def cache_tag
-    "git"
+    if partial_clone_sparse_checkout?
+      "git-sparse"
+    else
+      "git"
+    end
   end
 
   sig { returns(Integer) }
@@ -880,6 +888,12 @@ class GitDownloadStrategy < VCSDownloadStrategy
     (cached_location/".gitmodules").exist?
   end
 
+  def partial_clone_sparse_checkout?
+    return false if @only_path.blank?
+
+    Utils::Git.supports_partial_clone_sparse_checkout?
+  end
+
   sig { returns(T::Array[String]) }
   def clone_args
     args = %w[clone]
@@ -888,6 +902,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
     when :branch, :tag
       args << "--branch" << @ref
     end
+
+    args << "--no-checkout" << "--filter=blob:none" if partial_clone_sparse_checkout?
 
     args << "-c" << "advice.detachedHead=false" # silences detached head warning
     args << @url << cached_location
@@ -922,6 +938,13 @@ class GitDownloadStrategy < VCSDownloadStrategy
     command! "git",
              args:  ["config", "advice.detachedHead", "false"],
              chdir: cached_location
+
+    return unless partial_clone_sparse_checkout?
+
+    command! "git",
+             args:  ["config", "origin.partialclonefilter", "blob:none"],
+             chdir: cached_location
+    configure_sparse_checkout
   end
 
   sig { params(timeout: T.nilable(Time)).void }
@@ -950,6 +973,9 @@ class GitDownloadStrategy < VCSDownloadStrategy
              args:    ["config", "homebrew.cacheversion", cache_version],
              chdir:   cached_location,
              timeout: timeout&.remaining
+
+    configure_sparse_checkout if partial_clone_sparse_checkout?
+
     checkout(timeout: timeout)
     update_submodules(timeout: timeout) if submodules?
   end
@@ -1019,6 +1045,14 @@ class GitDownloadStrategy < VCSDownloadStrategy
       relative_git_dir = Pathname.new(git_dir).relative_path_from(work_dir)
       dot_git.atomic_write("gitdir: #{relative_git_dir}\n")
     end
+  end
+
+  def configure_sparse_checkout
+    command! "git",
+             args:  ["config", "core.sparseCheckout", "true"],
+             chdir: cached_location
+
+    (git_dir/"info"/"sparse-checkout").atomic_write("#{@only_path}\n")
   end
 end
 
