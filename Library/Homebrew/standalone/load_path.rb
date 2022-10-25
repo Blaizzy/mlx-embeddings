@@ -1,8 +1,12 @@
 # typed: true
 # frozen_string_literal: true
 
-require "pathname"
+# We trust base Ruby to provide what we need.
+# Don't look into the user-installed sitedir, which may contain older versions of RubyGems.
+require "rbconfig"
+$LOAD_PATH.reject! { |path| path.start_with?(RbConfig::CONFIG["sitedir"]) }
 
+require "pathname"
 HOMEBREW_LIBRARY_PATH = Pathname(__dir__).parent.realpath.freeze
 
 require_relative "../utils/gems"
