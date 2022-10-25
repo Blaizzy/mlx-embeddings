@@ -44,7 +44,7 @@ module Cask
             ohai "Adopting existing #{self.class.english_name} at '#{target}'"
             same = command.run(
               "/usr/bin/diff",
-              args:         ["-rq", source, target],
+              args:         ["--recursive", "--brief", source, target],
               verbose:      verbose,
               print_stdout: verbose,
             ).success?
@@ -55,7 +55,7 @@ module Cask
                     "the one being installed."
             end
 
-            # Simulate moving the source to the target location
+            # Remove the source as we don't need to move it to the target location
             source.rmtree
 
             return post_move(command)
