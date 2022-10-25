@@ -88,7 +88,7 @@ module Homebrew
     if args.named.present?
       formulae = all_formulae = args.named.to_formulae
     elsif args.dependents?
-      if !args.all? && !Homebrew::EnvConfig.eval_all?
+      if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
         odeprecated "brew unbottled --dependents", "brew unbottled --all --dependents or HOMEBREW_EVAL_ALL"
       end
       formulae = all_formulae = Formula.all
