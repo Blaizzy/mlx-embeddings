@@ -1099,6 +1099,7 @@ _brew_instal() {
     -*)
       __brewcomp "
       --HEAD
+      --adopt
       --appdir
       --audio-unit-plugindir
       --binaries
@@ -1159,6 +1160,7 @@ _brew_install() {
     -*)
       __brewcomp "
       --HEAD
+      --adopt
       --appdir
       --audio-unit-plugindir
       --binaries
@@ -1727,6 +1729,7 @@ _brew_reinstall() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --adopt
       --appdir
       --audio-unit-plugindir
       --binaries
