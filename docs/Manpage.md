@@ -373,6 +373,8 @@ is already installed but outdated.
   Require all casks to have a checksum.
 * `--[no-]quarantine`:
   Disable/enable quarantining of downloads (default: enabled).
+* `--adopt`:
+  Adopt existing artifacts in the destination that are identical to those being installed. Cannot be combined with --force.
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 * `--zap`:
@@ -572,6 +574,8 @@ reinstalled formulae or, every 30 days, for all formulae.
   Require all casks to have a checksum.
 * `--[no-]quarantine`:
   Disable/enable quarantining of downloads (default: enabled).
+* `--adopt`:
+  Adopt existing artifacts in the destination that are identical to those being installed. Cannot be combined with --force.
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 * `--zap`:
