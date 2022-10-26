@@ -10,6 +10,10 @@ module Cask
       extend T::Sig
 
       OPTIONS = [
+        [:switch, "--adopt", {
+          description: "Adopt existing artifacts in the destination that are identical to those being installed. " \
+                       "Cannot be combined with --force.",
+        }],
         [:switch, "--skip-cask-deps", {
           description: "Skip installing cask dependencies.",
         }],
@@ -40,6 +44,7 @@ module Cask
           binaries:       args.binaries?,
           verbose:        args.verbose?,
           force:          args.force?,
+          adopt:          args.adopt?,
           skip_cask_deps: args.skip_cask_deps?,
           require_sha:    args.require_sha?,
           quarantine:     args.quarantine?,
@@ -52,6 +57,7 @@ module Cask
         *casks,
         verbose: nil,
         force: nil,
+        adopt: nil,
         binaries: nil,
         skip_cask_deps: nil,
         require_sha: nil,
@@ -65,6 +71,7 @@ module Cask
         options = {
           verbose:        verbose,
           force:          force,
+          adopt:          adopt,
           binaries:       binaries,
           skip_cask_deps: skip_cask_deps,
           require_sha:    require_sha,

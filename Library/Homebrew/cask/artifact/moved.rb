@@ -34,18 +34,39 @@ module Cask
 
       private
 
-      def move(force: false, command: nil, **options)
+      def move(adopt: false, force: false, verbose: false, command: nil, **options)
+        unless source.exist?
+          raise CaskError, "It seems the #{self.class.english_name} source '#{source}' is not there."
+        end
+
         if Utils.path_occupied?(target)
+          if adopt
+            ohai "Adopting existing #{self.class.english_name} at '#{target}'"
+            same = command.run(
+              "/usr/bin/diff",
+              args:         ["--recursive", "--brief", source, target],
+              verbose:      verbose,
+              print_stdout: verbose,
+            ).success?
+
+            unless same
+              raise CaskError,
+                    "It seems the existing #{self.class.english_name} is different from " \
+                    "the one being installed."
+            end
+
+            # Remove the source as we don't need to move it to the target location
+            source.rmtree
+
+            return post_move(command)
+          end
+
           message = "It seems there is already #{self.class.english_article} " \
                     "#{self.class.english_name} at '#{target}'"
           raise CaskError, "#{message}." unless force
 
           opoo "#{message}; overwriting."
           delete(target, force: force, command: command, **options)
-        end
-
-        unless source.exist?
-          raise CaskError, "It seems the #{self.class.english_name} source '#{source}' is not there."
         end
 
         ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'"
@@ -61,6 +82,11 @@ module Cask
           command.run!("/bin/mv", args: [source, target], sudo: true)
         end
 
+        post_move(command)
+      end
+
+      # Performs any actions necessary after the source has been moved to the target location.
+      def post_move(command)
         FileUtils.ln_sf target, source
 
         add_altname_metadata(target, source.basename, command: command)
