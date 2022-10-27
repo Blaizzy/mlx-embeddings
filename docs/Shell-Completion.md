@@ -46,7 +46,7 @@ then
 fi
 ```
 
-This must be done before `compinit` is called. Note that if you are using Oh My Zsh, it will call `compinit` for you when sourced. In this case, instead of the above, add the following line to your `~/.zshrc`, before you call `oh-my-zsh.sh`:
+This must be done before `compinit` is called. Note that if you are using Oh My Zsh, it will call `compinit` for you when you source `oh-my-zsh.sh`. In this case, instead of the above, add the following line to your `~/.zshrc`, before you source `oh-my-zsh.sh`:
 
 ```sh
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
