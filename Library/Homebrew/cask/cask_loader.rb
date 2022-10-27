@@ -19,12 +19,15 @@ module Cask
 
         content = ref.to_str
 
-        token  = /(?:"[^"]*"|'[^']*')/
-        curly  = /\(\s*#{token.source}\s*\)\s*\{.*\}/
-        do_end = /\s+#{token.source}\s+do(?:\s*;\s*|\s+).*end/
-        regex  = /\A\s*cask(?:#{curly.source}|#{do_end.source})\s*\Z/m
+        # Cache compiled regex
+        @regex ||= begin
+          token  = /(?:"[^"]*"|'[^']*')/
+          curly  = /\(\s*#{token.source}\s*\)\s*\{.*\}/
+          do_end = /\s+#{token.source}\s+do(?:\s*;\s*|\s+).*end/
+          /\A\s*cask(?:#{curly.source}|#{do_end.source})\s*\Z/m
+        end
 
-        content.match?(regex)
+        content.match?(@regex)
       end
 
       def initialize(content)
@@ -93,8 +96,13 @@ module Cask
       extend T::Sig
 
       def self.can_load?(ref)
-        uri_regex = ::URI::DEFAULT_PARSER.make_regexp
-        return false unless ref.to_s.match?(Regexp.new("\\A#{uri_regex.source}\\Z", uri_regex.options))
+        # Cache compiled regex
+        @uri_regex ||= begin
+          uri_regex = ::URI::DEFAULT_PARSER.make_regexp
+          Regexp.new("\\A#{uri_regex.source}\\Z", uri_regex.options)
+        end
+
+        return false unless ref.to_s.match?(@uri_regex)
 
         uri = URI(ref)
         return false unless uri
