@@ -171,7 +171,8 @@
 # Unignore our `brew` script.
 !/bin/brew
 
-# Unignore our documentation/completions.
+# Unignore our configuration/completions/documentation.
+!/.devcontainer
 !/.github
 !/completions
 !/docs
