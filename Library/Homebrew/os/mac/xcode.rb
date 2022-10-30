@@ -325,8 +325,7 @@ module OS
         end
 
         <<~EOS
-          Update them from Software Update in #{software_update_location} or run:
-            softwareupdate --all --install --force --verbose
+          Update them from Software Update in #{software_update_location}.
 
           If that doesn't show you any updates, run:
             sudo rm -rf /Library/Developer/CommandLineTools
