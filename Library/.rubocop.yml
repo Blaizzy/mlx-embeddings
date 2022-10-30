@@ -371,6 +371,9 @@ Metrics/PerceivedComplexity:
 # allow those that are standard
 # TODO: try to remove some of these
 Naming/MethodParameterName:
+  inherit_mode:
+    merge:
+      - AllowedNames
   AllowedNames:
     - "a"
     - "b"
@@ -383,14 +386,12 @@ Naming/MethodParameterName:
     - "ff"
     - "fn"
     - "id"
-    - "io"
     - "o"
     - "p"
     - "pr"
     - "r"
     - "rb"
     - "s"
-    - "to"
     - "v"
 
 # GitHub diff UI wraps beyond 118 characters
