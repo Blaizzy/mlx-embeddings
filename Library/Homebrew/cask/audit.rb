@@ -556,7 +556,7 @@ module Cask
 
       xml = begin
         REXML::Document.new(out)
-      rescue
+      rescue REXML::ParseException
         nil
       end
 
