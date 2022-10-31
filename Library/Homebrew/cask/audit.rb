@@ -546,6 +546,7 @@ module Cask
     end
 
     def check_livecheck_min_os
+      return unless online?
       return unless cask.livecheckable?
       return unless cask.livecheck.strategy == :sparkle
 
