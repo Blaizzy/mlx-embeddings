@@ -39,8 +39,6 @@ module Cask
         target
       end
 
-      attr_reader :source, :target
-
       sig {
         params(cask: Cask, source: T.nilable(T.any(String, Pathname)), target_hash: T.any(String, Pathname))
           .void
@@ -51,12 +49,18 @@ module Cask
         target = target_hash[:target]
         @source_string = source.to_s
         @target_string = target.to_s
-        base_path = cask.staged_path
-        base_path = base_path.join(cask.url.only_path) if cask.url&.only_path.present?
-        source = base_path.join(source)
-        @source = source
-        target ||= source.basename
-        @target = resolve_target(target)
+      end
+
+      def source
+        @source ||= begin
+          base_path = cask.staged_path
+          base_path = base_path.join(cask.url.only_path) if cask.url&.only_path.present?
+          base_path.join(@source_string)
+        end
+      end
+
+      def target
+        @target ||= resolve_target(@target_string.presence || source.basename)
       end
 
       def to_a
