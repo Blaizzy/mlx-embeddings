@@ -575,6 +575,8 @@ module Cask
         return
       end
 
+      return if min_os_string == MacOS::Version::OLDEST_ALLOWED
+
       cask_min_os = cask.depends_on.macos&.version
 
       return if cask_min_os == min_os_string
