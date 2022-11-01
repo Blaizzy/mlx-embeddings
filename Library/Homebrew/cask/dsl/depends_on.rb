@@ -50,7 +50,7 @@ module Cask
         @cask.concat(args)
       end
 
-      sig { params(args: String).returns(T.nilable(MacOSRequirement)) }
+      sig { params(args: T.any(String, Symbol)).returns(T.nilable(MacOSRequirement)) }
       def macos=(*args)
         raise "Only a single 'depends_on macos' is allowed." if defined?(@macos)
 
