@@ -550,7 +550,7 @@ module Cask
       return unless cask.livecheckable?
       return unless cask.livecheck.strategy == :sparkle
 
-      out, _, status = curl_output(cask.livecheck.url)
+      out, _, status = curl_output("--fail", "--silent", "--location", cask.livecheck.url)
       return unless status.success?
 
       require "rexml/document"
@@ -563,14 +563,21 @@ module Cask
 
       return if xml.blank?
 
-      item = xml.get_elements("//rss//channel//item").first
+      item = xml.elements["//rss//channel//item"]
       return if item.blank?
 
-      min_os = item.elements["sparkle:minimumSystemVersion"].text
+      min_os = item.elements["sparkle:minimumSystemVersion"]&.text
       return if min_os.blank?
 
-      min_os_string = OS::Mac::Version.new(min_os).strip_patch
-      cask_min_os = cask.depends_on.macos.version
+      begin
+        min_os_string = OS::Mac::Version.new(min_os).strip_patch
+      rescue MacOSVersionError
+        return
+      end
+
+      return if min_os_string == MacOS::Version::OLDEST_ALLOWED
+
+      cask_min_os = cask.depends_on.macos&.version
 
       return if cask_min_os == min_os_string
 
