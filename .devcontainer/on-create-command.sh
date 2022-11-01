@@ -5,7 +5,7 @@ set -e
 sudo chmod -R g-w,o-w /home/linuxbrew
 
 # install Homebrew's development gems
-brew install-bundler-gems
+brew install-bundler-gems --groups=sorbet
 
 # install Homebrew formulae we might need
 brew install shellcheck shfmt gh gnu-tar
