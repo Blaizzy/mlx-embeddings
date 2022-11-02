@@ -146,9 +146,21 @@ module Homebrew
     print_formulae &&= all_formulae.any?
     print_casks &&= all_casks.any?
 
-    ohai "Formulae", Formatter.columns(all_formulae) if print_formulae
+    if print_formulae
+      if $stdout.tty?
+        ohai "Formulae", Formatter.columns(all_formulae)
+      else
+        puts all_formulae
+      end
+    end
     puts if print_formulae && print_casks
-    ohai "Casks", Formatter.columns(all_casks) if print_casks
+    if print_casks
+      if $stdout.tty?
+        ohai "Casks", Formatter.columns(all_casks)
+      else
+        puts all_casks
+      end
+    end
 
     count = all_formulae.count + all_casks.count
 
