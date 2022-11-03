@@ -128,6 +128,15 @@ describe RuboCop::Cop::FormulaAudit::Desc do
       RUBY
     end
 
+    it "does not report an offense when the description ends with 'etc.'" do
+      expect_no_offenses(<<~RUBY, "/homebrew-core/Formula/foo.rb")
+        class Foo < Formula
+          url 'https://brew.sh/foo-1.0.tgz'
+          desc 'Description of a thing and some more things and some more etc.'
+        end
+      RUBY
+    end
+
     it "reports and corrects all rules for description text" do
       expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
         class Foo < Formula
