@@ -107,6 +107,14 @@ module Homebrew
         ENV.delete(env)
       end
 
+      # Codespaces /tmp is mounted 755 which makes Ruby warn constantly.
+      if (ENV["HOMEBREW_CODESPACES"] == "true") && (HOMEBREW_TEMP.to_s == "/tmp")
+        homebrew_prefix_tmp = "#{HOMEBREW_PREFIX}/tmp"
+        ENV["HOMEBREW_TEMP"] = homebrew_prefix_tmp
+        FileUtils.mkdir_p homebrew_prefix_tmp
+        system "chmod", "-R", "g-w,o-w", "/tmp"
+      end
+
       ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
       ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
       ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
