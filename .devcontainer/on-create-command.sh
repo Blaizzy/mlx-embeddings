@@ -18,5 +18,9 @@ sudo apt-get update
 sudo apt-get install -y \
   -o Dpkg::Options::=--force-confdef \
   -o Dpkg::Options::=--force-confnew \
+  openssh-server \
   zsh \
   zsh-autosuggestions
+
+# Start the SSH server so that `gh cs ssh` works.
+sudo service ssh start
