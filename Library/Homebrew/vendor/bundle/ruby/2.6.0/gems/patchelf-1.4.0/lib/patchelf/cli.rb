@@ -139,7 +139,7 @@ module PatchELF
           @options[:set][:soname] = soname
         end
 
-        opts.on('--version', 'Show current gem\'s version.') {}
+        opts.on('--version', 'Show current gem\'s version.')
       end
     end
 
