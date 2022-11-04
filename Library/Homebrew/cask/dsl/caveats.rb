@@ -71,10 +71,10 @@ module Cask
       caveat :unsigned_accessibility do |access = "Accessibility"|
         # access: the category in the privacy settings the app requires.
 
-        if MacOS.version < :ventura
-          navigation_path = "System Preferences → Security & Privacy → Privacy"
+        navigation_path = if MacOS.version < :ventura
+          "System Preferences → Security & Privacy → Privacy"
         else
-          navigation_path = "System Settings → Privacy & Security"
+          "System Settings → Privacy & Security"
         end
 
         <<~EOS
