@@ -214,6 +214,28 @@ $ otool -L /usr/local/bin/ldapvi
     /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1213.0.0)
 ```
 
+### Specifying macOS components as dependencies
+
+If a formula dependency is required on all platforms but can be handled by a component that ships with macOS, specify it with [`uses_from_macos`](https://rubydoc.brew.sh/Formula#uses_from_macos-class_method). On Linux it acts like [`depends_on`](https://rubydoc.brew.sh/Formula#depends_on-class_method), while on macOS it's ignored unless the host system is older than the optional `since:` parameter.
+
+For example, to require the `bzip2` formula on Linux while relying on built-in `bzip2` on macOS:
+
+```ruby
+uses_from_macos "bzip2"
+```
+
+To require the `perl` formula only when building or testing on Linux:
+
+```ruby
+uses_from_macos "perl" => [:build, :test]
+```
+
+To require the `curl` formula on Linux and pre-macOS 12:
+
+```ruby
+uses_from_macos "curl", since: :monterey
+```
+
 ### Specifying gems, Python modules, Go projects, etc. as dependencies
 
 Homebrew doesn’t package already-packaged language-specific libraries. These should be installed directly from `gem`/`cpan`/`pip` etc.
@@ -611,21 +633,6 @@ class Foo < Formula
 end
 ```
 
-### Compiler selection
-
-Sometimes a package fails to build when using a certain compiler. Since recent [Xcode versions](Xcode.md) no longer include a GCC compiler we cannot simply force the use of GCC. Instead, the correct way to declare this is the [`fails_with`](https://rubydoc.brew.sh/Formula#fails_with-class_method) DSL method. A properly constructed [`fails_with`](https://rubydoc.brew.sh/Formula#fails_with-class_method) block documents the latest compiler build version known to cause compilation to fail, and the cause of the failure. For example:
-
-```ruby
-fails_with :clang do
-  build 211
-  cause "Miscompilation resulting in segfault on queries"
-end
-```
-
-`build` takes a Fixnum (an integer; you can find this number in your `brew --config` output). `cause` takes a String, and the use of heredocs is encouraged to improve readability and allow for more comprehensive documentation.
-
-[`fails_with`](https://rubydoc.brew.sh/Formula#fails_with-class_method) declarations can be used with any of `:gcc`, `:llvm`, and `:clang`. Homebrew will use this information to select a working compiler (if one is available).
-
 ### Specifying the download strategy explicitly
 
 To use one of Homebrew’s built-in download strategies, specify the `:using =>` flag on a [`url`](https://rubydoc.brew.sh/Formula#url-class_method) or [`head`](https://rubydoc.brew.sh/Formula#head-class_method). For example:
@@ -668,6 +675,21 @@ class Foo < Formula
   url "something", :using => MyDownloadStrategy
 end
 ```
+
+### Compiler selection
+
+Sometimes a package fails to build when using a certain compiler. Since recent [Xcode versions](Xcode.md) no longer include a GCC compiler we cannot simply force the use of GCC. Instead, the correct way to declare this is the [`fails_with`](https://rubydoc.brew.sh/Formula#fails_with-class_method) DSL method. A properly constructed [`fails_with`](https://rubydoc.brew.sh/Formula#fails_with-class_method) block documents the latest compiler build version known to cause compilation to fail, and the cause of the failure. For example:
+
+```ruby
+fails_with :clang do
+  build 211
+  cause "Miscompilation resulting in segfault on queries"
+end
+```
+
+`build` takes a Fixnum (an integer; you can find this number in your `brew --config` output). `cause` takes a String, and the use of heredocs is encouraged to improve readability and allow for more comprehensive documentation.
+
+[`fails_with`](https://rubydoc.brew.sh/Formula#fails_with-class_method) declarations can be used with any of `:gcc`, `:llvm`, and `:clang`. Homebrew will use this information to select a working compiler (if one is available).
 
 ### Just moving some files
 
@@ -736,6 +758,56 @@ To install man pages into specific locations, use `man1.install "foo.1", "bar.1"
 
 Note that in the context of Homebrew, [`libexec`](https://rubydoc.brew.sh/Formula#libexec-instance_method) is reserved for private use by the formula and therefore is not symlinked into `HOMEBREW_PREFIX`.
 
+### File level operations
+
+You can use the file utilities provided by Ruby's [`FileUtils`](https://www.ruby-doc.org/stdlib/libdoc/fileutils/rdoc/index.html). These are included in the [`Formula`](https://rubydoc.brew.sh/Formula) class, so you do not need the `FileUtils.` prefix to use them.
+
+When creating symlinks, take special care to ensure they are *relative* symlinks. This makes it easier to create a relocatable bottle. For example, to create a symlink in `bin` to an executable in `libexec`, use
+
+```ruby
+bin.install_symlink libexec/"name"
+```
+
+instead of:
+
+```ruby
+ln_s libexec/"name", bin
+```
+
+The symlinks created by [`install_symlink`](https://rubydoc.brew.sh/Pathname#install_symlink-instance_method) are guaranteed to be relative. `ln_s` will only produce a relative symlink when given a relative path.
+
+Several other utilities for Ruby's [`Pathname`](https://rubydoc.brew.sh/Pathname) can simplify some common operations.
+
+* To perform several operations within a directory, enclose them within a  [`cd <path> do`](https://rubydoc.brew.sh/Pathname#cd-instance_method) block:
+
+  ```ruby
+  cd "src" do
+    system "./configure",  "--disable-debug", "--prefix=#{prefix}"
+    system "make", "install"
+  end
+  ```
+
+* To surface one or more binaries buried in `libexec` or a macOS `.app` package, use [`write_exec_script`](https://rubydoc.brew.sh/Pathname#write_exec_script-instance_method) or [`write_jar_script`](https://rubydoc.brew.sh/Pathname#write_jar_script-instance_method):
+
+  ```ruby
+  bin.write_exec_script (libexec/"bin").children
+  bin.write_exec_script prefix/"Package.app/Contents/MacOS/package"
+  bin.write_jar_script libexec/jar_file, "jarfile", java_version: "11"
+  ```
+
+* For binaries that require setting one or more environment variables to function properly, use [`write_env_script`](https://rubydoc.brew.sh/Pathname#write_env_script-instance_method) or [`env_script_all_files`](https://rubydoc.brew.sh/Pathname#env_script_all_files-instance_method):
+
+  ```ruby
+  (bin/"package").write_env_script libexec/"package", PACKAGE_ROOT: libexec
+  bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
+  ```
+
+### Rewriting a script shebang
+
+Some formulae install executable scripts written in an interpreted language such as Python or Perl. Homebrew provides a `rewrite_shebang` method to rewrite the shebang of a script. This replaces a script's original interpreter path with the one the formula depends on. This guarantees that the correct interpreter is used at execution time. This isn't required if the build system already handles it (e.g. often with `pip` or Perl `ExtUtils::MakeMaker`).
+
+For example, the [`icdiff` formula](https://github.com/Homebrew/homebrew-core/blob/7beae5ab57c65249403699b2b0700fbccf14e6cb/Formula/icdiff.rb#L16) uses such utility. Note that it is necessary to include the utility in the formula, for example with Python one must use `include Language::Python::Shebang`.
+
 ### Adding optional steps
 
 **Note:** [`option`](https://rubydoc.brew.sh/Formula#option-class_method)s are not allowed in Homebrew/homebrew-core as they are not tested by CI.
@@ -767,30 +839,6 @@ end
 [`option`](https://rubydoc.brew.sh/Formula#option-class_method) names should be prefixed with the words `with` or `without`. For example, an option to run a test suite should be named `--with-test` or `--with-check` rather than `--test`, and an option to enable a shared library `--with-shared` rather than `--shared` or `--enable-shared`.
 
 [`option`](https://rubydoc.brew.sh/Formula#option-class_method)s that aren’t `build.with? ` or `build.without?` should be deprecated with [`deprecated_option`](https://rubydoc.brew.sh/Formula#deprecated_option-class_method). See [`wget`](https://github.com/Homebrew/homebrew-core/blob/3f762b63c6fbbd49191ffdf58574d7e18937d93f/Formula/wget.rb#L27-L31) for an example.
-
-### File level operations
-
-You can use the file utilities provided by Ruby's [`FileUtils`](https://www.ruby-doc.org/stdlib/libdoc/fileutils/rdoc/index.html). These are included in the [`Formula`](https://rubydoc.brew.sh/Formula) class, so you do not need the `FileUtils.` prefix to use them.
-
-When creating symlinks, take special care to ensure they are *relative* symlinks. This makes it easier to create a relocatable bottle. For example, to create a symlink in `bin` to an executable in `libexec`, use
-
-```ruby
-bin.install_symlink libexec/"name"
-```
-
-instead of:
-
-```ruby
-ln_s libexec/"name", bin
-```
-
-The symlinks created by [`install_symlink`](https://rubydoc.brew.sh/Pathname#install_symlink-instance_method) are guaranteed to be relative. `ln_s` will only produce a relative symlink when given a relative path.
-
-### Rewriting a script shebang
-
-Some formulae install executable scripts written in an interpreted language such as Python or Perl. Homebrew provides a `rewrite_shebang` method to rewrite the shebang of a script. This replaces a script's original interpreter path with the one the formula depends on. This guarantees that the correct interpreter is used at execution time. This isn't required if the build system already handles it (e.g. often with `pip` or Perl `ExtUtils::MakeMaker`).
-
-For example, the [`icdiff` formula](https://github.com/Homebrew/homebrew-core/blob/7beae5ab57c65249403699b2b0700fbccf14e6cb/Formula/icdiff.rb#L16) uses such utility. Note that it is necessary to include the utility in the formula, for example with Python one must use `include Language::Python::Shebang`.
 
 ### Handling files that should persist over formula upgrades
 
@@ -955,24 +1003,7 @@ See our [Deprecating, Disabling, and Removing Formulae](Deprecating-Disabling-an
 
 ## Updating formulae
 
-Eventually a new version of the software will be released. In this case you should update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method). You can use:
-
-```sh
-brew bump-formula-pr foo
-```
-
-If a [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) line exists outside any `bottle do` block it should be removed.
-
-Leave the `bottle do ... end`  block as-is; our CI system will update it when we pull your change.
-
-Check if the formula you are updating is a dependency for any other formulae by running `brew uses <formula>`. If it is a dependency, run `brew reinstall` for all the dependencies after it is installed and verify they work correctly.
-
-## Style guide
-
-Homebrew wants to maintain a consistent Ruby style across all formulae mostly based on [Ruby Style Guide](https://github.com/rubocop-hq/ruby-style-guide#the-ruby-style-guide). Other formulae may not have been updated to match this guide yet but all new ones should. Also:
-
-* The order of methods in a formula should be consistent with other formulae (e.g.: `def install` goes before `def post_install`).
-* An empty line is required before the `__END__` line.
+When a new version of the software is released, use `brew bump-formula-pr` to automatically update the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) and [`sha256`](https://rubydoc.brew.sh/Formula#sha256%3D-class_method), remove any [`revision`](https://rubydoc.brew.sh/Formula#revision%3D-class_method) lines, and submit a pull request. See our [How To Open a Homebrew Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation for more information.
 
 ## Troubleshooting for people writing new formulae
 
