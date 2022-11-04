@@ -115,7 +115,7 @@ module PatchELF
       # prefer backward than forward
       return extend_backward(loads[idx - 1]) if writable?(loads[idx - 1])
 
-      # note: loads[idx].file_head has been changed in shift_attributes
+      # NOTE: loads[idx].file_head has been changed in shift_attributes
       extend_forward(loads[idx], @extend_size)
     end
 
@@ -161,7 +161,7 @@ module PatchELF
 
         seg.header.p_offset += extend_size
         # We have to change align of LOAD segment since ld.so checks it.
-        seg.header.p_align = Helper::PAGE_SIZE if seg.is_a?(ELFTools::Segments::LoadSegment)
+        seg.header.p_align = Helper.page_size if seg.is_a?(ELFTools::Segments::LoadSegment)
       end
 
       @elf.header.e_shoff += extend_size if @elf.header.e_shoff >= threshold

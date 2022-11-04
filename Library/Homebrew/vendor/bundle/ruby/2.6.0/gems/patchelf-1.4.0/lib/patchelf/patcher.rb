@@ -30,7 +30,7 @@ module PatchELF
       @elf = ELFTools::ELFFile.new(File.open(filename))
       @set = {}
       @rpath_sym = :runpath
-      @on_error = !logging ? :exception : on_error
+      @on_error = logging ? on_error : :exception
 
       on_error_syms = %i[exception log silent]
       raise ArgumentError, "on_error must be one of #{on_error_syms}" unless on_error_syms.include?(@on_error)

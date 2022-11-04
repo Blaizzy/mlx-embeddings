@@ -53,8 +53,8 @@ module PatchELF
     def patch_interpreter
       return if @set[:interpreter].nil?
 
-      new_interp = @set[:interpreter] + "\x00"
-      old_interp = @elf.segment_by_type(:interp).interp_name + "\x00"
+      new_interp = "#{@set[:interpreter]}\x00"
+      old_interp = "#{@elf.segment_by_type(:interp).interp_name}\x00"
       return if old_interp == new_interp
 
       # These headers must be found here but not in the proc.
@@ -184,7 +184,7 @@ module PatchELF
       need_size = strtab_string.size + @strtab_extend_requests.reduce(0) { |sum, (str, _)| sum + str.size + 1 }
       dynstr = section_header('.dynstr')
       @mm.malloc(need_size) do |off, vaddr|
-        new_str = strtab_string + @strtab_extend_requests.map(&:first).join("\x00") + "\x00"
+        new_str = "#{strtab_string}#{@strtab_extend_requests.map(&:first).join("\x00")}\x00"
         inline_patch(off, new_str)
         cur = strtab_string.size
         @strtab_extend_requests.each do |str, block|
@@ -206,7 +206,7 @@ module PatchELF
     # @yieldparam [Integer] idx
     # @yieldreturn [void]
     def reg_str_table(str, &block)
-      idx = strtab_string.index(str + "\x00")
+      idx = strtab_string.index("#{str}\x00")
       # Request string is already exist
       return yield idx if idx
 

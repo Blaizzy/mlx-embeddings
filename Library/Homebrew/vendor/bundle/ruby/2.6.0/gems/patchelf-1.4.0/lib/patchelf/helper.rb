@@ -3,9 +3,6 @@
 module PatchELF
   # Helper methods for internal usage.
   module Helper
-    # The size of one page.
-    PAGE_SIZE = 0x1000
-
     module_function
 
     # Color codes for pretty print.
@@ -15,6 +12,23 @@ module PatchELF
       warn: "\e[38;5;230m", # light yellow
       error: "\e[38;5;196m" # heavy red
     }.freeze
+
+    # The size of one page.
+    def page_size(e_machine = nil)
+      # Different architectures have different minimum section alignments.
+      case e_machine
+      when ELFTools::Constants::EM_SPARC,
+           ELFTools::Constants::EM_MIPS,
+           ELFTools::Constants::EM_PPC,
+           ELFTools::Constants::EM_PPC64,
+           ELFTools::Constants::EM_AARCH64,
+           ELFTools::Constants::EM_TILEGX,
+           ELFTools::Constants::EM_LOONGARCH
+        0x10000
+      else
+        0x1000
+      end
+    end
 
     # For wrapping string with color codes for prettier inspect.
     # @param [String] str
@@ -48,7 +62,7 @@ module PatchELF
     #   #=> 32
     #   aligndown(0x10, 0x8)
     #   #=> 16
-    def aligndown(val, align = PAGE_SIZE)
+    def aligndown(val, align = page_size)
       val - (val & (align - 1))
     end
 
@@ -63,7 +77,7 @@ module PatchELF
     #   #=> 64
     #   alignup(0x10, 0x8)
     #   #=> 16
-    def alignup(val, align = PAGE_SIZE)
+    def alignup(val, align = page_size)
       (val & (align - 1)).zero? ? val : (aligndown(val, align) + align)
     end
   end

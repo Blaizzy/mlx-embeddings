@@ -13,17 +13,18 @@ module PatchELF::Helper
   def alignup(val, align = T.unsafe(nil)); end
   def color_enabled?; end
   def colorize(str, type); end
+  def page_size(e_machine = T.unsafe(nil)); end
 
   class << self
     def aligndown(val, align = T.unsafe(nil)); end
     def alignup(val, align = T.unsafe(nil)); end
     def color_enabled?; end
     def colorize(str, type); end
+    def page_size(e_machine = T.unsafe(nil)); end
   end
 end
 
 PatchELF::Helper::COLOR_CODE = T.let(T.unsafe(nil), Hash)
-PatchELF::Helper::PAGE_SIZE = T.let(T.unsafe(nil), Integer)
 
 module PatchELF::Logger
   private
