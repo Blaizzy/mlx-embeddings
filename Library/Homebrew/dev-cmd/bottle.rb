@@ -78,6 +78,9 @@ module Homebrew
       switch "--only-json-tab",
              depends_on:  "--json",
              description: "When passed with `--json`, the tab will be written to the JSON file but not the bottle."
+      switch "--no-all-checks",
+             depends_on:  "--merge",
+             description: "Don't try to create an `all` bottle or stop a no-change upload."
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--root-url=",
@@ -623,7 +626,8 @@ module Homebrew
       # if all the cellars and checksums are the same: we can create an
       # `all: $SHA256` bottle.
       tag_hashes = bottle_hash["bottle"]["tags"].values
-      all_bottle = (!old_bottle_spec_matches || bottle.rebuild != old_bottle_spec.rebuild) &&
+      all_bottle = !args.no_all_checks? &&
+                   (!old_bottle_spec_matches || bottle.rebuild != old_bottle_spec.rebuild) &&
                    tag_hashes.count > 1 &&
                    tag_hashes.uniq { |tag_hash| "#{tag_hash["cellar"]}-#{tag_hash["sha256"]}" }.count == 1
 
@@ -648,7 +652,8 @@ module Homebrew
         next
       end
 
-      no_bottle_changes = if old_bottle_spec_matches && bottle.rebuild != old_bottle_spec.rebuild
+      no_bottle_changes = if !args.no_all_checks? && old_bottle_spec_matches &&
+                             bottle.rebuild != old_bottle_spec.rebuild
         bottle.collector.tags.all? do |tag|
           tag_spec = bottle.collector.specification_for(tag)
           next false if tag_spec.blank?
