@@ -146,6 +146,9 @@ module Cask
     def force?; end
 
     sig { returns(T::Boolean) }
+    def adopt?; end
+
+    sig { returns(T::Boolean) }
     def skip_cask_deps?; end
 
     sig { returns(T::Boolean) }
