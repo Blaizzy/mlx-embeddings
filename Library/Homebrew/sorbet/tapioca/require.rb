@@ -10,7 +10,11 @@ dependency_require_map = {
 # Don't start coverage tracking automatically
 ENV["SIMPLECOV_NO_DEFAULTS"] = "1"
 
-Bundler.definition.locked_gems.specs.each do |spec|
+# Freeze lockfile
+Bundler.settings.set_command_option(:frozen, "1")
+
+definition = Bundler.definition
+definition.resolve.for(definition.current_dependencies).each do |spec|
   name = spec.name
 
   # These sorbet gems do not contain any library files
