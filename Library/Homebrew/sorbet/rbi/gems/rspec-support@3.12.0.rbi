@@ -463,6 +463,7 @@ module RSpec::Support::RubyFeatures
   private
 
   def caller_locations_supported?; end
+  def distincts_kw_args_from_positional_hash?; end
   def fork_supported?; end
   def kw_args_supported?; end
   def module_prepends_supported?; end
@@ -476,6 +477,7 @@ module RSpec::Support::RubyFeatures
 
   class << self
     def caller_locations_supported?; end
+    def distincts_kw_args_from_positional_hash?; end
     def fork_supported?; end
     def kw_args_supported?; end
     def module_prepends_supported?; end

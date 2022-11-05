@@ -377,6 +377,7 @@ module RSpec::Matchers
   def a_value_within(*args, &block); end
   def aggregate_failures(label = T.unsafe(nil), metadata = T.unsafe(nil), &block); end
   def all(expected); end
+  def an_array_matching(*args, &block); end
   def an_instance_of(*args, &block); end
   def an_object_eq_to(*args, &block); end
   def an_object_eql_to(*args, &block); end
