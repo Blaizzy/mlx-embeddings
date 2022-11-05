@@ -39,6 +39,7 @@ module RSpec::Github; end
 class RSpec::Github::Formatter < ::RSpec::Core::Formatters::BaseFormatter
   def example_failed(failure); end
   def example_pending(pending); end
+  def seed(notification); end
 end
 
 class RSpec::Github::NotificationDecorator
