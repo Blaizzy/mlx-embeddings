@@ -99,7 +99,7 @@ GEM
       parser (>= 2.6.4.0)
       sorbet-runtime (>= 0.5.9204)
       unparser
-    rdiscount (2.2.0.2)
+    rdiscount (2.2.7)
     regexp_parser (2.6.0)
     rexml (3.2.5)
     ronn (0.7.3)
