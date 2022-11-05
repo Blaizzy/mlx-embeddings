@@ -49,7 +49,7 @@ if MacOS.version <= :mojave        # symbolic name
 if MacOS.version <= "10.14"        # version string
 ```
 
-The available symbols for macOS versions are: `:el_capitan`, `:sierra`, `:high_sierra`, `:mojave`, `:catalina` and `:big_sur`. The corresponding numeric version strings should be given as major releases containing a single dot.
+The available symbols for macOS versions are: `:el_capitan`, `:sierra`, `:high_sierra`, `:mojave`, `:catalina`, `:big_sur`, `:monterey`, and `:ventura`. The corresponding numeric version strings should be given as major releases containing a single dot.
 
 Note that in the official Homebrew Cask repositories only the symbolic names are allowed. The numeric comparison may only be used for third-party taps.
 
@@ -468,8 +468,9 @@ The available values for macOS releases are:
 | `:high_sierra`     | `10.13`
 | `:mojave`          | `10.14`
 | `:catalina`        | `10.15`
-| `:big_sur`         | `11.0`
-| `:monterey`        | `12.0`
+| `:big_sur`         | `11`
+| `:monterey`        | `12`
+| `:ventura`         | `13`
 
 Only major releases are covered (version numbers containing a single dot). The symbol form is used for readability. The following are all valid ways to enumerate the exact macOS release requirements for a Cask:
 

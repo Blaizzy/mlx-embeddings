@@ -24,7 +24,7 @@ We maintain separate Taps for different types of binaries. Our nomenclature is:
 
 ### Stable Versions
 
-Stable versions live in the main repository at [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-cask). They should run on the latest release of macOS or the previous point release (High Sierra and Mojave as of late 2018).
+Stable versions live in the main repository at [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-cask). They should run on the latest release of macOS or the previous point release (Monterey and Ventura as of late 2022).
 
 ### But There Is No Stable Version!
 
