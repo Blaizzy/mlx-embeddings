@@ -50,6 +50,8 @@ module RuboCop
       #
       # @param dependency_name dependency's name
       def depends_on?(dependency_name, *types)
+        return if @body.nil?
+
         types = [:any] if types.empty?
         dependency_nodes = find_every_method_call_by_name(@body, :depends_on)
         idx = dependency_nodes.index do |n|
@@ -106,6 +108,8 @@ module RuboCop
 
       # Return all the caveats' string nodes in an array.
       def caveats_strings
+        return [] if @body.nil?
+
         find_strings(find_method_def(@body, :caveats))
       end
 

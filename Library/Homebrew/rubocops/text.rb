@@ -22,6 +22,8 @@ module RuboCop
             end
           end
 
+          return if body_node.nil?
+
           if !find_node_method_by_name(body_node, :plist_options) &&
              find_method_def(body_node, :plist)
             problem "Please set plist_options when using a formula-defined plist."
@@ -106,6 +108,8 @@ module RuboCop
       # @api private
       class Text < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           find_method_with_args(body_node, :go_resource) do
             problem "`go_resource`s are deprecated. Please ask upstream to implement Go vendoring"
           end
