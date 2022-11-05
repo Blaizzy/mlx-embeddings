@@ -431,6 +431,7 @@ class RSpec::Mocks::ClassNewMethodReference < ::RSpec::Mocks::ObjectMethodRefere
 
   class << self
     def applies_to?(method_name); end
+    def uses_class_new?(klass); end
   end
 end
 
