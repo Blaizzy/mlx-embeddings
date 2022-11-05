@@ -724,7 +724,7 @@ then
 fi
 
 # Disable Ruby options we don't need.
-RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
+export HOMEBREW_RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
 
 if [[ -z "${HOMEBREW_RUBY_WARNINGS}" ]]
 then
@@ -839,7 +839,7 @@ else
   # shellcheck disable=SC2154
   {
     auto-update "$@"
-    exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${RUBY_DISABLE_OPTIONS}" \
+    exec "${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_WARNINGS}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" \
       "${HOMEBREW_LIBRARY}/Homebrew/brew.rb" "$@"
   }
 fi
