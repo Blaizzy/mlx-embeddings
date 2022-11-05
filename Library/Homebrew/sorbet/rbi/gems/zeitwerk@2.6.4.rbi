@@ -70,22 +70,28 @@ class Zeitwerk::Inflector
   def overrides; end
 end
 
+module Zeitwerk::Internal
+  def internal(method_name); end
+end
+
 class Zeitwerk::Loader
   include ::Zeitwerk::RealModName
   include ::Zeitwerk::Loader::Callbacks
   include ::Zeitwerk::Loader::Helpers
   include ::Zeitwerk::Loader::Config
+  include ::Zeitwerk::Loader::EagerLoad
 
   def initialize; end
 
   def autoloaded_dirs; end
   def autoloads; end
-  def eager_load(force: T.unsafe(nil)); end
-  def lazy_subdirs; end
   def mutex; end
   def mutex2; end
+  def namespace_dirs; end
   def reload; end
   def setup; end
+  def shadowed_file?(file); end
+  def shadowed_files; end
   def to_unload; end
   def unload; end
   def unloadable_cpath?(cpath); end
@@ -111,6 +117,7 @@ class Zeitwerk::Loader
     def default_logger; end
     def default_logger=(_arg0); end
     def eager_load_all; end
+    def eager_load_namespace(mod); end
     def for_gem(warn_on_extra_files: T.unsafe(nil)); end
   end
 end
@@ -128,46 +135,62 @@ module Zeitwerk::Loader::Callbacks
 end
 
 module Zeitwerk::Loader::Config
+  extend ::Zeitwerk::Internal
+
   def initialize; end
 
+  def __ignores?(abspath); end
+  def __roots; end
   def collapse(*glob_patterns); end
-  def collapse_dirs; end
-  def collapse_glob_patterns; end
   def dirs(namespaces: T.unsafe(nil)); end
   def do_not_eager_load(*paths); end
-  def eager_load_exclusions; end
   def enable_reloading; end
   def ignore(*glob_patterns); end
-  def ignored_glob_patterns; end
-  def ignored_paths; end
-  def ignores?(abspath); end
   def inflector; end
   def inflector=(_arg0); end
   def log!; end
   def logger; end
   def logger=(_arg0); end
   def on_load(cpath = T.unsafe(nil), &block); end
-  def on_load_callbacks; end
   def on_setup(&block); end
-  def on_setup_callbacks; end
   def on_unload(cpath = T.unsafe(nil), &block); end
-  def on_unload_callbacks; end
   def push_dir(path, namespace: T.unsafe(nil)); end
   def reloading_enabled?; end
-  def root_dirs; end
   def tag; end
   def tag=(tag); end
 
   private
 
-  def actual_root_dirs; end
+  def actual_roots; end
   def collapse?(dir); end
+  def collapse_dirs; end
+  def collapse_glob_patterns; end
+  def eager_load_exclusions; end
   def excluded_from_eager_load?(abspath); end
   def expand_glob_patterns(glob_patterns); end
   def expand_paths(paths); end
+  def ignored_glob_patterns; end
+  def ignored_paths; end
+  def ignores?(abspath); end
+  def on_load_callbacks; end
+  def on_setup_callbacks; end
+  def on_unload_callbacks; end
   def recompute_collapse_dirs; end
   def recompute_ignored_paths; end
   def root_dir?(dir); end
+  def roots; end
+end
+
+module Zeitwerk::Loader::EagerLoad
+  def eager_load(force: T.unsafe(nil)); end
+  def eager_load_dir(path); end
+  def eager_load_namespace(mod); end
+  def load_file(path); end
+
+  private
+
+  def actual_eager_load_dir(dir, namespace, force: T.unsafe(nil)); end
+  def eager_load_child_namespace(child, child_name, root_dir, root_namespace); end
 end
 
 module Zeitwerk::Loader::Helpers
@@ -183,6 +206,7 @@ module Zeitwerk::Loader::Helpers
   def ls(dir); end
   def ruby?(path); end
   def strict_autoload_path(parent, cname); end
+  def walk_up(abspath); end
 end
 
 Zeitwerk::Loader::MUTEX = T.let(T.unsafe(nil), Thread::Mutex)

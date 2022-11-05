@@ -175,6 +175,24 @@ RuboCop::Cop::Rails::ActionFilter::FILTER_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::ActionFilter::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::ActionFilter::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Rails::ActionOrder < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::VisibilityHelp
+  include ::RuboCop::Cop::DefNode
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def action_declarations(param0, param1); end
+  def on_class(node); end
+
+  private
+
+  def actions; end
+  def expected_order; end
+  def find_index(node); end
+  def register_offense(previous, current); end
+end
+
+RuboCop::Cop::Rails::ActionOrder::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Rails::ActiveRecordAliases < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -695,6 +713,10 @@ class RuboCop::Cop::Rails::EagerEvaluationLogMessage < ::RuboCop::Cop::Base
 
   def replacement_range(node); end
   def replacement_source(node, arguments); end
+
+  class << self
+    def autocorrect_incompatible_with; end
+  end
 end
 
 RuboCop::Cop::Rails::EagerEvaluationLogMessage::MSG = T.let(T.unsafe(nil), String)
@@ -1059,6 +1081,15 @@ end
 RuboCop::Cop::Rails::I18nLocaleTexts::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::I18nLocaleTexts::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Rails::IgnoredColumnsAssignment < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+end
+
+RuboCop::Cop::Rails::IgnoredColumnsAssignment::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::IgnoredColumnsAssignment::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Rails::IgnoredSkipActionFilterOption < ::RuboCop::Cop::Base
   def filter_options(param0 = T.unsafe(nil)); end
   def on_send(node); end
@@ -1325,8 +1356,11 @@ class RuboCop::Cop::Rails::Pluck < ::RuboCop::Cop::Base
 
   private
 
-  def message(value, node); end
+  def message(replacement, node); end
   def offense_range(node); end
+  def register_offense(node, key); end
+  def use_block_argument_in_key?(block_argument, key); end
+  def use_one_block_argument?(argument); end
 end
 
 RuboCop::Cop::Rails::Pluck::MSG = T.let(T.unsafe(nil), String)
@@ -1398,11 +1432,13 @@ class RuboCop::Cop::Rails::Presence < ::RuboCop::Cop::Base
   private
 
   def build_source_for_or_method(other); end
+  def current(node); end
   def ignore_if_node?(node); end
   def ignore_other_node?(node); end
   def message(node, receiver, other); end
+  def method_range(node); end
   def register_offense(node, receiver, other); end
-  def replacement(receiver, other); end
+  def replacement(receiver, other, left_sibling); end
 end
 
 RuboCop::Cop::Rails::Presence::MSG = T.let(T.unsafe(nil), String)
@@ -2235,6 +2271,18 @@ RuboCop::Cop::Rails::WhereNot::NOT_EQ_NAMED_RE = T.let(T.unsafe(nil), Regexp)
 RuboCop::Cop::Rails::WhereNot::NOT_IN_ANONYMOUS_RE = T.let(T.unsafe(nil), Regexp)
 RuboCop::Cop::Rails::WhereNot::NOT_IN_NAMED_RE = T.let(T.unsafe(nil), Regexp)
 RuboCop::Cop::Rails::WhereNot::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Rails::WhereNotWithMultipleConditions < ::RuboCop::Cop::Base
+  def on_send(node); end
+  def where_not_call?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def multiple_arguments_hash?(hash); end
+end
+
+RuboCop::Cop::Rails::WhereNotWithMultipleConditions::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::WhereNotWithMultipleConditions::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 module RuboCop::Cop::TargetRailsVersion
   def minimum_target_rails_version(version); end
