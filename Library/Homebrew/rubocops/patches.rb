@@ -16,6 +16,8 @@ module RuboCop
         def audit_formula(node, _class_node, _parent_class_node, body)
           @full_source_content = source_buffer(node).source
 
+          return if body.nil?
+
           external_patches = find_all_blocks(body, :patch)
           external_patches.each do |patch_block|
             url_node = find_every_method_call_by_name(patch_block, :url).first

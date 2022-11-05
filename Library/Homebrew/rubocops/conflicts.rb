@@ -15,6 +15,8 @@ module RuboCop
               "Use `keg_only :versioned_formula` instead."
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           find_method_calls_by_name(body_node, :conflicts_with).each do |conflicts_with_call|
             next unless parameters(conflicts_with_call).last.respond_to? :values
 

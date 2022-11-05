@@ -11,6 +11,8 @@ module RuboCop
       # @api private
       class Urls < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
 
@@ -262,6 +264,8 @@ module RuboCop
         extend T::Sig
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           urls = find_every_func_call_by_name(body_node, :url)
           mirrors = find_every_func_call_by_name(body_node, :mirror)
           urls += mirrors
@@ -292,6 +296,7 @@ module RuboCop
       # @api private
       class GitUrls < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
           return unless formula_tap == "homebrew-core"
 
           find_method_calls_by_name(body_node, :url).each do |url|
@@ -315,6 +320,7 @@ module RuboCop
       # @api private
       class GitUrls < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
           return unless formula_tap == "homebrew-core"
 
           find_method_calls_by_name(body_node, :url).each do |url|

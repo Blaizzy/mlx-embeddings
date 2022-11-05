@@ -15,6 +15,8 @@ module RuboCop
         OPTION = "Formulae in homebrew/core should not use `option`."
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           option_call_nodes = find_every_method_call_by_name(body_node, :option)
           option_call_nodes.each do |option_call|
             option = parameters(option_call).first

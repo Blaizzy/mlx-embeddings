@@ -10,10 +10,11 @@ module RuboCop
       class Homepage < FormulaCop
         extend AutoCorrector
 
-        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+        def audit_formula(_node, class_node, _parent_class_node, body_node)
           homepage_node = find_node_method_by_name(body_node, :homepage)
 
           if homepage_node.nil?
+            offending_node(class_node) if body_node.nil?
             problem "Formula should have a homepage."
             return
           end

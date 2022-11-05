@@ -91,6 +91,8 @@ module RuboCop
       # @api private
       class AssertStatements < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           find_every_method_call_by_name(body_node, :assert).each do |method|
             if method_called_ever?(method, :include?) && !method_called_ever?(method, :!)
               problem "Use `assert_match` instead of `assert ...include?`"
@@ -116,6 +118,8 @@ module RuboCop
       # @api private
       class OptionDeclarations < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           problem "Use new-style option definitions" if find_method_def(body_node, :options)
 
           if formula_tap == "homebrew-core"
@@ -201,6 +205,8 @@ module RuboCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           # Enforce use of OpenMPI for MPI dependency in core
           return unless formula_tap == "homebrew-core"
 
@@ -219,6 +225,8 @@ module RuboCop
       # @api private
       class PyoxidizerCheck < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           # Disallow use of PyOxidizer as a dependency in core
           return unless formula_tap == "homebrew-core"
 
@@ -246,6 +254,8 @@ module RuboCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           test = find_block(body_node, :test)
 
           [:popen_read, :popen_write].each do |unsafe_command|
@@ -275,6 +285,8 @@ module RuboCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           popen_commands = [
             :popen,
             :popen_read,
@@ -305,6 +317,8 @@ module RuboCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           license_node = find_node_method_by_name(body_node, :license)
           return unless license_node
 
@@ -322,6 +336,8 @@ module RuboCop
       # @api private
       class Licenses < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           license_node = find_node_method_by_name(body_node, :license)
           return unless license_node
           return if license_node.source.include?("\n")
@@ -345,6 +361,8 @@ module RuboCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           python_formula_node = find_every_method_call_by_name(body_node, :depends_on).find do |dep|
             string_content(parameters(dep).first).start_with? "python@"
           end
@@ -565,6 +583,8 @@ module RuboCop
       # @api private
       class Miscellaneous < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
           # FileUtils is included in Formula
           # encfs modifies a file with this name, so check for some leading characters
           find_instance_method_call(body_node, "FileUtils", nil) do |method_node|
