@@ -64,7 +64,7 @@ module Homebrew
     paths = ENV.fetch("PATH").split(":")
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     paths.unshift(Gem.bindir) unless paths.include?(Gem.bindir)
-    paths.unshift(HOMEBREW_SHIMS_PATH/"ruby") unless paths.include?(HOMEBREW_SHIMS_PATH/"ruby")
+    paths.unshift(HOMEBREW_LIBRARY_PATH/"shims/ruby") unless paths.include?(HOMEBREW_LIBRARY_PATH/"shims/ruby")
     ENV["PATH"] = paths.compact.join(":")
 
     # Set envs so the above binaries can be invoked.
@@ -80,8 +80,9 @@ module Homebrew
 
     if specs.empty?
       ohai_if_defined "Installing '#{name}' gem"
-      # document: [] , is equivalent to --no-document
-      specs = Gem.install name, version, document: []
+      # `document: []` is equivalent to --no-document
+      # `build_args: []` stops ARGV being used as a default
+      specs = Gem.install name, version, document: [], build_args: []
     end
 
     specs += specs.flat_map(&:runtime_dependencies)
@@ -115,10 +116,6 @@ module Homebrew
   end
 
   def install_bundler!
-    if Gem.ruby_version >= Gem::Version.new("2.7")
-      raise "Installing and using Bundler is currently only supported on Ruby 2.6."
-    end
-
     setup_gem_environment!
     install_gem_setup_path!(
       "bundler",
