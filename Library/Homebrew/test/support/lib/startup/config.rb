@@ -36,6 +36,7 @@ HOMEBREW_TEMP          = (HOMEBREW_PREFIX.parent/"temp").freeze
 HOMEBREW_RUBY_EXEC_ARGS = [
   RUBY_PATH,
   ENV.fetch("HOMEBREW_RUBY_WARNINGS"),
+  ENV.fetch("HOMEBREW_RUBY_DISABLE_OPTIONS"),
   "-I", HOMEBREW_LIBRARY_PATH/"test/support/lib"
 ].freeze
 
