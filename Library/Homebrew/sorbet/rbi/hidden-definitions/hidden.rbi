@@ -107,8 +107,20 @@ class BigDecimal
   def to_digits(); end
 end
 
+module BigDecimal::Deprecation
+  def new(*args, **kwargs); end
+end
+
+module BigDecimal::Deprecation
+end
+
 class BigDecimal
-  def self.new(*args, **kwargs); end
+  extend ::BigDecimal::Deprecation
+  def self.inherited(subclass); end
+
+  def self.interpret_loosely(arg); end
+
+  def self.new(*arg); end
 end
 
 class Binding
@@ -3295,6 +3307,7 @@ class Date
   def plus_without_duration(arg); end
 
   def to_default_s(); end
+  VERSION = ::T.let(nil, ::T.untyped)
 end
 
 class Date::Infinity
