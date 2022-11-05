@@ -14,10 +14,12 @@ module JSONSchemer
   end
 end
 
-class JSONSchemer::CachedRefResolver
-  def initialize(&ref_resolver); end
+class JSONSchemer::CachedRefResolver < ::JSONSchemer::CachedResolver; end
 
-  def call(uri); end
+class JSONSchemer::CachedResolver
+  def initialize(&resolver); end
+
+  def call(*args); end
 end
 
 JSONSchemer::DEFAULT_META_SCHEMA = T.let(T.unsafe(nil), String)
@@ -57,13 +59,14 @@ JSONSchemer::Format::LABEL_REGEX_STRING = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::RELATIVE_JSON_POINTER_REGEX = T.let(T.unsafe(nil), Regexp)
 class JSONSchemer::InvalidFileURI < ::StandardError; end
 class JSONSchemer::InvalidRefResolution < ::StandardError; end
+class JSONSchemer::InvalidRegexpResolution < ::StandardError; end
 class JSONSchemer::InvalidSymbolKey < ::StandardError; end
 module JSONSchemer::Schema; end
 
 class JSONSchemer::Schema::Base
   include ::JSONSchemer::Format
 
-  def initialize(schema, format: T.unsafe(nil), insert_property_defaults: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil), formats: T.unsafe(nil), keywords: T.unsafe(nil), ref_resolver: T.unsafe(nil)); end
+  def initialize(schema, format: T.unsafe(nil), insert_property_defaults: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil), formats: T.unsafe(nil), keywords: T.unsafe(nil), ref_resolver: T.unsafe(nil), regexp_resolver: T.unsafe(nil)); end
 
   def valid?(data); end
   def validate(data); end
@@ -78,7 +81,6 @@ class JSONSchemer::Schema::Base
 
   def child(schema); end
   def custom_format?(format); end
-  def ecma_262_regex(pattern); end
   def error(instance, type, details = T.unsafe(nil)); end
   def format?; end
   def formats; end
@@ -87,8 +89,10 @@ class JSONSchemer::Schema::Base
   def keywords; end
   def pointer_uri(schema, pointer); end
   def ref_resolver; end
+  def regexp_resolver; end
   def resolve_ids(schema, ids = T.unsafe(nil), parent_uri = T.unsafe(nil), pointer = T.unsafe(nil)); end
   def resolve_ref(uri); end
+  def resolve_regexp(pattern); end
   def root; end
   def safe_strict_decode64(data); end
   def spec_format?(format); end
@@ -108,6 +112,7 @@ end
 
 JSONSchemer::Schema::Base::BOOLEANS = T.let(T.unsafe(nil), Set)
 JSONSchemer::Schema::Base::DEFAULT_REF_RESOLVER = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Schema::Base::ECMA_262_REGEXP_RESOLVER = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Schema::Base::ID_KEYWORD = T.let(T.unsafe(nil), String)
 JSONSchemer::Schema::Base::INSERT_DEFAULT_PROPERTY = T.let(T.unsafe(nil), Proc)
 
