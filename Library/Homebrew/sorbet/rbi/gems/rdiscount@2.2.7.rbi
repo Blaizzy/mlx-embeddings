@@ -11,6 +11,8 @@ class RDiscount
 
   def autolink; end
   def autolink=(_arg0); end
+  def explicitlist; end
+  def explicitlist=(_arg0); end
   def filter_html; end
   def filter_html=(_arg0); end
   def filter_styles; end
@@ -21,6 +23,10 @@ class RDiscount
   def footnotes=(_arg0); end
   def generate_toc; end
   def generate_toc=(_arg0); end
+  def latex; end
+  def latex=(_arg0); end
+  def md1compat; end
+  def md1compat=(_arg0); end
   def no_image; end
   def no_image=(_arg0); end
   def no_links; end
