@@ -410,6 +410,7 @@ _brew_bottle() {
       --json
       --keep-old
       --merge
+      --no-all-checks
       --no-commit
       --no-rebuild
       --only-json-tab

@@ -948,6 +948,8 @@ value, while `--no-rebuild` will remove it.
   When passed with `--write`, a new commit will not generated after writing changes to the formula file.
 * `--only-json-tab`:
   When passed with `--json`, the tab will be written to the JSON file but not the bottle.
+* `--no-all-checks`:
+  Don't try to create an `all` bottle or stop a no-change upload.
 * `--committer`:
   Specify a committer name and email in `git`'s standard author format.
 * `--root-url`:
