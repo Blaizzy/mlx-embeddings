@@ -995,6 +995,8 @@ class Formula
   #   </plist>
   #   EOS
   # end</pre>
+  #
+  # @deprecated Please use {#service} instead
   def plist
     nil
   end
@@ -1014,6 +1016,13 @@ class Formula
   # The generated launchd {.plist} file path.
   sig { returns(Pathname) }
   def plist_path
+    odeprecated "formula.plist_path", "formula.launchd_service_path"
+    launchd_service_path
+  end
+
+  # The generated systemd {.service} file path.
+  sig { returns(Pathname) }
+  def launchd_service_path
     opt_prefix/"#{plist_name}.plist"
   end
 
@@ -3121,7 +3130,10 @@ class Formula
     #
     # Or perhaps you'd like to give the user a choice? Ooh fancy.
     # <pre>plist_options startup: true, manual: "foo start"</pre>
+    #
+    # @deprecated Please use {#service.require_root} instead
     def plist_options(options)
+      odeprecated "plist_options", "service.require_root"
       @plist_startup = options[:startup]
       @plist_manual = options[:manual]
     end
@@ -3259,7 +3271,7 @@ class Formula
     # Service can be used to define services.
     # This method evaluates the DSL specified in the service block of the
     # {Formula} (if it exists) and sets the instance variables of a Service
-    # object accordingly. This is used by `brew install` to generate a plist.
+    # object accordingly. This is used by `brew install` to generate a service file.
     #
     # <pre>service do
     #   run [opt_bin/"foo"]

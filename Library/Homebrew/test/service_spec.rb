@@ -64,6 +64,29 @@ describe Homebrew::Service do
     end
   end
 
+  describe "#requires_root?" do
+    it "returns status when set" do
+      f = stub_formula do
+        service do
+          run opt_bin/"beanstalkd"
+          require_root true
+        end
+      end
+
+      expect(f.service.requires_root?).to be(true)
+    end
+
+    it "returns status when not set" do
+      f = stub_formula do
+        service do
+          run opt_bin/"beanstalkd"
+        end
+      end
+
+      expect(f.service.requires_root?).to be(false)
+    end
+  end
+
   describe "#run_type" do
     it "throws for unexpected type" do
       f = stub_formula do
@@ -166,6 +189,7 @@ describe Homebrew::Service do
           error_log_path var/"log/beanstalkd.error.log"
           log_path var/"log/beanstalkd.log"
           input_path var/"in/beanstalkd"
+          require_root true
           root_dir var
           working_dir var
           keep_alive true
@@ -539,6 +563,7 @@ describe Homebrew::Service do
           error_log_path var/"log/beanstalkd.error.log"
           log_path var/"log/beanstalkd.log"
           input_path var/"in/beanstalkd"
+          require_root true
           root_dir var
           working_dir var
           keep_alive true

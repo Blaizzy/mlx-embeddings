@@ -129,6 +129,26 @@ module Homebrew
       end
     end
 
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def require_root(value = nil)
+      case T.unsafe(value)
+      when nil
+        @require_root
+      when true, false
+        @require_root = value
+      else
+        raise TypeError, "Service#require_root expects a Boolean"
+      end
+    end
+
+    # Returns a `Boolean` describing if a service requires root access.
+    # @return [Boolean]
+    sig { returns(T::Boolean) }
+    def requires_root?
+      instance_eval(&@service_block)
+      @require_root.present? && @require_root == true
+    end
+
     sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
     def sockets(value = nil)
       case T.unsafe(value)
