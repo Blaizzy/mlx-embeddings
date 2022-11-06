@@ -666,4 +666,32 @@ module GitHub
     pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
     pr_data["labels"].map { |label| label["name"] }
   end
+
+  def last_commit(user, repo, ref)
+    return if Homebrew::EnvConfig.no_github_api?
+
+    output, _, status = curl_output(
+      "--silent", "--head", "--location",
+      "-H", "Accept: application/vnd.github.sha",
+      "https://api.github.com/repos/#{user}/#{repo}/commits/#{ref}"
+    )
+
+    return unless status.success?
+
+    commit = output[/^ETag: "(\h+)"/, 1]
+    version.update_commit(commit) if commit
+    commit
+  end
+
+  def multiple_short_commits_exist?(user, repo, commit)
+    return if Homebrew::EnvConfig.no_github_api?
+
+    output, _, status = curl_output(
+      "--silent", "--head", "--location",
+      "-H", "Accept: application/vnd.github.sha",
+      "https://api.github.com/repos/#{user}/#{repo}/commits/#{commit}"
+    )
+
+    !(status.success? && output && output[/^Status: (200)/, 1] == "200")
+  end
 end
