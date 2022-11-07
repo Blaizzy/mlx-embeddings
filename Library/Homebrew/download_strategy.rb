@@ -12,6 +12,7 @@ require "mechanize/version"
 require "mechanize/http/content_disposition_parser"
 
 require "utils/curl"
+require "utils/github"
 
 require "github_packages"
 
@@ -1070,7 +1071,6 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
   end
 
   def commit_outdated?(commit)
-    require "utils/github"
     @last_commit ||= GitHub.last_commit(@user, @repo, @ref)
     if @last_commit
       return true unless commit
