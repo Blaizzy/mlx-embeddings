@@ -672,14 +672,16 @@ module GitHub
 
     output, _, status = curl_output(
       "--silent", "--head", "--location",
-      "-H", "Accept: application/vnd.github.sha",
+      "--header", "Accept: application/vnd.github.sha",
       "https://api.github.com/repos/#{user}/#{repo}/commits/#{ref}"
     )
 
     return unless status.success?
 
     commit = output[/^ETag: "(\h+)"/, 1]
-    version.update_commit(commit) if commit
+    return if commit.blank?
+
+    version.update_commit(commit)
     commit
   end
 
@@ -688,10 +690,14 @@ module GitHub
 
     output, _, status = curl_output(
       "--silent", "--head", "--location",
-      "-H", "Accept: application/vnd.github.sha",
+      "--header", "Accept: application/vnd.github.sha",
       "https://api.github.com/repos/#{user}/#{repo}/commits/#{commit}"
     )
 
-    !(status.success? && output && output[/^Status: (200)/, 1] == "200")
+    return true if status.success?
+    return true unless output
+    return true if output[/^Status: (200)/, 1] != "200"
+
+    false
   end
 end
