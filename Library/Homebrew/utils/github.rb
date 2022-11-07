@@ -696,8 +696,7 @@ module GitHub
 
     return true if status.success?
     return true unless output
-    return true if output[/^Status: (200)/, 1] != "200"
 
-    false
+    output[/^Status: (200)/, 1] != "200"
   end
 end
