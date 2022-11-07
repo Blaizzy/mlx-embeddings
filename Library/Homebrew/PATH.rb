@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-# Represention of a `*PATH` environment variable.
+# Representation of a `*PATH` environment variable.
 #
 # @api private
 class PATH

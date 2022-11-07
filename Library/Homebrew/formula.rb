@@ -2847,7 +2847,7 @@ class Formula
     # @!attribute [w] url
     # The URL used to download the source for the {.stable} version of the formula.
     # We prefer `https` for security and proxy reasons.
-    # If not inferrable, specify the download strategy with `using: ...`.
+    # If not inferable, specify the download strategy with `using: ...`.
     #
     # - `:git`, `:hg`, `:svn`, `:bzr`, `:fossil`, `:cvs`,
     # - `:curl` (normal file download, will also extract)
@@ -2948,7 +2948,7 @@ class Formula
     # @!attribute [w] stable
     # Allows adding {.depends_on} and {Patch}es just to the {.stable} {SoftwareSpec}.
     # This is required instead of using a conditional.
-    # It is preferrable to also pull the {url} and {sha256= sha256} into the block if one is added.
+    # It is preferable to also pull the {url} and {sha256= sha256} into the block if one is added.
     #
     # <pre>stable do
     #   url "https://example.com/foo-1.0.tar.gz"

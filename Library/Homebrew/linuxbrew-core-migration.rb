@@ -3,7 +3,7 @@
 
 # List of formulae that had a revision in linuxbrew-core
 # that was different than in homebrew-core
-# We will use this list to modify the version_sheme
+# We will use this list to modify the version_scheme
 # during the migration from linuxbrew-core to homebrew-core.
 
 LINUXBREW_CORE_MIGRATION_LIST = %w[
