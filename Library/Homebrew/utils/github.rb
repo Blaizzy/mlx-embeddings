@@ -673,7 +673,7 @@ module GitHub
     output, _, status = curl_output(
       "--silent", "--head", "--location",
       "--header", "Accept: application/vnd.github.sha",
-      "https://api.github.com/repos/#{user}/#{repo}/commits/#{ref}"
+      url_to("repos", user, repo, "commits", ref).to_s
     )
 
     return unless status.success?
@@ -691,7 +691,7 @@ module GitHub
     output, _, status = curl_output(
       "--silent", "--head", "--location",
       "--header", "Accept: application/vnd.github.sha",
-      "https://api.github.com/repos/#{user}/#{repo}/commits/#{commit}"
+      url_to("repos", user, repo, "commits", commit).to_s
     )
 
     return true if status.success?
