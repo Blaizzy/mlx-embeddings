@@ -1700,7 +1700,7 @@ run `brew upgrade` and/or `brew cleanup` respectively. Pass `--enable-notificati
 to send a notification when the autoupdate process has finished successfully.
 
 `brew autoupdate stop`
-<br>Stop autoupdating, but retain plist & logs.
+<br>Stop autoupdating, but retain plist and logs.
 
 `brew autoupdate delete`
 <br>Cancel the autoupdate, delete the plist and logs.
@@ -1718,7 +1718,7 @@ to send a notification when the autoupdate process has finished successfully.
 * `--cleanup`:
   Automatically clean brew's cache and logs. Must be passed with `start`.
 * `--enable-notification`:
-  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed & found. Must be passed with `start`. <NOTE: Notifications are enabled by default on macOS Catalina and newer.>
+  Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed and found. Must be passed with `start`. Note: notifications are enabled by default on macOS Catalina and newer.
 * `--immediate`:
   Starts the autoupdate command immediately, instead of waiting for one interval (24 hours by default) to pass first. Must be passed with `start`.
 
