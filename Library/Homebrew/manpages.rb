@@ -94,9 +94,9 @@ module Homebrew
         ronn_output = case format_flag
         when "--markdown"
           ronn_output.gsub(%r{<var>(.*?)</var>}, "*`\\1`*")
-                    .gsub(/\n\n\n+/, "\n\n")
-                    .gsub(/^(- `[^`]+`):/, "\\1") # drop trailing colons from definition lists
-                    .gsub(/(?<=\n\n)([\[`].+):\n/, "\\1\n<br>") # replace colons with <br> on subcommands
+                     .gsub(/\n\n\n+/, "\n\n")
+                     .gsub(/^(- `[^`]+`):/, "\\1") # drop trailing colons from definition lists
+                     .gsub(/(?<=\n\n)([\[`].+):\n/, "\\1\n<br>") # replace colons with <br> on subcommands
         when "--roff"
           ronn_output.gsub(%r{<code>(.*?)</code>}, "\\fB\\1\\fR")
                      .gsub(%r{<var>(.*?)</var>}, "\\fI\\1\\fR")
