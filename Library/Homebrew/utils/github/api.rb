@@ -3,6 +3,7 @@
 
 require "tempfile"
 require "utils/shell"
+require "utils/formatter"
 
 module GitHub
   API_URL = "https://api.github.com"
