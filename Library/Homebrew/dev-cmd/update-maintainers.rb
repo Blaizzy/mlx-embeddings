@@ -3,9 +3,7 @@
 
 require "cli/parser"
 require "utils/github"
-
-# TODO: move function to manpages.rb and require that instead
-require "dev-cmd/generate-man-completions"
+require "manpages"
 
 module Homebrew
   extend T::Sig
@@ -61,8 +59,7 @@ module Homebrew
     if diff.status.success?
       ofail "No changes to list of maintainers."
     else
-      # TODO: move function to manpages.rb and call that instead
-      Homebrew.regenerate_man_pages(quiet: true)
+      Manpages.regenerate_man_pages(quiet: true)
       puts "List of maintainers updated in the README and the generated man pages."
     end
   end
