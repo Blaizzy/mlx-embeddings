@@ -3134,7 +3134,8 @@ class Formula
     #
     # @deprecated Please use {#service.require_root} instead
     def plist_options(options)
-      odeprecated "plist_options", "service.require_root"
+      # TODO: Deprecate
+      # odeprecated "plist_options", "service.require_root"
       @plist_startup = options[:startup]
       @plist_manual = options[:manual]
     end
