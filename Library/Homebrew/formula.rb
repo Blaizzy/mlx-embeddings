@@ -1016,7 +1016,8 @@ class Formula
   # The generated launchd {.plist} file path.
   sig { returns(Pathname) }
   def plist_path
-    odeprecated "formula.plist_path", "formula.launchd_service_path"
+    # TODO: Add deprecation
+    # odeprecated "formula.plist_path", "formula.launchd_service_path"
     launchd_service_path
   end
 
