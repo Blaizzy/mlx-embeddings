@@ -5,6 +5,7 @@ require "securerandom"
 
 module Zeitwerk::Loader::Config
   extend Zeitwerk::Internal
+  include Zeitwerk::RealModName
 
   # @sig #camelize
   attr_accessor :inflector
@@ -12,13 +13,14 @@ module Zeitwerk::Loader::Config
   # @sig #call | #debug | nil
   attr_accessor :logger
 
-  # Absolute paths of the root directories. Stored in a hash to preserve order,
-  # easily handle duplicates, have a fast lookup needed for detecting nested
-  # paths, and store namespaces as values.
+  # Absolute paths of the root directories, mapped to their respective root namespaces:
   #
   #   "/Users/fxn/blog/app/channels" => Object,
   #   "/Users/fxn/blog/app/adapters" => ActiveJob::QueueAdapters,
   #   ...
+  #
+  # Stored in a hash to preserve order, easily handle duplicates, and have a
+  # fast lookup by directory.
   #
   # This is a private collection maintained by the loader. The public
   # interface for it is `push_dir` and `dirs`.
@@ -110,6 +112,10 @@ module Zeitwerk::Loader::Config
     # Note that Class < Module.
     unless namespace.is_a?(Module)
       raise Zeitwerk::Error, "#{namespace.inspect} is not a class or module object, should be"
+    end
+
+    unless real_mod_name(namespace)
+      raise Zeitwerk::Error, "root namespaces cannot be anonymous"
     end
 
     abspath = File.expand_path(path)
@@ -283,17 +289,22 @@ module Zeitwerk::Loader::Config
     return false if ignored_paths.empty?
 
     walk_up(abspath) do |abspath|
-      return true  if ignored_paths.member?(abspath)
+      return true  if ignored_path?(abspath)
       return false if roots.key?(abspath)
     end
 
     false
   end
 
+  # @sig (String) -> bool
+  private def ignored_path?(abspath)
+    ignored_paths.member?(abspath)
+  end
+
   # @sig () -> Array[String]
   private def actual_roots
     roots.reject do |root_dir, _root_namespace|
-      !dir?(root_dir) || ignored_paths.member?(root_dir)
+      !dir?(root_dir) || ignored_path?(root_dir)
     end
   end
 
