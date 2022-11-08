@@ -694,8 +694,8 @@ module GitHub
       url_to("repos", user, repo, "commits", commit).to_s
     )
 
-    return true if status.success?
-    return true unless output
+    return true unless status.success?
+    return true if output.blank?
 
     output[/^Status: (200)/, 1] != "200"
   end
