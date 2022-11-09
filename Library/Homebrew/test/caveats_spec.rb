@@ -130,6 +130,11 @@ describe Caveats do
     end
 
     context "when f.service is not nil" do
+      before do
+        allow_any_instance_of(Object).to receive(:which).with("launchctl").and_return(true)
+        allow_any_instance_of(Object).to receive(:which).with("systemctl").and_return(true)
+      end
+
       it "prints warning when no service deamon is found" do
         f = formula do
           url "foo-1.0"
@@ -259,6 +264,10 @@ describe Caveats do
       let(:path) { f.prefix.resolved_path }
 
       before do
+        # don't try to load/fetch gcc/glibc
+        allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
+        allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+
         allow_any_instance_of(Pathname).to receive(:children).and_return([Pathname.new("child")])
         allow_any_instance_of(Object).to receive(:which).with(any_args).and_return(Pathname.new("shell"))
         allow(Utils::Shell).to receive(:preferred).and_return(nil)

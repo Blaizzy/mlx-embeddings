@@ -43,12 +43,14 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
   end
 
   around do |example|
+    ENV["HOMEBREW_INTEGRATION_TEST"] = "1"
     (HOMEBREW_PREFIX/"bin").mkpath
     FileUtils.touch HOMEBREW_PREFIX/"bin/brew"
 
     example.run
   ensure
     FileUtils.rm_rf HOMEBREW_PREFIX/"bin"
+    ENV.delete("HOMEBREW_INTEGRATION_TEST")
   end
 
   # Generate unique ID to be able to

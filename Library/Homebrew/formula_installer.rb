@@ -246,7 +246,7 @@ class FormulaInstaller
     if Homebrew.default_prefix? &&
        !build_from_source? && !build_bottle? && !formula.head? && formula.tap&.core_tap? &&
        # Integration tests override homebrew-core locations
-       ENV["HOMEBREW_TEST_TMPDIR"].nil? &&
+       ENV["HOMEBREW_INTEGRATION_TEST"].nil? &&
        !pour_bottle?
       message = if !formula.pour_bottle? && formula.pour_bottle_check_unsatisfied_reason
         formula_message = formula.pour_bottle_check_unsatisfied_reason

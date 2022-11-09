@@ -93,55 +93,7 @@ module Homebrew
     require "byebug" if args.byebug?
 
     HOMEBREW_LIBRARY_PATH.cd do
-      # Cleanup any unwanted user configuration.
-      allowed_test_env = %w[
-        HOMEBREW_GITHUB_API_TOKEN
-        HOMEBREW_CACHE
-        HOMEBREW_LOGS
-        HOMEBREW_TEMP
-        HOMEBREW_USE_RUBY_FROM_PATH
-      ]
-      Homebrew::EnvConfig::ENVS.keys.map(&:to_s).each do |env|
-        next if allowed_test_env.include?(env)
-
-        ENV.delete(env)
-      end
-
-      # Codespaces /tmp is mounted 755 which makes Ruby warn constantly.
-      if (ENV["HOMEBREW_CODESPACES"] == "true") && (HOMEBREW_TEMP.to_s == "/tmp")
-        homebrew_prefix_tmp = "#{HOMEBREW_PREFIX}/tmp"
-        ENV["HOMEBREW_TEMP"] = homebrew_prefix_tmp
-        FileUtils.mkdir_p homebrew_prefix_tmp
-        system "chmod", "-R", "g-w,o-w", "/tmp"
-      end
-
-      ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
-      ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
-      ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
-      ENV["HOMEBREW_TEST_ONLINE"] = "1" if args.online?
-      ENV["HOMEBREW_SORBET_RUNTIME"] = "1"
-
-      ENV["USER"] ||= system_command!("id", args: ["-nu"]).stdout.chomp
-
-      # Avoid local configuration messing with tests, e.g. git being configured
-      # to use GPG to sign by default
-      ENV["HOME"] = "#{HOMEBREW_LIBRARY_PATH}/test"
-
-      # Print verbose output when requesting debug or verbose output.
-      ENV["HOMEBREW_VERBOSE_TESTS"] = "1" if args.debug? || args.verbose?
-
-      if args.coverage?
-        ENV["HOMEBREW_TESTS_COVERAGE"] = "1"
-        FileUtils.rm_f "test/coverage/.resultset.json"
-      end
-
-      # Override author/committer as global settings might be invalid and thus
-      # will cause silent failure during the setup of dummy Git repositories.
-      %w[AUTHOR COMMITTER].each do |role|
-        ENV["GIT_#{role}_NAME"] = "brew tests"
-        ENV["GIT_#{role}_EMAIL"] = "brew-tests@localhost"
-        ENV["GIT_#{role}_DATE"]  = "Sun Jan 22 19:59:13 2017 +0000"
-      end
+      setup_environment!(args)
 
       parallel = true
 
@@ -235,6 +187,61 @@ module Homebrew
       return if $CHILD_STATUS.success?
 
       Homebrew.failed = true
+    end
+  end
+
+  def setup_environment!(args)
+    # Cleanup any unwanted user configuration.
+    allowed_test_env = %w[
+      HOMEBREW_GITHUB_API_TOKEN
+      HOMEBREW_CACHE
+      HOMEBREW_LOGS
+      HOMEBREW_TEMP
+      HOMEBREW_USE_RUBY_FROM_PATH
+    ]
+    Homebrew::EnvConfig::ENVS.keys.map(&:to_s).each do |env|
+      next if allowed_test_env.include?(env)
+
+      ENV.delete(env)
+    end
+
+    # Codespaces HOMEBREW_PREFIX and /tmp are mounted 755 which makes Ruby warn constantly.
+    if (ENV["HOMEBREW_CODESPACES"] == "true") && (HOMEBREW_TEMP.to_s == "/tmp")
+      # Need to keep this fairly short to avoid socket paths being too long in tests.
+      homebrew_prefix_tmp = "/home/linuxbrew/tmp"
+      ENV["HOMEBREW_TEMP"] = homebrew_prefix_tmp
+      FileUtils.mkdir_p homebrew_prefix_tmp
+      system "chmod", "-R", "g-w,o-w", HOMEBREW_PREFIX, homebrew_prefix_tmp
+    end
+
+    ENV["HOMEBREW_TESTS"] = "1"
+    ENV["HOMEBREW_NO_AUTO_UPDATE"] = "1"
+    ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
+    ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
+    ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
+    ENV["HOMEBREW_TEST_ONLINE"] = "1" if args.online?
+    ENV["HOMEBREW_SORBET_RUNTIME"] = "1"
+
+    ENV["USER"] ||= system_command!("id", args: ["-nu"]).stdout.chomp
+
+    # Avoid local configuration messing with tests, e.g. git being configured
+    # to use GPG to sign by default
+    ENV["HOME"] = "#{HOMEBREW_LIBRARY_PATH}/test"
+
+    # Print verbose output when requesting debug or verbose output.
+    ENV["HOMEBREW_VERBOSE_TESTS"] = "1" if args.debug? || args.verbose?
+
+    if args.coverage?
+      ENV["HOMEBREW_TESTS_COVERAGE"] = "1"
+      FileUtils.rm_f "test/coverage/.resultset.json"
+    end
+
+    # Override author/committer as global settings might be invalid and thus
+    # will cause silent failure during the setup of dummy Git repositories.
+    %w[AUTHOR COMMITTER].each do |role|
+      ENV["GIT_#{role}_NAME"] = "brew tests"
+      ENV["GIT_#{role}_EMAIL"] = "brew-tests@localhost"
+      ENV["GIT_#{role}_DATE"]  = "Sun Jan 22 19:59:13 2017 +0000"
     end
   end
 end

@@ -6,7 +6,7 @@ require "cmd/shared_examples/args_parse"
 describe "brew tap-info" do
   it_behaves_like "parseable arguments"
 
-  it "gets information for a given Tap", :integration_test do
+  it "gets information for a given Tap", :integration_test, :needs_network do
     setup_test_tap
 
     expect { brew "tap-info", "--json=v1", "--installed" }

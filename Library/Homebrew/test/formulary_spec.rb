@@ -141,8 +141,10 @@ describe Formulary do
     context "with installed Formula" do
       before do
         allow(described_class).to receive(:loader_for).and_call_original
-        stub_formula_loader formula("gcc") { url "gcc-1.0" }
-        stub_formula_loader formula("gcc@11") { url "gcc-11.0" }
+
+        # don't try to load/fetch gcc/glibc
+        allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
+        allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
       end
 
       let(:installed_formula) { described_class.factory(formula_path) }
@@ -283,6 +285,10 @@ describe Formulary do
 
       before do
         allow(described_class).to receive(:loader_for).and_return(described_class::FormulaAPILoader.new(formula_name))
+
+        # don't try to load/fetch gcc/glibc
+        allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
+        allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
       end
 
       it "returns a Formula when given a name" do

@@ -33,7 +33,8 @@ describe Language::Python::Shebang do
 
   describe "#detected_python_shebang" do
     it "can be used to replace Python shebangs" do
-      expect(Formulary).to receive(:factory).with(python_f.name).and_return(python_f)
+      allow(Formulary).to receive(:factory)
+      allow(Formulary).to receive(:factory).with(python_f.name).and_return(python_f)
       Utils::Shebang.rewrite_shebang described_class.detected_python_shebang(f, use_python_from_path: false), file
 
       expect(File.read(file)).to eq <<~EOS
