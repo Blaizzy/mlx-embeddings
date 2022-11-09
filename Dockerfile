@@ -27,6 +27,7 @@ RUN apt-get update \
     sudo \
     uuid-runtime \
     tzdata \
+    jq \
   && apt remove --purge -y software-properties-common \
   && apt autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
