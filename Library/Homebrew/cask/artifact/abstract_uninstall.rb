@@ -90,7 +90,22 @@ module Cask
       # :launchctl must come before :quit/:signal for cases where app would instantly re-launch
       def uninstall_launchctl(*services, command: nil, **_)
         booleans = [false, true]
+
+        all_services = []
+
+        # if launchctl item contains a wildcard, find matching process(es)
         services.each do |service|
+          all_services.push(service)
+          next unless /\*/.match?(service)
+
+          find_launchctl_with_wildcard(service)
+            .map { |_, _, id| id }
+            .each do |match|
+            all_services.push(match)
+          end
+        end
+
+        all_services.each do |service|
           ohai "Removing launchctl service #{service}"
           booleans.each do |with_sudo|
             plist_status = command.run(
@@ -265,6 +280,16 @@ module Cask
           opoo "Removal of login item #{id} failed. #{automation_access_instructions}" unless result.success?
 
           sleep 1
+        end
+      end
+
+      def find_launchctl_with_wildcard(search)
+        system_command!("/bin/launchctl", args: ["list"])
+          .stdout.lines.drop(1)
+          .map { |line| line.chomp.split("\t") }
+          .map { |pid, state, id| [pid.to_i, state.to_i, id] }
+          .select do |(pid, _, id)|
+          pid.nonzero? && /\A#{Regexp.escape(search).gsub("\\*", ".*")}\Z/.match?(id)
         end
       end
 
