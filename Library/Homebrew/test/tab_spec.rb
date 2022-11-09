@@ -248,6 +248,10 @@ describe Tab do
       # < 1.1.7 runtime dependencies were wrong so are ignored
       stub_const("HOMEBREW_VERSION", "1.1.7")
 
+      # don't try to load gcc/glibc
+      allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
+      allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+
       f = formula do
         url "foo-1.0"
         depends_on "bar"

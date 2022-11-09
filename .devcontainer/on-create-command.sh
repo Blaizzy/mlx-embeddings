@@ -1,22 +1,14 @@
 #!/bin/bash
 set -e
 
-# dump information variables for debugging
-echo "==> env"
-env | grep -v TOKEN
-echo
-echo "==> /etc/os-release"
-cat /etc/os-release || true
-echo
-echo "==> /etc/lsb-release"
-cat /etc/lsb-release || true
-echo
-echo "==> /etc/issue"
-cat /etc/issue || true
-echo
-
 # fix permissions so Homebrew and Bundler don't complain
 sudo chmod -R g-w,o-w /home/linuxbrew
+
+# everything below is too slow to do unless prebuilding so skip it
+if [ -z "$CODESPACES_PREBUILD_TOKEN" ]
+then
+  exit 0
+fi
 
 # install Homebrew's development gems
 brew install-bundler-gems --groups=sorbet

@@ -27,7 +27,7 @@ class Formula
 
   sig { params(spec: SoftwareSpec).void }
   def add_global_deps_to_spec(spec)
-    return unless DevelopmentTools.build_system_too_old?
+    return unless DevelopmentTools.needs_build_formulae?
 
     @global_deps ||= begin
       dependency_collector = spec.dependency_collector

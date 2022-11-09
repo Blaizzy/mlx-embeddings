@@ -1202,6 +1202,9 @@ module Homebrew
       end
 
       specify "it warns when another formula does not have a symmetric conflict" do
+        stub_formula_loader formula("gcc") { url "gcc-1.0" }
+        stub_formula_loader formula("glibc") { url "glibc-1.0" }
+
         foo = formula("foo") do
           url "https://brew.sh/foo-1.0.tgz"
         end

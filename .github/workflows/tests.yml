@@ -12,6 +12,7 @@ permissions:
 env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_ENV_HINTS: 1
 
 concurrency:
   group: "${{ github.ref }}"
@@ -235,10 +236,9 @@ jobs:
           - name: tests (Ubuntu 22.04)
             test-flags: --online --coverage
             runs-on: ubuntu-22.04
-          # Enable later once this can be fixed.
-          # - name: tests (Ubuntu 18.04)
-          #   test-flags: --online --coverage
-          #   runs-on: ubuntu-18.04
+          - name: tests (Ubuntu 18.04)
+            test-flags: --online --coverage
+            runs-on: ubuntu-18.04
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew

@@ -18,6 +18,8 @@ describe InstalledDependents do
   end
 
   def setup_test_keg(name, version, &block)
+    stub_formula("gcc")
+    stub_formula("glibc")
     stub_formula(name, version, &block)
 
     path = HOMEBREW_CELLAR/name/version

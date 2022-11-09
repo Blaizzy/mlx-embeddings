@@ -33,6 +33,7 @@ describe Language::Perl::Shebang do
 
   describe "#detected_perl_shebang" do
     it "can be used to replace Perl shebangs" do
+      allow(Formulary).to receive(:factory)
       allow(Formulary).to receive(:factory).with(perl_f.name).and_return(perl_f)
       Utils::Shebang.rewrite_shebang described_class.detected_perl_shebang(f), file
 

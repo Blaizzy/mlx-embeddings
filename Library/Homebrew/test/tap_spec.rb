@@ -258,8 +258,7 @@ describe Tap do
     expect(homebrew_foo_tap.git_last_commit).to match(/\A\d+ .+ ago\Z/)
   end
 
-  specify "#private?" do
-    skip "HOMEBREW_GITHUB_API_TOKEN is required" unless GitHub::API.credentials
+  specify "#private?", :needs_network do
     expect(homebrew_foo_tap).to be_private
   end
 

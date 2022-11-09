@@ -8,10 +8,10 @@ class DevelopmentTools
     sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
       (@locate ||= {}).fetch(tool) do |key|
-        @locate[key] = if build_system_too_old? &&
+        @locate[key] = if needs_build_formulae? &&
                           (binutils_path = HOMEBREW_PREFIX/"opt/binutils/bin/#{tool}").executable?
           binutils_path
-        elsif build_system_too_old? && (glibc_path = HOMEBREW_PREFIX/"opt/glibc/bin/#{tool}").executable?
+        elsif needs_build_formulae? && (glibc_path = HOMEBREW_PREFIX/"opt/glibc/bin/#{tool}").executable?
           glibc_path
         elsif (homebrew_path = HOMEBREW_PREFIX/"bin/#{tool}").executable?
           homebrew_path
@@ -27,18 +27,22 @@ class DevelopmentTools
     end
 
     sig { returns(T::Boolean) }
-    def build_system_too_old?
-      return @build_system_too_old if defined? @build_system_too_old
+    def needs_libc_formula?
+      return @needs_libc_formula if defined? @needs_libc_formula
 
-      @build_system_too_old = (system_gcc_too_old? || OS::Linux::Glibc.below_ci_version?)
+      @needs_libc_formula = OS::Linux::Glibc.below_ci_version?
     end
 
     sig { returns(T::Boolean) }
-    def system_gcc_too_old?
-      gcc = "/usr/bin/gcc"
-      return true unless File.exist?(gcc)
+    def needs_compiler_formula?
+      return @needs_compiler_formula if defined? @needs_compiler_formula
 
-      gcc_version(gcc) < OS::LINUX_GCC_CI_VERSION
+      gcc = "/usr/bin/gcc"
+      @needs_compiler_formula = if File.exist?(gcc)
+        gcc_version(gcc) < OS::LINUX_GCC_CI_VERSION
+      else
+        true
+      end
     end
 
     sig { returns(T::Hash[String, T.nilable(String)]) }

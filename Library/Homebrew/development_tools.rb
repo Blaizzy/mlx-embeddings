@@ -99,12 +99,17 @@ class DevelopmentTools
     end
 
     sig { returns(T::Boolean) }
-    def build_system_too_old?
+    def needs_build_formulae?
+      needs_libc_formula? || needs_compiler_formula?
+    end
+
+    sig { returns(T::Boolean) }
+    def needs_libc_formula?
       false
     end
 
     sig { returns(T::Boolean) }
-    def system_gcc_too_old?
+    def needs_compiler_formula?
       false
     end
 
