@@ -88,6 +88,15 @@ class MacOSRequirement < Requirement
     end
   end
 
+  def ==(other)
+    super(other) && comparator == other.comparator && version == other.version
+  end
+  alias eql? ==
+
+  def hash
+    [super, comparator, version].hash
+  end
+
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: version#{@comparator}#{@version.to_s.inspect} #{tags.inspect}>"
