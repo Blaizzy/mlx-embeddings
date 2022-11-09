@@ -5,8 +5,9 @@ set -e
 sudo chmod -R g-w,o-w /home/linuxbrew
 
 # everything below is too slow to do unless prebuilding so skip it
-if [ -z "$CODESPACES_PREBUILD_TOKEN" ]
-then
+CODESPACES_ACTION_NAME="$(cat /workspaces/.codespaces/shared/environment-variables.json | jq -r '.ACTION_NAME')"
+if [ "$CODESPACES_ACTION_NAME" != "createPrebuildTemplate" ];
+  echo "Skipping slow items, not prebuilding."
   exit 0
 fi
 
