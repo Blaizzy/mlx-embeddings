@@ -28,16 +28,18 @@ module Zeitwerk::ExplicitNamespace
   extend ::Zeitwerk::RealModName
 
   class << self
-    def cpaths; end
-    def mutex; end
-    def register(cpath, loader); end
-    def tracer; end
-    def unregister_loader(loader); end
+    def __register(cpath, loader); end
+    def __unregister_loader(loader); end
 
     private
 
+    def cpaths; end
     def disable_tracer_if_unneeded; end
+    def mutex; end
+    def register(cpath, loader); end
     def tracepoint_class_callback(event); end
+    def tracer; end
+    def unregister_loader(loader); end
   end
 end
 
@@ -135,6 +137,7 @@ module Zeitwerk::Loader::Callbacks
 end
 
 module Zeitwerk::Loader::Config
+  include ::Zeitwerk::RealModName
   extend ::Zeitwerk::Internal
 
   def initialize; end
@@ -170,6 +173,7 @@ module Zeitwerk::Loader::Config
   def expand_glob_patterns(glob_patterns); end
   def expand_paths(paths); end
   def ignored_glob_patterns; end
+  def ignored_path?(abspath); end
   def ignored_paths; end
   def ignores?(abspath); end
   def on_load_callbacks; end
@@ -237,6 +241,10 @@ module Zeitwerk::Registry
 end
 
 class Zeitwerk::ReloadingDisabledError < ::Zeitwerk::Error
+  def initialize; end
+end
+
+class Zeitwerk::SetupRequired < ::Zeitwerk::Error
   def initialize; end
 end
 

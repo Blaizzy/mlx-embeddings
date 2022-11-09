@@ -9,6 +9,7 @@ module Zeitwerk::Loader::EagerLoad
   def eager_load(force: false)
     mutex.synchronize do
       break if @eager_loaded
+      raise Zeitwerk::SetupRequired unless @setup
 
       log("eager load start") if logger
 
@@ -29,6 +30,8 @@ module Zeitwerk::Loader::EagerLoad
 
   # @sig (String | Pathname) -> void
   def eager_load_dir(path)
+    raise Zeitwerk::SetupRequired unless @setup
+
     abspath = File.expand_path(path)
 
     raise Zeitwerk::Error.new("#{abspath} is not a directory") unless dir?(abspath)
@@ -37,7 +40,7 @@ module Zeitwerk::Loader::EagerLoad
 
     root_namespace = nil
     walk_up(abspath) do |dir|
-      return if ignored_paths.member?(dir)
+      return if ignored_path?(dir)
       return if eager_load_exclusions.member?(dir)
 
       break if root_namespace = roots[dir]
@@ -67,6 +70,8 @@ module Zeitwerk::Loader::EagerLoad
 
   # @sig (Module) -> void
   def eager_load_namespace(mod)
+    raise Zeitwerk::SetupRequired unless @setup
+
     unless mod.is_a?(Module)
       raise Zeitwerk::Error, "#{mod.inspect} is not a class or module object"
     end
@@ -111,7 +116,7 @@ module Zeitwerk::Loader::EagerLoad
 
     raise Zeitwerk::Error.new("#{abspath} does not exist") unless File.exist?(abspath)
     raise Zeitwerk::Error.new("#{abspath} is not a Ruby file") if dir?(abspath) || !ruby?(abspath)
-    raise Zeitwerk::Error.new("#{abspath} is ignored") if ignored_paths.member?(abspath)
+    raise Zeitwerk::Error.new("#{abspath} is ignored") if ignored_path?(abspath)
 
     basename = File.basename(abspath, ".rb")
     base_cname = inflector.camelize(basename, abspath).to_sym
@@ -120,7 +125,7 @@ module Zeitwerk::Loader::EagerLoad
     cnames = []
 
     walk_up(File.dirname(abspath)) do |dir|
-      raise Zeitwerk::Error.new("#{abspath} is ignored") if ignored_paths.member?(dir)
+      raise Zeitwerk::Error.new("#{abspath} is ignored") if ignored_path?(dir)
 
       break if root_namespace = roots[dir]
 
@@ -203,7 +208,7 @@ module Zeitwerk::Loader::EagerLoad
           next unless dir?(abspath)
 
           if collapse?(abspath)
-            current_dirs << abspath
+            dirs << abspath
           elsif segment == inflector.camelize(basename, abspath)
             next_dirs << abspath
           end
