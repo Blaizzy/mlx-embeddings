@@ -5,8 +5,9 @@ set -e
 sudo chmod -R g-w,o-w /home/linuxbrew
 
 # everything below is too slow to do unless prebuilding so skip it
-CODESPACES_ACTION_NAME="$(cat /workspaces/.codespaces/shared/environment-variables.json | jq -r '.ACTION_NAME')"
-if [ "$CODESPACES_ACTION_NAME" != "createPrebuildTemplate" ];
+CODESPACES_ACTION_NAME="$(jq --raw-output '.ACTION_NAME' /workspaces/.codespaces/shared/environment-variables.json)"
+if [[ "${CODESPACES_ACTION_NAME}" != "createPrebuildTemplate" ]]
+then
   echo "Skipping slow items, not prebuilding."
   exit 0
 fi
@@ -22,18 +23,23 @@ brew cleanup
 
 # install some useful development things
 sudo apt-get update
-APT_GET_INSTALL="openssh-server zsh"
+
+apt_get_install() {
+  sudo apt-get install -y \
+    -o Dpkg::Options::=--force-confdef \
+    -o Dpkg::Options::=--force-confnew \
+    "$@"
+}
+
+apt_get_install \
+  openssh-server \
+  zsh
 
 # Ubuntu 18.04 doesn't include zsh-autosuggestions
 if ! grep -q "Ubuntu 18.04" /etc/issue &>/dev/null
 then
-  APT_GET_INSTALL="$APT_GET_INSTALL zsh-autosuggestions"
+  apt_get_install zsh-autosuggestions
 fi
-
-sudo apt-get install -y \
-  -o Dpkg::Options::=--force-confdef \
-  -o Dpkg::Options::=--force-confnew \
-  $APT_GET_INSTALL
 
 # Start the SSH server so that `gh cs ssh` works.
 sudo service ssh start
