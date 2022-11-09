@@ -262,12 +262,13 @@ module Homebrew
         HOMEBREW_BREW_FILE,
         HOMEBREW_REPOSITORY/"completions/bash/brew",
         HOMEBREW_REPOSITORY/"Dockerfile",
-        *HOMEBREW_LIBRARY.glob("Homebrew/*.sh"),
+        *HOMEBREW_REPOSITORY.glob(".devcontainer/**/*.sh"),
+        *HOMEBREW_LIBRARY.glob("Homebrew/**/*.sh").reject { |path| path.to_s.include?("/vendor/") },
         *HOMEBREW_LIBRARY.glob("Homebrew/shims/**/*").map(&:realpath).uniq
                          .reject(&:directory?)
                          .reject { |path| path.basename.to_s == "cc" }
                          .select do |path|
-                           %r{^#! ?/bin/(?:ba)?sh( |$)}.match?(path.read(13)) || path.extname == ".sh"
+                           %r{^#! ?/bin/(?:ba)?sh( |$)}.match?(path.read(13))
                          end,
         *HOMEBREW_LIBRARY.glob("Homebrew/{dev-,}cmd/*.sh"),
         *HOMEBREW_LIBRARY.glob("Homebrew/{cask/,}utils/*.sh"),
