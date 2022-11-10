@@ -11,8 +11,6 @@ Style/Documentation:
     - "default_prefix.rb"
     - "global.rb"
     - "keg_relocate.rb"
-    - "os/linux/global.rb"
-    - "os/mac/global.rb"
     - "os/mac/keg.rb"
     - "reinstall.rb"
     - "software_spec.rb"
