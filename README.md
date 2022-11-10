@@ -36,7 +36,7 @@ Good luck!
 
 ## Security
 
-Please report security issues by filling in [the vulnerability reporting form](https://github.com/homebrew/brew/security/advisories/new).
+Please report security issues by filling in [the security advisory form](https://github.com/homebrew/brew/security/advisories/new).
 
 ## Who We Are
 
