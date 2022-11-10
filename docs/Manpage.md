@@ -2123,7 +2123,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Use this base64 encoded username and password for authenticating with a Docker registry proxying GitHub Packages. If HOMEBREW_DOCKER_REGISTRY_TOKEN is set, it will be used instead.
 
 - `HOMEBREW_DOCKER_REGISTRY_TOKEN`
-  <br>Use this bearer token for authenticating with a Docker registry proxying GitHub Packages. Preferred over HOMEBREW_DOCKER_REGISTRY_TOKEN_BASIC.
+  <br>Use this bearer token for authenticating with a Docker registry proxying GitHub Packages. Preferred over HOMEBREW_DOCKER_REGISTRY_BASIC_AUTH_TOKEN.
 
 - `HOMEBREW_GITHUB_PACKAGES_USER`
   <br>Use this username when accessing the GitHub Packages Registry (where bottles may be stored).
