@@ -154,16 +154,24 @@ module Homebrew
             end
           end
 
-          log_command = "git log --since='1 month ago' --diff-filter=D " \
-                        "--name-only --max-count=1 " \
-                        "--format=%H\\\\n%h\\\\n%B -- #{relative_path}"
-          hash, short_hash, *commit_message, relative_path =
-            Utils.popen_read(log_command).gsub("\\n", "\n").lines.map(&:chomp)
+          commit_command = "git log --before='1 month ago' --max-count=1 --format=%H"
+          month_old_commit = Utils.popen_read(commit_command).chomp
 
-          if hash.blank? || short_hash.blank? || relative_path.blank?
+          # Check if the formula has been deleted in the last month
+          # by comparing the diff between now and a month ago.
+          diff_command = "git diff --diff-filter=D --name-only " \
+                         "#{month_old_commit} HEAD -- #{relative_path}"
+
+          if Utils.popen_read(diff_command).blank?
             ofail "No previously deleted formula found." unless silent
             return
           end
+
+          log_command = "git log --since='1 month ago' --diff-filter=D " \
+                        "--name-only --max-count=1 " \
+                        "--format=%h\\\\n%B -- #{relative_path}"
+          short_hash, *commit_message, relative_path =
+            Utils.popen_read(log_command).gsub("\\n", "\n").lines.map(&:chomp)
 
           commit_message = commit_message.reject(&:empty?).join("\n  ")
 
