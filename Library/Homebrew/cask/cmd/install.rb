@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "cask_dependent"
+
 module Cask
   class Cmd
     # Cask implementation of the `brew install` command.
