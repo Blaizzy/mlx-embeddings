@@ -85,6 +85,7 @@ module RuboCop
           groff
           gzip
           less
+          mandoc
           openssl
           perl
           php
