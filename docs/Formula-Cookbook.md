@@ -77,8 +77,7 @@ end
 
 If `brew` said `Warning: Version cannot be determined from URL` when doing the `create` step, you’ll need to explicitly add the correct [`version`](https://rubydoc.brew.sh/Formula#version-class_method) to the formula and then save the formula.
 
-Homebrew will try to guess the formula’s name from its URL. If it fails to do
-so you can override this with `brew create <URL> --set-name <name>`.
+Homebrew will try to guess the formula’s name from its URL. If it fails to do so you can override this with `brew create <URL> --set-name <name>`.
 
 ### Fill in the `homepage`
 
@@ -128,13 +127,7 @@ We generally try not to duplicate system libraries and complicated tools in core
 
 Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be built using Homebrew’s shipped equivalent and our Brew Test Bot's post-install `audit` will warn if it detects you haven't done this.
 
-Homebrew’s OpenSSL is [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method)
-to avoid conflicting with the system so sometimes formulae need to
-have environment variables set or special configuration flags passed
-to locate our OpenSSL. You can see this mechanism in the
-[`clamav`](https://github.com/Homebrew/homebrew-core/blob/89c4574ef1a6d15e92196637ff315a0a4bb3e289/Formula/clamav.rb#L37)
-formula. Usually this is unnecessary because Homebrew sets up our [build environment](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/extend/ENV/super.rb)
-to favour finding [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) formulae first.
+Homebrew’s OpenSSL is [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) to avoid conflicting with the system so sometimes formulae need to have environment variables set or special configuration flags passed to locate our OpenSSL. You can see this mechanism in the [`clamav`](https://github.com/Homebrew/homebrew-core/blob/89c4574ef1a6d15e92196637ff315a0a4bb3e289/Formula/clamav.rb#L37) formula. Usually this is unnecessary because Homebrew sets up our [build environment](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/extend/ENV/super.rb) to favour finding [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) formulae first.
 
 **Important:** `$(brew --prefix)/bin` is NOT on the `PATH` during formula installation. If you have dependencies at build time, you must specify them and `brew` will add them to the `PATH` or create a [`Requirement`](https://rubydoc.brew.sh/Requirement).
 
@@ -157,20 +150,15 @@ A Symbol (e.g. `:xcode`) specifies a [`Requirement`](https://rubydoc.brew.sh/Req
 
 A Hash (e.g. `=>`) adds information to a dependency. Given a String or Symbol, the value can be one or more of the following values:
 
-* `:build` means that dependency is a build-time only dependency so it can
-be skipped when installing from a bottle or when listing missing
-dependencies using `brew missing`.
-* `:test` means that dependency is only required when running `brew test`.
-* `:optional` generates an implicit `with-foo` option for the formula.
-This means that, given `depends_on "foo" => :optional`, the user must pass `--with-foo` in order to use the dependency.
-* `:recommended` generates an implicit `without-foo` option, meaning that
-the dependency is enabled by default and the user must pass
-`--without-foo` to disable this dependency. The default
-description can be overridden using the normal option syntax (in this case, the option declaration must precede the dependency):
-    ```ruby
-    option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
-    depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
-    ```
+* `:build` means this is a build-time only dependency so it can be skipped when installing from a bottle or when listing missing dependencies using `brew missing`.
+* `:test` means this is only required when running `brew test`.
+* `:optional` generates an implicit `with-foo` option for the formula. This means that, given `depends_on "foo" => :optional`, the user must pass `--with-foo` in order to use the dependency.
+* `:recommended` generates an implicit `without-foo` option, meaning that the dependency is enabled by default and the user must pass `--without-foo` to disable this dependency. The default description can be overridden using the normal option syntax (in this case, the option declaration must precede the dependency):
+
+  ```ruby
+  option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
+  depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
+  ```
 * Some [`Requirement`](https://rubydoc.brew.sh/Requirement)s can also take a string specifying their minimum version that the formula depends on.
 
 **Note:** `:optional` and `:recommended` are not allowed in Homebrew/homebrew-core as they are not tested by CI.
@@ -181,8 +169,7 @@ Sometimes there’s hard conflict between formulae, and it can’t be avoided or
 
 A good example formula for minor conflict is [`mbedtls`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/mbedtls.rb), which ships and compiles a "Hello World" executable. This is obviously non-essential to `mbedtls`’s functionality, and conflict with the popular GNU [`hello`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/hello.rb) formula would be overkill, so we just [remove it](https://github.com/Homebrew/homebrew-core/blob/966273060ad507fea490bd931971963de8b1a1dc/Formula/mbedtls.rb#L30-L31) during the installation process.
 
-[`pdftohtml`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/pdftohtml.rb) provides an example of a serious
-conflict, where both formula ship an identically-named binary that is essential to functionality, so a [`conflicts_with`](https://rubydoc.brew.sh/Formula#conflicts_with-class_method) is preferable.
+[`pdftohtml`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/pdftohtml.rb) provides an example of a serious conflict, where both formula ship an identically-named binary that is essential to functionality, so a [`conflicts_with`](https://rubydoc.brew.sh/Formula#conflicts_with-class_method) is preferable.
 
 As a general rule, [`conflicts_with`](https://rubydoc.brew.sh/Formula#conflicts_with-class_method) should be a last-resort option. It’s a fairly blunt instrument.
 
@@ -264,9 +251,7 @@ Check the top of the e.g. `./configure` output. Some configure scripts do not re
 
 Add a valid test to the [`test do`](https://rubydoc.brew.sh/Formula#test-class_method) block of the formula. This will be run by `brew test foo` and the [Brew Test Bot](Brew-Test-Bot.md).
 
-The [`test do`](https://rubydoc.brew.sh/Formula#test-class_method) block automatically creates and changes to a temporary directory which
-is deleted after run. You can access this [`Pathname`](https://rubydoc.brew.sh/Pathname) with the [`testpath`](https://rubydoc.brew.sh/Formula#testpath-instance_method)
-function. The environment variable `HOME` is set to [`testpath`](https://rubydoc.brew.sh/Formula#testpath-instance_method) within the [`test do`](https://rubydoc.brew.sh/Formula#test-class_method) block.
+The [`test do`](https://rubydoc.brew.sh/Formula#test-class_method) block automatically creates and changes to a temporary directory which is deleted after run. You can access this [`Pathname`](https://rubydoc.brew.sh/Pathname) with the [`testpath`](https://rubydoc.brew.sh/Formula#testpath-instance_method) function. The environment variable `HOME` is set to [`testpath`](https://rubydoc.brew.sh/Formula#testpath-instance_method) within the [`test do`](https://rubydoc.brew.sh/Formula#test-class_method) block.
 
 We want tests that don't require any user input and test the basic functionality of the application. For example `foo build-foo input.foo` is a good test and (despite their widespread use) `foo --version` and `foo --help` are bad tests. However, a bad test is better than no test at all.
 
@@ -285,8 +270,8 @@ assert_predicate testpath/"output.txt", :exist?
 ```
 
 Some advice for specific cases:
-* If the formula is a library, compile and run some simple code that links against it. It could be taken from upstream's documentation / source examples.
-A good example is [`tinyxml2`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/tinyxml2.rb), which writes a small C++ source file into the test directory, compiles and links it against the tinyxml2 library and finally checks that the resulting program runs successfully.
+
+* If the formula is a library, compile and run some simple code that links against it. It could be taken from upstream's documentation / source examples. A good example is [`tinyxml2`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/tinyxml2.rb), which writes a small C++ source file into the test directory, compiles and links it against the tinyxml2 library and finally checks that the resulting program runs successfully.
 * If the formula is for a GUI program, try to find some function that runs as command-line only, like a format conversion, reading or displaying a config file, etc.
 * If the software cannot function without credentials or requires a virtual machine, docker instance, etc. to run, a test could be to try to connect with invalid credentials (or without credentials) and confirm that it fails as expected. This is preferred over mocking a dependency.
 * Homebrew comes with a number of [standard test fixtures](https://github.com/Homebrew/brew/tree/master/Library/Homebrew/test/support/fixtures), including numerous sample images, sounds, and documents in various formats. You can get the file path to a test fixture with `test_fixtures("test.svg")`.
@@ -315,13 +300,11 @@ Some software installs to `man` instead of `share/man`, so check the output and 
 
 In case there are specific issues with the Homebrew packaging (compared to how the software is installed from other sources) a `caveats` block can be added to the formula to warn users. This can indicate non-standard install paths, an example from the `ruby` formula:
 
-```
-==> Caveats
-By default, binaries installed by gem will be placed into:
-  /usr/local/lib/ruby/gems/bin
+    ==> Caveats
+    By default, binaries installed by gem will be placed into:
+      /usr/local/lib/ruby/gems/bin
 
-You may want to add this to your PATH.
-```
+    You may want to add this to your PATH.
 
 ### A quick word on naming
 
@@ -352,8 +335,7 @@ You can run `brew audit --strict --online` to test formulae for adherence to Hom
 
 New formulae being submitted to Homebrew should run `brew audit --new-formula foo`. This command is performed by the Brew Test Bot on new submissions as part of the automated build and test process, and highlights more potential issues than the standard audit.
 
-Use `brew info` and check if the version guessed by Homebrew from the URL is
-correct. Add an explicit [`version`](https://rubydoc.brew.sh/Formula#version-class_method) if not.
+Use `brew info` and check if the version guessed by Homebrew from the URL is correct. Add an explicit [`version`](https://rubydoc.brew.sh/Formula#version-class_method) if not.
 
 ### Commit
 
@@ -376,6 +358,7 @@ The established standard for Git commit messages is:
 * explain the commit thoroughly.
 
 At Homebrew, we like to put the name of the formula up front like so: `foobar 7.3 (new formula)`.
+
 This may seem crazy short, but you’ll find that forcing yourself to summarise the commit encourages you to be atomic and concise. If you can’t summarise it in 50-80 characters, you’re probably trying to commit two commits as one. For a more thorough explanation, please read Tim Pope’s excellent blog post, [A Note About Git Commit Messages](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
 The preferred commit message format for simple version updates is `foobar 7.3` and for fixes is `foobar: fix flibble matrix.`.
@@ -510,15 +493,13 @@ patch :p0, :DATA
 
 with the patch data included at the end of the file:
 
-```
-__END__
-diff --git a/foo/showfigfonts b/foo/showfigfonts
-index 643c60b..543379c 100644
---- a/foo/showfigfonts
-+++ b/foo/showfigfonts
-@@ -14,6 +14,7 @@
-…
-```
+    __END__
+    diff --git a/foo/showfigfonts b/foo/showfigfonts
+    index 643c60b..543379c 100644
+    --- a/foo/showfigfonts
+    +++ b/foo/showfigfonts
+    @@ -14,6 +14,7 @@
+    …
 
 Patches can also be embedded by passing a string. This makes it possible to provide multiple embedded patches while making only some of them conditional.
 
@@ -538,6 +519,7 @@ brew edit foo
 ```
 
 Now just paste into the formula after `__END__`.
+
 Instead of `git diff | pbcopy`, for some editors `git diff >> path/to/your/formula/foo.rb` might help you ensure that the patch is not touched, e.g. white space removal, indentation changes, etc.
 
 ## Advanced formula tricks
@@ -819,23 +801,25 @@ Another example would be configuration files that should not be overwritten on p
 ### Service files
 
 There are two ways to add plists and systemd services to a formula, so that [`brew services`](https://github.com/Homebrew/homebrew-services) can pick it up:
+
 1. If the formula already provides a file the formula can install it into the prefix like so.
 
-```ruby
-prefix.install_symlink "file.plist" => "#{plist_name}.plist"
-prefix.install_symlink "file.service" => "#{service_name}.service"
-```
+   ```ruby
+   prefix.install_symlink "file.plist" => "#{plist_name}.plist"
+   prefix.install_symlink "file.service" => "#{service_name}.service"
+   ```
 
 2. If the formula does not provide a service you can generate one using the following stanza.
-```rb
-service do
-  run bin/"script"
-end
-```
+
+   ```rb
+   service do
+     run bin/"script"
+   end
+   ```
 
 #### Service block methods
-There are many more options you can set within such a block, and in this table you will find them all.
-The only required field in a `service` block is the `run` field to indicate what to run.
+
+There are many more options you can set within such a block, and in this table you will find them all. The only required field in a `service` block is the `run` field to indicate what to run.
 
 | Method                  | Default      | macOS | Linux | Description                                                                              |
 |-------------------------|--------------|-------|-------|------------------------------------------------------------------------------------------|
@@ -857,84 +841,96 @@ The only required field in a `service` block is the `run` field to indicate what
 | `sockets`               | -            |  yes  | no-op | A socket that is created as an accesspoint to the service                                |
 
 For services that start and keep running alive you can use the default `run_type :` like so:
+
 ```ruby
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    keep_alive true
-    run_type :immediate # This should be omitted since it's the default
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  keep_alive true
+  run_type :immediate # This should be omitted since it's the default
+end
 ```
 
 If a service needs to run on an interval, use `run_type :interval` and specify an interval:
+
 ```ruby
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    run_type :interval
-    interval 500
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  run_type :interval
+  interval 500
+end
 ```
 
 If a service needs to run at certain times, use `run_type :cron` and specify a time with the crontab syntax:
+
 ```ruby
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    run_type :cron
-    cron "5 * * * *"
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  run_type :cron
+  cron "5 * * * *"
+end
 ```
 
 For environment variables you can specify a hash. For the path there is the helper method `std_service_path_env`.
 This method will set the path to `#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin` so the service can find other `brew` commands.
+
 ```rb
-  service do
-    run opt_bin/"beanstalkd"
-    environment_variables PATH: std_service_path_env
-  end
+service do
+  run opt_bin/"beanstalkd"
+  environment_variables PATH: std_service_path_env
+end
 ```
 
 #### KeepAlive options
+
 The standard options, keep alive regardless of any status or circomstances
+
 ```rb
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    keep_alive true # or false
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  keep_alive true # or false
+end
 ```
 
 Same as above in hash form
+
 ```rb
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    keep_alive { always: true }
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  keep_alive { always: true }
+end
 ```
 
 Keep alive until the job exits with a non-zero return code
+
 ```rb
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    keep_alive { succesful_exit: true }
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  keep_alive { succesful_exit: true }
+end
 ```
 
 Keep alive only if the job crashed
+
 ```rb
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    keep_alive { crashed: true }
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  keep_alive { crashed: true }
+end
 ```
 
 Keep alive as long as a file exists
+
 ```rb
-  service do
-    run [opt_bin/"beanstalkd", "test"]
-    keep_alive { path: "/some/path" }
-  end
+service do
+  run [opt_bin/"beanstalkd", "test"]
+  keep_alive { path: "/some/path" }
+end
 ```
 
 #### Socket format
+
 The sockets method accepts a formatted socket definition as `<type>://<host>:<port>`.
+
 - `type`: `udp` or `tcp`
 - `host`: The host to run the socket on. For example `0.0.0.0`
 - `port`: The port the socket should listen on.

@@ -29,8 +29,7 @@ Exception: `do` blocks such as `postflight` may enclose a block of pure Ruby cod
 
 ### Efficiency
 
-Conditional statements are permitted, but only if they are very efficient.
-Tests on the following values are known to be acceptable:
+Conditional statements are permitted, but only if they are very efficient. Tests on the following values are known to be acceptable:
 
 | value                       | examples
 | ----------------------------|--------------------------------------
@@ -38,8 +37,7 @@ Tests on the following values are known to be acceptable:
 
 ### Version Comparisons
 
-Tests against `MacOS.version` may use either symbolic names or version
-strings with numeric comparison operators:
+Tests against `MacOS.version` may use either symbolic names or version strings with numeric comparison operators:
 
 ```ruby
 if MacOS.version <= :mojave        # symbolic name
@@ -105,8 +103,7 @@ The first non-comment line in a Cask follows the form:
 cask "<cask-token>" do
 ```
 
-[`<cask-token>`](#token-reference) should match the Cask filename, without the `.rb` extension,
-enclosed in single quotes.
+[`<cask-token>`](#token-reference) should match the Cask filename, without the `.rb` extension, enclosed in single quotes.
 
 There are currently some arbitrary limitations on Cask tokens which are in the process of being removed. GitHub Actions will catch any errors during the transition.
 
@@ -114,61 +111,59 @@ There are currently some arbitrary limitations on Cask tokens which are in the p
 
 Having a common order for stanzas makes Casks easier to update and parse. Below is the complete stanza sequence (no Cask will have all stanzas). The empty lines shown here are also important, as they help to visually delineate information.
 
-```
-version
-sha256
+    version
+    sha256
 
-language
+    language
 
-url
-appcast
-name
-desc
-homepage
+    url
+    appcast
+    name
+    desc
+    homepage
 
-livecheck
+    livecheck
 
-auto_updates
-conflicts_with
-depends_on
-container
+    auto_updates
+    conflicts_with
+    depends_on
+    container
 
-suite
-app
-pkg
-installer
-binary
-manpage
-colorpicker
-dictionary
-font
-input_method
-internet_plugin
-prefpane
-qlplugin
-mdimporter
-screen_saver
-service
-audio_unit_plugin
-vst_plugin
-vst3_plugin
-artifact, target: # target: shown here as is required with `artifact`
-stage_only
+    suite
+    app
+    pkg
+    installer
+    binary
+    manpage
+    colorpicker
+    dictionary
+    font
+    input_method
+    internet_plugin
+    prefpane
+    qlplugin
+    mdimporter
+    screen_saver
+    service
+    audio_unit_plugin
+    vst_plugin
+    vst3_plugin
+    artifact, target: # target: shown here as is required with `artifact`
+    stage_only
 
-preflight
+    preflight
 
-postflight
+    postflight
 
-uninstall_preflight
+    uninstall_preflight
 
-uninstall_postflight
+    uninstall_postflight
 
-uninstall
+    uninstall
 
-zap
+    zap
 
-caveats
-```
+    caveats
 
 Note that every stanza that has additional parameters (`:symbols` after a `,`) shall have them on separate lines, one per line, in alphabetical order. An exception is `target:` which typically consists of short lines.
 
@@ -430,8 +425,7 @@ conflicts_with formula: "macvim"
 
 ### Stanza: `depends_on`
 
-`depends_on` is used to declare dependencies and requirements for a Cask.
-`depends_on` is not consulted until `install` is attempted.
+`depends_on` is used to declare dependencies and requirements for a Cask. `depends_on` is not consulted until `install` is attempted.
 
 #### depends_on cask
 
@@ -635,10 +629,10 @@ installer manual: "Nutstore Installer.app"
 The path may be absolute, or relative to the Cask. Example (from [miniforge.rb](https://github.com/Homebrew/homebrew-cask/blob/ed2033fb3578376c3ee58a2cb459ef96fa6eb37d/Casks/miniforge.rb#L15L18)):
 
 ```ruby
-  installer script: {
-    executable: "Miniforge3-#{version}-MacOSX-x86_64.sh",
-    args:       ["-b", "-p", "#{caskroom_path}/base"],
-  }
+installer script: {
+  executable: "Miniforge3-#{version}-MacOSX-x86_64.sh",
+  args:       ["-b", "-p", "#{caskroom_path}/base"],
+}
 ```
 
 If the `installer script:` does not require any of the key-values it can point directly to the path of the install script:
@@ -991,13 +985,13 @@ It is better to use the least-severe signals which are sufficient to stop a proc
 An example, with commonly-used signals in ascending order of severity:
 
 ```ruby
-  uninstall signal: [
-                      ["TERM", "fr.madrau.switchresx.daemon"],
-                      ["QUIT", "fr.madrau.switchresx.daemon"],
-                      ["INT",  "fr.madrau.switchresx.daemon"],
-                      ["HUP",  "fr.madrau.switchresx.daemon"],
-                      ["KILL", "fr.madrau.switchresx.daemon"],
-                    ]
+uninstall signal: [
+            ["TERM", "fr.madrau.switchresx.daemon"],
+            ["QUIT", "fr.madrau.switchresx.daemon"],
+            ["INT",  "fr.madrau.switchresx.daemon"],
+            ["HUP",  "fr.madrau.switchresx.daemon"],
+            ["KILL", "fr.madrau.switchresx.daemon"],
+          ]
 ```
 
 Note that when multiple running processes match the given Bundle ID, all matching processes will be signaled.
@@ -1033,10 +1027,10 @@ IDs inside a kext bundle you have located on disk can be listed using the comman
 `uninstall script:` introduces a series of key-value pairs describing a command which will automate completion of the uninstall. Example (from [gpgtools.rb](https://github.com/Homebrew/homebrew-cask/blob/4a0a49d1210a8202cbdd54bce2986f15049b8b61/Casks/gpgtools.rb#L33-#L37)):
 
 ```ruby
-  uninstall script:    {
-                         executable: "#{staged_path}/Uninstall.app/Contents/Resources/GPG Suite Uninstaller.app/Contents/Resources/uninstall.sh",
-                         sudo:       true,
-                       }
+uninstall script: {
+            executable: "#{staged_path}/Uninstall.app/Contents/Resources/GPG Suite Uninstaller.app/Contents/Resources/uninstall.sh",
+            sudo:       true,
+          }
 ```
 
 It is important to note that, although `script:` in the above example does attempt to completely uninstall the `pkg`, it should not be used in detriment of [`pkgutil:`](#uninstall-key-pkgutil), but as a complement when possible.
@@ -1157,23 +1151,17 @@ SourceForge and OSDN (formerly `SourceForge.JP`) projects are common ways to dis
 
 We prefer URLs of this format:
 
-```
-https://downloads.sourceforge.net/<project_name>/<filename>.<ext>
-```
+    https://downloads.sourceforge.net/<project_name>/<filename>.<ext>
 
 Or, if it’s from [OSDN](https://osdn.jp/):
 
-```
-http://<subdomain>.osdn.jp/<project_name>/<release_id>/<filename>.<ext>
-```
+    http://<subdomain>.osdn.jp/<project_name>/<release_id>/<filename>.<ext>
 
 `<subdomain>` is typically of the form `dl` or `<user>.dl`.
 
 If these formats are not available, and the application is macOS-exclusive (otherwise a command-line download defaults to the Windows version) we prefer the use of this format:
 
-```
-https://sourceforge.net/projects/<project_name>/files/latest/download
-```
+    https://sourceforge.net/projects/<project_name>/files/latest/download
 
 #### Some Providers Block Command-line Downloads
 
@@ -1450,11 +1438,9 @@ App Name on Disk       | Simplified App Name | Cask Token       | Filename
 
 Cask taps have naming conventions specific to each tap.
 
-[Homebrew/cask-versions](https://github.com/Homebrew/homebrew-cask-versions/blob/HEAD/CONTRIBUTING.md#naming-versions-casks)
-
-[Homebrew/cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md#naming-font-casks)
-
-[Homebrew/cask-drivers](https://github.com/Homebrew/homebrew-cask-drivers/blob/HEAD/CONTRIBUTING.md#naming-driver-casks)
+* [Homebrew/cask-versions](https://github.com/Homebrew/homebrew-cask-versions/blob/HEAD/CONTRIBUTING.md#naming-versions-casks)
+* [Homebrew/cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md#naming-font-casks)
+* [Homebrew/cask-drivers](https://github.com/Homebrew/homebrew-cask-drivers/blob/HEAD/CONTRIBUTING.md#naming-driver-casks)
 
 # Special Affixes
 
