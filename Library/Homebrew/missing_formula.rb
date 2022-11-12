@@ -154,24 +154,35 @@ module Homebrew
             end
           end
 
-          commit_command = "git log --before='1 month ago' --max-count=1 --format=%H"
-          month_old_commit = Utils.popen_read(commit_command).chomp
+          # The core tap has thousands of monthly commits making the `git log`
+          # command below a performance issue when using `brew search` or
+          # `brew info` to look for a formula that doesn't exist. This first
+          # checks if the formula existed a month ago before continuing.
+          if tap.is_a? CoreTap
+            commit_command = "git log --before='1 month ago' --max-count=1 --format=%H"
+            month_old_commit_hash = Utils.popen_read(commit_command).chomp
 
-          # Check if the formula has been deleted in the last month
-          # by comparing the diff between now and a month ago.
-          diff_command = "git diff --diff-filter=D --name-only " \
-                         "#{month_old_commit} HEAD -- #{relative_path}"
+            # Check if the formula has been deleted in the last month
+            # by comparing the diff between now and a month ago.
+            diff_command = "git diff --diff-filter=D --name-only " \
+                           "#{month_old_commit_hash} HEAD -- #{relative_path}"
 
-          if Utils.popen_read(diff_command).blank?
-            ofail "No previously deleted formula found." unless silent
-            return
+            if Utils.popen_read(diff_command).blank?
+              ofail "No previously deleted formula found." unless silent
+              return
+            end
           end
 
           log_command = "git log --since='1 month ago' --diff-filter=D " \
                         "--name-only --max-count=1 " \
-                        "--format=%h\\\\n%B -- #{relative_path}"
-          short_hash, *commit_message, relative_path =
+                        "--format=%H\\\\n%h\\\\n%B -- #{relative_path}"
+          hash, short_hash, *commit_message, relative_path =
             Utils.popen_read(log_command).gsub("\\n", "\n").lines.map(&:chomp)
+
+          if hash.blank? || short_hash.blank? || relative_path.blank?
+            ofail "No previously deleted formula found." unless silent
+            return
+          end
 
           commit_message = commit_message.reject(&:empty?).join("\n  ")
 
