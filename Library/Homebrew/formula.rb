@@ -996,7 +996,7 @@ class Formula
   #   EOS
   # end</pre>
   #
-  # @deprecated Please use {#service} instead
+  # @deprecated Please use {Homebrew::Service} instead.
   def plist
     nil
   end
@@ -1021,7 +1021,7 @@ class Formula
     launchd_service_path
   end
 
-  # The generated systemd {.service} file path.
+  # The generated launchd {.service} file path.
   sig { returns(Pathname) }
   def launchd_service_path
     opt_prefix/"#{plist_name}.plist"
@@ -3053,7 +3053,8 @@ class Formula
     end
 
     # Indicates use of dependencies provided by macOS.
-    # On macOS this is a no-op (as we use the provided system libraries).
+    # On macOS this is a no-op (as we use the provided system libraries) unless
+    # `:since` specifies a minimum macOS version.
     # On Linux this will act as {.depends_on}.
     def uses_from_macos(dep, bounds = {})
       specs.each { |spec| spec.uses_from_macos(dep, bounds) }
@@ -3132,7 +3133,7 @@ class Formula
     # Or perhaps you'd like to give the user a choice? Ooh fancy.
     # <pre>plist_options startup: true, manual: "foo start"</pre>
     #
-    # @deprecated Please use {#service.require_root} instead
+    # @deprecated Please use {Homebrew::Service.require_root} instead.
     def plist_options(options)
       # TODO: Deprecate
       # odeprecated "plist_options", "service.require_root"

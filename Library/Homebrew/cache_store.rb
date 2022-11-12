@@ -60,7 +60,7 @@ class CacheStoreDatabase
     db[key]
   end
 
-  # Gets a value from the underlying database (if it already exists).
+  # Deletes a value from the underlying database (if it already exists).
   def delete(key)
     return unless created?
 
