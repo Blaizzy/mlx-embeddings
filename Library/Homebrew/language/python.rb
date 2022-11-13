@@ -182,7 +182,7 @@ module Language
       # formula preference for python or python@x.y, or to resolve an ambiguous
       # case where it's not clear whether python or python@x.y should be the
       # default guess.
-      def virtualenv_install_with_resources(using: nil, system_site_packages: true)
+      def virtualenv_install_with_resources(using: nil, system_site_packages: true, link_manpages: false)
         python = using
         if python.nil?
           wanted = python_names.select { |py| needs_python?(py) }
@@ -194,7 +194,7 @@ module Language
         end
         venv = virtualenv_create(libexec, python.delete("@"), system_site_packages: system_site_packages)
         venv.pip_install resources
-        venv.pip_install_and_link buildpath
+        venv.pip_install_and_link(buildpath, link_manpages: link_manpages)
         venv
       end
 
@@ -281,14 +281,22 @@ module Language
         #
         # @param (see #pip_install)
         # @return (see #pip_install)
-        def pip_install_and_link(targets)
+        def pip_install_and_link(targets, link_manpages: false)
           bin_before = Dir[@venv_root/"bin/*"].to_set
+          man_before = Dir[@venv_root/"share/man/man*/*"].to_set if link_manpages
 
           pip_install(targets)
 
           bin_after = Dir[@venv_root/"bin/*"].to_set
           bin_to_link = (bin_after - bin_before).to_a
           @formula.bin.install_symlink(bin_to_link)
+          return unless link_manpages
+
+          man_after = Dir[@venv_root/"share/man/man*/*"].to_set
+          man_to_link = (man_after - man_before).to_a
+          man_to_link.each do |manpage|
+            (@formula.man/Pathname.new(manpage).dirname.basename).install_symlink manpage
+          end
         end
 
         private
