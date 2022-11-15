@@ -154,25 +154,17 @@ module Homebrew
             end
           end
 
-          # The core tap has thousands of monthly commits making the `git log`
-          # command below a performance issue when using `brew search` or
-          # `brew info` to look for a formula that doesn't exist. This first
-          # checks if the formula existed a month ago before continuing.
-          if tap.is_a? CoreTap
-            commit_command = "git log --before='1 month ago' --max-count=1 --format=%H"
-            month_old_commit_hash = Utils.popen_read(commit_command).chomp
+          # Check if the formula has been deleted in the last month.
+          diff_command = ["git", "diff", "--diff-filter=D", "--name-only",
+                          "@{'1 month ago'}", "--", relative_path]
+          deleted_formula = Utils.popen_read(*diff_command)
 
-            # Check if the formula has been deleted in the last month
-            # by comparing the diff between now and a month ago.
-            diff_command = "git diff --diff-filter=D --name-only " \
-                           "#{month_old_commit_hash} HEAD -- #{relative_path}"
-
-            if Utils.popen_read(diff_command).blank?
-              ofail "No previously deleted formula found." unless silent
-              return
-            end
+          if deleted_formula.blank?
+            ofail "No previously deleted formula found." unless silent
+            return
           end
 
+          # Find commit where formula was deleted in the last month.
           log_command = "git log --since='1 month ago' --diff-filter=D " \
                         "--name-only --max-count=1 " \
                         "--format=%H\\\\n%h\\\\n%B -- #{relative_path}"
