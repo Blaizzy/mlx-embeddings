@@ -9,15 +9,16 @@ module Hardware
   class CPU
     INTEL_32BIT_ARCHS = [:i386].freeze
     INTEL_64BIT_ARCHS = [:x86_64].freeze
+    INTEL_ARCHS       = (INTEL_32BIT_ARCHS + INTEL_64BIT_ARCHS).freeze
     PPC_32BIT_ARCHS   = [:ppc, :ppc32, :ppc7400, :ppc7450, :ppc970].freeze
     PPC_64BIT_ARCHS   = [:ppc64, :ppc64le, :ppc970].freeze
+    PPC_ARCHS         = (PPC_32BIT_ARCHS + PPC_64BIT_ARCHS).freeze
     ARM_64BIT_ARCHS   = [:arm64, :aarch64].freeze
+    ARM_ARCHS         = ARM_64BIT_ARCHS
     ALL_ARCHS = [
-      *INTEL_32BIT_ARCHS,
-      *INTEL_64BIT_ARCHS,
-      *PPC_32BIT_ARCHS,
-      *PPC_64BIT_ARCHS,
-      *ARM_64BIT_ARCHS,
+      *INTEL_ARCHS,
+      *PPC_ARCHS,
+      *ARM_ARCHS,
     ].freeze
 
     INTEL_64BIT_OLDEST_CPU = :core2
