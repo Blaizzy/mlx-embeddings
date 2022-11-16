@@ -152,11 +152,7 @@ module Hardware
       end
 
       def sysctl_int(key)
-        if (x = sysctl_n(key).to_i) >= 0
-          x
-        else
-          x & 0xffffffff
-        end
+        sysctl_n(key).to_i & 0xffffffff
       end
 
       def sysctl_n(*keys)
