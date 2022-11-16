@@ -1417,6 +1417,8 @@ Installs, configures and runs Homebrew's `rubocop`.
 Run a Ruby instance with Homebrew's libraries loaded. For example,
 `brew ruby -e "puts :gcc.f.deps"` or `brew ruby script.rb`.
 
+Run e.g. `brew ruby -- --version` to pass arbitrary arguments to `ruby`.
+
 * `-r`:
   Load a library using `require`.
 * `-e`:
