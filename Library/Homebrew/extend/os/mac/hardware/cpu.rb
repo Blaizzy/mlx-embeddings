@@ -152,7 +152,7 @@ module Hardware
       end
 
       def sysctl_int(key)
-        sysctl_n(key).to_i
+        sysctl_n(key).to_i & 0xffffffff
       end
 
       def sysctl_n(*keys)
