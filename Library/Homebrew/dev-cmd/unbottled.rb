@@ -44,6 +44,15 @@ module Homebrew
       Utils::Bottles.tag
     end
 
+    Homebrew::SimulateSystem.os = @bottle_tag.system
+    Homebrew::SimulateSystem.arch = if Hardware::CPU::INTEL_ARCHS.include?(@bottle_tag.arch)
+      :intel
+    elsif Hardware::CPU::ARM_ARCHS.include?(@bottle_tag.arch)
+      :arm
+    else
+      raise "Unknown arch #{@bottle_tag.arch}."
+    end
+
     all = args.eval_all?
     if args.total?
       if !all && !Homebrew::EnvConfig.eval_all?
@@ -82,6 +91,8 @@ module Homebrew
     end
 
     output_unbottled(formulae, deps_hash, noun, hash, args.named.present?)
+  ensure
+    Homebrew::SimulateSystem.clear
   end
 
   def formulae_all_installs_from_args(args, all)
