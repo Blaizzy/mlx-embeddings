@@ -236,6 +236,11 @@ class RuboCop::Cop::Performance::Count < ::RuboCop::Cop::Base
 
   def autocorrect(corrector, node, selector_node, selector); end
   def eligible_node?(node); end
+  def negate_block_pass_as_inline_block(node); end
+  def negate_block_pass_reject(corrector, node); end
+  def negate_block_reject(corrector, node); end
+  def negate_expression(node); end
+  def negate_reject(corrector, node); end
   def source_starting_at(node); end
 end
 
@@ -411,6 +416,7 @@ class RuboCop::Cop::Performance::MapCompact < ::RuboCop::Cop::Base
   def invoke_method_after_map_compact_on_same_line?(compact_node, chained_method); end
   def map_method_and_compact_method_on_same_line?(map_node, compact_node); end
   def remove_compact_method(corrector, map_node, compact_node, chained_method); end
+  def use_dot?(node); end
 end
 
 RuboCop::Cop::Performance::MapCompact::MSG = T.let(T.unsafe(nil), String)
