@@ -10,7 +10,7 @@ require "English"
 module Homebrew
   # Keep in sync with the `Gemfile.lock`'s BUNDLED WITH.
   # After updating this, run `brew vendor-gems --update=--bundler`.
-  HOMEBREW_BUNDLER_VERSION = "2.3.24"
+  HOMEBREW_BUNDLER_VERSION = "2.3.26"
 
   module_function
 
@@ -64,7 +64,6 @@ module Homebrew
     paths = ENV.fetch("PATH").split(":")
     paths.unshift(ruby_bindir) unless paths.include?(ruby_bindir)
     paths.unshift(Gem.bindir) unless paths.include?(Gem.bindir)
-    paths.unshift(HOMEBREW_LIBRARY_PATH/"shims/ruby") unless paths.include?(HOMEBREW_LIBRARY_PATH/"shims/ruby")
     ENV["PATH"] = paths.compact.join(":")
 
     # Set envs so the above binaries can be invoked.
