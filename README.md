@@ -36,7 +36,7 @@ Good luck!
 
 ## Security
 
-Please report security issues to our [HackerOne](https://hackerone.com/homebrew/).
+Please report security issues by filling in [the security advisory form](https://github.com/homebrew/brew/security/advisories/new).
 
 ## Who We Are
 
