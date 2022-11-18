@@ -154,14 +154,17 @@ module Homebrew
             end
           end
 
-          # Check if the formula has been deleted in the last month.
-          diff_command = ["git", "diff", "--diff-filter=D", "--name-only",
-                          "@{'1 month ago'}", "--", relative_path]
-          deleted_formula = Utils.popen_read(*diff_command)
+          # Optimization for the core tap which has many monthly commits
+          if tap.core_tap?
+            # Check if the formula has been deleted in the last month.
+            diff_command = ["git", "diff", "--diff-filter=D", "--name-only",
+                            "@{'1 month ago'}", "--", relative_path]
+            deleted_formula = Utils.popen_read(*diff_command)
 
-          if deleted_formula.blank?
-            ofail "No previously deleted formula found." unless silent
-            return
+            if deleted_formula.blank?
+              ofail "No previously deleted formula found." unless silent
+              return
+            end
           end
 
           # Find commit where formula was deleted in the last month.
