@@ -14,12 +14,12 @@ module Bootsnap
     def absolute_path?(path); end
     def default_setup; end
     def instrumentation=(callback); end
-    def iseq_cache_supported?; end
     def log!; end
     def logger; end
     def logger=(logger); end
     def rb_get_path(fname); end
-    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), autoload_paths_cache: T.unsafe(nil), disable_trace: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
+    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), ignore_directories: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
+    def unload_cache!; end
   end
 end
 
@@ -54,7 +54,7 @@ module Bootsnap::LoadPathCache
     def enabled?; end
     def load_path_cache; end
     def loaded_features_index; end
-    def setup(cache_path:, development_mode:); end
+    def setup(cache_path:, development_mode:, ignore_directories:); end
     def supported?; end
     def unload!; end
   end
@@ -179,6 +179,8 @@ Bootsnap::LoadPathCache::Path::VOLATILE = T.let(T.unsafe(nil), Symbol)
 module Bootsnap::LoadPathCache::PathScanner
   class << self
     def call(path); end
+    def ignored_directories; end
+    def ignored_directories=(_arg0); end
     def os_path(path); end
     def walk(absolute_dir_path, relative_dir_path, &block); end
   end
