@@ -4281,6 +4281,7 @@ class Gem::Specification
 
   def to_ruby(); end
   LATEST_RUBY_WITHOUT_PATCH_VERSIONS = ::T.let(nil, ::T.untyped)
+  ORIGINAL_LOCAL_PLATFORM = ::T.let(nil, ::T.untyped)
 end
 
 module Gem::Specification::YamlBackfiller
