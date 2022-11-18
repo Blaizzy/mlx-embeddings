@@ -75,16 +75,28 @@ describe Homebrew::MissingFormula do
       end
     end
 
-    context "with a deleted formula" do
-      let(:formula) { "homebrew/foo/deleted-formula" }
+    shared_examples "it detects deleted formulae" do
+      context "with a deleted formula" do
+        let(:formula) { "homebrew/foo/deleted-formula" }
 
-      it { is_expected.not_to be_nil }
+        it { is_expected.not_to be_nil }
+      end
+
+      context "with a formula that never existed" do
+        let(:formula) { "homebrew/foo/missing-formula" }
+
+        it { is_expected.to be_nil }
+      end
     end
 
-    context "with a formula that never existed" do
-      let(:formula) { "homebrew/foo/missing-formula" }
+    include_examples "it detects deleted formulae"
 
-      it { is_expected.to be_nil }
+    describe "on the core tap" do
+      before do
+        allow_any_instance_of(Tap).to receive(:core_tap?).and_return(true)
+      end
+
+      include_examples "it detects deleted formulae"
     end
   end
 
