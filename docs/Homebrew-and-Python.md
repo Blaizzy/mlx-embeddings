@@ -87,10 +87,9 @@ CFLAGS="-I$(brew --prefix)/include" LDFLAGS="-L$(brew --prefix)/lib" pip install
 
 ## Virtualenv
 
-**Warning!** When you `brew install` formulae that provide Python bindings, you should **not be in an active virtual environment**.
+**Warning!** When you `brew install` formulae that provide Python bindings, you should **not be in an active virtual environment.**
 
-Activate the virtualenv *after* you've brewed, or brew in a fresh terminal window.
-This will ensure Python modules are installed into Homebrew's `site-packages` and *not* into that of the virtual environment.
+Activate the virtualenv *after* you've brewed, or brew in a fresh terminal window. This will ensure Python modules are installed into Homebrew's `site-packages` and *not* into that of the virtual environment.
 
 Virtualenv has a `--system-site-packages` switch to allow "global" (i.e. Homebrew's) `site-packages` to be accessible from within the virtualenv.
 

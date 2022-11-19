@@ -13,8 +13,7 @@ A detailed checklist can be found [below](#detailed-merge-checklist). This is al
   [pip](https://pip.pypa.io/en/stable/).
 - Ensure that any dependencies are accurate and minimal. We don't need to
   support every possible optional feature for the software.
-- When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See the ["How to merge without bottles" section below](#how-to-merge-without-bottles)
-for more details.
+- When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See the ["How to merge without bottles" section below](#how-to-merge-without-bottles) for more details.
 - Use `brew pr-publish` or `brew pr-pull` otherwise, which adds messages to auto-close pull requests and pull bottles built by the Brew Test Bot.
 - Thank people for contributing.
 
@@ -155,18 +154,18 @@ transparency for contributors in addition to the
 - bottle block is not removed
 
   Suggested reply:
-  ```
-  Please keep bottle block in place, [@BrewTestBot](https://github.com/BrewTestBot) takes care of it.
-  ```
+
+      Please keep bottle block in place; [@BrewTestBot](https://github.com/BrewTestBot) takes care of it.
+
 - is there a test block for other than checking version or printing help? Consider asking to add one
 - if CI failed
   - due to test block - paste relevant lines and add `test failure` label
   - due to build errors - paste relevant lines and add `build failure` label
   - due to other formulae needing revision bumps - suggest to use the following command:
-    ```
-    # in this example PR is for `libuv` formula and `urbit` needs revision bump
-    brew bump-revision --message 'for libuv' urbit
-    ```
+
+        # in this example: PR is for `libuv` formula and `urbit` needs revision bump
+        brew bump-revision --message 'for libuv' urbit
+
     - make sure it is one commit per revision bump
 - if CI is green and...
   - bottles need to be pulled, and...
@@ -187,16 +186,14 @@ This error might pop up when parameters passed to `gcc` are in the wrong order.
 
 An example from `libmagic` formula:
 
-```
-==> brew test libmagic --verbose
-Testing libmagic
-==> /usr/bin/gcc -I/home/linuxbrew/.linuxbrew/Cellar/libmagic/5.38/include -L/home/linuxbrew/.linuxbrew/Cellar/libmagic/5.38/lib -lmagic test.c -o test
-/tmp/ccNeDVRt.o: In function `main':
-test.c:(.text+0x15): undefined reference to `magic_open'
-test.c:(.text+0x4a): undefined reference to `magic_load'
-test.c:(.text+0x81): undefined reference to `magic_file'
-collect2: error: ld returned 1 exit status
-```
+    ==> brew test libmagic --verbose
+    Testing libmagic
+    ==> /usr/bin/gcc -I/home/linuxbrew/.linuxbrew/Cellar/libmagic/5.38/include -L/home/linuxbrew/.linuxbrew/Cellar/libmagic/5.38/lib -lmagic test.c -o test
+    /tmp/ccNeDVRt.o: In function `main':
+    test.c:(.text+0x15): undefined reference to `magic_open'
+    test.c:(.text+0x4a): undefined reference to `magic_load'
+    test.c:(.text+0x81): undefined reference to `magic_file'
+    collect2: error: ld returned 1 exit status
 
 Solution:
 

@@ -46,4 +46,4 @@ work to be done.
 
 ---
 
-_Thanks to https://gist.github.com/ryanflorence/124070e7c4b3839d4573 which influenced this document_
+_Thanks to <https://gist.github.com/ryanflorence/124070e7c4b3839d4573> which influenced this document._

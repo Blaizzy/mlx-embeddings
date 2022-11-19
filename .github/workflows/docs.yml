@@ -1,0 +1,67 @@
+name: Documentation CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linting:
+    if: github.repository == 'Homebrew/brew'
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install vale
+        run: brew install vale
+
+      - name: Run vale for docs linting
+        run: vale .
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+          bundler-cache: true
+          working-directory: docs
+
+      - name: Check Markdown syntax
+        run: bundle exec rake lint
+
+      - name: Build docs site
+        run: bundle exec rake build
+
+  rubydoc:
+    if: github.repository == 'Homebrew/brew'
+    runs-on: ubuntu-22.04
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/rubydoc/Gemfile
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Checkout Homebrew/rubydoc.brew.sh
+        uses: actions/checkout@main
+        with:
+          repository: Homebrew/rubydoc.brew.sh
+          path: rubydoc
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+          bundler-cache: true
+
+      - name: Process rubydoc comments
+        working-directory: Library/Homebrew
+        run: bundle exec yard doc --plugin sorbet --no-output #--fail-on-warning
