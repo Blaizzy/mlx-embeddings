@@ -81,7 +81,8 @@ module Homebrew
       ohai_if_defined "Installing '#{name}' gem"
       # `document: []` is equivalent to --no-document
       # `build_args: []` stops ARGV being used as a default
-      specs = Gem.install name, version, document: [], build_args: []
+      # `env_shebang: true` makes shebangs generic to allow switching between system and Portable Ruby
+      specs = Gem.install name, version, document: [], build_args: [], env_shebang: true
     end
 
     specs += specs.flat_map(&:runtime_dependencies)
