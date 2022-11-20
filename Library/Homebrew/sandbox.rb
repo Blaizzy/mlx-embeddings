@@ -17,7 +17,7 @@ class Sandbox
 
   sig { returns(T::Boolean) }
   def self.available?
-    OS.mac? && File.executable?(SANDBOX_EXEC)
+    false
   end
 
   sig { void }
@@ -256,3 +256,5 @@ class Sandbox
   end
   private_constant :SandboxProfile
 end
+
+require "extend/os/sandbox"
