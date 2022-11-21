@@ -178,6 +178,7 @@ RuboCop::Cop::Rails::ActionFilter::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 class RuboCop::Cop::Rails::ActionOrder < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::VisibilityHelp
   include ::RuboCop::Cop::DefNode
+  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def action_declarations(param0, param1); end
@@ -186,9 +187,14 @@ class RuboCop::Cop::Rails::ActionOrder < ::RuboCop::Cop::Base
   private
 
   def actions; end
+  def add_range(range1, range2); end
+  def correction_target(def_node); end
   def expected_order; end
   def find_index(node); end
+  def range_with_comments(node); end
+  def range_with_comments_and_lines(node); end
   def register_offense(previous, current); end
+  def swap_range(corrector, range1, range2); end
 end
 
 RuboCop::Cop::Rails::ActionOrder::MSG = T.let(T.unsafe(nil), String)
@@ -695,6 +701,9 @@ class RuboCop::Cop::Rails::DynamicFindBy < ::RuboCop::Cop::Base
   def autocorrect_argument_keywords(corrector, node, keywords); end
   def autocorrect_method_name(corrector, node); end
   def column_keywords(method); end
+  def dynamic_find_by_arguments?(node); end
+  def dynamic_find_by_arguments_count?(node); end
+  def dynamic_find_by_arguments_type?(node); end
   def static_method_name(method_name); end
   def whitelisted?(node); end
 end
@@ -921,7 +930,7 @@ class RuboCop::Cop::Rails::FreezeTime < ::RuboCop::Cop::Base
   def current_time_with_convert?(node, method_name); end
 end
 
-RuboCop::Cop::Rails::FreezeTime::CONV_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Rails::FreezeTime::CONVERT_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::FreezeTime::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::FreezeTime::NOW_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Rails::FreezeTime::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
@@ -1061,6 +1070,7 @@ class RuboCop::Cop::Rails::I18nLazyLookup < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Rails::I18nLazyLookup::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::I18nLazyLookup::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::I18nLocaleAssignment < ::RuboCop::Cop::Base
   def i18n_locale_assignment?(param0 = T.unsafe(nil)); end
@@ -1775,7 +1785,8 @@ class RuboCop::Cop::Rails::RootPathnameMethods < ::RuboCop::Cop::Base
 
   private
 
-  def build_path_glob(path, method); end
+  def build_path_glob_replacement(path, method); end
+  def build_path_replacement(path, method, args); end
   def evidence(node); end
   def include_interpolation?(arguments); end
   def join_arguments(arguments); end
@@ -2047,8 +2058,13 @@ class RuboCop::Cop::Rails::ToSWithArgument < ::RuboCop::Cop::Base
 
   def on_csend(node); end
   def on_send(node); end
+
+  private
+
+  def rails_extended_to_s?(node); end
 end
 
+RuboCop::Cop::Rails::ToSWithArgument::EXTENDED_FORMAT_TYPES = T.let(T.unsafe(nil), Set)
 RuboCop::Cop::Rails::ToSWithArgument::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::ToSWithArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
