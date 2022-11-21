@@ -496,9 +496,12 @@ class Rack::Lint::Wrapper
   def respond_to?(name, *_arg1); end
   def response; end
   def to_ary; end
+  def to_path; end
   def verify_content_length(size); end
   def verify_to_path; end
 end
+
+Rack::Lint::Wrapper::BODY_METHODS = T.let(T.unsafe(nil), Hash)
 
 class Rack::Lint::Wrapper::ErrorWrapper
   def initialize(error); end
