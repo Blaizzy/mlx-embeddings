@@ -60,7 +60,7 @@ module Homebrew
                           "that `--version=0` can be used to delete an existing version override from a " \
                           "formula if it has become redundant."
       flag   "--message=",
-             description: "Append <message> to the default pull request message."
+             description: "Prepend <message> to the default pull request message."
       flag   "--url=",
              description: "Specify the <URL> for the new download. If a <URL> is specified, the <SHA-256> " \
                           "checksum of the new download should also be specified."
