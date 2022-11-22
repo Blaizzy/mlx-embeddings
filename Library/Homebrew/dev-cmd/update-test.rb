@@ -65,7 +65,8 @@ module Homebrew
           tags = if (HOMEBREW_REPOSITORY/".git/shallow").exist?
             safe_system "git", "fetch", "--tags", "--depth=1"
             Utils.popen_read("git", "tag", "--list", "--sort=-version:refname")
-          elsif OS.linux?
+          # TODO: Refactor and move to extend/os
+          elsif OS.linux? # rubocop:disable Homebrew/MoveToExtendOS
             Utils.popen_read("git tag --list | sort -rV")
           end
         end

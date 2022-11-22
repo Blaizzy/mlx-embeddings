@@ -8,7 +8,7 @@ module RuboCop
       #
       # @api private
       class MoveToExtendOS < Base
-        MSG = "Move calls to `OS.linux?` and `OS.mac?` to `extend/os`."
+        MSG = "Move `OS.linux?` and `OS.mac?` calls to `extend/os`."
 
         def_node_matcher :os_check?, <<~PATTERN
           (send (const nil? :OS) {:mac? | :linux?})

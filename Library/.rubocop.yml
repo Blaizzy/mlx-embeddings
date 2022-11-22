@@ -57,7 +57,7 @@ FormulaAuditStrict:
 
 Homebrew/MoveToExtendOS:
   Exclude:
-    - "Homebrew/{extend,test}/**/*"
+    - "Homebrew/{extend,test,requirements}/**/*"
     - "Taps/**/*"
     - "Homebrew/os.rb"
 

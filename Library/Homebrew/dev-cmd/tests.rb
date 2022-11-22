@@ -157,6 +157,8 @@ module Homebrew
         --require spec_helper
       ]
 
+      # TODO: Refactor and move to extend/os
+      # rubocop:disable Homebrew/MoveToExtendOS
       unless OS.mac?
         bundle_args << "--tag" << "~needs_macos" << "--tag" << "~cask"
         files = files.grep_v(%r{^test/(os/mac|cask)(/.*|_spec\.rb)$})
@@ -166,6 +168,7 @@ module Homebrew
         bundle_args << "--tag" << "~needs_linux"
         files = files.grep_v(%r{^test/os/linux(/.*|_spec\.rb)$})
       end
+      # rubocop:enable Homebrew/MoveToExtendOS
 
       puts "Randomized with seed #{seed}"
 

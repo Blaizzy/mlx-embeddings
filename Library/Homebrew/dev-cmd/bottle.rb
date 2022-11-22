@@ -247,7 +247,8 @@ module Homebrew
       "--pax-option", "globexthdr.name=/GlobalHead.%n,exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
     ].freeze
 
-    return ["tar", gnutar_args].freeze if OS.linux?
+    # TODO: Refactor and move to extend/os
+    return ["tar", gnutar_args].freeze if OS.linux? # rubocop:disable Homebrew/MoveToExtendOS
 
     # Use gnu-tar on macOS as it can be set up for reproducibility better than libarchive.
     begin
@@ -275,6 +276,8 @@ module Homebrew
       ignores << %r{#{cellar_regex}/#{go_regex}/[\d.]+/libexec}
     end
 
+    # TODO: Refactor and move to extend/os
+    # rubocop:disable Homebrew/MoveToExtendOS
     ignores << case f.name
     # On Linux, GCC installation can be moved so long as the whole directory tree is moved together:
     # https://gcc-help.gcc.gnu.narkive.com/GnwuCA7l/moving-gcc-from-the-installation-path-is-it-allowed.
@@ -284,6 +287,7 @@ module Homebrew
     when Version.formula_optionally_versioned_regex(:binutils)
       %r{#{cellar_regex}/binutils} if OS.linux?
     end
+    # rubocop:enable Homebrew/MoveToExtendOS
 
     ignores.compact
   end
@@ -409,7 +413,8 @@ module Homebrew
           # Set the times for reproducible bottles.
           if file.symlink?
             # Need to make symlink permissions consistent on macOS and Linux
-            File.lchmod 0777, file if OS.mac?
+            # TODO: Refactor and move to extend/os
+            File.lchmod 0777, file if OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
             File.lutime(tab.source_modified_time, tab.source_modified_time, file)
           else
             file.utime(tab.source_modified_time, tab.source_modified_time)
