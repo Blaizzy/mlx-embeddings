@@ -150,6 +150,8 @@ safe_cd() {
 }
 
 brew() {
+  # This variable is set by bin/brew
+  # shellcheck disable=SC2154
   "${HOMEBREW_BREW_FILE}" "$@"
 }
 
