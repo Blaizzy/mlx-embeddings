@@ -38,8 +38,9 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - run: brew test-bot --only-cleanup-before
+        if: !contains(matrix.runner, github.run_id)
 
-      - run: brew test-bot --only-setup
+      - run: brew doctor
 
       - run: brew test-bot --only-cleanup-after
-        if: always()
+        if: always() && !contains(matrix.runner, github.run_id)
