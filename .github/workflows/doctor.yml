@@ -18,13 +18,13 @@ jobs:
   tests:
     strategy:
       matrix:
-        include:
-          - runner: "13-arm64-${{github.run_id}}-${{github.run_attempt}}"
-          - runner: "12-arm64"
-          - runner: "12-${{github.run_id}}-${{github.run_attempt}}"
-          - runner: "11-arm64"
-          - runner: "11-${{github.run_id}}-${{github.run_attempt}}"
-          - runner: "10.15-${{github.run_id}}-${{github.run_attempt}}"
+        runner:
+          - "13-arm64-${{github.run_id}}-${{github.run_attempt}}"
+          - "12-arm64"
+          - "12-${{github.run_id}}-${{github.run_attempt}}"
+          - "11-arm64"
+          - "11-${{github.run_id}}-${{github.run_attempt}}"
+          - "10.15-${{github.run_id}}-${{github.run_attempt}}"
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     env:
