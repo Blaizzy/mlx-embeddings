@@ -506,6 +506,30 @@ module Utils
       nil
     end
 
+    # Returns the final URL by following location headers in cURL responses.
+    # @param responses [Array<Hash>] An array of hashes containing response
+    #   status information and headers from `#parse_curl_response`.
+    # @param base_url [String] The URL to use as a base.
+    # @return [String] The final absolute URL after redirections.
+    sig {
+      params(
+        responses: T::Array[T::Hash[Symbol, T.untyped]],
+        base_url:  String,
+      ).returns(String)
+    }
+    def curl_response_follow_redirections(responses, base_url)
+      responses.each do |response|
+        next if response[:headers].blank?
+
+        location = response[:headers]["location"]
+        next if location.blank?
+
+        base_url = URI.join(base_url, location).to_s
+      end
+
+      base_url
+    end
+
     private
 
     # Parses HTTP response text from `curl` output into a hash containing the
