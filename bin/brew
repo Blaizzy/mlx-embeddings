@@ -105,7 +105,7 @@ export HOMEBREW_LIBRARY
 # set from user environment
 # shellcheck disable=SC2154
 # Use VISUAL if HOMEBREW_EDITOR and EDITOR are unset.
-if [[ -z "${HOMEBREW_EDITOR}" && -n "${VISUAL}" ]]
+if [[ -z "${HOMEBREW_EDITOR:-}" && -n "${VISUAL}" ]]
 then
   export HOMEBREW_EDITOR="${VISUAL}"
 fi
