@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 # Fail fast with concise message when not using bash
 # Single brackets is needed here for POSIX compatibility
@@ -87,11 +88,11 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR CODESPACES
 do
   # Skip if variable value is empty.
-  [[ -z "${!VAR}" ]] && continue
+  [[ -z "${!VAR:-}" ]] && continue
 
   VAR_NEW="HOMEBREW_${VAR}"
   # Skip if existing HOMEBREW_* variable is set.
-  [[ -n "${!VAR_NEW}" ]] && continue
+  [[ -n "${!VAR_NEW:-}" ]] && continue
   export "${VAR_NEW}"="${!VAR}"
 done
 unset VAR VAR_NEW
@@ -113,7 +114,7 @@ fi
 # shellcheck disable=SC2154
 # Set CI variable for Azure Pipelines and Jenkins
 # (Set by default on GitHub Actions, Circle and Travis CI)
-if [[ -z "${CI}" ]] && [[ -n "${TF_BUILD}" || -n "${JENKINS_HOME}" ]]
+if [[ -z "${CI:-}" ]] && [[ -n "${TF_BUILD:-}" || -n "${JENKINS_HOME:-}" ]]
 then
   export CI="1"
 fi
@@ -137,7 +138,7 @@ ENV_VAR_NAMES=(
 for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"
 do
   # Skip if variable value is empty.
-  [[ -z "${!VAR}" ]] && continue
+  [[ -z "${!VAR:-}" ]] && continue
 
   FILTERED_ENV+=("${VAR}=${!VAR}")
 done
