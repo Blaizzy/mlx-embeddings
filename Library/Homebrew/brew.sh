@@ -13,26 +13,6 @@ case "${HOMEBREW_SYSTEM}" in
   Linux) HOMEBREW_LINUX="1" ;;
 esac
 
-if [[ "${HOMEBREW_MACOS}" == "1" ]] &&
-   [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]]
-then
-  # used in vendor-install.sh
-  # shellcheck disable=SC2034
-  HOMEBREW_PHYSICAL_PROCESSOR="arm64"
-  HOMEBREW_ROSETTA="$(sysctl -n sysctl.proc_translated)"
-
-  # If we're running under macOS Rosetta 2, and it was requested by setting
-  # HOMEBREW_CHANGE_ARCH_TO_ARM (for example in CI), then we re-exec this
-  # same file under the native architecture
-  # These variables are set from the user environment.
-  # shellcheck disable=SC2154
-  if [[ "${HOMEBREW_CHANGE_ARCH_TO_ARM}" == "1" ]] &&
-     [[ "${HOMEBREW_ROSETTA}" == "1" ]]
-  then
-    exec arch -arm64e "${HOMEBREW_BREW_FILE}" "$@"
-  fi
-fi
-
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
 # for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
 # These variables are set by bin/brew
@@ -170,6 +150,8 @@ safe_cd() {
 }
 
 brew() {
+  # This variable is set by bin/brew
+  # shellcheck disable=SC2154
   "${HOMEBREW_BREW_FILE}" "$@"
 }
 
@@ -441,6 +423,13 @@ then
   HOMEBREW_MACOS_VERSION="$(/usr/bin/sw_vers -productVersion)"
   # Don't change this from Mac OS X to match what macOS itself does in Safari on 10.12
   HOMEBREW_OS_USER_AGENT_VERSION="Mac OS X ${HOMEBREW_MACOS_VERSION}"
+
+  if [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]]
+  then
+    # used in vendor-install.sh
+    # shellcheck disable=SC2034
+    HOMEBREW_PHYSICAL_PROCESSOR="arm64"
+  fi
 
   # Intentionally set this variable by exploding another.
   # shellcheck disable=SC2086,SC2183
