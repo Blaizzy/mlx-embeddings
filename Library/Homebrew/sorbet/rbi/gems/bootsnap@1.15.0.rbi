@@ -18,7 +18,7 @@ module Bootsnap
     def logger; end
     def logger=(logger); end
     def rb_get_path(fname); end
-    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), ignore_directories: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
+    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), ignore_directories: T.unsafe(nil), readonly: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
     def unload_cache!; end
   end
 end
@@ -26,7 +26,7 @@ end
 module Bootsnap::CompileCache
   class << self
     def permission_error(path); end
-    def setup(cache_dir:, iseq:, yaml:, json:); end
+    def setup(cache_dir:, iseq:, yaml:, json:, readonly: T.unsafe(nil)); end
     def supported?; end
   end
 end
@@ -54,7 +54,7 @@ module Bootsnap::LoadPathCache
     def enabled?; end
     def load_path_cache; end
     def loaded_features_index; end
-    def setup(cache_path:, development_mode:, ignore_directories:); end
+    def setup(cache_path:, development_mode:, ignore_directories:, readonly: T.unsafe(nil)); end
     def supported?; end
     def unload!; end
   end
@@ -193,7 +193,7 @@ Bootsnap::LoadPathCache::PathScanner::REQUIRABLE_EXTENSIONS = T.let(T.unsafe(nil
 Bootsnap::LoadPathCache::SLASH = T.let(T.unsafe(nil), String)
 
 class Bootsnap::LoadPathCache::Store
-  def initialize(store_path); end
+  def initialize(store_path, readonly: T.unsafe(nil)); end
 
   def fetch(key); end
   def get(key); end
