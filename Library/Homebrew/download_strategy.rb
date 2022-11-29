@@ -471,7 +471,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     lines = output.to_s.lines.map(&:chomp)
 
-    final_url = curl_response_last_location(parsed_output[:responses], absolutize: true, base_url: url)
+    final_url = curl_response_follow_redirections(parsed_output[:responses], url)
     final_url ||= url
 
     content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
