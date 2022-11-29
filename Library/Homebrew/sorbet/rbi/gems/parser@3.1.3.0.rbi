@@ -59,6 +59,8 @@ class Parser::AST::Processor < ::AST::Processor
   def on_find_pattern(node); end
   def on_for(node); end
   def on_forward_arg(node); end
+  def on_forwarded_kwrestarg(node); end
+  def on_forwarded_restarg(node); end
   def on_gvar(node); end
   def on_gvasgn(node); end
   def on_hash(node); end
@@ -235,6 +237,8 @@ class Parser::Builders::Default
   def forward_arg(dots_t); end
   def forward_only_args(begin_t, dots_t, end_t); end
   def forwarded_args(dots_t); end
+  def forwarded_kwrestarg(dstar_t); end
+  def forwarded_restarg(star_t); end
   def gvar(token); end
   def hash_pattern(lbrace_t, kwargs, rbrace_t); end
   def ident(token); end
@@ -520,6 +524,7 @@ class Parser::Lexer
   def static_env=(_arg0); end
   def tokens; end
   def tokens=(_arg0); end
+  def version; end
 
   protected
 
@@ -528,6 +533,7 @@ class Parser::Lexer
   def emit(type, value = T.unsafe(nil), s = T.unsafe(nil), e = T.unsafe(nil)); end
   def emit_comment(s = T.unsafe(nil), e = T.unsafe(nil)); end
   def emit_do(do_block = T.unsafe(nil)); end
+  def emit_invalid_escapes?; end
   def emit_table(table, s = T.unsafe(nil), e = T.unsafe(nil)); end
   def encode_escape(ord); end
   def eof_codepoint?(point); end
@@ -1610,9 +1616,13 @@ class Parser::StaticEnvironment
 
   def declare(name); end
   def declare_anonymous_blockarg; end
+  def declare_anonymous_kwrestarg; end
+  def declare_anonymous_restarg; end
   def declare_forward_args; end
   def declared?(name); end
   def declared_anonymous_blockarg?; end
+  def declared_anonymous_kwrestarg?; end
+  def declared_anonymous_restarg?; end
   def declared_forward_args?; end
   def empty?; end
   def extend_dynamic; end
@@ -1622,6 +1632,8 @@ class Parser::StaticEnvironment
 end
 
 Parser::StaticEnvironment::ANONYMOUS_BLOCKARG = T.let(T.unsafe(nil), Symbol)
+Parser::StaticEnvironment::ANONYMOUS_KWRESTARG = T.let(T.unsafe(nil), Symbol)
+Parser::StaticEnvironment::ANONYMOUS_RESTARG = T.let(T.unsafe(nil), Symbol)
 Parser::StaticEnvironment::FORWARD_ARGS = T.let(T.unsafe(nil), Symbol)
 
 class Parser::SyntaxError < ::StandardError
