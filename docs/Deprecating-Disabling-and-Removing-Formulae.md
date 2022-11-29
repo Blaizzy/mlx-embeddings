@@ -49,7 +49,7 @@ The most common reasons for disabling a formula are:
 
 Formulae should not be disabled without a deprecation period of at least three months unless the circumstances are exceptional (e.g. the formula does not build on any supported macOS version or Linux). Popular formulae should have longer deprecation periods. The popularity of a formula should be based on our analytics data.
 
-**Note: disabled formulae in `homebrew/core` will be automatically removed one year after their disable date**.
+**Note: disabled formulae in `homebrew/core` will be automatically removed one year after their disable date.**
 
 To disable a formula, add a `disable!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
 

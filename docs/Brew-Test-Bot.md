@@ -32,4 +32,3 @@ A passed build looks like this:
 ---
 
 On failed or passed builds you can click the "Details" link to view the result in GitHub Actions.
-

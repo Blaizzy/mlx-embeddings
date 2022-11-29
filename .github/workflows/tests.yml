@@ -37,17 +37,12 @@ jobs:
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems --groups=sorbet
 
-      - name: Install shellcheck
-        run: brew install shellcheck
+      - name: Install shellcheck and shfmt
+        run: brew install shellcheck shfmt
 
       - run: brew style --display-cop-names
 
       - run: brew typecheck
-
-      - name: Run vale for docs linting
-        run: |
-          brew install vale
-          vale docs/
 
   tap-syntax:
     name: tap syntax
@@ -282,6 +277,7 @@ jobs:
 
   test-default-formula-linux:
     name: ${{ matrix.name }}
+    if: startsWith(github.repository, 'Homebrew/')
     runs-on: ${{ matrix.runs-on }}
     env:
       HOMEBREW_BOOTSNAP: 1

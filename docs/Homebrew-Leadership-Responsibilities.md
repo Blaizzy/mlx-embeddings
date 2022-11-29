@@ -21,7 +21,7 @@
 
 - January: check membership, announce AGM votes
   - Ask for nominations for the for the PLC and project leader, and ask who is interested in serving on the TSC
-  - Create ballots for the elections on https://www.opavote.com
+  - Create ballots for the elections on <https://www.opavote.com>
   - Ask the project leader and representatives of the PLC and TSC to prepare reports for the AGM
   - Ask for members interested in presenting lightning talks at the AGM
 - February: organise the annual general meeting (AGM)
@@ -29,8 +29,8 @@
   - Book a group dinner (which Homebrew pays for) and check for any dietary requirements
   - Ask someone to bring a conference/table microphone for people to be able to remotely participate in AGM
 - February after the AGM:
-  - Add the minutes of the AGM to https://github.com/Homebrew/homebrew-governance
-  - Create [issue in homebrew-governance](https://github.com/homebrew/homebrew-governance/issues) to ask members who did not vote in the election whether they wish to remain or step down as members
+  - Add the minutes of the AGM to <https://github.com/Homebrew/brew/tree/master/docs/governance>
+  - Create [issue in Homebrew/brew](https://github.com/Homebrew/brew/issues?q=is%3Aissue+in%3Atitle+membership+) to ask members who did not vote in the election whether they wish to remain or step down as members
     - Members that are not maintainers should be a least one of:
       - An current or previously active maintainer, PLC/TSC member or Project Leader
       - A long-standing member of the Homebrew community (e.g. been submitting good bug reports for over two years)
