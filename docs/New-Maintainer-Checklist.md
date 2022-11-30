@@ -85,4 +85,4 @@ When admitted as members:
 
 - Invite them to the [**@Homebrew/members** team](https://github.com/orgs/Homebrew/teams/members), to give them access to the private governance repository.
 - Invite them as a single-channel guest to the #members channel on the [`machomebrew` private maintainers Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
-- Add them to the membership list in the [homebrew-governance repository](https://github.com/Homebrew/homebrew-governance).
+- Add them to the current year's membership list in the [governance archives](https://github.com/Homebrew/brew/tree/master/docs/governance).
