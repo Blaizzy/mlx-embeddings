@@ -4,6 +4,7 @@ FROM ubuntu:"${version}"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # hadolint ignore=DL3008
+# shellcheck disable=SC2292
 RUN apt-get update \
   && apt-get install -y --no-install-recommends software-properties-common gnupg-agent \
   && add-apt-repository -y ppa:git-core/ppa \
@@ -28,8 +29,9 @@ RUN apt-get update \
     uuid-runtime \
     tzdata \
     jq \
-  && apt remove --purge -y software-properties-common \
-  && apt autoremove --purge -y \
+  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]; then apt-get install gpg; fi \
+  && apt-get remove --purge -y software-properties-common \
+  && apt-get autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
   && localedef -i en_US -f UTF-8 en_US.UTF-8 \
   && useradd -m -s /bin/bash linuxbrew \
