@@ -405,28 +405,12 @@ module Homebrew
     end
 
     def cleanup_portable_ruby
-      rubies = [which("ruby"), which("ruby", ORIGINAL_PATHS)].compact
-      system_ruby = Pathname.new("/usr/bin/ruby")
-      rubies << system_ruby if system_ruby.exist?
-
-      use_system_ruby = if Homebrew::EnvConfig.force_vendor_ruby?
-        false
-      elsif OS.mac?
-        ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"].present?
-      else
-        check_ruby_version = HOMEBREW_LIBRARY_PATH/"utils/ruby_check_version_script.rb"
-        rubies.uniq.any? do |ruby|
-          quiet_system ruby, "--enable-frozen-string-literal", "--disable=gems,did_you_mean,rubyopt",
-                       check_ruby_version, HOMEBREW_REQUIRED_RUBY_VERSION
-        end
-      end
-
       vendor_dir = HOMEBREW_LIBRARY/"Homebrew/vendor"
       portable_ruby_latest_version = (vendor_dir/"portable-ruby-version").read.chomp
 
       portable_rubies_to_remove = []
       Pathname.glob(vendor_dir/"portable-ruby/*.*").select(&:directory?).each do |path|
-        next if !use_system_ruby && portable_ruby_latest_version == path.basename.to_s
+        next if !use_system_ruby? && portable_ruby_latest_version == path.basename.to_s
 
         portable_rubies_to_remove << path
       end
@@ -444,6 +428,8 @@ module Homebrew
         cleanup_path(portable_ruby) { portable_ruby.rmtree }
       end
     end
+
+    def use_system_ruby?; end
 
     def cleanup_bootsnap
       bootsnap = cache/"bootsnap"
@@ -615,3 +601,5 @@ module Homebrew
     end
   end
 end
+
+require "extend/os/cleanup"

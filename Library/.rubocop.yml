@@ -55,6 +55,12 @@ FormulaAudit:
 FormulaAuditStrict:
   Enabled: true
 
+Homebrew/MoveToExtendOS:
+  Exclude:
+    - "Homebrew/{extend,test,requirements}/**/*"
+    - "Taps/**/*"
+    - "Homebrew/os.rb"
+
 # enable all Homebrew custom cops
 Homebrew:
   Enabled: true

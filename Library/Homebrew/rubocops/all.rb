@@ -14,6 +14,7 @@ end
 
 require_relative "io_read"
 require_relative "shell_commands"
+require_relative "platform"
 
 require_relative "formula_desc"
 require_relative "components_order"

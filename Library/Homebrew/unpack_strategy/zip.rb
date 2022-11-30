@@ -49,4 +49,4 @@ module UnpackStrategy
   end
 end
 
-require "extend/os/mac/unpack_strategy/zip" if OS.mac?
+require "extend/os/unpack_strategy/zip"

@@ -258,9 +258,7 @@ class FormulaInstaller
       # don't want to complain about no bottle available if doing an
       # upgrade/reinstall/dependency install (but do in the case the bottle
       # check fails)
-      elsif !Homebrew::EnvConfig.developer? &&
-            (!installed_as_dependency? || !formula.any_version_installed?) &&
-            (!OS.mac? || !OS::Mac.version.outdated_release?)
+      elsif fresh_install?(formula)
         <<~EOS
           #{formula}: no bottle available!
         EOS
@@ -341,6 +339,11 @@ class FormulaInstaller
     raise CannotInstallFormulaError,
           "You must `brew unpin #{pinned_unsatisfied_deps * " "}` as installing " \
           "#{formula.full_name} requires the latest version of pinned dependencies"
+  end
+
+  sig { params(_formula: Formula).returns(T.nilable(T::Boolean)) }
+  def fresh_install?(_formula)
+    false
   end
 
   sig { void }

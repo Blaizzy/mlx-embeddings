@@ -319,7 +319,8 @@ module FormulaCellarChecks
   def check_binary_arches(formula)
     return unless formula.prefix.directory?
     # There is no `binary_executable_or_library_files` method for the generic OS
-    return if !OS.mac? && !OS.linux?
+    # TODO: Refactor and move to extend/os
+    return if !OS.mac? && !OS.linux? # rubocop:disable Homebrew/MoveToExtendOS
 
     keg = Keg.new(formula.prefix)
     mismatches = {}

@@ -293,7 +293,8 @@ module Homebrew
   end
 
   def migrate_gcc_dependents_if_needed
-    return if OS.mac?
+    # TODO: Refactor and move to extend/os
+    return if OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
     return if Settings.read("gcc-rpaths.fixed") == "true"
 
     Formula.installed.each do |formula|
