@@ -5,6 +5,7 @@ then
   echo "${0##*/}: The build tool has reset ENV; --env=std required." >&2
   exit 1
 fi
+unset RUBYLIB
 exec "${HOMEBREW_RUBY_PATH}" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt -x "$0" "$@"
 #!/usr/bin/env ruby -W0
 
