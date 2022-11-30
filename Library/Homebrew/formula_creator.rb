@@ -168,11 +168,9 @@ module Homebrew
         <% elsif mode == :go %>
             system "go", "build", *std_go_args(ldflags: "-s -w")
         <% elsif mode == :meson %>
-            mkdir "build" do
-              system "meson", *std_meson_args, ".."
-              system "ninja", "-v"
-              system "ninja", "install", "-v"
-            end
+            system "meson", "setup", "build", *std_meson_args
+            system "meson", "compile", "-C", "build", "--verbose"
+            system "meson", "install", "-C", "build"
         <% elsif mode == :node %>
             system "npm", "install", *Language::Node.std_npm_install_args(libexec)
             bin.install_symlink Dir["\#{libexec}/bin/*"]
