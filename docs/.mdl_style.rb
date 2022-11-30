@@ -1,4 +1,5 @@
 all
+rule 'MD007', indent: 2 # Unordered list indentation
 rule 'MD026', punctuation: ',;:' # Trailing punctuation in header
 exclude_rule 'MD013' # Line length
 exclude_rule 'MD029' # Ordered list item prefix

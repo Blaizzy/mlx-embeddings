@@ -31,7 +31,6 @@
   Jonathan Chang and Issy Long are elected.
 
   <https://www.opavote.com/results/5937355983683584>
-
 - 11:57–12:00 Election of the Project Leader
 
   Mike McQuaid elected by acclamation.
@@ -49,7 +48,7 @@
 - 12:55–13:00 Shaun Jackman - Speeding up install times / Git repo size <https://github.com/Homebrew/install/issues/523>
 - 13:10 Meeting adjourned
 
-## Motions
+## Resolutions
 
 ### Motion to adopt the voting system
 

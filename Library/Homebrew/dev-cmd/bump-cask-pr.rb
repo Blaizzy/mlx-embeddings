@@ -41,7 +41,7 @@ module Homebrew
       flag   "--version=",
              description: "Specify the new <version> for the cask."
       flag   "--message=",
-             description: "Append <message> to the default pull request message."
+             description: "Prepend <message> to the default pull request message."
       flag   "--url=",
              description: "Specify the <URL> for the new download."
       flag   "--sha256=",

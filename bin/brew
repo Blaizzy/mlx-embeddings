@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 # Fail fast with concise message when not using bash
 # Single brackets is needed here for POSIX compatibility
@@ -21,7 +22,7 @@ fi
 # Fail fast with concise message when requesting unfiltered environment.
 # This is basically odisabled so can be removed at any major release afterwards
 # and definitely if this is still here in 2023.
-if [ -n "${HOMEBREW_NO_ENV_FILTERING}" ]
+if [[ -n "${HOMEBREW_NO_ENV_FILTERING:-}" ]]
 then
   echo "Error: HOMEBREW_NO_ENV_FILTERING was deprecated for over a year and has now been removed (because it breaks many things)!" >&2
   exit 1
@@ -87,11 +88,11 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR CODESPACES
 do
   # Skip if variable value is empty.
-  [[ -z "${!VAR}" ]] && continue
+  [[ -z "${!VAR:-}" ]] && continue
 
   VAR_NEW="HOMEBREW_${VAR}"
   # Skip if existing HOMEBREW_* variable is set.
-  [[ -n "${!VAR_NEW}" ]] && continue
+  [[ -n "${!VAR_NEW:-}" ]] && continue
   export "${VAR_NEW}"="${!VAR}"
 done
 unset VAR VAR_NEW
@@ -104,7 +105,7 @@ export HOMEBREW_LIBRARY
 # set from user environment
 # shellcheck disable=SC2154
 # Use VISUAL if HOMEBREW_EDITOR and EDITOR are unset.
-if [[ -z "${HOMEBREW_EDITOR}" && -n "${VISUAL}" ]]
+if [[ -z "${HOMEBREW_EDITOR:-}" && -n "${VISUAL:-}" ]]
 then
   export HOMEBREW_EDITOR="${VISUAL}"
 fi
@@ -113,7 +114,7 @@ fi
 # shellcheck disable=SC2154
 # Set CI variable for Azure Pipelines and Jenkins
 # (Set by default on GitHub Actions, Circle and Travis CI)
-if [[ -z "${CI}" ]] && [[ -n "${TF_BUILD}" || -n "${JENKINS_HOME}" ]]
+if [[ -z "${CI:-}" ]] && [[ -n "${TF_BUILD:-}" || -n "${JENKINS_HOME:-}" ]]
 then
   export CI="1"
 fi
@@ -131,13 +132,13 @@ ENV_VAR_NAMES=(
   HOME SHELL PATH TERM TERMINFO TERMINFO_DIRS COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
   http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY
   GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED
-  GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_ATTEMPT GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF
+  GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_ATTEMPT GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF GITHUB_OUTPUT
 )
 # Filter all but the specific variables.
 for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"
 do
   # Skip if variable value is empty.
-  [[ -z "${!VAR}" ]] && continue
+  [[ -z "${!VAR:-}" ]] && continue
 
   FILTERED_ENV+=("${VAR}=${!VAR}")
 done

@@ -556,4 +556,58 @@ describe "Utils::Curl" do
       expect(curl_response_last_location([response_hash[:ok]])).to be_nil
     end
   end
+
+  describe "#curl_response_follow_redirections" do
+    it "returns the original URL when there are no location headers" do
+      expect(
+        curl_response_follow_redirections(
+          [response_hash[:ok]],
+          "https://brew.sh/test1/test2",
+        ),
+      ).to eq("https://brew.sh/test1/test2")
+    end
+
+    it "returns the URL relative to base when locations are relative" do
+      expect(
+        curl_response_follow_redirections(
+          [response_hash[:redirection_root_relative], response_hash[:ok]],
+          "https://brew.sh/test1/test2",
+        ),
+      ).to eq("https://brew.sh/example/")
+
+      expect(
+        curl_response_follow_redirections(
+          [response_hash[:redirection_parent_relative], response_hash[:ok]],
+          "https://brew.sh/test1/test2",
+        ),
+      ).to eq("https://brew.sh/test1/example/")
+
+      expect(
+        curl_response_follow_redirections(
+          [
+            response_hash[:redirection_parent_relative],
+            response_hash[:redirection_parent_relative],
+            response_hash[:ok],
+          ],
+          "https://brew.sh/test1/test2",
+        ),
+      ).to eq("https://brew.sh/test1/example/example/")
+    end
+
+    it "returns new base when there are absolute location(s)" do
+      expect(
+        curl_response_follow_redirections(
+          [response_hash[:redirection], response_hash[:ok]],
+          "https://brew.sh/test1/test2",
+        ),
+      ).to eq(location_urls[0])
+
+      expect(
+        curl_response_follow_redirections(
+          [response_hash[:redirection], response_hash[:redirection_parent_relative], response_hash[:ok]],
+          "https://brew.sh/test1/test2",
+        ),
+      ).to eq("#{location_urls[0]}example/")
+    end
+  end
 end

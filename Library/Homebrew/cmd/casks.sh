@@ -8,5 +8,5 @@
 source "${HOMEBREW_LIBRARY}/Homebrew/items.sh"
 
 homebrew-casks() {
-  homebrew-items 'Formula' 's|/Casks/|/|' '^homebrew/cask'
+  homebrew-items '*/Casks/*\.rb' '' 's|/Casks/|/|' '^homebrew/cask'
 }

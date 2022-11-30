@@ -178,7 +178,7 @@ Other commonly used stanzas are:
 | ------------------ | ----------- |
 | `livecheck`        | Ruby block describing how to find updates for this cask (see [`livecheck` Stanza Details](Cask-Cookbook.md#stanza-livecheck))
 | `pkg`              | relative path to a `.pkg` file containing the distribution (see [`pkg` Stanza Details](Cask-Cookbook.md#stanza-pkg))
-| `caveats`          | a string or Ruby block providing the user with cask-specific information at install time (see [`caveats` Stanza Details](Cask-Cookbook.md#stanza-caveats))
+| `caveats`          | string or Ruby block providing the user with cask-specific information at install time (see [`caveats` Stanza Details](Cask-Cookbook.md#stanza-caveats))
 | `uninstall`        | procedures to uninstall a cask; optional unless the `pkg` stanza is used (see [`uninstall` Stanza Details](Cask-Cookbook.md#stanza-uninstall))
 | `zap`              | additional procedures for a more complete uninstall, including configuration files and shared resources (see [`zap` Stanza Details](Cask-Cookbook.md#stanza-zap))
 
