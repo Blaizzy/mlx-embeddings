@@ -659,6 +659,8 @@ class RuboCop::AST::Node < ::Parser::AST::Node
   def forward_arg_type?; end
   def forward_args_type?; end
   def forwarded_args_type?; end
+  def forwarded_kwrestarg_type?; end
+  def forwarded_restarg_type?; end
   def global_const?(param0 = T.unsafe(nil), param1); end
   def guard_clause?; end
   def gvar_type?; end
@@ -1491,6 +1493,7 @@ RuboCop::AST::NodePattern::Sets::SET_SPAWN_SYSTEM = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_SPRINTF_FORMAT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_START_WITH_END_WITH = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_START_WITH_STARTS_WITH_END_WITH_ENDS_WITH = T.let(T.unsafe(nil), Set)
+RuboCop::AST::NodePattern::Sets::SET_STDOUT_STDERR = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_STRUCT_CLASS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_SUCC_PRED_NEXT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TEMPFILE_STRINGIO = T.let(T.unsafe(nil), Set)
@@ -1854,6 +1857,8 @@ module RuboCop::AST::Traversal
   def on_forward_arg(node); end
   def on_forward_args(node); end
   def on_forwarded_args(node); end
+  def on_forwarded_kwrestarg(node); end
+  def on_forwarded_restarg(node); end
   def on_gvar(node); end
   def on_gvasgn(node); end
   def on_hash(node); end
