@@ -23,17 +23,17 @@ Homebrew aims to be the missing package manager for macOS (and Linux). Its prima
 
 1. [Ensure you have set your username and email address properly](https://help.github.com/articles/setting-your-email-in-git/)
 2. Sign off cherry-picks if you amended them (use `git -s`)
-3. If the commit fixes a bug, use “Fixes \#104” syntax to close the bug report and link to the commit
+3. If your commit fixes a bug, use [issue linking syntax](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) (e.g. “Fixes \#104”) to close the bug report and link back to the commit
 
 ### Add comments
 
-It may be enough to refer to an issue ticket, but make sure changes are clear so that if you came to them unaware of the surrounding issues they would make sense to you. Many times on other projects I’ve seen code removed because the new guy didn’t know why it was there. Regressions suck.
+It may be enough to refer to an issue ticket, but make sure changes and context are clear enough so that anyone reading them for the first time can make sense of them. You don't want code you wrote to be removed because the someone new doesn’t understand why it’s there. Regressions suck.
 
 ### Don’t allow bloated diffs
 
 Amend a cherry-pick to remove commits that are only changes in whitespace. They are not acceptable because our history is important and `git blame` should be useful.
 
-Whitespace corrections (to Ruby standard etc.) are allowed (in fact this is a good opportunity to do it) provided the line itself has some kind of modification that is not whitespace in it. But be careful about making changes to inline patches—make sure they still apply.
+Whitespace corrections (to Ruby standard etc.) are allowed (in fact this is a good opportunity to do it) provided the line itself has some kind of modification that is more than just whitespace changes. But be careful about making changes to inline patches—make sure they still apply.
 
 ### Closing issues/PRs
 
@@ -47,13 +47,13 @@ Any maintainer can revert a PR created by another maintainer after a user submit
 
 ### Give time for other maintainers to review
 
-PRs that are an "enhancement" to existing functionality i.e. not a fix to an open user issue/discussion, not a version bump, not a security fix, not a fix for CI failure, a usability improvement, a new feature, refactoring etc. should wait 24h Monday - Friday before being merged. For example,
+PRs that are an "enhancement" to existing functionality, i.e. not a fix to an open user issue/discussion, not a version bump, not a security fix, not a fix for CI failure, a usability improvement, a new feature, refactoring etc. should wait 24h Monday to Friday before being merged. For example,
 
 - a new feature PR submitted at 5pm on Thursday should wait until 5pm on Friday before it is merged
 - a usability fix PR submitted at 5pm on Friday should wait until 5pm on Monday before it is merged
 - a user-reported issue fix PR can be merged immediately after CI is green
 
-If a maintainer is on holiday/vacation/sick during this time and leaves comments after they are back: please treat post-merge PR comments and feedback as you would left within the time period and follow-up with another PR to address their requests (if agreed).
+If a maintainer is on holiday/vacation/sick during this time and leaves comments after they are back: please treat post-merge PR comments and feedback as you would if left within the time period and follow-up with another PR to address their requests (if agreed).
 
 The vast majority of `Homebrew/homebrew-core` PRs are bug fixes or version bumps which can be self-merged once CI has completed.
 

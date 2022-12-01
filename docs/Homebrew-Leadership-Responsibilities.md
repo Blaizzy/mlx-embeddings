@@ -1,4 +1,4 @@
-# Homebrew Governance Responsibilities
+# Homebrew Leadership Responsibilities
 
 ## Project Leadership Committee
 

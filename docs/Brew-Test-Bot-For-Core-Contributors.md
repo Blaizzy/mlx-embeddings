@@ -1,4 +1,4 @@
-# Brew Test Bot For Core Contributors
+# Brew Test Bot for Maintainers
 
 If a build has run and passed on `brew test-bot` then it can be used to quickly bottle formulae.
 

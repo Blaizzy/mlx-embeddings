@@ -83,7 +83,7 @@ The other maintainers reviewed this application and have expressed their support
 
 According to anonymous analytics data collected per our policy (<https://docs.brew.sh/Analytics>), Homebrew on macOS has approximately 1.24 million instances that have been active in the past month. This is an increase of 19.3% over the same period last year, with 1.04 million active instances.
 
-Hoomebrew on Linux has approximately 15 thousand active instances, an increase of 75% over last year with 8.6 thousand instances.
+Homebrew on Linux has approximately 15 thousand active instances, an increase of 75% over last year with 8.6 thousand instances.
 
 Each installed instance of Homebrew is quite active: over the last year we recorded approximately 166 million installation events; meaning on average, a instance will install software about 1.7 times per day.
 

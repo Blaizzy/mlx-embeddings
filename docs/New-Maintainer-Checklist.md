@@ -17,9 +17,9 @@ changes (e.g. version updates), triaging, fixing and debugging user-reported
 issues, or reviewing user pull requests. You should also be making contributions
 to Homebrew at least once per quarter.
 
-You should watch or regularly check Homebrew/brew and/or
-Homebrew/homebrew-core and/or Homebrew/homebrew-cask. Let us know which so we
-can grant you commit access appropriately.
+You should watch or regularly check Homebrew/brew and/or Homebrew/homebrew-core
+and/or Homebrew/homebrew-cask. Let us know which so we can grant you commit
+access appropriately.
 
 If you're no longer able to perform all of these tasks, please continue to
 contribute to Homebrew, but we will ask you to step down as a maintainer.
@@ -35,7 +35,7 @@ A few requests:
     - Homebrew/brew: https://docs.brew.sh/Homebrew-brew-Maintainer-Guide
     - Homebrew/homebrew-core: https://docs.brew.sh/Homebrew-homebrew-core-Maintainer-Guide
     - Homebrew/homebrew-cask: https://docs.brew.sh/Homebrew-homebrew-cask-Maintainer-Guide
-- Still create your branches on your fork rather than in the main repository.
+- Continue to create branches on your fork rather than in the main repository.
   Note GitHub's UI will create edits and reverts on the main repository if you
   make edits or click "Revert" on the Homebrew/brew repository rather than your
   own fork.
@@ -73,7 +73,7 @@ If they are elected to the Homebrew's [Project Leadership Committee](https://doc
 
 If there are problems, ask them to step down as a maintainer and revoke their access to all of the above.
 
-In the interests of loosely verifying maintainer identity and building camaraderie, if you find yourself in the same town (e.g living, visiting or at a conference) as another Homebrew maintainer you should make the effort to meet up. If you do so, you can expense your meal (within [SFC reimbursable expense policies](https://sfconservancy.org/projects/policies/conservancy-travel-policy.html#meals-for-organizational-development)). This is a more relaxed version of similar policies used by other projects, e.g. the Debian system to meet in person to sign keys with legal ID verification.
+In the interests of loosely verifying maintainer identity and building camaraderie, if you find yourself in the same town (e.g living, visiting or at a conference) as another Homebrew maintainer you should make the effort to meet up. If you do so, you can [expense your meal](https://docs.opencollective.com/help/expenses-and-getting-paid/submitting-expenses) (within [Homebrew's reimbursable expense policies](https://opencollective.com/homebrew/expenses)). This is a more relaxed version of similar policies used by other projects, e.g. the Debian system to meet in person to sign keys with legal ID verification.
 
 Now sit back, relax and let the new maintainers handle more of our contributions.
 
