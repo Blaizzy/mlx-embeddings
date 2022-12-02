@@ -6723,10 +6723,6 @@ class RuboCop::AST::Node
 
   def cask_block?(param0=T.unsafe(nil)); end
 
-  def forwarded_kwrestarg_type?(); end
-
-  def forwarded_restarg_type?(); end
-
   def key_node(param0=T.unsafe(nil)); end
 
   def method_node(param0=T.unsafe(nil)); end
@@ -6747,16 +6743,9 @@ module RuboCop::AST::NodePattern::Sets
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
-  SET_STDOUT_STDERR = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)
-end
-
-module RuboCop::AST::Traversal
-  def on_forwarded_kwrestarg(node); end
-
-  def on_forwarded_restarg(node); end
 end
 
 class RuboCop::Cask::AST::Stanza
