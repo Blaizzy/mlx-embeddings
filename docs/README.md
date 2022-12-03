@@ -2,19 +2,19 @@
 
 ## Users
 
-- [`brew` man-page (command documentation)](Manpage.md)
+- [`brew` manual page (command documentation)](Manpage.md)
 - [Homebrew Blog (news on major updates)](https://brew.sh/blog/)
-- [Troubleshooting](Troubleshooting.md)
 - [Installation](Installation.md)
-- [Frequently Asked Questions](FAQ.md)
+- [Troubleshooting](Troubleshooting.md)
+- [FAQ (Frequently Asked Questions)](FAQ.md)
 - [Common Issues](Common-Issues.md)
 - [`brew` Shell Completion](Shell-Completion.md)
 - [Homebrew on Linux](Homebrew-on-Linux.md)
 
-- [Tips and Tricks](Tips-N'-Tricks.md)
 - [Bottles (binary packages)](Bottles.md)
 - [Taps (third-party repositories)](Taps.md)
 - [Interesting Taps and Forks](Interesting-Taps-and-Forks.md)
+- [Tips and Tricks](Tips-N'-Tricks.md)
 - [Anonymous Aggregate User Behaviour Analytics](Analytics.md)
 
 - [Querying `brew`](Querying-Brew.md)
@@ -65,7 +65,7 @@
 - [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Maintainer-Guide.md)
 - [Homebrew/homebrew-cask Maintainer Guide](Homebrew-homebrew-cask-Maintainer-Guide.md)
 
-- [Brew Test Bot For Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
+- [Brew Test Bot for Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
 - [Releases](Releases.md)
 - [Developer/Internal API Documentation](https://rubydoc.brew.sh)

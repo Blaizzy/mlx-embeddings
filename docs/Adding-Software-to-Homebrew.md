@@ -24,7 +24,7 @@ If everything checks out, you're ready to get started on a new formula!
 
 1. Try installing your formula using `brew install --build-from-source <formula>`, where \<formula> is the name of your formula. If any errors occur, correct your formula and attempt to install it again. The formula installation should finish without errors by the end of this step.
 
-If you're stuck, ask for help on GitHub or [Homebrew/discussions](https://github.com/homebrew/discussions/discussions). The maintainers are very happy to help but we also like to see that you've put effort into trying to find a solution first.
+If you're stuck, ask for help on GitHub or the [Homebrew discussion forum](https://github.com/orgs/Homebrew/discussions). The maintainers are very happy to help but we also like to see that you've put effort into trying to find a solution first.
 
 ### Testing and auditing the formula
 
