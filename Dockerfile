@@ -10,6 +10,7 @@ RUN apt-get update \
   && add-apt-repository -y ppa:git-core/ppa \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    acl \
     bzip2 \
     ca-certificates \
     curl \
