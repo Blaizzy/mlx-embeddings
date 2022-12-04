@@ -574,7 +574,7 @@ describe Homebrew::CLI::Parser do
       expect { parser.parse(["--cask"]) }.to raise_error UsageError, /Casks are not supported on Linux/
     end
 
-    it "only warns developers", :dev_on_linux do
+    it "only warns developers", :needs_macos do
       expect { parser.parse(["--cask"]) }.not_to raise_error
     end
   end

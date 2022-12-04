@@ -152,5 +152,3 @@ module Homebrew
     end
   end
 end
-
-require "extend/os/args"

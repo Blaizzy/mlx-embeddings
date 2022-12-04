@@ -329,8 +329,11 @@ module Homebrew
           remaining + non_options
         end
 
+        set_default_options
+
         unless ignore_invalid_options
           check_constraint_violations
+          validate_options
           check_named_args(named_args)
         end
 
@@ -341,17 +344,15 @@ module Homebrew
 
         @args_parsed = true
 
-        unless ignore_invalid_options
-          if @args.help?
-            puts generate_help_text
-            exit
-          end
-
-          validate_options
+        if !ignore_invalid_options && @args.help?
+          puts generate_help_text
+          exit
         end
 
         @args
       end
+
+      def set_default_options; end
 
       def validate_options; end
 
