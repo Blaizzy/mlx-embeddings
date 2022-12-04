@@ -672,7 +672,7 @@ module Homebrew
             If this is a surprise to you, then you should stash these modifications.
             Stashing returns Homebrew to a pristine state but can be undone
             should you later need to do so for some reason.
-              cd #{path} && git stash && git clean -d -f
+              cd #{path} && git stash -u && git clean -d -f
           EOS
 
           modified = status.split("\n")
