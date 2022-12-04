@@ -13,9 +13,6 @@ jobs:
   linting:
     if: github.repository == 'Homebrew/brew'
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: docs
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -25,6 +22,7 @@ jobs:
         run: brew install vale
 
       - name: Run vale for docs linting
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: vale .
 
       - name: Install Ruby
@@ -32,12 +30,14 @@ jobs:
         with:
           ruby-version: "2.7"
           bundler-cache: true
-          working-directory: docs
+          working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
 
       - name: Check Markdown syntax
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: bundle exec rake lint
 
       - name: Build docs site
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: bundle exec rake build
 
   rubydoc:
@@ -63,5 +63,5 @@ jobs:
           bundler-cache: true
 
       - name: Process rubydoc comments
-        working-directory: Library/Homebrew
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew
         run: bundle exec yard doc --plugin sorbet --no-output --fail-on-warning
