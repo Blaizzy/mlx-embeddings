@@ -85,11 +85,15 @@ module Homebrew
   end
 
   def create_cask(args:)
-    raise UsageError, "The `--set-name` flag is required for creating casks." if args.set_name.blank?
-
     url = args.named.first
-    name = args.set_name
-    token = Cask::Utils.token_from(args.set_name)
+    name = if args.set_name.blank?
+      stem = Pathname.new(url).stem.rpartition("=").last
+      print "Cask name [#{stem}]: "
+      __gets || stem
+    else
+      args.set_name
+    end
+    token = Cask::Utils.token_from(name)
 
     cask_tap = Tap.fetch(args.tap || "homebrew/cask")
     raise TapUnavailableError, args.tap unless cask_tap.installed?
@@ -139,13 +143,19 @@ module Homebrew
 
   def create_formula(args:)
     fc = FormulaCreator.new(args)
-    fc.name = args.set_name
+    fc.name = if args.set_name.blank?
+      stem = Pathname.new(args.named.first).stem.rpartition("=").last
+      print "Formula name [#{stem}]: "
+      __gets || stem
+    else
+      args.set_name
+    end
     fc.version = args.set_version
     fc.license = args.set_license
     fc.tap = Tap.fetch(args.tap || "homebrew/core")
     raise TapUnavailableError, args.tap unless fc.tap.installed?
 
-    fc.url = args.named.first # Pull the first (and only) URL from ARGV
+    fc.url = args.named.first
 
     fc.mode = if args.autotools?
       :autotools
@@ -167,13 +177,6 @@ module Homebrew
       :ruby
     elsif args.rust?
       :rust
-    end
-
-    if fc.name.nil? || fc.name.strip.empty?
-      stem = Pathname.new(fc.url).stem.rpartition("=").last
-      print "Formula name [#{stem}]: "
-      fc.name = __gets || stem
-      fc.update_path
     end
 
     # Check for disallowed formula, or names that shadow aliases,
