@@ -25,6 +25,15 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
       releaseDate: '2000-01-01T00:00:00.000Z'
     EOS
   }
+
+  let(:electron_builder_yaml_with_timestamp) {
+    # An electron-builder YAML file may use a timestamp instead of an explicit
+    # string value (with quotes) for `releaseDate`, so we need to make sure that
+    # `ElectronBuilder#versions_from_content` won't encounter an error in this
+    # scenario (e.g. `Tried to load unspecified class: Time`).
+    electron_builder_yaml.sub(/releaseDate:\s*'([^']+)'/, 'releaseDate: \1')
+  }
+
   let(:mac_regex) { /Example[._-]v?(\d+(?:\.\d+)+)[._-]mac\.zip/i }
 
   let(:versions) { ["1.2.3"] }
@@ -46,6 +55,7 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
 
     it "returns an array of version strings when given YAML text" do
       expect(electron_builder.versions_from_content(electron_builder_yaml)).to eq(versions)
+      expect(electron_builder.versions_from_content(electron_builder_yaml_with_timestamp)).to eq(versions)
     end
 
     it "returns an array of version strings when given YAML text and a block" do
