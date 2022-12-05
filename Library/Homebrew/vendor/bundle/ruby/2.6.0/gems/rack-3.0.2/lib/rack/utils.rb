@@ -121,13 +121,13 @@ module Rack
         }.join("&")
       when Hash
         value.map { |k, v|
-          build_nested_query(v, prefix ? "#{prefix}[#{escape(k)}]" : escape(k))
+          build_nested_query(v, prefix ? "#{prefix}[#{k}]" : k)
         }.delete_if(&:empty?).join('&')
       when nil
-        prefix
+        escape(prefix)
       else
         raise ArgumentError, "value must be a Hash" if prefix.nil?
-        "#{prefix}=#{escape(value)}"
+        "#{escape(prefix)}=#{escape(value)}"
       end
     end
 
@@ -278,7 +278,7 @@ module Rack
     # If the cookie +value+ is an instance of +Hash+, it considers the following
     # cookie attribute keys: +domain+, +max_age+, +expires+ (must be instance
     # of +Time+), +secure+, +http_only+, +same_site+ and +value+. For more
-    # details about the interpretation of these fields, consult 
+    # details about the interpretation of these fields, consult
     # [RFC6265 Section 5.2](https://datatracker.ietf.org/doc/html/rfc6265#section-5.2).
     #
     # An extra cookie attribute +escape_key+ can be provided to control whether

@@ -43,7 +43,7 @@ module Rack
     #
     # If the +body+ is +nil+, construct an empty response object with internal
     # buffering.
-    # 
+    #
     # If the +body+ responds to +to_str+, assume it's a string-like object and
     # construct a buffered response object containing using that string as the
     # initial contents of the buffer.
@@ -102,11 +102,16 @@ module Rack
       CHUNKED == get_header(TRANSFER_ENCODING)
     end
 
+    def no_entity_body?
+      # The response body is an enumerable body and it is not allowed to have an entity body.
+      @body.respond_to?(:each) && STATUS_WITH_NO_ENTITY_BODY[@status]
+    end
+    
     # Generate a response array consistent with the requirements of the SPEC.
     # @return [Array] a 3-tuple suitable of `[status, headers, body]`
     # which is suitable to be returned from the middleware `#call(env)` method.
     def finish(&block)
-      if STATUS_WITH_NO_ENTITY_BODY[@status]
+      if no_entity_body?
         delete_header CONTENT_TYPE
         delete_header CONTENT_LENGTH
         close
@@ -333,7 +338,7 @@ module Rack
             end
 
             body.close if body.respond_to?(:close)
-            
+
             @buffered = true
           else
             @buffered = false
