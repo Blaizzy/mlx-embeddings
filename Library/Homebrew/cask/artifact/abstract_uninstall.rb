@@ -95,14 +95,10 @@ module Cask
 
         # if launchctl item contains a wildcard, find matching process(es)
         services.each do |service|
-          all_services.push(service)
-          next unless /\*/.match?(service)
+          all_services << service
+          next unless service.include?("*")
 
-          find_launchctl_with_wildcard(service)
-            .map { |_, _, id| id }
-            .each do |match|
-            all_services.push(match)
-          end
+          all_services += find_launchctl_with_wildcard(service)
         end
 
         all_services.each do |service|
@@ -284,13 +280,13 @@ module Cask
       end
 
       def find_launchctl_with_wildcard(search)
+        regex = Regexp.escape(search).gsub("\\*", ".*")
         system_command!("/bin/launchctl", args: ["list"])
           .stdout.lines.drop(1)
-          .map { |line| line.chomp.split("\t") }
-          .map { |pid, state, id| [pid.to_i, state.to_i, id] }
-          .select do |(pid, _, id)|
-          pid.nonzero? && /\A#{Regexp.escape(search).gsub("\\*", ".*")}\Z/.match?(id)
-        end
+          .map do |line|
+            pid, _state, id = line.chomp.split("\t")
+            id if pid.to_i.nonzero? && id.match?(regex)
+          end.compact
       end
 
       # :kext should be unloaded before attempting to delete the relevant file
