@@ -270,7 +270,8 @@ module Homebrew
 
     return unless args.open_pr?
 
-    if repology_latest > current_version &&
+    if repology_latest.is_a?(Version) &&
+       repology_latest > current_version &&
        repology_latest > livecheck_latest &&
        formula_or_cask.livecheckable?
       puts "#{title_name} was not bumped to the Repology version because it's livecheckable."
