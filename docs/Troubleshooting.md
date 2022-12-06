@@ -15,7 +15,7 @@ This document will help you check for common issues and make sure your issue has
   * [Homebrew/homebrew-cask issue tracker](https://github.com/Homebrew/homebrew-cask/issues) (casks)
   * [Homebrew/brew issue tracker](https://github.com/Homebrew/brew/issues) (`brew` itself)
 * If the formula or cask that has failed to install is part of a non-Homebrew tap, then check that tap's issue tracker instead.
-* Search the [Homebrew discussion forum](https://github.com/homebrew/discussions/discussions) or [Discourse archive](https://discourse.brew.sh/) to see if any discussions have started about the issue.
+* Search the [Homebrew discussion forum](https://github.com/orgs/Homebrew/discussions) or [Discourse archive](https://discourse.brew.sh/) to see if any discussions have started about the issue.
 
 ## Create an issue
 

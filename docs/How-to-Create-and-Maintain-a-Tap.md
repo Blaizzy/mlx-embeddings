@@ -4,7 +4,7 @@
 
 ## Creating a tap
 
-A tap is usually a Git repository available online, but you can use anything as long as it’s a protocol that Git understands, or even just a directory with files in it. If hosted on GitHub, we recommend that the repository’s name start with `homebrew-` so the short `brew tap` command can be used. See the [manpage](Manpage.md) for more information on repository naming.
+A tap is usually a Git repository available online, but you can use anything as long as it’s a protocol that Git understands, or even just a directory with files in it. If hosted on GitHub, we recommend that the repository’s name start with `homebrew-` so the short `brew tap` command can be used. See the [`brew` manual page](Manpage.md) for more information on repository naming.
 
 The `brew tap-new` command can be used to create a new tap along with some template files.
 

@@ -84,4 +84,4 @@ Due to [known issues](https://github.com/microsoft/WSL/issues/8219) with WSL 1, 
 ## Homebrew on Linux Community
 
 - [@HomebrewOnLinux on Twitter](https://twitter.com/HomebrewOnLinux)
-- [Homebrew/discussions (forum)](https://github.com/homebrew/discussions/discussions)
+- [Homebrew/discussions (forum)](https://github.com/orgs/Homebrew/discussions/categories/linux)
