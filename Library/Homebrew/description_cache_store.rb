@@ -33,8 +33,8 @@ class DescriptionCacheStore < CacheStore
   # If the database is empty `update!` it with all known formulae.
   #
   # @return [nil]
-  def populate_if_empty!
-    return unless Homebrew::EnvConfig.eval_all?
+  def populate_if_empty!(eval_all: Homebrew::EnvConfig.eval_all?)
+    return unless eval_all
     return unless database.empty?
 
     Formula.all.each { |f| update!(f.full_name, f.desc) }
