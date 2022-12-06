@@ -47,7 +47,7 @@ module Homebrew
         def self.versions_from_content(content, regex = nil, &block)
           require "yaml"
 
-          yaml = YAML.safe_load(content)
+          yaml = YAML.safe_load(content, permitted_classes: [Date, Time])
           return [] if yaml.blank?
 
           if block
