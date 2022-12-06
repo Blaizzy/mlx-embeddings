@@ -1087,6 +1087,7 @@ class Rack::Response
   def headers; end
   def length; end
   def length=(_arg0); end
+  def no_entity_body?; end
   def redirect(target, status = T.unsafe(nil)); end
   def set_header(key, value); end
   def status; end
