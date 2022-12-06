@@ -53,7 +53,7 @@ module Homebrew
       switch "--[no-]appcast",
              description: "Audit the appcast."
       switch "--[no-]signing",
-             description: "Audit for signed apps, which is required on ARM"
+             description: "Audit for signed apps, which are required on ARM"
       switch "--token-conflicts",
              description: "Audit for token conflicts."
       flag   "--tap=",
