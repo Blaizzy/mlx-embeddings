@@ -893,6 +893,8 @@ non-zero status if any errors are found.
   Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
 * `--[no-]appcast`:
   Audit the appcast.
+* `--[no-]signing`:
+  Audit for signed apps, which are required on ARM
 * `--token-conflicts`:
   Audit for token conflicts.
 * `--tap`:

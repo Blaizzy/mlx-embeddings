@@ -363,10 +363,12 @@ _brew_audit() {
       --installed
       --new
       --no-appcast
+      --no-signing
       --online
       --only
       --only-cops
       --quiet
+      --signing
       --skip-style
       --strict
       --tap
