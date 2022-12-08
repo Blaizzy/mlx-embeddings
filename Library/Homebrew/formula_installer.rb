@@ -1161,6 +1161,10 @@ class FormulaInstaller
     deps = compute_dependencies
     return if deps.empty?
 
+    oh1 "Fetching dependencies for #{formula.full_name}: " \
+        "#{deps.map(&:first).map(&Formatter.method(:identifier)).to_sentence}",
+        truncate: false
+
     deps.each { |dep, _options| fetch_dependency(dep) }
   end
 
@@ -1171,6 +1175,8 @@ class FormulaInstaller
     fetch_dependencies
 
     return if only_deps?
+
+    oh1 "Fetching #{Formatter.identifier(formula.full_name)}".strip
 
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
