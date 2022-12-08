@@ -28,6 +28,7 @@
   - Create a dedicated Slack channel
   - Book a group dinner (which Homebrew pays for) and check for any dietary requirements
   - Ask someone to bring a conference/table microphone for people to be able to remotely participate in AGM
+  - Reconsider current OpenCollective invoice hourly rates based on e.g. inflation
 - February after the AGM:
   - Add the minutes of the AGM to Homebrew/brew's [governance archives](https://github.com/Homebrew/brew/tree/master/docs/governance)
   - Create an [issue in Homebrew/brew](https://github.com/Homebrew/brew/issues?q=is%3Aissue+in%3Atitle+membership+) to survey members who did not vote in the election whether they wish to remain or step down as members
