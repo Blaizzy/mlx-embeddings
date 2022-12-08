@@ -16,7 +16,8 @@ module Homebrew
         ohai "Casks"
         CacheStoreDatabase.use(:cask_descriptions) do |db|
           cache_store = CaskDescriptionCacheStore.new(db)
-          Descriptions.search(string_or_regex, :desc, cache_store).print
+          eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
+          Descriptions.search(string_or_regex, :desc, cache_store, eval_all).print
         end
       end
 
