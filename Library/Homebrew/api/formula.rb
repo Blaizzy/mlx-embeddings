@@ -10,6 +10,8 @@ module Homebrew
       class << self
         extend T::Sig
 
+        MAX_RETRIES = 3
+
         sig { returns(String) }
         def formula_api_path
           "formula"
@@ -29,13 +31,24 @@ module Homebrew
         sig { returns(Hash) }
         def all_formulae
           @all_formulae ||= begin
-            curl_args = %w[--compressed --silent https://formulae.brew.sh/api/formula.json]
-            if cached_formula_json_file.exist? && !cached_formula_json_file.empty?
-              curl_args.prepend("--time-cond", cached_formula_json_file)
-            end
-            curl_download(*curl_args, to: cached_formula_json_file, max_time: 5)
+            retry_count = 0
 
-            json_formulae = JSON.parse(cached_formula_json_file.read)
+            url = "https://formulae.brew.sh/api/formula.json"
+            json_formulae = begin
+              curl_args = %W[--compressed --silent #{url}]
+              if cached_formula_json_file.exist? && !cached_formula_json_file.empty?
+                curl_args.prepend("--time-cond", cached_formula_json_file)
+              end
+              curl_download(*curl_args, to: cached_formula_json_file, max_time: 5)
+
+              JSON.parse(cached_formula_json_file.read)
+            rescue JSON::ParserError
+              cached_formula_json_file.unlink
+              retry_count += 1
+              odie "Cannot download non-corrupt #{url}!" if retry_count > MAX_RETRIES
+
+              retry
+            end
 
             @all_aliases = {}
             json_formulae.to_h do |json_formula|
