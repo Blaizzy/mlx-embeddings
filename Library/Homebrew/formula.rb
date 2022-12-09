@@ -1689,7 +1689,7 @@ class Formula
   # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
   # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
   # @param shell_parameter_format [String, Symbol] specify how `shells` should each be passed
-  # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none].
+  # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none, :click].
   # Defaults to plainly passing the shell.
   #
   # @example Using default values for optional arguments
@@ -1729,6 +1729,13 @@ class Formula
   #
   # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions")
   #
+  # @example Using predefined shell_parameter_format :click
+  #   generate_completions_from_executable(bin/"foo", shell_parameter_format: :click, shells: [:zsh])
+  # translates to
+  #
+  # (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh", "_FOO_COMPLETE" => "zsh_source" },
+  #                                                     bin/"foo")
+  #
   # @example Using custom shell_parameter_format
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: "--selected-shell=",
   #                                        shells: [:bash])
@@ -1751,6 +1758,7 @@ class Formula
     }
 
     shells.each do |shell|
+      popen_read_env = { "SHELL" => shell.to_s }
       script_path = completion_script_path_map[shell]
       shell_parameter = if shell_parameter_format.nil?
         shell.to_s
@@ -1759,6 +1767,10 @@ class Formula
       elsif shell_parameter_format == :arg
         "--shell=#{shell}"
       elsif shell_parameter_format == :none
+        nil
+      elsif shell_parameter_format == :click
+        prog_name = File.basename(commands.first.to_s).upcase.tr("-", "_")
+        popen_read_env["_#{prog_name}_COMPLETE"] = "#{shell}_source"
         nil
       else
         "#{shell_parameter_format}#{shell}"
@@ -1770,7 +1782,7 @@ class Formula
       popen_read_args.flatten!
 
       script_path.dirname.mkpath
-      script_path.write Utils.safe_popen_read({ "SHELL" => shell.to_s }, *popen_read_args)
+      script_path.write Utils.safe_popen_read(popen_read_env, *popen_read_args)
     end
   end
 
