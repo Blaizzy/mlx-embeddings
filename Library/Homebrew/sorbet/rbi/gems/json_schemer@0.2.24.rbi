@@ -82,6 +82,7 @@ class JSONSchemer::Schema::Base
   def child(schema); end
   def custom_format?(format); end
   def error(instance, type, details = T.unsafe(nil)); end
+  def escape_json_pointer_token(token); end
   def format?; end
   def formats; end
   def id_keyword; end
@@ -141,6 +142,8 @@ class JSONSchemer::Schema::Base::Instance < ::Struct
   end
 end
 
+JSONSchemer::Schema::Base::JSON_POINTER_TOKEN_ESCAPE_CHARS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Schema::Base::JSON_POINTER_TOKEN_ESCAPE_REGEXP = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Schema::Base::NET_HTTP_REF_RESOLVER = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Schema::Base::RUBY_REGEX_ANCHORS_TO_ECMA_262 = T.let(T.unsafe(nil), Hash)
 
