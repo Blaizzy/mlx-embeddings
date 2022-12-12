@@ -752,8 +752,8 @@ class RSpec::Mocks::Matchers::HaveReceived
   def exactly(*args); end
   def failure_message; end
   def failure_message_when_negated; end
+  def matcher_name; end
   def matches?(subject, &block); end
-  def name; end
   def once(*args); end
   def ordered(*args); end
   def setup_allowance(_subject, &_block); end
@@ -803,8 +803,8 @@ class RSpec::Mocks::Matchers::Receive
   def description; end
   def does_not_match?(subject, &block); end
   def exactly(*args, &block); end
+  def matcher_name; end
   def matches?(subject, &block); end
-  def name; end
   def never(*args, &block); end
   def once(*args, &block); end
   def ordered(*args, &block); end
@@ -849,8 +849,8 @@ class RSpec::Mocks::Matchers::ReceiveMessageChain
   def and_yield(*args, &block); end
   def description; end
   def does_not_match?(*_args); end
+  def matcher_name; end
   def matches?(subject, &block); end
-  def name; end
   def setup_allowance(subject, &block); end
   def setup_any_instance_allowance(subject, &block); end
   def setup_any_instance_expectation(subject, &block); end
@@ -871,8 +871,8 @@ class RSpec::Mocks::Matchers::ReceiveMessages
 
   def description; end
   def does_not_match?(_subject); end
+  def matcher_name; end
   def matches?(subject); end
-  def name; end
   def setup_allowance(subject); end
   def setup_any_instance_allowance(subject); end
   def setup_any_instance_expectation(subject); end
@@ -1031,6 +1031,7 @@ class RSpec::Mocks::MethodDouble
   def usable_rspec_prepended_module; end
 end
 
+RSpec::Mocks::MethodDouble::FROZEN_ERROR_MSG = T.let(T.unsafe(nil), Regexp)
 class RSpec::Mocks::MethodDouble::RSpecPrependedModule < ::Module; end
 
 class RSpec::Mocks::MethodReference
