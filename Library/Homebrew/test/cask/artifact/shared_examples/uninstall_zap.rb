@@ -61,6 +61,19 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
+  context "using launchctl with regex" do
+    let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-launchctl-wildcard")) }
+    let(:launchctl_list_cmd) { %w[/bin/launchctl list] }
+
+    it "searches running launchctl items" do
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list"], print_stderr: false, sudo: false)
+        .and_return(instance_double(SystemCommand::Result))
+
+      subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
+    end
+  end
+
   context "using :pkgutil" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-pkgutil")) }
 
@@ -117,9 +130,9 @@ shared_examples "#uninstall_phase or #zap_phase" do
       allow(User.current).to receive(:gui?).and_return false
       allow(subject).to receive(:running?).with(bundle_id).and_return(true)
 
-      expect {
+      expect do
         subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
-      }.to output(/Not logged into a GUI; skipping quitting application ID 'my.fancy.package.app'\./).to_stderr
+      end.to output(/Not logged into a GUI; skipping quitting application ID 'my.fancy.package.app'\./).to_stderr
     end
 
     it "quits a running application" do
@@ -130,9 +143,9 @@ shared_examples "#uninstall_phase or #zap_phase" do
                                        .and_return(instance_double("SystemCommand::Result", success?: true))
       expect(subject).to receive(:running?).with(bundle_id).ordered.and_return(false)
 
-      expect {
+      expect do
         subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
-      }.to output(/Application 'my.fancy.package.app' quit successfully\./).to_stdout
+      end.to output(/Application 'my.fancy.package.app' quit successfully\./).to_stdout
     end
 
     it "tries to quit the application for 10 seconds" do
@@ -143,9 +156,9 @@ shared_examples "#uninstall_phase or #zap_phase" do
                                       .and_return(instance_double("SystemCommand::Result", success?: false))
 
       time = Benchmark.measure do
-        expect {
+        expect do
           subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
-        }.to output(/Application 'my.fancy.package.app' did not quit\./).to_stderr
+        end.to output(/Application 'my.fancy.package.app' did not quit\./).to_stderr
       end
 
       expect(time.real).to be_within(3).of(10)

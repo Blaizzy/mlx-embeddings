@@ -95,7 +95,7 @@ module Cask
 
         # if launchctl item contains a wildcard, find matching process(es)
         services.each do |service|
-          all_services << service
+          all_services << service unless service.include?("*")
           next unless service.include?("*")
 
           all_services += find_launchctl_with_wildcard(service)
