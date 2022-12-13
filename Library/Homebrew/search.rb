@@ -115,7 +115,7 @@ module Homebrew
       []
     end
 
-    def search_names(query, string_or_regex, args)
+    def search_names(query, string_or_regex)
       remote_results = search_taps(query, silent: true)
 
       local_formulae = search_formulae(string_or_regex)
@@ -126,48 +126,7 @@ module Homebrew
       remote_casks = remote_results[:casks]
       all_casks = local_casks + remote_casks
 
-      print_formulae = args.formula?
-      print_casks = args.cask?
-      print_formulae = print_casks = true if !print_formulae && !print_casks
-      print_formulae &&= all_formulae.any?
-      print_casks &&= all_casks.any?
-
-      count = 0
-      if print_formulae
-        if $stdout.tty?
-          ohai "Formulae", Formatter.columns(all_formulae)
-        else
-          puts all_formulae
-        end
-        count += all_formulae.count
-      end
-      puts if print_formulae && print_casks
-      if print_casks
-        if $stdout.tty?
-          ohai "Casks", Formatter.columns(all_casks)
-        else
-          puts all_casks
-        end
-        count += all_casks.count
-      end
-
-      print_missing_formula_help(query, count.positive?) if local_casks.exclude?(query)
-
-      odie "No formulae or casks found for #{query.inspect}." if count.zero?
-      !count.zero?
-    end
-
-    def print_missing_formula_help(query, found_matches)
-      return unless $stdout.tty?
-
-      reason = MissingFormula.reason(query, silent: true)
-      return if reason.nil?
-
-      if found_matches
-        puts
-        puts "If you meant #{query.inspect} specifically:"
-      end
-      puts reason
+      [all_formulae, all_casks]
     end
   end
 end

@@ -288,16 +288,47 @@ module Homebrew
     end
 
     opoo e
+
+    reason = MissingFormula.reason(name, silent: true)
+    if !args.cask? && reason
+      $stderr.puts reason
+      return
+    end
+
+    return if name.include?("/")
+
     ohai "Searching for similarly named formulae and casks..."
 
     # Don't treat formula/cask name as a regex
     query = string_or_regex = name
-    if search_names(query, string_or_regex, args)
-      puts <<~EOL
+    all_formulae, all_casks = search_names(query, string_or_regex)
 
-        To install one of them, run:
-          brew install 'package_name'
-      EOL
+    print_formulae = args.formula?
+    print_casks = args.cask?
+    print_formulae = print_casks = true if !print_formulae && !print_casks
+    print_formulae &&= all_formulae.any?
+    print_casks &&= all_casks.any?
+
+    if print_formulae
+      ohai "Formulae", Formatter.columns(all_formulae)
+      first_formula = all_formulae.first.to_s
+      puts <<~EOS
+
+        To install #{first_formula}, run:
+          brew install #{first_formula}
+      EOS
     end
+    puts if print_formulae && print_casks
+    if print_casks
+      ohai "Casks", Formatter.columns(all_casks)
+      first_cask = all_casks.first.to_s
+      puts <<~EOS
+
+        To install #{first_cask}, run:
+          brew install --cask #{first_cask}
+      EOS
+    end
+
+    odie "No formulae or casks found for #{name}." if !print_formulae && !print_casks
   end
 end
