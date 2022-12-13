@@ -200,7 +200,7 @@ module Homebrew
         except:              args.except,
         spdx_license_data:   spdx_license_data,
         spdx_exception_data: spdx_exception_data,
-        style_offenses:      style_offenses ? style_offenses.for_path(f.path) : nil,
+        style_offenses:      style_offenses&.for_path(f.path),
         display_cop_names:   args.display_cop_names?,
       }.compact
 

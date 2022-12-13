@@ -220,9 +220,9 @@ module PyPI
     pipgrip_output = Utils.popen_read(*command)
     unless $CHILD_STATUS.success?
       odie <<~EOS
-        Unable to determine dependencies for \"#{input_packages.join(" ")}\" because of a failure when running
+        Unable to determine dependencies for "#{input_packages.join(" ")}" because of a failure when running
         `#{command.join(" ")}`.
-        Please update the resources for \"#{formula.name}\" manually.
+        Please update the resources for "#{formula.name}" manually.
       EOS
     end
 
@@ -242,8 +242,8 @@ module PyPI
         odie "Unable to resolve some dependencies. Please update the resources for \"#{formula.name}\" manually."
       elsif url.blank? || checksum.blank?
         odie <<~EOS
-          Unable to find the URL and/or sha256 for the \"#{name}\" resource.
-          Please update the resources for \"#{formula.name}\" manually.
+          Unable to find the URL and/or sha256 for the "#{name}" resource.
+          Please update the resources for "#{formula.name}" manually.
         EOS
       end
 

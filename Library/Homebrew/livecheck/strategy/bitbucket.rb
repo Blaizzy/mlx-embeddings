@@ -74,7 +74,7 @@ module Homebrew
           regex_prefix = Regexp.escape(T.must(match[:prefix])).gsub("\\-", "-")
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          suffix = T.must(match[:suffix]).sub(Strategy::TARBALL_EXTENSION_REGEX, "\.t")
+          suffix = T.must(match[:suffix]).sub(Strategy::TARBALL_EXTENSION_REGEX, ".t")
           regex_suffix = Regexp.escape(suffix).gsub("\\-", "-")
 
           # Example regexes:

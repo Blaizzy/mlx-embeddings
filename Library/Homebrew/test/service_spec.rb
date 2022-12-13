@@ -592,8 +592,8 @@ describe Homebrew::Service do
         StandardInput=file:#{HOMEBREW_PREFIX}/var/in/beanstalkd
         StandardOutput=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.log
         StandardError=append:#{HOMEBREW_PREFIX}/var/log/beanstalkd.error.log
-        Environment=\"PATH=#{std_path}\"
-        Environment=\"FOO=BAR\"
+        Environment="PATH=#{std_path}"
+        Environment="FOO=BAR"
       EOS
       expect(unit).to eq(unit_expect.strip)
     end

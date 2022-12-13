@@ -93,7 +93,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "xcodebuild", "foo", "bar"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use \"xcodebuild *args\" instead of \"system 'xcodebuild', *args\"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use "xcodebuild *args" instead of "system 'xcodebuild', *args"
           end
         end
       RUBY
@@ -107,7 +107,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "xcodebuild", "foo", "bar"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use \"xcodebuild *args\" instead of \"system 'xcodebuild', *args\"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use "xcodebuild *args" instead of "system 'xcodebuild', *args"
           end
 
           def plist
@@ -152,7 +152,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             Formula.factory(name)
-            ^^^^^^^^^^^^^^^^^^^^^ \"Formula.factory(name)\" is deprecated in favor of \"Formula[name]\"
+            ^^^^^^^^^^^^^^^^^^^^^ "Formula.factory(name)" is deprecated in favor of "Formula[name]"
           end
         end
       RUBY
@@ -166,7 +166,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "dep", "ensure"
-            ^^^^^^^^^^^^^^^^^^^^^^ use \"dep\", \"ensure\", \"-vendor-only\"
+            ^^^^^^^^^^^^^^^^^^^^^^ use "dep", "ensure", "-vendor-only"
           end
         end
       RUBY
@@ -180,7 +180,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "cargo", "build"
-            ^^^^^^^^^^^^^^^^^^^^^^^ use \"cargo\", \"install\", *std_cargo_args
+            ^^^^^^^^^^^^^^^^^^^^^^^ use "cargo", "install", *std_cargo_args
           end
         end
       RUBY

@@ -37,7 +37,7 @@ describe Cask::Cmd::Reinstall, :cask do
       ==> Removing App '.*Caffeine.app'
       ==> Dispatching zap stanza
       ==> Trashing files:
-      .*org\.example\.caffeine\.plist
+      .*org.example.caffeine.plist
       ==> Removing all staged versions of Cask 'local-caffeine'
       ==> Installing Cask local-caffeine
       ==> Moving App 'Caffeine.app' to '.*Caffeine.app'

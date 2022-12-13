@@ -185,31 +185,31 @@ class URL < Delegator
     &block
   )
     super(
-    if block
-      LazyObject.new do
-        *args = BlockDSL.new(uri, dsl: dsl, &block).call
-        options = args.last.is_a?(Hash) ? args.pop : {}
-        uri = T.let(args.first, T.any(URI::Generic, String))
-        DSL.new(uri, **options)
+      if block
+        LazyObject.new do
+          *args = BlockDSL.new(uri, dsl: dsl, &block).call
+          options = args.last.is_a?(Hash) ? args.pop : {}
+          uri = T.let(args.first, T.any(URI::Generic, String))
+          DSL.new(uri, **options)
+        end
+      else
+        DSL.new(
+          T.must(uri),
+          verified:   verified,
+          using:      using,
+          tag:        tag,
+          branch:     branch,
+          revisions:  revisions,
+          revision:   revision,
+          trust_cert: trust_cert,
+          cookies:    cookies,
+          referer:    referer,
+          header:     header,
+          user_agent: user_agent,
+          data:       data,
+          only_path:  only_path,
+        )
       end
-    else
-      DSL.new(
-        T.must(uri),
-        verified:   verified,
-        using:      using,
-        tag:        tag,
-        branch:     branch,
-        revisions:  revisions,
-        revision:   revision,
-        trust_cert: trust_cert,
-        cookies:    cookies,
-        referer:    referer,
-        header:     header,
-        user_agent: user_agent,
-        data:       data,
-        only_path:  only_path,
-      )
-    end
     )
 
     @from_block = !block.nil?

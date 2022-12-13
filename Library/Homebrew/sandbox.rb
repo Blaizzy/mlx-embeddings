@@ -202,7 +202,7 @@ class Sandbox
 
   def path_filter(path, type)
     case type
-    when :regex        then "regex \#\"#{path}\""
+    when :regex        then "regex #\"#{path}\""
     when :subpath      then "subpath \"#{expand_realpath(Pathname.new(path))}\""
     when :literal, nil then "literal \"#{expand_realpath(Pathname.new(path))}\""
     end

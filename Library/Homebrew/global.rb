@@ -8,7 +8,6 @@ require "fileutils"
 require "json"
 require "json/add/exception"
 require "ostruct"
-require "pp"
 require "forwardable"
 
 # Only require "core_ext" here to ensure we're only requiring the minimum of

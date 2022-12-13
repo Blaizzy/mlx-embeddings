@@ -12,7 +12,7 @@ describe RuboCop::Cop::FormulaAudit::Lines do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on :automake
-          ^^^^^^^^^^^^^^^^^^^^ :automake is deprecated. Usage should be \"automake\".
+          ^^^^^^^^^^^^^^^^^^^^ :automake is deprecated. Usage should be "automake".
         end
       RUBY
     end
@@ -22,7 +22,7 @@ describe RuboCop::Cop::FormulaAudit::Lines do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on :autoconf
-          ^^^^^^^^^^^^^^^^^^^^ :autoconf is deprecated. Usage should be \"autoconf\".
+          ^^^^^^^^^^^^^^^^^^^^ :autoconf is deprecated. Usage should be "autoconf".
         end
       RUBY
     end
@@ -32,7 +32,7 @@ describe RuboCop::Cop::FormulaAudit::Lines do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on :libtool
-          ^^^^^^^^^^^^^^^^^^^ :libtool is deprecated. Usage should be \"libtool\".
+          ^^^^^^^^^^^^^^^^^^^ :libtool is deprecated. Usage should be "libtool".
         end
       RUBY
     end
@@ -42,7 +42,7 @@ describe RuboCop::Cop::FormulaAudit::Lines do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           depends_on :apr
-          ^^^^^^^^^^^^^^^ :apr is deprecated. Usage should be \"apr-util\".
+          ^^^^^^^^^^^^^^^ :apr is deprecated. Usage should be "apr-util".
         end
       RUBY
     end

@@ -85,7 +85,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'An aardvark'
-                ^^ Description shouldn\'t start with an article.
+                ^^ Description shouldn't start with an article.
         end
       RUBY
 
@@ -93,7 +93,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'The aardvark'
-                ^^^ Description shouldn\'t start with an article.
+                ^^^ Description shouldn't start with an article.
         end
       RUBY
     end
@@ -113,7 +113,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'Foo is a foobar'
-                ^^^ Description shouldn\'t start with the formula name.
+                ^^^ Description shouldn't start with the formula name.
         end
       RUBY
     end
