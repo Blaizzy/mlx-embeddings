@@ -63,7 +63,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
           livecheck do
           ^^^^^^^^^^^^ `livecheck` (line 7) should be put before `bottle` (line 5)
             url "https://brew.sh/foo/versions/"
-            regex(/href=.+?foo-(\d+(?:\.\d+)+)\.t/)
+            regex(/href=.+?foo-(\d+(?:.\d+)+).t/)
           end
         end
       RUBY
@@ -75,7 +75,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
 
           livecheck do
             url "https://brew.sh/foo/versions/"
-            regex(/href=.+?foo-(\d+(?:\.\d+)+)\.t/)
+            regex(/href=.+?foo-(\d+(?:.\d+)+).t/)
           end
 
           bottle :unneeded

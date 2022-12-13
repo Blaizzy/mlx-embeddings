@@ -65,7 +65,7 @@ module Homebrew
           values[:url] = "https://pypi.org/project/#{T.must(match[:package_name]).gsub(/%20|_/, "-")}/#files"
 
           # Use `\.t` instead of specific tarball extensions (e.g. .tar.gz)
-          suffix = T.must(match[:suffix]).sub(Strategy::TARBALL_EXTENSION_REGEX, "\.t")
+          suffix = T.must(match[:suffix]).sub(Strategy::TARBALL_EXTENSION_REGEX, ".t")
           regex_suffix = Regexp.escape(suffix).gsub("\\-", "-")
 
           # Example regex: `%r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)\.t}i`

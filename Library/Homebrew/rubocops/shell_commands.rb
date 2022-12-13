@@ -3,6 +3,7 @@
 
 require "active_support/core_ext/array/access"
 require "rubocops/shared/helper_functions"
+require "shellwords"
 
 module RuboCop
   module Cop

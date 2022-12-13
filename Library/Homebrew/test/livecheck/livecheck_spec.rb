@@ -51,7 +51,7 @@ describe Homebrew::Livecheck do
 
         livecheck do
           url "https://formulae.brew.sh/api/formula/ruby.json"
-          regex(/"stable":"(\d+(?:\.\d+)+)"/i)
+          regex(/"stable":"(\d+(?:.\d+)+)"/i)
         end
       end
     RUBY
@@ -227,7 +227,7 @@ describe Homebrew::Livecheck do
 
           livecheck do
             url "https://formulae.brew.sh/api/formula/ruby.json"
-            regex(/"stable":"(\d+(?:\.\d+)+)"/i)
+            regex(/"stable":"(\d+(?:.\d+)+)"/i)
           end
         end
       RUBY
