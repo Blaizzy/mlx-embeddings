@@ -37,3 +37,10 @@ RSpec/MultipleMemoizedHelpers:
 # Annoying to have these autoremoved.
 RSpec/Focus:
   AutoCorrect: false
+
+# Gets confused on these tests for a `skip` DSL
+RSpec/PendingWithoutReason:
+  Exclude:
+    - "**/dependency_expansion_spec.rb"
+    - "**/livecheck/skip_conditions_spec.rb"
+    - "**/livecheck_spec.rb"
