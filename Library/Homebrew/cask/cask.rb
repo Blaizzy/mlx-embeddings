@@ -38,16 +38,6 @@ module Cask
       end.compact
     end
 
-    def self.full_names
-      Tap.flat_map do |tap|
-        next tap.cask_tokens.blank?
-        next tap.cask_tokens if tap.user == "Homebrew"
-
-        name = tap.name
-        tap.cask_tokens.map { |tok| "#{name}/#{tok}" }
-      end.flatten
-    end
-
     def tap
       return super if block_given? # Object#tap
 
