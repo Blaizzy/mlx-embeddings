@@ -295,6 +295,8 @@ module Homebrew
       return
     end
 
+    # We don't seem to get good search results when the tap is specified
+    # so we might as well return early.
     return if name.include?("/")
 
     ohai "Searching for similarly named formulae and casks..."
