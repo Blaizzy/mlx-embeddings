@@ -303,15 +303,9 @@ module Homebrew
 
     # Don't treat formula/cask name as a regex
     query = string_or_regex = name
-    all_formulae, all_casks = search_names(query, string_or_regex)
+    all_formulae, all_casks = search_names(query, string_or_regex, args)
 
-    print_formulae = args.formula?
-    print_casks = args.cask?
-    print_formulae = print_casks = true if !print_formulae && !print_casks
-    print_formulae &&= all_formulae.any?
-    print_casks &&= all_casks.any?
-
-    if print_formulae
+    if all_formulae.any?
       ohai "Formulae", Formatter.columns(all_formulae)
       first_formula = all_formulae.first.to_s
       puts <<~EOS
@@ -320,8 +314,8 @@ module Homebrew
           brew install #{first_formula}
       EOS
     end
-    puts if print_formulae && print_casks
-    if print_casks
+    puts if all_formulae.any? && all_casks.any?
+    if all_casks.any?
       ohai "Casks", Formatter.columns(all_casks)
       first_cask = all_casks.first.to_s
       puts <<~EOS
@@ -330,7 +324,8 @@ module Homebrew
           brew install --cask #{first_cask}
       EOS
     end
+    return if all_formulae.any? || all_casks.any?
 
-    odie "No formulae or casks found for #{name}." if !print_formulae && !print_casks
+    odie "No formulae or casks found for #{name}."
   end
 end
