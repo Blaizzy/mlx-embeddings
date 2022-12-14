@@ -1,4 +1,4 @@
-# typed: true
+# typed: false
 # frozen_string_literal: true
 
 class Keg
@@ -86,6 +86,8 @@ class Keg
     end
   end
 
+  undef prepare_debug_symbols
+
   def prepare_debug_symbols
     binary_executable_or_library_files.each do |file|
       odebug "Extracting symbols #{file}"
@@ -98,6 +100,16 @@ class Keg
         Failed to extract symbols from #{file}:
         #{result.stderr}
       EOS
+    end
+  end
+
+  undef consistent_reproducible_symlink_permissions!
+
+  # Needed to make symlink permissions consistent on macOS and Linux for
+  # reproducible bottles.
+  def consistent_reproducible_symlink_permissions!
+    find do |file|
+      File.lchmod 0777, file if file.symlink?
     end
   end
 end

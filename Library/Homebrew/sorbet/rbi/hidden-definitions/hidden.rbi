@@ -3287,9 +3287,13 @@ module CopHelper
 
   def autocorrect_source_file(source); end
 
+  def configuration(); end
+
   def inspect_source(source, file=T.unsafe(nil)); end
 
   def parse_source(source, file=T.unsafe(nil)); end
+
+  def registry(); end
 end
 
 module CopHelper
@@ -6776,6 +6780,7 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
+  SET_ANY_EMPTY = ::T.let(nil, ::T.untyped)
   SET_ARM_INTEL = ::T.let(nil, ::T.untyped)
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
@@ -6784,7 +6789,9 @@ module RuboCop::AST::NodePattern::Sets
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
+  SET_PRESENT_ANY_BLANK_EMPTY = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
+  SET_TO_TO_NOT_NOT_TO = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)
 end

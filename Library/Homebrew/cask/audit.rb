@@ -416,7 +416,7 @@ module Cask
       add_error "cask token underscores should be replaced by hyphens" if cask.token.include? "_"
       add_error "cask token should not contain double hyphens" if cask.token.include? "--"
 
-      if cask.token.match?(/[^a-z0-9\-]/)
+      if cask.token.match?(/[^a-z0-9-]/)
         add_error "cask token should only contain lowercase alphanumeric characters and hyphens"
       end
 

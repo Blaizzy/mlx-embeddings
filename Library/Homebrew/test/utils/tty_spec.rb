@@ -4,7 +4,7 @@
 describe Tty do
   describe "::strip_ansi" do
     it "removes ANSI escape codes from a string" do
-      expect(described_class.strip_ansi("\033\[36;7mhello\033\[0m")).to eq("hello")
+      expect(described_class.strip_ansi("\033[36;7mhello\033[0m")).to eq("hello")
     end
   end
 

@@ -493,7 +493,7 @@ class FormulaInstaller
       # stop installation from continuing.
       opoo <<~EOS
         #{formula}: #{e.message}
-        'conflicts_with \"#{c.name}\"' should be removed from #{formula.path.basename}.
+        'conflicts_with "#{c.name}"' should be removed from #{formula.path.basename}.
       EOS
 
       raise if Homebrew::EnvConfig.developer?

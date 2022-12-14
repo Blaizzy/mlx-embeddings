@@ -508,7 +508,7 @@ else
     message="Please update your system curl or set HOMEBREW_CURL_PATH to a newer version.
 Minimum required version: ${HOMEBREW_MINIMUM_CURL_VERSION}
 Your curl version: ${curl_name_and_version##* }
-Your curl executable: $(type -p ${HOMEBREW_CURL})"
+Your curl executable: $(type -p "${HOMEBREW_CURL}")"
 
     if [[ -z ${HOMEBREW_CURL_PATH} ]]
     then
@@ -537,7 +537,7 @@ Your curl executable: $(type -p ${HOMEBREW_CURL})"
     message="Please update your system Git or set HOMEBREW_GIT_PATH to a newer version.
 Minimum required version: ${HOMEBREW_MINIMUM_GIT_VERSION}
 Your Git version: ${major}.${minor}.${micro}.${build}
-Your Git executable: $(unset git && type -p ${HOMEBREW_GIT})"
+Your Git executable: $(unset git && type -p "${HOMEBREW_GIT}")"
     if [[ -z ${HOMEBREW_GIT_PATH} ]]
     then
       HOMEBREW_FORCE_BREWED_GIT="1"

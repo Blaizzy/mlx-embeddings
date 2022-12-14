@@ -234,7 +234,7 @@ module Homebrew
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
-  def setup_tar_and_args!(args)
+  def setup_tar_and_args!(args, mtime)
     # Without --only-json-tab bottles are never reproducible
     default_tar_args = ["tar", [].freeze].freeze
     return default_tar_args unless args.only_json_tab?
@@ -242,7 +242,7 @@ module Homebrew
     # Ensure tar is set up for reproducibility.
     # https://reproducible-builds.org/docs/archives/
     gnutar_args = [
-      "--format", "pax", "--owner", "0", "--group", "0", "--sort", "name",
+      "--format", "pax", "--owner", "0", "--group", "0", "--sort", "name", "--mtime=#{mtime}",
       # Set exthdr names to exclude PID (for GNU tar <1.33). Also don't store atime and ctime.
       "--pax-option", "globexthdr.name=/GlobalHead.%n,exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
     ].freeze
@@ -409,28 +409,18 @@ module Homebrew
           tab.write
         end
 
-        keg.find do |file|
-          # Set the times for reproducible bottles.
-          if file.symlink?
-            # Need to make symlink permissions consistent on macOS and Linux
-            # TODO: Refactor and move to extend/os
-            File.lchmod 0777, file if OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
-            File.lutime(tab.source_modified_time, tab.source_modified_time, file)
-          else
-            file.utime(tab.source_modified_time, tab.source_modified_time)
-          end
-        end
+        keg.consistent_reproducible_symlink_permissions!
 
         cd cellar do
           sudo_purge
           # Tar then gzip for reproducible bottles.
-          tar, tar_args = setup_tar_and_args!(args)
+          tar_mtime = tab.source_modified_time.strftime("%Y-%m-%d %H:%M:%S")
+          tar, tar_args = setup_tar_and_args!(args, tar_mtime)
           safe_system tar, "--create", "--numeric-owner",
                       *tar_args,
                       "--file", tar_path, "#{f.name}/#{f.pkg_version}"
           sudo_purge
-          # Set more times for reproducible bottles.
-          tar_path.utime(tab.source_modified_time, tab.source_modified_time)
+          # Set filename as it affects the tarball checksum.
           relocatable_tar_path = "#{f}-bottle.tar"
           mv tar_path, relocatable_tar_path
           # Use gzip, faster to compress than bzip2, faster to uncompress than bzip2

@@ -643,13 +643,13 @@ module RuboCop
 
           formula_path_strings(body_node, :prefix) do |p|
             if (match = regex_match_group(p, %r{^(/share/(info|man))$}))
-              problem "\"\#\{prefix}#{match[1]}\" should be \"\#{#{match[2]}}\""
+              problem ['"#', "{prefix}", match[1], '" should be "#{', match[2], '}"'].join
             end
             if (match = regex_match_group(p, %r{^((/share/man/)(man[1-8]))}))
-              problem "\"\#\{prefix}#{match[1]}\" should be \"\#{#{match[3]}}\""
+              problem ['"#', "{prefix}", match[1], '" should be "#{', match[3], '}"'].join
             end
             if (match = regex_match_group(p, %r{^(/(bin|include|libexec|lib|sbin|share|Frameworks))}i))
-              problem "\"\#\{prefix}#{match[1]}\" should be \"\#{#{match[2].downcase}}\""
+              problem ['"#', "{prefix}", match[1], '" should be "#{', match[2].downcase, '}"'].join
             end
           end
 

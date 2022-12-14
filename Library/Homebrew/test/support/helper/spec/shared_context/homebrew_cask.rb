@@ -36,7 +36,7 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do # rubocop:disable RSpec/Co
     third_party_tap = Tap.fetch("third-party", "tap")
 
     begin
-      Cask::Config::DEFAULT_DIRS_PATHNAMES.values.each(&:mkpath)
+      Cask::Config::DEFAULT_DIRS_PATHNAMES.each_value(&:mkpath)
 
       Tap.default_cask_tap.tap do |tap|
         FileUtils.mkdir_p tap.path.dirname

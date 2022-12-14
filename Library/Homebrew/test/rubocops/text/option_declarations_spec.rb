@@ -110,7 +110,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if build.without? "--without-bar"
-                                     ^^^^^^^^^^^^^^^ Don't duplicate 'without': Use `build.without? \"bar\"` to check for \"--without-bar\"
+                                     ^^^^^^^^^^^^^^^ Don't duplicate 'without': Use `build.without? "bar"` to check for "--without-bar"
           end
         end
       RUBY
@@ -123,7 +123,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if build.with? "--with-bar"
-                                  ^^^^^^^^^^^^ Don't duplicate 'with': Use `build.with? \"bar\"` to check for \"--with-bar\"
+                                  ^^^^^^^^^^^^ Don't duplicate 'with': Use `build.with? "bar"` to check for "--with-bar"
           end
         end
       RUBY

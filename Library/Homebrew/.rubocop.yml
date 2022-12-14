@@ -2,6 +2,12 @@ inherit_from:
   - ../.rubocop_rspec.yml
   - .rubocop_todo.yml
 
+Homebrew/MoveToExtendOS:
+  Enabled: true
+  Exclude:
+    - "{extend,test,requirements}/**/*"
+    - "os.rb"
+
 # make rspec formatting more flexible
 Layout/MultilineMethodCallIndentation:
   Exclude:
