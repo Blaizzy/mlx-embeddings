@@ -114,6 +114,26 @@ module Homebrew
     def search_casks(_string_or_regex)
       []
     end
+
+    def search_names(query, string_or_regex, args)
+      both = !args.formula? && !args.cask?
+
+      remote_results = search_taps(query, silent: true)
+
+      all_formulae = if args.formula? || both
+        search_formulae(string_or_regex) + remote_results[:formulae]
+      else
+        []
+      end
+
+      all_casks = if args.cask? || both
+        search_casks(string_or_regex) + remote_results[:casks]
+      else
+        []
+      end
+
+      [all_formulae, all_casks]
+    end
   end
 end
 

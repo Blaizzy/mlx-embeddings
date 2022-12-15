@@ -37,8 +37,7 @@ module Homebrew
         results = cask_tokens.extend(Searchable)
                              .search(string_or_regex)
 
-        cask_names = Cask::Cask.all.map(&:full_name)
-        results += DidYouMean::SpellChecker.new(dictionary: cask_names)
+        results += DidYouMean::SpellChecker.new(dictionary: cask_tokens)
                                            .correct(string_or_regex)
 
         results.sort.map do |name|
