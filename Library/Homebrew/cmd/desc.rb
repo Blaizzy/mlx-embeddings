@@ -72,22 +72,7 @@ module Homebrew
     else
       query = args.named.join(" ")
       string_or_regex = query_regexp(query)
-      eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
-      unless args.cask?
-        ohai "Formulae"
-        CacheStoreDatabase.use(:descriptions) do |db|
-          cache_store = DescriptionCacheStore.new(db)
-          Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
-        end
-      end
-      unless args.formula?
-        puts unless args.cask?
-        ohai "Casks"
-        CacheStoreDatabase.use(:cask_descriptions) do |db|
-          cache_store = CaskDescriptionCacheStore.new(db)
-          Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
-        end
-      end
+      search_descriptions(string_or_regex, args, search_type: search_type)
     end
   end
 end

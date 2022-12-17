@@ -19,14 +19,25 @@ module Homebrew
       raise "#{query} is not a valid regex."
     end
 
-    def search_descriptions(string_or_regex, args)
-      return if args.cask?
+    def search_descriptions(string_or_regex, args, search_type: :desc)
+      both = !args.formula? && !args.cask?
+      eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
 
-      ohai "Formulae"
-      CacheStoreDatabase.use(:descriptions) do |db|
-        cache_store = DescriptionCacheStore.new(db)
-        eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
-        Descriptions.search(string_or_regex, :desc, cache_store, eval_all).print
+      if args.formula? || both
+        ohai "Formulae"
+        CacheStoreDatabase.use(:descriptions) do |db|
+          cache_store = DescriptionCacheStore.new(db)
+          Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
+        end
+      end
+      return if !args.cask? && !both
+
+      puts if both
+
+      ohai "Casks"
+      CacheStoreDatabase.use(:cask_descriptions) do |db|
+        cache_store = CaskDescriptionCacheStore.new(db)
+        Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
       end
     end
 
@@ -161,5 +172,3 @@ module Homebrew
     end
   end
 end
-
-require "extend/os/search"
