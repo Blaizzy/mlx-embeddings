@@ -11,8 +11,6 @@ module Homebrew
 
   module_function
 
-  extend Search
-
   sig { returns(CLI::Parser) }
   def desc_args
     Homebrew::CLI::Parser.new do
@@ -71,8 +69,8 @@ module Homebrew
       Descriptions.new(desc).print
     else
       query = args.named.join(" ")
-      string_or_regex = query_regexp(query)
-      search_descriptions(string_or_regex, args, search_type: search_type)
+      string_or_regex = Search.query_regexp(query)
+      Search.search_descriptions(string_or_regex, args, search_type: search_type)
     end
   end
 end

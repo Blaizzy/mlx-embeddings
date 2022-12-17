@@ -12,8 +12,6 @@ module Cask
       extend T::Sig
       extend T::Helpers
 
-      include Homebrew::Search
-
       OPTIONS = [
         [:switch, "--[no-]binaries", {
           description: "Disable/enable linking of helper executables (default: enabled).",
@@ -87,7 +85,7 @@ module Cask
       end
 
       def suggestion_message(cask_token)
-        matches = search_casks(cask_token)
+        matches = Homebrew::Search.search_casks(cask_token)
 
         if matches.one?
           "Did you mean '#{matches.first}'?"
