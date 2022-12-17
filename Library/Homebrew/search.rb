@@ -111,8 +111,33 @@ module Homebrew
       end.compact
     end
 
-    def search_casks(_string_or_regex)
-      []
+    def search_casks(string_or_regex)
+      if string_or_regex.is_a?(String) && string_or_regex.match?(HOMEBREW_TAP_CASK_REGEX)
+        return begin
+          [Cask::CaskLoader.load(string_or_regex).token]
+        rescue Cask::CaskUnavailableError
+          []
+        end
+      end
+
+      cask_tokens = Tap.flat_map(&:cask_tokens).map do |c|
+        c.sub(%r{^homebrew/cask.*/}, "")
+      end
+
+      results = cask_tokens.extend(Searchable)
+                           .search(string_or_regex)
+
+      results += DidYouMean::SpellChecker.new(dictionary: cask_tokens)
+                                         .correct(string_or_regex)
+
+      results.sort.map do |name|
+        cask = Cask::CaskLoader.load(name)
+        if cask.installed?
+          pretty_installed(cask.full_name)
+        else
+          cask.full_name
+        end
+      end.uniq
     end
 
     def search_names(query, string_or_regex, args)
