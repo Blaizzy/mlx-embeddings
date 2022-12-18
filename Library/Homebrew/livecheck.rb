@@ -142,6 +142,13 @@ class Livecheck
     end
   end
 
+  # Returns a placeholder string that will be replaced with a formula's latest
+  # version in livecheck URLs for its resources.
+  # @return String
+  def latest_version
+    "<FORMULA_LATEST_VERSION>"
+  end
+
   delegate version: :@package_or_resource
   delegate arch: :@package_or_resource
   private :version, :arch
