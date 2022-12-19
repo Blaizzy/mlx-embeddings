@@ -118,7 +118,7 @@ Common reasons to reject a cask entirely:
 + The author has [specifically asked us not to include it](https://github.com/Homebrew/homebrew-cask/pull/5342).
 + App requires [SIP to be disabled](https://github.com/Homebrew/homebrew-cask/pull/41890) to be installed and/or used.
 + App installer is a `pkg` that requires [`allow_untrusted: true`](https://docs.brew.sh/Cask-Cookbook#pkg-allow_untrusted).
-+ App works on Homebrew supported macOS versions and platforms with GateKeeper enabled.
++ App fails with GateKeeper enabled on Homebrew supported macOS versions and platforms (e.g. unsigned apps fail on Macs with Apple silicon/ARM).
 
 Common reasons to reject a cask from the main repo:
 
