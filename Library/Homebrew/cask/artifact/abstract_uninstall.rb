@@ -98,7 +98,10 @@ module Cask
           all_services << service unless service.include?("*")
           next unless service.include?("*")
 
-          all_services += find_launchctl_with_wildcard(service)
+          found_services = find_launchctl_with_wildcard(service)
+          next if found_services.blank?
+
+          found_services.each { |service| all_services += service}
         end
 
         all_services.each do |service|
@@ -282,6 +285,7 @@ module Cask
       def find_launchctl_with_wildcard(search)
         regex = Regexp.escape(search).gsub("\\*", ".*")
         system_command!("/bin/launchctl", args: ["list"])
+          # skip stdout column headers
           .stdout.lines.drop(1)
           .map do |line|
             pid, _state, id = line.chomp.split("\t")
