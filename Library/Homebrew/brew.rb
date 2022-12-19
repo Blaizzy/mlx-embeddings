@@ -125,6 +125,7 @@ begin
     with_env HOMEBREW_HELP: nil do
       tap_commands = []
       if File.exist?("/.dockerenv") ||
+         Process.uid.zero? ||
          ((cgroup = Utils.popen_read("cat", "/proc/1/cgroup").presence) &&
           %w[azpl_job actions_job docker garden kubepods].none? { |type| cgroup.include?(type) })
         brew_uid = HOMEBREW_BREW_FILE.stat.uid
