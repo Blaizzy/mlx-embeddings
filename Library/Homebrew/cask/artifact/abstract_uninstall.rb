@@ -101,7 +101,7 @@ module Cask
           found_services = find_launchctl_with_wildcard(service)
           next if found_services.blank?
 
-          found_services.each { |service| all_services += service}
+          found_services.each { |found_service| all_services += found_service }
         end
 
         all_services.each do |service|
