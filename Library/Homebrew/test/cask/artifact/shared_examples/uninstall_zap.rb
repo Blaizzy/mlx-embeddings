@@ -66,7 +66,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     let(:launchctl_list_cmd) { %w[/bin/launchctl list] }
 
     it "searches running launchctl items" do
-      allow(fake_system_command).to receive(:run)
+      expect(fake_system_command).to receive(:run)
         .with("/bin/launchctl", args: ["list"], print_stderr: false, sudo: false)
         .and_return(instance_double(SystemCommand::Result))
 
