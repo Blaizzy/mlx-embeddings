@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "livecheck/constants"
 require "livecheck/error"
 require "livecheck/livecheck_version"
 require "livecheck/skip_conditions"
@@ -877,7 +878,7 @@ module Homebrew
       checked_urls = []
       # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
-        url = original_url.gsub(/<FORMULA_LATEST_VERSION>/, formula_latest)
+        url = original_url.gsub(Constants::LATEST_VERSION, formula_latest)
 
         # Only preprocess the URL when it's appropriate
         url = preprocess_url(url) unless STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)

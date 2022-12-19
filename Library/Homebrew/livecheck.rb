@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "livecheck/constants"
+
 # The {Livecheck} class implements the DSL methods used in a formula's, cask's
 # or resource's `livecheck` block and stores related instance variables. Most
 # of these methods also return the related instance variable when no argument
@@ -140,13 +142,6 @@ class Livecheck
     else
       raise TypeError, "Livecheck#url expects a String or valid Symbol"
     end
-  end
-
-  # Returns a placeholder string that will be replaced with a formula's latest
-  # version in livecheck URLs for its resources.
-  # @return String
-  def latest_version
-    "<FORMULA_LATEST_VERSION>"
   end
 
   delegate version: :@package_or_resource
