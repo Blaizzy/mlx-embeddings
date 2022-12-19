@@ -192,6 +192,7 @@ module GitHub
 
       token = credentials
       args += ["--header", "Authorization: token #{token}"] unless credentials_type == :none
+      args += ["--header", "X-GitHub-Api-Version:2022-11-28"]
 
       data_tmpfile = nil
       if data
