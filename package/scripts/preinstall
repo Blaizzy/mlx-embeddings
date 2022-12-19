@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Checked for installed CLT
+if [[ -e "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
+  exit 0
+fi
+
+if /usr/bin/xcode-select --install; then
+  exit 0
+fi
+
+printf "Failed to install CommandLine Tools"
+exit 1
