@@ -230,6 +230,13 @@ class RSpec::Expectations::FailureAggregator
   def notify_aggregated_failures; end
 end
 
+RSpec::Expectations::FailureAggregator::AGGREGATED_FAILURE = T.let(T.unsafe(nil), RSpec::Expectations::FailureAggregator::AggregatedFailure)
+
+class RSpec::Expectations::FailureAggregator::AggregatedFailure
+  def inspect; end
+end
+
+RSpec::Expectations::FailureAggregator::AggregatedFailure::MESSAGE = T.let(T.unsafe(nil), String)
 RSpec::Expectations::LegacyMacherAdapter = RSpec::Expectations::LegacyMatcherAdapter
 
 class RSpec::Expectations::LegacyMatcherAdapter < ::RSpec::Matchers::MatcherDelegator
