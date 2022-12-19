@@ -285,8 +285,7 @@ module Cask
       def find_launchctl_with_wildcard(search)
         regex = Regexp.escape(search).gsub("\\*", ".*")
         system_command!("/bin/launchctl", args: ["list"])
-          # skip stdout column headers
-          .stdout.lines.drop(1)
+          .stdout.lines.drop(1) # skip stdout column headers
           .map do |line|
             pid, _state, id = line.chomp.split("\t")
             id if pid.to_i.nonzero? && id.match?(regex)
