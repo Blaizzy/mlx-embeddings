@@ -304,7 +304,8 @@ module Language
         def do_install(targets)
           targets = Array(targets)
           @formula.system @venv_root/"bin/pip", "install",
-                          "-v", "--no-deps", "--use-feature=no-binary-enable-wheel-cache",
+                          "-v", "--no-deps", "--no-binary", ":all:",
+                          "--use-feature=no-binary-enable-wheel-cache",
                           "--ignore-installed", *targets
         end
       end
