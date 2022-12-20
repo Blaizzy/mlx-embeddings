@@ -9,7 +9,9 @@ module Homebrew
   #
   # @api private
   module Search
-    def self.query_regexp(query)
+    module_function
+
+    def query_regexp(query)
       if (m = query.match(%r{^/(.*)/$}))
         Regexp.new(m[1])
       else
@@ -19,7 +21,7 @@ module Homebrew
       raise "#{query} is not a valid regex."
     end
 
-    def self.search_descriptions(string_or_regex, args, search_type: :desc)
+    def search_descriptions(string_or_regex, args, search_type: :desc)
       both = !args.formula? && !args.cask?
       eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
 
@@ -41,7 +43,7 @@ module Homebrew
       end
     end
 
-    def self.search_taps(query, silent: false)
+    def search_taps(query, silent: false)
       if query.match?(Regexp.union(HOMEBREW_TAP_FORMULA_REGEX, HOMEBREW_TAP_CASK_REGEX))
         _, _, query = query.split("/", 3)
       end
@@ -86,7 +88,7 @@ module Homebrew
       results
     end
 
-    def self.search_formulae(string_or_regex)
+    def search_formulae(string_or_regex)
       if string_or_regex.is_a?(String) && string_or_regex.match?(HOMEBREW_TAP_FORMULA_REGEX)
         return begin
           [Formulary.factory(string_or_regex).name]
@@ -122,7 +124,7 @@ module Homebrew
       end.compact
     end
 
-    def self.search_casks(string_or_regex)
+    def search_casks(string_or_regex)
       if string_or_regex.is_a?(String) && string_or_regex.match?(HOMEBREW_TAP_CASK_REGEX)
         return begin
           [Cask::CaskLoader.load(string_or_regex).token]
@@ -151,7 +153,7 @@ module Homebrew
       end.uniq
     end
 
-    def self.search_names(query, string_or_regex, args)
+    def search_names(query, string_or_regex, args)
       both = !args.formula? && !args.cask?
 
       remote_results = search_taps(query, silent: true)
