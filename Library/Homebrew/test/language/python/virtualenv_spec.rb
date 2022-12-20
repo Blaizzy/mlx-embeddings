@@ -24,7 +24,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
   describe "#pip_install" do
     it "accepts a string" do
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps",
+        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
               "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "foo")
         .and_return(true)
       virtualenv.pip_install "foo"
@@ -32,7 +32,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
     it "accepts a multi-line strings" do
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps",
+        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
               "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "foo", "bar")
         .and_return(true)
 
@@ -44,12 +44,12 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
     it "accepts an array" do
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps",
+        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
               "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "foo")
         .and_return(true)
 
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps",
+        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
               "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "bar")
         .and_return(true)
 
@@ -61,7 +61,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
       expect(res).to receive(:stage).and_yield
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps",
+        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
               "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", Pathname.pwd)
         .and_return(true)
 
