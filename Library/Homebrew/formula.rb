@@ -3278,6 +3278,7 @@ class Formula
     def livecheck(&block)
       return @livecheck unless block
 
+      include Homebrew::Livecheck::Constants
       @livecheckable = true
       @livecheck.instance_eval(&block)
     end

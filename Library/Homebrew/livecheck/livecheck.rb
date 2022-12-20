@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "livecheck/constants"
 require "livecheck/error"
 require "livecheck/livecheck_version"
 require "livecheck/skip_conditions"
@@ -295,6 +296,7 @@ module Homebrew
             else
               res_version_info = resource_version(
                 resource,
+                latest.to_s,
                 json:    json,
                 debug:   debug,
                 quiet:   quiet,
@@ -836,15 +838,17 @@ module Homebrew
     # version information. Returns nil if a latest version couldn't be found.
     sig {
       params(
-        resource: Resource,
-        json:     T::Boolean,
-        debug:    T::Boolean,
-        quiet:    T::Boolean,
-        verbose:  T::Boolean,
+        resource:       Resource,
+        formula_latest: String,
+        json:           T::Boolean,
+        debug:          T::Boolean,
+        quiet:          T::Boolean,
+        verbose:        T::Boolean,
       ).returns(Hash)
     }
     def resource_version(
       resource,
+      formula_latest,
       json: false,
       debug: false,
       quiet: false,
@@ -874,12 +878,11 @@ module Homebrew
       checked_urls = []
       # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
+        url = original_url.gsub(Constants::LATEST_VERSION, formula_latest)
+
         # Only preprocess the URL when it's appropriate
-        url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
-          original_url
-        else
-          preprocess_url(original_url)
-        end
+        url = preprocess_url(url) unless STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
+
         next if checked_urls.include?(url)
 
         strategies = Strategy.from_url(
