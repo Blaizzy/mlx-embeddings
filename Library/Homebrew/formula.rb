@@ -65,6 +65,7 @@ class Formula
   include Utils::Shell
   include Context
   include OnSystem::MacOSAndLinux
+  include Homebrew::Livecheck::Constants
   extend Forwardable
   extend Cachable
   extend Predicable
@@ -3278,7 +3279,6 @@ class Formula
     def livecheck(&block)
       return @livecheck unless block
 
-      include Homebrew::Livecheck::Constants
       @livecheckable = true
       @livecheck.instance_eval(&block)
     end
