@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # verify the files exist
 tmp_brew="$2"
@@ -8,9 +9,7 @@ if [[ ! -d "${tmp_brew:?}" ]]; then
 fi
 
 # pick the correct target
-if [[ "$3" != "/" ]]; then
-  target=$3
-elif [[ $(uname -m) == "x86_64" ]];then
+if [[ $(uname -m) == "x86_64" ]];then
   target="/usr/local"
 else
   target="/opt/Homebrew"

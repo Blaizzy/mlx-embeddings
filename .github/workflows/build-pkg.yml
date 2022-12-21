@@ -4,9 +4,6 @@ on:
     paths:
       - .github/workflows/build-pkg.yml
       - package/scripts
-  pull_request:
-    branches:
-      - master
   release:
     types:
       - published
