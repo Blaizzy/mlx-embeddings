@@ -12,8 +12,6 @@ module Homebrew
 
   module_function
 
-  extend Search
-
   PACKAGE_MANAGERS = {
     repology:  ->(query) { "https://repology.org/projects/?search=#{query}" },
     macports:  ->(query) { "https://ports.macports.org/search/?q=#{query}" },
@@ -76,17 +74,17 @@ module Homebrew
     return if search_package_manager(args)
 
     query = args.named.join(" ")
-    string_or_regex = query_regexp(query)
+    string_or_regex = Search.query_regexp(query)
 
     if args.desc?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
         odeprecated "brew search --desc", "brew search --desc --eval-all or HOMEBREW_EVAL_ALL"
       end
-      search_descriptions(string_or_regex, args)
+      Search.search_descriptions(string_or_regex, args)
     elsif args.pull_request?
       search_pull_requests(query, args)
     else
-      formulae, casks = search_names(query, string_or_regex, args)
+      formulae, casks = Search.search_names(query, string_or_regex, args)
       print_results(formulae, casks, query)
     end
 

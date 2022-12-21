@@ -8,15 +8,12 @@ require "missing_formula"
 require "formula_installer"
 require "development_tools"
 require "install"
-require "search"
 require "cleanup"
 require "cli/parser"
 require "upgrade"
 
 module Homebrew
   extend T::Sig
-
-  extend Search
 
   module_function
 
@@ -299,11 +296,12 @@ module Homebrew
     # so we might as well return early.
     return if name.include?("/")
 
+    require "search"
     ohai "Searching for similarly named formulae and casks..."
 
     # Don't treat formula/cask name as a regex
     query = string_or_regex = name
-    all_formulae, all_casks = search_names(query, string_or_regex, args)
+    all_formulae, all_casks = Search.search_names(query, string_or_regex, args)
 
     if all_formulae.any?
       ohai "Formulae", Formatter.columns(all_formulae)
