@@ -5,9 +5,12 @@ if [[ -e "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
   exit 0
 fi
 
-if /usr/bin/xcode-select --install; then
-  exit 0
+if [[ -z "$COMMAND_LINE_INSTALL" ]]; then
+  printf "No auto-install of CommandLine Tools in headless install!"
+  exit 1
 fi
 
-printf "Failed to install CommandLine Tools"
-exit 1
+if ! /usr/bin/xcode-select --install; then
+  printf "Failed to install CommandLine Tools!"
+  exit 1
+fi
