@@ -3030,10 +3030,6 @@ class Cask::CaskUnspecifiedError
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Cask::Cmd::AbstractCommand
-  include ::Homebrew::Search::Extension
-end
-
 class Cask::Config
   def appdir(); end
 
@@ -3325,10 +3321,6 @@ end
 class Dependencies
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Descriptions
-  extend ::Homebrew::Search::Extension
 end
 
 class DevelopmentTools
@@ -4625,10 +4617,6 @@ class Homebrew::Livecheck::Strategy::Sparkle::Item
   def self.members(); end
 end
 
-module Homebrew::Search
-  include ::Homebrew::Search::Extension
-end
-
 class Homebrew::Service
   def bin(*args, &block); end
 
@@ -4653,7 +4641,6 @@ module Homebrew
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
   extend ::FileUtils::StreamUtils_
-  extend ::Homebrew::Search::Extension
 end
 
 module HostEnvironmentSimulatorHelper
