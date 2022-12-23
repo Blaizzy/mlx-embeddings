@@ -103,7 +103,7 @@ module Homebrew
     arguments = dirs.sort + %w[-type f (]
     arguments.concat UNBREWED_EXCLUDE_FILES.flat_map { |f| %W[! -name #{f}] }
     arguments.concat UNBREWED_EXCLUDE_PATHS.flat_map { |d| %W[! -path #{d}] }
-    arguments.concat %w[)]
+    arguments.push ")"
 
     cd HOMEBREW_PREFIX
     safe_system "find", *arguments

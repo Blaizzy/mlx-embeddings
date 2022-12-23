@@ -81,6 +81,7 @@ class URL < Delegator
   class BlockDSL
     extend T::Sig
 
+    # To access URL associated with page contents.
     module PageWithURL
       extend T::Sig
 

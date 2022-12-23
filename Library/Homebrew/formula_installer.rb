@@ -721,21 +721,19 @@ class FormulaInstaller
 
     fi = FormulaInstaller.new(
       df,
-      **{
-        options:                    options,
-        link_keg:                   keg_had_linked_keg ? keg_was_linked : nil,
-        installed_as_dependency:    true,
-        installed_on_request:       df.any_version_installed? && tab.present? && tab.installed_on_request,
-        force_bottle:               false,
-        include_test_formulae:      @include_test_formulae,
-        build_from_source_formulae: @build_from_source_formulae,
-        keep_tmp:                   keep_tmp?,
-        debug_symbols:              debug_symbols?,
-        force:                      force?,
-        debug:                      debug?,
-        quiet:                      quiet?,
-        verbose:                    verbose?,
-      },
+      options:                    options,
+      link_keg:                   keg_had_linked_keg ? keg_was_linked : nil,
+      installed_as_dependency:    true,
+      installed_on_request:       df.any_version_installed? && tab.present? && tab.installed_on_request,
+      force_bottle:               false,
+      include_test_formulae:      @include_test_formulae,
+      build_from_source_formulae: @build_from_source_formulae,
+      keep_tmp:                   keep_tmp?,
+      debug_symbols:              debug_symbols?,
+      force:                      force?,
+      debug:                      debug?,
+      quiet:                      quiet?,
+      verbose:                    verbose?,
     )
     oh1 "Installing #{formula.full_name} dependency: #{Formatter.identifier(dep.name)}"
     fi.install
