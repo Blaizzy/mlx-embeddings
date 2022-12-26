@@ -1787,9 +1787,11 @@ class RuboCop::Cop::Rails::RootPathnameMethods < ::RuboCop::Cop::Base
 
   def build_path_glob_replacement(path, method); end
   def build_path_replacement(path, method, args); end
+  def enforce_double_quotes?; end
   def evidence(node); end
   def include_interpolation?(arguments); end
   def join_arguments(arguments); end
+  def string_literals_config; end
 end
 
 RuboCop::Cop::Rails::RootPathnameMethods::DIR_METHODS = T.let(T.unsafe(nil), Set)
@@ -2018,6 +2020,7 @@ class RuboCop::Cop::Rails::TimeZone < ::RuboCop::Cop::Base
   def method_send?(node); end
   def need_check_localtime?(chain); end
   def not_danger_chain?(chain); end
+  def offset_option_provided?(node); end
   def offset_provided?(node); end
   def remove_redundant_in_time_zone(corrector, node); end
   def safe_method(method_name, node); end
@@ -2127,6 +2130,7 @@ class RuboCop::Cop::Rails::UniqueValidationWithoutIndex < ::RuboCop::Cop::Base
   def class_node(node); end
   def column_names(node); end
   def column_names_from_scope(node); end
+  def condition_hash_part?(pairs, keys:); end
   def condition_part?(node); end
   def find_schema_information(node); end
   def find_scope(pairs); end
