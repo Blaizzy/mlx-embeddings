@@ -17,6 +17,7 @@ homebrew-items() {
 
   # HOMEBREW_REPOSITORY is set by brew.sh
   # shellcheck disable=SC2154
+  [[ -d "${HOMEBREW_REPOSITORY}/Library/Taps" ]] || return
   items="$(
     find "${HOMEBREW_REPOSITORY}/Library/Taps" \
       -type d \( \
