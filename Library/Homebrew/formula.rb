@@ -1782,8 +1782,11 @@ class Formula
       popen_read_args << shell_parameter if shell_parameter.present?
       popen_read_args.flatten!
 
+      popen_read_options = {}
+      popen_read_options[:err] = :err unless ENV["HOMEBREW_STDERR"]
+
       script_path.dirname.mkpath
-      script_path.write Utils.safe_popen_read(popen_read_env, *popen_read_args)
+      script_path.write Utils.safe_popen_read(popen_read_env, *popen_read_args, **popen_read_options)
     end
   end
 
