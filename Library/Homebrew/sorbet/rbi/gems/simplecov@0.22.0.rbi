@@ -153,9 +153,12 @@ module SimpleCov::Configuration
   def coverage_criterion(criterion = T.unsafe(nil)); end
   def coverage_criterion_enabled?(criterion); end
   def coverage_dir(dir = T.unsafe(nil)); end
+  def coverage_for_eval_enabled?; end
+  def coverage_for_eval_supported?; end
   def coverage_path; end
   def coverage_start_arguments_supported?; end
   def enable_coverage(criterion); end
+  def enable_coverage_for_eval; end
   def enable_for_subprocesses(value = T.unsafe(nil)); end
   def enabled_for_subprocesses?; end
   def filters; end
@@ -333,11 +336,7 @@ class SimpleCov::Filter
   end
 end
 
-module SimpleCov::Formatter
-  class << self
-    def from_env(env); end
-  end
-end
+module SimpleCov::Formatter; end
 
 class SimpleCov::Formatter::MultiFormatter
   class << self
