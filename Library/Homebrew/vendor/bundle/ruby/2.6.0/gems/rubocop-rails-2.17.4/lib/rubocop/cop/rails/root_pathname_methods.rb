@@ -186,11 +186,7 @@ module RuboCop
         def build_path_glob_replacement(path, method)
           receiver = range_between(path.loc.expression.begin_pos, path.children.first.loc.selector.end_pos).source
 
-          argument = if path.arguments.one?
-                       path.first_argument.source
-                     else
-                       join_arguments(path.arguments)
-                     end
+          argument = path.arguments.one? ? path.first_argument.source : join_arguments(path.arguments)
 
           "#{receiver}.#{method}(#{argument})"
         end
@@ -214,10 +210,27 @@ module RuboCop
         end
 
         def join_arguments(arguments)
-          quote = include_interpolation?(arguments) ? '"' : "'"
-          joined_arguments = arguments.map(&:value).join('/')
+          use_interpolation = false
+
+          joined_arguments = arguments.map do |arg|
+            if arg.respond_to?(:value)
+              arg.value
+            else
+              use_interpolation = true
+              "\#{#{arg.source}}"
+            end
+          end.join('/')
+          quote = enforce_double_quotes? || include_interpolation?(arguments) || use_interpolation ? '"' : "'"
 
           "#{quote}#{joined_arguments}#{quote}"
+        end
+
+        def enforce_double_quotes?
+          string_literals_config['EnforcedStyle'] == 'double_quotes'
+        end
+
+        def string_literals_config
+          config.for_cop('Style/StringLiterals')
         end
       end
     end
