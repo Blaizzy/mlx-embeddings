@@ -6774,6 +6774,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
+  SET_MATCH___MATCH = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
   SET_PRESENT_ANY_BLANK_EMPTY = ::T.let(nil, ::T.untyped)

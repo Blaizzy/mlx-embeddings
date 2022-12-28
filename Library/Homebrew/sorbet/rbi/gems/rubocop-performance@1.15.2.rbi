@@ -807,6 +807,7 @@ RuboCop::Cop::Performance::StringReplacement::TR = T.let(T.unsafe(nil), String)
 class RuboCop::Cop::Performance::Sum < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRubyVersion
 
   def acc_plus_elem?(param0 = T.unsafe(nil), param1, param2); end
   def elem_plus_acc?(param0 = T.unsafe(nil), param1, param2); end
