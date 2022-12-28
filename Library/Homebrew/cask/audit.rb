@@ -567,6 +567,7 @@ module Cask
       return if item.blank?
 
       min_os = item.elements["sparkle:minimumSystemVersion"]&.text
+      min_os = "11" if min_os == "10.16"
       return if min_os.blank?
 
       begin
@@ -581,7 +582,8 @@ module Cask
 
       return if cask_min_os == min_os_string
 
-      add_error "Upstream defined #{min_os_string} as minimal OS version and the cask defined #{cask_min_os}"
+      add_error "Upstream defined #{min_os_string.to_sym.inspect} as minimal OS version " \
+                "and the cask defined #{cask_min_os.to_sym.inspect}"
     end
 
     sig { void }
