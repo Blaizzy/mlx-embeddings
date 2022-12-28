@@ -263,6 +263,7 @@ module Homebrew
         HOMEBREW_REPOSITORY/"completions/bash/brew",
         HOMEBREW_REPOSITORY/"Dockerfile",
         *HOMEBREW_REPOSITORY.glob(".devcontainer/**/*.sh"),
+        *HOMEBREW_REPOSITORY.glob("package/scripts/*"),
         *HOMEBREW_LIBRARY.glob("Homebrew/**/*.sh").reject { |path| path.to_s.include?("/vendor/") },
         *HOMEBREW_LIBRARY.glob("Homebrew/shims/**/*").map(&:realpath).uniq
                          .reject(&:directory?)

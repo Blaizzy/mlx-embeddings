@@ -179,6 +179,9 @@
 !/docs
 !/manpages
 
+# Unignore our packaging files
+!/package
+
 # Ignore generated documentation site
 /docs/_site
 /docs/bin
