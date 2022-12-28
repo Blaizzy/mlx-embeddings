@@ -41,6 +41,7 @@ module RuboCop
           end
 
           audit_arch_conditionals(cask_body)
+          audit_macos_version_conditionals(cask_body)
           simplify_sha256_stanzas
         end
 
