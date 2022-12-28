@@ -61,13 +61,39 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using launchctl with regex" do
+  context "using :launchctl with regex wildcard" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-launchctl-wildcard")) }
-    let(:launchctl_list_cmd) { %w[/bin/launchctl list] }
+    let(:launchctl_regex) { "my.fancy.package.service.*" }
+    let(:unknown_response) { "launchctl list returned unknown response\n" }
+    let(:service_info) do
+      <<~EOS
+        {
+                "LimitLoadToSessionType" = "Aqua";
+                "Label" = "my.fancy.package.service.12345";
+                "TimeOut" = 30;
+                "OnDemand" = true;
+                "LastExitStatus" = 0;
+                "ProgramArguments" = (
+                        "argument";
+                );
+        };
+      EOS
+    end
 
-    it "searches running launchctl items" do
-      expect(fake_system_command).to receive(:run)
-        .with("/bin/launchctl", args: ["list"], print_stderr: false, sudo: false)
+    it "searches installed launchctl items" do
+      expect(subject).to receive(:find_launchctl_with_wildcard)
+        .with(launchctl_regex)
+        .and_return(["my.fancy.package.service.12345"])
+
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list", "my.fancy.package.service.12345"], print_stderr: false, sudo: false)
+        .and_return(instance_double(SystemCommand::Result, stdout: unknown_response))
+      allow(fake_system_command).to receive(:run)
+        .with("/bin/launchctl", args: ["list", "my.fancy.package.service.12345"], print_stderr: false, sudo: true)
+        .and_return(instance_double(SystemCommand::Result, stdout: service_info))
+
+      expect(fake_system_command).to receive(:run!)
+        .with("/bin/launchctl", args: ["remove", "my.fancy.package.service.12345"], sudo: true)
         .and_return(instance_double(SystemCommand::Result))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
