@@ -106,4 +106,14 @@ describe Homebrew::Livecheck::Strategy::ExtractPlist do
         .to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
     end
   end
+
+  describe "::find_versions" do
+    it "returns a for an installer artifact" do
+      cask = Cask::CaskLoader.load(cask_path("livecheck/installer-manual-livecheck"))
+      installer_artifact = cask.artifacts.first
+
+      expect(installer_artifact).to be_a(Cask::Artifact::Installer)
+      expect(installer_artifact.path).to be_a(Pathname)
+    end
+  end
 end
