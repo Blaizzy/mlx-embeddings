@@ -140,10 +140,11 @@ module Homebrew
       no_named_args = true
       [Formula.all, Cask::Cask.all]
     else
-      if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
-        odeprecated "brew audit [path ...]",
-                    "brew audit [name ...]"
-      end
+      # TODO: Add deprecation
+      # if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
+      #   odeprecated "brew audit [path ...]",
+      #               "brew audit [name ...]"
+      # end
 
       args.named.to_formulae_and_casks
           .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
