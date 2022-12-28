@@ -582,8 +582,9 @@ module Cask
 
       return if cask_min_os == min_os_string
 
+      min_os_symbol = cask_min_os&.to_sym.inspect || "no minimal OS version"
       add_error "Upstream defined #{min_os_string.to_sym.inspect} as minimal OS version " \
-                "and the cask defined #{cask_min_os ? cask_min_.to_sym.inspect : "no minimal OS version"}."
+                "and the cask defined #{min_os_symbol}."
     end
 
     sig { void }
