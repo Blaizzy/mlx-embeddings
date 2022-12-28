@@ -108,10 +108,12 @@ describe Homebrew::Livecheck::Strategy::ExtractPlist do
   end
 
   describe "::find_versions" do
-    it "can be used with an installer artifact" do
+    it "returns a for an installer artifact" do
       cask = Cask::CaskLoader.load(cask_path("livecheck/installer-manual-livecheck"))
+      installer_artifact = cask.artifacts.first
 
-      expect(extract_plist.find_versions(cask: cask)[:matches].values).to eq(["1.2.3"])
+      expect(installer_artifact).to be_a(Cask::Artifact::Installer)
+      expect(installer_artifact.path).to be_a(Pathname)
     end
   end
 end
