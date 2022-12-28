@@ -91,6 +91,8 @@ module RuboCop
 
         [:arch, :arm?, :intel?].each do |method|
           hardware_cpu_search(body_node, method: method) do |method_node|
+            # These should already be caught by `if_arch_node_search`
+            next if method_node.parent.source.start_with? "if #{method_node.source}"
             next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
 
             offending_node(method_node)
@@ -137,6 +139,8 @@ module RuboCop
           end
 
           macos_version_comparison_search(body_node, os_version: macos_version_option) do |method_node|
+            # These should already be caught by `if_macos_version_node_search`
+            next if method_node.parent.source.start_with? "if #{method_node.source}"
             next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
 
             offending_node(method_node)

@@ -338,4 +338,105 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       include_examples "reports offenses"
     end
   end
+
+  context "when auditing loose `MacOS.version` method calls" do
+    context "when there is a `MacOS.version ==` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            if MacOS.version == :catalina
+              version "1.0.0"
+            else
+              version "2.0.0"
+            end
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `if MacOS.version == :catalina`, use `on_catalina do` instead.",
+          severity: :convention,
+          line:     2,
+          column:   2,
+          source:   "if MacOS.version == :catalina\n    version \"1.0.0\"\n  else\n    version \"2.0.0\"\n  end",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+
+    context "when there is a `MacOS.version <=` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            if MacOS.version <= :catalina
+              version "1.0.0"
+            else
+              version "2.0.0"
+            end
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `if MacOS.version <= :catalina`, use `on_catalina :or_older do` instead.",
+          severity: :convention,
+          line:     2,
+          column:   2,
+          source:   "if MacOS.version <= :catalina\n    version \"1.0.0\"\n  else\n    version \"2.0.0\"\n  end",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+
+    context "when there is a `MacOS.version >=` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            if MacOS.version >= :catalina
+              version "1.0.0"
+            else
+              version "2.0.0"
+            end
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `if MacOS.version >= :catalina`, use `on_catalina :or_newer do` instead.",
+          severity: :convention,
+          line:     2,
+          column:   2,
+          source:   "if MacOS.version >= :catalina\n    version \"1.0.0\"\n  else\n    version \"2.0.0\"\n  end",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+
+    context "when there is a `MacOS.version` reference" do
+      let(:source) do
+        <<-CASK.undent
+          cask 'foo' do
+            version "1.2.3"
+            sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
+
+            url "https://example.com/foo-\#{version}-\#{MacOS.version == :monterey}.zip"
+          end
+        CASK
+      end
+      let(:expected_offenses) do
+        [{
+          message:  "Don't use `MacOS.version == :monterey`, use `on_{macos_version}` blocks instead.",
+          severity: :convention,
+          line:     5,
+          column:   44,
+          source:   "MacOS.version == :monterey",
+        }]
+      end
+
+      include_examples "reports offenses"
+    end
+  end
 end
