@@ -6767,19 +6767,15 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
-  SET_ANY_EMPTY = ::T.let(nil, ::T.untyped)
   SET_ARM_INTEL = ::T.let(nil, ::T.untyped)
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
-  SET_MATCH___MATCH = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
-  SET_PRESENT_ANY_BLANK_EMPTY = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
-  SET_TO_TO_NOT_NOT_TO = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)
 end
@@ -6981,11 +6977,15 @@ class RuboCop::Cop::Homebrew::MoveToExtendOS
 end
 
 module RuboCop::Cop::OnSystemConditionalsHelper
+  def hardware_cpu_search(param0, method:); end
+
   def if_arch_node_search(param0, arch:); end
 
   def if_base_os_node_search(param0, base_os:); end
 
   def if_macos_version_node_search(param0, os_version:); end
+
+  def macos_version_comparison_search(param0, os_version:); end
 
   def on_macos_version_method_call(param0=T.unsafe(nil), on_method:); end
 
