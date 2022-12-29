@@ -244,7 +244,7 @@ module Cask
         "caveats"        => (to_h_string_gsubs(caveats) unless caveats.empty?),
         "depends_on"     => depends_on,
         "conflicts_with" => conflicts_with,
-        "container"      => container,
+        "container"      => container&.pairs,
         "auto_updates"   => auto_updates,
       }
     end
