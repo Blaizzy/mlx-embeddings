@@ -297,6 +297,10 @@ class RuboCop::AST::ConstNode < ::RuboCop::AST::Node
   def short_name; end
 end
 
+class RuboCop::AST::CsendNode < ::RuboCop::AST::SendNode
+  def send_type?; end
+end
+
 class RuboCop::AST::DefNode < ::RuboCop::AST::Node
   include ::RuboCop::AST::ParameterizedNode
   include ::RuboCop::AST::MethodIdentifierPredicates
@@ -821,6 +825,8 @@ RuboCop::AST::Node::BASIC_LITERALS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Node::COMPARISON_OPERATORS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Node::COMPOSITE_LITERALS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Node::CONDITIONALS = T.let(T.unsafe(nil), Set)
+RuboCop::AST::Node::EMPTY_CHILDREN = T.let(T.unsafe(nil), Array)
+RuboCop::AST::Node::EMPTY_PROPERTIES = T.let(T.unsafe(nil), Hash)
 RuboCop::AST::Node::EQUALS_ASSIGNMENTS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Node::FALSEY_LITERALS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::Node::IMMUTABLE_LITERALS = T.let(T.unsafe(nil), Set)
@@ -1388,6 +1394,7 @@ RuboCop::AST::NodePattern::Sets::SET_AFTER_ACTION_APPEND_AFTER_ACTION_APPEND_ARO
 RuboCop::AST::NodePattern::Sets::SET_ALL_CONTEXT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_AND_RETURN_AND_RAISE_AND_THROW_ETC = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_ANY_ALL_NORETURN_ETC = T.let(T.unsafe(nil), Set)
+RuboCop::AST::NodePattern::Sets::SET_ANY_EMPTY = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_AP_P_PP_ETC = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_ATTR_READER_ATTR_WRITER_ATTR_ACCESSOR_ATTR = T.let(T.unsafe(nil), Set)
@@ -1419,7 +1426,6 @@ RuboCop::AST::NodePattern::Sets::SET_DOWNCASE_UPCASE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_EACH_EXAMPLE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_EACH_WITH_INDEX_WITH_INDEX = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_EACH_WITH_OBJECT_WITH_OBJECT = T.let(T.unsafe(nil), Set)
-RuboCop::AST::NodePattern::Sets::SET_ENUMERATOR_RATIONAL_COMPLEX_THREAD = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_EQL_EQ_BE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_ESCAPE_ENCODE_UNESCAPE_DECODE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_EXACTLY_AT_LEAST_AT_MOST = T.let(T.unsafe(nil), Set)
@@ -1452,6 +1458,7 @@ RuboCop::AST::NodePattern::Sets::SET_LOAD_RESTORE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_MAP_COLLECT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_MATCH_MATCH = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_MATCH__MATCH = T.let(T.unsafe(nil), Set)
+RuboCop::AST::NodePattern::Sets::SET_MATCH___MATCH = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_MESSAGES_DETAILS = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_NEW_ = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_NEW_COMPILE = T.let(T.unsafe(nil), Set)
@@ -1461,6 +1468,7 @@ RuboCop::AST::NodePattern::Sets::SET_NOTICE_ALERT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_ONLY_EXCEPT = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_PENDING_SKIP = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_PIPELINE_PIPELINE_R_PIPELINE_RW_ETC = T.let(T.unsafe(nil), Set)
+RuboCop::AST::NodePattern::Sets::SET_PRESENT_ANY_BLANK_EMPTY = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_PRIVATE_PROTECTED_PUBLIC = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_PROC_LAMBDA = T.let(T.unsafe(nil), Set)
@@ -1501,6 +1509,7 @@ RuboCop::AST::NodePattern::Sets::SET_TIME_DATETIME = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TO_ENUM_ENUM_FOR = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TO_H_TO_HASH = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TO_I_TO_F_TO_C_TO_R = T.let(T.unsafe(nil), Set)
+RuboCop::AST::NodePattern::Sets::SET_TO_TO_NOT_NOT_TO = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TRANSLATE_LOCALIZE = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TRANSLATE_T = T.let(T.unsafe(nil), Set)
 RuboCop::AST::NodePattern::Sets::SET_TRUE_FALSE = T.let(T.unsafe(nil), Set)
@@ -1590,6 +1599,8 @@ module RuboCop::AST::ParameterizedNode::RestArguments
   def first_argument; end
   def last_argument; end
 end
+
+RuboCop::AST::ParameterizedNode::RestArguments::EMPTY_ARGUMENTS = T.let(T.unsafe(nil), Array)
 
 module RuboCop::AST::ParameterizedNode::WrappedArguments
   include ::RuboCop::AST::ParameterizedNode
@@ -1741,6 +1752,7 @@ class RuboCop::AST::SendNode < ::RuboCop::AST::Node
   include ::RuboCop::AST::MethodDispatchNode
 
   def attribute_accessor?(param0 = T.unsafe(nil)); end
+  def send_type?; end
 
   private
 
@@ -1807,6 +1819,8 @@ class RuboCop::AST::Token
     def from_parser_token(parser_token); end
   end
 end
+
+RuboCop::AST::Token::LEFT_PAREN_TYPES = T.let(T.unsafe(nil), Array)
 
 module RuboCop::AST::Traversal
   extend ::RuboCop::AST::Traversal::CallbackCompiler
