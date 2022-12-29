@@ -186,6 +186,91 @@ module Cask
       end
     end
 
+    # Loads a cask from the JSON API.
+    class FromAPILoader
+      attr_reader :token, :path
+
+      FLIGHT_STANZAS = [:preflight, :postflight, :uninstall_preflight, :uninstall_postflight].freeze
+
+      def self.can_load?(ref)
+        Homebrew::API::Cask.all_casks.key? ref
+      end
+
+      def initialize(token)
+        @token = token
+        @path = CaskLoader.default_path(token)
+      end
+
+      def load(config:)
+        json_cask = Homebrew::API::Cask.all_casks[token]
+        cask_source = Homebrew::API::CaskSource.fetch(token)
+
+        if (bottle_tag = ::Utils::Bottles.tag.to_s.presence) &&
+           (variations = json_cask["variations"].presence) &&
+           (variation = variations[bottle_tag].presence)
+          json_cask = json_cask.merge(variation)
+        end
+
+        json_cask.deep_symbolize_keys!
+
+        Cask.new(token, source: cask_source, config: config) do
+          version json_cask[:version]
+
+          if json_cask[:sha256] == "no_check"
+            sha256 :no_check
+          else
+            sha256 json_cask[:sha256]
+          end
+
+          url json_cask[:url]
+          appcast json_cask[:appcast] if json_cask[:appcast].present?
+          json_cask[:name].each do |cask_name|
+            name cask_name
+          end
+          desc json_cask[:desc]
+          homepage json_cask[:homepage]
+
+          auto_updates json_cask[:auto_updates] if json_cask[:auto_updates].present?
+          conflicts_with(**json_cask[:conflicts_with]) if json_cask[:conflicts_with].present?
+
+          if json_cask[:depends_on].present?
+            dep_hash = json_cask[:depends_on].to_h do |dep_key, dep_value|
+              next [dep_key, dep_value] unless dep_key == :macos
+
+              dep_type = dep_value.keys.first
+              if dep_type == :==
+                version_symbols = dep_value[dep_type].map do |version|
+                  MacOSVersions::SYMBOLS.key(version) || version
+                end
+                next [dep_key, version_symbols]
+              end
+
+              version_symbol = dep_value[dep_type].first
+              version_symbol = MacOSVersions::SYMBOLS.key(version_symbol) || version_symbol
+              [dep_key, "#{dep_type} :#{version_symbol}"]
+            end.compact
+            depends_on(**dep_hash)
+          end
+
+          if json_cask[:container].present?
+            container_hash = json_cask[:container].to_h do |container_key, container_value|
+              next [container_key, container_value] unless container_key == :type
+
+              [container_key, container_value.to_sym]
+            end
+            container(**container_hash)
+          end
+
+          json_cask[:artifacts].each do |artifact|
+            key = artifact.keys.first
+            send(key, *artifact[key])
+          end
+
+          caveats json_cask[:caveats] if json_cask[:caveats].present?
+        end
+      end
+    end
+
     # Pseudo-loader which raises an error when trying to load the corresponding cask.
     class NullLoader < FromPathLoader
       extend T::Sig
@@ -225,15 +310,15 @@ module Cask
         next unless loader_class.can_load?(ref)
 
         if loader_class == FromTapLoader && Homebrew::EnvConfig.install_from_api? &&
-           ref.start_with?("homebrew/cask/") && Homebrew::API::CaskSource.available?(ref)
-          return FromContentLoader.new(Homebrew::API::CaskSource.fetch(ref))
+           ref.start_with?("homebrew/cask/") && FromAPILoader.can_load?(ref)
+          return FromAPILoader.new(ref)
         end
 
         return loader_class.new(ref)
       end
 
       if Homebrew::EnvConfig.install_from_api? && !need_path && Homebrew::API::CaskSource.available?(ref)
-        return FromContentLoader.new(Homebrew::API::CaskSource.fetch(ref))
+        return FromAPILoader.new(ref)
       end
 
       return FromTapPathLoader.new(default_path(ref)) if FromTapPathLoader.can_load?(default_path(ref))

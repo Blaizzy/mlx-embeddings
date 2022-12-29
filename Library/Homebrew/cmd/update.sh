@@ -754,28 +754,32 @@ EOS
   if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
   then
     mkdir -p "${HOMEBREW_CACHE}/api"
-    if [[ -f "${HOMEBREW_CACHE}/api/formula.json" ]]
-    then
-      INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/formula.json)"
-    fi
-    curl \
-      "${CURL_DISABLE_CURLRC_ARGS[@]}" \
-      --fail --compressed --silent --max-time 5 \
-      --location --remote-time --output "${HOMEBREW_CACHE}/api/formula.json" \
-      --time-cond "${HOMEBREW_CACHE}/api/formula.json" \
-      --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
-      "https://formulae.brew.sh/api/formula.json"
-    curl_exit_code=$?
-    if [[ ${curl_exit_code} -eq 0 ]]
-    then
-      CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/formula.json)"
-      if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
+
+    for formula_or_cask in formula cask
+    do
+      if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" ]]
       then
-        HOMEBREW_UPDATED="1"
+        INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
       fi
-    else
-      echo "Failed to download formula.json!" >>"${update_failed_file}"
-    fi
+      curl \
+        "${CURL_DISABLE_CURLRC_ARGS[@]}" \
+        --fail --compressed --silent --max-time 5 \
+        --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+        --time-cond "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+        --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
+        "https://formulae.brew.sh/api/${formula_or_cask}.json"
+      curl_exit_code=$?
+      if [[ ${curl_exit_code} -eq 0 ]]
+      then
+        CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
+        if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
+        then
+          HOMEBREW_UPDATED="1"
+        fi
+      else
+        echo "Failed to download ${formula_or_cask}.json!" >>"${update_failed_file}"
+      fi
+    done
   fi
 
   safe_cd "${HOMEBREW_REPOSITORY}"
