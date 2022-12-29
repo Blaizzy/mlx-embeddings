@@ -216,10 +216,10 @@ module Homebrew
     if args.no_audit?
       ohai "Skipping `brew audit`"
     elsif args.online?
-      system HOMEBREW_BREW_FILE, "audit", "--cask", "--online", cask.sourcefile_path
+      system HOMEBREW_BREW_FILE, "audit", "--cask", "--online", cask.full_name
       failed_audit = !$CHILD_STATUS.success?
     else
-      system HOMEBREW_BREW_FILE, "audit", "--cask", cask.sourcefile_path
+      system HOMEBREW_BREW_FILE, "audit", "--cask", cask.full_name
       failed_audit = !$CHILD_STATUS.success?
     end
     return unless failed_audit
