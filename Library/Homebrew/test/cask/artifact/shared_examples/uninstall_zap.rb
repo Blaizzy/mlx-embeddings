@@ -79,6 +79,15 @@ shared_examples "#uninstall_phase or #zap_phase" do
         };
       EOS
     end
+    let(:launchctl_list) do
+      <<~EOS
+        PID     Status  Label
+        1111    0       my.fancy.package.service.12345
+        -       0       com.apple.SafariHistoryServiceAgent
+        -       0       com.apple.progressd
+        555     0       my.fancy.package.service.test
+      EOS
+    end
 
     it "searches installed launchctl items" do
       expect(subject).to receive(:find_launchctl_with_wildcard)
@@ -97,6 +106,16 @@ shared_examples "#uninstall_phase or #zap_phase" do
         .and_return(instance_double(SystemCommand::Result))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
+    end
+
+    it "returns the matching launchctl services" do
+      expect(subject).to receive(:system_command!)
+        .with("/bin/launchctl", args: ["list"])
+        .and_return(instance_double(SystemCommand::Result, stdout: launchctl_list))
+
+      expect(subject.send(:find_launchctl_with_wildcard,
+                          "my.fancy.package.service.*")).to eq(["my.fancy.package.service.12345",
+                                                                "my.fancy.package.service.test"])
     end
   end
 
