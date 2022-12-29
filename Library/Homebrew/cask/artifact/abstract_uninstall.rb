@@ -145,6 +145,16 @@ module Cask
           end
       end
 
+      def find_launchctl_with_wildcard(search)
+        regex = Regexp.escape(search).gsub("\\*", ".*")
+        system_command!("/bin/launchctl", args: ["list"])
+          .stdout.lines.drop(1) # skip stdout column headers
+          .map do |line|
+            pid, _state, id = line.chomp.split(/\s+/)
+            id if pid.to_i.nonzero? && id.match?(regex)
+          end.compact
+      end
+
       sig { returns(String) }
       def automation_access_instructions
         <<~EOS
@@ -280,16 +290,6 @@ module Cask
 
           sleep 1
         end
-      end
-
-      def find_launchctl_with_wildcard(search)
-        regex = Regexp.escape(search).gsub("\\*", ".*")
-        system_command!("/bin/launchctl", args: ["list"])
-          .stdout.lines.drop(1) # skip stdout column headers
-          .map do |line|
-            pid, _state, id = line.chomp.split("\t")
-            id if pid.to_i.nonzero? && id.match?(regex)
-          end.compact
       end
 
       # :kext should be unloaded before attempting to delete the relevant file
