@@ -17,6 +17,9 @@ cask "alfred" do
 end
 ```
 
+* Table of Contents
+{:toc}
+
 ## The Cask Language Is Declarative
 
 Each cask contains a series of stanzas (or “fields”) which *declare* how the software is to be obtained and installed. In a declarative language, the author does not need to worry about **order**. As long as all the needed fields are present, Homebrew Cask will figure out what needs to be done at install time.

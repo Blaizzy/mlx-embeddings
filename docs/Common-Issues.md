@@ -2,6 +2,9 @@
 
 This is a list of commonly encountered problems, known issues, and their solutions.
 
+* Table of Contents
+{:toc}
+
 ## Running `brew`
 
 ### `brew` complains about absence of "Command Line Tools"
@@ -120,8 +123,8 @@ This is an issue in the connection between your machine and GitHub, rather than 
 
 Upgrading macOS can cause errors like the following:
 
-- `dyld: Library not loaded: /usr/local/opt/icu4c/lib/libicui18n.54.dylib`
-- `configure: error: Cannot find libz`
+* `dyld: Library not loaded: /usr/local/opt/icu4c/lib/libicui18n.54.dylib`
+* `configure: error: Cannot find libz`
 
 Following a macOS upgrade it may be necessary to reinstall the Xcode Command Line Tools and then `brew upgrade` all installed formulae:
 

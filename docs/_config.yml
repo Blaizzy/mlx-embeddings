@@ -31,6 +31,9 @@ defaults:
     values:
       category: governance-archives
 
+kramdown:
+  toc_levels: 2..3
+
 logo: /assets/img/homebrew-256x256.png
 
 twitter:
