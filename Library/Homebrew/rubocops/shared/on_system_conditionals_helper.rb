@@ -88,6 +88,17 @@ module RuboCop
                                  else_method: else_method, else_node: else_node)
           end
         end
+
+        [:arch, :arm?, :intel?].each do |method|
+          hardware_cpu_search(body_node, method: method) do |method_node|
+            # These should already be caught by `if_arch_node_search`
+            next if method_node.parent.source.start_with? "if #{method_node.source}"
+            next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+
+            offending_node(method_node)
+            problem "Don't use `#{method_node.source}`, use `on_arm` and `on_intel` blocks instead."
+          end
+        end
       end
 
       def audit_base_os_conditionals(body_node, allowed_methods: [], allowed_blocks: [])
@@ -125,6 +136,15 @@ module RuboCop
 
             if_statement_problem(if_node, "if MacOS.version #{operator} :#{macos_version_option}",
                                  on_system_method_string, autocorrect: autocorrect)
+          end
+
+          macos_version_comparison_search(body_node, os_version: macos_version_option) do |method_node|
+            # These should already be caught by `if_macos_version_node_search`
+            next if method_node.parent.source.start_with? "if #{method_node.source}"
+            next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+
+            offending_node(method_node)
+            problem "Don't use `#{method_node.source}`, use `on_{macos_version}` blocks instead."
           end
         end
       end
@@ -178,6 +198,14 @@ module RuboCop
 
       def_node_matcher :on_system_method_call, <<~PATTERN
         (send nil? :on_system (sym :linux) (hash (pair (sym :macos) (sym $_))))
+      PATTERN
+
+      def_node_search :hardware_cpu_search, <<~PATTERN
+        (send (const (const nil? :Hardware) :CPU) %method)
+      PATTERN
+
+      def_node_search :macos_version_comparison_search, <<~PATTERN
+        (send (send (const nil? :MacOS) :version) {:== :<= :< :>= :> :!=} (sym %os_version))
       PATTERN
 
       def_node_search :if_arch_node_search, <<~PATTERN
