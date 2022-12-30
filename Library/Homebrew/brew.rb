@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 if ENV["HOMEBREW_STACKPROF"]
+  require "rubygems"
   require "stackprof"
   StackProf.start(mode: :wall, raw: true)
 end
