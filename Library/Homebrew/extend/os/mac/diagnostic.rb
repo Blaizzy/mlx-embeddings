@@ -364,19 +364,6 @@ module Homebrew
         end
       end
 
-      def check_for_bitdefender
-        if !Pathname("/Library/Bitdefender/AVP/EndpointSecurityforMac.app").exist? &&
-           !Pathname("/Library/Bitdefender/AVP/BDLDaemon").exist?
-          return
-        end
-
-        <<~EOS
-          You have installed Bitdefender. The "Traffic Scan" option interferes with
-          Homebrew's ability to download packages. See:
-            #{Formatter.url("https://github.com/Homebrew/brew/issues/5558")}
-        EOS
-      end
-
       def check_for_multiple_volumes
         return unless HOMEBREW_CELLAR.exist?
 
