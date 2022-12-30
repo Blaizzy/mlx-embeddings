@@ -12,7 +12,7 @@ module Homebrew
 
         sig { params(name: String).returns(Hash) }
         def fetch(name)
-          Homebrew::API.fetch "#{formula_api_path}/#{name}.json"
+          Homebrew::API.fetch "formula/#{name}.json"
         end
 
         sig { returns(Hash) }

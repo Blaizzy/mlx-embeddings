@@ -557,11 +557,10 @@ module Homebrew
           "date"     => Pathname(filename.to_s).mtime.strftime("%F"),
           "tags"     => {
             bottle_tag.to_s => {
-              "filename"              => filename.url_encode,
-              "local_filename"        => filename.to_s,
-              "sha256"                => sha256,
-              "formulae_brew_sh_path" => Homebrew::API::Formula.formula_api_path,
-              "tab"                   => tab.to_bottle_hash,
+              "filename"       => filename.url_encode,
+              "local_filename" => filename.to_s,
+              "sha256"         => sha256,
+              "tab"            => tab.to_bottle_hash,
             },
           },
         },
