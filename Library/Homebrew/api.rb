@@ -21,6 +21,7 @@ module Homebrew
 
     API_DOMAIN = "https://formulae.brew.sh/api"
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
+    MAX_RETRIES = 3
 
     sig { params(endpoint: String, json: T::Boolean).returns(T.any(String, Hash)) }
     def fetch(endpoint, json: true)
@@ -37,6 +38,25 @@ module Homebrew
       end
     rescue JSON::ParserError
       raise ArgumentError, "Invalid JSON file: #{Tty.underline}#{api_url}#{Tty.reset}"
+    end
+
+    def fetch_json_api_file(endpoint, target:)
+      retry_count = 0
+
+      url = "#{API_DOMAIN}/#{endpoint}"
+      begin
+        curl_args = %W[--compressed --silent #{url}]
+        curl_args.prepend("--time-cond", target) if target.exist? && !target.empty?
+        Utils::Curl.curl_download(*curl_args, to: target, max_time: 5)
+
+        JSON.parse(target.read)
+      rescue JSON::ParserError
+        target.unlink
+        retry_count += 1
+        odie "Cannot download non-corrupt #{url}!" if retry_count > MAX_RETRIES
+
+        retry
+      end
     end
   end
 end
