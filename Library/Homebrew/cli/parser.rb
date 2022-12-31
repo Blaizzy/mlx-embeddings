@@ -332,8 +332,8 @@ module Homebrew
         set_default_options
 
         unless ignore_invalid_options
-          check_constraint_violations
           validate_options
+          check_constraint_violations
           check_named_args(named_args)
         end
 

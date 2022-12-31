@@ -15,7 +15,9 @@ module Homebrew
         return unless @args.respond_to?(:cask?)
         return unless @args.cask?
 
-        raise UsageError, "Casks are not supported on Linux"
+        # NOTE: We don't raise a UsageError here because
+        # we don't want to print the help page.
+        raise "Invalid usage: Casks are not supported on Linux"
       end
     end
   end
