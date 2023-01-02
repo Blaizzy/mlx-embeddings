@@ -277,10 +277,6 @@ class Minitest::SummaryReporter < ::Minitest::StatisticsReporter
   def sync; end
   def sync=(_arg0); end
   def to_s; end
-
-  private
-
-  def binary_string; end
 end
 
 class Minitest::Test < ::Minitest::Runnable
@@ -319,6 +315,7 @@ module Minitest::Test::LifecycleHooks
 end
 
 Minitest::Test::PASSTHROUGH_EXCEPTIONS = T.let(T.unsafe(nil), Array)
+Minitest::Test::SETUP_METHODS = T.let(T.unsafe(nil), Array)
 Minitest::Test::TEARDOWN_METHODS = T.let(T.unsafe(nil), Array)
 
 class Minitest::UnexpectedError < ::Minitest::Assertion
