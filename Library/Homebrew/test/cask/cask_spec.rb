@@ -1,8 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "method_source"
-
 describe Cask::Cask, :cask do
   let(:cask) { described_class.new("versioned-cask") }
 

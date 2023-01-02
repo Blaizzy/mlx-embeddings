@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "method_source"
 require "cask/artifact/abstract_artifact"
 
 module Cask
@@ -38,6 +37,8 @@ module Cask
       end
 
       def to_h
+        require "method_source"
+
         directives.transform_values(&:source)
       end
 
