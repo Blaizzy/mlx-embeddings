@@ -1,5 +1,8 @@
 # FAQ (Frequently Asked Questions)
 
+* Table of Contents
+{:toc}
+
 ## Is there a glossary of terms around?
 
 The Formula Cookbook has a list of [Homebrew terminology](Formula-Cookbook.md#homebrew-terminology).
