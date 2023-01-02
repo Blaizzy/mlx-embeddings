@@ -77,7 +77,7 @@ GEM
     parallel (1.22.1)
     parallel_tests (3.13.0)
       parallel
-    parlour (8.0.0)
+    parlour (8.1.0)
       commander (~> 4.5)
       parser
       rainbow (~> 3.0)
