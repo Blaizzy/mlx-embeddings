@@ -573,7 +573,9 @@ describe Homebrew::CLI::Parser do
 
       it "throws an error when defined" do
         expect { parser.parse(["--cask"]) }
-          .to raise_error RuntimeError, "Invalid usage: Casks are not supported on Linux"
+          .to output("Error: Invalid `--cask` usage: Casks do not work on Linux\n").to_stderr
+          .and not_to_output.to_stdout
+          .and raise_exception SystemExit
       end
     end
 
@@ -588,12 +590,16 @@ describe Homebrew::CLI::Parser do
 
       it "throws an error when --cask defined" do
         expect { parser.parse(["--cask"]) }
-          .to raise_error RuntimeError, "Invalid usage: Casks are not supported on Linux"
+          .to output("Error: Invalid `--cask` usage: Casks do not work on Linux\n").to_stderr
+          .and not_to_output.to_stdout
+          .and raise_exception SystemExit
       end
 
       it "throws an error when both defined" do
         expect { parser.parse(["--cask", "--formula"]) }
-          .to raise_error RuntimeError, "Invalid usage: Casks are not supported on Linux"
+          .to output("Error: Invalid `--cask` usage: Casks do not work on Linux\n").to_stderr
+          .and not_to_output.to_stdout
+          .and raise_exception SystemExit
       end
     end
   end
