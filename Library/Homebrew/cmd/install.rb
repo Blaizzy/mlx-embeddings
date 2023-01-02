@@ -297,7 +297,12 @@ module Homebrew
     return if name.include?("/")
 
     require "search"
-    ohai "Searching for similarly named formulae and casks..."
+
+    package_types = []
+    package_types << "formulae" unless args.cask?
+    package_types << "casks" unless args.formula?
+
+    ohai "Searching for similarly named #{package_types.join(" and ")}..."
 
     # Don't treat formula/cask name as a regex
     query = string_or_regex = name
@@ -324,6 +329,6 @@ module Homebrew
     end
     return if all_formulae.any? || all_casks.any?
 
-    odie "No formulae or casks found for #{name}."
+    odie "No #{package_types.join(" or ")} found for #{name}."
   end
 end
