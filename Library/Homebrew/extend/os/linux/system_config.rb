@@ -40,10 +40,22 @@ module SystemConfig
       out
     end
 
+    def wsl_version(kernel)
+      return unless /-microsoft/i.match?(kernel)
+
+      return "2 (Microsoft Store)" if Version.new(kernel[/Linux ([0-9.]*)-.*/, 1]) > Version.new("5.15")
+      return "2" if /-microsoft/.match?(kernel)
+      return "1" if /-Microsoft/.match?(kernel)
+    end
+
     def dump_verbose_config(out = $stdout)
+      kernel = Utils.safe_popen_read("uname", "-mors").chomp
       dump_generic_verbose_config(out)
-      out.puts "Kernel: #{`uname -mors`.chomp}"
+      out.puts "Kernel: #{kernel}"
       out.puts "OS: #{OS::Linux.os_version}"
+      if (wsl = wsl_version(kernel).presence)
+        out.puts "WSL: #{wsl}"
+      end
       out.puts "Host glibc: #{host_glibc_version}"
       out.puts "/usr/bin/gcc: #{host_gcc_version}"
       out.puts "/usr/bin/ruby: #{host_ruby_version}" if RUBY_PATH != HOST_RUBY_PATH
