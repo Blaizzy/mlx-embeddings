@@ -223,16 +223,16 @@ jobs:
       matrix:
         include:
           - name: tests (no-compatibility mode)
-            test-flags: --no-compat --online --coverage
+            test-flags: --no-compat --coverage
             runs-on: ubuntu-22.04
           - name: tests (generic OS)
-            test-flags: --generic --online --coverage
+            test-flags: --generic --coverage
             runs-on: ubuntu-22.04
           - name: tests (Ubuntu 22.04)
             test-flags: --online --coverage
             runs-on: ubuntu-22.04
           - name: tests (Ubuntu 18.04)
-            test-flags: --online --coverage
+            test-flags: --coverage
             runs-on: ubuntu-18.04
     steps:
       - name: Set up Homebrew
