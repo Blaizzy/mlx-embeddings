@@ -307,11 +307,7 @@ module Homebrew
     def cleanup_logs
       return unless HOMEBREW_LOGS.directory?
 
-      logs_days = if days > CLEANUP_DEFAULT_DAYS
-        CLEANUP_DEFAULT_DAYS
-      else
-        days
-      end
+      logs_days = [days, CLEANUP_DEFAULT_DAYS].min
 
       HOMEBREW_LOGS.subdirs.each do |dir|
         cleanup_path(dir) { dir.rmtree } if dir.prune?(logs_days)

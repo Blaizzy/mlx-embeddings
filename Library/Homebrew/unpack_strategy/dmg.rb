@@ -46,10 +46,8 @@ module UnpackStrategy
         def bom
           tries = 0
           result = loop do
-            # rubocop:disable Style/AsciiComments
             # We need to use `find` here instead of Ruby in order to properly handle
             # file names containing special characters, such as “e” + “´” vs. “é”.
-            # rubocop:enable Style/AsciiComments
             r = system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
             tries += 1
 

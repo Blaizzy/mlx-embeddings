@@ -105,7 +105,7 @@ class AbstractDownloadStrategy
 
   def chdir(&block)
     entries = Dir["*"]
-    raise "Empty archive" if entries.length.zero?
+    raise "Empty archive" if entries.empty?
 
     if entries.length != 1
       yield

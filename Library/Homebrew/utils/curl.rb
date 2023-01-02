@@ -354,7 +354,7 @@ module Utils
         return "The #{url_type} #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."
       end
 
-      lenratio = (100 * https_content.length / http_content.length).to_i
+      lenratio = (https_content.length * 100 / http_content.length).to_i
       return unless (90..110).cover?(lenratio)
 
       "The #{url_type} #{url} may be able to use HTTPS rather than HTTP. Please verify it in a browser."

@@ -188,7 +188,7 @@ module Stdenv
 
   # @private
   sig { params(map: T::Hash[Symbol, String]).void }
-  def set_cpu_cflags(map = Hardware::CPU.optimization_flags) # rubocop:disable Naming/AccessorMethodName
+  def set_cpu_cflags(map = Hardware::CPU.optimization_flags)
     set_cpu_flags(CC_FLAG_VARS, map)
   end
 
