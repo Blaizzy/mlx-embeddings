@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "method_source"
 require "cask/artifact/abstract_artifact"
 
 module Cask
@@ -34,6 +35,10 @@ module Cask
 
       def summarize
         directives.keys.map(&:to_s).join(", ")
+      end
+
+      def to_h
+        directives.transform_values(&:source)
       end
 
       private

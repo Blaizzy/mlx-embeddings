@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require "method_source"
+
 describe Cask::Cask, :cask do
   let(:cask) { described_class.new("versioned-cask") }
 
@@ -265,6 +267,46 @@ describe Cask::Cask, :cask do
         }
       JSON
     }
+    let(:expected_flight_variations) {
+      <<~JSON
+        {
+          "arm64_big_sur": {
+            "artifacts": [
+              {
+                "preflight": "    preflight do\\n      puts \\"preflight on Big Sur\\"\\n    end\\n"
+              },
+              {
+                "uninstall_postflight": "    uninstall_postflight do\\n      puts \\"uninstall_postflight on Big Sur\\"\\n    end\\n"
+              }
+            ]
+          },
+          "big_sur": {
+            "artifacts": [
+              {
+                "preflight": "    preflight do\\n      puts \\"preflight on Big Sur\\"\\n    end\\n"
+              },
+              {
+                "uninstall_postflight": "    uninstall_postflight do\\n      puts \\"uninstall_postflight on Big Sur\\"\\n    end\\n"
+              }
+            ]
+          },
+          "catalina": {
+            "artifacts": [
+              {
+                "preflight": "    preflight do\\n      puts \\"preflight on Catalina or older\\"\\n    end\\n"
+              }
+            ]
+          },
+          "mojave": {
+            "artifacts": [
+              {
+                "preflight": "    preflight do\\n      puts \\"preflight on Catalina or older\\"\\n    end\\n"
+              }
+            ]
+          }
+        }
+      JSON
+    }
 
     before do
       # Use a more limited symbols list to shorten the variations hash
@@ -299,6 +341,14 @@ describe Cask::Cask, :cask do
 
       expect(h).to be_a(Hash)
       expect(JSON.pretty_generate(h["variations"])).to eq expected_sha256_variations.strip
+    end
+
+    it "returns the correct variations hash for a cask with conditional flight blocks" do
+      c = Cask::CaskLoader.load("conditional-flight")
+      h = c.to_hash_with_variations
+
+      expect(h).to be_a(Hash)
+      expect(JSON.pretty_generate(h["variations"])).to eq expected_flight_variations.strip
     end
   end
 end
