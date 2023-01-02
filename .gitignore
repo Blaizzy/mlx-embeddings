@@ -11,6 +11,7 @@
 /Library/Homebrew/.npmignore
 /Library/Homebrew/bin
 /Library/Homebrew/doc
+/Library/Homebrew/prof
 /Library/Homebrew/test/.gem
 /Library/Homebrew/test/.subversion
 /Library/Homebrew/test/coverage
