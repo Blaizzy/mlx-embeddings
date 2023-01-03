@@ -48,10 +48,8 @@ module Ignorable
   def self.unhook_raise
     Object.class_eval do
       # False positive - https://github.com/rubocop/rubocop/issues/5022
-      # rubocop:disable Lint/DuplicateMethods
       alias_method :raise, :original_raise
       alias_method :fail, :original_raise
-      # rubocop:enable Lint/DuplicateMethods
       undef :original_raise
     end
   end
