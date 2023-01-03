@@ -52,7 +52,7 @@
 
 2. The PLC consists of five members including the Project Leader. Committee members are elected by Homebrew members in a [Meek Single Transferable Vote](https://en.wikipedia.org/wiki/Counting_single_transferable_votes#Meek) election using the Droop quota. Each PLC member will serve a term of two years or until the member's successor is elected. Any sudden vacancy in the PLC will be filled by the usual procedure for electing PLC members at the next general meeting, typically the next AGM.
 
-3. Three weeks prior to the AGM, the PLC will nominate at least one candidate for each upcoming vacant seat. Any member may also nominate any other member as a candidate for the PLC at this time.
+3. Three weeks prior to the AGM, the PLC will nominate at least one candidate for each upcoming vacant seat. Any member may also nominate any other member as a candidate for the PLC at this time. Nominees may accept or reject their nomination. Accepting candidates should provide the PLC with a brief statement expressing relevant experience and intentions if elected. The PLC will distribute candidates' writings one week before the AGM. Candidates may deliver their remarks in writing or verbally during the meeting.
 
 4. The PLC will deliver a report of their activities, decisions, and financial statements to the Homebrew members at the AGM.
 
