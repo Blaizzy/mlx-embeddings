@@ -233,6 +233,7 @@ DEPENDENCIES
   did_you_mean
   json_schemer
   mechanize
+  method_source
   minitest
   parallel_tests
   parlour
