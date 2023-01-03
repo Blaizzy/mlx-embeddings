@@ -18,6 +18,7 @@ class Unicode::DisplayWidth
   end
 end
 
+Unicode::DisplayWidth::ASCII_NON_ZERO_REGEX = T.let(T.unsafe(nil), Regexp)
 Unicode::DisplayWidth::DATA_DIRECTORY = T.let(T.unsafe(nil), String)
 Unicode::DisplayWidth::DEPTHS = T.let(T.unsafe(nil), Array)
 Unicode::DisplayWidth::INDEX = T.let(T.unsafe(nil), Array)
