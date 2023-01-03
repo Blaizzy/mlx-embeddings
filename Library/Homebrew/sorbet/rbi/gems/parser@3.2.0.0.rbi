@@ -529,21 +529,48 @@ class Parser::Lexer
   protected
 
   def arg_or_cmdarg(cmd_state); end
+  def check_ambiguous_slash(tm); end
+  def check_invalid_escapes(p); end
   def diagnostic(type, reason, arguments = T.unsafe(nil), location = T.unsafe(nil), highlights = T.unsafe(nil)); end
+  def e_heredoc_nl(p); end
+  def e_lbrace; end
   def emit(type, value = T.unsafe(nil), s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def emit_character_constant; end
+  def emit_colon_with_digits(p, tm, diag_msg); end
   def emit_comment(s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def emit_comment_from_range(p, pe); end
   def emit_do(do_block = T.unsafe(nil)); end
+  def emit_global_var; end
   def emit_invalid_escapes?; end
+  def emit_rbrace_rparen_rbrack; end
+  def emit_singleton_class; end
   def emit_table(table, s = T.unsafe(nil), e = T.unsafe(nil)); end
   def encode_escape(ord); end
+  def encode_escaped_char(p); end
   def eof_codepoint?(point); end
+  def extend_interp_code(current_literal); end
+  def extend_interp_digit_var; end
+  def extend_interp_var(current_literal); end
+  def extend_string_eol_check_eof(current_literal, pe); end
+  def extend_string_eol_heredoc_intertwined(p); end
+  def extend_string_eol_heredoc_line; end
+  def extend_string_eol_words(current_literal, p); end
+  def extend_string_escaped; end
+  def extend_string_for_token_range(current_literal, string); end
+  def extend_string_slice_end(lookahead); end
   def literal; end
   def next_state_for_literal(literal); end
+  def numeric_literal_int; end
   def pop_literal; end
   def push_literal(*args); end
   def range(s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def read_post_meta_or_ctrl_char(p); end
+  def slash_c_char; end
+  def slash_m_char; end
   def stack_pop; end
   def tok(s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def unescape_char(p); end
+  def unicode_points(p); end
   def version?(*versions); end
 
   class << self
@@ -632,6 +659,7 @@ end
 
 Parser::Lexer::Dedenter::TAB_WIDTH = T.let(T.unsafe(nil), Integer)
 Parser::Lexer::ESCAPES = T.let(T.unsafe(nil), Hash)
+Parser::Lexer::ESCAPE_WHITESPACE = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::KEYWORDS = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::KEYWORDS_BEGIN = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::LEX_STATES = T.let(T.unsafe(nil), Hash)
@@ -1200,7 +1228,7 @@ class Parser::Source::Buffer
   def name; end
   def raw_source=(input); end
   def read; end
-  def slice(range); end
+  def slice(start, length = T.unsafe(nil)); end
   def source; end
   def source=(input); end
   def source_line(lineno); end
