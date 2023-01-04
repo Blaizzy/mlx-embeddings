@@ -263,7 +263,11 @@ module Cask
 
           json_cask[:artifacts].each do |artifact|
             key = artifact.keys.first
-            send(key, *artifact[key])
+            if FLIGHT_STANZAS.include?(key)
+              instance_eval(artifact[key])
+            else
+              send(key, *artifact[key])
+            end
           end
 
           caveats json_cask[:caveats] if json_cask[:caveats].present?
