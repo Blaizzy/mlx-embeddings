@@ -55,15 +55,26 @@ module Homebrew
       args.named.to_paths.select do |path|
         next path if path.exist?
 
-        message = if args.cask?
+        not_exist_message = if args.cask?
+          "#{path.basename(".rb")} doesn't exist on disk."
+        else
+          "#{path} doesn't exist on disk."
+        end
+
+        message = if Homebrew::EnvConfig.install_from_api?
           <<~EOS
-            #{path.basename(".rb")} doesn't exist on disk. \
+            #{not_exist_message}
+            This is expected with HOMEBREW_INSTALL_FROM_API set!
+          EOS
+        elsif args.cask?
+          <<~EOS
+            #{not_exist_message}
             Run #{Formatter.identifier("brew create --cask --set-name #{path.basename(".rb")} $URL")} \
             to create a new cask!
           EOS
         else
           <<~EOS
-            #{path} doesn't exist on disk. \
+            #{not_exist_message}
             Run #{Formatter.identifier("brew create --formula --set-name #{path.basename} $URL")} \
             to create a new formula!
           EOS
