@@ -1156,6 +1156,7 @@ class FormulaInstaller
   def fetch_dependencies
     return if ignore_deps?
 
+    # Don't output dependencies if we're explicitly installing them.
     deps = compute_dependencies.reject do |dep, _options|
       self.class.fetched.include?(dep.to_formula)
     end
