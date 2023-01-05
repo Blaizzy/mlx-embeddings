@@ -9,7 +9,7 @@ require "formula_versions"
 require "cli/parser"
 require "utils/inreplace"
 require "erb"
-require "zlib"
+require "utils/gzip"
 require "api"
 
 BOTTLE_ERB = <<-EOS
@@ -30,7 +30,6 @@ BOTTLE_ERB = <<-EOS
 EOS
 
 MAXIMUM_STRING_MATCHES = 100
-GZIP_BUFFER_SIZE = 64 * 1024
 
 ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
   %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Homebrew/os/(mac|linux)/pkgconfig},
@@ -425,14 +424,10 @@ module Homebrew
           mv tar_path, relocatable_tar_path
           # Use gzip, faster to compress than bzip2, faster to uncompress than bzip2
           # or an uncompressed tarball (and more bandwidth friendly).
-          gz = Zlib::GzipWriter.open(bottle_path)
-          gz.mtime = tab.source_modified_time
-          gz.orig_name = relocatable_tar_path
-          File.open(relocatable_tar_path, "rb") do |tarfile|
-            gz.write(tarfile.read(GZIP_BUFFER_SIZE)) until tarfile.eof?
-          end
-          gz.close
-          rm_f relocatable_tar_path
+          Utils::Gzip.compress_with_options(relocatable_tar_path,
+                                            mtime:     tab.source_modified_time,
+                                            orig_name: relocatable_tar_path,
+                                            output:    bottle_path)
           sudo_purge
         end
 
