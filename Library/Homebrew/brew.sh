@@ -277,7 +277,7 @@ auto-update() {
 
     unset HOMEBREW_AUTO_UPDATING
 
-    # restore old path for user installed Ruby version.
+    # Restore user path as it'll be refiltered by HOMEBREW_BREW_FILE (bin/brew)
     export PATH=${HOMEBREW_PATH}
 
     # exec a new process to set any new environment variables.
