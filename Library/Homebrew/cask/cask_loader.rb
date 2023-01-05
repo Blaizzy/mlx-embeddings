@@ -206,14 +206,14 @@ module Cask
     end
 
     def self.path(ref)
-      self.for(ref).path
+      self.for(ref, need_path: true).path
     end
 
     def self.load(ref, config: nil)
       self.for(ref).load(config: config)
     end
 
-    def self.for(ref)
+    def self.for(ref, need_path: false)
       [
         FromInstanceLoader,
         FromContentLoader,
@@ -232,7 +232,7 @@ module Cask
         return loader_class.new(ref)
       end
 
-      if Homebrew::EnvConfig.install_from_api? && Homebrew::API::CaskSource.available?(ref)
+      if Homebrew::EnvConfig.install_from_api? && !need_path && Homebrew::API::CaskSource.available?(ref)
         return FromContentLoader.new(Homebrew::API::CaskSource.fetch(ref))
       end
 
