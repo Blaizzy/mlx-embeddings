@@ -14,6 +14,18 @@ module Homebrew
         def fetch(name)
           Homebrew::API.fetch "cask/#{name}.json"
         end
+
+        sig { returns(Hash) }
+        def all_casks
+          @all_casks ||= begin
+            json_casks = Homebrew::API.fetch_json_api_file "cask.json",
+                                                           target: HOMEBREW_CACHE_API/"cask.json"
+
+            json_casks.to_h do |json_cask|
+              [json_cask["token"], json_cask.except("token")]
+            end
+          end
+        end
       end
     end
   end

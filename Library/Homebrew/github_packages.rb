@@ -354,8 +354,7 @@ class GitHubPackages
 
       config_json_sha256, config_json_size = write_image_config(platform_hash, tar_sha256.hexdigest, blobs)
 
-      formulae_dir = tag_hash["formulae_brew_sh_path"]
-      documentation = "https://formulae.brew.sh/#{formulae_dir}/#{formula_name}" if formula_core_tap
+      documentation = "https://formulae.brew.sh/formula/#{formula_name}" if formula_core_tap
 
       descriptor_annotations_hash = {
         "org.opencontainers.image.ref.name" => tag,
