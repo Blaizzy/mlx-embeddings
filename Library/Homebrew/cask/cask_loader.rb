@@ -203,7 +203,6 @@ module Cask
 
       def load(config:)
         json_cask = Homebrew::API::Cask.all_casks[token]
-        cask_source = Homebrew::API::CaskSource.fetch(token)
 
         if (bottle_tag = ::Utils::Bottles.tag.to_s.presence) &&
            (variations = json_cask["variations"].presence) &&
@@ -212,6 +211,12 @@ module Cask
         end
 
         json_cask.deep_symbolize_keys!
+
+        # Use the cask-source API if there are any `*flight` blocks
+        if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) }
+          cask_source = Homebrew::API::CaskSource.fetch(token)
+          return FromContentLoader.new(cask_source).load(config: config)
+        end
 
         Cask.new(token, source: cask_source, config: config) do
           version json_cask[:version]
