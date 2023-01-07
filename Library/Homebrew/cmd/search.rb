@@ -17,7 +17,7 @@ module Homebrew
     macports:  ->(query) { "https://ports.macports.org/search/?q=#{query}" },
     fink:      ->(query) { "https://pdb.finkproject.org/pdb/browse.php?summary=#{query}" },
     opensuse:  ->(query) { "https://software.opensuse.org/search?q=#{query}" },
-    fedora:    ->(query) { "https://apps.fedoraproject.org/packages/s/#{query}" },
+    fedora:    ->(query) { "https://packages.fedoraproject.org/search?query=#{query}" },
     archlinux: ->(query) { "https://archlinux.org/packages/?q=#{query}" },
     debian:    lambda { |query|
       "https://packages.debian.org/search?keywords=#{query}&searchon=names&suite=all&section=all"
