@@ -11,6 +11,7 @@ require "utils/gems"
 require "utils/git"
 require "utils/git_repository"
 require "utils/github"
+require "utils/gzip"
 require "utils/inreplace"
 require "utils/link"
 require "utils/popen"
@@ -397,11 +398,10 @@ module Kernel
   end
 
   # GZips the given paths, and returns the gzipped paths.
+  # TODO: Add deprecation
+  # odeprecated "Utils.gzip" "Utils::Gzip.compress"
   def gzip(*paths)
-    paths.map do |path|
-      safe_system "gzip", path
-      Pathname.new("#{path}.gz")
-    end
+    Utils::Gzip.compress(*paths)
   end
 
   def ignore_interrupts(_opt = nil)

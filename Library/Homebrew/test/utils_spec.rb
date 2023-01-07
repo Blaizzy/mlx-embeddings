@@ -183,15 +183,6 @@ describe "globally-scoped helper methods" do
     expect(which_editor).to eq("vemate -w")
   end
 
-  specify "#gzip" do
-    mktmpdir do |path|
-      somefile = path/"somefile"
-      FileUtils.touch somefile
-      expect(gzip(somefile)[0].to_s).to eq("#{somefile}.gz")
-      expect(Pathname.new("#{somefile}.gz")).to exist
-    end
-  end
-
   specify "#capture_stderr" do
     err = capture_stderr do
       $stderr.print "test"
