@@ -388,6 +388,7 @@ module Cask
     end
 
     def save_config_file
+      @cask.config_path.dirname.mkpath
       @cask.config_path.atomic_write(@cask.config.to_json)
     end
 
