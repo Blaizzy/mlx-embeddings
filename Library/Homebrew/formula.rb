@@ -2659,11 +2659,12 @@ class Formula
   # Common environment variables used at both build and test time.
   def common_stage_test_env
     {
-      _JAVA_OPTIONS: "-Duser.home=#{HOMEBREW_CACHE}/java_cache",
-      GOCACHE:       "#{HOMEBREW_CACHE}/go_cache",
-      GOPATH:        "#{HOMEBREW_CACHE}/go_mod_cache",
-      CARGO_HOME:    "#{HOMEBREW_CACHE}/cargo_cache",
-      CURL_HOME:     ENV.fetch("CURL_HOME") { Dir.home },
+      _JAVA_OPTIONS:           "-Duser.home=#{HOMEBREW_CACHE}/java_cache",
+      GOCACHE:                 "#{HOMEBREW_CACHE}/go_cache",
+      GOPATH:                  "#{HOMEBREW_CACHE}/go_mod_cache",
+      CARGO_HOME:              "#{HOMEBREW_CACHE}/cargo_cache",
+      CURL_HOME:               ENV.fetch("CURL_HOME") { Dir.home },
+      PYTHONDONTWRITEBYTECODE: "1",
     }
   end
 
