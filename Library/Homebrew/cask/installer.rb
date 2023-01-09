@@ -377,17 +377,21 @@ module Cask
       self.class.caveats(@cask)
     end
 
+    def metadata_subdir
+      @metadata_subdir ||= @cask.metadata_subdir("Casks", timestamp: :now, create: true)
+    end
+
     def save_caskfile
       old_savedir = @cask.metadata_timestamped_path
 
       return if @cask.source.blank?
 
-      savedir = @cask.metadata_subdir("Casks", timestamp: :now, create: true)
-      (savedir/"#{@cask.token}.rb").write @cask.source
+      (metadata_subdir/"#{@cask.token}.rb").write @cask.source
       old_savedir&.rmtree
     end
 
     def save_config_file
+      metadata_subdir
       @cask.config_path.atomic_write(@cask.config.to_json)
     end
 
