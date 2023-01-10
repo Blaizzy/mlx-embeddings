@@ -577,6 +577,14 @@ describe Homebrew::CLI::Parser do
           .and not_to_output.to_stdout
           .and raise_exception SystemExit
       end
+
+      # Developers want to be able to use `audit` and `bump`
+      # commands for formulae and casks on Linux.
+      it "succeeds for developer commands" do
+        require "dev-cmd/cat"
+        args = Homebrew.cat_args.parse(["--cask", "cask_name"])
+        expect(args.cask?).to be(true)
+      end
     end
 
     context "with conflicting --formula switch" do
