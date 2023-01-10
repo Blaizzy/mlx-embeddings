@@ -1901,6 +1901,7 @@ module RuboCop::Cop::HashShorthandSyntax
 
   private
 
+  def brackets?(send_node); end
   def breakdown_value_types_of_hash(hash_node); end
   def def_node_that_require_parentheses(node); end
   def each_omittable_value_pair(hash_value_type_breakdown, &block); end
@@ -6363,6 +6364,16 @@ end
 
 RuboCop::Cop::Lint::UselessMethodDefinition::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Lint::UselessRescue < ::RuboCop::Cop::Base
+  def on_rescue(node); end
+
+  private
+
+  def only_reraising?(resbody_node); end
+end
+
+RuboCop::Cop::Lint::UselessRescue::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Lint::UselessRuby2Keywords < ::RuboCop::Cop::Base
   def method_definition(param0 = T.unsafe(nil), param1); end
   def on_send(node); end
@@ -6630,6 +6641,7 @@ class RuboCop::Cop::Metrics::ParameterLists < ::RuboCop::Cop::Base
   def on_args(node); end
   def on_def(node); end
   def on_defs(node); end
+  def struct_new_or_data_define_block?(param0 = T.unsafe(nil)); end
 
   private
 
@@ -7758,6 +7770,7 @@ end
 
 module RuboCop::Cop::StatementModifier
   include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::RangeHelp
 
   private
 
@@ -9360,9 +9373,9 @@ RuboCop::Cop::Style::GlobalVars::BUILT_IN_VARS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Style::GlobalVars::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::GuardClause < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::LineLengthHelp
   include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::MinBodyLength
-  include ::RuboCop::Cop::LineLengthHelp
   include ::RuboCop::Cop::StatementModifier
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -9454,6 +9467,7 @@ class RuboCop::Cop::Style::HashEachMethods < ::RuboCop::Cop::Base
   def correct_key_value_each(node, corrector); end
   def format_message(method_name); end
   def kv_range(outer_node); end
+  def receiver_name(receiver); end
   def register_kv_offense(target, method); end
   def register_kv_with_block_pass_offense(node, target, method); end
   def used?(arg); end
@@ -9623,9 +9637,9 @@ RuboCop::Cop::Style::IfInsideElse::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::IfUnlessModifier < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::StatementModifier
   include ::RuboCop::Cop::AllowedPattern
-  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_if(node); end
@@ -9659,6 +9673,7 @@ RuboCop::Cop::Style::IfUnlessModifier::MSG_USE_NORMAL = T.let(T.unsafe(nil), Str
 
 class RuboCop::Cop::Style::IfUnlessModifierOfIfUnless < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::StatementModifier
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -10159,6 +10174,7 @@ RuboCop::Cop::Style::MinMaxComparison::MSG = T.let(T.unsafe(nil), String)
 class RuboCop::Cop::Style::MissingElse < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::OnNormalIfUnless
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
+  extend ::RuboCop::Cop::AutoCorrector
 
   def on_case(node); end
   def on_case_match(node); end
@@ -10166,6 +10182,7 @@ class RuboCop::Cop::Style::MissingElse < ::RuboCop::Cop::Base
 
   private
 
+  def autocorrect(corrector, node); end
   def case_style?; end
   def check(node); end
   def empty_else_config; end
@@ -10257,6 +10274,7 @@ RuboCop::Cop::Style::MultilineBlockChain::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::MultilineIfModifier < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::StatementModifier
   include ::RuboCop::Cop::Alignment
   extend ::RuboCop::Cop::AutoCorrector
@@ -10865,6 +10883,8 @@ class RuboCop::Cop::Style::OperatorMethodCall < ::RuboCop::Cop::Base
 
   private
 
+  def anonymous_forwarding?(argument); end
+  def method_call_with_parenthesized_arg?(argument); end
   def wrap_in_parentheses_if_chained(corrector, node); end
 end
 
@@ -12773,6 +12793,7 @@ RuboCop::Cop::Style::WhileUntilDo::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::WhileUntilModifier < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::StatementModifier
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -14255,6 +14276,7 @@ module RuboCop::PathUtil
 end
 
 RuboCop::PathUtil::HIDDEN_FILE_PATTERN = T.let(T.unsafe(nil), String)
+RuboCop::PathUtil::SMART_PATH_CACHE = T.let(T.unsafe(nil), Hash)
 
 module RuboCop::Platform
   class << self
