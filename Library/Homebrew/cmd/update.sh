@@ -482,13 +482,22 @@ EOS
     QUIET_ARGS=()
   fi
 
-  # HOMEBREW_CURLRC isn't misspelt here
+  # HOMEBREW_CURLRC is optionally defined in the user environment.
   # shellcheck disable=SC2153
   if [[ -z "${HOMEBREW_CURLRC}" ]]
   then
     CURL_DISABLE_CURLRC_ARGS=(-q)
   else
     CURL_DISABLE_CURLRC_ARGS=()
+  fi
+
+  # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
+  # shellcheck disable=SC2153
+  if [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
+  then
+    CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
+  else
+    CURL_GITHUB_API_ARGS=()
   fi
 
   # only allow one instance of brew update
@@ -626,10 +635,12 @@ EOS
         UPSTREAM_SHA_HTTP_CODE="$(
           curl \
             "${CURL_DISABLE_CURLRC_ARGS[@]}" \
+            "${CURL_GITHUB_API_ARGS[@]}" \
             --silent --max-time 3 \
             --location --no-remote-time --output /dev/null --write-out "%{http_code}" \
             --dump-header "${DIR}/.git/GITHUB_HEADERS" \
             --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
+            --header "X-GitHub-Api-Version:2022-11-28" \
             --header "Accept: ${GITHUB_API_ACCEPT}" \
             --header "If-None-Match: \"${GITHUB_API_ETAG}\"" \
             "https://api.github.com/repos/${UPSTREAM_REPOSITORY}/${GITHUB_API_ENDPOINT}"
