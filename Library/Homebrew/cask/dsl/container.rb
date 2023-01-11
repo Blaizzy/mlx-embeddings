@@ -9,20 +9,11 @@ module Cask
     #
     # @api private
     class Container
-      VALID_KEYS = Set.new([
-        :type,
-        :nested,
-      ]).freeze
+      attr_accessor :nested, :type
 
-      attr_accessor(*VALID_KEYS, :pairs)
-
-      def initialize(**pairs)
-        @pairs = pairs
-        pairs.each do |key, value|
-          raise "invalid container key: #{key.inspect}" unless VALID_KEYS.include?(key)
-
-          send(:"#{key}=", value)
-        end
+      def initialize(nested: nil, type: nil)
+        @nested = nested
+        @type = type
 
         return if type.nil?
         return unless UnpackStrategy.from_type(type).nil?
@@ -30,12 +21,16 @@ module Cask
         raise "invalid container type: #{type.inspect}"
       end
 
+      def pairs
+        instance_variables.to_h { |ivar| [ivar[1..].to_sym, instance_variable_get(ivar)] }.compact
+      end
+
       def to_yaml
-        @pairs.to_yaml
+        pairs.to_yaml
       end
 
       def to_s
-        @pairs.inspect
+        pairs.inspect
       end
     end
   end
