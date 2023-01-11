@@ -240,6 +240,8 @@ module Cask
 
           if json_cask[:depends_on].present?
             dep_hash = json_cask[:depends_on].to_h do |dep_key, dep_value|
+              # Arch dependencies are encoded like `{ type: :intel, bits: 64 }`
+              # but `depends_on arch:` only accepts `:intel` or `:arm64`
               if dep_key == :arch
                 next [:arch, :intel] if dep_value.first[:type] == "intel"
 
