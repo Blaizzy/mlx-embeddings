@@ -19,6 +19,10 @@ module Kernel
   private :superenv?
 end
 
+# @!parse
+#  # ENV is not actually a class, but this makes `YARD` happy
+#  # @see https://rubydoc.info/stdlib/core/ENV ENV core documentation
+#  class ENV; end
 module EnvActivation
   extend T::Sig
 
