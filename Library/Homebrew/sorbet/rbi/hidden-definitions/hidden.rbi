@@ -3192,20 +3192,6 @@ class Cask::DSL::Caveats
   def zsh_path_helper(*args); end
 end
 
-class Cask::DSL::Container
-  def nested(); end
-
-  def nested=(nested); end
-
-  def pairs(); end
-
-  def pairs=(pairs); end
-
-  def type(); end
-
-  def type=(type); end
-end
-
 class Cask::DSL::Version
   def dots_to_hyphens(); end
 
