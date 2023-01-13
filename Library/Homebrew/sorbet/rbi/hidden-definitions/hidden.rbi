@@ -6755,6 +6755,7 @@ end
 
 module RuboCop::AST::NodePattern::Sets
   SET_ARM_INTEL = ::T.let(nil, ::T.untyped)
+  SET_ASSERT_EQUAL_REFUTE_EQUAL = ::T.let(nil, ::T.untyped)
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
