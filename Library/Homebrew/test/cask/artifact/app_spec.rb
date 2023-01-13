@@ -263,6 +263,11 @@ describe Cask::Artifact::App, :cask do
   end
 
   describe "uninstall_phase" do
+    after do
+      FileUtils.chmod 0755, target_path if target_path.exist?
+      FileUtils.chmod 0755, source_path if source_path.exist?
+    end
+
     it "deletes managed apps" do
       install_phase
 
@@ -271,6 +276,16 @@ describe Cask::Artifact::App, :cask do
       uninstall_phase
 
       expect(target_path).not_to exist
+    end
+
+    it "backs up read-only managed apps" do
+      install_phase
+
+      FileUtils.chmod 0544, target_path
+
+      expect { uninstall_phase }.to raise_error(Errno::ENOTEMPTY)
+
+      expect(source_path).to be_a_directory
     end
   end
 
