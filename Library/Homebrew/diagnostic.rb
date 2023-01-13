@@ -519,6 +519,17 @@ module Homebrew
         examine_git_origin(repo, Homebrew::EnvConfig.brew_git_remote)
       end
 
+      def check_brew_git_branch
+        repo = HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
+        return if repo.git_default_origin_branch?
+
+        <<~EOS
+          Homebrew is not on the default git origin branch and may not receive
+          updates. If this is a surprise to you, check out the default branch with:
+            git -C $(brew --repo) checkout #{repo.git_origin_branch}"
+        EOS
+      end
+
       def check_coretap_integrity
         coretap = CoreTap.instance
         unless coretap.installed?
