@@ -173,6 +173,20 @@ end
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MAP = T.let(T.unsafe(nil), Hash)
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::RSpec::Capybara::MatchStyle < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_send(node); end
+
+  private
+
+  def message(node); end
+end
+
+RuboCop::Cop::RSpec::Capybara::MatchStyle::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::Capybara::MatchStyle::PREFERRED_METHOD = T.let(T.unsafe(nil), Hash)
+RuboCop::Cop::RSpec::Capybara::MatchStyle::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::RSpec::Capybara::NegationMatcher < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
   extend ::RuboCop::Cop::AutoCorrector
@@ -1465,12 +1479,11 @@ class RuboCop::Cop::RSpec::PendingWithoutReason < ::RuboCop::Cop::RSpec::Base
   def skipped_by_example_group_method?(param0 = T.unsafe(nil)); end
   def skipped_by_example_method?(param0 = T.unsafe(nil)); end
   def skipped_by_metadata_without_reason?(param0 = T.unsafe(nil)); end
+  def without_reason?(param0 = T.unsafe(nil)); end
 
   private
 
-  def pending_by_pending_step_without_reason?(node); end
   def pending_without_reason?(node); end
-  def skipped_by_skip_step_without_reason?(node); end
   def skipped_without_reason?(node); end
 end
 
@@ -1581,6 +1594,21 @@ class RuboCop::Cop::RSpec::Rails::InferredSpecType < ::RuboCop::Cop::RSpec::Base
 end
 
 RuboCop::Cop::RSpec::Rails::InferredSpecType::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::RSpec::Rails::MinitestAssertions < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def minitest_assertion(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def message(prefer); end
+  def replacement(node, expected, actual, failure_message); end
+end
+
+RuboCop::Cop::RSpec::Rails::MinitestAssertions::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::Rails::MinitestAssertions::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::RSpec::ReceiveCounts < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
