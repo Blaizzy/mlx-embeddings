@@ -2,6 +2,7 @@
 
 require_relative 'rspec/capybara/current_path_expectation'
 require_relative 'rspec/capybara/feature_methods'
+require_relative 'rspec/capybara/match_style'
 require_relative 'rspec/capybara/negation_matcher'
 require_relative 'rspec/capybara/specific_actions'
 require_relative 'rspec/capybara/specific_finders'
@@ -23,6 +24,7 @@ rescue LoadError
   # Rails/HttpStatus cannot be loaded if rack/utils is unavailable.
 end
 require_relative 'rspec/rails/inferred_spec_type'
+require_relative 'rspec/rails/minitest_assertions'
 
 require_relative 'rspec/align_left_let_brace'
 require_relative 'rspec/align_right_let_brace'
