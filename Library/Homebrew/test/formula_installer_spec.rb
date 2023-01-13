@@ -226,13 +226,14 @@ describe FormulaInstaller do
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
-      expect(formula).to receive(:service).exactly(3).and_return(service)
+      expect(formula).to receive(:service).exactly(5).and_return(service)
       expect(formula).to receive(:plist_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
 
       expect(service).to receive(:timed?).and_return(false)
       expect(service).to receive(:to_plist).and_return("plist")
       expect(service).to receive(:to_systemd_unit).and_return("unit")
+      expect(service).to receive(:command).exactly(2).and_return("/bin/sh")
 
       installer = described_class.new(formula)
       expect {
@@ -253,7 +254,7 @@ describe FormulaInstaller do
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
-      expect(formula).to receive(:service).exactly(4).and_return(service)
+      expect(formula).to receive(:service).exactly(6).and_return(service)
       expect(formula).to receive(:plist_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
       expect(formula).to receive(:systemd_timer_path).and_call_original
@@ -262,6 +263,7 @@ describe FormulaInstaller do
       expect(service).to receive(:timed?).and_return(true)
       expect(service).to receive(:to_systemd_unit).and_return("unit")
       expect(service).to receive(:to_systemd_timer).and_return("timer")
+      expect(service).to receive(:command).exactly(2).and_return("/bin/sh")
 
       installer = described_class.new(formula)
       expect {

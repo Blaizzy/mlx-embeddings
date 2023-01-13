@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "extend/on_system"
+
 module Homebrew
   # The {Service} class implements the DSL methods used in a formula's
   # `service` block and stores related instance variables. Most of these methods
@@ -8,6 +10,7 @@ module Homebrew
   class Service
     extend T::Sig
     extend Forwardable
+    include OnSystem::MacOSAndLinux
 
     RUN_TYPE_IMMEDIATE = :immediate
     RUN_TYPE_INTERVAL = :interval
@@ -33,8 +36,15 @@ module Homebrew
       @formula
     end
 
-    sig { params(command: T.nilable(T.any(T::Array[String], String, Pathname))).returns(T.nilable(Array)) }
-    def run(command = nil)
+    sig {
+      params(
+        command: T.nilable(T.any(T::Array[String], String, Pathname)),
+        macos:   T.nilable(T.any(T::Array[String], String, Pathname)),
+        linux:   T.nilable(T.any(T::Array[String], String, Pathname)),
+      ).returns(T.nilable(Array))
+    }
+    def run(command = nil, macos: nil, linux: nil)
+      command ||= on_system_conditional(macos: macos, linux: linux)
       case T.unsafe(command)
       when nil
         @run
@@ -326,10 +336,10 @@ module Homebrew
       "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin"
     end
 
-    sig { returns(T::Array[String]) }
+    sig { returns(T.nilable(T::Array[String])) }
     def command
       instance_eval(&@service_block)
-      @run.map(&:to_s)
+      @run&.map(&:to_s)
     end
 
     # Returns the `String` command to run manually instead of the service.
@@ -340,7 +350,8 @@ module Homebrew
       vars = @environment_variables.except(:PATH)
                                    .map { |k, v| "#{k}=\"#{v}\"" }
 
-      out = vars + command
+      cmd = command
+      out = vars + cmd if cmd.present?
       out.join(" ")
     end
 
@@ -427,7 +438,7 @@ module Homebrew
       EOS
 
       # command needs to be first because it initializes all other values
-      cmd = command.join(" ")
+      cmd = command&.join(" ")
 
       options = []
       options << "Type=#{(@launch_only_once == true) ? "oneshot" : "simple"}"
