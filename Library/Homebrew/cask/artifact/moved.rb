@@ -70,10 +70,13 @@ module Cask
         end
 
         ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'"
-        if target.dirname.ascend.find(&:directory?).writable?
-          target.dirname.mkpath
-        else
-          command.run!("/bin/mkdir", args: ["-p", target.dirname], sudo: true)
+
+        unless target.dirname.exist?
+          if target.dirname.ascend.find(&:directory?).writable?
+            target.dirname.mkpath
+          else
+            command.run!("/bin/mkdir", args: ["-p", target.dirname], sudo: true)
+          end
         end
 
         if target.dirname.writable?
