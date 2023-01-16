@@ -131,29 +131,7 @@ end
 RuboCop::Cop::RSpec::BeforeAfterAll::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::BeforeAfterAll::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 module RuboCop::Cop::RSpec::Capybara; end
-
-class RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation < ::RuboCop::Cop::Base
-  extend ::RuboCop::Cop::AutoCorrector
-
-  def as_is_matcher(param0 = T.unsafe(nil)); end
-  def expectation_set_on_current_path(param0 = T.unsafe(nil)); end
-  def on_send(node); end
-  def regexp_str_matcher(param0 = T.unsafe(nil)); end
-
-  private
-
-  def add_ignore_query_options(corrector, node); end
-  def autocorrect(corrector, node); end
-  def convert_regexp_str_to_literal(corrector, matcher_node, regexp_str); end
-  def rewrite_expectation(corrector, node, to_symbol, matcher_node); end
-
-  class << self
-    def autocorrect_incompatible_with; end
-  end
-end
-
-RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::RSpec::Capybara::CurrentPathExpectation = RuboCop::Cop::Capybara::CurrentPathExpectation
 
 class RuboCop::Cop::RSpec::Capybara::FeatureMethods < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::RSpec::InsideExampleGroup
@@ -172,135 +150,12 @@ end
 
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MAP = T.let(T.unsafe(nil), Hash)
 RuboCop::Cop::RSpec::Capybara::FeatureMethods::MSG = T.let(T.unsafe(nil), String)
-
-class RuboCop::Cop::RSpec::Capybara::MatchStyle < ::RuboCop::Cop::RSpec::Base
-  extend ::RuboCop::Cop::AutoCorrector
-
-  def on_send(node); end
-
-  private
-
-  def message(node); end
-end
-
-RuboCop::Cop::RSpec::Capybara::MatchStyle::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::MatchStyle::PREFERRED_METHOD = T.let(T.unsafe(nil), Hash)
-RuboCop::Cop::RSpec::Capybara::MatchStyle::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-
-class RuboCop::Cop::RSpec::Capybara::NegationMatcher < ::RuboCop::Cop::Base
-  include ::RuboCop::Cop::ConfigurableEnforcedStyle
-  extend ::RuboCop::Cop::AutoCorrector
-
-  def have_no?(param0 = T.unsafe(nil)); end
-  def not_to?(param0 = T.unsafe(nil)); end
-  def on_send(node); end
-
-  private
-
-  def message(matcher); end
-  def offense?(node); end
-  def offense_range(node); end
-  def replaced_matcher(matcher); end
-  def replaced_runner; end
-end
-
-RuboCop::Cop::RSpec::Capybara::NegationMatcher::CAPYBARA_MATCHERS = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::RSpec::Capybara::NegationMatcher::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::NegationMatcher::NEGATIVE_MATCHERS = T.let(T.unsafe(nil), Set)
-RuboCop::Cop::RSpec::Capybara::NegationMatcher::POSITIVE_MATCHERS = T.let(T.unsafe(nil), Set)
-RuboCop::Cop::RSpec::Capybara::NegationMatcher::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
-
-class RuboCop::Cop::RSpec::Capybara::SpecificActions < ::RuboCop::Cop::Base
-  def click_on_selector(param0 = T.unsafe(nil)); end
-  def on_send(node); end
-
-  private
-
-  def good_action(action); end
-  def last_selector(arg); end
-  def message(action, selector); end
-  def offense_range(node, receiver); end
-  def specific_action(selector); end
-  def supported_selector?(selector); end
-end
-
-RuboCop::Cop::RSpec::Capybara::SpecificActions::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::SpecificActions::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::RSpec::Capybara::SpecificActions::SPECIFIC_ACTION = T.let(T.unsafe(nil), Hash)
-
-class RuboCop::Cop::RSpec::Capybara::SpecificFinders < ::RuboCop::Cop::Base
-  include ::RuboCop::Cop::RangeHelp
-  extend ::RuboCop::Cop::AutoCorrector
-
-  def find_argument(param0 = T.unsafe(nil)); end
-  def on_send(node); end
-
-  private
-
-  def attribute?(arg); end
-  def end_pos(node); end
-  def offense_range(node); end
-  def on_attr(node, arg); end
-  def on_id(node, arg); end
-  def register_offense(node, arg_replacement); end
-  def replaced_arguments(arg, id); end
-  def to_options(attrs); end
-end
-
-RuboCop::Cop::RSpec::Capybara::SpecificFinders::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::SpecificFinders::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-
-class RuboCop::Cop::RSpec::Capybara::SpecificMatcher < ::RuboCop::Cop::Base
-  def first_argument(param0 = T.unsafe(nil)); end
-  def on_send(node); end
-
-  private
-
-  def good_matcher(node, matcher); end
-  def message(node, matcher); end
-  def specific_matcher(arg); end
-end
-
-RuboCop::Cop::RSpec::Capybara::SpecificMatcher::MSG = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::SpecificMatcher::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::RSpec::Capybara::SpecificMatcher::SPECIFIC_MATCHER = T.let(T.unsafe(nil), Hash)
-
-class RuboCop::Cop::RSpec::Capybara::VisibilityMatcher < ::RuboCop::Cop::Base
-  def on_send(node); end
-  def visible_false?(param0 = T.unsafe(nil)); end
-  def visible_true?(param0 = T.unsafe(nil)); end
-
-  private
-
-  def capybara_matcher?(method_name); end
-end
-
-RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::CAPYBARA_MATCHER_METHODS = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::MSG_FALSE = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::MSG_TRUE = T.let(T.unsafe(nil), String)
-RuboCop::Cop::RSpec::Capybara::VisibilityMatcher::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-
-module RuboCop::Cop::RSpec::CapybaraHelp
-  private
-
-  def include_option?(node, option); end
-  def replaceable_element?(node, element, attrs); end
-  def replaceable_pseudo_class?(pseudo_class, locator); end
-  def replaceable_pseudo_class_not?(locator); end
-  def replaceable_to_link?(node, attrs); end
-  def specific_option?(node, locator, element); end
-  def specific_pseudo_classes?(locator); end
-
-  class << self
-    def include_option?(node, option); end
-    def replaceable_element?(node, element, attrs); end
-    def replaceable_pseudo_class?(pseudo_class, locator); end
-    def replaceable_pseudo_class_not?(locator); end
-    def replaceable_to_link?(node, attrs); end
-    def specific_option?(node, locator, element); end
-    def specific_pseudo_classes?(locator); end
-  end
-end
+RuboCop::Cop::RSpec::Capybara::MatchStyle = RuboCop::Cop::Capybara::MatchStyle
+RuboCop::Cop::RSpec::Capybara::NegationMatcher = RuboCop::Cop::Capybara::NegationMatcher
+RuboCop::Cop::RSpec::Capybara::SpecificActions = RuboCop::Cop::Capybara::SpecificActions
+RuboCop::Cop::RSpec::Capybara::SpecificFinders = RuboCop::Cop::Capybara::SpecificFinders
+RuboCop::Cop::RSpec::Capybara::SpecificMatcher = RuboCop::Cop::Capybara::SpecificMatcher
+RuboCop::Cop::RSpec::Capybara::VisibilityMatcher = RuboCop::Cop::Capybara::VisibilityMatcher
 
 class RuboCop::Cop::RSpec::ChangeByZero < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -386,36 +241,6 @@ class RuboCop::Cop::RSpec::ContextWording < ::RuboCop::Cop::RSpec::Base
 end
 
 RuboCop::Cop::RSpec::ContextWording::MSG = T.let(T.unsafe(nil), String)
-
-module RuboCop::Cop::RSpec::CssSelector
-  private
-
-  def attribute?(selector); end
-  def attributes(selector); end
-  def common_attributes?(selector); end
-  def id?(selector); end
-  def multiple_selectors?(selector); end
-  def normalize_value(value); end
-  def pseudo_classes(selector); end
-  def specific_options?(element, attribute); end
-  def specific_pesudo_classes?(pseudo_class); end
-
-  class << self
-    def attribute?(selector); end
-    def attributes(selector); end
-    def common_attributes?(selector); end
-    def id?(selector); end
-    def multiple_selectors?(selector); end
-    def normalize_value(value); end
-    def pseudo_classes(selector); end
-    def specific_options?(element, attribute); end
-    def specific_pesudo_classes?(pseudo_class); end
-  end
-end
-
-RuboCop::Cop::RSpec::CssSelector::COMMON_OPTIONS = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::RSpec::CssSelector::SPECIFIC_OPTIONS = T.let(T.unsafe(nil), Hash)
-RuboCop::Cop::RSpec::CssSelector::SPECIFIC_PSEUDO_CLASSES = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::RSpec::DescribeClass < ::RuboCop::Cop::RSpec::Base
   include ::RuboCop::Cop::RSpec::TopLevelGroup
@@ -760,11 +585,14 @@ module RuboCop::Cop::RSpec::ExplicitHelper
   def allowed_explicit_matchers; end
   def check_explicit(node); end
   def corrector_explicit(corrector, to_node, actual, matcher, block_child); end
+  def heredoc_argument?(matcher); end
   def message_explicit(matcher); end
   def move_predicate(corrector, actual, matcher, block_child); end
   def predicate_matcher_name?(name); end
+  def replaceable_matcher?(matcher); end
   def replacement_matcher(node); end
   def to_predicate_method(matcher); end
+  def uncorrectable_matcher?(node, matcher); end
 end
 
 RuboCop::Cop::RSpec::ExplicitHelper::BUILT_IN_MATCHERS = T.let(T.unsafe(nil), Array)
