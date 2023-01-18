@@ -766,6 +766,16 @@ To turn developer mode off, run $(bold "brew developer off")
   export HOMEBREW_DEV_CMD_RUN="1"
 fi
 
+# Test HOMEBREW_INSTALL_FROM_API on HOMEBREW_DEV_CMD_RUN and HOMEBREW_DEVELOPER
+# folks who haven't run a HOMEBREW_DEVELOPER_COMMAND.
+if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
+      -z "${HOMEBREW_INSTALL_FROM_API}" &&
+      -z "${HOMEBREW_DEVELOPER_COMMAND}" ]] &&
+   [[ -n "${HOMEBREW_DEV_CMD_RUN}" || -n "${HOMEBREW_DEVELOPER}" ]]
+then
+  export HOMEBREW_INSTALL_FROM_API=1
+fi
+
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]
 then
   HOMEBREW_BASH_COMMAND="${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh"
