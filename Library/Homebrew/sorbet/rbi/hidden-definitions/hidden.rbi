@@ -19,10 +19,6 @@ module ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
 end
 
-module ActiveSupport::VERSION
-  PRE = ::T.let(nil, ::T.untyped)
-end
-
 class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
@@ -3293,7 +3289,6 @@ class Date
   def plus_without_duration(arg); end
 
   def to_default_s(); end
-  VERSION = ::T.let(nil, ::T.untyped)
 end
 
 class Date::Infinity
@@ -4506,8 +4501,6 @@ module Homebrew::EnvConfig
 
   def self.install_badge(); end
 
-  def self.install_from_api?(); end
-
   def self.livecheck_watchlist(); end
 
   def self.logs(); end
@@ -4533,6 +4526,8 @@ module Homebrew::EnvConfig
   def self.no_insecure_redirect?(); end
 
   def self.no_install_cleanup?(); end
+
+  def self.no_install_from_api?(); end
 
   def self.no_install_upgrade?(); end
 
