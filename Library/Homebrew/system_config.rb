@@ -53,11 +53,6 @@ module SystemConfig
     end
 
     sig { returns(String) }
-    def branch
-      homebrew_repo.git_branch || "(none)"
-    end
-
-    sig { returns(String) }
     def core_tap_head
       CoreTap.instance.git_head || "(none)"
     end
@@ -160,7 +155,6 @@ module SystemConfig
       f.puts "ORIGIN: #{origin}"
       f.puts "HEAD: #{head}"
       f.puts "Last commit: #{last_commit}"
-      f.puts "Branch: #{branch}"
     end
 
     def homebrew_env_config(f = $stdout)
