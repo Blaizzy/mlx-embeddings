@@ -385,6 +385,12 @@ user account:
 EOS
   fi
 
+  if [[ -d "${HOMEBREW_CORE_REPOSITORY}" ]] ||
+     [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+  then
+    HOMEBREW_CORE_AVAILABLE="1"
+  fi
+
   if [[ ! -w "${HOMEBREW_REPOSITORY}" ]]
   then
     odie <<EOS
@@ -399,7 +405,7 @@ EOS
   if [[ -n "${HOMEBREW_FORCE_BREWED_CA_CERTIFICATES}" && ! -f "${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem" ]]
   then
     # we cannot install Homebrew CA certificates if homebrew/core is unavailable.
-    if [[ -d "${HOMEBREW_CORE_REPOSITORY}" || -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+    if [[ -n "${HOMEBREW_CORE_AVAILABLE}" ]]
     then
       brew install ca-certificates
       setup_ca_certificates
@@ -410,7 +416,7 @@ EOS
   if [[ -n "${HOMEBREW_FORCE_BREWED_CURL}" && ! -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]]
   then
     # we cannot install a Homebrew cURL if homebrew/core is unavailable.
-    if [[ ! -d "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install curl
+    if [[ -z "${HOMEBREW_CORE_AVAILABLE}" ]] || ! brew install curl
     then
       odie "'curl' must be installed and in your PATH!"
     fi
@@ -422,7 +428,7 @@ EOS
      [[ -n "${HOMEBREW_FORCE_BREWED_GIT}" && ! -x "${HOMEBREW_PREFIX}/opt/git/bin/git" ]]
   then
     # we cannot install a Homebrew Git if homebrew/core is unavailable.
-    if [[ ! -d "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_INSTALL_FROM_API}" ]] || ! brew install git
+    if [[ -z "${HOMEBREW_CORE_AVAILABLE}" ]] || ! brew install git
     then
       odie "'git' must be installed and in your PATH!"
     fi
@@ -560,7 +566,7 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
+    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
        [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ]]
     then
@@ -720,7 +726,7 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
+    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
        [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ||
           "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
@@ -762,7 +768,7 @@ EOS
     fi
   done
 
-  if [[ -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+  if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]]
   then
     mkdir -p "${HOMEBREW_CACHE}/api"
 

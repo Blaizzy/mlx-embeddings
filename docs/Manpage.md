@@ -2151,8 +2151,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_INSTALL_FROM_API`
   <br>If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API instead of needing (large, slow) local checkouts of these repositories.
 
-    *Note:* Setting HOMEBREW_INSTALL_FROM_API is not compatible with Homebrew's developer mode so will error (as Homebrew development needs a full clone).
-
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
 
@@ -2209,6 +2207,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_NO_INSTALL_CLEANUP`
   <br>If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every `HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days. Alternatively, HOMEBREW_NO_CLEANUP_FORMULAE allows specifying specific formulae to not clean up.
+
+- `HOMEBREW_NO_INSTALL_FROM_API`
+  <br>If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API even if `HOMEBREW_INSTALL_FROM_API` is set and instead use (large, slow) local checkouts of these repositories.
 
 - `HOMEBREW_NO_INSTALL_UPGRADE`
   <br>If set, `brew install *`formula`*` will not upgrade `*`formula`*` if it is installed but outdated.

@@ -226,9 +226,7 @@ module Homebrew
       },
       HOMEBREW_INSTALL_FROM_API:                 {
         description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
-                     "API instead of needing (large, slow) local checkouts of these repositories." \
-                     "\n\n    *Note:* Setting HOMEBREW_INSTALL_FROM_API is not compatible with Homebrew's " \
-                     "developer mode so will error (as Homebrew development needs a full clone).",
+                     "API instead of needing (large, slow) local checkouts of these repositories.",
         boolean:     true,
       },
       HOMEBREW_LIVECHECK_WATCHLIST:              {
@@ -311,6 +309,12 @@ module Homebrew
                      "cleanup installed/upgraded/reinstalled formulae or all formulae every " \
                      "`HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS` days. Alternatively, HOMEBREW_NO_CLEANUP_FORMULAE " \
                      "allows specifying specific formulae to not clean up.",
+        boolean:     true,
+      },
+      HOMEBREW_NO_INSTALL_FROM_API:              {
+        description: "If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using " \
+                     "Homebrew's API even if `HOMEBREW_INSTALL_FROM_API` is set and instead use (large, slow) " \
+                     "local checkouts of these repositories.",
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_UPGRADE:               {
@@ -477,6 +481,11 @@ module Homebrew
     sig { returns(T::Boolean) }
     def cask_opts_require_sha?
       cask_opts.include?("--require-sha")
+    end
+
+    sig { returns(T::Boolean) }
+    def install_from_api?
+      ENV["HOMEBREW_NO_INSTALL_FROM_API"].blank? && ENV["HOMEBREW_INSTALL_FROM_API"].present?
     end
   end
 end

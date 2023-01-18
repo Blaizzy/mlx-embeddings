@@ -3142,9 +3142,6 @@ Print this text before the installation summary of each successful build\.
 .br
 If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew\'s API instead of needing (large, slow) local checkouts of these repositories\.
 .
-.IP
-\fINote:\fR Setting HOMEBREW_INSTALL_FROM_API is not compatible with Homebrew\'s developer mode so will error (as Homebrew development needs a full clone)\.
-.
 .TP
 \fBHOMEBREW_LIVECHECK_WATCHLIST\fR
 .
@@ -3252,6 +3249,12 @@ If set, forbid redirects from secure HTTPS to insecure HTTP\.
 .
 .br
 If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every \fBHOMEBREW_CLEANUP_PERIODIC_FULL_DAYS\fR days\. Alternatively, HOMEBREW_NO_CLEANUP_FORMULAE allows specifying specific formulae to not clean up\.
+.
+.TP
+\fBHOMEBREW_NO_INSTALL_FROM_API\fR
+.
+.br
+If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew\'s API even if \fBHOMEBREW_INSTALL_FROM_API\fR is set and instead use (large, slow) local checkouts of these repositories\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALL_UPGRADE\fR
