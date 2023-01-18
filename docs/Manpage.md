@@ -1993,7 +1993,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_AUTO_UPDATE_SECS`
   <br>Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.
 
-  *Default:* `300`.
+  *Default:* 300 (5 minutes) or 86400 (24 hours) if HOMEBREW_INSTALL_FROM_API is set.
 
 - `HOMEBREW_AUTOREMOVE`
   <br>If set, calls to `brew cleanup` and `brew uninstall` will automatically remove unused formula dependents and if HOMEBREW_NO_INSTALL_CLEANUP is not set, `brew cleanup` will start running `brew autoremove` periodically.
