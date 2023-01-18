@@ -31,10 +31,10 @@ module Homebrew
                      "`http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`",
       },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
-        description: "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
-                     "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
-                     "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
-        default:     300,
+        description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
+                      "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
+                      "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
+        default_text: "300 (5 minutes) or 86400 (24 hours) if HOMEBREW_INSTALL_FROM_API is set.",
       },
       HOMEBREW_AUTOREMOVE:                       {
         description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \

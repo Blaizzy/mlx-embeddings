@@ -249,7 +249,14 @@ auto-update() {
 
     if [[ -z "${HOMEBREW_AUTO_UPDATE_SECS}" ]]
     then
-      HOMEBREW_AUTO_UPDATE_SECS="300"
+      if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+      then
+        # 24 hours
+        HOMEBREW_AUTO_UPDATE_SECS="86400"
+      else
+        # 5 minutes
+        HOMEBREW_AUTO_UPDATE_SECS="300"
+      fi
     fi
 
     # Skip auto-update if the repository has been updated in the
