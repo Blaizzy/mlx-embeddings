@@ -4506,8 +4506,6 @@ module Homebrew::EnvConfig
 
   def self.install_badge(); end
 
-  def self.install_from_api?(); end
-
   def self.livecheck_watchlist(); end
 
   def self.logs(); end
@@ -4533,6 +4531,8 @@ module Homebrew::EnvConfig
   def self.no_insecure_redirect?(); end
 
   def self.no_install_cleanup?(); end
+
+  def self.no_install_from_api?(); end
 
   def self.no_install_upgrade?(); end
 
