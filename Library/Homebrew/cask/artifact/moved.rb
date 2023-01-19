@@ -117,7 +117,7 @@ module Cask
         source.dirname.mkpath
 
         # We need to preserve extended attributes between copies.
-        command.run!("/bin/cp", args: ["-pR", target, source], sudo: !target.parent.writable?)
+        command.run!("/bin/cp", args: ["-pR", target, source], sudo: !source.parent.writable?)
 
         delete(target, force: force, command: command, **options)
       end
