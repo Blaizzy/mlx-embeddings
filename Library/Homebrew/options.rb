@@ -146,6 +146,11 @@ class Options
   alias to_ary to_a
 
   sig { returns(String) }
+  def to_s
+    @options.map(&:to_s).join(" ")
+  end
+
+  sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{to_a.inspect}>"
   end
