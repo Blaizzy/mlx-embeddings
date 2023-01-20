@@ -82,7 +82,10 @@ module Cask
         if target.dirname.writable?
           FileUtils.move(source, target)
         else
-          command.run!("/bin/mv", args: [source, target], sudo: true)
+          # default sudo user isn't necessarily able to write to Homebrew's locations
+          # e.g. with runas_default set in the sudoers (5) file.
+          command.run!("/bin/cp", args: ["-pR", source, target], sudo: true)
+          source.rmtree
         end
 
         post_move(command)
