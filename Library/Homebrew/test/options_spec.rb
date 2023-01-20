@@ -90,6 +90,14 @@ describe Options do
     expect(described_class.create(array).sort).to eq([option1, option2].sort)
   end
 
+  specify "#to_s" do
+    expect(options.to_s).to eq("")
+    options << Option.new("first")
+    expect(options.to_s).to eq("--first")
+    options << Option.new("second")
+    expect(options.to_s).to eq("--first --second")
+  end
+
   specify "#inspect" do
     expect(options.inspect).to eq("#<Options: []>")
     options << Option.new("foo")
