@@ -153,6 +153,7 @@ class Caveats
 
   def service_caveats
     return if !f.plist && !f.service? && !keg&.plist_installed?
+    return if f.service? && f.service.command.blank?
 
     s = []
 

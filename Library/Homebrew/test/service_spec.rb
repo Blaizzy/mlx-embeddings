@@ -803,5 +803,77 @@ describe Homebrew::Service do
       command = f.service.command
       expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test"])
     end
+
+    it "returns @run data on Linux", :needs_linux do
+      f = stub_formula do
+        service do
+          run linux: [opt_bin/"beanstalkd", "test"]
+          run_type :immediate
+        end
+      end
+
+      command = f.service.command
+      expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test"])
+    end
+
+    it "returns nil on Linux", :needs_linux do
+      f = stub_formula do
+        service do
+          run macos: [opt_bin/"beanstalkd", "test"]
+          run_type :immediate
+        end
+      end
+
+      command = f.service.command
+      expect(command).to be_nil
+    end
+
+    it "returns @run data on macOS", :needs_macos do
+      f = stub_formula do
+        service do
+          run macos: [opt_bin/"beanstalkd", "test"]
+          run_type :immediate
+        end
+      end
+
+      command = f.service.command
+      expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test"])
+    end
+
+    it "returns nil on macOS", :needs_macos do
+      f = stub_formula do
+        service do
+          run linux: [opt_bin/"beanstalkd", "test"]
+          run_type :immediate
+        end
+      end
+
+      command = f.service.command
+      expect(command).to be_nil
+    end
+
+    it "returns appropriate @run data on Linux", :needs_linux do
+      f = stub_formula do
+        service do
+          run macos: [opt_bin/"beanstalkd", "test", "macos"], linux: [opt_bin/"beanstalkd", "test", "linux"]
+          run_type :immediate
+        end
+      end
+
+      command = f.service.command
+      expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test", "linux"])
+    end
+
+    it "returns appropriate @run data on macOS", :needs_macos do
+      f = stub_formula do
+        service do
+          run macos: [opt_bin/"beanstalkd", "test", "macos"], linux: [opt_bin/"beanstalkd", "test", "linux"]
+          run_type :immediate
+        end
+      end
+
+      command = f.service.command
+      expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test", "macos"])
+    end
   end
 end

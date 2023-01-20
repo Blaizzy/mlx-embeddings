@@ -564,7 +564,7 @@ module Homebrew
         RUBY
 
         mkdir_p fa.formula.prefix
-        expect(fa.check_service_command(fa.formula)).to match "Service command blank"
+        expect(fa.check_service_command(fa.formula)).to match nil
       end
 
       specify "Invalid command" do

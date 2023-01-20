@@ -108,6 +108,13 @@ module OnSystem
 
       result
     end
+
+    base.define_method(:on_system_conditional) do |macos: nil, linux: nil|
+      @on_system_blocks_exist = true
+
+      return macos if OnSystem.os_condition_met?(:macos) && macos.present?
+      return linux if OnSystem.os_condition_met?(:linux) && linux.present?
+    end
   end
 
   sig { params(base: Class).void }

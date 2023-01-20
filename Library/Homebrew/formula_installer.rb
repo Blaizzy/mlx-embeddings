@@ -1031,7 +1031,7 @@ class FormulaInstaller
       return
     end
 
-    if formula.service?
+    if formula.service? && formula.service.command.present?
       service_path = formula.systemd_service_path
       service_path.atomic_write(formula.service.to_systemd_unit)
       service_path.chmod 0644
@@ -1043,7 +1043,7 @@ class FormulaInstaller
       end
     end
 
-    service = if formula.service?
+    service = if formula.service? && formula.service.command.present?
       formula.service.to_plist
     elsif formula.plist
       formula.plist
@@ -1057,6 +1057,7 @@ class FormulaInstaller
     log = formula.var/"log"
     log.mkpath if service.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
+    puts e
     ofail "Failed to install service files"
     odebug e, e.backtrace
   end
