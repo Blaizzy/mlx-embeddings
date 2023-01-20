@@ -110,7 +110,7 @@ module Homebrew
     elsif args.json
       all = args.eval_all?
       if !all && args.all? && !Homebrew::EnvConfig.eval_all?
-        odeprecated "brew info --all", "brew info --eval-all or HOMEBREW_EVAL_ALL"
+        odisabled "brew info --all", "brew info --eval-all or HOMEBREW_EVAL_ALL"
         all = true
       end
 

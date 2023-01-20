@@ -56,7 +56,7 @@ module Homebrew
     all = args.eval_all?
     if args.total?
       if !all && !Homebrew::EnvConfig.eval_all?
-        odeprecated "brew unbottled --total", "brew unbottled --total --eval-all or HOMEBREW_EVAL_ALL"
+        odisabled "brew unbottled --total", "brew unbottled --total --eval-all or HOMEBREW_EVAL_ALL"
       end
       all = true
     end
@@ -100,7 +100,7 @@ module Homebrew
       formulae = all_formulae = args.named.to_formulae
     elsif args.dependents?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-        odeprecated "brew unbottled --dependents", "brew unbottled --all --dependents or HOMEBREW_EVAL_ALL"
+        odisabled "brew unbottled --dependents", "brew unbottled --all --dependents or HOMEBREW_EVAL_ALL"
       end
       formulae = all_formulae = Formula.all
 

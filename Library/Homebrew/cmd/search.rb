@@ -78,7 +78,7 @@ module Homebrew
 
     if args.desc?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-        odeprecated "brew search --desc", "brew search --desc --eval-all or HOMEBREW_EVAL_ALL"
+        odisabled "brew search --desc", "brew search --desc --eval-all or HOMEBREW_EVAL_ALL"
       end
       Search.search_descriptions(string_or_regex, args)
     elsif args.pull_request?

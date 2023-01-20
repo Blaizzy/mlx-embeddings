@@ -24,10 +24,10 @@ module Cask
     attr_accessor :download, :allow_reassignment
 
     def self.all
-      # TODO: uncomment for 3.7.0 and ideally avoid using ARGV by moving to e.g. CLI::Parser
-      # if !ARGV.include?("--eval-all") && !Homebrew::EnvConfig.eval_all?
-      #   odeprecated "Cask::Cask#all without --all or HOMEBREW_EVAL_ALL"
-      # end
+      # TODO: ideally avoid using ARGV by moving to e.g. CLI::Parser
+      if ARGV.exclude?("--eval-all") && !Homebrew::EnvConfig.eval_all?
+        odeprecated "Cask::Cask#all without --all or HOMEBREW_EVAL_ALL"
+      end
 
       Tap.flat_map(&:cask_files).map do |f|
         CaskLoader::FromTapPathLoader.new(f).load(config: nil)

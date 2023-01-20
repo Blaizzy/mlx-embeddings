@@ -14,7 +14,6 @@ class LinkageChecker
     libdl.so.2
     libm.so.6
     libmvec.so.1
-    libnsl.so.1
     libnss_files.so.2
     libpthread.so.0
     libresolv.so.2
@@ -41,13 +40,9 @@ class LinkageChecker
     # If there's no library deprecated/disabled handling left:
     # - Remove the `display_` overrides here and the associated generic aliases in HOMEBREW_LIBRARY/linkage_checker.rb
 
-    odisabled "linkage to libcrypt.so.1", "libcrypt.so.2 in the libxcrypt formula" if @libcrypt_found
-
     return unless @libnsl_found
 
-    odeprecated "linkage to libnsl.so.1", "libnsl.so.3 in the libnsl formula",
-                disable:                fail_on_libnsl1?(strict: strict),
-                disable_for_developers: false
+    odisabled "linkage to libnsl.so.1", "libnsl.so.3 in the libnsl formula"
   end
 
   def display_normal_output
@@ -61,19 +56,14 @@ class LinkageChecker
   end
 
   def broken_library_linkage?(test: false, strict: false)
-    generic_broken_library_linkage?(test: test, strict: strict) || (fail_on_libnsl1?(strict: strict) && @libnsl_found)
+    generic_broken_library_linkage?(test: test, strict: strict) || @libnsl_found
   end
 
   private
 
-  def fail_on_libnsl1?(strict:)
-    strict || ENV["HOMEBREW_DISALLOW_LIBNSL1"].present?
-  end
-
   def check_dylibs(rebuild_cache:)
     generic_check_dylibs(rebuild_cache: rebuild_cache)
 
-    @libcrypt_found = true if @system_dylibs.any? { |s| File.basename(s) == "libcrypt.so.1" }
     @libnsl_found = true if @system_dylibs.any? { |s| File.basename(s) == "libnsl.so.1" }
 
     # glibc and gcc are implicit dependencies.

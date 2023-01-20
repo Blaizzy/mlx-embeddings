@@ -38,7 +38,7 @@ module Homebrew
 
     all = args.eval_all?
     if args.all?
-      odeprecated "brew info --all", "brew info --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
+      odisabled "brew info --all", "brew info --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
       all = true
     end
 

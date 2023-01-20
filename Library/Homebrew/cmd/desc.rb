@@ -45,7 +45,7 @@ module Homebrew
     args = desc_args.parse
 
     if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-      odeprecated "brew desc", "brew desc --eval-all or HOMEBREW_EVAL_ALL"
+      odisabled "brew desc", "brew desc --eval-all or HOMEBREW_EVAL_ALL"
     end
 
     search_type = if args.search?
