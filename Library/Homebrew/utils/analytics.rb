@@ -16,9 +16,18 @@ module Utils
 
       include Context
 
-      def report(type, metadata = {})
-        return if not_this_run?
-        return if disabled?
+      INFLUX_BUCKET = "analytics"
+      INFLUX_TOKEN = "y2JZsgE7glWT9V-S-nElETLp8oyH9PGh9JVa-kCdOdp7mEHIOws4BtdjsIe3HHpCBty7IQHLnmh0prqK2vBj9A=="
+      INFLUX_HOST = "europe-west1-1.gcp.cloud2.influxdata.com"
+
+      sig { params(type: T.any(String, Symbol), metadata: T::Hash[Symbol, T.untyped]).void }
+      def report_google(type, metadata = {})
+        os = metadata[:el][:os]
+        arch = ", #{metadata[:el][:arch]}" if metadata[:el][:arch].present?
+        prefix = ", #{metadata[:el][:prefix]}" if metadata[:el][:prefix].present?
+        ci = ", CI" if metadata[:el][:CI] == true
+
+        metadata[:el] = "#{os}#{arch}#{prefix}#{ci}"
 
         analytics_ids = ENV.fetch("HOMEBREW_ANALYTICS_IDS", "").split(",")
         analytics_ids.each do |analytics_id|
@@ -61,7 +70,7 @@ module Utils
             pid = fork do
               exec curl, *args,
                    "--silent", "--output", "/dev/null",
-                   "https://www.google-analytics.com/collect"
+                   "https://www.google-analytqics.com/collect"
             end
             Process.detach T.must(pid)
           end
@@ -69,12 +78,63 @@ module Utils
         nil
       end
 
-      def report_event(category, action, label = os_arch_prefix_ci, value = nil)
-        report(:event,
-               ec: category,
-               ea: action,
-               el: label,
-               ev: value)
+      sig {
+        params(category: T.any(String, Symbol), action: T.any(String, Symbol), on_request: T::Boolean,
+               additional_tags: T::Hash[Symbol, T.untyped]).void
+      }
+      def report_influx(category, action, on_request, additional_tags = {})
+        return unless ENV["HOMEBREW_ANALYTICS_ENABLE_INFLUX"]
+
+        # Append general information to device information
+        tags = additional_tags.merge(action: action, on_request: !on_request.nil?)
+                              .compact_blank
+                              .map { |k, v| "#{k}=#{v.to_s.sub(" ", "\\ ")}" } # convert to key/value parameters
+                              .join(",")
+
+        args = [
+          "--max-time", "3",
+          "--header", "Content-Type: text/plain; charset=utf-8",
+          "--header", "Accept: application/json",
+          "--header", "Authorization: Token #{INFLUX_TOKEN}",
+          "--data-raw", "#{category},#{tags} count=1i #{Time.now.to_i}"
+        ]
+
+        curl = Utils::Curl.curl_executable
+        url = "https://#{INFLUX_HOST}/api/v2/write?bucket=#{INFLUX_BUCKET}&precision=s"
+        if ENV["HOMEBREW_ANALYTICS_DEBUG"]
+          puts "#{curl} #{args.join(" ")} \"#{url}\""
+          puts Utils.popen_read(curl, *args, url)
+        else
+          pid = fork do
+            exec curl, *args, "--silent", "--output", "/dev/null", url
+          end
+          Process.detach T.must(pid)
+        end
+      end
+
+      sig { params(category: T.any(String, Symbol), action: String, on_request: T::Boolean).void }
+      def report_event(category, action, on_request: false)
+        return if not_this_run?
+        return if disabled?
+
+        google_label = os_arch_prefix_ci(verbose: false)
+
+        report_google(:event,
+                      ec: category,
+                      ea: action,
+                      el: google_label,
+                      ev: nil)
+
+        if on_request
+          report_google(:event,
+                        ec: :install_on_request,
+                        ea: action,
+                        el: google_label,
+                        ev: nil)
+        end
+
+        influx_additional_data = os_arch_prefix_ci(verbose: true)
+        report_influx(category, action, on_request, influx_additional_data)
       end
 
       def report_build_error(exception)
@@ -216,14 +276,14 @@ module Utils
         nil
       end
 
-      sig { returns(String) }
-      def custom_prefix_label
+      sig { params(verbose: T::Boolean).returns(String) }
+      def custom_prefix_label(verbose: false)
         "custom-prefix"
       end
       alias generic_custom_prefix_label custom_prefix_label
 
-      sig { returns(String) }
-      def arch_label
+      sig { params(verbose: T::Boolean).returns(String) }
+      def arch_label(verbose: false)
         if Hardware::CPU.arm?
           "ARM"
         else
@@ -237,13 +297,24 @@ module Utils
         remove_instance_variable(:@os_arch_prefix_ci)
       end
 
-      def os_arch_prefix_ci
+      sig { params(verbose: T::Boolean).returns(T::Hash[Symbol, String]) }
+      def os_arch_prefix_ci(verbose: false)
         @os_arch_prefix_ci ||= begin
-          os = OS_VERSION
-          arch = ", #{arch_label}" if arch_label.present?
-          prefix = ", #{custom_prefix_label}" unless Homebrew.default_prefix?
-          ci = ", CI" if ENV["CI"]
-          "#{os}#{arch}#{prefix}#{ci}"
+          data = {
+            os:        OS_VERSION,
+            developer: Homebrew::EnvConfig.developer?,
+            version:   HOMEBREW_VERSION,
+            system:    HOMEBREW_SYSTEM,
+            ci:        ENV["CI"].present?,
+            arch:      arch_label(verbose: verbose),
+            prefix:    custom_prefix_label(verbose: verbose),
+          }
+          unless verbose
+            data.delete(:arch) if data[:arch].blank?
+            data.delete(:prefix) if Homebrew.default_prefix?
+          end
+
+          data
         end
       end
 

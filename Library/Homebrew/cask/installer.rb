@@ -110,7 +110,7 @@ module Cask
 
       install_artifacts
 
-      ::Utils::Analytics.report_event("cask_install", @cask.token) unless @cask.tap&.private?
+      ::Utils::Analytics.report_event("cask_install", @cask.token, on_request: true) unless @cask.tap&.private?
 
       purge_backed_up_versioned_files
 

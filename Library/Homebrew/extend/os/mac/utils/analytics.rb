@@ -6,15 +6,15 @@ module Utils
     class << self
       extend T::Sig
 
-      sig { returns(String) }
-      def custom_prefix_label
+      sig { params(verbose: T::Boolean).returns(String) }
+      def custom_prefix_label(verbose: false)
         return generic_custom_prefix_label if Hardware::CPU.arm?
 
         "non-/usr/local"
       end
 
-      sig { returns(String) }
-      def arch_label
+      sig { params(verbose: T::Boolean).returns(String) }
+      def arch_label(verbose: false)
         if Hardware::CPU.arm?
           "ARM"
         elsif Hardware::CPU.in_rosetta2?
