@@ -26,7 +26,7 @@ module Homebrew
       switch "--cask", "--casks",
              description: "Check only casks."
       switch "--open-pr",
-             description: "Open a pull request for the new version if there are none already open."
+             description: "Open a pull request for the new version if none have been opened yet."
       flag   "--limit=",
              description: "Limit number of package results returned."
       flag   "--start-with=",
@@ -213,9 +213,9 @@ module Homebrew
     "error: #{e}"
   end
 
-  def retrieve_pull_requests(formula_or_cask, name)
+  def retrieve_pull_requests(formula_or_cask, name, state:, version: nil)
     tap_remote_repo = formula_or_cask.tap&.remote_repo || formula_or_cask.tap&.full_name
-    pull_requests = GitHub.fetch_pull_requests(name, tap_remote_repo, state: "open")
+    pull_requests = GitHub.fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
     if pull_requests.try(:any?)
       pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
     end
@@ -248,8 +248,13 @@ module Homebrew
       repology_latest
     end.presence
 
-    pull_requests = if !args.no_pull_requests? && (args.named.present? || new_version)
-      retrieve_pull_requests(formula_or_cask, name)
+    open_pull_requests = if !args.no_pull_requests? && (args.named.present? || new_version)
+      retrieve_pull_requests(formula_or_cask, name, state: "open")
+    end.presence
+
+    closed_pull_requests = if !args.no_pull_requests? && !open_pull_requests && new_version.present?
+      # if we haven't already found open requests, try for an exact match across closed requests
+      retrieve_pull_requests(formula_or_cask, name, state: "closed", version: new_version)
     end.presence
 
     title_name = ambiguous_cask ? "#{name} (cask)" : name
@@ -265,7 +270,8 @@ module Homebrew
       Current #{version_name}:  #{current_version}
       Latest livecheck version: #{livecheck_latest}
       Latest Repology version:  #{repology_latest}
-      Open pull requests:       #{pull_requests || "none"}
+      Open pull requests:       #{open_pull_requests || "none"}
+      Closed pull requests:     #{closed_pull_requests || "none"}
     EOS
 
     return unless args.open_pr?
@@ -278,7 +284,8 @@ module Homebrew
     end
 
     return unless new_version
-    return if pull_requests
+    return if open_pull_requests
+    return if closed_pull_requests
 
     system HOMEBREW_BREW_FILE, "bump-#{type}-pr", "--no-browse",
            "--message=Created by `brew bump`", "--version=#{new_version}", name
