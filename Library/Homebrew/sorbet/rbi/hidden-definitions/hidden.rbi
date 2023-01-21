@@ -3995,6 +3995,8 @@ class Formula
 
   def on_system(linux, macos:, &block); end
 
+  def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
+
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 
   def uses_from_macos_names(*args, &block); end
@@ -4024,6 +4026,8 @@ class Formula
   def self.on_sierra(or_condition=T.unsafe(nil), &block); end
 
   def self.on_system(linux, macos:, &block); end
+
+  def self.on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
 
   def self.on_ventura(or_condition=T.unsafe(nil), &block); end
 end
@@ -4604,6 +4608,34 @@ class Homebrew::Service
   def etc(*args, &block); end
 
   def libexec(*args, &block); end
+
+  def on_arch_conditional(arm: T.unsafe(nil), intel: T.unsafe(nil)); end
+
+  def on_arm(&block); end
+
+  def on_big_sur(or_condition=T.unsafe(nil), &block); end
+
+  def on_catalina(or_condition=T.unsafe(nil), &block); end
+
+  def on_el_capitan(or_condition=T.unsafe(nil), &block); end
+
+  def on_high_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_intel(&block); end
+
+  def on_linux(&block); end
+
+  def on_macos(&block); end
+
+  def on_mojave(or_condition=T.unsafe(nil), &block); end
+
+  def on_monterey(or_condition=T.unsafe(nil), &block); end
+
+  def on_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_system(linux, macos:, &block); end
+
+  def on_ventura(or_condition=T.unsafe(nil), &block); end
 
   def opt_bin(*args, &block); end
 
@@ -5785,6 +5817,8 @@ class PourBottleCheck
 
   def on_system(linux, macos:, &block); end
 
+  def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
+
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
 
@@ -6154,6 +6188,8 @@ class Resource
   def on_sierra(or_condition=T.unsafe(nil), &block); end
 
   def on_system(linux, macos:, &block); end
+
+  def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
 
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
@@ -8265,6 +8301,8 @@ class SoftwareSpec
   def on_sierra(or_condition=T.unsafe(nil), &block); end
 
   def on_system(linux, macos:, &block); end
+
+  def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
 
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
