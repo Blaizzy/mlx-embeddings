@@ -185,10 +185,6 @@ module Cask
     def check_single_uninstall_zap
       odebug "Auditing single uninstall_* and zap stanzas"
 
-      if cask.artifacts.count { |k| k.is_a?(Artifact::Uninstall) } > 1
-        add_error "only a single uninstall stanza is allowed"
-      end
-
       count = cask.artifacts.count do |k|
         k.is_a?(Artifact::PreflightBlock) &&
           k.directives.key?(:uninstall_preflight)

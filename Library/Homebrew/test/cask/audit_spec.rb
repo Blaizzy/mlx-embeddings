@@ -600,28 +600,6 @@ describe Cask::Audit, :cask do
       end
     end
 
-    describe "uninstall stanza checks" do
-      let(:message) { "only a single uninstall stanza is allowed" }
-
-      context "when the Cask has no uninstall stanza" do
-        let(:cask_token) { "with-zap-rmdir" }
-
-        it { is_expected.not_to fail_with(message) }
-      end
-
-      context "when the Cask has only one uninstall stanza" do
-        let(:cask_token) { "with-uninstall-rmdir" }
-
-        it { is_expected.not_to fail_with(message) }
-      end
-
-      context "when the Cask has multiple uninstall stanzas" do
-        let(:cask_token) { "with-uninstall-multi" }
-
-        it { is_expected.to fail_with(message) }
-      end
-    end
-
     describe "uninstall_preflight stanza checks" do
       let(:message) { "only a single uninstall_preflight stanza is allowed" }
 
