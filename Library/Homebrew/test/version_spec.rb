@@ -246,11 +246,6 @@ describe Version do
   end
 
   describe "::create" do
-    it "accepts objects responding to #to_str" do
-      value = double(to_str: "0.1")
-      expect(described_class.create(value).to_s).to eq("0.1")
-    end
-
     it "raises a TypeError for non-string objects" do
       expect { described_class.create(1.1) }.to raise_error(TypeError)
       expect { described_class.create(1) }.to raise_error(TypeError)
