@@ -45,12 +45,12 @@ describe Utils::Git do
   end
 
   let(:file) { "README.md" }
-  let(:file_hash1) { @h1[0..6] } # rubocop:todo RSpec/InstanceVariable
-  let(:file_hash2) { @h2[0..6] } # rubocop:todo RSpec/InstanceVariable
+  let(:file_hash1) { @h1[0..6] } # rubocop:disable RSpec/InstanceVariable
+  let(:file_hash2) { @h2[0..6] } # rubocop:disable RSpec/InstanceVariable
   let(:files) { ["README.md", "LICENSE.txt"] }
-  let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] } # rubocop:todo RSpec/InstanceVariable
-  let(:files_hash2) { [@h2[0..6], ["README.md"]] } # rubocop:todo RSpec/InstanceVariable
-  let(:cherry_pick_commit) { @cherry_pick_commit[0..6] } # rubocop:todo RSpec/InstanceVariable
+  let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] } # rubocop:disable RSpec/InstanceVariable
+  let(:files_hash2) { [@h2[0..6], ["README.md"]] } # rubocop:disable RSpec/InstanceVariable
+  let(:cherry_pick_commit) { @cherry_pick_commit[0..6] } # rubocop:disable RSpec/InstanceVariable
 
   describe "#cherry_pick!" do
     it "can cherry pick a commit" do
