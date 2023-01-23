@@ -10,7 +10,7 @@ describe CacheStoreDatabase do
     let(:type) { :test }
 
     it "creates a new `DatabaseCache` instance" do
-      cache_store = double("cache_store", write_if_dirty!: nil)
+      cache_store = instance_double(described_class, "cache_store", write_if_dirty!: nil)
       expect(described_class).to receive(:new).with(type).and_return(cache_store)
       expect(cache_store).to receive(:write_if_dirty!)
       described_class.use(type) { |_db| }
@@ -18,7 +18,7 @@ describe CacheStoreDatabase do
   end
 
   describe "#set" do
-    let(:db) { double("db", :[]= => nil) }
+    let(:db) { instance_double(Hash, "db", :[]= => nil) }
 
     it "sets the value in the `CacheStoreDatabase`" do
       allow(File).to receive(:write)
@@ -33,7 +33,7 @@ describe CacheStoreDatabase do
 
   describe "#get" do
     context "with a database created" do
-      let(:db) { double("db", :[] => "bar") }
+      let(:db) { instance_double(Hash, "db", :[] => "bar") }
 
       it "gets value in the `CacheStoreDatabase` corresponding to the key" do
         allow(sample_db).to receive(:created?).and_return(true)
@@ -45,7 +45,7 @@ describe CacheStoreDatabase do
     end
 
     context "without a database created" do
-      let(:db) { double("db", :[] => nil) }
+      let(:db) { instance_double(Hash, "db", :[] => nil) }
 
       before do
         allow(sample_db).to receive(:created?).and_return(false)
@@ -65,7 +65,7 @@ describe CacheStoreDatabase do
 
   describe "#delete" do
     context "with a database created" do
-      let(:db) { double("db", :[] => { foo: "bar" }) }
+      let(:db) { instance_double(Hash, "db", :[] => { foo: "bar" }) }
 
       before do
         allow(sample_db).to receive(:created?).and_return(true)
@@ -79,7 +79,7 @@ describe CacheStoreDatabase do
     end
 
     context "without a database created" do
-      let(:db) { double("db", delete: nil) }
+      let(:db) { instance_double(Hash, "db", delete: nil) }
 
       before do
         allow(sample_db).to receive(:created?).and_return(false)
