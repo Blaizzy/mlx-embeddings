@@ -487,7 +487,7 @@ _brew_bump() {
     '--help[Show this message]' \
     '--limit[Limit number of package results returned]' \
     '(--open-pr)--no-pull-requests[Do not retrieve pull requests from GitHub]' \
-    '(--no-pull-requests)--open-pr[Open a pull request for the new version if there are none already open]' \
+    '(--no-pull-requests)--open-pr[Open a pull request for the new version if none have been opened yet]' \
     '--quiet[Make some output more quiet]' \
     '--start-with[Letter or word that the list of package results should alphabetically follow]' \
     '--verbose[Make some output more verbose]' \

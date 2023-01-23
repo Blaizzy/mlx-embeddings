@@ -974,7 +974,7 @@ formulae, also displays whether a pull request has been opened with the URL.
 * `--cask`:
   Check only casks.
 * `--open-pr`:
-  Open a pull request for the new version if there are none already open.
+  Open a pull request for the new version if none have been opened yet.
 * `--limit`:
   Limit number of package results returned.
 * `--start-with`:
