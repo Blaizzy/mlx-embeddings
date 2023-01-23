@@ -11,6 +11,8 @@ module Dependable
   # misuse in future.
   RESERVED_TAGS = [:build, :optional, :recommended, :run, :test, :linked].freeze
 
+  attr_reader :tags
+
   def build?
     tags.include? :build
   end
