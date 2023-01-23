@@ -137,6 +137,10 @@ module Homebrew
         c.sub(%r{^homebrew/cask.*/}, "")
       end
 
+      if !Tap.fetch("homebrew/cask").installed? && Homebrew::EnvConfig.install_from_api?
+        cask_tokens += Homebrew::API::Cask.all_casks.keys
+      end
+
       results = cask_tokens.extend(Searchable)
                            .search(string_or_regex)
 
