@@ -27,8 +27,8 @@ describe "brew update-report" do
     let(:hub) { ReporterHub.new }
 
     def perform_update(fixture_name = "")
-      allow(Formulary).to receive(:factory).and_return(double(pkg_version: "1.0"))
-      allow(FormulaVersions).to receive(:new).and_return(double(formula_at_revision: "2.0"))
+      allow(Formulary).to receive(:factory).and_return(instance_double(Formula, pkg_version: "1.0"))
+      allow(FormulaVersions).to receive(:new).and_return(instance_double(FormulaVersions, formula_at_revision: "2.0"))
 
       diff = YAML.load_file("#{TEST_FIXTURE_DIR}/updater_fixture.yaml")[fixture_name]
       allow(reporter).to receive(:diff).and_return(diff || "")
