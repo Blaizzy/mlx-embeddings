@@ -4,7 +4,13 @@
 describe Cask::Pkg, :cask do
   describe "#uninstall" do
     let(:fake_system_command) { NeverSudoSystemCommand }
-    let(:empty_response) { double(stdout: "", plist: { "volume" => "/", "install-location" => "", "paths" => {} }) }
+    let(:empty_response) do
+      instance_double(
+        SystemCommand::Result,
+        stdout: "",
+        plist:  { "volume" => "/", "install-location" => "", "paths" => {} },
+      )
+    end
     let(:pkg) { described_class.new("my.fake.pkg", fake_system_command) }
 
     it "removes files and dirs referenced by the pkg" do

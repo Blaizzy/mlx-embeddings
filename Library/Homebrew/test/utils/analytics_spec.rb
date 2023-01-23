@@ -143,7 +143,7 @@ describe Utils::Analytics do
 
     context "when formula does not have a tap" do
       let(:err) { BuildError.new(f, "badprg", %w[arg1 arg2], {}) }
-      let(:f) { double(Formula, name: "foo", path: "blah", tap: nil) }
+      let(:f) { instance_double(Formula, name: "foo", path: "blah", tap: nil) }
 
       it "does not report event if BuildError is raised" do
         expect(described_class).not_to receive(:report_event)
@@ -153,7 +153,7 @@ describe Utils::Analytics do
 
     context "when tap for a formula is not installed" do
       let(:err) { BuildError.new(f, "badprg", %w[arg1 arg2], {}) }
-      let(:f) { double(Formula, name: "foo", path: "blah", tap: CoreTap.instance) }
+      let(:f) { instance_double(Formula, name: "foo", path: "blah", tap: CoreTap.instance) }
 
       it "does not report event if BuildError is raised" do
         allow_any_instance_of(Pathname).to receive(:directory?).and_return(false)

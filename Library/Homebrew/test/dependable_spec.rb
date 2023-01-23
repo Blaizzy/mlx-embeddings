@@ -6,9 +6,14 @@ require "dependable"
 describe Dependable do
   alias_matcher :be_a_build_dependency, :be_build
 
-  subject(:dependable) { double(tags: tags).extend(described_class) }
-
-  let(:tags) { ["foo", "bar", :build] }
+  subject(:dependable) {
+    Class.new {
+      include Dependable
+      def initialize
+        @tags = ["foo", "bar", :build]
+      end
+    }.new
+  }
 
   specify "#options" do
     expect(dependable.options.as_flags.sort).to eq(%w[--foo --bar].sort)

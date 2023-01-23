@@ -3,10 +3,6 @@
 
 describe Cask::Installer, :cask do
   describe "install" do
-    let(:empty_depends_on_stub) {
-      double(formula: [], cask: [], macos: nil, arch: nil)
-    }
-
     it "downloads and installs a nice fresh Cask" do
       caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
 

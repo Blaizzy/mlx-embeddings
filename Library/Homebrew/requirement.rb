@@ -17,7 +17,7 @@ class Requirement
   include Dependable
   extend Cachable
 
-  attr_reader :tags, :name, :cask, :download
+  attr_reader :name, :cask, :download
 
   def initialize(tags = [])
     # Only allow instances of subclasses. This base class enforces no constraints on its own.
