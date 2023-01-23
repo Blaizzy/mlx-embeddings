@@ -37,7 +37,7 @@ describe "Exception" do
   describe TapFormulaOrCaskUnavailableError do
     subject(:error) { described_class.new(tap, "foo") }
 
-    let(:tap) { double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
+    let(:tap) { instance_double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
 
     its(:to_s) { is_expected.to match(%r{Please tap it and then try again: brew tap u/r}) }
   end
@@ -79,7 +79,7 @@ describe "Exception" do
   describe TapFormulaUnavailableError do
     subject { described_class.new(tap, "foo") }
 
-    let(:tap) { double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
+    let(:tap) { instance_double(Tap, user: "u", repo: "r", to_s: "u/r", installed?: false) }
 
     its(:to_s) { is_expected.to match(%r{Please tap it and then try again: brew tap u/r}) }
   end
@@ -141,7 +141,7 @@ describe "Exception" do
   describe BuildError do
     subject { described_class.new(formula, "badprg", %w[arg1 arg2], {}) }
 
-    let(:formula) { double(Formula, name: "foo") }
+    let(:formula) { instance_double(Formula, name: "foo") }
 
     its(:to_s) { is_expected.to eq("Failed executing: badprg arg1 arg2") }
   end
@@ -155,7 +155,7 @@ describe "Exception" do
   describe FormulaInstallationAlreadyAttemptedError do
     subject { described_class.new(formula) }
 
-    let(:formula) { double(Formula, full_name: "foo/bar") }
+    let(:formula) { instance_double(Formula, full_name: "foo/bar") }
 
     its(:to_s) { is_expected.to eq("Formula installation already attempted: foo/bar") }
   end
@@ -163,8 +163,8 @@ describe "Exception" do
   describe FormulaConflictError do
     subject { described_class.new(formula, [conflict]) }
 
-    let(:formula) { double(Formula, full_name: "foo/qux") }
-    let(:conflict) { double(name: "bar", reason: "I decided to") }
+    let(:formula) { instance_double(Formula, full_name: "foo/qux") }
+    let(:conflict) { instance_double(FormulaConflict, name: "bar", reason: "I decided to") }
 
     its(:to_s) { is_expected.to match(/Please `brew unlink bar` before continuing\./) }
   end
@@ -172,7 +172,7 @@ describe "Exception" do
   describe CompilerSelectionError do
     subject { described_class.new(formula) }
 
-    let(:formula) { double(Formula, full_name: "foo") }
+    let(:formula) { instance_double(Formula, full_name: "foo") }
 
     its(:to_s) { is_expected.to match(/foo cannot be built with any available compilers\./) }
   end
@@ -202,8 +202,8 @@ describe "Exception" do
   describe ChecksumMismatchError do
     subject { described_class.new("/file.tar.gz", hash1, hash2) }
 
-    let(:hash1) { double(hash_type: "sha256", to_s: "deadbeef") }
-    let(:hash2) { double(hash_type: "sha256", to_s: "deadcafe") }
+    let(:hash1) { instance_double(Checksum, to_s: "deadbeef") }
+    let(:hash2) { instance_double(Checksum, to_s: "deadcafe") }
 
     its(:to_s) { is_expected.to match(/SHA256 mismatch/) }
   end
@@ -211,8 +211,8 @@ describe "Exception" do
   describe ResourceMissingError do
     subject { described_class.new(formula, resource) }
 
-    let(:formula) { double(Formula, full_name: "bar") }
-    let(:resource) { double(inspect: "<resource foo>") }
+    let(:formula) { instance_double(Formula, full_name: "bar") }
+    let(:resource) { instance_double(Resource, inspect: "<resource foo>") }
 
     its(:to_s) { is_expected.to eq("bar does not define resource <resource foo>") }
   end
@@ -220,7 +220,7 @@ describe "Exception" do
   describe DuplicateResourceError do
     subject { described_class.new(resource) }
 
-    let(:resource) { double(inspect: "<resource foo>") }
+    let(:resource) { instance_double(Resource, inspect: "<resource foo>") }
 
     its(:to_s) { is_expected.to eq("Resource <resource foo> is defined more than once") }
   end
@@ -228,7 +228,7 @@ describe "Exception" do
   describe BottleFormulaUnavailableError do
     subject { described_class.new("/foo.bottle.tar.gz", "foo/1.0/.brew/foo.rb") }
 
-    let(:formula) { double(Formula, full_name: "foo") }
+    let(:formula) { instance_double(Formula, full_name: "foo") }
 
     its(:to_s) { is_expected.to match(/This bottle does not contain the formula file/) }
   end
