@@ -9,7 +9,7 @@ describe SoftwareSpec do
 
   subject(:spec) { described_class.new }
 
-  let(:owner) { double(name: "some_name", full_name: "some_name", tap: "homebrew/core") }
+  let(:owner) { instance_double(Cask::Cask, name: "some_name", full_name: "some_name", tap: "homebrew/core") }
 
   describe "#resource" do
     it "defines a resource" do
