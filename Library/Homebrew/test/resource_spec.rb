@@ -188,7 +188,7 @@ describe Resource do
   end
 
   specify "#verify_download_integrity_mismatch" do
-    fn = double(file?: true, basename: "foo")
+    fn = instance_double(Pathname, file?: true, basename: "foo")
     checksum = resource.sha256(TEST_SHA256)
 
     expect(fn).to receive(:verify_checksum).with(checksum)
