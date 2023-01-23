@@ -298,17 +298,19 @@ describe Formula do
     let(:f) { Testball.new }
 
     it "returns false if the #latest_installed_prefix is not a directory" do
-      allow(f).to receive(:latest_installed_prefix).and_return(double(directory?: false))
+      allow(f).to receive(:latest_installed_prefix).and_return(instance_double(Pathname, directory?: false))
       expect(f).not_to be_latest_version_installed
     end
 
     it "returns false if the #latest_installed_prefix does not have children" do
-      allow(f).to receive(:latest_installed_prefix).and_return(double(directory?: true, children: []))
+      allow(f).to receive(:latest_installed_prefix)
+        .and_return(instance_double(Pathname, directory?: true, children: []))
       expect(f).not_to be_latest_version_installed
     end
 
     it "returns true if the #latest_installed_prefix has children" do
-      allow(f).to receive(:latest_installed_prefix).and_return(double(directory?: true, children: [double]))
+      allow(f).to receive(:latest_installed_prefix)
+        .and_return(instance_double(Pathname, directory?: true, children: [double]))
       expect(f).to be_latest_version_installed
     end
   end
@@ -821,7 +823,7 @@ describe Formula do
       keg = Keg.for(formula.latest_installed_prefix)
       keg.link
 
-      linkage_checker = double("linkage checker", undeclared_deps: [dependency.name])
+      linkage_checker = instance_double(LinkageChecker, "linkage checker", undeclared_deps: [dependency.name])
       allow(LinkageChecker).to receive(:new).and_return(linkage_checker)
 
       expect(formula.runtime_dependencies.map(&:name)).to eq [dependency.name]
