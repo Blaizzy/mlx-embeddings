@@ -276,6 +276,8 @@ module Homebrew
     $stderr.puts e.backtrace if Homebrew::EnvConfig.developer?
     ofail e.message
   rescue FormulaOrCaskUnavailableError, Cask::CaskUnavailableError => e
+    Homebrew.failed = true
+
     # formula name or cask token
     name = e.try(:name) || e.token
 
