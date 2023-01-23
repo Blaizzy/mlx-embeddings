@@ -511,7 +511,7 @@ module GitHub
     return if pull_requests.blank?
 
     duplicates_message = <<~EOS
-      These pull requests may be duplicates:
+      These #{state} pull requests may be duplicates:
       #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
     EOS
     error_message = "Duplicate PRs should not be opened. Use --force to override this error."

@@ -91,7 +91,9 @@ module Homebrew
     old_version = cask.version
     old_hash = cask.sha256
 
-    check_open_pull_requests(cask, args: args)
+    check_pull_requests(cask, state: "open", args: args)
+    # if we haven't already found open requests, try for an exact match across closed requests
+    check_pull_requests(cask, state: "closed", args: args, version: new_version) if new_version.present?
 
     old_contents = File.read(cask.sourcefile_path)
 
@@ -193,12 +195,13 @@ module Homebrew
     GitHub.create_bump_pr(pr_info, args: args)
   end
 
-  def check_open_pull_requests(cask, args:)
+  def check_pull_requests(cask, state:, args:, version: nil)
     tap_remote_repo = cask.tap.remote_repo || cask.tap.full_name
     GitHub.check_for_duplicate_pull_requests(cask.token, tap_remote_repo,
-                                             state: "open",
-                                             file:  cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
-                                             args:  args)
+                                             state:   state,
+                                             version: version,
+                                             file:    cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
+                                             args:    args)
   end
 
   def run_cask_audit(cask, old_contents, args:)
