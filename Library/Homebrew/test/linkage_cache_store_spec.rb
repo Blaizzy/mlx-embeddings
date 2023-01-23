@@ -7,7 +7,7 @@ describe LinkageCacheStore do
   subject(:linkage_cache) { described_class.new(keg_name, database) }
 
   let(:keg_name) { "keg_name" }
-  let(:database) { double("database") }
+  let(:database) { instance_double(CacheStoreDatabase, "database") }
 
   describe "#keg_exists?" do
     context "when `keg_name` exists in cache" do
