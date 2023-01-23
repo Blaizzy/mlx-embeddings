@@ -18,7 +18,7 @@ describe GitDownloadStrategy do
 
   def git_commit_all
     system "git", "add", "--all"
-    system "git", "commit", "-m", "commit number #{@commit_id}"
+    system "git", "commit", "-m", "commit number #{@commit_id}" # rubocop:todo RSpec/InstanceVariable
     @commit_id += 1
   end
 
