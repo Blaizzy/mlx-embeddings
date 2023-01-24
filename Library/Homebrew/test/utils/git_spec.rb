@@ -45,6 +45,7 @@ describe Utils::Git do
   end
 
   let(:file) { "README.md" }
+  # Allow instance variables here for a simpler `before do` block.
   # rubocop:disable RSpec/InstanceVariable
   let(:file_hash1) { @h1[0..6] }
   let(:file_hash2) { @h2[0..6] }
