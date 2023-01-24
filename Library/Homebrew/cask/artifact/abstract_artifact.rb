@@ -99,11 +99,11 @@ module Cask
         description = key ? "#{stanza} #{key.inspect}" : stanza.to_s
 
         # backward-compatible string value
-        if arguments.is_a?(String)
-          arguments = { executable: arguments }
+        arguments = if arguments.is_a?(String)
+          { executable: arguments }
         else
           # Avoid mutating the original argument
-          arguments = arguments.dup
+          arguments.dup
         end
 
         # key sanity
