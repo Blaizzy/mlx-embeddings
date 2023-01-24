@@ -927,6 +927,20 @@ class CoreTap < Tap
   def alias_file_to_name(file)
     file.basename.to_s
   end
+
+  # @private
+  def aliases
+    return super if installed? || !Homebrew::EnvConfig.install_from_api?
+
+    Homebrew::API::Formula.all_aliases.keys
+  end
+
+  # @private
+  def formula_names
+    return super if installed? || !Homebrew::EnvConfig.install_from_api?
+
+    Homebrew::API::Formula.all_formulae.keys
+  end
 end
 
 # Permanent configuration per {Tap} using `git-config(1)`.
