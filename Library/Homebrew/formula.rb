@@ -1017,8 +1017,7 @@ class Formula
   # The generated launchd {.plist} file path.
   sig { returns(Pathname) }
   def plist_path
-    # TODO: Add deprecation
-    # odeprecated "formula.plist_path", "formula.launchd_service_path"
+    odeprecated "formula.plist_path", "formula.launchd_service_path"
     launchd_service_path
   end
 
@@ -3152,8 +3151,7 @@ class Formula
     #
     # @deprecated Please use {Homebrew::Service.require_root} instead.
     def plist_options(options)
-      # TODO: Deprecate
-      # odeprecated "plist_options", "service.require_root"
+      odeprecated "plist_options", "service.require_root"
       @plist_startup = options[:startup]
       @plist_manual = options[:manual]
     end
