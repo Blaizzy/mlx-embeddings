@@ -45,12 +45,15 @@ describe Utils::Git do
   end
 
   let(:file) { "README.md" }
+  # Allow instance variables here for a simpler `before do` block.
+  # rubocop:disable RSpec/InstanceVariable
   let(:file_hash1) { @h1[0..6] }
   let(:file_hash2) { @h2[0..6] }
   let(:files) { ["README.md", "LICENSE.txt"] }
   let(:files_hash1) { [@h3[0..6], ["LICENSE.txt"]] }
   let(:files_hash2) { [@h2[0..6], ["README.md"]] }
   let(:cherry_pick_commit) { @cherry_pick_commit[0..6] }
+  # rubocop:enable RSpec/InstanceVariable
 
   describe "#cherry_pick!" do
     it "can cherry pick a commit" do

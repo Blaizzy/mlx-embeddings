@@ -119,7 +119,10 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
     end
 
     Bundler.with_unbundled_env do
+      # Allow instance variable here to improve performance through memoization.
+      # rubocop:disable RSpec/InstanceVariable
       stdout, stderr, status = Open3.capture3(env, *@ruby_args, *args)
+      # rubocop:enable RSpec/InstanceVariable
       $stdout.print stdout
       $stderr.print stderr
       status
