@@ -94,10 +94,6 @@ module Homebrew
   def reinstall
     args = reinstall_args.parse
 
-    if args.build_from_source? && Homebrew::EnvConfig.install_from_api?
-      raise UsageError, "--build-from-source is not supported when using HOMEBREW_INSTALL_FROM_API."
-    end
-
     formulae, casks = args.named.to_formulae_and_casks(method: :resolve)
                           .partition { |o| o.is_a?(Formula) }
 
