@@ -255,14 +255,14 @@ describe RuboCop::Cop::FormulaAudit::Miscellaneous do
       RUBY
     end
 
-    it "reports an offense when a hard-coded `llvm-g++` is set as COMPILER_PATH" do
+    it "reports an offense when a hard-coded `c++` is set as COMPILER_PATH" do
       expect_offense(<<~'RUBY')
         class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           def install
-            ENV["COMPILER_PATH"] = "/usr/bin/llvm-g++"
-                                   ^^^^^^^^^^^^^^^^^^^ Use "#{ENV.cxx}" instead of hard-coding "llvm-g++"
+            ENV["COMPILER_PATH"] = "/usr/bin/c++"
+                                   ^^^^^^^^^^^^^^ Use "#{ENV.cxx}" instead of hard-coding "c++"
           end
         end
       RUBY
