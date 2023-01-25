@@ -27,7 +27,6 @@ end
 
 require "rspec/its"
 require "rspec/github"
-require "rspec/wait"
 require "rspec/retry"
 require "rspec/sorbet"
 require "rubocop/rspec/support"

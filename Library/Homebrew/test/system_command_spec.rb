@@ -196,10 +196,8 @@ describe SystemCommand do
       ] }
     }
 
-    it "returns without deadlocking" do
-      wait(30).for {
-        described_class.run(command, **options)
-      }.to be_a_success
+    it "returns without deadlocking", timeout: 30 do
+      expect(described_class.run(command, **options)).to be_a_success
     end
   end
 
