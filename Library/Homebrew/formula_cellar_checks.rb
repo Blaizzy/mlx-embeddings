@@ -315,58 +315,6 @@ module FormulaCellarChecks
     "No `cpuid` instruction detected. #{formula} should not use `ENV.runtime_cpu_detection`."
   end
 
-  def check_binary_arches(formula)
-    return unless formula.prefix.directory?
-    # There is no `binary_executable_or_library_files` method for the generic OS
-    # TODO: Refactor and move to extend/os
-    return if !OS.mac? && !OS.linux? # rubocop:disable Homebrew/MoveToExtendOS
-
-    keg = Keg.new(formula.prefix)
-    mismatches = {}
-    keg.binary_executable_or_library_files.each do |file|
-      farch = file.arch
-      mismatches[file] = farch unless farch == Hardware::CPU.arch
-    end
-    return if mismatches.empty?
-
-    compatible_universal_binaries, mismatches = mismatches.partition do |file, arch|
-      arch == :universal && file.archs.include?(Hardware::CPU.arch)
-    end.map(&:to_h) # To prevent transformation into nested arrays
-
-    universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
-      formula.tap.audit_exception(:universal_binary_allowlist, formula.name)
-    else
-      true
-    end
-    return if mismatches.empty? && universal_binaries_expected
-
-    mismatches_expected = formula.tap.blank? ||
-                          formula.tap.audit_exception(:mismatched_binary_allowlist, formula.name)
-    return if compatible_universal_binaries.empty? && mismatches_expected
-
-    return if universal_binaries_expected && mismatches_expected
-
-    s = ""
-
-    if mismatches.present? && !mismatches_expected
-      s += <<~EOS
-        Binaries built for a non-native architecture were installed into #{formula}'s prefix.
-        The offending files are:
-          #{mismatches.map { |m| "#{m.first}\t(#{m.last})" } * "\n  "}
-      EOS
-    end
-
-    if compatible_universal_binaries.present? && !universal_binaries_expected
-      s += <<~EOS
-        Unexpected universal binaries were found.
-        The offending files are:
-          #{compatible_universal_binaries.keys * "\n  "}
-      EOS
-    end
-
-    s
-  end
-
   def audit_installed
     @new_formula ||= false
 
