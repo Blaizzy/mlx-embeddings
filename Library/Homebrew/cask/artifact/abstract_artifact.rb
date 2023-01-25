@@ -99,7 +99,12 @@ module Cask
         description = key ? "#{stanza} #{key.inspect}" : stanza.to_s
 
         # backward-compatible string value
-        arguments = { executable: arguments } if arguments.is_a?(String)
+        arguments = if arguments.is_a?(String)
+          { executable: arguments }
+        else
+          # Avoid mutating the original argument
+          arguments.dup
+        end
 
         # key sanity
         permitted_keys = [:args, :input, :executable, :must_succeed, :sudo, :print_stdout, :print_stderr]
