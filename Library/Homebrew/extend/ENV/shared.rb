@@ -289,7 +289,7 @@ module SharedEnvExtension
     gcc_version_name = "gcc@#{version}"
 
     gcc = Formulary.factory("gcc")
-    if gcc.version_suffix == version
+    if gcc.try(:version_suffix) == version
       gcc
     else
       Formulary.factory(gcc_version_name)
