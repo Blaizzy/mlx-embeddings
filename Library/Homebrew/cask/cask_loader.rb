@@ -218,6 +218,10 @@ module Cask
           return FromContentLoader.new(cask_source).load(config: config)
         end
 
+        # convert generic string replacements into actual ones
+        json_cask[:artifacts] = json_cask[:artifacts].map(&method(:from_h_hash_gsubs))
+        json_cask[:caveats] = from_h_string_gsubs(json_cask[:caveats])
+
         Cask.new(token, source: cask_source, config: config) do
           version json_cask[:version]
 
@@ -284,6 +288,38 @@ module Cask
           end
 
           caveats json_cask[:caveats] if json_cask[:caveats].present?
+        end
+      end
+
+      private
+
+      def from_h_string_gsubs(string)
+        string.to_s
+              .gsub("$HOME", Dir.home)
+              .gsub("$(brew --prefix)", HOMEBREW_PREFIX)
+      end
+
+      def from_h_array_gsubs(array)
+        array.to_a.map do |value|
+          from_h_gsubs(value)
+        end
+      end
+
+      def from_h_hash_gsubs(hash)
+        hash.to_h.transform_values do |value|
+          from_h_gsubs(value)
+        end
+      rescue TypeError
+        from_h_array_gsubs(hash)
+      end
+
+      def from_h_gsubs(value)
+        if value.respond_to? :to_h
+          from_h_hash_gsubs(value)
+        elsif value.respond_to? :to_a
+          from_h_array_gsubs(value)
+        else
+          from_h_string_gsubs(value)
         end
       end
     end
