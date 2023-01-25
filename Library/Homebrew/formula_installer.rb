@@ -1181,8 +1181,14 @@ class FormulaInstaller
 
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
-    elsif formula.core_formula? && Homebrew::EnvConfig.install_from_api?
-      odie "Unable to build #{formula.name} from source with HOMEBREW_INSTALL_FROM_API."
+    elsif formula.core_formula? && !formula.tap.installed? && Homebrew::EnvConfig.install_from_api?
+      odie <<~EOS
+        Unable to build #{formula.name} from source while Homebrew/homebrew-core is
+        untapped and HOMEBREW_NO_INSTALL_FROM_API is unset! To resolve please run:
+          brew tap Homebrew/core
+          export HOMEBREW_NO_INSTALL_FROM_API=1
+        and retry.
+      EOS
     else
       formula.fetch_patches
       formula.resources.each(&:fetch)
