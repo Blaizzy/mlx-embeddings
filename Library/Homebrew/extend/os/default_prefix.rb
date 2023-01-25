@@ -1,10 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-require "simulate_system"
-
-if OS.mac? && Hardware::CPU.arm?
+if OS.mac?
   require "extend/os/mac/default_prefix"
-elsif Homebrew::SimulateSystem.simulating_or_running_on_linux?
+elsif OS.linux?
   require "extend/os/linux/default_prefix"
 end
