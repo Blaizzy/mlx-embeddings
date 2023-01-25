@@ -13,8 +13,6 @@ RSpec/SubjectStub:
 # TODO: try to enable these
 RSpec/DescribeClass:
   Enabled: false
-RSpec/LeakyConstantDeclaration:
-  Enabled: false
 RSpec/MessageSpies:
   Enabled: false
 RSpec/RepeatedDescription:
