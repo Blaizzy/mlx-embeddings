@@ -67,6 +67,8 @@ describe FormulaInstaller do
     expect(f.libexec).to be_a_directory
   end
 
+  # This test wraps expect() calls in `test_basic_formula_setup`
+  # rubocop:disable RSpec/NoExpectationExample
   specify "basic bottle install" do
     allow(DevelopmentTools).to receive(:installed?).and_return(false)
     Homebrew.install_args.parse(["testball_bottle"])
@@ -74,6 +76,7 @@ describe FormulaInstaller do
       test_basic_formula_setup(f)
     end
   end
+  # rubocop:enable RSpec/NoExpectationExample
 
   specify "basic bottle install with cellar information on sha256 line" do
     allow(DevelopmentTools).to receive(:installed?).and_return(false)
