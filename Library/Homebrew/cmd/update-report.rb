@@ -9,6 +9,7 @@ require "description_cache_store"
 require "cli/parser"
 require "settings"
 require "linuxbrew-core-migration"
+require "extend/os/update-report"
 
 module Homebrew
   extend T::Sig
@@ -293,8 +294,6 @@ module Homebrew
   end
 
   def migrate_gcc_dependents_if_needed
-    # TODO: Refactor and move to extend/os
-    return if OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
     return if Settings.read("gcc-rpaths.fixed") == "true"
 
     Formula.installed.each do |formula|
