@@ -89,9 +89,12 @@ describe "Exception" do
 
     let(:mod) do
       Module.new do
+        # These are defined within an anonymous module to avoid polluting the global namespace.
+        # rubocop:disable RSpec/LeakyConstantDeclaration
         class Bar < Requirement; end
 
         class Baz < Formula; end
+        # rubocop:enable RSpec/LeakyConstantDeclaration
       end
     end
 
