@@ -12,7 +12,7 @@ module Cask
       extend T::Sig
 
       def self.from_args(cask, *args, **kwargs)
-        if args != [true] || kwargs.present?
+        if (args != [true] && args != ["true"]) || kwargs.present?
           raise CaskInvalidError.new(cask.token, "'stage_only' takes only a single argument: true")
         end
 
