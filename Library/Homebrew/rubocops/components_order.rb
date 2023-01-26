@@ -131,7 +131,6 @@ module RuboCop
             fails_with
             resource
             patch
-            ignore_missing_libraries
           ]
           on_system_allowed_methods += on_system_methods.map(&:to_s)
           _, offensive_node = check_order(component_precedence_list, on_system_block.body)
