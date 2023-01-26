@@ -5,7 +5,6 @@
 # typed: false
 
 module ::StackProf; end
-module BigDecimal::Deprecation; end
 module T::InterfaceWrapper::Helpers; end
 module T::Private::Abstract::Hooks; end
 module T::Private::Methods::MethodHooks; end
