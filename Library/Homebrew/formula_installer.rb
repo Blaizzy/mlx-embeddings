@@ -1185,8 +1185,8 @@ class FormulaInstaller
       odie <<~EOS
         Unable to build #{formula.name} from source while Homebrew/homebrew-core is
         untapped and HOMEBREW_NO_INSTALL_FROM_API is unset! To resolve please run:
-          brew tap Homebrew/core
           export HOMEBREW_NO_INSTALL_FROM_API=1
+          brew tap Homebrew/core
         and retry.
       EOS
     else
