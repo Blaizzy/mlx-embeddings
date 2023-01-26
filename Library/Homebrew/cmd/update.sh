@@ -437,7 +437,7 @@ EOS
   fi
 
   [[ -f "${HOMEBREW_CORE_REPOSITORY}/.git/shallow" ]] && HOMEBREW_CORE_SHALLOW=1
-  [[ -f "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask/.git/shallow" ]] && HOMEBREW_CASK_SHALLOW=1
+  [[ -f "${HOMEBREW_CASK_REPOSITORY}/.git/shallow" ]] && HOMEBREW_CASK_SHALLOW=1
   if [[ -n "${HOMEBREW_CORE_SHALLOW}" && -n "${HOMEBREW_CASK_SHALLOW}" ]]
   then
     SHALLOW_COMMAND_PHRASE="These commands"
@@ -455,7 +455,7 @@ ${HOMEBREW_CORE_SHALLOW:+
   homebrew-cask is a shallow clone.}
 To \`brew update\`, first run:${HOMEBREW_CORE_SHALLOW:+
   git -C "${HOMEBREW_CORE_REPOSITORY}" fetch --unshallow}${HOMEBREW_CASK_SHALLOW:+
-  git -C "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" fetch --unshallow}
+  git -C "${HOMEBREW_CASK_REPOSITORY}" fetch --unshallow}
 ${SHALLOW_COMMAND_PHRASE} may take a few minutes to run due to the large size of the ${SHALLOW_REPO_PHRASE}.
 This restriction has been made on GitHub's request because updating shallow
 clones is an extremely expensive operation due to the tree layout and traffic of
@@ -567,8 +567,8 @@ EOS
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
     if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
-       [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
-       [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ]]
+       [[ -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
+       [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" || "${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" ]]
     then
       continue
     fi
@@ -729,7 +729,7 @@ EOS
     if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
        [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ||
-          "${DIR}" == "${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask" ]]
+          "${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" ]]
     then
       continue
     fi
