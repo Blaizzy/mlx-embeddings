@@ -4,24 +4,29 @@
 require "formula"
 
 describe "patching" do
-  before do
-    stub_const("TESTBALL_URL", "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz")
-    stub_const("TESTBALL_PATCHES_URL", "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1-patches.tgz")
-    stub_const("PATCH_URL_A", "file://#{TEST_FIXTURE_DIR}/patches/noop-a.diff")
-    stub_const("PATCH_URL_B", "file://#{TEST_FIXTURE_DIR}/patches/noop-b.diff")
-    stub_const("PATCH_A_CONTENTS", File.read("#{TEST_FIXTURE_DIR}/patches/noop-a.diff").freeze)
-    stub_const("PATCH_B_CONTENTS", File.read("#{TEST_FIXTURE_DIR}/patches/noop-b.diff").freeze)
-    stub_const("APPLY_A", "noop-a.diff")
-    stub_const("APPLY_B", "noop-b.diff")
-    stub_const("APPLY_C", "noop-c.diff")
-  end
-
-  def formula(name = "formula_name", path: Formulary.core_path(name), spec: :stable, alias_path: nil, &block)
+  let(:formula_subclass) {
     Class.new(Formula) {
+      # These are defined within an anonymous class to avoid polluting the global namespace.
+      # rubocop:disable RSpec/LeakyConstantDeclaration
+      TESTBALL_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
+      TESTBALL_PATCHES_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1-patches.tgz"
+      PATCH_URL_A = "file://#{TEST_FIXTURE_DIR}/patches/noop-a.diff"
+      PATCH_URL_B = "file://#{TEST_FIXTURE_DIR}/patches/noop-b.diff"
+      PATCH_A_CONTENTS = File.read("#{TEST_FIXTURE_DIR}/patches/noop-a.diff").freeze
+      PATCH_B_CONTENTS = File.read("#{TEST_FIXTURE_DIR}/patches/noop-b.diff").freeze
+      APPLY_A = "noop-a.diff"
+      APPLY_B = "noop-b.diff"
+      APPLY_C = "noop-c.diff"
+      # rubocop:enable RSpec/LeakyConstantDeclaration
+
       url TESTBALL_URL
       sha256 TESTBALL_SHA256
-      class_eval(&block)
-    }.new(name, path, spec, alias_path: alias_path)
+    }
+  }
+
+  def formula(name = "formula_name", path: Formulary.core_path(name), spec: :stable, alias_path: nil, &block)
+    formula_subclass.class_eval(&block)
+    formula_subclass.new(name, path, spec, alias_path: alias_path)
   end
 
   matcher :be_patched do
