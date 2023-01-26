@@ -23,23 +23,20 @@ module Homebrew
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
     MAX_RETRIES = 3
 
-    sig { params(endpoint: String, json: T::Boolean).returns(T.any(String, Hash)) }
-    def fetch(endpoint, json: true)
+    sig { params(endpoint: String).returns(Hash) }
+    def fetch(endpoint)
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
 
       api_url = "#{API_DOMAIN}/#{endpoint}"
       output = Utils::Curl.curl_output("--fail", api_url, max_time: 5)
       raise ArgumentError, "No file found at #{Tty.underline}#{api_url}#{Tty.reset}" unless output.success?
 
-      cache[endpoint] = if json
-        JSON.parse(output.stdout)
-      else
-        output.stdout
-      end
+      cache[endpoint] = JSON.parse(output.stdout)
     rescue JSON::ParserError
       raise ArgumentError, "Invalid JSON file: #{Tty.underline}#{api_url}#{Tty.reset}"
     end
 
+    sig { params(endpoint: String, target: Pathname).returns(Hash) }
     def fetch_json_api_file(endpoint, target:)
       retry_count = 0
 
@@ -57,6 +54,19 @@ module Homebrew
 
         retry
       end
+    end
+
+    sig { params(token: String, git_head: T.nilable(String)).returns(String) }
+    def fetch_source(token, git_head: nil)
+      git_head ||= "master"
+      endpoint = "#{git_head}/Casks/#{token}.rb"
+      return cache[endpoint] if cache.present? && cache.key?(endpoint)
+
+      raw_url = "https://raw.githubusercontent.com/Homebrew/homebrew-cask/#{endpoint}"
+      output = Utils::Curl.curl_output("--fail", raw_url, max_time: 5)
+      raise ArgumentError, "No file found at #{Tty.underline}#{raw_url}#{Tty.reset}" unless output.success?
+
+      cache[endpoint] = output.stdout
     end
   end
 end

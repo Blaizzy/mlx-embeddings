@@ -214,7 +214,7 @@ module Cask
 
         # Use the cask-source API if there are any `*flight` blocks
         if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) }
-          cask_source = Homebrew::API::CaskSource.fetch(token)
+          cask_source = Homebrew::API::CaskSource.fetch(token, git_head: json_cask[:tap_git_head])
           return FromContentLoader.new(cask_source).load(config: config)
         end
 
@@ -222,7 +222,9 @@ module Cask
         json_cask[:artifacts] = json_cask[:artifacts].map(&method(:from_h_hash_gsubs))
         json_cask[:caveats] = from_h_string_gsubs(json_cask[:caveats])
 
-        Cask.new(token, source: cask_source, config: config) do
+        tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
+
+        Cask.new(token, tap: tap, source: cask_source, config: config) do
           version json_cask[:version]
 
           if json_cask[:sha256] == "no_check"

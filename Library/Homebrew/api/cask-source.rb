@@ -10,10 +10,10 @@ module Homebrew
       class << self
         extend T::Sig
 
-        sig { params(token: String).returns(Hash) }
-        def fetch(token)
+        sig { params(token: String, git_head: T.nilable(String)).returns(Hash) }
+        def fetch(token, git_head: nil)
           token = token.sub(%r{^homebrew/cask/}, "")
-          Homebrew::API.fetch "cask-source/#{token}.rb", json: false
+          Homebrew::API.fetch_source token, git_head: git_head
         end
 
         sig { params(token: String).returns(T::Boolean) }
