@@ -4418,6 +4418,10 @@ class RuboCop::Cop::Lint::AmbiguousOperator < ::RuboCop::Cop::Base
   def offense_node(node); end
   def offense_position?(node, diagnostic); end
   def unary_operator?(node, diagnostic); end
+
+  class << self
+    def autocorrect_incompatible_with; end
+  end
 end
 
 RuboCop::Cop::Lint::AmbiguousOperator::AMBIGUITIES = T.let(T.unsafe(nil), Hash)
@@ -6977,6 +6981,10 @@ class RuboCop::Cop::Naming::BlockForwarding < ::RuboCop::Cop::Base
   def register_offense(block_argument, node); end
   def use_block_argument_as_local_variable?(node, last_argument); end
   def use_kwarg_in_method_definition?(node); end
+
+  class << self
+    def autocorrect_incompatible_with; end
+  end
 end
 
 RuboCop::Cop::Naming::BlockForwarding::MSG = T.let(T.unsafe(nil), String)
