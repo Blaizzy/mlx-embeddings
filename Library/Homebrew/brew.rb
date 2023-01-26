@@ -96,8 +96,8 @@ begin
       odie <<~EOS
         This command cannot be run while Homebrew/homebrew-core is untapped and
         HOMEBREW_NO_INSTALL_FROM_API is unset! To resolve please run:
-          brew tap Homebrew/core
           export HOMEBREW_NO_INSTALL_FROM_API=1
+          brew tap Homebrew/core
         and retry this command.
       EOS
     end

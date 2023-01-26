@@ -65,8 +65,8 @@ module Homebrew
           <<~EOS
             #{not_exist_message}
             This is expected with HOMEBREW_NO_INSTALL_FROM_API unset! To resolve please run:
-              brew tap Homebrew/core
               export HOMEBREW_NO_INSTALL_FROM_API=1
+              brew tap Homebrew/core
             and retry this command.
           EOS
         elsif args.cask?

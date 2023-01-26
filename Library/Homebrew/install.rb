@@ -113,6 +113,15 @@ module Homebrew
         EOS
       end
 
+      if head && Homebrew::EnvConfig.install_from_api?
+        raise UsageError, <<~EOS
+          --HEAD is not supported with HOMEBREW_NO_INSTALL_FROM_API unset! To resolve please run:
+            export HOMEBREW_NO_INSTALL_FROM_API=1
+            brew tap Homebrew/core
+          and retry this command.
+        EOS
+      end
+
       # --HEAD, fail with no head defined
       odie "No head is defined for #{f.full_name}" if head && f.head.nil?
 
