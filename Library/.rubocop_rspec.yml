@@ -15,8 +15,6 @@ RSpec/MessageSpies:
   Enabled: false
 RSpec/StubbedMock:
   Enabled: false
-RSpec/NoExpectationExample:
-  Enabled: false
 
 # TODO: try to reduce these
 RSpec/ExampleLength:
