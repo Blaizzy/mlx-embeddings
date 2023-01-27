@@ -298,9 +298,10 @@ module Homebrew
       def parse(argv = ARGV.freeze, ignore_invalid_options: false)
         raise "Arguments were already parsed!" if @args_parsed
 
-        # If we accept formula options, parse once allowing invalid options
-        # so we can get the remaining list containing formula names.
-        if @formula_options
+        # If we accept formula options, but the command isn't scoped only
+        # to casks, parse once allowing invalid options so we can get the
+        # remaining list containing formula names.
+        if @formula_options && argv.exclude?("--cask")
           remaining, non_options = parse_remaining(argv, ignore_invalid_options: true)
 
           argv = [*remaining, "--", *non_options]
