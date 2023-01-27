@@ -10,22 +10,30 @@ require "tap"
 def with_monkey_patch
   BottleSpecification.class_eval do
     alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
-    define_method(:method_missing) { |*| }
+    define_method(:method_missing) do |*|
+      # do nothing
+    end
   end
 
   Module.class_eval do
     alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
-    define_method(:method_missing) { |*| }
+    define_method(:method_missing) do |*|
+      # do nothing
+    end
   end
 
   Resource.class_eval do
     alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
-    define_method(:method_missing) { |*| }
+    define_method(:method_missing) do |*|
+      # do nothing
+    end
   end
 
   DependencyCollector.class_eval do
     alias_method :old_parse_symbol_spec, :parse_symbol_spec if method_defined?(:parse_symbol_spec)
-    define_method(:parse_symbol_spec) { |*| }
+    define_method(:parse_symbol_spec) do |*|
+      # do nothing
+    end
   end
 
   yield

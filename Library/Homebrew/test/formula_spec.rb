@@ -872,7 +872,11 @@ describe Formula do
     end
 
     expect(Set.new(f2.recursive_requirements)).to eq(Set[])
-    expect(Set.new(f2.recursive_requirements {})).to eq(Set[xcode])
+    expect(
+      f2.recursive_requirements {
+        # do nothing
+      }.to_set,
+    ).to eq(Set[xcode])
 
     requirements = f2.recursive_requirements do |_dependent, requirement|
       Requirement.prune if requirement.is_a?(XcodeRequirement)

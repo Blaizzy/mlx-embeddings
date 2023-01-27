@@ -93,7 +93,9 @@ describe Pathname do
     end
 
     it "preserves permissions" do
-      File.open(file, "w", 0100777) {}
+      File.open(file, "w", 0100777) {
+        # do nothing
+      }
       file.atomic_write("CONTENT")
       expect(file.stat.mode.to_s(8)).to eq((~File.umask & 0100777).to_s(8))
     end
