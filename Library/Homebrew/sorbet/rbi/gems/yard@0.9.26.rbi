@@ -149,13 +149,16 @@ class Rack::Request
   def xhr?; end
 
   class << self
+    def forwarded_priority; end
+    def forwarded_priority=(_arg0); end
     def ip_filter; end
     def ip_filter=(_arg0); end
+    def x_forwarded_proto_priority; end
+    def x_forwarded_proto_priority=(_arg0); end
   end
 end
 
 Rack::Request::ALLOWED_SCHEMES = T.let(T.unsafe(nil), Array)
-Rack::Request::SCHEME_WHITELIST = T.let(T.unsafe(nil), Array)
 
 class String
   include ::Comparable
@@ -202,8 +205,6 @@ module YARD
     def ruby18?; end
     def ruby19?; end
     def ruby2?; end
-    def ruby31?; end
-    def ruby3?; end
     def windows?; end
   end
 end
@@ -1419,12 +1420,7 @@ class YARD::Handlers::Ruby::MixinHandler < ::YARD::Handlers::Ruby::Base
   def recipient(mixin); end
 end
 
-class YARD::Handlers::Ruby::ModuleFunctionHandler < ::YARD::Handlers::Ruby::Base
-  include ::YARD::Handlers::Ruby::DecoratorHandlerMethods
-
-  def make_module_function(instance_method, namespace); end
-end
-
+class YARD::Handlers::Ruby::ModuleFunctionHandler < ::YARD::Handlers::Ruby::Base; end
 class YARD::Handlers::Ruby::ModuleHandler < ::YARD::Handlers::Ruby::Base; end
 
 class YARD::Handlers::Ruby::PrivateClassMethodHandler < ::YARD::Handlers::Ruby::Base
@@ -2409,7 +2405,6 @@ class YARD::Parser::Ruby::ModuleNode < ::YARD::Parser::Ruby::KeywordNode
 end
 
 class YARD::Parser::Ruby::ParameterNode < ::YARD::Parser::Ruby::AstNode
-  def args_forward; end
   def block_param; end
   def double_splat_param; end
   def named_params; end
@@ -3335,7 +3330,6 @@ class YARD::Tags::Directive
 
   protected
 
-  def inside_directive?; end
   def parser; end
 end
 

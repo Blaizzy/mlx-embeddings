@@ -265,6 +265,7 @@ class WEBrick::HTTPRequest
   private
 
   def _read_data(io, method, *arg); end
+  def parse_host_request_line(host); end
   def parse_query; end
   def parse_uri(str, scheme = T.unsafe(nil)); end
   def read_body(socket, block); end
@@ -284,7 +285,6 @@ class WEBrick::HTTPResponse
 
   def [](field); end
   def []=(field, value); end
-  def _rack_setup_header; end
   def body; end
   def body=(_arg0); end
   def chunked=(val); end
@@ -319,9 +319,13 @@ class WEBrick::HTTPResponse
   def sent_size; end
   def set_error(ex, backtrace = T.unsafe(nil)); end
   def set_redirect(status, url); end
+  def setup_header; end
   def status; end
   def status=(status); end
   def status_line; end
+  def upgrade; end
+  def upgrade!(protocol); end
+  def upgrade=(_arg0); end
 
   private
 
@@ -448,6 +452,15 @@ class WEBrick::HTTPServlet::FileHandler < ::WEBrick::HTTPServlet::AbstractServle
     def add_handler(suffix, handler); end
     def remove_handler(suffix); end
   end
+end
+
+class WEBrick::HTTPServlet::ProcHandler < ::WEBrick::HTTPServlet::AbstractServlet
+  def initialize(proc); end
+
+  def do_GET(request, response); end
+  def do_POST(request, response); end
+  def do_PUT(request, response); end
+  def get_instance(server, *options); end
 end
 
 module WEBrick::HTTPStatus
