@@ -1,20 +1,21 @@
 Style/Documentation:
+  AllowedConstants:
+    - Homebrew
   Exclude:
     - "extend/**/*.rb"
-    - "cmd/**/*.rb"
-    - "dev-cmd/**/*.rb"
     - "test/**/*.rb"
     - "cask/macos.rb"
     - "cli/args.rb"
     - "cli/parser.rb"
-    - "global.rb"
+    - "cmd/list.rb"
+    - "cmd/update-report.rb"
+    - "dev-cmd/irb.rb"
+    - "dev-cmd/pr-pull.rb"
     - "keg_relocate.rb"
     - "os/mac/keg.rb"
-    - "reinstall.rb"
     - "software_spec.rb"
     - "utils.rb"
     - "utils/fork.rb"
-    - "utils/gems.rb"
     - "utils/git_repository.rb"
     - "utils/popen.rb"
     - "utils/shell.rb"
