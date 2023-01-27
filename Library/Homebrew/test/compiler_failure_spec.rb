@@ -22,7 +22,9 @@ describe CompilerFailure do
     end
 
     it "can be given an empty block" do
-      failure = described_class.create(:clang) {}
+      failure = described_class.create(:clang) {
+        # do nothing
+      }
       expect(failure).to fail_with(
         instance_double(CompilerSelector::Compiler, "Compiler", type: :clang, name: :clang, version: 600),
       )

@@ -18,7 +18,9 @@ describe Formula do
           sha256 TESTBALL_SHA256
         end
 
-        f.brew {}
+        f.brew {
+          # do nothing
+        }
       }.not_to raise_error
     end
 
@@ -28,7 +30,9 @@ describe Formula do
           sha256 "dcbf5f44743b74add648c7e35e414076632fa3b24463d68d1f6afc5be77024f8"
         end
 
-        f.brew {}
+        f.brew {
+          # do nothing
+        }
       }.to raise_error(ChecksumMismatchError)
     end
   end
