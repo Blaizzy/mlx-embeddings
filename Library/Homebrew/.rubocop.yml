@@ -1,6 +1,5 @@
 inherit_from:
   - ../.rubocop_rspec.yml
-  - .rubocop_todo.yml
 
 Homebrew/MoveToExtendOS:
   Enabled: true
@@ -56,6 +55,28 @@ Naming/PredicateName:
     - is_a?
     - is_32_bit?
     - is_64_bit?
+
+Style/Documentation:
+  AllowedConstants:
+    - Homebrew
+  Exclude:
+    - "extend/**/*.rb"
+    - "test/**/*.rb"
+    - "cask/macos.rb"
+    - "cli/args.rb"
+    - "cli/parser.rb"
+    - "cmd/list.rb"
+    - "cmd/update-report.rb"
+    - "dev-cmd/irb.rb"
+    - "dev-cmd/pr-pull.rb"
+    - "keg_relocate.rb"
+    - "os/mac/keg.rb"
+    - "software_spec.rb"
+    - "utils.rb"
+    - "utils/fork.rb"
+    - "utils/git_repository.rb"
+    - "utils/popen.rb"
+    - "utils/shell.rb"
 
 Style/HashAsLastArrayItem:
   Exclude:
