@@ -301,7 +301,7 @@ module Homebrew
         # If we accept formula options, but the command isn't scoped only
         # to casks, parse once allowing invalid options so we can get the
         # remaining list containing formula names.
-        if @formula_options && argv.exclude?("--cask")
+        if @formula_options && !only_casks?(argv)
           remaining, non_options = parse_remaining(argv, ignore_invalid_options: true)
 
           argv = [*remaining, "--", *non_options]
@@ -639,6 +639,10 @@ module Homebrew
             nil
           end
         end.compact.uniq(&:name)
+      end
+
+      def only_casks?(argv)
+        argv.include?("--casks") || argv.include?("--cask")
       end
     end
 
