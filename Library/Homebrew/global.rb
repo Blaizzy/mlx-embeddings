@@ -129,8 +129,6 @@ end.compact.freeze
 
 require "set"
 
-require "extend/string"
-
 require "system_command"
 require "exceptions"
 require "utils"

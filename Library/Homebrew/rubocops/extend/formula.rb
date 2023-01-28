@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "extend/string"
 require "rubocops/shared/helper_functions"
 
 module RuboCop
