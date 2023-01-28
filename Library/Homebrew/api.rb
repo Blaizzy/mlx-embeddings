@@ -55,7 +55,7 @@ module Homebrew
       end
     end
 
-    sig { params(token: String, git_head: T.nilable(String)).returns(String) }
+    sig { params(filepath: String, repo: String, git_head: T.nilable(String)).returns(String) }
     def fetch_file_source(filepath, repo:, git_head: nil)
       git_head ||= "master"
       endpoint = "#{git_head}/#{filepath}"
