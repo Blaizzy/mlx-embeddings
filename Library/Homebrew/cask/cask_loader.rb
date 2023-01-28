@@ -212,8 +212,9 @@ module Cask
 
         json_cask.deep_symbolize_keys!
 
-        # Use the cask-source API if there are any `*flight` blocks
-        if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) }
+        # Use the cask-source API if there are any `*flight` blocks or the cask has multiple languages
+        if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) } ||
+           json_cask[:languages].any?
           cask_source = Homebrew::API::CaskSource.fetch(token)
           return FromContentLoader.new(cask_source).load(config: config)
         end
