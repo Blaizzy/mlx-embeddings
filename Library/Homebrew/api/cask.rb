@@ -10,9 +10,14 @@ module Homebrew
       class << self
         extend T::Sig
 
-        sig { params(name: String).returns(Hash) }
-        def fetch(name)
-          Homebrew::API.fetch "cask/#{name}.json"
+        sig { params(token: String).returns(Hash) }
+        def fetch(token)
+          Homebrew::API.fetch "cask/#{token}.json"
+        end
+
+        sig { params(token: String, git_head: T.nilable(String)).returns(String) }
+        def fetch_source(token, git_head: nil)
+          Homebrew::API.fetch_file_source "Casks/#{token}.rb", repo: "Homebrew/homebrew-cask", git_head: git_head
         end
 
         sig { returns(Hash) }

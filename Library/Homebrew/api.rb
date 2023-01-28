@@ -3,7 +3,6 @@
 
 require "api/analytics"
 require "api/cask"
-require "api/cask-source"
 require "api/formula"
 require "api/versions"
 require "extend/cachable"
@@ -57,12 +56,13 @@ module Homebrew
     end
 
     sig { params(token: String, git_head: T.nilable(String)).returns(String) }
-    def fetch_source(token, git_head: nil)
+    def fetch_file_source(filepath, repo:, git_head: nil)
       git_head ||= "master"
-      endpoint = "#{git_head}/Casks/#{token}.rb"
+      endpoint = "#{git_head}/#{filepath}"
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
 
-      raw_url = "https://raw.githubusercontent.com/Homebrew/homebrew-cask/#{endpoint}"
+      raw_url = "https://raw.githubusercontent.com/#{repo}/#{endpoint}"
+      puts "Fetching #{raw_url}..."
       output = Utils::Curl.curl_output("--fail", raw_url, max_time: 5)
       raise ArgumentError, "No file found at #{Tty.underline}#{raw_url}#{Tty.reset}" unless output.success?
 
