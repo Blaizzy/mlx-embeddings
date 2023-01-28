@@ -355,8 +355,8 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
     context "when caveats is a heredoc" do
       let(:caveats) do
-        <<-CAVEATS.undent
-          caveats <<-EOS.undent
+        <<~CAVEATS
+          caveats <<~EOS
               This is a multiline caveat.
 
               Let's hope it doesn't cause any problems!
@@ -369,7 +369,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
     context "when caveats is a block" do
       let(:caveats) do
-        <<-CAVEATS.undent
+        <<~CAVEATS
           caveats do
               puts 'This is a multiline caveat.'
 
