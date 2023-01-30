@@ -4,10 +4,6 @@
 require 'strscan'
 
 module TZInfo
-  # Use send as a workaround for erroneous 'wrong number of arguments' errors
-  # with JRuby 9.0.5.0 when calling methods with Java implementations. See #114.
-  send(:using, UntaintExt) if TZInfo.const_defined?(:UntaintExt)
-
   module DataSources
     # An {InvalidPosixTimeZone} exception is raised if an invalid POSIX-style
     # time zone string is encountered.
@@ -43,12 +39,12 @@ module TZInfo
 
         s = StringScanner.new(tz_string)
         check_scan(s, /([^-+,\d<][^-+,\d]*) | <([^>]+)>/x)
-        std_abbrev = @string_deduper.dedupe((s[1] || s[2]).untaint)
+        std_abbrev = @string_deduper.dedupe(RubyCoreSupport.untaint(s[1] || s[2]))
         check_scan(s, /([-+]?\d+)(?::(\d+)(?::(\d+))?)?/)
         std_offset = get_offset_from_hms(s[1], s[2], s[3])
 
         if s.scan(/([^-+,\d<][^-+,\d]*) | <([^>]+)>/x)
-          dst_abbrev = @string_deduper.dedupe((s[1] || s[2]).untaint)
+          dst_abbrev = @string_deduper.dedupe(RubyCoreSupport.untaint(s[1] || s[2]))
 
           if s.scan(/([-+]?\d+)(?::(\d+)(?::(\d+))?)?/)
             dst_offset = get_offset_from_hms(s[1], s[2], s[3])

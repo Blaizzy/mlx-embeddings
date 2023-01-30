@@ -2,10 +2,6 @@
 # frozen_string_literal: true
 
 module TZInfo
-  # Use send as a workaround for erroneous 'wrong number of arguments' errors
-  # with JRuby 9.0.5.0 when calling methods with Java implementations. See #114.
-  send(:using, UntaintExt) if TZInfo.const_defined?(:UntaintExt)
-
   module DataSources
     # A {TZInfoDataNotFound} exception is raised if the tzinfo-data gem could
     # not be found (i.e. `require 'tzinfo/data'` failed) when selecting the Ruby
@@ -52,7 +48,7 @@ module TZInfo
           data_file = File.join('', 'tzinfo', 'data.rb')
           path = $".reverse_each.detect {|p| p.end_with?(data_file) }
           if path
-            @base_path = File.join(File.dirname(path), 'data').untaint
+            @base_path = RubyCoreSupport.untaint(File.join(File.dirname(path), 'data'))
           else
             @base_path = 'tzinfo/data'
           end
