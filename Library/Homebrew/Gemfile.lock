@@ -198,7 +198,7 @@ GEM
       thor (>= 1.2.0)
       yard-sorbet
     thor (1.2.1)
-    tzinfo (2.0.5)
+    tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf (0.1.4)
       unf_ext
