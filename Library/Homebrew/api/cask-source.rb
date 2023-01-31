@@ -10,8 +10,6 @@ module Homebrew
       class << self
         extend T::Sig
 
-        CASK_TOKEN_REGEX = %r{^(homebrew/cask/)?[a-z0-9\-_]+$}.freeze
-
         sig { params(token: String).returns(Hash) }
         def fetch(token)
           token = token.delete_prefix("homebrew/cask/")
@@ -21,7 +19,7 @@ module Homebrew
         sig { params(token: String).returns(T::Boolean) }
         def available?(token)
           # Sanity check before hitting the API
-          return false unless token.match?(CASK_TOKEN_REGEX)
+          return false unless token.match?(HOMEBREW_MAIN_TAP_CASK_REGEX)
 
           begin
             fetch token
