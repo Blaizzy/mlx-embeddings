@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "rubocops/extend/formula"
-require "extend/string"
 
 module RuboCop
   module Cop

@@ -3,7 +3,6 @@
 
 require "rubocops/extend/formula"
 require "rubocops/shared/desc_helper"
-require "extend/string"
 
 module RuboCop
   module Cop
