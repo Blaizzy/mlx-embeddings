@@ -2,10 +2,6 @@
 # frozen_string_literal: true
 
 module TZInfo
-  # Use send as a workaround for erroneous 'wrong number of arguments' errors
-  # with JRuby 9.0.5.0 when calling methods with Java implementations. See #114.
-  send(:using, UntaintExt) if TZInfo.const_defined?(:UntaintExt)
-
   module DataSources
     # An {InvalidZoneinfoFile} exception is raised if an attempt is made to load
     # an invalid zoneinfo file.
@@ -448,7 +444,7 @@ module TZInfo
           abbrev_end = abbrev.index("\0", abbrev_start)
           raise InvalidZoneinfoFile, "Missing abbreviation null terminator in file '#{file.path}'." unless abbrev_end
 
-          abbr = @string_deduper.dedupe(abbrev[abbrev_start...abbrev_end].force_encoding(Encoding::UTF_8).untaint)
+          abbr = @string_deduper.dedupe(RubyCoreSupport.untaint(abbrev[abbrev_start...abbrev_end].force_encoding(Encoding::UTF_8)))
 
           TimezoneOffset.new(base_utc_offset, std_offset, abbr)
         end

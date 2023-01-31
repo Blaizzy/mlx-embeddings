@@ -2,10 +2,6 @@
 # frozen_string_literal: true
 
 module TZInfo
-  # Use send as a workaround for erroneous 'wrong number of arguments' errors
-  # with JRuby 9.0.5.0 when calling methods with Java implementations. See #114.
-  send(:using, UntaintExt) if TZInfo.const_defined?(:UntaintExt)
-
   module DataSources
     # An {InvalidZoneinfoDirectory} exception is raised if {ZoneinfoDataSource}
     # is initialized with a specific zoneinfo path that is not a valid zoneinfo
@@ -444,7 +440,7 @@ module TZInfo
           end
 
           unless entry =~ /\./ || exclude.include?(entry)
-            entry.untaint
+            RubyCoreSupport.untaint(entry)
             path = dir + [entry]
             full_path = File.join(@zoneinfo_dir, *path)
 

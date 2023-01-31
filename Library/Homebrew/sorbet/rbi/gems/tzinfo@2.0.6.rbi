@@ -579,6 +579,12 @@ end
 
 class TZInfo::PeriodNotFound < ::StandardError; end
 
+module TZInfo::RubyCoreSupport
+  class << self
+    def untaint(o); end
+  end
+end
+
 class TZInfo::StringDeduper
   def initialize; end
 
