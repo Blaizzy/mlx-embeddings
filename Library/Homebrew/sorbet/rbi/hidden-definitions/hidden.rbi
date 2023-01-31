@@ -4382,11 +4382,6 @@ class Hash
   def deep_transform_values!(&block); end
 end
 
-module Homebrew
-  MAX_PORT = ::T.let(nil, ::T.untyped)
-  MIN_PORT = ::T.let(nil, ::T.untyped)
-end
-
 module Homebrew::API::Analytics
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -5461,9 +5456,6 @@ class Object
 
   def to_yaml(options=T.unsafe(nil)); end
   APPLE_GEM_HOME = ::T.let(nil, ::T.untyped)
-  APPLY_A = ::T.let(nil, ::T.untyped)
-  APPLY_B = ::T.let(nil, ::T.untyped)
-  APPLY_C = ::T.let(nil, ::T.untyped)
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
@@ -5529,12 +5521,8 @@ class Object
   OPTION_DESC_WIDTH = ::T.let(nil, ::T.untyped)
   ORIGINAL_PATHS = ::T.let(nil, ::T.untyped)
   OS_VERSION = ::T.let(nil, ::T.untyped)
-  PATCH_A_CONTENTS = ::T.let(nil, ::T.untyped)
   PATCH_A_SHA256 = ::T.let(nil, ::T.untyped)
-  PATCH_B_CONTENTS = ::T.let(nil, ::T.untyped)
   PATCH_B_SHA256 = ::T.let(nil, ::T.untyped)
-  PATCH_URL_A = ::T.let(nil, ::T.untyped)
-  PATCH_URL_B = ::T.let(nil, ::T.untyped)
   RUBY18 = ::T.let(nil, ::T.untyped)
   RUBY19 = ::T.let(nil, ::T.untyped)
   RUBY_BIN = ::T.let(nil, ::T.untyped)
@@ -5557,9 +5545,7 @@ class Object
   TARGET_DOC_PATH = ::T.let(nil, ::T.untyped)
   TARGET_MAN_PATH = ::T.let(nil, ::T.untyped)
   TESTBALL_PATCHES_SHA256 = ::T.let(nil, ::T.untyped)
-  TESTBALL_PATCHES_URL = ::T.let(nil, ::T.untyped)
   TESTBALL_SHA256 = ::T.let(nil, ::T.untyped)
-  TESTBALL_URL = ::T.let(nil, ::T.untyped)
   TEST_DIRECTORIES = ::T.let(nil, ::T.untyped)
   TEST_FIXTURE_DIR = ::T.let(nil, ::T.untyped)
   TEST_SHA1 = ::T.let(nil, ::T.untyped)

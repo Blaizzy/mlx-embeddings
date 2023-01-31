@@ -2192,8 +2192,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_NO_EMOJI`
   <br>If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build.
 
-    *Note:* Will only try to print emoji on OS X Lion or newer.
-
 - `HOMEBREW_NO_ENV_HINTS`
   <br>If set, do not print any hints about changing Homebrew's behaviour with environment variables.
 

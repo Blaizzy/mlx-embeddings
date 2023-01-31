@@ -80,7 +80,11 @@ describe Formula do
     end
 
     it "fails when Formula is empty" do
-      expect { formula {} }.to raise_error(FormulaSpecificationError)
+      expect {
+        formula {
+          # do nothing
+        }
+      }.to raise_error(FormulaSpecificationError)
     end
   end
 end

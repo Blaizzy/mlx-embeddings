@@ -12,7 +12,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
   context "when auditing `postflight` stanzas" do
     context "when there are no on_system blocks" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               foobar
@@ -26,7 +26,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is an `on_intel` block" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               on_intel do
@@ -37,7 +37,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
         CASK
       end
       let(:correct_source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               if Hardware::CPU.intel?
@@ -64,7 +64,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is an `on_monterey` block" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               on_monterey do
@@ -75,7 +75,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
         CASK
       end
       let(:correct_source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               if MacOS.version == :monterey
@@ -102,7 +102,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is an `on_monterey :or_older` block" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               on_monterey :or_older do
@@ -113,7 +113,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
         CASK
       end
       let(:correct_source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             postflight do
               if MacOS.version <= :monterey
@@ -143,7 +143,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
   context "when auditing `sha256` stanzas inside on_arch blocks" do
     context "when there are no on_arch blocks" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
           end
@@ -155,7 +155,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when the proper `sha256` stanza is used" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             sha256 arm:   "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94",
                    intel: "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
@@ -168,7 +168,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when the `sha256` stanza needs to be removed from the on_arch blocks" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             on_intel do
               sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
@@ -180,7 +180,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
         CASK
       end
       let(:correct_source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
           #{"  "}
             sha256 arm: "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b", intel: "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
@@ -188,7 +188,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
         CASK
       end
       let(:offense_source) do
-        <<-CASK.undent
+        <<~CASK
           on_arm do
               sha256 "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
             end
@@ -213,7 +213,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is only one on_arch block" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             on_intel do
               sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
@@ -227,7 +227,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is also a `version` stanza inside the on_arch blocks" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             on_intel do
               version "1.0.0"
@@ -246,7 +246,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is also a `version` stanza inside only a single on_arch block" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             on_intel do
               version "2.0.0"
@@ -266,7 +266,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
   context "when auditing loose `Hardware::CPU` method calls" do
     context "when there is a `Hardware::CPU.arm?` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             if Hardware::CPU.arm? && other_condition
               sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
@@ -291,7 +291,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is a `Hardware::CPU.intel?` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             if Hardware::CPU.intel? && other_condition
               sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
@@ -316,7 +316,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is a `Hardware::CPU.arch` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             version "1.2.3"
             sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
@@ -342,7 +342,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
   context "when auditing loose `MacOS.version` method calls" do
     context "when there is a `MacOS.version ==` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             if MacOS.version == :catalina
               version "1.0.0"
@@ -367,7 +367,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is a `MacOS.version <=` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             if MacOS.version <= :catalina
               version "1.0.0"
@@ -392,7 +392,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is a `MacOS.version >=` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             if MacOS.version >= :catalina
               version "1.0.0"
@@ -417,7 +417,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
 
     context "when there is a `MacOS.version` reference" do
       let(:source) do
-        <<-CASK.undent
+        <<~CASK
           cask 'foo' do
             version "1.2.3"
             sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"

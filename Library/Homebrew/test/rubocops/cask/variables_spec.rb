@@ -11,7 +11,7 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there are no variables" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask "foo" do
           version :latest
         end
@@ -23,7 +23,7 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is an arch stanza" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask "foo" do
           arch arm: "darwin-arm64", intel: "darwin"
         end
@@ -35,7 +35,7 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is a non-arch variable that uses the arch conditional" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask "foo" do
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
         end
@@ -47,14 +47,14 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is an arch variable" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch = Hardware::CPU.intel? ? "darwin" : "darwin-arm64"
         end
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "darwin-arm64", intel: "darwin"
         end
@@ -78,14 +78,14 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is an arch variable that doesn't use strings" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch = Hardware::CPU.intel? ? :darwin : :darwin_arm64
         end
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: :darwin_arm64, intel: :darwin
         end
@@ -109,14 +109,14 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is an arch with an empty string" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch = Hardware::CPU.intel? ? "" : "arm64"
         end
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64"
         end
@@ -140,14 +140,14 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is a non-arch variable" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           folder = Hardware::CPU.intel? ? "darwin" : "darwin-arm64"
         end
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
         end
@@ -171,14 +171,14 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is a non-arch variable with an empty string" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           folder = Hardware::CPU.intel? ? "amd64" : ""
         end
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           folder = on_arch_conditional intel: "amd64"
         end
@@ -202,7 +202,7 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there is an arch and a non-arch variable" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"
           folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"
@@ -210,7 +210,7 @@ describe RuboCop::Cop::Cask::Variables do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "darwin-arm64", intel: "darwin"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -242,7 +242,7 @@ describe RuboCop::Cop::Cask::Variables do
 
   context "when there are two non-arch variables" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"
           platform = Hardware::CPU.intel? ? "darwin": "darwin-arm64"
@@ -250,7 +250,7 @@ describe RuboCop::Cop::Cask::Variables do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
           platform = on_arch_conditional arm: "darwin-arm64", intel: "darwin"

@@ -1,6 +1,5 @@
 inherit_from:
   - ../.rubocop_rspec.yml
-  - .rubocop_todo.yml
 
 Homebrew/MoveToExtendOS:
   Enabled: true
@@ -20,9 +19,9 @@ Lint/NestedMethodDefinition:
 
 # TODO: Try to bring down all metrics maximums.
 Metrics/AbcSize:
-  Max: 280
+  Max: 241
 Metrics/BlockLength:
-  Max: 106
+  Max: 86
   Exclude:
     # TODO: extract more of the bottling logic
     - "dev-cmd/bottle.rb"
@@ -31,18 +30,18 @@ Metrics/BlockLength:
 Metrics/BlockNesting:
   Max: 5
 Metrics/ClassLength:
-  Max: 800
+  Max: 736
   Exclude:
     - "formula.rb"
     - "formula_installer.rb"
 Metrics/CyclomaticComplexity:
-  Max: 80
+  Max: 68
 Metrics/PerceivedComplexity:
-  Max: 90
+  Max: 84
 Metrics/MethodLength:
-  Max: 260
+  Max: 232
 Metrics/ModuleLength:
-  Max: 500
+  Max: 463
   Exclude:
     # TODO: extract more of the bottling logic
     - "dev-cmd/bottle.rb"
@@ -56,6 +55,28 @@ Naming/PredicateName:
     - is_a?
     - is_32_bit?
     - is_64_bit?
+
+Style/Documentation:
+  AllowedConstants:
+    - Homebrew
+  Exclude:
+    - "extend/**/*.rb"
+    - "test/**/*.rb"
+    - "cask/macos.rb"
+    - "cli/args.rb"
+    - "cli/parser.rb"
+    - "cmd/list.rb"
+    - "cmd/update-report.rb"
+    - "dev-cmd/irb.rb"
+    - "dev-cmd/pr-pull.rb"
+    - "keg_relocate.rb"
+    - "os/mac/keg.rb"
+    - "software_spec.rb"
+    - "utils.rb"
+    - "utils/fork.rb"
+    - "utils/git_repository.rb"
+    - "utils/popen.rb"
+    - "utils/shell.rb"
 
 Style/HashAsLastArrayItem:
   Exclude:

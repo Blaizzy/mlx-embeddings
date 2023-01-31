@@ -70,7 +70,7 @@ module Utils
             pid = fork do
               exec curl, *args,
                    "--silent", "--output", "/dev/null",
-                   "https://www.google-analytqics.com/collect"
+                   "https://www.google-analytics.com/collect"
             end
             Process.detach T.must(pid)
           end

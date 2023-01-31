@@ -285,8 +285,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_EMOJI:                         {
-        description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build." \
-                     "\n\n    *Note:* Will only try to print emoji on OS X Lion or newer.",
+        description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build.",
         boolean:     true,
       },
       HOMEBREW_NO_ENV_HINTS:                     {
