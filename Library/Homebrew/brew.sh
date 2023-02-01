@@ -689,6 +689,8 @@ done
 HOMEBREW_ARG_COUNT="$#"
 HOMEBREW_COMMAND="$1"
 shift
+# If you are going to change anything in below case statement,
+# be sure to also update HOMEBREW_INTERNAL_COMMAND_ALIASES hash in commands.rb
 case "${HOMEBREW_COMMAND}" in
   ls) HOMEBREW_COMMAND="list" ;;
   homepage) HOMEBREW_COMMAND="home" ;;
@@ -705,6 +707,8 @@ case "${HOMEBREW_COMMAND}" in
   environment) HOMEBREW_COMMAND="--env" ;;
   --config) HOMEBREW_COMMAND="config" ;;
   -v) HOMEBREW_COMMAND="--version" ;;
+  lc) HOMEBREW_COMMAND="livecheck" ;;
+  tc) HOMEBREW_COMMAND="typecheck" ;;
 esac
 
 # Set HOMEBREW_DEV_CMD_RUN for users who have run a development command.

@@ -11,6 +11,8 @@ module Commands
 
   HOMEBREW_CMD_PATH = (HOMEBREW_LIBRARY_PATH/"cmd").freeze
   HOMEBREW_DEV_CMD_PATH = (HOMEBREW_LIBRARY_PATH/"dev-cmd").freeze
+  # If you are going to change anything in below hash,
+  # be sure to also update appropriate case statement in brew.sh
   HOMEBREW_INTERNAL_COMMAND_ALIASES = {
     "ls"          => "list",
     "homepage"    => "home",
