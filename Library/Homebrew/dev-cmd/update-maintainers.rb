@@ -28,11 +28,10 @@ module Homebrew
     public_members = GitHub.public_member_usernames("Homebrew")
 
     members = {
-      plc: GitHub.members_by_team("Homebrew", "plc"),
-      tsc: GitHub.members_by_team("Homebrew", "tsc"),
+      plc:         GitHub.members_by_team("Homebrew", "plc"),
+      tsc:         GitHub.members_by_team("Homebrew", "tsc"),
+      maintainers: GitHub.members_by_team("Homebrew", "maintainers"),
     }
-    members[:other] = GitHub.members_by_team("Homebrew", "maintainers")
-                            .except(*members.values.map(&:keys).flatten.uniq)
 
     sentences = {}
     members.each do |group, hash|
@@ -48,8 +47,8 @@ module Homebrew
                   "\\1 is #{sentences[:plc]}.")
     content.gsub!(/(Homebrew's \[Technical Steering Committee.*) is .*\./,
                   "\\1 is #{sentences[:tsc]}.")
-    content.gsub!(/(Homebrew's other current maintainers are).*\./,
-                  "\\1 #{sentences[:other]}.")
+    content.gsub!(/(Homebrew's maintainers are).*\./,
+                  "\\1 #{sentences[:maintainers]}.")
 
     File.write(readme, content)
 
