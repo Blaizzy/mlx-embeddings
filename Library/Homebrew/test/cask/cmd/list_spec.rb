@@ -128,6 +128,7 @@ describe Cask::Cmd::List, :cask do
             "conflicts_with": null,
             "container": null,
             "auto_updates": null,
+            "tap_git_head": null,
             "languages": [
 
             ]
@@ -162,6 +163,7 @@ describe Cask::Cmd::List, :cask do
             "conflicts_with": null,
             "container": null,
             "auto_updates": null,
+            "tap_git_head": null,
             "languages": [
 
             ]
@@ -199,6 +201,7 @@ describe Cask::Cmd::List, :cask do
             "conflicts_with": null,
             "container": null,
             "auto_updates": null,
+            "tap_git_head": null,
             "languages": [
 
             ]
@@ -233,6 +236,7 @@ describe Cask::Cmd::List, :cask do
             "conflicts_with": null,
             "container": null,
             "auto_updates": null,
+            "tap_git_head": null,
             "languages": [
 
             ]
@@ -267,6 +271,7 @@ describe Cask::Cmd::List, :cask do
             "conflicts_with": null,
             "container": null,
             "auto_updates": null,
+            "tap_git_head": null,
             "languages": [
               "zh",
               "en-US"

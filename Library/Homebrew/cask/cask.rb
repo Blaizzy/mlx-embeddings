@@ -246,6 +246,7 @@ module Cask
         "conflicts_with" => conflicts_with,
         "container"      => container&.pairs,
         "auto_updates"   => auto_updates,
+        "tap_git_head"   => tap&.git_head,
         "languages"      => languages,
       }
     end
