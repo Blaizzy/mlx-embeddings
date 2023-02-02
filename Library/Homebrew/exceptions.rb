@@ -524,7 +524,7 @@ class BuildError < RuntimeError
       end
     end
 
-    if formula.tap && defined?(OS::ISSUES_URL)
+    if formula.tap && !OS.unsupported_configuration?
       if formula.tap.official?
         puts Formatter.error(Formatter.url(OS::ISSUES_URL), label: "READ THIS")
       elsif (issues_url = formula.tap.issues_url)

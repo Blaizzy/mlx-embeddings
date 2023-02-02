@@ -69,4 +69,9 @@ module OS
     ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
     PATH_OPEN = "xdg-open"
   end
+
+  sig { returns(T::Boolean) }
+  def self.unsupported_configuration?
+    !defined?(OS::ISSUES_URL)
+  end
 end
