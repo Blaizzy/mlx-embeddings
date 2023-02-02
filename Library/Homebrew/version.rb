@@ -467,7 +467,7 @@ class Version
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-beta1.tar.gz
     # e.g. https://github.com/dlang/dmd/archive/v2.074.0-rc1.tar.gz
     # e.g. https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/premake-5.0.0-alpha10-src.zip
-    StemParser.new(/[.-vV]?(#{NUMERIC_WITH_DOTS}#{PRERELEASE_SUFFIX})/),
+    StemParser.new(/[-.vV]?(#{NUMERIC_WITH_DOTS}#{PRERELEASE_SUFFIX})/),
 
     # e.g. foobar4.5.1
     StemParser.new(/(#{NUMERIC_WITH_OPTIONAL_DOTS})$/),
@@ -505,7 +505,7 @@ class Version
     StemParser.new(/\.v(\d+[a-z]?)/),
 
     # e.g. https://secure.php.net/get/php-7.1.10.tar.bz2/from/this/mirror
-    UrlParser.new(/[.-vV]?(#{NUMERIC_WITH_DOTS}#{PRERELEASE_SUFFIX}?)/),
+    UrlParser.new(/[-.vV]?(#{NUMERIC_WITH_DOTS}#{PRERELEASE_SUFFIX}?)/),
   ].freeze
   private_constant :VERSION_PARSERS
 
