@@ -11,6 +11,7 @@ require "utils/inreplace"
 require "erb"
 require "utils/gzip"
 require "api"
+require "extend/os/dev-cmd/bottle"
 
 BOTTLE_ERB = <<-EOS
   bottle do
@@ -238,17 +239,6 @@ module Homebrew
     default_tar_args = ["tar", [].freeze].freeze
     return default_tar_args unless args.only_json_tab?
 
-    # Ensure tar is set up for reproducibility.
-    # https://reproducible-builds.org/docs/archives/
-    gnutar_args = [
-      "--format", "pax", "--owner", "0", "--group", "0", "--sort", "name", "--mtime=#{mtime}",
-      # Set exthdr names to exclude PID (for GNU tar <1.33). Also don't store atime and ctime.
-      "--pax-option", "globexthdr.name=/GlobalHead.%n,exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
-    ].freeze
-
-    # TODO: Refactor and move to extend/os
-    return ["tar", gnutar_args].freeze if OS.linux? # rubocop:disable Homebrew/MoveToExtendOS
-
     # Use gnu-tar on macOS as it can be set up for reproducibility better than libarchive.
     begin
       gnu_tar = Formula["gnu-tar"]
@@ -258,13 +248,20 @@ module Homebrew
 
     ensure_formula_installed!(gnu_tar, reason: "bottling")
 
+    # Ensure tar is set up for reproducibility.
+    # https://reproducible-builds.org/docs/archives/
+    gnutar_args = [
+      "--format", "pax", "--owner", "0", "--group", "0", "--sort", "name", "--mtime=#{mtime}",
+      # Set exthdr names to exclude PID (for GNU tar <1.33). Also don't store atime and ctime.
+      "--pax-option", "globexthdr.name=/GlobalHead.%n,exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
+    ].freeze
+
     ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end
 
   def formula_ignores(f)
     ignores = []
     cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
-    prefix_regex = Regexp.escape(HOMEBREW_PREFIX)
 
     # Ignore matches to go keg, because all go binaries are statically linked.
     any_go_deps = f.deps.any? do |dep|
@@ -274,19 +271,6 @@ module Homebrew
       go_regex = Version.formula_optionally_versioned_regex(:go, full: false)
       ignores << %r{#{cellar_regex}/#{go_regex}/[\d.]+/libexec}
     end
-
-    # TODO: Refactor and move to extend/os
-    # rubocop:disable Homebrew/MoveToExtendOS
-    ignores << case f.name
-    # On Linux, GCC installation can be moved so long as the whole directory tree is moved together:
-    # https://gcc-help.gcc.gnu.narkive.com/GnwuCA7l/moving-gcc-from-the-installation-path-is-it-allowed.
-    when Version.formula_optionally_versioned_regex(:gcc)
-      Regexp.union(%r{#{cellar_regex}/gcc}, %r{#{prefix_regex}/opt/gcc}) if OS.linux?
-    # binutils is relocatable for the same reason: https://github.com/Homebrew/brew/pull/11899#issuecomment-906804451.
-    when Version.formula_optionally_versioned_regex(:binutils)
-      %r{#{cellar_regex}/binutils} if OS.linux?
-    end
-    # rubocop:enable Homebrew/MoveToExtendOS
 
     ignores.compact
   end
