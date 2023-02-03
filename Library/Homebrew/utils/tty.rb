@@ -87,7 +87,7 @@ module Tty
     CODES.each do |name, code|
       define_method(name) do
         @escape_sequence ||= []
-        @escape_sequence << code
+        @escape_sequence << code if @escape_sequence
         self
       end
     end
