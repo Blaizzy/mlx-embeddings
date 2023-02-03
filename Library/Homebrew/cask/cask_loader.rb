@@ -371,10 +371,6 @@ module Cask
         return loader_class.new(ref) if loader_class.can_load?(ref)
       end
 
-      if Homebrew::EnvConfig.install_from_api? && !need_path && Homebrew::API::Cask.all_casks.key?(ref)
-        return FromAPILoader.new(ref)
-      end
-
       return FromTapPathLoader.new(default_path(ref)) if FromTapPathLoader.can_load?(default_path(ref))
 
       case (possible_tap_casks = tap_paths(ref)).count
