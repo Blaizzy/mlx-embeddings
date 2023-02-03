@@ -178,7 +178,7 @@ class Tap
   def git_head
     raise TapUnavailableError, name unless installed?
 
-    path.git_head
+    @git_head ||= path.git_head
   end
 
   # Time since last git commit for this {Tap}.

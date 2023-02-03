@@ -2149,7 +2149,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* The "Beer Mug" emoji.
 
 - `HOMEBREW_INSTALL_FROM_API`
-  <br>If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API instead of needing (large, slow) local checkouts of these repositories.
+  <br>If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API instead of needing (large, slow) local checkouts of these repositories. Note, this will only take effect in supported configurations (i.e. using the default Homebrew prefix and, if on macOS, on a supported version).
 
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
@@ -2191,8 +2191,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_NO_EMOJI`
   <br>If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build.
-
-    *Note:* Will only try to print emoji on OS X Lion or newer.
 
 - `HOMEBREW_NO_ENV_HINTS`
   <br>If set, do not print any hints about changing Homebrew's behaviour with environment variables.
@@ -2310,9 +2308,9 @@ Homebrew's Project Leadership Committee is Issy Long, Jonathan Chang, Mike McQua
 
 Homebrew's Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid and Rylan Polster.
 
-Homebrew's other current maintainers are Alexander Bayandin, Bevan Kay, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, George Adams, Markus Reiter, Maxim Belkin, Miccal Matthews, Michael Cho, Nanda H Krishna, Patrick Linnane, Randall, Rui Chen, Sam Ford, Shaun Jackman, Steve Peters, Thierry Moisan and Vítor Galvão.
+Homebrew's maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan.
 
-Former maintainers with significant contributions include Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
+Former maintainers with significant contributions include Misty De Méo, Markus Reiter, Shaun Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
 
 ## BUGS
 

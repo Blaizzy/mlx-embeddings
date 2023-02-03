@@ -689,6 +689,8 @@ done
 HOMEBREW_ARG_COUNT="$#"
 HOMEBREW_COMMAND="$1"
 shift
+# If you are going to change anything in below case statement,
+# be sure to also update HOMEBREW_INTERNAL_COMMAND_ALIASES hash in commands.rb
 case "${HOMEBREW_COMMAND}" in
   ls) HOMEBREW_COMMAND="list" ;;
   homepage) HOMEBREW_COMMAND="home" ;;
@@ -705,6 +707,8 @@ case "${HOMEBREW_COMMAND}" in
   environment) HOMEBREW_COMMAND="--env" ;;
   --config) HOMEBREW_COMMAND="config" ;;
   -v) HOMEBREW_COMMAND="--version" ;;
+  lc) HOMEBREW_COMMAND="livecheck" ;;
+  tc) HOMEBREW_COMMAND="typecheck" ;;
 esac
 
 # Set HOMEBREW_DEV_CMD_RUN for users who have run a development command.
@@ -767,13 +771,21 @@ To turn developer mode off, run $(bold "brew developer off")
 fi
 
 # Test HOMEBREW_INSTALL_FROM_API on HOMEBREW_DEV_CMD_RUN and HOMEBREW_DEVELOPER
-# folks who haven't run a HOMEBREW_DEVELOPER_COMMAND.
+# folks who haven't run a HOMEBREW_DEVELOPER_COMMAND if they are in a default
+# prefix and on a supported macOS version.
 if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
       -z "${HOMEBREW_INSTALL_FROM_API}" &&
       -z "${HOMEBREW_DEVELOPER_COMMAND}" ]] &&
+   [[ -z "${HOMEBREW_MACOS_VERSION_NUMERIC}" ||
+   "${HOMEBREW_MACOS_VERSION_NUMERIC}" -ge "110000" ]] &&
+   [[ "${HOMEBREW_PREFIX}" == "/usr/local" ||
+      "${HOMEBREW_PREFIX}" == "/opt/homebrew" ||
+      "${HOMEBREW_PREFIX}" == "/home/linuxbrew/.linuxbrew" ]] &&
    [[ -n "${HOMEBREW_DEV_CMD_RUN}" || -n "${HOMEBREW_DEVELOPER}" ]]
 then
   export HOMEBREW_INSTALL_FROM_API=1
+else
+  unset HOMEBREW_INSTALL_FROM_API
 fi
 
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]

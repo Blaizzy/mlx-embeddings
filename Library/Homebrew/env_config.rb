@@ -226,7 +226,9 @@ module Homebrew
       },
       HOMEBREW_INSTALL_FROM_API:                 {
         description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
-                     "API instead of needing (large, slow) local checkouts of these repositories.",
+                     "API instead of needing (large, slow) local checkouts of these repositories. Note, this will " \
+                     "only take effect in supported configurations (i.e. using the default Homebrew prefix and, " \
+                     "if on macOS, on a supported version).",
         boolean:     true,
       },
       HOMEBREW_LIVECHECK_WATCHLIST:              {
@@ -285,8 +287,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_EMOJI:                         {
-        description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build." \
-                     "\n\n    *Note:* Will only try to print emoji on OS X Lion or newer.",
+        description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build.",
         boolean:     true,
       },
       HOMEBREW_NO_ENV_HINTS:                     {
@@ -485,6 +486,9 @@ module Homebrew
 
     sig { returns(T::Boolean) }
     def install_from_api?
+      return false if OS.unsupported_configuration?
+      return false unless Homebrew.default_prefix?
+
       ENV["HOMEBREW_NO_INSTALL_FROM_API"].blank? && ENV["HOMEBREW_INSTALL_FROM_API"].present?
     end
   end

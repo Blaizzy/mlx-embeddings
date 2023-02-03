@@ -4390,10 +4390,6 @@ module Homebrew::API::Cask
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Homebrew::API::CaskSource
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Homebrew::API::Formula
   extend ::T::Private::Methods::SingletonMethodHooks
 end

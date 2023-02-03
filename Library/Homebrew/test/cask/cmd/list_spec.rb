@@ -84,7 +84,10 @@ describe Cask::Cmd::List, :cask do
   end
 
   describe "lists json" do
-    let(:casks) { ["local-caffeine", "local-transmission", "multiple-versions", "third-party/tap/third-party-cask"] }
+    let(:casks) {
+      ["local-caffeine", "local-transmission", "multiple-versions", "with-languages",
+       "third-party/tap/third-party-cask"]
+    }
     let(:expected_output) {
       <<~EOS
         [
@@ -124,7 +127,11 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "tap_git_head": null,
+            "languages": [
+
+            ]
           },
           {
             "token": "local-transmission",
@@ -155,7 +162,11 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "tap_git_head": null,
+            "languages": [
+
+            ]
           },
           {
             "token": "multiple-versions",
@@ -189,7 +200,11 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "tap_git_head": null,
+            "languages": [
+
+            ]
           },
           {
             "token": "third-party-cask",
@@ -220,7 +235,47 @@ describe Cask::Cmd::List, :cask do
             },
             "conflicts_with": null,
             "container": null,
-            "auto_updates": null
+            "auto_updates": null,
+            "tap_git_head": null,
+            "languages": [
+
+            ]
+          },
+          {
+            "token": "with-languages",
+            "full_token": "with-languages",
+            "tap": "homebrew/cask",
+            "name": [
+
+            ],
+            "desc": null,
+            "homepage": "https://brew.sh/",
+            "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip",
+            "appcast": null,
+            "version": "1.2.3",
+            "versions": {
+            },
+            "installed": "1.2.3",
+            "outdated": false,
+            "sha256": "xyz789",
+            "artifacts": [
+              {
+                "app": [
+                  "Caffeine.app"
+                ]
+              }
+            ],
+            "caveats": null,
+            "depends_on": {
+            },
+            "conflicts_with": null,
+            "container": null,
+            "auto_updates": null,
+            "tap_git_head": null,
+            "languages": [
+              "zh",
+              "en-US"
+            ]
           }
         ]
       EOS
@@ -257,7 +312,7 @@ describe Cask::Cmd::List, :cask do
     it "of given Casks" do
       expect {
         described_class.run("--json", "local-caffeine", "local-transmission", "multiple-versions",
-                            "third-party/tap/third-party-cask")
+                            "third-party/tap/third-party-cask", "with-languages")
       }.to output(expected_output).to_stdout
     end
   end

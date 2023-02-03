@@ -18,7 +18,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when there is only one stanza" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
         end
@@ -30,7 +30,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when no stanzas are incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -43,7 +43,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when no stanzas or variable assignments are incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -59,7 +59,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when one stanza is incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
 
@@ -68,7 +68,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -92,7 +92,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when the arch stanza is incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           version :latest
@@ -101,7 +101,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
 
@@ -127,7 +127,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when one variable assignment is incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -137,7 +137,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -164,7 +164,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when many stanzas are incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -181,7 +181,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -232,7 +232,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when many stanzas and variable assignments are incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -253,7 +253,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -320,7 +320,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when caveats stanza is incorrectly grouped" do
     let(:source) do
-      format(<<-CASK.undent, caveats: caveats.strip)
+      format(<<~CASK, caveats: caveats.strip)
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -332,7 +332,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      format(<<-CASK.undent, caveats: caveats.strip)
+      format(<<~CASK, caveats: caveats.strip)
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -355,8 +355,8 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
     context "when caveats is a heredoc" do
       let(:caveats) do
-        <<-CAVEATS.undent
-          caveats <<-EOS.undent
+        <<~CAVEATS
+          caveats <<~EOS
               This is a multiline caveat.
 
               Let's hope it doesn't cause any problems!
@@ -369,7 +369,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
     context "when caveats is a block" do
       let(:caveats) do
-        <<-CAVEATS.undent
+        <<~CAVEATS
           caveats do
               puts 'This is a multiline caveat.'
 
@@ -384,7 +384,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when the postflight stanza is incorrectly grouped" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -398,7 +398,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -420,7 +420,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when a stanza has a comment" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -437,7 +437,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version :latest
           sha256 :no_check
@@ -462,7 +462,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
   context "when a stanza has a comment and there is a variable assignment" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -481,7 +481,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86_64"
           folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"
@@ -509,7 +509,7 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
   # TODO: detect incorrectly grouped stanzas in nested expressions
   context "when stanzas are nested in a conditional expression" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           if true
             version :latest
