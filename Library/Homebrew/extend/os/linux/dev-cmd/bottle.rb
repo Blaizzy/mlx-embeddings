@@ -23,18 +23,10 @@ module Homebrew
   end
 
   def formula_ignores(f)
-    ignores = []
     cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
     prefix_regex = Regexp.escape(HOMEBREW_PREFIX)
 
-    # Ignore matches to go keg, because all go binaries are statically linked.
-    any_go_deps = f.deps.any? do |dep|
-      dep.name =~ Version.formula_optionally_versioned_regex(:go)
-    end
-    if any_go_deps
-      go_regex = Version.formula_optionally_versioned_regex(:go, full: false)
-      ignores << %r{#{cellar_regex}/#{go_regex}/[\d.]+/libexec}
-    end
+    ignores = generic_formula_ignores(f)
 
     ignores << case f.name
     # On Linux, GCC installation can be moved so long as the whole directory tree is moved together:

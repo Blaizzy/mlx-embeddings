@@ -275,6 +275,8 @@ module Homebrew
     ignores.compact
   end
 
+  alias generic_formula_ignores formula_ignores
+
   def bottle_formula(f, args:)
     local_bottle_json = args.json? && f.local_bottle_path.present?
 
