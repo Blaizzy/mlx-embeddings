@@ -59,8 +59,8 @@ module OS
     if !OS::Mac.version.prerelease? &&
        !OS::Mac.version.outdated_release? &&
        ARGV.none? { |v| v.start_with?("--cc=") } &&
-       (HOMEBREW_PREFIX == HOMEBREW_DEFAULT_PREFIX ||
-       (HOMEBREW_PREFIX == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX && Hardware::CPU.arm?))
+       (HOMEBREW_PREFIX.to_s == HOMEBREW_DEFAULT_PREFIX ||
+       (HOMEBREW_PREFIX.to_s == HOMEBREW_MACOS_ARM_DEFAULT_PREFIX && Hardware::CPU.arm?))
       ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
     end
     PATH_OPEN = "/usr/bin/open"
