@@ -5489,6 +5489,7 @@ class Object
   HOMEBREW_LOGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_MACOS_ARM_DEFAULT_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
+  HOMEBREW_MAIN_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)

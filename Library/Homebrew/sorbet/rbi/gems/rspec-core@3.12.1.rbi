@@ -406,8 +406,6 @@ module RSpec::Core::Configuration::Readers
   def threadsafe; end
   def tty; end
   def verbose_retry; end
-  def wait_delay; end
-  def wait_timeout; end
 end
 
 RSpec::Core::Configuration::UNKNOWN_STATUS = T.let(T.unsafe(nil), String)
