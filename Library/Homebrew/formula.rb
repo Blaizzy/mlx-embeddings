@@ -2126,6 +2126,7 @@ class Formula
       "disabled"                 => disabled?,
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
+      "tap_git_head"             => tap&.git_head,
     }
 
     if stable

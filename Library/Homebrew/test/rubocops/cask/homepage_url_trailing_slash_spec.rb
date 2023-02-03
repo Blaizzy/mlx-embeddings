@@ -11,7 +11,7 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
 
   context "when the homepage URL ends with a slash" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           homepage 'https://foo.brew.sh/'
         end
@@ -23,7 +23,7 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
 
   context "when the homepage URL does not end with a slash but has a path" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           homepage 'https://foo.brew.sh/path'
         end
@@ -35,14 +35,14 @@ describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash do
 
   context "when the homepage URL does not end with a slash and has no path" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           homepage 'https://foo.brew.sh'
         end
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           homepage 'https://foo.brew.sh/'
         end

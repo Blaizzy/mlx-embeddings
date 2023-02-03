@@ -11,7 +11,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
 
   context "when url version interpolation does not include version.before_comma or version.after_comma" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version '1.1'
           url 'https://foo.brew.sh/foo-\#{version}.dmg'
@@ -24,7 +24,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
 
   context "when the url uses csv" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version '1.1,111'
           url 'https://foo.brew.sh/foo-\#{version.csv.first}.dmg'
@@ -37,7 +37,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
 
   context "when the url uses version.before_comma" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version '1.1,111'
           url 'https://foo.brew.sh/foo-\#{version.before_comma}.dmg'
@@ -45,7 +45,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version '1.1,111'
           url 'https://foo.brew.sh/foo-\#{version.csv.first}.dmg'
@@ -70,7 +70,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
 
   context "when the url uses version.after_comma" do
     let(:source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version '1.1,111'
           url 'https://foo.brew.sh/foo-\#{version.after_comma}.dmg'
@@ -78,7 +78,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
       CASK
     end
     let(:correct_source) do
-      <<-CASK.undent
+      <<~CASK
         cask 'foo' do
           version '1.1,111'
           url 'https://foo.brew.sh/foo-\#{version.csv.second}.dmg'

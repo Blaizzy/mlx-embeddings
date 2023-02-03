@@ -21,12 +21,6 @@ describe Homebrew::API do
   end
 
   describe "::fetch" do
-    it "fetches a text file" do
-      mock_curl_output stdout: text
-      fetched_text = described_class.fetch("foo.txt", json: false)
-      expect(fetched_text).to eq text
-    end
-
     it "fetches a JSON file" do
       mock_curl_output stdout: json
       fetched_json = described_class.fetch("foo.json")
@@ -68,6 +62,21 @@ describe Homebrew::API do
       expect {
         described_class.fetch_json_api_file("baz.json", target: cache_dir/"baz.json")
       }.to raise_error(SystemExit)
+    end
+  end
+
+  describe "::fetch_file_source" do
+    it "fetches a file" do
+      mock_curl_output stdout: json
+      fetched_json = described_class.fetch_file_source("foo.json", repo: "Homebrew/homebrew-core", git_head: "master")
+      expect(fetched_json).to eq json
+    end
+
+    it "raises an error if the file does not exist" do
+      mock_curl_output success: false
+      expect {
+        described_class.fetch_file_source("bar.txt", repo: "Homebrew/homebrew-core", git_head: "master")
+      }.to raise_error(ArgumentError, /No file found/)
     end
   end
 end

@@ -199,7 +199,7 @@ rescue MethodDeprecatedError => e
   exit 1
 rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e
-  if internal_cmd && defined?(OS::ISSUES_URL)
+  if internal_cmd && !OS.unsupported_configuration?
     if Homebrew::EnvConfig.no_auto_update?
       $stderr.puts "#{Tty.bold}Do not report this issue until you've run `brew update` and tried again.#{Tty.reset}"
     else

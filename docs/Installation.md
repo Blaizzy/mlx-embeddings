@@ -36,6 +36,8 @@ export HOMEBREW_INSTALL_FROM_API=1
 
 This will make Homebrew install formulae and casks from the `homebrew/core` and `homebrew/cask` taps using Homebrew’s API instead of local checkouts of these repositories.
 
+Note, this will take effect in supported configurations (i.e. using the default Homebrew prefix and, if on macOS, on a supported version).
+
 ## Unattended installation
 
 If you want a non-interactive run of the Homebrew installer that doesn't prompt for passwords (e.g. in automation scripts), prepend [`NONINTERACTIVE=1`](https://github.com/Homebrew/install/#install-homebrew-on-macos-or-linux) to the installation command.
