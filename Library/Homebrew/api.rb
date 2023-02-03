@@ -62,7 +62,6 @@ module Homebrew
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
 
       raw_url = "https://raw.githubusercontent.com/#{repo}/#{endpoint}"
-      puts "Fetching #{raw_url}..."
       output = Utils::Curl.curl_output("--fail", raw_url, max_time: 5)
       raise ArgumentError, "No file found at #{Tty.underline}#{raw_url}#{Tty.reset}" unless output.success?
 
