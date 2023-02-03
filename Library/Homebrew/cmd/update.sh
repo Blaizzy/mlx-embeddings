@@ -778,14 +778,24 @@ EOS
       then
         INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
       fi
-      curl \
-        "${CURL_DISABLE_CURLRC_ARGS[@]}" \
-        --fail --compressed --silent --max-time 10 \
-        --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
-        --time-cond "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
-        --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
-        "https://formulae.brew.sh/api/${formula_or_cask}.json"
-      curl_exit_code=$?
+      JSON_URLS=()
+      if [[ -n "${HOMEBREW_API_DOMAIN}" && "${HOMEBREW_API_DOMAIN}" != "${HOMEBREW_API_DEFAULT_DOMAIN}" ]]
+      then
+        JSON_URLS=("${HOMEBREW_API_DOMAIN}/${formula_or_cask}.json")
+      fi
+      JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.json")
+      for json_url in "${JSON_URLS[@]}"
+      do
+        curl \
+          "${CURL_DISABLE_CURLRC_ARGS[@]}" \
+          --fail --compressed --silent --max-time 10 \
+          --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+          --time-cond "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+          --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
+          "${json_url}"
+        curl_exit_code=$?
+        [[ ${curl_exit_code} -eq 0 ]] && break
+      done
       if [[ ${curl_exit_code} -eq 0 ]]
       then
         CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
