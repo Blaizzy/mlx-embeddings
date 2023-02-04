@@ -37,8 +37,8 @@ describe Homebrew::Cleanup do
     end
 
     it "returns true when ctime and mtime < days_default" do
-      allow_any_instance_of(Pathname).to receive(:ctime).and_return(2.days.ago)
-      allow_any_instance_of(Pathname).to receive(:mtime).and_return(2.days.ago)
+      allow_any_instance_of(Pathname).to receive(:ctime).and_return((DateTime.now - 2).to_time)
+      allow_any_instance_of(Pathname).to receive(:mtime).and_return((DateTime.now - 2).to_time)
       expect(path.prune?(1)).to be true
     end
 
@@ -186,8 +186,8 @@ describe Homebrew::Cleanup do
       it "removes the download for the latest version after 30 days" do
         download = Cask::Cache.path/"#{cask.token}--#{cask.version}"
 
-        allow(download).to receive(:ctime).and_return(30.days.ago - 1.hour)
-        allow(download).to receive(:mtime).and_return(30.days.ago - 1.hour)
+        allow(download).to receive(:ctime).and_return((DateTime.now - 30).to_time - (60 * 60))
+        allow(download).to receive(:mtime).and_return((DateTime.now - 30).to_time - (60 * 60))
 
         cleanup.cleanup_cask(cask)
 
@@ -209,15 +209,15 @@ describe Homebrew::Cleanup do
     end
 
     it "cleans up logs if older than 30 days" do
-      allow_any_instance_of(Pathname).to receive(:ctime).and_return(31.days.ago)
-      allow_any_instance_of(Pathname).to receive(:mtime).and_return(31.days.ago)
+      allow_any_instance_of(Pathname).to receive(:ctime).and_return((DateTime.now - 31).to_time)
+      allow_any_instance_of(Pathname).to receive(:mtime).and_return((DateTime.now - 31).to_time)
       cleanup.cleanup_logs
       expect(path).not_to exist
     end
 
     it "does not clean up logs less than 30 days old" do
-      allow_any_instance_of(Pathname).to receive(:ctime).and_return(15.days.ago)
-      allow_any_instance_of(Pathname).to receive(:mtime).and_return(15.days.ago)
+      allow_any_instance_of(Pathname).to receive(:ctime).and_return((DateTime.now - 15).to_time)
+      allow_any_instance_of(Pathname).to receive(:mtime).and_return((DateTime.now - 15).to_time)
       cleanup.cleanup_logs
       expect(path).to exist
     end

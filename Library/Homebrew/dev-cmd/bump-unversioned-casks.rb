@@ -65,7 +65,7 @@ module Homebrew
     end
 
     limit = args.limit.presence&.to_i
-    end_time = Time.now + limit.minutes if limit
+    end_time = Time.now + (limit * 60) if limit
 
     until queue.empty? || (end_time && end_time < Time.now)
       cask = queue.deq
@@ -101,7 +101,7 @@ module Homebrew
     last_check_time = state["check_time"]&.then { |t| Time.parse(t) }
 
     check_time = Time.now
-    if last_check_time && check_time < (last_check_time + 1.day)
+    if last_check_time && check_time < (last_check_time + (DateTime.now + 1).to_time)
       opoo "Skipping, already checked within the last 24 hours."
       return
     end
@@ -119,7 +119,7 @@ module Homebrew
 
     if last_time != time || last_file_size != file_size
       sha256 = begin
-        Timeout.timeout(5.minutes) do
+        Timeout.timeout(5 * 60) do
           unversioned_cask_checker.installer.download.sha256
         end
       rescue => e
@@ -128,7 +128,7 @@ module Homebrew
 
       if sha256.present? && last_sha256 != sha256
         version = begin
-          Timeout.timeout(1.minute) do
+          Timeout.timeout(60) do
             unversioned_cask_checker.guess_cask_version
           end
         rescue Timeout::Error

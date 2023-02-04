@@ -13,7 +13,7 @@ require "forwardable"
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
 require "active_support/core_ext/object/blank"
-require "active_support/core_ext/numeric/time"
+require "active_support/core_ext/string/filters"
 require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
 require "active_support/core_ext/string/inflections"

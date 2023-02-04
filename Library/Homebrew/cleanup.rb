@@ -46,7 +46,8 @@ module Homebrew
 
           return true if symlink? && !exist?
 
-          mtime < days.days.ago && ctime < days.days.ago
+          days_ago = (DateTime.now - days).to_time
+          mtime < days_ago && ctime < days_ago
         end
 
         def stale?(scrub: false)
@@ -125,8 +126,8 @@ module Homebrew
           return true if scrub && cask.versions.exclude?(cask.version)
 
           if cask.version.latest?
-            return mtime < CLEANUP_DEFAULT_DAYS.days.ago &&
-                   ctime < CLEANUP_DEFAULT_DAYS.days.ago
+            cleanup_threshold = (DateTime.now - CLEANUP_DEFAULT_DAYS).to_time
+            return mtime < cleanup_threshold && ctime < cleanup_threshold
           end
 
           false
@@ -202,7 +203,7 @@ module Homebrew
         return false
       end
 
-      PERIODIC_CLEAN_FILE.mtime < CLEANUP_DEFAULT_DAYS.days.ago
+      PERIODIC_CLEAN_FILE.mtime < (DateTime.now - CLEANUP_DEFAULT_DAYS).to_time
     end
 
     def self.periodic_clean!(dry_run: false)
