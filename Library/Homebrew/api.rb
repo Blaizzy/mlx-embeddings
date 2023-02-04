@@ -4,7 +4,6 @@
 require "api/analytics"
 require "api/cask"
 require "api/formula"
-require "api/versions"
 require "extend/cachable"
 
 module Homebrew
