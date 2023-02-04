@@ -45,15 +45,17 @@ module Homebrew
       curl_args.prepend("--time-cond", target) if target.exist? && !target.empty?
 
       begin
-        # Disable retries here, we handle them ourselves below.
-        Utils::Curl.curl_download(*curl_args, to: target, max_time: JSON_API_MAX_TIME, retries: 0)
+        begin
+          # Disable retries here, we handle them ourselves below.
+          Utils::Curl.curl_download(*curl_args, to: target, max_time: JSON_API_MAX_TIME, retries: 0)
+        rescue ErrorDuringExecution
+          raise unless target.exist?
+          raise if target.empty?
+
+          opoo "#{target.basename}: update failed, falling back to cached version."
+        end
 
         JSON.parse(target.read)
-      rescue ErrorDuringExecution
-        raise unless target.exist?
-        raise if target.empty?
-
-        opoo "#{target.basename}: update failed, falling back to cached version."
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
