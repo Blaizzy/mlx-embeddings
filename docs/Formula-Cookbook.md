@@ -155,7 +155,7 @@ A `Hash` (e.g. `=>`) adds information to a dependency. Given a string or symbol,
 * `:build` means this is a build-time only dependency so it can be skipped when installing from a bottle or when listing missing dependencies using `brew missing`.
 * `:test` means this is only required when running `brew test`.
 * `:optional` (not allowed in `Homebrew/homebrew-core`) generates an implicit `with-foo` option for the formula. This means that, given `depends_on "foo" => :optional`, the user must pass `--with-foo` to use the dependency.
-* `:recommended` generates an implicit `without-foo` option, meaning that the dependency is enabled by default and the user must pass `--without-foo` to disable this dependency. The default description can be overridden using the [`option`](https://rubydoc.brew.sh/Formula#option-class_method) syntax (in this case, the [`option` declaration](#adding-optional-steps) must precede the dependency):
+* `:recommended` (not allowed in `Homebrew/homebrew-core`) generates an implicit `without-foo` option, meaning that the dependency is enabled by default and the user must pass `--without-foo` to disable this dependency. The default description can be overridden using the [`option`](https://rubydoc.brew.sh/Formula#option-class_method) syntax (in this case, the [`option` declaration](#adding-optional-steps) must precede the dependency):
 
   ```ruby
   option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
