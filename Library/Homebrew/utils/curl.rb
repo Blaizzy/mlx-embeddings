@@ -54,6 +54,7 @@ module Utils
         retries:         T.nilable(Integer),
         retry_max_time:  T.any(Integer, Float, NilClass),
         show_output:     T.nilable(T::Boolean),
+        show_error:      T.nilable(T::Boolean),
         user_agent:      T.any(String, Symbol, NilClass),
       ).returns(T::Array[T.untyped])
     }
@@ -64,6 +65,7 @@ module Utils
       retries: Homebrew::EnvConfig.curl_retries.to_i,
       retry_max_time: nil,
       show_output: false,
+      show_error: true,
       user_agent: nil
     )
       args = []
@@ -76,7 +78,7 @@ module Utils
 
       args << "--globoff"
 
-      args << "--show-error"
+      args << "--show-error" if show_error
 
       args << "--user-agent" << case user_agent
       when :browser, :fake
