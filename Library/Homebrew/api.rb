@@ -51,7 +51,9 @@ module Homebrew
       begin
         begin
           # Disable retries here, we handle them ourselves below.
-          Utils::Curl.curl_download(*curl_args, to: target, max_time: JSON_API_MAX_TIME, retries: 0)
+          Utils::Curl.curl_download(*curl_args, url, to: target,
+                                    max_time: JSON_API_MAX_TIME, retries: 0,
+                                    show_error: false)
         rescue ErrorDuringExecution
           if url == default_url
             raise unless target.exist?
