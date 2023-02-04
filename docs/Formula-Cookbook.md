@@ -162,7 +162,6 @@ A `Hash` (e.g. `=>`) adds information to a dependency. Given a string or symbol,
   depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
   ```
 
-
 ### Specifying conflicts with other formulae
 
 Sometimes there’s a hard conflict between formulae that can’t be avoided or circumvented with [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method).
