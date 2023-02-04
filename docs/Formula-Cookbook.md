@@ -162,7 +162,6 @@ A `Hash` (e.g. `=>`) adds information to a dependency. Given a string or symbol,
   depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
   ```
 
-  **Note:** This value is not allowed in Homebrew/homebrew-core as it is not tested by CI.
 
 ### Specifying conflicts with other formulae
 
