@@ -54,6 +54,7 @@ module Homebrew
         raise if target.empty?
 
         opoo "#{target.basename}: update failed, falling back to cached version."
+        JSON.parse(target.read)
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
