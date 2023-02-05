@@ -150,7 +150,7 @@ module Cask
           if !c.installed_caskfile.exist? && c.tap.to_s == "homebrew/cask" &&
              Homebrew::API::Cask.all_casks.key?(c.token)
             odie <<~EOS
-              The cask '#{c.token}' was not properly installed and cannot be upgraded. To fix this, run:
+              The cask '#{c.token}' was affected by a bug and cannot be upgraded as-is. To fix this, run:
                 brew reinstall --cask --force #{c.token}
             EOS
           end
