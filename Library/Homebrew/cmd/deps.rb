@@ -84,8 +84,8 @@ module Homebrew
     all = args.eval_all?
     if args.all?
       unless all
-        odeprecated "brew deps --all",
-                    "brew deps --eval-all or HOMEBREW_EVAL_ALL"
+        odisabled "brew deps --all",
+                  "brew deps --eval-all or HOMEBREW_EVAL_ALL"
       end
       all = true
     end

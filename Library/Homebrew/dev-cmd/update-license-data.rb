@@ -28,7 +28,7 @@ module Homebrew
 
   def update_license_data
     args = update_license_data_args.parse
-    odeprecated "brew update-license-data --fail-if-not-changed" if args.fail_if_not_changed?
+    odisabled "brew update-license-data --fail-if-not-changed" if args.fail_if_not_changed?
 
     SPDX.download_latest_license_data!
     diff = system_command "git", args: [
