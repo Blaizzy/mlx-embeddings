@@ -249,7 +249,7 @@ auto-update() {
 
     if [[ -z "${HOMEBREW_AUTO_UPDATE_SECS}" ]]
     then
-      if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+      if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
       then
         # 24 hours
         HOMEBREW_AUTO_UPDATE_SECS="86400"
@@ -770,25 +770,6 @@ To turn developer mode off, run $(bold "brew developer off")
 
   git config --file="${HOMEBREW_GIT_CONFIG_FILE}" --replace-all homebrew.devcmdrun true 2>/dev/null
   export HOMEBREW_DEV_CMD_RUN="1"
-fi
-
-# Test HOMEBREW_INSTALL_FROM_API on HOMEBREW_DEV_CMD_RUN and HOMEBREW_DEVELOPER
-# folks who haven't run a HOMEBREW_DEVELOPER_COMMAND if they are in a default
-# prefix and on a supported macOS version.
-if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
-      -z "${HOMEBREW_DEVELOPER_COMMAND}" ]] &&
-   [[ -z "${HOMEBREW_MACOS_VERSION_NUMERIC}" ||
-   "${HOMEBREW_MACOS_VERSION_NUMERIC}" -ge "110000" ]] &&
-   [[ "${HOMEBREW_PREFIX}" == "/usr/local" ||
-      "${HOMEBREW_PREFIX}" == "/opt/homebrew" ||
-      "${HOMEBREW_PREFIX}" == "/home/linuxbrew/.linuxbrew" ]]
-then
-  if [[ -n "${HOMEBREW_DEV_CMD_RUN}" || -n "${HOMEBREW_DEVELOPER}" ]]
-  then
-    export HOMEBREW_INSTALL_FROM_API=1
-  fi
-else
-  unset HOMEBREW_INSTALL_FROM_API
 fi
 
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]

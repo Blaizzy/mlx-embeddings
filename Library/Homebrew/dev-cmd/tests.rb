@@ -225,6 +225,9 @@ module Homebrew
     ENV["HOMEBREW_TEST_ONLINE"] = "1" if args.online?
     ENV["HOMEBREW_SORBET_RUNTIME"] = "1"
 
+    # TODO: remove this and fix tests when possible.
+    ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
+
     ENV["USER"] ||= system_command!("id", args: ["-nu"]).stdout.chomp
 
     # Avoid local configuration messing with tests, e.g. git being configured
