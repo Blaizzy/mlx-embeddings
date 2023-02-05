@@ -295,16 +295,24 @@ module Cask
 
     def artifacts_list
       artifacts.map do |artifact|
-        next artifact.to_h if artifact.is_a? Artifact::AbstractFlightBlock
-
-        { artifact.class.dsl_key => to_h_gsubs(artifact.to_args) }
+        case artifact
+        when Artifact::AbstractFlightBlock
+          artifact.to_h
+        when Artifact::Relocated
+          # Don't replace the Homebrew prefix in the source path since the source could include /usr/local
+          source, *args = artifact.to_args
+          { artifact.class.dsl_key => [to_h_string_gsubs(source, replace_prefix: false), *to_h_gsubs(args)] }
+        else
+          { artifact.class.dsl_key => to_h_gsubs(artifact.to_args) }
+        end
       end
     end
 
-    def to_h_string_gsubs(string)
-      string.to_s
-            .gsub(Dir.home, "$HOME")
-            .gsub(HOMEBREW_PREFIX, "$(brew --prefix)")
+    def to_h_string_gsubs(string, replace_prefix: true)
+      string = string.to_s.gsub(Dir.home, "$HOME")
+      return string unless replace_prefix
+
+      string.gsub(HOMEBREW_PREFIX, "$(brew --prefix)")
     end
 
     def to_h_array_gsubs(array)
@@ -322,10 +330,14 @@ module Cask
     end
 
     def to_h_gsubs(value)
+      return value if value.blank?
+
       if value.respond_to? :to_h
         to_h_hash_gsubs(value)
       elsif value.respond_to? :to_a
         to_h_array_gsubs(value)
+      elsif [true, false].include? value
+        value
       else
         to_h_string_gsubs(value)
       end

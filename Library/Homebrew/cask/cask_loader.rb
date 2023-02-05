@@ -328,12 +328,14 @@ module Cask
       end
 
       def from_h_gsubs(value)
+        return value if value.blank?
+
         if value.respond_to? :to_h
           from_h_hash_gsubs(value)
         elsif value.respond_to? :to_a
           from_h_array_gsubs(value)
         else
-          from_h_string_gsubs(value)
+          { "true" => true, "false" => false }.fetch(value, from_h_string_gsubs(value))
         end
       end
     end
