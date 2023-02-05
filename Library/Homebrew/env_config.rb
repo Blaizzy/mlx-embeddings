@@ -41,7 +41,7 @@ module Homebrew
         description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
                       "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
                       "disable auto-update entirely with HOMEBREW_NO_AUTO_UPDATE.",
-        default_text: "300 (5 minutes) or 86400 (24 hours) if HOMEBREW_INSTALL_FROM_API is set.",
+        default_text: "86400 (24 hours) or 300 (5 minutes) if HOMEBREW_NO_INSTALL_FROM_API is set.",
       },
       HOMEBREW_AUTOREMOVE:                       {
         description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
@@ -231,13 +231,6 @@ module Homebrew
         default_text: 'The "Beer Mug" emoji.',
         default:      "🍺",
       },
-      HOMEBREW_INSTALL_FROM_API:                 {
-        description: "If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's " \
-                     "API instead of needing (large, slow) local checkouts of these repositories. Note, this will " \
-                     "only take effect in supported configurations (i.e. using the default Homebrew prefix and, " \
-                     "if on macOS, on a supported version).",
-        boolean:     true,
-      },
       HOMEBREW_LIVECHECK_WATCHLIST:              {
         description:  "Consult this file for the list of formulae to check by default when no formula argument " \
                       "is passed to `brew livecheck`.",
@@ -321,8 +314,7 @@ module Homebrew
       },
       HOMEBREW_NO_INSTALL_FROM_API:              {
         description: "If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using " \
-                     "Homebrew's API even if `HOMEBREW_INSTALL_FROM_API` is set and instead use (large, slow) " \
-                     "local checkouts of these repositories.",
+                     "Homebrew's API and instead use (large, slow) local checkouts of these repositories.",
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_UPGRADE:               {
@@ -496,7 +488,7 @@ module Homebrew
       return false if OS.unsupported_configuration?
       return false unless Homebrew.default_prefix?
 
-      ENV["HOMEBREW_NO_INSTALL_FROM_API"].blank? && ENV["HOMEBREW_INSTALL_FROM_API"].present?
+      ENV["HOMEBREW_NO_INSTALL_FROM_API"].blank?
     end
   end
 end
