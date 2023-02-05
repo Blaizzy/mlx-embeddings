@@ -78,6 +78,6 @@ module Homebrew
       first_warning = false
     end
 
-    puts "Your system is ready to brew." unless Homebrew.failed?
+    puts "Your system is ready to brew." if !Homebrew.failed? && !args.quiet?
   end
 end
