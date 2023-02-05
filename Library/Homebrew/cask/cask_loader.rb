@@ -51,7 +51,7 @@ module Cask
     class FromPathLoader < FromContentLoader
       def self.can_load?(ref)
         path = Pathname(ref)
-        path.extname == ".rb" && path.expand_path.exist?
+        %w[.rb .json].include?(path.extname) && path.expand_path.exist?
       end
 
       attr_reader :token, :path
@@ -59,7 +59,7 @@ module Cask
       def initialize(path) # rubocop:disable Lint/MissingSuper
         path = Pathname(path).expand_path
 
-        @token = path.basename(".rb").to_s
+        @token = path.basename(path.extname).to_s
         @path = path
       end
 
@@ -70,6 +70,10 @@ module Cask
 
         @content = path.read(encoding: "UTF-8")
         @config = config
+
+        if path.extname == ".json"
+          return FromAPILoader.new(token, from_json: JSON.parse(@content)).load(config: config)
+        end
 
         begin
           instance_eval(content, path).tap do |cask|
@@ -201,13 +205,15 @@ module Cask
         Homebrew::API::Cask.all_casks.key?(token)
       end
 
-      def initialize(token)
+      def initialize(token, from_json: nil)
         @token = token.delete_prefix("homebrew/cask/")
         @path = CaskLoader.default_path(token)
+        @from_json = from_json
       end
 
       def load(config:)
-        json_cask = Homebrew::API::Cask.all_casks[token]
+        json_cask = @from_json || Homebrew::API::Cask.all_casks[token]
+        cask_source = JSON.pretty_generate(json_cask)
 
         if (bottle_tag = ::Utils::Bottles.tag.to_s.presence) &&
            (variations = json_cask["variations"].presence) &&
@@ -230,7 +236,7 @@ module Cask
 
         tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
-        Cask.new(token, tap: tap, source: cask_source, config: config) do
+        Cask.new(token, tap: tap, source: cask_source, config: config, loaded_from_api: true) do
           version json_cask[:version]
 
           if json_cask[:sha256] == "no_check"

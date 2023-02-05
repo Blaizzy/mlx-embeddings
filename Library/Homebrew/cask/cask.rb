@@ -19,7 +19,7 @@ module Cask
     extend Searchable
     include Metadata
 
-    attr_reader :token, :sourcefile_path, :source, :config, :default_config
+    attr_reader :token, :sourcefile_path, :source, :config, :default_config, :loaded_from_api
 
     attr_accessor :download, :allow_reassignment
 
@@ -44,12 +44,14 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, allow_reassignment: false, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, allow_reassignment: false,
+                   loaded_from_api: false, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
       @tap = tap
       @allow_reassignment = allow_reassignment
+      @loaded_from_api = loaded_from_api
       @block = block
 
       @default_config = config || Config.new
@@ -133,7 +135,10 @@ module Cask
 
     def installed_caskfile
       installed_version = timestamped_versions.last
-      metadata_main_container_path.join(*installed_version, "Casks", "#{token}.rb")
+      caskfile_dir = metadata_main_container_path.join(*installed_version, "Casks")
+      return caskfile_dir.join("#{token}.json") if caskfile_dir.join("#{token}.json").exist?
+
+      caskfile_dir.join("#{token}.rb")
     end
 
     def config_path
