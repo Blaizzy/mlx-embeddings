@@ -148,7 +148,7 @@ module SystemConfig
       end
 
       if (formula_json = Homebrew::API::HOMEBREW_CACHE_API/"formula.json") && formula_json.exist?
-        f.puts "Core tap JSON: #{formula_json.mtime.to_s(:short)}"
+        f.puts "Core tap JSON: #{formula_json.mtime.utc.strftime("%d %b %H:%M UTC")}"
       elsif !CoreTap.instance.installed?
         f.puts "Core tap: N/A"
       end
