@@ -290,14 +290,16 @@ module Cask
 
     def artifacts_list
       artifacts.map do |artifact|
-        next artifact.to_h if artifact.is_a? Artifact::AbstractFlightBlock
-
-        if artifact.is_a? Artifact::Relocated
+        case artifact
+        when Artifact::AbstractFlightBlock
+          artifact.to_h
+        when Artifact::Relocated
+          # Don't replace the Homebrew prefix in the source path since the source could include /usr/local
           source, *args = artifact.to_args
-          next { artifact.class.dsl_key => [to_h_string_gsubs(source, replace_prefix: false), *to_h_gsubs(args)] }
+          { artifact.class.dsl_key => [to_h_string_gsubs(source, replace_prefix: false), *to_h_gsubs(args)] }
+        else
+          { artifact.class.dsl_key => to_h_gsubs(artifact.to_args) }
         end
-
-        { artifact.class.dsl_key => to_h_gsubs(artifact.to_args) }
       end
     end
 
