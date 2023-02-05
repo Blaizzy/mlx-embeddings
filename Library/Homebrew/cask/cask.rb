@@ -44,8 +44,8 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil, allow_reassignment: false,
-                   loaded_from_api: false, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil,
+                   allow_reassignment: false, loaded_from_api: false, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
