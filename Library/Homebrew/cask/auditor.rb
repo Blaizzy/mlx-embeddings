@@ -8,36 +8,8 @@ module Cask
   #
   # @api private
   class Auditor
-    def self.audit(
-      cask,
-      audit_download: nil,
-      audit_appcast: nil,
-      audit_online: nil,
-      audit_new_cask: nil,
-      audit_strict: nil,
-      audit_signing: nil,
-      audit_token_conflicts: nil,
-      quarantine: nil,
-      any_named_args: nil,
-      language: nil,
-      display_passes: nil,
-      display_failures_only: nil
-    )
-      new(
-        cask,
-        audit_download:        audit_download,
-        audit_appcast:         audit_appcast,
-        audit_online:          audit_online,
-        audit_new_cask:        audit_new_cask,
-        audit_strict:          audit_strict,
-        audit_signing:         audit_signing,
-        audit_token_conflicts: audit_token_conflicts,
-        quarantine:            quarantine,
-        any_named_args:        any_named_args,
-        language:              language,
-        display_passes:        display_passes,
-        display_failures_only: display_failures_only,
-      ).audit
+    def self.audit(cask, **options)
+      new(cask, **options).audit
     end
 
     attr_reader :cask, :language
@@ -55,7 +27,9 @@ module Cask
       any_named_args: nil,
       language: nil,
       display_passes: nil,
-      display_failures_only: nil
+      display_failures_only: nil,
+      only: [],
+      except: []
     )
       @cask = cask
       @audit_download = audit_download
@@ -70,6 +44,8 @@ module Cask
       @language = language
       @display_passes = display_passes
       @display_failures_only = display_failures_only
+      @only = only
+      @except = except
     end
 
     def audit
@@ -142,6 +118,8 @@ module Cask
         token_conflicts: @audit_token_conflicts,
         download:        @audit_download,
         quarantine:      @quarantine,
+        only:            @only,
+        except:          @except,
       )
       audit.run!
     end

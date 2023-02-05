@@ -34,6 +34,7 @@ describe Cask::Audit, :cask do
   let(:new_cask) { nil }
   let(:online) { nil }
   let(:only) { [] }
+  let(:except) { [] }
   let(:strict) { nil }
   let(:token_conflicts) { nil }
   let(:audit) {
@@ -41,7 +42,8 @@ describe Cask::Audit, :cask do
                               strict:          strict,
                               new_cask:        new_cask,
                               token_conflicts: token_conflicts,
-                              only:            only)
+                              only:            only,
+                              except:          except)
   }
 
   describe "#new" do
@@ -965,7 +967,7 @@ describe Cask::Audit, :cask do
 
     context "when an exception is raised" do
       let(:cask) { instance_double(Cask::Cask) }
-      let(:only) { ["description_present"] }
+      let(:only) { ["description"] }
 
       it "fails the audit" do
         expect(cask).to receive(:tap).and_raise(StandardError.new)
@@ -974,7 +976,7 @@ describe Cask::Audit, :cask do
     end
 
     describe "checking description" do
-      let(:only) { ["description_present"] }
+      let(:only) { ["description"] }
       let(:cask_token) { "without-description" }
       let(:cask) do
         tmp_cask cask_token.to_s, <<~RUBY
