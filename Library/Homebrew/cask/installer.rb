@@ -386,7 +386,8 @@ module Cask
 
       return if @cask.source.blank?
 
-      (metadata_subdir/"#{@cask.token}.rb").write @cask.source
+      extension = @cask.loaded_from_api ? "json" : "rb"
+      (metadata_subdir/"#{@cask.token}.#{extension}").write @cask.source
       old_savedir&.rmtree
     end
 
