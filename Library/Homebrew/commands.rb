@@ -33,25 +33,6 @@ module Commands
     "tc"          => "typecheck",
   }.freeze
 
-  INSTALL_FROM_API_FORBIDDEN_COMMANDS = %w[
-    audit
-    bottle
-    bump-cask-pr
-    bump-formula-pr
-    bump-revision
-    bump-unversioned-casks
-    cat
-    create
-    edit
-    extract
-    formula
-    livecheck
-    pr-pull
-    pr-upload
-    test
-    update-python-resources
-  ].freeze
-
   def valid_internal_cmd?(cmd)
     require?(HOMEBREW_CMD_PATH/cmd)
   end

@@ -90,18 +90,6 @@ begin
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
-    if Commands::INSTALL_FROM_API_FORBIDDEN_COMMANDS.include?(cmd) &&
-       !CoreTap.instance.installed? &&
-       Homebrew::EnvConfig.install_from_api? && !Homebrew::EnvConfig.developer?
-      odie <<~EOS
-        This command cannot be run while Homebrew/homebrew-core is untapped and
-        HOMEBREW_NO_INSTALL_FROM_API is unset! To resolve please run:
-          export HOMEBREW_NO_INSTALL_FROM_API=1
-          brew tap Homebrew/core
-        and retry this command.
-      EOS
-    end
-
     Homebrew.send Commands.method_name(cmd)
   elsif (path = Commands.external_ruby_cmd_path(cmd))
     require?(path)
