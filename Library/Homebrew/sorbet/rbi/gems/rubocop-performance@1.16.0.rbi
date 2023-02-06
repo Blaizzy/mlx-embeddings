@@ -508,6 +508,7 @@ RuboCop::Cop::Performance::RedundantMatch::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Performance::RedundantMatch::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::RedundantMerge < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::Alignment
   extend ::RuboCop::Cop::AutoCorrector
 
   def modifier_flow_control?(param0 = T.unsafe(nil)); end
@@ -519,7 +520,6 @@ class RuboCop::Cop::Performance::RedundantMerge < ::RuboCop::Cop::Base
   def correct_multiple_elements(corrector, node, parent, new_source); end
   def correct_single_element(corrector, node, new_source); end
   def each_redundant_merge(node); end
-  def indent_width; end
   def kwsplat_used?(pairs); end
   def leading_spaces(node); end
   def max_key_value_pairs; end
