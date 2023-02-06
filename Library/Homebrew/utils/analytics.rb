@@ -99,8 +99,13 @@ module Utils
           "--data-raw", "#{category},#{tags} count=1i #{Time.now.to_i}"
         ]
 
-        curl = Utils::Curl.curl_executable
         url = "https://#{INFLUX_HOST}/api/v2/write?bucket=#{INFLUX_BUCKET}&precision=s"
+        deferred_curl(url, args)
+      end
+
+      sig { params(url: String, args: T::Array[String]).void }
+      def deferred_curl(url, args)
+        curl = Utils::Curl.curl_executable
         if ENV["HOMEBREW_ANALYTICS_DEBUG"]
           puts "#{curl} #{args.join(" ")} \"#{url}\""
           puts Utils.popen_read(curl, *args, url)

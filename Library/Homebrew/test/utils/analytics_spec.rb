@@ -117,9 +117,8 @@ describe Utils::Analytics do
       ENV.delete("HOMEBREW_NO_ANALYTICS")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
       ENV["HOMEBREW_ANALYTICS_ENABLE_INFLUX"] = "true"
-      expect do
-        described_class.report_influx(:install, action, true, developer: true, CI: true)
-      end.to output(/--data-raw install,[a-zA-Z=,]*,action=formula_name\\ --head/).to_stdout
+      expect(described_class).to receive(:deferred_curl).once
+      described_class.report_influx(:install, action, true, developer: true, CI: true)
     end
   end
 
