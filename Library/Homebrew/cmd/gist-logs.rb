@@ -63,7 +63,15 @@ module Homebrew
     else
       "#{f.name} (#{f.full_name}) on #{OS_VERSION} - Homebrew build logs"
     end
-    url = GitHub.create_gist(files, descr, private: args.private?)
+
+    begin
+      url = GitHub.create_gist(files, descr, private: args.private?)
+    rescue GitHub::API::HTTPNotFoundError
+      odie <<~EOS
+        Your GitHub API token likely doesn't have the `gist` scope.
+        #{GitHub.pat_blurb(GitHub::CREATE_GIST_SCOPES)}
+      EOS
+    end
 
     url = GitHub.create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url) if args.new_issue?
 
