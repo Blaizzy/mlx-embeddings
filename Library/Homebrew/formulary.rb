@@ -151,7 +151,7 @@ module Formulary
     klass = Class.new(::Formula) do
       desc json_formula["desc"]
       homepage json_formula["homepage"]
-      license json_formula["license"]
+      license SPDX.string_to_license_expression(json_formula["license"])
       revision json_formula["revision"]
       version_scheme json_formula["version_scheme"]
 

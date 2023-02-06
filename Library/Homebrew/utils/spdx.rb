@@ -129,6 +129,40 @@ module SPDX
     end
   end
 
+  def string_to_license_expression(string)
+    return if string.blank?
+
+    result = string
+    result_type = nil
+
+    and_parts = string.split(/ and (?![^(]*\))/)
+    if and_parts.length > 1
+      result = and_parts
+      result_type = :all_of
+    else
+      or_parts = string.split(/ or (?![^(]*\))/)
+      if or_parts.length > 1
+        result = or_parts
+        result_type = :any_of
+      end
+    end
+
+    if result_type
+      result.map! do |part|
+        part = part[1..-2] if part[0] == "(" && part[-1] == ")"
+        string_to_license_expression(part)
+      end
+      { result_type => result }
+    else
+      with_parts = string.split(" with ", 2)
+      if with_parts.length > 1
+        { with_parts.first => { with: with_parts.second } }
+      else
+        result
+      end
+    end
+  end
+
   def license_version_info(license)
     return [license] if ALLOWED_LICENSE_SYMBOLS.include? license
 
