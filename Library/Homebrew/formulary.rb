@@ -163,6 +163,10 @@ module Formulary
         end
       end
 
+      if (urls_head = json_formula["urls"]["head"]).present?
+        head urls_head["url"], branch: urls_head["branch"]
+      end
+
       if (bottles_stable = json_formula["bottle"]["stable"]).present?
         bottle do
           root_url bottles_stable["root_url"]

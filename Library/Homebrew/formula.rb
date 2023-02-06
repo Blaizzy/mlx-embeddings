@@ -2139,6 +2139,13 @@ class Formula
       hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
     end
 
+    if head
+      hsh["urls"]["head"] = {
+        "url"    => head.url,
+        "branch" => head.specs[:branch],
+      }
+    end
+
     hsh["options"] = options.map do |opt|
       { "option" => opt.flag, "description" => opt.description }
     end
