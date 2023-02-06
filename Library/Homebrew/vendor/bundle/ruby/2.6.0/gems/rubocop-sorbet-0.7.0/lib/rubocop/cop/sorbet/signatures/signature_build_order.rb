@@ -94,6 +94,8 @@ module RuboCop
         end
 
         def call_chain(sig_child_node)
+          return [] if sig_child_node.nil?
+
           call_node = root_call(sig_child_node).first
           return [] unless call_node
 

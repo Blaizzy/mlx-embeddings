@@ -7,18 +7,18 @@ module RuboCop
   module Cop
     module Sorbet
       # This cop disallows use of `T.untyped` or `T.nilable(T.untyped)`
-      # as a prop type for `T::Struct`.
+      # as a prop type for `T::Struct` or `T::ImmutableStruct`.
       #
       # @example
       #
       #   # bad
-      #   class SomeClass
+      #   class SomeClass < T::Struct
       #     const :foo, T.untyped
       #     prop :bar, T.nilable(T.untyped)
       #   end
       #
       #   # good
-      #   class SomeClass
+      #   class SomeClass < T::Struct
       #     const :foo, Integer
       #     prop :bar, T.nilable(String)
       #   end
@@ -27,6 +27,10 @@ module RuboCop
 
         def_node_matcher :t_struct, <<~PATTERN
           (const (const nil? :T) :Struct)
+        PATTERN
+
+        def_node_matcher :t_immutable_struct, <<~PATTERN
+          (const (const nil? :T) :ImmutableStruct)
         PATTERN
 
         def_node_matcher :t_untyped, <<~PATTERN
@@ -38,7 +42,7 @@ module RuboCop
         PATTERN
 
         def_node_matcher :subclass_of_t_struct?, <<~PATTERN
-          (class (const ...) #t_struct ...)
+          (class (const ...) {#t_struct #t_immutable_struct} ...)
         PATTERN
 
         def_node_search :untyped_props, <<~PATTERN

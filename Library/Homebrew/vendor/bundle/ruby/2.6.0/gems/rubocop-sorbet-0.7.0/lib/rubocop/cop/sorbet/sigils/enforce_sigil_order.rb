@@ -7,7 +7,7 @@ module RuboCop
     module Sorbet
       # This cop checks that the Sorbet sigil comes as the first magic comment in the file.
       #
-      # The expected order for magic comments is: typed, (en)?coding, warn_indent then frozen_string_literal.
+      # The expected order for magic comments is: (en)?coding, typed, warn_indent then frozen_string_literal.
       #
       # For example, the following bad ordering:
       #
@@ -25,7 +25,7 @@ module RuboCop
       # class Foo; end
       # ```
       #
-      # Only `typed`, `(en)?coding`, `warn_indent` and `frozen_string_literal` magic comments are considered,
+      # Only `(en)?coding`, `typed`, `warn_indent` and `frozen_string_literal` magic comments are considered,
       # other comments or magic comments are left in the same place.
       class EnforceSigilOrder < ValidSigil
         include RangeHelp

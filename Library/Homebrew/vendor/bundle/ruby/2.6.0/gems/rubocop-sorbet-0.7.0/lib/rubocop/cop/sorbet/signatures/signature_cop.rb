@@ -12,7 +12,11 @@ module RuboCop
         @registry = Cop.registry # So we can properly subclass this cop
 
         def_node_matcher(:signature?, <<~PATTERN)
-          (block (send #allowed_recv :sig) (args) ...)
+          (block (send
+            {nil? #with_runtime? #without_runtime?}
+            :sig
+            (sym :final)?
+          ) (args) ...)
         PATTERN
 
         def_node_matcher(:with_runtime?, <<~PATTERN)
@@ -22,13 +26,6 @@ module RuboCop
         def_node_matcher(:without_runtime?, <<~PATTERN)
           (const (const (const nil? :T) :Sig) :WithoutRuntime)
         PATTERN
-
-        def allowed_recv(recv)
-          return true unless recv
-          return true if with_runtime?(recv)
-          return true if without_runtime?(recv)
-          false
-        end
 
         def on_block(node)
           on_signature(node) if signature?(node)
