@@ -772,6 +772,26 @@ To turn developer mode off, run $(bold "brew developer off")
   export HOMEBREW_DEV_CMD_RUN="1"
 fi
 
+if [[ "${HOMEBREW_COMMAND}" == "audit" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "bottle" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "bump-cask-pr" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "bump-formula-pr" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "bump-revision" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "bump-unversioned-casks" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "cat" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "create" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "edit" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "extract" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "formula" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "livecheck" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "pr-pull" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "pr-upload" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "test" ]] ||
+   [[ "${HOMEBREW_COMMAND}" == "update-python-resources" ]]
+then
+  export HOMEBREW_NO_INSTALL_FROM_API=1
+fi
+
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]
 then
   HOMEBREW_BASH_COMMAND="${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh"

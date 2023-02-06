@@ -61,15 +61,7 @@ module Homebrew
           "#{path} doesn't exist on disk."
         end
 
-        message = if Homebrew::EnvConfig.install_from_api?
-          <<~EOS
-            #{not_exist_message}
-            This is expected with HOMEBREW_NO_INSTALL_FROM_API unset! To resolve please run:
-              export HOMEBREW_NO_INSTALL_FROM_API=1
-              brew tap Homebrew/core
-            and retry this command.
-          EOS
-        elsif args.cask?
+        message = if args.cask?
           <<~EOS
             #{not_exist_message}
             Run #{Formatter.identifier("brew create --cask --set-name #{path.basename(".rb")} $URL")} \
