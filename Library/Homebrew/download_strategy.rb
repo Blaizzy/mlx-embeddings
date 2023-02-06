@@ -830,8 +830,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
   end
 
   # @see VCSDownloadStrategy#last_commit
-  sig { returns(String) }
   # @api public
+  sig { returns(String) }
   def last_commit
     out, = silent_command("git", args: ["--git-dir", git_dir, "rev-parse", "--short=7", "HEAD"])
     out.chomp

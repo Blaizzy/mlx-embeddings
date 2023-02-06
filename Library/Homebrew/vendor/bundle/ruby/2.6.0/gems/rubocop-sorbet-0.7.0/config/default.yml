@@ -25,6 +25,11 @@ Sorbet/CheckedTrueInSignature:
   Enabled: true
   VersionAdded: 0.2.0
 
+Sorbet/EmptyLineAfterSig:
+  Description: 'Ensures that there are no blank lines after signatures'
+  Enabled: true
+  VersionAdded: 0.7.0
+
 Sorbet/ConstantsFromStrings:
   Description: >-
                   Forbids constant access through meta-programming.
@@ -42,7 +47,7 @@ Sorbet/EnforceSigilOrder:
 Sorbet/EnforceSingleSigil:
   Description: 'Ensures that there is only one Sorbet sigil in a file.'
   Enabled: true
-  VersionAdded: '<<next>>'
+  VersionAdded: 0.7.0
 
 Sorbet/EnforceSignatures:
   Description: 'Ensures all methods have a valid signature.'
@@ -73,6 +78,7 @@ Sorbet/ForbidRBIOutsideOfAllowedPaths:
   Enabled: true
   VersionAdded: 0.6.1
   AllowedPaths:
+  - "rbi/**"
   - "sorbet/rbi/**"
   Include:
   - "**/*.rbi"
@@ -149,6 +155,16 @@ Sorbet/OneAncestorPerLine:
   Description: 'Enforces one ancestor per call to requires_ancestor'
   Enabled: false
   VersionAdded: '0.6.0'
+
+Sorbet/RedundantExtendTSig:
+  Description: >-
+    Forbid the usage of redundant `extend T::Sig`.
+
+    Only for use in applications that monkey patch `Module.include(T::Sig)` directly,
+    where it is useful to reduce noise.
+  Enabled: false
+  Safe: false
+  VersionAdded: 0.7.0
 
 Sorbet/SignatureBuildOrder:
   Description: >-

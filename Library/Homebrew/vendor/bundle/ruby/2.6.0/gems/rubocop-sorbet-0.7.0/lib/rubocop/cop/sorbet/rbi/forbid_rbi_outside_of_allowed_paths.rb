@@ -9,7 +9,7 @@ module RuboCop
       #
       # Options:
       #
-      # * `AllowedPaths`: A list of the paths where RBI files are allowed (default: ["sorbet/rbi/**"])
+      # * `AllowedPaths`: A list of the paths where RBI files are allowed (default: ["rbi/**", "sorbet/rbi/**"])
       #
       # @example
       #   # bad
@@ -17,6 +17,7 @@ module RuboCop
       #   # other_file.rbi
       #
       #   # good
+      #   # rbi/external_interface.rbi
       #   # sorbet/rbi/some_file.rbi
       #   # sorbet/rbi/any/path/for/file.rbi
       class ForbidRBIOutsideOfAllowedPaths < RuboCop::Cop::Cop
