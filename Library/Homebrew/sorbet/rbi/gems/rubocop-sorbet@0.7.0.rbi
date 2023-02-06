@@ -6,6 +6,7 @@
 
 module RuboCop; end
 module RuboCop::Cop; end
+RuboCop::Cop::IgnoredMethods = RuboCop::Cop::AllowedMethods
 RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 module RuboCop::Cop::Sorbet; end
 
@@ -53,6 +54,17 @@ RuboCop::Cop::Sorbet::CheckedTrueInSignature::MESSAGE = T.let(T.unsafe(nil), Str
 class RuboCop::Cop::Sorbet::ConstantsFromStrings < ::RuboCop::Cop::Cop
   def constant_from_string?(param0 = T.unsafe(nil)); end
   def on_send(node); end
+end
+
+class RuboCop::Cop::Sorbet::EmptyLineAfterSig < ::RuboCop::Cop::Sorbet::SignatureCop
+  include ::RuboCop::Cop::RangeHelp
+
+  def autocorrect(node); end
+  def on_signature(node); end
+
+  private
+
+  def next_method(node); end
 end
 
 class RuboCop::Cop::Sorbet::EnforceSigilOrder < ::RuboCop::Cop::Sorbet::ValidSigil
@@ -175,6 +187,7 @@ end
 class RuboCop::Cop::Sorbet::ForbidUntypedStructProps < ::RuboCop::Cop::Cop
   def on_class(node); end
   def subclass_of_t_struct?(param0 = T.unsafe(nil)); end
+  def t_immutable_struct(param0 = T.unsafe(nil)); end
   def t_nilable_untyped(param0 = T.unsafe(nil)); end
   def t_struct(param0 = T.unsafe(nil)); end
   def t_untyped(param0 = T.unsafe(nil)); end
@@ -223,6 +236,15 @@ end
 
 RuboCop::Cop::Sorbet::OneAncestorPerLine::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Sorbet::RedundantExtendTSig < ::RuboCop::Cop::Cop
+  def autocorrect(node); end
+  def extend_t_sig?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::Sorbet::RedundantExtendTSig::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::RedundantExtendTSig::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Sorbet::SignatureBuildOrder < ::RuboCop::Cop::Sorbet::SignatureCop
   def autocorrect(node); end
   def on_signature(node); end
@@ -239,7 +261,6 @@ class RuboCop::Cop::Sorbet::SignatureBuildOrder::ModernBuilder < ::RuboCop::AST:
 RuboCop::Cop::Sorbet::SignatureBuildOrder::ORDER = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::Cop::Sorbet::SignatureCop < ::RuboCop::Cop::Cop
-  def allowed_recv(recv); end
   def on_block(node); end
   def on_signature(_); end
   def signature?(param0 = T.unsafe(nil)); end
