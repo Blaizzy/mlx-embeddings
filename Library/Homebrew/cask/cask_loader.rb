@@ -347,8 +347,10 @@ module Cask
           from_h_hash_gsubs(value)
         elsif value.respond_to? :to_a
           from_h_array_gsubs(value)
+        elsif value.is_a? String
+          from_h_string_gsubs(value)
         else
-          { "true" => true, "false" => false }.fetch(value, from_h_string_gsubs(value))
+          value
         end
       end
     end
