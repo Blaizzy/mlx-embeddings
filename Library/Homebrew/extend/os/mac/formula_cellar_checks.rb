@@ -49,7 +49,7 @@ module FormulaCellarChecks
     python_modules = Pathname.glob lib/"python*/site-packages/**/*.so"
     framework_links = python_modules.select do |obj|
       dlls = obj.dynamically_linked_libraries
-      dlls.any? { |dll| /Python\.framework/.match dll }
+      dlls.any? { |dll| dll.include?("Python.framework") }
     end
     return if framework_links.empty?
 
