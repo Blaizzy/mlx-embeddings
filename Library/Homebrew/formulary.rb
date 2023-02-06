@@ -163,6 +163,10 @@ module Formulary
         end
       end
 
+      if (urls_head = json_formula["urls"]["head"]).present?
+        head urls_head["url"], branch: urls_head["branch"]
+      end
+
       if (bottles_stable = json_formula["bottle"]["stable"]).present?
         bottle do
           root_url bottles_stable["root_url"]
@@ -215,6 +219,11 @@ module Formulary
       @caveats_string = json_formula["caveats"]
       def caveats
         self.class.instance_variable_get(:@caveats_string)
+      end
+
+      @tap_git_head_string = json_formula["tap_git_head"]
+      def tap_git_head
+        self.class.instance_variable_get(:@tap_git_head_string)
       end
     end
 
@@ -391,24 +400,27 @@ module Formulary
 
     attr_reader :url
 
-    sig { params(url: T.any(URI::Generic, String)).void }
-    def initialize(url)
+    sig { params(url: T.any(URI::Generic, String), from: T.nilable(Symbol)).void }
+    def initialize(url, from: nil)
       @url = url
+      @from = from
       uri = URI(url)
       formula = File.basename(uri.path, ".rb")
       super formula, HOMEBREW_CACHE_FORMULA/File.basename(uri.path)
     end
 
     def load_file(flags:, ignore_errors:)
-      if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url
-        raise UnsupportedInstallationMethod,
-              "Installation of #{formula_name} from a GitHub commit URL is unsupported! " \
-              "`brew extract #{formula_name}` to a stable tap on GitHub instead."
-      elsif url.match?(%r{^(https?|ftp)://})
-        raise UnsupportedInstallationMethod,
-              "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! " \
-              "`brew extract` or `brew create` and `brew tap-new` to create a formula file in a tap " \
-              "on GitHub instead."
+      if @from != :formula_installer
+        if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url
+          raise UnsupportedInstallationMethod,
+                "Installation of #{formula_name} from a GitHub commit URL is unsupported! " \
+                "`brew extract #{formula_name}` to a stable tap on GitHub instead."
+        elsif url.match?(%r{^(https?|ftp)://})
+          raise UnsupportedInstallationMethod,
+                "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! " \
+                "`brew extract` or `brew create` and `brew tap-new` to create a formula file in a tap " \
+                "on GitHub instead."
+        end
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)
@@ -660,7 +672,7 @@ module Formulary
     when HOMEBREW_BOTTLES_EXTNAME_REGEX
       return BottleLoader.new(ref)
     when URL_START_REGEX
-      return FromUrlLoader.new(ref)
+      return FromUrlLoader.new(ref, from: from)
     when HOMEBREW_TAP_FORMULA_REGEX
       if ref.start_with?("homebrew/core/") && Homebrew::EnvConfig.install_from_api?
         name = ref.split("/", 3).last

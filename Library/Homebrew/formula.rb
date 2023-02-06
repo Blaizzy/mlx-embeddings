@@ -1955,6 +1955,11 @@ class Formula
   end
 
   # @private
+  def tap_git_head
+    tap&.git_head
+  end
+
+  # @private
   delegate env: :"self.class"
 
   # @private
@@ -2125,7 +2130,7 @@ class Formula
       "disabled"                 => disabled?,
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
-      "tap_git_head"             => tap&.git_head,
+      "tap_git_head"             => tap_git_head,
     }
 
     if stable
@@ -2137,6 +2142,13 @@ class Formula
       }
 
       hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
+    end
+
+    if head
+      hsh["urls"]["head"] = {
+        "url"    => head.url,
+        "branch" => head.specs[:branch],
+      }
     end
 
     hsh["options"] = options.map do |opt|
