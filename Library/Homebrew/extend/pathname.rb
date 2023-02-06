@@ -484,7 +484,6 @@ module ObserverPathnameExtension
     end
 
     sig { returns([Integer, Integer]) }
-
     def counts
       [n, d]
     end
