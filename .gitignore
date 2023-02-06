@@ -111,6 +111,7 @@
 **/vendor/bundle/ruby/*/gems/jaro_winkler-*/
 **/vendor/bundle/ruby/*/gems/json-*/
 **/vendor/bundle/ruby/*/gems/json_schemer-*/
+**/vendor/bundle/ruby/*/gems/method_source-*/
 **/vendor/bundle/ruby/*/gems/mime-types-data-*/
 **/vendor/bundle/ruby/*/gems/mime-types-*/
 **/vendor/bundle/ruby/*/gems/mini_portile2-*/

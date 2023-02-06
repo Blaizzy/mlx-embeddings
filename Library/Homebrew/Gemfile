@@ -15,7 +15,6 @@ end
 gem "bootsnap", require: false
 gem "byebug", require: false
 gem "json_schemer", require: false
-gem "method_source", require: false
 gem "minitest", require: false
 gem "parallel_tests", require: false
 gem "ronn", require: false
