@@ -100,11 +100,11 @@ module Utils
         ]
 
         url = "https://#{INFLUX_HOST}/api/v2/write?bucket=#{INFLUX_BUCKET}&precision=s"
-        defered_curl(url, args)
+        deferred_curl(url, args)
       end
 
       sig { params(url: String, args: T::Array[String]).void }
-      def defered_curl(url, args)
+      def deferred_curl(url, args)
         curl = Utils::Curl.curl_executable
         if ENV["HOMEBREW_ANALYTICS_DEBUG"]
           puts "#{curl} #{args.join(" ")} \"#{url}\""
