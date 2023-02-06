@@ -7,9 +7,7 @@ module Homebrew
   module_function
 
   def setup_tar_and_args!(args, mtime)
-    # Without --only-json-tab bottles are never reproducible
-    default_tar_args = ["tar", [].freeze].freeze
-    return default_tar_args unless args.only_json_tab?
+    generic_setup_tar_and_args!(args, mtime)
 
     # Ensure tar is set up for reproducibility.
     # https://reproducible-builds.org/docs/archives/
