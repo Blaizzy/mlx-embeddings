@@ -217,6 +217,31 @@ describe SPDX do
     end
   end
 
+  describe ".string_to_license_expression" do
+    it "returns the correct result for 'and', 'or' and 'with'" do
+      expr_string = "Apache-2.0 and (Apache-2.0 with LLVM-exception) and (MIT or NCSA)"
+      expect(described_class.string_to_license_expression(expr_string)).to eq({
+        all_of: [
+          "Apache-2.0",
+          { "Apache-2.0" => { with: "LLVM-exception" } },
+          { any_of: ["MIT", "NCSA"] },
+        ],
+      })
+    end
+
+    it "handles nested brackets" do
+      expect(described_class.string_to_license_expression("A and (B or (C and D))")).to eq({
+        all_of: [
+          "A",
+          any_of: [
+            "B",
+            all_of: ["C", "D"],
+          ],
+        ],
+      })
+    end
+  end
+
   describe ".license_version_info" do
     it "returns license without version" do
       expect(described_class.license_version_info("MIT")).to eq ["MIT"]
