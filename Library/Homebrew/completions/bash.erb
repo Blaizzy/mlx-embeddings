@@ -14,41 +14,27 @@
 # Bash completion script for brew(1)
 
 __brewcomp_words_include() {
-  local i=1
-  while [[ "${i}" -lt "${COMP_CWORD}" ]]
+  local element idx 
+  for (( idx = 1; idx < COMP_CWORD; idx++ ))
   do
-    if [[ "${COMP_WORDS[i]}" = "$1" ]]
-    then
-      return 0
-    fi
-    (( i++ ))
+    element=${COMP_WORDS[idx]}
+    [[ -n ${element} && ${element} == "$1" ]] && return 0
   done
   return 1
-}
-
-# Find the previous non-switch word
-__brewcomp_prev() {
-  local idx="$((COMP_CWORD - 1))"
-  local prv="${COMP_WORDS[idx]}"
-  while [[ "${prv}" = -* ]]
-  do
-    (( idx-- ))
-    prv="${COMP_WORDS[idx]}"
-  done
-  echo "${prv}"
 }
 
 __brewcomp() {
   # break $1 on space, tab, and newline characters,
   # and turn it into a newline separated list of words
   local list s sep=$'\n' IFS=$' \t\n'
-  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local cur=${COMP_WORDS[COMP_CWORD]}
 
   for s in $1
   do
-    __brewcomp_words_include "${s}" && continue
-    list="${list}${s}${sep}"
+    __brewcomp_words_include "${s}" || list+="${s}${sep}"
   done
+
+  list=${list%"${sep}"}
 
   IFS="${sep}"
   while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${list}" -- "${cur}")
