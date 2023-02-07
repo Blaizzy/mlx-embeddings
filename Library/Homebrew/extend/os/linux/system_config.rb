@@ -44,8 +44,8 @@ module SystemConfig
       return unless /-microsoft/i.match?(kernel)
 
       return "2 (Microsoft Store)" if Version.new(kernel[/Linux ([0-9.]*)-.*/, 1]) > Version.new("5.15")
-      return "2" if /-microsoft/.match?(kernel)
-      return "1" if /-Microsoft/.match?(kernel)
+      return "2" if kernel.include?("-microsoft")
+      return "1" if kernel.include?("-Microsoft")
     end
 
     def dump_verbose_config(out = $stdout)
