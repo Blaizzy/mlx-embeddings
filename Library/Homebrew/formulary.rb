@@ -169,7 +169,12 @@ module Formulary
 
       if (bottles_stable = json_formula["bottle"]["stable"]).present?
         bottle do
-          root_url bottles_stable["root_url"]
+          if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN \
+              && bottles_stable["root_url"] == HOMEBREW_BOTTLE_DEFAULT_DOMAIN
+            root_url Homebrew::EnvConfig.bottle_domain
+          else
+            root_url bottles_stable["root_url"]
+          end
           rebuild bottles_stable["rebuild"]
           bottles_stable["files"].each do |tag, bottle_spec|
             cellar = Formulary.convert_to_string_or_symbol bottle_spec["cellar"]
