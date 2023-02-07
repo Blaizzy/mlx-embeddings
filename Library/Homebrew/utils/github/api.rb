@@ -5,7 +5,18 @@ require "tempfile"
 require "utils/shell"
 require "utils/formatter"
 
+# A module that interfaces with GitHub, code like PAT scopes, credential handling and API errors.
 module GitHub
+  def self.pat_blurb(scopes = ALL_SCOPES)
+    <<~EOS
+      Create a GitHub personal access token:
+      #{Formatter.url(
+        "https://github.com/settings/tokens/new?scopes=#{scopes.join(",")}&description=Homebrew",
+      )}
+      #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
+    EOS
+  end
+
   API_URL = "https://api.github.com"
   API_MAX_PAGES = 50
   API_MAX_ITEMS = 5000
@@ -14,14 +25,6 @@ module GitHub
   CREATE_ISSUE_FORK_OR_PR_SCOPES = ["repo"].freeze
   CREATE_WORKFLOW_SCOPES = ["workflow"].freeze
   ALL_SCOPES = (CREATE_GIST_SCOPES + CREATE_ISSUE_FORK_OR_PR_SCOPES + CREATE_WORKFLOW_SCOPES).freeze
-  ALL_SCOPES_URL = Formatter.url(
-    "https://github.com/settings/tokens/new?scopes=#{ALL_SCOPES.join(",")}&description=Homebrew",
-  ).freeze
-  CREATE_GITHUB_PAT_MESSAGE = <<~EOS
-    Create a GitHub personal access token:
-        #{ALL_SCOPES_URL}
-      #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
-  EOS
   GITHUB_PERSONAL_ACCESS_TOKEN_REGEX = /^(?:[a-f0-9]{40}|gh[po]_\w{36,251})$/.freeze
 
   # Helper functions to access the GitHub API.
@@ -49,7 +52,7 @@ module GitHub
     class RateLimitExceededError < Error
       def initialize(reset, github_message)
         @github_message = github_message
-        new_pat_message = ", or:\n#{CREATE_GITHUB_PAT_MESSAGE}" if API.credentials.blank?
+        new_pat_message = ", or:\n#{GitHub.pat_blurb}" if API.credentials.blank?
         super <<~EOS
           GitHub API Error: #{github_message}
           Try again in #{pretty_ratelimit_reset(reset)}#{new_pat_message}
@@ -76,7 +79,7 @@ module GitHub
             The GitHub credentials in the macOS keychain may be invalid.
             Clear them with:
               printf "protocol=https\\nhost=github.com\\n" | git credential-osxkeychain erase
-            #{CREATE_GITHUB_PAT_MESSAGE}
+            #{GitHub.pat_blurb}
           EOS
         end
         super message.freeze
@@ -87,7 +90,7 @@ module GitHub
     class MissingAuthenticationError < Error
       def initialize
         message = +"No GitHub credentials found in macOS Keychain or environment.\n"
-        message << CREATE_GITHUB_PAT_MESSAGE
+        message << GitHub.pat_blurb
         super message
       end
     end
@@ -177,7 +180,7 @@ module GitHub
         Your #{what} credentials do not have sufficient scope!
         Scopes required: #{needed_scopes}
         Scopes present:  #{credentials_scopes}
-        #{CREATE_GITHUB_PAT_MESSAGE}
+        #{GitHub.pat_blurb}
       EOS
     end
 
