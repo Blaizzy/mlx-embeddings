@@ -2855,7 +2855,7 @@ Prefix all download URLs, including those for bottles, with this value\. For exa
 Run \fBbrew update\fR once every \fBHOMEBREW_AUTO_UPDATE_SECS\fR seconds before some commands, e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\. Alternatively, disable auto\-update entirely with HOMEBREW_NO_AUTO_UPDATE\.
 .
 .IP
-\fIDefault:\fR 300 (5 minutes) or 86400 (24 hours) if HOMEBREW_INSTALL_FROM_API is set\.
+\fIDefault:\fR 86400 (24 hours) or 300 (5 minutes) if HOMEBREW_NO_INSTALL_FROM_API is set\.
 .
 .TP
 \fBHOMEBREW_AUTOREMOVE\fR
@@ -3146,12 +3146,6 @@ Print this text before the installation summary of each successful build\.
 \fIDefault:\fR The "Beer Mug" emoji\.
 .
 .TP
-\fBHOMEBREW_INSTALL_FROM_API\fR
-.
-.br
-If set, install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew\'s API instead of needing (large, slow) local checkouts of these repositories\. Note, this will only take effect in supported configurations (i\.e\. using the default Homebrew prefix and, if on macOS, on a supported version)\.
-.
-.TP
 \fBHOMEBREW_LIVECHECK_WATCHLIST\fR
 .
 .br
@@ -3260,7 +3254,7 @@ If set, \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew reinstall\fR will nev
 \fBHOMEBREW_NO_INSTALL_FROM_API\fR
 .
 .br
-If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew\'s API even if \fBHOMEBREW_INSTALL_FROM_API\fR is set and instead use (large, slow) local checkouts of these repositories\.
+If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew\'s API and instead use (large, slow) local checkouts of these repositories\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALL_UPGRADE\fR
