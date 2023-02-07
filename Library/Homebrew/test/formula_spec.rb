@@ -1845,6 +1845,54 @@ describe Formula do
     end
   end
 
+  describe "#ignore_missing_libraries" do
+    after do
+      Homebrew::SimulateSystem.clear
+    end
+
+    it "adds library to allowed_missing_libraries on Linux", :needs_linux do
+      Homebrew::SimulateSystem.clear
+      f = formula do
+        url "foo-1.0"
+
+        ignore_missing_libraries "bar.so"
+      end
+      expect(f.class.allowed_missing_libraries.to_a).to eq(["bar.so"])
+    end
+
+    it "adds library to allowed_missing_libraries on macOS when simulating Linux", :needs_macos do
+      Homebrew::SimulateSystem.os = :linux
+      f = formula do
+        url "foo-1.0"
+
+        ignore_missing_libraries "bar.so"
+      end
+      expect(f.class.allowed_missing_libraries.to_a).to eq(["bar.so"])
+    end
+
+    it "raises an error on macOS", :needs_macos do
+      Homebrew::SimulateSystem.clear
+      expect {
+        formula do
+          url "foo-1.0"
+
+          ignore_missing_libraries "bar.so"
+        end
+      }.to raise_error("ignore_missing_libraries is available on Linux only")
+    end
+
+    it "raises an error on Linux when simulating macOS", :needs_linux do
+      Homebrew::SimulateSystem.os = :macos
+      expect {
+        formula do
+          url "foo-1.0"
+
+          ignore_missing_libraries "bar.so"
+        end
+      }.to raise_error("ignore_missing_libraries is available on Linux only")
+    end
+  end
+
   describe "#generate_completions_from_executable" do
     let(:f) do
       Class.new(Testball) do
