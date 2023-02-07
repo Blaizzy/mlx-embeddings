@@ -7,7 +7,8 @@ module Homebrew
   module_function
 
   def setup_tar_and_args!(args, mtime)
-    generic_setup_tar_and_args!(args, mtime)
+    default_tar_args = generic_setup_tar_and_args!(args, mtime)
+    return default_tar_args unless args.only_json_tab?
 
     ["tar", gnutar_args(mtime)].freeze
   end

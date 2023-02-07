@@ -236,8 +236,7 @@ module Homebrew
 
   def setup_tar_and_args!(args, _mtime)
     # Without --only-json-tab bottles are never reproducible
-    default_tar_args = ["tar", [].freeze].freeze
-    return default_tar_args unless args.only_json_tab?
+    ["tar", [].freeze].freeze
   end
 
   alias generic_setup_tar_and_args! setup_tar_and_args!
