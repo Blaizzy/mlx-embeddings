@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cask_dependent"
+require "extend/os/cask/cmd/install"
 
 module Cask
   class Cmd
