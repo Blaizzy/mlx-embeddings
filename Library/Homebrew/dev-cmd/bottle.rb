@@ -242,6 +242,16 @@ module Homebrew
 
   alias generic_setup_tar_and_args! setup_tar_and_args!
 
+  def gnutar_args(mtime)
+    # Ensure tar is set up for reproducibility.
+    # https://reproducible-builds.org/docs/archives/
+    [
+      "--format", "pax", "--owner", "0", "--group", "0", "--sort", "name", "--mtime=#{mtime}",
+      # Set exthdr names to exclude PID (for GNU tar <1.33). Also don't store atime and ctime.
+      "--pax-option", "globexthdr.name=/GlobalHead.%n,exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime"
+    ].freeze
+  end
+
   def formula_ignores(f)
     ignores = []
     cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
