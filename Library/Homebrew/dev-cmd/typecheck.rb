@@ -51,7 +51,7 @@ module Homebrew
 
     HOMEBREW_LIBRARY_PATH.cd do
       if args.update? || args.update_all?
-        odeprecated "brew typecheck --update --fail-if-not-changed" if args.fail_if_not_changed?
+        odisabled "brew typecheck --update --fail-if-not-changed" if args.fail_if_not_changed?
 
         excluded_gems = [
           "did_you_mean", # RBI file is already provided by Sorbet
