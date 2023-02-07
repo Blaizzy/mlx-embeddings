@@ -209,6 +209,19 @@ EOS
   fi
 }
 
+# NOTE: the members of the array in the second arg must not have spaces!
+check-array-membership() {
+  local item=$1
+  shift
+
+  if [[ " ${*} " == *" ${item} "* ]]
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Let user know we're still updating Homebrew if brew update --auto-update
 # exceeds 3 seconds.
 auto-update-timer() {
@@ -237,12 +250,16 @@ auto-update() {
   # If we've checked for updates, we don't need to check again.
   export HOMEBREW_AUTO_UPDATE_CHECKED="1"
 
-  if [[ "${HOMEBREW_COMMAND}" == "install" ]] ||
-     [[ "${HOMEBREW_COMMAND}" == "upgrade" ]] ||
-     [[ "${HOMEBREW_COMMAND}" == "bump-formula-pr" ]] ||
-     [[ "${HOMEBREW_COMMAND}" == "bump-cask-pr" ]] ||
-     [[ "${HOMEBREW_COMMAND}" == "bundle" ]] ||
-     [[ "${HOMEBREW_COMMAND}" == "release" ]] ||
+  AUTO_UPDATE_COMMANDS=(
+    install
+    upgrade
+    bump-formula-pr
+    bump-cask-pr
+    bundle
+    release
+  )
+
+  if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_COMMANDS[@]}" ||
      [[ "${HOMEBREW_COMMAND}" == "tap" && "${HOMEBREW_ARG_COUNT}" -gt 1 ]]
   then
     export HOMEBREW_AUTO_UPDATING="1"
@@ -290,6 +307,8 @@ auto-update() {
     # exec a new process to set any new environment variables.
     exec "${HOMEBREW_BREW_FILE}" "$@"
   fi
+
+  unset AUTO_UPDATE_COMMANDS
 }
 
 #####
@@ -776,7 +795,7 @@ then
     update-python-resources
   )
 
-  if [[ " ${NO_INSTALL_FROM_API_COMMANDS[*]} " == *" ${HOMEBREW_COMMAND} "* ]]
+  if check-array-membership "${HOMEBREW_COMMAND}" "${NO_INSTALL_FROM_API_COMMANDS[@]}"
   then
     export HOMEBREW_NO_INSTALL_FROM_API=1
   fi
