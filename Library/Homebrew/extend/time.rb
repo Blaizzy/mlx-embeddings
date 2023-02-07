@@ -16,3 +16,8 @@ module TimeRemaining
     end
   end
 end
+
+class Time
+  # Backwards compatibility for formulae that used this ActiveSupport extension
+  alias rfc3339 xmlschema
+end
