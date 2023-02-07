@@ -234,7 +234,7 @@ module Homebrew
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
-  def setup_tar_and_args!(args, _mtime)
+  def setup_tar_and_args!(_args, _mtime)
     # Without --only-json-tab bottles are never reproducible
     ["tar", [].freeze].freeze
   end
