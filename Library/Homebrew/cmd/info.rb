@@ -222,6 +222,14 @@ module Homebrew
         formulae.map(&:to_hash)
       end
     when :v2
+      # Cannot generate cask API JSON data from the cask JSON API
+      if EnvConfig.install_from_api?
+        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
+        core_untapped = !CoreTap.instance.installed?
+        cask_untapped = !Tap.fetch("Homebrew/homebrew-cask").installed?
+        raise UsageError, "tap homebrew/core and/or homebrew/cask to use --json=v2" if core_untapped || cask_untapped
+      end
+
       formulae, casks = if all
         [Formula.all.sort, Cask::Cask.all.sort_by(&:full_name)]
       elsif args.installed?
