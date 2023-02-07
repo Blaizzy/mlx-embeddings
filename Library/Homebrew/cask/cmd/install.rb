@@ -69,8 +69,6 @@ module Cask
         zap: nil,
         dry_run: nil
       )
-        # TODO: Refactor and move to extend/os
-        odie "Installing casks is supported only on macOS" unless OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
 
         options = {
           verbose:        verbose,
