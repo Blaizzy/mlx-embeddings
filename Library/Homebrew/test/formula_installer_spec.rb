@@ -203,11 +203,11 @@ describe FormulaInstaller do
   describe "#install_service" do
     it "works if plist is set" do
       formula = Testball.new
-      path = formula.launchd_service_path
+      path = formula.plist_path
       formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).twice.and_return("PLIST")
-      expect(formula).to receive(:launchd_service_path).and_call_original
+      expect(formula).to receive(:plist_path).and_call_original
 
       installer = described_class.new(formula)
       expect {
@@ -219,7 +219,7 @@ describe FormulaInstaller do
 
     it "works if service is set" do
       formula = Testball.new
-      launchd_service_path = formula.launchd_service_path
+      plist_path = formula.plist_path
       service_path = formula.systemd_service_path
       service = Homebrew::Service.new(formula)
       formula.opt_prefix.mkpath
@@ -227,7 +227,7 @@ describe FormulaInstaller do
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
       expect(formula).to receive(:service).exactly(5).and_return(service)
-      expect(formula).to receive(:launchd_service_path).and_call_original
+      expect(formula).to receive(:plist_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
 
       expect(service).to receive(:timed?).and_return(false)
@@ -240,13 +240,13 @@ describe FormulaInstaller do
         installer.install_service
       }.not_to output(/Error: Failed to install service files/).to_stderr
 
-      expect(launchd_service_path).to exist
+      expect(plist_path).to exist
       expect(service_path).to exist
     end
 
     it "works if timed service is set" do
       formula = Testball.new
-      launchd_service_path = formula.launchd_service_path
+      plist_path = formula.plist_path
       service_path = formula.systemd_service_path
       timer_path = formula.systemd_timer_path
       service = Homebrew::Service.new(formula)
@@ -255,7 +255,7 @@ describe FormulaInstaller do
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
       expect(formula).to receive(:service).exactly(6).and_return(service)
-      expect(formula).to receive(:launchd_service_path).and_call_original
+      expect(formula).to receive(:plist_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
       expect(formula).to receive(:systemd_timer_path).and_call_original
 
@@ -270,19 +270,19 @@ describe FormulaInstaller do
         installer.install_service
       }.not_to output(/Error: Failed to install service files/).to_stderr
 
-      expect(launchd_service_path).to exist
+      expect(plist_path).to exist
       expect(service_path).to exist
       expect(timer_path).to exist
     end
 
     it "returns without definition" do
       formula = Testball.new
-      path = formula.launchd_service_path
+      path = formula.plist_path
       formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(nil)
-      expect(formula).not_to receive(:launchd_service_path)
+      expect(formula).not_to receive(:plist_path)
       expect(formula).not_to receive(:to_systemd_unit)
 
       installer = described_class.new(formula)
@@ -295,13 +295,13 @@ describe FormulaInstaller do
 
     it "errors with duplicate definition" do
       formula = Testball.new
-      path = formula.launchd_service_path
+      path = formula.plist_path
       formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return("plist")
       expect(formula).to receive(:service?).and_return(true)
       expect(formula).not_to receive(:service)
-      expect(formula).not_to receive(:launchd_service_path)
+      expect(formula).not_to receive(:plist_path)
 
       installer = described_class.new(formula)
       expect {

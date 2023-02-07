@@ -30,7 +30,7 @@ module Homebrew
   def generate_man_completions
     args = generate_man_completions_args.parse
 
-    odisabled "brew generate-man-completions --fail-if-not-changed" if args.fail_if_not_changed?
+    odeprecated "brew generate-man-completions --fail-if-not-changed" if args.fail_if_not_changed?
 
     Commands.rebuild_internal_commands_completion_list
     Manpages.regenerate_man_pages(quiet: args.quiet?)

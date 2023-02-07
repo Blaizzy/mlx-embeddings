@@ -1051,9 +1051,9 @@ class FormulaInstaller
 
     return unless service
 
-    launchd_service_path = formula.launchd_service_path
-    launchd_service_path.atomic_write(service)
-    launchd_service_path.chmod 0644
+    plist_path = formula.plist_path
+    plist_path.atomic_write(service)
+    plist_path.chmod 0644
     log = formula.var/"log"
     log.mkpath if service.include? log.to_s
   rescue Exception => e # rubocop:disable Lint/RescueException
