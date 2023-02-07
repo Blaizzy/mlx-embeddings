@@ -14,6 +14,7 @@ homebrew-formulae() {
   # HOMEBREW_CACHE is set by brew.sh
   # shellcheck disable=SC2154
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
+        -n "${HOMEBREW_INSTALL_FROM_API}" &&
         -f "${HOMEBREW_CACHE}/api/formula.json" ]]
   then
     local api_formulae
