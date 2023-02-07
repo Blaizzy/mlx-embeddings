@@ -52,7 +52,7 @@ module GitHub
     class RateLimitExceededError < Error
       def initialize(reset, github_message)
         @github_message = github_message
-        new_pat_message = ", or:\n#{pat_blurb}" if API.credentials.blank?
+        new_pat_message = ", or:\n#{GitHub.pat_blurb}" if API.credentials.blank?
         super <<~EOS
           GitHub API Error: #{github_message}
           Try again in #{pretty_ratelimit_reset(reset)}#{new_pat_message}
@@ -79,7 +79,7 @@ module GitHub
             The GitHub credentials in the macOS keychain may be invalid.
             Clear them with:
               printf "protocol=https\\nhost=github.com\\n" | git credential-osxkeychain erase
-            #{pat_blurb}
+            #{GitHub.pat_blurb}
           EOS
         end
         super message.freeze
@@ -90,7 +90,7 @@ module GitHub
     class MissingAuthenticationError < Error
       def initialize
         message = +"No GitHub credentials found in macOS Keychain or environment.\n"
-        message << pat_blurb
+        message << GitHub.pat_blurb
         super message
       end
     end
@@ -180,7 +180,7 @@ module GitHub
         Your #{what} credentials do not have sufficient scope!
         Scopes required: #{needed_scopes}
         Scopes present:  #{credentials_scopes}
-        #{pat_blurb}
+        #{GitHub.pat_blurb}
       EOS
     end
 
