@@ -755,6 +755,33 @@ if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]] ||
    [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.rb" ]]
 then
   export HOMEBREW_DEVELOPER_COMMAND="1"
+
+  NO_INSTALL_FROM_API_COMMANDS=(
+    audit
+    bottle
+    bump-cask-pr
+    bump-formula-pr
+    bump-revision
+    bump-unversioned-casks
+    bump
+    cat
+    create
+    edit
+    extract
+    formula
+    livecheck
+    pr-pull
+    pr-upload
+    test
+    update-python-resources
+  )
+
+  if [[ " ${NO_INSTALL_FROM_API_COMMANDS[*]} " == *" ${HOMEBREW_COMMAND} "* ]]
+  then
+    export HOMEBREW_NO_INSTALL_FROM_API=1
+  fi
+
+  unset NO_INSTALL_FROM_API_COMMANDS
 fi
 
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
@@ -770,26 +797,6 @@ To turn developer mode off, run $(bold "brew developer off")
 
   git config --file="${HOMEBREW_GIT_CONFIG_FILE}" --replace-all homebrew.devcmdrun true 2>/dev/null
   export HOMEBREW_DEV_CMD_RUN="1"
-fi
-
-if [[ "${HOMEBREW_COMMAND}" == "audit" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "bottle" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "bump-cask-pr" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "bump-formula-pr" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "bump-revision" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "bump-unversioned-casks" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "cat" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "create" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "edit" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "extract" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "formula" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "livecheck" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "pr-pull" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "pr-upload" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "test" ]] ||
-   [[ "${HOMEBREW_COMMAND}" == "update-python-resources" ]]
-then
-  export HOMEBREW_NO_INSTALL_FROM_API=1
 fi
 
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]
