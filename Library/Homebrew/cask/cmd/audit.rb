@@ -60,6 +60,8 @@ module Cask
           language:              args.language,
           display_passes:        args.verbose? || args.named.count == 1,
           display_failures_only: args.display_failures_only?,
+          only:                  [],
+          except:                [],
         )
 
         failed_casks = results.reject { |_, result| result[:errors].empty? }.map(&:first)
@@ -70,18 +72,20 @@ module Cask
 
       def self.audit_casks(
         *casks,
-        download: nil,
-        appcast: nil,
-        online: nil,
-        strict: nil,
-        signing: nil,
-        new_cask: nil,
-        token_conflicts: nil,
-        quarantine: nil,
-        any_named_args: nil,
-        language: nil,
-        display_passes: nil,
-        display_failures_only: nil
+        download:,
+        appcast:,
+        online:,
+        strict:,
+        signing:,
+        new_cask:,
+        token_conflicts:,
+        quarantine:,
+        any_named_args:,
+        language:,
+        display_passes:,
+        display_failures_only:,
+        only:,
+        except:
       )
         options = {
           audit_download:        download,
@@ -96,6 +100,8 @@ module Cask
           any_named_args:        any_named_args,
           display_passes:        display_passes,
           display_failures_only: display_failures_only,
+          only:                  only,
+          except:                except,
         }.compact
 
         options[:quarantine] = true if options[:quarantine].nil?

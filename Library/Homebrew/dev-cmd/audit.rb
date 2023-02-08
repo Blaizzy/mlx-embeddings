@@ -253,6 +253,8 @@ module Homebrew
         language:              nil,
         display_passes:        args.verbose? || args.named.count == 1,
         display_failures_only: args.display_failures_only?,
+        only:                  args.only,
+        except:                args.except,
       )
     end
 
