@@ -27,6 +27,10 @@ module Homebrew
       @text.include? s
     end
 
+    def to_s
+      @text
+    end
+
     def line_number(regex, skip = 0)
       index = @lines.drop(skip).index { |line| line =~ regex }
       index ? index + 1 : nil
