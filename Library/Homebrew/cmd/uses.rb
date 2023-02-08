@@ -109,14 +109,14 @@ module Homebrew
       all = args.eval_all?
       if args.all?
         unless all
-          odeprecated "brew uses --all",
-                      "brew uses --eval-all or HOMEBREW_EVAL_ALL"
+          odisabled "brew uses --all",
+                    "brew uses --eval-all or HOMEBREW_EVAL_ALL"
         end
         all = true
       end
 
       if !args.installed? && !(all || Homebrew::EnvConfig.eval_all?)
-        odeprecated "brew uses", "brew uses --eval-all or HOMEBREW_EVAL_ALL"
+        odisabled "brew uses", "brew uses --eval-all or HOMEBREW_EVAL_ALL"
       end
       if show_formulae_and_casks || args.formula?
         deps += args.installed? ? Formula.installed : Formula.all

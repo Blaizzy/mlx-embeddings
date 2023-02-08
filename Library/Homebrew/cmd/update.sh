@@ -386,7 +386,7 @@ EOS
   fi
 
   if [[ -d "${HOMEBREW_CORE_REPOSITORY}" ]] ||
-     [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+     [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
     HOMEBREW_CORE_AVAILABLE="1"
   fi
@@ -566,8 +566,7 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
-       [[ -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
+    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" || "${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" ]]
     then
       continue
@@ -726,7 +725,7 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]] &&
+    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]] &&
        [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ "${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" ||
           "${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" ]]
@@ -768,7 +767,7 @@ EOS
     fi
   done
 
-  if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_INSTALL_FROM_API}" ]]
+  if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
     mkdir -p "${HOMEBREW_CACHE}/api"
 

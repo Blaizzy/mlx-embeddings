@@ -44,17 +44,6 @@ describe Caveats do
         expect(described_class.new(f).caveats).to include("provides a launchd plist which can only be used on macOS!")
       end
 
-      it "prints plist startup information when f.plist_startup is not nil" do
-        f = formula do
-          url "foo-1.0"
-          def plist
-            "plist_test.plist"
-          end
-          plist_options startup: true
-        end
-        expect(described_class.new(f).caveats).to include("startup")
-      end
-
       it "prints plist login information when f.plist_startup is nil" do
         f = formula do
           url "foo-1.0"
@@ -63,39 +52,6 @@ describe Caveats do
           end
         end
         expect(described_class.new(f).caveats).to include("login")
-      end
-
-      it "gives information about restarting services after upgrade" do
-        f = formula do
-          url "foo-1.0"
-          def plist
-            "plist_test.plist"
-          end
-          plist_options startup: true
-        end
-        f_obj = described_class.new(f)
-        plist_path = mktmpdir/"plist"
-        FileUtils.touch plist_path
-        allow(f_obj).to receive(:plist_path).and_return(plist_path)
-        allow(Homebrew).to receive(:_system).and_return(true)
-        allow(Homebrew).to receive(:_system).with("/bin/launchctl list #{f.plist_name} &>/dev/null").and_return(true)
-        allow(plist_path).to receive(:symlink?).and_return(true)
-        expect(f_obj.caveats).to include("restart #{f.full_name}")
-        expect(f_obj.caveats).to include("sudo")
-      end
-
-      it "gives information about plist_manual" do
-        f = formula do
-          url "foo-1.0"
-          def plist
-            "plist_test.plist"
-          end
-          plist_options manual: "foo"
-        end
-        caveats = described_class.new(f).caveats
-
-        expect(caveats).to include("background service")
-        expect(caveats).to include(f.plist_manual)
       end
 
       it "gives information about service" do
@@ -141,7 +97,6 @@ describe Caveats do
           service do
             run [bin/"cmd"]
           end
-          plist_options startup: true
         end
 
         allow_any_instance_of(Object).to receive(:which).with("launchctl").and_return(nil)
@@ -149,13 +104,13 @@ describe Caveats do
         expect(described_class.new(f).caveats).to include("service which can only be used on macOS or systemd!")
       end
 
-      it "prints service startup information when f.plist_startup is not nil" do
+      it "prints service startup information when service.require_root is true" do
         f = formula do
           url "foo-1.0"
           service do
             run [bin/"cmd"]
+            require_root true
           end
-          plist_options startup: true
         end
         cmd = "#{HOMEBREW_CELLAR}/formula_name/1.0/bin/cmd"
         allow(Homebrew).to receive(:_system).and_return(true)
@@ -174,21 +129,6 @@ describe Caveats do
         allow(Homebrew).to receive(:_system).and_return(true)
         expect(Homebrew).to receive(:_system).with("ps aux | grep #{cmd}").and_return(false)
         expect(described_class.new(f).caveats).to include("login")
-      end
-
-      it "gives information about plist_options restarting services after upgrade" do
-        f = formula do
-          url "foo-1.0"
-          service do
-            run [bin/"cmd"]
-          end
-          plist_options startup: true
-        end
-        cmd = "#{HOMEBREW_CELLAR}/formula_name/1.0/bin/cmd"
-        f_obj = described_class.new(f)
-        allow(Homebrew).to receive(:_system).and_return(true)
-        expect(Homebrew).to receive(:_system).with("ps aux | grep #{cmd}").and_return(true)
-        expect(f_obj.caveats).to include("  sudo brew services restart #{f.full_name}")
       end
 
       it "gives information about require_root restarting services after upgrade" do

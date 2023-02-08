@@ -85,6 +85,8 @@ jobs:
 
       - name: Run brew audit --skip-style on all taps
         run: brew audit --eval-all --skip-style --except=version --display-failures-only
+        env:
+          HOMEBREW_NO_INSTALL_FROM_API: 1
 
       - name: Set up all Homebrew taps
         run: |
@@ -96,6 +98,7 @@ jobs:
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
           brew tap homebrew/command-not-found
+          brew tap homebrew/core
           brew tap homebrew/formula-analytics
           brew tap homebrew/portable-ruby
           brew tap homebrew/services
@@ -109,6 +112,7 @@ jobs:
         run: brew audit --skip-style --except=version --tap=homebrew/core
         env:
           HOMEBREW_SIMULATE_MACOS_ON_LINUX: 1
+          HOMEBREW_NO_INSTALL_FROM_API: 1
 
       - name: Run brew style on official taps
         run: |

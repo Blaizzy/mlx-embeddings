@@ -398,9 +398,8 @@ module Kernel
   end
 
   # GZips the given paths, and returns the gzipped paths.
-  # TODO: Add deprecation
-  # odeprecated "Utils.gzip" "Utils::Gzip.compress"
   def gzip(*paths)
+    odeprecated "Utils.gzip", "Utils::Gzip.compress"
     Utils::Gzip.compress(*paths)
   end
 

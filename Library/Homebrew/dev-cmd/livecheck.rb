@@ -59,7 +59,7 @@ module Homebrew
 
     all = args.eval_all?
     if args.all?
-      odeprecated "brew livecheck --all", "brew livecheck --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
+      odisabled "brew livecheck --all", "brew livecheck --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
       all = true
     end
 

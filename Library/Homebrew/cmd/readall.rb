@@ -46,7 +46,7 @@ module Homebrew
     options = { aliases: args.aliases?, no_simulate: args.no_simulate? }
     taps = if args.no_named?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-        odeprecated "brew readall", "brew readall --eval-all or HOMEBREW_EVAL_ALL"
+        odisabled "brew readall", "brew readall --eval-all or HOMEBREW_EVAL_ALL"
       end
       Tap
     else
