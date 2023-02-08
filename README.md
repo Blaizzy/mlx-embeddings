@@ -53,6 +53,7 @@ Former maintainers with significant contributions include [Misty De Méo](https:
 
 - [Homebrew/discussions (forum)](https://github.com/orgs/Homebrew/discussions)
 - [@MacHomebrew (Twitter)](https://twitter.com/MacHomebrew)
+- [@homebrew@fosstodon.org (Mastodon)](https://fosstodon.org/@homebrew)
 
 ## License
 
