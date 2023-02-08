@@ -8517,8 +8517,6 @@ class Time
 
   def plus_without_duration(arg); end
 
-  def rfc3339(fraction_digits=T.unsafe(nil)); end
-
   def to_default_s(); end
 end
 
