@@ -58,10 +58,6 @@ If they accept, follow a few steps to get them set up:
 - Ask them to (regularly) review remove any unneeded [GitHub personal access tokens](https://github.com/settings/tokens).
 - Start the process to [add them as Homebrew members](#members), for formal voting rights and the ability to hold office for Homebrew.
 
-If they are interested in doing system administration work:
-
-- Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people)
-
 If there are problems, ask them to step down as a maintainer.
 
 When they step down as a maintainer for any reason, revoke their access to all of the above.
@@ -76,6 +72,7 @@ If a maintainer or member is elected to the Homebrew's [Project Leadership Commi
 
 - Invite them to the [**@Homebrew/plc** team](https://github.com/orgs/Homebrew/teams/plc/members)
 - Make them [billing managers](https://github.com/organizations/Homebrew/settings/billing) and [moderators](https://github.com/organizations/Homebrew/settings/moderators) on the Homebrew GitHub organisation
+- Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people) and add them to the "plc" group.
 
 When they step down as a PLC member, revoke or downgrade their access to all of the above.
 
@@ -107,3 +104,11 @@ When admitted as members:
 - Invite them to the [**@Homebrew/members** team](https://github.com/orgs/Homebrew/teams/members), to give them access to the private governance repository.
 - Invite them as a single-channel guest to the #members channel on the [`machomebrew` private Slack](https://machomebrew.slack.com/admin/invites) (and ensure they've read the [communication guidelines](Maintainer-Guidelines.md#communication)) and ask them to use their real name there (rather than a pseudonym they may use on e.g. GitHub).
 - Add them to the current year's membership list in the [governance archives](https://github.com/Homebrew/brew/tree/master/docs/governance).
+
+If they are interested in doing ops/infrastructure/system administration work:
+
+- Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people) and add them to the "ops" group.
+
+If they are interested in doing security work:
+
+- Invite them to the [`homebrew` private 1Password](https://homebrew.1password.com/people) and add them to the "security" group.
