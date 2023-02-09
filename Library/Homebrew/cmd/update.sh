@@ -709,13 +709,6 @@ EOS
   wait
   trap - SIGINT
 
-  if [[ -f "${update_failed_file}" ]]
-  then
-    onoe <"${update_failed_file}"
-    rm -f "${update_failed_file}"
-    export HOMEBREW_UPDATE_FAILED="1"
-  fi
-
   if [[ -f "${missing_remote_ref_dirs_file}" ]]
   then
     HOMEBREW_MISSING_REMOTE_REF_DIRS="$(cat "${missing_remote_ref_dirs_file}")"
@@ -811,6 +804,13 @@ EOS
         echo "Failed to download ${formula_or_cask}.json!" >>"${update_failed_file}"
       fi
     done
+  fi
+
+  if [[ -f "${update_failed_file}" ]]
+  then
+    onoe <"${update_failed_file}"
+    rm -f "${update_failed_file}"
+    export HOMEBREW_UPDATE_FAILED="1"
   fi
 
   safe_cd "${HOMEBREW_REPOSITORY}"
