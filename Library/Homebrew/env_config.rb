@@ -55,7 +55,7 @@ module Homebrew
       },
       HOMEBREW_BAT_CONFIG_PATH:                  {
         description:  "Use this as the `bat` configuration file.",
-        default_text: "`$HOME/.config/bat/config`.",
+        default_text: "`$BAT_CONFIG_PATH`.",
       },
       HOMEBREW_BAT_THEME:                        {
         description:  "Use this as the `bat` theme for syntax highlighting.",
