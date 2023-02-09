@@ -337,15 +337,15 @@ module GitHub
       EOS
     end
 
-    status = check_suite.first["status"].sub("_", " ").downcase
+    status = check_suite.last["status"].sub("_", " ").downcase
     if status != "completed"
       raise API::Error, <<~EOS
         The newest workflow run for ##{pr} is still #{status}!
-          #{Formatter.url check_suite.first["workflowRun"]["url"]}
+          #{Formatter.url check_suite.last["workflowRun"]["url"]}
       EOS
     end
 
-    run_id = check_suite.first["workflowRun"]["databaseId"]
+    run_id = check_suite.last["workflowRun"]["databaseId"]
     artifacts = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/actions/runs/#{run_id}/artifacts", scopes: scopes)
 
     artifact = artifacts["artifacts"].select do |art|
@@ -355,7 +355,7 @@ module GitHub
     if artifact.empty?
       raise API::Error, <<~EOS
         No artifact with the name `#{artifact_name}` was found!
-          #{Formatter.url check_suite.first["workflowRun"]["url"]}
+          #{Formatter.url check_suite.last["workflowRun"]["url"]}
       EOS
     end
 
