@@ -142,6 +142,8 @@ If all maintainer feedback has been addressed and all tests are passing, bump it
 
 Yes! It’s easy! Just `brew edit <formula>`. You don’t have to submit modifications back to `homebrew/core`, just edit the formula to what you personally need and `brew install <formula>`. As a bonus, `brew update` will merge your changes with upstream so you can still keep the formula up-to-date **with** your personal modifications!
 
+Note that if you are editing a core formula or cask you must set `HOMEBREW_NO_INSTALL_WITH_API=1` before using `brew install` or `brew update` otherwise they will ignore your local changes and default to the API.
+
 ## Can I make new formulae?
 
 Yes! It’s easy! Just `brew create URL`. Homebrew will then open the formula in `EDITOR` so you can edit it, but it probably already installs; try it: `brew install <formula>`. If you encounter any issues, run the command with the `--debug` switch like so: `brew install --debug <formula>`, which drops you into a debugging shell.
