@@ -785,11 +785,16 @@ EOS
       JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.json")
       for json_url in "${JSON_URLS[@]}"
       do
+        time_cond=()
+        if [[ -s "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" ]]
+        then
+          time_cond=("--time-cond" "${HOMEBREW_CACHE}/api/${formula_or_cask}.json")
+        fi
         curl \
           "${CURL_DISABLE_CURLRC_ARGS[@]}" \
-          --fail --compressed --silent --max-time 30 \
+          --fail --compressed --silent --speed-limit 100 --speed-time 30 \
           --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
-          --time-cond "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+          "${time_cond[@]}" \
           --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
           "${json_url}"
         curl_exit_code=$?

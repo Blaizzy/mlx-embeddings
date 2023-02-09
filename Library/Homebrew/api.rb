@@ -19,8 +19,10 @@ module Homebrew
 
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
 
-    # Set a longer timeout just for large(r) files.
-    JSON_API_MAX_TIME = 30
+    # Timeout values to check for dead connections
+    # We don't use --max-time to support slow connections
+    JSON_API_SPEED_MARGIN = 100 # bytes/sec
+    JSON_API_SPEED_TIME = 10 # seconds of downloading under the margin
 
     sig { params(endpoint: String).returns(Hash) }
     def fetch(endpoint)
@@ -45,15 +47,14 @@ module Homebrew
       retry_count = 0
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
-      curl_args = %w[--compressed --silent]
+      curl_args = %W[--compressed --speed-limit #{JSON_API_SPEED_MARGIN} --speed-time #{JSON_API_SPEED_TIME}]
+      curl_args.prepend("--silent") unless Context.current.debug?
       curl_args.prepend("--time-cond", target) if target.exist? && !target.empty?
 
       begin
         begin
           # Disable retries here, we handle them ourselves below.
-          Utils::Curl.curl_download(*curl_args, url, to: target,
-                                    max_time: JSON_API_MAX_TIME, retries: 0,
-                                    show_error: false)
+          Utils::Curl.curl_download(*curl_args, url, to: target, retries: 0, show_error: false)
         rescue ErrorDuringExecution
           if url == default_url
             raise unless target.exist?
