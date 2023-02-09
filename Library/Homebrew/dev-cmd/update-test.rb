@@ -61,7 +61,7 @@ module Homebrew
       elsif (date = args.before)
         Utils.popen_read("git", "rev-list", "-n1", "--before=#{date}", "origin/master").chomp
       elsif args.to_tag?
-        tags = git_tag
+        tags = git_tags
         current_tag, previous_tag, = tags.lines
         current_tag = current_tag.to_s.chomp
         odie "Could not find current tag in:\n#{tags}" if current_tag.empty?
@@ -141,7 +141,7 @@ module Homebrew
     FileUtils.rm_rf "update-test" unless args.keep_tmp?
   end
 
-  def git_tag
+  def git_tags
     tags = Utils.popen_read("git", "tag", "--list", "--sort=-version:refname")
     if tags.blank?
       tags = if (HOMEBREW_REPOSITORY/".git/shallow").exist?
@@ -152,5 +152,5 @@ module Homebrew
     tags
   end
 
-  alias generic_git_tag git_tag
+  alias generic_git_tags git_tags
 end
