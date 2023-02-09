@@ -8,6 +8,7 @@ module Homebrew
 
   def git_tags
     tags = generic_git_tags
-    Utils.popen_read("git tag --list | sort -rV") if tags.blank?
+    tags = Utils.popen_read("git tag --list | sort -rV") if tags.blank?
+    tags
   end
 end
