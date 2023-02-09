@@ -20,7 +20,7 @@ module Homebrew
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
 
     # Set a longer timeout just for large(r) files.
-    JSON_API_MAX_TIME = 10
+    JSON_API_MAX_TIME = 30
 
     sig { params(endpoint: String).returns(Hash) }
     def fetch(endpoint)
