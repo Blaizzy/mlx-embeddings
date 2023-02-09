@@ -49,12 +49,13 @@ module Homebrew
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
       curl_args = %W[--compressed --speed-limit #{JSON_API_SPEED_MARGIN} --speed-time #{JSON_API_SPEED_TIME}]
       curl_args.prepend("--silent") unless Context.current.debug?
-      curl_args.prepend("--time-cond", target) if target.exist? && !target.empty?
 
       begin
         begin
+          args = curl_args.dup
+          args.prepend("--time-cond", target) if target.exist? && !target.empty?
           # Disable retries here, we handle them ourselves below.
-          Utils::Curl.curl_download(*curl_args, url, to: target, retries: 0, show_error: false)
+          Utils::Curl.curl_download(*args, url, to: target, retries: 0, show_error: false)
         rescue ErrorDuringExecution
           if url == default_url
             raise unless target.exist?
