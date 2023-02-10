@@ -22,7 +22,7 @@ module Homebrew
 
       conflicts "--formula", "--cask"
 
-      named_args [:formula, :cask], number: 1
+      named_args [:formula, :cask], min: 1
     end
   end
 
@@ -44,6 +44,6 @@ module Homebrew
       "cat"
     end
 
-    safe_system pager, args.named.to_paths.first
+    safe_system pager, *args.named.to_paths
   end
 end
