@@ -628,6 +628,11 @@ curl_version_output="$(curl --version 2>/dev/null)"
 curl_name_and_version="${curl_version_output%% (*}"
 HOMEBREW_USER_AGENT_CURL="${HOMEBREW_USER_AGENT} ${curl_name_and_version// //}"
 
+# Timeout values to check for dead connections
+# We don't use --max-time to support slow connections
+HOMEBREW_CURL_SPEED_LIMIT=100
+HOMEBREW_CURL_SPEED_TIME=5
+
 export HOMEBREW_VERSION
 export HOMEBREW_DEFAULT_CACHE
 export HOMEBREW_CACHE
@@ -656,6 +661,8 @@ export HOMEBREW_USER_AGENT_CURL
 export HOMEBREW_API_DEFAULT_DOMAIN
 export HOMEBREW_BOTTLE_DEFAULT_DOMAIN
 export HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
+export HOMEBREW_CURL_SPEED_LIMIT
+export HOMEBREW_CURL_SPEED_TIME
 
 if [[ -n "${HOMEBREW_MACOS}" && -x "/usr/bin/xcode-select" ]]
 then

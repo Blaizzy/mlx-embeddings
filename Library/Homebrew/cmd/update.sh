@@ -785,7 +785,8 @@ EOS
         fi
         curl \
           "${CURL_DISABLE_CURLRC_ARGS[@]}" \
-          --fail --compressed --silent --speed-limit 100 --speed-time 30 \
+          --fail --compressed --silent \
+          --speed-limit "${HOMEBREW_CURL_SPEED_LIMIT}" --speed-time "${HOMEBREW_CURL_SPEED_TIME}" \
           --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
           "${time_cond[@]}" \
           --user-agent "${HOMEBREW_USER_AGENT_CURL}" \

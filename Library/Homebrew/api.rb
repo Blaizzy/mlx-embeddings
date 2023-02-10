@@ -19,11 +19,6 @@ module Homebrew
 
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
 
-    # Timeout values to check for dead connections
-    # We don't use --max-time to support slow connections
-    JSON_API_SPEED_MARGIN = 100 # bytes/sec
-    JSON_API_SPEED_TIME = 10 # seconds of downloading under the margin
-
     sig { params(endpoint: String).returns(Hash) }
     def fetch(endpoint)
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
@@ -47,7 +42,11 @@ module Homebrew
       retry_count = 0
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
-      curl_args = %W[--compressed --speed-limit #{JSON_API_SPEED_MARGIN} --speed-time #{JSON_API_SPEED_TIME}]
+      curl_args = %W[
+        --compressed
+        --speed-limit #{ENV.fetch("HOMEBREW_CURL_SPEED_LIMIT")}
+        --speed-time #{ENV.fetch("HOMEBREW_CURL_SPEED_TIME")}
+      ]
       curl_args.prepend("--silent") unless Context.current.debug?
 
       begin
