@@ -1101,7 +1101,7 @@ Check all casks with unversioned URLs in a given *`tap`* for updates.
 * `--state-file`:
   File for caching state.
 
-### `cat` [*`--formula`*] [*`--cask`*] *`formula`*|*`cask`*
+### `cat` [*`--formula`*] [*`--cask`*] *`formula`*|*`cask`* [...]
 
 Display the source of a *`formula`* or *`cask`*.
 
