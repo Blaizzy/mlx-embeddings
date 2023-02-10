@@ -9,6 +9,8 @@ module Zeitwerk
     require_relative "loader/config"
     require_relative "loader/eager_load"
 
+    extend Internal
+
     include RealModName
     include Callbacks
     include Helpers
@@ -26,9 +28,9 @@ module Zeitwerk
     #   "/Users/fxn/blog/app/models/hotel/pricing.rb" => [Hotel, :Pricing]
     #   ...
     #
-    # @private
     # @sig Hash[String, [Module, Symbol]]
     attr_reader :autoloads
+    internal :autoloads
 
     # We keep track of autoloaded directories to remove them from the registry
     # at the end of eager loading.
@@ -36,9 +38,9 @@ module Zeitwerk
     # Files are removed as they are autoloaded, but directories need to wait due
     # to concurrency (see why in Zeitwerk::Loader::Callbacks#on_dir_autoloaded).
     #
-    # @private
     # @sig Array[String]
     attr_reader :autoloaded_dirs
+    internal :autoloaded_dirs
 
     # Stores metadata needed for unloading. Its entries look like this:
     #
@@ -52,9 +54,9 @@ module Zeitwerk
     # If reloading is enabled, this hash is filled as constants are autoloaded
     # or eager loaded. Otherwise, the collection remains empty.
     #
-    # @private
     # @sig Hash[String, [String, [Module, Symbol]]]
     attr_reader :to_unload
+    internal :to_unload
 
     # Maps namespace constant paths to their respective directories.
     #
@@ -70,9 +72,9 @@ module Zeitwerk
     # and that its children are spread over those directories. We'll visit them
     # to set up the corresponding autoloads.
     #
-    # @private
     # @sig Hash[String, Array[String]]
     attr_reader :namespace_dirs
+    internal :namespace_dirs
 
     # A shadowed file is a file managed by this loader that is ignored when
     # setting autoloads because its matching constant is already taken.
@@ -81,17 +83,17 @@ module Zeitwerk
     # has only scanned the top-level, `shadowed_files` does not have shadowed
     # files that may exist deep in the project tree yet.
     #
-    # @private
     # @sig Set[String]
     attr_reader :shadowed_files
+    internal :shadowed_files
 
-    # @private
     # @sig Mutex
     attr_reader :mutex
+    private :mutex
 
-    # @private
     # @sig Mutex
     attr_reader :mutex2
+    private :mutex2
 
     def initialize
       super
@@ -134,7 +136,7 @@ module Zeitwerk
     # unload them.
     #
     # This method is public but undocumented. Main interface is `reload`, which
-    # means `unload` + `setup`. This one is avaiable to be used together with
+    # means `unload` + `setup`. This one is available to be used together with
     # `unregister`, which is undocumented too.
     #
     # @sig () -> void
@@ -254,9 +256,8 @@ module Zeitwerk
     # The return value of this predicate is only meaningful if the loader has
     # scanned the file. This is the case in the spots where we use it.
     #
-    # @private
     # @sig (String) -> Boolean
-    def shadowed_file?(file)
+    internal def shadowed_file?(file)
       shadowed_files.member?(file)
     end
 
@@ -323,10 +324,8 @@ module Zeitwerk
       end
     end
 
-    private # -------------------------------------------------------------------------------------
-
     # @sig (String, Module) -> void
-    def set_autoloads_in_dir(dir, parent)
+    private def set_autoloads_in_dir(dir, parent)
       ls(dir) do |basename, abspath|
         begin
           if ruby?(basename)
@@ -361,13 +360,22 @@ module Zeitwerk
     end
 
     # @sig (Module, Symbol, String) -> void
-    def autoload_subdir(parent, cname, subdir)
+    private def autoload_subdir(parent, cname, subdir)
       if autoload_path = autoload_path_set_by_me_for?(parent, cname)
         cpath = cpath(parent, cname)
-        register_explicit_namespace(cpath) if ruby?(autoload_path)
-        # We do not need to issue another autoload, the existing one is enough
-        # no matter if it is for a file or a directory. Just remember the
-        # subdirectory has to be visited if the namespace is used.
+        if ruby?(autoload_path)
+          # Scanning visited a Ruby file first, and now a directory for the same
+          # constant has been found. This means we are dealing with an explicit
+          # namespace whose definition was seen first.
+          #
+          # Registering is idempotent, and we have to keep the autoload pointing
+          # to the file. This may run again if more directories are found later
+          # on, no big deal.
+          register_explicit_namespace(cpath)
+        end
+        # If the existing autoload points to a file, it has to be preserved, if
+        # not, it is fine as it is. In either case, we do not need to override.
+        # Just remember the subdirectory conforms this namespace.
         namespace_dirs[cpath] << subdir
       elsif !cdef?(parent, cname)
         # First time we find this namespace, set an autoload for it.
@@ -382,7 +390,7 @@ module Zeitwerk
     end
 
     # @sig (Module, Symbol, String) -> void
-    def autoload_file(parent, cname, file)
+    private def autoload_file(parent, cname, file)
       if autoload_path = strict_autoload_path(parent, cname) || Registry.inception?(cpath(parent, cname))
         # First autoload for a Ruby file wins, just ignore subsequent ones.
         if ruby?(autoload_path)
@@ -408,7 +416,7 @@ module Zeitwerk
     # the file where we've found the namespace is explicitly defined.
     #
     # @sig (dir: String, file: String, parent: Module, cname: Symbol) -> void
-    def promote_namespace_from_implicit_to_explicit(dir:, file:, parent:, cname:)
+    private def promote_namespace_from_implicit_to_explicit(dir:, file:, parent:, cname:)
       autoloads.delete(dir)
       Registry.unregister_autoload(dir)
 
@@ -419,7 +427,7 @@ module Zeitwerk
     end
 
     # @sig (Module, Symbol, String) -> void
-    def set_autoload(parent, cname, abspath)
+    private def set_autoload(parent, cname, abspath)
       parent.autoload(cname, abspath)
 
       if logger
@@ -440,7 +448,7 @@ module Zeitwerk
     end
 
     # @sig (Module, Symbol) -> String?
-    def autoload_path_set_by_me_for?(parent, cname)
+    private def autoload_path_set_by_me_for?(parent, cname)
       if autoload_path = strict_autoload_path(parent, cname)
         autoload_path if autoloads.key?(autoload_path)
       else
@@ -449,12 +457,12 @@ module Zeitwerk
     end
 
     # @sig (String) -> void
-    def register_explicit_namespace(cpath)
+    private def register_explicit_namespace(cpath)
       ExplicitNamespace.__register(cpath, self)
     end
 
     # @sig (String) -> void
-    def raise_if_conflicting_directory(dir)
+    private def raise_if_conflicting_directory(dir)
       MUTEX.synchronize do
         dir_slash = dir + "/"
 
@@ -479,23 +487,23 @@ module Zeitwerk
     end
 
     # @sig (String, Object, String) -> void
-    def run_on_unload_callbacks(cpath, value, abspath)
+    private def run_on_unload_callbacks(cpath, value, abspath)
       # Order matters. If present, run the most specific one.
       on_unload_callbacks[cpath]&.each { |c| c.call(value, abspath) }
       on_unload_callbacks[:ANY]&.each { |c| c.call(cpath, value, abspath) }
     end
 
     # @sig (Module, Symbol) -> void
-    def unload_autoload(parent, cname)
-      parent.__send__(:remove_const, cname)
+    private def unload_autoload(parent, cname)
+      crem(parent, cname)
       log("autoload for #{cpath(parent, cname)} removed") if logger
     end
 
     # @sig (Module, Symbol) -> void
-    def unload_cref(parent, cname)
+    private def unload_cref(parent, cname)
       # Let's optimistically remove_const. The way we use it, this is going to
       # succeed always if all is good.
-      parent.__send__(:remove_const, cname)
+      crem(parent, cname)
     rescue ::NameError
       # There are a few edge scenarios in which this may happen. If the constant
       # is gone, that is OK, anyway.

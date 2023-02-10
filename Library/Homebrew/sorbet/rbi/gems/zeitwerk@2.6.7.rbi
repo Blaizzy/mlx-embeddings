@@ -29,6 +29,7 @@ module Zeitwerk::ExplicitNamespace
 
   class << self
     def __register(cpath, loader); end
+    def __registered?(cpath); end
     def __unregister_loader(loader); end
 
     private
@@ -37,6 +38,7 @@ module Zeitwerk::ExplicitNamespace
     def disable_tracer_if_unneeded; end
     def mutex; end
     def register(cpath, loader); end
+    def registered?(cpath); end
     def tracepoint_class_callback(event); end
     def tracer; end
     def unregister_loader(loader); end
@@ -82,19 +84,18 @@ class Zeitwerk::Loader
   include ::Zeitwerk::Loader::Helpers
   include ::Zeitwerk::Loader::Config
   include ::Zeitwerk::Loader::EagerLoad
+  extend ::Zeitwerk::Internal
 
   def initialize; end
 
-  def autoloaded_dirs; end
-  def autoloads; end
-  def mutex; end
-  def mutex2; end
-  def namespace_dirs; end
+  def __autoloaded_dirs; end
+  def __autoloads; end
+  def __namespace_dirs; end
+  def __shadowed_file?(file); end
+  def __shadowed_files; end
+  def __to_unload; end
   def reload; end
   def setup; end
-  def shadowed_file?(file); end
-  def shadowed_files; end
-  def to_unload; end
   def unload; end
   def unloadable_cpath?(cpath); end
   def unloadable_cpaths; end
@@ -105,12 +106,20 @@ class Zeitwerk::Loader
   def autoload_file(parent, cname, file); end
   def autoload_path_set_by_me_for?(parent, cname); end
   def autoload_subdir(parent, cname, subdir); end
+  def autoloaded_dirs; end
+  def autoloads; end
+  def mutex; end
+  def mutex2; end
+  def namespace_dirs; end
   def promote_namespace_from_implicit_to_explicit(dir:, file:, parent:, cname:); end
   def raise_if_conflicting_directory(dir); end
   def register_explicit_namespace(cpath); end
   def run_on_unload_callbacks(cpath, value, abspath); end
   def set_autoload(parent, cname, abspath); end
   def set_autoloads_in_dir(dir, parent); end
+  def shadowed_file?(file); end
+  def shadowed_files; end
+  def to_unload; end
   def unload_autoload(parent, cname); end
   def unload_cref(parent, cname); end
 
@@ -145,7 +154,7 @@ module Zeitwerk::Loader::Config
   def __ignores?(abspath); end
   def __roots; end
   def collapse(*glob_patterns); end
-  def dirs(namespaces: T.unsafe(nil)); end
+  def dirs(namespaces: T.unsafe(nil), ignored: T.unsafe(nil)); end
   def do_not_eager_load(*paths); end
   def enable_reloading; end
   def ignore(*glob_patterns); end
@@ -203,6 +212,7 @@ module Zeitwerk::Loader::Helpers
   def cdef?(parent, cname); end
   def cget(parent, cname); end
   def cpath(parent, cname); end
+  def crem(parent, cname); end
   def dir?(path); end
   def has_at_least_one_ruby_file?(dir); end
   def hidden?(basename); end
