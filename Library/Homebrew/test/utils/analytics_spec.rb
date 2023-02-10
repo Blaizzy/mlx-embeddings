@@ -17,8 +17,10 @@ describe Utils::Analytics do
         allow(Hardware::CPU).to receive(:type).and_return(:intel)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
+        expect(described_class.os_arch_prefix_ci).to have_key(:google_prefix)
+        expect(described_class.os_arch_prefix_ci[:google_prefix]).to eq described_class.custom_prefix_label
         expect(described_class.os_arch_prefix_ci).to have_key(:prefix)
-        expect(described_class.os_arch_prefix_ci[:prefix]).to eq described_class.custom_prefix_label
+        expect(described_class.os_arch_prefix_ci[:prefix]).to eq HOMEBREW_PREFIX.to_s
       end
 
       it "returns OS_VERSION, ARM and prefix when HOMEBREW_PREFIX is a custom prefix on arm" do
@@ -27,26 +29,37 @@ describe Utils::Analytics do
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
         expect(described_class.os_arch_prefix_ci).to have_key(:arch)
         expect(described_class.os_arch_prefix_ci[:arch]).to eq described_class.arch_label
+        expect(described_class.os_arch_prefix_ci).to have_key(:google_prefix)
+        expect(described_class.os_arch_prefix_ci[:google_prefix]).to eq described_class.custom_prefix_label
         expect(described_class.os_arch_prefix_ci).to have_key(:prefix)
-        expect(described_class.os_arch_prefix_ci[:prefix]).to eq described_class.custom_prefix_label
+        expect(described_class.os_arch_prefix_ci[:prefix]).to eq HOMEBREW_PREFIX.to_s
       end
 
       it "returns OS_VERSION, Rosetta and prefix when HOMEBREW_PREFIX is a custom prefix on Rosetta", :needs_macos do
         allow(Hardware::CPU).to receive(:type).and_return(:intel)
         allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(true)
         allow(Homebrew).to receive(:default_prefix?).and_return(false)
+        expect(described_class.os_arch_prefix_ci).to have_key(:google_prefix)
+        expect(described_class.os_arch_prefix_ci[:google_prefix]).to eq described_class.custom_prefix_label
         expect(described_class.os_arch_prefix_ci).to have_key(:prefix)
-        expect(described_class.os_arch_prefix_ci[:prefix]).to eq described_class.custom_prefix_label
+        expect(described_class.os_arch_prefix_ci[:prefix]).to eq HOMEBREW_PREFIX.to_s
       end
 
       it "does not include prefix when HOMEBREW_PREFIX is the default prefix" do
         allow(Homebrew).to receive(:default_prefix?).and_return(true)
-        expect(described_class.os_arch_prefix_ci).not_to have_key(:prefix)
+        expect(described_class.os_arch_prefix_ci).not_to have_key(:google_prefix)
+        expect(described_class.os_arch_prefix_ci).to have_key(:prefix)
+        expect(described_class.os_arch_prefix_ci[:prefix]).to eq :default
       end
 
       it "includes CI when ENV['CI'] is set" do
         ENV["CI"] = "true"
         expect(described_class.os_arch_prefix_ci).to have_key(:ci)
+      end
+
+      it "includes developer when ENV['CI'] is set" do
+        allow(Homebrew::EnvConfig).to receive(:developer?).and_return(true)
+        expect(described_class.os_arch_prefix_ci).to have_key(:developer)
       end
     end
   end
@@ -61,14 +74,14 @@ describe Utils::Analytics do
         ENV["HOMEBREW_NO_ANALYTICS"] = "true"
         expect(described_class).not_to receive(:report_google)
         expect(described_class).not_to receive(:report_influx)
-        described_class.report_event("install", action)
+        described_class.report_event(:install, action)
       end
 
       it "returns nil when HOMEBREW_NO_ANALYTICS_THIS_RUN is true" do
         ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "true"
         expect(described_class).not_to receive(:report_google)
         expect(described_class).not_to receive(:report_influx)
-        described_class.report_event("install", action)
+        described_class.report_event(:install, action)
       end
 
       it "returns nil when HOMEBREW_ANALYTICS_DEBUG is true" do
@@ -78,7 +91,7 @@ describe Utils::Analytics do
         expect(described_class).to receive(:report_google)
         expect(described_class).to receive(:report_influx)
 
-        described_class.report_event("install", action)
+        described_class.report_event(:install, action)
       end
     end
 

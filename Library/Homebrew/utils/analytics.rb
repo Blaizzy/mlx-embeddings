@@ -24,7 +24,7 @@ module Utils
       def report_google(type, metadata = {})
         os = metadata[:el][:os]
         arch = ", #{metadata[:el][:arch]}" if metadata[:el][:arch].present?
-        prefix = ", #{metadata[:el][:prefix]}" if metadata[:el][:prefix].present?
+        prefix = ", #{metadata[:el][:google_prefix]}" if metadata[:el][:google_prefix].present?
         ci = ", CI" if metadata[:el][:CI] == true
 
         metadata[:el] = "#{os}#{arch}#{prefix}#{ci}"
@@ -86,7 +86,7 @@ module Utils
         return unless ENV["HOMEBREW_ANALYTICS_ENABLE_INFLUX"]
 
         # Append general information to device information
-        tags = additional_tags.merge(action: action, on_request: !on_request.nil?)
+        tags = additional_tags.merge(package_and_options: action, on_request: !on_request.nil?)
                               .compact_blank
                               .map { |k, v| "#{k}=#{v.to_s.sub(" ", "\\ ")}" } # convert to key/value parameters
                               .join(",")
@@ -117,15 +117,16 @@ module Utils
         end
       end
 
-      sig { params(category: T.any(String, Symbol), action: String, on_request: T::Boolean).void }
+      sig { params(category: Symbol, action: String, on_request: T::Boolean).void }
       def report_event(category, action, on_request: false)
         return if not_this_run?
         return if disabled?
 
         google_label = os_arch_prefix_ci(verbose: false)
+        google_category = (category == :formula_install) ? "install" : category
 
         report_google(:event,
-                      ec: category,
+                      ec: google_category,
                       ea: action,
                       el: google_label,
                       ev: nil)
@@ -150,7 +151,7 @@ module Utils
         if (options = exception.options.to_a.map(&:to_s).join(" ").presence)
           action = "#{action} #{options}".strip
         end
-        report_event("BuildError", action)
+        report_event(:build_error, action)
       end
 
       def messages_displayed?
@@ -290,9 +291,20 @@ module Utils
       def arch_label(verbose: false)
         if Hardware::CPU.arm?
           "ARM"
+        elsif verbose
+          "x86_64"
         else
           ""
         end
+      end
+      alias generic_arch_label arch_label
+
+      sig { returns(String) }
+      def homebrew_version
+        version = HOMEBREW_VERSION.match(/^([\d.]*)-?/)[1]
+        return "#{version}-dev" if HOMEBREW_VERSION.include?("-")
+
+        version
       end
 
       def clear_os_arch_prefix_ci
@@ -305,17 +317,20 @@ module Utils
       def os_arch_prefix_ci(verbose: false)
         @os_arch_prefix_ci ||= begin
           data = {
-            os:        OS_VERSION,
-            developer: Homebrew::EnvConfig.developer?,
-            version:   HOMEBREW_VERSION,
-            system:    HOMEBREW_SYSTEM,
-            ci:        ENV["CI"].present?,
-            arch:      arch_label(verbose: verbose),
-            prefix:    custom_prefix_label(verbose: verbose),
+            version:             homebrew_version,
+            google_prefix:       custom_prefix_label(verbose: verbose),
+            prefix:              HOMEBREW_PREFIX.to_s,
+            ci:                  ENV["CI"].present?,
+            developer:           Homebrew::EnvConfig.developer?,
+            arch:                arch_label(verbose: verbose),
+            os:                  HOMEBREW_SYSTEM,
+            os_name_and_version: OS_VERSION,
           }
+
           unless verbose
             data.delete(:arch) if data[:arch].blank?
-            data.delete(:prefix) if Homebrew.default_prefix?
+            data.delete(:google_prefix) if Homebrew.default_prefix?
+            data[:prefix] = :default if Homebrew.default_prefix?
           end
 
           data
