@@ -530,47 +530,24 @@ class Parser::Lexer
 
   def arg_or_cmdarg(cmd_state); end
   def check_ambiguous_slash(tm); end
-  def check_invalid_escapes(p); end
   def diagnostic(type, reason, arguments = T.unsafe(nil), location = T.unsafe(nil), highlights = T.unsafe(nil)); end
-  def e_heredoc_nl(p); end
   def e_lbrace; end
   def emit(type, value = T.unsafe(nil), s = T.unsafe(nil), e = T.unsafe(nil)); end
-  def emit_character_constant; end
+  def emit_class_var(ts = T.unsafe(nil), te = T.unsafe(nil)); end
   def emit_colon_with_digits(p, tm, diag_msg); end
   def emit_comment(s = T.unsafe(nil), e = T.unsafe(nil)); end
   def emit_comment_from_range(p, pe); end
   def emit_do(do_block = T.unsafe(nil)); end
-  def emit_global_var; end
-  def emit_invalid_escapes?; end
+  def emit_global_var(ts = T.unsafe(nil), te = T.unsafe(nil)); end
+  def emit_instance_var(ts = T.unsafe(nil), te = T.unsafe(nil)); end
   def emit_rbrace_rparen_rbrack; end
   def emit_singleton_class; end
   def emit_table(table, s = T.unsafe(nil), e = T.unsafe(nil)); end
-  def encode_escape(ord); end
-  def encode_escaped_char(p); end
-  def eof_codepoint?(point); end
-  def extend_interp_code(current_literal); end
-  def extend_interp_digit_var; end
-  def extend_interp_var(current_literal); end
-  def extend_string_eol_check_eof(current_literal, pe); end
-  def extend_string_eol_heredoc_intertwined(p); end
-  def extend_string_eol_heredoc_line; end
-  def extend_string_eol_words(current_literal, p); end
-  def extend_string_escaped; end
-  def extend_string_for_token_range(current_literal, string); end
-  def extend_string_slice_end(lookahead); end
-  def literal; end
-  def next_state_for_literal(literal); end
   def numeric_literal_int; end
-  def pop_literal; end
-  def push_literal(*args); end
+  def on_newline(p); end
   def range(s = T.unsafe(nil), e = T.unsafe(nil)); end
-  def read_post_meta_or_ctrl_char(p); end
-  def slash_c_char; end
-  def slash_m_char; end
   def stack_pop; end
   def tok(s = T.unsafe(nil), e = T.unsafe(nil)); end
-  def unescape_char(p); end
-  def unicode_points(p); end
   def version?(*versions); end
 
   class << self
@@ -598,30 +575,14 @@ class Parser::Lexer
     def lex_en_expr_value=(_arg0); end
     def lex_en_expr_variable; end
     def lex_en_expr_variable=(_arg0); end
-    def lex_en_interp_backslash_delimited; end
-    def lex_en_interp_backslash_delimited=(_arg0); end
-    def lex_en_interp_backslash_delimited_words; end
-    def lex_en_interp_backslash_delimited_words=(_arg0); end
-    def lex_en_interp_string; end
-    def lex_en_interp_string=(_arg0); end
-    def lex_en_interp_words; end
-    def lex_en_interp_words=(_arg0); end
+    def lex_en_inside_string; end
+    def lex_en_inside_string=(_arg0); end
     def lex_en_leading_dot; end
     def lex_en_leading_dot=(_arg0); end
     def lex_en_line_begin; end
     def lex_en_line_begin=(_arg0); end
     def lex_en_line_comment; end
     def lex_en_line_comment=(_arg0); end
-    def lex_en_plain_backslash_delimited; end
-    def lex_en_plain_backslash_delimited=(_arg0); end
-    def lex_en_plain_backslash_delimited_words; end
-    def lex_en_plain_backslash_delimited_words=(_arg0); end
-    def lex_en_plain_string; end
-    def lex_en_plain_string=(_arg0); end
-    def lex_en_plain_words; end
-    def lex_en_plain_words=(_arg0); end
-    def lex_en_regexp_modifiers; end
-    def lex_en_regexp_modifiers=(_arg0); end
     def lex_error; end
     def lex_error=(_arg0); end
     def lex_start; end
@@ -658,7 +619,6 @@ class Parser::Lexer::Dedenter
 end
 
 Parser::Lexer::Dedenter::TAB_WIDTH = T.let(T.unsafe(nil), Integer)
-Parser::Lexer::ESCAPES = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::ESCAPE_WHITESPACE = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::KEYWORDS = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::KEYWORDS_BEGIN = T.let(T.unsafe(nil), Hash)
@@ -704,7 +664,6 @@ Parser::Lexer::Literal::DELIMITERS = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::Literal::TYPES = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::PUNCTUATION = T.let(T.unsafe(nil), Hash)
 Parser::Lexer::PUNCTUATION_BEGIN = T.let(T.unsafe(nil), Hash)
-Parser::Lexer::REGEXP_META_CHARACTERS = T.let(T.unsafe(nil), Regexp)
 
 class Parser::Lexer::StackState
   def initialize(name); end
@@ -719,6 +678,116 @@ class Parser::Lexer::StackState
   def to_s; end
 end
 
+class Parser::LexerStrings
+  def initialize(lexer, version); end
+
+  def advance(p); end
+  def close_interp_on_current_literal(p); end
+  def continue_lexing(current_literal); end
+  def dedent_level; end
+  def herebody_s; end
+  def herebody_s=(_arg0); end
+  def literal; end
+  def next_state_for_literal(literal); end
+  def on_newline(p); end
+  def pop_literal; end
+  def push_literal(*args); end
+  def read_character_constant(p); end
+  def reset; end
+  def source_buffer; end
+  def source_buffer=(_arg0); end
+  def source_pts; end
+  def source_pts=(_arg0); end
+
+  protected
+
+  def check_ambiguous_slash(tm); end
+  def check_invalid_escapes(p); end
+  def cond; end
+  def diagnostic(type, reason, arguments = T.unsafe(nil), location = T.unsafe(nil), highlights = T.unsafe(nil)); end
+  def emit(type, value = T.unsafe(nil), s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def emit_character_constant; end
+  def emit_interp_var(interp_var_kind); end
+  def emit_invalid_escapes?; end
+  def encode_escape(ord); end
+  def encode_escaped_char(p); end
+  def eof_codepoint?(point); end
+  def extend_interp_code(current_literal); end
+  def extend_interp_digit_var; end
+  def extend_interp_var(current_literal); end
+  def extend_string_eol_check_eof(current_literal, pe); end
+  def extend_string_eol_heredoc_intertwined(p); end
+  def extend_string_eol_heredoc_line; end
+  def extend_string_eol_words(current_literal, p); end
+  def extend_string_escaped; end
+  def extend_string_for_token_range(current_literal, string); end
+  def extend_string_slice_end(lookahead); end
+  def range(s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def read_post_meta_or_ctrl_char(p); end
+  def slash_c_char; end
+  def slash_m_char; end
+  def tok(s = T.unsafe(nil), e = T.unsafe(nil)); end
+  def unescape_char(p); end
+  def unicode_points(p); end
+  def version?(*versions); end
+
+  class << self
+    def lex_en_character; end
+    def lex_en_character=(_arg0); end
+    def lex_en_interp_backslash_delimited; end
+    def lex_en_interp_backslash_delimited=(_arg0); end
+    def lex_en_interp_backslash_delimited_words; end
+    def lex_en_interp_backslash_delimited_words=(_arg0); end
+    def lex_en_interp_string; end
+    def lex_en_interp_string=(_arg0); end
+    def lex_en_interp_words; end
+    def lex_en_interp_words=(_arg0); end
+    def lex_en_plain_backslash_delimited; end
+    def lex_en_plain_backslash_delimited=(_arg0); end
+    def lex_en_plain_backslash_delimited_words; end
+    def lex_en_plain_backslash_delimited_words=(_arg0); end
+    def lex_en_plain_string; end
+    def lex_en_plain_string=(_arg0); end
+    def lex_en_plain_words; end
+    def lex_en_plain_words=(_arg0); end
+    def lex_en_regexp_modifiers; end
+    def lex_en_regexp_modifiers=(_arg0); end
+    def lex_en_unknown; end
+    def lex_en_unknown=(_arg0); end
+    def lex_error; end
+    def lex_error=(_arg0); end
+    def lex_start; end
+    def lex_start=(_arg0); end
+
+    private
+
+    def _lex_actions; end
+    def _lex_actions=(_arg0); end
+    def _lex_eof_trans; end
+    def _lex_eof_trans=(_arg0); end
+    def _lex_from_state_actions; end
+    def _lex_from_state_actions=(_arg0); end
+    def _lex_index_offsets; end
+    def _lex_index_offsets=(_arg0); end
+    def _lex_indicies; end
+    def _lex_indicies=(_arg0); end
+    def _lex_key_spans; end
+    def _lex_key_spans=(_arg0); end
+    def _lex_to_state_actions; end
+    def _lex_to_state_actions=(_arg0); end
+    def _lex_trans_actions; end
+    def _lex_trans_actions=(_arg0); end
+    def _lex_trans_keys; end
+    def _lex_trans_keys=(_arg0); end
+    def _lex_trans_targs; end
+    def _lex_trans_targs=(_arg0); end
+  end
+end
+
+Parser::LexerStrings::ESCAPES = T.let(T.unsafe(nil), Hash)
+Parser::LexerStrings::ESCAPE_WHITESPACE = T.let(T.unsafe(nil), Hash)
+Parser::LexerStrings::LEX_STATES = T.let(T.unsafe(nil), Hash)
+Parser::LexerStrings::REGEXP_META_CHARACTERS = T.let(T.unsafe(nil), Regexp)
 Parser::MESSAGES = T.let(T.unsafe(nil), Hash)
 
 class Parser::MaxNumparamStack
