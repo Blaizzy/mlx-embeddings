@@ -55,7 +55,7 @@ module Homebrew
        ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
       ohai "Re-running `brew update` for linuxbrew-core migration"
 
-      if HOMEBREW_CORE_DEFAULT_GIT_REMOTE != Homebrew::EnvConfig.core_git_remote
+      if Homebrew::EnvConfig.core_git_remote != HOMEBREW_CORE_DEFAULT_GIT_REMOTE
         opoo <<~EOS
           HOMEBREW_CORE_GIT_REMOTE was set: #{Homebrew::EnvConfig.core_git_remote}.
           It has been unset for the migration.
@@ -65,7 +65,7 @@ module Homebrew
       end
       ENV.delete("HOMEBREW_CORE_GIT_REMOTE")
 
-      if HOMEBREW_BOTTLE_DEFAULT_DOMAIN != Homebrew::EnvConfig.bottle_domain
+      if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
         opoo <<~EOS
           HOMEBREW_BOTTLE_DOMAIN was set: #{Homebrew::EnvConfig.bottle_domain}.
           It has been unset for the migration.
