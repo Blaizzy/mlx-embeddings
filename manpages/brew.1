@@ -2849,6 +2849,15 @@ Linux only: Pass this value to a type name representing the compiler\'s \fB\-mar
 Prefix all download URLs, including those for bottles, with this value\. For example, \fBHOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080\fR will cause a formula with the URL \fBhttps://example\.com/foo\.tar\.gz\fR to instead download from \fBhttp://localhost:8080/https://example\.com/foo\.tar\.gz\fR\. Bottle URLs however, have their domain replaced with this prefix\. This results in e\.g\. \fBhttps://ghcr\.io/v2/homebrew/core/gettext/manifests/0\.21\fR to instead be downloaded from \fBhttp://localhost:8080/v2/homebrew/core/gettext/manifests/0\.21\fR
 .
 .TP
+\fBHOMEBREW_API_AUTO_UPDATE_SECS\fR
+.
+.br
+Check Homebrew\'s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_UPDATE_SECS\fR seconds\. Alternatively, disable API auto\-update checks entirely with HOMEBREW_NO_AUTO_UPDATE\.
+.
+.IP
+\fIDefault:\fR \fB1800\fR\.
+.
+.TP
 \fBHOMEBREW_AUTO_UPDATE_SECS\fR
 .
 .br
