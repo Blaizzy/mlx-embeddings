@@ -78,6 +78,19 @@ module Homebrew
       end.presence
     end
 
+    if Homebrew::EnvConfig.automatically_set_no_install_from_api? &&
+       !Homebrew::EnvConfig.no_env_hints?
+      paths.each do |path|
+        next if !path.fnmatch?("**/homebrew-core/Formula/*.rb") && !path.fnmatch?("**/homebrew-cask/Casks/*.rb")
+
+        opoo <<~EOS
+          Unless `HOMEBREW_NO_INSTALL_FROM_API` is set when running
+          `brew install`, it will ignore your locally edited formula.
+        EOS
+        break
+      end
+    end
+
     if args.print_path?
       paths.each(&method(:puts))
       return
