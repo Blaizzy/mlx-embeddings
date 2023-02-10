@@ -176,9 +176,9 @@ class GitHubPackages
     puts
     ofail "#{Formatter.url(schema_uri)} JSON schema validation failed!"
     oh1 "Errors"
-    pp schema.validate(json).to_a
+    puts schema.validate(json).to_a.inspect
     oh1 "JSON"
-    pp json
+    puts json.inspect
     exit 1
   end
 
