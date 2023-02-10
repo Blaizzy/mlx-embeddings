@@ -85,7 +85,7 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR CODESPACES
+for VAR in BAT_CONFIG_PATH BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR CODESPACES
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR:-}" ]] && continue

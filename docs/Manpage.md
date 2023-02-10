@@ -2009,7 +2009,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_BAT_CONFIG_PATH`
   <br>Use this as the `bat` configuration file.
 
-  *Default:* `$HOME/.config/bat/config`.
+  *Default:* `$BAT_CONFIG_PATH`.
 
 - `HOMEBREW_BAT_THEME`
   <br>Use this as the `bat` theme for syntax highlighting.
