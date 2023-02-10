@@ -488,10 +488,10 @@ module GitHub
 
   def fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
     if version.present?
-      query = "#{name} #{version}"
+      query = "#{name} #{version} is:pr"
       regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i
     else
-      query = name
+      query = "#{name} is:pr"
       regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s|$)/i
     end
     issues_for_formula(query, tap_remote_repo: tap_remote_repo, state: state).select do |pr|
