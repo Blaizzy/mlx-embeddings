@@ -709,13 +709,6 @@ EOS
   wait
   trap - SIGINT
 
-  if [[ -f "${update_failed_file}" ]]
-  then
-    onoe <"${update_failed_file}"
-    rm -f "${update_failed_file}"
-    export HOMEBREW_UPDATE_FAILED="1"
-  fi
-
   if [[ -f "${missing_remote_ref_dirs_file}" ]]
   then
     HOMEBREW_MISSING_REMOTE_REF_DIRS="$(cat "${missing_remote_ref_dirs_file}")"
@@ -785,11 +778,16 @@ EOS
       JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.json")
       for json_url in "${JSON_URLS[@]}"
       do
+        time_cond=()
+        if [[ -s "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" ]]
+        then
+          time_cond=("--time-cond" "${HOMEBREW_CACHE}/api/${formula_or_cask}.json")
+        fi
         curl \
           "${CURL_DISABLE_CURLRC_ARGS[@]}" \
-          --fail --compressed --silent --max-time 30 \
+          --fail --compressed --silent --speed-limit 100 --speed-time 30 \
           --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
-          --time-cond "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+          "${time_cond[@]}" \
           --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
           "${json_url}"
         curl_exit_code=$?
@@ -806,6 +804,13 @@ EOS
         echo "Failed to download ${formula_or_cask}.json!" >>"${update_failed_file}"
       fi
     done
+  fi
+
+  if [[ -f "${update_failed_file}" ]]
+  then
+    onoe <"${update_failed_file}"
+    rm -f "${update_failed_file}"
+    export HOMEBREW_UPDATE_FAILED="1"
   fi
 
   safe_cd "${HOMEBREW_REPOSITORY}"
