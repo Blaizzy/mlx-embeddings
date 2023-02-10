@@ -228,13 +228,7 @@ module Cask
         json_cask = @from_json || Homebrew::API::Cask.all_casks[token]
         cask_source = JSON.pretty_generate(json_cask)
 
-        if (bottle_tag = ::Utils::Bottles.tag.to_s.presence) &&
-           (variations = json_cask["variations"].presence) &&
-           (variation = variations[bottle_tag].presence)
-          json_cask = json_cask.merge(variation)
-        end
-
-        json_cask.deep_symbolize_keys!
+        json_cask = Homebrew::API.merge_variations(json_cask).deep_symbolize_keys
 
         # Use the cask-source API if there are any `*flight` blocks or the cask has multiple languages
         if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) } ||

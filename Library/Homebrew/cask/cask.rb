@@ -231,6 +231,11 @@ module Cask
     alias == eql?
 
     def to_h
+      if loaded_from_api && Homebrew::EnvConfig.install_from_api?
+        json_cask = Homebrew::API::Cask.all_casks[token]
+        return Homebrew::API.merge_variations(json_cask)
+      end
+
       {
         "token"          => token,
         "full_token"     => full_name,
@@ -257,6 +262,8 @@ module Cask
     end
 
     def to_hash_with_variations
+      return Homebrew::API::Cask.all_casks[token] if loaded_from_api && Homebrew::EnvConfig.install_from_api?
+
       hash = to_h
       variations = {}
 

@@ -108,5 +108,16 @@ module Homebrew
 
       cache[endpoint] = output.stdout
     end
+
+    sig { params(json: Hash).returns(Hash) }
+    def merge_variations(json)
+      if (bottle_tag = ::Utils::Bottles.tag.to_s.presence) &&
+         (variations = json["variations"].presence) &&
+         (variation = variations[bottle_tag].presence)
+        json = json.merge(variation)
+      end
+
+      json.except("variations")
+    end
   end
 end
