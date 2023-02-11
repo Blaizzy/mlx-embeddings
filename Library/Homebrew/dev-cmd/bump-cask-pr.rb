@@ -85,7 +85,7 @@ module Homebrew
     new_hash = :no_check if ["no_check", ":no_check"].include? new_hash
 
     if new_version.nil? && new_base_url.nil? && new_hash.nil?
-      raise UsageError, "No `--version=`, `--url=` or `--sha256=` argument specified!"
+      raise UsageError, "No `--version`, `--url` or `--sha256` argument specified!"
     end
 
     old_version = cask.version

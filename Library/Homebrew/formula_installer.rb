@@ -496,7 +496,7 @@ class FormulaInstaller
 
       raise if Homebrew::EnvConfig.developer?
 
-      $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/core)!"
+      $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/homebrew-core)!"
       false
     else
       f.linked_keg.exist? && f.opt_prefix.exist?

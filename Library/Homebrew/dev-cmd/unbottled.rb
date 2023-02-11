@@ -24,7 +24,7 @@ module Homebrew
              description: "Print the number of unbottled and total formulae."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to check them. " \
-                          "Implied if HOMEBREW_EVAL_ALL is set."
+                          "Implied if `HOMEBREW_EVAL_ALL` is set."
 
       conflicts "--dependents", "--total"
 
@@ -64,7 +64,7 @@ module Homebrew
     if args.named.blank?
       ohai "Getting formulae..."
     elsif all
-      raise UsageError, "cannot specify `<formula>` and `--eval-all`/`--total`."
+      raise UsageError, "Cannot specify formulae when using `--eval-all`/`--total`."
     end
 
     formulae, all_formulae, formula_installs =

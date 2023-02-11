@@ -27,7 +27,7 @@ describe "brew --prefix" do
       .and be_a_failure
   end
 
-  it "prints a warning with `--installed` if the given Formula is not installed", :integration_test do
+  it "prints a warning when `--installed` is used and the given Formula is not installed", :integration_test do
     expect { brew "--prefix", "--installed", testball }
       .to not_to_output.to_stdout
       .and output(/testball/).to_stderr

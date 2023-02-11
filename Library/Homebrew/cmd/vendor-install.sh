@@ -149,7 +149,7 @@ fetch() {
       first_try=''
       if [[ -f "${temporary_path}" ]]
       then
-        # HOMEBREW_CURL is set by brew.sh (and isn't mispelt here)
+        # HOMEBREW_CURL is set by brew.sh (and isn't misspelt here)
         # shellcheck disable=SC2153
         "${HOMEBREW_CURL}" "${curl_args[@]}" -C - "${url}" -o "${temporary_path}"
         if [[ $? -eq 33 ]]

@@ -16,7 +16,7 @@ module Homebrew
       EOS
 
       comma_array "--update",
-                  description: "Update all vendored Gems to the latest version."
+                  description: "Update the specified list of vendored gems to the latest version."
       switch      "--no-commit",
                   description: "Do not generate a new commit upon completion."
 

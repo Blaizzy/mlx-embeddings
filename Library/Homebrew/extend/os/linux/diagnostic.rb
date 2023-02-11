@@ -125,7 +125,7 @@ module Homebrew
         return unless CoreTap.instance.linuxbrew_core?
 
         <<~EOS
-          Your Linux Homebrew/core repository is still linuxbrew-core.
+          Your Linux core repository is still linuxbrew-core.
           You must `brew update` to update to homebrew-core.
         EOS
       end

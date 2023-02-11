@@ -119,7 +119,7 @@ describe Homebrew::CLI::Parser do
     subject(:parser) {
       described_class.new do
         flag        "--filename=", description: "Name of the file"
-        comma_array "--files",     description: "Comma separated filenames"
+        comma_array "--files",     description: "Comma-separated filenames"
         flag        "--hidden=",      hidden: true
         comma_array "--hidden-array", hidden: true
       end

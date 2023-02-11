@@ -180,7 +180,7 @@ rescue RuntimeError, SystemCallError => e
 rescue MethodDeprecatedError => e
   onoe e
   if e.issues_url
-    $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):"
+    $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/homebrew-core):"
     $stderr.puts "  #{Formatter.url(e.issues_url)}"
   end
   $stderr.puts e.backtrace if args.debug?

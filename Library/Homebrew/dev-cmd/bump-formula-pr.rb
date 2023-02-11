@@ -160,7 +160,7 @@ module Homebrew
       false
     elsif old_hash.blank?
       if new_tag.blank? && new_version.blank? && new_revision.blank?
-        raise UsageError, "#{formula}: no --tag= or --version= argument specified!"
+        raise UsageError, "#{formula}: no `--tag` or `--version` argument specified!"
       end
 
       if old_tag.present?
@@ -180,7 +180,7 @@ module Homebrew
       end
       false
     elsif new_url.blank? && new_version.blank?
-      raise UsageError, "#{formula}: no --url= or --version= argument specified!"
+      raise UsageError, "#{formula}: no `--url` or `--version` argument specified!"
     else
       new_url ||= PyPI.update_pypi_url(old_url, new_version)
       if new_url.blank?

@@ -14,7 +14,7 @@ module Homebrew
       description <<~EOS
         Install Homebrew's Bundler gems.
       EOS
-      comma_array "--groups=",
+      comma_array "--groups",
                   description: "Installs the specified comma-separated list of gem groups (default: last used)."
 
       named_args :none

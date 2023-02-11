@@ -118,7 +118,7 @@ class Resource
   #
   # @api public
   def stage(target = nil, debug_symbols: false, &block)
-    raise ArgumentError, "target directory or block is required" if !target && block.blank?
+    raise ArgumentError, "Target directory or block is required" if !target && block.blank?
 
     prepare_patches
     fetch_patches(skip_downloaded: true)

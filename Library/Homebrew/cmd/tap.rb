@@ -45,7 +45,7 @@ module Homebrew
              description: "List all pinned taps."
       switch "--eval-all",
              description: "Evaluate all the formulae, casks and aliases in the new tap to check validity. " \
-                          "Implied if HOMEBREW_EVAL_ALL is set."
+                          "Implied if `HOMEBREW_EVAL_ALL` is set."
 
       named_args :tap, max: 2
     end

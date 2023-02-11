@@ -113,7 +113,7 @@ module Homebrew
       end
 
       if files.blank?
-        raise UsageError, "The --only= argument requires a valid file or folder name!" if args.only
+        raise UsageError, "The `--only` argument requires a valid file or folder name!" if args.only
 
         if args.changed?
           opoo "No tests are directly associated with the changed files!"

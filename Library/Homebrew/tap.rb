@@ -814,11 +814,11 @@ class CoreTap < Tap
     remote = Homebrew::EnvConfig.core_git_remote # set by HOMEBREW_CORE_GIT_REMOTE
     requested_remote = clone_target || remote
 
-    # The remote will changed again on `brew update` since remotes for Homebrew/core are mismatched
+    # The remote will changed again on `brew update` since remotes for homebrew/core are mismatched
     raise TapCoreRemoteMismatchError.new(name, remote, requested_remote) if requested_remote != remote
 
     if remote != default_remote
-      $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} for Homebrew/core Git remote."
+      $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} as the Homebrew/homebrew-core Git remote."
     end
 
     super(quiet: quiet, clone_target: remote, force_auto_update: force_auto_update, custom_remote: custom_remote)

@@ -77,7 +77,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def extract_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`extract` [<--version>`=`] [<--force>] <formula> <tap>"
+      usage_banner "`extract` [`--version=`] [`--force`] <formula> <tap>"
       description <<~EOS
         Look through repository history to find the most recent version of <formula> and
         create a copy in <tap>. Specifically, the command will create the new

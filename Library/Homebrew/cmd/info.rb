@@ -61,7 +61,7 @@ module Homebrew
       switch "--eval-all",
              depends_on:  "--json",
              description: "Evaluate all available formulae and casks, whether installed or not, to print their " \
-                          "JSON. Implied if HOMEBREW_EVAL_ALL is set."
+                          "JSON. Implied if `HOMEBREW_EVAL_ALL` is set."
       switch "--all",
              hidden:     true,
              depends_on: "--json"
@@ -93,16 +93,17 @@ module Homebrew
 
     if args.analytics?
       if args.days.present? && VALID_DAYS.exclude?(args.days)
-        raise UsageError, "--days must be one of #{VALID_DAYS.join(", ")}"
+        raise UsageError, "`--days` must be one of #{VALID_DAYS.join(", ")}."
       end
 
       if args.category.present?
         if args.named.present? && VALID_FORMULA_CATEGORIES.exclude?(args.category)
-          raise UsageError, "--category must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae"
+          raise UsageError,
+                "`--category` must be one of #{VALID_FORMULA_CATEGORIES.join(", ")} when querying formulae."
         end
 
         unless VALID_CATEGORIES.include?(args.category)
-          raise UsageError, "--category must be one of #{VALID_CATEGORIES.join(", ")}"
+          raise UsageError, "`--category` must be one of #{VALID_CATEGORIES.join(", ")}."
         end
       end
 
@@ -204,7 +205,7 @@ module Homebrew
 
     json = case json_version(args.json)
     when :v1, :default
-      raise UsageError, "cannot specify --cask with --json=v1!" if args.cask?
+      raise UsageError, "Cannot specify `--cask` when using `--json=v1`!" if args.cask?
 
       formulae = if all
         Formula.all.sort
@@ -227,7 +228,9 @@ module Homebrew
         ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
         core_untapped = !CoreTap.instance.installed?
         cask_untapped = !Tap.fetch("Homebrew/homebrew-cask").installed?
-        raise UsageError, "tap homebrew/core and/or homebrew/cask to use --json=v2" if core_untapped || cask_untapped
+        if core_untapped || cask_untapped
+          raise UsageError, "Tap homebrew/core and/or homebrew/cask to use `--json=v2`."
+        end
       end
 
       formulae, casks = if all
