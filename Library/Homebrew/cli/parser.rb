@@ -441,9 +441,9 @@ module Homebrew
         else
           required_argument_types = [:required_flag, :comma_array]
           @non_global_processed_options.map do |option, type|
-            next " [<#{option}>`=`]" if required_argument_types.include? type
+            next " [`#{option}=`]" if required_argument_types.include? type
 
-            " [<#{option}>]"
+            " [`#{option}`]"
           end.join
         end
 

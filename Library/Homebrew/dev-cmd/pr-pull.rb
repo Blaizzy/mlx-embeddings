@@ -56,10 +56,10 @@ module Homebrew
       flag   "--root-url-using=",
              description: "Use the specified download strategy class for downloading the bottle's URL instead of " \
                           "Homebrew's default."
-      comma_array "--workflows=",
+      comma_array "--workflows",
                   description: "Retrieve artifacts from the specified workflow (default: `tests.yml`). " \
                                "Can be a comma-separated list to include multiple workflows."
-      comma_array "--ignore-missing-artifacts=",
+      comma_array "--ignore-missing-artifacts",
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
       conflicts "--no-autosquash", "--message"

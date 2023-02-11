@@ -21,8 +21,8 @@ module Homebrew
              description: "Build timeout (in minutes, default: 60)."
       flag   "--issue=",
              description: "If specified, post a comment to this issue number if the job fails."
-      comma_array "--macos=",
-                  description: "Version(s) of macOS the bottle should be built for."
+      comma_array "--macos",
+                  description: "macOS version (or comma-separated list of versions) the bottle should be built for."
       flag   "--workflow=",
              description: "Dispatch specified workflow (default: `dispatch-build-bottle.yml`)."
       switch "--upload",
@@ -74,7 +74,7 @@ module Homebrew
       runners << "linux-self-hosted-1"
     end
 
-    raise UsageError, "Must specify --macos or --linux or --linux-self-hosted option" if runners.empty?
+    raise UsageError, "Must specify `--macos`, `--linux` or `--linux-self-hosted` option." if runners.empty?
 
     args.named.to_resolved_formulae.each do |formula|
       # Required inputs

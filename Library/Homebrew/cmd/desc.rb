@@ -29,7 +29,7 @@ module Homebrew
                           "it is interpreted as a regular expression."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to search their " \
-                          "descriptions. Implied if HOMEBREW_EVAL_ALL is set."
+                          "descriptions. Implied if `HOMEBREW_EVAL_ALL` is set."
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",

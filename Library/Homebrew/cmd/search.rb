@@ -45,7 +45,7 @@ module Homebrew
       switch "--eval-all",
              depends_on:  "--desc",
              description: "Evaluate all available formulae and casks, whether installed or not, to search their " \
-                          "descriptions. Implied if HOMEBREW_EVAL_ALL is set."
+                          "descriptions. Implied if `HOMEBREW_EVAL_ALL` is set."
       switch "--pull-request",
              description: "Search for GitHub pull requests containing <text>."
       switch "--open",

@@ -3065,7 +3065,7 @@ class Formula
     # <pre>depends_on "zeromq" => "with-pgm"
     # depends_on "qt" => ["with-qtdbus", "developer"] # Multiple options.</pre>
     #
-    # Optional and enforce that "boost" is built with `--with-c++11`.
+    # Optional and enforce that "boost" is built using `--with-c++11`.
     # <pre>depends_on "boost" => [:optional, "with-c++11"]</pre>
     #
     # If a dependency is only needed in certain cases:

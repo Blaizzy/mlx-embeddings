@@ -43,7 +43,7 @@ module Homebrew
              description: "Only check formulae and casks that are currently installed."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to audit them. " \
-                          "Implied if HOMEBREW_EVAL_ALL is set."
+                          "Implied if `HOMEBREW_EVAL_ALL` is set."
       switch "--all",
              hidden: true
       switch "--new", "--new-formula", "--new-cask",

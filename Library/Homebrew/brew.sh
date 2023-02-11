@@ -1,6 +1,6 @@
 #####
-##### First do the essential, fast things to be able to make e.g. brew --prefix and other commands we want to be
-##### able to `source` in shell configuration quick.
+##### First do the essential, fast things to ensure commands like `brew --prefix` and others that we want
+##### to be able to `source` in shell configurations run quickly.
 #####
 
 # Doesn't need a default case because we don't support other OSs
@@ -202,9 +202,9 @@ check-prefix-is-not-tmpdir() {
   then
     odie <<EOS
 Your HOMEBREW_PREFIX is in the Homebrew temporary directory, which Homebrew
-uses to store downloads and builds. You can resolve this by installing Homebrew to
-either the standard prefix (/usr/local) or to a non-standard prefix that is not
-in the Homebrew temporary directory.
+uses to store downloads and builds. You can resolve this by installing Homebrew
+to either the standard prefix for your platform or to a non-standard prefix that
+is not in the Homebrew temporary directory.
 EOS
   fi
 }
@@ -814,11 +814,13 @@ if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
 then
   if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]]
   then
-    message="$(bold "${HOMEBREW_COMMAND}") is a developer command, so
-Homebrew's developer mode has been automatically turned on.
-To turn developer mode off, run $(bold "brew developer off")
-"
-    opoo "${message}"
+    opoo <<EOS
+$(bold "${HOMEBREW_COMMAND}") is a developer command, so Homebrew's
+developer mode has been automatically turned on.
+To turn developer mode off, run:
+  brew developer off
+
+EOS
   fi
 
   git config --file="${HOMEBREW_GIT_CONFIG_FILE}" --replace-all homebrew.devcmdrun true 2>/dev/null

@@ -30,7 +30,7 @@ module Homebrew
         Unless `HOMEBREW_NO_INSTALL_CLEANUP` is set, `brew cleanup` will then be run for
         the installed formulae or, every 30 days, for all formulae.
 
-        Unless `HOMEBREW_NO_INSTALL_UPGRADE` is set, `brew install <formula>` will upgrade <formula> if it
+        Unless `HOMEBREW_NO_INSTALL_UPGRADE` is set, `brew install` <formula> will upgrade <formula> if it
         is already installed but outdated.
       EOS
       switch "-d", "--debug",
@@ -92,7 +92,7 @@ module Homebrew
         }],
         [:switch, "--debug-symbols", {
           depends_on:  "--build-from-source",
-          description: "Generate debug symbols on build. Source will be retained in a cache directory. ",
+          description: "Generate debug symbols on build. Source will be retained in a cache directory.",
         }],
         [:switch, "--build-bottle", {
           description: "Prepare the formula for eventual bottling during installation, skipping any " \

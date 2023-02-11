@@ -200,7 +200,7 @@ describe Homebrew::Completions do
           "--force"       => "Always do a slower, full update check (even if unnecessary).",
           "--help"        => "Show this message.",
           "--merge"       => "Use `git merge` to apply updates (rather than `git rebase`).",
-          "--quiet"       => "Make some output more quiet",
+          "--quiet"       => "Make some output more quiet.",
           "--verbose"     => "Print the directories checked and `git` operations performed.",
         }
         expect(described_class.command_options("update")).to eq expected_options

@@ -25,7 +25,7 @@ module Homebrew
              description: "Syntax-check all of Homebrew's Ruby files (if no `<tap>` is passed)."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not. " \
-                          "Implied if HOMEBREW_EVAL_ALL is set."
+                          "Implied if `HOMEBREW_EVAL_ALL` is set."
       switch "--no-simulate",
              description: "Don't simulate other system configurations when checking formulae and casks."
 

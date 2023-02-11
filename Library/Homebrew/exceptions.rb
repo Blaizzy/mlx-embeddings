@@ -332,7 +332,7 @@ class TapRemoteMismatchError < RuntimeError
   end
 end
 
-# Raised when the remote of Homebrew/core does not match HOMEBREW_CORE_GIT_REMOTE.
+# Raised when the remote of homebrew/core does not match HOMEBREW_CORE_GIT_REMOTE.
 class TapCoreRemoteMismatchError < TapRemoteMismatchError
   def message
     <<~EOS
@@ -529,18 +529,18 @@ class BuildError < RuntimeError
         puts Formatter.error(Formatter.url(OS::ISSUES_URL), label: "READ THIS")
       elsif (issues_url = formula.tap.issues_url)
         puts <<~EOS
-          If reporting this issue please do so at (not Homebrew/brew or Homebrew/core):
+          If reporting this issue please do so at (not Homebrew/brew or Homebrew/homebrew-core):
             #{Formatter.url(issues_url)}
         EOS
       else
         puts <<~EOS
-          If reporting this issue please do so to (not Homebrew/brew or Homebrew/core):
+          If reporting this issue please do so to (not Homebrew/brew or Homebrew/homebrew-core):
             #{formula.tap}
         EOS
       end
     else
       puts <<~EOS
-        Do not report this issue to Homebrew/brew or Homebrew/core!
+        Do not report this issue to Homebrew/brew or Homebrew/homebrew-core!
       EOS
     end
 

@@ -27,9 +27,9 @@ module Homebrew
       flag   "--package-name=",
              description: "Use the specified <package-name> when finding resources for <formula>. " \
                           "If no package name is specified, it will be inferred from the formula's stable URL."
-      comma_array "--extra-packages=",
+      comma_array "--extra-packages",
                   description: "Include these additional packages when finding resources."
-      comma_array "--exclude-packages=",
+      comma_array "--exclude-packages",
                   description: "Exclude these packages when finding resources."
 
       named_args :formula, min: 1
