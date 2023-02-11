@@ -276,7 +276,7 @@ auto-update() {
       fi
     fi
 
-    # Skip auto-update if the repository has been updated in the
+    # Skip auto-update if the Homebrew/brew repository has been checked in the
     # last $HOMEBREW_AUTO_UPDATE_SECS.
     repo_fetch_head="${HOMEBREW_REPOSITORY}/.git/FETCH_HEAD"
     if [[ -f "${repo_fetch_head}" ]] &&

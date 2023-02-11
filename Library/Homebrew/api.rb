@@ -42,19 +42,31 @@ module Homebrew
       retry_count = 0
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
+
+      # TODO: consider using more of Utils::Curl
       curl_args = %W[
         --compressed
         --speed-limit #{ENV.fetch("HOMEBREW_CURL_SPEED_LIMIT")}
         --speed-time #{ENV.fetch("HOMEBREW_CURL_SPEED_TIME")}
       ]
-      curl_args.prepend("--silent") unless Context.current.debug?
+      curl_args << "--progress-bar" unless Context.current.verbose?
+      curl_args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
+      curl_args << "--silent" unless $stdout.tty?
+
+      skip_download = target.exist? &&
+                      !target.empty? &&
+                      (Homebrew::EnvConfig.no_auto_update? ||
+                      ((Time.now - Homebrew::EnvConfig.api_auto_update_secs.to_i) < target.mtime))
 
       begin
         begin
           args = curl_args.dup
           args.prepend("--time-cond", target) if target.exist? && !target.empty?
-          # Disable retries here, we handle them ourselves below.
-          Utils::Curl.curl_download(*args, url, to: target, retries: 0, show_error: false)
+          unless skip_download
+            ohai "Downloading #{url}" if $stdout.tty?
+            # Disable retries here, we handle them ourselves below.
+            Utils::Curl.curl_download(*args, url, to: target, retries: 0, show_error: false)
+          end
         rescue ErrorDuringExecution
           if url == default_url
             raise unless target.exist?
@@ -64,6 +76,7 @@ module Homebrew
             # This block will be executed only once, because we set `url` to `default_url`
             url = default_url
             target.unlink if target.exist? && target.empty?
+            skip_download = false
 
             retry
           end
@@ -71,10 +84,12 @@ module Homebrew
           opoo "#{target.basename}: update failed, falling back to cached version."
         end
 
+        FileUtils.touch target
         JSON.parse(target.read)
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
+        skip_download = false
         odie "Cannot download non-corrupt #{url}!" if retry_count > Homebrew::EnvConfig.curl_retries.to_i
 
         retry
