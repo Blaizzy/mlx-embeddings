@@ -361,7 +361,7 @@ module Kernel
     end.compact.uniq
   end
 
-  def which_editor
+  def which_editor(silent: false)
     editor = Homebrew::EnvConfig.editor
     return editor if editor
 
@@ -371,11 +371,13 @@ module Kernel
     end
     editor ||= "vim"
 
-    opoo <<~EOS
-      Using #{editor} because no editor was set in the environment.
-      This may change in the future, so we recommend setting EDITOR,
-      or HOMEBREW_EDITOR to your preferred text editor.
-    EOS
+    unless silent
+      opoo <<~EOS
+        Using #{editor} because no editor was set in the environment.
+        This may change in the future, so we recommend setting EDITOR,
+        or HOMEBREW_EDITOR to your preferred text editor.
+      EOS
+    end
 
     editor
   end
