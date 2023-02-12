@@ -51,10 +51,6 @@ module Homebrew
              description: "Print a JSON representation. Currently the default value for <version> is `v1` for " \
                           "<formula>. For <formula> and <cask> use `v2`. See the docs for examples of using the " \
                           "JSON output: <https://docs.brew.sh/Querying-Brew>"
-      switch "--bottle",
-             depends_on:  "--json",
-             description: "Output information about the bottles for <formula> and its dependencies.",
-             hidden:      true
       switch "--installed",
              depends_on:  "--json",
              description: "Print JSON of formulae that are currently installed."
@@ -78,10 +74,6 @@ module Homebrew
       conflicts "--installed", "--eval-all"
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
-
-      %w[--cask --analytics --github].each do |conflict|
-        conflicts "--bottle", conflict
-      end
 
       named_args [:formula, :cask]
     end
@@ -215,24 +207,12 @@ module Homebrew
         args.named.to_formulae
       end
 
-      if args.bottle?
-        formulae.map(&:to_recursive_bottle_hash)
-      elsif args.variations?
+      if args.variations?
         formulae.map(&:to_hash_with_variations)
       else
         formulae.map(&:to_hash)
       end
     when :v2
-      # Cannot generate cask API JSON data from the cask JSON API
-      if EnvConfig.install_from_api?
-        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
-        core_untapped = !CoreTap.instance.installed?
-        cask_untapped = !Tap.fetch("Homebrew/homebrew-cask").installed?
-        if core_untapped || cask_untapped
-          raise UsageError, "Tap homebrew/core and/or homebrew/cask to use `--json=v2`."
-        end
-      end
-
       formulae, casks = if all
         [Formula.all.sort, Cask::Cask.all.sort_by(&:full_name)]
       elsif args.installed?
@@ -241,9 +221,7 @@ module Homebrew
         args.named.to_formulae_to_casks
       end
 
-      if args.bottle?
-        { "formulae" => formulae.map(&:to_recursive_bottle_hash) }
-      elsif args.variations?
+      if args.variations?
         {
           "formulae" => formulae.map(&:to_hash_with_variations),
           "casks"    => casks.map(&:to_hash_with_variations),

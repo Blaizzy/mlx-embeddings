@@ -2074,6 +2074,11 @@ class Formula
 
   # @private
   def to_hash
+    if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
+      json_formula = Homebrew::API::Formula.all_formulae[name]
+      return Homebrew::API.merge_variations(json_formula)
+    end
+
     dependencies = deps
 
     hsh = {
@@ -2185,6 +2190,10 @@ class Formula
 
   # @private
   def to_hash_with_variations
+    if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
+      return Homebrew::API::Formula.all_formulae[name]
+    end
+
     hash = to_hash
     variations = {}
 
@@ -2219,32 +2228,6 @@ class Formula
     Homebrew::SimulateSystem.clear
 
     hash["variations"] = variations
-    hash
-  end
-
-  # @api private
-  # Generate a hash to be used to install a formula from a JSON file
-  def to_recursive_bottle_hash(top_level: true)
-    bottle = bottle_hash
-
-    bottles = bottle["files"].to_h do |tag, file|
-      info = { "url" => file["url"] }
-      info["sha256"] = file["sha256"] if tap.name != "homebrew/core"
-      [tag.to_s, info]
-    end
-
-    hash = {
-      "name"        => name,
-      "pkg_version" => pkg_version,
-      "rebuild"     => bottle["rebuild"],
-      "bottles"     => bottles,
-    }
-
-    return hash unless top_level
-
-    hash["dependencies"] = declared_runtime_dependencies.map do |dep|
-      dep.to_formula.to_recursive_bottle_hash(top_level: false)
-    end
     hash
   end
 
