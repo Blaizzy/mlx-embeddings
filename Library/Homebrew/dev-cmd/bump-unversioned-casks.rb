@@ -101,7 +101,7 @@ module Homebrew
     last_check_time = state["check_time"]&.then { |t| Time.parse(t) }
 
     check_time = Time.now
-    if last_check_time && check_time < (last_check_time + (DateTime.now + 1).to_time)
+    if last_check_time && (check_time - last_check_time) / 3600 < 24
       opoo "Skipping, already checked within the last 24 hours."
       return
     end
