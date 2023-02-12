@@ -4404,6 +4404,8 @@ module Homebrew::EnvConfig
 
   def self.all_proxy(); end
 
+  def self.api_auto_update_secs(); end
+
   def self.api_domain(); end
 
   def self.arch(); end
