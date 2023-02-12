@@ -24,7 +24,7 @@ describe Homebrew::Style do
     it "returns offenses when RuboCop reports offenses" do
       formula = dir/"my-formula.rb"
 
-      formula.write <<~'EOS'
+      formula.write <<~EOS
         class MyFormula < Formula
 
         end
