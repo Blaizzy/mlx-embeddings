@@ -317,9 +317,12 @@ module Cask
 
     def to_h_string_gsubs(string, replace_prefix: true)
       string = string.to_s.gsub(Dir.home, "$HOME")
-      return string unless replace_prefix
 
-      string.gsub(HOMEBREW_PREFIX, "$(brew --prefix)")
+      if replace_prefix
+        string.gsub(HOMEBREW_PREFIX, "$(brew --prefix)")
+      else
+        string.gsub(Caskroom.path, "$(brew --prefix)/Caskroom")
+      end
     end
 
     def to_h_array_gsubs(array)
