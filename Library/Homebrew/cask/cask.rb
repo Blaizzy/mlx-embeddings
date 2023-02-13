@@ -233,7 +233,7 @@ module Cask
     def to_h
       if loaded_from_api && Homebrew::EnvConfig.install_from_api?
         json_cask = Homebrew::API::Cask.all_casks[token]
-        return Homebrew::API.merge_variations(json_cask)
+        return api_to_local_hash(Homebrew::API.merge_variations(json_cask))
       end
 
       {
@@ -262,7 +262,9 @@ module Cask
     end
 
     def to_hash_with_variations
-      return Homebrew::API::Cask.all_casks[token] if loaded_from_api && Homebrew::EnvConfig.install_from_api?
+      if loaded_from_api && Homebrew::EnvConfig.install_from_api?
+        return api_to_local_hash(Homebrew::API::Cask.all_casks[token])
+      end
 
       hash = to_h
       variations = {}
@@ -299,6 +301,13 @@ module Cask
     end
 
     private
+
+    def api_to_local_hash(hash)
+      hash["token"] = token
+      hash["installed"] = versions.last
+      hash["outdated"] = outdated?
+      hash
+    end
 
     def artifacts_list
       artifacts.map do |artifact|

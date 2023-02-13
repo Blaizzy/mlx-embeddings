@@ -2074,11 +2074,6 @@ class Formula
 
   # @private
   def to_hash
-    if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
-      json_formula = Homebrew::API::Formula.all_formulae[name]
-      return Homebrew::API.merge_variations(json_formula)
-    end
-
     dependencies = deps
 
     hsh = {
@@ -2185,16 +2180,32 @@ class Formula
       }
     end
 
+    # TODO: can we implement these in Formulary?
+    if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
+      json_formula = Homebrew::API::Formula.all_formulae[name]
+      json_formula = Homebrew::API.merge_variations(json_formula)
+      hsh["oldname"] = json_formula["oldname"]
+      hsh["requirements"] = json_formula["requirements"]
+    end
+
     hsh
   end
 
   # @private
   def to_hash_with_variations
+    hash = to_hash
+
+    # Take from API, merging in local install status.
     if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
-      return Homebrew::API::Formula.all_formulae[name]
+      json_formula = Homebrew::API::Formula.all_formulae[name].dup
+      json_formula["name"] = hash["name"]
+      json_formula["installed"] = hash["installed"]
+      json_formula["linked_keg"] = hash["linked_keg"]
+      json_formula["pinned"] = hash["pinned"]
+      json_formula["outdated"] = hash["outdated"]
+      return json_formula
     end
 
-    hash = to_hash
     variations = {}
 
     os_versions = [*MacOSVersions::SYMBOLS.keys, :linux]
