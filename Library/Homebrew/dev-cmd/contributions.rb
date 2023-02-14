@@ -44,6 +44,7 @@ module Homebrew
 
     commits = 0
     coauthorships = 0
+    signoffs = 0
 
     all_repos = args.repositories.nil? || args.repositories.include?("all")
     repos = all_repos ? SUPPORTED_REPOS : args.repositories
@@ -61,11 +62,13 @@ module Homebrew
       end
 
       commits += git_log_author_cmd(T.must(repo_path), args)
-      coauthorships += git_log_coauthor_cmd(T.must(repo_path), args)
+      coauthorships += git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", args)
+      signoffs += git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", args)
     end
 
-    sentence = "#{args.named.first} directly authored #{commits} commits " \
-               "and co-authored #{coauthorships} commits " \
+    sentence = "#{args.named.first} directly authored #{commits} commits" \
+               ", co-authored #{coauthorships} commits" \
+               ", and signed-off #{signoffs} commits " \
                "across #{all_repos ? "all Homebrew repos" : repos.to_sentence}"
     sentence += if args.from && args.to
       " between #{args.from} and #{args.to}"
@@ -76,7 +79,7 @@ module Homebrew
     else
       " in all time"
     end
-    sentence += "."
+    sentence += ". Total: #{commits + coauthorships + signoffs}."
 
     puts sentence
   end
@@ -97,10 +100,10 @@ module Homebrew
     Utils.safe_popen_read(*cmd).lines.count
   end
 
-  sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
-  def git_log_coauthor_cmd(repo_path, args)
+  sig { params(repo_path: Pathname, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
+  def git_log_trailers_cmd(repo_path, trailer, args)
     cmd = ["git", "-C", repo_path, "log", "--oneline"]
-    cmd << "--format='%(trailers:key=Co-authored-by:)'"
+    cmd << "--format='%(trailers:key=#{trailer}:)'"
     cmd << "--before=#{args.to}" if args.to
     cmd << "--after=#{args.from}" if args.from
 
