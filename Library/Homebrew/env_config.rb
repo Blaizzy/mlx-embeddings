@@ -490,6 +490,11 @@ module Homebrew
     end
 
     sig { returns(T::Boolean) }
+    def automatically_set_no_install_from_api?
+      ENV["HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API"].present?
+    end
+
+    sig { returns(T::Boolean) }
     def install_from_api?
       return false if OS.unsupported_configuration?
       return false unless Homebrew.default_prefix?

@@ -796,6 +796,7 @@ class CoreTap < Tap
   def self.ensure_installed!
     return if instance.installed?
     return if Homebrew::EnvConfig.install_from_api?
+    return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
 
     # Tests override homebrew-core locations and we don't want to auto-tap in them.
     return if ENV["HOMEBREW_TESTS"]
