@@ -244,6 +244,15 @@ describe Formulary do
             "recommended_dependencies" => ["recommended_dep"],
             "optional_dependencies"    => ["optional_dep"],
             "uses_from_macos"          => ["uses_from_macos_dep"],
+            "requirements"             => [
+              {
+                "name"     => "xcode",
+                "cask"     => nil,
+                "download" => nil,
+                "version"  => "1.0",
+                "contexts" => ["build"],
+              },
+            ],
             "caveats"                  => "example caveat string",
           }.merge(extra_items),
         }
@@ -306,14 +315,23 @@ describe Formulary do
 
         formula = described_class.factory(formula_name)
         expect(formula).to be_a(Formula)
+
         expect(formula.keg_only_reason.reason).to eq :provided_by_macos
         if OS.mac?
           expect(formula.deps.count).to eq 5
-        elsif OS.linux?
+        else
           expect(formula.deps.count).to eq 6
         end
         expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
+
+        expect(formula.requirements.count).to eq 1
+        req = formula.requirements.first
+        expect(req).to be_an_instance_of XcodeRequirement
+        expect(req.version).to eq "1.0"
+        expect(req.tags).to eq [:build]
+
         expect(formula.caveats).to eq "example caveat string"
+
         expect {
           formula.install
         }.to raise_error("Cannot build from source from abstract formula.")
