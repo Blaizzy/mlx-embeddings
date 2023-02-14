@@ -171,12 +171,12 @@ module Homebrew
       end
     end
 
-    # Returns a `Boolean` describing if a service requires root access.
+    # Returns a `Boolean` describing if a service requires the command to execute at load.
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def run_at_load?
       instance_eval(&@service_block)
-      @run_at_load.present? && @run_at_load == true
+      @run_at_load.present? && @run_at_load == false
     end
 
     sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
