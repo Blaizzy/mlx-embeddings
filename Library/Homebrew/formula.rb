@@ -2119,7 +2119,7 @@ class Formula
       "uses_from_macos"          => uses_from_macos_elements.uniq,
       "requirements"             => [],
       "conflicts_with"           => conflicts.map(&:name),
-      "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, "$(brew --prefix)"),
+      "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER),
       "installed"                => [],
       "linked_keg"               => linked_version&.to_s,
       "pinned"                   => pinned?,

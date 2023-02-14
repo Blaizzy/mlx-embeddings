@@ -237,13 +237,9 @@ module Cask
           return FromContentLoader.new(cask_source).load(config: config)
         end
 
-        # convert generic string replacements into actual ones
-        json_cask[:artifacts] = json_cask[:artifacts].map(&method(:from_h_hash_gsubs))
-        json_cask[:caveats] = from_h_string_gsubs(json_cask[:caveats])
-
         tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
-        Cask.new(token, tap: tap, source: cask_source, config: config, loaded_from_api: true) do
+        Cask.new(token, tap: tap, source: cask_source, config: config, loaded_from_api: true, loader: self) do
           version json_cask[:version]
 
           if json_cask[:sha256] == "no_check"
@@ -300,45 +296,53 @@ module Cask
           end
 
           json_cask[:artifacts].each do |artifact|
+            # convert generic string replacements into actual ones
+            artifact = cask.loader.from_h_hash_gsubs(artifact, appdir)
             key = artifact.keys.first
             send(key, *artifact[key])
           end
 
-          caveats json_cask[:caveats] if json_cask[:caveats].present?
+          if json_cask[:caveats].present?
+            # convert generic string replacements into actual ones
+            json_cask[:caveats] = cask.loader.from_h_string_gsubs(json_cask[:caveats], appdir)
+            caveats json_cask[:caveats]
+          end
         end
       end
 
-      private
-
-      def from_h_string_gsubs(string)
+      def from_h_string_gsubs(string, appdir)
+        # TODO: HOMEBREW_OLD_PREFIX_PLACEHOLDER can be removed when API JSON is
+        #       regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
         string.to_s
-              .gsub("$HOME", Dir.home)
-              .gsub("$(brew --prefix)", HOMEBREW_PREFIX)
+              .gsub(Cask::HOME_PLACEHOLDER, Dir.home)
+              .gsub(Cask::HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+              .gsub(Cask::APPDIR_PLACEHOLDER, appdir)
+              .gsub(Cask::HOMEBREW_OLD_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
       end
 
-      def from_h_array_gsubs(array)
+      def from_h_array_gsubs(array, appdir)
         array.to_a.map do |value|
-          from_h_gsubs(value)
+          from_h_gsubs(value, appdir)
         end
       end
 
-      def from_h_hash_gsubs(hash)
+      def from_h_hash_gsubs(hash, appdir)
         hash.to_h.transform_values do |value|
-          from_h_gsubs(value)
+          from_h_gsubs(value, appdir)
         end
       rescue TypeError
-        from_h_array_gsubs(hash)
+        from_h_array_gsubs(hash, appdir)
       end
 
-      def from_h_gsubs(value)
+      def from_h_gsubs(value, appdir)
         return value if value.blank?
 
         if value.respond_to? :to_h
-          from_h_hash_gsubs(value)
+          from_h_hash_gsubs(value, appdir)
         elsif value.respond_to? :to_a
-          from_h_array_gsubs(value)
+          from_h_array_gsubs(value, appdir)
         elsif value.is_a? String
-          from_h_string_gsubs(value)
+          from_h_string_gsubs(value, appdir)
         else
           value
         end
