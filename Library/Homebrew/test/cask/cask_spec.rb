@@ -300,5 +300,18 @@ describe Cask::Cask, :cask do
       expect(h).to be_a(Hash)
       expect(JSON.pretty_generate(h["variations"])).to eq expected_sha256_variations.strip
     end
+
+    it "returns the correct hash placeholders" do
+      described_class.generating_hash!
+      expect(described_class).to be_generating_hash
+      c = Cask::CaskLoader.load("placeholders")
+      h = c.to_hash_with_variations
+      described_class.generated_hash!
+      expect(described_class).not_to be_generating_hash
+
+      expect(h).to be_a(Hash)
+      expect(h["artifacts"].first[:binary].first).to eq "$APPDIR/some/path"
+      expect(h["caveats"]).to eq "$HOMEBREW_PREFIX and $HOME\n"
+    end
   end
 end

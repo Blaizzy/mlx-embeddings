@@ -117,7 +117,7 @@ describe Cask::Cmd::List, :cask do
               {
                 "zap": [
                   {
-                    "trash": "$HOME/support/fixtures/cask/caffeine/org.example.caffeine.plist"
+                    "trash": "#{TEST_FIXTURE_DIR}/cask/caffeine/org.example.caffeine.plist"
                   }
                 ]
               }

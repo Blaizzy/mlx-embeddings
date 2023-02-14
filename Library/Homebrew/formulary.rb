@@ -251,6 +251,7 @@ module Formulary
       @caveats_string = json_formula["caveats"]
       def caveats
         self.class.instance_variable_get(:@caveats_string)
+            &.gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
       end
 
       @tap_git_head_string = json_formula["tap_git_head"]
