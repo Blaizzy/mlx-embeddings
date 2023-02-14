@@ -19,7 +19,8 @@ module Cask
     extend Searchable
     include Metadata
 
-    HOME_PLACEHOLDER = "$HOME"
+    # Needs a leading slash to avoid `File.expand.path` complaining about non-absolute home.
+    HOME_PLACEHOLDER = "/$HOME"
     HOMEBREW_PREFIX_PLACEHOLDER = "$HOMEBREW_PREFIX"
     APPDIR_PLACEHOLDER = "$APPDIR"
 
