@@ -79,7 +79,7 @@ module Homebrew
     else
       " in all time"
     end
-    sentence += "."
+    sentence += ". Total: #{commits + coauthorships + signoffs}."
 
     puts sentence
   end
