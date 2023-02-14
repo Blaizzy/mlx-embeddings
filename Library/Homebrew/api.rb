@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "api/analytics"
@@ -15,12 +15,10 @@ module Homebrew
 
     extend Cachable
 
-    module_function
-
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze
 
     sig { params(endpoint: String).returns(Hash) }
-    def fetch(endpoint)
+    def self.fetch(endpoint)
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
 
       api_url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
@@ -37,8 +35,8 @@ module Homebrew
       raise ArgumentError, "Invalid JSON file: #{Tty.underline}#{api_url}#{Tty.reset}"
     end
 
-    sig { params(endpoint: String, target: Pathname).returns(Hash) }
-    def fetch_json_api_file(endpoint, target:)
+    sig { params(endpoint: String, target: Pathname).returns(T.any(Array, Hash)) }
+    def self.fetch_json_api_file(endpoint, target:)
       retry_count = 0
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
@@ -61,7 +59,7 @@ module Homebrew
       begin
         begin
           args = curl_args.dup
-          args.prepend("--time-cond", target) if target.exist? && !target.empty?
+          args.prepend("--time-cond", target.to_s) if target.exist? && !target.empty?
           unless skip_download
             ohai "Downloading #{url}" if $stdout.tty?
             # Disable retries here, we handle them ourselves below.
@@ -97,7 +95,7 @@ module Homebrew
     end
 
     sig { params(filepath: String, repo: String, git_head: T.nilable(String)).returns(String) }
-    def fetch_file_source(filepath, repo:, git_head: nil)
+    def self.fetch_file_source(filepath, repo:, git_head: nil)
       git_head ||= "master"
       endpoint = "#{git_head}/#{filepath}"
       return cache[endpoint] if cache.present? && cache.key?(endpoint)
@@ -110,7 +108,7 @@ module Homebrew
     end
 
     sig { params(json: Hash).returns(Hash) }
-    def merge_variations(json)
+    def self.merge_variations(json)
       if (bottle_tag = ::Utils::Bottles.tag.to_s.presence) &&
          (variations = json["variations"].presence) &&
          (variation = variations[bottle_tag].presence)
