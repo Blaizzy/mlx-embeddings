@@ -782,32 +782,36 @@ if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]] ||
 then
   export HOMEBREW_DEVELOPER_COMMAND="1"
 
-  NO_INSTALL_FROM_API_COMMANDS=(
-    audit
-    bottle
-    bump-cask-pr
-    bump-formula-pr
-    bump-revision
-    bump-unversioned-casks
-    bump
-    cat
-    create
-    edit
-    extract
-    formula
-    livecheck
-    pr-pull
-    pr-upload
-    test
-    update-python-resources
-  )
-
-  if check-array-membership "${HOMEBREW_COMMAND}" "${NO_INSTALL_FROM_API_COMMANDS[@]}"
+  if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
-    export HOMEBREW_NO_INSTALL_FROM_API=1
-  fi
+    NO_INSTALL_FROM_API_COMMANDS=(
+      audit
+      bottle
+      bump-cask-pr
+      bump-formula-pr
+      bump-revision
+      bump-unversioned-casks
+      bump
+      cat
+      create
+      edit
+      extract
+      formula
+      livecheck
+      pr-pull
+      pr-upload
+      test
+      update-python-resources
+    )
 
-  unset NO_INSTALL_FROM_API_COMMANDS
+    if check-array-membership "${HOMEBREW_COMMAND}" "${NO_INSTALL_FROM_API_COMMANDS[@]}"
+    then
+      export HOMEBREW_NO_INSTALL_FROM_API=1
+      export HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API=1
+    fi
+
+    unset NO_INSTALL_FROM_API_COMMANDS
+  fi
 fi
 
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
