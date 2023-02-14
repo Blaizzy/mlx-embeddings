@@ -6770,14 +6770,9 @@ end
 
 module RuboCop::AST::NodePattern::Sets
   SET_ARM_INTEL = ::T.let(nil, ::T.untyped)
-  SET_ASSERT_EQUAL_REFUTE_EQUAL = ::T.let(nil, ::T.untyped)
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
-  SET_CLONE_DUP_FREEZE = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
-  SET_ENV = ::T.let(nil, ::T.untyped)
-  SET_FILE_DIR = ::T.let(nil, ::T.untyped)
-  SET_GETHOSTBYADDR_GETHOSTBYNAME = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
