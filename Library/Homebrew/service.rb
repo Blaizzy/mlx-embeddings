@@ -391,7 +391,7 @@ module Homebrew
       base = {
         Label:            @formula.plist_name,
         ProgramArguments: command,
-        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE || @run_at_load == true,
+        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE || (@run_at_load == true && @run_type == RUN_TYPE_INTERVAL),
       }
 
       base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
@@ -494,6 +494,7 @@ module Homebrew
       instance_eval(&@service_block)
       options = []
       options << "Persistent=true" if @run_type == RUN_TYPE_CRON
+      options << "OnActiveSec=0s" if @run_at_load == true && @run_type == RUN_TYPE_INTERVAL
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
 
       if @run_type == RUN_TYPE_CRON
