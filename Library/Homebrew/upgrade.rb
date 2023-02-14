@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "reinstall"
@@ -209,7 +209,7 @@ module Homebrew
     ensure
       # restore previous installation state if build failed
       begin
-        linked_kegs.each(&:link) if linked_kegs.present? && !f.latest_version_installed?
+        linked_kegs&.each(&:link) unless formula.latest_version_installed?
       rescue
         nil
       end
