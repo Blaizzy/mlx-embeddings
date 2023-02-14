@@ -32,7 +32,7 @@ module Cask
           "/usr/bin/xargs",
           args:  ["-0", "--", "/bin/rm", "--"],
           input: pkgutil_bom_files.join("\0"),
-          sudo:  true,
+          sudo:  "root",
         )
       end
 
@@ -42,7 +42,7 @@ module Cask
           "/usr/bin/xargs",
           args:  ["-0", "--", "/bin/rm", "--"],
           input: pkgutil_bom_specials.join("\0"),
-          sudo:  true,
+          sudo:  "root",
         )
       end
 
@@ -59,7 +59,7 @@ module Cask
     sig { void }
     def forget
       odebug "Unregistering pkg receipt (aka forgetting)"
-      @command.run!("/usr/sbin/pkgutil", args: ["--forget", package_id], sudo: true)
+      @command.run!("/usr/sbin/pkgutil", args: ["--forget", package_id], sudo: "root")
     end
 
     sig { returns(T::Array[Pathname]) }
@@ -114,7 +114,7 @@ module Cask
         "/usr/bin/xargs",
         args:  ["-0", "--", RMDIR_SH.to_s],
         input: Array(path).join("\0"),
-        sudo:  true,
+        sudo:  "root",
       )
     end
 

@@ -64,7 +64,7 @@ class SystemCommand
     params(
       executable:   T.any(String, Pathname),
       args:         T::Array[T.any(String, Integer, Float, URI::Generic)],
-      sudo:         T::Boolean,
+      sudo:         T.any(T::Boolean, String),
       env:          T::Hash[String, String],
       input:        T.any(String, T::Array[String]),
       must_succeed: T::Boolean,
@@ -122,7 +122,12 @@ class SystemCommand
 
   attr_reader :executable, :args, :input, :chdir, :env
 
-  attr_predicate :sudo?, :print_stdout?, :print_stderr?, :must_succeed?
+  attr_predicate :print_stdout?, :print_stderr?, :must_succeed?
+
+  sig { returns(T::Boolean) }
+  def sudo?
+    @sudo != false && @sudo != ""
+  end
 
   sig { returns(T::Boolean) }
   def debug?
@@ -153,8 +158,9 @@ class SystemCommand
 
   sig { returns(T::Array[String]) }
   def sudo_prefix
+    user_flags = @sudo.is_a?(String) ? ["-u", @sudo] : []
     askpass_flags = ENV.key?("SUDO_ASKPASS") ? ["-A"] : []
-    ["/usr/bin/sudo", *askpass_flags, "-E", *env_args, "--"]
+    ["/usr/bin/sudo", *user_flags, *askpass_flags, "-E", *env_args, "--"]
   end
 
   sig { returns(T::Array[String]) }
