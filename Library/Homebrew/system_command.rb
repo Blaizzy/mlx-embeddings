@@ -164,13 +164,13 @@ class SystemCommand
   end
 
   sig { returns(T::Array[String]) }
-  def env_previx
+  def env_prefix
     ["/usr/bin/env", *env_args]
   end
 
   sig { returns(T::Array[String]) }
   def command_prefix
-    sudo? ? sudo_prefix : env_previx
+    sudo? ? sudo_prefix : env_prefix
   end
 
   sig { returns(T::Array[String]) }
