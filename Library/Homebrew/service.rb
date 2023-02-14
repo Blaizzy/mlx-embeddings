@@ -162,21 +162,13 @@ module Homebrew
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def run_at_load(value = nil)
       case T.unsafe(value)
-      when nil
+      when nil, false
         @run_at_load
-      when true, false
-        @run_at_load = value
+      when true
+        @run_at_load = @run_type == RUN_TYPE_INTERVAL
       else
         raise TypeError, "Service#run_at_load expects a Boolean"
       end
-    end
-
-    # Returns a `Boolean` describing if a service requires the command to execute at load.
-    # @return [Boolean]
-    sig { returns(T::Boolean) }
-    def run_at_load?
-      instance_eval(&@service_block)
-      @run_at_load.present? && @run_at_load == false
     end
 
     sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
@@ -391,7 +383,7 @@ module Homebrew
       base = {
         Label:            @formula.plist_name,
         ProgramArguments: command,
-        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE || (@run_at_load == true && @run_type == RUN_TYPE_INTERVAL),
+        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE || @run_at_load == true,
       }
 
       base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
@@ -494,7 +486,7 @@ module Homebrew
       instance_eval(&@service_block)
       options = []
       options << "Persistent=true" if @run_type == RUN_TYPE_CRON
-      options << "OnActiveSec=0s" if @run_at_load == true && @run_type == RUN_TYPE_INTERVAL
+      options << "OnActiveSec=0s" if @run_at_load == true
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
 
       if @run_type == RUN_TYPE_CRON
