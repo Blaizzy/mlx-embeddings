@@ -36,12 +36,6 @@ module Cask
         directives.keys.map(&:to_s).join(", ")
       end
 
-      def to_h
-        require "method_source"
-
-        directives.transform_values(&:source)
-      end
-
       private
 
       def class_for_dsl_key(dsl_key)

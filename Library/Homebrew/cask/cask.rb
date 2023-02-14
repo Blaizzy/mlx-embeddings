@@ -313,7 +313,8 @@ module Cask
       artifacts.map do |artifact|
         case artifact
         when Artifact::AbstractFlightBlock
-          artifact.to_h
+          # Only indicate whether this block is used as we don't load it from the API
+          { artifact.summarize => nil }
         when Artifact::Relocated
           # Don't replace the Homebrew prefix in the source path since the source could include /usr/local
           source, *args = artifact.to_args
