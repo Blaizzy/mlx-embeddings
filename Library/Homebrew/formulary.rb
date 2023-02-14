@@ -19,6 +19,9 @@ module Formulary
 
   URL_START_REGEX = %r{(https?|ftp|file)://}.freeze
 
+  # :codesign and custom requirement classes are not supported
+  API_SUPPORTED_REQUIREMENTS = [:arch, :linux, :macos, :maximum_macos, :xcode].freeze
+
   sig { void }
   def self.enable_factory_cache!
     @factory_cache = true
@@ -212,6 +215,35 @@ module Formulary
         uses_from_macos dep
       end
 
+      json_formula["requirements"].each do |req|
+        req_name = req["name"].to_sym
+        next if API_SUPPORTED_REQUIREMENTS.exclude?(req_name)
+
+        req_version = case req_name
+        when :arch
+          req["version"]&.to_sym
+        when :macos, :maximum_macos
+          MacOSVersions::SYMBOLS.key(req["version"])
+        else
+          req["version"]
+        end
+
+        req_tags = []
+        req_tags << req_version if req_version.present?
+        req_tags += req["contexts"].map do |tag|
+          case tag
+          when String
+            tag.to_sym
+          when Hash
+            tag.deep_transform_keys(&:to_sym)
+          else
+            tag
+          end
+        end
+
+        depends_on req_name => req_tags
+      end
+
       def install
         raise "Cannot build from source from abstract formula."
       end
@@ -224,6 +256,21 @@ module Formulary
       @tap_git_head_string = json_formula["tap_git_head"]
       def tap_git_head
         self.class.instance_variable_get(:@tap_git_head_string)
+      end
+
+      @oldname_string = json_formula["oldname"]
+      def oldname
+        self.class.instance_variable_get(:@oldname_string)
+      end
+
+      @aliases_array = json_formula["aliases"]
+      def aliases
+        self.class.instance_variable_get(:@aliases_array)
+      end
+
+      @versioned_formulae_array = json_formula["versioned_formulae"]
+      def versioned_formulae_names
+        self.class.instance_variable_get(:@versioned_formulae_array)
       end
     end
 

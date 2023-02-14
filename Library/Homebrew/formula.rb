@@ -2180,14 +2180,6 @@ class Formula
       }
     end
 
-    # TODO: can we implement these in Formulary?
-    if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
-      json_formula = Homebrew::API::Formula.all_formulae[name]
-      json_formula = Homebrew::API.merge_variations(json_formula)
-      hsh["oldname"] = json_formula["oldname"]
-      hsh["requirements"] = json_formula["requirements"]
-    end
-
     hsh
   end
 

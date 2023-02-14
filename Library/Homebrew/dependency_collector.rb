@@ -154,6 +154,8 @@ class DependencyCollector
   end
 
   def parse_symbol_spec(spec, tags)
+    # When modifying this list of supported requirements, consider
+    # whether Formulary::API_SUPPORTED_REQUIREMENTS should also be changed.
     case spec
     when :arch          then ArchRequirement.new(tags)
     when :codesign      then CodesignRequirement.new(tags)
