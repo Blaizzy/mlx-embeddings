@@ -162,10 +162,10 @@ module Homebrew
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def run_at_load(value = nil)
       case T.unsafe(value)
-      when nil, false
+      when nil
         @run_at_load
-      when true
-        @run_at_load = @run_type == RUN_TYPE_INTERVAL
+      when true, false
+        @run_at_load = value
       else
         raise TypeError, "Service#run_at_load expects a Boolean"
       end
