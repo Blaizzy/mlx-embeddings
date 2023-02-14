@@ -194,14 +194,14 @@ module Formulary
       end
 
       json_formula["dependencies"].each do |dep|
-        next if uses_from_macos_names.include? dep
+        next if uses_from_macos_names.include?(dep) && !Homebrew::SimulateSystem.simulating_or_running_on_macos?
 
         depends_on dep
       end
 
       [:build, :test, :recommended, :optional].each do |type|
         json_formula["#{type}_dependencies"].each do |dep|
-          next if uses_from_macos_names.include? dep
+          next if uses_from_macos_names.include?(dep) && !Homebrew::SimulateSystem.simulating_or_running_on_macos?
 
           depends_on dep => type
         end
