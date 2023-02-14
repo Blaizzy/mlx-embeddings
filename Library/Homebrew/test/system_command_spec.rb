@@ -54,8 +54,8 @@ describe SystemCommand do
           expect(Open3)
             .to receive(:popen3)
             .with(
-              an_instance_of(Hash), ["/usr/bin/sudo", "/usr/bin/sudo"], "-E", "--",
-              "/usr/bin/env", "A=1", "B=2", "C=3", "env", *env_args, pgroup: nil
+              an_instance_of(Hash), ["/usr/bin/sudo", "/usr/bin/sudo"], "-E",
+              "A=1", "B=2", "C=3", "--", "env", *env_args, pgroup: nil
             )
             .and_wrap_original do |original_popen3, *_, &block|
               original_popen3.call("true", &block)

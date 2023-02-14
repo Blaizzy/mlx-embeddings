@@ -121,7 +121,7 @@ class SystemCommand
 
   sig { returns(T::Array[String]) }
   def command
-    [*sudo_prefix, *env_args, executable.to_s, *expanded_args]
+    [*command_prefix, executable.to_s, *expanded_args]
   end
 
   private
@@ -154,15 +154,23 @@ class SystemCommand
 
     return [] if set_variables.empty?
 
-    ["/usr/bin/env", *set_variables]
+    set_variables
   end
 
   sig { returns(T::Array[String]) }
   def sudo_prefix
-    return [] unless sudo?
-
     askpass_flags = ENV.key?("SUDO_ASKPASS") ? ["-A"] : []
-    ["/usr/bin/sudo", *askpass_flags, "-E", "--"]
+    ["/usr/bin/sudo", *askpass_flags, "-E", *env_args, "--"]
+  end
+
+  sig { returns(T::Array[String]) }
+  def env_prefix
+    ["/usr/bin/env", *env_args]
+  end
+
+  sig { returns(T::Array[String]) }
+  def command_prefix
+    sudo? ? sudo_prefix : env_prefix
   end
 
   sig { returns(T::Array[String]) }
