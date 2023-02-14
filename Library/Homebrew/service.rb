@@ -159,6 +159,26 @@ module Homebrew
       @require_root.present? && @require_root == true
     end
 
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def run_at_load(value = nil)
+      case T.unsafe(value)
+      when nil
+        @run_at_load
+      when true, false
+        @run_at_load = value
+      else
+        raise TypeError, "Service#run_at_load expects a Boolean"
+      end
+    end
+
+    # Returns a `Boolean` describing if a service requires root access.
+    # @return [Boolean]
+    sig { returns(T::Boolean) }
+    def run_at_load?
+      instance_eval(&@service_block)
+      @run_at_load.present? && @run_at_load == true
+    end
+
     sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
     def sockets(value = nil)
       case T.unsafe(value)
@@ -371,7 +391,7 @@ module Homebrew
       base = {
         Label:            @formula.plist_name,
         ProgramArguments: command,
-        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE,
+        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE || @run_at_load == true,
       }
 
       base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
