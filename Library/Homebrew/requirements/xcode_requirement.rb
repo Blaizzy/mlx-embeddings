@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "requirement"
@@ -13,7 +13,10 @@ class XcodeRequirement < Requirement
 
   attr_reader :version
 
-  satisfy(build_env: false) { xcode_installed_version }
+  satisfy(build_env: false) do
+    T.bind(self, XcodeRequirement)
+    xcode_installed_version
+  end
 
   def initialize(tags = [])
     @version = tags.shift if tags.first.to_s.match?(/(\d\.)+\d/)

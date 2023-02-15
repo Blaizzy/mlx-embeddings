@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "requirement"
@@ -55,6 +55,7 @@ class MacOSRequirement < Requirement
   end
 
   satisfy(build_env: false) do
+    T.bind(self, MacOSRequirement)
     next Array(@version).any? { |v| MacOS.version.public_send(@comparator, v) } if version_specified?
     next true if OS.mac?
     next true if @version
@@ -115,10 +116,10 @@ class MacOSRequirement < Requirement
     end
   end
 
-  def to_json(*args)
+  def to_json(options)
     comp = @comparator.to_s
-    return { comp => @version.map(&:to_s) }.to_json(*args) if @version.is_a?(Array)
+    return { comp => @version.map(&:to_s) }.to_json(options) if @version.is_a?(Array)
 
-    { comp => [@version.to_s] }.to_json(*args)
+    { comp => [@version.to_s] }.to_json(options)
   end
 end
