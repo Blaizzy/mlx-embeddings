@@ -85,7 +85,17 @@ HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
-for VAR in BAT_CONFIG_PATH BAT_THEME BROWSER DISPLAY EDITOR NO_COLOR TMUX DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR CODESPACES
+
+# These variables are allowed to be set by the user as, e.g., `HOMEBREW_BROWSER`.
+MANPAGE_VARS=(
+  BAT_CONFIG_PATH
+  BAT_THEME
+  BROWSER
+  DISPLAY
+  EDITOR
+  NO_COLOR
+)
+for VAR in "${MANPAGE_VARS[@]}"
 do
   # Skip if variable value is empty.
   [[ -z "${!VAR:-}" ]] && continue
@@ -95,7 +105,26 @@ do
   [[ -n "${!VAR_NEW:-}" ]] && continue
   export "${VAR_NEW}"="${!VAR}"
 done
-unset VAR VAR_NEW
+
+# We don't want to take the user's value for, e.g., `HOMEBREW_PATH` here!
+USED_BY_HOMEBREW_VARS=(
+  CODESPACES
+  DBUS_SESSION_BUS_ADDRESS
+  PATH
+  TMUX
+  XDG_RUNTIME_DIR
+)
+for VAR in "${USED_BY_HOMEBREW_VARS[@]}"
+do
+  # Skip if variable value is empty.
+  [[ -z "${!VAR:-}" ]] && continue
+
+  # We unconditionally override `HOMEBREW_*` here.
+  VAR_NEW="HOMEBREW_${VAR}"
+  export "${VAR_NEW}"="${!VAR}"
+done
+
+unset VAR VAR_NEW MANPAGE_VARS USED_BY_HOMEBREW_VARS
 
 export HOMEBREW_BREW_FILE
 export HOMEBREW_PREFIX
@@ -118,11 +147,6 @@ if [[ -z "${CI:-}" ]] && [[ -n "${TF_BUILD:-}" || -n "${JENKINS_HOME:-}" ]]
 then
   export CI="1"
 fi
-
-# save the existing user path as HOMEBREW_PATH so it can be queried by
-# e.g. brew doctor later.
-HOMEBREW_PATH="${PATH}"
-export HOMEBREW_PATH
 
 # filter the user environment
 PATH="/usr/bin:/bin:/usr/sbin:/sbin"
