@@ -107,6 +107,7 @@ module Homebrew
           counts.values.sum
         ]
       end
+      csv << [user, "*", "*", "*", "*", total(results)]
     end
   end
 
