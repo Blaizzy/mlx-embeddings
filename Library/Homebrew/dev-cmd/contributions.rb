@@ -104,7 +104,7 @@ module Homebrew
           counts[:commits],
           counts[:coauthorships],
           counts[:signoffs],
-          counts.values.sum
+          counts.values.sum,
         ]
       end
       csv << [user, "*", "*", "*", "*", total(results)]
