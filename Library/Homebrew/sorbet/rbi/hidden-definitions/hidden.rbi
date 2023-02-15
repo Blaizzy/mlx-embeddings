@@ -4404,8 +4404,6 @@ module Homebrew::EnvConfig
 
   def self.all_proxy(); end
 
-  def self.api_auto_update_secs(); end
-
   def self.api_domain(); end
 
   def self.arch(); end
@@ -5494,6 +5492,7 @@ class Object
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PREFIX_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_PROCESSOR = ::T.let(nil, ::T.untyped)
   HOMEBREW_PRODUCT = ::T.let(nil, ::T.untyped)
   HOMEBREW_PULL_API_REGEX = ::T.let(nil, ::T.untyped)
