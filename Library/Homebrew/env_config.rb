@@ -41,7 +41,7 @@ module Homebrew
         description: "Check Homebrew's API for new formulae or cask data every " \
                      "`HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update " \
                      "checks entirely with HOMEBREW_NO_AUTO_UPDATE.",
-        default:     1800,
+        default:     450,
       },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
         description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \

@@ -10,7 +10,7 @@ brew(1) -- The Missing Package Manager for macOS (or Linux)
 
 Homebrew is the easiest and most flexible way to install the UNIX tools Apple
 didn't include with macOS. It can also install software not packaged for your
-Linux distribution without requiring `sudo`.
+Linux distribution to your home directory without requiring `sudo`.
 
 ## TERMINOLOGY
 
@@ -1998,7 +1998,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_API_AUTO_UPDATE_SECS`
   <br>Check Homebrew's API for new formulae or cask data every `HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update checks entirely with HOMEBREW_NO_AUTO_UPDATE.
 
-  *Default:* `1800`.
+  *Default:* `450`.
 
 - `HOMEBREW_AUTO_UPDATE_SECS`
   <br>Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, disable auto-update entirely with `HOMEBREW_NO_AUTO_UPDATE`.
