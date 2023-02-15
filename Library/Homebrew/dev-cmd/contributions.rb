@@ -96,9 +96,16 @@ module Homebrew
   sig { params(user: String, results: Hash).returns(String) }
   def generate_csv(user, results)
     CSV.generate do |csv|
-      csv << %w[user repo commits coauthorships signoffs]
+      csv << %w[user repo commits coauthorships signoffs total]
       results.each do |repo, counts|
-        csv << [user, repo, counts[:commits], counts[:coauthorships], counts[:signoffs]]
+        csv << [
+          user,
+          repo,
+          counts[:commits],
+          counts[:coauthorships],
+          counts[:signoffs],
+          counts.values.sum
+        ]
       end
     end
   end
