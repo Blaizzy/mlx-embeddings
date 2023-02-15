@@ -2864,7 +2864,7 @@ Check Homebrew\'s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_U
 Run \fBbrew update\fR once every \fBHOMEBREW_AUTO_UPDATE_SECS\fR seconds before some commands, e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\. Alternatively, disable auto\-update entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fR\.
 .
 .IP
-\fIDefault:\fR 86400 (24 hours) or 300 (5 minutes) if \fBHOMEBREW_NO_INSTALL_FROM_API\fR is set\.
+\fIDefault:\fR 86400 (24 hours), 3600 (1 hour) if a developer command has been run or 300 (5 minutes) if \fBHOMEBREW_NO_INSTALL_FROM_API\fR is set\.
 .
 .TP
 \fBHOMEBREW_AUTOREMOVE\fR
