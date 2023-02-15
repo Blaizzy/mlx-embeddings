@@ -144,8 +144,7 @@ module Utils
 
       def report_build_error(exception)
         return unless exception.formula.tap
-        return unless exception.formula.tap.installed?
-        return if exception.formula.tap.private?
+        return unless exception.formula.tap.should_report_analytics?
 
         action = exception.formula.full_name
         if (options = exception.options.to_a.map(&:to_s).join(" ").presence)

@@ -670,6 +670,13 @@ class Tap
     @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS
   end
 
+  # @private
+  def should_report_analytics?
+    return Homebrew::EnvConfig.install_from_api? && official? unless installed?
+
+    !private?
+  end
+
   def ==(other)
     other = Tap.fetch(other) if other.is_a?(String)
     self.class == other.class && name == other.name
