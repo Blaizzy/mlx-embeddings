@@ -414,7 +414,7 @@ class FormulaInstaller
     options = display_options(formula).join(" ")
     oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip if show_header?
 
-    if formula.tap&.installed? && !formula.tap&.private?
+    if formula.tap&.should_report_analytics?
       action = "#{formula.full_name} #{options}".strip
       Utils::Analytics.report_event("install", action, on_request: installed_on_request?)
     end
