@@ -155,7 +155,8 @@ module Formulary
 
       if (urls_stable = json_formula["urls"]["stable"]).present?
         stable do
-          url urls_stable["url"]
+          url_spec = { tag: urls_stable["tag"], revision: urls_stable["revision"] }.compact
+          url urls_stable["url"], **url_spec
           version json_formula["versions"]["stable"]
           sha256 urls_stable["checksum"] if urls_stable["checksum"].present?
         end
