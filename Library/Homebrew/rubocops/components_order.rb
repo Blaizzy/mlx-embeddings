@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "ast_constants"
@@ -58,7 +58,7 @@ module RuboCop
 
             @offensive_node = resource_block
 
-            on_system_bodies = []
+            on_system_bodies = T.let([], T::Array[[RuboCop::AST::BlockNode, RuboCop::AST::Node]])
 
             on_system_blocks.each_value do |blocks|
               blocks.each do |on_system_block|
@@ -68,7 +68,7 @@ module RuboCop
               end
             end
 
-            message = nil
+            message = T.let(nil, T.nilable(String))
             allowed_methods = [
               [:url, :sha256],
               [:url, :mirror, :sha256],
@@ -97,7 +97,7 @@ module RuboCop
               break
             end
 
-            if message.present?
+            if message
               problem message
               next
             end
@@ -199,7 +199,7 @@ module RuboCop
           end
 
           # Check if each present_components is above rest of the present_components
-          offensive_nodes = nil
+          offensive_nodes = T.let(nil, T.nilable(T::Array[RuboCop::AST::Node]))
           present_components.take(present_components.size - 1).each_with_index do |preceding_component, p_idx|
             next if preceding_component.empty?
 

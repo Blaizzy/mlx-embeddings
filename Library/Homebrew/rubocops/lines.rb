@@ -686,13 +686,13 @@ module RuboCop
           end
 
           find_instance_method_call(body_node, :version, :==) do |method|
-            next unless parameters_passed?(method, "HEAD")
+            next unless parameters_passed?(method, ["HEAD"])
 
             problem "Use 'build.head?' instead of inspecting 'version'"
           end
 
           find_instance_method_call(body_node, "ARGV", :include?) do |method|
-            next unless parameters_passed?(method, "--HEAD")
+            next unless parameters_passed?(method, ["--HEAD"])
 
             problem "Use \"if build.head?\" instead"
           end

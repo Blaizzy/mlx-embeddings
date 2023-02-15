@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module RuboCop
@@ -19,10 +19,12 @@ module RuboCop
 
       def stanza?
         return true if arch_variable?
-        return false if !send_type? && !block_type?
-        return true if ON_SYSTEM_METHODS.include?(method_name)
 
-        STANZA_ORDER.include?(method_name)
+        case self
+        when RuboCop::AST::BlockNode, RuboCop::AST::SendNode
+          ON_SYSTEM_METHODS.include?(method_name) || STANZA_ORDER.include?(method_name)
+        else false
+        end
       end
 
       def heredoc?
