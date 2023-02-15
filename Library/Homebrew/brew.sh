@@ -270,6 +270,10 @@ auto-update() {
       then
         # 24 hours
         HOMEBREW_AUTO_UPDATE_SECS="86400"
+      elif [[ -n "${HOMEBREW_DEV_CMD_RUN}" ]]
+      then
+        # 1 hour
+        HOMEBREW_AUTO_UPDATE_SECS="3600"
       else
         # 5 minutes
         HOMEBREW_AUTO_UPDATE_SECS="300"
