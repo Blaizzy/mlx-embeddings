@@ -486,7 +486,6 @@ module Homebrew
       instance_eval(&@service_block)
       options = []
       options << "Persistent=true" if @run_type == RUN_TYPE_CRON
-      options << "OnActiveSec=0s" if @run_at_load == true
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
 
       if @run_type == RUN_TYPE_CRON
