@@ -229,6 +229,18 @@ module Cask
     end
 
     sig { void }
+    def audit_version_special_characters
+      return unless cask.version
+
+      return if cask.version.latest?
+
+      raw_version = cask.version.raw_version
+      return if raw_version.exclude?(":") && raw_version.exclude?("/")
+
+      add_error "version should not contain colons or slashes"
+    end
+
+    sig { void }
     def audit_no_string_version_latest
       return unless cask.version
 
