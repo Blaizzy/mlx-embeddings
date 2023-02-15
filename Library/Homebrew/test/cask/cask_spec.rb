@@ -311,7 +311,7 @@ describe Cask::Cask, :cask do
 
       expect(h).to be_a(Hash)
       expect(h["artifacts"].first[:binary].first).to eq "$APPDIR/some/path"
-      expect(h["caveats"]).to eq "$HOMEBREW_PREFIX and $HOME\n"
+      expect(h["caveats"]).to eq "$HOMEBREW_PREFIX and /$HOME\n"
     end
   end
 end
