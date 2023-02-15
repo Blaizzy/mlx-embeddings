@@ -25,17 +25,33 @@ homebrew-prefix() {
   [[ -z "${prefix}" ]] && return 1
   [[ -z "${formula}" ]] && echo "${HOMEBREW_PREFIX}" && return 0
 
-  local formula_path
+  local formula_exists
   if [[ -f "${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/Formula/${formula}.rb" ]]
   then
-    formula_path="${HOMEBREW_REPOSITORY}/Library/Taps/homebrew/homebrew-core/Formula/${formula}.rb"
+    formula_exists="1"
   else
+    local formula_path
     formula_path="$(
       shopt -s nullglob
       echo "${HOMEBREW_REPOSITORY}/Library/Taps"/*/*/{Formula/,HomebrewFormula/,}"${formula}.rb"
     )"
+    [[ -n "${formula_path}" ]] && formula_exists="1"
   fi
-  [[ -z "${formula_path}" ]] && return 1
+
+  if [[ -z "${formula_exists}" &&
+        -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
+        -f "${HOMEBREW_CACHE}/api/formula.json" ]]
+  then
+    formula_exists="$(
+      ruby -rjson <<RUBY 2>/dev/null
+puts 1 if JSON.parse(File.read("${HOMEBREW_CACHE}/api/formula.json")).any? do |f|
+  f["name"] == "${formula}"
+end
+RUBY
+    )"
+  fi
+
+  [[ -z "${formula_exists}" ]] && return 1
 
   echo "${HOMEBREW_PREFIX}/opt/${formula}"
   return 0
