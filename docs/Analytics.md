@@ -1,6 +1,6 @@
 # Anonymous Aggregate User Behaviour Analytics
 
-Homebrew gathers anonymous aggregate user behaviour analytics using Google Analytics. You will be notified the first time you run `brew update` or install Homebrew. Analytics are not enabled until after this notice is shown, to ensure that you can [opt out](Analytics.md#opting-out) without ever sending analytics data.
+Homebrew gathers anonymous aggregate user behaviour analytics using Google Analytics (until our in-progress migration to our own InfluxDB). You will be notified the first time you run `brew update` or install Homebrew. Analytics are not enabled until after this notice is shown, to ensure that you can [opt out](Analytics.md#opting-out) without ever sending analytics data.
 
 ## Why?
 
@@ -59,6 +59,12 @@ Homebrew analytics helps us maintainers and leaving it on is appreciated. Howeve
 
 ```sh
 export HOMEBREW_NO_ANALYTICS=1
+```
+
+If you are fine with analytics being sent to Homebrew's InfluxDB but not to Google Analytics, you can set:
+
+```sh
+export HOMEBREW_NO_GOOGLE_ANALYTICS=1
 ```
 
 Alternatively, this will prevent analytics from ever being sent:

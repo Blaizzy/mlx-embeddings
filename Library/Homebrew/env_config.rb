@@ -297,6 +297,11 @@ module Homebrew
         description: "If set, do not print any hints about changing Homebrew's behaviour with environment variables.",
         boolean:     true,
       },
+      HOMEBREW_NO_GOOGLE_ANALYTICS:              {
+        description: "If set, do not send analytics to Google Analytics but allow sending to Homebrew's InfluxDB " \
+                     "analytics server. For more information, see: <https://docs.brew.sh/Analytics>",
+        boolean:     true,
+      },
       HOMEBREW_NO_GITHUB_API:                    {
         description: "If set, do not use the GitHub API, e.g. for searches or fetching relevant issues " \
                      "after a failed install.",
