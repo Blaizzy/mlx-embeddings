@@ -76,8 +76,6 @@ module Utils
                additional_tags: T::Hash[Symbol, T.untyped]).void
       }
       def report_influx(measurement, package_and_options, on_request, additional_tags = {})
-        return unless ENV["HOMEBREW_ANALYTICS_ENABLE_INFLUX"]
-
         # Append general information to device information
         tags = additional_tags.merge(package_and_options: package_and_options, on_request: !on_request.nil?)
                               .compact_blank
