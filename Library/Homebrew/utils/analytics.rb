@@ -17,7 +17,7 @@ module Utils
       include Context
 
       INFLUX_BUCKET = "analytics"
-      INFLUX_TOKEN = "y2JZsgE7glWT9V-S-nElETLp8oyH9PGh9JVa-kCdOdp7mEHIOws4BtdjsIe3HHpCBty7IQHLnmh0prqK2vBj9A=="
+      INFLUX_TOKEN = "9eMkCRwRWS7xjPR_HbF5tBffKmnyRFSup7rq41tHZLOpnBsjVtRFd-y9R_P9OCcB3kr1ftDEzxcxTehcufy1SQ=="
       INFLUX_HOST = "europe-west1-1.gcp.cloud2.influxdata.com"
 
       sig { params(type: Symbol, metadata: T::Hash[Symbol, T.untyped]).void }
