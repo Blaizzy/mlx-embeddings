@@ -21,7 +21,6 @@ module RuboCop
         @file_path = processed_source.buffer.name
         return unless file_path_allowed?
         return unless formula_class?(node)
-        return unless respond_to?(:audit_formula)
 
         class_node, parent_class_node, @body = *node
         @formula_name = Pathname.new(@file_path).basename(".rb").to_s
