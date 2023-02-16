@@ -80,7 +80,7 @@ Read more at <https://docs.brew.sh/Analytics>.
 <br>Turn Homebrew's analytics on or off respectively.
 
 `brew analytics regenerate-uuid`
-<br>Regenerate the UUID used for Homebrew's analytics.
+<br>Regenerate the UUID used for Homebrew's Google Analytics (not InfluxDB).
 
 ### `autoremove` [`--dry-run`]
 
