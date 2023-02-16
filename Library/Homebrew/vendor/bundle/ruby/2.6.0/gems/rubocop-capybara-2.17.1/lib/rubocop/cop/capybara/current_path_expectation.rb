@@ -50,11 +50,11 @@ module RuboCop
             ${(send nil? :eq ...) (send nil? :match (regexp ...))})
         PATTERN
 
-        # @!method regexp_str_matcher(node)
-        def_node_matcher :regexp_str_matcher, <<-PATTERN
+        # @!method regexp_node_matcher(node)
+        def_node_matcher :regexp_node_matcher, <<-PATTERN
           (send
             #expectation_set_on_current_path ${:to :to_not :not_to}
-            $(send nil? :match (str $_)))
+            $(send nil? :match ${str dstr xstr}))
         PATTERN
 
         def self.autocorrect_incompatible_with
@@ -78,9 +78,9 @@ module RuboCop
             rewrite_expectation(corrector, node, to_sym, matcher_node)
           end
 
-          regexp_str_matcher(node.parent) do |to_sym, matcher_node, regexp|
+          regexp_node_matcher(node.parent) do |to_sym, matcher_node, regexp|
             rewrite_expectation(corrector, node, to_sym, matcher_node)
-            convert_regexp_str_to_literal(corrector, matcher_node, regexp)
+            convert_regexp_node_to_literal(corrector, matcher_node, regexp)
           end
         end
 
@@ -97,10 +97,18 @@ module RuboCop
           add_ignore_query_options(corrector, node)
         end
 
-        def convert_regexp_str_to_literal(corrector, matcher_node, regexp_str)
+        def convert_regexp_node_to_literal(corrector, matcher_node, regexp_node)
           str_node = matcher_node.first_argument
-          regexp_expr = Regexp.new(regexp_str).inspect
+          regexp_expr = regexp_node_to_regexp_expr(regexp_node)
           corrector.replace(str_node, regexp_expr)
+        end
+
+        def regexp_node_to_regexp_expr(regexp_node)
+          if regexp_node.xstr_type?
+            "/\#{`#{regexp_node.value.value}`}/"
+          else
+            Regexp.new(regexp_node.value).inspect
+          end
         end
 
         # `have_current_path` with no options will include the querystring
@@ -110,7 +118,9 @@ module RuboCop
         def add_ignore_query_options(corrector, node)
           expectation_node = node.parent.last_argument
           expectation_last_child = expectation_node.children.last
-          return if %i[regexp str].include?(expectation_last_child.type)
+          return if %i[
+            regexp str dstr xstr
+          ].include?(expectation_last_child.type)
 
           corrector.insert_after(
             expectation_last_child,
