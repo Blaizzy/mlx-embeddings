@@ -8,6 +8,7 @@ SimpleCov.enable_for_subprocesses true
 SimpleCov.start do
   coverage_dir File.expand_path("../test/coverage", File.realpath(__FILE__))
   root File.expand_path("..", File.realpath(__FILE__))
+  command_name "Homebrew/brew"
 
   # enables branch coverage as well as, the default, line coverage
   enable_coverage :branch
@@ -18,9 +19,6 @@ SimpleCov.start do
   merge_timeout 86400
 
   at_fork do |pid|
-    # This needs a unique name so it won't be ovewritten
-    command_name "#{SimpleCov.command_name} (#{pid})"
-
     # be quiet, the parent process will be in charge of output and checking coverage totals
     SimpleCov.print_error_status = false
   end
@@ -31,8 +29,8 @@ SimpleCov.start do
   files = "#{SimpleCov.root}/{#{subdirs},*.rb}"
 
   if ENV["HOMEBREW_INTEGRATION_TEST"]
-    # This needs a unique name so it won't be ovewritten
-    command_name "#{ENV["HOMEBREW_INTEGRATION_TEST"]} (#{$PROCESS_ID})"
+    # This needs a unique name so it won't be overwritten
+    command_name "Homebrew/brew integration tests (#{ENV.fetch('TEST_ENV_NUMBER', $PROCESS_ID)})"
 
     # be quiet, the parent process will be in charge of output and checking coverage totals
     SimpleCov.print_error_status = false
@@ -53,7 +51,7 @@ SimpleCov.start do
       raise if $ERROR_INFO.is_a?(SystemExit)
     end
   else
-    command_name "#{command_name} (#{$PROCESS_ID})"
+    command_name "Homebrew/brew (#{ENV.fetch('TEST_ENV_NUMBER', $PROCESS_ID)})"
 
     # Not using this during integration tests makes the tests 4x times faster
     # without changing the coverage.
