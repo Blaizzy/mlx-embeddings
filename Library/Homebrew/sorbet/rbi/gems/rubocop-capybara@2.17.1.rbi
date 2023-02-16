@@ -8,19 +8,74 @@ module RuboCop; end
 module RuboCop::Cop; end
 module RuboCop::Cop::Capybara; end
 
+module RuboCop::Cop::Capybara::CapybaraHelp
+  private
+
+  def common_attributes?(selector); end
+  def include_option?(node, option); end
+  def replaceable_attributes?(attrs); end
+  def replaceable_element?(node, element, attrs); end
+  def replaceable_option?(node, locator, element); end
+  def replaceable_pseudo_class?(pseudo_class, locator); end
+  def replaceable_pseudo_class_not?(locator); end
+  def replaceable_pseudo_classes?(locator); end
+  def replaceable_to_link?(node, attrs); end
+
+  class << self
+    def common_attributes?(selector); end
+    def include_option?(node, option); end
+    def replaceable_attributes?(attrs); end
+    def replaceable_element?(node, element, attrs); end
+    def replaceable_option?(node, locator, element); end
+    def replaceable_pseudo_class?(pseudo_class, locator); end
+    def replaceable_pseudo_class_not?(locator); end
+    def replaceable_pseudo_classes?(locator); end
+    def replaceable_to_link?(node, attrs); end
+  end
+end
+
+RuboCop::Cop::Capybara::CapybaraHelp::COMMON_OPTIONS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Capybara::CapybaraHelp::SPECIFIC_OPTIONS = T.let(T.unsafe(nil), Hash)
+RuboCop::Cop::Capybara::CapybaraHelp::SPECIFIC_PSEUDO_CLASSES = T.let(T.unsafe(nil), Array)
+
+module RuboCop::Cop::Capybara::CssSelector
+  private
+
+  def attribute?(selector); end
+  def attributes(selector); end
+  def classes(selector); end
+  def id(selector); end
+  def id?(selector); end
+  def multiple_selectors?(selector); end
+  def normalize_value(value); end
+  def pseudo_classes(selector); end
+
+  class << self
+    def attribute?(selector); end
+    def attributes(selector); end
+    def classes(selector); end
+    def id(selector); end
+    def id?(selector); end
+    def multiple_selectors?(selector); end
+    def normalize_value(value); end
+    def pseudo_classes(selector); end
+  end
+end
+
 class RuboCop::Cop::Capybara::CurrentPathExpectation < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def as_is_matcher(param0 = T.unsafe(nil)); end
   def expectation_set_on_current_path(param0 = T.unsafe(nil)); end
   def on_send(node); end
-  def regexp_str_matcher(param0 = T.unsafe(nil)); end
+  def regexp_node_matcher(param0 = T.unsafe(nil)); end
 
   private
 
   def add_ignore_query_options(corrector, node); end
   def autocorrect(corrector, node); end
-  def convert_regexp_str_to_literal(corrector, matcher_node, regexp_str); end
+  def convert_regexp_node_to_literal(corrector, matcher_node, regexp_node); end
+  def regexp_node_to_regexp_expr(regexp_node); end
   def rewrite_expectation(corrector, node, to_symbol, matcher_node); end
 
   class << self
@@ -78,6 +133,8 @@ class RuboCop::Cop::Capybara::SpecificActions < ::RuboCop::Cop::Base
   def last_selector(arg); end
   def message(action, selector); end
   def offense_range(node, receiver); end
+  def replaceable?(node, arg, action); end
+  def replaceable_attributes?(selector); end
   def specific_action(selector); end
   def supported_selector?(selector); end
 end
@@ -90,17 +147,21 @@ class RuboCop::Cop::Capybara::SpecificFinders < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
+  def class_options(param0); end
   def find_argument(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
   private
 
+  def append_options(classes, options); end
   def attribute?(arg); end
+  def autocorrect_classes(corrector, node, classes); end
   def end_pos(node); end
+  def keyword_argument_class(classes); end
   def offense_range(node); end
   def on_attr(node, arg); end
   def on_id(node, arg); end
-  def register_offense(node, arg_replacement); end
+  def register_offense(node, id, classes = T.unsafe(nil)); end
   def replaced_arguments(arg, id); end
   def to_options(attrs); end
 end
@@ -116,6 +177,8 @@ class RuboCop::Cop::Capybara::SpecificMatcher < ::RuboCop::Cop::Base
 
   def good_matcher(node, matcher); end
   def message(node, matcher); end
+  def replaceable?(node, arg, matcher); end
+  def replaceable_attributes?(selector); end
   def specific_matcher(arg); end
 end
 
@@ -137,58 +200,6 @@ RuboCop::Cop::Capybara::VisibilityMatcher::CAPYBARA_MATCHER_METHODS = T.let(T.un
 RuboCop::Cop::Capybara::VisibilityMatcher::MSG_FALSE = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Capybara::VisibilityMatcher::MSG_TRUE = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Capybara::VisibilityMatcher::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
-
-module RuboCop::Cop::CapybaraHelp
-  private
-
-  def include_option?(node, option); end
-  def replaceable_element?(node, element, attrs); end
-  def replaceable_pseudo_class?(pseudo_class, locator); end
-  def replaceable_pseudo_class_not?(locator); end
-  def replaceable_to_link?(node, attrs); end
-  def specific_option?(node, locator, element); end
-  def specific_pseudo_classes?(locator); end
-
-  class << self
-    def include_option?(node, option); end
-    def replaceable_element?(node, element, attrs); end
-    def replaceable_pseudo_class?(pseudo_class, locator); end
-    def replaceable_pseudo_class_not?(locator); end
-    def replaceable_to_link?(node, attrs); end
-    def specific_option?(node, locator, element); end
-    def specific_pseudo_classes?(locator); end
-  end
-end
-
-module RuboCop::Cop::CssSelector
-  private
-
-  def attribute?(selector); end
-  def attributes(selector); end
-  def common_attributes?(selector); end
-  def id?(selector); end
-  def multiple_selectors?(selector); end
-  def normalize_value(value); end
-  def pseudo_classes(selector); end
-  def specific_options?(element, attribute); end
-  def specific_pesudo_classes?(pseudo_class); end
-
-  class << self
-    def attribute?(selector); end
-    def attributes(selector); end
-    def common_attributes?(selector); end
-    def id?(selector); end
-    def multiple_selectors?(selector); end
-    def normalize_value(value); end
-    def pseudo_classes(selector); end
-    def specific_options?(element, attribute); end
-    def specific_pesudo_classes?(pseudo_class); end
-  end
-end
-
-RuboCop::Cop::CssSelector::COMMON_OPTIONS = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::CssSelector::SPECIFIC_OPTIONS = T.let(T.unsafe(nil), Hash)
-RuboCop::Cop::CssSelector::SPECIFIC_PSEUDO_CLASSES = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::IgnoredMethods = RuboCop::Cop::AllowedMethods
 RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 RuboCop::NodePattern = RuboCop::AST::NodePattern
