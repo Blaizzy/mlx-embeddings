@@ -23,6 +23,7 @@ class LinkageChecker
     libgcc_s.so.1
     libgomp.so.1
     libstdc++.so.6
+    libquadmath.so.0
   ].freeze
 
   def display_deprecated_warning(strict: false)
