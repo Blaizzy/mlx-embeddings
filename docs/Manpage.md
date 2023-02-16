@@ -1114,7 +1114,7 @@ Display the source of a *`formula`* or *`cask`*.
 
 Display the path to the file being used when invoking `brew` *`cmd`*.
 
-### `contributions` *`email|name`* [*`--repositories`*`=`]
+### `contributions` *`email|name`* [*`--repositories`*`=`] [*`--csv`*]
 
 Contributions to Homebrew repos for a user.
 
@@ -1126,6 +1126,8 @@ The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "bre
   Date (ISO-8601 format) to start searching contributions.
 * `--to`:
   Date (ISO-8601 format) to stop searching contributions.
+* `--csv`:
+  Print a CSV of a user's contributions across repositories over the time period.
 
 ### `create` [*`options`*] *`URL`*
 
@@ -2318,7 +2320,7 @@ Homebrew's Project Leadership Committee is Colin Dean, Issy Long, Jonathan Chang
 
 Homebrew's Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid and Rylan Polster.
 
-Homebrew's maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan.
+Homebrew's maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan.
 
 Former maintainers with significant contributions include Misty De Méo, Markus Reiter, Shaun Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
 

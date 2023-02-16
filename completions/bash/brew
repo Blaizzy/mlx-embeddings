@@ -678,6 +678,7 @@ _brew_contributions() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --csv
       --debug
       --from
       --help
