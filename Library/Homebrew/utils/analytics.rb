@@ -78,7 +78,7 @@ module Utils
       def report_influx(measurement, package_and_options, on_request, additional_tags = {})
         # Append general information to device information
         tags = additional_tags.merge(package_and_options: package_and_options, on_request: !on_request.nil?)
-                              .compact_blank
+                              .compact
                               .map { |k, v| "#{k}=#{v.to_s.sub(" ", "\\ ")}" } # convert to key/value parameters
                               .join(",")
 
@@ -161,7 +161,7 @@ module Utils
         else
           formula_full_name
         end
-        report_event("BuildError", package_and_options)
+        report_google_event("BuildError", package_and_options)
       end
 
       sig { params(exception: Exception).void }
@@ -177,7 +177,7 @@ module Utils
         else
           formula_full_name
         end
-        report_event(:build_error, package_and_options)
+        report_influx_event(:build_error, package_and_options)
       end
 
       def messages_displayed?
@@ -346,6 +346,10 @@ module Utils
           version = "#{version}-dev" if HOMEBREW_VERSION.include?("-")
           prefix = Homebrew.default_prefix? ? HOMEBREW_PREFIX.to_s : "custom-prefix"
 
+          # Cleanup quotes and patch/patchset versions to reduce cardinality.
+          os_version = OS_VERSION.tr('"', "")
+                                 .gsub(/(\d+\.\d+)(\.\d+)?(-\d)?/, '\1')
+
           {
             version:             version,
             prefix:              prefix,
@@ -354,7 +358,7 @@ module Utils
             developer:           Homebrew::EnvConfig.developer?,
             arch:                HOMEBREW_PHYSICAL_PROCESSOR,
             os:                  HOMEBREW_SYSTEM,
-            os_name_and_version: OS_VERSION,
+            os_name_and_version: os_version,
           }
         end
       end
