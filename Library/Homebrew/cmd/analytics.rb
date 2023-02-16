@@ -22,7 +22,7 @@ module Homebrew
         Turn Homebrew's analytics on or off respectively.
 
         `brew analytics regenerate-uuid`:
-        Regenerate the UUID used for Homebrew's analytics.
+        Regenerate the UUID used for Homebrew's Google Analytics (not InfluxDB).
       EOS
 
       named_args %w[state on off regenerate-uuid], max: 1
@@ -38,7 +38,11 @@ module Homebrew
         puts "Analytics are disabled."
       else
         puts "Analytics are enabled."
-        puts "UUID: #{Utils::Analytics.uuid}" if Utils::Analytics.uuid.present?
+        if Homebrew::EnvConfig.no_google_analytics?
+          puts "Google Analytics are disabled."
+        elsif Utils::Analytics.uuid.present?
+          puts "UUID: #{Utils::Analytics.uuid}"
+        end
       end
     when "on"
       Utils::Analytics.enable!
