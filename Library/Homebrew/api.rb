@@ -94,17 +94,29 @@ module Homebrew
       end
     end
 
-    sig { params(filepath: String, repo: String, git_head: T.nilable(String)).returns(String) }
-    def self.fetch_file_source(filepath, repo:, git_head: nil)
-      git_head ||= "master"
-      endpoint = "#{git_head}/#{filepath}"
-      return cache[endpoint] if cache.present? && cache.key?(endpoint)
+    sig { params(name: String, git_head: T.nilable(String)).returns(String) }
+    def self.fetch_homebrew_cask_source(name, git_head: nil)
+      git_head = "master" if git_head.blank?
+      raw_endpoint = "#{git_head}/Casks/#{name}.rb"
+      return cache[raw_endpoint] if cache.present? && cache.key?(raw_endpoint)
 
-      raw_url = "https://raw.githubusercontent.com/#{repo}/#{endpoint}"
-      output = Utils::Curl.curl_output("--fail", raw_url)
-      raise ArgumentError, "No file found at #{Tty.underline}#{raw_url}#{Tty.reset}" unless output.success?
+      # This API sometimes returns random 404s so needs a fallback at formulae.brew.sh.
+      raw_source_url = "https://raw.githubusercontent.com/Homebrew/homebrew-cask/#{raw_endpoint}"
+      api_source_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/cask-source/#{name}.rb"
+      output = Utils::Curl.curl_output("--fail", raw_source_url)
 
-      cache[endpoint] = output.stdout
+      if !output.success? || output.blank?
+        output = Utils::Curl.curl_output("--fail", api_source_url)
+        if !output.success? || output.blank?
+          raise ArgumentError, <<~EOS
+            No valid file found at either of:
+            #{Tty.underline}#{raw_source_url}#{Tty.reset}
+            #{Tty.underline}#{api_source_url}#{Tty.reset}
+          EOS
+        end
+      end
+
+      cache[raw_endpoint] = output.stdout
     end
 
     sig { params(json: Hash).returns(Hash) }
