@@ -1602,7 +1602,7 @@ Treat all named arguments as casks\.
 .SS "\fBcommand\fR \fIcommand\fR [\.\.\.]"
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
-.SS "\fBcontributions\fR \fIemail|name\fR [\fI\-\-repositories\fR\fB=\fR]"
+.SS "\fBcontributions\fR \fIemail|name\fR [\fI\-\-repositories\fR\fB=\fR] [\fI\-\-csv\fR]"
 Contributions to Homebrew repos for a user\.
 .
 .P
@@ -1619,6 +1619,10 @@ Date (ISO\-8601 format) to start searching contributions\.
 .TP
 \fB\-\-to\fR
 Date (ISO\-8601 format) to stop searching contributions\.
+.
+.TP
+\fB\-\-csv\fR
+Print a CSV of a user\'s contributions across repositories over the time period\.
 .
 .SS "\fBcreate\fR [\fIoptions\fR] \fIURL\fR"
 Generate a formula or, with \fB\-\-cask\fR, a cask for the downloadable file at \fIURL\fR and open it in the editor\. Homebrew will attempt to automatically derive the formula name and version, but if it fails, you\'ll have to make your own template\. The \fBwget\fR formula serves as a simple example\. For the complete API, see: \fIhttps://rubydoc\.brew\.sh/Formula\fR
@@ -3453,7 +3457,7 @@ Homebrew\'s Project Leadership Committee is Colin Dean, Issy Long, Jonathan Chan
 Homebrew\'s Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid and Rylan Polster\.
 .
 .P
-Homebrew\'s maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan\.
+Homebrew\'s maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan\.
 .
 .P
 Former maintainers with significant contributions include Misty De Meo, Markus Reiter, Shaun Jackman, Vitor Galvao, Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew\'s creator: Max Howell\.
