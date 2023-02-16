@@ -4516,6 +4516,8 @@ module Homebrew::EnvConfig
 
   def self.no_github_api?(); end
 
+  def self.no_google_analytics?(); end
+
   def self.no_insecure_redirect?(); end
 
   def self.no_install_cleanup?(); end
@@ -5490,6 +5492,7 @@ class Object
   HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY = ::T.let(nil, ::T.untyped)
   HOMEBREW_MAIN_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
+  HOMEBREW_PHYSICAL_PROCESSOR = ::T.let(nil, ::T.untyped)
   HOMEBREW_PINNED_KEGS = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PREFIX_PLACEHOLDER = ::T.let(nil, ::T.untyped)
