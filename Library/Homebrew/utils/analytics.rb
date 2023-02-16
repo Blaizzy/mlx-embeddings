@@ -76,8 +76,11 @@ module Utils
                additional_tags: T::Hash[Symbol, T.untyped]).void
       }
       def report_influx(measurement, package_and_options, on_request, additional_tags = {})
+        # convert on_request to a boolean
+        on_request = on_request ? true : false
+
         # Append general information to device information
-        tags = additional_tags.merge(package_and_options: package_and_options, on_request: !on_request.nil?)
+        tags = additional_tags.merge(package_and_options: package_and_options, on_request: on_request)
                               .compact
                               .map { |k, v| "#{k}=#{v.to_s.sub(" ", "\\ ")}" } # convert to key/value parameters
                               .join(",")
