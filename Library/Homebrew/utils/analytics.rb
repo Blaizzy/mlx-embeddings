@@ -161,7 +161,7 @@ module Utils
         else
           formula_full_name
         end
-        report_event("BuildError", package_and_options)
+        report_google_event("BuildError", package_and_options)
       end
 
       sig { params(exception: Exception).void }
@@ -177,7 +177,7 @@ module Utils
         else
           formula_full_name
         end
-        report_event(:build_error, package_and_options)
+        report_influx_event(:build_error, package_and_options)
       end
 
       def messages_displayed?
