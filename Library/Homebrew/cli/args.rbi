@@ -335,6 +335,9 @@ module Homebrew
 
       sig { returns(T.nilable(T::Boolean)) }
       def force_auto_update?; end
+
+      sig { returns(T::Boolean) }
+      def csv?; end
     end
   end
 end

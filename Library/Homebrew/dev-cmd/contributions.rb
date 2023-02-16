@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "csv"
 
 module Homebrew
   extend T::Sig
@@ -17,7 +18,7 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` <email|name> [<--repositories>`=`]"
+      usage_banner "`contributions` <email|name> [<--repositories>`=`] [<--csv>]"
       description <<~EOS
         Contributions to Homebrew repos for a user.
 
@@ -34,6 +35,9 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
+      switch "--csv",
+             description: "Print a CSV of a user's contributions across repositories over the time period."
+
       named_args number: 1
     end
   end
@@ -42,9 +46,7 @@ module Homebrew
   def contributions
     args = contributions_args.parse
 
-    commits = 0
-    coauthorships = 0
-    signoffs = 0
+    results = {}
 
     all_repos = args.repositories.nil? || args.repositories.include?("all")
     repos = all_repos ? SUPPORTED_REPOS : args.repositories
@@ -56,32 +58,19 @@ module Homebrew
 
       repo_path = find_repo_path_for_repo(repo)
       unless repo_path.exist?
-
         opoo "Repository #{repo} not yet tapped! Tapping it now..."
         Tap.fetch("homebrew", repo).install
       end
 
-      commits += git_log_author_cmd(T.must(repo_path), args)
-      coauthorships += git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", args)
-      signoffs += git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", args)
+      results[repo] = {
+        commits:       git_log_author_cmd(T.must(repo_path), args),
+        coauthorships: git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", args),
+        signoffs:      git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", args),
+      }
     end
 
-    sentence = "#{args.named.first} directly authored #{commits} commits" \
-               ", co-authored #{coauthorships} commits" \
-               ", and signed-off #{signoffs} commits " \
-               "across #{all_repos ? "all Homebrew repos" : repos.to_sentence}"
-    sentence += if args.from && args.to
-      " between #{args.from} and #{args.to}"
-    elsif args.from
-      " after #{args.from}"
-    elsif args.to
-      " before #{args.to}"
-    else
-      " in all time"
-    end
-    sentence += ". Total: #{commits + coauthorships + signoffs}."
-
-    puts sentence
+    puts "The user #{args.named.first} has made #{total(results)} contributions #{time_period(args)}."
+    puts generate_csv(args.named.first, results) if args.csv?
   end
 
   sig { params(repo: String).returns(Pathname) }
@@ -89,6 +78,45 @@ module Homebrew
     return HOMEBREW_REPOSITORY if repo == "brew"
 
     Tap.fetch("homebrew", repo).path
+  end
+
+  sig { params(args: Homebrew::CLI::Args).returns(String) }
+  def time_period(args)
+    if args.from && args.to
+      "between #{args.from} and #{args.to}"
+    elsif args.from
+      "after #{args.from}"
+    elsif args.to
+      "before #{args.to}"
+    else
+      "in all time"
+    end
+  end
+
+  sig { params(user: String, results: Hash).returns(String) }
+  def generate_csv(user, results)
+    CSV.generate do |csv|
+      csv << %w[user repo commits coauthorships signoffs total]
+      results.each do |repo, counts|
+        csv << [
+          user,
+          repo,
+          counts[:commits],
+          counts[:coauthorships],
+          counts[:signoffs],
+          counts.values.sum,
+        ]
+      end
+      csv << [user, "*", "*", "*", "*", total(results)]
+    end
+  end
+
+  sig { params(results: Hash).returns(Integer) }
+  def total(results)
+    results
+      .values # [{:commits=>1, :coauthorships=>0, :signoffs=>3}, {:commits=>500, :coauthorships=>2, :signoffs=>450}]
+      .map(&:values) # [[1, 0, 3], [500, 2, 450]]
+      .sum(&:sum) # 956
   end
 
   sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
