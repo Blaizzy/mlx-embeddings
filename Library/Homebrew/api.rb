@@ -82,7 +82,7 @@ module Homebrew
           opoo "#{target.basename}: update failed, falling back to cached version."
         end
 
-        FileUtils.touch target
+        FileUtils.touch(target) unless skip_download
         JSON.parse(target.read)
       rescue JSON::ParserError
         target.unlink
