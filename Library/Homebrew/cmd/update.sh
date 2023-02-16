@@ -802,7 +802,7 @@ EOS
           HOMEBREW_UPDATED="1"
         fi
       else
-        echo "Failed to download ${formula_or_cask}.json!" >>"${update_failed_file}"
+        echo "Failed to download ${json_url}!" >>"${update_failed_file}"
       fi
     done
   fi
