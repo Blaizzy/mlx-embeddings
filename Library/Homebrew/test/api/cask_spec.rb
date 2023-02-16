@@ -8,6 +8,7 @@ describe Homebrew::API::Cask do
 
   before do
     stub_const("Homebrew::API::HOMEBREW_CACHE_API", cache_dir)
+    Homebrew::API.clear_cache
   end
 
   def mock_curl_download(stdout:)

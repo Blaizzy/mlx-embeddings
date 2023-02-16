@@ -17,7 +17,7 @@ module Homebrew
 
         sig { params(token: String, git_head: T.nilable(String)).returns(String) }
         def fetch_source(token, git_head: nil)
-          Homebrew::API.fetch_file_source "Casks/#{token}.rb", repo: "Homebrew/homebrew-cask", git_head: git_head
+          Homebrew::API.fetch_homebrew_cask_source token, git_head: git_head
         end
 
         sig { returns(Hash) }

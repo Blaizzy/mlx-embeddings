@@ -9,6 +9,10 @@ describe Homebrew::API do
   let(:json_hash) { JSON.parse(json) }
   let(:json_invalid) { '{"foo":"bar"' }
 
+  before do
+    described_class.clear_cache
+  end
+
   def mock_curl_output(stdout: "", success: true)
     curl_output = OpenStruct.new(stdout: stdout, success?: success)
     allow(Utils::Curl).to receive(:curl_output).and_return curl_output
@@ -68,15 +72,15 @@ describe Homebrew::API do
   describe "::fetch_file_source" do
     it "fetches a file" do
       mock_curl_output stdout: json
-      fetched_json = described_class.fetch_file_source("foo.json", repo: "Homebrew/homebrew-core", git_head: "master")
+      fetched_json = described_class.fetch_homebrew_cask_source("foo", git_head: "master")
       expect(fetched_json).to eq json
     end
 
     it "raises an error if the file does not exist" do
       mock_curl_output success: false
       expect {
-        described_class.fetch_file_source("bar.txt", repo: "Homebrew/homebrew-core", git_head: "master")
-      }.to raise_error(ArgumentError, /No file found/)
+        described_class.fetch_homebrew_cask_source("bar", git_head: "master")
+      }.to raise_error(ArgumentError, /No valid file found/)
     end
   end
 end
