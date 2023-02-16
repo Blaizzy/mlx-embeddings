@@ -185,7 +185,6 @@ describe Tap do
       setup_git_repo
 
       expect(homebrew_foo_tap.remote).to eq("https://github.com/Homebrew/homebrew-foo")
-      expect { described_class.new("Homebrew", "bar").remote }.to raise_error(TapUnavailableError)
       expect(homebrew_foo_tap).not_to have_custom_remote
 
       services_tap = described_class.new("Homebrew", "services")
@@ -213,7 +212,6 @@ describe Tap do
       setup_git_repo
 
       expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
-      expect { described_class.new("Homebrew", "bar").remote_repo }.to raise_error(TapUnavailableError)
 
       services_tap = described_class.new("Homebrew", "services")
       services_tap.path.mkpath
@@ -228,7 +226,6 @@ describe Tap do
       setup_git_repo
 
       expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
-      expect { described_class.new("Homebrew", "bar").remote_repo }.to raise_error(TapUnavailableError)
 
       services_tap = described_class.new("Homebrew", "services")
       services_tap.path.mkpath

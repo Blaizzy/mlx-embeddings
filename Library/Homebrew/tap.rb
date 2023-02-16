@@ -134,7 +134,7 @@ class Tap
   # The remote path to this {Tap}.
   # e.g. `https://github.com/user/homebrew-repo`
   def remote
-    raise TapUnavailableError, name unless installed?
+    return default_remote unless installed?
 
     @remote ||= path.git_origin
   end
