@@ -35,7 +35,7 @@ module Homebrew
       raise ArgumentError, "Invalid JSON file: #{Tty.underline}#{api_url}#{Tty.reset}"
     end
 
-    sig { params(endpoint: String, target: Pathname).returns(T.any(Array, Hash)) }
+    sig { params(endpoint: String, target: Pathname).returns([T.any(Array, Hash), T::Boolean]) }
     def self.fetch_json_api_file(endpoint, target:)
       retry_count = 0
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
@@ -83,7 +83,7 @@ module Homebrew
         end
 
         FileUtils.touch(target) unless skip_download
-        JSON.parse(target.read)
+        [JSON.parse(target.read), !skip_download]
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
@@ -128,6 +128,17 @@ module Homebrew
       end
 
       json.except("variations")
+    end
+
+    sig { params(names: T::Array[String], type: String, regenerate: T::Boolean).returns(T::Boolean) }
+    def self.write_names_file(names, type, regenerate:)
+      names_path = HOMEBREW_CACHE_API/"#{type}_names.txt"
+      if !names_path.exist? || regenerate
+        names_path.write(names.join("\n"))
+        return true
+      end
+
+      false
     end
   end
 end

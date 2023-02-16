@@ -39,16 +39,26 @@ homebrew-prefix() {
   fi
 
   if [[ -z "${formula_exists}" &&
-        -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
-        -f "${HOMEBREW_CACHE}/api/formula.json" ]]
+        -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
-    formula_exists="$(
-      ruby -rjson <<RUBY 2>/dev/null
-puts 1 if JSON.parse(File.read("${HOMEBREW_CACHE}/api/formula.json")).any? do |f|
-  f["name"] == "${formula}"
-end
-RUBY
-    )"
+    if [[ -f "${HOMEBREW_CACHE}/api/formula_names.txt" ]] &&
+       grep -Fxq "${formula}" "${HOMEBREW_CACHE}/api/formula_names.txt"
+    then
+      formula_exists="1"
+    elif [[ -f "${HOMEBREW_CACHE}/api/formula_aliases.txt" ]]
+    then
+      while IFS="|" read -r alias_name real_name
+      do
+        case "${alias_name}" in
+          "${formula}")
+            formula_exists="1"
+            formula="${real_name}"
+            break
+            ;;
+          *) ;;
+        esac
+      done <"${HOMEBREW_CACHE}/api/formula_aliases.txt"
+    fi
   fi
 
   [[ -z "${formula_exists}" ]] && return 1

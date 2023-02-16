@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "extend/cachable"
+
 module Homebrew
   module API
     # Helper functions for using the cask JSON API.
@@ -8,7 +10,10 @@ module Homebrew
     # @api private
     module Cask
       class << self
+        include Cachable
         extend T::Sig
+
+        private :cache
 
         sig { params(token: String).returns(Hash) }
         def fetch(token)
@@ -20,16 +25,34 @@ module Homebrew
           Homebrew::API.fetch_homebrew_cask_source token, git_head: git_head
         end
 
+        sig { returns(T::Boolean) }
+        def download_and_cache_data!
+          json_casks, updated = Homebrew::API.fetch_json_api_file "cask.json",
+                                                                  target: HOMEBREW_CACHE_API/"cask.json"
+
+          cache["casks"] = json_casks.to_h do |json_cask|
+            [json_cask["token"], json_cask.except("token")]
+          end
+
+          updated
+        end
+        private :download_and_cache_data!
+
         sig { returns(Hash) }
         def all_casks
-          @all_casks ||= begin
-            json_casks = Homebrew::API.fetch_json_api_file "cask.json",
-                                                           target: HOMEBREW_CACHE_API/"cask.json"
-
-            json_casks.to_h do |json_cask|
-              [json_cask["token"], json_cask.except("token")]
-            end
+          unless cache.key?("casks")
+            json_updated = download_and_cache_data!
+            write_names(regenerate: json_updated)
           end
+
+          cache["casks"]
+        end
+
+        sig { params(regenerate: T::Boolean).void }
+        def write_names(regenerate: false)
+          download_and_cache_data! unless cache.key?("casks")
+
+          Homebrew::API.write_names_file(all_casks.keys, "cask", regenerate: regenerate)
         end
       end
     end

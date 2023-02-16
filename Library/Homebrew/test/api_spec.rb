@@ -51,13 +51,13 @@ describe Homebrew::API do
 
     it "fetches a JSON file" do
       mock_curl_download stdout: json
-      fetched_json = described_class.fetch_json_api_file("foo.json", target: cache_dir/"foo.json")
+      fetched_json, = described_class.fetch_json_api_file("foo.json", target: cache_dir/"foo.json")
       expect(fetched_json).to eq json_hash
     end
 
     it "updates an existing JSON file" do
       mock_curl_download stdout: json
-      fetched_json = described_class.fetch_json_api_file("bar.json", target: cache_dir/"bar.json")
+      fetched_json, = described_class.fetch_json_api_file("bar.json", target: cache_dir/"bar.json")
       expect(fetched_json).to eq json_hash
     end
 
