@@ -1,8 +1,4 @@
---dir
-.
-
---ignore
-/vendor
-
---ignore
-/test/.gem
+--dir=.
+--enable-experimental-requires-ancestor
+--ignore=/vendor
+--ignore=/test/.gem

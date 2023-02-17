@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "rubocops/shared/helper_functions"
@@ -21,12 +21,15 @@ module RuboCop
         @file_path = processed_source.buffer.name
         return unless file_path_allowed?
         return unless formula_class?(node)
-        return unless respond_to?(:audit_formula)
 
         class_node, parent_class_node, @body = *node
         @formula_name = Pathname.new(@file_path).basename(".rb").to_s
         @tap_style_exceptions = nil
         audit_formula(node, class_node, parent_class_node, @body)
+      end
+
+      def audit_formula(node, class_node, parent_class_node, body_node)
+        raise NotImplementedError, "Subclasses must implement this method."
       end
 
       # Yields to block when there is a match.

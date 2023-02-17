@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module RuboCop
@@ -6,6 +6,13 @@ module RuboCop
     module Cask
       # Common functionality for cops checking casks.
       module CaskHelp
+        extend T::Helpers
+        extend T::Sig
+        abstract!
+
+        sig { abstract.params(cask_block: RuboCop::Cask::AST::CaskBlock).void }
+        def on_cask(cask_block); end
+
         def on_block(block_node)
           super if defined? super
           return unless respond_to?(:on_cask)

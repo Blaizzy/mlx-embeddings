@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "rubocop"
@@ -14,6 +14,7 @@ module RuboCop
     #
     # @api private
     module HelperFunctions
+      extend T::Sig
       include RangeHelp
 
       # Checks for regex match of pattern in the node and
@@ -49,6 +50,7 @@ module RuboCop
       end
 
       # Returns the line number of the node.
+      sig { params(node: RuboCop::AST::Node).returns(Integer) }
       def line_number(node)
         node.loc.line
       end
@@ -166,7 +168,7 @@ module RuboCop
       def find_method_with_args(node, method_name, *args)
         methods = find_every_method_call_by_name(node, method_name)
         methods.each do |method|
-          next unless parameters_passed?(method, *args)
+          next unless parameters_passed?(method, args)
           return true unless block_given?
 
           yield method
@@ -358,7 +360,7 @@ module RuboCop
       # Returns true if the given parameters are present in method call
       # and sets the method call as the offending node.
       # Params can be string, symbol, array, hash, matching regex.
-      def parameters_passed?(method_node, *params)
+      def parameters_passed?(method_node, params)
         method_params = parameters(method_node)
         @offensive_node = method_node
         params.all? do |given_param|

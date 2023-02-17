@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "macos_versions"
@@ -172,7 +172,7 @@ module RuboCop
 
       def if_node_is_allowed?(if_node, allowed_methods: [], allowed_blocks: [])
         # TODO: check to see if it's legal
-        valid = false
+        valid = T.let(false, T::Boolean)
         if_node.each_ancestor do |ancestor|
           valid_method_names = case ancestor.type
           when :def

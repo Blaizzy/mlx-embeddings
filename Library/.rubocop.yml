@@ -47,6 +47,11 @@ Cask/StanzaOrder:
   Description: "Ensure that cask stanzas are sorted correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
   Enabled: true
 
+# This was intended to be an abstract Cop class for Homebrew formulae, but rubocop doesn't know that.
+# TODO: refactor this as a module for formulae Cop classes to include instead
+FormulaCop:
+  Enabled: false
+
 # enable all formulae audits
 FormulaAudit:
   Enabled: true
