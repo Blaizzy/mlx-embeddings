@@ -198,14 +198,18 @@ module Homebrew
 
     # if the user's flags will prevent bottle only-installations when no
     # developer tools are available, we need to stop them early on
+    build_flags = []
     unless DevelopmentTools.installed?
-      build_flags = []
-
       build_flags << "--HEAD" if args.HEAD?
       build_flags << "--build-bottle" if args.build_bottle?
       build_flags << "--build-from-source" if args.build_from_source?
 
       raise BuildFlagsError.new(build_flags, bottled: formulae.all?(&:bottled?)) if build_flags.present?
+    end
+
+    if build_flags.present? && !Homebrew::EnvConfig.developer?
+      opoo "building from source is not supported!"
+      puts "You're on your own. Failures are expected so don't create any issues, please!"
     end
 
     installed_formulae = formulae.select do |f|

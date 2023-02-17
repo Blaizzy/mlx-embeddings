@@ -125,8 +125,15 @@ module Homebrew
   def upgrade_outdated_formulae(formulae, args:)
     return false if args.cask?
 
-    if args.build_from_source? && !DevelopmentTools.installed?
-      raise BuildFlagsError.new(["--build-from-source"], bottled: formulae.all?(&:bottled?))
+    if args.build_from_source?
+      unless DevelopmentTools.installed?
+        raise BuildFlagsError.new(["--build-from-source"], bottled: formulae.all?(&:bottled?))
+      end
+
+      unless Homebrew::EnvConfig.developer?
+        opoo "building from source is not supported!"
+        puts "You're on your own. Failures are expected so don't create any issues, please!"
+      end
     end
 
     Install.perform_preinstall_checks

@@ -97,8 +97,15 @@ module Homebrew
     formulae, casks = args.named.to_formulae_and_casks(method: :resolve)
                           .partition { |o| o.is_a?(Formula) }
 
-    if args.build_from_source? && !DevelopmentTools.installed?
-      raise BuildFlagsError.new(["--build-from-source"], bottled: formulae.all?(&:bottled?))
+    if args.build_from_source?
+      unless DevelopmentTools.installed?
+        raise BuildFlagsError.new(["--build-from-source"], bottled: formulae.all?(&:bottled?))
+      end
+
+      unless Homebrew::EnvConfig.developer?
+        opoo "building from source is not supported!"
+        puts "You're on your own. Failures are expected so don't create any issues, please!"
+      end
     end
 
     Install.perform_preinstall_checks
