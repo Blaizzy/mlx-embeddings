@@ -14,6 +14,7 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
   HOMEBREW_NO_ENV_HINTS: 1
   HOMEBREW_BOOTSNAP: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
 
 concurrency:
   group: "${{ github.ref }}"
@@ -55,10 +56,6 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - run: brew test-bot --only-cleanup-before
-
-      - run: brew config
-
       - name: Cache Bundler RubyGems
         uses: actions/cache@v1
         with:
@@ -68,8 +65,6 @@ jobs:
 
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems --groups=sorbet
-
-      - run: brew doctor
 
       - name: Run brew readall on all taps
         run: brew readall --eval-all --aliases
@@ -291,6 +286,10 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-
 
       - name: Install brew tests dependencies
+        if: matrix.name != 'tests (generic OS)'
+        run: brew install buildpulse-test-reporter
+
+      - name: Install brew tests --online dependencies
         if: matrix.name == 'tests (online)'
         run: brew install subversion curl
 
@@ -301,9 +300,11 @@ jobs:
 
       - name: Run brew tests
         run: |
+          # brew tests
+
           # Don't attempt to use BuildPulse for generic tests.
           # Fails for no apparent reason.
-          if [[ "${{ matrix.test-flags }}" =~ "--generic" ]]
+          if [[ "${{ matrix.name }}" =~ "generic" ]]
           then
             unset HOMEBREW_BUILDPULSE_ACCESS_KEY_ID
           fi
@@ -351,5 +352,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - run: brew test-bot --only-cleanup-before
+
+      - run: brew test-bot --only-setup
 
       - run: brew test-bot --only-formulae --only-json-tab --test-default-formula

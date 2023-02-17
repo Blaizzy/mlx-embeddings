@@ -30,7 +30,7 @@ SimpleCov.start do
 
   if ENV["HOMEBREW_INTEGRATION_TEST"]
     # This needs a unique name so it won't be overwritten
-    command_name "brew_integration_#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
+    command_name "brew_i#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
 
     # be quiet, the parent process will be in charge of output and checking coverage totals
     SimpleCov.print_error_status = false
@@ -51,7 +51,7 @@ SimpleCov.start do
       raise if $ERROR_INFO.is_a?(SystemExit)
     end
   else
-    command_name "brew_#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
+    command_name "brew#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
 
     # Not using this during integration tests makes the tests 4x times faster
     # without changing the coverage.
