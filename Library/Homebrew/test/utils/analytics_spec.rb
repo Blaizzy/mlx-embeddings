@@ -100,6 +100,10 @@ describe Utils::Analytics do
     let(:options) { ["--head"].join }
     let(:action)  { "#{f.full_name} #{options}".strip }
 
+    before do
+      described_class.clear_additional_tags_cache
+    end
+
     context "when ENV vars is set" do
       it "returns nil when HOMEBREW_NO_ANALYTICS is true" do
         ENV["HOMEBREW_NO_ANALYTICS"] = "true"
