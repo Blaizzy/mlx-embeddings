@@ -1181,13 +1181,15 @@ class FormulaInstaller
 
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
-    elsif formula.core_formula? && Homebrew::EnvConfig.install_from_api?
-      url = "https://raw.githubusercontent.com/#{formula.tap.full_name}/#{formula.tap_git_head}/Formula/#{formula.name}.rb"
-      @formula = Formulary.factory(url, formula.active_spec_sym,
-                                   alias_path: formula.alias_path,
-                                   flags:      formula.class.build_flags,
-                                   from:       :formula_installer)
     else
+      if formula.core_formula? && Homebrew::EnvConfig.install_from_api?
+        url = "https://raw.githubusercontent.com/#{formula.tap.full_name}/#{formula.tap_git_head}/Formula/#{formula.name}.rb"
+        @formula = Formulary.factory(url, formula.active_spec_sym,
+                                     alias_path: formula.alias_path,
+                                     flags:      formula.class.build_flags,
+                                     from:       :formula_installer)
+      end
+
       formula.fetch_patches
       formula.resources.each(&:fetch)
     end
