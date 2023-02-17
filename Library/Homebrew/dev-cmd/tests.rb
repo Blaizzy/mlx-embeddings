@@ -62,10 +62,11 @@ module Homebrew
 
     ohai "Sending test results to BuildPulse"
 
-    safe_system Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
-                "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
-                "--account-id", ENV.fetch("HOMEBREW_BUILDPULSE_ACCOUNT_ID"),
-                "--repository-id", ENV.fetch("HOMEBREW_BUILDPULSE_REPOSITORY_ID")
+    result = quiet_system Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
+                          "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
+                          "--account-id", ENV.fetch("HOMEBREW_BUILDPULSE_ACCOUNT_ID"),
+                          "--repository-id", ENV.fetch("HOMEBREW_BUILDPULSE_REPOSITORY_ID")
+    odie "Failed to send test results to BuildPulse!" unless result
   end
 
   def changed_test_files
