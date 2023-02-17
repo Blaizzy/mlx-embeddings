@@ -18,7 +18,7 @@ if [[ $(uname -m) == "x86_64" ]]
 then
   target="/usr/local"
 else
-  target="/opt/Homebrew"
+  target="/opt/homebrew"
 fi
 
 loggedInUser=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ { print $3 }')
@@ -44,7 +44,8 @@ fi
 
 group=$(id -gn "${loggedInUser}")
 
-install -d -o "${loggedInUser}" -g "${group}" "${target}"
+install -d -o "root" -g "wheel" -m "0755" "${target}"
+
 cp -RX "${tmp_brew}/" "${target}"
 
 # set permissions
