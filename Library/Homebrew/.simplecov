@@ -14,8 +14,8 @@ SimpleCov.start do
   enable_coverage :branch
 
   # We manage the result cache ourselves and the default of 10 minutes can be
-  # too low (particularly on Travis CI), causing results from some integration
-  # tests to be dropped. This causes random fluctuations in test coverage.
+  # too low causing results from some integration tests to be dropped. This
+  # causes random fluctuations in test coverage.
   merge_timeout 86400
 
   at_fork do
@@ -30,7 +30,7 @@ SimpleCov.start do
 
   if ENV["HOMEBREW_INTEGRATION_TEST"]
     # This needs a unique name so it won't be overwritten
-    command_name "i#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
+    command_name "brew_integration_#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
 
     # be quiet, the parent process will be in charge of output and checking coverage totals
     SimpleCov.print_error_status = false
@@ -51,7 +51,7 @@ SimpleCov.start do
       raise if $ERROR_INFO.is_a?(SystemExit)
     end
   else
-    command_name "b#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
+    command_name "brew_#{ENV.fetch("TEST_ENV_NUMBER", $PROCESS_ID)}"
 
     # Not using this during integration tests makes the tests 4x times faster
     # without changing the coverage.

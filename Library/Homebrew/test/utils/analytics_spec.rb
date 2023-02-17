@@ -5,37 +5,37 @@ require "utils/analytics"
 require "formula_installer"
 
 describe Utils::Analytics do
-  describe "::label_google" do
-    before do
-      described_class.clear_additional_tags_cache
-    end
+  before do
+    described_class.clear_additional_tags_cache
+  end
 
+  describe "::label_google" do
     let(:ci) { ", CI" if ENV["CI"] }
 
     it "returns OS_VERSION and prefix when HOMEBREW_PREFIX is a custom prefix on intel" do
-      allow(Hardware::CPU).to receive(:type).and_return(:intel)
       allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
-      allow(Homebrew).to receive(:default_prefix?).and_return(false)
+      expect(Hardware::CPU).to receive(:type).and_return(:intel).at_least(:once)
+      expect(Homebrew).to receive(:default_prefix?).and_return(false)
       expect(described_class.label_google).to include described_class.custom_prefix_label_google
     end
 
     it "returns OS_VERSION, ARM and prefix when HOMEBREW_PREFIX is a custom prefix on arm" do
-      allow(Hardware::CPU).to receive(:type).and_return(:arm)
       allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
-      allow(Homebrew).to receive(:default_prefix?).and_return(false)
+      expect(Hardware::CPU).to receive(:type).and_return(:arm).at_least(:once)
+      expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
       expect(described_class.label_google).to include described_class.arch_label_google
       expect(described_class.label_google).to include described_class.custom_prefix_label_google
     end
 
     it "returns OS_VERSION, Rosetta and prefix when HOMEBREW_PREFIX is a custom prefix on Rosetta", :needs_macos do
-      allow(Hardware::CPU).to receive(:type).and_return(:intel)
       allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(true)
-      allow(Homebrew).to receive(:default_prefix?).and_return(false)
+      expect(Hardware::CPU).to receive(:type).and_return(:intel).at_least(:once)
+      expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
       expect(described_class.label_google).to include described_class.custom_prefix_label_google
     end
 
     it "does not include prefix when HOMEBREW_PREFIX is the default prefix" do
-      allow(Homebrew).to receive(:default_prefix?).and_return(true)
+      expect(Homebrew).to receive(:default_prefix?).and_return(true)
       expect(described_class.label_google).not_to include HOMEBREW_PREFIX.to_s
     end
 
@@ -46,24 +46,16 @@ describe Utils::Analytics do
   end
 
   describe "::additional_tags_influx" do
-    before do
-      described_class.clear_additional_tags_cache
-    end
-
     let(:ci) { ", CI" if ENV["CI"] }
 
     it "returns OS_VERSION and prefix when HOMEBREW_PREFIX is a custom prefix on intel" do
-      allow(Hardware::CPU).to receive(:type).and_return(:intel)
-      allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
-      allow(Homebrew).to receive(:default_prefix?).and_return(false)
+      expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
       expect(described_class.additional_tags_influx).to have_key(:prefix)
       expect(described_class.additional_tags_influx[:prefix]).to eq "custom-prefix"
     end
 
     it "returns OS_VERSION, ARM and prefix when HOMEBREW_PREFIX is a custom prefix on arm" do
-      allow(Hardware::CPU).to receive(:type).and_return(:arm)
-      allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(false)
-      allow(Homebrew).to receive(:default_prefix?).and_return(false)
+      expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
       expect(described_class.additional_tags_influx).to have_key(:arch)
       expect(described_class.additional_tags_influx[:arch]).to eq HOMEBREW_PHYSICAL_PROCESSOR
       expect(described_class.additional_tags_influx).to have_key(:prefix)
@@ -71,15 +63,13 @@ describe Utils::Analytics do
     end
 
     it "returns OS_VERSION, Rosetta and prefix when HOMEBREW_PREFIX is a custom prefix on Rosetta", :needs_macos do
-      allow(Hardware::CPU).to receive(:type).and_return(:intel)
-      allow(Hardware::CPU).to receive(:in_rosetta2?).and_return(true)
-      allow(Homebrew).to receive(:default_prefix?).and_return(false)
+      expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
       expect(described_class.additional_tags_influx).to have_key(:prefix)
       expect(described_class.additional_tags_influx[:prefix]).to eq "custom-prefix"
     end
 
     it "does not include prefix when HOMEBREW_PREFIX is the default prefix" do
-      allow(Homebrew).to receive(:default_prefix?).and_return(true)
+      expect(Homebrew).to receive(:default_prefix?).and_return(true).at_least(:once)
       expect(described_class.additional_tags_influx).to have_key(:prefix)
       expect(described_class.additional_tags_influx[:prefix]).to eq HOMEBREW_PREFIX.to_s
     end
@@ -90,7 +80,7 @@ describe Utils::Analytics do
     end
 
     it "includes developer when ENV['HOMEBREW_DEVELOPER'] is set" do
-      ENV["HOMEBREW_DEVELOPER"] = "1"
+      expect(Homebrew::EnvConfig).to receive(:developer?).and_return(true)
       expect(described_class.additional_tags_influx).to have_key(:developer)
     end
   end
@@ -99,10 +89,6 @@ describe Utils::Analytics do
     let(:f) { formula { url "foo-1.0" } }
     let(:options) { ["--head"].join }
     let(:action)  { "#{f.full_name} #{options}".strip }
-
-    before do
-      described_class.clear_additional_tags_cache
-    end
 
     context "when ENV vars is set" do
       it "returns nil when HOMEBREW_NO_ANALYTICS is true" do
@@ -133,8 +119,8 @@ describe Utils::Analytics do
     it "passes to the influxdb and google methods" do
       ENV.delete("HOMEBREW_NO_ANALYTICS_THIS_RUN")
       ENV.delete("HOMEBREW_NO_ANALYTICS")
-      ENV.delete("HOMEBREW_DEVELOPER")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
+      expect(Homebrew::EnvConfig).to receive(:developer?).and_return(false)
       expect(described_class).to receive(:report_google).with(:event, hash_including(ea: action)).once
       expect(described_class).to receive(:report_influx).with(:install, "formula_name --head", false,
                                                               hash_including(developer: false)).once
@@ -144,8 +130,8 @@ describe Utils::Analytics do
     it "sends to google twice on request" do
       ENV.delete("HOMEBREW_NO_ANALYTICS_THIS_RUN")
       ENV.delete("HOMEBREW_NO_ANALYTICS")
-      ENV.delete("HOMEBREW_DEVELOPER")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
+      expect(Homebrew::EnvConfig).to receive(:developer?).and_return(false)
       expect(described_class).to receive(:report_google).with(:event, hash_including(ea: action, ec: :install)).once
       expect(described_class).to receive(:report_google).with(:event,
                                                               hash_including(ea: action,
@@ -166,7 +152,6 @@ describe Utils::Analytics do
       ENV.delete("HOMEBREW_NO_ANALYTICS_THIS_RUN")
       ENV.delete("HOMEBREW_NO_ANALYTICS")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
-      ENV["HOMEBREW_DEVELOPER"] = "1"
       expect(described_class).to receive(:deferred_curl).once
       described_class.report_influx(:install, action, true, developer: true, CI: true)
     end

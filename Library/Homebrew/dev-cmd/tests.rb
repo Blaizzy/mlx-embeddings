@@ -170,6 +170,12 @@ module Homebrew
       end
       # rubocop:enable Homebrew/MoveToExtendOS
 
+      bundle_args << "--tag" << "~needs_network" unless args.online?
+      unless ENV["CI"]
+        bundle_args << "--tag" << "~needs_ci" \
+                    << "--tag" << "~needs_svn"
+      end
+
       puts "Randomized with seed #{seed}"
 
       # Submit test flakiness information using BuildPulse

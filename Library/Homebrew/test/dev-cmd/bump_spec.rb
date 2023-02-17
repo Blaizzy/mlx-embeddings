@@ -7,27 +7,6 @@ describe "brew bump" do
   it_behaves_like "parseable arguments"
 
   describe "formula", :integration_test, :needs_homebrew_curl, :needs_network do
-    # TODO: consider re-enabling when/if we can make these not flaky.
-    #
-    #   it "returns data for single valid specified formula" do
-    #     install_test_formula "testball"
-
-    #     expect { brew "bump", "testball" }
-    #       .to output.to_stdout
-    #       .and not_to_output.to_stderr
-    #       .and be_a_success
-    #   end
-
-    #   it "returns data for multiple valid specified formula" do
-    #     install_test_formula "testball"
-    #     install_test_formula "testball2"
-
-    #     expect { brew "bump", "testball", "testball2" }
-    #       .to output.to_stdout
-    #       .and not_to_output.to_stderr
-    #       .and be_a_success
-    #   end
-
     it "returns no data and prints a message for HEAD-only formulae" do
       content = <<~RUBY
         desc "HEAD-only test formula"

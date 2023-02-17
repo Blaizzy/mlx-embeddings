@@ -13,7 +13,7 @@
 # Additionally, libffi version detection cannot be performed on systems running Mojave or earlier.
 #
 # For indeterminable cases, consult https://opensource.apple.com for the version used.
-describe "pkg-config" do
+describe "pkg-config", :needs_ci do
   def pc_version(library)
     path = HOMEBREW_LIBRARY_PATH/"os/mac/pkgconfig/#{MacOS.version}/#{library}.pc"
     version = File.foreach(path)
