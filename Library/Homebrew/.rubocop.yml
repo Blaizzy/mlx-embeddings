@@ -87,5 +87,4 @@ Style/BlockDelimiters:
     - "sig"
 
 Bundler/GemFilename:
-  Exclude:
-    - "utils/gems.rb"
+  Enabled: false
