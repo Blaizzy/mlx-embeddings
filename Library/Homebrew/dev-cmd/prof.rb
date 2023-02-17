@@ -27,7 +27,18 @@ module Homebrew
     brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path
     FileUtils.mkdir_p "prof"
     cmd = args.named.first
-    raise UsageError, "#{cmd} is a Bash command!" if Commands.path(cmd).extname == ".sh"
+
+    case Commands.path(cmd)&.extname
+    when ".rb"
+      # expected file extension so we do nothing
+    when ".sh"
+      raise UsageError, <<~EOS
+        `#{cmd}` is a Bash command!
+        Try `hyperfine` for benchmarking instead.
+      EOS
+    else
+      raise UsageError, "`#{cmd}` is an unknown command!"
+    end
 
     if args.stackprof?
       Homebrew.install_gem_setup_path! "stackprof"
@@ -45,5 +56,12 @@ module Homebrew
     end
 
     exec_browser output_filename
+  rescue OptionParser::InvalidOption => e
+    ofail e
+
+    # The invalid option could have been meant for the subcommand.
+    # Suggest `brew prof list -r` -> `brew prof -- list -r`
+    args = ARGV - ["--"]
+    puts "Try `brew prof -- #{args.join(" ")}` instead."
   end
 end
