@@ -13,6 +13,7 @@ env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
   HOMEBREW_NO_ENV_HINTS: 1
+  HOMEBREW_BOOTSNAP: 1
 
 concurrency:
   group: "${{ github.ref }}"
@@ -69,13 +70,6 @@ jobs:
         run: brew install-bundler-gems --groups=sorbet
 
       - run: brew doctor
-
-      - name: Run brew update-tests
-        if: github.event_name == 'pull_request'
-        run: |
-          brew update-test
-          brew update-test --to-tag
-          brew update-test --commit=HEAD
 
       - name: Run brew readall on all taps
         run: brew readall --eval-all --aliases
@@ -135,6 +129,7 @@ jobs:
 
   vendored-gems:
     name: vendored gems
+    needs: syntax
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
@@ -189,9 +184,10 @@ jobs:
           docker push "homebrew/ubuntu22.04:master"
 
       - name: Build deprecated 16.04 Docker image
+        if: github.ref == 'refs/heads/master'
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
         run: |
-          echo "homebrew/ubuntu16.04:master is deprecated and will soon be retired. Use homebrew/ubuntu22.04:master or homebrew/ubuntu16.04 or homebrew/brew. For CI, homebrew/ubuntu22.04:master is recommended." > .docker-deprecate
+          echo "homebrew/ubuntu16.04:master is deprecated and will soon be retired. Use homebrew/ubuntu22.04:master or homebrew/ubuntu18.04 or homebrew/brew. For CI, homebrew/ubuntu22.04:master is recommended." > .docker-deprecate
           docker build -t brew-deprecated --build-arg=version=16.04 \
                --label org.opencontainers.image.created="$(date --rfc-3339=seconds --utc)" \
                --label org.opencontainers.image.url="https://brew.sh" \
@@ -211,6 +207,29 @@ jobs:
           docker tag brew-deprecated "homebrew/ubuntu16.04:master"
           docker push "homebrew/ubuntu16.04:master"
 
+  update-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runs-on }}
+    needs: syntax
+    if: github.event_name == 'pull_request'
+    strategy:
+      matrix:
+        include:
+          - name: update-test (Ubuntu 22.04)
+            runs-on: ubuntu-22.04
+          - name: update-test (macOS 12)
+            runs-on: macos-12
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Run brew update-tests
+        run: |
+          brew update-test
+          brew update-test --to-tag
+          brew update-test --commit=HEAD
+
   tests:
     name: ${{ matrix.name }}
     needs: syntax
@@ -218,6 +237,9 @@ jobs:
     strategy:
       matrix:
         include:
+          - name: tests (online)
+            test-flags: --online --coverage
+            runs-on: ubuntu-22.04
           - name: tests (no-compatibility mode)
             test-flags: --no-compat --coverage
             runs-on: ubuntu-22.04
@@ -225,11 +247,14 @@ jobs:
             test-flags: --generic --coverage
             runs-on: ubuntu-22.04
           - name: tests (Ubuntu 22.04)
-            test-flags: --online --coverage
+            test-flags: --coverage
             runs-on: ubuntu-22.04
           - name: tests (Ubuntu 18.04)
             test-flags: --coverage
             runs-on: ubuntu-18.04
+          - name: tests (macOS 12)
+            test-flags: --coverage
+            runs-on: macos-12
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -256,118 +281,31 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-
 
       - name: Install brew tests dependencies
-        run: brew install curl
-
-      - name: Run brew tests
-        run: |
-          # brew tests doesn't like world writable directories
-          sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
-
-          brew tests ${{ matrix.test-flags }}
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
-        with:
-          directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
-          files: Library/Homebrew/test/coverage/coverage.xml
-
-  test-default-formula-linux:
-    name: ${{ matrix.name }}
-    if: startsWith(github.repository, 'Homebrew/')
-    runs-on: ${{ matrix.runs-on }}
-    env:
-      HOMEBREW_BOOTSNAP: 1
-    strategy:
-      matrix:
-        include:
-          - name: test default formula (Ubuntu 22.04)
-            test-flags: --online --coverage
-            runs-on: ubuntu-22.04
-          - name: test default formula (Ubuntu 18.04)
-            test-flags: --online --coverage
-            runs-on: ubuntu-18.04
-    steps:
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - run: brew test-bot --only-cleanup-before
-
-      - run: brew test-bot --only-formulae --only-json-tab --test-default-formula
-
-  test-everything:
-    name: test everything (macOS)
-    needs: syntax
-    if: startsWith(github.repository, 'Homebrew/')
-    runs-on: macos-12
-    env:
-      HOMEBREW_BOOTSNAP: 1
-    steps:
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - run: brew test-bot --only-cleanup-before
-
-      - run: brew config
-
-      # Can't cache this because we need to check that it doesn't fail the
-      # "uncommitted RubyGems" step with a cold cache.
-      - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=sorbet
-
-      - name: Check for uncommitted RubyGems
-        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
-        run: git diff --stat --exit-code Library/Homebrew/vendor/bundle/ruby
-
-      - run: brew doctor
-
-      - name: Run brew update-tests
-        if: github.event_name == 'pull_request'
-        run: |
-          brew update-test
-          brew update-test --to-tag
-          brew update-test --commit=HEAD
-
-      - name: Set up all Homebrew taps
-        run: |
-          brew tap homebrew/cask
-          brew tap homebrew/cask-drivers
-          brew tap homebrew/cask-fonts
-          brew tap homebrew/cask-versions
-          brew update-reset Library/Taps/homebrew/homebrew-bundle \
-                            Library/Taps/homebrew/homebrew-cask \
-                            Library/Taps/homebrew/homebrew-cask-versions \
-                            Library/Taps/homebrew/homebrew-services
-
-      - name: Run brew readall on all taps
-        run: brew readall --eval-all --aliases
-
-      - name: Install brew tests dependencies
+        if: matrix.name == 'tests (online)'
         run: brew install subversion curl
 
-      - name: Create parallel test log directory
-        run: mkdir tests
-
-      - name: Cache parallel tests log
-        uses: actions/cache@v1
-        with:
-          path: tests
-          key: ${{ runner.os }}-parallel_runtime_rspec-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-parallel_runtime_rspec-
+        # brew tests doesn't like world writable directories
+      - name: Cleanup permissions
+        if: runner.os == 'Linux'
+        run: sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
 
       - name: Run brew tests
         run: |
+          # Don't attempt to use BuildPulse for generic tests.
+          # Fails for no apparent reason.
+          if [[ "${{ matrix.test-flags }}" =~ "--generic" ]]
+          then
+            unset HOMEBREW_BUILDPULSE_ACCESS_KEY_ID
+          fi
+
           # Retry multiple times when using BuildPulse to detect and submit
           # flakiness (because rspec-retry is disabled).
           if [[ -n "${HOMEBREW_BUILDPULSE_ACCESS_KEY_ID}" ]]
           then
-            brew tests --online --coverage ||
-            brew tests --online --coverage ||
-            brew tests --online --coverage
+            brew tests ${{ matrix.test-flags }} ||
+            brew tests ${{ matrix.test-flags }}
           else
-            brew tests --online --coverage
+            brew tests ${{ matrix.test-flags }}
           fi
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -378,9 +316,30 @@ jobs:
           HOMEBREW_BUILDPULSE_ACCOUNT_ID: 1503512
           HOMEBREW_BUILDPULSE_REPOSITORY_ID: 53238813
 
-      - run: brew test-bot --only-formulae --test-default-formula
-
       - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
         with:
           directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
           files: Library/Homebrew/test/coverage/coverage.xml
+
+  test-default-formula:
+    name: ${{ matrix.name }}
+    needs: syntax
+    if: startsWith(github.repository, 'Homebrew/')
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        include:
+          - name: test default formula (Ubuntu 22.04)
+            runs-on: ubuntu-22.04
+          - name: test default formula (Ubuntu 18.04)
+            runs-on: ubuntu-18.04
+          - name: test default formula (macOS 12)
+            runs-on: macos-12
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - run: brew test-bot --only-cleanup-before
+
+      - run: brew test-bot --only-formulae --only-json-tab --test-default-formula
