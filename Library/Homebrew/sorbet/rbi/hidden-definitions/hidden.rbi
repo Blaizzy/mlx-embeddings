@@ -6872,6 +6872,11 @@ class RuboCop::Cask::AST::Stanza
   def zap?(); end
 end
 
+module RuboCop::Cop::Cask::CaskHelp
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+end
+
 class RuboCop::Cop::Cask::Variables
   def variable_assignment(param0); end
 end
