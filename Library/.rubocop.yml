@@ -76,10 +76,6 @@ Layout/SpaceBeforeBrackets:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
 
-# Use `<<~` for heredocs.
-Layout/HeredocIndentation:
-  Enabled: true
-
 # Keyword arguments don't have the same readability
 # problems as normal parameters.
 Metrics/ParameterLists:
@@ -117,7 +113,6 @@ Naming/VariableNumber:
 
 # Require &&/|| instead of and/or
 Style/AndOr:
-  Enabled: true
   EnforcedStyle: always
 
 # Avoid leaking resources.
@@ -145,24 +140,12 @@ Style/FetchEnvVar:
 Style/FormatStringToken:
   EnforcedStyle: annotated
 
-# autocorrectable and more readable
-Style/HashEachMethods:
-  Enabled: true
-Style/HashTransformKeys:
-  Enabled: true
-Style/HashTransformValues:
-  Enabled: true
-
 # Allow for license expressions
 Style/HashAsLastArrayItem:
   Exclude:
     - "Taps/*/*/*.rb"
     - "/**/Formula/*.rb"
     - "**/Formula/*.rb"
-
-# Enabled now LineLength is lowish.
-Style/IfUnlessModifier:
-  Enabled: true
 
 # Only use this for numbers >= `1_000_000`.
 Style/NumericLiterals:
@@ -295,10 +278,6 @@ Layout/EndAlignment:
 
 # conflicts with DSL-style path concatenation with `/`
 Layout/SpaceAroundOperators:
-  Enabled: false
-
-# layout is not configurable (https://github.com/rubocop-hq/rubocop/issues/6254).
-Layout/RescueEnsureAlignment:
   Enabled: false
 
 # significantly less indentation involved; more consistent
@@ -452,11 +431,6 @@ Sorbet/StrictSigil:
 Sorbet/ConstantsFromStrings:
   Enabled: false
 
-# Avoid false positives on modifiers used on symbols of methods
-# See https://github.com/rubocop-hq/rubocop/issues/5953
-Style/AccessModifierDeclarations:
-  Enabled: false
-
 # Conflicts with type signatures on `attr_*`s.
 Style/AccessorGrouping:
   Enabled: false
@@ -506,10 +480,6 @@ Style/GuardClause:
     - "Taps/*/*/*.rb"
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
-
-# avoid hash rockets where possible
-Style/HashSyntax:
-  EnforcedStyle: ruby19
 
 # OpenStruct is a nice helper.
 Style/OpenStructUse:
