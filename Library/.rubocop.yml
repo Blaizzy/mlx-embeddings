@@ -323,11 +323,6 @@ Lint/DuplicateBranch:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
 
-# needed for lazy_object magic
-Naming/MemoizedInstanceVariableName:
-  Exclude:
-    - "Homebrew/lazy_object.rb"
-
 # useful for metaprogramming in RSpec
 Lint/ConstantDefinitionInBlock:
   Exclude:

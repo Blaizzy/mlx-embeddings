@@ -10,9 +10,11 @@ class LazyObject < Delegator
   end
 
   def __getobj__
+    # rubocop:disable Naming/MemoizedInstanceVariableName
     return @__delegate__ if defined?(@__delegate__)
 
     @__delegate__ = @__callable__.call
+    # rubocop:enable Naming/MemoizedInstanceVariableName
   end
 
   def __setobj__(callable)
