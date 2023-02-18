@@ -35,7 +35,7 @@ ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
   %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Homebrew/os/(mac|linux)/pkgconfig},
 ].freeze
 
-module Homebrew
+module Homebrew # rubocop:disable Metrics/ModuleLength
   extend T::Sig
 
   module_function
@@ -591,7 +591,7 @@ module Homebrew
     bottles_hash = merge_json_files(parse_json_files(args.named))
 
     any_cellars = ["any", "any_skip_relocation"]
-    bottles_hash.each do |formula_name, bottle_hash|
+    bottles_hash.each do |formula_name, bottle_hash| # rubocop:disable Metrics/BlockLength
       ohai formula_name
 
       bottle = BottleSpecification.new

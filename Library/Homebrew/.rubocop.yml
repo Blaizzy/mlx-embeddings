@@ -17,18 +17,10 @@ Metrics/AbcSize:
   Max: 241
 Metrics/BlockLength:
   Max: 86
-  Exclude:
-    # TODO: extract more of the bottling logic
-    - "dev-cmd/bottle.rb"
-    - "test/**/*"
-    - "cmd/install.rb"
 Metrics/BlockNesting:
   Max: 5
 Metrics/ClassLength:
   Max: 736
-  Exclude:
-    - "formula.rb"
-    - "formula_installer.rb"
 Metrics/CyclomaticComplexity:
   Max: 68
 Metrics/PerceivedComplexity:
@@ -37,12 +29,6 @@ Metrics/MethodLength:
   Max: 232
 Metrics/ModuleLength:
   Max: 481
-  Exclude:
-    # TODO: extract more of the bottling logic
-    - "dev-cmd/bottle.rb"
-    # TODO: try break this down
-    - "utils/github.rb"
-    - "test/**/*"
 
 Naming/PredicateName:
   # Can't rename these.
