@@ -45,6 +45,8 @@ module Cask
         directives[:signal] = Array(directives[:signal]).flatten.each_slice(2).to_a
         @directives = directives
 
+        # This is already included when loading from the API.
+        return if cask.loaded_from_api?
         return unless directives.key?(:kext)
 
         cask.caveats do

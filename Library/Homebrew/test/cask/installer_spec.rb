@@ -244,7 +244,7 @@ describe Cask::Installer, :cask do
         expect(Homebrew::API::Cask).to receive(:fetch_source).once.and_return(content)
 
         caffeine = Cask::CaskLoader.load(path)
-        expect(caffeine).to receive(:loaded_from_api).once.and_return(true)
+        expect(caffeine).to receive(:loaded_from_api?).once.and_return(true)
         expect(caffeine).to receive(:caskfile_only?).once.and_return(true)
 
         described_class.new(caffeine).install
@@ -299,7 +299,7 @@ describe Cask::Installer, :cask do
         expect(Homebrew::API::Cask).to receive(:fetch_source).twice.and_return(content)
 
         caffeine = Cask::CaskLoader.load(path)
-        expect(caffeine).to receive(:loaded_from_api).twice.and_return(true)
+        expect(caffeine).to receive(:loaded_from_api?).twice.and_return(true)
         expect(caffeine).to receive(:caskfile_only?).twice.and_return(true)
         expect(caffeine).to receive(:installed_caskfile).once.and_return(invalid_path)
 
