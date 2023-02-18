@@ -12,11 +12,6 @@ Layout/MultilineMethodCallIndentation:
   Exclude:
     - "**/*_spec.rb"
 
-# `formula do` uses nested method definitions
-Lint/NestedMethodDefinition:
-  Exclude:
-    - "test/**/*"
-
 # TODO: Try to bring down all metrics maximums.
 Metrics/AbcSize:
   Max: 241
