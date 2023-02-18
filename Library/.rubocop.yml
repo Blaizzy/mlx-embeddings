@@ -323,11 +323,6 @@ Lint/DuplicateBranch:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
 
-# useful for metaprogramming in RSpec
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - "**/*_spec.rb"
-
 # so many of these in formulae and can't be autocorrected
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
