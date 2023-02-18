@@ -16,7 +16,7 @@ module Cask
         [:switch, "--skip-cask-deps", {
           description: "Skip installing cask dependencies.",
         }],
-        [:switch, "--greedy", {
+        [:switch, "-g", "--greedy", {
           description: "Also include casks with `auto_updates true` or `version :latest`.",
         }],
         [:switch, "--greedy-latest", {
