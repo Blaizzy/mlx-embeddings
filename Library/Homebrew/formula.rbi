@@ -17,7 +17,7 @@ class Formula
   def service?; end
   def version; end
 
-  def resource; end
+  def resource(name); end
   def deps; end
   def uses_from_macos_elements; end
   def requirements; end

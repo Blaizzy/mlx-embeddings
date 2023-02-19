@@ -109,8 +109,9 @@ module Homebrew
       end
     end
 
-    sig { params(name: String, git_head: T.nilable(String)).returns(String) }
-    def self.fetch_homebrew_cask_source(name, git_head: nil)
+    sig { params(name: String, git_head: T.nilable(String), sha256: T.nilable(String)).returns(String) }
+    def self.fetch_homebrew_cask_source(name, git_head: nil, sha256: nil)
+      # TODO: unify with formula logic (https://github.com/Homebrew/brew/issues/14746)
       git_head = "master" if git_head.blank?
       raw_endpoint = "#{git_head}/Casks/#{name}.rb"
       return cache[raw_endpoint] if cache.present? && cache.key?(raw_endpoint)
@@ -118,10 +119,13 @@ module Homebrew
       # This API sometimes returns random 404s so needs a fallback at formulae.brew.sh.
       raw_source_url = "https://raw.githubusercontent.com/Homebrew/homebrew-cask/#{raw_endpoint}"
       api_source_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/cask-source/#{name}.rb"
-      output = Utils::Curl.curl_output("--fail", raw_source_url)
+
+      url = raw_source_url
+      output = Utils::Curl.curl_output("--fail", url)
 
       if !output.success? || output.blank?
-        output = Utils::Curl.curl_output("--fail", api_source_url)
+        url = api_source_url
+        output = Utils::Curl.curl_output("--fail", url)
         if !output.success? || output.blank?
           raise ArgumentError, <<~EOS
             No valid file found at either of:
@@ -131,7 +135,20 @@ module Homebrew
         end
       end
 
-      cache[raw_endpoint] = output.stdout
+      cask_source = output.stdout
+      actual_sha256 = Digest::SHA256.hexdigest(cask_source)
+      if sha256 && actual_sha256 != sha256
+        raise ArgumentError, <<~EOS
+          SHA256 mismatch
+          Expected: #{Formatter.success(sha256.to_s)}
+            Actual: #{Formatter.error(actual_sha256.to_s)}
+               URL: #{url}
+          Check if you can access the URL in your browser.
+          Regardless, try again in a few minutes.
+        EOS
+      end
+
+      cache[raw_endpoint] = cask_source
     end
 
     sig { params(json: Hash).returns(Hash) }

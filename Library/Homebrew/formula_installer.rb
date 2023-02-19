@@ -1182,9 +1182,12 @@ class FormulaInstaller
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
     else
-      if formula.core_formula? && Homebrew::EnvConfig.install_from_api?
-        url = "https://raw.githubusercontent.com/#{formula.tap.full_name}/#{formula.tap_git_head}/Formula/#{formula.name}.rb"
-        @formula = Formulary.factory(url, formula.active_spec_sym,
+      if formula.class.loaded_from_api
+        # TODO: unify with cask logic (https://github.com/Homebrew/brew/issues/14746)
+        resource = formula.resource("ruby-source")
+        resource.fetch
+        @formula = Formulary.factory(resource.cached_download,
+                                     formula.active_spec_sym,
                                      alias_path: formula.alias_path,
                                      flags:      formula.class.build_flags,
                                      from:       :formula_installer)

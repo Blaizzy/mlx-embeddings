@@ -20,9 +20,9 @@ module Homebrew
           Homebrew::API.fetch "cask/#{token}.json"
         end
 
-        sig { params(token: String, git_head: T.nilable(String)).returns(String) }
-        def fetch_source(token, git_head: nil)
-          Homebrew::API.fetch_homebrew_cask_source token, git_head: git_head
+        sig { params(token: String, git_head: T.nilable(String), sha256: T.nilable(String)).returns(String) }
+        def fetch_source(token, git_head: nil, sha256: nil)
+          Homebrew::API.fetch_homebrew_cask_source token, git_head: git_head, sha256: sha256
         end
 
         sig { returns(T::Boolean) }

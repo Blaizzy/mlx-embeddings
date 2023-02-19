@@ -2133,6 +2133,7 @@ class Formula
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
       "tap_git_head"             => tap_git_head,
+      "ruby_source_checksum"     => {},
     }
 
     if stable
@@ -2180,6 +2181,16 @@ class Formula
         "runtime_dependencies"    => tab.runtime_dependencies,
         "installed_as_dependency" => tab.installed_as_dependency,
         "installed_on_request"    => tab.installed_on_request,
+      }
+    end
+
+    if self.class.loaded_from_api && active_spec.resource_defined?("ruby-source")
+      hsh["ruby_source_checksum"] = {
+        "sha256" => resource("ruby-source").checksum.hexdigest,
+      }
+    elsif !self.class.loaded_from_api && path.exist?
+      hsh["ruby_source_checksum"] = {
+        "sha256" => Digest::SHA256.file(path).hexdigest,
       }
     end
 
