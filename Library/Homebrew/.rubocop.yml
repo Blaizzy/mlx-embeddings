@@ -50,9 +50,7 @@ Metrics/ModuleLength:
     - "test/**/*"
 
 Naming/PredicateName:
-  # Can't rename these.
   AllowedMethods:
-    - is_a?
     - is_32_bit?
     - is_64_bit?
 
