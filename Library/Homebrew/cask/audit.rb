@@ -491,6 +491,7 @@ module Cask
       Dir.mktmpdir do |tmpdir|
         tmpdir = Pathname(tmpdir)
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
+
         artifacts.each do |artifact|
           path = case artifact
           when Artifact::Moved
@@ -501,7 +502,6 @@ module Cask
           next unless path.exist?
 
           result = system_command("codesign", args: ["--verify", path], print_stderr: false)
-
           next if result.success?
 
           message = "Signature verification failed:\n#{result.merged_output}\nmacOS on ARM requires applications " \
