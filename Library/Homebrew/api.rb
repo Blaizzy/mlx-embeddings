@@ -56,7 +56,7 @@ module Homebrew
                       (Homebrew::EnvConfig.no_auto_update? ||
                       ((Time.now - Homebrew::EnvConfig.api_auto_update_secs.to_i) < target.mtime))
 
-      begin
+      json_data = begin
         begin
           args = curl_args.dup
           args.prepend("--time-cond", target.to_s) if target.exist? && !target.empty?
@@ -83,7 +83,7 @@ module Homebrew
         end
 
         FileUtils.touch(target) unless skip_download
-        [JSON.parse(target.read), !skip_download]
+        JSON.parse(target.read)
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
@@ -91,6 +91,21 @@ module Homebrew
         odie "Cannot download non-corrupt #{url}!" if retry_count > Homebrew::EnvConfig.curl_retries.to_i
 
         retry
+      end
+
+      if endpoint.end_with?(".jws.json")
+        success, data = verify_and_parse_jws(json_data)
+        unless success
+          target.unlink
+          odie <<~EOS
+            Failed to verify integrity (#{data}) of:
+              #{url}
+            Potential MITM attempt detected. Please run `brew update` and try again.
+          EOS
+        end
+        [data, !skip_download]
+      else
+        [json_data, !skip_download]
       end
     end
 
@@ -139,6 +154,32 @@ module Homebrew
       end
 
       false
+    end
+
+    sig { params(json_data: Hash).returns([T::Boolean, T.any(String, Array, Hash)]) }
+    private_class_method def self.verify_and_parse_jws(json_data)
+      signatures = json_data["signatures"]
+      homebrew_signature = signatures&.find { |sig| sig.dig("header", "kid") == "homebrew-1" }
+      return false, "key not found" if homebrew_signature.nil?
+
+      header = JSON.parse(Base64.urlsafe_decode64(homebrew_signature["protected"]))
+      if header["alg"] != "PS512" || header["b64"] != false # NOTE: nil has a meaning of true
+        return false, "invalid algorithm"
+      end
+
+      require "openssl"
+
+      pubkey = OpenSSL::PKey::RSA.new((HOMEBREW_LIBRARY_PATH/"api/homebrew-1.pem").read)
+      signing_input = "#{homebrew_signature["protected"]}.#{json_data["payload"]}"
+      unless pubkey.verify_pss("SHA512",
+                               Base64.urlsafe_decode64(homebrew_signature["signature"]),
+                               signing_input,
+                               salt_length: :digest,
+                               mgf1_hash:   "SHA512")
+        return false, "signature mismatch"
+      end
+
+      [true, JSON.parse(json_data["payload"])]
     end
   end
 end
