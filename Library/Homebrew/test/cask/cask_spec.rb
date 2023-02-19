@@ -41,6 +41,12 @@ describe Cask::Cask, :cask do
       expect(c.token).to eq("local-caffeine")
     end
 
+    it "returns an instance of the Cask from a JSON file" do
+      c = Cask::CaskLoader.load("#{tap_path}/caffeine.json")
+      expect(c).to be_a(described_class)
+      expect(c.token).to eq("caffeine")
+    end
+
     it "returns an instance of the Cask from a URL" do
       c = Cask::CaskLoader.load("file://#{tap_path}/Casks/local-caffeine.rb")
       expect(c).to be_a(described_class)
@@ -49,9 +55,7 @@ describe Cask::Cask, :cask do
 
     it "raises an error when failing to download a Cask from a URL" do
       expect {
-        url = "file://#{tap_path}/Casks/notacask.rb"
-
-        Cask::CaskLoader.load(url)
+        Cask::CaskLoader.load("file://#{tap_path}/Casks/notacask.rb")
       }.to raise_error(Cask::CaskUnavailableError)
     end
 
@@ -208,6 +212,33 @@ describe Cask::Cask, :cask do
           file.close
           file.unlink
         end
+      end
+    end
+  end
+
+  describe "#to_h" do
+    let(:json_file) { "#{TEST_FIXTURE_DIR}/cask/everything.json" }
+    let(:expected_json) { File.read(json_file).strip }
+
+    context "when loaded from cask file" do
+      it "returns expected hash" do
+        hash = Cask::CaskLoader.load("everything").to_h
+
+        expect(hash).to be_a(Hash)
+        expect(JSON.pretty_generate(hash)).to eq(expected_json)
+      end
+    end
+
+    context "when loaded from json file" do
+      it "returns expected hash" do
+        expect(Homebrew::API::Cask).not_to receive(:fetch_source)
+        hash = Cask::CaskLoader::FromAPILoader
+          .new("everything", from_json: JSON.parse(expected_json))
+          .load(config: nil)
+          .to_h
+
+        expect(hash).to be_a(Hash)
+        expect(JSON.pretty_generate(hash)).to eq(expected_json)
       end
     end
   end
