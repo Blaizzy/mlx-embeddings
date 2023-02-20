@@ -2119,6 +2119,8 @@ class Formula # rubocop:disable Metrics/ClassLength
       "uses_from_macos"          => uses_from_macos_elements.uniq,
       "requirements"             => [],
       "conflicts_with"           => conflicts.map(&:name),
+      "conflicts_with_reasons"   => conflicts.map(&:reason),
+      "link_overwrite"           => self.class.link_overwrite_paths.to_a,
       "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER),
       "installed"                => [],
       "linked_keg"               => linked_version&.to_s,

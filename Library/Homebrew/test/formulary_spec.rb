@@ -253,6 +253,9 @@ describe Formulary do
                 "contexts" => ["build"],
               },
             ],
+            "conflicts_with"           => ["conflicting_formula"],
+            "conflicts_with_reasons"   => ["it does"],
+            "link_overwrite"           => ["bin/abc"],
             "caveats"                  => "example caveat string",
           }.merge(extra_items),
         }
@@ -329,6 +332,10 @@ describe Formulary do
         expect(req).to be_an_instance_of XcodeRequirement
         expect(req.version).to eq "1.0"
         expect(req.tags).to eq [:build]
+
+        expect(formula.conflicts.map(&:name)).to include "conflicting_formula"
+        expect(formula.conflicts.map(&:reason)).to include "it does"
+        expect(formula.class.link_overwrite_paths).to include "bin/abc"
 
         expect(formula.caveats).to eq "example caveat string"
 
