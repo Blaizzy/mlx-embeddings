@@ -9,6 +9,7 @@ inherit_mode:
   merge:
     - Include
     - Exclude
+    - AllowedMethods
 
 AllCops:
   TargetRubyVersion: 2.6
@@ -20,9 +21,8 @@ AllCops:
     - "**/*.rbi"
   Exclude:
     - "Homebrew/sorbet/rbi/gems/**/*.rbi"
-    - "Homebrew/sorbet/rbi/hidden-definitions/**/*.rbi"
+    - "Homebrew/sorbet/rbi/hidden-definitions/*.rbi"
     - "Homebrew/sorbet/rbi/todo.rbi"
-    - "Homebrew/sorbet/rbi/upstream.rbi"
     - "Homebrew/bin/*"
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"
