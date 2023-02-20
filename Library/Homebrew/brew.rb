@@ -162,7 +162,7 @@ rescue BuildError => e
       This build failure is expected behaviour.
       Do not create issues about this on Homebrew's GitHub repositories.
       Any opened issues will be immediately closed without response.
-      Do not ask for help from MacHomebrew on Twitter.
+      Do not ask for help from Homebrew or its maintainers on social media.
       You may ask for help in Homebrew's discussions but are unlikely to receive a response.
       Try to figure out the problem yourself and submit a fix as a pull request.
       We will review it but may or may not accept it.
