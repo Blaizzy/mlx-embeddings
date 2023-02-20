@@ -7,7 +7,7 @@ describe "patching" do
   let(:formula_subclass) {
     Class.new(Formula) {
       # These are defined within an anonymous class to avoid polluting the global namespace.
-      # rubocop:disable RSpec/LeakyConstantDeclaration
+      # rubocop:disable RSpec/LeakyConstantDeclaration,Lint/ConstantDefinitionInBlock
       TESTBALL_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz"
       TESTBALL_PATCHES_URL = "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1-patches.tgz"
       PATCH_URL_A = "file://#{TEST_FIXTURE_DIR}/patches/noop-a.diff"
@@ -17,7 +17,7 @@ describe "patching" do
       APPLY_A = "noop-a.diff"
       APPLY_B = "noop-b.diff"
       APPLY_C = "noop-c.diff"
-      # rubocop:enable RSpec/LeakyConstantDeclaration
+      # rubocop:enable RSpec/LeakyConstantDeclaration,Lint/ConstantDefinitionInBlock
 
       url TESTBALL_URL
       sha256 TESTBALL_SHA256

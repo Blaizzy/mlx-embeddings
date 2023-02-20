@@ -3,7 +3,7 @@
 
 require "benchmark"
 
-shared_examples "#uninstall_phase or #zap_phase" do
+shared_examples "#uninstall_phase or #zap_phase" do # rubocop:disable Metrics/BlockLength
   subject { artifact }
 
   let(:artifact_dsl_key) { described_class.dsl_key }

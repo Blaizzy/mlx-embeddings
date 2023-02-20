@@ -290,27 +290,11 @@ Layout/FirstHashElementIndentation:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
-Lint/RequireRelativeSelfPath:
-  # bugged on formula-analytics
-  # https://github.com/Homebrew/brew/pull/12152/checks?check_run_id=3755137378#step:15:60
-  Exclude:
-    - "Taps/homebrew/homebrew-formula-analytics/*/*.rb"
-
 Lint/DuplicateBranch:
   Exclude:
     - "Taps/*/*/*.rb"
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
-
-# needed for lazy_object magic
-Naming/MemoizedInstanceVariableName:
-  Exclude:
-    - "Homebrew/lazy_object.rb"
-
-# useful for metaprogramming in RSpec
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - "**/*_spec.rb"
 
 # so many of these in formulae and can't be autocorrected
 Lint/ParenthesesAsGroupedExpression:
