@@ -36,7 +36,7 @@ module Homebrew
              description: "Fetch the upstream repository to detect if the HEAD installation of the " \
                           "formula is outdated. Otherwise, the repository's HEAD will only be checked for " \
                           "updates when a new stable or development version has been released."
-      switch "--greedy",
+      switch "-g", "--greedy",
              description: "Also include outdated casks with `auto_updates true` or `version :latest`."
 
       switch "--greedy-latest",
