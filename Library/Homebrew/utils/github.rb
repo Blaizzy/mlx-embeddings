@@ -699,4 +699,14 @@ module GitHub # rubocop:disable Metrics/ModuleLength
 
     output[/^Status: (200)/, 1] != "200"
   end
+
+  def repo_commit_count_for_user(nwo, user)
+    return if Homebrew::EnvConfig.no_github_api?
+
+    commits = 0
+    API.paginate_rest("#{API_URL}/repos/#{nwo}/commits", query: "&author=#{user}") do |result|
+      commits += result.length
+    end
+    commits
+  end
 end

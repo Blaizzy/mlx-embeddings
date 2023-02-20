@@ -86,7 +86,7 @@ class Tap
   # e.g. `user/repo`
   attr_reader :name
 
-  # The full name of this {Tap}, including the `homebrew-` prefix.
+  # The full name of this {Tap}, including the `homebrew-` prefix unless repo == "brew".
   # It combines {#user} and 'homebrew-'-prefixed {#repo} with a slash.
   # e.g. `user/homebrew-repo`
   attr_reader :full_name
@@ -100,7 +100,7 @@ class Tap
     @user = user
     @repo = repo
     @name = "#{@user}/#{@repo}".downcase
-    @full_name = "#{@user}/homebrew-#{@repo}"
+    @full_name = (@repo == "brew") ? "#{user}/#{repo}" : "#{@user}/homebrew-#{@repo}"
     @path = TAP_DIRECTORY/@full_name.downcase
     @path.extend(GitRepositoryExtension)
     @alias_table = nil
