@@ -699,7 +699,7 @@ Print output in JSON format\. There are two versions: \fBv1\fR and \fBv2\fR\. \f
 Fetch the upstream repository to detect if the HEAD installation of the formula is outdated\. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released\.
 .
 .TP
-\fB\-\-greedy\fR
+\fB\-g\fR, \fB\-\-greedy\fR
 Also include outdated casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
 .
 .TP
@@ -1074,7 +1074,7 @@ Disable/enable quarantining of downloads (default: enabled)\.
 Skip installing cask dependencies\.
 .
 .TP
-\fB\-\-greedy\fR
+\fB\-g\fR, \fB\-\-greedy\fR
 Also include casks with \fBauto_updates true\fR or \fBversion :latest\fR\.
 .
 .TP
@@ -1606,7 +1606,7 @@ The first argument is a name (e\.g\. "BrewTestBot") or an email address (e\.g\. 
 .
 .TP
 \fB\-\-repositories\fR
-Specify a comma\-separated (no spaces) list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBautoupdate\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-drivers\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\.Omitting this flag, or specifying \fB\-\-repositories=all\fR, will search all repositories\.
+Specify a comma\-separated (no spaces) list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBautoupdate\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-drivers\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\. Omitting this flag, or specifying \fB\-\-repositories=all\fR, searches all repositories\. Use \fB\-\-repositories=primary\fR to search only the main repositories: brew,core,cask\.
 .
 .TP
 \fB\-\-from\fR
