@@ -338,6 +338,9 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def csv?; end
+
+      sig { returns(T.nilable(String)) }
+      def user; end
     end
   end
 end

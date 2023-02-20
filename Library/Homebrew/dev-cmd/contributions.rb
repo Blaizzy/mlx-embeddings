@@ -19,11 +19,9 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` <email|username> [<--repositories>`=`] [<--csv>]"
+      usage_banner "`contributions` [--user=<email|username>] [<--repositories>`=`] [<--csv>]"
       description <<~EOS
-        Contributions to Homebrew repos for a user.
-
-        The first argument is a GitHub username (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
+        Contributions to Homebrew repos.
       EOS
 
       comma_array "--repositories",
@@ -37,10 +35,11 @@ module Homebrew
       flag "--to=",
            description: "Date (ISO-8601 format) to stop searching contributions."
 
+      flag "--user=",
+           description: "A GitHub username or email address of a specific person to find contribution data for."
+
       switch "--csv",
              description: "Print a CSV of a user's contributions across repositories over the time period."
-
-      named_args number: 1
     end
   end
 
@@ -59,33 +58,26 @@ module Homebrew
       args.repositories
     end
 
-    repos.each do |repo|
-      if SUPPORTED_REPOS.exclude?(repo)
-        return ofail "Unsupported repository: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
-      end
+    return ofail "CSVs not yet supported for the full list of maintainers at once." if args.csv? && args.user.nil?
 
-      repo_path = find_repo_path_for_repo(repo)
-      tap = Tap.fetch("homebrew", repo)
-      unless repo_path.exist?
-        opoo "Repository #{repo} not yet tapped! Tapping it now..."
-        tap.install
-      end
-
-      repo_full_name = if repo == "brew"
-        "homebrew/brew"
-      else
-        tap.full_name
-      end
-
-      results[repo] = {
-        commits:       GitHub.repo_commit_count_for_user(repo_full_name, args.named.first),
-        coauthorships: git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", args),
-        signoffs:      git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", args),
-      }
+    maintainers = GitHub.members_by_team("Homebrew", "maintainers")
+    maintainers.each do |username, _|
+      puts "Determining contributions for #{username}..." if args.verbose?
+      # TODO: Using the GitHub username to scan the `git log` undercounts some
+      # contributions as people might not always have configured their Git
+      # committer details to match the ones on GitHub.
+      # TODO: Switch to using the GitHub APIs instead of `git log` if
+      # they ever support trailers.
+      results[username] = scan_repositories(repos, username, args)
+      puts "#{username} contributed #{total(results[username])} times #{time_period(args)}."
     end
 
-    puts "The user #{args.named.first} has made #{total(results)} contributions #{time_period(args)}."
-    puts generate_csv(args.named.first, results) if args.csv?
+    return unless args.user
+
+    user = args.user
+    results[user] = scan_repositories(repos, user, args)
+    puts "#{user} contributed #{total(results[user])} times #{time_period(args)}."
+    puts generate_csv(T.must(user), results[user]) if args.csv?
   end
 
   sig { params(repo: String).returns(Pathname) }
@@ -126,6 +118,37 @@ module Homebrew
     end
   end
 
+  def scan_repositories(repos, person, args)
+    data = {}
+
+    repos.each do |repo|
+      if SUPPORTED_REPOS.exclude?(repo)
+        return ofail "Unsupported repository: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
+      end
+
+      repo_path = find_repo_path_for_repo(repo)
+      tap = Tap.fetch("homebrew", repo)
+      unless repo_path.exist?
+        opoo "Repository #{repo} not yet tapped! Tapping it now..."
+        tap.install
+      end
+
+      repo_full_name = if repo == "brew"
+        "homebrew/brew"
+      else
+        tap.full_name
+      end
+
+      data[repo] = {
+        commits:       GitHub.repo_commit_count_for_user(repo_full_name, person),
+        coauthorships: git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", person, args),
+        signoffs:      git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", person, args),
+      }
+    end
+
+    data
+  end
+
   sig { params(results: Hash).returns(Integer) }
   def total(results)
     results
@@ -134,13 +157,13 @@ module Homebrew
       .sum(&:sum) # 956
   end
 
-  sig { params(repo_path: Pathname, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
-  def git_log_trailers_cmd(repo_path, trailer, args)
+  sig { params(repo_path: Pathname, person: String, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
+  def git_log_trailers_cmd(repo_path, person, trailer, args)
     cmd = ["git", "-C", repo_path, "log", "--oneline"]
     cmd << "--format='%(trailers:key=#{trailer}:)'"
     cmd << "--before=#{args.to}" if args.to
     cmd << "--after=#{args.from}" if args.from
 
-    Utils.safe_popen_read(*cmd).lines.count { |l| l.include?(args.named.first) }
+    Utils.safe_popen_read(*cmd).lines.count { |l| l.include?(person) }
   end
 end
