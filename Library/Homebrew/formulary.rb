@@ -244,6 +244,14 @@ module Formulary
         depends_on req_name => req_tags
       end
 
+      json_formula["conflicts_with"].each_with_index do |conflict, index|
+        conflicts_with conflict, because: json_formula.dig("conflicts_with_reasons", index)
+      end
+
+      json_formula["link_overwrite"]&.each do |overwrite_path|
+        link_overwrite overwrite_path
+      end
+
       def install
         raise "Cannot build from source from abstract formula."
       end
