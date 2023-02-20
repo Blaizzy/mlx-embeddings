@@ -95,10 +95,10 @@ class AbstractDownloadStrategy
   # @api public
   def stage(&block)
     UnpackStrategy.detect(cached_location,
-                          prioritize_extension: true,
+                          prioritise_extension: true,
                           ref_type: @ref_type, ref: @ref)
                   .extract_nestedly(basename:             basename,
-                                    prioritize_extension: true,
+                                    prioritise_extension: true,
                                     verbose:              verbose? && !quiet?)
     chdir(&block) if block
   end
