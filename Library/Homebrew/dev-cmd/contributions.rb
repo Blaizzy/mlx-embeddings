@@ -9,8 +9,9 @@ module Homebrew
 
   module_function
 
+  PRIMARY_REPOS = %w[brew core cask].freeze
   SUPPORTED_REPOS = [
-    %w[brew core cask],
+    PRIMARY_REPOS,
     OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") },
     OFFICIAL_CASK_TAPS.reject { |t| t == "cask" },
   ].flatten.freeze
@@ -28,7 +29,8 @@ module Homebrew
       comma_array "--repositories",
                   description: "Specify a comma-separated (no spaces) list of repositories to search. " \
                                "Supported repositories: #{SUPPORTED_REPOS.map { |t| "`#{t}`" }.to_sentence}." \
-                               "Omitting this flag, or specifying `--repositories=all`, will search all repositories."
+                               "Omitting this flag, or specifying `--repositories=all`, searches all repositories." \
+                               "Use `--repositories=primary` to search only the main repositories: brew,core,cask."
       flag "--from=",
            description: "Date (ISO-8601 format) to start searching contributions."
 
@@ -49,7 +51,13 @@ module Homebrew
     results = {}
 
     all_repos = args.repositories.nil? || args.repositories.include?("all")
-    repos = all_repos ? SUPPORTED_REPOS : args.repositories
+    repos = if all_repos
+      SUPPORTED_REPOS
+    elsif args.repositories.include?("primary")
+      PRIMARY_REPOS
+    else
+      args.repositories
+    end
 
     repos.each do |repo|
       if SUPPORTED_REPOS.exclude?(repo)
