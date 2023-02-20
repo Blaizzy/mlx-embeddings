@@ -28,8 +28,8 @@ module Homebrew
 
       comma_array "--repositories",
                   description: "Specify a comma-separated (no spaces) list of repositories to search. " \
-                               "Supported repositories: #{SUPPORTED_REPOS.map { |t| "`#{t}`" }.to_sentence}." \
-                               "Omitting this flag, or specifying `--repositories=all`, searches all repositories." \
+                               "Supported repositories: #{SUPPORTED_REPOS.map { |t| "`#{t}`" }.to_sentence}. " \
+                               "Omitting this flag, or specifying `--repositories=all`, searches all repositories. " \
                                "Use `--repositories=primary` to search only the main repositories: brew,core,cask."
       flag "--from=",
            description: "Date (ISO-8601 format) to start searching contributions."

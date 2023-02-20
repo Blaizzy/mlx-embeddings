@@ -498,7 +498,7 @@ information is displayed in interactive shells, and suppressed otherwise.
   Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
-* `--greedy`:
+* `-g`, `--greedy`:
   Also include outdated casks with `auto_updates true` or `version :latest`.
 * `--greedy-latest`:
   Also include outdated casks including those with `version :latest`.
@@ -763,7 +763,7 @@ upgraded formulae or, every 30 days, for all formulae.
   Disable/enable quarantining of downloads (default: enabled).
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
-* `--greedy`:
+* `-g`, `--greedy`:
   Also include casks with `auto_updates true` or `version :latest`.
 * `--greedy-latest`:
   Also include casks with `version :latest`.
@@ -1118,7 +1118,7 @@ Contributions to Homebrew repos for a user.
 The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
 
 * `--repositories`:
-  Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`.Omitting this flag, or specifying `--repositories=all`, will search all repositories.
+  Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`. Omitting this flag, or specifying `--repositories=all`, searches all repositories. Use `--repositories=primary` to search only the main repositories: brew,core,cask.
 * `--from`:
   Date (ISO-8601 format) to start searching contributions.
 * `--to`:
