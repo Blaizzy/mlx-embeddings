@@ -1,6 +1,6 @@
 # Bash completion script for brew(1)
 
-if [[ -n ${POSIXLY_CORRECT} ]] || shopt -oq posix
+if test -v POSIXLY_CORRECT || test -o posix 
 then
   echo "Homebrew Bash completions do not work in POSIX mode" 1>&2
   return

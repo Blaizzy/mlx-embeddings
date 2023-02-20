@@ -36,7 +36,7 @@ module Utils
             --data aip=1
             --data t=#{type}
             --data tid=#{analytics_id}
-            --data cid=#{ENV.fetch("HOMEBREW_ANALYTICS_USER_UUID")}
+            --data uid=n0thxg00gl3
             --data an=#{HOMEBREW_PRODUCT}
             --data av=#{HOMEBREW_VERSION}
           ]
@@ -202,10 +202,6 @@ module Utils
         ENV["HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT"].present?
       end
 
-      def uuid
-        Homebrew::Settings.read :analyticsuuid
-      end
-
       def messages_displayed!
         Homebrew::Settings.write :analyticsmessage, true
         Homebrew::Settings.write :caskanalyticsmessage, true
@@ -213,16 +209,16 @@ module Utils
 
       def enable!
         Homebrew::Settings.write :analyticsdisabled, false
+        delete_uuid!
         messages_displayed!
       end
 
       def disable!
         Homebrew::Settings.write :analyticsdisabled, true
-        regenerate_uuid!
+        delete_uuid!
       end
 
-      def regenerate_uuid!
-        # it will be regenerated in next run unless disabled.
+      def delete_uuid!
         Homebrew::Settings.delete :analyticsuuid
       end
 

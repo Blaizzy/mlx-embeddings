@@ -79,9 +79,6 @@ Read more at <https://docs.brew.sh/Analytics>.
 `brew analytics` (`on`|`off`)
 <br>Turn Homebrew's analytics on or off respectively.
 
-`brew analytics regenerate-uuid`
-<br>Regenerate the UUID used for Homebrew's Google Analytics (not InfluxDB).
-
 ### `autoremove` [`--dry-run`]
 
 Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed.
