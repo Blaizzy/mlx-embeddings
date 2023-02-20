@@ -796,9 +796,15 @@ EOS
       done
       if [[ ${curl_exit_code} -eq 0 ]]
       then
+        touch "${HOMEBREW_CACHE}/api/${formula_or_cask}.json"
         CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
         if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
         then
+          rm -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt"
+          if [[ "${formula_or_cask}" == "formula" ]]
+          then
+            rm -f "${HOMEBREW_CACHE}/api/formula_aliases.txt"
+          fi
           HOMEBREW_UPDATED="1"
         fi
       else

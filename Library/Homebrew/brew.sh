@@ -75,10 +75,10 @@ case "$*" in
     homebrew-casks
     exit 0
     ;;
-  # falls back to cmd/prefix.rb on a non-zero return
-  --prefix*)
-    source "${HOMEBREW_LIBRARY}/Homebrew/prefix.sh"
-    homebrew-prefix "$@" && exit 0
+  # falls back to cmd/--prefix.rb and cmd/--cellar.rb on a non-zero return
+  --prefix* | --cellar*)
+    source "${HOMEBREW_LIBRARY}/Homebrew/formula_path.sh"
+    homebrew-formula-path "$@" && exit 0
     ;;
 esac
 
