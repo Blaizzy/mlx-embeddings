@@ -4386,14 +4386,6 @@ module Homebrew::API::Analytics
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Homebrew::API::Cask
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::API::Formula
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Homebrew::CLI::Args
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
