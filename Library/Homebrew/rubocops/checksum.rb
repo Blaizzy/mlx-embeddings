@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -9,7 +9,9 @@ module RuboCop
       # This cop makes sure that deprecated checksums are not used.
       #
       # @api private
-      class Checksum < FormulaCop
+      class Checksum < Base
+        include FormulaCop
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -45,7 +47,8 @@ module RuboCop
       # This cop makes sure that checksum strings are lowercase.
       #
       # @api private
-      class ChecksumCase < FormulaCop
+      class ChecksumCase < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "macos_versions"
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 require "rubocops/shared/on_system_conditionals_helper"
 
 module RuboCop
@@ -11,7 +11,8 @@ module RuboCop
       # This cop checks for various miscellaneous Homebrew coding styles.
       #
       # @api private
-      class Lines < FormulaCop
+      class Lines < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           [:automake, :ant, :autoconf, :emacs, :expat, :libtool, :mysql, :perl,
            :postgresql, :python, :python3, :rbenv, :ruby].each do |dependency|
@@ -34,7 +35,8 @@ module RuboCop
       # This cop makes sure that a space is used for class inheritance.
       #
       # @api private
-      class ClassInheritance < FormulaCop
+      class ClassInheritance < Base
+        include FormulaCop
         def audit_formula(_node, class_node, parent_class_node, _body_node)
           begin_pos = start_column(parent_class_node)
           end_pos = end_column(class_node)
@@ -48,7 +50,8 @@ module RuboCop
       # This cop makes sure that template comments are removed.
       #
       # @api private
-      class Comments < FormulaCop
+      class Comments < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           audit_comments do |comment|
             [
@@ -89,7 +92,8 @@ module RuboCop
       # This cop makes sure that idiomatic `assert_*` statements are used.
       #
       # @api private
-      class AssertStatements < FormulaCop
+      class AssertStatements < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -116,7 +120,8 @@ module RuboCop
       # This cop makes sure that `option`s are used idiomatically.
       #
       # @api private
-      class OptionDeclarations < FormulaCop
+      class OptionDeclarations < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -201,7 +206,8 @@ module RuboCop
       # This cop makes sure that formulae depend on `open-mpi` instead of `mpich`.
       #
       # @api private
-      class MpiCheck < FormulaCop
+      class MpiCheck < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -223,7 +229,8 @@ module RuboCop
       # or run-time.
       #
       # @api private
-      class PyoxidizerCheck < FormulaCop
+      class PyoxidizerCheck < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -250,7 +257,8 @@ module RuboCop
       # This cop makes sure that the safe versions of `popen_*` calls are used.
       #
       # @api private
-      class SafePopenCommands < FormulaCop
+      class SafePopenCommands < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -281,7 +289,8 @@ module RuboCop
       # This cop makes sure that environment variables are passed correctly to `popen_*` calls.
       #
       # @api private
-      class ShellVariables < FormulaCop
+      class ShellVariables < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -313,7 +322,8 @@ module RuboCop
       # This cop makes sure that `license` has the correct format.
       #
       # @api private
-      class LicenseArrays < FormulaCop
+      class LicenseArrays < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -334,7 +344,8 @@ module RuboCop
       # This cop makes sure that nested `license` declarations are split onto multiple lines.
       #
       # @api private
-      class Licenses < FormulaCop
+      class Licenses < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -357,7 +368,8 @@ module RuboCop
       # This cop makes sure that Python versions are consistent.
       #
       # @api private
-      class PythonVersions < FormulaCop
+      class PythonVersions < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -395,7 +407,8 @@ module RuboCop
       # This cop makes sure that OS conditionals are consistent.
       #
       # @api private
-      class OnSystemConditionals < FormulaCop
+      class OnSystemConditionals < Base
+        include FormulaCop
         include OnSystemConditionalsHelper
         extend AutoCorrector
 
@@ -436,7 +449,8 @@ module RuboCop
       # This cop makes sure that the `generate_completions_from_executable` DSL is used.
       #
       # @api private
-      class GenerateCompletionsDSL < FormulaCop
+      class GenerateCompletionsDSL < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -519,7 +533,8 @@ module RuboCop
       # a single, combined call for all shells.
       #
       # @api private
-      class SingleGenerateCompletionsDSLCall < FormulaCop
+      class SingleGenerateCompletionsDSLCall < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -581,7 +596,8 @@ module RuboCop
       # This cop checks for other miscellaneous style violations.
       #
       # @api private
-      class Miscellaneous < FormulaCop
+      class Miscellaneous < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -852,7 +868,8 @@ module RuboCop
       # This cop makes sure that no build-time checks are performed.
       #
       # @api private
-      class MakeCheck < FormulaCop
+      class MakeCheck < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if formula_tap != "homebrew-core"
 
@@ -876,7 +893,8 @@ module RuboCop
       end
 
       # This cop ensures that new formulae depending on removed Requirements are not used
-      class Requirements < FormulaCop
+      class Requirements < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           problem "Formulae should depend on a versioned `openjdk` instead of :java" if depends_on? :java
           problem "Formulae should depend on specific X libraries instead of :x11" if depends_on? :x11

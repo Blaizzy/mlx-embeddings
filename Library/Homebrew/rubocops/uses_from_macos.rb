@@ -1,13 +1,15 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits formulae that are keg-only because they are provided by macos.
-      class ProvidedByMacos < FormulaCop
+      class ProvidedByMacos < Base
+        include FormulaCop
+
         PROVIDED_BY_MACOS_FORMULAE = %w[
           apr
           bc
@@ -73,7 +75,9 @@ module RuboCop
       end
 
       # This cop audits `uses_from_macos` dependencies in formulae.
-      class UsesFromMacos < FormulaCop
+      class UsesFromMacos < Base
+        include FormulaCop
+
         # These formulae aren't `keg_only :provided_by_macos` but are provided by
         # macOS (or very similarly, e.g. OpenSSL where system provides LibreSSL).
         # TODO: consider making some of these keg-only.

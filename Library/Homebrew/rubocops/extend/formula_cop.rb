@@ -5,10 +5,11 @@ require "rubocops/shared/helper_functions"
 
 module RuboCop
   module Cop
-    # Superclass for all formula cops.
+    # Mixin for all formula cops.
     #
     # @api private
-    class FormulaCop < Base
+    module FormulaCop
+      extend RuboCop::AST::NodePattern::Macros
       include RangeHelp
       include HelperFunctions
 
@@ -67,11 +68,7 @@ module RuboCop
       # Returns true if given dependency name and dependency type exist in given dependency method call node.
       # TODO: Add case where key of hash is an array
       def depends_on_name_type?(node, name = nil, type = :required)
-        name_match = if name
-          false
-        else
-          true # Match only by type when name is nil
-        end
+        name_match = !name # Match only by type when name is nil
 
         case type
         when :required

@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -9,7 +9,8 @@ module RuboCop
       # This cop audits the `bottle` block in formulae.
       #
       # @api private
-      class BottleFormat < FormulaCop
+      class BottleFormat < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -56,7 +57,8 @@ module RuboCop
       # This cop audits the indentation of the bottle tags in the `bottle` block in formulae.
       #
       # @api private
-      class BottleTagIndentation < FormulaCop
+      class BottleTagIndentation < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -92,7 +94,8 @@ module RuboCop
       # This cop audits the indentation of the sha256 digests in the`bottle` block in formulae.
       #
       # @api private
-      class BottleDigestIndentation < FormulaCop
+      class BottleDigestIndentation < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -128,7 +131,8 @@ module RuboCop
       # This cop audits the order of the `bottle` block in formulae.
       #
       # @api private
-      class BottleOrder < FormulaCop
+      class BottleOrder < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

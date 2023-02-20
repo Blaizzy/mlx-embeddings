@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -14,7 +14,9 @@ module RuboCop
       # - `stable do` should not be present without a `head` spec
       #
       # @api private
-      class ComponentsRedundancy < FormulaCop
+      class ComponentsRedundancy < Base
+        include FormulaCop
+
         HEAD_MSG = "`head` and `head do` should not be simultaneously present"
         BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present"
         STABLE_MSG = "`stable do` should not be present without a `head` spec"

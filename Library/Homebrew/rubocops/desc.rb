@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 require "rubocops/shared/desc_helper"
 
 module RuboCop
@@ -9,7 +9,8 @@ module RuboCop
     module FormulaAudit
       # This cop audits `desc` in formulae.
       # See the {DescHelper} module for details of the checks.
-      class Desc < FormulaCop
+      class Desc < Base
+        include FormulaCop
         include DescHelper
         extend AutoCorrector
 

@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require "rubocops/formula_desc"
+require "rubocops/desc"
 
 describe RuboCop::Cop::FormulaAudit::Desc do
   subject(:cop) { described_class.new }

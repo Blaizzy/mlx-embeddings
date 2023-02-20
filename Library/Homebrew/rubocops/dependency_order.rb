@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -10,7 +10,8 @@ module RuboCop
       #
       # precedence order:
       # build-time > test > normal > recommended > optional
-      class DependencyOrder < FormulaCop
+      class DependencyOrder < Base
+        include FormulaCop
         extend T::Sig
         extend AutoCorrector
 

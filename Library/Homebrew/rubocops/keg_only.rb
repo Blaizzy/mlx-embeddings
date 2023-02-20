@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -9,7 +9,8 @@ module RuboCop
       # This cop makes sure that a `keg_only` reason has the correct format.
       #
       # @api private
-      class KegOnly < FormulaCop
+      class KegOnly < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

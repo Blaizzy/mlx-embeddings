@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -24,7 +24,9 @@ module RuboCop
       #   end
       #
       # @api private
-      class Caveats < FormulaCop
+      class Caveats < Base
+        include FormulaCop
+
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           caveats_strings.each do |n|
             if regex_match_group(n, /\bsetuid\b/i)

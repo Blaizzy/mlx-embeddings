@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -9,7 +9,8 @@ module RuboCop
       # This cop checks for various problems in a formula's source code.
       #
       # @api private
-      class Text < FormulaCop
+      class Text < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(node, _class_node, _parent_class_node, body_node)
@@ -106,7 +107,8 @@ module RuboCop
       # This cop contains stricter checks for various problems in a formula's source code.
       #
       # @api private
-      class Text < FormulaCop
+      class Text < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 

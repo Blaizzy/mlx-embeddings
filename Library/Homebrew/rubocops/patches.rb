@@ -1,14 +1,15 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits `patch`es in formulae.
       # TODO: Many of these could be auto-corrected.
-      class Patches < FormulaCop
+      class Patches < Base
+        include FormulaCop
         extend T::Sig
         extend AutoCorrector
 

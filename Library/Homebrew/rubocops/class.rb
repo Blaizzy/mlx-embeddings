@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -9,7 +9,8 @@ module RuboCop
       # This cop makes sure that {Formula} is used as superclass.
       #
       # @api private
-      class ClassName < FormulaCop
+      class ClassName < Base
+        include FormulaCop
         extend AutoCorrector
 
         DEPRECATED_CLASSES = %w[
@@ -31,7 +32,8 @@ module RuboCop
       # This cop makes sure that a `test` block contains a proper test.
       #
       # @api private
-      class Test < FormulaCop
+      class Test < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -74,7 +76,8 @@ module RuboCop
       # This cop makes sure that a `test` block exists.
       #
       # @api private
-      class TestPresent < FormulaCop
+      class TestPresent < Base
+        include FormulaCop
         def audit_formula(_node, class_node, _parent_class_node, body_node)
           return if find_block(body_node, :test)
 

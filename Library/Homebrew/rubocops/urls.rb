@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
@@ -9,7 +9,9 @@ module RuboCop
       # This cop audits `url`s and `mirror`s in formulae.
       #
       # @api private
-      class Urls < FormulaCop
+      class Urls < Base
+        include FormulaCop
+
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
 
@@ -260,7 +262,8 @@ module RuboCop
       # This cop makes sure that the correct format for PyPI URLs is used.
       #
       # @api private
-      class PyPiUrls < FormulaCop
+      class PyPiUrls < Base
+        include FormulaCop
         extend T::Sig
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -294,7 +297,8 @@ module RuboCop
       # This cop makes sure that git URLs have a `revision`.
       #
       # @api private
-      class GitUrls < FormulaCop
+      class GitUrls < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
           return unless formula_tap == "homebrew-core"
@@ -318,7 +322,8 @@ module RuboCop
       # This cop makes sure that git URLs have a `tag`.
       #
       # @api private
-      class GitUrls < FormulaCop
+      class GitUrls < Base
+        include FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
           return unless formula_tap == "homebrew-core"

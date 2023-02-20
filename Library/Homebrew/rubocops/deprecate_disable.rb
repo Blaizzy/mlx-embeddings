@@ -1,13 +1,14 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits `deprecate!` and `disable!` dates.
-      class DeprecateDisableDate < FormulaCop
+      class DeprecateDisableDate < Base
+        include FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -34,7 +35,8 @@ module RuboCop
       end
 
       # This cop audits `deprecate!` and `disable!` reasons.
-      class DeprecateDisableReason < FormulaCop
+      class DeprecateDisableReason < Base
+        include FormulaCop
         extend AutoCorrector
 
         PUNCTUATION_MARKS = %w[. ! ?].freeze

@@ -1,13 +1,14 @@
 # typed: true
 # frozen_string_literal: true
 
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits versioned formulae for `conflicts_with`.
-      class Conflicts < FormulaCop
+      class Conflicts < Base
+        include FormulaCop
         extend AutoCorrector
 
         MSG = "Versioned formulae should not use `conflicts_with`. " \
