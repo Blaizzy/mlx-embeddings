@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "ast_constants"
-require "rubocops/extend/formula"
+require "rubocops/extend/formula_cop"
 
 module RuboCop
   module Cop

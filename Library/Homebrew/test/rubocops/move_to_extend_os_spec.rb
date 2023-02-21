@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require "rubocops/platform"
+require "rubocops/move_to_extend_os"
 
 describe RuboCop::Cop::Homebrew::MoveToExtendOS do
   subject(:cop) { described_class.new }

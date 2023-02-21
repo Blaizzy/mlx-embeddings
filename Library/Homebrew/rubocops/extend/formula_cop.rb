@@ -5,12 +5,17 @@ require "rubocops/shared/helper_functions"
 
 module RuboCop
   module Cop
-    # Superclass for all formula cops.
+    # Abstract base class for all formula cops.
     #
     # @api private
     class FormulaCop < Base
+      extend T::Sig
+      extend T::Helpers
       include RangeHelp
       include HelperFunctions
+
+      abstract!
+      exclude_from_registry
 
       attr_accessor :file_path
 
@@ -28,9 +33,16 @@ module RuboCop
         audit_formula(node, class_node, parent_class_node, @body)
       end
 
-      def audit_formula(node, class_node, parent_class_node, body_node)
-        raise NotImplementedError, "Subclasses must implement this method."
-      end
+      sig {
+        abstract
+          .params(
+            node:              RuboCop::AST::ClassNode,
+            class_node:        RuboCop::AST::ConstNode,
+            parent_class_node: RuboCop::AST::ConstNode,
+            body_node:         RuboCop::AST::Node,
+          ).void
+      }
+      def audit_formula(node, class_node, parent_class_node, body_node); end
 
       # Yields to block when there is a match.
       #
@@ -67,11 +79,7 @@ module RuboCop
       # Returns true if given dependency name and dependency type exist in given dependency method call node.
       # TODO: Add case where key of hash is an array
       def depends_on_name_type?(node, name = nil, type = :required)
-        name_match = if name
-          false
-        else
-          true # Match only by type when name is nil
-        end
+        name_match = !name # Match only by type when name is nil
 
         case type
         when :required
