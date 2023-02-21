@@ -64,15 +64,21 @@ module Homebrew
         return ofail "Unsupported repository: #{repo}. Try one of #{SUPPORTED_REPOS.join(", ")}."
       end
 
-      tap = Tap.fetch("Homebrew", repo)
       repo_path = find_repo_path_for_repo(repo)
+      tap = Tap.fetch("homebrew", repo)
       unless repo_path.exist?
         opoo "Repository #{repo} not yet tapped! Tapping it now..."
         tap.install
       end
 
+      repo_full_name = if repo == "brew"
+        "homebrew/brew"
+      else
+        tap.full_name
+      end
+
       results[repo] = {
-        commits:       GitHub.repo_commit_count_for_user(tap.full_name, args.named.first),
+        commits:       GitHub.repo_commit_count_for_user(repo_full_name, args.named.first),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", args),
         signoffs:      git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", args),
       }
