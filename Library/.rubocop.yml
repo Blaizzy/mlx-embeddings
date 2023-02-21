@@ -76,11 +76,6 @@ Layout/SpaceBeforeBrackets:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
 
-# Keyword arguments don't have the same readability
-# problems as normal parameters.
-Metrics/ParameterLists:
-  CountKeywordArgs: false
-
 # Allow dashes in filenames.
 Naming/FileName:
   Regex: !ruby/regexp /^[\w\@\-\+\.]+(\.rb)?$/
@@ -303,42 +298,9 @@ Lint/ParenthesesAsGroupedExpression:
     - "/**/Formula/*.rb"
     - "**/Formula/*.rb"
 
-# Most metrics don't make sense to apply for casks/formulae/taps.
-Metrics/AbcSize:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-Metrics/BlockLength:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-Metrics/ClassLength:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-Metrics/CyclomaticComplexity:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-Metrics/MethodLength:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-Metrics/ModuleLength:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-Metrics/PerceivedComplexity:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+# These metrics didn't end up helping.
+Metrics:
+  Enabled: false
 
 # allow those that are standard
 # TODO: try to remove some of these
