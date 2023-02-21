@@ -4,3 +4,13 @@ inherit_from:
 RSpec:
   Include:
     - ./*
+
+RSpec/ContextWording:
+  Prefixes:
+    - when
+    - with
+    - without
+    - if
+    - unless
+    - for
+    - which
