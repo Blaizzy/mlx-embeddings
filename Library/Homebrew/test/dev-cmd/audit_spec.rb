@@ -17,7 +17,7 @@ module Count
   end
 end
 
-module Homebrew # rubocop:disable Metrics/ModuleLength
+module Homebrew
   describe FormulaTextAuditor do
     alias_matcher :have_data, :be_data
     alias_matcher :have_end, :be_end

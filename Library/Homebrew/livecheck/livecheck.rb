@@ -11,8 +11,6 @@ require "ruby-progressbar"
 require "uri"
 
 module Homebrew
-  # rubocop:disable Metrics/ModuleLength
-
   # The {Livecheck} module consists of methods used by the `brew livecheck`
   # command. These methods print the requested livecheck information
   # for formulae.
@@ -158,8 +156,6 @@ module Homebrew
 
     # Executes the livecheck logic for each formula/cask in the
     # `formulae_and_casks_to_check` array and prints the results.
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
     sig {
       params(
         formulae_and_casks_to_check: T::Array[T.any(Formula, Cask::Cask)],
@@ -217,7 +213,6 @@ module Homebrew
         )
       end
 
-      # rubocop:disable Metrics/BlockLength
       formulae_checked = formulae_and_casks_to_check.map.with_index do |formula_or_cask, i|
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
         cask = formula_or_cask if formula_or_cask.is_a?(Cask::Cask)
@@ -383,7 +378,10 @@ module Homebrew
 
         if json
           progress&.increment
-          status_hash(formula_or_cask, "error", [e.to_s], full_name: use_full_name, verbose: verbose) unless quiet
+          unless quiet
+            status_hash(formula_or_cask, "error", [e.to_s], full_name: use_full_name,
+                                                            verbose:   verbose)
+          end
         elsif !quiet
           name = package_or_resource_name(formula_or_cask, full_name: use_full_name)
           name += " (cask)" if ambiguous_casks.include?(formula_or_cask)
@@ -627,7 +625,6 @@ module Homebrew
 
     # Identifies the latest version of the formula/cask and returns a Hash containing
     # the version information. Returns nil if a latest version couldn't be found.
-    # rubocop:disable Metrics/CyclomaticComplexity
     sig {
       params(
         formula_or_cask:            T.any(Formula, Cask::Cask),
@@ -685,7 +682,6 @@ module Homebrew
       end
 
       checked_urls = []
-      # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
         # Only preprocess the URL when it's appropriate
         url = if STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL.include?(livecheck_strategy)
@@ -828,12 +824,8 @@ module Homebrew
 
         return version_info
       end
-      # rubocop:enable Metrics/BlockLength
-
       nil
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
-
     # Identifies the latest version of a resource and returns a Hash containing the
     # version information. Returns nil if a latest version couldn't be found.
     sig {
@@ -876,7 +868,6 @@ module Homebrew
       urls ||= checkable_urls(resource)
 
       checked_urls = []
-      # rubocop:disable Metrics/BlockLength
       urls.each_with_index do |original_url, i|
         url = original_url.gsub(Constants::LATEST_VERSION, formula_latest)
 
@@ -1020,7 +1011,6 @@ module Homebrew
           nil
         end
       end
-      # rubocop:enable Metrics/BlockLength
       resource_version_info
     end
   end

@@ -443,7 +443,7 @@ module RuboCop
           install = find_method_def(body_node, :install)
           return if install.blank?
 
-          correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter| # rubocop:disable Metrics/ParameterLists
+          correctable_shell_completion_node(install) do |node, shell, base_name, executable, subcmd, shell_parameter|
             # generate_completions_from_executable only applicable if shell is passed
             next unless shell_parameter.match?(/(bash|zsh|fish)/)
 

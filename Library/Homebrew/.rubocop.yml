@@ -12,23 +12,8 @@ Layout/MultilineMethodCallIndentation:
   Exclude:
     - "**/*_spec.rb"
 
-# TODO: Try to bring down all metrics maximums.
-Metrics/AbcSize:
-  Max: 241
-Metrics/BlockLength:
-  Max: 86
-Metrics/BlockNesting:
-  Max: 5
-Metrics/ClassLength:
-  Max: 736
-Metrics/CyclomaticComplexity:
-  Max: 68
-Metrics/PerceivedComplexity:
-  Max: 84
-Metrics/MethodLength:
-  Max: 232
-Metrics/ModuleLength:
-  Max: 481
+Metrics:
+  Enabled: false
 
 Naming/PredicateName:
   AllowedMethods:

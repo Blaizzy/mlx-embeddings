@@ -10,7 +10,7 @@ require "system_command"
 # Wrapper functions for the GitHub API.
 #
 # @api private
-module GitHub # rubocop:disable Metrics/ModuleLength
+module GitHub
   extend T::Sig
 
   include SystemCommand::Mixin

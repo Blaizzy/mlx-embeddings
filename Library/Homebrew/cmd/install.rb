@@ -19,7 +19,7 @@ module Homebrew
 
   sig { returns(CLI::Parser) }
   def install_args
-    Homebrew::CLI::Parser.new do # rubocop:disable Metrics/BlockLength
+    Homebrew::CLI::Parser.new do
       description <<~EOS
         Install a <formula> or <cask>. Additional options specific to a <formula> may be
         appended to the command.
