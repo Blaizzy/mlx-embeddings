@@ -28,11 +28,11 @@ module Utils
       # Zlib::GzipWriter does not properly handle the case of setting mtime = 0:
       # https://bugs.ruby-lang.org/issues/16285
       #
-      # This was fixed in https://github.com/ruby/zlib/pull/10. Set mtime to 0 instead
-      # of raising exception once we are using zlib gem version 1.1.0 or newer.
+      # This was fixed in https://github.com/ruby/zlib/pull/10. Remove workaround
+      # once we are using zlib gem version 1.1.0 or newer.
       if mtime.to_i.zero?
-        raise ArgumentError,
-              "Can't create reproducible gzip file without a valid mtime"
+        odebug "Setting `mtime = 1` to avoid zlib gem bug when `mtime == 0`."
+        mtime = 1
       end
 
       File.open(path, "rb") do |fp|
