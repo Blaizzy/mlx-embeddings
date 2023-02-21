@@ -60,7 +60,7 @@ which therefore don’t need sudo.
 
 _This is only recommended if you **don't** use rbenv or RVM._
 
-Brewed Ruby installs executables to `$(brew --prefix)/opt/ruby/bin`
+Brewed Ruby installs executables to `$(brew --prefix ruby)/bin`
 without sudo. You should add this to your path. See the caveats in the
 `ruby` formula for up-to-date information.
 
@@ -91,7 +91,7 @@ Just install everything into the Homebrew prefix like this:
 echo "export GEM_HOME=\"$(brew --prefix)\"" >> ~/.bashrc
 ```
 
-### It doesn’t work! I get some “permissions” error when I try to install stuff!
+### It doesn’t work! I get some “permissions” error when I try to install stuff
 
 _Note that you may not want to do this, since Apple has decided it
 is not a good default._
