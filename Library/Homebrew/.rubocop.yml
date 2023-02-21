@@ -12,9 +12,6 @@ Layout/MultilineMethodCallIndentation:
   Exclude:
     - "**/*_spec.rb"
 
-Metrics:
-  Enabled: false
-
 Naming/PredicateName:
   AllowedMethods:
     - is_32_bit?
