@@ -49,7 +49,7 @@ module Homebrew
       ]
       curl_args << "--progress-bar" unless Context.current.verbose?
       curl_args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
-      curl_args << "--silent" unless $stdout.tty?
+      curl_args << "--silent" if !$stdout.tty? || Context.current.quiet?
 
       skip_download = target.exist? &&
                       !target.empty? &&
@@ -61,7 +61,7 @@ module Homebrew
           args = curl_args.dup
           args.prepend("--time-cond", target.to_s) if target.exist? && !target.empty?
           unless skip_download
-            ohai "Downloading #{url}" if $stdout.tty?
+            ohai "Downloading #{url}" if $stdout.tty? && !Context.current.quiet?
             # Disable retries here, we handle them ourselves below.
             Utils::Curl.curl_download(*args, url, to: target, retries: 0, show_error: false)
           end
