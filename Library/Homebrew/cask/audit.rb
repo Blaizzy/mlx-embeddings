@@ -492,8 +492,12 @@ module Cask
         tmpdir = Pathname(tmpdir)
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
 
-        message = "Signature verification failed:\n#{result.merged_output}\nmacOS on ARM requires applications " \
-                  "to be signed. Please contact the upstream developer to let them know they should "
+        message = <<~EOS
+          Signature verification failed:
+          #{result.merged_output}
+          macOS on ARM requires applications to be signed.
+          Please contact the upstream developer to let them know they should
+        EOS
 
         artifacts.each do |artifact|
           case artifact
@@ -505,10 +509,10 @@ module Cask
 
             next if result.success?
 
-            message += if result.stderr.include?("not signed at all")
-              "sign their app."
+            message = if result.stderr.include?("not signed at all")
+              "#{message} sign their app."
             else
-              "fix the signature of their app."
+              "#{message} fix the signature of their app."
             end
 
             add_warning message
