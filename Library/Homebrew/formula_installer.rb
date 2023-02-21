@@ -26,7 +26,7 @@ require "service"
 # Installer for a formula.
 #
 # @api private
-class FormulaInstaller # rubocop:disable Metrics/ClassLength
+class FormulaInstaller
   extend T::Sig
 
   include FormulaCellarChecks

@@ -56,7 +56,7 @@ require "api"
 #     system "make", "install"
 #   end
 # end</pre>
-class Formula # rubocop:disable Metrics/ClassLength
+class Formula
   extend T::Sig
 
   include FileUtils

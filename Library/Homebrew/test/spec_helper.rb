@@ -63,7 +63,7 @@ TEST_DIRECTORIES = [
 # work when type-checking is active.
 RSpec::Sorbet.allow_doubles!
 
-RSpec.configure do |config| # rubocop:disable Metrics/BlockLength
+RSpec.configure do |config|
   config.order = :random
 
   config.raise_errors_for_deprecations!
@@ -181,7 +181,7 @@ RSpec.configure do |config| # rubocop:disable Metrics/BlockLength
     skip "Unzip is not installed." unless which("unzip")
   end
 
-  config.around do |example| # rubocop:disable Metrics/BlockLength
+  config.around do |example|
     def find_files
       return [] unless File.exist?(TEST_TMPDIR)
 
