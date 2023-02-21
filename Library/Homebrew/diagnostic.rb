@@ -652,7 +652,7 @@ module Homebrew
           "Homebrew/homebrew-core" => CoreTap.instance.path,
         }
 
-        %w[cask cask-drivers cask-fonts cask-versions].each do |tap|
+        OFFICIAL_CASK_TAPS.each do |tap|
           cask_tap = Tap.fetch "homebrew", tap
           repos[cask_tap.full_name] = cask_tap.path if cask_tap.installed?
         end
