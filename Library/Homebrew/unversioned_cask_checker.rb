@@ -100,9 +100,8 @@ module Homebrew
 
         info_plist_paths.each(&parse_info_plist)
 
-        pkg_paths = pkgs.flat_map do |pkg|
-          Pathname.glob(dir/"**"/pkg.path.basename).sort
-        end
+        pkg_paths = pkgs.flat_map { |pkg| Pathname.glob(dir/"**"/pkg.path.basename).sort }
+        pkg_paths = Pathname.glob(dir/"**"/"*.pkg").sort if pkg_paths.empty?
 
         pkg_paths.each do |pkg_path|
           Dir.mktmpdir do |extract_dir|
