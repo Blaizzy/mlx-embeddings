@@ -23,7 +23,7 @@ The executables are organised as follows:
 Unversioned symlinks for `python`, `python-config`, `pip` etc. are installed here:
 
 ```sh
-$(brew --prefix)/opt/python/libexec/bin
+$(brew --prefix python)/libexec/bin
 ```
 
 ## Setuptools, pip, etc.
