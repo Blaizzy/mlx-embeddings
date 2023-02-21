@@ -33,7 +33,7 @@ Packages are installed according to their formulae. Read over a simple one, e.g.
 
 Make sure you run `brew update` before you start. This ensures your Homebrew installation is a Git repository.
 
-To create or edit formulae locally, you'll need to `brew tap homebrew/core` if you haven't previously. This clones the `homebrew-core` Git repository where Homebrew expects it to be, which is `$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula`. As you are developing, you'll also need to set `HOMEBREW_NO_INSTALL_FROM_API=0` before any `install` commands, to force `brew` to use the local repository instead of the API.
+To create or edit formulae locally, you'll need to `brew tap homebrew/core` if you haven't previously. This clones the `homebrew-core` Git repository where Homebrew expects it to be, which is `$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula`. As you are developing, you'll also need to set `HOMEBREW_NO_INSTALL_FROM_API=1` before any `install` commands, to force `brew` to use the local repository instead of the API.
 
 Before submitting a new formula make sure your package:
 
@@ -106,7 +106,7 @@ Check out the [License Guidelines](License-Guidelines.md) for examples of comple
 ### Check the build system
 
 ```sh
-HOMEBREW_NO_INSTALL_FROM_API=0 brew install --interactive foo
+HOMEBREW_NO_INSTALL_FROM_API=1 brew install --interactive foo
 ```
 
 You’re now at a new prompt with the tarball extracted to a temporary sandbox.
@@ -265,7 +265,7 @@ For Python formulae, running `brew update-python-resources <formula>` will autom
 ### Install the formula
 
 ```sh
-HOMEBREW_NO_INSTALL_FROM_API=0 brew install --build-from-source --verbose --debug foo
+HOMEBREW_NO_INSTALL_FROM_API=1 brew install --build-from-source --verbose --debug foo
 ```
 
 `--debug` will ask you to open an interactive shell if the build fails so you can try to figure out what went wrong.
@@ -537,7 +537,7 @@ In embedded patches, the string "HOMEBREW\_PREFIX" is replaced with the value of
 ### Creating the diff
 
 ```sh
-HOMEBREW_NO_INSTALL_FROM_API=0 brew install --interactive --git foo
+HOMEBREW_NO_INSTALL_FROM_API=1 brew install --interactive --git foo
 # (make some edits)
 git diff | pbcopy
 brew edit foo
