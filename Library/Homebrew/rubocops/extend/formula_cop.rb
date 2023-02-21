@@ -8,7 +8,7 @@ module RuboCop
     # Abstract base class for all formula cops.
     #
     # @api private
-    class FormulaCop < Cop
+    class FormulaCop < Base
       extend T::Sig
       extend T::Helpers
       include RangeHelp
