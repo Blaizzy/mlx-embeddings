@@ -11,8 +11,7 @@ module RuboCop
       #
       # - `component_precedence_list` has component hierarchy in a nested list
       #   where each sub array contains components' details which are at same precedence level
-      class ComponentsOrder < Base
-        include FormulaCop
+      class ComponentsOrder < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

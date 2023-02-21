@@ -10,8 +10,7 @@ module RuboCop
       #
       # precedence order:
       # build-time > test > normal > recommended > optional
-      class DependencyOrder < Base
-        include FormulaCop
+      class DependencyOrder < FormulaCop
         extend T::Sig
         extend AutoCorrector
 

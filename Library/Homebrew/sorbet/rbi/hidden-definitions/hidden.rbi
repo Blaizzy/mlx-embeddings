@@ -6963,7 +6963,7 @@ class RuboCop::Cop::FormulaAuditStrict::Text
   def share_path_starts_with(param0, param1); end
 end
 
-module RuboCop::Cop::FormulaCop
+class RuboCop::Cop::FormulaCop
   def dependency_name_hash_match?(param0, param1); end
 
   def dependency_type_hash_match?(param0, param1); end

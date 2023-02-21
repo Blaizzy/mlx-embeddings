@@ -24,9 +24,7 @@ module RuboCop
       #   end
       #
       # @api private
-      class Caveats < Base
-        include FormulaCop
-
+      class Caveats < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, _body_node)
           caveats_strings.each do |n|
             if regex_match_group(n, /\bsetuid\b/i)

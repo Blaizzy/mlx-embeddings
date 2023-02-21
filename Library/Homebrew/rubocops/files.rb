@@ -9,9 +9,7 @@ module RuboCop
       # This cop makes sure that a formula's file permissions are correct.
       #
       # @api private
-      class Files < Base
-        include FormulaCop
-
+      class Files < FormulaCop
         def audit_formula(node, _class_node, _parent_class_node, _body_node)
           return unless file_path
 

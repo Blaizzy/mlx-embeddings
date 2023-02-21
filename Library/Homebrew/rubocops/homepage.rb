@@ -7,8 +7,7 @@ module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits the `homepage` URL in formulae.
-      class Homepage < Base
-        include FormulaCop
+      class Homepage < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, class_node, _parent_class_node, body_node)

@@ -14,9 +14,7 @@ module RuboCop
       # - `stable do` should not be present without a `head` spec
       #
       # @api private
-      class ComponentsRedundancy < Base
-        include FormulaCop
-
+      class ComponentsRedundancy < FormulaCop
         HEAD_MSG = "`head` and `head do` should not be simultaneously present"
         BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present"
         STABLE_MSG = "`stable do` should not be present without a `head` spec"

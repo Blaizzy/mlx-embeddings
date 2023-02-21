@@ -10,8 +10,7 @@ module RuboCop
       # skipped formulae.
       #
       # @api private
-      class LivecheckSkip < Base
-        include FormulaCop
+      class LivecheckSkip < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -43,8 +42,7 @@ module RuboCop
       # This cop ensures that a `url` is specified in the `livecheck` block.
       #
       # @api private
-      class LivecheckUrlProvided < Base
-        include FormulaCop
+      class LivecheckUrlProvided < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
           return if livecheck_node.blank?
@@ -68,8 +66,7 @@ module RuboCop
       # is used when the livecheck `url` is identical to one of these formula URLs.
       #
       # @api private
-      class LivecheckUrlSymbol < Base
-        include FormulaCop
+      class LivecheckUrlSymbol < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -126,8 +123,7 @@ module RuboCop
       # This cop ensures that the `regex` call in the `livecheck` block uses parentheses.
       #
       # @api private
-      class LivecheckRegexParentheses < Base
-        include FormulaCop
+      class LivecheckRegexParentheses < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -154,8 +150,7 @@ module RuboCop
       # `\.tgz`, `\.tar.gz` and variants.
       #
       # @api private
-      class LivecheckRegexExtension < Base
-        include FormulaCop
+      class LivecheckRegexExtension < FormulaCop
         extend AutoCorrector
 
         TAR_PATTERN = /\\?\.t(ar|(g|l|x)z$|[bz2]{2,4}$)(\\?\.((g|l|x)z)|[bz2]{2,4}|Z)?$/i.freeze
@@ -188,8 +183,7 @@ module RuboCop
       # in the `livecheck` block.
       #
       # @api private
-      class LivecheckRegexIfPageMatch < Base
-        include FormulaCop
+      class LivecheckRegexIfPageMatch < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
           return if livecheck_node.blank?
@@ -215,8 +209,7 @@ module RuboCop
       # unless sensitivity is explicitly required for proper matching.
       #
       # @api private
-      class LivecheckRegexCaseInsensitive < Base
-        include FormulaCop
+      class LivecheckRegexCaseInsensitive < FormulaCop
         extend AutoCorrector
 
         MSG = "Regexes should be case-insensitive unless sensitivity is explicitly required for proper matching."

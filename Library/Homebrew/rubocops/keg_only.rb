@@ -9,8 +9,7 @@ module RuboCop
       # This cop makes sure that a `keg_only` reason has the correct format.
       #
       # @api private
-      class KegOnly < Base
-        include FormulaCop
+      class KegOnly < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

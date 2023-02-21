@@ -9,8 +9,7 @@ module RuboCop
     module FormulaAudit
       # This cop audits `desc` in formulae.
       # See the {DescHelper} module for details of the checks.
-      class Desc < Base
-        include FormulaCop
+      class Desc < FormulaCop
         include DescHelper
         extend AutoCorrector
 

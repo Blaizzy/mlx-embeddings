@@ -8,8 +8,7 @@ module RuboCop
     module FormulaAudit
       # This cop audits `patch`es in formulae.
       # TODO: Many of these could be auto-corrected.
-      class Patches < Base
-        include FormulaCop
+      class Patches < FormulaCop
         extend T::Sig
         extend AutoCorrector
 

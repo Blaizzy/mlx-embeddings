@@ -5,13 +5,17 @@ require "rubocops/shared/helper_functions"
 
 module RuboCop
   module Cop
-    # Mixin for all formula cops.
+    # Abstract base class for all formula cops.
     #
     # @api private
-    module FormulaCop
-      extend RuboCop::AST::NodePattern::Macros
+    class FormulaCop < Cop
+      extend T::Sig
+      extend T::Helpers
       include RangeHelp
       include HelperFunctions
+
+      abstract!
+      exclude_from_registry
 
       attr_accessor :file_path
 
@@ -29,9 +33,16 @@ module RuboCop
         audit_formula(node, class_node, parent_class_node, @body)
       end
 
-      def audit_formula(node, class_node, parent_class_node, body_node)
-        raise NotImplementedError, "Subclasses must implement this method."
-      end
+      sig {
+        abstract
+          .params(
+            node:              RuboCop::AST::ClassNode,
+            class_node:        RuboCop::AST::ConstNode,
+            parent_class_node: RuboCop::AST::ConstNode,
+            body_node:         RuboCop::AST::Node,
+          ).void
+      }
+      def audit_formula(node, class_node, parent_class_node, body_node); end
 
       # Yields to block when there is a match.
       #

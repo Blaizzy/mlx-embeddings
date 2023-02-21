@@ -7,8 +7,7 @@ module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits versioned formulae for `conflicts_with`.
-      class Conflicts < Base
-        include FormulaCop
+      class Conflicts < FormulaCop
         extend AutoCorrector
 
         MSG = "Versioned formulae should not use `conflicts_with`. " \

@@ -7,8 +7,7 @@ module RuboCop
   module Cop
     module FormulaAudit
       # This cop audits `deprecate!` and `disable!` dates.
-      class DeprecateDisableDate < Base
-        include FormulaCop
+      class DeprecateDisableDate < FormulaCop
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
@@ -35,8 +34,7 @@ module RuboCop
       end
 
       # This cop audits `deprecate!` and `disable!` reasons.
-      class DeprecateDisableReason < Base
-        include FormulaCop
+      class DeprecateDisableReason < FormulaCop
         extend AutoCorrector
 
         PUNCTUATION_MARKS = %w[. ! ?].freeze
