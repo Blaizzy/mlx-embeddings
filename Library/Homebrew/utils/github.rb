@@ -704,7 +704,7 @@ module GitHub # rubocop:disable Metrics/ModuleLength
     return if Homebrew::EnvConfig.no_github_api?
 
     commits = 0
-    API.paginate_rest("#{API_URL}/repos/#{nwo}/commits", query: "&author=#{user}") do |result|
+    API.paginate_rest("#{API_URL}/repos/#{nwo}/commits", additional_query_params: "author=#{user}") do |result|
       commits += result.length
     end
     commits

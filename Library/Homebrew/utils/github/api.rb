@@ -253,9 +253,9 @@ module GitHub
       end
     end
 
-    def paginate_rest(url, query: nil, per_page: 100)
+    def paginate_rest(url, additional_query_params: nil, per_page: 100)
       (1..API_MAX_PAGES).each do |page|
-        result = API.open_rest("#{url}?per_page=#{per_page}&page=#{page}#{query}")
+        result = API.open_rest("#{url}?per_page=#{per_page}&page=#{page}&#{additional_query_params}")
         yield(result, page)
       end
     end
