@@ -28,10 +28,12 @@ describe UnpackStrategy do
 
     context "when extracting a directory with nested directories" do
       let(:directories) { "A/B/C" }
+      let(:writable) { true }
       let(:path) {
         (mktmpdir/"file.tar").tap do |path|
           mktmpdir do |dir|
             (dir/directories).mkpath
+            FileUtils.chmod "-w", (dir/directories) unless writable
             system "tar", "--create", "--file", path, "--directory", dir, "A/"
           end
         end
@@ -40,6 +42,17 @@ describe UnpackStrategy do
       it "does not recurse into nested directories" do
         strategy.extract_nestedly(to: unpack_dir)
         expect(Pathname.glob(unpack_dir/"**/*")).to include unpack_dir/directories
+      end
+
+      context "which are not writable" do
+        let(:writable) { false }
+
+        it "makes them writable but not world-writable" do
+          strategy.extract_nestedly(to: unpack_dir)
+
+          expect(unpack_dir/directories).to be_writable
+          expect(unpack_dir/directories).not_to be_world_writable
+        end
       end
     end
 
