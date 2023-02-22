@@ -66,7 +66,7 @@ module Homebrew
       return
     end
 
-    return ofail "CSVs not yet supported for the full list of maintainers at once." if args.csv?
+    odie "CSVs not yet supported for the full list of maintainers at once." if args.csv?
 
     maintainers = GitHub.members_by_team("Homebrew", "maintainers")
     maintainers.each do |username, _|
