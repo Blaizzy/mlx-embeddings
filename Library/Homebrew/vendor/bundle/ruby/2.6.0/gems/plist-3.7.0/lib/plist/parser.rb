@@ -26,8 +26,13 @@ module Plist
   # can't be parsed into a Time object, please create an issue
   # attaching your plist file at https://github.com/patsplat/plist/issues
   # so folks can implement the proper support.
-  def self.parse_xml(filename_or_xml)
-    listener = Listener.new
+  #
+  # By default, <data> will be assumed to be a marshaled Ruby object and
+  # interpreted with <tt>Marshal.load</tt>. Pass <tt>marshal: false</tt>
+  # to disable this behavior and return the raw binary data as an IO
+  # object instead.
+  def self.parse_xml(filename_or_xml, options={})
+    listener = Listener.new(options)
     # parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
     parser = StreamParser.new(filename_or_xml, listener)
     parser.parse
@@ -39,13 +44,14 @@ module Plist
 
     attr_accessor :result, :open
 
-    def initialize
+    def initialize(options={})
       @result = nil
       @open   = []
+      @options = { :marshal => true }.merge(options).freeze
     end
 
     def tag_start(name, attributes)
-      @open.push PTag.mappings[name].new
+      @open.push PTag.mappings[name].new(@options)
     end
 
     def text(contents)
@@ -154,9 +160,10 @@ module Plist
       mappings[key] = sub_class
     end
 
-    attr_accessor :text, :children
-    def initialize
+    attr_accessor :text, :children, :options
+    def initialize(options)
       @children = []
+      @options = options
     end
 
     def to_ruby
@@ -244,13 +251,13 @@ module Plist
     def to_ruby
       data = Base64.decode64(text.gsub(/\s+/, '')) unless text.nil?
       begin
-        return Marshal.load(data)
+        return Marshal.load(data) if options[:marshal]
       rescue Exception
-        io = StringIO.new
-        io.write data
-        io.rewind
-        return io
       end
+      io = StringIO.new
+      io.write data
+      io.rewind
+      io
     end
   end
 end
