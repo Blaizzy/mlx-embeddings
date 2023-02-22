@@ -479,7 +479,7 @@ module Cask
       return unless cask.livecheck.strategy == :sparkle
       return unless cask.version.csv.second
       return if cask.url.to_s.include? cask.version.csv.second
-      return if cask.version.csv.third && cask.url.to_s.include? cask.version.csv.third
+      return if cask.version.csv.third.present? && cask.url.to_s.include? cask.version.csv.third
 
       add_warning "Download does not require additional version components. Use `&:short_version` in the livecheck"
     end
