@@ -189,25 +189,7 @@ Naming/MethodParameterName:
   inherit_mode:
     merge:
       - AllowedNames
-  AllowedNames:
-    - "a"
-    - "b"
-    - "cc"
-    - "c1"
-    - "c2"
-    - "d"
-    - "e"
-    - "f"
-    - "ff"
-    - "fn"
-    - "id"
-    - "o"
-    - "p"
-    - "pr"
-    - "r"
-    - "rb"
-    - "s"
-    - "v"
+  AllowedNames: ["a", "b", "cc", "c1", "c2", "d", "e", "f", "ff", "fn", "id", "o", "p", "pr", "r", "rb", "s", "v"]
 
 # Both styles are used depending on context,
 # e.g. `sha256` and `something_countable_1`.
