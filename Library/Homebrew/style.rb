@@ -129,12 +129,7 @@ module Homebrew
       if files.blank? || files == [HOMEBREW_REPOSITORY]
         files = [HOMEBREW_LIBRARY_PATH]
       elsif files.none? { |f| f.to_s.start_with? HOMEBREW_LIBRARY_PATH }
-        config = if files.any? { |f| (f/"spec").exist? }
-          HOMEBREW_LIBRARY/".rubocop_rspec.yml"
-        else
-          HOMEBREW_LIBRARY/".rubocop.yml"
-        end
-        args << "--config" << config
+        args << "--config" << (HOMEBREW_LIBRARY/".rubocop.yml")
       end
 
       args += files
