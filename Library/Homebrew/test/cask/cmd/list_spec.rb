@@ -131,7 +131,10 @@ describe Cask::Cmd::List, :cask do
             "tap_git_head": null,
             "languages": [
 
-            ]
+            ],
+            "ruby_source_checksum": {
+              "sha256": "#{Digest::SHA256.file(Tap.default_cask_tap.cask_dir/"local-caffeine.rb").hexdigest}"
+            }
           },
           {
             "token": "local-transmission",
@@ -166,7 +169,10 @@ describe Cask::Cmd::List, :cask do
             "tap_git_head": null,
             "languages": [
 
-            ]
+            ],
+            "ruby_source_checksum": {
+              "sha256": "#{Digest::SHA256.file(Tap.default_cask_tap.cask_dir/"local-transmission.rb").hexdigest}"
+            }
           },
           {
             "token": "multiple-versions",
@@ -204,7 +210,10 @@ describe Cask::Cmd::List, :cask do
             "tap_git_head": null,
             "languages": [
 
-            ]
+            ],
+            "ruby_source_checksum": {
+              "sha256": "#{Digest::SHA256.file(Tap.default_cask_tap.cask_dir/"multiple-versions.rb").hexdigest}"
+            }
           },
           {
             "token": "third-party-cask",
@@ -239,7 +248,10 @@ describe Cask::Cmd::List, :cask do
             "tap_git_head": null,
             "languages": [
 
-            ]
+            ],
+            "ruby_source_checksum": {
+              "sha256": "#{Digest::SHA256.file(Tap.fetch("third-party", "tap").cask_dir/"third-party-cask.rb").hexdigest}"
+            }
           },
           {
             "token": "with-languages",
@@ -275,7 +287,10 @@ describe Cask::Cmd::List, :cask do
             "languages": [
               "zh",
               "en-US"
-            ]
+            ],
+            "ruby_source_checksum": {
+              "sha256": "#{Digest::SHA256.file(Tap.default_cask_tap.cask_dir/"with-languages.rb").hexdigest}"
+            }
           }
         ]
       EOS

@@ -766,28 +766,28 @@ EOS
 
     for formula_or_cask in formula cask
     do
-      if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" ]]
+      if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json" ]]
       then
-        INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
+        INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
       fi
       JSON_URLS=()
       if [[ -n "${HOMEBREW_API_DOMAIN}" && "${HOMEBREW_API_DOMAIN}" != "${HOMEBREW_API_DEFAULT_DOMAIN}" ]]
       then
-        JSON_URLS=("${HOMEBREW_API_DOMAIN}/${formula_or_cask}.json")
+        JSON_URLS=("${HOMEBREW_API_DOMAIN}/${formula_or_cask}.jws.json")
       fi
-      JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.json")
+      JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.jws.json")
       for json_url in "${JSON_URLS[@]}"
       do
         time_cond=()
-        if [[ -s "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" ]]
+        if [[ -s "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json" ]]
         then
-          time_cond=("--time-cond" "${HOMEBREW_CACHE}/api/${formula_or_cask}.json")
+          time_cond=("--time-cond" "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json")
         fi
         curl \
           "${CURL_DISABLE_CURLRC_ARGS[@]}" \
           --fail --compressed --silent \
           --speed-limit "${HOMEBREW_CURL_SPEED_LIMIT}" --speed-time "${HOMEBREW_CURL_SPEED_TIME}" \
-          --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.json" \
+          --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json" \
           "${time_cond[@]}" \
           --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
           "${json_url}"
@@ -796,8 +796,8 @@ EOS
       done
       if [[ ${curl_exit_code} -eq 0 ]]
       then
-        touch "${HOMEBREW_CACHE}/api/${formula_or_cask}.json"
-        CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".json)"
+        touch "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json"
+        CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
         if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
         then
           rm -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt"

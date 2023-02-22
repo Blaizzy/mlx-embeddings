@@ -233,13 +233,21 @@ module Cask
         # Use the cask-source API if there are any `*flight` blocks or the cask has multiple languages
         if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) } ||
            json_cask[:languages].any?
-          cask_source = Homebrew::API::Cask.fetch_source(token, git_head: json_cask[:tap_git_head])
+          cask_source = Homebrew::API::Cask.fetch_source(token,
+                                                         git_head: json_cask[:tap_git_head],
+                                                         sha256:   json_cask.dig(:ruby_source_checksum, :sha256))
           return FromContentLoader.new(cask_source).load(config: config)
         end
 
         tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
-        Cask.new(token, tap: tap, source: cask_source, config: config, loaded_from_api: true, loader: self) do
+        Cask.new(token,
+                 tap:             tap,
+                 source:          cask_source,
+                 source_checksum: json_cask[:ruby_source_checksum],
+                 config:          config,
+                 loaded_from_api: true,
+                 loader:          self) do
           version json_cask[:version]
 
           if json_cask[:sha256] == "no_check"

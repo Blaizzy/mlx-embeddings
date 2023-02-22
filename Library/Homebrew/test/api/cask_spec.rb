@@ -9,11 +9,15 @@ describe Homebrew::API::Cask do
   before do
     stub_const("Homebrew::API::HOMEBREW_CACHE_API", cache_dir)
     Homebrew::API.clear_cache
+    described_class.clear_cache
   end
 
   def mock_curl_download(stdout:)
     allow(Utils::Curl).to receive(:curl_download) do |*_args, **kwargs|
       kwargs[:to].write stdout
+    end
+    allow(Homebrew::API).to receive(:verify_and_parse_jws) do |json_data|
+      [true, json_data]
     end
   end
 

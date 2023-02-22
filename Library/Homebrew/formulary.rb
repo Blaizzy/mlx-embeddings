@@ -252,6 +252,13 @@ module Formulary
         link_overwrite overwrite_path
       end
 
+      resource "ruby-source" do
+        url "https://raw.githubusercontent.com/Homebrew/homebrew-core/#{json_formula["tap_git_head"]}/Formula/#{name}.rb"
+        if (ruby_source_sha256 = json_formula.dig("ruby_source_checksum", "sha256")).present?
+          sha256 ruby_source_sha256
+        end
+      end
+
       def install
         raise "Cannot build from source from abstract formula."
       end
@@ -446,7 +453,13 @@ module Formulary
   class FromPathLoader < FormulaLoader
     def initialize(path)
       path = Pathname.new(path).expand_path
-      super path.basename(".rb").to_s, path
+      name = path.basename(".rb").to_s
+
+      # For files we've downloaded, they will be prefixed with `{URL MD5}--`.
+      # Remove that prefix to get the original filename.
+      name = name.split("--", 2).last if path.dirname == HOMEBREW_CACHE/"downloads"
+
+      super name, path
     end
   end
 

@@ -56,7 +56,7 @@ module Homebrew
                       (Homebrew::EnvConfig.no_auto_update? ||
                       ((Time.now - Homebrew::EnvConfig.api_auto_update_secs.to_i) < target.mtime))
 
-      begin
+      json_data = begin
         begin
           args = curl_args.dup
           args.prepend("--time-cond", target.to_s) if target.exist? && !target.empty?
@@ -83,7 +83,7 @@ module Homebrew
         end
 
         FileUtils.touch(target) unless skip_download
-        [JSON.parse(target.read), !skip_download]
+        JSON.parse(target.read)
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
@@ -92,10 +92,26 @@ module Homebrew
 
         retry
       end
+
+      if endpoint.end_with?(".jws.json")
+        success, data = verify_and_parse_jws(json_data)
+        unless success
+          target.unlink
+          odie <<~EOS
+            Failed to verify integrity (#{data}) of:
+              #{url}
+            Potential MITM attempt detected. Please run `brew update` and try again.
+          EOS
+        end
+        [data, !skip_download]
+      else
+        [json_data, !skip_download]
+      end
     end
 
-    sig { params(name: String, git_head: T.nilable(String)).returns(String) }
-    def self.fetch_homebrew_cask_source(name, git_head: nil)
+    sig { params(name: String, git_head: T.nilable(String), sha256: T.nilable(String)).returns(String) }
+    def self.fetch_homebrew_cask_source(name, git_head: nil, sha256: nil)
+      # TODO: unify with formula logic (https://github.com/Homebrew/brew/issues/14746)
       git_head = "master" if git_head.blank?
       raw_endpoint = "#{git_head}/Casks/#{name}.rb"
       return cache[raw_endpoint] if cache.present? && cache.key?(raw_endpoint)
@@ -103,10 +119,13 @@ module Homebrew
       # This API sometimes returns random 404s so needs a fallback at formulae.brew.sh.
       raw_source_url = "https://raw.githubusercontent.com/Homebrew/homebrew-cask/#{raw_endpoint}"
       api_source_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/cask-source/#{name}.rb"
-      output = Utils::Curl.curl_output("--fail", raw_source_url)
+
+      url = raw_source_url
+      output = Utils::Curl.curl_output("--fail", url)
 
       if !output.success? || output.blank?
-        output = Utils::Curl.curl_output("--fail", api_source_url)
+        url = api_source_url
+        output = Utils::Curl.curl_output("--fail", url)
         if !output.success? || output.blank?
           raise ArgumentError, <<~EOS
             No valid file found at either of:
@@ -116,7 +135,20 @@ module Homebrew
         end
       end
 
-      cache[raw_endpoint] = output.stdout
+      cask_source = output.stdout
+      actual_sha256 = Digest::SHA256.hexdigest(cask_source)
+      if sha256 && actual_sha256 != sha256
+        raise ArgumentError, <<~EOS
+          SHA256 mismatch
+          Expected: #{Formatter.success(sha256.to_s)}
+            Actual: #{Formatter.error(actual_sha256.to_s)}
+               URL: #{url}
+          Check if you can access the URL in your browser.
+          Regardless, try again in a few minutes.
+        EOS
+      end
+
+      cache[raw_endpoint] = cask_source
     end
 
     sig { params(json: Hash).returns(Hash) }
@@ -139,6 +171,32 @@ module Homebrew
       end
 
       false
+    end
+
+    sig { params(json_data: Hash).returns([T::Boolean, T.any(String, Array, Hash)]) }
+    private_class_method def self.verify_and_parse_jws(json_data)
+      signatures = json_data["signatures"]
+      homebrew_signature = signatures&.find { |sig| sig.dig("header", "kid") == "homebrew-1" }
+      return false, "key not found" if homebrew_signature.nil?
+
+      header = JSON.parse(Base64.urlsafe_decode64(homebrew_signature["protected"]))
+      if header["alg"] != "PS512" || header["b64"] != false # NOTE: nil has a meaning of true
+        return false, "invalid algorithm"
+      end
+
+      require "openssl"
+
+      pubkey = OpenSSL::PKey::RSA.new((HOMEBREW_LIBRARY_PATH/"api/homebrew-1.pem").read)
+      signing_input = "#{homebrew_signature["protected"]}.#{json_data["payload"]}"
+      unless pubkey.verify_pss("SHA512",
+                               Base64.urlsafe_decode64(homebrew_signature["signature"]),
+                               signing_input,
+                               salt_length: :digest,
+                               mgf1_hash:   "SHA512")
+        return false, "signature mismatch"
+      end
+
+      [true, JSON.parse(json_data["payload"])]
     end
   end
 end

@@ -20,15 +20,15 @@ module Homebrew
           Homebrew::API.fetch "cask/#{token}.json"
         end
 
-        sig { params(token: String, git_head: T.nilable(String)).returns(String) }
-        def fetch_source(token, git_head: nil)
-          Homebrew::API.fetch_homebrew_cask_source token, git_head: git_head
+        sig { params(token: String, git_head: T.nilable(String), sha256: T.nilable(String)).returns(String) }
+        def fetch_source(token, git_head: nil, sha256: nil)
+          Homebrew::API.fetch_homebrew_cask_source token, git_head: git_head, sha256: sha256
         end
 
         sig { returns(T::Boolean) }
         def download_and_cache_data!
-          json_casks, updated = Homebrew::API.fetch_json_api_file "cask.json",
-                                                                  target: HOMEBREW_CACHE_API/"cask.json"
+          json_casks, updated = Homebrew::API.fetch_json_api_file "cask.jws.json",
+                                                                  target: HOMEBREW_CACHE_API/"cask.jws.json"
 
           cache["casks"] = json_casks.to_h do |json_cask|
             [json_cask["token"], json_cask.except("token")]

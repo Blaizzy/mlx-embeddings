@@ -83,11 +83,12 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, config: nil,
-                   allow_reassignment: false, loaded_from_api: false, loader: nil, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, source_checksum: nil, tap: nil,
+                   config: nil, allow_reassignment: false, loaded_from_api: false, loader: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
+      @ruby_source_checksum = source_checksum
       @tap = tap
       @allow_reassignment = allow_reassignment
       @loaded_from_api = loaded_from_api
@@ -277,27 +278,28 @@ module Cask
       end
 
       {
-        "token"          => token,
-        "full_token"     => full_name,
-        "tap"            => tap&.name,
-        "name"           => name,
-        "desc"           => desc,
-        "homepage"       => homepage,
-        "url"            => url,
-        "appcast"        => appcast,
-        "version"        => version,
-        "versions"       => os_versions,
-        "installed"      => versions.last,
-        "outdated"       => outdated?,
-        "sha256"         => sha256,
-        "artifacts"      => artifacts_list,
-        "caveats"        => (caveats unless caveats.empty?),
-        "depends_on"     => depends_on,
-        "conflicts_with" => conflicts_with,
-        "container"      => container&.pairs,
-        "auto_updates"   => auto_updates,
-        "tap_git_head"   => tap&.git_head,
-        "languages"      => languages,
+        "token"                => token,
+        "full_token"           => full_name,
+        "tap"                  => tap&.name,
+        "name"                 => name,
+        "desc"                 => desc,
+        "homepage"             => homepage,
+        "url"                  => url,
+        "appcast"              => appcast,
+        "version"              => version,
+        "versions"             => os_versions,
+        "installed"            => versions.last,
+        "outdated"             => outdated?,
+        "sha256"               => sha256,
+        "artifacts"            => artifacts_list,
+        "caveats"              => (caveats unless caveats.empty?),
+        "depends_on"           => depends_on,
+        "conflicts_with"       => conflicts_with,
+        "container"            => container&.pairs,
+        "auto_updates"         => auto_updates,
+        "tap_git_head"         => tap&.git_head,
+        "languages"            => languages,
+        "ruby_source_checksum" => ruby_source_checksum,
       }
     end
 
@@ -347,6 +349,12 @@ module Cask
       hash["installed"] = versions.last
       hash["outdated"] = outdated?
       hash
+    end
+
+    def ruby_source_checksum
+      @ruby_source_checksum ||= {
+        "sha256" => Digest::SHA256.file(sourcefile_path).hexdigest,
+      }
     end
 
     def artifacts_list
