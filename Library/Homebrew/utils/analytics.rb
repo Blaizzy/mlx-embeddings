@@ -11,14 +11,15 @@ module Utils
   #
   # @api private
   module Analytics
+    INFLUX_BUCKET = "analytics"
+    INFLUX_TOKEN = "9eMkCRwRWS7xjPR_HbF5tBffKmnyRFSup7rq41tHZLOpnBsjVtRFd-y9R_P9OCcB3kr1ftDEzxcxTehcufy1SQ=="
+    INFLUX_HOST = "https://europe-west1-1.gcp.cloud2.influxdata.com"
+    INFLUX_ORG = "9a707721bb47fc02"
+
     class << self
       extend T::Sig
 
       include Context
-
-      INFLUX_BUCKET = "analytics"
-      INFLUX_TOKEN = "9eMkCRwRWS7xjPR_HbF5tBffKmnyRFSup7rq41tHZLOpnBsjVtRFd-y9R_P9OCcB3kr1ftDEzxcxTehcufy1SQ=="
-      INFLUX_HOST = "europe-west1-1.gcp.cloud2.influxdata.com"
 
       sig { params(type: Symbol, metadata: T::Hash[Symbol, T.untyped]).void }
       def report_google(type, metadata = {})
@@ -93,7 +94,7 @@ module Utils
           "--data-raw", "#{measurement},#{tags} count=1i #{Time.now.to_i}"
         ]
 
-        url = "https://#{INFLUX_HOST}/api/v2/write?bucket=#{INFLUX_BUCKET}&precision=s"
+        url = "#{INFLUX_HOST}/api/v2/write?bucket=#{INFLUX_BUCKET}&precision=s"
         deferred_curl(url, args)
       end
 
