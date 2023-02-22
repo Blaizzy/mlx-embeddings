@@ -144,8 +144,8 @@ module Homebrew
 
       data[repo] = {
         commits:       GitHub.repo_commit_count_for_user(repo_full_name, person),
-        coauthorships: git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", person, args),
-        signoffs:      git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", person, args),
+        coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
+        signoffs:      git_log_trailers_cmd(T.must(repo_path), person, "Signed-off-by", args),
       }
     end
 
