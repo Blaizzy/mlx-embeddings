@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "active_support/core_ext/object/deep_dup"
@@ -10,12 +10,14 @@ module Cask
     # @api private
     class AbstractArtifact
       extend T::Sig
+      extend T::Helpers
+      abstract!
 
       include Comparable
       extend Predicable
 
       def self.english_name
-        @english_name ||= name.sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1 \2')
+        @english_name ||= T.must(name).sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1 \2')
       end
 
       def self.english_article
@@ -23,12 +25,15 @@ module Cask
       end
 
       def self.dsl_key
-        @dsl_key ||= name.sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1_\2').downcase.to_sym
+        @dsl_key ||= T.must(name).sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1_\2').downcase.to_sym
       end
 
       def self.dirmethod
         @dirmethod ||= "#{dsl_key}dir".to_sym
       end
+
+      sig { abstract.returns(String) }
+      def summarize; end
 
       def staged_path_join_executable(path)
         path = Pathname(path)

@@ -69,7 +69,7 @@ module Cask
         end
       end
 
-      sig { returns(String) }
+      sig { override.returns(String) }
       def summarize
         target_string = @target_string.empty? ? "" : " -> #{@target_string}"
         "#{@source_string}#{target_string}"

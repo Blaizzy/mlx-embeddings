@@ -24,7 +24,7 @@ module Cask
         [true]
       end
 
-      sig { returns(String) }
+      sig { override.returns(String) }
       def summarize
         "true"
       end
