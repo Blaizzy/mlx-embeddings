@@ -86,7 +86,7 @@ GEM
       ast (~> 2.4.1)
     patchelf (1.4.0)
       elftools (>= 1.2)
-    plist (3.6.0)
+    plist (3.7.0)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
