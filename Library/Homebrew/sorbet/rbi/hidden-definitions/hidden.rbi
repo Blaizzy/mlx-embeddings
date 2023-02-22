@@ -6968,9 +6968,16 @@ class RuboCop::Cop::FormulaCop
 
   def dependency_type_hash_match?(param0, param1); end
 
+  def initialize(*args, &blk); end
+
   def required_dependency?(param0); end
 
   def required_dependency_name?(param0, param1); end
+end
+
+class RuboCop::Cop::FormulaCop
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
 end
 
 class RuboCop::Cop::Homebrew::MoveToExtendOS
