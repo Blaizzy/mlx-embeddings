@@ -700,11 +700,15 @@ module GitHub
     output[/^Status: (200)/, 1] != "200"
   end
 
-  def repo_commit_count_for_user(nwo, user)
+  def repo_commit_count_for_user(nwo, user, args)
     return if Homebrew::EnvConfig.no_github_api?
 
+    params = ["author=#{user}"]
+    params << "since=#{DateTime.parse(args.from).iso8601}" if args.from
+    params << "until=#{DateTime.parse(args.to).iso8601}" if args.to
+
     commits = 0
-    API.paginate_rest("#{API_URL}/repos/#{nwo}/commits", additional_query_params: "author=#{user}") do |result|
+    API.paginate_rest("#{API_URL}/repos/#{nwo}/commits", additional_query_params: params.join("&")) do |result|
       commits += result.length
     end
     commits

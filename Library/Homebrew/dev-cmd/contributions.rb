@@ -143,7 +143,7 @@ module Homebrew
       puts "Determining contributions for #{person} on #{repo_full_name}..." if args.verbose?
 
       data[repo] = {
-        commits:       GitHub.repo_commit_count_for_user(repo_full_name, person),
+        commits:       GitHub.repo_commit_count_for_user(repo_full_name, person, args),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
         signoffs:      git_log_trailers_cmd(T.must(repo_path), person, "Signed-off-by", args),
       }
