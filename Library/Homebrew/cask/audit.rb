@@ -501,47 +501,29 @@ module Cask
       Dir.mktmpdir do |tmpdir|
         tmpdir = Pathname(tmpdir)
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
-
-        message = <<~EOS
-          Signature verification failed:
-          #{result.merged_output}
-          macOS on ARM requires applications to be signed.
-          Please contact the upstream developer to let them know they should
-        EOS
-
         artifacts.each do |artifact|
-          case artifact
+          path = case artifact
           when Artifact::Moved
-            path = tmpdir/artifact.source.basename
-            next unless path.exist?
-
-            result = system_command("codesign", args: ["--verify", path], print_stderr: false)
-
-            next if result.success?
-
-            message = if result.stderr.include?("not signed at all")
-              "#{message} sign their app."
-            else
-              "#{message} fix the signature of their app."
-            end
-
-            add_warning message
+            tmpdir/artifact.source.basename
           when Artifact::Pkg
-            path = artifact.path
-            next unless path.exist?
-
-            result = system_command("pkgutil", args: ["--check-signature", path], print_stderr: false)
-            if result.failure?
-              add_warning "#{message} sign their package."
-              next
-            end
-
-            result = system_command("stapler", args: ["validate", path], print_stderr: false)
-            if result.failure?
-              add_warning "#{message} notarize their package."
-              next
-            end
+            artifact.path
           end
+          next unless path.exist?
+
+          result = system_command("codesign", args: ["--verify", path], print_stderr: false)
+
+          next if result.success?
+
+          message = "Signature verification failed:\n#{result.merged_output}\nmacOS on ARM requires applications " \
+                    "to be signed. Please contact the upstream developer to let them know they should "
+
+          message += if result.stderr.include?("not signed at all")
+            "sign their app."
+          else
+            "fix the signature of their app."
+          end
+
+          add_warning message
         end
       end
     end
