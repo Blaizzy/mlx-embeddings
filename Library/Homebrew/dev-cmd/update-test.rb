@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 require "cli/parser"
-require "extend/os/dev-cmd/update-test"
-
 module Homebrew
   extend T::Sig
 
@@ -151,6 +149,6 @@ module Homebrew
     end
     tags
   end
-
-  alias generic_git_tags git_tags
 end
+
+require "extend/os/dev-cmd/update-test"

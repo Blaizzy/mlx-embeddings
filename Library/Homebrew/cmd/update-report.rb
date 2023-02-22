@@ -9,7 +9,6 @@ require "description_cache_store"
 require "cli/parser"
 require "settings"
 require "linuxbrew-core-migration"
-require "extend/os/cmd/update-report"
 
 module Homebrew
   extend T::Sig
@@ -304,6 +303,8 @@ module Homebrew
     # do nothing
   end
 end
+
+require "extend/os/cmd/update-report"
 
 class Reporter
   class ReporterRevisionUnsetError < RuntimeError
