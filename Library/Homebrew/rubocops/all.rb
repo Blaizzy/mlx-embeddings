@@ -1,16 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+# TODO: remove this (and avoid further active support in rubocops)
 require "active_support/core_ext/array/conversions"
-
-require "rubocop-performance"
-require "rubocop-rails"
-require "rubocop-rspec"
-
-require_relative "../warnings"
-Warnings.ignore :parser_syntax do
-  require "rubocop-sorbet"
-end
 
 require_relative "io_read"
 require_relative "move_to_extend_os"
