@@ -357,7 +357,7 @@ class SystemCommand
           Regexp.last_match(1)
         end
 
-        Plist.parse_xml(output)
+        Plist.parse_xml(output, marshal: false)
       end
     end
 
