@@ -19,11 +19,11 @@ module Homebrew
   sig { returns(CLI::Parser) }
   def contributions_args
     Homebrew::CLI::Parser.new do
-      usage_banner "`contributions` <email|name> [<--repositories>`=`] [<--csv>]"
+      usage_banner "`contributions` <email|username> [<--repositories>`=`] [<--csv>]"
       description <<~EOS
         Contributions to Homebrew repos for a user.
 
-        The first argument is a name (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
+        The first argument is a GitHub username (e.g. "BrewTestBot") or an email address (e.g. "brewtestbot@brew.sh").
       EOS
 
       comma_array "--repositories",
@@ -65,13 +65,20 @@ module Homebrew
       end
 
       repo_path = find_repo_path_for_repo(repo)
+      tap = Tap.fetch("homebrew", repo)
       unless repo_path.exist?
         opoo "Repository #{repo} not yet tapped! Tapping it now..."
-        Tap.fetch("homebrew", repo).install
+        tap.install
+      end
+
+      repo_full_name = if repo == "brew"
+        "homebrew/brew"
+      else
+        tap.full_name
       end
 
       results[repo] = {
-        commits:       git_log_author_cmd(T.must(repo_path), args),
+        commits:       GitHub.repo_commit_count_for_user(repo_full_name, args.named.first),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), "Co-authored-by", args),
         signoffs:      git_log_trailers_cmd(T.must(repo_path), "Signed-off-by", args),
       }
@@ -125,15 +132,6 @@ module Homebrew
       .values # [{:commits=>1, :coauthorships=>0, :signoffs=>3}, {:commits=>500, :coauthorships=>2, :signoffs=>450}]
       .map(&:values) # [[1, 0, 3], [500, 2, 450]]
       .sum(&:sum) # 956
-  end
-
-  sig { params(repo_path: Pathname, args: Homebrew::CLI::Args).returns(Integer) }
-  def git_log_author_cmd(repo_path, args)
-    cmd = ["git", "-C", repo_path, "log", "--oneline", "--author=#{args.named.first}"]
-    cmd << "--before=#{args.to}" if args.to
-    cmd << "--after=#{args.from}" if args.from
-
-    Utils.safe_popen_read(*cmd).lines.count
   end
 
   sig { params(repo_path: Pathname, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
