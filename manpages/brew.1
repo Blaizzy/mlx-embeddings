@@ -1598,11 +1598,8 @@ Treat all named arguments as casks\.
 .SS "\fBcommand\fR \fIcommand\fR [\.\.\.]"
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
-.SS "\fBcontributions\fR \fIemail|username\fR [\fI\-\-repositories\fR\fB=\fR] [\fI\-\-csv\fR]"
-Contributions to Homebrew repos for a user\.
-.
-.P
-The first argument is a GitHub username (e\.g\. "BrewTestBot") or an email address (e\.g\. "brewtestbot@brew\.sh")\.
+.SS "\fBcontributions\fR [\-\-user=\fIemail|username\fR] [\fI\-\-repositories\fR\fB=\fR] [\fI\-\-csv\fR]"
+Contributions to Homebrew repos\.
 .
 .TP
 \fB\-\-repositories\fR
@@ -1615,6 +1612,10 @@ Date (ISO\-8601 format) to start searching contributions\.
 .TP
 \fB\-\-to\fR
 Date (ISO\-8601 format) to stop searching contributions\.
+.
+.TP
+\fB\-\-user\fR
+A GitHub username or email address of a specific person to find contribution data for\.
 .
 .TP
 \fB\-\-csv\fR
