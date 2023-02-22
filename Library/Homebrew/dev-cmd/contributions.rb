@@ -58,7 +58,15 @@ module Homebrew
       args.repositories
     end
 
-    return ofail "CSVs not yet supported for the full list of maintainers at once." if args.csv? && args.user.nil?
+    if args.user
+      user = args.user
+      results[user] = scan_repositories(repos, user, args)
+      puts "#{user} contributed #{total(results[user])} times #{time_period(args)}."
+      puts generate_csv(T.must(user), results[user]) if args.csv?
+      return
+    end
+
+    return ofail "CSVs not yet supported for the full list of maintainers at once." if args.csv?
 
     maintainers = GitHub.members_by_team("Homebrew", "maintainers")
     maintainers.each do |username, _|
@@ -71,13 +79,6 @@ module Homebrew
       results[username] = scan_repositories(repos, username, args)
       puts "#{username} contributed #{total(results[username])} times #{time_period(args)}."
     end
-
-    return unless args.user
-
-    user = args.user
-    results[user] = scan_repositories(repos, user, args)
-    puts "#{user} contributed #{total(results[user])} times #{time_period(args)}."
-    puts generate_csv(T.must(user), results[user]) if args.csv?
   end
 
   sig { params(repo: String).returns(Pathname) }
@@ -138,6 +139,8 @@ module Homebrew
       else
         tap.full_name
       end
+
+      puts "Determining contributions for #{person} on #{repo_full_name}..." if args.verbose?
 
       data[repo] = {
         commits:       GitHub.repo_commit_count_for_user(repo_full_name, person),
