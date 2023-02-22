@@ -33,6 +33,7 @@ module Homebrew
     ].freeze
 
     STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = [
+      :extract_plist,
       :github_latest,
       :page_match,
       :header_match,
