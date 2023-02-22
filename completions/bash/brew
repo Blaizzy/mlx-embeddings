@@ -687,6 +687,7 @@ _brew_contributions() {
       --quiet
       --repositories
       --to
+      --user
       --verbose
       "
       return
