@@ -232,7 +232,7 @@ module FormulaCellarChecks
     return unless prefix.directory?
 
     plist = begin
-      Plist.parse_xml(plist)
+      Plist.parse_xml(plist, marshal: false)
     rescue
       nil
     end

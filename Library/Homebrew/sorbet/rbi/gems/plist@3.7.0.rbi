@@ -6,7 +6,7 @@
 
 module Plist
   class << self
-    def parse_xml(filename_or_xml); end
+    def parse_xml(filename_or_xml, options = T.unsafe(nil)); end
   end
 end
 
@@ -38,7 +38,7 @@ class Plist::Emit::PlistBuilder
 end
 
 class Plist::Listener
-  def initialize; end
+  def initialize(options = T.unsafe(nil)); end
 
   def open; end
   def open=(_arg0); end
@@ -90,10 +90,12 @@ class Plist::PString < ::Plist::PTag
 end
 
 class Plist::PTag
-  def initialize; end
+  def initialize(options); end
 
   def children; end
   def children=(_arg0); end
+  def options; end
+  def options=(_arg0); end
   def text; end
   def text=(_arg0); end
   def to_ruby; end
