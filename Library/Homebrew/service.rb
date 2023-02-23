@@ -27,6 +27,7 @@ module Homebrew
     def initialize(formula, &block)
       @formula = formula
       @run_type = RUN_TYPE_IMMEDIATE
+      @run_at_load = true
       @environment_variables = {}
       @service_block = block
     end
@@ -383,7 +384,7 @@ module Homebrew
       base = {
         Label:            @formula.plist_name,
         ProgramArguments: command,
-        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE || @run_at_load == true,
+        RunAtLoad:        @run_at_load == true,
       }
 
       base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
