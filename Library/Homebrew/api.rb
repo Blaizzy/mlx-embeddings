@@ -41,6 +41,11 @@ module Homebrew
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
 
+      if Homebrew.running_as_root_but_not_owned_by_root? &&
+         (!target.exist? || target.empty?)
+        odie "Need to download #{url} but cannot as root! Run `brew update` without `sudo` first then try again."
+      end
+
       # TODO: consider using more of Utils::Curl
       curl_args = %W[
         --compressed
@@ -55,6 +60,7 @@ module Homebrew
                       !target.empty? &&
                       (Homebrew::EnvConfig.no_auto_update? ||
                       ((Time.now - Homebrew::EnvConfig.api_auto_update_secs.to_i) < target.mtime))
+      skip_download ||= Homebrew.running_as_root_but_not_owned_by_root?
 
       json_data = begin
         begin
