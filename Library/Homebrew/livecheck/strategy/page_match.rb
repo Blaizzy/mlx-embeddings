@@ -11,8 +11,8 @@ module Homebrew
       # strategies apply to a given URL. Though {PageMatch} will technically
       # match any HTTP URL, the strategy also requires a regex to function.
       #
-      # The {find_versions} method is also used within other strategies,
-      # to handle the process of identifying version text in content.
+      # The {find_versions} method can be used within other strategies, to
+      # handle the process of identifying version text in content.
       #
       # @api public
       class PageMatch
@@ -78,7 +78,7 @@ module Homebrew
         # @param url [String] the URL of the content to check
         # @param regex [Regexp, nil] a regex used for matching versions
         # @param provided_content [String, nil] page content to use in place of
-        #   fetching via Strategy#page_content
+        #   fetching via `Strategy#page_content`
         # @param homebrew_curl [Boolean] whether to use brewed curl with the URL
         # @return [Hash]
         sig {
