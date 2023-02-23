@@ -167,6 +167,8 @@ __brew_internal_commands() {
     'fetch:Download a bottle (if available) or source packages for formulae and binaries for casks'
     'formula:Display the path where formula is located'
     'formulae:List all locally installable formulae including short names'
+    'generate-cask-api:Generates Cask API data files for formulae'
+    'generate-formula-api:Generates Formula API data files for formulae'
     'generate-man-completions:Generate Homebrew'\''s manpages and shell completions'
     'gist-logs:Upload logs for a failed build of formula to a new Gist'
     'home:Open a formula or cask'\''s homepage in a browser, or open Homebrew'\''s own homepage if no argument is provided'
@@ -896,6 +898,24 @@ _brew_formula() {
     '--verbose[Make some output more verbose]' \
     - formula \
     '*::formula:__brew_formulae'
+}
+
+# brew generate-cask-api
+_brew_generate_cask_api() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
+# brew generate-formula-api
+_brew_generate_formula_api() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
 }
 
 # brew generate-man-completions
