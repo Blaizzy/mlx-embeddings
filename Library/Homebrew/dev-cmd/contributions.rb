@@ -39,7 +39,7 @@ module Homebrew
            description: "A GitHub username or email address of a specific person to find contribution data for."
 
       switch "--csv",
-             description: "Print a CSV of a user's contributions across repositories over the time period."
+             description: "Print a CSV of contributions across repositories over the time period."
     end
   end
 
@@ -48,6 +48,7 @@ module Homebrew
     args = contributions_args.parse
 
     results = {}
+    grand_totals = {}
 
     all_repos = args.repositories.nil? || args.repositories.include?("all")
     repos = if all_repos
@@ -61,12 +62,12 @@ module Homebrew
     if args.user
       user = args.user
       results[user] = scan_repositories(repos, user, args)
-      puts "#{user} contributed #{total(results[user])} times #{time_period(args)}."
-      puts generate_csv(T.must(user), results[user]) if args.csv?
+      grand_totals[user] = total(results[user])
+
+      puts "#{user} contributed #{grand_totals[user]} times #{time_period(args)}."
+      puts generate_csv(T.must(user), results[user], grand_totals[user]) if args.csv?
       return
     end
-
-    odie "CSVs not yet supported for the full list of maintainers at once." if args.csv?
 
     maintainers = GitHub.members_by_team("Homebrew", "maintainers")
     maintainers.each do |username, _|
@@ -76,8 +77,12 @@ module Homebrew
       # TODO: Switch to using the GitHub APIs instead of `git log` if
       # they ever support trailers.
       results[username] = scan_repositories(repos, username, args)
-      puts "#{username} contributed #{total(results[username])} times #{time_period(args)}."
+      grand_totals[username] = total(results[username])
+
+      puts "#{username} contributed #{grand_totals[username]} times #{time_period(args)}."
     end
+
+    puts generate_maintainers_csv(grand_totals) if args.csv?
   end
 
   sig { params(repo: String).returns(Pathname) }
@@ -100,8 +105,18 @@ module Homebrew
     end
   end
 
-  sig { params(user: String, results: Hash).returns(String) }
-  def generate_csv(user, results)
+  sig { params(totals: Hash).returns(String) }
+  def generate_maintainers_csv(totals)
+    CSV.generate do |csv|
+      csv << %w[user total]
+      totals.each do |user, total|
+        csv << [user, total]
+      end
+    end
+  end
+
+  sig { params(user: String, results: Hash, grand_total: Integer).returns(String) }
+  def generate_csv(user, results, grand_total)
     CSV.generate do |csv|
       csv << %w[user repo commits coauthorships signoffs total]
       results.each do |repo, counts|
@@ -114,7 +129,7 @@ module Homebrew
           counts.values.sum,
         ]
       end
-      csv << [user, "*", "*", "*", "*", total(results)]
+      csv << [user, "*", "*", "*", "*", grand_total]
     end
   end
 
