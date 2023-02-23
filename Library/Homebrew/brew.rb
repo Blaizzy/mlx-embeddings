@@ -120,12 +120,12 @@ begin
     # Unset HOMEBREW_HELP to avoid confusing the tap
     with_env HOMEBREW_HELP: nil do
       tap_commands = []
-      if File.exist?("/.dockerenv") ||
-         Process.uid.zero? ||
+      if (File.exist?("/.dockerenv") ||
+         Homebrew.running_as_root? ||
          ((cgroup = Utils.popen_read("cat", "/proc/1/cgroup").presence) &&
-          %w[azpl_job actions_job docker garden kubepods].none? { |type| cgroup.include?(type) })
-        brew_uid = HOMEBREW_BREW_FILE.stat.uid
-        tap_commands += %W[/usr/bin/sudo -u ##{brew_uid}] if Process.uid.zero? && !brew_uid.zero?
+          %w[azpl_job actions_job docker garden kubepods].none? { |type| cgroup.include?(type) })) &&
+         Homebrew.running_as_root_but_not_owned_by_root?
+        tap_commands += %W[/usr/bin/sudo -u ##{Homebrew.owner_uid}]
       end
       quiet_arg = args.quiet? ? "--quiet" : nil
       tap_commands += [HOMEBREW_BREW_FILE, "tap", *quiet_arg, possible_tap.name]

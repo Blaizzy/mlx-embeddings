@@ -111,6 +111,19 @@ module Homebrew
     def auditing?
       @auditing == true
     end
+
+    def running_as_root?
+      @process_uid ||= Process.uid
+      @process_uid.zero?
+    end
+
+    def owner_uid
+      @owner_uid ||= HOMEBREW_BREW_FILE.stat.uid
+    end
+
+    def running_as_root_but_not_owned_by_root?
+      running_as_root? && !owner_uid.zero?
+    end
   end
 end
 
