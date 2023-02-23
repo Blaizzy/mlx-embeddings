@@ -70,7 +70,6 @@ module Homebrew
 
     maintainers = GitHub.members_by_team("Homebrew", "maintainers")
     maintainers.each do |username, _|
-      puts "Determining contributions for #{username}..." if args.verbose?
       # TODO: Using the GitHub username to scan the `git log` undercounts some
       # contributions as people might not always have configured their Git
       # committer details to match the ones on GitHub.
@@ -143,7 +142,7 @@ module Homebrew
       puts "Determining contributions for #{person} on #{repo_full_name}..." if args.verbose?
 
       data[repo] = {
-        commits:       GitHub.repo_commit_count_for_user(repo_full_name, person),
+        commits:       GitHub.repo_commit_count_for_user(repo_full_name, person, args),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
         signoffs:      git_log_trailers_cmd(T.must(repo_path), person, "Signed-off-by", args),
       }
