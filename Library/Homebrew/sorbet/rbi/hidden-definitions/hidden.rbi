@@ -2953,67 +2953,14 @@ class Cask::AbstractCaskErrorWithToken
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Cask::Artifact::AbstractArtifact
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+end
+
 module Cask::Cache
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::Cask
-  def app(&block); end
-
-  def artifact(&block); end
-
-  def audio_unit_plugin(&block); end
-
-  def binary(&block); end
-
-  def colorpicker(&block); end
-
-  def dictionary(&block); end
-
-  def font(&block); end
-
-  def input_method(&block); end
-
-  def installer(&block); end
-
-  def internet_plugin(&block); end
-
-  def manpage(&block); end
-
-  def mdimporter(&block); end
-
-  def on_system_blocks_exist?(&block); end
-
-  def pkg(&block); end
-
-  def postflight(&block); end
-
-  def preflight(&block); end
-
-  def prefpane(&block); end
-
-  def qlplugin(&block); end
-
-  def screen_saver(&block); end
-
-  def service(&block); end
-
-  def stage_only(&block); end
-
-  def suite(&block); end
-
-  def uninstall(&block); end
-
-  def uninstall_postflight(&block); end
-
-  def uninstall_preflight(&block); end
-
-  def vst3_plugin(&block); end
-
-  def vst_plugin(&block); end
-
-  def zap(&block); end
 end
 
 class Cask::CaskQuarantineError
@@ -3082,84 +3029,6 @@ class Cask::Config
   def vst_plugindir(); end
 
   def vst_plugindir=(path); end
-end
-
-class Cask::DSL
-  def app(*args, **kwargs); end
-
-  def artifact(*args, **kwargs); end
-
-  def audio_unit_plugin(*args, **kwargs); end
-
-  def binary(*args, **kwargs); end
-
-  def colorpicker(*args, **kwargs); end
-
-  def dictionary(*args, **kwargs); end
-
-  def font(*args, **kwargs); end
-
-  def input_method(*args, **kwargs); end
-
-  def installer(*args, **kwargs); end
-
-  def internet_plugin(*args, **kwargs); end
-
-  def manpage(*args, **kwargs); end
-
-  def mdimporter(*args, **kwargs); end
-
-  def on_arch_conditional(arm: T.unsafe(nil), intel: T.unsafe(nil)); end
-
-  def on_arm(&block); end
-
-  def on_big_sur(or_condition=T.unsafe(nil), &block); end
-
-  def on_catalina(or_condition=T.unsafe(nil), &block); end
-
-  def on_el_capitan(or_condition=T.unsafe(nil), &block); end
-
-  def on_high_sierra(or_condition=T.unsafe(nil), &block); end
-
-  def on_intel(&block); end
-
-  def on_mojave(or_condition=T.unsafe(nil), &block); end
-
-  def on_monterey(or_condition=T.unsafe(nil), &block); end
-
-  def on_sierra(or_condition=T.unsafe(nil), &block); end
-
-  def on_ventura(or_condition=T.unsafe(nil), &block); end
-
-  def pkg(*args, **kwargs); end
-
-  def postflight(&block); end
-
-  def preflight(&block); end
-
-  def prefpane(*args, **kwargs); end
-
-  def qlplugin(*args, **kwargs); end
-
-  def screen_saver(*args, **kwargs); end
-
-  def service(*args, **kwargs); end
-
-  def stage_only(*args, **kwargs); end
-
-  def suite(*args, **kwargs); end
-
-  def uninstall(*args, **kwargs); end
-
-  def uninstall_postflight(&block); end
-
-  def uninstall_preflight(&block); end
-
-  def vst3_plugin(*args, **kwargs); end
-
-  def vst_plugin(*args, **kwargs); end
-
-  def zap(*args, **kwargs); end
 end
 
 class Cask::DSL::Caveats
@@ -4559,18 +4428,6 @@ class Homebrew::FormulaCreator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Homebrew::Livecheck::Strategy::ExtractPlist::Item
-  def short_version(*args, &block); end
-
-  def version(*args, &block); end
-end
-
-class Homebrew::Livecheck::Strategy::ExtractPlist::Item
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
 class Homebrew::Livecheck::Strategy::Sparkle::Item
   def nice_version(*args, &block); end
 
@@ -5538,7 +5395,6 @@ class Object
   TARGET_MAN_PATH = ::T.let(nil, ::T.untyped)
   TESTBALL_PATCHES_SHA256 = ::T.let(nil, ::T.untyped)
   TESTBALL_SHA256 = ::T.let(nil, ::T.untyped)
-  TEST_DIRECTORIES = ::T.let(nil, ::T.untyped)
   TEST_FIXTURE_DIR = ::T.let(nil, ::T.untyped)
   TEST_SHA1 = ::T.let(nil, ::T.untyped)
   TEST_SHA256 = ::T.let(nil, ::T.untyped)
@@ -6014,22 +5870,6 @@ end
 
 class RSpec::Expectations::MultipleExpectationsNotMetError
   include ::RSpec::Core::MultipleExceptionError::InterfaceTag
-end
-
-module RSpec::Matchers
-  def a_json_string(*expected, &block_arg); end
-
-  def a_string_containing(*args, &block); end
-
-  def array_including_cons(*expected, &block_arg); end
-
-  def be_a_failure(*args, &block); end
-
-  def have_failed(*args, &block); end
-
-  def not_raise_error(*args, &block); end
-
-  def not_to_output(*args, &block); end
 end
 
 module Racc
@@ -6769,6 +6609,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
+  SET_MODULE_FUNCTION_RUBY2_KEYWORDS = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
