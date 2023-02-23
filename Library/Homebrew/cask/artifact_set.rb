@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "set"
@@ -9,7 +9,10 @@ module Cask
   # @api private
   class ArtifactSet < ::Set
     def each(&block)
-      return enum_for(__method__) { size } unless block
+      # TODO: This is a false positive: https://github.com/rubocop/rubocop/issues/11591
+      # rubocop:disable Lint/ToEnumArguments
+      return enum_for(T.must(__method__)) { size } unless block
+      # rubocop:enable Lint/ToEnumArguments
 
       to_a.each(&block)
       self

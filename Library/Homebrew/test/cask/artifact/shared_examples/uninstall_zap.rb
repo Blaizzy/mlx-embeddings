@@ -221,7 +221,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
                                                    .and_return(unix_pids.map { |pid| [pid, 0, bundle_id] })
 
       signals.each do |signal|
-        expect(Process).to receive(:kill).with(signal, *unix_pids)
+        expect(Process).to receive(:kill).with(signal, *unix_pids).and_return(1)
       end
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
