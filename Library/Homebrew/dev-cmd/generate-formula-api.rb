@@ -22,7 +22,7 @@ module Homebrew
     end
   end
 
-  JSON_TEMPLATE = <<~EOS
+  FORMULA_JSON_TEMPLATE = <<~EOS
     ---
     layout: formula_json
     ---
@@ -57,7 +57,7 @@ module Homebrew
       json = JSON.pretty_generate(formula.to_hash_with_variations)
 
       File.write("_data/formula/#{name.tr("+", "_")}.json", "#{json}\n")
-      File.write("api/formula/#{name}.json", JSON_TEMPLATE)
+      File.write("api/formula/#{name}.json", FORMULA_JSON_TEMPLATE)
       File.write("formula/#{name}.html", html_template(name))
     end
 

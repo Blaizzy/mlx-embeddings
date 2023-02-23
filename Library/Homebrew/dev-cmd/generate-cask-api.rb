@@ -22,7 +22,7 @@ module Homebrew
     end
   end
 
-  JSON_TEMPLATE = <<~EOS
+  CASK_JSON_TEMPLATE = <<~EOS
     ---
     layout: cask_json
     ---
@@ -56,7 +56,7 @@ module Homebrew
       json = JSON.pretty_generate(cask.to_hash_with_variations)
 
       File.write("_data/cask/#{name}.json", "#{json}\n")
-      File.write("api/cask/#{name}.json", JSON_TEMPLATE)
+      File.write("api/cask/#{name}.json", CASK_JSON_TEMPLATE)
       File.write("api/cask-source/#{name}.rb", path.read)
       File.write("cask/#{name}.html", html_template(name))
     end
