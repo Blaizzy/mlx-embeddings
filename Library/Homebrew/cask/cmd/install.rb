@@ -85,7 +85,7 @@ module Cask
 
         if dry_run
           if (casks_to_install = casks.reject(&:installed?).presence)
-            plural = ::Utils::Inflection.number(casks_to_install.count, "cask")
+            plural = ::Utils::Inflection.pluralize("cask", casks_to_install.count)
             ohai "Would install #{casks_to_install.count} #{plural}:"
             puts casks_to_install.map(&:full_name).join(" ")
           end
@@ -97,7 +97,7 @@ module Cask
                                      .map(&:name)
             next if dep_names.blank?
 
-            plural = ::Utils::Inflection.number(dep_names.count, "dependenc", "ies", "y")
+            plural = ::Utils::Inflection.pluralize("dependenc", dep_names.count, plural: "ies", singular: "y")
             ohai "Would install #{dep_names.count} #{plural} for #{cask.full_name}:"
             puts dep_names.join(" ")
           end

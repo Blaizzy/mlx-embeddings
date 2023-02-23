@@ -8,9 +8,9 @@ module Utils
   module Inflection
     extend T::Sig
 
-    # Combines `stem`` with the `singular`` or `plural` suffix based on `count`.
-    sig { params(count: Integer, stem: String, plural: String, singular: String).returns(String) }
-    def self.number(count, stem, plural = "s", singular = "")
+    # Combines `stem` with the `singular` or `plural` suffix based on `count`.
+    sig { params(stem: String, count: Integer, plural: String, singular: String).returns(String) }
+    def self.pluralize(stem, count, plural: "s", singular: "")
       suffix = (count == 1) ? singular : plural
       "#{stem}#{suffix}"
     end
