@@ -802,6 +802,8 @@ then
       edit
       extract
       formula
+      generate-cask-api
+      generate-formula-api
       livecheck
       pr-pull
       pr-upload
