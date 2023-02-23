@@ -55,7 +55,7 @@ module Formulary
         namespace = klass.name.deconstantize
         next if namespace.deconstantize != name
 
-        remove_const(namespace.demodulize)
+        remove_const(Utils::Inflection.demodulize(namespace))
       end
     end
 
