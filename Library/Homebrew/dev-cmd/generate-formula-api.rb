@@ -14,6 +14,8 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Generates Formula API data files for formulae.brew.sh.
+
+        The generated files are written to the current directory.
       EOS
 
       named_args :none
@@ -32,7 +34,7 @@ module Homebrew
       ---
       title: #{title}
       layout: formula
-      redirect_from: /formula-linux/$TITLE
+      redirect_from: /formula-linux/#{title}
       ---
       {{ content }}
     EOS
@@ -41,7 +43,7 @@ module Homebrew
   def generate_formula_api
     generate_formula_api_args.parse
 
-    tap = Tap.fetch("homebrew/core")
+    tap = CoreTap.instance
 
     directories = ["_data/formula", "api/formula", "formula"]
     FileUtils.rm_rf directories + ["_data/formula_canonical.json"]

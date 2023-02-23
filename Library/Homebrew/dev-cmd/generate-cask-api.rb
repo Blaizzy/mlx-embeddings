@@ -14,6 +14,8 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Generates Cask API data files for formulae.brew.sh.
+
+        The generated files are written to the current directory.
       EOS
 
       named_args :none
@@ -40,7 +42,7 @@ module Homebrew
   def generate_cask_api
     generate_cask_api_args.parse
 
-    tap = Tap.fetch("homebrew/cask")
+    tap = Tap.default_cask_tap
 
     directories = ["_data/cask", "api/cask", "api/cask-source", "cask"].freeze
     FileUtils.rm_rf directories
