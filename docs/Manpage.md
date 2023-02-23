@@ -1224,6 +1224,18 @@ a formula from a tap that is not `homebrew/core` use its fully-qualified form of
 
 Display the path where *`formula`* is located.
 
+### `generate-cask-api`
+
+Generates Cask API data files for formulae.brew.sh.
+
+The generated files are written to the current directory.
+
+### `generate-formula-api`
+
+Generates Formula API data files for formulae.brew.sh.
+
+The generated files are written to the current directory.
+
 ### `generate-man-completions`
 
 Generate Homebrew's manpages and shell completions.

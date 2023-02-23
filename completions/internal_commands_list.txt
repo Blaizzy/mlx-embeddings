@@ -41,6 +41,8 @@ extract
 fetch
 formula
 formulae
+generate-cask-api
+generate-formula-api
 generate-man-completions
 gist-logs
 help

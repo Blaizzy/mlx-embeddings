@@ -731,6 +731,20 @@ __fish_brew_complete_arg 'formula' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 
+__fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae'
+__fish_brew_complete_arg 'generate-cask-api' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'generate-cask-api' -l help -d 'Show this message'
+__fish_brew_complete_arg 'generate-cask-api' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'generate-cask-api' -l verbose -d 'Make some output more verbose'
+
+
+__fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae'
+__fish_brew_complete_arg 'generate-formula-api' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'generate-formula-api' -l help -d 'Show this message'
+__fish_brew_complete_arg 'generate-formula-api' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'generate-formula-api' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'generate-man-completions' 'Generate Homebrew\'s manpages and shell completions'
 __fish_brew_complete_arg 'generate-man-completions' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-man-completions' -l help -d 'Show this message'
