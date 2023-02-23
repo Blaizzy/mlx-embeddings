@@ -185,7 +185,6 @@ describe Homebrew::Service do
         service do
           run [opt_bin/"beanstalkd", "test"]
           run_type :immediate
-          run_at_load true
           environment_variables PATH: std_service_path_env, FOO: "BAR", ETC_DIR: etc/"beanstalkd"
           error_log_path var/"log/beanstalkd.error.log"
           log_path var/"log/beanstalkd.log"
@@ -347,7 +346,7 @@ describe Homebrew::Service do
       expect(plist).to eq(plist_expect)
     end
 
-    it "returns valid partial plist" do
+    it "returns valid partial plist with run_at_load being false" do
       f = stub_formula do
         service do
           run opt_bin/"beanstalkd"
