@@ -43,7 +43,7 @@ module Homebrew
 
       if Homebrew.running_as_root_but_not_owned_by_root? &&
          (!target.exist? || target.empty?)
-        odie "Need to download #{url} but cannot as root! Try again without `sudo`."
+        odie "Need to download #{url} but cannot as root! Run `brew update` without `sudo` first then try again."
       end
 
       # TODO: consider using more of Utils::Curl
