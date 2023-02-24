@@ -790,7 +790,6 @@ then
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
     NO_INSTALL_FROM_API_COMMANDS=(
-      audit
       bottle
       bump-cask-pr
       bump-formula-pr
