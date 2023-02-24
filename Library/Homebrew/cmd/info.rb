@@ -254,6 +254,8 @@ module Homebrew
     when Formula
       f.path.relative_path_from(f.tap.path)
     when Cask::Cask
+      return "#{f.tap.default_remote}/blob/HEAD/Casks/#{f.token}.rb" if f.sourcefile_path.blank?
+
       f.sourcefile_path.relative_path_from(f.tap.path)
     end
     github_remote_path(f.tap.remote, path)
