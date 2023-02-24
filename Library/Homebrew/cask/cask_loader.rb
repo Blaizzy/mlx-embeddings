@@ -45,7 +45,10 @@ module Cask
       private
 
       def cask(header_token, **options, &block)
-        Cask.new(header_token, source: content, **options, config: @config, &block)
+        checksum = {
+          "sha256" => Digest::SHA256.hexdigest(content),
+        }
+        Cask.new(header_token, source: content, source_checksum: checksum, **options, config: @config, &block)
       end
     end
 
