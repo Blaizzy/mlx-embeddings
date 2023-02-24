@@ -167,7 +167,9 @@ module Cask
 
       def initialize(tapped_name)
         user, repo, token = tapped_name.split("/", 3)
-        super Tap.fetch(user, repo).cask_dir/"#{token}.rb"
+        tap = Tap.fetch(user, repo)
+        cask = CaskLoader.find_cask_in_tap(token, tap)
+        super cask
       end
 
       def load(config:)
@@ -421,8 +423,15 @@ module Cask
     end
 
     def self.tap_paths(token)
-      Tap.map { |t| t.cask_dir/"#{token.to_s.downcase}.rb" }
-         .select(&:exist?)
+      Tap.map do |tap|
+        find_cask_in_tap(token.to_s.downcase, tap)
+      end.select(&:exist?)
+    end
+
+    def self.find_cask_in_tap(token, tap)
+      filename = "#{token}.rb"
+
+      Tap.cask_files_by_name(tap).fetch(filename, tap.cask_dir/filename)
     end
   end
 end

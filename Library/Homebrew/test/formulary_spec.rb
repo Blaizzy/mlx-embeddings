@@ -81,6 +81,21 @@ describe Formulary do
       }.to raise_error(ArgumentError)
     end
 
+    context "with sharded Formula directory" do
+      before { CoreTap.instance.clear_cache }
+
+      let(:formula_name) { "testball_sharded" }
+      let(:formula_path) { CoreTap.new.formula_dir/formula_name[0]/"#{formula_name}.rb" }
+
+      it "returns a Formula" do
+        expect(described_class.factory(formula_name)).to be_a(Formula)
+      end
+
+      it "returns a Formula when given a fully qualified name" do
+        expect(described_class.factory("homebrew/core/#{formula_name}")).to be_a(Formula)
+      end
+    end
+
     context "when the Formula has the wrong class" do
       let(:formula_name) { "giraffe" }
       let(:formula_content) do
@@ -171,7 +186,7 @@ describe Formulary do
     context "when loading from Tap" do
       let(:tap) { Tap.new("homebrew", "foo") }
       let(:another_tap) { Tap.new("homebrew", "bar") }
-      let(:formula_path) { tap.path/"#{formula_name}.rb" }
+      let(:formula_path) { tap.path/"Formula/#{formula_name}.rb" }
 
       it "returns a Formula when given a name" do
         expect(described_class.factory(formula_name)).to be_a(Formula)
@@ -195,8 +210,8 @@ describe Formulary do
       end
 
       it "raises an error if a Formula is in multiple Taps" do
-        another_tap.path.mkpath
-        (another_tap.path/"#{formula_name}.rb").write formula_content
+        (another_tap.path/"Formula").mkpath
+        (another_tap.path/"Formula/#{formula_name}.rb").write formula_content
 
         expect {
           described_class.factory(formula_name)

@@ -528,15 +528,12 @@ describe Tap do
       expect(core_tap.name).to eq("homebrew/core")
       expect(core_tap.command_files).to eq([])
       expect(core_tap).to be_installed
-      expect(core_tap).not_to be_pinned
       expect(core_tap).to be_official
       expect(core_tap).to be_a_core_tap
     end
 
     specify "forbidden operations" do
       expect { core_tap.uninstall }.to raise_error(RuntimeError)
-      expect { core_tap.pin }.to raise_error(RuntimeError)
-      expect { core_tap.unpin }.to raise_error(RuntimeError)
     end
 
     specify "files" do
