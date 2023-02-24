@@ -199,7 +199,8 @@ module Homebrew
 
     unless updated_taps.empty?
       auto_update_header args: args
-      puts "Updated #{updated_taps.count} #{"tap".pluralize(updated_taps.count)} (#{updated_taps.to_sentence})."
+      puts "Updated #{updated_taps.count} #{Utils::Inflection.pluralize("tap",
+                                                                        updated_taps.count)} (#{updated_taps.to_sentence})."
       updated = true
     end
 
@@ -584,11 +585,12 @@ class ReporterHub
       output_dump_formula_or_cask_report "Outdated Casks", outdated_casks
     elsif report_all
       if (changed_formulae = select_formula_or_cask(:M).count) && changed_formulae.positive?
-        ohai "Modified Formulae", "Modified #{changed_formulae} #{"formula".pluralize(changed_formulae)}."
+        ohai "Modified Formulae",
+             "Modified #{changed_formulae} #{Utils::Inflection.pluralize("formula", changed_formulae, plural: "e")}."
       end
 
       if (changed_casks = select_formula_or_cask(:MC).count) && changed_casks.positive?
-        ohai "Modified Casks", "Modified #{changed_casks} #{"cask".pluralize(changed_casks)}."
+        ohai "Modified Casks", "Modified #{changed_casks} #{Utils::Inflection.pluralize("cask", changed_casks)}."
       end
     else
       outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
@@ -609,12 +611,14 @@ class ReporterHub
     msg = ""
 
     if outdated_formulae.positive?
-      msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{"formula".pluralize(outdated_formulae)}"
+      msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{Utils::Inflection.pluralize("formula",
+                                                                                                 outdated_formulae, plural: "e")}"
     end
 
     if outdated_casks.positive?
       msg += " and " if msg.present?
-      msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{"cask".pluralize(outdated_casks)}"
+      msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{Utils::Inflection.pluralize("cask",
+                                                                                              outdated_casks)}"
     end
 
     return if msg.blank?
