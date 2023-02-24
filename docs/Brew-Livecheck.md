@@ -141,6 +141,21 @@ livecheck do
 end
 ```
 
+#### `Json` `strategy` block
+
+A `strategy` block for `Json` receives parsed JSON data and, if provided, a regex. For example, if we have an object containing an array of objects with a `version` string, we can select only the members that match the regex and isolate the relevant version text as follows:
+
+```ruby
+livecheck do
+  url "https://www.example.com/example.json"
+  regex(/^v?(\d+(?:\.\d+)+)$/i)
+  strategy :json do |json, regex|
+    json["versions"].select { |item| item["version"]&.match?(regex) }
+                    .map { |item| item["version"][regex, 1] }
+  end
+end
+```
+
 #### `Sparkle` `strategy` block
 
 A `strategy` block for `Sparkle` receives an `item` which has methods for the `short_version`, `version`, `url` and `title`.

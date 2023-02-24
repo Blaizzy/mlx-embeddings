@@ -153,9 +153,13 @@ module Homebrew
       def from_url(url, livecheck_strategy: nil, url_provided: false, regex_provided: false, block_provided: false)
         usable_strategies = strategies.values.select do |strategy|
           if strategy == PageMatch
-            # Only treat the `PageMatch` strategy as usable if a regex is
-            # present in the `livecheck` block
+            # Only treat the strategy as usable if the `livecheck` block
+            # contains a regex and/or `strategy` block
             next if !regex_provided && !block_provided
+          elsif strategy == Json
+            # Only treat the strategy as usable if the `livecheck` block
+            # contains a `strategy` block
+            next unless block_provided
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy
@@ -273,6 +277,7 @@ require_relative "strategy/gnome"
 require_relative "strategy/gnu"
 require_relative "strategy/hackage"
 require_relative "strategy/header_match"
+require_relative "strategy/json"
 require_relative "strategy/launchpad"
 require_relative "strategy/npm"
 require_relative "strategy/page_match"

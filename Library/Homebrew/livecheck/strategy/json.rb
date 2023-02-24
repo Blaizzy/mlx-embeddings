@@ -4,33 +4,40 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The {PageMatch} strategy fetches content at a URL and scans it for
-      # matching text using the provided regex.
+      # The {Json} strategy fetches content at a URL, parses it as JSON, and
+      # provides the parsed data to a `strategy` block. If a regex is present
+      # in the `livecheck` block, it should be passed as the second argument to
+      # the  `strategy` block.
       #
-      # This strategy can be used in a `livecheck` block when no specific
-      # strategies apply to a given URL. Though {PageMatch} will technically
-      # match any HTTP URL, the strategy also requires a regex to function.
+      # This is a generic strategy that doesn't contain any logic for finding
+      # versions, as the structure of JSON data varies. Instead, a `strategy`
+      # block must be used to extract version information from the JSON data.
       #
-      # The {find_versions} method can be used within other strategies, to
-      # handle the process of identifying version text in content.
+      # This strategy is not applied automatically and it is necessary to use
+      # `strategy :json` in a `livecheck` block (in conjunction with a
+      # `strategy` block) to use it.
+      #
+      # This strategy's {find_versions} method can be used in other strategies
+      # that work with JSON content, so it should only be necessary to write
+      # the version-finding logic that works with the parsed JSON data.
       #
       # @api public
-      class PageMatch
+      class Json
         extend T::Sig
 
-        NICE_NAME = "Page match"
+        NICE_NAME = "JSON"
 
         # A priority of zero causes livecheck to skip the strategy. We do this
-        # for {PageMatch} so we can selectively apply it only when a regex is
-        # provided in a `livecheck` block.
+        # for {Json} so we can selectively apply it only when a strategy block
+        # is provided in a `livecheck` block.
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
         # Whether the strategy can be applied to the provided URL.
-        # {PageMatch} will technically match any HTTP URL but is only
-        # usable with a `livecheck` block containing a regex.
+        # {Json} will technically match any HTTP URL but is only usable with
+        # a `livecheck` block containing a `strategy` block.
         #
         # @param url [String] the URL to match against
         # @return [Boolean]
@@ -39,11 +46,10 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
-        # Uses the regex to match text in the content or, if a block is
-        # provided, passes the page content to the block to handle matching.
-        # With either approach, an array of unique matches is returned.
-        #
-        # @param content [String] the page content to check
+        # Parses JSON text and identifies versions using a `strategy` block.
+        # If a regex is provided, it will be passed as the second argument to
+        # the  `strategy` block (after the parsed JSON data).
+        # @param content [String] the JSON text to parse and check
         # @param regex [Regexp, nil] a regex used for matching versions in the
         #   content
         # @return [Array]
@@ -54,26 +60,28 @@ module Homebrew
             block:   T.untyped,
           ).returns(T::Array[String])
         }
-        def self.versions_from_content(content, regex, &block)
-          if block
-            block_return_value = regex.present? ? yield(content, regex) : yield(content)
-            return Strategy.handle_block_return(block_return_value)
+        def self.versions_from_content(content, regex = nil, &block)
+          return [] if content.blank? || block.blank?
+
+          require "json"
+          json = begin
+            JSON.parse(content)
+          rescue JSON::ParserError
+            raise "Content could not be parsed as JSON."
           end
 
-          return [] if regex.blank?
-
-          content.scan(regex).map do |match|
-            case match
-            when String
-              match
-            when Array
-              match.first
-            end
-          end.compact.uniq
+          block_return_value = if regex.present?
+            yield(json, regex)
+          elsif block.arity == 2
+            raise "Two arguments found in `strategy` block but no regex provided."
+          else
+            yield(json)
+          end
+          Strategy.handle_block_return(block_return_value)
         end
 
-        # Checks the content at the URL for new versions, using the provided
-        # regex for matching.
+        # Checks the JSON content at the URL for versions, using the provided
+        # `strategy` block to extract version information.
         #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp, nil] a regex used for matching versions
@@ -92,12 +100,10 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, provided_content: nil, homebrew_curl: false, **_unused, &block)
-          if regex.blank? && block.blank?
-            raise ArgumentError, "#{T.must(name).demodulize} requires a regex or `strategy` block"
-          end
+          raise ArgumentError, "#{T.must(name).demodulize} requires a `strategy` block" if block.blank?
 
           match_data = { matches: {}, regex: regex, url: url }
-          return match_data if url.blank? || (regex.blank? && block.blank?)
+          return match_data if url.blank? || block.blank?
 
           content = if provided_content.is_a?(String)
             match_data[:cached] = true
