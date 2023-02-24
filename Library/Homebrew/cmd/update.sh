@@ -810,6 +810,9 @@ EOS
       else
         echo "Failed to download ${json_url}!" >>"${update_failed_file}"
       fi
+
+      # Not a typo, this is the file we used to download that we should cleanup.
+      rm -f "${HOMEBREW_CACHE}/api/${formula_or_cask}.json"
     done
   fi
 
