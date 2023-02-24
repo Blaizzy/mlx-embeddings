@@ -3,6 +3,27 @@
 
 require "system_command"
 
+# Helper module for iterating over directory trees.
+#
+# @api private
+module PathnameEachDirectory
+  refine Pathname do
+    extend T::Sig
+
+    sig {
+      type_parameters(:T)
+        .params(
+          _block: T.proc.params(path: Pathname).returns(T.type_parameter(:T)),
+        ).returns(T.type_parameter(:T))
+    }
+    def each_directory(&_block)
+      find do |path|
+        yield path if path.directory?
+      end
+    end
+  end
+end
+
 # Module containing all available strategies for unpacking archives.
 #
 # @api private
@@ -11,6 +32,8 @@ module UnpackStrategy
   extend T::Helpers
 
   include SystemCommand::Mixin
+
+  using PathnameEachDirectory
 
   # Helper module for identifying the file type.
   module Magic
@@ -164,17 +187,21 @@ module UnpackStrategy
       children = tmp_unpack_dir.children
 
       if children.count == 1 && !children.first.directory?
-        FileUtils.chmod "+rw", children.first, verbose: verbose
-
         s = UnpackStrategy.detect(children.first, prioritize_extension: prioritize_extension)
 
         s.extract_nestedly(to: to, verbose: verbose, prioritize_extension: prioritize_extension)
+
         next
       end
 
-      Directory.new(tmp_unpack_dir).extract(to: to, verbose: verbose)
+      # Ensure all extracted directories are writable.
+      tmp_unpack_dir.each_directory do |path|
+        next if path.writable?
 
-      FileUtils.chmod_R "+w", tmp_unpack_dir, force: true, verbose: verbose
+        FileUtils.chmod "u+w", path, verbose: verbose
+      end
+
+      Directory.new(tmp_unpack_dir).extract(to: to, verbose: verbose)
     end
   end
 
