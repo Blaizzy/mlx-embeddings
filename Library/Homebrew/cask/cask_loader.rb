@@ -246,6 +246,12 @@ module Cask
 
         tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
+        user_agent = json_cask.dig(:url_specs, :user_agent)
+        json_cask[:url_specs][:user_agent] = user_agent[1..].to_sym if user_agent && user_agent[0] == ":"
+        if (using = json_cask.dig(:url_specs, :using))
+          json_cask[:url_specs][:using] = using.to_sym
+        end
+
         Cask.new(token,
                  tap:             tap,
                  source:          cask_source,
@@ -261,7 +267,7 @@ module Cask
             sha256 json_cask[:sha256]
           end
 
-          url json_cask[:url]
+          url json_cask[:url], **json_cask.fetch(:url_specs, {})
           appcast json_cask[:appcast] if json_cask[:appcast].present?
           json_cask[:name].each do |cask_name|
             name cask_name
