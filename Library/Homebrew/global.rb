@@ -16,7 +16,7 @@ require "active_support/core_ext/object/blank"
 require "active_support/core_ext/string/filters"
 require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
-require "active_support/core_ext/string/inflections"
+require "i18n"
 require "active_support/core_ext/array/conversions"
 require "active_support/core_ext/hash/deep_merge"
 require "active_support/core_ext/file/atomic"
@@ -26,12 +26,6 @@ require "active_support/core_ext/string/indent"
 
 I18n.backend.available_locales # Initialize locales so they can be overwritten.
 I18n.backend.store_translations :en, support: { array: { last_word_connector: " and " } }
-
-ActiveSupport::Inflector.inflections(:en) do |inflect|
-  inflect.irregular "formula", "formulae"
-  inflect.irregular "is", "are"
-  inflect.irregular "it", "they"
-end
 
 HOMEBREW_API_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_API_DEFAULT_DOMAIN").freeze
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_BOTTLE_DEFAULT_DOMAIN").freeze
