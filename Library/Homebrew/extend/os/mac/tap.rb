@@ -4,7 +4,7 @@
 class Tap
   def self.install_default_cask_tap_if_necessary(force: false)
     return false if default_cask_tap.installed?
-    return false if Homebrew::EnvConfig.install_from_api?
+    return false unless Homebrew::EnvConfig.no_install_from_api?
     return false if Homebrew::EnvConfig.automatically_set_no_install_from_api?
     return false if !force && Tap.untapped_official_taps.include?(default_cask_tap.name)
 

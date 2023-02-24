@@ -43,7 +43,7 @@ class MacOSRequirement < Requirement
       end
 
       # Otherwise fallback to the oldest allowed if comparator is >=.
-      MacOS::Version.new(MacOS::Version::OLDEST_ALLOWED) if comparator == ">="
+      MacOS::Version.new(HOMEBREW_MACOS_OLDEST_ALLOWED) if comparator == ">="
     end
 
     @comparator = comparator

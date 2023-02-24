@@ -28,8 +28,8 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
     context "when not using the API" do
       before do
         allow(Homebrew::EnvConfig)
-          .to receive(:install_from_api?)
-          .and_return(false)
+          .to receive(:no_install_from_api?)
+          .and_return(true)
       end
 
       it "returns false" do
@@ -40,8 +40,8 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
     context "when using the API" do
       before do
         allow(Homebrew::EnvConfig)
-          .to receive(:install_from_api?)
-          .and_return(true)
+          .to receive(:no_install_from_api?)
+          .and_return(false)
       end
 
       it "returns true for valid token" do

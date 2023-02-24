@@ -327,7 +327,7 @@ module Homebrew
   end
 
   def without_api(&block)
-    return yield unless Homebrew::EnvConfig.install_from_api?
+    return yield if Homebrew::EnvConfig.no_install_from_api?
 
     with_env(HOMEBREW_NO_INSTALL_FROM_API: "1", HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API: "1", &block)
   end
