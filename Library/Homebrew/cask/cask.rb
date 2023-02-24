@@ -277,8 +277,8 @@ module Cask
         return api_to_local_hash(Homebrew::API.merge_variations(json_cask))
       end
 
-      url_specs = url.specs.dup
-      case url_specs[:user_agent]
+      url_specs = url&.specs.dup
+      case url_specs&.dig(:user_agent)
       when :default
         url_specs.delete(:user_agent)
       when Symbol
