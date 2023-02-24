@@ -122,31 +122,33 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    audit_formulae, audit_casks = if args.tap
-      Tap.fetch(args.tap).then do |tap|
-        [
-          tap.formula_names.map { |name| Formula[name] },
-          tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
-        ]
-      end
-    elsif args.installed?
-      no_named_args = true
-      [Formula.installed, Cask::Caskroom.casks]
-    elsif args.no_named?
-      if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-        odisabled "brew audit",
-                  "brew audit --eval-all or HOMEBREW_EVAL_ALL"
-      end
-      no_named_args = true
-      [Formula.all, Cask::Cask.all]
-    else
-      if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
-        odeprecated "brew audit [path ...]",
-                    "brew audit [name ...]"
-      end
+    audit_formulae, audit_casks = without_api do # audit requires full Ruby source
+      if args.tap
+        Tap.fetch(args.tap).then do |tap|
+          [
+            tap.formula_names.map { |name| Formula[name] },
+            tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
+          ]
+        end
+      elsif args.installed?
+        no_named_args = true
+        [Formula.installed, Cask::Caskroom.casks]
+      elsif args.no_named?
+        if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+          odisabled "brew audit",
+                    "brew audit --eval-all or HOMEBREW_EVAL_ALL"
+        end
+        no_named_args = true
+        [Formula.all, Cask::Cask.all]
+      else
+        if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
+          odeprecated "brew audit [path ...]",
+                      "brew audit [name ...]"
+        end
 
-      args.named.to_formulae_and_casks
-          .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
+        args.named.to_formulae_and_casks
+            .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
+      end
     end
 
     if audit_formulae.empty? && audit_casks.empty?
@@ -209,8 +211,15 @@ module Homebrew
         display_cop_names:   args.display_cop_names?,
       }.compact
 
-      fa = FormulaAuditor.new(f, **options)
-      fa.audit
+      audit_proc = proc { FormulaAuditor.new(f, **options).tap(&:audit) }
+
+      # Audit requires full Ruby source so disable API.
+      # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core clone.
+      fa = if f.core_formula?
+        without_api(&audit_proc)
+      else
+        audit_proc.call
+      end
 
       if fa.problems.any? || fa.new_formula_problems.any?
         formula_count += 1
@@ -315,5 +324,11 @@ module Homebrew
 
   def format_problem(message, location)
     "* #{location&.to_s&.dup&.concat(": ")}#{message.chomp.gsub("\n", "\n    ")}"
+  end
+
+  def without_api(&block)
+    return yield unless Homebrew::EnvConfig.install_from_api?
+
+    with_env(HOMEBREW_NO_INSTALL_FROM_API: "1", HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API: "1", &block)
   end
 end
