@@ -101,6 +101,8 @@ describe Cask::Cmd::List, :cask do
             "desc": null,
             "homepage": "https://brew.sh/",
             "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip",
+            "url_specs": {
+            },
             "appcast": null,
             "version": "1.2.3",
             "versions": {
@@ -146,6 +148,8 @@ describe Cask::Cmd::List, :cask do
             "desc": "BitTorrent client",
             "homepage": "https://transmissionbt.com/",
             "url": "file://#{TEST_FIXTURE_DIR}/cask/transmission-2.61.dmg",
+            "url_specs": {
+            },
             "appcast": null,
             "version": "2.61",
             "versions": {
@@ -184,6 +188,8 @@ describe Cask::Cmd::List, :cask do
             "desc": null,
             "homepage": "https://brew.sh/",
             "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine/darwin-arm64/1.2.3/arm.zip",
+            "url_specs": {
+            },
             "appcast": null,
             "version": "1.2.3",
             "versions": {
@@ -225,6 +231,8 @@ describe Cask::Cmd::List, :cask do
             "desc": null,
             "homepage": "https://brew.sh/",
             "url": "https://brew.sh/ThirdParty.dmg",
+            "url_specs": {
+            },
             "appcast": null,
             "version": "1.2.3",
             "versions": {
@@ -263,6 +271,8 @@ describe Cask::Cmd::List, :cask do
             "desc": null,
             "homepage": "https://brew.sh/",
             "url": "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip",
+            "url_specs": {
+            },
             "appcast": null,
             "version": "1.2.3",
             "versions": {

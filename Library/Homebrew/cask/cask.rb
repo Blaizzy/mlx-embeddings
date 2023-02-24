@@ -277,6 +277,14 @@ module Cask
         return api_to_local_hash(Homebrew::API.merge_variations(json_cask))
       end
 
+      url_specs = url.specs.dup
+      case url_specs[:user_agent]
+      when :default
+        url_specs.delete(:user_agent)
+      when Symbol
+        url_specs[:user_agent] = ":#{url_specs[:user_agent]}"
+      end
+
       {
         "token"                => token,
         "full_token"           => full_name,
@@ -285,6 +293,7 @@ module Cask
         "desc"                 => desc,
         "homepage"             => homepage,
         "url"                  => url,
+        "url_specs"            => url_specs,
         "appcast"              => appcast,
         "version"              => version,
         "versions"             => os_versions,
