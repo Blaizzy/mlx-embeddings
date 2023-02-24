@@ -59,6 +59,9 @@ module Homebrew
       File.write("api/cask/#{name}.json", CASK_JSON_TEMPLATE)
       File.write("api/cask-source/#{name}.rb", path.read)
       File.write("cask/#{name}.html", html_template(name))
+    rescue
+      onoe "Error while generating data for cask '#{path.stem}'."
+      raise
     end
   end
 end

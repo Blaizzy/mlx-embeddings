@@ -59,6 +59,9 @@ module Homebrew
       File.write("_data/formula/#{name.tr("+", "_")}.json", "#{json}\n")
       File.write("api/formula/#{name}.json", FORMULA_JSON_TEMPLATE)
       File.write("formula/#{name}.html", html_template(name))
+    rescue
+      onoe "Error while generating data for formula '#{name}'."
+      raise
     end
 
     canonical_json = JSON.pretty_generate(tap.formula_renames.merge(tap.alias_table))
