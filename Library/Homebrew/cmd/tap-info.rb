@@ -50,17 +50,14 @@ module Homebrew
       tap_count = 0
       formula_count = 0
       command_count = 0
-      pinned_count = 0
       private_count = 0
       Tap.each do |tap|
         tap_count += 1
         formula_count += tap.formula_files.size
         command_count += tap.command_files.size
-        pinned_count += 1 if tap.pinned?
         private_count += 1 if tap.private?
       end
       info = "#{tap_count} #{"tap".pluralize(tap_count)}"
-      info += ", #{pinned_count} pinned"
       info += ", #{private_count} private"
       info += ", #{formula_count} #{"formula".pluralize(formula_count)}"
       info += ", #{command_count} #{"command".pluralize(command_count)}"

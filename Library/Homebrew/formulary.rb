@@ -516,15 +516,14 @@ module Formulary
     def formula_name_path(tapped_name, warn: true)
       user, repo, name = tapped_name.split("/", 3).map(&:downcase)
       @tap = Tap.fetch user, repo
-      formula_dir = @tap.formula_dir || @tap.path
-      path = formula_dir/"#{name}.rb"
+      path = find_formula_from_name(name)
 
       unless path.file?
         if (possible_alias = @tap.alias_dir/name).file?
           path = possible_alias.resolved_path
           name = path.basename(".rb").to_s
         elsif (new_name = @tap.formula_renames[name]) &&
-              (new_path = formula_dir/"#{new_name}.rb").file?
+              (new_path = find_formula_from_name(new_name)).file?
           old_name = name
           path = new_path
           name = new_name
@@ -561,6 +560,12 @@ module Formulary
     rescue MethodDeprecatedError => e
       e.issues_url = tap.issues_url || tap.to_s
       raise
+    end
+
+    private
+
+    def find_formula_from_name(name)
+      Formulary.find_formula_in_tap(name, @tap)
     end
   end
 
@@ -800,22 +805,28 @@ module Formulary
   end
 
   def self.core_path(name)
-    CoreTap.instance.formula_dir/"#{name.to_s.downcase}.rb"
+    find_formula_in_tap(name.to_s.downcase, CoreTap.instance)
   end
 
   def self.core_alias_path(name)
     CoreTap.instance.alias_dir/name.to_s.downcase
   end
 
-  def self.tap_paths(name, taps = Dir[HOMEBREW_LIBRARY/"Taps/*/*/"])
+  def self.tap_paths(name, taps = Tap)
     name = name.to_s.downcase
     taps.map do |tap|
-      Pathname.glob([
-        "#{tap}Formula/#{name}.rb",
-        "#{tap}HomebrewFormula/#{name}.rb",
-        "#{tap}#{name}.rb",
-        "#{tap}Aliases/#{name}",
-      ]).find(&:file?)
-    end.compact
+      formula_path = find_formula_in_tap(name, tap)
+
+      alias_path = tap.alias_dir/name
+      next alias_path if !formula_path.exist? && alias_path.exist?
+
+      formula_path
+    end.select(&:file?)
+  end
+
+  def self.find_formula_in_tap(name, tap)
+    filename = "#{name}.rb"
+
+    Tap.formula_files_by_name(tap).fetch(filename, tap.formula_dir/filename)
   end
 end

@@ -61,8 +61,8 @@ describe Homebrew::MissingFormula do
 
     before do
       tap_path = Tap::TAP_DIRECTORY/"homebrew/homebrew-foo"
-      tap_path.mkpath
-      (tap_path/"deleted-formula.rb").write "placeholder"
+      (tap_path/"Formula").mkpath
+      (tap_path/"Formula/deleted-formula.rb").write "placeholder"
       ENV.delete "GIT_AUTHOR_DATE"
       ENV.delete "GIT_COMMITTER_DATE"
 
@@ -70,7 +70,7 @@ describe Homebrew::MissingFormula do
         system "git", "init"
         system "git", "add", "--all"
         system "git", "commit", "-m", "initial state"
-        system "git", "rm", "deleted-formula.rb"
+        system "git", "rm", "Formula/deleted-formula.rb"
         system "git", "commit", "-m", "delete formula 'deleted-formula'"
       end
     end

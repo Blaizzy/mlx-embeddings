@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "commands"
@@ -416,7 +416,6 @@ class Tap
     abv = path.abv
     formatted_contents = contents.presence&.to_sentence&.dup&.prepend(" ")
 
-    unpin if pinned?
     CacheStoreDatabase.use(:descriptions) do |db|
       DescriptionCacheStore.new(db)
                            .delete_from_formula_names!(formula_names)
@@ -451,15 +450,23 @@ class Tap
   end
 
   # Path to the directory of all {Formula} files for this {Tap}.
+  sig { returns(Pathname) }
   def formula_dir
-    @formula_dir ||= potential_formula_dirs.find(&:directory?) || (path/"Formula")
+    # Official formulae taps always use this directory, saves time to hardcode.
+    @formula_dir ||= if official?
+      path/"Formula"
+    else
+      potential_formula_dirs.find(&:directory?) || (path/"Formula")
+    end
   end
 
+  sig { returns(T::Array[Pathname]) }
   def potential_formula_dirs
     @potential_formula_dirs ||= [path/"Formula", path/"HomebrewFormula", path].freeze
   end
 
   # Path to the directory of all {Cask} files for this {Tap}.
+  sig { returns(Pathname) }
   def cask_dir
     @cask_dir ||= path/"Casks"
   end
@@ -483,15 +490,35 @@ class Tap
   end
 
   # An array of all {Formula} files of this {Tap}.
+  sig { returns(T::Array[Pathname]) }
   def formula_files
     @formula_files ||= if formula_dir.directory?
-      formula_dir.children.select(&method(:ruby_file?))
+      # TODO: odeprecate the non-official/old logic with a new minor release somehow?
+      if official?
+        formula_dir.find
+      else
+        formula_dir.children
+      end.select(&method(:ruby_file?))
     else
       []
     end
   end
 
+  # A cached hash of {Formula} basenames to {Formula} file pathnames for a {Tap}
+  sig { params(tap: Tap).returns(T::Hash[String, Pathname]) }
+  def self.formula_files_by_name(tap)
+    cache_key = "formula_files_by_name_#{tap}"
+    cache.fetch(cache_key) do |key|
+      cache[key] = tap.formula_files.each_with_object({}) do |file, hash|
+        # If there's more than one file with the same basename: intentionally
+        # ignore the later ones here.
+        hash[file.basename.to_s] ||= file
+      end
+    end
+  end
+
   # An array of all versioned {Formula} files of this {Tap}.
+  sig { returns(T::Array[Pathname]) }
   def versioned_formula_files
     @versioned_formula_files ||= formula_files.select do |file|
       file.basename(".rb").to_s =~ /@[\d.]+$/
@@ -499,16 +526,37 @@ class Tap
   end
 
   # An array of all {Cask} files of this {Tap}.
+  sig { returns(T::Array[Pathname]) }
   def cask_files
     @cask_files ||= if cask_dir.directory?
-      cask_dir.children.select(&method(:ruby_file?))
+      # TODO: odeprecate the non-official/old logic with a new minor release somehow?
+      if official?
+        cask_dir.find
+      else
+        cask_dir.children
+      end.select(&method(:ruby_file?))
     else
       []
     end
   end
 
+  # A cached hash of {Cask} basenames to {Cask} file pathnames for a {Tap}
+  sig { params(tap: Tap).returns(T::Hash[String, Pathname]) }
+  def self.cask_files_by_name(tap)
+    cache_key = "cask_files_by_name_#{tap}"
+
+    cache.fetch(cache_key) do |key|
+      cache[key] = tap.cask_files.each_with_object({}) do |file, hash|
+        # If there's more than one file with the same basename: intentionally
+        # ignore the later ones here.
+        hash[file.basename.to_s] ||= file
+      end
+    end
+  end
+
   # returns true if the file has a Ruby extension
   # @private
+  sig { params(file: Pathname).returns(T::Boolean) }
   def ruby_file?(file)
     file.extname == ".rb"
   end
@@ -516,45 +564,56 @@ class Tap
   # return true if given path would present a {Formula} file in this {Tap}.
   # accepts both absolute path and relative path (relative to this {Tap}'s path)
   # @private
+  sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def formula_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
     file = file.expand_path(path)
-    ruby_file?(file) && file.parent == formula_dir
+    return false unless ruby_file?(file)
+
+    file.to_s.start_with?("#{formula_dir}/")
   end
 
   # return true if given path would present a {Cask} file in this {Tap}.
   # accepts both absolute path and relative path (relative to this {Tap}'s path)
   # @private
+  sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def cask_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
     file = file.expand_path(path)
-    ruby_file?(file) && file.parent == cask_dir
+    return false unless ruby_file?(file)
+
+    file.to_s.start_with?("#{cask_dir}/")
   end
 
   # An array of all {Formula} names of this {Tap}.
+  sig { returns(T::Array[String]) }
   def formula_names
     @formula_names ||= formula_files.map(&method(:formula_file_to_name))
   end
 
   # An array of all {Cask} tokens of this {Tap}.
+  sig { returns(T::Array[String]) }
   def cask_tokens
     @cask_tokens ||= cask_files.map(&method(:formula_file_to_name))
   end
 
   # path to the directory of all alias files for this {Tap}.
   # @private
+  sig { returns(Pathname) }
   def alias_dir
     @alias_dir ||= path/"Aliases"
   end
 
   # an array of all alias files of this {Tap}.
   # @private
+  sig { returns(T::Array[Pathname]) }
   def alias_files
     @alias_files ||= Pathname.glob("#{alias_dir}/*").select(&:file?)
   end
 
   # an array of all aliases of this {Tap}.
   # @private
+  sig { returns(T::Array[String]) }
   def aliases
     @aliases ||= alias_files.map { |f| alias_file_to_name(f) }
   end
@@ -584,11 +643,13 @@ class Tap
     @alias_reverse_table
   end
 
+  sig { returns(Pathname) }
   def command_dir
     @command_dir ||= path/"cmd"
   end
 
   # An array of all commands files of this {Tap}.
+  sig { returns(T::Array[Pathname]) }
   def command_files
     @command_files ||= if command_dir.directory?
       Commands.find_commands(command_dir)
@@ -597,19 +658,7 @@ class Tap
     end
   end
 
-  # path to the pin record for this {Tap}.
-  # @private
-  def pinned_symlink_path
-    HOMEBREW_LIBRARY/"PinnedTaps/#{name}"
-  end
-
-  # True if this {Tap} has been pinned.
-  def pinned?
-    return @pinned if instance_variable_defined?(:@pinned)
-
-    @pinned = pinned_symlink_path.directory?
-  end
-
+  sig { returns(Hash) }
   def to_hash
     hash = {
       "name"          => name,
@@ -635,6 +684,7 @@ class Tap
   end
 
   # Hash with tap formula renames.
+  sig { returns(Hash) }
   def formula_renames
     @formula_renames ||= if (rename_file = path/HOMEBREW_TAP_FORMULA_RENAMES_FILE).file?
       JSON.parse(rename_file.read)
@@ -644,6 +694,7 @@ class Tap
   end
 
   # Hash with tap migrations.
+  sig { returns(Hash) }
   def tap_migrations
     @tap_migrations ||= if (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
       JSON.parse(migration_file.read)
@@ -665,18 +716,19 @@ class Tap
   end
 
   # Hash with pypi formula mappings
-  sig { returns(Hash) }
   def pypi_formula_mappings
     @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS
   end
 
   # @private
+  sig { returns(T::Boolean) }
   def should_report_analytics?
     return Homebrew::EnvConfig.install_from_api? && official? unless installed?
 
     !private?
   end
 
+  sig { params(other: T.nilable(T.any(String, Tap))).returns(T::Boolean) }
   def ==(other)
     other = Tap.fetch(other) if other.is_a?(String)
     self.class == other.class && name == other.name
@@ -695,6 +747,7 @@ class Tap
   end
 
   # An array of all installed {Tap} names.
+  sig { returns(T::Array[String]) }
   def self.names
     map(&:name).sort
   end
@@ -712,11 +765,13 @@ class Tap
   end
 
   # @private
+  sig { params(file: Pathname).returns(String) }
   def formula_file_to_name(file)
     "#{name}/#{file.basename(".rb")}"
   end
 
   # @private
+  sig { params(file: Pathname).returns(String) }
   def alias_file_to_name(file)
     "#{name}/#{file.basename}"
   end
@@ -796,10 +851,12 @@ class CoreTap < Tap
     super "Homebrew", "core"
   end
 
+  sig { returns(CoreTap) }
   def self.instance
     @instance ||= new
   end
 
+  sig { void }
   def self.ensure_installed!
     return if instance.installed?
     return if Homebrew::EnvConfig.install_from_api?
@@ -811,6 +868,7 @@ class CoreTap < Tap
     instance.install
   end
 
+  sig { returns(String) }
   def remote
     super if installed? || !Homebrew::EnvConfig.install_from_api?
 
@@ -841,24 +899,6 @@ class CoreTap < Tap
   end
 
   # @private
-  sig { void }
-  def pin
-    raise "Tap#pin is not available for CoreTap"
-  end
-
-  # @private
-  sig { void }
-  def unpin
-    raise "Tap#unpin is not available for CoreTap"
-  end
-
-  # @private
-  sig { returns(T::Boolean) }
-  def pinned?
-    false
-  end
-
-  # @private
   sig { returns(T::Boolean) }
   def core_tap?
     true
@@ -871,6 +911,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Pathname) }
   def formula_dir
     @formula_dir ||= begin
       self.class.ensure_installed!
@@ -879,6 +920,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Pathname) }
   def alias_dir
     @alias_dir ||= begin
       self.class.ensure_installed!
@@ -887,6 +929,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Hash) }
   def formula_renames
     @formula_renames ||= begin
       self.class.ensure_installed!
@@ -895,6 +938,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Hash) }
   def tap_migrations
     @tap_migrations ||= begin
       self.class.ensure_installed!
@@ -903,6 +947,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Hash) }
   def audit_exceptions
     @audit_exceptions ||= begin
       self.class.ensure_installed!
@@ -911,6 +956,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Hash) }
   def style_exceptions
     @style_exceptions ||= begin
       self.class.ensure_installed!
@@ -919,6 +965,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(Hash) }
   def pypi_formula_mappings
     @pypi_formula_mappings ||= begin
       self.class.ensure_installed!
@@ -927,16 +974,19 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { params(file: Pathname).returns(String) }
   def formula_file_to_name(file)
     file.basename(".rb").to_s
   end
 
   # @private
+  sig { params(file: Pathname).returns(String) }
   def alias_file_to_name(file)
     file.basename.to_s
   end
 
   # @private
+  sig { returns(T::Array[String]) }
   def aliases
     return super if installed? || !Homebrew::EnvConfig.install_from_api?
 
@@ -944,6 +994,7 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(T::Array[String]) }
   def formula_names
     return super if installed? || !Homebrew::EnvConfig.install_from_api?
 
@@ -953,8 +1004,11 @@ end
 
 # Permanent configuration per {Tap} using `git-config(1)`.
 class TapConfig
+  extend T::Sig
+
   attr_reader :tap
 
+  sig { params(tap: Tap).void }
   def initialize(tap)
     @tap = tap
   end
