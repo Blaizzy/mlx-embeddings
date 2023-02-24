@@ -137,7 +137,7 @@ _brew___cache() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -155,7 +155,7 @@ _brew___caskroom() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_casks
 }
@@ -172,7 +172,7 @@ _brew___cellar() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -189,7 +189,7 @@ _brew___config() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -207,7 +207,7 @@ _brew___env() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -226,7 +226,7 @@ _brew___prefix() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -243,7 +243,7 @@ _brew___repo() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -260,7 +260,7 @@ _brew___repository() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -292,7 +292,7 @@ _brew__s() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -318,7 +318,7 @@ _brew_abv() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -336,7 +336,7 @@ _brew_analytics() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brewcomp "state on off regenerate-uuid"
 }
@@ -377,7 +377,7 @@ _brew_audit() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -396,7 +396,7 @@ _brew_autoremove() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -425,7 +425,7 @@ _brew_bottle() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_files
@@ -450,7 +450,7 @@ _brew_bump() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -482,7 +482,7 @@ _brew_bump_cask_pr() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_casks
 }
@@ -519,7 +519,7 @@ _brew_bump_formula_pr() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -540,7 +540,7 @@ _brew_bump_revision() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -560,7 +560,7 @@ _brew_bump_unversioned_casks() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_casks
   __brew_complete_tapped
@@ -580,7 +580,7 @@ _brew_cat() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -602,7 +602,7 @@ _brew_cleanup() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -620,7 +620,7 @@ _brew_command() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_commands
 }
@@ -638,7 +638,7 @@ _brew_commands() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -654,7 +654,7 @@ _brew_completions() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brewcomp "state link unlink"
 }
@@ -671,7 +671,7 @@ _brew_config() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -692,7 +692,7 @@ _brew_contributions() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -726,7 +726,7 @@ _brew_create() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -760,7 +760,7 @@ _brew_deps() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -784,7 +784,7 @@ _brew_desc() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -802,7 +802,7 @@ _brew_developer() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brewcomp "state on off"
 }
@@ -828,7 +828,7 @@ _brew_dispatch_build_bottle() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -845,7 +845,7 @@ _brew_docs() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -863,9 +863,9 @@ _brew_doctor() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
-  __brewcomp "$(brew doctor --list-checks)"
+  __brewcomp "${__HOMEBREW_DOCTOR_CHECKS=$(brew doctor --list-checks)}"
 }
 
 _brew_dr() {
@@ -882,9 +882,9 @@ _brew_dr() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
-  __brewcomp "$(brew doctor --list-checks)"
+  __brewcomp "${__HOMEBREW_DOCTOR_CHECKS=$(brew doctor --list-checks)}"
 }
 
 _brew_edit() {
@@ -902,7 +902,7 @@ _brew_edit() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -922,7 +922,7 @@ _brew_environment() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -941,7 +941,7 @@ _brew_extract() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_tapped
@@ -971,7 +971,7 @@ _brew_fetch() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -989,7 +989,7 @@ _brew_formula() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -1006,7 +1006,7 @@ _brew_generate_cask_api() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1022,7 +1022,7 @@ _brew_generate_formula_api() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1038,7 +1038,7 @@ _brew_generate_man_completions() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1057,7 +1057,7 @@ _brew_gist_logs() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -1076,7 +1076,7 @@ _brew_home() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1096,7 +1096,7 @@ _brew_homepage() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1124,7 +1124,7 @@ _brew_info() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1185,7 +1185,7 @@ _brew_instal() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1246,7 +1246,7 @@ _brew_install() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1265,7 +1265,7 @@ _brew_install_bundler_gems() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1283,7 +1283,7 @@ _brew_irb() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1308,7 +1308,7 @@ _brew_lc() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1328,7 +1328,7 @@ _brew_leaves() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1348,7 +1348,7 @@ _brew_link() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -1369,7 +1369,7 @@ _brew_linkage() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -1396,7 +1396,7 @@ _brew_list() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_installed_casks
@@ -1423,7 +1423,7 @@ _brew_livecheck() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1445,7 +1445,7 @@ _brew_ln() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -1469,7 +1469,7 @@ _brew_log() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1497,7 +1497,7 @@ _brew_ls() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_installed_casks
@@ -1517,7 +1517,7 @@ _brew_migrate() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -1535,7 +1535,7 @@ _brew_missing() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -1556,7 +1556,7 @@ _brew_options() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -1580,7 +1580,7 @@ _brew_outdated() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1598,7 +1598,7 @@ _brew_pin() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -1615,7 +1615,7 @@ _brew_postinstall() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -1640,7 +1640,7 @@ _brew_pr_automerge() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1661,7 +1661,7 @@ _brew_pr_publish() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1694,7 +1694,7 @@ _brew_pr_pull() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1718,7 +1718,7 @@ _brew_pr_upload() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1735,7 +1735,7 @@ _brew_prof() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_commands
 }
@@ -1756,7 +1756,7 @@ _brew_readall() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -1806,7 +1806,7 @@ _brew_reinstall() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
   __brew_complete_casks
@@ -1826,7 +1826,7 @@ _brew_release() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1847,7 +1847,7 @@ _brew_remove() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_installed_casks
@@ -1870,7 +1870,7 @@ _brew_rm() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_installed_casks
@@ -1890,7 +1890,7 @@ _brew_ruby() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_files
 }
@@ -1922,7 +1922,7 @@ _brew_search() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -1940,7 +1940,7 @@ _brew_sh() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_files
 }
@@ -1964,7 +1964,7 @@ _brew_style() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_files
   __brew_complete_tapped
@@ -1990,7 +1990,7 @@ _brew_tap() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -2009,7 +2009,7 @@ _brew_tap_info() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -2030,7 +2030,7 @@ _brew_tap_new() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -2054,7 +2054,7 @@ _brew_tc() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2074,7 +2074,7 @@ _brew_test() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -2099,7 +2099,7 @@ _brew_tests() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2122,7 +2122,7 @@ _brew_typecheck() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2142,7 +2142,7 @@ _brew_unbottled() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -2164,7 +2164,7 @@ _brew_uninstal() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_installed_casks
@@ -2187,7 +2187,7 @@ _brew_uninstall() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
   __brew_complete_installed_casks
@@ -2206,7 +2206,7 @@ _brew_unlink() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -2227,7 +2227,7 @@ _brew_unpack() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -2244,7 +2244,7 @@ _brew_unpin() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_installed_formulae
 }
@@ -2262,7 +2262,7 @@ _brew_untap() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_tapped
 }
@@ -2282,7 +2282,7 @@ _brew_up() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2301,7 +2301,7 @@ _brew_update() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2317,7 +2317,7 @@ _brew_update_license_data() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2333,7 +2333,7 @@ _brew_update_maintainers() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2356,7 +2356,7 @@ _brew_update_python_resources() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -2375,7 +2375,7 @@ _brew_update_report() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2391,7 +2391,7 @@ _brew_update_sponsors() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2411,7 +2411,7 @@ _brew_update_test() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 
@@ -2463,7 +2463,7 @@ _brew_upgrade() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_outdated_formulae
   __brew_complete_outdated_casks
@@ -2490,7 +2490,7 @@ _brew_uses() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
   __brew_complete_formulae
 }
@@ -2509,7 +2509,7 @@ _brew_vendor_gems() {
       "
       return
       ;;
-    *)
+    *) ;;
   esac
 }
 

@@ -34,7 +34,7 @@ module Homebrew
       tap:               "__brew_complete_tapped",
       installed_tap:     "__brew_complete_tapped",
       command:           "__brew_complete_commands",
-      diagnostic_check:  '__brewcomp "$(brew doctor --list-checks)"',
+      diagnostic_check:  '__brewcomp "${__HOMEBREW_DOCTOR_CHECKS=$(brew doctor --list-checks)}"',
       file:              "__brew_complete_files",
     }.freeze
 
@@ -187,7 +187,7 @@ module Homebrew
               "
               return
               ;;
-            *)
+            *) ;;
           esac#{named_completion_string}
         }
       COMPLETION

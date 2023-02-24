@@ -262,7 +262,7 @@ describe Homebrew::Completions do
                 "
                 return
                 ;;
-              *)
+              *) ;;
             esac
             __brew_complete_formulae
           }
@@ -287,7 +287,7 @@ describe Homebrew::Completions do
                 "
                 return
                 ;;
-              *)
+              *) ;;
             esac
           }
         COMPLETION
