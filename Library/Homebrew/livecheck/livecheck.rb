@@ -393,7 +393,6 @@ module Homebrew
           nil
         end
       end
-      # rubocop:enable Metrics/BlockLength
 
       puts "No newer upstream versions." if newer_only && !has_a_newer_upstream_version && !debug && !json
 
@@ -408,8 +407,6 @@ module Homebrew
 
       puts JSON.pretty_generate(formulae_checked.compact)
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
 
     sig { params(package_or_resource: T.any(Formula, Cask::Cask, Resource), full_name: T::Boolean).returns(String) }
     def package_or_resource_name(package_or_resource, full_name: false)
@@ -1015,5 +1012,4 @@ module Homebrew
       resource_version_info
     end
   end
-  # rubocop:enable Metrics/ModuleLength
 end
