@@ -118,5 +118,5 @@ module Tty
 
       @stream.tty?
     end
-end
+  end
 end

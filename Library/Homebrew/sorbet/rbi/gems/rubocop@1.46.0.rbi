@@ -216,6 +216,7 @@ class RuboCop::CommentConfig
   def config(*args, &block); end
   def cop_disabled_line_ranges; end
   def cop_enabled_at_line?(cop, line_number); end
+  def cop_opted_in?(cop); end
   def extra_enabled_comments; end
   def processed_source; end
   def registry(*args, &block); end
@@ -234,6 +235,7 @@ class RuboCop::CommentConfig
   def handle_switch(directive, names, extras); end
   def inject_disabled_cops_directives(analyses); end
   def non_comment_token_line_numbers; end
+  def opt_in_cops; end
   def qualified_cop_name(cop_name); end
 end
 
@@ -1934,7 +1936,7 @@ module RuboCop::Cop::HashShorthandSyntax
   def hash_with_values_that_cant_be_omitted?(hash_value_type_breakdown); end
   def ignore_hash_shorthand_syntax?(pair_node); end
   def ignore_mixed_hash_shorthand_syntax?(hash_node); end
-  def last_expression?(ancestor); end
+  def last_expression?(node); end
   def method_dispatch_as_argument?(method_dispatch_node); end
   def mixed_shorthand_syntax_check(hash_value_type_breakdown); end
   def no_mixed_shorthand_syntax_check(hash_value_type_breakdown); end
@@ -2844,6 +2846,7 @@ class RuboCop::Cop::Layout::EndAlignment < ::RuboCop::Cop::Base
   def on_class(node); end
   def on_if(node); end
   def on_module(node); end
+  def on_sclass(node); end
   def on_until(node); end
   def on_while(node); end
 
@@ -3111,6 +3114,7 @@ class RuboCop::Cop::Layout::HeredocArgumentClosingParenthesis < ::RuboCop::Cop::
   def add_correct_closing_paren(node, corrector); end
   def add_correct_external_trailing_comma(node, corrector); end
   def autocorrect(corrector, node); end
+  def end_keyword_before_closing_parentesis?(parenthesized_send_node); end
   def exist_argument_between_heredoc_end_and_closing_parentheses?(node); end
   def external_trailing_comma?(node); end
   def external_trailing_comma_offset_from_loc_end(node); end
@@ -3352,13 +3356,13 @@ class RuboCop::Cop::Layout::LineContinuationSpacing < ::RuboCop::Cop::Base
   def comment_ranges(comments); end
   def find_offensive_spacing(line); end
   def ignore_range?(backtick_range); end
+  def ignored_literal_ranges(ast); end
   def ignored_ranges; end
   def investigate(line, line_number); end
   def last_line(processed_source); end
   def message(_range); end
   def no_space_style?; end
   def space_style?; end
-  def string_literal_ranges(ast); end
 end
 
 class RuboCop::Cop::Layout::LineEndStringConcatenationIndentation < ::RuboCop::Cop::Base
@@ -5291,7 +5295,6 @@ class RuboCop::Cop::Lint::NestedMethodDefinition < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::AllowedMethods
   include ::RuboCop::Cop::AllowedPattern
 
-  def class_constructor?(param0 = T.unsafe(nil)); end
   def eval_call?(param0 = T.unsafe(nil)); end
   def exec_call?(param0 = T.unsafe(nil)); end
   def on_def(node); end
@@ -5485,8 +5488,8 @@ class RuboCop::Cop::Lint::OutOfRangeRegexpRef < ::RuboCop::Cop::Base
 
   def check_regexp(node); end
   def nth_ref_receiver?(send_node); end
-  def patterns(pattern_node); end
   def regexp_first_argument?(send_node); end
+  def regexp_patterns(in_node); end
   def regexp_receiver?(send_node); end
 end
 
@@ -5629,6 +5632,7 @@ end
 
 RuboCop::Cop::Lint::RedundantCopDisableDirective::COP_NAME = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Lint::RedundantCopDisableDirective::DEPARTMENT_MARKER = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Lint::RedundantCopDisableDirective::SIMILAR_COP_NAMES_CACHE = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::Cop::Lint::RedundantCopEnableDirective < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -6316,7 +6320,6 @@ class RuboCop::Cop::Lint::UselessAccessModifier < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
-  def class_constructor?(param0 = T.unsafe(nil)); end
   def class_or_instance_eval?(param0 = T.unsafe(nil)); end
   def dynamic_method_definition?(param0 = T.unsafe(nil)); end
   def on_block(node); end
@@ -7889,11 +7892,11 @@ class RuboCop::Cop::Style::AccessorGrouping < ::RuboCop::Cop::Base
 
   private
 
-  def accessor?(send_node); end
   def autocorrect(corrector, node); end
   def check(send_node); end
   def class_send_elements(class_node); end
   def group_accessors(node, accessors); end
+  def groupable_accessor?(node); end
   def grouped_style?; end
   def message(send_node); end
   def preferred_accessors(node); end
@@ -7903,7 +7906,6 @@ class RuboCop::Cop::Style::AccessorGrouping < ::RuboCop::Cop::Base
   def sibling_accessors(send_node); end
 end
 
-RuboCop::Cop::Style::AccessorGrouping::ACCESSOR_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Style::AccessorGrouping::GROUPED_MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Style::AccessorGrouping::SEPARATED_MSG = T.let(T.unsafe(nil), String)
 
@@ -8809,7 +8811,7 @@ class RuboCop::Cop::Style::DocumentationMethod < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::VisibilityHelp
   include ::RuboCop::Cop::DefNode
 
-  def module_function_node?(param0 = T.unsafe(nil)); end
+  def modifier_node?(param0 = T.unsafe(nil)); end
   def on_def(node); end
   def on_defs(node); end
 
@@ -11673,10 +11675,10 @@ class RuboCop::Cop::Style::RedundantRegexpCharacterClass < ::RuboCop::Cop::Base
   private
 
   def backslash_b?(elem); end
-  def backslash_zero?(elem); end
   def each_redundant_character_class(node); end
   def each_single_element_character_class(node); end
   def multiple_codepoins?(expression); end
+  def octal_requiring_char_class?(elem); end
   def redundant_single_element_character_class?(node, char_class); end
   def requires_escape_outside_char_class?(elem); end
   def whitespace_in_free_space_mode?(node, elem); end
@@ -12907,13 +12909,15 @@ class RuboCop::Cop::Style::WordArray < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_array(node); end
+  def on_new_investigation; end
 
   private
 
   def build_bracketed_array(node); end
   def complex_content?(strings, complex_regex: T.unsafe(nil)); end
   def invalid_percent_array_contents?(node); end
-  def within_2d_array_of_complex_content?(node); end
+  def matrix_of_complex_content?(array); end
+  def within_matrix_of_complex_content?(node); end
   def word_regex; end
 
   class << self
@@ -13061,7 +13065,7 @@ class RuboCop::Cop::Team
   def investigate_partial(cops, processed_source, offset:, original:); end
   def process_errors(file, errors); end
   def reset; end
-  def roundup_relevant_cops(filename); end
+  def roundup_relevant_cops(processed_source); end
   def support_target_rails_version?(cop); end
   def support_target_ruby_version?(cop); end
   def suppress_clobbering; end
@@ -13204,6 +13208,7 @@ end
 
 RuboCop::Cop::Util::LINE_BEGINS_REGEX_CACHE = T.let(T.unsafe(nil), Hash)
 RuboCop::Cop::Util::LITERAL_REGEX = T.let(T.unsafe(nil), Regexp)
+RuboCop::Cop::Util::MAX_LINE_BEGINS_REGEX_INDEX = T.let(T.unsafe(nil), Integer)
 module RuboCop::Cop::Utils; end
 
 class RuboCop::Cop::Utils::FormatString
