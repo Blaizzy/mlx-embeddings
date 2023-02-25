@@ -77,7 +77,6 @@ module Cask
       :depends_on,
       :homepage,
       :language,
-      :languages,
       :name,
       :sha256,
       :staged_path,

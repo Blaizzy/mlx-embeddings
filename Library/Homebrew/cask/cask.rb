@@ -83,15 +83,14 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, source_checksum: nil, tap: nil,
-                   config: nil, allow_reassignment: false, loaded_from_api: false, loader: nil, &block)
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil,
+                   config: nil, allow_reassignment: false, loader: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
-      @ruby_source_checksum = source_checksum
       @tap = tap
       @allow_reassignment = allow_reassignment
-      @loaded_from_api = loaded_from_api
+      @loaded_from_api = false
       @loader = loader
       @block = block
 
@@ -164,6 +163,12 @@ module Cask
 
     def installed?
       !versions.empty?
+    end
+
+    # The caskfile is needed during installation when there are
+    # `*flight` blocks or the cask has multiple languages
+    def caskfile_only?
+      languages.any? || artifacts.any?(Artifact::AbstractFlightBlock)
     end
 
     sig { returns(T.nilable(Time)) }
@@ -258,6 +263,27 @@ module Cask
       end
     end
 
+    def ruby_source_checksum
+      @ruby_source_checksum ||= {
+        "sha256" => Digest::SHA256.file(sourcefile_path).hexdigest,
+      }.freeze
+    end
+
+    def languages
+      @languages ||= @dsl.languages
+    end
+
+    def tap_git_head
+      @tap_git_head ||= tap&.git_head
+    end
+
+    def populate_from_api!(json_cask)
+      @loaded_from_api = true
+      @languages = json_cask[:languages]
+      @tap_git_head = json_cask[:tap_git_head]
+      @ruby_source_checksum = json_cask[:ruby_source_checksum].freeze
+    end
+
     def to_s
       @token
     end
@@ -306,7 +332,7 @@ module Cask
         "conflicts_with"       => conflicts_with,
         "container"            => container&.pairs,
         "auto_updates"         => auto_updates,
-        "tap_git_head"         => tap&.git_head,
+        "tap_git_head"         => tap_git_head,
         "languages"            => languages,
         "ruby_source_checksum" => ruby_source_checksum,
       }
@@ -358,12 +384,6 @@ module Cask
       hash["installed"] = versions.last
       hash["outdated"] = outdated?
       hash
-    end
-
-    def ruby_source_checksum
-      @ruby_source_checksum ||= {
-        "sha256" => Digest::SHA256.file(sourcefile_path).hexdigest,
-      }
     end
 
     def artifacts_list

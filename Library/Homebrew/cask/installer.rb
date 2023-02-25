@@ -64,6 +64,8 @@ module Cask
     def fetch(quiet: nil, timeout: nil)
       odebug "Cask::Installer#fetch"
 
+      load_cask_from_source_api! if @cask.loaded_from_api && @cask.caskfile_only?
+
       verify_has_sha if require_sha? && !force?
 
       download(quiet: quiet, timeout: timeout)
@@ -149,16 +151,8 @@ module Cask
     def uninstall_existing_cask
       return unless @cask.installed?
 
-      # use the same cask file that was used for installation, if possible
-      installed_caskfile = @cask.installed_caskfile
-      installed_cask = begin
-        installed_caskfile.exist? ? CaskLoader.load(installed_caskfile) : @cask
-      rescue CaskInvalidError # could be thrown by call to CaskLoader#load with outdated caskfile
-        @cask # default
-      end
-
       # Always force uninstallation, ignore method parameter
-      cask_installer = Installer.new(installed_cask, verbose: verbose?, force: true, upgrade: upgrade?)
+      cask_installer = Installer.new(@cask, verbose: verbose?, force: true, upgrade: upgrade?)
       zap? ? cask_installer.zap : cask_installer.uninstall
     end
 
@@ -403,6 +397,7 @@ module Cask
     end
 
     def uninstall
+      load_installed_caskfile!
       oh1 "Uninstalling Cask #{Formatter.identifier(@cask)}"
       uninstall_artifacts(clear: true)
       if !reinstall? && !upgrade?
@@ -480,6 +475,7 @@ module Cask
     end
 
     def zap
+      load_installed_caskfile!
       ohai "Implied `brew uninstall --cask #{@cask}`"
       uninstall_artifacts
       if (zap_stanzas = @cask.artifacts.select { |a| a.is_a?(Artifact::Zap) }).empty?
@@ -546,6 +542,31 @@ module Cask
     def purge_caskroom_path
       odebug "Purging all staged versions of Cask #{@cask}"
       gain_permissions_remove(@cask.caskroom_path)
+    end
+
+    private
+
+    # load the same cask file that was used for installation, if possible
+    def load_installed_caskfile!
+      installed_caskfile = @cask.installed_caskfile
+
+      if installed_caskfile.exist?
+        begin
+          @cask = CaskLoader.load(installed_caskfile)
+          return
+        rescue CaskInvalidError
+          # could be caused by trying to load outdated caskfile
+        end
+      end
+
+      load_cask_from_source_api! if @cask.loaded_from_api && @cask.caskfile_only?
+      # otherwise we default to the current cask
+    end
+
+    def load_cask_from_source_api!
+      options = { git_head: @cask.tap_git_head, sha256: @cask.ruby_source_checksum["sha256"] }
+      cask_source = Homebrew::API::Cask.fetch_source(@cask.token, **options)
+      @cask = CaskLoader::FromContentLoader.new(cask_source).load(config: @cask.config)
     end
   end
 end

@@ -59,80 +59,64 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
   end
 
   describe "#load" do
-    shared_examples "loads from fetched source" do |cask_token|
-      include_context "with API setup", cask_token
-      let(:content_loader) { instance_double(Cask::CaskLoader::FromContentLoader) }
-
-      it "fetches cask source from API" do
-        expect(Homebrew::API::Cask).to receive(:fetch_source).once
-        expect(Cask::CaskLoader::FromContentLoader)
-          .to receive(:new).once
-          .and_return(content_loader)
-        expect(content_loader).to receive(:load).once
-
-        api_loader.load(config: nil)
-      end
-    end
-
-    context "with a preflight stanza" do
-      include_examples "loads from fetched source", "with-preflight"
-    end
-
-    context "with an uninstall-preflight stanza" do
-      include_examples "loads from fetched source", "with-uninstall-preflight"
-    end
-
-    context "with a postflight stanza" do
-      include_examples "loads from fetched source", "with-postflight"
-    end
-
-    context "with an uninstall-postflight stanza" do
-      include_examples "loads from fetched source", "with-uninstall-postflight"
-    end
-
-    context "with a language stanza" do
-      include_examples "loads from fetched source", "with-languages"
-    end
-
-    shared_examples "loads from API" do |cask_token|
+    shared_examples "loads from API" do |cask_token, caskfile_only|
       include_context "with API setup", cask_token
       let(:cask_from_api) { api_loader.load(config: nil) }
 
       it "loads from JSON API" do
-        expect(Homebrew::API::Cask).not_to receive(:fetch_source)
-        expect(Cask::CaskLoader::FromContentLoader).not_to receive(:new)
-
         expect(cask_from_api).to be_a(Cask::Cask)
         expect(cask_from_api.token).to eq(cask_token)
+        expect(cask_from_api.loaded_from_api).to be(true)
+        expect(cask_from_api.caskfile_only?).to be(caskfile_only)
       end
     end
 
     context "with a binary stanza" do
-      include_examples "loads from API", "with-binary"
+      include_examples "loads from API", "with-binary", false
     end
 
     context "with cask dependencies" do
-      include_examples "loads from API", "with-depends-on-cask-multiple"
+      include_examples "loads from API", "with-depends-on-cask-multiple", false
     end
 
     context "with formula dependencies" do
-      include_examples "loads from API", "with-depends-on-formula-multiple"
+      include_examples "loads from API", "with-depends-on-formula-multiple", false
     end
 
     context "with macos dependencies" do
-      include_examples "loads from API", "with-depends-on-macos-array"
+      include_examples "loads from API", "with-depends-on-macos-array", false
     end
 
     context "with an installer stanza" do
-      include_examples "loads from API", "with-installer-script"
+      include_examples "loads from API", "with-installer-script", false
     end
 
     context "with uninstall stanzas" do
-      include_examples "loads from API", "with-uninstall-multi"
+      include_examples "loads from API", "with-uninstall-multi", false
     end
 
     context "with a zap stanza" do
-      include_examples "loads from API", "with-zap"
+      include_examples "loads from API", "with-zap", false
+    end
+
+    context "with a preflight stanza" do
+      include_examples "loads from API", "with-preflight", true
+    end
+
+    context "with an uninstall-preflight stanza" do
+      include_examples "loads from API", "with-uninstall-preflight", true
+    end
+
+    context "with a postflight stanza" do
+      include_examples "loads from API", "with-postflight", true
+    end
+
+    context "with an uninstall-postflight stanza" do
+      include_examples "loads from API", "with-uninstall-postflight", true
+    end
+
+    context "with a language stanza" do
+      include_examples "loads from API", "with-languages", true
     end
   end
 end
