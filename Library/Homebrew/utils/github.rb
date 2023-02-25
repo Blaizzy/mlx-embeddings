@@ -61,7 +61,14 @@ module GitHub
   end
 
   def search_code(repo: nil, user: "Homebrew", path: ["Formula", "Casks", "."], filename: nil, extension: "rb")
-    matches = search_results_items("code", user: user, path: path, filename: filename, extension: extension, repo: repo)
+    matches = search_results_items(
+      "code",
+      user:      user,
+      path:      path,
+      filename:  filename,
+      extension: extension,
+      repo:      repo,
+    )
     return matches if matches.blank?
 
     matches.map do |match|
