@@ -64,7 +64,7 @@ module Homebrew
       results[user] = scan_repositories(repos, user, args)
       grand_totals[user] = total(results[user])
 
-      puts "#{user} contributed #{grand_totals[user]} times #{time_period(args)}."
+      puts "#{user} contributed #{grand_totals[user].values.sum} times #{time_period(args)}."
       puts generate_csv(T.must(user), results[user], grand_totals[user]) if args.csv?
       return
     end
@@ -79,7 +79,7 @@ module Homebrew
       results[username] = scan_repositories(repos, username, args)
       grand_totals[username] = total(results[username])
 
-      puts "#{username} contributed #{grand_totals[username]} times #{time_period(args)}."
+      puts "#{username} contributed #{grand_totals[username].values.sum} times #{time_period(args)}."
     end
 
     puts generate_maintainers_csv(grand_totals) if args.csv?
@@ -108,14 +108,15 @@ module Homebrew
   sig { params(totals: Hash).returns(String) }
   def generate_maintainers_csv(totals)
     CSV.generate do |csv|
-      csv << %w[user total]
+      csv << %w[user repo commits coauthorships signoffs total]
+
       totals.each do |user, total|
-        csv << [user, total]
+        csv << grand_total_row(user, total)
       end
     end
   end
 
-  sig { params(user: String, results: Hash, grand_total: Integer).returns(String) }
+  sig { params(user: String, results: Hash, grand_total: Hash).returns(String) }
   def generate_csv(user, results, grand_total)
     CSV.generate do |csv|
       csv << %w[user repo commits coauthorships signoffs total]
@@ -129,8 +130,20 @@ module Homebrew
           counts.values.sum,
         ]
       end
-      csv << [user, "*", "*", "*", "*", grand_total]
+      csv << grand_total_row(user, grand_total)
     end
+  end
+
+  sig { params(user: String, grand_total: Hash).returns(Array) }
+  def grand_total_row(user, grand_total)
+    [
+      user,
+      "all",
+      grand_total[:commits],
+      grand_total[:coauthorships],
+      grand_total[:signoffs],
+      grand_total.values.sum,
+    ]
   end
 
   def scan_repositories(repos, person, args)
@@ -166,12 +179,18 @@ module Homebrew
     data
   end
 
-  sig { params(results: Hash).returns(Integer) }
+  sig { params(results: Hash).returns(Hash) }
   def total(results)
-    results
-      .values # [{:commits=>1, :coauthorships=>0, :signoffs=>3}, {:commits=>500, :coauthorships=>2, :signoffs=>450}]
-      .map(&:values) # [[1, 0, 3], [500, 2, 450]]
-      .sum(&:sum) # 956
+    totals = { commits: 0, coauthorships: 0, signoffs: 0 }
+
+    # {"brew"=>{:commits=>9,:coauthorships=>6,:signoffs=>3},"core"=>{:commits=>15,:coauthorships=>10,:signoffs=>5}}
+    results.each_value do |counts|
+      counts.each do |kind, count|
+        totals[kind] += count
+      end
+    end
+
+    totals # {:commits=>24,:coauthorships=>16,signoffs=>8}
   end
 
   sig { params(repo_path: Pathname, person: String, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
