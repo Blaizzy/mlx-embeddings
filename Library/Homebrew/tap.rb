@@ -723,7 +723,7 @@ class Tap
   # @private
   sig { returns(T::Boolean) }
   def should_report_analytics?
-    return Homebrew::EnvConfig.install_from_api? && official? unless installed?
+    return !Homebrew::EnvConfig.no_install_from_api? && official? unless installed?
 
     !private?
   end
@@ -859,7 +859,7 @@ class CoreTap < Tap
   sig { void }
   def self.ensure_installed!
     return if instance.installed?
-    return if Homebrew::EnvConfig.install_from_api?
+    return unless Homebrew::EnvConfig.no_install_from_api?
     return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
 
     # Tests override homebrew-core locations and we don't want to auto-tap in them.
@@ -870,7 +870,7 @@ class CoreTap < Tap
 
   sig { returns(String) }
   def remote
-    super if installed? || !Homebrew::EnvConfig.install_from_api?
+    super if installed? || Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::EnvConfig.core_git_remote
   end
@@ -893,7 +893,7 @@ class CoreTap < Tap
   # @private
   sig { params(manual: T::Boolean).void }
   def uninstall(manual: false)
-    raise "Tap#uninstall is not available for CoreTap" unless Homebrew::EnvConfig.install_from_api?
+    raise "Tap#uninstall is not available for CoreTap" if Homebrew::EnvConfig.no_install_from_api?
 
     super
   end
@@ -988,7 +988,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Array[String]) }
   def aliases
-    return super if installed? || !Homebrew::EnvConfig.install_from_api?
+    return super if installed? || Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_aliases.keys
   end
@@ -996,7 +996,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Array[String]) }
   def formula_names
-    return super if installed? || !Homebrew::EnvConfig.install_from_api?
+    return super if installed? || Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_formulae.keys
   end

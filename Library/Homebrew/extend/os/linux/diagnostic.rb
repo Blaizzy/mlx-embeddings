@@ -121,7 +121,7 @@ module Homebrew
       end
 
       def check_linuxbrew_core
-        return if Homebrew::EnvConfig.install_from_api?
+        return unless Homebrew::EnvConfig.no_install_from_api?
         return unless CoreTap.instance.linuxbrew_core?
 
         <<~EOS

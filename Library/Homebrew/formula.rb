@@ -2202,7 +2202,7 @@ class Formula
     hash = to_hash
 
     # Take from API, merging in local install status.
-    if self.class.loaded_from_api && Homebrew::EnvConfig.install_from_api?
+    if self.class.loaded_from_api && !Homebrew::EnvConfig.no_install_from_api?
       json_formula = Homebrew::API::Formula.all_formulae[name].dup
       json_formula["name"] = hash["name"]
       json_formula["installed"] = hash["installed"]

@@ -522,7 +522,7 @@ module Homebrew
       def check_coretap_integrity
         coretap = CoreTap.instance
         unless coretap.installed?
-          return if EnvConfig.install_from_api?
+          return unless EnvConfig.no_install_from_api?
 
           CoreTap.ensure_installed!
         end
@@ -821,7 +821,7 @@ module Homebrew
         deleted_formulae = kegs.map do |keg|
           next if Formulary.tap_paths(keg.name).any?
 
-          if !CoreTap.instance.installed? && EnvConfig.install_from_api?
+          if !CoreTap.instance.installed? && !EnvConfig.no_install_from_api?
             # Formulae installed with HOMEBREW_INSTALL_FROM_API should not count as deleted formulae
             # but may not have a tap listed in their tab
             tap = Tab.for_keg(keg).tap

@@ -24,6 +24,25 @@ else
   HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar"
 fi
 
+HOMEBREW_MACOS_ARM_DEFAULT_PREFIX="/opt/homebrew"
+HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY="${HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}"
+HOMEBREW_LINUX_DEFAULT_PREFIX="/home/linuxbrew/.linuxbrew"
+HOMEBREW_LINUX_DEFAULT_REPOSITORY="${HOMEBREW_LINUX_DEFAULT_PREFIX}/Homebrew"
+HOMEBREW_GENERIC_DEFAULT_PREFIX="/usr/local"
+HOMEBREW_GENERIC_DEFAULT_REPOSITORY="${HOMEBREW_GENERIC_DEFAULT_PREFIX}/Homebrew"
+if [[ -n "${HOMEBREW_MACOS}" && "${HOMEBREW_PROCESSOR}" == "arm64" ]]
+then
+  HOMEBREW_DEFAULT_PREFIX="${HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}"
+  HOMEBREW_DEFAULT_REPOSITORY="${HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY}"
+elif [[ -n "${HOMEBREW_LINUX}" ]]
+then
+  HOMEBREW_DEFAULT_PREFIX="${HOMEBREW_LINUX_DEFAULT_PREFIX}"
+  HOMEBREW_DEFAULT_REPOSITORY="${HOMEBREW_LINUX_DEFAULT_REPOSITORY}"
+else
+  HOMEBREW_DEFAULT_PREFIX="${HOMEBREW_GENERIC_DEFAULT_PREFIX}"
+  HOMEBREW_DEFAULT_REPOSITORY="${HOMEBREW_GENERIC_DEFAULT_REPOSITORY}"
+fi
+
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
   HOMEBREW_DEFAULT_CACHE="${HOME}/Library/Caches/Homebrew"
@@ -448,6 +467,17 @@ case "$*" in
     ;;
 esac
 
+# TODO: bump version when new macOS is released or announced
+# and also update references in docs/Installation.md,
+# https://github.com/Homebrew/install/blob/HEAD/install.sh and
+# MacOSVersions::SYMBOLS
+HOMEBREW_MACOS_NEWEST_UNSUPPORTED="14"
+# TODO: bump version when new macOS is released and also update
+# references in docs/Installation.md and
+# https://github.com/Homebrew/install/blob/HEAD/install.sh
+HOMEBREW_MACOS_OLDEST_SUPPORTED="11"
+HOMEBREW_MACOS_OLDEST_ALLOWED="10.11"
+
 if [[ -n "${HOMEBREW_MACOS}" ]]
 then
   HOMEBREW_PRODUCT="Homebrew"
@@ -467,6 +497,10 @@ then
   # Intentionally set this variable by exploding another.
   # shellcheck disable=SC2086,SC2183
   printf -v HOMEBREW_MACOS_VERSION_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_VERSION//./ }
+  # shellcheck disable=SC2248
+  printf -v HOMEBREW_MACOS_OLDEST_SUPPORTED_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_OLDEST_SUPPORTED//./ }
+  # shellcheck disable=SC2248
+  printf -v HOMEBREW_MACOS_OLDEST_ALLOWED_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_OLDEST_ALLOWED//./ }
 
   # Don't include minor versions for Big Sur and later.
   if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -gt "110000" ]]
@@ -477,7 +511,7 @@ then
   fi
 
   # Refuse to run on pre-El Capitan
-  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "101100" ]]
+  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "${HOMEBREW_MACOS_OLDEST_ALLOWED_NUMERIC}" ]]
   then
     printf "ERROR: Your version of macOS (%s) is too old to run Homebrew!\\n" "${HOMEBREW_MACOS_VERSION}" >&2
     if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "100700" ]]
@@ -523,6 +557,12 @@ then
     # Used in ruby.sh.
     # shellcheck disable=SC2034
     HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH="1"
+  fi
+
+  # Don't support API at this time for older macOS versions.
+  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "${HOMEBREW_MACOS_OLDEST_SUPPORTED_NUMERIC}" ]]
+  then
+    export HOMEBREW_NO_INSTALL_FROM_API=1
   fi
 else
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
@@ -596,6 +636,12 @@ Your Git executable: $(unset git && type -p "${HOMEBREW_GIT}")"
   fi
 fi
 
+# Generic OS or non-default prefix: API not supported.
+if [[ (-z "${HOMEBREW_MACOS}" && -z "${HOMEBREW_LINUX}") || "${HOMEBREW_PREFIX}" != "${HOMEBREW_DEFAULT_PREFIX}" ]]
+then
+  export HOMEBREW_NO_INSTALL_FROM_API=1
+fi
+
 setup_ca_certificates() {
   if [[ -n "${HOMEBREW_FORCE_BREWED_CA_CERTIFICATES}" && -f "${HOMEBREW_PREFIX}/etc/ca-certificates/cert.pem" ]]
   then
@@ -638,6 +684,14 @@ HOMEBREW_CURL_SPEED_LIMIT=100
 HOMEBREW_CURL_SPEED_TIME=5
 
 export HOMEBREW_VERSION
+export HOMEBREW_MACOS_ARM_DEFAULT_PREFIX
+export HOMEBREW_LINUX_DEFAULT_PREFIX
+export HOMEBREW_GENERIC_DEFAULT_PREFIX
+export HOMEBREW_DEFAULT_PREFIX
+export HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY
+export HOMEBREW_LINUX_DEFAULT_REPOSITORY
+export HOMEBREW_GENERIC_DEFAULT_REPOSITORY
+export HOMEBREW_DEFAULT_REPOSITORY
 export HOMEBREW_DEFAULT_CACHE
 export HOMEBREW_CACHE
 export HOMEBREW_DEFAULT_LOGS
@@ -661,6 +715,9 @@ export HOMEBREW_PRODUCT
 export HOMEBREW_OS_VERSION
 export HOMEBREW_MACOS_VERSION
 export HOMEBREW_MACOS_VERSION_NUMERIC
+export HOMEBREW_MACOS_NEWEST_UNSUPPORTED
+export HOMEBREW_MACOS_OLDEST_SUPPORTED
+export HOMEBREW_MACOS_OLDEST_ALLOWED
 export HOMEBREW_USER_AGENT
 export HOMEBREW_USER_AGENT_CURL
 export HOMEBREW_API_DEFAULT_DOMAIN

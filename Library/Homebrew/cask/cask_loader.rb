@@ -215,7 +215,7 @@ module Cask
       FLIGHT_STANZAS = [:preflight, :postflight, :uninstall_preflight, :uninstall_postflight].freeze
 
       def self.can_load?(ref)
-        return false unless Homebrew::EnvConfig.install_from_api?
+        return false if Homebrew::EnvConfig.no_install_from_api?
         return false unless ref.is_a?(String)
         return false unless ref.match?(HOMEBREW_MAIN_TAP_CASK_REGEX)
 

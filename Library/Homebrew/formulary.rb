@@ -748,7 +748,7 @@ module Formulary
     when URL_START_REGEX
       return FromUrlLoader.new(ref, from: from)
     when HOMEBREW_TAP_FORMULA_REGEX
-      if ref.start_with?("homebrew/core/") && Homebrew::EnvConfig.install_from_api?
+      if ref.start_with?("homebrew/core/") && !Homebrew::EnvConfig.no_install_from_api?
         name = ref.split("/", 3).last
         return FormulaAPILoader.new(name) if Homebrew::API::Formula.all_formulae.key?(name)
         return AliasAPILoader.new(name) if Homebrew::API::Formula.all_aliases.key?(name)
@@ -760,7 +760,7 @@ module Formulary
     pathname_ref = Pathname.new(ref)
     return FromPathLoader.new(ref) if File.extname(ref) == ".rb" && pathname_ref.expand_path.exist?
 
-    if Homebrew::EnvConfig.install_from_api?
+    unless Homebrew::EnvConfig.no_install_from_api?
       return FormulaAPILoader.new(ref) if Homebrew::API::Formula.all_formulae.key?(ref)
       return AliasAPILoader.new(ref) if Homebrew::API::Formula.all_aliases.key?(ref)
     end

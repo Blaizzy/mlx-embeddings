@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 module Homebrew
-  DEFAULT_PREFIX = HOMEBREW_DEFAULT_PREFIX
-  DEFAULT_REPOSITORY = HOMEBREW_DEFAULT_REPOSITORY
+  DEFAULT_PREFIX = ENV.fetch("HOMEBREW_DEFAULT_PREFIX").freeze
+  DEFAULT_REPOSITORY = ENV.fetch("HOMEBREW_DEFAULT_REPOSITORY").freeze
 end
-
-require "extend/os/default_prefix"
