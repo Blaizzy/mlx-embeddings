@@ -14,7 +14,7 @@ module Cask
 
     # Loads a cask from a string.
     class FromContentLoader
-      attr_reader :content
+      attr_reader :content, :tap
 
       def self.can_load?(ref)
         return false unless ref.respond_to?(:to_str)
@@ -32,8 +32,9 @@ module Cask
         content.match?(@regex)
       end
 
-      def initialize(content)
+      def initialize(content, tap: nil)
         @content = content.force_encoding("UTF-8")
+        @tap = tap
       end
 
       def load(config:)
@@ -48,7 +49,8 @@ module Cask
         checksum = {
           "sha256" => Digest::SHA256.hexdigest(content),
         }
-        Cask.new(header_token, source: content, source_checksum: checksum, **options, config: @config, &block)
+        Cask.new(header_token, source: content, source_checksum: checksum, tap: tap, **options,
+                 config: @config, &block)
       end
     end
 
@@ -234,6 +236,7 @@ module Cask
         cask_source = JSON.pretty_generate(json_cask)
 
         json_cask = Homebrew::API.merge_variations(json_cask).deep_symbolize_keys
+        tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
         # Use the cask-source API if there are any `*flight` blocks or the cask has multiple languages
         if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) } ||
@@ -241,10 +244,8 @@ module Cask
           cask_source = Homebrew::API::Cask.fetch_source(token,
                                                          git_head: json_cask[:tap_git_head],
                                                          sha256:   json_cask.dig(:ruby_source_checksum, :sha256))
-          return FromContentLoader.new(cask_source).load(config: config)
+          return FromContentLoader.new(cask_source, tap: tap).load(config: config)
         end
-
-        tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
         user_agent = json_cask.dig(:url_specs, :user_agent)
         json_cask[:url_specs][:user_agent] = user_agent[1..].to_sym if user_agent && user_agent[0] == ":"
