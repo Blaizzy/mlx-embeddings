@@ -110,7 +110,7 @@ module Homebrew
     CSV.generate do |csv|
       csv << %w[user repo commits coauthorships signoffs total]
 
-      totals.each do |user, total|
+      totals.sort_by { |_, v| -v.values.sum }.each do |user, total|
         csv << grand_total_row(user, total)
       end
     end
