@@ -666,7 +666,7 @@ _brew_config() {
 # brew contributions
 _brew_contributions() {
   _arguments \
-    '--csv[Print a CSV of a user'\''s contributions across repositories over the time period]' \
+    '--csv[Print a CSV of contributions across repositories over the time period]' \
     '--debug[Display any debugging information]' \
     '--from[Date (ISO-8601 format) to start searching contributions]' \
     '--help[Show this message]' \
