@@ -61,21 +61,7 @@ module GitHub
   end
 
   def search_code(repo: nil, user: "Homebrew", path: ["Formula", "Casks", "."], filename: nil, extension: "rb")
-    matches = search_results_items(
-      "code",
-      user:      user,
-      path:      path,
-      filename:  filename,
-      extension: extension,
-      repo:      repo,
-    )
-    return matches if matches.blank?
-
-    matches.map do |match|
-      # .sub workaround for GitHub returning preceding /
-      match["path"] = match["path"].delete_prefix("/")
-      match
-    end
+    search_results_items("code", user: user, path: path, filename: filename, extension: extension, repo: repo)
   end
 
   def issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil)
