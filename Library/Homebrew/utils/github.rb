@@ -173,11 +173,21 @@ module GitHub
   def search_query_string(*main_params, **qualifiers)
     params = main_params
 
-    params += qualifiers.flat_map do |key, value|
+    if (args = qualifiers.fetch(:args, nil))
+      params << if args.from && args.to
+        "created:#{args.from}..#{args.to}"
+      elsif args.from
+        "created:>=#{args.from}"
+      elsif args.to
+        "created:<=#{args.to}"
+      end
+    end
+
+    params += qualifiers.except(:args).flat_map do |key, value|
       Array(value).map { |v| "#{key.to_s.tr("_", "-")}:#{v}" }
     end
 
-    "q=#{URI.encode_www_form_component(params.join(" "))}&per_page=100"
+    "q=#{URI.encode_www_form_component(params.compact.join(" "))}&per_page=100"
   end
 
   def url_to(*subroutes)
