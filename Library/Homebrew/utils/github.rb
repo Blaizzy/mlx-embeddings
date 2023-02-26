@@ -147,7 +147,7 @@ module GitHub
     API.open_rest(url, data: data, scopes: scopes)
   end
 
-  def check_fork_exists(repo, org: nil)
+  def fork_exists?(repo, org: nil)
     _, reponame = repo.split("/")
 
     username = org || API.open_rest(url_to("user")) { |json| json["login"] }
@@ -555,7 +555,7 @@ module GitHub
   def forked_repo_info!(tap_remote_repo, org: nil)
     response = create_fork(tap_remote_repo, org: org)
     # GitHub API responds immediately but fork takes a few seconds to be ready.
-    sleep 1 until check_fork_exists(tap_remote_repo, org: org)
+    sleep 1 until fork_exists?(tap_remote_repo, org: org)
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote..*.url", "git@github.com:.*")
       response.fetch("ssh_url")
     else
