@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+# Contains shorthand Homebrew utility methods like `ohai`, `opoo`, `odisabled`.
 module Kernel
   extend T::Sig
 
