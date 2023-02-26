@@ -14,7 +14,7 @@ module Cask
 
     # Loads a cask from a string.
     class FromContentLoader
-      attr_reader :content
+      attr_reader :content, :tap
 
       def self.can_load?(ref)
         return false unless ref.respond_to?(:to_str)
@@ -32,8 +32,9 @@ module Cask
         content.match?(@regex)
       end
 
-      def initialize(content)
+      def initialize(content, tap: nil)
         @content = content.force_encoding("UTF-8")
+        @tap = tap
       end
 
       def load(config:)

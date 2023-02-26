@@ -1124,7 +1124,7 @@ Contributions to Homebrew repos.
 * `--user`:
   A GitHub username or email address of a specific person to find contribution data for.
 * `--csv`:
-  Print a CSV of a user's contributions across repositories over the time period.
+  Print a CSV of contributions across repositories over the time period.
 
 ### `create` [*`options`*] *`URL`*
 

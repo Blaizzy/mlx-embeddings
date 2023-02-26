@@ -37,7 +37,11 @@ module GitHub
   end
 
   def search_issues(query, **qualifiers)
-    search("issues", query, **qualifiers)
+    search_results_items("issues", query, **qualifiers)
+  end
+
+  def count_issues(query, **qualifiers)
+    search_results_count("issues", query, **qualifiers)
   end
 
   def create_gist(files, description, private:)
@@ -57,7 +61,14 @@ module GitHub
   end
 
   def search_code(repo: nil, user: "Homebrew", path: ["Formula", "Casks", "."], filename: nil, extension: "rb")
-    matches = search("code", user: user, path: path, filename: filename, extension: extension, repo: repo)
+    matches = search_results_items(
+      "code",
+      user:      user,
+      path:      path,
+      filename:  filename,
+      extension: extension,
+      repo:      repo,
+    )
     return matches if matches.blank?
 
     matches.map do |match|
@@ -163,7 +174,7 @@ module GitHub
     params = main_params
 
     params += qualifiers.flat_map do |key, value|
-      Array(value).map { |v| "#{key}:#{v}" }
+      Array(value).map { |v| "#{key.to_s.tr("_", "-")}:#{v}" }
     end
 
     "q=#{URI.encode_www_form_component(params.join(" "))}&per_page=100"
@@ -176,7 +187,17 @@ module GitHub
   def search(entity, *queries, **qualifiers)
     uri = url_to "search", entity
     uri.query = search_query_string(*queries, **qualifiers)
-    API.open_rest(uri) { |json| json.fetch("items", []) }
+    API.open_rest(uri)
+  end
+
+  def search_results_items(entity, *queries, **qualifiers)
+    json = search(entity, *queries, **qualifiers)
+    json.fetch("items", [])
+  end
+
+  def search_results_count(entity, *queries, **qualifiers)
+    json = search(entity, *queries, **qualifiers)
+    json.fetch("total_count", 0)
   end
 
   def approved_reviews(user, repo, pr, commit: nil)

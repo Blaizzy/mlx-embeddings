@@ -537,7 +537,7 @@ __fish_brew_complete_arg 'config' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'contributions' 'Contributions to Homebrew repos'
-__fish_brew_complete_arg 'contributions' -l csv -d 'Print a CSV of a user\'s contributions across repositories over the time period'
+__fish_brew_complete_arg 'contributions' -l csv -d 'Print a CSV of contributions across repositories over the time period'
 __fish_brew_complete_arg 'contributions' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'contributions' -l from -d 'Date (ISO-8601 format) to start searching contributions'
 __fish_brew_complete_arg 'contributions' -l help -d 'Show this message'
