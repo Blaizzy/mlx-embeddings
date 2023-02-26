@@ -339,13 +339,47 @@ Style/DisableCopsWithinSourceCodeDirective:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
 
-# Don't enforce documentation in casks or formulae.
+# Only enforce documentation for public APIs.
 Style/Documentation:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
-    - "**/*.rbi"
+  AllowedConstants:
+    - Homebrew
+  Include:
+    - Homebrew/cask/dsl.rb
+    - Homebrew/cask/dsl/version.rb
+    - Homebrew/cask/url.rb
+    - Homebrew/download_strategy.rb
+    - Homebrew/formula.rb
+    - Homebrew/formula_assertions.rb
+    - Homebrew/formula_free_port.rb
+    - Homebrew/language/go.rb
+    - Homebrew/language/java.rb
+    - Homebrew/language/node.rb
+    - Homebrew/language/perl.rb
+    - Homebrew/language/python.rb
+    - Homebrew/livecheck/strategy/apache.rb
+    - Homebrew/livecheck/strategy/bitbucket.rb
+    - Homebrew/livecheck/strategy/cpan.rb
+    - Homebrew/livecheck/strategy/extract_plist.rb
+    - Homebrew/livecheck/strategy/git.rb
+    - Homebrew/livecheck/strategy/github_latest.rb
+    - Homebrew/livecheck/strategy/gnome.rb
+    - Homebrew/livecheck/strategy/gnu.rb
+    - Homebrew/livecheck/strategy/hackage.rb
+    - Homebrew/livecheck/strategy/json.rb
+    - Homebrew/livecheck/strategy/launchpad.rb
+    - Homebrew/livecheck/strategy/npm.rb
+    - Homebrew/livecheck/strategy/page_match.rb
+    - Homebrew/livecheck/strategy/pypi.rb
+    - Homebrew/livecheck/strategy/sourceforge.rb
+    - Homebrew/livecheck/strategy/sparkle.rb
+    - Homebrew/livecheck/strategy/xorg.rb
+    - Homebrew/os.rb
+    - Homebrew/resource.rb
+    - Homebrew/utils.rb
+    - Homebrew/utils/inreplace.rb
+    - Homebrew/utils/shebang.rb
+    - Homebrew/utils/string_inreplace_extension.rb
+    - Homebrew/version.rb
 
 Style/DocumentationMethod:
   Include:
