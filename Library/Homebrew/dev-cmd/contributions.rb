@@ -108,7 +108,7 @@ module Homebrew
   sig { params(totals: Hash).returns(String) }
   def generate_maintainers_csv(totals)
     CSV.generate do |csv|
-      csv << %w[user repo commits coauthorships signoffs reviews total]
+      csv << %w[user repo commits coauthorships reviews total]
 
       totals.sort_by { |_, v| -v.values.sum }.each do |user, total|
         csv << grand_total_row(user, total)
@@ -119,14 +119,13 @@ module Homebrew
   sig { params(user: String, results: Hash, grand_total: Hash).returns(String) }
   def generate_csv(user, results, grand_total)
     CSV.generate do |csv|
-      csv << %w[user repo commits coauthorships signoffs reviews total]
+      csv << %w[user repo commits coauthorships reviews total]
       results.each do |repo, counts|
         csv << [
           user,
           repo,
           counts[:commits],
           counts[:coauthorships],
-          counts[:signoffs],
           counts[:reviews],
           counts.values.sum,
         ]
@@ -142,7 +141,6 @@ module Homebrew
       "all",
       grand_total[:commits],
       grand_total[:coauthorships],
-      grand_total[:signoffs],
       grand_total[:reviews],
       grand_total.values.sum,
     ]
@@ -174,7 +172,6 @@ module Homebrew
       data[repo] = {
         commits:       GitHub.repo_commit_count_for_user(repo_full_name, person, args),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
-        signoffs:      git_log_trailers_cmd(T.must(repo_path), person, "Signed-off-by", args),
         reviews:       GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, args: args),
       }
     end
@@ -184,11 +181,11 @@ module Homebrew
 
   sig { params(results: Hash).returns(Hash) }
   def total(results)
-    totals = { commits: 0, coauthorships: 0, signoffs: 0, reviews: 0 }
+    totals = { commits: 0, coauthorships: 0, reviews: 0 }
 
     # {
-    #   "brew"=>{:commits=>9,:coauthorships=>6,:signoffs=>3,:reviews=>1},
-    #   "core"=>{:commits=>15,:coauthorships=>10,:signoffs=>5,:reviews=>2}
+    #   "brew"=>{:commits=>9,:coauthorships=>6,:reviews=>1},
+    #   "core"=>{:commits=>15,:coauthorships=>10,:reviews=>2}
     # }
     results.each_value do |counts|
       counts.each do |kind, count|
@@ -196,7 +193,7 @@ module Homebrew
       end
     end
 
-    totals # {:commits=>24,:coauthorships=>16,:signoffs=>8,:reviews=>3}
+    totals # {:commits=>24,:coauthorships=>16,:reviews=>3}
   end
 
   sig { params(repo_path: Pathname, person: String, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
