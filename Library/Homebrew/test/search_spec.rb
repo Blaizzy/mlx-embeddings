@@ -39,7 +39,7 @@ describe Homebrew::Search do
         ],
       }
 
-      allow(GitHub::API).to receive(:open_rest).and_yield(json_response)
+      allow(GitHub::API).to receive(:open_rest).and_return(json_response)
 
       expect(described_class.search_taps("some-formula"))
         .to match(formulae: ["homebrew/foo/some-formula"], casks: ["homebrew/bar/some-cask"])
