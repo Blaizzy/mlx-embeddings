@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "utils"
+
 module OS
   # Helper module for querying system information on Linux.
   module Linux
@@ -24,6 +26,23 @@ module OS
       else
         "Unknown"
       end
+    end
+
+    sig { returns(T::Boolean) }
+    def wsl?
+      /-microsoft/i.match?(OS.kernel_version.to_s)
+    end
+
+    sig { returns(Version) }
+    def wsl_version
+      Version::NULL unless wsl?
+      kernel = OS.kernel_version.to_s
+      return Version.new("2 (Microsoft Store)") if Version.new(T.must(kernel[/^([0-9.]*)-.*/,
+                                                                             1])) > Version.new("5.15")
+      return Version.new("2") if kernel.include?("-microsoft")
+      return Version.new("1") if kernel.include?("-Microsoft")
+
+      Version::NULL
     end
   end
 

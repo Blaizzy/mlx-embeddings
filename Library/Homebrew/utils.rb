@@ -19,6 +19,7 @@ require "utils/repology"
 require "utils/svn"
 require "utils/tty"
 require "tap_constants"
+require "PATH"
 
 module Homebrew
   extend Context
