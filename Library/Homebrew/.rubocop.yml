@@ -52,6 +52,7 @@ Style/Documentation:
     - livecheck/strategy/pypi.rb
     - livecheck/strategy/sourceforge.rb
     - livecheck/strategy/sparkle.rb
+    - livecheck/strategy/xml.rb
     - livecheck/strategy/xorg.rb
     - os.rb
     - resource.rb

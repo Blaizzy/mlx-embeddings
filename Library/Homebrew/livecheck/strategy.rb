@@ -156,7 +156,7 @@ module Homebrew
             # Only treat the strategy as usable if the `livecheck` block
             # contains a regex and/or `strategy` block
             next if !regex_provided && !block_provided
-          elsif strategy == Json
+          elsif [Json, Xml].include?(strategy)
             # Only treat the strategy as usable if the `livecheck` block
             # specifies the strategy and contains a `strategy` block
             next if (livecheck_strategy != strategy_symbol) || !block_provided
@@ -284,4 +284,5 @@ require_relative "strategy/page_match"
 require_relative "strategy/pypi"
 require_relative "strategy/sourceforge"
 require_relative "strategy/sparkle"
+require_relative "strategy/xml"
 require_relative "strategy/xorg"
