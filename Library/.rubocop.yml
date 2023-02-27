@@ -425,9 +425,16 @@ Style/NumericLiterals:
   Exclude:
     - "**/Brewfile"
 
-# OpenStruct is a nice helper.
+# TODO: These are pre-existing violations and should be fixed.
 Style/OpenStructUse:
-  Enabled: false
+  Exclude:
+    - "Homebrew/cli/args.rb"
+    - "Homebrew/cmd/uses.rb"
+    - "Homebrew/completions.rb"
+    - "Homebrew/manpages.rb"
+    - "Homebrew/tab.rb"
+    - "Homebrew/test/api/cask_spec.rb"
+    - "Homebrew/test/api_spec.rb"
 
 # Rescuing `StandardError` is an understood default.
 Style/RescueStandardError:
