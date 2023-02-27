@@ -1,3 +1,4 @@
+require 'fiber'
 require 'concurrent/utility/engine'
 require 'concurrent/constants'
 

@@ -445,7 +445,7 @@ end
 Concurrent::Collection::MapImplementation = Concurrent::Collection::MriMapBackend
 
 class Concurrent::Collection::MriMapBackend < ::Concurrent::Collection::NonConcurrentMapBackend
-  def initialize(options = T.unsafe(nil)); end
+  def initialize(options = T.unsafe(nil), &default_proc); end
 
   def []=(key, value); end
   def clear; end
@@ -461,7 +461,7 @@ class Concurrent::Collection::MriMapBackend < ::Concurrent::Collection::NonConcu
 end
 
 class Concurrent::Collection::NonConcurrentMapBackend
-  def initialize(options = T.unsafe(nil)); end
+  def initialize(options = T.unsafe(nil), &default_proc); end
 
   def [](key); end
   def []=(key, value); end
@@ -482,8 +482,6 @@ class Concurrent::Collection::NonConcurrentMapBackend
 
   private
 
-  def _get(key); end
-  def _set(key, value); end
   def dupped_backend; end
   def initialize_copy(other); end
   def pair?(key, expected_value); end
@@ -911,10 +909,6 @@ Concurrent::MVar::EMPTY = T.let(T.unsafe(nil), Object)
 Concurrent::MVar::TIMEOUT = T.let(T.unsafe(nil), Object)
 
 class Concurrent::Map < ::Concurrent::Collection::MriMapBackend
-  def initialize(options = T.unsafe(nil), &block); end
-
-  def [](key); end
-  def []=(key, value); end
   def each; end
   def each_key; end
   def each_pair; end
