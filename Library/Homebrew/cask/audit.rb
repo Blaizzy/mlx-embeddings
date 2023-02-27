@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask/denylist"
@@ -119,7 +119,7 @@ module Cask
       end
     end
 
-    sig { params(include_passed: T::Boolean, include_warnings: T::Boolean).returns(String) }
+    sig { params(include_passed: T::Boolean, include_warnings: T::Boolean).returns(T.nilable(String)) }
     def summary(include_passed: false, include_warnings: true)
       return if success? && !include_passed
       return if warnings? && !errors? && !include_warnings
@@ -320,7 +320,7 @@ module Cask
 
     LIVECHECK_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#stanza-livecheck"
 
-    sig { params(livecheck_result: T::Boolean).void }
+    sig { params(livecheck_result: T.any(NilClass, T::Boolean, Symbol)).void }
     def audit_hosting_with_livecheck(livecheck_result: audit_livecheck_version)
       return if cask.discontinued? || cask.version.latest?
       return if block_url_offline? || cask.appcast || cask.livecheckable?
@@ -444,10 +444,9 @@ module Cask
 
       add_error "cask token contains .app" if token.end_with? ".app"
 
-      if /-(?<designation>alpha|beta|rc|release-candidate)$/ =~ cask.token &&
-         cask.tap&.official? &&
-         cask.tap != "homebrew/cask-versions"
-        add_error "cask token contains version designation '#{designation}'"
+      match_data = /-(?<designation>alpha|beta|rc|release-candidate)$/.match(cask.token)
+      if match_data && cask.tap&.official? && cask.tap != "homebrew/cask-versions"
+        add_error "cask token contains version designation '#{match_data[:designation]}'"
       end
 
       add_warning "cask token mentions launcher" if token.end_with? "launcher"
@@ -528,7 +527,7 @@ module Cask
       end
     end
 
-    sig { returns(T.nilable(T.any(T::Boolean, Symbol))) }
+    sig { returns(T.any(NilClass, T::Boolean, Symbol)) }
     def audit_livecheck_version
       return unless appcast?
 
@@ -864,8 +863,8 @@ module Cask
       return false if homepage.blank?
 
       home = homepage.downcase
-      if (split_host = host.split(".")).length >= 3
-        host = split_host[-2..].join(".")
+      if (split_host = T.must(host).split(".")).length >= 3
+        host = T.must(split_host[-2..]).join(".")
       end
       if (split_home = homepage.split(".")).length >= 3
         home = split_home[-2..].join(".")
