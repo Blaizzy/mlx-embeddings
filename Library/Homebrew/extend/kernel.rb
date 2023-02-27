@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # Contains shorthand Homebrew utility methods like `ohai`, `opoo`, `odisabled`.
@@ -18,7 +18,7 @@ module Kernel
 
   def ohai_title(title)
     verbose = if respond_to?(:verbose?)
-      verbose?
+      T.unsafe(self).verbose?
     else
       Context.current.verbose?
     end
@@ -34,7 +34,7 @@ module Kernel
 
   def odebug(title, *sput, always_display: false)
     debug = if respond_to?(:debug)
-      debug?
+      T.unsafe(self).debug?
     else
       Context.current.debug?
     end
@@ -47,7 +47,7 @@ module Kernel
 
   def oh1_title(title, truncate: :auto)
     verbose = if respond_to?(:verbose?)
-      verbose?
+      T.unsafe(self).verbose?
     else
       Context.current.verbose?
     end
@@ -361,7 +361,7 @@ module Kernel
   end
 
   def nostdout(&block)
-    if verbose?
+    if T.unsafe(self).verbose?
       yield
     else
       redirect_stdout(File::NULL, &block)
@@ -436,7 +436,11 @@ module Kernel
   end
 
   def parse_author!(author)
-    /^(?<name>[^<]+?)[ \t]*<(?<email>[^>]+?)>$/ =~ author
+    match_data = /^(?<name>[^<]+?)[ \t]*<(?<email>[^>]+?)>$/.match(author)
+    if match_data
+      name = match_data[:name]
+      email = match_data[:email]
+    end
     raise UsageError, "Unable to parse name and email." if name.blank? && email.blank?
 
     { name: name, email: email }

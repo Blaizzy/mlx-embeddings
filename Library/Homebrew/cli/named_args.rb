@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "delegate"
@@ -149,7 +149,8 @@ module Homebrew
             if want_keg_like_cask
               cask_version = Cask::Cask.new(name, config: config).versions.first
               cask = Cask::Cask.new(name, config: config) do
-                version cask_version if cask_version
+                # This block is dynamically evaluated in `Cask::Cask#refresh`, so sorbet cannot typecheck it.
+                T.unsafe(self).version cask_version if cask_version
               end
               return cask
             end
