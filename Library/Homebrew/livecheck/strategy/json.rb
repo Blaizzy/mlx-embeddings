@@ -7,7 +7,7 @@ module Homebrew
       # The {Json} strategy fetches content at a URL, parses it as JSON, and
       # provides the parsed data to a `strategy` block. If a regex is present
       # in the `livecheck` block, it should be passed as the second argument to
-      # the  `strategy` block.
+      # the `strategy` block.
       #
       # This is a generic strategy that doesn't contain any logic for finding
       # versions, as the structure of JSON data varies. Instead, a `strategy`
