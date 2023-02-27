@@ -1,0 +1,29 @@
+name: RuboCop filepaths
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    if: github.repository == 'Homebrew/brew'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Check public API docs
+        working-directory: Library/Homebrew
+        run: |
+          public_apis=$(git grep -l "@api public" | wc -l | tr -d ' ')
+          rubocop_docs=$(yq '.Style/Documentation.Include' .rubocop.yml | wc -l | tr -d ' ')
+
+          if [[ public_apis -ne rubocop_docs ]]
+          then
+            echo "All public Homebrew APIs should be included in the Style/Documentation RuboCop."
+            echo "There were ${public_apis} '@api public' lines but ${rubocop_docs} filepaths for the 'Style/Documentation' RuboCop."
+            echo "Add or remove the filepaths from Library/Homebrew/.rubocop.yml as appropriate."
+            exit 1
+          fi
