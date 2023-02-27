@@ -151,15 +151,15 @@ module Homebrew
         ).returns(T::Array[T.untyped])
       }
       def from_url(url, livecheck_strategy: nil, url_provided: false, regex_provided: false, block_provided: false)
-        usable_strategies = strategies.values.select do |strategy|
+        usable_strategies = strategies.select do |strategy_symbol, strategy|
           if strategy == PageMatch
             # Only treat the strategy as usable if the `livecheck` block
             # contains a regex and/or `strategy` block
             next if !regex_provided && !block_provided
           elsif strategy == Json
             # Only treat the strategy as usable if the `livecheck` block
-            # contains a `strategy` block
-            next unless block_provided
+            # specifies the strategy and contains a `strategy` block
+            next if (livecheck_strategy != strategy_symbol) || !block_provided
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
                 from_symbol(livecheck_strategy) != strategy
@@ -169,7 +169,7 @@ module Homebrew
           end
 
           strategy.respond_to?(:match?) && strategy.match?(url)
-        end
+        end.values
 
         # Sort usable strategies in descending order by priority, using the
         # DEFAULT_PRIORITY when a strategy doesn't contain a PRIORITY constant
