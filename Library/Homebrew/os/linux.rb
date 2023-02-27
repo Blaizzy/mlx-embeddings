@@ -35,14 +35,18 @@ module OS
 
     sig { returns(Version) }
     def wsl_version
-      Version::NULL unless wsl?
-      kernel = OS.kernel_version.to_s
-      return Version.new("2 (Microsoft Store)") if Version.new(T.must(kernel[/^([0-9.]*)-.*/,
-                                                                             1])) > Version.new("5.15")
-      return Version.new("2") if kernel.include?("-microsoft")
-      return Version.new("1") if kernel.include?("-Microsoft")
+      return Version::NULL unless wsl?
 
-      Version::NULL
+      kernel = OS.kernel_version.to_s
+      if Version.new(T.must(kernel[/^([0-9.]*)-.*/, 1])) > Version.new("5.15")
+        Version.new("2 (Microsoft Store)")
+      elsif kernel.include?("-microsoft")
+        Version.new("2")
+      elsif kernel.include?("-Microsoft")
+        Version.new("1")
+      else
+        Version::NULL
+      end
     end
   end
 
