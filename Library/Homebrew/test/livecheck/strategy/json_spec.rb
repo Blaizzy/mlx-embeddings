@@ -74,6 +74,12 @@ describe Homebrew::Livecheck::Strategy::Json do
     end
   end
 
+  describe "::parse_json" do
+    it "returns an object when given valid content" do
+      expect(json.parse_json(content_simple)).to be_an_instance_of(Hash)
+    end
+  end
+
   describe "::versions_from_content" do
     it "returns an empty array when given a block but content is blank" do
       expect(json.versions_from_content("", regex) { "1.2.3" }).to eq([])
