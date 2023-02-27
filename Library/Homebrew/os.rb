@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "version"
+
 # Helper functions for querying operating system information.
 #
 # @api private
@@ -67,7 +69,7 @@ module OS
   elsif OS.linux?
     require "os/linux"
     ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
-    PATH_OPEN = "xdg-open"
+    PATH_OPEN = (OS::Linux.wsl? ? "wslview" : "xdg-open").freeze
   end
 
   sig { returns(T::Boolean) }
