@@ -339,6 +339,14 @@ Style/DisableCopsWithinSourceCodeDirective:
     - "/**/{Formula,Casks}/*.rb"
     - "**/{Formula,Casks}/*.rb"
 
+# The files actually scanned in this cop are in `Library/Homebrew/.rubocop.yml`.
+Style/Documentation:
+  Exclude:
+    - "Taps/**/*"
+    - "/**/{Formula,Casks}/*.rb"
+    - "**/{Formula,Casks}/*.rb"
+    - "**/*.rbi"
+
 Style/DocumentationMethod:
   Include:
     - "Homebrew/formula.rb"
