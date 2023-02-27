@@ -44,6 +44,19 @@ module Homebrew
       "cat"
     end
 
+    args.named.to_paths.each do |path|
+      next path if path.exist?
+
+      path = path.basename(".rb") if args.cask?
+
+      ofail "#{path}'s source doesn't exist on disk."
+    end
+
+    if Homebrew.failed?
+      $stderr.puts "The name may be wrong, or the tap hasn't been tapped."
+      return
+    end
+
     safe_system pager, *args.named.to_paths
   end
 end
