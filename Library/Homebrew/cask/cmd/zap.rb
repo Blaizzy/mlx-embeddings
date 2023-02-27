@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Cask
@@ -11,6 +11,7 @@ module Cask
 
       def self.parser
         super do
+          T.bind(self, Homebrew::CLI::Parser)
           switch "--force",
                  description: "Ignore errors when removing files."
         end

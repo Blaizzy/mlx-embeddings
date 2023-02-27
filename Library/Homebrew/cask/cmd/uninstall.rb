@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Cask
@@ -11,6 +11,7 @@ module Cask
 
       def self.parser
         super do
+          T.bind(self, Homebrew::CLI::Parser)
           switch "--force",
                  description: "Uninstall even if the <cask> is not installed, overwrite " \
                               "existing files and ignore errors when removing files."

@@ -10,7 +10,7 @@ describe Cask::Cmd::Audit, :cask do
 
   describe "selection of Casks to audit" do
     it "audits all Casks if no tokens are given" do
-      allow(Cask::Cask).to receive(:to_a).and_return([cask, cask])
+      allow(Cask::Cask).to receive(:all).and_return([cask, cask])
 
       expect(Cask::Auditor).to receive(:audit).twice.and_return(result)
 

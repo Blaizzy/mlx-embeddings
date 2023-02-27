@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask_dependent"
@@ -27,6 +27,7 @@ module Cask
 
       def self.parser(&block)
         super do
+          T.bind(self, Homebrew::CLI::Parser)
           switch "--force",
                  description: "Force overwriting existing files."
 

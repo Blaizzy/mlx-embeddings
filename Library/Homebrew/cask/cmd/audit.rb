@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "utils/github/actions"
@@ -13,6 +13,7 @@ module Cask
 
       def self.parser
         super do
+          T.bind(self, Homebrew::CLI::Parser)
           switch "--[no-]download",
                  description: "Audit the downloaded file"
           switch "--[no-]appcast",
@@ -44,7 +45,7 @@ module Cask
         end
         casks = casks.map { |c| CaskLoader.load(c, config: Config.from_args(args)) }
         any_named_args = casks.any?
-        casks = Cask.to_a if casks.empty?
+        casks = Cask.all if casks.empty?
 
         results = self.class.audit_casks(
           *casks,
