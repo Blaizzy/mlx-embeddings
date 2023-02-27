@@ -162,7 +162,7 @@ module Homebrew
             next if (livecheck_strategy != strategy_symbol) || !block_provided
           elsif strategy.const_defined?(:PRIORITY) &&
                 !strategy::PRIORITY.positive? &&
-                from_symbol(livecheck_strategy) != strategy
+                livecheck_strategy != strategy_symbol
             # Ignore strategies with a priority of 0 or lower, unless the
             # strategy is specified in the `livecheck` block
             next
