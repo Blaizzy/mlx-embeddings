@@ -67,7 +67,15 @@ module Readall
 
       success = T.let(true, T::Boolean)
       casks.each do |file|
-        Cask::CaskLoader.load(file)
+        cask = Cask::CaskLoader.load(file)
+
+        # Fine to have missing URLs for unsupported macOS
+        macos_req = cask.depends_on.macos
+        next if macos_req&.version && Array(macos_req.version).none? do |macos_version|
+          bottle_tag.to_macos_version.public_send(macos_req.comparator, macos_version)
+        end
+
+        raise "Missing URL" if cask.url.nil?
       rescue Interrupt
         raise
       rescue Exception => e # rubocop:disable Lint/RescueException
