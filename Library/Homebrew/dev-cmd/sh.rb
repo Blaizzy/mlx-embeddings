@@ -43,6 +43,8 @@ module Homebrew
 
     ENV["VERBOSE"] = "1" if args.verbose?
 
+    preferred_shell = Utils::Shell.preferred_path(default: "/bin/bash")
+
     if args.cmd.present?
       safe_system(preferred_shell, "-c", args.cmd)
     elsif args.named.present?
