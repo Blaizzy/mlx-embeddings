@@ -8298,17 +8298,79 @@ module Stdenv
 end
 
 class String
+  def acts_like_string?(); end
+
+  def at(position); end
+
+  def camelcase(first_letter=T.unsafe(nil)); end
+
+  def camelize(first_letter=T.unsafe(nil)); end
+
+  def classify(); end
+
+  def constantize(); end
+
+  def dasherize(); end
+
+  def deconstantize(); end
+
+  def demodulize(); end
+
   def exclude?(string); end
 
   def fast_xs(); end
+
+  def first(limit=T.unsafe(nil)); end
+
+  def foreign_key(separate_class_name_and_id_with_underscore=T.unsafe(nil)); end
+
+  def from(position); end
+
+  def html_safe(); end
+
+  def humanize(capitalize: T.unsafe(nil), keep_id_suffix: T.unsafe(nil)); end
 
   def indent(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
 
   def indent!(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
 
+  def is_utf8?(); end
+
+  def last(limit=T.unsafe(nil)); end
+
+  def mb_chars(); end
+
+  def parameterize(separator: T.unsafe(nil), preserve_case: T.unsafe(nil), locale: T.unsafe(nil)); end
+
+  def pluralize(count=T.unsafe(nil), locale=T.unsafe(nil)); end
+
+  def remove(*patterns); end
+
+  def remove!(*patterns); end
+
+  def safe_constantize(); end
+
   def shellescape(); end
 
   def shellsplit(); end
+
+  def singularize(locale=T.unsafe(nil)); end
+
+  def squish(); end
+
+  def squish!(); end
+
+  def tableize(); end
+
+  def titlecase(keep_id_suffix: T.unsafe(nil)); end
+
+  def titleize(keep_id_suffix: T.unsafe(nil)); end
+
+  def to(position); end
+
+  def to_date(); end
+
+  def to_datetime(); end
 
   def to_nfc(); end
 
@@ -8317,6 +8379,18 @@ class String
   def to_nfkc(); end
 
   def to_nfkd(); end
+
+  def to_time(form=T.unsafe(nil)); end
+
+  def truncate(truncate_at, options=T.unsafe(nil)); end
+
+  def truncate_bytes(truncate_at, omission: T.unsafe(nil)); end
+
+  def truncate_words(words_count, options=T.unsafe(nil)); end
+
+  def underscore(); end
+
+  def upcase_first(); end
 end
 
 class StringScanner

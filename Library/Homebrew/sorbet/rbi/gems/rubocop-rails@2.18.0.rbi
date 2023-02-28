@@ -140,6 +140,7 @@ class RuboCop::Cop::Rails::ActionControllerFlashBeforeRender < ::RuboCop::Cop::B
   def followed_by_render?(flash_node); end
   def inherit_action_controller_base?(node); end
   def instance_method_or_block?(node); end
+  def use_redirect_to?(context); end
 end
 
 RuboCop::Cop::Rails::ActionControllerFlashBeforeRender::MSG = T.let(T.unsafe(nil), String)
@@ -919,6 +920,7 @@ RuboCop::Cop::Rails::FindEach::SCOPE_METHODS = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::FreezeTime < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
 
   def on_send(node); end
   def time_now?(param0 = T.unsafe(nil)); end
@@ -1185,6 +1187,7 @@ class RuboCop::Cop::Rails::LexicallyScopedActionFilter < ::RuboCop::Cop::Base
 
   private
 
+  def alias_methods(node); end
   def aliased_action_methods(node, defined_methods); end
   def array_values(node); end
   def defined_action_methods(block); end
@@ -1714,6 +1717,21 @@ end
 RuboCop::Cop::Rails::RequireDependency::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::RequireDependency::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Rails::ResponseParsedBody < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRailsVersion
+
+  def json_parse_response_body?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def autocorrect(corrector, node); end
+end
+
+RuboCop::Cop::Rails::ResponseParsedBody::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::ResponseParsedBody::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Rails::ReversibleMigration < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::MigrationsHelper
 
@@ -1967,12 +1985,14 @@ class RuboCop::Cop::Rails::SquishedSQLHeredocs < ::RuboCop::Cop::Base
 
   def message(node); end
   def offense_detected?(node); end
+  def singleline_comments_present?(node); end
   def sql_heredoc?(node); end
   def using_squish?(node); end
 end
 
 RuboCop::Cop::Rails::SquishedSQLHeredocs::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::SquishedSQLHeredocs::SQL = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::SquishedSQLHeredocs::SQL_IDENTIFIER_MARKERS = T.let(T.unsafe(nil), Regexp)
 RuboCop::Cop::Rails::SquishedSQLHeredocs::SQUISH = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Rails::StripHeredoc < ::RuboCop::Cop::Base
@@ -2164,8 +2184,10 @@ RuboCop::Cop::Rails::UnknownEnv::MSG_SIMILAR = T.let(T.unsafe(nil), String)
 class RuboCop::Cop::Rails::UnusedIgnoredColumns < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ActiveRecordHelper
 
+  def appended_ignored_columns(param0 = T.unsafe(nil)); end
   def column_name(param0 = T.unsafe(nil)); end
   def ignored_columns(param0 = T.unsafe(nil)); end
+  def on_op_asgn(node); end
   def on_send(node); end
 
   private
