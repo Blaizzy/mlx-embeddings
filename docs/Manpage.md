@@ -709,7 +709,7 @@ Fetch the newest version of Homebrew and all formulae from GitHub using `git`(1)
 * `-f`, `--force`:
   Always do a slower, full update check (even if unnecessary).
 
-### `update-reset` [*`repository`* ...]
+### `update-reset` [*`path-to-tap-repository`* ...]
 
 Fetch and reset Homebrew and all tap repositories (or any specified *`repository`*) using `git`(1) to their latest `origin/HEAD`.
 
