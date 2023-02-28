@@ -5,6 +5,7 @@ require "cask/auditor"
 
 describe Cask::Cmd::Audit, :cask do
   let(:cask) { Cask::Cask.new("cask") }
+  let(:cask_with_many_languages) { Cask::CaskLoader.load(cask_path("with-many-languages")) }
   let(:result) { { warnings: Set.new, errors: Set.new } }
 
   describe "selection of Casks to audit" do
@@ -159,5 +160,12 @@ describe Cask::Cmd::Audit, :cask do
       .and_return(result)
 
     described_class.run("casktoken")
+  end
+
+  it "audits a sample of language when cask contains more than 10 languages" do
+    allow(Cask::CaskLoader).to receive(:load).and_return(cask_with_many_languages)
+    expect {
+      described_class.run("with-many-languages")
+    }.to output(/==> auditing a sample of available languages/im).to_stdout
   end
 end
