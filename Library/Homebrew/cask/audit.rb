@@ -307,7 +307,11 @@ module Cask
       return unless cask.version.latest?
 
       add_error "Casks with an `appcast` should not use `version :latest`." if cask.appcast
-      add_error "Casks with a `livecheck` should not use `version :latest`." if cask.livecheckable?
+
+      return unless cask.livecheckable?
+      return if cask.livecheck.skip?
+
+      add_error "Casks with a `livecheck` should not use `version :latest`."
     end
 
     sig { void }
