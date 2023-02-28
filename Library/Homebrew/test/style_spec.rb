@@ -40,7 +40,7 @@ describe Homebrew::Style do
   describe ".check_style_and_print" do
     let(:dir) { mktmpdir }
 
-    it "returns false for conforming file with only audit-level violations" do
+    it "returns true (success) for conforming file with only audit-level violations" do
       # This file is known to use non-rocket hashes and other things that trigger audit,
       # but not regular, cop violations
       target_file = HOMEBREW_LIBRARY_PATH/"utils.rb"
