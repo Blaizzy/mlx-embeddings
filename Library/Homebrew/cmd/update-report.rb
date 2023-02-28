@@ -200,7 +200,7 @@ module Homebrew
     unless updated_taps.empty?
       auto_update_header args: args
       puts "Updated #{updated_taps.count} #{Utils.pluralize("tap",
-                                                                        updated_taps.count)} (#{updated_taps.to_sentence})."
+                                                            updated_taps.count)} (#{updated_taps.to_sentence})."
       updated = true
     end
 
@@ -612,13 +612,13 @@ class ReporterHub
 
     if outdated_formulae.positive?
       msg += "#{Tty.bold}#{outdated_formulae}#{Tty.reset} outdated #{Utils.pluralize("formula",
-                                                                                                 outdated_formulae, plural: "e")}"
+                                                                                     outdated_formulae, plural: "e")}"
     end
 
     if outdated_casks.positive?
       msg += " and " if msg.present?
       msg += "#{Tty.bold}#{outdated_casks}#{Tty.reset} outdated #{Utils.pluralize("cask",
-                                                                                              outdated_casks)}"
+                                                                                  outdated_casks)}"
     end
 
     return if msg.blank?

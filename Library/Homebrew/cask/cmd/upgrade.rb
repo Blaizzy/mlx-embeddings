@@ -143,7 +143,7 @@ module Cask
 
         verb = dry_run ? "Would upgrade" : "Upgrading"
         oh1 "#{verb} #{outdated_casks.count} outdated #{::Utils.pluralize("package",
-                                                                                      outdated_casks.count)}:"
+                                                                          outdated_casks.count)}:"
 
         caught_exceptions = []
 

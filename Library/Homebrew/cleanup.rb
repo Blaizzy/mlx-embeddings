@@ -585,7 +585,7 @@ module Homebrew
 
       verb = dry_run ? "Would autoremove" : "Autoremoving"
       oh1 "#{verb} #{formulae_names.count} unneeded #{Utils.pluralize("formula", formulae_names.count,
-                                                                                  plural: "e")}:"
+                                                                      plural: "e")}:"
       puts formulae_names.join("\n")
       return if dry_run
 
