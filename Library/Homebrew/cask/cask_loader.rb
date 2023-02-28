@@ -46,11 +46,7 @@ module Cask
       private
 
       def cask(header_token, **options, &block)
-        checksum = {
-          "sha256" => Digest::SHA256.hexdigest(content),
-        }
-        Cask.new(header_token, source: content, source_checksum: checksum, tap: tap, **options,
-                 config: @config, &block)
+        Cask.new(header_token, source: content, tap: tap, **options, config: @config, &block)
       end
     end
 
@@ -150,17 +146,9 @@ module Cask
         super && !Tap.from_path(ref).nil?
       end
 
-      attr_reader :tap
-
       def initialize(path)
         @tap = Tap.from_path(path)
         super(path)
-      end
-
-      private
-
-      def cask(*args, &block)
-        super(*args, tap: tap, &block)
       end
     end
 
@@ -214,8 +202,6 @@ module Cask
     class FromAPILoader
       attr_reader :token, :path
 
-      FLIGHT_STANZAS = [:preflight, :postflight, :uninstall_preflight, :uninstall_postflight].freeze
-
       def self.can_load?(ref)
         return false if Homebrew::EnvConfig.no_install_from_api?
         return false unless ref.is_a?(String)
@@ -235,17 +221,9 @@ module Cask
         json_cask = @from_json || Homebrew::API::Cask.all_casks[token]
         cask_source = JSON.pretty_generate(json_cask)
 
-        json_cask = Homebrew::API.merge_variations(json_cask).deep_symbolize_keys
-        tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
+        json_cask = Homebrew::API.merge_variations(json_cask).deep_symbolize_keys.freeze
 
-        # Use the cask-source API if there are any `*flight` blocks or the cask has multiple languages
-        if json_cask[:artifacts].any? { |artifact| FLIGHT_STANZAS.include?(artifact.keys.first) } ||
-           json_cask[:languages].any?
-          cask_source = Homebrew::API::Cask.fetch_source(token,
-                                                         git_head: json_cask[:tap_git_head],
-                                                         sha256:   json_cask.dig(:ruby_source_checksum, :sha256))
-          return FromContentLoader.new(cask_source, tap: tap).load(config: config)
-        end
+        tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
         user_agent = json_cask.dig(:url_specs, :user_agent)
         json_cask[:url_specs][:user_agent] = user_agent[1..].to_sym if user_agent && user_agent[0] == ":"
@@ -253,13 +231,7 @@ module Cask
           json_cask[:url_specs][:using] = using.to_sym
         end
 
-        Cask.new(token,
-                 tap:             tap,
-                 source:          cask_source,
-                 source_checksum: json_cask[:ruby_source_checksum],
-                 config:          config,
-                 loaded_from_api: true,
-                 loader:          self) do
+        api_cask = Cask.new(token, tap: tap, source: cask_source, config: config, loader: self) do
           version json_cask[:version]
 
           if json_cask[:sha256] == "no_check"
@@ -319,15 +291,21 @@ module Cask
             # convert generic string replacements into actual ones
             artifact = cask.loader.from_h_hash_gsubs(artifact, appdir)
             key = artifact.keys.first
-            send(key, *artifact[key])
+            if artifact[key].nil?
+              # for artifacts with blocks that can't be loaded from the API
+              send(key) {} # empty on purpose
+            else
+              send(key, *artifact[key])
+            end
           end
 
           if json_cask[:caveats].present?
             # convert generic string replacements into actual ones
-            json_cask[:caveats] = cask.loader.from_h_string_gsubs(json_cask[:caveats], appdir)
-            caveats json_cask[:caveats]
+            caveats cask.loader.from_h_string_gsubs(json_cask[:caveats], appdir)
           end
         end
+        api_cask.populate_from_api!(json_cask)
+        api_cask
       end
 
       def from_h_string_gsubs(string, appdir)

@@ -235,6 +235,22 @@ describe Cask::Installer, :cask do
 
       expect(latest_cask.download_sha_path).to be_a_file
     end
+
+    context "when loaded from the api and caskfile is required" do
+      let(:path) { cask_path("local-caffeine") }
+      let(:content) { File.read(path) }
+
+      it "installs cask" do
+        expect(Homebrew::API::Cask).to receive(:fetch_source).once.and_return(content)
+
+        caffeine = Cask::CaskLoader.load(path)
+        expect(caffeine).to receive(:loaded_from_api).once.and_return(true)
+        expect(caffeine).to receive(:caskfile_only?).once.and_return(true)
+
+        described_class.new(caffeine).install
+        expect(Cask::CaskLoader.load(path)).to be_installed
+      end
+    end
   end
 
   describe "uninstall" do
@@ -268,6 +284,31 @@ describe Cask::Installer, :cask do
       expect(Cask::Caskroom.path.join("local-caffeine", caffeine.version)).not_to be_a_directory
       expect(Cask::Caskroom.path.join("local-caffeine", mutated_version)).not_to be_a_directory
       expect(Cask::Caskroom.path.join("local-caffeine")).not_to be_a_directory
+    end
+
+    context "when loaded from the api, caskfile is required and installed caskfile is invalid" do
+      let(:path) { cask_path("local-caffeine") }
+      let(:content) { File.read(path) }
+      let(:invalid_path) { instance_double(Pathname) }
+
+      before do
+        allow(invalid_path).to receive(:exist?).and_return(false)
+      end
+
+      it "uninstalls cask" do
+        expect(Homebrew::API::Cask).to receive(:fetch_source).twice.and_return(content)
+
+        caffeine = Cask::CaskLoader.load(path)
+        expect(caffeine).to receive(:loaded_from_api).twice.and_return(true)
+        expect(caffeine).to receive(:caskfile_only?).twice.and_return(true)
+        expect(caffeine).to receive(:installed_caskfile).once.and_return(invalid_path)
+
+        described_class.new(caffeine).install
+        expect(Cask::CaskLoader.load(path)).to be_installed
+
+        described_class.new(caffeine).uninstall
+        expect(Cask::CaskLoader.load(path)).not_to be_installed
+      end
     end
   end
 
