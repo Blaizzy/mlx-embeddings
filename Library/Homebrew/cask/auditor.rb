@@ -48,12 +48,22 @@ module Cask
       @except = except
     end
 
+    LANGUAGE_BLOCK_LIMIT = 10
+
     def audit
       warnings = Set.new
       errors = Set.new
 
       if !language && language_blocks
-        language_blocks.each_key do |l|
+        sample_languages = if language_blocks.length > LANGUAGE_BLOCK_LIMIT && !@audit_new_cask
+          sample_keys = language_blocks.keys.sample(LANGUAGE_BLOCK_LIMIT)
+          ohai "Auditing a sample of available languages: #{sample_keys.map { |lang| lang[0].to_s }.to_sentence}"
+          language_blocks.select { |k| sample_keys.include?(k) }
+        else
+          language_blocks
+        end
+
+        sample_languages.each_key do |l|
           audit = audit_languages(l)
           summary = audit.summary(include_passed: output_passed?, include_warnings: output_warnings?)
           if summary.present? && output_summary?(audit)
