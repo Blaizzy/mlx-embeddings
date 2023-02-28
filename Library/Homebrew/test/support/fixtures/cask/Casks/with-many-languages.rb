@@ -46,9 +46,9 @@ cask "with-many-languages" do
     "th"
   end
 
-  name "Caffeine"
-  desc "Keep your mac awake"
   url "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip"
+  name "Caffeine"
+  desc "Keep your computer awake"
   homepage "https://brew.sh/"
 
   app "Caffeine.app"
