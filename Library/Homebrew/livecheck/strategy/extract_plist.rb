@@ -101,8 +101,7 @@ module Homebrew
                   "#{Utils.demodulize(T.must(name))} only supports a regex when using a `strategy` block"
           end
           unless T.unsafe(cask)
-            raise ArgumentError,
-                  "The #{Utils.demodulize(T.must(name))} strategy only supports casks."
+            raise ArgumentError, "The #{Utils.demodulize(T.must(name))} strategy only supports casks."
           end
 
           match_data = { matches: {}, regex: regex, url: url }

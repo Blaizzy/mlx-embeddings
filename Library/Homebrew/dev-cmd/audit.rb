@@ -281,8 +281,7 @@ module Homebrew
 
       error_sources = []
       if formula_count.positive?
-        error_sources << "#{formula_count} #{Utils.pluralize("formula", formula_count,
-                                                             plural: "e")}"
+        error_sources << "#{formula_count} #{Utils.pluralize("formula", formula_count, plural: "e")}"
       end
       error_sources << "#{cask_count} #{Utils.pluralize("cask", cask_count)}" if cask_count.positive?
       error_sources << "#{tap_count} #{Utils.pluralize("tap", tap_count)}" if tap_count.positive?
@@ -292,8 +291,8 @@ module Homebrew
       errors_summary += " detected"
 
       if corrected_problem_count.positive?
-        errors_summary += ", #{corrected_problem_count} #{Utils.pluralize("problem",
-                                                                          corrected_problem_count)} corrected"
+        noun = Utils.pluralize("problem", corrected_problem_count)
+        errors_summary += ", #{corrected_problem_count} #{noun} corrected"
       end
 
       ofail errors_summary
