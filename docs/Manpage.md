@@ -2331,7 +2331,7 @@ Homebrew's Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popof
 
 Homebrew's maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Markus Reiter, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan.
 
-Former maintainers with significant contributions include Misty De Méo, Markus Reiter, Shaun Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
+Former maintainers with significant contributions include Misty De Méo, Shaun Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
 
 ## BUGS
 
