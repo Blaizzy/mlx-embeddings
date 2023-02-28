@@ -475,15 +475,15 @@ class Tap
     contents = []
 
     if (command_count = command_files.count).positive?
-      contents << "#{command_count} #{Utils::Inflection.pluralize("command", command_count)}"
+      contents << "#{command_count} #{Utils.pluralize("command", command_count)}"
     end
 
     if (cask_count = cask_files.count).positive?
-      contents << "#{cask_count} #{Utils::Inflection.pluralize("cask", cask_count)}"
+      contents << "#{cask_count} #{Utils.pluralize("cask", cask_count)}"
     end
 
     if (formula_count = formula_files.count).positive?
-      contents << "#{formula_count} #{Utils::Inflection.pluralize("formula", formula_count, plural: "e")}"
+      contents << "#{formula_count} #{Utils.pluralize("formula", formula_count, plural: "e")}"
     end
 
     contents

@@ -568,7 +568,7 @@ end
 class UnbottledError < RuntimeError
   def initialize(formulae)
     msg = +<<~EOS
-      The following #{Utils::Inflection.pluralize("formula", formulae.count, plural: "e")} cannot be installed from #{Utils::Inflection.pluralize("bottle", formulae.count)} and must be
+      The following #{Utils.pluralize("formula", formulae.count, plural: "e")} cannot be installed from #{Utils.pluralize("bottle", formulae.count)} and must be
       built from source.
         #{formulae.to_sentence}
     EOS

@@ -46,7 +46,7 @@ module Cask
           next if (versions = cask.versions).empty?
 
           puts <<~EOS
-            #{cask} #{versions.to_sentence} #{::Utils::Inflection.pluralize("", versions.count, plural: "are", singular: "is")} still installed.
+            #{cask} #{versions.to_sentence} #{::Utils.pluralize("", versions.count, plural: "are", singular: "is")} still installed.
             Remove #{(versions.count == 1) ? "it" : "them all"} with `brew uninstall --cask --force #{cask}`.
           EOS
         end

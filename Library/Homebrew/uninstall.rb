@@ -52,7 +52,7 @@ module Homebrew
               if rack.directory?
                 versions = rack.subdirs.map(&:basename)
                 puts <<~EOS
-                  #{keg.name} #{versions.to_sentence} #{Utils::Inflection.pluralize("", versions.count, plural: "are", singular: "is")} still installed.
+                  #{keg.name} #{versions.to_sentence} #{Utils.pluralize("", versions.count, plural: "are", singular: "is")} still installed.
                   To remove all versions, run:
                     brew uninstall --force #{keg.name}
                 EOS
@@ -136,9 +136,9 @@ module Homebrew
       end
 
       def are_required_by_deps
-        "#{Utils::Inflection.pluralize("", reqs.count, plural:   "are",
+        "#{Utils.pluralize("", reqs.count, plural:   "are",
                                                        singular: "is")} required by #{deps.to_sentence}, " \
-          "which #{Utils::Inflection.pluralize("", deps.count, plural: "are", singular: "is")} currently installed"
+          "which #{Utils.pluralize("", deps.count, plural: "are", singular: "is")} currently installed"
       end
     end
 
@@ -158,7 +158,7 @@ module Homebrew
       def output
         ofail <<~EOS
           Refusing to uninstall #{reqs.to_sentence}
-          because #{Utils::Inflection.pluralize("", reqs.count, plural: "they", singular: "it")} #{are_required_by_deps}.
+          because #{Utils.pluralize("", reqs.count, plural: "they", singular: "it")} #{are_required_by_deps}.
           You can override this and force removal with:
             #{sample_command}
         EOS

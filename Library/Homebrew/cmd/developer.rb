@@ -40,7 +40,7 @@ module Homebrew
     case args.named.first
     when nil, "state"
       if env_vars.any?
-        puts "Developer mode is enabled because #{env_vars.to_sentence} #{Utils::Inflection.pluralize("",
+        puts "Developer mode is enabled because #{env_vars.to_sentence} #{Utils.pluralize("",
                                                                                                       env_vars.count, plural: "are", singular: "is")} set."
       elsif Homebrew::Settings.read("devcmdrun") == "true"
         puts "Developer mode is enabled."

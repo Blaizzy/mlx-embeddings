@@ -61,7 +61,7 @@ module Homebrew
         constant = Strategy.const_get(const_symbol)
         next unless constant.is_a?(Class)
 
-        @livecheck_strategy_names[constant] = Utils::Inflection.demodulize(T.must(constant.name))
+        @livecheck_strategy_names[constant] = Utils.demodulize(T.must(constant.name))
       end
       @livecheck_strategy_names.freeze
     end

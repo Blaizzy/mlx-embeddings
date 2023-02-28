@@ -52,10 +52,10 @@ module Formulary
       next if type == :formulary_factory
 
       cached_objects.each_value do |klass|
-        namespace = Utils::Inflection.deconstantize(klass.name)
-        next if Utils::Inflection.deconstantize(namespace) != name
+        namespace = Utils.deconstantize(klass.name)
+        next if Utils.deconstantize(namespace) != name
 
-        remove_const(Utils::Inflection.demodulize(namespace))
+        remove_const(Utils.demodulize(namespace))
       end
     end
 
