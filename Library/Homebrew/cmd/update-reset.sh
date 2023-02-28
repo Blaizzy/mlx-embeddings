@@ -1,4 +1,4 @@
-#:  * `update-reset` [<repository> ...]
+#:  * `update-reset` [<path-to-tap-repository> ...]
 #:
 #:  Fetch and reset Homebrew and all tap repositories (or any specified <repository>) using `git`(1) to their latest `origin/HEAD`.
 #:
@@ -33,7 +33,14 @@ homebrew-update-reset() {
         [[ "${option}" == *d* ]] && HOMEBREW_DEBUG=1
         ;;
       *)
-        REPOS+=("${option}")
+        if [[ -d "${option}/.git" ]]
+        then
+          REPOS+=("${option}")
+        else
+          onoe "${option} is not a Git repository!"
+          brew help update-reset
+          exit 1
+        fi
         ;;
     esac
   done
