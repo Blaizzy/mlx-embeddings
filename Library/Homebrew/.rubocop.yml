@@ -18,6 +18,7 @@ Naming/PredicateName:
     - is_64_bit?
 
 # Only enforce documentation for public APIs.
+# Checked by the tests.yml syntax job
 Style/Documentation:
   AllowedConstants:
     - Homebrew
