@@ -172,7 +172,14 @@ module Homebrew
       data[repo] = {
         commits:       GitHub.repo_commit_count_for_user(repo_full_name, person, args),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
-        reviews:       GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, args: args),
+        reviews:       GitHub.count_issues(
+          "",
+          is:          "pr",
+          repo:        repo_full_name,
+          reviewed_by: person,
+          review:      "approved",
+          args:        args,
+        ),
       }
     end
 
