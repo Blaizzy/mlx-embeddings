@@ -166,7 +166,7 @@ module Homebrew
     if args.retry? && (@fetch_tries[f] < FETCH_MAX_TRIES)
       wait = 2 ** @fetch_tries[f]
       remaining = FETCH_MAX_TRIES - @fetch_tries[f]
-      what = "try".pluralize(remaining)
+      what = Utils.pluralize("tr", remaining, plural: "ies", singular: "y")
 
       ohai "Retrying download in #{wait}s... (#{remaining} #{what} left)"
       sleep wait

@@ -684,7 +684,7 @@ module Homebrew
           arg_types = types.map { |type| type.to_s.tr("_", " ") }
                            .to_sentence two_words_connector: " or ", last_word_connector: " or "
 
-          "This command does not take more than #{maximum} #{arg_types} #{"argument".pluralize(maximum)}."
+          "This command does not take more than #{maximum} #{arg_types} #{Utils.pluralize("argument", maximum)}."
         end
       end
     end
@@ -698,7 +698,7 @@ module Homebrew
         arg_types = types.map { |type| type.to_s.tr("_", " ") }
                          .to_sentence two_words_connector: " or ", last_word_connector: " or "
 
-        super "This command requires at least #{minimum} #{arg_types} #{"argument".pluralize(minimum)}."
+        super "This command requires at least #{minimum} #{arg_types} #{Utils.pluralize("argument", minimum)}."
       end
     end
 
@@ -711,7 +711,7 @@ module Homebrew
         arg_types = types.map { |type| type.to_s.tr("_", " ") }
                          .to_sentence two_words_connector: " or ", last_word_connector: " or "
 
-        super "This command requires exactly #{minimum} #{arg_types} #{"argument".pluralize(minimum)}."
+        super "This command requires exactly #{minimum} #{arg_types} #{Utils.pluralize("argument", minimum)}."
       end
     end
   end

@@ -57,10 +57,10 @@ module Homebrew
         command_count += tap.command_files.size
         private_count += 1 if tap.private?
       end
-      info = "#{tap_count} #{"tap".pluralize(tap_count)}"
+      info = "#{tap_count} #{Utils.pluralize("tap", tap_count)}"
       info += ", #{private_count} private"
-      info += ", #{formula_count} #{"formula".pluralize(formula_count)}"
-      info += ", #{command_count} #{"command".pluralize(command_count)}"
+      info += ", #{formula_count} #{Utils.pluralize("formula", formula_count, plural: "e")}"
+      info += ", #{command_count} #{Utils.pluralize("command", command_count)}"
       info += ", #{Tap::TAP_DIRECTORY.dup.abv}" if Tap::TAP_DIRECTORY.directory?
       puts info
     else

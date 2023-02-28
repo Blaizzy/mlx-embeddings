@@ -95,7 +95,7 @@ module SPDX
     when String
       license_expression
     when Symbol
-      license_expression.to_s.tr("_", " ").titleize
+      license_expression.to_s.tr("_", " ").gsub(/\b(?<!\w['’`()])[a-z]/, &:capitalize)
     when Hash
       expressions = []
 

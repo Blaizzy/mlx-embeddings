@@ -97,9 +97,12 @@ module Homebrew
         }
         def self.find_versions(cask:, url: nil, regex: nil, **_unused, &block)
           if regex.present? && block.blank?
-            raise ArgumentError, "#{T.must(name).demodulize} only supports a regex when using a `strategy` block"
+            raise ArgumentError,
+                  "#{Utils.demodulize(T.must(name))} only supports a regex when using a `strategy` block"
           end
-          raise ArgumentError, "The #{T.must(name).demodulize} strategy only supports casks." unless T.unsafe(cask)
+          unless T.unsafe(cask)
+            raise ArgumentError, "The #{Utils.demodulize(T.must(name))} strategy only supports casks."
+          end
 
           match_data = { matches: {}, regex: regex, url: url }
 

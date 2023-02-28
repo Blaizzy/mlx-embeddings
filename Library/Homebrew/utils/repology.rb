@@ -53,14 +53,14 @@ module Repology
   def parse_api_response(limit = nil, last_package = "", repository:)
     package_term = case repository
     when HOMEBREW_CORE
-      "formula"
+      "formulae"
     when HOMEBREW_CASK
-      "cask"
+      "casks"
     else
-      "package"
+      "packages"
     end
 
-    ohai "Querying outdated #{package_term.pluralize} from Repology"
+    ohai "Querying outdated #{package_term} from Repology"
 
     page_no = 1
     outdated_packages = {}
@@ -76,7 +76,8 @@ module Repology
       break if (limit && outdated_packages.size >= limit) || response.size <= 1
     end
 
-    puts "#{outdated_packages.size} outdated #{package_term.pluralize(outdated_packages.size)} found"
+    package_term = package_term.chop if outdated_packages.size == 1
+    puts "#{outdated_packages.size} outdated #{package_term} found"
     puts
 
     outdated_packages.sort.to_h

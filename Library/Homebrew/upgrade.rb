@@ -299,7 +299,7 @@ module Homebrew
                            .sort { |a, b| depends_on(a, b) }
 
       if pinned_dependents.present?
-        plural = "dependent".pluralize(pinned_dependents.count)
+        plural = Utils.pluralize("dependent", pinned_dependents.count)
         ohai "Not upgrading #{pinned_dependents.count} pinned #{plural}:"
         puts(pinned_dependents.map do |f|
           "#{f.full_specified_name} #{f.pkg_version}"
@@ -310,8 +310,8 @@ module Homebrew
       if upgradeable_dependents.blank?
         ohai "No outdated dependents to upgrade!" unless dry_run
       else
-        dependent_plural = "dependent".pluralize(upgradeable_dependents.count)
-        formula_plural = "formula".pluralize(installed_formulae.count)
+        dependent_plural = Utils.pluralize("dependent", upgradeable_dependents.count)
+        formula_plural = Utils.pluralize("formula", installed_formulae.count, plural: "e")
         upgrade_verb = dry_run ? "Would upgrade" : "Upgrading"
         ohai "#{upgrade_verb} #{upgradeable_dependents.count} #{dependent_plural} of upgraded #{formula_plural}:"
         Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
@@ -375,7 +375,7 @@ module Homebrew
       # Print the pinned dependents.
       if outdated_pinned_broken_dependents.present?
         count = outdated_pinned_broken_dependents.count
-        plural = "dependent".pluralize(outdated_pinned_broken_dependents.count)
+        plural = Utils.pluralize("dependent", outdated_pinned_broken_dependents.count)
         onoe "Not reinstalling #{count} broken and outdated, but pinned #{plural}:"
         $stderr.puts(outdated_pinned_broken_dependents.map do |f|
           "#{f.full_specified_name} #{f.pkg_version}"
@@ -387,7 +387,7 @@ module Homebrew
         ohai "No broken dependents to reinstall!"
       else
         count = reinstallable_broken_dependents.count
-        plural = "dependent".pluralize(reinstallable_broken_dependents.count)
+        plural = Utils.pluralize("dependent", reinstallable_broken_dependents.count)
         ohai "Reinstalling #{count} #{plural} with broken linkage from source:"
         Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
         puts reinstallable_broken_dependents.map(&:full_specified_name)

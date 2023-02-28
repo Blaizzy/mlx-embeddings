@@ -103,7 +103,8 @@ module Homebrew
           tags.map do |tag|
             if regex
               # Use the first capture group (the version)
-              tag.scan(regex).first&.first
+              # This code is not typesafe unless the regex includes a capture group
+              T.unsafe(tag.scan(regex).first)&.first
             else
               # Remove non-digits from the start of the tag and use that as the
               # version text

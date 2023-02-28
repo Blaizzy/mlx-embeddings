@@ -172,7 +172,7 @@ module Homebrew
     end
 
     if !pinned.empty? && !args.ignore_pinned?
-      ofail "Not upgrading #{pinned.count} pinned #{"package".pluralize(pinned.count)}:"
+      ofail "Not upgrading #{pinned.count} pinned #{Utils.pluralize("package", pinned.count)}:"
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
 
@@ -180,7 +180,7 @@ module Homebrew
       oh1 "No packages to upgrade"
     else
       verb = args.dry_run? ? "Would upgrade" : "Upgrading"
-      oh1 "#{verb} #{formulae_to_install.count} outdated #{"package".pluralize(formulae_to_install.count)}:"
+      oh1 "#{verb} #{formulae_to_install.count} outdated #{Utils.pluralize("package", formulae_to_install.count)}:"
       formulae_upgrades = formulae_to_install.map do |f|
         if f.optlinked?
           "#{f.full_specified_name} #{Keg.new(f.opt_prefix).version} -> #{f.pkg_version}"

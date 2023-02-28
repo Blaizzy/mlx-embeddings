@@ -906,11 +906,11 @@ module Homebrew
               0
             end
 
-            "#{tap.path} (#{cask_count} #{"cask".pluralize(cask_count)})"
+            "#{tap.path} (#{cask_count} #{Utils.pluralize("cask", cask_count)})"
           end
         end)
 
-        taps = "tap".pluralize error_tap_paths.count
+        taps = Utils.pluralize("tap", error_tap_paths.count)
         "Unable to read from cask #{taps}: #{error_tap_paths.to_sentence}" if error_tap_paths.present?
       end
 

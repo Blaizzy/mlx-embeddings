@@ -584,7 +584,7 @@ module Homebrew
       formulae_names = removable_formulae.map(&:full_name).sort
 
       verb = dry_run ? "Would autoremove" : "Autoremoving"
-      oh1 "#{verb} #{formulae_names.count} unneeded #{"formula".pluralize(formulae_names.count)}:"
+      oh1 "#{verb} #{formulae_names.count} unneeded #{Utils.pluralize("formula", formulae_names.count, plural: "e")}:"
       puts formulae_names.join("\n")
       return if dry_run
 

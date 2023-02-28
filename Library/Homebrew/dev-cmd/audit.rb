@@ -277,19 +277,22 @@ module Homebrew
     if total_problems_count.positive?
       puts new_formula_problem_lines.map { |s| "  #{s}" }
 
-      errors_summary = "#{total_problems_count} #{"problem".pluralize(total_problems_count)}"
+      errors_summary = "#{total_problems_count} #{Utils.pluralize("problem", total_problems_count)}"
 
       error_sources = []
-      error_sources << "#{formula_count} #{"formula".pluralize(formula_count)}" if formula_count.positive?
-      error_sources << "#{cask_count} #{"cask".pluralize(cask_count)}" if cask_count.positive?
-      error_sources << "#{tap_count} #{"tap".pluralize(tap_count)}" if tap_count.positive?
+      if formula_count.positive?
+        error_sources << "#{formula_count} #{Utils.pluralize("formula", formula_count, plural: "e")}"
+      end
+      error_sources << "#{cask_count} #{Utils.pluralize("cask", cask_count)}" if cask_count.positive?
+      error_sources << "#{tap_count} #{Utils.pluralize("tap", tap_count)}" if tap_count.positive?
 
       errors_summary += " in #{error_sources.to_sentence}" if error_sources.any?
 
       errors_summary += " detected"
 
       if corrected_problem_count.positive?
-        errors_summary += ", #{corrected_problem_count} #{"problem".pluralize(corrected_problem_count)} corrected"
+        noun = Utils.pluralize("problem", corrected_problem_count)
+        errors_summary += ", #{corrected_problem_count} #{noun} corrected"
       end
 
       ofail errors_summary

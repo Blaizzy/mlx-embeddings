@@ -121,7 +121,7 @@ module Cask
 
         if manual_installer_casks.present?
           count = manual_installer_casks.count
-          ofail "Not upgrading #{count} `installer manual` #{"cask".pluralize(count)}."
+          ofail "Not upgrading #{count} `installer manual` #{::Utils.pluralize("cask", versions.count)}."
           puts manual_installer_casks.map(&:to_s)
           outdated_casks -= manual_installer_casks
         end
@@ -142,7 +142,7 @@ module Cask
         end
 
         verb = dry_run ? "Would upgrade" : "Upgrading"
-        oh1 "#{verb} #{outdated_casks.count} outdated #{"package".pluralize(outdated_casks.count)}:"
+        oh1 "#{verb} #{outdated_casks.count} outdated #{::Utils.pluralize("package", outdated_casks.count)}:"
 
         caught_exceptions = []
 
