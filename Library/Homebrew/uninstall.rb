@@ -52,7 +52,7 @@ module Homebrew
               if rack.directory?
                 versions = rack.subdirs.map(&:basename)
                 puts <<~EOS
-                  #{keg.name} #{versions.to_sentence} #{versions.count == 1 ? "is" : "are"} still installed.
+                  #{keg.name} #{versions.to_sentence} #{(versions.count == 1) ? "is" : "are"} still installed.
                   To remove all versions, run:
                     brew uninstall --force #{keg.name}
                 EOS
@@ -136,8 +136,8 @@ module Homebrew
       end
 
       def are_required_by_deps
-        "#{reqs.count == 1 ? "is" : "are"} required by #{deps.to_sentence}, " \
-          "which #{deps.count == 1 ? "is" : "are"} currently installed"
+        "#{(reqs.count == 1) ? "is" : "are"} required by #{deps.to_sentence}, " \
+          "which #{(deps.count == 1) ? "is" : "are"} currently installed"
       end
     end
 
