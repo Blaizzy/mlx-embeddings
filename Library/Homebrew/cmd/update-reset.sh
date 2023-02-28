@@ -33,22 +33,7 @@ homebrew-update-reset() {
         [[ "${option}" == *d* ]] && HOMEBREW_DEBUG=1
         ;;
       *)
-        if [[ -d "${option}" ]]
-        then
-          REPOS+=("${option}")
-        else
-          local owner="${option%/*}"
-          local name="${option#*/}"
-          name="${name#homebrew-}" # Support both homebrew/core and homebrew/homebrew-core.
-
-          local repo_path="${HOMEBREW_LIBRARY}/Taps/${owner}/homebrew-${name}"
-          if [[ -d "${repo_path}" ]]
-          then
-            REPOS+=("${repo_path}")
-          else
-            odie "Could not find tap: ${option}"
-          fi
-        fi
+        REPOS+=("${option}")
         ;;
     esac
   done
