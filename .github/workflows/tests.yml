@@ -103,8 +103,6 @@ jobs:
           brew tap homebrew/portable-ruby
           brew tap homebrew/services
 
-          brew update-reset Library/Taps/homebrew/homebrew-bundle
-
           # brew style doesn't like world writable directories
           sudo chmod -R g-w,o-w "$(brew --repo)/Library/Taps"
 
