@@ -26,6 +26,7 @@ Style/Documentation:
     - cask/dsl/version.rb
     - cask/url.rb
     - download_strategy.rb
+    - extend/kernel.rb
     - formula.rb
     - formula_assertions.rb
     - formula_free_port.rb
@@ -53,7 +54,6 @@ Style/Documentation:
     - livecheck/strategy/xorg.rb
     - os.rb
     - resource.rb
-    - utils.rb
     - utils/inreplace.rb
     - utils/shebang.rb
     - utils/string_inreplace_extension.rb
