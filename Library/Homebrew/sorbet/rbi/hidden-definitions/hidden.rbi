@@ -4811,13 +4811,15 @@ module Kernel
 end
 
 module Kernel
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
   def self.fork(); end
 
-  def self.load(*arg); end
+  def self.hpricot_slate_method_added(name); end
 
-  def self.method_added(name); end
+  def self.load(*arg); end
 end
 
 class KeyError
