@@ -46,7 +46,7 @@ module Cask
       private
 
       def cask(header_token, **options, &block)
-        Cask.new(header_token, source: content, **options, config: @config, &block)
+        Cask.new(header_token, source: content, tap: tap, **options, config: @config, &block)
       end
     end
 
@@ -146,17 +146,9 @@ module Cask
         super && !Tap.from_path(ref).nil?
       end
 
-      attr_reader :tap
-
       def initialize(path)
         @tap = Tap.from_path(path)
         super(path)
-      end
-
-      private
-
-      def cask(*args, &block)
-        super(*args, tap: tap, &block)
       end
     end
 

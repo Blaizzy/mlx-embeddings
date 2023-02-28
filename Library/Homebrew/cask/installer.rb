@@ -566,7 +566,7 @@ module Cask
     def load_cask_from_source_api!
       options = { git_head: @cask.tap_git_head, sha256: @cask.ruby_source_checksum["sha256"] }
       cask_source = Homebrew::API::Cask.fetch_source(@cask.token, **options)
-      @cask = CaskLoader::FromContentLoader.new(cask_source).load(config: @cask.config)
+      @cask = CaskLoader::FromContentLoader.new(cask_source, tap: @cask.tap).load(config: @cask.config)
     end
   end
 end
