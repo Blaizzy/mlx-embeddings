@@ -64,8 +64,8 @@ Homebrew/MoveToExtendOS:
 Layout/ArgumentAlignment:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/Formula/*.rb"
-    - "**/Formula/*.rb"
+    - "/**/Formula/**/*.rb"
+    - "**/Formula/**/*.rb"
 
 # this is a bit less "floaty"
 Layout/CaseIndentation:
@@ -130,8 +130,8 @@ Layout/SpaceBeforeBrackets:
   Exclude:
     - "**/*_spec.rb"
     - "Taps/*/*/*.rb"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
 
 # favour parens-less DSL-style arguments
 Lint/AmbiguousBlockAssociation:
@@ -140,15 +140,15 @@ Lint/AmbiguousBlockAssociation:
 Lint/DuplicateBranch:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
 
 # so many of these in formulae and can't be autocorrected
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/Formula/*.rb"
-    - "**/Formula/*.rb"
+    - "/**/Formula/**/*.rb"
+    - "**/Formula/**/*.rb"
 
 # unused keyword arguments improve APIs
 Lint/UnusedMethodArgument:
@@ -173,11 +173,11 @@ Naming/InclusiveLanguage:
     # TODO: If possible, make this stricter.
     slave:
       AllowedRegex:
-        - "gitslave"  # Used in formula `gitslave`
-        - "log_slave"  # Used in formula `ssdb`
-        - "ssdb_slave"  # Used in formula `ssdb`
-        - "var_slave"  # Used in formula `ssdb`
-        - "patches/13_fix_scope_for_show_slave_status_data.patch"  # Used in formula `mytop`
+        - "gitslave" # Used in formula `gitslave`
+        - "log_slave" # Used in formula `ssdb`
+        - "ssdb_slave" # Used in formula `ssdb`
+        - "var_slave" # Used in formula `ssdb`
+        - "patches/13_fix_scope_for_show_slave_status_data.patch" # Used in formula `mytop`
 
 Naming/MethodName:
   AllowedPatterns:
@@ -189,7 +189,27 @@ Naming/MethodParameterName:
   inherit_mode:
     merge:
       - AllowedNames
-  AllowedNames: ["a", "b", "cc", "c1", "c2", "d", "e", "f", "ff", "fn", "id", "o", "p", "pr", "r", "rb", "s", "v"]
+  AllowedNames:
+    [
+      "a",
+      "b",
+      "cc",
+      "c1",
+      "c2",
+      "d",
+      "e",
+      "f",
+      "ff",
+      "fn",
+      "id",
+      "o",
+      "p",
+      "pr",
+      "r",
+      "rb",
+      "s",
+      "v",
+    ]
 
 # Both styles are used depending on context,
 # e.g. `sha256` and `something_countable_1`.
@@ -223,7 +243,7 @@ Rails/Blank:
 Rails/CompactBlank:
   Enabled: true
 Rails/Delegate:
-  Enabled: false  # TODO
+  Enabled: false # TODO
 Rails/DelegateAllowBlank:
   Enabled: true
 Rails/DurationArithmetic:
@@ -288,8 +308,8 @@ Sorbet/ConstantsFromStrings:
 Sorbet/FalseSigil:
   Exclude:
     - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
     - "Homebrew/test/**/Casks/**/*.rb"
 
 Sorbet/StrictSigil:
@@ -336,15 +356,15 @@ Style/DisableCopsWithinSourceCodeDirective:
   Enabled: true
   Include:
     - "Taps/*/*/*.rb"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
 
 # Don't enforce documentation in casks or formulae.
 Style/Documentation:
   Exclude:
     - "Taps/**/*"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
     - "**/*.rbi"
 
 Style/DocumentationMethod:
@@ -356,8 +376,8 @@ Style/DocumentationMethod:
 Style/FetchEnvVar:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/Formula/*.rb"
-    - "**/Formula/*.rb"
+    - "/**/Formula/**/*.rb"
+    - "**/Formula/**/*.rb"
 
 # Prefer tokens with type annotations for consistency
 # between formatting numbers and strings.
@@ -369,8 +389,8 @@ Style/FrozenStringLiteralComment:
   EnforcedStyle: always
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
     - "Homebrew/test/**/Casks/**/*.rb"
     - "**/*.rbi"
     - "**/Brewfile"
@@ -384,15 +404,15 @@ Style/GlobalVars:
 Style/GuardClause:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
 
 # Allow for license expressions
 Style/HashAsLastArrayItem:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/Formula/*.rb"
-    - "**/Formula/*.rb"
+    - "/**/Formula/**/*.rb"
+    - "**/Formula/**/*.rb"
 
 # Zero-prefixed octal literals are widely used and understood.
 Style/NumericLiteralPrefix:
@@ -426,8 +446,8 @@ Style/StderrPuts:
 Style/StringConcatenation:
   Exclude:
     - "Taps/*/*/*.rb"
-    - "/**/{Formula,Casks}/*.rb"
-    - "**/{Formula,Casks}/*.rb"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
 
 # ruby style guide favorite
 Style/StringLiterals:
