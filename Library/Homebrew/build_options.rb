@@ -29,7 +29,7 @@ class BuildOptions
       if option_defined? "with-#{name}"
         include? "with-#{name}"
       elsif option_defined? "without-#{name}"
-        !include? "without-#{name}" # rubocop:disable Rails/NegateInclude
+        !include? "without-#{name}"
       else
         false
       end

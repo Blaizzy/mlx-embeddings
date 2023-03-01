@@ -132,7 +132,7 @@ module Utils
                               timeout: end_time&.remaining,
                               **command_options
 
-      return result if result.success? || !args.exclude?("--http1.1")
+      return result if result.success? || args.include?("--http1.1")
 
       raise Timeout::Error, result.stderr.lines.last.chomp if timeout && result.status.exitstatus == 28
 
