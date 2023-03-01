@@ -27,6 +27,7 @@ module Homebrew
     def initialize(formula, &block)
       @formula = formula
       @run_type = RUN_TYPE_IMMEDIATE
+      @run_at_load = true
       @environment_variables = {}
       @service_block = block
     end
@@ -157,6 +158,18 @@ module Homebrew
     def requires_root?
       instance_eval(&@service_block)
       @require_root.present? && @require_root == true
+    end
+
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def run_at_load(value = nil)
+      case T.unsafe(value)
+      when nil
+        @run_at_load
+      when true, false
+        @run_at_load = value
+      else
+        raise TypeError, "Service#run_at_load expects a Boolean"
+      end
     end
 
     sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
@@ -371,7 +384,7 @@ module Homebrew
       base = {
         Label:            @formula.plist_name,
         ProgramArguments: command,
-        RunAtLoad:        @run_type == RUN_TYPE_IMMEDIATE,
+        RunAtLoad:        @run_at_load == true,
       }
 
       base[:LaunchOnlyOnce] = @launch_only_once if @launch_only_once == true
