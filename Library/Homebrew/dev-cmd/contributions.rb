@@ -193,17 +193,13 @@ module Homebrew
   def total(results)
     totals = { author: 0, committer: 0, coauthorships: 0, reviews: 0 }
 
-    # {
-    #   "brew"=>{:commits=>9,:coauthorships=>6,:reviews=>1},
-    #   "core"=>{:commits=>15,:coauthorships=>10,:reviews=>2}
-    # }
     results.each_value do |counts|
       counts.each do |kind, count|
         totals[kind] += count
       end
     end
 
-    totals # {:commits=>24,:coauthorships=>16,:reviews=>3}
+    totals
   end
 
   sig { params(repo_path: Pathname, person: String, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
