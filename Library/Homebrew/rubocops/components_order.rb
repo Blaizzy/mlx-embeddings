@@ -4,6 +4,9 @@
 require "ast_constants"
 require "rubocops/extend/formula_cop"
 
+# TODO: remove this (and avoid further active support in rubocops)
+require "active_support/core_ext/array/conversions"
+
 module RuboCop
   module Cop
     module FormulaAudit

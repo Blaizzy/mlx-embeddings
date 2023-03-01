@@ -234,7 +234,7 @@ module Homebrew
     unless updated_taps.empty?
       auto_update_header args: args
       noun = Utils.pluralize("tap", updated_taps.count)
-      puts "Updated #{updated_taps.count} #{noun} (#{updated_taps.to_sentence})."
+      puts "Updated #{updated_taps.count} #{noun} (#{Utils.to_sentence(updated_taps)})."
       updated = true
     end
 

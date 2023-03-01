@@ -46,7 +46,7 @@ module Cask
           pkgs = Pathname.glob(cask.staged_path/"**"/"*.pkg").map { |path| path.relative_path_from(cask.staged_path) }
 
           message = "Could not find PKG source file '#{pkg}'"
-          message += ", found #{pkgs.map { |path| "'#{path}'" }.to_sentence} instead" if pkgs.any?
+          message += ", found #{::Utils.to_sentence(pkgs.map { |path| "'#{path}'" })} instead" if pkgs.any?
           message += "."
 
           raise CaskError, message

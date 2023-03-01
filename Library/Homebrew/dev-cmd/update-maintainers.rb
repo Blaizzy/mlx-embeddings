@@ -37,7 +37,7 @@ module Homebrew
     members.each do |group, hash|
       hash.slice!(*public_members)
       hash.each { |login, name| hash[login] = "[#{name}](https://github.com/#{login})" }
-      sentences[group] = hash.values.sort.to_sentence
+      sentences[group] = Utils.to_sentence(hash.values.sort)
     end
 
     readme = HOMEBREW_REPOSITORY/"README.md"

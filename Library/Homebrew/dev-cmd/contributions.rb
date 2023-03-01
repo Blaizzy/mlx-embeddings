@@ -18,6 +18,7 @@ module Homebrew
 
   sig { returns(CLI::Parser) }
   def contributions_args
+    supported_repos_sentence = Utils.to_sentence(SUPPORTED_REPOS.map { |t| "`#{t}`" })
     Homebrew::CLI::Parser.new do
       usage_banner "`contributions` [--user=<email|username>] [<--repositories>`=`] [<--csv>]"
       description <<~EOS
@@ -26,7 +27,7 @@ module Homebrew
 
       comma_array "--repositories",
                   description: "Specify a comma-separated (no spaces) list of repositories to search. " \
-                               "Supported repositories: #{SUPPORTED_REPOS.map { |t| "`#{t}`" }.to_sentence}. " \
+                               "Supported repositories: #{supported_repos_sentence}. " \
                                "Omitting this flag, or specifying `--repositories=all`, searches all repositories. " \
                                "Use `--repositories=primary` to search only the main repositories: brew,core,cask."
       flag "--from=",

@@ -652,7 +652,7 @@ class FormulaInstaller
       puts "All dependencies for #{formula.full_name} are satisfied."
     elsif !deps.empty?
       oh1 "Installing dependencies for #{formula.full_name}: " \
-          "#{deps.map(&:first).map(&Formatter.method(:identifier)).to_sentence}",
+          "#{Utils.to_sentence(deps.map(&:first).map(&Formatter.method(:identifier)))}",
           truncate: false
       deps.each { |dep, options| install_dependency(dep, options) }
     end
@@ -1163,7 +1163,7 @@ class FormulaInstaller
     return if deps.empty?
 
     oh1 "Fetching dependencies for #{formula.full_name}: " \
-        "#{deps.map(&:first).map(&Formatter.method(:identifier)).to_sentence}",
+        "#{Utils.to_sentence(deps.map(&:first).map(&Formatter.method(:identifier)))}",
         truncate: false
 
     deps.each { |dep, _options| fetch_dependency(dep) }

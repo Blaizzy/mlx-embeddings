@@ -286,7 +286,7 @@ module Homebrew
       error_sources << "#{cask_count} #{Utils.pluralize("cask", cask_count)}" if cask_count.positive?
       error_sources << "#{tap_count} #{Utils.pluralize("tap", tap_count)}" if tap_count.positive?
 
-      errors_summary += " in #{error_sources.to_sentence}" if error_sources.any?
+      errors_summary += " in #{Utils.to_sentence(error_sources)}" if error_sources.any?
 
       errors_summary += " detected"
 
