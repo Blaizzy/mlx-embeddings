@@ -66,7 +66,7 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
       it "loads from JSON API" do
         expect(cask_from_api).to be_a(Cask::Cask)
         expect(cask_from_api.token).to eq(cask_token)
-        expect(cask_from_api.loaded_from_api).to be(true)
+        expect(cask_from_api.loaded_from_api?).to be(true)
         expect(cask_from_api.caskfile_only?).to be(caskfile_only)
       end
     end

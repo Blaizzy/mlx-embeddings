@@ -17,6 +17,7 @@ module Cask
 
     extend Forwardable
     extend Searchable
+    extend Predicable
     include Metadata
 
     # Needs a leading slash to avoid `File.expand.path` complaining about non-absolute home.
@@ -27,9 +28,10 @@ module Cask
     # TODO: can be removed when API JSON is regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
     HOMEBREW_OLD_PREFIX_PLACEHOLDER = "$(brew --prefix)"
 
-    attr_reader :token, :sourcefile_path, :source, :config, :default_config, :loaded_from_api, :loader
-
+    attr_reader :token, :sourcefile_path, :source, :config, :default_config, :loader
     attr_accessor :download, :allow_reassignment
+
+    attr_predicate :loaded_from_api?
 
     class << self
       def generating_hash!
@@ -83,14 +85,14 @@ module Cask
       @tap
     end
 
-    def initialize(token, sourcefile_path: nil, source: nil, tap: nil,
+    def initialize(token, sourcefile_path: nil, source: nil, tap: nil, loaded_from_api: false,
                    config: nil, allow_reassignment: false, loader: nil, &block)
       @token = token
       @sourcefile_path = sourcefile_path
       @source = source
       @tap = tap
       @allow_reassignment = allow_reassignment
-      @loaded_from_api = false
+      @loaded_from_api = loaded_from_api
       @loader = loader
       @block = block
 
@@ -278,7 +280,8 @@ module Cask
     end
 
     def populate_from_api!(json_cask)
-      @loaded_from_api = true
+      raise ArgumentError, "Expected cask to be loaded from the API" unless loaded_from_api?
+
       @languages = json_cask[:languages]
       @tap_git_head = json_cask[:tap_git_head]
       @ruby_source_checksum = json_cask[:ruby_source_checksum].freeze
@@ -298,11 +301,6 @@ module Cask
     alias == eql?
 
     def to_h
-      if loaded_from_api && !Homebrew::EnvConfig.no_install_from_api?
-        json_cask = Homebrew::API::Cask.all_casks[token]
-        return api_to_local_hash(Homebrew::API.merge_variations(json_cask))
-      end
-
       url_specs = url&.specs.dup
       case url_specs&.dig(:user_agent)
       when :default
@@ -339,7 +337,7 @@ module Cask
     end
 
     def to_hash_with_variations
-      if loaded_from_api && !Homebrew::EnvConfig.no_install_from_api?
+      if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
         return api_to_local_hash(Homebrew::API::Cask.all_casks[token])
       end
 

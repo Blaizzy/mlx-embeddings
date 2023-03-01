@@ -219,11 +219,17 @@ module Cask
 
       def load(config:)
         json_cask = @from_json || Homebrew::API::Cask.all_casks[token]
-        cask_source = JSON.pretty_generate(json_cask)
+
+        cask_options = {
+          loaded_from_api: true,
+          source:          JSON.pretty_generate(json_cask),
+          config:          config,
+          loader:          self,
+        }
 
         json_cask = Homebrew::API.merge_variations(json_cask).deep_symbolize_keys.freeze
 
-        tap = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
+        cask_options[:tap] = Tap.fetch(json_cask[:tap]) if json_cask[:tap].to_s.include?("/")
 
         user_agent = json_cask.dig(:url_specs, :user_agent)
         json_cask[:url_specs][:user_agent] = user_agent[1..].to_sym if user_agent && user_agent[0] == ":"
@@ -231,7 +237,7 @@ module Cask
           json_cask[:url_specs][:using] = using.to_sym
         end
 
-        api_cask = Cask.new(token, tap: tap, source: cask_source, config: config, loader: self) do
+        api_cask = Cask.new(token, **cask_options) do
           version json_cask[:version]
 
           if json_cask[:sha256] == "no_check"
@@ -248,7 +254,7 @@ module Cask
           desc json_cask[:desc]
           homepage json_cask[:homepage]
 
-          auto_updates json_cask[:auto_updates] if json_cask[:auto_updates].present?
+          auto_updates json_cask[:auto_updates] unless json_cask[:auto_updates].nil?
           conflicts_with(**json_cask[:conflicts_with]) if json_cask[:conflicts_with].present?
 
           if json_cask[:depends_on].present?
@@ -289,7 +295,7 @@ module Cask
 
           json_cask[:artifacts].each do |artifact|
             # convert generic string replacements into actual ones
-            artifact = cask.loader.from_h_hash_gsubs(artifact, appdir)
+            artifact = cask.loader.from_h_gsubs(artifact, appdir)
             key = artifact.keys.first
             if artifact[key].nil?
               # for artifacts with blocks that can't be loaded from the API
@@ -328,18 +334,17 @@ module Cask
         hash.to_h.transform_values do |value|
           from_h_gsubs(value, appdir)
         end
-      rescue TypeError
-        from_h_array_gsubs(hash, appdir)
       end
 
       def from_h_gsubs(value, appdir)
         return value if value.blank?
 
-        if value.respond_to? :to_h
+        case value
+        when Hash
           from_h_hash_gsubs(value, appdir)
-        elsif value.respond_to? :to_a
+        when Array
           from_h_array_gsubs(value, appdir)
-        elsif value.is_a? String
+        when String
           from_h_string_gsubs(value, appdir)
         else
           value

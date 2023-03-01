@@ -64,7 +64,7 @@ module Cask
     def fetch(quiet: nil, timeout: nil)
       odebug "Cask::Installer#fetch"
 
-      load_cask_from_source_api! if @cask.loaded_from_api && @cask.caskfile_only?
+      load_cask_from_source_api! if @cask.loaded_from_api? && @cask.caskfile_only?
 
       verify_has_sha if require_sha? && !force?
 
@@ -382,7 +382,7 @@ module Cask
 
       return if @cask.source.blank?
 
-      extension = @cask.loaded_from_api ? "json" : "rb"
+      extension = @cask.loaded_from_api? ? "json" : "rb"
       (metadata_subdir/"#{@cask.token}.#{extension}").write @cask.source
       old_savedir&.rmtree
     end
@@ -559,7 +559,7 @@ module Cask
         end
       end
 
-      load_cask_from_source_api! if @cask.loaded_from_api && @cask.caskfile_only?
+      load_cask_from_source_api! if @cask.loaded_from_api? && @cask.caskfile_only?
       # otherwise we default to the current cask
     end
 
