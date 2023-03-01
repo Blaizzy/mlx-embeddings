@@ -1417,7 +1417,7 @@ class Formula
   end
 
   def current_installed_alias_target
-    Formulary.factory(installed_alias_path) if installed_alias_path
+    Formulary.factory(installed_alias_name) if installed_alias_path
   end
 
   # Has the target of the alias used to install this formula changed?
