@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "cask/cmd/abstract_command"
-require "cask/cmd/info"
+require "cask/info"
 require "cask/cask_loader"
 require "cask/caskroom"
 
@@ -48,7 +48,7 @@ module Homebrew
           suggestion = <<~EOS
             Found a cask named "#{name}" instead.
 
-            #{Cask::Cmd::Info.get_info(cask)}
+            #{Cask::Info.get_info(cask)}
           EOS
         else
           return
