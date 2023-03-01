@@ -62,11 +62,13 @@ module Homebrew
 
     ohai "Sending test results to BuildPulse"
 
-    result = quiet_system Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
-                          "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
-                          "--account-id", ENV.fetch("HOMEBREW_BUILDPULSE_ACCOUNT_ID"),
-                          "--repository-id", ENV.fetch("HOMEBREW_BUILDPULSE_REPOSITORY_ID")
-    odie "Failed to send test results to BuildPulse!" unless result
+    # TODO: make this use `system_command!` when https://github.com/buildpulse/buildpulse-action/issues/4 is fixed
+    system_command Formula["buildpulse-test-reporter"].opt_bin/"buildpulse-test-reporter",
+                   args: [
+                     "submit", "#{HOMEBREW_LIBRARY_PATH}/test/junit",
+                     "--account-id", ENV.fetch("HOMEBREW_BUILDPULSE_ACCOUNT_ID"),
+                     "--repository-id", ENV.fetch("HOMEBREW_BUILDPULSE_REPOSITORY_ID")
+                   ]
   end
 
   def changed_test_files
@@ -191,10 +193,11 @@ module Homebrew
       else
         system "bundle", "exec", "rspec", *bundle_args, "--", *files
       end
+      success = $CHILD_STATUS.success?
 
       run_buildpulse if use_buildpulse?
 
-      return if $CHILD_STATUS.success?
+      return if success
 
       Homebrew.failed = true
     end
