@@ -47,7 +47,7 @@ module Utils
     when 2
       +"#{array[0]}#{two_words_connector}#{array[1]}"
     else
-      +"#{array[0...-1].join(words_connector)}#{last_word_connector}#{array[-1]}"
+      +"#{T.must(array[0...-1]).join(words_connector)}#{last_word_connector}#{array[-1]}"
     end
   end
 end
