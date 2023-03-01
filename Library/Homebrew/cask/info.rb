@@ -36,10 +36,6 @@ module Cask
       title
     end
 
-    def self.formatted_url(url)
-      "#{Tty.underline}#{url}#{Tty.reset}"
-    end
-
     def self.installation_info(cask)
       return "Not installed\n" unless cask.installed?
 
