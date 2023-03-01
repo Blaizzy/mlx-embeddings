@@ -338,6 +338,8 @@ Style/BarePercentLiterals:
 
 # make rspec formatting more flexible
 Style/BlockDelimiters:
+  BracesRequiredMethods:
+    - "sig"
   Exclude:
     - "Homebrew/**/*_spec.rb"
     - "Homebrew/**/shared_examples/**/*.rb"
@@ -366,10 +368,6 @@ Style/Documentation:
     - "/**/{Formula,Casks}/**/*.rb"
     - "**/{Formula,Casks}/**/*.rb"
     - "**/*.rbi"
-
-Style/DocumentationMethod:
-  Include:
-    - "Homebrew/formula.rb"
 
 # This is quite a large change, so don't enforce this yet for formulae.
 # We should consider doing so in the future, but be aware of the impact on third-party taps.

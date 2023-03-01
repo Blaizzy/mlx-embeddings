@@ -60,13 +60,13 @@ Style/Documentation:
     - utils/string_inreplace_extension.rb
     - version.rb
 
+Style/DocumentationMethod:
+  Include:
+    - "formula.rb"
+
 Style/HashAsLastArrayItem:
   Exclude:
     - "test/utils/spdx_spec.rb"
-
-Style/BlockDelimiters:
-  BracesRequiredMethods:
-    - "sig"
 
 Bundler/GemFilename:
   Enabled: false
