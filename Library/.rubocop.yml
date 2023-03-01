@@ -425,7 +425,8 @@ Style/NumericLiterals:
   Exclude:
     - "**/Brewfile"
 
-# TODO: These are pre-existing violations and should be fixed.
+# TODO: These are pre-existing violations and should be corrected
+#   to define methods so that call sites can be type-checked.
 Style/OpenStructUse:
   Exclude:
     - "Homebrew/cli/args.rb"
