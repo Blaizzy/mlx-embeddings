@@ -367,10 +367,6 @@ Style/Documentation:
     - "**/{Formula,Casks}/**/*.rb"
     - "**/*.rbi"
 
-Style/DocumentationMethod:
-  Include:
-    - "Homebrew/formula.rb"
-
 # This is quite a large change, so don't enforce this yet for formulae.
 # We should consider doing so in the future, but be aware of the impact on third-party taps.
 Style/FetchEnvVar:
