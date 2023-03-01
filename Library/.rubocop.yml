@@ -338,6 +338,8 @@ Style/BarePercentLiterals:
 
 # make rspec formatting more flexible
 Style/BlockDelimiters:
+  BracesRequiredMethods:
+    - "sig"
   Exclude:
     - "Homebrew/**/*_spec.rb"
     - "Homebrew/**/shared_examples/**/*.rb"

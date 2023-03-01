@@ -68,9 +68,5 @@ Style/HashAsLastArrayItem:
   Exclude:
     - "test/utils/spdx_spec.rb"
 
-Style/BlockDelimiters:
-  BracesRequiredMethods:
-    - "sig"
-
 Bundler/GemFilename:
   Enabled: false
