@@ -58,7 +58,7 @@ module Cask
         sample_languages = if language_blocks.length > LANGUAGE_BLOCK_LIMIT && !@audit_new_cask
           sample_keys = language_blocks.keys.sample(LANGUAGE_BLOCK_LIMIT)
           sample_keys_sentence = ::Utils.to_sentence(sample_keys.map { |lang| lang[0].to_s })
-          ohai "Auditing a sample of available languages: #{sameple_keys_sentence}"
+          ohai "Auditing a sample of available languages: #{sample_keys_sentence}"
           language_blocks.select { |k| sample_keys.include?(k) }
         else
           language_blocks
