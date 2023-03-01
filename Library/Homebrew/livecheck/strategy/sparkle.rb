@@ -66,25 +66,8 @@ module Homebrew
         # @return [Item, nil]
         sig { params(content: String).returns(T::Array[Item]) }
         def self.items_from_content(content)
-          require "rexml/document"
-
-          parsing_tries = 0
-          xml = begin
-            REXML::Document.new(content)
-          rescue REXML::UndefinedNamespaceException => e
-            undefined_prefix = e.to_s[/Undefined prefix ([^ ]+) found/i, 1]
-            raise if undefined_prefix.blank?
-
-            # Only retry parsing once after removing prefix from content
-            parsing_tries += 1
-            raise if parsing_tries > 1
-
-            # When an XML document contains a prefix without a corresponding
-            # namespace, it's necessary to remove the prefix from the content
-            # to be able to successfully parse it using REXML
-            content = content.gsub(%r{(</?| )#{Regexp.escape(undefined_prefix)}:}, '\1')
-            retry
-          end
+          xml = Xml.parse_xml(content)
+          return [] if xml.blank?
 
           # Remove prefixes, so we can reliably identify elements and attributes
           xml.root&.each_recursive do |node|

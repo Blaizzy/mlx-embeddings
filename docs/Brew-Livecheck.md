@@ -171,6 +171,22 @@ livecheck do
 end
 ```
 
+#### `Xml` `strategy` block
+
+A `strategy` block for `Xml` receives an `REXML::Document` object and, if provided, a regex. For example, if the XML contains a `versions` element with nested `version` elements and their inner text contains the version string, we could extract it using a regex as follows:
+
+```ruby
+livecheck do
+  url "https://www.example.com/example.xml"
+  regex(/v?(\d+(?:\.\d+)+)/i)
+  strategy :xml do |xml, regex|
+    xml.get_elements("versions//version").map { |item| item.text[regex, 1] }
+  end
+end
+```
+
+For more information on how to work with an `REXML::Document` object, please refer to the [`REXML::Document`](https://ruby.github.io/rexml/REXML/Document.html) and [`REXML::Element`](https://ruby.github.io/rexml/REXML/Element.html) documentation.
+
 ### `skip`
 
 Livecheck automatically skips some formulae/casks for a number of reasons (deprecated, disabled, discontinued, etc.). However, on rare occasions we need to use a `livecheck` block to do a manual skip. The `skip` method takes a string containing a very brief reason for skipping.
