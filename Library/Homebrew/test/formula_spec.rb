@@ -1194,6 +1194,7 @@ describe Formula do
 
     let(:tab) { Tab.empty }
     let(:alias_path) { "#{CoreTap.instance.alias_dir}/bar" }
+    let(:alias_name) { "bar" }
 
     before do
       allow(described_class).to receive(:installed).and_return([f])
@@ -1215,7 +1216,7 @@ describe Formula do
 
     specify "alias changes when not changed" do
       tab.source["path"] = alias_path
-      stub_formula_loader(f, alias_path)
+      stub_formula_loader(f, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
       FileUtils.ln_sf f.path, alias_path
@@ -1230,7 +1231,7 @@ describe Formula do
 
     specify "alias changes when new alias target" do
       tab.source["path"] = alias_path
-      stub_formula_loader(new_formula, alias_path)
+      stub_formula_loader(new_formula, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
       FileUtils.ln_sf new_formula.path, alias_path
@@ -1245,7 +1246,7 @@ describe Formula do
 
     specify "alias changes when old formulae installed" do
       tab.source["path"] = alias_path
-      stub_formula_loader(new_formula, alias_path)
+      stub_formula_loader(new_formula, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
       FileUtils.ln_sf new_formula.path, alias_path
@@ -1286,6 +1287,7 @@ describe Formula do
     end
 
     let(:alias_path) { "#{f.tap.alias_dir}/bar" }
+    let(:alias_name) { "bar" }
 
     def setup_tab_for_prefix(prefix, options = {})
       prefix.mkpath
@@ -1324,14 +1326,14 @@ describe Formula do
     example "outdated follow alias and alias unchanged" do
       f.follow_installed_alias = true
       f.build = setup_tab_for_prefix(same_prefix, path: alias_path)
-      stub_formula_loader(f, alias_path)
+      stub_formula_loader(f, alias_name)
       expect(f.outdated_kegs).to be_empty
     end
 
     example "outdated follow alias and alias changed and new target not installed" do
       f.follow_installed_alias = true
       f.build = setup_tab_for_prefix(same_prefix, path: alias_path)
-      stub_formula_loader(new_formula, alias_path)
+      stub_formula_loader(new_formula, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
       FileUtils.ln_sf new_formula.path, alias_path
@@ -1342,7 +1344,7 @@ describe Formula do
     example "outdated follow alias and alias changed and new target installed" do
       f.follow_installed_alias = true
       f.build = setup_tab_for_prefix(same_prefix, path: alias_path)
-      stub_formula_loader(new_formula, alias_path)
+      stub_formula_loader(new_formula, alias_name)
       setup_tab_for_prefix(new_formula.prefix)
       expect(f.outdated_kegs).to be_empty
     end
@@ -1350,7 +1352,7 @@ describe Formula do
     example "outdated no follow alias and alias unchanged" do
       f.follow_installed_alias = false
       f.build = setup_tab_for_prefix(same_prefix, path: alias_path)
-      stub_formula_loader(f, alias_path)
+      stub_formula_loader(f, alias_name)
       expect(f.outdated_kegs).to be_empty
     end
 
