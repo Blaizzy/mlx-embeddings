@@ -1,11 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
+# Disable Rails cops, as we haven't required active_support yet.
+# rubocop:disable Rails
 homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? && !ENV["HOMEBREW_BOOTSNAP"].nil?
 
 # portable ruby doesn't play nice with bootsnap
-# Can't use .exclude? here because we haven't required active_support yet.
-homebrew_bootsnap_enabled &&= !RUBY_PATH.to_s.include?("/vendor/portable-ruby/") # rubocop:disable Rails/NegateInclude
+
+homebrew_bootsnap_enabled &&= !RUBY_PATH.to_s.include?("/vendor/portable-ruby/") # rubocop:disable Style/InverseMethods
 
 homebrew_bootsnap_enabled &&= if ENV["HOMEBREW_MACOS_VERSION"]
   # Apple Silicon doesn't play nice with bootsnap
@@ -32,8 +34,7 @@ if homebrew_bootsnap_enabled
 
   if defined?(Bootsnap)
     cache = ENV.fetch("HOMEBREW_CACHE", nil) || ENV.fetch("HOMEBREW_DEFAULT_CACHE", nil)
-    # Can't use .blank? here because we haven't required active_support yet.
-    raise "Needs HOMEBREW_CACHE or HOMEBREW_DEFAULT_CACHE!" if cache.nil? || cache.empty? # rubocop:disable Rails/Blank
+    raise "Needs HOMEBREW_CACHE or HOMEBREW_DEFAULT_CACHE!" if cache.nil? || cache.empty?
 
     Bootsnap.setup(
       cache_dir:          cache,
@@ -45,3 +46,4 @@ if homebrew_bootsnap_enabled
     $stderr.puts "Error: HOMEBREW_BOOTSNAP could not `require \"bootsnap\"`!\n\n"
   end
 end
+# rubocop:enable Rails

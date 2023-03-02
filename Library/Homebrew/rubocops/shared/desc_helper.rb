@@ -53,7 +53,7 @@ module RuboCop
         desc_problem "Description shouldn't start with an article." if regex_match_group(desc, /^(the|an?)(?=\s)/i)
 
         # Check if invalid lowercase words are at the start of a desc.
-        if !VALID_LOWERCASE_WORDS.include?(string_content(desc).split.first) &&
+        if !VALID_LOWERCASE_WORDS.include?(string_content(desc).split.first) && # rubocop:disable Style/InverseMethods (false positive)
            regex_match_group(desc, /^[a-z]/)
           desc_problem "Description should start with a capital letter."
         end
