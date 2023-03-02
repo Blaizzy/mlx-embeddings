@@ -65,9 +65,5 @@ Style/DocumentationMethod:
   Include:
     - "formula.rb"
 
-Style/HashAsLastArrayItem:
-  Exclude:
-    - "test/utils/spdx_spec.rb"
-
 Bundler/GemFilename:
   Enabled: false

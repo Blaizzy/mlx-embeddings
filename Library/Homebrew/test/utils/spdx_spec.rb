@@ -81,7 +81,7 @@ describe SPDX do
       license_expression = { any_of: [
         "MIT",
         :public_domain,
-        all_of: ["0BSD", "Zlib"],
+        all_of: ["0BSD", "Zlib"], # rubocop:disable Style/HashAsLastArrayItem
         "curl" => { with: "LLVM-exception" },
       ] }
       result = [["MIT", :public_domain, "curl", "0BSD", "Zlib"], ["LLVM-exception"]]
@@ -201,7 +201,7 @@ describe SPDX do
       license_expression = { any_of: [
         "MIT",
         :public_domain,
-        all_of: ["0BSD", "Zlib"],
+        all_of: ["0BSD", "Zlib"], # rubocop:disable Style/HashAsLastArrayItem
         "curl" => { with: "LLVM-exception" },
       ] }
       result = "MIT or Public Domain or (0BSD and Zlib) or (curl with LLVM-exception)"
@@ -229,6 +229,7 @@ describe SPDX do
       })
     end
 
+    # rubocop:disable Style/HashAsLastArrayItem
     it "handles nested brackets" do
       expect(described_class.string_to_license_expression("A and (B or (C and D))")).to eq({
         all_of: [
@@ -240,6 +241,7 @@ describe SPDX do
         ],
       })
     end
+    # rubocop:enable Style/HashAsLastArrayItem
   end
 
   describe ".license_version_info" do
