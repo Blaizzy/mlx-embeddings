@@ -287,15 +287,15 @@ RSpec/MessageSpies:
 RSpec/StubbedMock:
   Enabled: false
 
-# TODO: try to reduce these
+# These were ever-growing numbers, not useful.
 RSpec/ExampleLength:
-  Max: 75
+  Enabled: false
 RSpec/MultipleExpectations:
-  Max: 26
+  Enabled: false
 RSpec/NestedGroups:
-  Max: 5
+  Enabled: false
 RSpec/MultipleMemoizedHelpers:
-  Max: 12
+  Enabled: false
 
 # Annoying to have these autoremoved.
 RSpec/Focus:
