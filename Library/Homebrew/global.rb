@@ -133,6 +133,7 @@ module Homebrew
 end
 
 require "context"
+require "extend/array"
 require "extend/git_repository"
 require "extend/pathname"
 require "extend/predicable"
