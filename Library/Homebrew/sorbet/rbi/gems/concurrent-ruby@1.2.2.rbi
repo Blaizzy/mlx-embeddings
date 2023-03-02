@@ -485,6 +485,7 @@ class Concurrent::Collection::NonConcurrentMapBackend
   def dupped_backend; end
   def initialize_copy(other); end
   def pair?(key, expected_value); end
+  def set_backend(default_proc); end
   def store_computed_value(key, new_value); end
 end
 
