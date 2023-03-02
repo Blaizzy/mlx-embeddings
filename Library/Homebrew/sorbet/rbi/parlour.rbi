@@ -138,6 +138,11 @@ module Cask
     def token_conflicts?; end
   end
 
+  class Cask
+    sig { returns(T::Boolean) }
+    def loaded_from_api?; end
+  end
+
   class Installer
     sig { returns(T::Boolean) }
     def binaries?; end
