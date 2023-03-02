@@ -377,11 +377,6 @@ Style/FetchEnvVar:
     - "/**/Formula/**/*.rb"
     - "**/Formula/**/*.rb"
 
-# Prefer tokens with type annotations for consistency
-# between formatting numbers and strings.
-Style/FormatStringToken:
-  EnforcedStyle: annotated
-
 # Not used for casks and formulae.
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
