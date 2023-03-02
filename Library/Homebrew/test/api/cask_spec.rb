@@ -49,7 +49,7 @@ describe Homebrew::API::Cask do
 
   describe "::fetch_source" do
     it "fetches the source of a cask (defaulting to master when no `git_head` is passed)" do
-      curl_output = OpenStruct.new(stdout: "foo", success?: true)
+      curl_output = instance_double(SystemCommand::Result, stdout: "foo", success?: true)
       expect(Utils::Curl).to receive(:curl_output)
         .with("--fail", "https://raw.githubusercontent.com/Homebrew/homebrew-cask/master/Casks/foo.rb")
         .and_return(curl_output)

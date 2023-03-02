@@ -12,6 +12,14 @@ module Homebrew
   module Completions
     extend T::Sig
 
+    Variables = Struct.new(
+      :aliases,
+      :builtin_command_descriptions,
+      :completion_functions,
+      :function_mappings,
+      keyword_init: true,
+    )
+
     module_function
 
     COMPLETIONS_DIR = (HOMEBREW_REPOSITORY/"completions").freeze
@@ -195,17 +203,16 @@ module Homebrew
 
     sig { params(commands: T::Array[String]).returns(String) }
     def generate_bash_completion_file(commands)
-      variables = OpenStruct.new
+      variables = Variables.new(
+        completion_functions: commands.map do |command|
+          generate_bash_subcommand_completion command
+        end.compact,
+        function_mappings:    commands.map do |command|
+          next unless command_gets_completions? command
 
-      variables[:completion_functions] = commands.map do |command|
-        generate_bash_subcommand_completion command
-      end.compact
-
-      variables[:function_mappings] = commands.map do |command|
-        next unless command_gets_completions? command
-
-        "#{command}) _brew_#{Commands.method_name command} ;;"
-      end.compact
+          "#{command}) _brew_#{Commands.method_name command} ;;"
+        end.compact,
+      )
 
       ERB.new((TEMPLATE_DIR/"bash.erb").read, trim_mode: ">").result(variables.instance_eval { binding })
     end
@@ -272,27 +279,27 @@ module Homebrew
 
     sig { params(commands: T::Array[String]).returns(String) }
     def generate_zsh_completion_file(commands)
-      variables = OpenStruct.new
+      variables = Variables.new(
+        aliases:                      Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.map do |alias_command, command|
+          alias_command = "'#{alias_command}'" if alias_command.start_with? "-"
+          command = "'#{command}'" if command.start_with? "-"
+          "#{alias_command} #{command}"
+        end.compact,
 
-      variables[:aliases] = Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.map do |alias_command, command|
-        alias_command = "'#{alias_command}'" if alias_command.start_with? "-"
-        command = "'#{command}'" if command.start_with? "-"
-        "#{alias_command} #{command}"
-      end.compact
+        builtin_command_descriptions: commands.map do |command|
+          next if Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.key? command
 
-      variables[:builtin_command_descriptions] = commands.map do |command|
-        next if Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.key? command
+          description = Commands.command_description(command, short: true)
+          next if description.blank?
 
-        description = Commands.command_description(command, short: true)
-        next if description.blank?
+          description = format_description description
+          "'#{command}:#{description}'"
+        end.compact,
 
-        description = format_description description
-        "'#{command}:#{description}'"
-      end.compact
-
-      variables[:completion_functions] = commands.map do |command|
-        generate_zsh_subcommand_completion command
-      end.compact
+        completion_functions:         commands.map do |command|
+          generate_zsh_subcommand_completion command
+        end.compact,
+      )
 
       ERB.new((TEMPLATE_DIR/"zsh.erb").read, trim_mode: ">").result(variables.instance_eval { binding })
     end
@@ -346,11 +353,11 @@ module Homebrew
 
     sig { params(commands: T::Array[String]).returns(String) }
     def generate_fish_completion_file(commands)
-      variables = OpenStruct.new
-
-      variables[:completion_functions] = commands.map do |command|
-        generate_fish_subcommand_completion command
-      end.compact
+      variables = Variables.new(
+        completion_functions: commands.map do |command|
+          generate_fish_subcommand_completion command
+        end.compact,
+      )
 
       ERB.new((TEMPLATE_DIR/"fish.erb").read, trim_mode: ">").result(variables.instance_eval { binding })
     end

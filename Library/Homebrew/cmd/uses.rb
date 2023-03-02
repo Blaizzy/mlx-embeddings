@@ -67,7 +67,10 @@ module Homebrew
       opoo e
       used_formulae_missing = true
       # If the formula doesn't exist: fake the needed formula object name.
+      # This is a legacy use of OpenStruct that should be refactored.
+      # rubocop:disable Style/OpenStructUse
       args.named.map { |name| OpenStruct.new name: name, full_name: name }
+      # rubocop:enable Style/OpenStructUse
     end
 
     use_runtime_dependents = args.installed? &&

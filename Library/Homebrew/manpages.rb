@@ -14,6 +14,21 @@ module Homebrew
   module Manpages
     extend T::Sig
 
+    Variables = Struct.new(
+      :alumni,
+      :commands,
+      :developer_commands,
+      :environment_variables,
+      :global_cask_options,
+      :global_options,
+      :lead,
+      :maintainers,
+      :official_external_commands,
+      :plc,
+      :tsc,
+      keyword_init: true,
+    )
+
     module_function
 
     def regenerate_man_pages(quiet:)
@@ -27,32 +42,25 @@ module Homebrew
 
     def build_man_page(quiet:)
       template = (SOURCE_PATH/"brew.1.md.erb").read
-      variables = OpenStruct.new
-
-      variables[:commands] = generate_cmd_manpages(Commands.internal_commands_paths)
-      variables[:developer_commands] = generate_cmd_manpages(Commands.internal_developer_commands_paths)
-      variables[:official_external_commands] =
-        generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet))
-      variables[:global_cask_options] = global_cask_options_manpage
-      variables[:global_options] = global_options_manpage
-      variables[:environment_variables] = env_vars_manpage
-
       readme = HOMEBREW_REPOSITORY/"README.md"
-      variables[:lead] =
-        readme.read[/(Homebrew's \[Project Leader.*\.)/, 1]
-              .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-      variables[:plc] =
-        readme.read[/(Homebrew's \[Project Leadership Committee.*\.)/, 1]
-              .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-      variables[:tsc] =
-        readme.read[/(Homebrew's \[Technical Steering Committee.*\.)/, 1]
-              .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-      variables[:maintainers] =
-        readme.read[/(Homebrew's maintainers .*\.)/, 1]
-              .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-      variables[:alumni] =
-        readme.read[/(Former maintainers .*\.)/, 1]
-              .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
+      variables = Variables.new(
+        commands:                   generate_cmd_manpages(Commands.internal_commands_paths),
+        developer_commands:         generate_cmd_manpages(Commands.internal_developer_commands_paths),
+        official_external_commands: generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet)),
+        global_cask_options:        global_cask_options_manpage,
+        global_options:             global_options_manpage,
+        environment_variables:      env_vars_manpage,
+        lead:                       readme.read[/(Homebrew's \[Project Leader.*\.)/, 1]
+                                      .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1'),
+        plc:                        readme.read[/(Homebrew's \[Project Leadership Committee.*\.)/, 1]
+                                      .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1'),
+        tsc:                        readme.read[/(Homebrew's \[Technical Steering Committee.*\.)/, 1]
+                                      .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1'),
+        maintainers:                readme.read[/(Homebrew's maintainers .*\.)/, 1]
+                                      .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1'),
+        alumni:                     readme.read[/(Former maintainers .*\.)/, 1]
+                                      .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1'),
+      )
 
       ERB.new(template, trim_mode: ">").result(variables.instance_eval { binding })
     end

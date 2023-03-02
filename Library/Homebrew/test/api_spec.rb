@@ -14,7 +14,7 @@ describe Homebrew::API do
   end
 
   def mock_curl_output(stdout: "", success: true)
-    curl_output = OpenStruct.new(stdout: stdout, success?: success)
+    curl_output = instance_double(SystemCommand::Result, stdout: stdout, success?: success)
     allow(Utils::Curl).to receive(:curl_output).and_return curl_output
   end
 
