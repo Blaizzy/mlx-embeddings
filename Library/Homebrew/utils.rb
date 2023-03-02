@@ -4,7 +4,6 @@
 require "time"
 
 require "utils/analytics"
-require "utils/array"
 require "utils/curl"
 require "utils/fork"
 require "utils/formatter"

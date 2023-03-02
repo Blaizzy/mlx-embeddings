@@ -326,7 +326,7 @@ class Tap
     Commands.rebuild_commands_completion_list
     link_completions_and_manpages
 
-    formatted_contents = contents.presence&.then { |c| Utils.to_sentence(c) }&.dup&.prepend(" ")
+    formatted_contents = contents.presence&.to_sentence&.dup&.prepend(" ")
     $stderr.puts "Tapped#{formatted_contents} (#{path.abv})." unless quiet
     CacheStoreDatabase.use(:descriptions) do |db|
       DescriptionCacheStore.new(db)
@@ -414,7 +414,7 @@ class Tap
     $stderr.puts "Untapping #{name}..."
 
     abv = path.abv
-    formatted_contents = contents.presence&.then { |c| Utils.to_sentence(c) }&.dup&.prepend(" ")
+    formatted_contents = contents.presence&.to_sentence&.dup&.prepend(" ")
 
     CacheStoreDatabase.use(:descriptions) do |db|
       DescriptionCacheStore.new(db)

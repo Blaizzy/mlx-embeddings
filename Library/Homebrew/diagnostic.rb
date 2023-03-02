@@ -911,7 +911,7 @@ module Homebrew
         end)
 
         taps = Utils.pluralize("tap", error_tap_paths.count)
-        "Unable to read from cask #{taps}: #{Utils.to_sentence(error_tap_paths)}" if error_tap_paths.present?
+        "Unable to read from cask #{taps}: #{error_tap_paths.to_sentence}" if error_tap_paths.present?
       end
 
       def check_cask_load_path

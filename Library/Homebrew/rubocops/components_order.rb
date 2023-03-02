@@ -3,7 +3,6 @@
 
 require "ast_constants"
 require "rubocops/extend/formula_cop"
-require "utils/array"
 
 module RuboCop
   module Cop
@@ -76,8 +75,8 @@ module RuboCop
               [:url, :version, :sha256],
               [:url, :mirror, :version, :sha256],
             ]
-            minimum_methods = Utils.to_sentence(allowed_methods.first.map { |m| "`#{m}`" })
-            maximum_methods = Utils.to_sentence(allowed_methods.last.map { |m| "`#{m}`" })
+            minimum_methods = allowed_methods.first.map { |m| "`#{m}`" }.to_sentence
+            maximum_methods = allowed_methods.last.map { |m| "`#{m}`" }.to_sentence
 
             on_system_bodies.each do |on_system_block, on_system_body|
               method_name = on_system_block.method_name

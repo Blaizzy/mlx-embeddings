@@ -40,8 +40,7 @@ module Homebrew
     case args.named.first
     when nil, "state"
       if env_vars.any?
-        env_vars_str = Utils.to_sentence(env_vars)
-        puts "Developer mode is enabled because #{env_vars_str} #{(env_vars.count == 1) ? "is" : "are"} set."
+        puts "Developer mode is enabled because #{env_vars.to_sentence} #{(env_vars.count == 1) ? "is" : "are"} set."
       elsif Homebrew::Settings.read("devcmdrun") == "true"
         puts "Developer mode is enabled."
       else
@@ -51,7 +50,7 @@ module Homebrew
       Homebrew::Settings.write "devcmdrun", true
     when "off"
       Homebrew::Settings.delete "devcmdrun"
-      puts "To fully disable developer mode, you must unset #{Utils.to_sentence(env_vars)}." if env_vars.any?
+      puts "To fully disable developer mode, you must unset #{env_vars.to_sentence}." if env_vars.any?
     else
       raise UsageError, "unknown subcommand: #{args.named.first}"
     end

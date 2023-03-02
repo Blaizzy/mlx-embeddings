@@ -306,7 +306,7 @@ module Cask
       rescue TSort::Cyclic
         strongly_connected_components = graph.strongly_connected_components.sort_by(&:count)
         cyclic_dependencies = strongly_connected_components.last - [@cask]
-        raise CaskCyclicDependencyError.new(@cask.token, ::Utils.to_sentence(cyclic_dependencies))
+        raise CaskCyclicDependencyError.new(@cask.token, cyclic_dependencies.to_sentence)
       end
     end
 
