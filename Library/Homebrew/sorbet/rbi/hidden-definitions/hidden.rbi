@@ -4260,6 +4260,12 @@ class Homebrew::CLI::Args
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::Completions::Variables
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
 module Homebrew::EnvConfig
   def self.additional_google_analytics_id(); end
 
@@ -4437,6 +4443,12 @@ class Homebrew::Livecheck::Strategy::Sparkle::Item
 end
 
 class Homebrew::Livecheck::Strategy::Sparkle::Item
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
+class Homebrew::Manpages::Variables
   def self.[](*arg); end
 
   def self.members(); end
