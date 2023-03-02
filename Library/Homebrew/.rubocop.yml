@@ -1,6 +1,9 @@
 inherit_from:
   - ../.rubocop.yml
 
+Bundler/GemFilename:
+  Enabled: false
+
 Homebrew/MoveToExtendOS:
   Enabled: true
   Exclude:
@@ -64,6 +67,3 @@ Style/Documentation:
 Style/DocumentationMethod:
   Include:
     - "formula.rb"
-
-Bundler/GemFilename:
-  Enabled: false
