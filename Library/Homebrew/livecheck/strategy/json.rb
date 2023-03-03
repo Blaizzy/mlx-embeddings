@@ -7,7 +7,7 @@ module Homebrew
       # The {Json} strategy fetches content at a URL, parses it as JSON, and
       # provides the parsed data to a `strategy` block. If a regex is present
       # in the `livecheck` block, it should be passed as the second argument to
-      # the  `strategy` block.
+      # the `strategy` block.
       #
       # This is a generic strategy that doesn't contain any logic for finding
       # versions, as the structure of JSON data varies. Instead, a `strategy`
@@ -46,6 +46,19 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Parses JSON text and returns the parsed data.
+        # @param content [String] the JSON text to parse
+        sig { params(content: String).returns(T.untyped) }
+        def self.parse_json(content)
+          require "json"
+
+          begin
+            JSON.parse(content)
+          rescue JSON::ParserError
+            raise "Content could not be parsed as JSON."
+          end
+        end
+
         # Parses JSON text and identifies versions using a `strategy` block.
         # If a regex is provided, it will be passed as the second argument to
         # the  `strategy` block (after the parsed JSON data).
@@ -63,12 +76,8 @@ module Homebrew
         def self.versions_from_content(content, regex = nil, &block)
           return [] if content.blank? || block.blank?
 
-          require "json"
-          json = begin
-            JSON.parse(content)
-          rescue JSON::ParserError
-            raise "Content could not be parsed as JSON."
-          end
+          json = parse_json(content)
+          return [] if json.blank?
 
           block_return_value = if regex.present?
             yield(json, regex)

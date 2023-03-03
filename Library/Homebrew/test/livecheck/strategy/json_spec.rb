@@ -11,7 +11,6 @@ describe Homebrew::Livecheck::Strategy::Json do
 
   let(:regex) { /^v?(\d+(?:\.\d+)+)$/i }
 
-  let(:simple_content) { '{"version":"1.2.3"}' }
   let(:content) {
     <<~EOS
       {
@@ -40,9 +39,10 @@ describe Homebrew::Livecheck::Strategy::Json do
       }
     EOS
   }
+  let(:content_simple) { '{"version":"1.2.3"}' }
 
-  let(:simple_content_matches) { ["1.2.3"] }
   let(:content_matches) { ["1.1.2", "1.1.1", "1.1.0", "1.0.3", "1.0.2", "1.0.1", "1.0.0"] }
+  let(:content_simple_matches) { ["1.2.3"] }
 
   let(:find_versions_return_hash) {
     {
@@ -74,6 +74,12 @@ describe Homebrew::Livecheck::Strategy::Json do
     end
   end
 
+  describe "::parse_json" do
+    it "returns an object when given valid content" do
+      expect(json.parse_json(content_simple)).to be_an_instance_of(Hash)
+    end
+  end
+
   describe "::versions_from_content" do
     it "returns an empty array when given a block but content is blank" do
       expect(json.versions_from_content("", regex) { "1.2.3" }).to eq([])
@@ -86,10 +92,10 @@ describe Homebrew::Livecheck::Strategy::Json do
 
     it "returns an array of version strings when given content and a block" do
       # Returning a string from block
-      expect(json.versions_from_content(simple_content) { |json| json["version"] }).to eq(simple_content_matches)
-      expect(json.versions_from_content(simple_content, regex) do |json|
+      expect(json.versions_from_content(content_simple) { |json| json["version"] }).to eq(content_simple_matches)
+      expect(json.versions_from_content(content_simple, regex) do |json|
         json["version"][regex, 1]
-      end).to eq(simple_content_matches)
+      end).to eq(content_simple_matches)
 
       # Returning an array of strings from block
       expect(json.versions_from_content(content, regex) do |json, regex|
@@ -99,16 +105,16 @@ describe Homebrew::Livecheck::Strategy::Json do
     end
 
     it "allows a nil return from a block" do
-      expect(json.versions_from_content(content, regex) { next }).to eq([])
+      expect(json.versions_from_content(content_simple, regex) { next }).to eq([])
     end
 
     it "errors if a block uses two arguments but a regex is not given" do
-      expect { json.versions_from_content(simple_content) { |json, regex| json["version"][regex, 1] } }
+      expect { json.versions_from_content(content_simple) { |json, regex| json["version"][regex, 1] } }
         .to raise_error("Two arguments found in `strategy` block but no regex provided.")
     end
 
     it "errors on an invalid return type from a block" do
-      expect { json.versions_from_content(content, regex) { 123 } }
+      expect { json.versions_from_content(content_simple, regex) { 123 } }
         .to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
     end
   end
