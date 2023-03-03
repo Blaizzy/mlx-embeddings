@@ -174,9 +174,7 @@ module Homebrew
       commits_authored = GitHub.repo_commit_count_for_user(repo_full_name, person, "author", args)
       commits_committed = GitHub.repo_commit_count_for_user(repo_full_name, person, "committer", args)
       # Only count committers where the author is not the same person. Avoid negative numbers or subtracting zero.
-      if commits_authored.positive? && commits_committed.positive?
-        commits_committed = commits_authored - commits_committed
-      end
+      commits_committed = commits_authored - commits_committed if commits_authored > commits_committed
 
       data[repo] = {
         author:        commits_authored,
