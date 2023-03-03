@@ -64,6 +64,7 @@ class RuboCop::CLI::Command::AutoGenerateConfig < ::RuboCop::CLI::Command::Base
   def max_line_length(config); end
   def maybe_run_line_length_cop; end
   def options_config_in_root?; end
+  def options_has_only_flag?; end
   def relative_path_to_todo_from_options_config; end
   def reset_config_and_auto_gen_file; end
   def run_all_cops(line_length_contents); end
@@ -77,6 +78,7 @@ RuboCop::CLI::Command::AutoGenerateConfig::AUTO_GENERATED_FILE = T.let(T.unsafe(
 RuboCop::CLI::Command::AutoGenerateConfig::PHASE_1 = T.let(T.unsafe(nil), String)
 RuboCop::CLI::Command::AutoGenerateConfig::PHASE_1_DISABLED = T.let(T.unsafe(nil), String)
 RuboCop::CLI::Command::AutoGenerateConfig::PHASE_1_OVERRIDDEN = T.let(T.unsafe(nil), String)
+RuboCop::CLI::Command::AutoGenerateConfig::PHASE_1_SKIPPED = T.let(T.unsafe(nil), String)
 RuboCop::CLI::Command::AutoGenerateConfig::PHASE_2 = T.let(T.unsafe(nil), String)
 RuboCop::CLI::Command::AutoGenerateConfig::YAML_OPTIONAL_DOC_START = T.let(T.unsafe(nil), Regexp)
 
@@ -242,6 +244,8 @@ end
 RuboCop::CommentConfig::CONFIG_DISABLED_LINE_RANGE_MIN = T.let(T.unsafe(nil), Float)
 
 class RuboCop::CommentConfig::ConfigDisabledCopDirectiveComment
+  include ::RuboCop::Ext::Comment
+
   def initialize(cop_name); end
 
   def line_number; end
@@ -5208,8 +5212,11 @@ class RuboCop::Cop::Lint::LiteralInInterpolation < ::RuboCop::Cop::Base
 
   def autocorrected_value(node); end
   def autocorrected_value_for_array(node); end
+  def autocorrected_value_for_hash(node); end
   def autocorrected_value_for_string(node); end
   def autocorrected_value_for_symbol(node); end
+  def autocorrected_value_in_hash(node); end
+  def autocorrected_value_in_hash_for_symbol(node); end
   def ends_heredoc_line?(node); end
   def in_array_percent_literal?(node); end
   def offending?(node); end
@@ -5254,6 +5261,7 @@ RuboCop::Cop::Lint::MissingCopEnableDirective::MSG = T.let(T.unsafe(nil), String
 RuboCop::Cop::Lint::MissingCopEnableDirective::MSG_BOUND = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Lint::MissingSuper < ::RuboCop::Cop::Base
+  def class_new_block(param0 = T.unsafe(nil)); end
   def on_def(node); end
   def on_defs(node); end
 
@@ -6615,6 +6623,20 @@ class RuboCop::Cop::Metrics::ClassLength < ::RuboCop::Cop::Base
 
   def message(length, max_length); end
 end
+
+class RuboCop::Cop::Metrics::CollectionLiteralLength < ::RuboCop::Cop::Base
+  def on_array(node); end
+  def on_hash(node); end
+  def on_index(node); end
+  def on_send(node); end
+
+  private
+
+  def collection_threshold; end
+end
+
+RuboCop::Cop::Metrics::CollectionLiteralLength::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Metrics::CollectionLiteralLength::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Metrics::CyclomaticComplexity < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::AllowedMethods
@@ -9700,6 +9722,8 @@ class RuboCop::Cop::Style::IfUnlessModifier < ::RuboCop::Cop::Base
   def allowed_patterns; end
   def another_statement_on_same_line?(node); end
   def autocorrect(corrector, node); end
+  def defined_argument_is_undefined?(if_node, defined_node); end
+  def defined_nodes(node); end
   def extract_heredoc_from(last_argument); end
   def line_length_enabled_at_line?(line); end
   def named_capture_in_condition?(node); end
@@ -13546,7 +13570,7 @@ class RuboCop::Cop::VariableForce::Variable
   def captured_by_block?; end
   def declaration_node; end
   def explicit_block_local_variable?; end
-  def in_modifier_if?(assignment); end
+  def in_modifier_conditional?(assignment); end
   def keyword_argument?; end
   def method_argument?; end
   def name; end
@@ -13680,6 +13704,11 @@ module RuboCop::ExcludeLimit
 end
 
 module RuboCop::Ext; end
+
+module RuboCop::Ext::Comment
+  def source; end
+  def source_range; end
+end
 
 module RuboCop::Ext::ProcessedSource
   def comment_config; end
