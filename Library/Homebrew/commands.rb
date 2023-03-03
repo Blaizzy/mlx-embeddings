@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "completions"
@@ -190,9 +190,8 @@ module Commands
 
       # skip the comment's initial usage summary lines
       comment_lines.slice(2..-1).each do |line|
-        if / (?<option>-[-\w]+) +(?<desc>.*)$/ =~ line
-          options << [option, desc]
-        end
+        match_data = / (?<option>-[-\w]+) +(?<desc>.*)$/.match(line)
+        options << [match_data[:option], match_data[:desc]] if match_data
       end
       options
     end
@@ -213,8 +212,10 @@ module Commands
 
       # skip the comment's initial usage summary lines
       comment_lines.slice(2..-1)&.each do |line|
-        if /^#:  (?<desc>\w.*+)$/ =~ line
-          return desc.split(".").first if short
+        match_data = /^#:  (?<desc>\w.*+)$/.match(line)
+        if match_data
+          desc = match_data[:desc]
+          return T.must(desc).split(".").first if short
 
           return desc
         end
