@@ -29,12 +29,13 @@ describe CurlPostDownloadStrategy do
       }
 
       it "adds the appropriate curl args" do
-        expect(strategy).to receive(:system_command).with(
-          /curl/,
-          hash_including(args: array_including_cons("-d", "form=data").and(array_including_cons("-d", "is=good"))),
-        )
-        .at_least(:once)
-        .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
+        expect(strategy).to receive(:system_command)
+          .with(
+            /curl/,
+            hash_including(args: array_including_cons("-d", "form=data").and(array_including_cons("-d", "is=good"))),
+          )
+          .at_least(:once)
+          .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
         strategy.fetch
       end
@@ -44,12 +45,13 @@ describe CurlPostDownloadStrategy do
       let(:specs) { { using: :post } }
 
       it "adds the appropriate curl args" do
-        expect(strategy).to receive(:system_command).with(
-          /curl/,
-          hash_including(args: array_including_cons("-X", "POST")),
-        )
-        .at_least(:once)
-        .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
+        expect(strategy).to receive(:system_command)
+          .with(
+            /curl/,
+            hash_including(args: array_including_cons("-X", "POST")),
+          )
+          .at_least(:once)
+          .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
         strategy.fetch
       end

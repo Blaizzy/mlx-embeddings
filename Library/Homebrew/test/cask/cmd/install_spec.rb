@@ -28,7 +28,8 @@ describe Cask::Cmd::Install, :cask do
   it "recognizes the --appdir flag" do
     appdir = mktmpdir
 
-    expect(Cask::CaskLoader).to receive(:load).with("local-caffeine", any_args)
+    expect(Cask::CaskLoader).to receive(:load)
+      .with("local-caffeine", any_args)
       .and_wrap_original { |f, *args|
         caffeine = f.call(*args)
         expect(caffeine.config.appdir).to eq appdir
@@ -41,7 +42,8 @@ describe Cask::Cmd::Install, :cask do
   it "recognizes the --appdir flag from HOMEBREW_CASK_OPTS" do
     appdir = mktmpdir
 
-    expect(Cask::CaskLoader).to receive(:load).with("local-caffeine", any_args)
+    expect(Cask::CaskLoader).to receive(:load)
+      .with("local-caffeine", any_args)
       .and_wrap_original { |f, *args|
         caffeine = f.call(*args)
         expect(caffeine.config.appdir).to eq appdir
@@ -57,7 +59,8 @@ describe Cask::Cmd::Install, :cask do
     global_appdir = mktmpdir
     appdir = mktmpdir
 
-    expect(Cask::CaskLoader).to receive(:load).with("local-caffeine", any_args)
+    expect(Cask::CaskLoader).to receive(:load)
+      .with("local-caffeine", any_args)
       .and_wrap_original { |f, *args|
         caffeine = f.call(*args)
         expect(caffeine.config.appdir).to eq appdir

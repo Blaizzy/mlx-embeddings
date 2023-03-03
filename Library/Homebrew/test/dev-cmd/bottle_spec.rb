@@ -86,6 +86,8 @@ describe "brew bottle" do
         system "git", "commit", "-m", "testball 0.1"
       end
 
+      # RuboCop would align the `.and` with `.to_stdout` which is too floaty.
+      # rubocop:disable Layout/MultilineMethodCallIndentation
       expect {
         brew "bottle",
              "--merge",
@@ -105,6 +107,7 @@ describe "brew bottle" do
       EOS
       .and not_to_output.to_stderr
       .and be_a_success
+      # rubocop:enable Layout/MultilineMethodCallIndentation
 
       expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
         class Testball < Formula
@@ -153,6 +156,8 @@ describe "brew bottle" do
         system "git", "commit", "-m", "testball 0.1"
       end
 
+      # RuboCop would align the `.and` with `.to_stdout` which is too floaty.
+      # rubocop:disable Layout/MultilineMethodCallIndentation
       expect {
         brew "bottle",
              "--merge",
@@ -172,6 +177,7 @@ describe "brew bottle" do
       EOS
       .and not_to_output.to_stderr
       .and be_a_success
+      # rubocop:enable Layout/MultilineMethodCallIndentation
 
       expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
         class Testball < Formula
@@ -218,6 +224,8 @@ describe "brew bottle" do
         system "git", "commit", "-m", "testball 0.1"
       end
 
+      # RuboCop would align the `.and` with `.to_stdout` which is too floaty.
+      # rubocop:disable Layout/MultilineMethodCallIndentation
       expect {
         brew "bottle",
              "--merge",
@@ -239,6 +247,7 @@ describe "brew bottle" do
       EOS
       .and not_to_output.to_stderr
       .and be_a_success
+      # rubocop:enable Layout/MultilineMethodCallIndentation
 
       expect((core_tap.path/"Formula/testball.rb").read).to eq <<~EOS
         class Testball < Formula

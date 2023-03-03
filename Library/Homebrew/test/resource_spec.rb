@@ -191,7 +191,8 @@ describe Resource do
     fn = instance_double(Pathname, file?: true, basename: "foo")
     checksum = resource.sha256(TEST_SHA256)
 
-    expect(fn).to receive(:verify_checksum).with(checksum)
+    expect(fn).to receive(:verify_checksum)
+      .with(checksum)
       .and_raise(ChecksumMismatchError.new(fn, checksum, Object.new))
 
     expect {

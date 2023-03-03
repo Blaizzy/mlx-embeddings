@@ -62,7 +62,7 @@ describe Utils::Autoremove do
       it "filters out runtime dependencies" do
         allow(tab_from_keg).to receive(:poured_from_bottle).and_return(true)
         expect(described_class.send(:formulae_with_no_formula_dependents, formulae))
-            .to eq([formula_with_deps, formula_is_build_dep])
+          .to eq([formula_with_deps, formula_is_build_dep])
       end
     end
 
@@ -70,7 +70,7 @@ describe Utils::Autoremove do
       it "filters out runtime and build dependencies" do
         allow(tab_from_keg).to receive(:poured_from_bottle).and_return(false)
         expect(described_class.send(:formulae_with_no_formula_dependents, formulae))
-            .to eq([formula_with_deps])
+          .to eq([formula_with_deps])
       end
     end
   end
@@ -85,13 +85,13 @@ describe Utils::Autoremove do
     specify "installed on request" do
       allow(tab_from_keg).to receive(:installed_on_request).and_return(true)
       expect(described_class.send(:unused_formulae_with_no_formula_dependents, formulae))
-          .to eq([])
+        .to eq([])
     end
 
     specify "not installed on request" do
       allow(tab_from_keg).to receive(:installed_on_request).and_return(false)
       expect(described_class.send(:unused_formulae_with_no_formula_dependents, formulae))
-          .to match_array(formulae)
+        .to match_array(formulae)
     end
   end
 
