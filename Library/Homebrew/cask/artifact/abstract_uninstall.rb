@@ -3,7 +3,6 @@
 
 require "timeout"
 
-require "utils/splat"
 require "utils/user"
 require "cask/artifact/abstract_artifact"
 require "cask/pkg"
@@ -262,7 +261,7 @@ module Cask
           # learned the pid from AppleScript is already some degree of protection,
           # though indirect.
           odebug "Unix ids are #{pids.inspect} for processes with bundle identifier #{bundle_id}"
-          ::Utils::Splat.process_kill(signal, pids)
+          Process.kill(signal, *pids)
           sleep 3
         end
       end

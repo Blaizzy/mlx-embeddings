@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "time"
@@ -24,6 +24,7 @@ require "extend/kernel"
 
 module Homebrew
   extend Context
+  extend T::Sig
 
   module_function
 
@@ -51,6 +52,7 @@ module Homebrew
   end
 
   # rubocop:disable Style/GlobalVars
+  sig { params(the_module: Module, pattern: Regexp).void }
   def inject_dump_stats!(the_module, pattern)
     @injected_dump_stat_modules ||= {}
     @injected_dump_stat_modules[the_module] ||= []

@@ -2,3 +2,4 @@
 --enable-experimental-requires-ancestor
 --ignore=/vendor
 --ignore=/test/.gem
+--suppress-error-code=7019
