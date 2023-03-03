@@ -136,4 +136,11 @@ module Superenv
   def no_weak_imports
     append_to_cccfg "w" if no_weak_imports_support?
   end
+
+  def no_fixup_chains
+    # Pass `-no_fixup_chains` whenever the linker is invoked with `-undefined dynamic_lookup`.
+    # See: https://github.com/python/cpython/issues/97524
+    #      https://github.com/pybind/pybind11/pull/4301
+    append_to_cccfg "f" if no_fixup_chains_support?
+  end
 end

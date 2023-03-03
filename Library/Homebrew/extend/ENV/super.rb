@@ -105,6 +105,8 @@ module Superenv
     #     have runtime detection of CPU features.
     # w - Pass -no_weak_imports to the linker
     # D - Generate debugging information
+    # f - Pass `-no_fixup_chains` to `ld` whenever it
+    #     is invoked with `-undefined dynamic_lookup`
     #
     # These flags will also be present:
     # a - apply fix for apr-1-config path

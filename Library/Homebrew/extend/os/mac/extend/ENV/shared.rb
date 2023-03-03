@@ -23,4 +23,12 @@ module SharedEnvExtension
 
     true
   end
+
+  sig { returns(T::Boolean) }
+  def no_fixup_chains_support?
+    return false if !MacOS::CLT.version.null? && MacOS::CLT.version < "13.0"
+    return false if !MacOS::Xcode.version.null? && MacOS::Xcode.version < "13.0"
+
+    true
+  end
 end

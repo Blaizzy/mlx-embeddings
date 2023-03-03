@@ -318,9 +318,11 @@ class Cmd
     when :ld
       args << "-headerpad_max_install_names"
       args << "-no_weak_imports" if no_weak_imports?
+      args << "-no_fixup_chains" if no_fixup_chains?
     when :ccld, :cxxld
       args << "-Wl,-headerpad_max_install_names"
       args << "-Wl,-no_weak_imports" if no_weak_imports?
+      args << "-Wl,-no_fixup_chains" if no_fixup_chains?
     end
     args
   end
@@ -414,6 +416,18 @@ class Cmd
 
   def debug_symbols?
     config.include?("D")
+  end
+
+  def no_fixup_chains?
+    return false unless config.include?("f")
+    return true if @args.include?("-Wl,-undefined,dynamic_lookup")
+
+    args_consecutive_pairs = @args.each_cons(2)
+    return true if args_consecutive_pairs.include?(["-undefined", "dynamic_lookup"])
+    return true if args_consecutive_pairs.include?(["-Wl,-undefined", "-Wl,dynamic_lookup"])
+
+    # The next flag would produce an error, but we fix it in `refurbish_arg`.
+    @args.include?("-undefineddynamic_lookup")
   end
 
   def canonical_path(path)
