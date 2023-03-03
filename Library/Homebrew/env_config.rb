@@ -378,11 +378,6 @@ module Homebrew
         default_text: "macOS: `/private/tmp`, Linux: `/tmp`.",
         default:      HOMEBREW_DEFAULT_TEMP,
       },
-      HOMEBREW_UPDATE_REPORT_ALL_FORMULAE:       {
-        description: "If set, `brew update` lists changes to all formulae and cask files rather than only showing " \
-                     "when they are new and not installed or outdated and installed.",
-        boolean:     true,
-      },
       HOMEBREW_UPDATE_TO_TAG:                    {
         description: "If set, always use the latest stable tag (even if developer commands " \
                      "have been run).",
