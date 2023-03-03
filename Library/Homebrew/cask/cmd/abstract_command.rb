@@ -1,4 +1,4 @@
-# typed: true
+# typed: false
 # frozen_string_literal: true
 
 require "search"
@@ -40,12 +40,12 @@ module Cask
 
       sig { returns(String) }
       def self.command_name
-        @command_name ||= T.must(name).sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1_\2').downcase
+        @command_name ||= name.sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
 
       sig { returns(T::Boolean) }
       def self.abstract?
-        T.must(name).split("::").fetch(-1).match?(/^Abstract[^a-z]/)
+        name.split("::").last.match?(/^Abstract[^a-z]/)
       end
 
       sig { returns(T::Boolean) }
@@ -56,6 +56,11 @@ module Cask
       sig { returns(String) }
       def self.help
         parser.generate_help_text
+      end
+
+      sig { returns(String) }
+      def self.short_description
+        description[/\A[^.]*\./]
       end
 
       def self.run(*args)
