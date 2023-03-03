@@ -341,7 +341,6 @@ Style/BlockDelimiters:
     - "sig"
   Exclude:
     - "Homebrew/**/*_spec.rb"
-    - "Homebrew/**/shared_examples/**/*.rb"
 
 # TODO: remove this when possible.
 Style/ClassVars:
