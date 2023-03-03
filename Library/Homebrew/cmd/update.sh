@@ -575,8 +575,11 @@ EOS
     [[ -d "${DIR}/.git" ]] || continue
     cd "${DIR}" || continue
 
-    # Git's fsmonitor prevents the release of our locks
-    git config --bool core.fsmonitor false
+    if [[ "${DIR}" = "${HOMEBREW_REPOSITORY}" && "${HOMEBREW_REPOSITORY}" = "${HOMEBREW_PREFIX}" ]]
+    then
+      # Git's fsmonitor prevents the release of our locks
+      git config --bool core.fsmonitor false
+    fi
 
     if ! git config --local --get remote.origin.url &>/dev/null
     then
