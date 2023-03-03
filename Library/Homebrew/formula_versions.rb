@@ -58,4 +58,12 @@ class FormulaVersions
   ensure
     Homebrew.raise_deprecation_exceptions = false
   end
+
+  def nostdout(&block)
+    if verbose?
+      yield
+    else
+      redirect_stdout(File::NULL, &block)
+    end
+  end
 end

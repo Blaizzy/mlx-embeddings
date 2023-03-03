@@ -360,14 +360,6 @@ module Kernel
     $stderr = old
   end
 
-  def nostdout(&block)
-    if T.unsafe(self).verbose?
-      yield
-    else
-      redirect_stdout(File::NULL, &block)
-    end
-  end
-
   def redirect_stdout(file)
     out = $stdout.dup
     $stdout.reopen(file)
