@@ -16,6 +16,9 @@ Layout/MultilineMethodCallIndentation:
     - "**/*_spec.rb"
 
 Naming/PredicateName:
+  inherit_mode:
+    merge:
+      - AllowedMethods
   AllowedMethods:
     - is_32_bit?
     - is_64_bit?

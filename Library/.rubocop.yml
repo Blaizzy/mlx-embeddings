@@ -10,7 +10,6 @@ inherit_mode:
   merge:
     - Include
     - Exclude
-    - AllowedMethods
 
 AllCops:
   TargetRubyVersion: 2.6
