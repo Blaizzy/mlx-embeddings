@@ -59,7 +59,7 @@ module Cask
 
       attr_reader :token, :path
 
-      def initialize(path) # rubocop:disable Lint/MissingSuper
+      def initialize(path)
         path = Pathname(path).expand_path
 
         @token = path.basename(path.extname).to_s
