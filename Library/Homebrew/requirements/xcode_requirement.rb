@@ -58,9 +58,9 @@ class XcodeRequirement < Requirement
   end
 
   def display_s
-    return name.capitalize unless @version
+    return "#{name.capitalize} (on macOS)" unless @version
 
-    "#{name.capitalize} >= #{@version}"
+    "#{name.capitalize} >= #{@version} (on macOS)"
   end
 end
 
