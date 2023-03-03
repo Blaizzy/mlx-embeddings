@@ -50,24 +50,24 @@ class ProgressBar::Base
   def autofinish=(_arg0); end
   def autostart; end
   def autostart=(_arg0); end
-  def bar; end
-  def bar=(_arg0); end
+  def bar_component; end
+  def bar_component=(_arg0); end
   def finished; end
   def finished=(_arg0); end
   def output; end
   def output=(_arg0); end
-  def percentage; end
-  def percentage=(_arg0); end
+  def percentage_component; end
+  def percentage_component=(_arg0); end
   def progressable; end
   def progressable=(_arg0); end
-  def rate; end
-  def rate=(_arg0); end
-  def time; end
-  def time=(_arg0); end
+  def rate_component; end
+  def rate_component=(_arg0); end
+  def time_component; end
+  def time_component=(_arg0); end
   def timer; end
   def timer=(_arg0); end
-  def title_comp; end
-  def title_comp=(_arg0); end
+  def title_component; end
+  def title_component=(_arg0); end
   def update_progress(*args); end
 end
 
@@ -99,9 +99,9 @@ class ProgressBar::Calculators::Length
   def unix?; end
 end
 
-class ProgressBar::Calculators::RunningAverage
+class ProgressBar::Calculators::SmoothedAverage
   class << self
-    def calculate(current_average, new_value_to_average, smoothing_factor); end
+    def calculate(current_average, new_value_to_average, rate); end
   end
 end
 
@@ -110,6 +110,11 @@ module ProgressBar::Components; end
 class ProgressBar::Components::Bar
   def initialize(options = T.unsafe(nil)); end
 
+  def bar(length); end
+  def bar_with_percentage(length); end
+  def complete_bar(length); end
+  def complete_bar_with_percentage(length); end
+  def incomplete_space(length); end
   def length; end
   def length=(_arg0); end
   def progress; end
@@ -124,12 +129,7 @@ class ProgressBar::Components::Bar
 
   private
 
-  def bar(length); end
-  def bar_with_percentage(length); end
-  def complete_bar(length); end
-  def complete_bar_with_percentage(length); end
   def completed_length; end
-  def incomplete_space(length); end
   def incomplete_string; end
   def integrated_percentage_complete_string; end
   def standard_complete_string; end
@@ -144,15 +144,12 @@ ProgressBar::Components::Bar::DEFAULT_UPA_STEPS = T.let(T.unsafe(nil), Array)
 class ProgressBar::Components::Percentage
   def initialize(options = T.unsafe(nil)); end
 
-  def progress; end
-  def progress=(_arg0); end
-
-  private
-
   def justified_percentage; end
   def justified_percentage_with_precision; end
   def percentage; end
   def percentage_with_precision; end
+  def progress; end
+  def progress=(_arg0); end
 end
 
 class ProgressBar::Components::Rate
@@ -160,12 +157,10 @@ class ProgressBar::Components::Rate
 
   def progress; end
   def progress=(_arg0); end
+  def rate_of_change(format_string = T.unsafe(nil)); end
+  def rate_of_change_with_precision; end
   def rate_scale; end
   def rate_scale=(_arg0); end
-  def started_at; end
-  def started_at=(_arg0); end
-  def stopped_at; end
-  def stopped_at=(_arg0); end
   def timer; end
   def timer=(_arg0); end
 
@@ -173,8 +168,6 @@ class ProgressBar::Components::Rate
 
   def base_rate; end
   def elapsed_seconds; end
-  def rate_of_change(format_string = T.unsafe(nil)); end
-  def rate_of_change_with_precision; end
   def scaled_rate; end
 end
 
@@ -182,15 +175,14 @@ class ProgressBar::Components::Time
   def initialize(options = T.unsafe(nil)); end
 
   def elapsed_with_label; end
-  def estimated_with_label; end
+  def estimated_wall_clock; end
+  def estimated_with_friendly_oob; end
+  def estimated_with_label(out_of_bounds_time_format = T.unsafe(nil)); end
+  def estimated_with_no_oob; end
+  def estimated_with_unknown_oob; end
 
   protected
 
-  def estimated_with_friendly_oob; end
-  def estimated_with_no_oob; end
-  def estimated_with_unknown_oob; end
-  def out_of_bounds_time_format; end
-  def out_of_bounds_time_format=(format); end
   def progress; end
   def progress=(_arg0); end
   def timer; end
@@ -199,9 +191,9 @@ class ProgressBar::Components::Time
   private
 
   def elapsed; end
-  def estimated; end
+  def estimated(out_of_bounds_time_format); end
   def estimated_seconds_remaining; end
-  def estimated_with_elapsed_fallback; end
+  def estimated_with_elapsed_fallback(out_of_bounds_time_format); end
 end
 
 ProgressBar::Components::Time::ELAPSED_LABEL = T.let(T.unsafe(nil), String)
@@ -213,6 +205,7 @@ ProgressBar::Components::Time::OOB_TEXT_TO_FORMAT = T.let(T.unsafe(nil), Hash)
 ProgressBar::Components::Time::OOB_TIME_FORMATS = T.let(T.unsafe(nil), Array)
 ProgressBar::Components::Time::OOB_UNKNOWN_TIME_TEXT = T.let(T.unsafe(nil), String)
 ProgressBar::Components::Time::TIME_FORMAT = T.let(T.unsafe(nil), String)
+ProgressBar::Components::Time::WALL_CLOCK_FORMAT = T.let(T.unsafe(nil), String)
 
 class ProgressBar::Components::Title
   def initialize(options = T.unsafe(nil)); end
@@ -333,8 +326,10 @@ class ProgressBar::Progress
   def reset; end
   def running_average; end
   def running_average=(_arg0); end
-  def smoothing; end
-  def smoothing=(_arg0); end
+  def running_average_calculator; end
+  def running_average_calculator=(_arg0); end
+  def running_average_rate; end
+  def running_average_rate=(_arg0); end
   def start(options = T.unsafe(nil)); end
   def starting_position; end
   def starting_position=(_arg0); end
@@ -345,8 +340,10 @@ class ProgressBar::Progress
 end
 
 ProgressBar::Progress::DEFAULT_BEGINNING_POSITION = T.let(T.unsafe(nil), Integer)
-ProgressBar::Progress::DEFAULT_SMOOTHING = T.let(T.unsafe(nil), Float)
+ProgressBar::Progress::DEFAULT_RUNNING_AVERAGE_CALCULATOR = ProgressBar::Calculators::SmoothedAverage
+ProgressBar::Progress::DEFAULT_RUNNING_AVERAGE_RATE = T.let(T.unsafe(nil), Float)
 ProgressBar::Progress::DEFAULT_TOTAL = T.let(T.unsafe(nil), Integer)
+ProgressBar::Progress::RUNNING_AVERAGE_CALCULATOR_MAP = T.let(T.unsafe(nil), Hash)
 module ProgressBar::Refinements; end
 module ProgressBar::Refinements::Enumerator; end
 
@@ -384,6 +381,7 @@ class ProgressBar::Timer
   def divide_seconds(seconds); end
   def elapsed_seconds; end
   def elapsed_whole_seconds; end
+  def now; end
   def pause; end
   def reset; end
   def reset?; end
