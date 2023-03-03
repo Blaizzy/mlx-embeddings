@@ -51,12 +51,12 @@ class MacOSRequirement < Requirement
   end
 
   def version_specified?
-    OS.mac? && @version
+    @version.present?
   end
 
   satisfy(build_env: false) do
     T.bind(self, MacOSRequirement)
-    next Array(@version).any? { |v| MacOS.version.public_send(@comparator, v) } if version_specified?
+    next Array(@version).any? { |v| MacOS.version.public_send(@comparator, v) } if OS.mac? && version_specified?
     next true if OS.mac?
     next true if @version
 
@@ -68,7 +68,7 @@ class MacOSRequirement < Requirement
 
     case @comparator
     when ">="
-      "macOS #{@version.pretty_name} or newer is required for this software."
+      "This software does not run on macOS versions older than #{@version.pretty_name}."
     when "<="
       case type
       when :formula
@@ -82,10 +82,10 @@ class MacOSRequirement < Requirement
     else
       if @version.respond_to?(:to_ary)
         *versions, last = @version.map(&:pretty_name)
-        return "macOS #{versions.join(", ")} or #{last} is required for this software."
+        return "This software does not run on macOS versions other than #{versions.join(", ")} and #{last}."
       end
 
-      "macOS #{@version.pretty_name} is required for this software."
+      "This software does not run on macOS versions other than #{@version.pretty_name}."
     end
   end
 
@@ -107,9 +107,9 @@ class MacOSRequirement < Requirement
   def display_s
     if version_specified?
       if @version.respond_to?(:to_ary)
-        "macOS #{@comparator} #{version.join(" / ")}"
+        "macOS #{@comparator} #{version.join(" / ")} (or Linux)"
       else
-        "macOS #{@comparator} #{@version}"
+        "macOS #{@comparator} #{@version} (or Linux)"
       end
     else
       "macOS"
