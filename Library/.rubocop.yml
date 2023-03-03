@@ -342,11 +342,6 @@ Style/BlockDelimiters:
   Exclude:
     - "Homebrew/**/*_spec.rb"
 
-# TODO: remove this when possible.
-Style/ClassVars:
-  Exclude:
-    - "**/developer/bin/*"
-
 # Use consistent style for better readability.
 Style/CollectionMethods:
   Enabled: true
@@ -385,11 +380,6 @@ Style/FrozenStringLiteralComment:
     - "Homebrew/test/**/Casks/**/*.rb"
     - "**/*.rbi"
     - "**/Brewfile"
-
-# TODO: remove this when possible.
-Style/GlobalVars:
-  Exclude:
-    - "**/developer/bin/*"
 
 # potential for errors in formulae too high with this
 Style/GuardClause:
