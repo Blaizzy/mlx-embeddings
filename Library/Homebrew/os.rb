@@ -69,7 +69,11 @@ module OS
   elsif OS.linux?
     require "os/linux"
     ISSUES_URL = "https://docs.brew.sh/Troubleshooting"
-    PATH_OPEN = (OS::Linux.wsl? ? "wslview" : "xdg-open").freeze
+    PATH_OPEN = if OS::Linux.wsl? && (wslview = which("wslview").presence)
+      wslview.to_s
+    else
+      "xdg-open"
+    end.freeze
   end
 
   sig { returns(T::Boolean) }
