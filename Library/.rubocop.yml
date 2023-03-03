@@ -395,6 +395,10 @@ Style/HashAsLastArrayItem:
     - "/**/Formula/**/*.rb"
     - "**/Formula/**/*.rb"
 
+# would rather freeze too much than too little
+Style/MutableConstant:
+  EnforcedStyle: strict
+
 # Zero-prefixed octal literals are widely used and understood.
 Style/NumericLiteralPrefix:
   EnforcedOctalStyle: zero_only
@@ -471,7 +475,3 @@ Style/UnlessLogicalOperators:
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
-
-# would rather freeze too much than too little
-Style/MutableConstant:
-  EnforcedStyle: strict
