@@ -187,6 +187,21 @@ end
 
 For more information on how to work with an `REXML::Document` object, please refer to the [`REXML::Document`](https://ruby.github.io/rexml/REXML/Document.html) and [`REXML::Element`](https://ruby.github.io/rexml/REXML/Element.html) documentation.
 
+#### `Yaml` `strategy` block
+
+A `strategy` block for `Yaml` receives parsed YAML data and, if provided, a regex. Borrowing the `Json` example, if we have an object containing an array of objects with a `version` string, we can select only the members that match the regex and isolate the relevant version text as follows:
+
+```ruby
+livecheck do
+  url "https://www.example.com/example.yaml"
+  regex(/^v?(\d+(?:\.\d+)+)$/i)
+  strategy :yaml do |yaml, regex|
+    yaml["versions"].select { |item| item["version"]&.match?(regex) }
+                    .map { |item| item["version"][regex, 1] }
+  end
+end
+```
+
 ### `skip`
 
 Livecheck automatically skips some formulae/casks for a number of reasons (deprecated, disabled, discontinued, etc.). However, on rare occasions we need to use a `livecheck` block to do a manual skip. The `skip` method takes a string containing a very brief reason for skipping.

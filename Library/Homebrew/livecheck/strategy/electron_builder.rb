@@ -32,61 +32,35 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
-        # Parses YAML text and identifies versions in it.
-        #
-        # @param content [String] the YAML text to parse and check
-        # @param regex [Regexp, nil] a regex for use in a strategy block
-        # @return [Array]
-        sig {
-          params(
-            content: String,
-            regex:   T.nilable(Regexp),
-            block:   T.untyped,
-          ).returns(T::Array[String])
-        }
-        def self.versions_from_content(content, regex = nil, &block)
-          require "yaml"
-
-          yaml = YAML.safe_load(content, permitted_classes: [Date, Time])
-          return [] if yaml.blank?
-
-          if block
-            block_return_value = regex.present? ? yield(yaml, regex) : yield(yaml)
-            return Strategy.handle_block_return(block_return_value)
-          end
-
-          version = yaml["version"]
-          version.present? ? [version] : []
-        end
-
         # Checks the YAML content at the URL for new versions.
         #
         # @param url [String] the URL of the content to check
+        # @param regex [Regexp, nil] a regex used for matching versions
+        # @param provided_content [String, nil] content to use in place of
+        #   fetching via `Strategy#page_content`
         # @return [Hash]
         sig {
           params(
-            url:     String,
-            regex:   T.nilable(Regexp),
-            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:   T.untyped,
+            url:              String,
+            regex:            T.nilable(Regexp),
+            provided_content: T.nilable(String),
+            unused:           T.nilable(T::Hash[Symbol, T.untyped]),
+            block:            T.untyped,
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex: nil, **_unused, &block)
+        def self.find_versions(url:, regex: nil, provided_content: nil, **unused, &block)
           if regex.present? && block.blank?
             raise ArgumentError,
                   "#{Utils.demodulize(T.must(name))} only supports a regex when using a `strategy` block"
           end
 
-          match_data = { matches: {}, regex: regex, url: url }
-
-          match_data.merge!(Strategy.page_content(url))
-          content = match_data.delete(:content)
-
-          versions_from_content(content, regex, &block).each do |version_text|
-            match_data[:matches][version_text] = Version.new(version_text)
-          end
-
-          match_data
+          T.unsafe(Yaml).find_versions(
+            url:              url,
+            regex:            regex,
+            provided_content: provided_content,
+            **unused,
+            &block || proc { |yaml| yaml["version"] }
+          )
         end
       end
     end

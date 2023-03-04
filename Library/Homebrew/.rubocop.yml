@@ -57,6 +57,7 @@ Style/Documentation:
     - livecheck/strategy/sparkle.rb
     - livecheck/strategy/xml.rb
     - livecheck/strategy/xorg.rb
+    - livecheck/strategy/yaml.rb
     - os.rb
     - resource.rb
     - utils/inreplace.rb
