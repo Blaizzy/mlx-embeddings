@@ -42,7 +42,11 @@ class LockFile
   def create_lockfile
     return if @lockfile.present? && !@lockfile.closed?
 
-    @lockfile = @path.open(File::RDWR | File::CREAT)
+    begin
+      @lockfile = @path.open(File::RDWR | File::CREAT)
+    rescue Errno::EMFILE
+      odie "The maximum number of open files on this system has been reached. Use `ulimit -n` to increase this limit."
+    end
     @lockfile.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
   end
 end
