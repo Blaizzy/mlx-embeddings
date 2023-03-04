@@ -693,6 +693,7 @@ Rack::Multipart::MULTIPART_CONTENT_DISPOSITION = T.let(T.unsafe(nil), Regexp)
 Rack::Multipart::MULTIPART_CONTENT_ID = T.let(T.unsafe(nil), Regexp)
 Rack::Multipart::MULTIPART_CONTENT_TYPE = T.let(T.unsafe(nil), Regexp)
 class Rack::Multipart::MultipartPartLimitError < ::Errno::EMFILE; end
+class Rack::Multipart::MultipartTotalPartLimitError < ::StandardError; end
 
 class Rack::Multipart::Parser
   def initialize(boundary, tempfile, bufsize, query_parser); end
@@ -742,7 +743,7 @@ class Rack::Multipart::Parser::Collector
 
   private
 
-  def check_open_files; end
+  def check_part_limits; end
 end
 
 class Rack::Multipart::Parser::Collector::BufferPart < ::Rack::Multipart::Parser::Collector::MimePart
@@ -1331,8 +1332,12 @@ module Rack::Utils
     def key_space_limit; end
     def key_space_limit=(v); end
     def make_delete_cookie_header(header, key, value); end
+    def multipart_file_limit; end
+    def multipart_file_limit=(_arg0); end
     def multipart_part_limit; end
     def multipart_part_limit=(_arg0); end
+    def multipart_total_part_limit; end
+    def multipart_total_part_limit=(_arg0); end
     def param_depth_limit; end
     def param_depth_limit=(v); end
     def parse_cookies(env); end
