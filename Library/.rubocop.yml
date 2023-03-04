@@ -279,10 +279,12 @@ RSpec/FilePath:
 RSpec/SubjectStub:
   Enabled: false
 
+# We use `allow(:foo).to receive(:bar)` everywhere.
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
 # TODO: try to enable these
 RSpec/DescribeClass:
-  Enabled: false
-RSpec/MessageSpies:
   Enabled: false
 RSpec/StubbedMock:
   Enabled: false
