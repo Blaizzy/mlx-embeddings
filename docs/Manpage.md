@@ -2268,9 +2268,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
   *Default:* macOS: `/private/tmp`, Linux: `/tmp`.
 
-- `HOMEBREW_UPDATE_REPORT_ALL_FORMULAE`
-  <br>If set, `brew update` lists changes to all formulae and cask files rather than only showing when they are new and not installed or outdated and installed.
-
 - `HOMEBREW_UPDATE_TO_TAG`
   <br>If set, always use the latest stable tag (even if developer commands have been run).
 

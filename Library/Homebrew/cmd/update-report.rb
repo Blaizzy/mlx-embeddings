@@ -629,7 +629,12 @@ class ReporterHub
   delegate empty?: :@hash
 
   def dump(updated_formula_report: true)
-    report_all = Homebrew::EnvConfig.update_report_all_formulae?
+    report_all = ENV["HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"].present?
+    if report_all && !Homebrew::EnvConfig.no_install_from_api?
+      odeprecated "HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"
+      opoo "This will not report all formulae because Homebrew cannot get this data from the API."
+      report_all = false
+    end
 
     dump_new_formula_report
     dump_new_cask_report
