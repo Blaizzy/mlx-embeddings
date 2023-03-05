@@ -42,6 +42,16 @@ describe RuboCop::Cop::Cask::Url do
       }]
     end
 
+    let(:correct_source) do
+      <<~CASK
+        cask "foo" do
+          url "https://example.com/download/foo-v1.2.0.dmg",
+            verified: "example.com"
+        end
+      CASK
+    end
+
     include_examples "reports offenses"
+    include_examples "autocorrects source"
   end
 end
