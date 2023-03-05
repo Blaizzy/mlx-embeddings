@@ -39,6 +39,8 @@ module Homebrew
     # work around IRB modifying ARGV.
     args = irb_args.parse(ARGV.dup.freeze)
 
+    clean_argv
+
     if args.examples?
       puts <<~EOS
         'v8'.f # => instance of the v8 formula
@@ -67,5 +69,14 @@ module Homebrew
     else
       IRB.start
     end
+  end
+
+  # Remove the `--debug`, `--verbose` and `--quiet` options which cause problems
+  # for IRB and have already been parsed by the CLI::Parser.
+  def clean_argv
+    global_options = Homebrew::CLI::Parser
+                     .global_options
+                     .flat_map { |options| options[0..1] }
+    ARGV.reject! { |arg| global_options.include?(arg) }
   end
 end
