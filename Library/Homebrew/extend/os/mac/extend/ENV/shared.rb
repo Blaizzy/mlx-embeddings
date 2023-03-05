@@ -26,9 +26,12 @@ module SharedEnvExtension
 
   sig { returns(T::Boolean) }
   def no_fixup_chains_support?
-    return false if !MacOS::CLT.version.null? && MacOS::CLT.version < "13.0"
-    return false if !MacOS::Xcode.version.null? && MacOS::Xcode.version < "13.0"
+    ld_v = Utils.safe_popen_read("/usr/bin/ld", "-v", err: :out).lines.first.chomp
+    ld_version = Version.parse(ld_v[/\d+(\.\d+)*$/])
 
-    true
+    # This is supported starting Xcode 13, which ships ld64-711.
+    # https://developer.apple.com/documentation/xcode-release-notes/xcode-13-release-notes
+    # https://en.wikipedia.org/wiki/Xcode#Xcode_11.0_-_14.x_(since_SwiftUI_framework)_2
+    ld_version >= 711
   end
 end
