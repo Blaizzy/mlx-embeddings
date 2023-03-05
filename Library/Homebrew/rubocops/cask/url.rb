@@ -30,7 +30,7 @@ module RuboCop
           hash_node.each_pair do |key_node, value_node|
             next unless key_node.source == "verified"
             next unless value_node.str_type?
-            next unless value_node.source.start_with?("\"https:/", "\"http:/")
+            next unless value_node.source.start_with?(%r{^"https?://})
 
             add_offense(
               value_node.source_range,

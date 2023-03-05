@@ -38,7 +38,7 @@ describe RuboCop::Cop::Cask::Url do
         severity: :convention,
         line:     3,
         column:   14,
-        source:   "verified: \"https://example.com\"",
+        source:   "\"https://example.com\"",
       }]
     end
 
