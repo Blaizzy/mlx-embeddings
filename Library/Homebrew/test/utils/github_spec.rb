@@ -93,4 +93,56 @@ describe GitHub do
       expect(described_class.pull_request_commits("Homebrew", "legacy-homebrew", 50678, per_page: 1)).to eq(hashes)
     end
   end
+
+  describe "::count_repo_commits" do
+    let(:five_shas) { %w[abcdef ghjkl mnop qrst uvwxyz] }
+    let(:ten_shas) { %w[abcdef ghjkl mnop qrst uvwxyz fedcba lkjhg ponm tsrq zyxwvu] }
+
+    it "counts commits authored by a user" do
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/cask", "user1", "author", {}).and_return(five_shas)
+
+      expect(described_class.count_repo_commits("homebrew/cask", "user1", "author", {})).to eq(5)
+    end
+
+    it "counts commits committed by a user" do
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/core", "user1", "author", {}).and_return([])
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/core", "user1", "committer", {}).and_return(five_shas)
+
+      expect(described_class.count_repo_commits("homebrew/core", "user1", "committer", {})).to eq(5)
+    end
+
+    it "calculates correctly when authored > committed with different shas" do
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/cask", "user1", "author", {}).and_return(ten_shas)
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/cask", "user1", "committer", {}).and_return(%w[1 2 3 4 5])
+
+      expect(described_class.count_repo_commits("homebrew/cask", "user1", "author", {})).to eq(10)
+      expect(described_class.count_repo_commits("homebrew/cask", "user1", "committer", {})).to eq(5)
+    end
+
+    it "calculates correctly when committed > authored" do
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/cask", "user1", "author", {}).and_return(five_shas)
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/cask", "user1", "committer", {}).and_return(ten_shas)
+
+      expect(described_class.count_repo_commits("homebrew/cask", "user1", "author", {})).to eq(5)
+      expect(described_class.count_repo_commits("homebrew/cask", "user1", "committer", {})).to eq(5)
+    end
+
+    it "deduplicates commits authored and committed by the same user" do
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/core", "user1", "author", {}).and_return(five_shas)
+      allow(described_class).to receive(:repo_commits_for_user)
+        .with("homebrew/core", "user1", "committer", {}).and_return(five_shas)
+
+      # Because user1 authored and committed the same 5 commits.
+      expect(described_class.count_repo_commits("homebrew/core", "user1", "author", {})).to eq(5)
+      expect(described_class.count_repo_commits("homebrew/core", "user1", "committer", {})).to eq(0)
+    end
+  end
 end

@@ -717,17 +717,30 @@ module GitHub
     output[/^Status: (200)/, 1] != "200"
   end
 
-  def repo_commit_count_for_user(nwo, user, filter, args)
+  def repo_commits_for_user(nwo, user, filter, args)
     return if Homebrew::EnvConfig.no_github_api?
 
     params = ["#{filter}=#{user}"]
     params << "since=#{DateTime.parse(args.from).iso8601}" if args.from
     params << "until=#{DateTime.parse(args.to).iso8601}" if args.to
 
-    commits = 0
+    commits = []
     API.paginate_rest("#{API_URL}/repos/#{nwo}/commits", additional_query_params: params.join("&")) do |result|
-      commits += result.length
+      commits.concat(result.map { |c| c["sha"] })
     end
     commits
+  end
+
+  def count_repo_commits(nwo, user, filter, args)
+    return if Homebrew::EnvConfig.no_github_api?
+
+    author_shas = repo_commits_for_user(nwo, user, "author", args)
+    return author_shas.count if filter == "author"
+
+    committer_shas = repo_commits_for_user(nwo, user, "committer", args)
+    return 0 if committer_shas.empty?
+
+    # Only count commits where the author and committer are different.
+    committer_shas.difference(author_shas).count
   end
 end
