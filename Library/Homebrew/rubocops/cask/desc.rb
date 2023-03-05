@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "forwardable"
-require "uri"
 require "rubocops/cask/mixin/on_desc_stanza"
 require "rubocops/shared/desc_helper"
 
