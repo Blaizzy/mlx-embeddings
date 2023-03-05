@@ -171,14 +171,9 @@ module Homebrew
 
       puts "Determining contributions for #{person} on #{repo_full_name}..." if args.verbose?
 
-      commits_authored = GitHub.repo_commit_count_for_user(repo_full_name, person, "author", args)
-      commits_committed = GitHub.repo_commit_count_for_user(repo_full_name, person, "committer", args)
-      # Only count committers where the author is not the same person. Avoid negative numbers or subtracting zero.
-      commits_committed = commits_authored - commits_committed if commits_authored > commits_committed
-
       data[repo] = {
-        author:        commits_authored,
-        committer:     commits_committed,
+        author:        GitHub.count_repo_commits(repo_full_name, person, "author", args),
+        committer:     GitHub.count_repo_commits(repo_full_name, person, "committer", args),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
         reviews:       GitHub.count_issues(
           "",
