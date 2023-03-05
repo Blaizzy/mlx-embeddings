@@ -67,6 +67,8 @@ module Homebrew
     if args.pry?
       Pry.start
     else
+      ENV["IRBRC"] = (HOMEBREW_REPOSITORY/".irb_config").to_s
+
       IRB.start
     end
   end
