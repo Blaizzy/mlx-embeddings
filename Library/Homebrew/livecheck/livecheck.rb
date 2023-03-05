@@ -35,9 +35,12 @@ module Homebrew
     STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = [
       :extract_plist,
       :github_latest,
-      :page_match,
       :header_match,
+      :json,
+      :page_match,
       :sparkle,
+      :xml,
+      :yaml,
     ].freeze
 
     UNSTABLE_VERSION_KEYWORDS = %w[
