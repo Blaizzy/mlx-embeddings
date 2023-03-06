@@ -54,34 +54,34 @@ module Homebrew
   end
 
   def git_log(cd_dir, path = nil, tap = nil, args:)
-    # This is a false positive type error: https://github.com/sorbet/sorbet/issues/6812
-    T.unsafe(self).cd cd_dir
-    repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
-    if tap
-      name = tap.to_s
-      git_cd = "$(brew --repo #{tap})"
-    elsif cd_dir == HOMEBREW_REPOSITORY
-      name = "Homebrew/brew"
-      git_cd = "$(brew --repo)"
-    else
-      name, git_cd = cd_dir
-    end
+    cd cd_dir do
+      repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
+      if tap
+        name = tap.to_s
+        git_cd = "$(brew --repo #{tap})"
+      elsif cd_dir == HOMEBREW_REPOSITORY
+        name = "Homebrew/brew"
+        git_cd = "$(brew --repo)"
+      else
+        name, git_cd = cd_dir
+      end
 
-    if File.exist? "#{repo}/.git/shallow"
-      opoo <<~EOS
-        #{name} is a shallow clone so only partial output will be shown.
-        To get a full clone, run:
-          git -C "#{git_cd}" fetch --unshallow
-      EOS
-    end
+      if File.exist? "#{repo}/.git/shallow"
+        opoo <<~EOS
+          #{name} is a shallow clone so only partial output will be shown.
+          To get a full clone, run:
+            git -C "#{git_cd}" fetch --unshallow
+        EOS
+      end
 
-    git_args = []
-    git_args << "--patch" if args.patch?
-    git_args << "--stat" if args.stat?
-    git_args << "--oneline" if args.oneline?
-    git_args << "-1" if args.public_send(:"1?")
-    git_args << "--max-count" << args.max_count if args.max_count
-    git_args += ["--follow", "--", path] if path.present?
-    system "git", "log", *git_args
+      git_args = []
+      git_args << "--patch" if args.patch?
+      git_args << "--stat" if args.stat?
+      git_args << "--oneline" if args.oneline?
+      git_args << "-1" if args.public_send(:"1?")
+      git_args << "--max-count" << args.max_count if args.max_count
+      git_args += ["--follow", "--", path] if path.present?
+      system "git", "log", *git_args
+    end
   end
 end

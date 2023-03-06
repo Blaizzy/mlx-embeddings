@@ -105,8 +105,6 @@ module Homebrew
     arguments.concat UNBREWED_EXCLUDE_PATHS.flat_map { |d| %W[! -path #{d}] }
     arguments.push ")"
 
-    # This is a false positive type error: https://github.com/sorbet/sorbet/issues/6812
-    T.unsafe(self).cd HOMEBREW_PREFIX
-    safe_system "find", *arguments
+    cd(HOMEBREW_PREFIX) { safe_system("find", *arguments) }
   end
 end
