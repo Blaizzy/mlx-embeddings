@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -32,7 +32,7 @@ module Homebrew
       return
     end
 
-    prepend_separator = false
+    prepend_separator = T.let(false, T::Boolean)
 
     {
       "Built-in commands"           => Commands.internal_commands,

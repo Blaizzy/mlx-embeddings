@@ -26,9 +26,7 @@ module Homebrew
   extend Context
   extend T::Sig
 
-  module_function
-
-  def _system(cmd, *args, **options)
+  def self._system(cmd, *args, **options)
     pid = fork do
       yield if block_given?
       args.map!(&:to_s)
@@ -43,7 +41,7 @@ module Homebrew
     $CHILD_STATUS.success?
   end
 
-  def system(cmd, *args, **options)
+  def self.system(cmd, *args, **options)
     if verbose?
       puts "#{cmd} #{args * " "}".gsub(RUBY_PATH, "ruby")
                                  .gsub($LOAD_PATH.join(File::PATH_SEPARATOR).to_s, "$LOAD_PATH")
@@ -53,7 +51,7 @@ module Homebrew
 
   # rubocop:disable Style/GlobalVars
   sig { params(the_module: Module, pattern: Regexp).void }
-  def inject_dump_stats!(the_module, pattern)
+  def self.inject_dump_stats!(the_module, pattern)
     @injected_dump_stat_modules ||= {}
     @injected_dump_stat_modules[the_module] ||= []
     injected_methods = @injected_dump_stat_modules[the_module]

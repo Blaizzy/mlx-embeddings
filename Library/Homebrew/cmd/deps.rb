@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula"
@@ -12,10 +12,8 @@ module Homebrew
 
   extend DependenciesHelpers
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def deps_args
+  def self.deps_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Show dependencies for <formula>. Additional options specific to <formula>
@@ -78,7 +76,7 @@ module Homebrew
     end
   end
 
-  def deps
+  def self.deps
     args = deps_args.parse
 
     all = args.eval_all?
@@ -164,16 +162,16 @@ module Homebrew
     puts all_deps
   end
 
-  def sorted_dependents(formulae_or_casks)
+  def self.sorted_dependents(formulae_or_casks)
     dependents(formulae_or_casks).sort_by(&:name)
   end
 
-  def condense_requirements(deps, args:)
+  def self.condense_requirements(deps, args:)
     deps.select! { |dep| dep.is_a?(Dependency) } unless args.include_requirements?
     deps.select! { |dep| dep.is_a?(Requirement) || dep.installed? } if args.installed?
   end
 
-  def dep_display_name(dep, args:)
+  def self.dep_display_name(dep, args:)
     str = if dep.is_a? Requirement
       if args.include_requirements?
         ":#{dep.display_s}"
@@ -198,7 +196,7 @@ module Homebrew
     str
   end
 
-  def deps_for_dependent(d, args:, recursive: false)
+  def self.deps_for_dependent(d, args:, recursive: false)
     includes, ignores = args_includes_ignores(args)
 
     deps = d.runtime_dependencies if @use_runtime_dependencies
@@ -214,11 +212,11 @@ module Homebrew
     deps + reqs.to_a
   end
 
-  def deps_for_dependents(dependents, args:, recursive: false, &block)
+  def self.deps_for_dependents(dependents, args:, recursive: false, &block)
     dependents.map { |d| deps_for_dependent(d, recursive: recursive, args: args) }.reduce(&block)
   end
 
-  def puts_deps(dependents, args:, recursive: false)
+  def self.puts_deps(dependents, args:, recursive: false)
     dependents.each do |dependent|
       deps = deps_for_dependent(dependent, recursive: recursive, args: args)
       condense_requirements(deps, args: args)
@@ -228,7 +226,7 @@ module Homebrew
     end
   end
 
-  def dot_code(dependents, recursive:, args:)
+  def self.dot_code(dependents, recursive:, args:)
     dep_graph = {}
     dependents.each do |d|
       graph_deps(d, dep_graph: dep_graph, recursive: recursive, args: args)
@@ -251,7 +249,7 @@ module Homebrew
     "digraph {\n#{dot_code}\n}"
   end
 
-  def graph_deps(f, dep_graph:, recursive:, args:)
+  def self.graph_deps(f, dep_graph:, recursive:, args:)
     return if dep_graph.key?(f)
 
     dependables = dependables(f, args: args)
@@ -268,7 +266,7 @@ module Homebrew
     end
   end
 
-  def puts_deps_tree(dependents, args:, recursive: false)
+  def self.puts_deps_tree(dependents, args:, recursive: false)
     dependents.each do |d|
       puts d.full_name
       recursive_deps_tree(d, dep_stack: [], prefix: "", recursive: recursive, args: args)
@@ -276,7 +274,7 @@ module Homebrew
     end
   end
 
-  def dependables(f, args:)
+  def self.dependables(f, args:)
     includes, ignores = args_includes_ignores(args)
     deps = @use_runtime_dependencies ? f.runtime_dependencies : f.deps
     deps = reject_ignores(deps, ignores, includes)
@@ -285,7 +283,7 @@ module Homebrew
     reqs + deps
   end
 
-  def recursive_deps_tree(f, dep_stack:, prefix:, recursive:, args:)
+  def self.recursive_deps_tree(f, dep_stack:, prefix:, recursive:, args:)
     dependables = dependables(f, args: args)
     max = dependables.length - 1
     dep_stack.push f.name

@@ -172,7 +172,7 @@ module Homebrew
           EOS
         end
         check_new_version(formula, tap_remote_repo, url: old_url, tag: new_tag, args: args) if new_version.blank?
-        resource_path, forced_version = fetch_resource(formula, new_version, old_url, tag: new_tag)
+        resource_path, forced_version = fetch_resource_and_forced_version(formula, new_version, old_url, tag: new_tag)
         new_revision = Utils.popen_read("git", "-C", resource_path.to_s, "rev-parse", "-q", "--verify", "HEAD")
         new_revision = new_revision.strip
       elsif new_revision.blank?
@@ -199,7 +199,7 @@ module Homebrew
         EOS
       end
       check_new_version(formula, tap_remote_repo, url: new_url, args: args) if new_version.blank?
-      resource_path, forced_version = fetch_resource(formula, new_version, new_url)
+      resource_path, forced_version = fetch_resource_and_forced_version(formula, new_version, new_url)
       Utils::Tar.validate_file(resource_path)
       new_hash = resource_path.sha256
     end
@@ -388,7 +388,7 @@ module Homebrew
     end
   end
 
-  def fetch_resource(formula, new_version, url, **specs)
+  def fetch_resource_and_forced_version(formula, new_version, url, **specs)
     resource = Resource.new
     resource.url(url, specs)
     resource.owner = Resource.new(formula.name)

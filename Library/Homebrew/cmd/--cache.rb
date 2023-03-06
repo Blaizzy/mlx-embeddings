@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "fetch"
@@ -10,10 +10,8 @@ module Homebrew
 
   extend Fetch
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def __cache_args
+  def self.__cache_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
@@ -41,7 +39,7 @@ module Homebrew
   end
 
   sig { void }
-  def __cache
+  def self.__cache
     args = __cache_args.parse
 
     if args.no_named?
@@ -61,9 +59,9 @@ module Homebrew
   end
 
   sig { params(formula: Formula, args: CLI::Args).void }
-  def print_formula_cache(formula, args:)
+  def self.print_formula_cache(formula, args:)
     if fetch_bottle?(formula, args: args)
-      puts formula.bottle_for_tag(args.bottle_tag&.to_sym).cached_download
+      puts formula.bottle_for_tag(args.bottle_tag&.to_sym)&.cached_download
     elsif args.HEAD?
       puts formula.head.cached_download
     else
@@ -72,7 +70,7 @@ module Homebrew
   end
 
   sig { params(cask: Cask::Cask).void }
-  def print_cask_cache(cask)
+  def self.print_cask_cache(cask)
     puts Cask::Download.new(cask).downloader.cached_location
   end
 end

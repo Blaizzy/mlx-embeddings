@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula"
@@ -11,12 +11,10 @@ module Homebrew
 
   extend Fetch
 
-  module_function
-
   FETCH_MAX_TRIES = 5
 
   sig { returns(CLI::Parser) }
-  def fetch_args
+  def self.fetch_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Download a bottle (if available) or source packages for <formula>e
@@ -65,7 +63,7 @@ module Homebrew
     end
   end
 
-  def fetch
+  def self.fetch
     args = fetch_args.parse
 
     bucket = if args.deps?
@@ -132,7 +130,7 @@ module Homebrew
     end
   end
 
-  def fetch_resource(r, args:)
+  def self.fetch_resource(r, args:)
     puts "Resource: #{r.name}"
     fetch_fetchable r, args: args
   rescue ChecksumMismatchError => e
@@ -140,28 +138,28 @@ module Homebrew
     opoo "Resource #{r.name} reports different sha256: #{e.expected}"
   end
 
-  def fetch_formula(f, args:)
+  def self.fetch_formula(f, args:)
     fetch_fetchable f, args: args
   rescue ChecksumMismatchError => e
     retry if retry_fetch?(f, args: args)
     opoo "Formula reports different sha256: #{e.expected}"
   end
 
-  def fetch_cask(cask_download, args:)
+  def self.fetch_cask(cask_download, args:)
     fetch_fetchable cask_download, args: args
   rescue ChecksumMismatchError => e
     retry if retry_fetch?(cask_download, args: args)
     opoo "Cask reports different sha256: #{e.expected}"
   end
 
-  def fetch_patch(p, args:)
+  def self.fetch_patch(p, args:)
     fetch_fetchable p, args: args
   rescue ChecksumMismatchError => e
     opoo "Patch reports different sha256: #{e.expected}"
     Homebrew.failed = true
   end
 
-  def retry_fetch?(f, args:)
+  def self.retry_fetch?(f, args:)
     @fetch_tries ||= Hash.new { |h, k| h[k] = 1 }
     if args.retry? && (@fetch_tries[f] < FETCH_MAX_TRIES)
       wait = 2 ** @fetch_tries[f]
@@ -180,7 +178,7 @@ module Homebrew
     end
   end
 
-  def fetch_fetchable(f, args:)
+  def self.fetch_fetchable(f, args:)
     f.clear_cache if args.force?
 
     already_fetched = f.cached_download.exist?

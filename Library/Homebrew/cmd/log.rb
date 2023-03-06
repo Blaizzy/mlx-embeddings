@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -54,7 +54,8 @@ module Homebrew
   end
 
   def git_log(cd_dir, path = nil, tap = nil, args:)
-    cd cd_dir
+    # This is a false positive type error: https://github.com/sorbet/sorbet/issues/6812
+    T.unsafe(self).cd cd_dir
     repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
     if tap
       name = tap.to_s

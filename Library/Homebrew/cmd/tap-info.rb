@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -64,6 +64,7 @@ module Homebrew
       info += ", #{Tap::TAP_DIRECTORY.dup.abv}" if Tap::TAP_DIRECTORY.directory?
       puts info
     else
+      info = ""
       taps.each_with_index do |tap, i|
         puts unless i.zero?
         info = "#{tap}: "

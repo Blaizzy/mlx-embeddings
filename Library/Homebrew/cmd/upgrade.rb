@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -121,7 +121,7 @@ module Homebrew
     Homebrew.messages.display_messages(display_times: args.display_times?)
   end
 
-  sig { params(formulae: T::Array[Formula], args: CLI::Args).returns(T::Boolean) }
+  sig { params(formulae: T::Array[Formula], args: T.untyped).returns(T::Boolean) }
   def upgrade_outdated_formulae(formulae, args:)
     return false if args.cask?
 
@@ -226,7 +226,7 @@ module Homebrew
     true
   end
 
-  sig { params(casks: T::Array[Cask::Cask], args: CLI::Args).returns(T::Boolean) }
+  sig { params(casks: T::Array[Cask::Cask], args: T.untyped).returns(T::Boolean) }
   def upgrade_outdated_casks(casks, args:)
     return false if args.formula?
 
