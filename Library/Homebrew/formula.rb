@@ -2517,7 +2517,7 @@ class Formula
       $stdout.flush
 
       unless $CHILD_STATUS.success?
-        log_lines = Homebrew::EnvConfig.fail_log_lines
+        log_lines = Homebrew::EnvConfig.fail_log_lines.to_s
 
         log.flush
         if !verbose? || verbose_using_dots
