@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # Disable Rails cops, as we haven't required active_support yet.
