@@ -6,10 +6,8 @@ require "cli/parser"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def log_args
+  def self.log_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Show the `git log` for <formula> or <cask>, or show the log for the Homebrew repository
@@ -37,7 +35,7 @@ module Homebrew
     end
   end
 
-  def log
+  def self.log
     args = log_args.parse
 
     # As this command is simplifying user-run commands then let's just use a
@@ -53,7 +51,7 @@ module Homebrew
     end
   end
 
-  def git_log(cd_dir, path = nil, tap = nil, args:)
+  def self.git_log(cd_dir, path = nil, tap = nil, args:)
     cd cd_dir do
       repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
       if tap
