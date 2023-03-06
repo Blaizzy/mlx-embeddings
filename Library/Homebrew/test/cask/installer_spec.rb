@@ -252,20 +252,16 @@ describe Cask::Installer, :cask do
       end
     end
 
-    context "add zap" do
-      let(:path) { cask_path("local-caffeine") }
+    it "zap method reinstall cask" do
+      caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+      described_class.new(caffeine).install
 
-      it "reinstall cask" do
-        caffeine = Cask::CaskLoader.load(path)
-        described_class.new(caffeine).install
+      expect(caffeine).to be_installed
 
-        expect(caffeine).to be_installed
+      described_class.new(caffeine).zap
 
-        described_class.new(caffeine).zap
-
-        expect(caffeine).not_to be_installed
-        expect(caffeine.config.appdir.join("Caffeine.app")).not_to be_a_symlink
-      end
+      expect(caffeine).not_to be_installed
+      expect(caffeine.config.appdir.join("Caffeine.app")).not_to be_a_symlink
     end
   end
 
