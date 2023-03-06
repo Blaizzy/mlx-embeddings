@@ -1,12 +1,13 @@
 # typed: true
 # frozen_string_literal: true
 
+require_relative "../../global"
+require_relative "../../env_config"
 require_relative "../../utils/tty"
 
 File.open("#{File.dirname(__FILE__)}/../../utils/tty.rbi", "w") do |file|
   file.write(<<~RUBY)
     # typed: strict
-    # frozen_string_literal: true
 
     module Tty
   RUBY

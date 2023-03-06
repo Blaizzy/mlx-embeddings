@@ -64,6 +64,9 @@ module Homebrew
         tapioca_args = ["--exclude", *excluded_gems, "--typed-overrides", *typed_overrides]
         tapioca_args << "--all" if args.update_all?
 
+        ohai "Updating homegrown RBI files..."
+        safe_system "bundle", "exec", "ruby", "sorbet/custom_generators/tty.rb"
+
         ohai "Updating Tapioca RBI files..."
         safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
         safe_system "bundle", "exec", "parlour"
