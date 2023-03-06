@@ -2,17 +2,26 @@
 # frozen_string_literal: true
 
 require "formulary"
+require "cask/cask_loader"
 require "cli/parser"
-
-class Symbol
-  def f(*args)
-    Formulary.factory(to_s, *args)
-  end
-end
 
 class String
   def f(*args)
     Formulary.factory(self, *args)
+  end
+
+  def c(config: nil)
+    Cask::CaskLoader.load(self, config: config)
+  end
+end
+
+class Symbol
+  def f(*args)
+    to_s.f(*args)
+  end
+
+  def c(config: nil)
+    to_s.c(config: config)
   end
 end
 
@@ -45,6 +54,9 @@ module Homebrew
         :hub.f.latest_version_installed?
         :lua.f.methods - 1.methods
         :mpd.f.recursive_dependencies.reject(&:installed?)
+
+        'vlc'.c # => instance of the vlc cask
+        :tsh.c.livecheckable?
       EOS
       return
     end
