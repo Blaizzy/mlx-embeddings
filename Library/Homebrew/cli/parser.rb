@@ -296,7 +296,9 @@ module Homebrew
         [remaining, non_options]
       end
 
-      sig { params(argv: T::Array[String], ignore_invalid_options: T::Boolean).returns(Args) }
+      # @return [Args] The actual return type is `Args`, but since `Args` uses `method_missing` to handle options, the
+      #   `sig` annotates this as returning `T.untyped` to avoid spurious type errors.
+      sig { params(argv: T::Array[String], ignore_invalid_options: T::Boolean).returns(T.untyped) }
       def parse(argv = ARGV.freeze, ignore_invalid_options: false)
         raise "Arguments were already parsed!" if @args_parsed
 

@@ -36,6 +36,7 @@ end
 
 module EnvActivation
   include EnvMethods
+  include Superenv
 end
 
 class Sorbet
