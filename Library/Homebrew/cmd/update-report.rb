@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "migrator"
@@ -188,7 +188,7 @@ module Homebrew
       begin
         reporter = Reporter.new(tap)
       rescue Reporter::ReporterRevisionUnsetError => e
-        onoe "#{e.message}\n#{e.backtrace.join "\n"}" if Homebrew::EnvConfig.developer?
+        onoe "#{e.message}\n#{e.backtrace&.join("\n")}" if Homebrew::EnvConfig.developer?
         next
       end
       if reporter.updated?
@@ -315,7 +315,7 @@ module Homebrew
     return if CoreTap.instance.installed?
 
     CoreTap.ensure_installed!
-    revision = core_tap.git_head
+    revision = CoreTap.instance.git_head
     ENV["HOMEBREW_UPDATE_BEFORE_HOMEBREW_HOMEBREW_CORE"] = revision
     ENV["HOMEBREW_UPDATE_AFTER_HOMEBREW_HOMEBREW_CORE"] = revision
   end
@@ -496,7 +496,7 @@ class Reporter
             system HOMEBREW_BREW_FILE, "link", new_full_name, "--overwrite"
           end
         rescue Exception => e # rubocop:disable Lint/RescueException
-          onoe "#{e.message}\n#{e.backtrace.join "\n"}" if Homebrew::EnvConfig.developer?
+          onoe "#{e.message}\n#{e.backtrace&.join("\n")}" if Homebrew::EnvConfig.developer?
         end
         next
       end
@@ -560,7 +560,7 @@ class Reporter
       begin
         f = Formulary.factory(new_full_name)
       rescue Exception => e # rubocop:disable Lint/RescueException
-        onoe "#{e.message}\n#{e.backtrace.join "\n"}" if Homebrew::EnvConfig.developer?
+        onoe "#{e.message}\n#{e.backtrace&.join("\n")}" if Homebrew::EnvConfig.developer?
         next
       end
 
@@ -642,8 +642,8 @@ class ReporterHub
     dump_deleted_formula_report(report_all)
     dump_deleted_cask_report(report_all)
 
-    outdated_formulae = nil
-    outdated_casks = nil
+    outdated_formulae = []
+    outdated_casks = []
 
     if updated_formula_report && report_all
       dump_modified_formula_report
