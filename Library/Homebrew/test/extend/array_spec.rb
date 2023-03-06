@@ -19,7 +19,7 @@ describe Array do
 
     it "converts an array to a sentence with a custom last word connector" do
       expect(["one", "two", "three"].to_sentence(last_word_connector: ", and also "))
-      .to eq("one, two, and also three")
+        .to eq("one, two, and also three")
       expect(["one", "two", "three"].to_sentence(last_word_connector: " ")).to eq("one, two three")
       expect(["one", "two", "three"].to_sentence(last_word_connector: " and ")).to eq("one, two and three")
     end
