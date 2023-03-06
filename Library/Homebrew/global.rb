@@ -17,7 +17,8 @@ require "active_support/core_ext/string/filters"
 require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
 require "active_support/core_ext/string/inflections"
-require "active_support/core_ext/array/conversions"
+require "active_support/core_ext/kernel/reporting"
+require "active_support/core_ext/hash/keys"
 require "active_support/core_ext/hash/deep_merge"
 require "active_support/core_ext/file/atomic"
 require "active_support/core_ext/enumerable"
@@ -132,6 +133,7 @@ module Homebrew
 end
 
 require "context"
+require "extend/array"
 require "extend/git_repository"
 require "extend/pathname"
 require "extend/predicable"

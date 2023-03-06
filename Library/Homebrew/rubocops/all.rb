@@ -1,9 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-# TODO: remove this (and avoid further active support in rubocops)
-require "active_support/core_ext/array/conversions"
-
+require_relative "../extend/array"
 require_relative "io_read"
 require_relative "move_to_extend_os"
 require_relative "shell_commands"
