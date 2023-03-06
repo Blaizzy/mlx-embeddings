@@ -1,9 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "forwardable"
-require "uri"
-
 module RuboCop
   module Cop
     module Cask
