@@ -10,11 +10,6 @@ Homebrew/MoveToExtendOS:
     - "{extend,test,requirements}/**/*"
     - "os.rb"
 
-# make rspec formatting more flexible
-Layout/MultilineMethodCallIndentation:
-  Exclude:
-    - "**/*_spec.rb"
-
 Naming/PredicateName:
   AllowedMethods:
     - is_32_bit?

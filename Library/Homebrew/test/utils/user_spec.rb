@@ -10,7 +10,8 @@ describe User do
 
   describe "#gui?" do
     before do
-      allow(SystemCommand).to receive(:run).with("who", any_args)
+      allow(SystemCommand).to receive(:run)
+        .with("who", any_args)
         .and_return([who_output, "", instance_double(Process::Status, success?: true)])
     end
 

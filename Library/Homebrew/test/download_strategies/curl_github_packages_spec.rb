@@ -20,12 +20,13 @@ describe CurlGitHubPackagesDownloadStrategy do
     end
 
     it "calls curl with anonymous authentication headers" do
-      expect(strategy).to receive(:system_command).with(
-        /curl/,
-        hash_including(args: array_including_cons("--header", "Authorization: Bearer QQ==")),
-      )
-      .at_least(:once)
-      .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
+      expect(strategy).to receive(:system_command)
+        .with(
+          /curl/,
+          hash_including(args: array_including_cons("--header", "Authorization: Bearer QQ==")),
+        )
+        .at_least(:once)
+        .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
       strategy.fetch
     end
@@ -34,12 +35,13 @@ describe CurlGitHubPackagesDownloadStrategy do
       let(:authorization) { "Bearer dead-beef-cafe" }
 
       it "calls curl with the provided header value" do
-        expect(strategy).to receive(:system_command).with(
-          /curl/,
-          hash_including(args: array_including_cons("--header", "Authorization: #{authorization}")),
-        )
-        .at_least(:once)
-        .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
+        expect(strategy).to receive(:system_command)
+          .with(
+            /curl/,
+            hash_including(args: array_including_cons("--header", "Authorization: #{authorization}")),
+          )
+          .at_least(:once)
+          .and_return(instance_double(SystemCommand::Result, success?: true, stdout: "", assert_success!: nil))
 
         strategy.fetch
       end

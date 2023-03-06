@@ -26,7 +26,7 @@ describe Cask::Cmd::Uninstall, :cask do
 
   it "shows an error when a Cask is provided that's not installed" do
     expect { described_class.run("local-caffeine") }
-    .to raise_error(Cask::CaskNotInstalledError, /is not installed/)
+      .to raise_error(Cask::CaskNotInstalledError, /is not installed/)
   end
 
   it "tries anyway on a non-present Cask when --force is given" do
@@ -63,7 +63,7 @@ describe Cask::Cmd::Uninstall, :cask do
     cask.config.appdir.join("MyFancyApp.app").rmtree
 
     expect { described_class.run("with-uninstall-script-app") }
-    .to raise_error(Cask::CaskError, /uninstall script .* does not exist/)
+      .to raise_error(Cask::CaskError, /uninstall script .* does not exist/)
 
     expect(cask).to be_installed
 
