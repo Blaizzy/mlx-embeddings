@@ -20,7 +20,7 @@ describe "brew cat" do
     it "prints a suggestion to use brew info --github" , :integration_test do
 
       expect  { brew "cat", "asdf", "bogus"}
-        .to output(/Consider using `brew info --github asdf bogus` instead/).to_stderr
+        .to output(/brew info --github asdf bogus/).to_stderr
         .and be_a_failure
     end
   end

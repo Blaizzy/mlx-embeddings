@@ -53,8 +53,8 @@ module Homebrew
     end
 
     if Homebrew.failed?
-      $stderr.puts "The name may be wrong, or the tap hasn't been tapped."
-      $stderr.puts "Consider using `brew info --github #{args.named.join(" ")}` instead."
+      $stderr.puts "The name may be wrong, or the tap hasn't been tapped. Instead try:"
+      $stderr.puts "  brew info --github #{args.named.join(" ")}"
       return
     end
 
