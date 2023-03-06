@@ -274,18 +274,18 @@ Rails/ToFormattedS:
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
   Enabled: false
+RSpec/DescribeClass:
+  Enabled: false
 RSpec/FilePath:
+  Enabled: false
+RSpec/StubbedMock:
   Enabled: false
 RSpec/SubjectStub:
   Enabled: false
 
-# TODO: try to enable these
-RSpec/DescribeClass:
-  Enabled: false
+# We use `allow(:foo).to receive(:bar)` everywhere.
 RSpec/MessageSpies:
-  Enabled: false
-RSpec/StubbedMock:
-  Enabled: false
+  EnforcedStyle: receive
 
 # These were ever-growing numbers, not useful.
 RSpec/ExampleLength:
