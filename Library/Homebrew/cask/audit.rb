@@ -504,29 +504,57 @@ module Cask
       Dir.mktmpdir do |tmpdir|
         tmpdir = Pathname(tmpdir)
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
+
         artifacts.each do |artifact|
-          path = case artifact
+          case artifact
           when Artifact::Moved
-            tmpdir/artifact.source.basename
+            path = tmpdir/artifact.source.basename
+            next unless path.exist?
+
+            result = system_command("codesign", args: ["--verify", path], print_stderr: false)
+
+            next if result.success?
+
+            message = <<~EOS
+              Signature verification failed:
+              #{result.merged_output}
+              macOS on ARM requires applications to be signed.
+              Please contact the upstream developer to let them know they should
+            EOS
+
+            message = if result.stderr.include?("not signed at all")
+              "#{message} sign their app."
+            else
+              "#{message} fix the signature of their app."
+            end
+
+            add_warning message
           when Artifact::Pkg
-            artifact.path
+            path = downloaded_path
+            next unless path.exist?
+
+            result = system_command("pkgutil", args: ["--check-signature", path], print_stderr: false)
+
+            unless result.success?
+              add_warning <<~EOS
+                Signature verification failed:
+                #{result.merged_output}
+                macOS on ARM requires applications to be signed.
+                Please contact the upstream developer to let them know they should sign their package.
+              EOS
+              next
+            end
+
+            result = system_command("stapler", args: ["validate", path], print_stderr: false)
+            next if result.success?
+
+            add_warning <<~EOS
+              Signature verification failed:
+              #{result.merged_output}
+              macOS on ARM requires applications to be signed.
+              Please contact the upstream developer to let them know they should notarize their package.
+            EOS
           end
-          next unless path.exist?
-
-          result = system_command("codesign", args: ["--verify", path], print_stderr: false)
-
-          next if result.success?
-
-          message = "Signature verification failed:\n#{result.merged_output}\nmacOS on ARM requires applications " \
-                    "to be signed. Please contact the upstream developer to let them know they should "
-
-          message += if result.stderr.include?("not signed at all")
-            "sign their app."
-          else
-            "fix the signature of their app."
-          end
-
-          add_warning message
         end
       end
     end
