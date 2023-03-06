@@ -54,7 +54,7 @@ module Homebrew
 
     if Homebrew.failed?
       $stderr.puts "The name may be wrong, or the tap hasn't been tapped."
-      $stderr.puts "Consider using `brew info --github formula|cask [...]` instead."
+      $stderr.puts "Consider using `brew info --github #{args.named.join(" ")}` instead."
       return
     end
 
