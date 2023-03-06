@@ -10,7 +10,6 @@ inherit_mode:
   merge:
     - Include
     - Exclude
-    - AllowedMethods
 
 AllCops:
   TargetRubyVersion: 2.6
@@ -342,12 +341,6 @@ Style/BlockDelimiters:
     - "sig"
   Exclude:
     - "Homebrew/**/*_spec.rb"
-    - "Homebrew/**/shared_examples/**/*.rb"
-
-# TODO: remove this when possible.
-Style/ClassVars:
-  Exclude:
-    - "**/developer/bin/*"
 
 # Use consistent style for better readability.
 Style/CollectionMethods:
@@ -388,11 +381,6 @@ Style/FrozenStringLiteralComment:
     - "**/*.rbi"
     - "**/Brewfile"
 
-# TODO: remove this when possible.
-Style/GlobalVars:
-  Exclude:
-    - "**/developer/bin/*"
-
 # potential for errors in formulae too high with this
 Style/GuardClause:
   Exclude:
@@ -406,6 +394,10 @@ Style/HashAsLastArrayItem:
     - "Taps/*/*/*.rb"
     - "/**/Formula/**/*.rb"
     - "**/Formula/**/*.rb"
+
+# would rather freeze too much than too little
+Style/MutableConstant:
+  EnforcedStyle: strict
 
 # Zero-prefixed octal literals are widely used and understood.
 Style/NumericLiteralPrefix:
@@ -483,7 +475,3 @@ Style/UnlessLogicalOperators:
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
-
-# would rather freeze too much than too little
-Style/MutableConstant:
-  EnforcedStyle: strict
