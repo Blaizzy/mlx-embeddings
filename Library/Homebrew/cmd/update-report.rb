@@ -642,8 +642,8 @@ class ReporterHub
     dump_deleted_formula_report(report_all)
     dump_deleted_cask_report(report_all)
 
-    outdated_formulae = nil
-    outdated_casks = nil
+    outdated_formulae = []
+    outdated_casks = []
 
     if updated_formula_report && report_all
       dump_modified_formula_report
@@ -671,7 +671,7 @@ class ReporterHub
     return if outdated_formulae.blank? && outdated_casks.blank?
 
     outdated_formulae = outdated_formulae.count
-    outdated_casks = T.must(outdated_casks).count
+    outdated_casks = outdated_casks.count
 
     update_pronoun = if (outdated_formulae + outdated_casks) == 1
       "it"
