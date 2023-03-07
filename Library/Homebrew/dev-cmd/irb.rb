@@ -54,7 +54,6 @@ module Homebrew
     if args.pry?
       Homebrew.install_gem_setup_path! "pry"
       require "pry"
-      Pry.config.prompt_name = "brew"
     else
       require "irb"
     end
@@ -65,6 +64,11 @@ module Homebrew
 
     ohai "Interactive Homebrew Shell", "Example commands available with: `brew irb --examples`"
     if args.pry?
+      Pry.config.should_load_rc = false # skip loading .pryrc
+      Pry.config.history_file = (HOMEBREW_REPOSITORY/".pry_history").to_s
+      Pry.config.memory_size = 100 # max lines to save to history file
+      Pry.config.prompt_name = "brew"
+
       Pry.start
     else
       ENV["IRBRC"] = (HOMEBREW_REPOSITORY/".irb_config").to_s
