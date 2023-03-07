@@ -131,4 +131,23 @@ module Utils
     suffix = (count == 1) ? singular : plural
     "#{stem}#{suffix}"
   end
+
+  # Makes an underscored, lowercase form from the expression in the string.
+  #
+  # Changes '::' to '/' to convert namespaces to paths.
+  #
+  #   underscore('ActiveModel')         # => "active_model"
+  #   underscore('ActiveModel::Errors') # => "active_model/errors"
+  #
+  # @see https://github.com/rails/rails/blob/v6.1.7.2/activesupport/lib/active_support/inflector/methods.rb#L81-L100
+  #   `ActiveSupport::Inflector.underscore`
+  sig { params(camel_cased_word: T.any(String, Symbol)).returns(String) }
+  def self.underscore(camel_cased_word)
+    return camel_cased_word unless /[A-Z-]|::/.match?(camel_cased_word)
+    word = camel_cased_word.to_s.gsub("::", "/")
+    word.gsub!(/([A-Z])(?=[A-Z][a-z])|([a-z\d])(?=[A-Z])/) { ($1 || $2) << "_" }
+    word.tr!("-", "_")
+    word.downcase!
+    word
+  end
 end

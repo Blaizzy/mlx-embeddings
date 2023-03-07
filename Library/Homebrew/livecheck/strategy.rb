@@ -111,7 +111,7 @@ module Homebrew
           constant = Strategy.const_get(const_symbol)
           next unless constant.is_a?(Class)
 
-          key = const_symbol.to_s.underscore.to_sym
+          key = Utils.underscore(const_symbol).to_sym
           @strategies[key] = constant
         end
         @strategies
