@@ -60,6 +60,8 @@ class ProgressBar::Base
   def percentage_component=(_arg0); end
   def progressable; end
   def progressable=(_arg0); end
+  def projector; end
+  def projector=(_arg0); end
   def rate_component; end
   def rate_component=(_arg0); end
   def time_component; end
@@ -71,6 +73,8 @@ class ProgressBar::Base
   def update_progress(*args); end
 end
 
+ProgressBar::Base::RUNNING_AVERAGE_RATE_DEPRECATION_WARNING = T.let(T.unsafe(nil), String)
+ProgressBar::Base::SMOOTHING_DEPRECATION_WARNING = T.let(T.unsafe(nil), String)
 module ProgressBar::Calculators; end
 
 class ProgressBar::Calculators::Length
@@ -97,12 +101,6 @@ class ProgressBar::Calculators::Length
   def dynamic_width_via_system_calls; end
   def terminal_width; end
   def unix?; end
-end
-
-class ProgressBar::Calculators::SmoothedAverage
-  class << self
-    def calculate(current_average, new_value_to_average, rate); end
-  end
 end
 
 module ProgressBar::Components; end
@@ -185,6 +183,8 @@ class ProgressBar::Components::Time
 
   def progress; end
   def progress=(_arg0); end
+  def projector; end
+  def projector=(_arg0); end
   def timer; end
   def timer=(_arg0); end
 
@@ -324,12 +324,6 @@ class ProgressBar::Progress
   def progress; end
   def progress=(new_progress); end
   def reset; end
-  def running_average; end
-  def running_average=(_arg0); end
-  def running_average_calculator; end
-  def running_average_calculator=(_arg0); end
-  def running_average_rate; end
-  def running_average_rate=(_arg0); end
   def start(options = T.unsafe(nil)); end
   def starting_position; end
   def starting_position=(_arg0); end
@@ -340,12 +334,53 @@ class ProgressBar::Progress
 end
 
 ProgressBar::Progress::DEFAULT_BEGINNING_POSITION = T.let(T.unsafe(nil), Integer)
-ProgressBar::Progress::DEFAULT_RUNNING_AVERAGE_CALCULATOR = ProgressBar::Calculators::SmoothedAverage
-ProgressBar::Progress::DEFAULT_RUNNING_AVERAGE_RATE = T.let(T.unsafe(nil), Float)
 ProgressBar::Progress::DEFAULT_TOTAL = T.let(T.unsafe(nil), Integer)
-ProgressBar::Progress::RUNNING_AVERAGE_CALCULATOR_MAP = T.let(T.unsafe(nil), Hash)
+
+class ProgressBar::Projector
+  class << self
+    def from_type(name); end
+  end
+end
+
+ProgressBar::Projector::DEFAULT_PROJECTOR = ProgressBar::Projectors::SmoothedAverage
+ProgressBar::Projector::NAME_TO_PROJECTOR_MAP = T.let(T.unsafe(nil), Hash)
+module ProgressBar::Projectors; end
+
+class ProgressBar::Projectors::SmoothedAverage
+  def initialize(options = T.unsafe(nil)); end
+
+  def decrement; end
+  def increment; end
+  def none?; end
+  def progress; end
+  def progress=(new_progress); end
+  def projection; end
+  def reset; end
+  def samples; end
+  def samples=(_arg0); end
+  def start(options = T.unsafe(nil)); end
+  def strength; end
+  def strength=(_arg0); end
+  def total=(_new_total); end
+
+  protected
+
+  def projection=(_arg0); end
+
+  private
+
+  def absolute; end
+
+  class << self
+    def calculate(current_projection, new_value, rate); end
+  end
+end
+
+ProgressBar::Projectors::SmoothedAverage::DEFAULT_BEGINNING_POSITION = T.let(T.unsafe(nil), Integer)
+ProgressBar::Projectors::SmoothedAverage::DEFAULT_STRENGTH = T.let(T.unsafe(nil), Float)
 module ProgressBar::Refinements; end
 module ProgressBar::Refinements::Enumerator; end
+ProgressBar::Refinements::Enumerator::ARITY_ERROR_MESSAGE = T.let(T.unsafe(nil), String)
 
 class ProgressBar::Throttle
   def initialize(options = T.unsafe(nil)); end
