@@ -4,6 +4,7 @@
 require "cli/parser"
 require "formula"
 require "api"
+require "os/mac/xcode"
 
 module Homebrew
   extend T::Sig
