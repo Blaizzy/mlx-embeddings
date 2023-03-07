@@ -346,6 +346,24 @@ module Homebrew
       EOS
     end
 
+    if new_url =~ %r{^https://github.com/([\w-]+)/([\w-]+)/archive/refs/tags/(v?[.0-9]*)\.tar}
+      owner = Regexp.last_match(1)
+      repo = Regexp.last_match(2)
+      tag = Regexp.last_match(3)
+      github_release_data = begin
+        GitHub::API.open_rest("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}")
+      rescue GitHub::API::HTTPNotFoundError
+        nil
+      end
+
+      pr_message += <<~EOS if github_release_data.present?
+        <details>
+          <summary>#{github_release_data["prerelease"] ? "pre" : ""}release notes</summary>
+          #{github_release_data["body"]}
+        </details>
+      EOS
+    end
+
     pr_info = {
       sourcefile_path:  formula.path,
       old_contents:     old_contents,
