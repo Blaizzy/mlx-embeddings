@@ -1,7 +1,9 @@
 # typed: false
 # frozen_string_literal: true
 
-describe Cask::Cmd::Upgrade, :cask do
+require "cask/upgrade"
+
+describe Cask::Upgrade, :cask do
   let(:version_latest_path_2) { version_latest.config.appdir.join("Caffeine Pro.app") }
   let(:version_latest_path_1) { version_latest.config.appdir.join("Caffeine Mini.app") }
   let(:version_latest) { Cask::CaskLoader.load("version-latest") }
@@ -11,6 +13,7 @@ describe Cask::Cmd::Upgrade, :cask do
   let(:local_transmission) { Cask::CaskLoader.load("local-transmission") }
   let(:local_caffeine_path) { local_caffeine.config.appdir.join("Caffeine.app") }
   let(:local_caffeine) { Cask::CaskLoader.load("local-caffeine") }
+  let(:args) { Homebrew::CLI::Args.new }
 
   context "when the upgrade is successful" do
     let(:installed) do
@@ -38,7 +41,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission_path).to be_a_directory
         expect(local_transmission.versions).to include("2.60")
 
-        described_class.run
+        described_class.upgrade_casks(args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -58,7 +61,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission_path).to be_a_directory
         expect(local_transmission.versions).to include("2.60")
 
-        described_class.run("local-caffeine")
+        described_class.upgrade_casks(local_caffeine, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -78,7 +81,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
 
-        described_class.run("local-caffeine", "auto-updates")
+        described_class.upgrade_casks(local_caffeine, auto_updates, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -111,7 +114,7 @@ describe Cask::Cmd::Upgrade, :cask do
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
 
-        described_class.run("--greedy")
+        described_class.upgrade_casks(greedy: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -136,13 +139,13 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
 
-        described_class.run("auto-updates", "--greedy")
+        described_class.upgrade_casks(auto_updates, greedy: true, args: args)
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.61")
 
-        described_class.run("auto-updates", "--greedy")
+        described_class.upgrade_casks(auto_updates, greedy: true, args: args)
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
@@ -158,7 +161,7 @@ describe Cask::Cmd::Upgrade, :cask do
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
 
-        described_class.run("version-latest", "--greedy")
+        described_class.upgrade_casks(version_latest, greedy: true, args: args)
 
         expect(version_latest).to be_installed
         expect(version_latest_path_1).to be_a_directory
@@ -166,7 +169,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(version_latest.versions).to include("latest")
         expect(version_latest.outdated_download_sha?).to be(false)
 
-        described_class.run("version-latest", "--greedy")
+        described_class.upgrade_casks(version_latest, greedy: true, args: args)
 
         expect(version_latest).to be_installed
         expect(version_latest_path_1).to be_a_directory
@@ -205,7 +208,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission_path).to be_a_directory
         expect(local_transmission.versions).to include("2.60")
 
-        described_class.run("--dry-run")
+        described_class.upgrade_casks(dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -229,7 +232,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(local_transmission_path).to be_a_directory
         expect(local_transmission.versions).to include("2.60")
 
-        described_class.run("--dry-run", "local-caffeine")
+        described_class.upgrade_casks(local_caffeine, dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -253,7 +256,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
 
-        described_class.run("--dry-run", "local-caffeine", "auto-updates")
+        described_class.upgrade_casks(local_caffeine, auto_updates, dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -288,7 +291,7 @@ describe Cask::Cmd::Upgrade, :cask do
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
 
-        described_class.run("--greedy", "--dry-run")
+        described_class.upgrade_casks(greedy: true, dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
@@ -316,7 +319,7 @@ describe Cask::Cmd::Upgrade, :cask do
         expect(auto_updates_path).to be_a_directory
         expect(auto_updates.versions).to include("2.57")
 
-        described_class.run("--dry-run", "auto-updates", "--greedy")
+        described_class.upgrade_casks(auto_updates, dry_run: true, greedy: true, args: args)
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
@@ -335,7 +338,7 @@ describe Cask::Cmd::Upgrade, :cask do
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
 
-        described_class.run("--dry-run", "version-latest", "--greedy")
+        described_class.upgrade_casks(version_latest, dry_run: true, greedy: true, args: args)
 
         expect(version_latest).to be_installed
         expect(version_latest_path_1).to be_a_directory
@@ -372,9 +375,9 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(will_fail_if_upgraded_path).to be_a_file
       expect(will_fail_if_upgraded.versions).to include("1.2.2")
 
-      expect do
-        described_class.run("will-fail-if-upgraded")
-      end.to raise_error(Cask::CaskError).and output(output_reverted).to_stderr
+      expect {
+        described_class.upgrade_casks(will_fail_if_upgraded, args: args)
+      }.to raise_error(Cask::CaskError).and output(output_reverted).to_stderr
 
       expect(will_fail_if_upgraded).to be_installed
       expect(will_fail_if_upgraded_path).to be_a_file
@@ -390,9 +393,9 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(bad_checksum_path).to be_a_directory
       expect(bad_checksum.versions).to include("1.2.2")
 
-      expect do
-        described_class.run("bad-checksum")
-      end.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
+      expect {
+        described_class.upgrade_casks(bad_checksum, args: args)
+      }.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
@@ -435,9 +438,9 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(bad_checksum_2_path).to be_a_file
       expect(bad_checksum_2.versions).to include("1.2.2")
 
-      expect do
-        described_class.run
-      end.to raise_error(Cask::MultipleCaskErrors)
+      expect {
+        described_class.upgrade_casks(args: args)
+      }.to raise_error(Cask::MultipleCaskErrors)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
