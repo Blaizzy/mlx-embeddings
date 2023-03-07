@@ -441,7 +441,7 @@ class Cmd
     fuse_ld_flag = fuse_ld_flags.last.strip
     fuse_ld_arg = fuse_ld_flag.split("=", 2).last
 
-    (fuse_ld_arg == "ld") || fuse_ld_arg.end_with("/usr/bin/ld")
+    (fuse_ld_arg == "ld") || fuse_ld_arg.end_with?("/usr/bin/ld")
   end
 
   def canonical_path(path)
