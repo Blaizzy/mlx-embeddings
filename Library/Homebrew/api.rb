@@ -163,7 +163,7 @@ module Homebrew
                                              arch:   Homebrew::SimulateSystem.current_arch)
 
       if (variations = json["variations"].presence) &&
-         (variation = variations[bottle_tag].presence)
+         (variation = variations[bottle_tag.to_s].presence)
         json = json.merge(variation)
       end
 
