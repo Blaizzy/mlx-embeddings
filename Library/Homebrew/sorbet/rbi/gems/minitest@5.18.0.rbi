@@ -69,6 +69,7 @@ module Minitest::Assertions
   def assert_operator(o1, op, o2 = T.unsafe(nil), msg = T.unsafe(nil)); end
   def assert_output(stdout = T.unsafe(nil), stderr = T.unsafe(nil)); end
   def assert_path_exists(path, msg = T.unsafe(nil)); end
+  def assert_pattern; end
   def assert_predicate(o1, op, msg = T.unsafe(nil)); end
   def assert_raises(*exp); end
   def assert_respond_to(obj, meth, msg = T.unsafe(nil)); end
@@ -98,6 +99,7 @@ module Minitest::Assertions
   def refute_nil(obj, msg = T.unsafe(nil)); end
   def refute_operator(o1, op, o2 = T.unsafe(nil), msg = T.unsafe(nil)); end
   def refute_path_exists(path, msg = T.unsafe(nil)); end
+  def refute_pattern; end
   def refute_predicate(o1, op, msg = T.unsafe(nil)); end
   def refute_respond_to(obj, meth, msg = T.unsafe(nil)); end
   def refute_same(exp, act, msg = T.unsafe(nil)); end

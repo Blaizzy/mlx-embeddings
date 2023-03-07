@@ -4928,6 +4928,8 @@ module Minitest::Expectations
 
   def must_output(*args); end
 
+  def must_pattern_match(*args); end
+
   def must_raise(*args); end
 
   def must_respond_to(*args); end
@@ -4961,6 +4963,8 @@ module Minitest::Expectations
   def wont_include(*args); end
 
   def wont_match(*args); end
+
+  def wont_pattern_match(*args); end
 
   def wont_respond_to(*args); end
 end
