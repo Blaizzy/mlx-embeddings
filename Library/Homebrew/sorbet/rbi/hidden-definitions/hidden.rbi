@@ -6647,6 +6647,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
+  SET_FILE_FILETEST = ::T.let(nil, ::T.untyped)
   SET_FILE_TEMPFILE_STRINGIO = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
@@ -6655,6 +6656,8 @@ module RuboCop::AST::NodePattern::Sets
   SET_SKIP_PENDING = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
+  SET___10 = ::T.let(nil, ::T.untyped)
+  SET___9 = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)
 end
 
