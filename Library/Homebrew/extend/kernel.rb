@@ -192,20 +192,20 @@ module Kernel
     end
   end
 
-  def pretty_duration(s)
-    s = s.to_i
+  def pretty_duration(seconds)
+    seconds = seconds.to_i
     res = +""
 
-    if s > 59
-      m = s / 60
-      s %= 60
-      res = +"#{m} #{Utils.pluralize("minute", m)}"
-      return res.freeze if s.zero?
+    if seconds > 59
+      minutes = seconds / 60
+      seconds %= 60
+      res = +"#{minutes} #{Utils.pluralize("minute", minutes)}"
+      return res.freeze if seconds.zero?
 
       res << " "
     end
 
-    res << "#{s} #{Utils.pluralize("second", s)}"
+    res << "#{seconds} #{Utils.pluralize("second", seconds)}"
     res.freeze
   end
 
@@ -471,14 +471,14 @@ module Kernel
   # preserving character encoding validity. The returned string will
   # be not much longer than the specified max_bytes, though the exact
   # shortfall or overrun may vary.
-  def truncate_text_to_approximate_size(s, max_bytes, options = {})
+  def truncate_text_to_approximate_size(str, max_bytes, options = {})
     front_weight = options.fetch(:front_weight, 0.5)
     raise "opts[:front_weight] must be between 0.0 and 1.0" if front_weight < 0.0 || front_weight > 1.0
-    return s if s.bytesize <= max_bytes
+    return str if str.bytesize <= max_bytes
 
     glue = "\n[...snip...]\n"
     max_bytes_in = [max_bytes - glue.bytesize, 1].max
-    bytes = s.dup.force_encoding("BINARY")
+    bytes = str.dup.force_encoding("BINARY")
     glue_bytes = glue.encode("BINARY")
     n_front_bytes = (max_bytes_in * front_weight).floor
     n_back_bytes = max_bytes_in - n_front_bytes
