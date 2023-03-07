@@ -15,12 +15,4 @@ describe "brew cat" do
       .and not_to_output.to_stderr
       .and be_a_success
   end
-
-  describe "when a source file isn't found" do
-    it "prints a suggestion to use brew info --github", :integration_test do
-      expect { brew "cat", "asdf", "bogus" }
-        .to output(/brew info --github asdf bogus/).to_stderr
-        .and be_a_failure
-    end
-  end
 end
