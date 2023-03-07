@@ -264,9 +264,9 @@ jobs:
           - name: tests (Ubuntu 22.04)
             test-flags: --coverage
             runs-on: ubuntu-22.04
-          - name: tests (Ubuntu 18.04)
+          - name: tests (Ubuntu 20.04)
             test-flags: --coverage
-            runs-on: ubuntu-18.04
+            runs-on: ubuntu-20.04
           - name: tests (macOS 12)
             test-flags: --coverage
             runs-on: macos-12
@@ -354,8 +354,8 @@ jobs:
         include:
           - name: test default formula (Ubuntu 22.04)
             runs-on: ubuntu-22.04
-          - name: test default formula (Ubuntu 18.04)
-            runs-on: ubuntu-18.04
+          - name: test default formula (Ubuntu 20.04)
+            runs-on: ubuntu-20.04
           - name: test default formula (macOS 12)
             runs-on: macos-12
     steps:
