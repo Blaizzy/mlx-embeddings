@@ -6349,6 +6349,7 @@ class RuboCop::Cop::Lint::UselessAccessModifier < ::RuboCop::Cop::Base
   def check_scope(node); end
   def check_send_node(node, cur_vis, unused); end
   def eval_call?(child); end
+  def included_block?(block_node); end
   def method_definition?(child); end
   def start_of_new_scope?(child); end
 end
@@ -6838,6 +6839,14 @@ module RuboCop::Cop::MinBodyLength
 
   def min_body_length; end
   def min_body_length?(node); end
+end
+
+module RuboCop::Cop::MinBranchesCount
+  private
+
+  def if_conditional_branches(node, branches = T.unsafe(nil)); end
+  def min_branches_count; end
+  def min_branches_count?(node); end
 end
 
 module RuboCop::Cop::MultilineElementIndentation
@@ -8219,6 +8228,7 @@ class RuboCop::Cop::Style::BlockDelimiters < ::RuboCop::Cop::Base
   def remove_trailing_whitespace(corrector, range, comment); end
   def replace_braces_with_do_end(corrector, loc); end
   def replace_do_end_with_braces(corrector, node); end
+  def require_braces?(node); end
   def return_value_of_scope?(node); end
   def return_value_used?(node); end
   def semantic_block_style?(node); end
@@ -8270,6 +8280,7 @@ RuboCop::Cop::Style::CaseEquality::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array
 
 class RuboCop::Cop::Style::CaseLikeIf < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::MinBranchesCount
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_if(node); end
@@ -8762,6 +8773,21 @@ end
 RuboCop::Cop::Style::Dir::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Style::Dir::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Style::DirEmpty < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRubyVersion
+
+  def offensive?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def bang(node); end
+end
+
+RuboCop::Cop::Style::DirEmpty::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Style::DirEmpty::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Style::DisableCopsWithinSourceCodeDirective < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -9250,6 +9276,21 @@ end
 
 RuboCop::Cop::Style::FetchEnvVar::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Style::FileEmpty < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::TargetRubyVersion
+
+  def offensive?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+
+  private
+
+  def bang(node); end
+end
+
+RuboCop::Cop::Style::FileEmpty::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Style::FileEmpty::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::Style::FileRead < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
@@ -9574,12 +9615,13 @@ RuboCop::Cop::Style::HashExcept::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Style::HashExcept::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Style::HashLikeCase < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::MinBranchesCount
+
   def hash_like_case?(param0 = T.unsafe(nil)); end
   def on_case(node); end
 
   private
 
-  def min_branches_count; end
   def nodes_of_same_type?(nodes); end
 end
 
@@ -9713,6 +9755,7 @@ class RuboCop::Cop::Style::IfUnlessModifier < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::StatementModifier
   include ::RuboCop::Cop::AllowedPattern
+  include ::RuboCop::Cop::CommentsHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_if(node); end
@@ -9722,6 +9765,7 @@ class RuboCop::Cop::Style::IfUnlessModifier < ::RuboCop::Cop::Base
   def allowed_patterns; end
   def another_statement_on_same_line?(node); end
   def autocorrect(corrector, node); end
+  def comment_on_node_line(node); end
   def defined_argument_is_undefined?(if_node, defined_node); end
   def defined_nodes(node); end
   def extract_heredoc_from(last_argument); end
@@ -9729,9 +9773,13 @@ class RuboCop::Cop::Style::IfUnlessModifier < ::RuboCop::Cop::Base
   def named_capture_in_condition?(node); end
   def non_eligible_node?(node); end
   def non_simple_if_unless?(node); end
+  def remove_comment(corrector, _node, comment); end
   def remove_heredoc(corrector, heredoc); end
+  def replacement_for_modifier_form(corrector, node); end
+  def to_modifier_form_with_move_comment(node, indentation, comment); end
   def to_normal_form(node, indentation); end
   def to_normal_form_with_heredoc(node, indentation, heredoc); end
+  def too_long_due_to_comment_after_modifier?(node, comment); end
   def too_long_due_to_modifier?(node); end
   def too_long_line_based_on_allow_uri?(line); end
   def too_long_line_based_on_config?(range, line); end
@@ -10583,6 +10631,7 @@ class RuboCop::Cop::Style::NegatedIfElseCondition < ::RuboCop::Cop::Base
   def else_range(node); end
   def if_else?(node); end
   def if_range(node); end
+  def message(node); end
   def negated_condition?(node); end
   def swap_branches(corrector, node); end
   def unwrap_begin_nodes(node); end
