@@ -205,7 +205,6 @@ Naming/MethodParameterName:
       "r",
       "rb",
       "s",
-      "v",
     ]
 
 # Both styles are used depending on context,
