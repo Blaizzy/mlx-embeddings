@@ -28,7 +28,7 @@ module SharedEnvExtension
   def no_fixup_chains_support?
     return false if MacOS.version <= :catalina
 
-    # Note: `-version_details` is supported in Xcode 10.2 at the earliest.
+    # NOTE: `-version_details` is supported in Xcode 10.2 at the earliest.
     ld_version_details = JSON.parse(Utils.safe_popen_read("/usr/bin/ld", "-version_details"))
     ld_version = Version.parse(ld_version_details["version"])
 
