@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -6,10 +6,8 @@ require "cli/parser"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def __prefix_args
+  def self.__prefix_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Display Homebrew's install path. *Default:*
@@ -30,7 +28,7 @@ module Homebrew
     end
   end
 
-  def __prefix
+  def self.__prefix
     args = __prefix_args.parse
 
     raise UsageError, "`--installed` requires a formula argument." if args.installed? && args.no_named?
@@ -89,7 +87,7 @@ module Homebrew
     texlive/*
   ].freeze
 
-  def list_unbrewed
+  def self.list_unbrewed
     dirs  = HOMEBREW_PREFIX.subdirs.map { |dir| dir.basename.to_s }
     dirs -= %w[Library Cellar Caskroom .git]
 
@@ -105,7 +103,6 @@ module Homebrew
     arguments.concat UNBREWED_EXCLUDE_PATHS.flat_map { |d| %W[! -path #{d}] }
     arguments.push ")"
 
-    cd HOMEBREW_PREFIX
-    safe_system "find", *arguments
+    cd(HOMEBREW_PREFIX) { safe_system("find", *arguments) }
   end
 end

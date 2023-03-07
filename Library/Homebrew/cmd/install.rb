@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask/config"
@@ -279,7 +279,11 @@ module Homebrew
     Homebrew.failed = true
 
     # formula name or cask token
-    name = e.try(:name) || e.token
+    name = case e
+    when FormulaOrCaskUnavailableError then e.name
+    when Cask::CaskUnavailableError then e.token
+    else T.absurd(e)
+    end
 
     if name == "updog"
       ofail "What's updog?"

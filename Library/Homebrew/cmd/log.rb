@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -6,10 +6,8 @@ require "cli/parser"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def log_args
+  def self.log_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Show the `git log` for <formula> or <cask>, or show the log for the Homebrew repository
@@ -37,7 +35,7 @@ module Homebrew
     end
   end
 
-  def log
+  def self.log
     args = log_args.parse
 
     # As this command is simplifying user-run commands then let's just use a
@@ -53,34 +51,35 @@ module Homebrew
     end
   end
 
-  def git_log(cd_dir, path = nil, tap = nil, args:)
-    cd cd_dir
-    repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
-    if tap
-      name = tap.to_s
-      git_cd = "$(brew --repo #{tap})"
-    elsif cd_dir == HOMEBREW_REPOSITORY
-      name = "Homebrew/brew"
-      git_cd = "$(brew --repo)"
-    else
-      name, git_cd = cd_dir
-    end
+  def self.git_log(cd_dir, path = nil, tap = nil, args:)
+    cd cd_dir do
+      repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
+      if tap
+        name = tap.to_s
+        git_cd = "$(brew --repo #{tap})"
+      elsif cd_dir == HOMEBREW_REPOSITORY
+        name = "Homebrew/brew"
+        git_cd = "$(brew --repo)"
+      else
+        name, git_cd = cd_dir
+      end
 
-    if File.exist? "#{repo}/.git/shallow"
-      opoo <<~EOS
-        #{name} is a shallow clone so only partial output will be shown.
-        To get a full clone, run:
-          git -C "#{git_cd}" fetch --unshallow
-      EOS
-    end
+      if File.exist? "#{repo}/.git/shallow"
+        opoo <<~EOS
+          #{name} is a shallow clone so only partial output will be shown.
+          To get a full clone, run:
+            git -C "#{git_cd}" fetch --unshallow
+        EOS
+      end
 
-    git_args = []
-    git_args << "--patch" if args.patch?
-    git_args << "--stat" if args.stat?
-    git_args << "--oneline" if args.oneline?
-    git_args << "-1" if args.public_send(:"1?")
-    git_args << "--max-count" << args.max_count if args.max_count
-    git_args += ["--follow", "--", path] if path.present?
-    system "git", "log", *git_args
+      git_args = []
+      git_args << "--patch" if args.patch?
+      git_args << "--stat" if args.stat?
+      git_args << "--oneline" if args.oneline?
+      git_args << "-1" if args.public_send(:"1?")
+      git_args << "--max-count" << args.max_count if args.max_count
+      git_args += ["--follow", "--", path] if path.present?
+      system "git", "log", *git_args
+    end
   end
 end

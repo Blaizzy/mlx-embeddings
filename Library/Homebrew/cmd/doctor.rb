@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "diagnostic"
@@ -8,10 +8,8 @@ require "cask/caskroom"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def doctor_args
+  def self.doctor_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Check your system for potential problems. Will exit with a non-zero status
@@ -30,7 +28,7 @@ module Homebrew
     end
   end
 
-  def doctor
+  def self.doctor
     args = doctor_args.parse
 
     inject_dump_stats!(Diagnostic::Checks, /^check_*/) if args.audit_debug?
@@ -53,7 +51,7 @@ module Homebrew
       methods = args.named
     end
 
-    first_warning = true
+    first_warning = T.let(true, T::Boolean)
     methods.each do |method|
       $stderr.puts Formatter.headline("Checking #{method}", color: :magenta) if args.debug?
       unless checks.respond_to?(method)
