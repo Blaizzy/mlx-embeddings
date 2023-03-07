@@ -3,15 +3,12 @@
 
 require "set"
 require "cache_store"
-require "searchable"
 
 #
 # {DescriptionCacheStore} provides methods to fetch and mutate formula descriptions used
 # by the `brew desc` and `brew search` commands.
 #
 class DescriptionCacheStore < CacheStore
-  include Searchable
-
   # Inserts a formula description into the cache if it does not exist or
   # updates the formula description if it does exist.
   #

@@ -3,7 +3,7 @@
 
 require "formula"
 require "formula_versions"
-require "searchable"
+require "search"
 
 # Helper class for printing and searching descriptions.
 #
@@ -15,11 +15,11 @@ class Descriptions
 
     results = case field
     when :name
-      cache_store.search(string_or_regex) { |name, _| name }
+      Homebrew::Search.search(cache_store, string_or_regex) { |name, _| name }
     when :desc
-      cache_store.search(string_or_regex) { |_, desc| desc }
+      Homebrew::Search.search(cache_store, string_or_regex) { |_, desc| desc }
     when :either
-      cache_store.search(string_or_regex)
+      Homebrew::Search.search(cache_store, string_or_regex)
     end
 
     new(results)

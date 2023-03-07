@@ -1,7 +1,6 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
-require "searchable"
 require "description_cache_store"
 
 module Homebrew
@@ -98,11 +97,7 @@ module Homebrew
       end
 
       aliases = Formula.alias_full_names
-      results = (Formula.full_names + aliases)
-                .extend(Searchable)
-                .search(string_or_regex)
-                .sort
-
+      results = search(Formula.full_names + aliases, string_or_regex).sort
       results |= Formula.fuzzy_search(string_or_regex).map { |n| Formulary.factory(n).full_name }
 
       results.map do |name|
@@ -141,9 +136,7 @@ module Homebrew
         cask_tokens += Homebrew::API::Cask.all_casks.keys
       end
 
-      results = cask_tokens.extend(Searchable)
-                           .search(string_or_regex)
-
+      results = search(cask_tokens, string_or_regex)
       results += DidYouMean::SpellChecker.new(dictionary: cask_tokens)
                                          .correct(string_or_regex)
 
@@ -175,6 +168,36 @@ module Homebrew
       end
 
       [all_formulae, all_casks]
+    end
+
+    def search(array, string_or_regex, &block)
+      case string_or_regex
+      when Regexp
+        search_regex(array, string_or_regex, &block)
+      else
+        search_string(array, string_or_regex.to_str, &block)
+      end
+    end
+
+    def simplify_string(string)
+      string.downcase.gsub(/[^a-z\d]/i, "")
+    end
+
+    def search_regex(array, regex)
+      array.select do |*args|
+        args = yield(*args) if block_given?
+        args = Array(args).flatten.compact
+        args.any? { |arg| arg.match?(regex) }
+      end
+    end
+
+    def search_string(array, string)
+      simplified_string = simplify_string(string)
+      array.select do |*args|
+        args = yield(*args) if block_given?
+        args = Array(args).flatten.compact
+        args.any? { |arg| simplify_string(arg).include?(simplified_string) }
+      end
     end
   end
 end
