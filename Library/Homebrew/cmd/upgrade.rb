@@ -7,6 +7,7 @@ require "install"
 require "upgrade"
 require "cask/cmd"
 require "cask/utils"
+require "cask/upgrade"
 require "cask/macos"
 require "api"
 
@@ -88,7 +89,7 @@ module Homebrew
                        "are specified, upgrade only outdated casks.",
         }],
         *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
-        *Cask::Cmd::Upgrade::OPTIONS.map(&:dup),
+        *Cask::Upgrade::OPTIONS.map(&:dup),
       ].each do |args|
         options = args.pop
         send(*args, **options)
@@ -230,7 +231,7 @@ module Homebrew
   def upgrade_outdated_casks(casks, args:)
     return false if args.formula?
 
-    Cask::Cmd::Upgrade.upgrade_casks(
+    Cask::Upgrade.upgrade_casks(
       *casks,
       force:               args.force?,
       greedy:              args.greedy?,
