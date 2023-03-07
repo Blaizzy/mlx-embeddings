@@ -76,7 +76,7 @@ module Cask
 
         args = directives[directive_sym]
 
-        send("uninstall_#{directive_sym}", (args.is_a?(Enumerable) ? args : [args]), **options)
+        send("uninstall_#{directive_sym}", *(args.is_a?(Hash) ? [args] : args), **options)
       end
 
       def stanza
@@ -91,7 +91,7 @@ module Cask
       end
 
       # :launchctl must come before :quit/:signal for cases where app would instantly re-launch
-      def uninstall_launchctl(services, command: nil, **_)
+      def uninstall_launchctl(*services, command: nil, **_)
         booleans = [false, true]
 
         all_services = []
@@ -168,7 +168,7 @@ module Cask
       end
 
       # :quit/:signal must come before :kext so the kext will not be in use by a running process
-      def uninstall_quit(bundle_ids, command: nil, **_)
+      def uninstall_quit(*bundle_ids, command: nil, **_)
         bundle_ids.each do |bundle_id|
           next unless running?(bundle_id)
 
@@ -245,7 +245,7 @@ module Cask
       private :quit
 
       # :signal should come after :quit so it can be used as a backup when :quit fails
-      def uninstall_signal(signals, command: nil, **_)
+      def uninstall_signal(*signals, command: nil, **_)
         signals.each do |pair|
           raise CaskInvalidError.new(cask, "Each #{stanza} :signal must consist of 2 elements.") unless pair.size == 2
 
@@ -266,7 +266,7 @@ module Cask
         end
       end
 
-      def uninstall_login_item(login_items, command: nil, upgrade: false, **_)
+      def uninstall_login_item(*login_items, command: nil, upgrade: false, **_)
         return if upgrade
 
         apps = cask.artifacts.select { |a| a.class.dsl_key == :app }
@@ -296,7 +296,7 @@ module Cask
       end
 
       # :kext should be unloaded before attempting to delete the relevant file
-      def uninstall_kext(kexts, command: nil, **_)
+      def uninstall_kext(*kexts, command: nil, **_)
         kexts.each do |kext|
           ohai "Unloading kernel extension #{kext}"
           is_loaded = system_command!("/usr/sbin/kextstat", args: ["-l", "-b", kext], sudo: true).stdout
@@ -338,7 +338,7 @@ module Cask
         sleep 1
       end
 
-      def uninstall_pkgutil(pkgs, command: nil, **_)
+      def uninstall_pkgutil(*pkgs, command: nil, **_)
         ohai "Uninstalling packages; your password may be necessary:"
         pkgs.each do |regex|
           ::Cask::Pkg.all_matching(regex, command).each do |pkg|
@@ -377,7 +377,7 @@ module Cask
         end
       end
 
-      def uninstall_delete(paths, command: nil, **_)
+      def uninstall_delete(*paths, command: nil, **_)
         return if paths.empty?
 
         ohai "Removing files:"
@@ -392,16 +392,16 @@ module Cask
         end
       end
 
-      def uninstall_trash(paths, **options)
+      def uninstall_trash(*paths, **options)
         return if paths.empty?
 
         resolved_paths = each_resolved_path(:trash, paths).to_a
 
         ohai "Trashing files:", resolved_paths.map(&:first)
-        trash_paths(resolved_paths.flat_map(&:last), **options)
+        trash_paths(*resolved_paths.flat_map(&:last), **options)
       end
 
-      def trash_paths(paths, command: nil, **_)
+      def trash_paths(*paths, command: nil, **_)
         return if paths.empty?
 
         stdout, stderr, = system_command HOMEBREW_LIBRARY_PATH/"cask/utils/trash.swift",
@@ -457,7 +457,7 @@ module Cask
         success
       end
 
-      def uninstall_rmdir(args, **kwargs)
+      def uninstall_rmdir(*args, **kwargs)
         return if args.empty?
 
         ohai "Removing directories if empty:"
