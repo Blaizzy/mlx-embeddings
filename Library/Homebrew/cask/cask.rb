@@ -5,7 +5,6 @@ require "cask/cask_loader"
 require "cask/config"
 require "cask/dsl"
 require "cask/metadata"
-require "searchable"
 require "utils/bottles"
 
 module Cask
@@ -16,7 +15,6 @@ module Cask
     extend T::Sig
 
     extend Forwardable
-    extend Searchable
     extend Predicable
     include Metadata
 
