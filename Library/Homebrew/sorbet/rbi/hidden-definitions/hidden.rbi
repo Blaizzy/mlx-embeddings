@@ -8492,46 +8492,6 @@ class TracePoint
   def parameters(); end
 end
 
-module Tty
-  def self.blue(); end
-
-  def self.bold(); end
-
-  def self.cyan(); end
-
-  def self.default(); end
-
-  def self.down(); end
-
-  def self.erase_char(); end
-
-  def self.erase_line(); end
-
-  def self.green(); end
-
-  def self.italic(); end
-
-  def self.left(); end
-
-  def self.magenta(); end
-
-  def self.no_underline(); end
-
-  def self.red(); end
-
-  def self.reset(); end
-
-  def self.right(); end
-
-  def self.strikethrough(); end
-
-  def self.underline(); end
-
-  def self.up(); end
-
-  def self.yellow(); end
-end
-
 module URI
   include ::URI::RFC2396_REGEXP
 end
