@@ -156,7 +156,7 @@ describe Utils::Autoremove do
 
     specify "multiple dependents" do
       expect(described_class.send(:formulae_with_cask_dependents, casks_multiple_deps))
-        .to match_array([formula_with_deps, formula_is_dep1, formula_is_dep2])
+        .to contain_exactly(formula_with_deps, formula_is_dep1, formula_is_dep2)
     end
   end
 end
