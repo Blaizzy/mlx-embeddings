@@ -26,8 +26,11 @@ module SharedEnvExtension
 
   sig { returns(T::Boolean) }
   def no_fixup_chains_support?
-    ld_v = Utils.safe_popen_read("/usr/bin/ld", "-v", err: :out).lines.first.chomp
-    ld_version = Version.parse(ld_v[/\d+(\.\d+)*$/])
+    return false if MacOS.version <= :catalina
+
+    # Note: `-version_details` is supported in Xcode 10.2 at the earliest.
+    ld_version_details = JSON.parse(Utils.safe_popen_read("/usr/bin/ld", "-version_details"))
+    ld_version = Version.parse(ld_version_details["version"])
 
     # This is supported starting Xcode 13, which ships ld64-711.
     # https://developer.apple.com/documentation/xcode-release-notes/xcode-13-release-notes
