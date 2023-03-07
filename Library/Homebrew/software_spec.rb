@@ -286,7 +286,7 @@ class HeadSoftwareSpec < SoftwareSpec
     @resource.version = Version.create("HEAD")
   end
 
-  def verify_download_integrity(_fn)
+  def verify_download_integrity(_filename)
     # no-op
   end
 end

@@ -2281,8 +2281,8 @@ class Formula
   end
 
   # @private
-  def verify_download_integrity(fn)
-    active_spec.verify_download_integrity(fn)
+  def verify_download_integrity(filename)
+    active_spec.verify_download_integrity(filename)
   end
 
   # @private
