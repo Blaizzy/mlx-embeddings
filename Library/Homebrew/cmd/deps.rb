@@ -196,17 +196,17 @@ module Homebrew
     str
   end
 
-  def self.deps_for_dependent(d, args:, recursive: false)
+  def self.deps_for_dependent(dependency, args:, recursive: false)
     includes, ignores = args_includes_ignores(args)
 
-    deps = d.runtime_dependencies if @use_runtime_dependencies
+    deps = dependency.runtime_dependencies if @use_runtime_dependencies
 
     if recursive
-      deps ||= recursive_includes(Dependency, d, includes, ignores)
-      reqs   = recursive_includes(Requirement, d, includes, ignores)
+      deps ||= recursive_includes(Dependency, dependency, includes, ignores)
+      reqs   = recursive_includes(Requirement, dependency, includes, ignores)
     else
-      deps ||= reject_ignores(d.deps, ignores, includes)
-      reqs   = reject_ignores(d.requirements, ignores, includes)
+      deps ||= reject_ignores(dependency.deps, ignores, includes)
+      reqs   = reject_ignores(dependency.requirements, ignores, includes)
     end
 
     deps + reqs.to_a

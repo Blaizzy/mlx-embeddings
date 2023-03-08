@@ -183,7 +183,6 @@ Naming/MethodName:
     - '\A(fetch_)?HEAD\?\Z'
 
 # allow those that are standard
-# TODO: try to remove some of these
 Naming/MethodParameterName:
   inherit_mode:
     merge:
@@ -194,7 +193,6 @@ Naming/MethodParameterName:
       "b",
       "c1",
       "c2",
-      "d",
       "e",
       "f",
       "ff",
