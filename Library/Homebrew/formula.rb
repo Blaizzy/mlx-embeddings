@@ -622,9 +622,9 @@ class Formula
   # This directory points to {#opt_prefix} if it exists and if #{prefix} is not
   # called from within the same formula's {#install} or {#post_install} methods.
   # Otherwise, return the full path to the formula's versioned cellar.
-  def prefix(v = pkg_version)
-    versioned_prefix = versioned_prefix(v)
-    if !@prefix_returns_versioned_prefix && v == pkg_version &&
+  def prefix(version = pkg_version)
+    versioned_prefix = versioned_prefix(version)
+    if !@prefix_returns_versioned_prefix && version == pkg_version &&
        versioned_prefix.directory? && Keg.new(versioned_prefix).optlinked?
       opt_prefix
     else
@@ -643,10 +643,10 @@ class Formula
   end
 
   # If a formula's linked keg points to the prefix.
-  def prefix_linked?(v = pkg_version)
+  def prefix_linked?(version = pkg_version)
     return false unless linked?
 
-    linked_keg.resolved_path == versioned_prefix(v)
+    linked_keg.resolved_path == versioned_prefix(version)
   end
 
   # {PkgVersion} of the linked keg for the formula.
@@ -2281,8 +2281,8 @@ class Formula
   end
 
   # @private
-  def verify_download_integrity(fn)
-    active_spec.verify_download_integrity(fn)
+  def verify_download_integrity(filename)
+    active_spec.verify_download_integrity(filename)
   end
 
   # @private
@@ -2636,8 +2636,8 @@ class Formula
 
   # Returns the prefix for a given formula version number.
   # @private
-  def versioned_prefix(v)
-    rack/v
+  def versioned_prefix(version)
+    rack/version
   end
 
   def exec_cmd(cmd, args, out, logfn)

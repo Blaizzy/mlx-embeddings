@@ -182,8 +182,7 @@ Naming/MethodName:
   AllowedPatterns:
     - '\A(fetch_)?HEAD\?\Z'
 
-# allow those that are standard
-# TODO: try to remove some of these
+# TODO: remove all of these
 Naming/MethodParameterName:
   inherit_mode:
     merge:
@@ -192,22 +191,12 @@ Naming/MethodParameterName:
     [
       "a",
       "b",
-      "cc",
       "c1",
       "c2",
-      "d",
       "e",
       "f",
-      "ff",
-      "fn",
-      "id",
       "o",
-      "p",
       "pr",
-      "r",
-      "rb",
-      "s",
-      "v",
     ]
 
 # Both styles are used depending on context,

@@ -78,7 +78,7 @@ module OS
       false
     end
 
-    def sdk_path_if_needed(_v = nil)
+    def sdk_path_if_needed(_version = nil)
       nil
     end
 

@@ -118,9 +118,9 @@ module Readall
 
     private
 
-    def syntax_errors_or_warnings?(rb)
+    def syntax_errors_or_warnings?(filename)
       # Retrieve messages about syntax errors/warnings printed to `$stderr`.
-      _, err, status = system_command(RUBY_PATH, args: ["-c", "-w", rb], print_stderr: false)
+      _, err, status = system_command(RUBY_PATH, args: ["-c", "-w", filename], print_stderr: false)
 
       # Ignore unnecessary warning about named capture conflicts.
       # See https://bugs.ruby-lang.org/issues/12359.

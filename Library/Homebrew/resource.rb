@@ -187,17 +187,17 @@ class Resource
     download
   end
 
-  def verify_download_integrity(fn)
-    if fn.file?
-      ohai "Verifying checksum for '#{fn.basename}'" if verbose?
-      fn.verify_checksum(checksum)
+  def verify_download_integrity(filename)
+    if filename.file?
+      ohai "Verifying checksum for '#{filename.basename}'" if verbose?
+      filename.verify_checksum(checksum)
     end
   rescue ChecksumMissingError
     opoo <<~EOS
-      Cannot verify integrity of '#{fn.basename}'.
+      Cannot verify integrity of '#{filename.basename}'.
       No checksum was provided for this resource.
       For your reference, the checksum is:
-        sha256 "#{fn.sha256}"
+        sha256 "#{filename.sha256}"
     EOS
   end
 

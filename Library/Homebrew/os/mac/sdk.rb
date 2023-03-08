@@ -42,9 +42,9 @@ module OS
 
       class NoSDKError < StandardError; end
 
-      sig { params(v: OS::Mac::Version).returns(SDK) }
-      def sdk_for(v)
-        sdk = all_sdks.find { |s| s.version == v }
+      sig { params(version: OS::Mac::Version).returns(SDK) }
+      def sdk_for(version)
+        sdk = all_sdks.find { |s| s.version == version }
         raise NoSDKError if sdk.nil?
 
         sdk
@@ -80,13 +80,13 @@ module OS
         @all_sdks
       end
 
-      sig { params(v: T.nilable(OS::Mac::Version)).returns(T.nilable(SDK)) }
-      def sdk_if_applicable(v = nil)
+      sig { params(version: T.nilable(OS::Mac::Version)).returns(T.nilable(SDK)) }
+      def sdk_if_applicable(version = nil)
         sdk = begin
-          if v.blank?
+          if version.blank?
             sdk_for OS::Mac.version
           else
-            sdk_for v
+            sdk_for version
           end
         rescue NoSDKError
           latest_sdk
@@ -95,7 +95,7 @@ module OS
 
         # On OSs lower than 11, whenever the major versions don't match,
         # only return an SDK older than the OS version if it was specifically requested
-        return if v.blank? && sdk.version < OS::Mac.version
+        return if version.blank? && sdk.version < OS::Mac.version
 
         sdk
       end

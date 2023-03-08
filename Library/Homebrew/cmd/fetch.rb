@@ -130,12 +130,12 @@ module Homebrew
     end
   end
 
-  def self.fetch_resource(r, args:)
-    puts "Resource: #{r.name}"
-    fetch_fetchable r, args: args
+  def self.fetch_resource(resource, args:)
+    puts "Resource: #{resource.name}"
+    fetch_fetchable resource, args: args
   rescue ChecksumMismatchError => e
-    retry if retry_fetch?(r, args: args)
-    opoo "Resource #{r.name} reports different sha256: #{e.expected}"
+    retry if retry_fetch?(resource, args: args)
+    opoo "Resource #{resource.name} reports different sha256: #{e.expected}"
   end
 
   def self.fetch_formula(f, args:)
@@ -152,8 +152,8 @@ module Homebrew
     opoo "Cask reports different sha256: #{e.expected}"
   end
 
-  def self.fetch_patch(p, args:)
-    fetch_fetchable p, args: args
+  def self.fetch_patch(patch, args:)
+    fetch_fetchable patch, args: args
   rescue ChecksumMismatchError => e
     opoo "Patch reports different sha256: #{e.expected}"
     Homebrew.failed = true

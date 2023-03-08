@@ -140,14 +140,14 @@ module OS
         @sdk_locator ||= XcodeSDKLocator.new
       end
 
-      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
-      def sdk(v = nil)
-        sdk_locator.sdk_if_applicable(v)
+      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
+      def sdk(version = nil)
+        sdk_locator.sdk_if_applicable(version)
       end
 
-      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
-      def sdk_path(v = nil)
-        sdk(v)&.path
+      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
+      def sdk_path(version = nil)
+        sdk(version)&.path
       end
 
       sig { returns(String) }
@@ -290,14 +290,14 @@ module OS
         @sdk_locator ||= CLTSDKLocator.new
       end
 
-      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
-      def sdk(v = nil)
-        sdk_locator.sdk_if_applicable(v)
+      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
+      def sdk(version = nil)
+        sdk_locator.sdk_if_applicable(version)
       end
 
-      sig { params(v: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
-      def sdk_path(v = nil)
-        sdk(v)&.path
+      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
+      def sdk_path(version = nil)
+        sdk(version)&.path
       end
 
       sig { returns(String) }

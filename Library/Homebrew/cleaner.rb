@@ -117,8 +117,8 @@ class Cleaner
   #
   # lib may have a large directory tree (see Erlang for instance), and
   # clean_dir applies cleaning rules to the entire tree
-  def clean_dir(d)
-    d.find do |path|
+  def clean_dir(directory)
+    directory.find do |path|
       path.extend(ObserverPathnameExtension)
 
       Find.prune if @f.skip_clean? path
