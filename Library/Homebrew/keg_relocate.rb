@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 class Keg
@@ -44,7 +44,7 @@ class Keg
         key.is_a?(String) ? key.length : 999
       end.reverse
 
-      any_changed = false
+      any_changed = T.let(nil, T.nilable(String))
       sorted_keys.each do |key|
         changed = text.gsub!(key, replacements[key])
         any_changed ||= changed
@@ -144,7 +144,7 @@ class Keg
   def replace_text_in_files(relocation, files: nil)
     files ||= text_files | libtool_files
 
-    changed_files = []
+    changed_files = T.let([], Array)
     files.map(&path.method(:join)).group_by { |f| f.stat.ino }.each_value do |first, *rest|
       s = first.open("rb", &:read)
 
@@ -179,11 +179,11 @@ class Keg
         binary = File.binread file
         odebug "Replacing build prefix in: #{file}"
         binary_strings = binary.split(/#{NULL_BYTE}/o, -1)
-        match_indices = binary_strings.each_index.select { |i| binary_strings[i].include?(old_prefix) }
+        match_indices = binary_strings.each_index.select { |i| binary_strings.fetch(i).include?(old_prefix) }
 
         # Only perform substitution on strings which match prefix regex.
         match_indices.each do |i|
-          s = binary_strings[i]
+          s = binary_strings.fetch(i)
           binary_strings[i] = s.gsub(old_prefix, new_prefix)
                                .ljust(s.size, NULL_BYTE)
         end
