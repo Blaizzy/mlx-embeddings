@@ -9,12 +9,12 @@ describe Array do
       expect([].to_sentence).to eq("")
       expect(["one"].to_sentence).to eq("one")
       expect(["one", "two"].to_sentence).to eq("one and two")
-      expect(["one", "two", "three"].to_sentence).to eq("one, two, and three")
+      expect(["one", "two", "three"].to_sentence).to eq("one, two and three")
     end
 
     it "converts an array to a sentence with a custom connector" do
-      expect(["one", "two", "three"].to_sentence(words_connector: " ")).to eq("one two, and three")
-      expect(["one", "two", "three"].to_sentence(words_connector: " & ")).to eq("one & two, and three")
+      expect(["one", "two", "three"].to_sentence(words_connector: " ")).to eq("one two and three")
+      expect(["one", "two", "three"].to_sentence(words_connector: " & ")).to eq("one & two and three")
     end
 
     it "converts an array to a sentence with a custom last word connector" do
@@ -38,7 +38,7 @@ describe Array do
     end
 
     it "converts an array with blank elements to a sentence" do
-      expect([nil, "one", "", "two", "three"].to_sentence).to eq(", one, , two, and three")
+      expect([nil, "one", "", "two", "three"].to_sentence).to eq(", one, , two and three")
     end
 
     it "does not return a frozen string" do
