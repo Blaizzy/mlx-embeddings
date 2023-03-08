@@ -353,6 +353,7 @@ module Homebrew
       github_release_data = begin
         GitHub::API.open_rest("#{GitHub::API_URL}/repos/#{owner}/#{repo}/releases/tags/#{tag}")
       rescue GitHub::API::HTTPNotFoundError
+        # If this is a 404: we can't do anything.
         nil
       end
 
