@@ -357,12 +357,14 @@ module Homebrew
         nil
       end
 
-      pr_message += <<~EOS if github_release_data.present?
-        <details>
-          <summary>#{github_release_data["prerelease"] ? "pre" : ""}release notes</summary>
-          #{github_release_data["body"]}
-        </details>
-      EOS
+      pr_message += if github_release_data.present?
+        pre = "pre" if github_release_data["prerelease"].present?
+        <<~XML 
+          <details>
+            <summary>#{pre}release notes</summary>
+            #{github_release_data["body"]}
+          </details>
+        XML
     end
 
     pr_info = {
