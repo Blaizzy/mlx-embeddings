@@ -357,14 +357,15 @@ module Homebrew
         nil
       end
 
-      pr_message += if github_release_data.present?
+      if github_release_data.present?
         pre = "pre" if github_release_data["prerelease"].present?
-        <<~XML 
+        pr_message += <<~XML
           <details>
             <summary>#{pre}release notes</summary>
             #{github_release_data["body"]}
           </details>
         XML
+      end
     end
 
     pr_info = {
