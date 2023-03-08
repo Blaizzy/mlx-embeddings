@@ -182,7 +182,7 @@ Naming/MethodName:
   AllowedPatterns:
     - '\A(fetch_)?HEAD\?\Z'
 
-# allow those that are standard
+# TODO: remove all of these
 Naming/MethodParameterName:
   inherit_mode:
     merge:
