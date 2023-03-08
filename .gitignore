@@ -194,6 +194,7 @@
 !/.dockerignore
 !/.editorconfig
 !/.gitignore
+!/.irb_config
 !/.yardopts
 !/.vale.ini
 !/.shellcheckrc

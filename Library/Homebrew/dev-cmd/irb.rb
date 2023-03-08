@@ -48,6 +48,8 @@ module Homebrew
     # work around IRB modifying ARGV.
     args = irb_args.parse(ARGV.dup.freeze)
 
+    clean_argv
+
     if args.examples?
       puts <<~EOS
         'v8'.f # => instance of the v8 formula
@@ -64,7 +66,6 @@ module Homebrew
     if args.pry?
       Homebrew.install_gem_setup_path! "pry"
       require "pry"
-      Pry.config.prompt_name = "brew"
     else
       require "irb"
     end
@@ -75,9 +76,25 @@ module Homebrew
 
     ohai "Interactive Homebrew Shell", "Example commands available with: `brew irb --examples`"
     if args.pry?
+      Pry.config.should_load_rc = false # skip loading .pryrc
+      Pry.config.history_file = "#{Dir.home}/.brew_pry_history"
+      Pry.config.memory_size = 100 # max lines to save to history file
+      Pry.config.prompt_name = "brew"
+
       Pry.start
     else
+      ENV["IRBRC"] = (HOMEBREW_LIBRARY_PATH/"brew_irbrc").to_s
+
       IRB.start
     end
+  end
+
+  # Remove the `--debug`, `--verbose` and `--quiet` options which cause problems
+  # for IRB and have already been parsed by the CLI::Parser.
+  def clean_argv
+    global_options = Homebrew::CLI::Parser
+                     .global_options
+                     .flat_map { |options| options[0..1] }
+    ARGV.reject! { |arg| global_options.include?(arg) }
   end
 end
