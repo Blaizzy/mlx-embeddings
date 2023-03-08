@@ -487,7 +487,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
         #   content-disposition: attachment; filename="myapp-1.2.3.pkg"; filename*=UTF-8''"myapp-1.2.3.pkg"
         # Then the encoded_filename will come back as the empty string, in which case we should fall back to the
         # `filename` parameter.
-        if encoding && encoded_filename.present?
+        if encoding.present? && encoded_filename.present?
           filename = URI.decode_www_form_component(encoded_filename).encode(encoding)
         end
       end
