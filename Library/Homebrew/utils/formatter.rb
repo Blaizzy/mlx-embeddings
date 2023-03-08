@@ -50,14 +50,14 @@ module Formatter
   # so we always wrap one word before an option.
   # @see https://github.com/Homebrew/brew/pull/12672
   # @see https://macromates.com/blog/2006/wrapping-text-with-regular-expressions/
-  def format_help_text(str, width: 172)
+  def format_help_text(string, width: 172)
     desc = OPTION_DESC_WIDTH
     indent = width - desc
-    str.gsub(/(?<=\S) *\n(?=\S)/, " ")
-       .gsub(/([`>)\]]:) /, "\\1\n    ")
-       .gsub(/^( +-.+  +(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)(?!-)\n?/, "\\1\\2\n#{" " * indent}")
-       .gsub(/^( {#{indent}}(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)(?!-)\n?/, "\\1\\2\n#{" " * indent}")
-       .gsub(/(.{1,#{width}})( +|$)(?!-)\n?/, "\\1\n")
+    string.gsub(/(?<=\S) *\n(?=\S)/, " ")
+          .gsub(/([`>)\]]:) /, "\\1\n    ")
+          .gsub(/^( +-.+  +(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)(?!-)\n?/, "\\1\\2\n#{" " * indent}")
+          .gsub(/^( {#{indent}}(?=\S.{#{desc}}))(.{1,#{desc}})( +|$)(?!-)\n?/, "\\1\\2\n#{" " * indent}")
+          .gsub(/(.{1,#{width}})( +|$)(?!-)\n?/, "\\1\n")
   end
 
   def url(string)
