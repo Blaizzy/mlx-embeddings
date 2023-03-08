@@ -152,8 +152,8 @@ module Homebrew
     opoo "Cask reports different sha256: #{e.expected}"
   end
 
-  def self.fetch_patch(p, args:)
-    fetch_fetchable p, args: args
+  def self.fetch_patch(patch, args:)
+    fetch_fetchable patch, args: args
   rescue ChecksumMismatchError => e
     opoo "Patch reports different sha256: #{e.expected}"
     Homebrew.failed = true
