@@ -9,28 +9,28 @@ describe Homebrew::Livecheck::Strategy::Git do
   let(:git_url) { "https://github.com/Homebrew/brew.git" }
   let(:non_git_url) { "https://brew.sh/test" }
 
-  let(:tags) {
+  let(:tags) do
     {
       normal:  ["brew/1.2", "brew/1.2.1", "brew/1.2.2", "brew/1.2.3", "brew/1.2.4", "1.2.5"],
       hyphens: ["brew/1-2", "brew/1-2-1", "brew/1-2-2", "brew/1-2-3", "brew/1-2-4", "1-2-5"],
     }
-  }
+  end
 
-  let(:regexes) {
+  let(:regexes) do
     {
       standard: /^v?(\d+(?:\.\d+)+)$/i,
       hyphens:  /^v?(\d+(?:[.-]\d+)+)$/i,
       brew:     %r{^brew/v?(\d+(?:\.\d+)+)$}i,
     }
-  }
+  end
 
-  let(:versions) {
+  let(:versions) do
     {
       default:        ["1.2", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.2.5"],
       standard_regex: ["1.2.5"],
       brew_regex:     ["1.2", "1.2.1", "1.2.2", "1.2.3", "1.2.4"],
     }
-  }
+  end
 
   describe "::tag_info", :needs_network do
     it "returns the Git tags for the provided remote URL that match the regex provided" do

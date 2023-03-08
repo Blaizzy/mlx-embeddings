@@ -6,9 +6,9 @@ require "lazy_object"
 describe LazyObject do
   describe "#initialize" do
     it "does not evaluate the block" do
-      expect { |block|
+      expect do |block|
         described_class.new(&block)
-      }.not_to yield_control
+      end.not_to yield_control
     end
   end
 

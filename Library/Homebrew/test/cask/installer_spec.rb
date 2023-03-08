@@ -59,16 +59,16 @@ describe Cask::Installer, :cask do
 
     it "blows up on a bad checksum" do
       bad_checksum = Cask::CaskLoader.load(cask_path("bad-checksum"))
-      expect {
+      expect do
         described_class.new(bad_checksum).install
-      }.to raise_error(ChecksumMismatchError)
+      end.to raise_error(ChecksumMismatchError)
     end
 
     it "blows up on a missing checksum" do
       missing_checksum = Cask::CaskLoader.load(cask_path("missing-checksum"))
-      expect {
+      expect do
         described_class.new(missing_checksum).install
-      }.to output(/Cannot verify integrity/).to_stderr
+      end.to output(/Cannot verify integrity/).to_stderr
     end
 
     it "installs fine if sha256 :no_check is used" do
@@ -81,9 +81,9 @@ describe Cask::Installer, :cask do
 
     it "fails to install if sha256 :no_check is used with --require-sha" do
       no_checksum = Cask::CaskLoader.load(cask_path("no-checksum"))
-      expect {
+      expect do
         described_class.new(no_checksum, require_sha: true).install
-      }.to raise_error(/--require-sha/)
+      end.to raise_error(/--require-sha/)
     end
 
     it "installs fine if sha256 :no_check is used with --require-sha and --force" do
@@ -97,9 +97,9 @@ describe Cask::Installer, :cask do
     it "prints caveats if they're present" do
       with_caveats = Cask::CaskLoader.load(cask_path("with-caveats"))
 
-      expect {
+      expect do
         described_class.new(with_caveats).install
-      }.to output(/Here are some things you might want to know/).to_stdout
+      end.to output(/Here are some things you might want to know/).to_stdout
 
       expect(with_caveats).to be_installed
     end
@@ -107,9 +107,9 @@ describe Cask::Installer, :cask do
     it "prints installer :manual instructions when present" do
       with_installer_manual = Cask::CaskLoader.load(cask_path("with-installer-manual"))
 
-      expect {
+      expect do
         described_class.new(with_installer_manual).install
-      }.to output(
+      end.to output(
         <<~EOS,
           ==> Downloading file://#{HOMEBREW_LIBRARY_PATH}/test/support/fixtures/cask/caffeine.zip
           ==> Installing Cask with-installer-manual
@@ -138,9 +138,9 @@ describe Cask::Installer, :cask do
 
       described_class.new(with_auto_updates).install
 
-      expect {
+      expect do
         described_class.new(with_auto_updates, force: true).install
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     # unlike the CLI, the internal interface throws exception on double-install
@@ -153,9 +153,9 @@ describe Cask::Installer, :cask do
 
       installer.install
 
-      expect {
+      expect do
         installer.install
-      }.to raise_error(Cask::CaskAlreadyInstalledError)
+      end.to raise_error(Cask::CaskAlreadyInstalledError)
     end
 
     it "allows already-installed Casks to be installed if force is provided" do
@@ -165,9 +165,9 @@ describe Cask::Installer, :cask do
 
       described_class.new(transmission).install
 
-      expect {
+      expect do
         described_class.new(transmission, force: true).install
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "works naked-pkg-based Casks" do
@@ -215,9 +215,9 @@ describe Cask::Installer, :cask do
 
     it "don't print cask installed message with --quiet option" do
       caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
-      expect {
+      expect do
         described_class.new(caffeine, quiet: true).install
-      }.to output(nil).to_stdout
+      end.to output(nil).to_stdout
     end
 
     it "does NOT generate LATEST_DOWNLOAD_SHA256 file for installed Cask without version :latest" do

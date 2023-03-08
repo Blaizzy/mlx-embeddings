@@ -13,14 +13,14 @@ describe Cask::Cmd::Upgrade, :cask do
   let(:local_caffeine) { Cask::CaskLoader.load("local-caffeine") }
 
   context "when the upgrade is successful" do
-    let(:installed) {
+    let(:installed) do
       [
         "outdated/local-caffeine",
         "outdated/local-transmission",
         "outdated/auto-updates",
         "outdated/version-latest",
       ]
-    }
+    end
 
     before do
       installed.each { |cask| Cask::Cmd::Install.run(cask) }
@@ -178,14 +178,14 @@ describe Cask::Cmd::Upgrade, :cask do
   end
 
   context "when the upgrade is a dry run" do
-    let(:installed) {
+    let(:installed) do
       [
         "outdated/local-caffeine",
         "outdated/local-transmission",
         "outdated/auto-updates",
         "outdated/version-latest",
       ]
-    }
+    end
 
     before do
       installed.each { |cask| Cask::Cmd::Install.run(cask) }
@@ -347,12 +347,12 @@ describe Cask::Cmd::Upgrade, :cask do
   end
 
   context "when an upgrade failed" do
-    let(:installed) {
+    let(:installed) do
       [
         "outdated/bad-checksum",
         "outdated/will-fail-if-upgraded",
       ]
-    }
+    end
 
     before do
       installed.each { |cask| Cask::Cmd::Install.run(cask) }
@@ -372,9 +372,9 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(will_fail_if_upgraded_path).to be_a_file
       expect(will_fail_if_upgraded.versions).to include("1.2.2")
 
-      expect {
+      expect do
         described_class.run("will-fail-if-upgraded")
-      }.to raise_error(Cask::CaskError).and output(output_reverted).to_stderr
+      end.to raise_error(Cask::CaskError).and output(output_reverted).to_stderr
 
       expect(will_fail_if_upgraded).to be_installed
       expect(will_fail_if_upgraded_path).to be_a_file
@@ -390,9 +390,9 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(bad_checksum_path).to be_a_directory
       expect(bad_checksum.versions).to include("1.2.2")
 
-      expect {
+      expect do
         described_class.run("bad-checksum")
-      }.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
+      end.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
@@ -402,13 +402,13 @@ describe Cask::Cmd::Upgrade, :cask do
   end
 
   context "when there were multiple failures" do
-    let(:installed) {
+    let(:installed) do
       [
         "outdated/bad-checksum",
         "outdated/local-transmission",
         "outdated/bad-checksum2",
       ]
-    }
+    end
 
     before do
       installed.each { |cask| Cask::Cmd::Install.run(cask) }
@@ -435,9 +435,9 @@ describe Cask::Cmd::Upgrade, :cask do
       expect(bad_checksum_2_path).to be_a_file
       expect(bad_checksum_2.versions).to include("1.2.2")
 
-      expect {
+      expect do
         described_class.run
-      }.to raise_error(Cask::MultipleCaskErrors)
+      end.to raise_error(Cask::MultipleCaskErrors)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory

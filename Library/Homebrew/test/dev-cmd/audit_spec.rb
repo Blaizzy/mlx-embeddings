@@ -846,19 +846,19 @@ module Homebrew
             fa.audit_deps
           end
 
-          its(:new_formula_problems) {
+          its(:new_formula_problems) do
             are_expected.to include(a_hash_including(message: a_string_matching(/is provided by macOS/)))
-          }
+          end
         end
       end
     end
 
     describe "#audit_revision_and_version_scheme" do
-      subject {
+      subject do
         fa = described_class.new(Formulary.factory(formula_path), git: true)
         fa.audit_revision_and_version_scheme
         fa.problems.first&.fetch(:message)
-      }
+      end
 
       let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
       let(:foo_version) { Count.increment }

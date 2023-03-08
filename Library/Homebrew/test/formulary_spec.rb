@@ -70,15 +70,15 @@ describe Formulary do
     end
 
     it "raises an error if the Formula cannot be found" do
-      expect {
+      expect do
         described_class.factory("not_existed_formula")
-      }.to raise_error(FormulaUnavailableError)
+      end.to raise_error(FormulaUnavailableError)
     end
 
     it "raises an error if ref is nil" do
-      expect {
+      expect do
         described_class.factory(nil)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     context "with sharded Formula directory" do
@@ -106,9 +106,9 @@ describe Formulary do
       end
 
       it "raises an error" do
-        expect {
+        expect do
           described_class.factory(formula_name)
-        }.to raise_error(FormulaClassUnavailableError)
+        end.to raise_error(FormulaClassUnavailableError)
       end
     end
 
@@ -200,9 +200,9 @@ describe Formulary do
       end
 
       it "raises an error when the Formula cannot be found" do
-        expect {
+        expect do
           described_class.factory("#{tap}/not_existed_formula")
-        }.to raise_error(TapFormulaUnavailableError)
+        end.to raise_error(TapFormulaUnavailableError)
       end
 
       it "returns a Formula when given a fully qualified name" do
@@ -213,9 +213,9 @@ describe Formulary do
         (another_tap.path/"Formula").mkpath
         (another_tap.path/"Formula/#{formula_name}.rb").write formula_content
 
-        expect {
+        expect do
           described_class.factory(formula_name)
-        }.to raise_error(TapFormulaAmbiguityError)
+        end.to raise_error(TapFormulaAmbiguityError)
       end
     end
 
@@ -354,9 +354,9 @@ describe Formulary do
 
         expect(formula.caveats).to eq "example caveat string"
 
-        expect {
+        expect do
           formula.install
-        }.to raise_error("Cannot build from source from abstract formula.")
+        end.to raise_error("Cannot build from source from abstract formula.")
       end
 
       it "returns a deprecated Formula when given a name" do
@@ -365,9 +365,9 @@ describe Formulary do
         formula = described_class.factory(formula_name)
         expect(formula).to be_a(Formula)
         expect(formula.deprecated?).to be true
-        expect {
+        expect do
           formula.install
-        }.to raise_error("Cannot build from source from abstract formula.")
+        end.to raise_error("Cannot build from source from abstract formula.")
       end
 
       it "returns a disabled Formula when given a name" do
@@ -376,9 +376,9 @@ describe Formulary do
         formula = described_class.factory(formula_name)
         expect(formula).to be_a(Formula)
         expect(formula.disabled?).to be true
-        expect {
+        expect do
           formula.install
-        }.to raise_error("Cannot build from source from abstract formula.")
+        end.to raise_error("Cannot build from source from abstract formula.")
       end
 
       it "returns a Formula with variations when given a name", :needs_macos do
@@ -439,9 +439,9 @@ describe Formulary do
     end
 
     it "raises an error if the Formula is not available" do
-      expect {
+      expect do
         described_class.to_rack("a/b/#{formula_name}")
-      }.to raise_error(TapFormulaUnavailableError)
+      end.to raise_error(TapFormulaUnavailableError)
     end
   end
 

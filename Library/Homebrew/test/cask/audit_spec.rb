@@ -70,14 +70,14 @@ describe Cask::Audit, :cask do
   let(:except) { [] }
   let(:strict) { nil }
   let(:token_conflicts) { nil }
-  let(:audit) {
+  let(:audit) do
     described_class.new(cask, online:          online,
                               strict:          strict,
                               new_cask:        new_cask,
                               token_conflicts: token_conflicts,
                               only:            only,
                               except:          except)
-  }
+  end
 
   describe "#new" do
     context "when `new_cask` is specified" do

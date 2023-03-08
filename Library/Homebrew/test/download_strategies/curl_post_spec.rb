@@ -18,7 +18,7 @@ describe CurlPostDownloadStrategy do
     end
 
     context "with :using and :data specified" do
-      let(:specs) {
+      let(:specs) do
         {
           using: :post,
           data:  {
@@ -26,7 +26,7 @@ describe CurlPostDownloadStrategy do
             is:   "good",
           },
         }
-      }
+      end
 
       it "adds the appropriate curl args" do
         expect(strategy).to receive(:system_command)

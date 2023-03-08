@@ -206,12 +206,12 @@ describe Caveats do
     end
 
     context "when f.keg_only is not nil" do
-      let(:f) {
+      let(:f) do
         formula do
           url "foo-1.0"
           keg_only "some reason"
         end
-      }
+      end
       let(:caveats) { described_class.new(f).caveats }
 
       it "tells formula is keg_only" do
@@ -252,11 +252,11 @@ describe Caveats do
     end
 
     describe "shell completions" do
-      let(:f) {
+      let(:f) do
         formula do
           url "foo-1.0"
         end
-      }
+      end
       let(:caveats) { described_class.new(f).caveats }
       let(:path) { f.prefix.resolved_path }
 

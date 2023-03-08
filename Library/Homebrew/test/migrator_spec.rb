@@ -57,15 +57,15 @@ describe Migrator do
 
   describe "::new" do
     it "raises an error if there is no old name" do
-      expect {
+      expect do
         described_class.new(old_formula)
-      }.to raise_error(Migrator::MigratorNoOldnameError)
+      end.to raise_error(Migrator::MigratorNoOldnameError)
     end
 
     it "raises an error if there is no old path" do
-      expect {
+      expect do
         described_class.new(new_formula)
-      }.to raise_error(Migrator::MigratorNoOldpathError)
+      end.to raise_error(Migrator::MigratorNoOldpathError)
     end
 
     it "raises an error if the Taps differ" do
@@ -76,9 +76,9 @@ describe Migrator do
       tab.source["tap"] = "homebrew/core"
       tab.write
 
-      expect {
+      expect do
         described_class.new(new_formula)
-      }.to raise_error(Migrator::MigratorDifferentTapsError)
+      end.to raise_error(Migrator::MigratorDifferentTapsError)
     end
   end
 

@@ -2,13 +2,13 @@
 # frozen_string_literal: true
 
 describe Cask::Cmd::Fetch, :cask do
-  let(:local_transmission) {
+  let(:local_transmission) do
     Cask::CaskLoader.load(cask_path("local-transmission"))
-  }
+  end
 
-  let(:local_caffeine) {
+  let(:local_caffeine) do
     Cask::CaskLoader.load(cask_path("local-caffeine"))
-  }
+  end
 
   it "allows downloading the installer of a Cask" do
     transmission_location = CurlDownloadStrategy.new(
@@ -53,8 +53,8 @@ describe Cask::Cmd::Fetch, :cask do
   end
 
   it "properly handles Casks that are not present" do
-    expect {
+    expect do
       described_class.run("notacask")
-    }.to raise_error(Cask::CaskUnavailableError)
+    end.to raise_error(Cask::CaskUnavailableError)
   end
 end

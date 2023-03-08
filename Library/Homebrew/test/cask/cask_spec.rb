@@ -54,9 +54,9 @@ describe Cask::Cask, :cask do
     end
 
     it "raises an error when failing to download a Cask from a URL" do
-      expect {
+      expect do
         Cask::CaskLoader.load("file://#{tap_path}/Casks/notacask.rb")
-      }.to raise_error(Cask::CaskUnavailableError)
+      end.to raise_error(Cask::CaskUnavailableError)
     end
 
     it "returns an instance of the Cask from a relative file location" do
@@ -71,9 +71,9 @@ describe Cask::Cask, :cask do
     end
 
     it "raises an error when attempting to load a Cask that doesn't exist" do
-      expect {
+      expect do
         Cask::CaskLoader.load("notacask")
-      }.to raise_error(Cask::CaskUnavailableError)
+      end.to raise_error(Cask::CaskUnavailableError)
     end
   end
 
@@ -244,7 +244,7 @@ describe Cask::Cask, :cask do
 
   describe "#to_hash_with_variations" do
     let!(:original_macos_version) { MacOS.full_version.to_s }
-    let(:expected_versions_variations) {
+    let(:expected_versions_variations) do
       <<~JSON
         {
           "arm64_big_sur": {
@@ -272,8 +272,8 @@ describe Cask::Cask, :cask do
           }
         }
       JSON
-    }
-    let(:expected_sha256_variations) {
+    end
+    let(:expected_sha256_variations) do
       <<~JSON
         {
           "monterey": {
@@ -294,7 +294,7 @@ describe Cask::Cask, :cask do
           }
         }
       JSON
-    }
+    end
 
     before do
       # Use a more limited symbols list to shorten the variations hash

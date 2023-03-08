@@ -96,9 +96,9 @@ describe FormulaInstaller do
 
       fi = described_class.new(f)
 
-      expect {
+      expect do
         fi.check_install_sanity
-      }.to raise_error(CannotInstallFormulaError)
+      end.to raise_error(CannotInstallFormulaError)
     end
 
     it "raises on indirect cyclic dependency" do
@@ -129,9 +129,9 @@ describe FormulaInstaller do
 
       fi = described_class.new(formula1)
 
-      expect {
+      expect do
         fi.check_install_sanity
-      }.to raise_error(CannotInstallFormulaError)
+      end.to raise_error(CannotInstallFormulaError)
     end
 
     it "raises on pinned dependency" do
@@ -165,9 +165,9 @@ describe FormulaInstaller do
 
       fi = described_class.new(dependent)
 
-      expect {
+      expect do
         fi.check_install_sanity
-      }.to raise_error(CannotInstallFormulaError)
+      end.to raise_error(CannotInstallFormulaError)
     end
   end
 
@@ -175,17 +175,17 @@ describe FormulaInstaller do
     ENV["HOMEBREW_TEST_NO_EXIT_CLEANUP"] = "1"
     ENV["FAILBALL_BUILD_ERROR"] = "1"
 
-    expect {
+    expect do
       temporary_install(Failball.new)
-    }.to raise_error(BuildError)
+    end.to raise_error(BuildError)
   end
 
   specify "install fails with a RuntimeError when #install raises" do
     ENV["HOMEBREW_TEST_NO_EXIT_CLEANUP"] = "1"
 
-    expect {
+    expect do
       temporary_install(Failball.new)
-    }.to raise_error(RuntimeError)
+    end.to raise_error(RuntimeError)
   end
 
   describe "#caveats" do
@@ -210,9 +210,9 @@ describe FormulaInstaller do
       expect(formula).to receive(:launchd_service_path).and_call_original
 
       installer = described_class.new(formula)
-      expect {
+      expect do
         installer.install_service
-      }.not_to output(/Error: Failed to install service files/).to_stderr
+      end.not_to output(/Error: Failed to install service files/).to_stderr
 
       expect(path).to exist
     end
@@ -236,9 +236,9 @@ describe FormulaInstaller do
       expect(service).to receive(:command).exactly(2).and_return("/bin/sh")
 
       installer = described_class.new(formula)
-      expect {
+      expect do
         installer.install_service
-      }.not_to output(/Error: Failed to install service files/).to_stderr
+      end.not_to output(/Error: Failed to install service files/).to_stderr
 
       expect(launchd_service_path).to exist
       expect(service_path).to exist
@@ -266,9 +266,9 @@ describe FormulaInstaller do
       expect(service).to receive(:command).exactly(2).and_return("/bin/sh")
 
       installer = described_class.new(formula)
-      expect {
+      expect do
         installer.install_service
-      }.not_to output(/Error: Failed to install service files/).to_stderr
+      end.not_to output(/Error: Failed to install service files/).to_stderr
 
       expect(launchd_service_path).to exist
       expect(service_path).to exist
@@ -286,9 +286,9 @@ describe FormulaInstaller do
       expect(formula).not_to receive(:to_systemd_unit)
 
       installer = described_class.new(formula)
-      expect {
+      expect do
         installer.install_service
-      }.not_to output(/Error: Failed to install service files/).to_stderr
+      end.not_to output(/Error: Failed to install service files/).to_stderr
 
       expect(path).not_to exist
     end
@@ -304,9 +304,9 @@ describe FormulaInstaller do
       expect(formula).not_to receive(:launchd_service_path)
 
       installer = described_class.new(formula)
-      expect {
+      expect do
         installer.install_service
-      }.to output("Error: Formula specified both service and plist\n").to_stderr
+      end.to output("Error: Formula specified both service and plist\n").to_stderr
 
       expect(Homebrew).to have_failed
       expect(path).not_to exist

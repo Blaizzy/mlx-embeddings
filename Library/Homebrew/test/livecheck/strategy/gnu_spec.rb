@@ -6,17 +6,17 @@ require "livecheck/strategy/gnu"
 describe Homebrew::Livecheck::Strategy::Gnu do
   subject(:gnu) { described_class }
 
-  let(:gnu_urls) {
+  let(:gnu_urls) do
     {
       no_version_dir: "https://ftp.gnu.org/gnu/abc/abc-1.2.3.tar.gz",
       software_page:  "https://www.gnu.org/software/abc/",
       subdomain:      "https://abc.gnu.org",
       savannah:       "https://download.savannah.gnu.org/releases/abc/abc-1.2.3.tar.gz",
     }
-  }
+  end
   let(:non_gnu_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       no_version_dir: {
         url:   "https://ftp.gnu.org/gnu/abc/",
@@ -32,7 +32,7 @@ describe Homebrew::Livecheck::Strategy::Gnu do
       },
       savannah:       {},
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for a [non-Savannah] GNU URL" do

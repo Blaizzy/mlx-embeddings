@@ -7,14 +7,12 @@ describe Formula do
   describe "::new" do
     matcher :fail_with_invalid do |attr|
       match do |actual|
-        expect {
-          begin
-            actual.call
-          rescue => e
-            expect(e.attr).to eq(attr)
-            raise e
-          end
-        }.to raise_error(FormulaValidationError)
+        expect do
+          actual.call
+        rescue => e
+          expect(e.attr).to eq(attr)
+          raise e
+        end.to raise_error(FormulaValidationError)
       end
 
       def supports_block_expectations?
@@ -23,52 +21,52 @@ describe Formula do
     end
 
     it "can't override the `brew` method" do
-      expect {
+      expect do
         formula do
           def brew; end
         end
-      }.to raise_error(RuntimeError, /You cannot override Formula#brew/)
+      end.to raise_error(RuntimeError, /You cannot override Formula#brew/)
     end
 
     it "validates the `name`" do
-      expect {
+      expect do
         formula "name with spaces" do
           url "foo"
           version "1.0"
         end
-      }.to fail_with_invalid :name
+      end.to fail_with_invalid :name
     end
 
     it "validates the `url`" do
-      expect {
+      expect do
         formula do
           url ""
           version "1"
         end
-      }.to fail_with_invalid :url
+      end.to fail_with_invalid :url
     end
 
     it "validates the `version`" do
-      expect {
+      expect do
         formula do
           url "foo"
           version "version with spaces"
         end
-      }.to fail_with_invalid :version
+      end.to fail_with_invalid :version
 
-      expect {
+      expect do
         formula do
           url "foo"
           version ""
         end
-      }.to fail_with_invalid :version
+      end.to fail_with_invalid :version
 
-      expect {
+      expect do
         formula do
           url "foo"
           version nil
         end
-      }.to fail_with_invalid :version
+      end.to fail_with_invalid :version
     end
 
     specify "head-only is valid" do
@@ -80,11 +78,11 @@ describe Formula do
     end
 
     it "fails when Formula is empty" do
-      expect {
-        formula {
+      expect do
+        formula do
           # do nothing
-        }
-      }.to raise_error(FormulaSpecificationError)
+        end
+      end.to raise_error(FormulaSpecificationError)
     end
   end
 end

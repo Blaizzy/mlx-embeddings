@@ -6,7 +6,7 @@ require "livecheck/strategy/xorg"
 describe Homebrew::Livecheck::Strategy::Xorg do
   subject(:xorg) { described_class }
 
-  let(:xorg_urls) {
+  let(:xorg_urls) do
     {
       app:     "https://www.x.org/archive/individual/app/abc-1.2.3.tar.bz2",
       font:    "https://www.x.org/archive/individual/font/abc-1.2.3.tar.bz2",
@@ -14,10 +14,10 @@ describe Homebrew::Livecheck::Strategy::Xorg do
       ftp_lib: "https://ftp.x.org/archive/individual/lib/libabc-1.2.3.tar.bz2",
       pub_doc: "https://www.x.org/pub/individual/doc/abc-1.2.3.tar.bz2",
     }
-  }
+  end
   let(:non_xorg_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       app:     {
         url:   "https://www.x.org/archive/individual/app/",
@@ -40,7 +40,7 @@ describe Homebrew::Livecheck::Strategy::Xorg do
         regex: /href=.*?abc[._-]v?(\d+(?:\.\d+)+)\.t/i,
       },
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for an X.Org URL" do

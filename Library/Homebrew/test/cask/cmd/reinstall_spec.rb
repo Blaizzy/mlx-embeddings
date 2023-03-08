@@ -19,9 +19,9 @@ describe Cask::Cmd::Reinstall, :cask do
       .*local-caffeine was successfully installed!
     EOS
 
-    expect {
+    expect do
       described_class.run("local-caffeine")
-    }.to output(output).to_stdout
+    end.to output(output).to_stdout
   end
 
   it "displays the reinstallation progress with zapping" do
@@ -44,9 +44,9 @@ describe Cask::Cmd::Reinstall, :cask do
       .*local-caffeine was successfully installed!
     EOS
 
-    expect {
+    expect do
       described_class.run("local-caffeine", "--zap")
-    }.to output(output).to_stdout
+    end.to output(output).to_stdout
   end
 
   it "allows reinstalling a Cask" do

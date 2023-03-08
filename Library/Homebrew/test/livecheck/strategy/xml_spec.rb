@@ -12,7 +12,7 @@ describe Homebrew::Livecheck::Strategy::Xml do
 
   let(:regex) { /^v?(\d+(?:\.\d+)+)$/i }
 
-  let(:content_version_text) {
+  let(:content_version_text) do
     <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <versions>
@@ -37,9 +37,9 @@ describe Homebrew::Livecheck::Strategy::Xml do
         <version>1.0.0-rc1</version>
       </versions>
     EOS
-  }
+  end
 
-  let(:content_version_attr) {
+  let(:content_version_attr) do
     <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <items>
@@ -64,26 +64,26 @@ describe Homebrew::Livecheck::Strategy::Xml do
         <item version="1.0.0-rc1" />
       </items>
     EOS
-  }
+  end
 
-  let(:content_simple) {
+  let(:content_simple) do
     <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <version>1.2.3</version>
     EOS
-  }
+  end
 
-  let(:content_undefined_namespace) {
+  let(:content_undefined_namespace) do
     <<~EOS
       <?xml version="1.0" encoding="utf-8"?>
       <something:version>1.2.3</something:version>
     EOS
-  }
+  end
 
   let(:content_matches) { ["1.1.2", "1.1.1", "1.1.0", "1.0.3", "1.0.2", "1.0.1", "1.0.0"] }
   let(:content_simple_matches) { ["1.2.3"] }
 
-  let(:find_versions_return_hash) {
+  let(:find_versions_return_hash) do
     {
       matches: {
         "1.1.2" => Version.new("1.1.2"),
@@ -97,11 +97,11 @@ describe Homebrew::Livecheck::Strategy::Xml do
       regex:   regex,
       url:     http_url,
     }
-  }
+  end
 
-  let(:find_versions_cached_return_hash) {
+  let(:find_versions_cached_return_hash) do
     find_versions_return_hash.merge({ cached: true })
-  }
+  end
 
   describe "::match?" do
     it "returns true for an HTTP URL" do

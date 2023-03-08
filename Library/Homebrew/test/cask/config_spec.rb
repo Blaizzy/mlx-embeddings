@@ -60,10 +60,10 @@ describe Cask::Config, :cask do
   end
 
   describe "#explicit" do
-    let(:config) {
+    let(:config) do
       described_class.new(explicit: { appdir:    "/explicit/path/to/apps",
                                       languages: ["zh-TW", "en"] })
-    }
+    end
 
     it "returns directories explicitly given as arguments" do
       expect(config.explicit[:appdir]).to eq(Pathname("/explicit/path/to/apps"))
@@ -79,7 +79,7 @@ describe Cask::Config, :cask do
   end
 
   context "when installing a cask and then adding a global default dir" do
-    let(:config) {
+    let(:config) do
       json = <<~EOS
         {
           "default": {
@@ -90,7 +90,7 @@ describe Cask::Config, :cask do
         }
       EOS
       described_class.from_json(json)
-    }
+    end
 
     describe "#appdir" do
       it "honors metadata of the installed cask" do

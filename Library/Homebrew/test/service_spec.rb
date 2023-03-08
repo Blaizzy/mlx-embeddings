@@ -43,9 +43,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.manual_command
-      }.to raise_error TypeError, "Service#process_type allows: 'background'/'standard'/'interactive'/'adaptive'"
+      end.to raise_error TypeError, "Service#process_type allows: 'background'/'standard'/'interactive'/'adaptive'"
     end
   end
 
@@ -58,9 +58,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.manual_command
-      }.to raise_error TypeError, "Service#keep_alive allows only [:always, :successful_exit, :crashed, :path]"
+      end.to raise_error TypeError, "Service#keep_alive allows only [:always, :successful_exit, :crashed, :path]"
     end
   end
 
@@ -96,9 +96,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.manual_command
-      }.to raise_error TypeError, "Service#run_type allows: 'immediate'/'interval'/'cron'"
+      end.to raise_error TypeError, "Service#run_type allows: 'immediate'/'interval'/'cron'"
     end
   end
 
@@ -111,9 +111,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.manual_command
-      }.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
+      end.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
 
     it "throws for missing host" do
@@ -124,9 +124,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.manual_command
-      }.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
+      end.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
 
     it "throws for missing port" do
@@ -137,9 +137,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.manual_command
-      }.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
+      end.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
   end
 
@@ -716,9 +716,9 @@ describe Homebrew::Service do
         end
       end
 
-      expect {
+      expect do
         f.service.to_systemd_timer
-      }.to raise_error TypeError, "Service#parse_cron expects a valid cron syntax"
+      end.to raise_error TypeError, "Service#parse_cron expects a valid cron syntax"
     end
 
     it "returns valid cron timers" do

@@ -5,14 +5,14 @@ require "hardware"
 
 describe Hardware::CPU do
   describe "::type" do
-    let(:cpu_types) {
+    let(:cpu_types) do
       [
         :arm,
         :intel,
         :ppc,
         :dunno,
       ]
-    }
+    end
 
     it "returns the current CPU's type as a symbol, or :dunno if it cannot be detected" do
       expect(cpu_types).to include(described_class.type)
@@ -20,7 +20,7 @@ describe Hardware::CPU do
   end
 
   describe "::family" do
-    let(:cpu_families) {
+    let(:cpu_families) do
       [
         :amd_k7,
         :amd_k8,
@@ -63,7 +63,7 @@ describe Hardware::CPU do
         :zen3,
         :dunno,
       ]
-    }
+    end
 
     it "returns the current CPU's family name as a symbol, or :dunno if it cannot be detected" do
       expect(cpu_families).to include described_class.family

@@ -282,15 +282,15 @@ describe SPDX do
     let(:mit_forbidden) { { "MIT" => described_class.license_version_info("MIT") } }
     let(:epl_1_forbidden) { { "EPL-1.0" => described_class.license_version_info("EPL-1.0") } }
     let(:epl_1_plus_forbidden) { { "EPL-1.0+" => described_class.license_version_info("EPL-1.0+") } }
-    let(:multiple_forbidden) {
+    let(:multiple_forbidden) do
       {
         "MIT"  => described_class.license_version_info("MIT"),
         "0BSD" => described_class.license_version_info("0BSD"),
       }
-    }
+    end
     let(:any_of_license) { { any_of: ["MIT", "0BSD"] } }
     let(:all_of_license) { { all_of: ["MIT", "0BSD"] } }
-    let(:nested_licenses) {
+    let(:nested_licenses) do
       {
         any_of: [
           "MIT",
@@ -298,7 +298,7 @@ describe SPDX do
           { any_of: ["MIT", "0BSD"] },
         ],
       }
-    }
+    end
     let(:license_exception) { { "MIT" => { with: "LLVM-exception" } } }
 
     it "allows installation with no forbidden licenses" do

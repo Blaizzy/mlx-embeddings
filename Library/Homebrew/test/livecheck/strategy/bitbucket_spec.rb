@@ -6,15 +6,15 @@ require "livecheck/strategy"
 describe Homebrew::Livecheck::Strategy::Bitbucket do
   subject(:bitbucket) { described_class }
 
-  let(:bitbucket_urls) {
+  let(:bitbucket_urls) do
     {
       get:       "https://bitbucket.org/abc/def/get/1.2.3.tar.gz",
       downloads: "https://bitbucket.org/abc/def/downloads/ghi-1.2.3.tar.gz",
     }
-  }
+  end
   let(:non_bitbucket_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       get:       {
         url:   "https://bitbucket.org/abc/def/downloads/?tab=tags",
@@ -25,7 +25,7 @@ describe Homebrew::Livecheck::Strategy::Bitbucket do
         regex: /href=.*?ghi-v?(\d+(?:\.\d+)+)\.t/i,
       },
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for a Bitbucket URL" do

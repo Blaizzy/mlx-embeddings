@@ -6,15 +6,15 @@ require "livecheck/strategy/npm"
 describe Homebrew::Livecheck::Strategy::Npm do
   subject(:npm) { described_class }
 
-  let(:npm_urls) {
+  let(:npm_urls) do
     {
       typical:    "https://registry.npmjs.org/abc/-/def-1.2.3.tgz",
       org_scoped: "https://registry.npmjs.org/@example/abc/-/def-1.2.3.tgz",
     }
-  }
+  end
   let(:non_npm_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       typical:    {
         url:   "https://www.npmjs.com/package/abc?activeTab=versions",
@@ -25,7 +25,7 @@ describe Homebrew::Livecheck::Strategy::Npm do
         regex: %r{href=.*?/package/@example/abc/v/(\d+(?:\.\d+)+)"}i,
       },
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for an npm URL" do

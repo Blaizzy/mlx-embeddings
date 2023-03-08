@@ -24,9 +24,9 @@ describe Sandbox, :needs_macos do
 
   describe "#exec" do
     it "fails when writing to file not specified with ##allow_write" do
-      expect {
+      expect do
         sandbox.exec "touch", file
-      }.to raise_error(ErrorDuringExecution)
+      end.to raise_error(ErrorDuringExecution)
 
       expect(file).not_to exist
     end

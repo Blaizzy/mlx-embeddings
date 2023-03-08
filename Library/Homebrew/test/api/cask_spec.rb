@@ -22,7 +22,7 @@ describe Homebrew::API::Cask do
   end
 
   describe "::all_casks" do
-    let(:casks_json) {
+    let(:casks_json) do
       <<~EOS
         [{
           "token": "foo",
@@ -32,13 +32,13 @@ describe Homebrew::API::Cask do
           "url": "https://brew.sh/bar"
         }]
       EOS
-    }
-    let(:casks_hash) {
+    end
+    let(:casks_hash) do
       {
         "foo" => { "url" => "https://brew.sh/foo" },
         "bar" => { "url" => "https://brew.sh/bar" },
       }
-    }
+    end
 
     it "returns the expected cask JSON list" do
       mock_curl_download stdout: casks_json

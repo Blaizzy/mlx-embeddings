@@ -21,7 +21,7 @@ describe Homebrew::API::Formula do
   end
 
   describe "::all_formulae" do
-    let(:formulae_json) {
+    let(:formulae_json) do
       <<~EOS
         [{
           "name": "foo",
@@ -37,21 +37,21 @@ describe Homebrew::API::Formula do
           "aliases": []
         }]
       EOS
-    }
-    let(:formulae_hash) {
+    end
+    let(:formulae_hash) do
       {
         "foo" => { "url" => "https://brew.sh/foo", "aliases" => ["foo-alias1", "foo-alias2"] },
         "bar" => { "url" => "https://brew.sh/bar", "aliases" => ["bar-alias"] },
         "baz" => { "url" => "https://brew.sh/baz", "aliases" => [] },
       }
-    }
-    let(:formulae_aliases) {
+    end
+    let(:formulae_aliases) do
       {
         "foo-alias1" => "foo",
         "foo-alias2" => "foo",
         "bar-alias"  => "bar",
       }
-    }
+    end
 
     it "returns the expected formula JSON list" do
       mock_curl_download stdout: formulae_json

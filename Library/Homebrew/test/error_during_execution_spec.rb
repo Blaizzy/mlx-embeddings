@@ -11,21 +11,21 @@ describe ErrorDuringExecution do
 
   describe "#initialize" do
     it "fails when only given a command" do
-      expect {
+      expect do
         described_class.new(command)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "fails when only given a status" do
-      expect {
+      expect do
         described_class.new(status: status)
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "does not raise an error when given both a command and a status" do
-      expect {
+      expect do
         described_class.new(command, status: status)
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 
@@ -35,33 +35,33 @@ describe ErrorDuringExecution do
     end
 
     context "when additionally given the output" do
-      let(:output) {
+      let(:output) do
         [
           [:stdout, "This still worked.\n"],
           [:stderr, "Here something went wrong.\n"],
         ]
-      }
+      end
 
       before do
         allow($stdout).to receive(:tty?).and_return(true)
       end
 
-      its(:to_s) {
+      its(:to_s) do
         expect(error.to_s).to eq <<~EOS
           Failure while executing; `false` exited with 1. Here's the output:
           This still worked.
           #{Formatter.error("Here something went wrong.\n")}
         EOS
-      }
+      end
     end
 
     context "when command arguments contain special characters" do
       let(:command) { ["env", "PATH=/bin", "cat", "with spaces"] }
 
-      its(:to_s) {
+      its(:to_s) do
         expect(error.to_s)
           .to eq 'Failure while executing; `env PATH=/bin cat with\ spaces` exited with 1.'
-      }
+      end
     end
   end
 end

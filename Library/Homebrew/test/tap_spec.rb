@@ -102,17 +102,17 @@ describe Tap do
     expect(tap).to be_a(described_class)
     expect(tap.name).to eq("homebrew/foo")
 
-    expect {
+    expect do
       described_class.fetch("foo")
-    }.to raise_error(/Invalid tap name/)
+    end.to raise_error(/Invalid tap name/)
 
-    expect {
+    expect do
       described_class.fetch("homebrew/homebrew/bar")
-    }.to raise_error(/Invalid tap name/)
+    end.to raise_error(/Invalid tap name/)
 
-    expect {
+    expect do
       described_class.fetch("homebrew", "homebrew/baz")
-    }.to raise_error(/Invalid tap name/)
+    end.to raise_error(/Invalid tap name/)
   end
 
   describe "::from_path" do
@@ -280,17 +280,17 @@ describe Tap do
       already_tapped_tap = described_class.new("Homebrew", "foo")
       expect(already_tapped_tap).to be_installed
       wrong_remote = "#{homebrew_foo_tap.remote}-oops"
-      expect {
+      expect do
         already_tapped_tap.install clone_target: wrong_remote
-      }.to raise_error(TapRemoteMismatchError)
+      end.to raise_error(TapRemoteMismatchError)
     end
 
     it "raises an error when the remote for Homebrew/core doesn't match HOMEBREW_CORE_GIT_REMOTE" do
       core_tap = described_class.fetch("Homebrew", "core")
       wrong_remote = "#{Homebrew::EnvConfig.core_git_remote}-oops"
-      expect {
+      expect do
         core_tap.install clone_target: wrong_remote
-      }.to raise_error(TapCoreRemoteMismatchError)
+      end.to raise_error(TapCoreRemoteMismatchError)
     end
 
     it "raises an error when run `brew tap --custom-remote` without a custom remote (already installed)" do
@@ -298,18 +298,18 @@ describe Tap do
       already_tapped_tap = described_class.new("Homebrew", "foo")
       expect(already_tapped_tap).to be_installed
 
-      expect {
+      expect do
         already_tapped_tap.install clone_target: nil, custom_remote: true
-      }.to raise_error(TapNoCustomRemoteError)
+      end.to raise_error(TapNoCustomRemoteError)
     end
 
     it "raises an error when run `brew tap --custom-remote` without a custom remote (not installed)" do
       not_tapped_tap = described_class.new("Homebrew", "bar")
       expect(not_tapped_tap).not_to be_installed
 
-      expect {
+      expect do
         not_tapped_tap.install clone_target: nil, custom_remote: true
-      }.to raise_error(TapNoCustomRemoteError)
+      end.to raise_error(TapNoCustomRemoteError)
     end
 
     describe "force_auto_update" do
@@ -340,9 +340,9 @@ describe Tap do
     specify "Git error" do
       tap = described_class.new("user", "repo")
 
-      expect {
+      expect do
         tap.install clone_target: "file:///not/existed/remote/url"
-      }.to raise_error(ErrorDuringExecution)
+      end.to raise_error(ErrorDuringExecution)
 
       expect(tap).not_to be_installed
       expect(Tap::TAP_DIRECTORY/"user").not_to exist

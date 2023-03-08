@@ -6,7 +6,7 @@ require "rubocops/urls"
 describe RuboCop::Cop::FormulaAudit::Urls do
   subject(:cop) { described_class.new }
 
-  let(:offense_list) {
+  let(:offense_list) do
     [{
       "url" => "https://ftpmirror.gnu.org/lightning/lightning-2.1.0.tar.gz",
       "msg" => 'Please use "https://ftp.gnu.org/gnu/lightning/lightning-2.1.0.tar.gz" instead of https://ftpmirror.gnu.org/lightning/lightning-2.1.0.tar.gz.',
@@ -181,7 +181,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
       "msg" => "Use of the svn+http:// scheme is deprecated, pass `:using => :svn` instead",
       "col" => 2,
     }]
-  }
+  end
 
   context "when auditing URLs" do
     it "reports all offenses in `offense_list`" do

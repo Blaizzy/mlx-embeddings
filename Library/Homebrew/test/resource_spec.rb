@@ -7,7 +7,7 @@ require "livecheck"
 describe Resource do
   subject(:resource) { described_class.new("test") }
 
-  let(:livecheck_resource) {
+  let(:livecheck_resource) do
     described_class.new do
       url "https://brew.sh/foo-1.0.tar.gz"
       sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
@@ -17,7 +17,7 @@ describe Resource do
         regex(/foo[._-]v?(\d+(?:\.\d+)+)\.t/i)
       end
     end
-  }
+  end
 
   describe "#url" do
     it "sets the URL" do
@@ -195,8 +195,8 @@ describe Resource do
       .with(checksum)
       .and_raise(ChecksumMismatchError.new(fn, checksum, Object.new))
 
-    expect {
+    expect do
       resource.verify_download_integrity(fn)
-    }.to raise_error(ChecksumMismatchError)
+    end.to raise_error(ChecksumMismatchError)
   end
 end

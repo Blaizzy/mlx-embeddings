@@ -14,11 +14,11 @@ describe Cask::DSL, :cask do
   end
 
   describe "when a Cask includes an unknown method" do
-    let(:attempt_unknown_method) {
+    let(:attempt_unknown_method) do
       Cask::Cask.new("unexpected-method-cask") do
         future_feature :not_yet_on_your_machine
       end
-    }
+    end
 
     it "prints a warning that it has encountered an unexpected method" do
       expected = Regexp.compile(<<~EOS.lines.map(&:chomp).join)
@@ -30,15 +30,15 @@ describe Cask::DSL, :cask do
         https://github.com/Homebrew/homebrew-cask#reporting-bugs
       EOS
 
-      expect {
+      expect do
         expect { attempt_unknown_method }.not_to output.to_stdout
-      }.to output(expected).to_stderr
+      end.to output(expected).to_stderr
     end
 
     it "will simply warn, not throw an exception" do
-      expect {
+      expect do
         attempt_unknown_method
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 
@@ -55,9 +55,9 @@ describe Cask::DSL, :cask do
       let(:token) { "invalid/invalid-header-token-mismatch" }
 
       it "raises an error" do
-        expect {
+        expect do
           cask
-        }.to raise_error(Cask::CaskTokenMismatchError, /header line does not match the file name/)
+        end.to raise_error(Cask::CaskTokenMismatchError, /header line does not match the file name/)
       end
     end
 
@@ -158,7 +158,7 @@ describe Cask::DSL, :cask do
 
   describe "language stanza" do
     context "when language is set explicitly" do
-      subject(:cask) {
+      subject(:cask) do
         Cask::Cask.new("cask-with-apps") do
           language "zh" do
             sha256 "abc123"
@@ -172,7 +172,7 @@ describe Cask::DSL, :cask do
 
           url "https://example.org/#{language}.zip"
         end
-      }
+      end
 
       matcher :be_the_chinese_version do
         match do |cask|

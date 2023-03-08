@@ -4,12 +4,12 @@
 require_relative "shared_examples"
 
 describe UnpackStrategy::Cvs do
-  let(:repo) {
+  let(:repo) do
     mktmpdir.tap do |repo|
       FileUtils.touch repo/"test"
       (repo/"CVS").mkpath
     end
-  }
+  end
   let(:path) { repo }
 
   include_examples "UnpackStrategy::detect"
