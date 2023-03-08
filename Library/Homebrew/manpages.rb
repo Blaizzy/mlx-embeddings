@@ -3,10 +3,6 @@
 
 require "cli/parser"
 require "erb"
-require "i18n"
-
-I18n.backend.available_locales # Initialize locales so they can be overwritten.
-I18n.backend.store_translations :en, support: { array: { last_word_connector: " and " } }
 
 SOURCE_PATH = (HOMEBREW_LIBRARY_PATH/"manpages").freeze
 TARGET_MAN_PATH = (HOMEBREW_REPOSITORY/"manpages").freeze
@@ -40,7 +36,6 @@ module Homebrew
 
       markup = build_man_page(quiet: quiet)
       convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md")
-      markup = I18n.transliterate(markup, locale: :en)
       convert_man_page(markup, TARGET_MAN_PATH/"brew.1")
     end
 

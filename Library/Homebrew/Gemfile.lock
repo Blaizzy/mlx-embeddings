@@ -231,7 +231,6 @@ DEPENDENCIES
   byebug
   concurrent-ruby
   did_you_mean
-  i18n
   json_schemer
   mechanize
   minitest
