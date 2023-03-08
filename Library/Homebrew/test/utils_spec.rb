@@ -58,4 +58,41 @@ describe Utils do
       expect(described_class.pluralize("foo", 2, singular: "o", plural: "es")).to eq("fooes")
     end
   end
+
+  describe ".underscore" do
+    # commented out entries require acronyms inflections
+    let(:words) {
+      [
+        ["API", "api"],
+        ["APIController", "api_controller"],
+        ["Nokogiri::HTML", "nokogiri/html"],
+        # ["HTTPAPI", "http_api"],
+        ["HTTP::Get", "http/get"],
+        ["SSLError", "ssl_error"],
+        # ["RESTful", "restful"],
+        # ["RESTfulController", "restful_controller"],
+        # ["Nested::RESTful", "nested/restful"],
+        # ["IHeartW3C", "i_heart_w3c"],
+        # ["PhDRequired", "phd_required"],
+        # ["IRoRU", "i_ror_u"],
+        # ["RESTfulHTTPAPI", "restful_http_api"],
+        # ["HTTP::RESTful", "http/restful"],
+        # ["HTTP::RESTfulAPI", "http/restful_api"],
+        # ["APIRESTful", "api_restful"],
+        ["Capistrano", "capistrano"],
+        ["CapiController", "capi_controller"],
+        ["HttpsApis", "https_apis"],
+        ["Html5", "html5"],
+        ["Restfully", "restfully"],
+        ["RoRails", "ro_rails"],
+      ]
+    }
+
+    it "converts strings to underscore case" do
+      words.each do |camel, under|
+        expect(described_class.underscore(camel)).to eq(under)
+        expect(described_class.underscore(under)).to eq(under)
+      end
+    end
+  end
 end

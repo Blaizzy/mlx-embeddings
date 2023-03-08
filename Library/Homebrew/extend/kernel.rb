@@ -199,13 +199,13 @@ module Kernel
     if s > 59
       m = s / 60
       s %= 60
-      res = +"#{m} #{"minute".pluralize(m)}"
+      res = +"#{m} #{Utils.pluralize("minute", m)}"
       return res.freeze if s.zero?
 
       res << " "
     end
 
-    res << "#{s} #{"second".pluralize(s)}"
+    res << "#{s} #{Utils.pluralize("second", s)}"
     res.freeze
   end
 
