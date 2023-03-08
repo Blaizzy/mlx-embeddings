@@ -3,6 +3,7 @@
 
 require "cli/parser"
 require "erb"
+require "i18n"
 
 SOURCE_PATH = (HOMEBREW_LIBRARY_PATH/"manpages").freeze
 TARGET_MAN_PATH = (HOMEBREW_REPOSITORY/"manpages").freeze

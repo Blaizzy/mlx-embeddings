@@ -4,7 +4,6 @@
 require "keg_relocate"
 require "language/python"
 require "lock_file"
-require "ostruct"
 require "extend/cachable"
 
 # Installation prefix of a formula.

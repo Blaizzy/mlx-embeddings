@@ -41,6 +41,7 @@ end
 gem "activesupport"
 gem "addressable"
 gem "concurrent-ruby"
+gem "i18n"
 gem "mechanize"
 gem "patchelf"
 gem "plist"
