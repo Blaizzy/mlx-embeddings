@@ -17,9 +17,9 @@ module Homebrew
   #
   # @api private
   module Diagnostic
-    def self.missing_deps(ff, hide = nil)
+    def self.missing_deps(formulae, hide = nil)
       missing = {}
-      ff.each do |f|
+      formulae.each do |f|
         missing_dependencies = f.missing_dependencies(hide: hide)
         next if missing_dependencies.empty?
 
