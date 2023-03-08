@@ -1319,6 +1319,8 @@ end
 Parser::Source::Buffer::ENCODING_RE = T.let(T.unsafe(nil), Regexp)
 
 class Parser::Source::Comment
+  include ::RuboCop::Ext::Comment
+
   def initialize(range); end
 
   def ==(other); end

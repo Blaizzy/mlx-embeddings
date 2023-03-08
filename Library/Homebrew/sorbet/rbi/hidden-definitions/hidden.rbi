@@ -5632,10 +5632,6 @@ class Parser::Ruby26
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
 end
 
-class Parser::Source::Comment
-  include ::RuboCop::Ext::Comment
-end
-
 class PkgVersion
   def major(*args, &block); end
 
