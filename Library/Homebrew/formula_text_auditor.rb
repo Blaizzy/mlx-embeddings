@@ -23,8 +23,8 @@ module Homebrew
       other =~ @text
     end
 
-    def include?(str)
-      @text.include? str
+    def include?(string)
+      @text.include? string
     end
 
     def to_s
