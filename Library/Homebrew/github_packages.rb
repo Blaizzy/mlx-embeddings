@@ -407,12 +407,21 @@ class GitHubPackages
                      "org.opencontainers.image.ref.name" => version_rebuild)
 
     puts
-    args = ["copy", "--retry-times=5", "--all", "oci:#{root}", image_uri.to_s]
+    args = ["copy", "--retry-times=2", "--all", "oci:#{root}", image_uri.to_s]
     if dry_run
       puts "#{skopeo} #{args.join(" ")} --dest-creds=#{user}:$HOMEBREW_GITHUB_PACKAGES_TOKEN"
     else
       args << "--dest-creds=#{user}:#{token}"
-      system_command!(skopeo, verbose: true, print_stdout: true, args: args)
+      retry_count = 0
+      begin
+        system_command!(skopeo, verbose: true, print_stdout: true, args: args)
+      rescue ErrorDuringExecution
+        retry_count += 1
+        odie "Cannot perform an upload to registry after retrying multiple times!" if retry_count >= 5
+        sleep 5*retry_count
+        retry
+      end
+
       package_name = "#{GitHubPackages.repo_without_prefix(repo)}/#{image_name}"
       ohai "Uploaded to https://github.com/orgs/#{org}/packages/container/package/#{package_name}"
     end
