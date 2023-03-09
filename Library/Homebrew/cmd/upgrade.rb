@@ -88,8 +88,19 @@ module Homebrew
           description: "Treat all named arguments as casks. If no named arguments " \
                        "are specified, upgrade only outdated casks.",
         }],
+        [:switch, "--skip-cask-deps", {
+          description: "Skip installing cask dependencies.",
+        }],
+        [:switch, "-g", "--greedy", {
+          description: "Also include casks with `auto_updates true` or `version :latest`.",
+        }],
+        [:switch, "--greedy-latest", {
+          description: "Also include casks with `version :latest`.",
+        }],
+        [:switch, "--greedy-auto-updates", {
+          description: "Also include casks with `auto_updates true`.",
+        }],
         *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
-        *Cask::Upgrade::OPTIONS.map(&:dup),
       ].each do |args|
         options = args.pop
         send(*args, **options)

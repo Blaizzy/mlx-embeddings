@@ -9,21 +9,6 @@ module Cask
   class Upgrade
     extend T::Sig
 
-    OPTIONS = [
-      [:switch, "--skip-cask-deps", {
-        description: "Skip installing cask dependencies.",
-      }],
-      [:switch, "-g", "--greedy", {
-        description: "Also include casks with `auto_updates true` or `version :latest`.",
-      }],
-      [:switch, "--greedy-latest", {
-        description: "Also include casks with `version :latest`.",
-      }],
-      [:switch, "--greedy-auto-updates", {
-        description: "Also include casks with `auto_updates true`.",
-      }],
-    ].freeze
-
     sig {
       params(
         casks:               Cask,
