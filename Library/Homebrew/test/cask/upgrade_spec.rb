@@ -375,9 +375,9 @@ describe Cask::Upgrade, :cask do
       expect(will_fail_if_upgraded_path).to be_a_file
       expect(will_fail_if_upgraded.versions).to include("1.2.2")
 
-      expect {
+      expect do
         described_class.upgrade_casks(will_fail_if_upgraded, args: args)
-      }.to raise_error(Cask::CaskError).and output(output_reverted).to_stderr
+      end.to raise_error(Cask::CaskError).and output(output_reverted).to_stderr
 
       expect(will_fail_if_upgraded).to be_installed
       expect(will_fail_if_upgraded_path).to be_a_file
@@ -393,9 +393,9 @@ describe Cask::Upgrade, :cask do
       expect(bad_checksum_path).to be_a_directory
       expect(bad_checksum.versions).to include("1.2.2")
 
-      expect {
+      expect do
         described_class.upgrade_casks(bad_checksum, args: args)
-      }.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
+      end.to raise_error(ChecksumMismatchError).and(not_to_output(output_reverted).to_stderr)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
@@ -438,9 +438,9 @@ describe Cask::Upgrade, :cask do
       expect(bad_checksum_2_path).to be_a_file
       expect(bad_checksum_2.versions).to include("1.2.2")
 
-      expect {
+      expect do
         described_class.upgrade_casks(args: args)
-      }.to raise_error(Cask::MultipleCaskErrors)
+      end.to raise_error(Cask::MultipleCaskErrors)
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
