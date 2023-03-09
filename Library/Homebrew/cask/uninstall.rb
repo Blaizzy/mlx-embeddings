@@ -4,7 +4,6 @@
 module Cask
   # @api private
   class Uninstall
-
     def self.uninstall_casks(*casks, binaries: nil, force: false, verbose: false)
       require "cask/installer"
 
