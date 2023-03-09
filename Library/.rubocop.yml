@@ -328,8 +328,6 @@ Style/BarePercentLiterals:
 Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
-  Exclude:
-    - "Homebrew/**/*_spec.rb"
 
 # Use consistent style for better readability.
 Style/CollectionMethods:

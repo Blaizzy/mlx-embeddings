@@ -61,7 +61,7 @@ describe Utils do
 
   describe ".underscore" do
     # commented out entries require acronyms inflections
-    let(:words) {
+    let(:words) do
       [
         ["API", "api"],
         ["APIController", "api_controller"],
@@ -86,7 +86,7 @@ describe Utils do
         ["Restfully", "restfully"],
         ["RoRails", "ro_rails"],
       ]
-    }
+    end
 
     it "converts strings to underscore case" do
       words.each do |camel, under|

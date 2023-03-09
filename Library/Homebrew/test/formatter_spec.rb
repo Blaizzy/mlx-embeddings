@@ -8,14 +8,14 @@ describe Formatter do
   describe "::columns" do
     subject(:columns) { described_class.columns(input) }
 
-    let(:input) {
+    let(:input) do
       %w[
         aa
         bbb
         ccc
         dd
       ]
-    }
+    end
 
     it "doesn't output columns if $stdout is not a TTY." do
       allow_any_instance_of(IO).to receive(:tty?).and_return(false)

@@ -11,7 +11,7 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
 
   let(:regex) { %r{href=.*?/homebrew[._-]v?(\d+(?:\.\d+)+)/?["' >]}i }
 
-  let(:content) {
+  let(:content) do
     <<~EOS
       <!DOCTYPE html>
       <html>
@@ -35,11 +35,11 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
         </body>
       </html>
     EOS
-  }
+  end
 
   let(:content_matches) { ["2.6.0", "2.5.0", "2.4.0", "2.3.0", "2.2.0", "2.1.0", "2.0.0", "1.9.0"] }
 
-  let(:find_versions_return_hash) {
+  let(:find_versions_return_hash) do
     {
       matches: {
         "2.6.0" => Version.new("2.6.0"),
@@ -54,13 +54,13 @@ describe Homebrew::Livecheck::Strategy::PageMatch do
       regex:   regex,
       url:     http_url,
     }
-  }
+  end
 
-  let(:find_versions_cached_return_hash) {
+  let(:find_versions_cached_return_hash) do
     return_hash = find_versions_return_hash
     return_hash[:cached] = true
     return_hash
-  }
+  end
 
   describe "::match?" do
     it "returns true for an HTTP URL" do

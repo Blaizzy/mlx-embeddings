@@ -3,7 +3,7 @@
 
 describe SystemCommand do
   describe "#initialize" do
-    subject(:command) {
+    subject(:command) do
       described_class.new(
         "env",
         args:         env_args,
@@ -11,7 +11,7 @@ describe SystemCommand do
         must_succeed: true,
         sudo:         sudo,
       )
-    }
+    end
 
     let(:env_args) { ["bash", "-c", 'printf "%s" "${A?}" "${B?}" "${C?}"'] }
     let(:env) { { "A" => "1", "B" => "2", "C" => "3" } }
@@ -40,9 +40,9 @@ describe SystemCommand do
       let(:env) { { "A" => "1", "B" => "2", "C" => nil } }
 
       it "unsets them" do
-        expect {
+        expect do
           command.run!
-        }.to raise_error(/C: parameter (null or )?not set/)
+        end.to raise_error(/C: parameter (null or )?not set/)
       end
     end
 
@@ -81,9 +81,9 @@ describe SystemCommand do
 
     context "with a command that must succeed" do
       it "throws an error" do
-        expect {
+        expect do
           described_class.run!(command)
-        }.to raise_error(ErrorDuringExecution)
+        end.to raise_error(ErrorDuringExecution)
       end
     end
 
@@ -115,12 +115,12 @@ describe SystemCommand do
 
   context "with both STDOUT and STDERR output from upstream" do
     let(:command) { "/bin/bash" }
-    let(:options) {
+    let(:options) do
       { args: [
         "-c",
         "for i in $(seq 1 2 5); do echo $i; echo $(($i + 1)) >&2; done",
       ] }
-    }
+    end
 
     shared_examples "it returns '1 2 3 4 5 6'" do
       describe "its result" do
@@ -135,9 +135,9 @@ describe SystemCommand do
     context "with default options" do
       it "echoes only STDERR" do
         expected = [2, 4, 6].map { |i| "#{i}\n" }.join
-        expect {
+        expect do
           described_class.run(command, **options)
-        }.to output(expected).to_stderr
+        end.to output(expected).to_stderr
       end
 
       include_examples("it returns '1 2 3 4 5 6'")
@@ -163,9 +163,9 @@ describe SystemCommand do
       end
 
       it "echoes nothing" do
-        expect {
+        expect do
           described_class.run(command, **options)
-        }.to output("").to_stdout
+        end.to output("").to_stdout
       end
 
       include_examples("it returns '1 2 3 4 5 6'")
@@ -178,9 +178,9 @@ describe SystemCommand do
 
       it "echoes only STDOUT" do
         expected = [1, 3, 5].map { |i| "#{i}\n" }.join
-        expect {
+        expect do
           described_class.run(command, **options)
-        }.to output(expected).to_stdout
+        end.to output(expected).to_stdout
       end
 
       include_examples("it returns '1 2 3 4 5 6'")
@@ -189,12 +189,12 @@ describe SystemCommand do
 
   context "with a very long STDERR output" do
     let(:command) { "/bin/bash" }
-    let(:options) {
+    let(:options) do
       { args: [
         "-c",
         "for i in $(seq 1 2 100000); do echo $i; echo $(($i + 1)) >&2; done",
       ] }
-    }
+    end
 
     it "returns without deadlocking", timeout: 30 do
       expect(described_class.run(command, **options)).to be_a_success
@@ -223,20 +223,20 @@ describe SystemCommand do
 
   describe "#run" do
     it "does not raise a `SystemCallError` when the executable does not exist" do
-      expect {
+      expect do
         described_class.run("non_existent_executable")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it 'does not format `stderr` when it starts with \r' do
-      expect {
+      expect do
         system_command \
           "bash",
           args: [
             "-c",
             'printf "\r%s" "###################                                                       27.6%" 1>&2',
           ]
-      }.to output( \
+      end.to output( \
         "\r###################                                                       27.6%",
       ).to_stderr
     end
@@ -261,46 +261,46 @@ describe SystemCommand do
     context "when given arguments with secrets" do
       it "does not leak the secrets" do
         redacted_msg = /#{Regexp.escape("username:******")}/
-        expect {
+        expect do
           described_class.run! "curl",
                                args:    %w[--user username:hunter2],
                                verbose: true,
                                secrets: %w[hunter2]
-        }.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stderr
+        end.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stderr
       end
 
       it "does not leak the secrets set by environment" do
         redacted_msg = /#{Regexp.escape("username:******")}/
-        expect {
+        expect do
           ENV["PASSWORD"] = "hunter2"
           described_class.run! "curl",
                                args:    %w[--user username:hunter2],
                                verbose: true
-        }.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stderr
+        end.to raise_error.with_message(redacted_msg).and output(redacted_msg).to_stderr
       end
     end
 
     context "when running a process that prints secrets" do
       it "does not leak the secrets" do
         redacted_msg = /#{Regexp.escape("username:******")}/
-        expect {
+        expect do
           described_class.run! "echo",
                                args:         %w[username:hunter2],
                                verbose:      true,
                                print_stdout: true,
                                secrets:      %w[hunter2]
-        }.to output(redacted_msg).to_stdout
+        end.to output(redacted_msg).to_stdout
       end
 
       it "does not leak the secrets set by environment" do
         redacted_msg = /#{Regexp.escape("username:******")}/
-        expect {
+        expect do
           ENV["PASSWORD"] = "hunter2"
           described_class.run! "echo",
                                args:         %w[username:hunter2],
                                print_stdout: true,
                                verbose:      true
-        }.to output(redacted_msg).to_stdout
+        end.to output(redacted_msg).to_stdout
       end
     end
 

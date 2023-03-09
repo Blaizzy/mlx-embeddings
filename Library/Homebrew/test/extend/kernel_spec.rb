@@ -10,9 +10,9 @@ describe "globally-scoped helper methods" do
 
   describe "#ofail" do
     it "sets Homebrew.failed to true" do
-      expect {
+      expect do
         ofail "foo"
-      }.to output("Error: foo\n").to_stderr
+      end.to output("Error: foo\n").to_stderr
 
       expect(Homebrew).to have_failed
     end
@@ -21,9 +21,9 @@ describe "globally-scoped helper methods" do
   describe "#odie" do
     it "exits with 1" do
       expect(self).to receive(:exit).and_return(1)
-      expect {
+      expect do
         odie "foo"
-      }.to output("Error: foo\n").to_stderr
+      end.to output("Error: foo\n").to_stderr
     end
   end
 
@@ -250,13 +250,13 @@ describe "globally-scoped helper methods" do
   describe "#odeprecated" do
     it "raises a MethodDeprecatedError when `disable` is true" do
       ENV.delete("HOMEBREW_DEVELOPER")
-      expect {
+      expect do
         odeprecated(
           "method", "replacement",
           caller:  ["#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core/"],
           disable: true
         )
-      }.to raise_error(
+      end.to raise_error(
         MethodDeprecatedError,
         %r{method.*replacement.*homebrew/core.*/Taps/homebrew/homebrew-core/}m,
       )
@@ -281,11 +281,11 @@ describe "globally-scoped helper methods" do
     end
 
     it "restores ENV if an exception is raised" do
-      expect {
+      expect do
         with_env(PATH: "/bin") do
           raise StandardError, "boom"
         end
-      }.to raise_error(StandardError)
+      end.to raise_error(StandardError)
 
       path = ENV.fetch("PATH", nil)
       expect(path).not_to be_nil

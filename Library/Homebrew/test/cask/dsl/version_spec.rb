@@ -54,9 +54,9 @@ describe Cask::DSL::Version, :cask do
 
   describe "#initialize" do
     it "raises an error when the version contains a slash" do
-      expect {
+      expect do
         described_class.new("0.1,../../directory/traversal")
-      }.to raise_error(TypeError, %r{invalid characters: /})
+      end.to raise_error(TypeError, %r{invalid characters: /})
     end
   end
 

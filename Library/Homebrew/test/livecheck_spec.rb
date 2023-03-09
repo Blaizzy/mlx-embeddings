@@ -39,9 +39,9 @@ describe Livecheck do
     end
 
     it "raises a TypeError if the argument isn't a String" do
-      expect {
+      expect do
         livecheckable_f.formula(123)
-      }.to raise_error(TypeError, "Livecheck#formula expects a String")
+      end.to raise_error(TypeError, "Livecheck#formula expects a String")
     end
   end
 
@@ -56,9 +56,9 @@ describe Livecheck do
     end
 
     it "raises a TypeError if the argument isn't a String" do
-      expect {
+      expect do
         livecheckable_c.cask(123)
-      }.to raise_error(TypeError, "Livecheck#cask expects a String")
+      end.to raise_error(TypeError, "Livecheck#cask expects a String")
     end
   end
 
@@ -73,9 +73,9 @@ describe Livecheck do
     end
 
     it "raises a TypeError if the argument isn't a Regexp" do
-      expect {
+      expect do
         livecheckable_f.regex("foo")
-      }.to raise_error(TypeError, "Livecheck#regex expects a Regexp")
+      end.to raise_error(TypeError, "Livecheck#regex expects a Regexp")
     end
   end
 
@@ -93,9 +93,9 @@ describe Livecheck do
     end
 
     it "raises a TypeError if the argument isn't a String" do
-      expect {
+      expect do
         livecheckable_f.skip(/foo/)
-      }.to raise_error(TypeError, "Livecheck#skip expects a String")
+      end.to raise_error(TypeError, "Livecheck#skip expects a String")
     end
   end
 
@@ -119,9 +119,9 @@ describe Livecheck do
     end
 
     it "raises a TypeError if the argument isn't a Symbol" do
-      expect {
+      expect do
         livecheckable_f.strategy("page_match")
-      }.to raise_error(TypeError, "Livecheck#strategy expects a Symbol")
+      end.to raise_error(TypeError, "Livecheck#strategy expects a Symbol")
     end
   end
 
@@ -152,9 +152,9 @@ describe Livecheck do
     end
 
     it "raises a TypeError if the argument isn't a String or valid Symbol" do
-      expect {
+      expect do
         livecheckable_f.url(/foo/)
-      }.to raise_error(TypeError, "Livecheck#url expects a String or valid Symbol")
+      end.to raise_error(TypeError, "Livecheck#url expects a String or valid Symbol")
     end
   end
 

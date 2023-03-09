@@ -11,7 +11,7 @@ describe Homebrew::Livecheck::Strategy::Yaml do
 
   let(:regex) { /^v?(\d+(?:\.\d+)+)$/i }
 
-  let(:content) {
+  let(:content) do
     <<~EOS
       versions:
         - version: 1.1.2
@@ -35,7 +35,7 @@ describe Homebrew::Livecheck::Strategy::Yaml do
         - version: 1.0.0-rc1
         - other: version is omitted from this object for testing
     EOS
-  }
+  end
   let(:content_simple) { "version: 1.2.3" }
 
   # This should produce a `Psych::SyntaxError` (`did not find expected comment
@@ -45,7 +45,7 @@ describe Homebrew::Livecheck::Strategy::Yaml do
   let(:content_matches) { ["1.1.2", "1.1.1", "1.1.0", "1.0.3", "1.0.2", "1.0.1", "1.0.0"] }
   let(:content_simple_matches) { ["1.2.3"] }
 
-  let(:find_versions_return_hash) {
+  let(:find_versions_return_hash) do
     {
       matches: {
         "1.1.2" => Version.new("1.1.2"),
@@ -59,11 +59,11 @@ describe Homebrew::Livecheck::Strategy::Yaml do
       regex:   regex,
       url:     http_url,
     }
-  }
+  end
 
-  let(:find_versions_cached_return_hash) {
+  let(:find_versions_cached_return_hash) do
     find_versions_return_hash.merge({ cached: true })
-  }
+  end
 
   describe "::match?" do
     it "returns true for an HTTP URL" do

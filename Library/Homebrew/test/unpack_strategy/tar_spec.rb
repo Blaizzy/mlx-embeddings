@@ -10,11 +10,11 @@ describe UnpackStrategy::Tar do
   include_examples "#extract", children: ["container"]
 
   context "when TAR archive is corrupted" do
-    let(:path) {
+    let(:path) do
       (mktmpdir/"test.tar").tap do |path|
         FileUtils.touch path
       end
-    }
+    end
 
     include_examples "UnpackStrategy::detect"
   end

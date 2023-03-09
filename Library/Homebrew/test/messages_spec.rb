@@ -11,23 +11,23 @@ describe Messages do
 
   describe "#record_caveats" do
     it "adds a caveat" do
-      expect {
+      expect do
         messages.record_caveats(test_formula, "Zsh completions were installed")
-      }.to change(messages.caveats, :count).by(1)
+      end.to change(messages.caveats, :count).by(1)
     end
   end
 
   describe "#package_installed" do
     it "increases the package count" do
-      expect {
+      expect do
         messages.package_installed(test_formula, elapsed_time)
-      }.to change(messages, :package_count).by(1)
+      end.to change(messages, :package_count).by(1)
     end
 
     it "adds to install_times" do
-      expect {
+      expect do
         messages.package_installed(test_formula, elapsed_time)
-      }.to change(messages.install_times, :count).by(1)
+      end.to change(messages.install_times, :count).by(1)
     end
   end
 

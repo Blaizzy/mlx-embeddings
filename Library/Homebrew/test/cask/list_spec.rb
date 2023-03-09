@@ -11,9 +11,9 @@ describe Cask::List, :cask do
       InstallHelper.install_with_caskfile(c)
     end
 
-    expect {
+    expect do
       described_class.list_casks
-    }.to output(<<~EOS).to_stdout
+    end.to output(<<~EOS).to_stdout
       local-caffeine
       local-transmission
     EOS
@@ -30,9 +30,9 @@ describe Cask::List, :cask do
       InstallHelper.install_with_caskfile(c)
     end
 
-    expect {
+    expect do
       described_class.list_casks(one: true)
-    }.to output(<<~EOS).to_stdout
+    end.to output(<<~EOS).to_stdout
       local-caffeine
       local-transmission
       third-party-cask
@@ -50,9 +50,9 @@ describe Cask::List, :cask do
       InstallHelper.install_with_caskfile(c)
     end
 
-    expect {
+    expect do
       described_class.list_casks(full_name: true)
-    }.to output(<<~EOS).to_stdout
+    end.to output(<<~EOS).to_stdout
       local-caffeine
       local-transmission
       third-party/tap/third-party-cask
@@ -60,27 +60,27 @@ describe Cask::List, :cask do
   end
 
   describe "lists versions" do
-    let!(:casks) {
+    let!(:casks) do
       ["local-caffeine",
        "local-transmission"].map(&Cask::CaskLoader.method(:load)).each(&InstallHelper.method(:install_with_caskfile))
-    }
-    let(:expected_output) {
+    end
+    let(:expected_output) do
       <<~EOS
         local-caffeine 1.2.3
         local-transmission 2.61
       EOS
-    }
+    end
 
     it "of all installed Casks" do
-      expect {
+      expect do
         described_class.list_casks(versions: true)
-      }.to output(expected_output).to_stdout
+      end.to output(expected_output).to_stdout
     end
 
     it "of given Casks" do
-      expect {
+      expect do
         described_class.list_casks(*casks, versions: true)
-      }.to output(expected_output).to_stdout
+      end.to output(expected_output).to_stdout
     end
   end
 
@@ -96,9 +96,9 @@ describe Cask::List, :cask do
         artifact.install_phase(command: NeverSudoSystemCommand, force: false)
       end
 
-      expect {
+      expect do
         described_class.list_casks(transmission, caffeine)
-      }.to output(<<~EOS).to_stdout
+      end.to output(<<~EOS).to_stdout
         ==> App
         #{transmission.config.appdir.join("Transmission.app")} (#{transmission.config.appdir.join("Transmission.app").abv})
         ==> App

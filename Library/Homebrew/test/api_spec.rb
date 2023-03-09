@@ -63,9 +63,9 @@ describe Homebrew::API do
 
     it "raises an error if the JSON file is invalid" do
       mock_curl_download stdout: json_invalid
-      expect {
+      expect do
         described_class.fetch_json_api_file("baz.json", target: cache_dir/"baz.json")
-      }.to raise_error(SystemExit)
+      end.to raise_error(SystemExit)
     end
   end
 
@@ -78,9 +78,9 @@ describe Homebrew::API do
 
     it "raises an error if the file does not exist" do
       mock_curl_output success: false
-      expect {
+      expect do
         described_class.fetch_homebrew_cask_source("bar", git_head: "master")
-      }.to raise_error(ArgumentError, /No valid file found/)
+      end.to raise_error(ArgumentError, /No valid file found/)
     end
   end
 end

@@ -4,9 +4,9 @@
 # TODO: this test should be named after the corresponding class, once
 #       that class is abstracted from installer.rb
 describe "Satisfy Dependencies and Requirements", :cask do
-  subject(:install) {
+  subject(:install) do
     Cask::Installer.new(cask).install
-  }
+  end
 
   describe "depends_on cask" do
     let(:dependency) { Cask::CaskLoader.load(cask.depends_on.cask.first) }

@@ -9,12 +9,12 @@ describe Homebrew::Livecheck::Strategy::Pypi do
   let(:pypi_url) { "https://files.pythonhosted.org/packages/ab/cd/efg/example-1.2.3.tar.gz" }
   let(:non_pypi_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       url:   "https://pypi.org/project/example/#files",
       regex: %r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)\.t}i,
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for a PyPI URL" do

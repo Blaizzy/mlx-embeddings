@@ -4,7 +4,7 @@
 require_relative "shared_examples"
 
 describe UnpackStrategy::Git do
-  let(:repo) {
+  let(:repo) do
     mktmpdir.tap do |repo|
       system "git", "-C", repo, "init"
 
@@ -12,7 +12,7 @@ describe UnpackStrategy::Git do
       system "git", "-C", repo, "add", "test"
       system "git", "-C", repo, "commit", "-m", "Add `test` file."
     end
-  }
+  end
   let(:path) { repo }
 
   include_examples "UnpackStrategy::detect"

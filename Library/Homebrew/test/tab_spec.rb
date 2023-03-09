@@ -19,7 +19,7 @@ describe Tab do
     end
   end
 
-  subject(:tab) {
+  subject(:tab) do
     described_class.new(
       "homebrew_version"     => HOMEBREW_VERSION,
       "used_options"         => used_options.as_flags,
@@ -45,7 +45,7 @@ describe Tab do
       "arch"                 => Hardware::CPU.arch,
       "built_on"             => DevelopmentTools.build_system_info,
     )
-  }
+  end
 
   let(:time) { Time.now.to_i }
   let(:unused_options) { Options.create(%w[--with-baz --without-qux]) }

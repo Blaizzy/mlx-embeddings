@@ -27,7 +27,7 @@ describe Cask::Artifact::App, :cask do
     end
 
     describe "when app is in a subdirectory" do
-      let(:cask) {
+      let(:cask) do
         Cask::Cask.new("subdir") do
           url "file://#{TEST_FIXTURE_DIR}/cask/caffeine.zip"
           homepage "https://brew.sh/local-caffeine"
@@ -35,7 +35,7 @@ describe Cask::Artifact::App, :cask do
           sha256 "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"
           app "subdir/Caffeine.app"
         end
-      }
+      end
 
       it "installs the given app using the proper target directory" do
         appsubdir = cask.staged_path.join("subdir").tap(&:mkpath)

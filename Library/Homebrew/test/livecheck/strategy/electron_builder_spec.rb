@@ -11,7 +11,7 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
 
   let(:regex) { /Example[._-]v?(\d+(?:\.\d+)+)[._-]mac\.zip/i }
 
-  let(:content) {
+  let(:content) do
     <<~EOS
       version: 1.2.3
       files:
@@ -26,19 +26,19 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
       sha512: MDXR0pxozBJjxxbtUQJOnhiaiiQkryLAwtcVjlnNiz30asm/PtSxlxWKFYN3kV/kl+jriInJrGypuzajTF6XIA==
       releaseDate: '2000-01-01T00:00:00.000Z'
     EOS
-  }
+  end
 
-  let(:content_timestamp) {
+  let(:content_timestamp) do
     # An electron-builder YAML file may use a timestamp instead of an explicit
     # string value (with quotes) for `releaseDate`, so we need to make sure that
     # `ElectronBuilder#versions_from_content` won't encounter an error in this
     # scenario (e.g. `Tried to load unspecified class: Time`).
     content.sub(/releaseDate:\s*'([^']+)'/, 'releaseDate: \1')
-  }
+  end
 
   let(:content_matches) { ["1.2.3"] }
 
-  let(:find_versions_return_hash) {
+  let(:find_versions_return_hash) do
     {
       matches: {
         "1.2.3" => Version.new("1.2.3"),
@@ -46,11 +46,11 @@ describe Homebrew::Livecheck::Strategy::ElectronBuilder do
       regex:   nil,
       url:     http_url,
     }
-  }
+  end
 
-  let(:find_versions_cached_return_hash) {
+  let(:find_versions_cached_return_hash) do
     find_versions_return_hash.merge({ cached: true })
-  }
+  end
 
   describe "::match?" do
     it "returns true for a YAML file URL" do

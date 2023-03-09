@@ -6,20 +6,20 @@ require "livecheck/strategy/github_latest"
 describe Homebrew::Livecheck::Strategy::GithubLatest do
   subject(:github_latest) { described_class }
 
-  let(:github_urls) {
+  let(:github_urls) do
     {
       release_artifact:  "https://github.com/abc/def/releases/download/1.2.3/ghi-1.2.3.tar.gz",
       tag_archive:       "https://github.com/abc/def/archive/v1.2.3.tar.gz",
       repository_upload: "https://github.com/downloads/abc/def/ghi-1.2.3.tar.gz",
     }
-  }
+  end
   let(:non_github_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       url: "https://github.com/abc/def/releases/latest",
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for a GitHub release artifact URL" do

@@ -32,15 +32,15 @@ describe PkgVersion do
     end
 
     it "raises an error if the other side isn't of the same class" do
-      expect {
+      expect do
         described_class.new(Version.create("1.0"), 0) > Object.new
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "is not compatible with Version" do
-      expect {
+      expect do
         described_class.new(Version.create("1.0"), 0) > Version.create("1.0")
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 

@@ -27,7 +27,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
 
   # The `item_hashes` data is used to create test appcast XML and expected
   # `Sparkle::Item` objects.
-  let(:item_hashes) {
+  let(:item_hashes) do
     {
       v123: {
         title:         "Version 1.2.3",
@@ -58,9 +58,9 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
         version:       "120",
       },
     }
-  }
+  end
 
-  let(:xml) {
+  let(:xml) do
     v123_item = <<~EOS
       <item>
         <title>#{item_hashes[:v123][:title]}</title>
@@ -151,11 +151,11 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
       no_items:            no_items,
       undefined_namespace: undefined_namespace,
     }
-  }
+  end
 
   let(:title_regex) { /Version\s+v?(\d+(?:\.\d+)+)\s*$/i }
 
-  let(:items) {
+  let(:items) do
     {
       v123: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
         title:          item_hashes[:v123][:title],
@@ -188,9 +188,9 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
                                                     item_hashes[:v120][:version]),
       ),
     }
-  }
+  end
 
-  let(:item_arrays) {
+  let(:item_arrays) do
     item_arrays = {
       appcast:        [
         items[:v123],
@@ -221,7 +221,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     item_arrays[:no_versions_item] = [no_versions_item]
 
     item_arrays
-  }
+  end
 
   let(:versions) { [items[:v123].nice_version] }
 
@@ -343,12 +343,12 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     end
 
     it "errors on an invalid return type from a block" do
-      expect {
+      expect do
         sparkle.versions_from_content(xml[:appcast]) do |item|
           _ = item # To appease `brew style` without modifying arg name
           123
         end
-      }.to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
+      end.to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
     end
 
     it "errors if the first block argument uses an unhandled name" do

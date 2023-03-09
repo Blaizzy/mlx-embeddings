@@ -10,9 +10,9 @@ describe Cask::Cmd::Install, :cask do
       .*local-caffeine was successfully installed!
     EOS
 
-    expect {
+    expect do
       described_class.run("local-caffeine")
-    }.to output(output).to_stdout
+    end.to output(output).to_stdout
   end
 
   it "allows staging and activation of multiple Casks at once" do
@@ -81,19 +81,19 @@ describe Cask::Cmd::Install, :cask do
   it "prints a warning message on double install" do
     described_class.run("local-transmission")
 
-    expect {
+    expect do
       described_class.run("local-transmission")
-    }.to output(/Warning: Cask 'local-transmission' is already installed./).to_stderr
+    end.to output(/Warning: Cask 'local-transmission' is already installed./).to_stderr
   end
 
   it "allows double install with --force" do
     described_class.run("local-transmission")
 
-    expect {
-      expect {
+    expect do
+      expect do
         described_class.run("local-transmission", "--force")
-      }.to output(/It seems there is already an App at.*overwriting\./).to_stderr
-    }.to output(/local-transmission was successfully installed!/).to_stdout
+      end.to output(/It seems there is already an App at.*overwriting\./).to_stderr
+    end.to output(/local-transmission was successfully installed!/).to_stdout
   end
 
   it "skips dependencies with --skip-cask-deps" do
@@ -104,15 +104,15 @@ describe Cask::Cmd::Install, :cask do
   end
 
   it "properly handles Casks that are not present" do
-    expect {
+    expect do
       described_class.run("notacask")
-    }.to raise_error(Cask::CaskUnavailableError)
+    end.to raise_error(Cask::CaskUnavailableError)
   end
 
   it "returns a suggestion for a misspelled Cask" do
-    expect {
+    expect do
       described_class.run("localcaffeine")
-    }.to raise_error(
+    end.to raise_error(
       Cask::CaskUnavailableError,
       "Cask 'localcaffeine' is unavailable: No Cask with this name exists. " \
       "Did you mean 'local-caffeine'?",
@@ -120,9 +120,9 @@ describe Cask::Cmd::Install, :cask do
   end
 
   it "returns multiple suggestions for a Cask fragment" do
-    expect {
+    expect do
       described_class.run("local")
-    }.to raise_error(
+    end.to raise_error(
       Cask::CaskUnavailableError,
       "Cask 'local' is unavailable: No Cask with this name exists. " \
       "Did you mean one of these?\nlocal-caffeine\nlocal-transmission\n",

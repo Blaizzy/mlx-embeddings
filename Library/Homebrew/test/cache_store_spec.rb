@@ -13,9 +13,9 @@ describe CacheStoreDatabase do
       cache_store = instance_double(described_class, "cache_store", write_if_dirty!: nil)
       expect(described_class).to receive(:new).with(type).and_return(cache_store)
       expect(cache_store).to receive(:write_if_dirty!)
-      described_class.use(type) { |_db|
+      described_class.use(type) do |_db|
         # do nothing
-      }
+      end
     end
   end
 

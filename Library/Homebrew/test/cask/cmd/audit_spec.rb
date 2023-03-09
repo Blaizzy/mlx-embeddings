@@ -164,8 +164,8 @@ describe Cask::Cmd::Audit, :cask do
 
   it "audits a sample of language when cask contains more than 10 languages" do
     allow(Cask::CaskLoader).to receive(:load).and_return(cask_with_many_languages)
-    expect {
+    expect do
       described_class.run("with-many-languages")
-    }.to output(/==> auditing a sample of available languages/im).to_stdout
+    end.to output(/==> auditing a sample of available languages/im).to_stdout
   end
 end

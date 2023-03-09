@@ -873,9 +873,9 @@ describe Formula do
 
     expect(Set.new(f2.recursive_requirements)).to eq(Set[])
     expect(
-      f2.recursive_requirements {
+      f2.recursive_requirements do
         # do nothing
-      }.to_set,
+      end.to_set,
     ).to eq(Set[xcode])
 
     requirements = f2.recursive_requirements do |_dependent, requirement|
@@ -930,7 +930,7 @@ describe Formula do
         end
       RUBY
     end
-    let(:expected_variations) {
+    let(:expected_variations) do
       <<~JSON
         {
           "arm64_big_sur": {
@@ -969,7 +969,7 @@ describe Formula do
           }
         }
       JSON
-    }
+    end
 
     before do
       # Use a more limited symbols list to shorten the variations hash

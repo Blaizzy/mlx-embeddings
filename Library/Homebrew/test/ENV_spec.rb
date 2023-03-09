@@ -30,12 +30,12 @@ describe "ENV" do
       it "ensures the environment is restored" do
         before = subject.dup
 
-        expect {
+        expect do
           subject.with_build_environment do
             subject["foo"] = "bar"
             raise StandardError
           end
-        }.to raise_error(StandardError)
+        end.to raise_error(StandardError)
 
         expect(subject["foo"]).to be_nil
         expect(subject).to eq(before)

@@ -14,9 +14,9 @@ describe Cask::Cmd::Uninstall, :cask do
       ==> Purging files for version 1.2.3 of Cask local-caffeine
     EOS
 
-    expect {
+    expect do
       described_class.run("local-caffeine")
-    }.to output(output).to_stdout
+    end.to output(output).to_stdout
   end
 
   it "shows an error when a bad Cask is provided" do
@@ -30,9 +30,9 @@ describe Cask::Cmd::Uninstall, :cask do
   end
 
   it "tries anyway on a non-present Cask when --force is given" do
-    expect {
+    expect do
       described_class.run("local-caffeine", "--force")
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it "can uninstall and unlink multiple Casks at once" do
@@ -67,9 +67,9 @@ describe Cask::Cmd::Uninstall, :cask do
 
     expect(cask).to be_installed
 
-    expect {
+    expect do
       described_class.run("with-uninstall-script-app", "--force")
-    }.not_to raise_error
+    end.not_to raise_error
 
     expect(cask).not_to be_installed
   end
@@ -78,12 +78,12 @@ describe Cask::Cmd::Uninstall, :cask do
     let(:token) { "versioned-cask" }
     let(:first_installed_version) { "1.2.3" }
     let(:last_installed_version) { "4.5.6" }
-    let(:timestamped_versions) {
+    let(:timestamped_versions) do
       [
         [first_installed_version, "123000"],
         [last_installed_version,  "456000"],
       ]
-    }
+    end
     let(:caskroom_path) { Cask::Caskroom.path.join(token).tap(&:mkpath) }
 
     before do
@@ -114,20 +114,20 @@ describe Cask::Cmd::Uninstall, :cask do
     end
 
     it "displays a message when versions remain installed" do
-      expect {
-        expect {
+      expect do
+        expect do
           described_class.run("versioned-cask")
-        }.not_to output.to_stderr
-      }.to output(/#{token} #{first_installed_version} is still installed./).to_stdout
+        end.not_to output.to_stderr
+      end.to output(/#{token} #{first_installed_version} is still installed./).to_stdout
     end
   end
 
   context "when Casks in Taps have been renamed or removed" do
     let(:app) { Cask::Config.new.appdir.join("ive-been-renamed.app") }
     let(:caskroom_path) { Cask::Caskroom.path.join("ive-been-renamed").tap(&:mkpath) }
-    let(:saved_caskfile) {
+    let(:saved_caskfile) do
       caskroom_path.join(".metadata", "latest", "timestamp", "Casks").join("ive-been-renamed.rb")
-    }
+    end
 
     before do
       app.tap(&:mkpath)

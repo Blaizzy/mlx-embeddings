@@ -9,7 +9,7 @@ describe UnpackStrategy do
 
     context "when extracting a GZIP nested in a BZIP2" do
       let(:file_name) { "file" }
-      let(:path) {
+      let(:path) do
         dir = mktmpdir
 
         (dir/"file").write "This file was inside a GZIP inside a BZIP2."
@@ -17,7 +17,7 @@ describe UnpackStrategy do
         system "bzip2", dir.children.first
 
         dir.children.first
-      }
+      end
 
       it "can extract nested archives" do
         strategy.extract_nestedly(to: unpack_dir)
@@ -30,7 +30,7 @@ describe UnpackStrategy do
       let(:directories) { "A/B/C" }
       let(:executable) { "#{directories}/executable" }
       let(:writable) { true }
-      let(:path) {
+      let(:path) do
         (mktmpdir/"file.tar").tap do |path|
           Dir.mktmpdir do |dir|
             dir = Pathname(dir)
@@ -46,7 +46,7 @@ describe UnpackStrategy do
             end
           end
         end
-      }
+      end
 
       it "does not recurse into nested directories" do
         strategy.extract_nestedly(to: unpack_dir)
@@ -73,14 +73,14 @@ describe UnpackStrategy do
 
     context "when extracting a nested archive" do
       let(:basename) { "file.xyz" }
-      let(:path) {
+      let(:path) do
         (mktmpdir/basename).tap do |path|
           mktmpdir do |dir|
             FileUtils.touch dir/"file.txt"
             system "tar", "--create", "--file", path, "--directory", dir, "file.txt"
           end
         end
-      }
+      end
 
       it "does not pass down the basename of the archive" do
         strategy.extract_nestedly(to: unpack_dir, basename: basename)

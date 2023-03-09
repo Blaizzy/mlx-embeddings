@@ -76,14 +76,14 @@ describe CurlDownloadStrategy do
     end
 
     context "with cookies set" do
-      let(:specs) {
+      let(:specs) do
         {
           cookies: {
             coo: "k/e",
             mon: "ster",
           },
         }
-      }
+      end
 
       it "adds the appropriate curl args and does not URL-encode the cookies" do
         expect(strategy).to receive(:system_command)

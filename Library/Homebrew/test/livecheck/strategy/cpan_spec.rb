@@ -6,15 +6,15 @@ require "livecheck/strategy"
 describe Homebrew::Livecheck::Strategy::Cpan do
   subject(:cpan) { described_class }
 
-  let(:cpan_urls) {
+  let(:cpan_urls) do
     {
       no_subdirectory:   "https://cpan.metacpan.org/authors/id/H/HO/HOMEBREW/Brew-v1.2.3.tar.gz",
       with_subdirectory: "https://cpan.metacpan.org/authors/id/H/HO/HOMEBREW/brew/brew-v1.2.3.tar.gz",
     }
-  }
+  end
   let(:non_cpan_url) { "https://brew.sh/test" }
 
-  let(:generated) {
+  let(:generated) do
     {
       no_subdirectory:   {
         url:   "https://cpan.metacpan.org/authors/id/H/HO/HOMEBREW/",
@@ -25,7 +25,7 @@ describe Homebrew::Livecheck::Strategy::Cpan do
         regex: /href=.*?brew[._-]v?(\d+(?:\.\d+)*)\.t/i,
       },
     }
-  }
+  end
 
   describe "::match?" do
     it "returns true for a CPAN URL" do

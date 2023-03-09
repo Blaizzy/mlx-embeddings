@@ -84,9 +84,9 @@ describe Keg do
       let(:options) { { dry_run: true } }
 
       it "only prints what would be done" do
-        expect {
+        expect do
           expect(keg.link(**options)).to eq(0)
-        }.to output(<<~EOF).to_stdout
+        end.to output(<<~EOF).to_stdout
           #{HOMEBREW_PREFIX}/bin/goodbye_cruel_world
           #{HOMEBREW_PREFIX}/bin/helloworld
           #{HOMEBREW_PREFIX}/bin/hiworld
@@ -135,9 +135,9 @@ describe Keg do
 
         options[:dry_run] = true
 
-        expect {
+        expect do
           expect(keg.link(**options)).to eq(0)
-        }.to output(<<~EOF).to_stdout
+        end.to output(<<~EOF).to_stdout
           #{dst}
         EOF
 

@@ -101,9 +101,9 @@ describe FormulaInstaller do
     expect(formula).not_to be_latest_version_installed
     expect(formula).not_to be_bottled
 
-    expect {
+    expect do
       described_class.new(formula).install
-    }.to raise_error(UnbottledError)
+    end.to raise_error(UnbottledError)
 
     expect(formula).not_to be_latest_version_installed
   end

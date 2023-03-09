@@ -35,16 +35,16 @@ describe SoftwareSpec do
 
     it "raises an error when duplicate resources are defined" do
       spec.resource("foo") { url "foo-1.0" }
-      expect {
+      expect do
         spec.resource("foo") { url "foo-1.0" }
-      }.to raise_error(DuplicateResourceError)
+      end.to raise_error(DuplicateResourceError)
     end
 
     it "raises an error when accessing missing resources" do
       spec.owner = owner
-      expect {
+      expect do
         spec.resource("foo")
-      }.to raise_error(ResourceMissingError)
+      end.to raise_error(ResourceMissingError)
     end
   end
 
@@ -67,15 +67,15 @@ describe SoftwareSpec do
     end
 
     it "raises an error when it begins with dashes" do
-      expect {
+      expect do
         spec.option("--foo")
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "raises an error when name is empty" do
-      expect {
+      expect do
         spec.option("")
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "special cases the cxx11 option" do
@@ -112,9 +112,9 @@ describe SoftwareSpec do
     end
 
     it "raises an error when empty" do
-      expect {
+      expect do
         spec.deprecated_option({})
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 
@@ -211,9 +211,9 @@ describe SoftwareSpec do
       end
 
       it "raises an error if passing invalid OS versions" do
-        expect {
+        expect do
           spec.uses_from_macos("foo", since: :bar)
-        }.to raise_error(MacOSVersionError, "unknown or unsupported macOS version: :bar")
+        end.to raise_error(MacOSVersionError, "unknown or unsupported macOS version: :bar")
       end
     end
   end

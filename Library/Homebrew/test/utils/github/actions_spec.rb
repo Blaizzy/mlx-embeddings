@@ -8,9 +8,9 @@ describe GitHub::Actions::Annotation do
 
   describe "#new" do
     it "fails when the type is wrong" do
-      expect {
+      expect do
         described_class.new(:fatal, message, file: "file.txt")
-      }.to raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
   end
 

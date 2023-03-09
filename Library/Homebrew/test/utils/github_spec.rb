@@ -59,19 +59,19 @@ describe GitHub do
 
   describe "::get_artifact_url", :needs_network do
     it "fails to find a nonexistent workflow" do
-      expect {
+      expect do
         described_class.get_artifact_url(
           described_class.get_workflow_run("Homebrew", "homebrew-core", "1"),
         )
-      }.to raise_error(/No matching check suite found/)
+      end.to raise_error(/No matching check suite found/)
     end
 
     it "fails to find artifacts that don't exist" do
-      expect {
+      expect do
         described_class.get_artifact_url(
           described_class.get_workflow_run("Homebrew", "homebrew-core", "79751", artifact_name: "false_bottles"),
         )
-      }.to raise_error(/No artifact .+ was found/)
+      end.to raise_error(/No artifact .+ was found/)
     end
 
     it "gets an artifact link" do

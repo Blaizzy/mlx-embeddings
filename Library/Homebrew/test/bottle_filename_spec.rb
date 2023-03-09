@@ -50,12 +50,12 @@ describe Bottle::Filename do
   describe "::create" do
     subject { described_class.create(f, :tag, 0) }
 
-    let(:f) {
+    let(:f) do
       formula do
         url "https://brew.sh/foo.tar.gz"
         version "1.0"
       end
-    }
+    end
 
     its(:to_s) { is_expected.to eq "formula_name--1.0.tag.bottle.tar.gz" }
   end

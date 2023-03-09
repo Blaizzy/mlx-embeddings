@@ -51,25 +51,25 @@ describe Homebrew::Uninstall do
     specify "when developer" do
       ENV["HOMEBREW_DEVELOPER"] = "1"
 
-      expect {
+      expect do
         described_class.handle_unsatisfied_dependents(kegs_by_rack)
-      }.to output(/Warning/).to_stderr
+      end.to output(/Warning/).to_stderr
 
       expect(Homebrew).not_to have_failed
     end
 
     specify "when not developer" do
-      expect {
+      expect do
         described_class.handle_unsatisfied_dependents(kegs_by_rack)
-      }.to output(/Error/).to_stderr
+      end.to output(/Error/).to_stderr
 
       expect(Homebrew).to have_failed
     end
 
     specify "when not developer and `ignore_dependencies` is true" do
-      expect {
+      expect do
         described_class.handle_unsatisfied_dependents(kegs_by_rack, ignore_dependencies: true)
-      }.not_to output.to_stderr
+      end.not_to output.to_stderr
 
       expect(Homebrew).not_to have_failed
     end

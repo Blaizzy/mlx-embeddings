@@ -4,7 +4,7 @@
 require "utils/curl"
 
 describe "Utils::Curl" do
-  let(:details) {
+  let(:details) do
     details = {
       normal:     {},
       cloudflare: {},
@@ -111,17 +111,17 @@ describe "Utils::Curl" do
     ]
 
     details
-  }
+  end
 
-  let(:location_urls) {
+  let(:location_urls) do
     %w[
       https://example.com/example/
       https://example.com/example1/
       https://example.com/example2/
     ]
-  }
+  end
 
-  let(:response_hash) {
+  let(:response_hash) do
     response_hash = {}
 
     response_hash[:ok] = {
@@ -240,9 +240,9 @@ describe "Utils::Curl" do
     }
 
     response_hash
-  }
+  end
 
-  let(:response_text) {
+  let(:response_text) do
     response_text = {}
 
     response_text[:ok] = <<~EOS
@@ -279,9 +279,9 @@ describe "Utils::Curl" do
     )
 
     response_text
-  }
+  end
 
-  let(:body) {
+  let(:body) do
     body = {}
 
     body[:default] = <<~EOS
@@ -303,7 +303,7 @@ describe "Utils::Curl" do
     body[:with_http_status_line] = body[:default].sub("<html>", "HTTP/1.1 200\r\n<html>")
 
     body
-  }
+  end
 
   describe "curl_args" do
     let(:args) { ["foo"] }

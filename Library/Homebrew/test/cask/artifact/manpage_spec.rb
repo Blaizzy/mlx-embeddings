@@ -13,13 +13,13 @@ describe Cask::Artifact::Manpage, :cask do
   end
 
   context "with install" do
-    let(:install_phase) {
+    let(:install_phase) do
       lambda do
         cask.artifacts.select { |a| a.is_a?(described_class) }.each do |artifact|
           artifact.install_phase(command: NeverSudoSystemCommand, force: false)
         end
       end
-    }
+    end
 
     let(:source_path) { cask.staged_path.join("manpage.1") }
     let(:target_path) { cask.config.manpagedir.join("man1/manpage.1") }
