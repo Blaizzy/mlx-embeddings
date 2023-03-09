@@ -98,22 +98,22 @@ module Debrew
     end
   end
 
-  def self.debug(e)
-    raise(e) if !active? || !debugged_exceptions.add?(e) || !try_lock
+  def self.debug(exception)
+    raise(exception) if !active? || !debugged_exceptions.add?(exception) || !try_lock
 
     begin
-      puts e.backtrace.first.to_s
-      puts Formatter.error(e, label: e.class.name)
+      puts exception.backtrace.first.to_s
+      puts Formatter.error(exception, label: exception.class.name)
 
       loop do
         Menu.choose do |menu|
           menu.prompt = "Choose an action: "
 
           menu.choice(:raise) { raise(e) }
-          menu.choice(:ignore) { return :ignore } if e.is_a?(Ignorable::ExceptionMixin)
-          menu.choice(:backtrace) { puts e.backtrace }
+          menu.choice(:ignore) { return :ignore } if exception.is_a?(Ignorable::ExceptionMixin)
+          menu.choice(:backtrace) { puts exception.backtrace }
 
-          if e.is_a?(Ignorable::ExceptionMixin)
+          if exception.is_a?(Ignorable::ExceptionMixin)
             menu.choice(:irb) do
               puts "When you exit this IRB session, execution will continue."
               set_trace_func proc { |event, _, _, id, binding, klass|
