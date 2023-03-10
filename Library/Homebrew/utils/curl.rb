@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "open3"
@@ -243,8 +243,8 @@ module Utils
       return unless url.start_with? "http"
 
       secure_url = url.sub(/\Ahttp:/, "https:")
-      secure_details = nil
-      hash_needed = false
+      secure_details = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
+      hash_needed = T.let(false, T::Boolean)
       if url != secure_url
         user_agents.each do |user_agent|
           secure_details = begin
@@ -267,7 +267,7 @@ module Utils
         end
       end
 
-      details = nil
+      details = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
       user_agents.each do |user_agent|
         details =
           curl_http_content_headers_and_checksum(
@@ -414,7 +414,7 @@ module Utils
             # Unknown charset in Content-Type header
           end
         end
-        file_contents = File.read(file.path, **open_args)
+        file_contents = File.read(T.must(file.path), **open_args)
         file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
       end
 
@@ -430,7 +430,7 @@ module Utils
         responses:      responses,
       }
     ensure
-      file.unlink
+      T.must(file).unlink
     end
 
     def curl_supports_tls13?
@@ -547,7 +547,7 @@ module Utils
       return response unless response_text.match?(HTTP_STATUS_LINE_REGEX)
 
       # Parse the status line and remove it
-      match = response_text.match(HTTP_STATUS_LINE_REGEX)
+      match = T.must(response_text.match(HTTP_STATUS_LINE_REGEX))
       response[:status_code] = match["code"] if match["code"].present?
       response[:status_text] = match["text"] if match["text"].present?
       response_text = response_text.sub(%r{^HTTP/.* (\d+).*$\s*}, "")
