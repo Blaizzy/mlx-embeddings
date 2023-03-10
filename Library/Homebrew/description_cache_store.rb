@@ -82,8 +82,6 @@ class DescriptionCacheStore < CacheStore
   end
   alias delete_from_cask_tokens! delete_from_formula_names!
 
-  private
-
   # `select` from the underlying database.
   def select(&block)
     database.select(&block)

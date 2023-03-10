@@ -170,12 +170,12 @@ module Homebrew
       [all_formulae, all_casks]
     end
 
-    def search(array, string_or_regex, &block)
+    def search(selectable, string_or_regex, &block)
       case string_or_regex
       when Regexp
-        search_regex(array, string_or_regex, &block)
+        search_regex(selectable, string_or_regex, &block)
       else
-        search_string(array, string_or_regex.to_str, &block)
+        search_string(selectable, string_or_regex.to_str, &block)
       end
     end
 
@@ -183,17 +183,17 @@ module Homebrew
       string.downcase.gsub(/[^a-z\d]/i, "")
     end
 
-    def search_regex(array, regex)
-      array.select do |*args|
+    def search_regex(selectable, regex)
+      selectable.select do |*args|
         args = yield(*args) if block_given?
         args = Array(args).flatten.compact
         args.any? { |arg| arg.match?(regex) }
       end
     end
 
-    def search_string(array, string)
+    def search_string(selectable, string)
       simplified_string = simplify_string(string)
-      array.select do |*args|
+      selectable.select do |*args|
         args = yield(*args) if block_given?
         args = Array(args).flatten.compact
         args.any? { |arg| simplify_string(arg).include?(simplified_string) }
