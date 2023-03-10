@@ -114,11 +114,11 @@ module Homebrew
     end
   end
 
-  def retry_test?(f, args:)
+  def retry_test?(formula, args:)
     @test_failed ||= Set.new
-    if args.retry? && @test_failed.add?(f)
-      oh1 "Testing #{f.full_name} (again)"
-      f.clear_cache
+    if args.retry? && @test_failed.add?(formula)
+      oh1 "Testing #{formula.full_name} (again)"
+      formula.clear_cache
       ENV["RUST_BACKTRACE"] = "full"
       true
     else

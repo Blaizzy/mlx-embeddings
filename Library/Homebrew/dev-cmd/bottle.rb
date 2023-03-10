@@ -102,8 +102,8 @@ module Homebrew
       return merge(args: args)
     end
 
-    args.named.to_resolved_formulae(uniq: false).each do |f|
-      bottle_formula f, args: args
+    args.named.to_resolved_formulae(uniq: false).each do |formula|
+      bottle_formula formula, args: args
     end
   end
 
@@ -261,13 +261,13 @@ module Homebrew
     ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end
 
-  def formula_ignores(f)
+  def formula_ignores(formula)
     ignores = []
     cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
     prefix_regex = Regexp.escape(HOMEBREW_PREFIX)
 
     # Ignore matches to go keg, because all go binaries are statically linked.
-    any_go_deps = f.deps.any? do |dep|
+    any_go_deps = formula.deps.any? do |dep|
       dep.name =~ Version.formula_optionally_versioned_regex(:go)
     end
     if any_go_deps
@@ -277,7 +277,7 @@ module Homebrew
 
     # TODO: Refactor and move to extend/os
     # rubocop:disable Homebrew/MoveToExtendOS
-    ignores << case f.name
+    ignores << case formula.name
     # On Linux, GCC installation can be moved so long as the whole directory tree is moved together:
     # https://gcc-help.gcc.gnu.narkive.com/GnwuCA7l/moving-gcc-from-the-installation-path-is-it-allowed.
     when Version.formula_optionally_versioned_regex(:gcc)
@@ -291,25 +291,29 @@ module Homebrew
     ignores.compact
   end
 
-  def bottle_formula(f, args:)
-    local_bottle_json = args.json? && f.local_bottle_path.present?
+  def bottle_formula(formula, args:)
+    local_bottle_json = args.json? && formula.local_bottle_path.present?
 
     unless local_bottle_json
-      return ofail "Formula not installed or up-to-date: #{f.full_name}" unless f.latest_version_installed?
-      return ofail "Formula was not installed with --build-bottle: #{f.full_name}" unless Utils::Bottles.built_as? f
+      unless formula.latest_version_installed?
+        return ofail "Formula not installed or up-to-date: #{formula.full_name}"
+      end
+      unless Utils::Bottles.built_as? formula
+        return ofail "Formula was not installed with --build-bottle: #{formula.full_name}"
+      end
     end
 
-    tap = f.tap
+    tap = formula.tap
     if tap.nil?
-      return ofail "Formula not from core or any installed taps: #{f.full_name}" unless args.force_core_tap?
+      return ofail "Formula not from core or any installed taps: #{formula.full_name}" unless args.force_core_tap?
 
       tap = CoreTap.instance
     end
 
-    return ofail "Formula has no stable version: #{f.full_name}" unless f.stable
+    return ofail "Formula has no stable version: #{formula.full_name}" unless formula.stable
 
     bottle_tag, rebuild = if local_bottle_json
-      _, tag_string, rebuild_string = Utils::Bottles.extname_tag_rebuild(f.local_bottle_path.to_s)
+      _, tag_string, rebuild_string = Utils::Bottles.extname_tag_rebuild(formula.local_bottle_path.to_s)
       [tag_string.to_sym, rebuild_string.to_i]
     end
 
@@ -322,19 +326,19 @@ module Homebrew
     rebuild ||= if args.no_rebuild? || !tap
       0
     elsif args.keep_old?
-      f.bottle_specification.rebuild
+      formula.bottle_specification.rebuild
     else
-      ohai "Determining #{f.full_name} bottle rebuild..."
-      FormulaVersions.new(f).formula_at_revision("origin/HEAD") do |upstream_f|
-        if f.pkg_version == upstream_f.pkg_version
-          upstream_f.bottle_specification.rebuild + 1
+      ohai "Determining #{formula.full_name} bottle rebuild..."
+      FormulaVersions.new(formula).formula_at_revision("origin/HEAD") do |upstream_formula|
+        if formula.pkg_version == upstream_formula.pkg_version
+          upstream_formula.bottle_specification.rebuild + 1
         else
           0
         end
       end || 0
     end
 
-    filename = Bottle::Filename.create(f, bottle_tag.to_sym, rebuild)
+    filename = Bottle::Filename.create(formula, bottle_tag.to_sym, rebuild)
     local_filename = filename.to_s
     bottle_path = Pathname.pwd/filename
 
@@ -354,7 +358,7 @@ module Homebrew
     cellar = HOMEBREW_CELLAR.to_s
 
     if local_bottle_json
-      bottle_path = f.local_bottle_path
+      bottle_path = formula.local_bottle_path
       local_filename = bottle_path.basename.to_s
 
       tab_path = Utils::Bottles.receipt_path(bottle_path)
@@ -363,7 +367,7 @@ module Homebrew
       tab_json = Utils::Bottles.file_from_bottle(bottle_path, tab_path)
       tab = Tab.from_file_content(tab_json, tab_path)
 
-      tag_spec = Formula[f.name].bottle_specification.tag_specification_for(bottle_tag, no_older_versions: true)
+      tag_spec = Formula[formula.name].bottle_specification.tag_specification_for(bottle_tag, no_older_versions: true)
       relocatable = [:any, :any_skip_relocation].include?(tag_spec.cellar)
       skip_relocation = tag_spec.cellar == :any_skip_relocation
 
@@ -373,12 +377,12 @@ module Homebrew
       tar_filename = filename.to_s.sub(/.gz$/, "")
       tar_path = Pathname.pwd/tar_filename
 
-      keg = Keg.new(f.prefix)
+      keg = Keg.new(formula.prefix)
     end
 
     ohai "Bottling #{local_filename}..."
 
-    formula_and_runtime_deps_names = [f.name] + f.runtime_dependencies.map(&:name)
+    formula_and_runtime_deps_names = [formula.name] + formula.runtime_dependencies.map(&:name)
 
     # this will be nil when using a local bottle
     keg&.lock do
@@ -417,10 +421,10 @@ module Homebrew
           tar, tar_args = setup_tar_and_args!(args, tar_mtime)
           safe_system tar, "--create", "--numeric-owner",
                       *tar_args,
-                      "--file", tar_path, "#{f.name}/#{f.pkg_version}"
+                      "--file", tar_path, "#{formula.name}/#{formula.pkg_version}"
           sudo_purge
           # Set filename as it affects the tarball checksum.
-          relocatable_tar_path = "#{f}-bottle.tar"
+          relocatable_tar_path = "#{formula}-bottle.tar"
           mv tar_path, relocatable_tar_path
           # Use gzip, faster to compress than bzip2, faster to uncompress than bzip2
           # or an uncompressed tarball (and more bandwidth friendly).
@@ -444,7 +448,7 @@ module Homebrew
         ignores = [%r{/include/|\.(c|cc|cpp|h|hpp)$}]
 
         # Add additional workarounds to ignore
-        ignores += formula_ignores(f)
+        ignores += formula_ignores(formula)
 
         repository_reference = if HOMEBREW_PREFIX == HOMEBREW_REPOSITORY
           HOMEBREW_LIBRARY
@@ -500,7 +504,7 @@ module Homebrew
     sha256 = bottle_path.sha256
     bottle.sha256 cellar: bottle_cellar, bottle_tag.to_sym => sha256
 
-    old_spec = f.bottle_specification
+    old_spec = formula.bottle_specification
     if args.keep_old? && !old_spec.checksums.empty?
       mismatches = [:root_url, :rebuild].reject do |key|
         old_spec.send(key) == bottle.send(key)
@@ -529,21 +533,21 @@ module Homebrew
     return unless args.json?
 
     json = {
-      f.full_name => {
+      formula.full_name => {
         "formula" => {
-          "name"             => f.name,
-          "pkg_version"      => f.pkg_version.to_s,
-          "path"             => f.path.to_s.delete_prefix("#{HOMEBREW_REPOSITORY}/"),
-          "tap_git_path"     => f.path.to_s.delete_prefix("#{tap_path}/"),
+          "name"             => formula.name,
+          "pkg_version"      => formula.pkg_version.to_s,
+          "path"             => formula.path.to_s.delete_prefix("#{HOMEBREW_REPOSITORY}/"),
+          "tap_git_path"     => formula.path.to_s.delete_prefix("#{tap_path}/"),
           "tap_git_revision" => tap_git_revision,
           "tap_git_remote"   => tap_git_remote,
           # descriptions can contain emoji. sigh.
-          "desc"             => f.desc.to_s.encode(
+          "desc"             => formula.desc.to_s.encode(
             Encoding.find("ASCII"),
             invalid: :replace, undef: :replace, replace: "",
           ).strip,
-          "license"          => SPDX.license_expression_to_string(f.license),
-          "homepage"         => f.homepage,
+          "license"          => SPDX.license_expression_to_string(formula.license),
+          "homepage"         => formula.homepage,
         },
         "bottle"  => {
           "root_url" => bottle.root_url,
@@ -603,8 +607,8 @@ module Homebrew
 
       old_bottle_spec = formula.bottle_specification
       old_pkg_version = formula.pkg_version
-      FormulaVersions.new(formula).formula_at_revision("origin/HEAD") do |upstream_f|
-        old_pkg_version = upstream_f.pkg_version
+      FormulaVersions.new(formula).formula_at_revision("origin/HEAD") do |upstream_formula|
+        old_pkg_version = upstream_formula.pkg_version
       end
 
       old_bottle_spec_matches = old_bottle_spec &&

@@ -138,10 +138,10 @@ module Homebrew
     opoo "Resource #{resource.name} reports different sha256: #{e.expected}"
   end
 
-  def self.fetch_formula(f, args:)
-    fetch_fetchable f, args: args
+  def self.fetch_formula(formula, args:)
+    fetch_fetchable formula, args: args
   rescue ChecksumMismatchError => e
-    retry if retry_fetch?(f, args: args)
+    retry if retry_fetch?(formula, args: args)
     opoo "Formula reports different sha256: #{e.expected}"
   end
 
@@ -159,18 +159,18 @@ module Homebrew
     Homebrew.failed = true
   end
 
-  def self.retry_fetch?(f, args:)
+  def self.retry_fetch?(formula, args:)
     @fetch_tries ||= Hash.new { |h, k| h[k] = 1 }
-    if args.retry? && (@fetch_tries[f] < FETCH_MAX_TRIES)
-      wait = 2 ** @fetch_tries[f]
-      remaining = FETCH_MAX_TRIES - @fetch_tries[f]
+    if args.retry? && (@fetch_tries[formula] < FETCH_MAX_TRIES)
+      wait = 2 ** @fetch_tries[formula]
+      remaining = FETCH_MAX_TRIES - @fetch_tries[formula]
       what = Utils.pluralize("tr", remaining, plural: "ies", singular: "y")
 
       ohai "Retrying download in #{wait}s... (#{remaining} #{what} left)"
       sleep wait
 
-      f.clear_cache
-      @fetch_tries[f] += 1
+      formula.clear_cache
+      @fetch_tries[formula] += 1
       true
     else
       Homebrew.failed = true
@@ -178,15 +178,15 @@ module Homebrew
     end
   end
 
-  def self.fetch_fetchable(f, args:)
-    f.clear_cache if args.force?
+  def self.fetch_fetchable(formula, args:)
+    formula.clear_cache if args.force?
 
-    already_fetched = f.cached_download.exist?
+    already_fetched = formula.cached_download.exist?
 
     begin
-      download = f.fetch(verify_download_integrity: false)
+      download = formula.fetch(verify_download_integrity: false)
     rescue DownloadError
-      retry if retry_fetch?(f, args: args)
+      retry if retry_fetch?(formula, args: args)
       raise
     end
 
@@ -195,6 +195,6 @@ module Homebrew
     puts "Downloaded to: #{download}" unless already_fetched
     puts "SHA256: #{download.sha256}"
 
-    f.verify_download_integrity(download)
+    formula.verify_download_integrity(download)
   end
 end

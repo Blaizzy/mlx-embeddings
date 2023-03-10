@@ -155,10 +155,10 @@ class Options
     "#<#{self.class.name}: #{to_a.inspect}>"
   end
 
-  def self.dump_for_formula(f)
-    f.options.sort_by(&:flag).each do |opt|
+  def self.dump_for_formula(formula)
+    formula.options.sort_by(&:flag).each do |opt|
       puts "#{opt.flag}\n\t#{opt.description}"
     end
-    puts "--HEAD\n\tInstall HEAD version" if f.head
+    puts "--HEAD\n\tInstall HEAD version" if formula.head
   end
 end
