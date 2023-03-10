@@ -124,6 +124,10 @@ module Homebrew
     def running_as_root_but_not_owned_by_root?
       running_as_root? && !owner_uid.zero?
     end
+
+    def auto_update_command?
+      ENV.fetch("HOMEBREW_AUTO_UPDATE_COMMAND", false).present?
+    end
   end
 end
 
