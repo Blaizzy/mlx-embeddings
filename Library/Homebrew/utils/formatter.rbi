@@ -1,5 +1,5 @@
 # typed: strict
 
-class URL
+module Formatter
   include Kernel
 end

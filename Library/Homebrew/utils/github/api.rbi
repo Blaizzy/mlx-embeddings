@@ -1,5 +1,5 @@
 # typed: strict
 
-class URL
+module GitHub::API
   include Kernel
 end

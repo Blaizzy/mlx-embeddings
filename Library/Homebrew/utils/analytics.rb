@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "context"
@@ -42,7 +42,6 @@ module Utils
             --data av=#{HOMEBREW_VERSION}
           ]
           metadata.each do |key, value|
-            next unless key
             next unless value
 
             key = ERB::Util.url_encode key
@@ -146,13 +145,13 @@ module Utils
         report_influx(measurement, package_and_options, on_request, additional_tags_influx)
       end
 
-      sig { params(exception: Exception).void }
+      sig { params(exception: BuildError).void }
       def report_build_error(exception)
         report_google_build_error(exception)
         report_influx_error(exception)
       end
 
-      sig { params(exception: Exception).void }
+      sig { params(exception: BuildError).void }
       def report_google_build_error(exception)
         return if not_this_run? || disabled?
 
@@ -165,10 +164,10 @@ module Utils
         else
           formula_full_name
         end
-        report_google_event("BuildError", package_and_options)
+        report_google_event(:BuildError, package_and_options)
       end
 
-      sig { params(exception: Exception).void }
+      sig { params(exception: BuildError).void }
       def report_influx_error(exception)
         return if not_this_run? || disabled?
 

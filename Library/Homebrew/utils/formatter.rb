@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "utils/tty"
@@ -91,11 +91,11 @@ module Formatter
     end
 
     fallback.call if objects.empty?
-    fallback.call if respond_to?(:tty?) ? !tty? : !$stdout.tty?
+    fallback.call if respond_to?(:tty?) ? !T.unsafe(self).tty? : !$stdout.tty?
 
     console_width = Tty.width
     object_lengths = objects.map { |obj| Tty.strip_ansi(obj).length }
-    cols = (console_width + gap_size) / (object_lengths.max + gap_size)
+    cols = (console_width + gap_size) / (T.must(object_lengths.max) + gap_size)
 
     fallback.call if cols < 2
 
@@ -109,14 +109,14 @@ module Formatter
     output = +""
 
     rows.times do |row_index|
-      item_indices_for_row = row_index.step(objects.size - 1, rows).to_a
+      item_indices_for_row = T.cast(row_index.step(objects.size - 1, rows).to_a, T::Array[Integer])
 
-      first_n = item_indices_for_row[0...-1].map do |index|
-        objects[index] + "".rjust(col_width - object_lengths[index])
+      first_n = T.must(item_indices_for_row[0...-1]).map do |index|
+        objects[index] + "".rjust(col_width - object_lengths.fetch(index))
       end
 
       # don't add trailing whitespace to last column
-      last = objects.values_at(item_indices_for_row.last)
+      last = objects.values_at(item_indices_for_row.fetch(-1))
 
       output.concat((first_n + last)
             .join(gap_string))
