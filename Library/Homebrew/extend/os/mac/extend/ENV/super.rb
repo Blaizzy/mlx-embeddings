@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Superenv
@@ -29,7 +29,7 @@ module Superenv
 
   # @private
   def homebrew_extra_pkg_config_paths
-    ["/usr/lib/pkgconfig", "#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.version}"]
+    [Pathname("/usr/lib/pkgconfig"), Pathname("#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.version}")]
   end
 
   # @private
@@ -68,7 +68,7 @@ module Superenv
   end
 
   def homebrew_extra_cmake_library_paths
-    ["#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries"]
+    [Pathname("#{self["HOMEBREW_SDKROOT"]}/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries")]
   end
 
   def homebrew_extra_cmake_frameworks_paths
@@ -96,7 +96,7 @@ module Superenv
     end
 
     self["HOMEBREW_DEVELOPER_DIR"] = if is_xcode_sdk
-      MacOS::Xcode.prefix
+      MacOS::Xcode.prefix.to_s
     else
       MacOS::CLT::PKG_PATH
     end
