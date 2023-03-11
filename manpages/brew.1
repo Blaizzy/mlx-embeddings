@@ -1058,18 +1058,6 @@ Print install times for each package at the end of the run\.
 Treat all named arguments as casks\. If no named arguments are specified, upgrade only outdated casks\.
 .
 .TP
-\fB\-\-[no\-]binaries\fR
-Disable/enable linking of helper executables (default: enabled)\.
-.
-.TP
-\fB\-\-require\-sha\fR
-Require all casks to have a checksum\.
-.
-.TP
-\fB\-\-[no\-]quarantine\fR
-Disable/enable quarantining of downloads (default: enabled)\.
-.
-.TP
 \fB\-\-skip\-cask\-deps\fR
 Skip installing cask dependencies\.
 .
@@ -1084,6 +1072,18 @@ Also include casks with \fBversion :latest\fR\.
 .TP
 \fB\-\-greedy\-auto\-updates\fR
 Also include casks with \fBauto_updates true\fR\.
+.
+.TP
+\fB\-\-[no\-]binaries\fR
+Disable/enable linking of helper executables (default: enabled)\.
+.
+.TP
+\fB\-\-require\-sha\fR
+Require all casks to have a checksum\.
+.
+.TP
+\fB\-\-[no\-]quarantine\fR
+Disable/enable quarantining of downloads (default: enabled)\.
 .
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Show formulae and casks that specify \fIformula\fR as a dependency; that is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
