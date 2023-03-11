@@ -324,7 +324,6 @@ Style/AutoResourceCleanup:
 Style/BarePercentLiterals:
   EnforcedStyle: percent_q
 
-# make rspec formatting more flexible
 Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
