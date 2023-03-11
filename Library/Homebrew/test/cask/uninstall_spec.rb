@@ -86,7 +86,6 @@ describe Cask::Uninstall, :cask do
       ]
     end
     let(:caskroom_path) { Cask::Caskroom.path.join(token).tap(&:mkpath) }
-    # let(:versioned_cask) { Cask::CaskLoader.load(caskroom_path) }
 
     before do
       timestamped_versions.each do |timestamped_version|
@@ -127,7 +126,6 @@ describe Cask::Uninstall, :cask do
   context "when Casks in Taps have been renamed or removed" do
     let(:app) { Cask::Config.new.appdir.join("ive-been-renamed.app") }
     let(:caskroom_path) { Cask::Caskroom.path.join("ive-been-renamed").tap(&:mkpath) }
-    # let(:ive_been_renamed) { Cask::CaskLoader.load(caskroom_path) }
     let(:saved_caskfile) do
       caskroom_path.join(".metadata", "latest", "timestamp", "Casks").join("ive-been-renamed.rb")
     end
