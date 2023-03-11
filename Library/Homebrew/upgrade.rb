@@ -423,13 +423,13 @@ module Homebrew
       end
     end
 
-    def depends_on(a, b)
-      if a.any_installed_keg
+    def depends_on(one, two)
+      if one.any_installed_keg
          &.runtime_dependencies
-         &.any? { |d| d["full_name"] == b.full_name }
+         &.any? { |dependency| dependency["full_name"] == two.full_name }
         1
       else
-        a <=> b
+        one <=> two
       end
     end
     private_class_method :depends_on
