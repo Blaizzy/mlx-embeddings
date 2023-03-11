@@ -189,14 +189,7 @@ Naming/MethodParameterName:
       - AllowedNames
   AllowedNames:
     [
-      "a",
-      "b",
-      "c1",
-      "c2",
-      "e",
-      "f",
-      "o",
-      "pr",
+      "pr", # TODO: Remove if https://github.com/rubocop/rubocop/pull/11690 is merged or we change the variable names.
     ]
 
 # Both styles are used depending on context,

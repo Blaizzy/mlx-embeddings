@@ -19,22 +19,22 @@ module Utils
                          arch:   HOMEBREW_PROCESSOR.downcase.to_sym)
       end
 
-      def built_as?(f)
-        return false unless f.latest_version_installed?
+      def built_as?(formula)
+        return false unless formula.latest_version_installed?
 
-        tab = Tab.for_keg(f.latest_installed_prefix)
+        tab = Tab.for_keg(formula.latest_installed_prefix)
         tab.built_as_bottle
       end
 
-      def file_outdated?(f, file)
+      def file_outdated?(formula, file)
         filename = file.basename.to_s
-        return false if f.bottle.blank?
+        return false if formula.bottle.blank?
 
         bottle_ext, bottle_tag, = extname_tag_rebuild(filename)
         return false if bottle_ext.blank?
         return false if bottle_tag != tag.to_s
 
-        bottle_url_ext, = extname_tag_rebuild(f.bottle.url)
+        bottle_url_ext, = extname_tag_rebuild(formula.bottle.url)
 
         bottle_ext && bottle_url_ext && bottle_ext != bottle_url_ext
       end

@@ -162,33 +162,33 @@ module Kernel
     odeprecated(method, replacement, options)
   end
 
-  def pretty_installed(f)
+  def pretty_installed(formula)
     if !$stdout.tty?
-      f.to_s
+      formula.to_s
     elsif Homebrew::EnvConfig.no_emoji?
-      Formatter.success("#{Tty.bold}#{f} (installed)#{Tty.reset}")
+      Formatter.success("#{Tty.bold}#{formula} (installed)#{Tty.reset}")
     else
-      "#{Tty.bold}#{f} #{Formatter.success("✔")}#{Tty.reset}"
+      "#{Tty.bold}#{formula} #{Formatter.success("✔")}#{Tty.reset}"
     end
   end
 
-  def pretty_outdated(f)
+  def pretty_outdated(formula)
     if !$stdout.tty?
-      f.to_s
+      formula.to_s
     elsif Homebrew::EnvConfig.no_emoji?
-      Formatter.error("#{Tty.bold}#{f} (outdated)#{Tty.reset}")
+      Formatter.error("#{Tty.bold}#{formula} (outdated)#{Tty.reset}")
     else
-      "#{Tty.bold}#{f} #{Formatter.warning("⚠")}#{Tty.reset}"
+      "#{Tty.bold}#{formula} #{Formatter.warning("⚠")}#{Tty.reset}"
     end
   end
 
-  def pretty_uninstalled(f)
+  def pretty_uninstalled(formula)
     if !$stdout.tty?
-      f.to_s
+      formula.to_s
     elsif Homebrew::EnvConfig.no_emoji?
-      Formatter.error("#{Tty.bold}#{f} (uninstalled)#{Tty.reset}")
+      Formatter.error("#{Tty.bold}#{formula} (uninstalled)#{Tty.reset}")
     else
-      "#{Tty.bold}#{f} #{Formatter.error("✘")}#{Tty.reset}"
+      "#{Tty.bold}#{formula} #{Formatter.error("✘")}#{Tty.reset}"
     end
   end
 
@@ -209,10 +209,10 @@ module Kernel
     res.freeze
   end
 
-  def interactive_shell(f = nil)
-    unless f.nil?
-      ENV["HOMEBREW_DEBUG_PREFIX"] = f.prefix
-      ENV["HOMEBREW_DEBUG_INSTALL"] = f.full_name
+  def interactive_shell(formula = nil)
+    unless formula.nil?
+      ENV["HOMEBREW_DEBUG_PREFIX"] = formula.prefix
+      ENV["HOMEBREW_DEBUG_INSTALL"] = formula.full_name
     end
 
     if Utils::Shell.preferred == :zsh && (home = Dir.home).start_with?(HOMEBREW_TEMP.resolved_path.to_s)

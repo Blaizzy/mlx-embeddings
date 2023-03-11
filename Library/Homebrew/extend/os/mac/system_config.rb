@@ -38,12 +38,12 @@ module SystemConfig
       @clt ||= MacOS::CLT.version if MacOS::CLT.installed?
     end
 
-    def dump_verbose_config(f = $stdout)
-      dump_generic_verbose_config(f)
-      f.puts "macOS: #{MacOS.full_version}-#{kernel}"
-      f.puts "CLT: #{clt || "N/A"}"
-      f.puts "Xcode: #{xcode || "N/A"}"
-      f.puts "Rosetta 2: #{Hardware::CPU.in_rosetta2?}" if Hardware::CPU.physical_cpu_arm64?
+    def dump_verbose_config(out = $stdout)
+      dump_generic_verbose_config(out)
+      out.puts "macOS: #{MacOS.full_version}-#{kernel}"
+      out.puts "CLT: #{clt || "N/A"}"
+      out.puts "Xcode: #{xcode || "N/A"}"
+      out.puts "Rosetta 2: #{Hardware::CPU.in_rosetta2?}" if Hardware::CPU.physical_cpu_arm64?
     end
   end
 end

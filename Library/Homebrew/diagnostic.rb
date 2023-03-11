@@ -570,8 +570,8 @@ module Homebrew
         EOS
       end
 
-      def __check_linked_brew(f)
-        f.installed_prefixes.each do |prefix|
+      def __check_linked_brew(formula)
+        formula.installed_prefixes.each do |prefix|
           prefix.find do |src|
             next if src == prefix
 

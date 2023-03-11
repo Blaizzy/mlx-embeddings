@@ -139,43 +139,43 @@ module SystemConfig
       end
     end
 
-    def core_tap_config(f = $stdout)
+    def core_tap_config(out = $stdout)
       if CoreTap.instance.installed?
-        f.puts "Core tap origin: #{core_tap_origin}"
-        f.puts "Core tap HEAD: #{core_tap_head}"
-        f.puts "Core tap last commit: #{core_tap_last_commit}"
-        f.puts "Core tap branch: #{core_tap_branch}"
+        out.puts "Core tap origin: #{core_tap_origin}"
+        out.puts "Core tap HEAD: #{core_tap_head}"
+        out.puts "Core tap last commit: #{core_tap_last_commit}"
+        out.puts "Core tap branch: #{core_tap_branch}"
       end
 
       if (formula_json = Homebrew::API::HOMEBREW_CACHE_API/"formula.jws.json") && formula_json.exist?
-        f.puts "Core tap JSON: #{formula_json.mtime.utc.strftime("%d %b %H:%M UTC")}"
+        out.puts "Core tap JSON: #{formula_json.mtime.utc.strftime("%d %b %H:%M UTC")}"
       elsif !CoreTap.instance.installed?
-        f.puts "Core tap: N/A"
+        out.puts "Core tap: N/A"
       end
     end
 
-    def homebrew_config(f = $stdout)
-      f.puts "HOMEBREW_VERSION: #{HOMEBREW_VERSION}"
-      f.puts "ORIGIN: #{origin}"
-      f.puts "HEAD: #{head}"
-      f.puts "Last commit: #{last_commit}"
+    def homebrew_config(out = $stdout)
+      out.puts "HOMEBREW_VERSION: #{HOMEBREW_VERSION}"
+      out.puts "ORIGIN: #{origin}"
+      out.puts "HEAD: #{head}"
+      out.puts "Last commit: #{last_commit}"
     end
 
-    def homebrew_env_config(f = $stdout)
-      f.puts "HOMEBREW_PREFIX: #{HOMEBREW_PREFIX}"
+    def homebrew_env_config(out = $stdout)
+      out.puts "HOMEBREW_PREFIX: #{HOMEBREW_PREFIX}"
       {
         HOMEBREW_REPOSITORY: Homebrew::DEFAULT_REPOSITORY,
         HOMEBREW_CELLAR:     Homebrew::DEFAULT_CELLAR,
       }.freeze.each do |key, default|
         value = Object.const_get(key)
-        f.puts "#{key}: #{value}" if value.to_s != default.to_s
+        out.puts "#{key}: #{value}" if value.to_s != default.to_s
       end
 
       Homebrew::EnvConfig::ENVS.each do |env, hash|
         method_name = Homebrew::EnvConfig.env_method_name(env, hash)
 
         if hash[:boolean]
-          f.puts "#{env}: set" if Homebrew::EnvConfig.send(method_name)
+          out.puts "#{env}: set" if Homebrew::EnvConfig.send(method_name)
           next
         end
 
@@ -184,26 +184,26 @@ module SystemConfig
         next if (default = hash[:default].presence) && value.to_s == default.to_s
 
         if ENV.sensitive?(env)
-          f.puts "#{env}: set"
+          out.puts "#{env}: set"
         else
-          f.puts "#{env}: #{value}"
+          out.puts "#{env}: #{value}"
         end
       end
-      f.puts "Homebrew Ruby: #{describe_homebrew_ruby}"
+      out.puts "Homebrew Ruby: #{describe_homebrew_ruby}"
     end
 
-    def host_software_config(f = $stdout)
-      f.puts "Clang: #{describe_clang}"
-      f.puts "Git: #{describe_git}"
-      f.puts "Curl: #{describe_curl}"
+    def host_software_config(out = $stdout)
+      out.puts "Clang: #{describe_clang}"
+      out.puts "Git: #{describe_git}"
+      out.puts "Curl: #{describe_curl}"
     end
 
-    def dump_verbose_config(f = $stdout)
-      homebrew_config(f)
-      core_tap_config(f)
-      homebrew_env_config(f)
-      f.puts hardware if hardware
-      host_software_config(f)
+    def dump_verbose_config(out = $stdout)
+      homebrew_config(out)
+      core_tap_config(out)
+      homebrew_env_config(out)
+      out.puts hardware if hardware
+      host_software_config(out)
     end
     alias dump_generic_verbose_config dump_verbose_config
   end

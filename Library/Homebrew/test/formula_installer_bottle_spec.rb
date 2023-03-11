@@ -49,22 +49,22 @@ describe FormulaInstaller do
     expect(formula).not_to be_latest_version_installed
   end
 
-  def test_basic_formula_setup(f)
+  def test_basic_formula_setup(formula)
     # Test that things made it into the Keg
-    expect(f.bin).to be_a_directory
+    expect(formula.bin).to be_a_directory
 
-    expect(f.libexec).to be_a_directory
+    expect(formula.libexec).to be_a_directory
 
-    expect(f.prefix/"main.c").not_to exist
+    expect(formula.prefix/"main.c").not_to exist
 
     # Test that things made it into the Cellar
-    keg = Keg.new f.prefix
+    keg = Keg.new formula.prefix
     keg.link
 
     bin = HOMEBREW_PREFIX/"bin"
     expect(bin).to be_a_directory
 
-    expect(f.libexec).to be_a_directory
+    expect(formula.libexec).to be_a_directory
   end
 
   # This test wraps expect() calls in `test_basic_formula_setup`

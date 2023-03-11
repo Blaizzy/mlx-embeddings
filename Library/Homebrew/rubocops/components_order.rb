@@ -214,13 +214,13 @@ module RuboCop
         end
 
         # Method to report and correct component precedence violations.
-        def component_problem(c1, c2)
+        def component_problem(component1, component2)
           return if tap_style_exception? :components_order_exceptions
 
-          problem "`#{format_component(c1)}` (line #{line_number(c1)}) " \
-                  "should be put before `#{format_component(c2)}` " \
-                  "(line #{line_number(c2)})" do |corrector|
-            reorder_components(corrector, c1, c2)
+          problem "`#{format_component(component1)}` (line #{line_number(component1)}) " \
+                  "should be put before `#{format_component(component2)}` " \
+                  "(line #{line_number(component2)})" do |corrector|
+            reorder_components(corrector, component1, component2)
           end
         end
 

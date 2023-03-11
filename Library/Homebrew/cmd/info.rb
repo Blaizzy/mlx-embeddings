@@ -247,40 +247,40 @@ module Homebrew
     end
   end
 
-  def github_info(f)
-    return f.path if f.tap.blank? || f.tap.remote.blank?
+  def github_info(formula)
+    return formula.path if formula.tap.blank? || formula.tap.remote.blank?
 
-    path = case f
+    path = case formula
     when Formula
-      f.path.relative_path_from(f.tap.path)
+      formula.path.relative_path_from(formula.tap.path)
     when Cask::Cask
-      return "#{f.tap.default_remote}/blob/HEAD/Casks/#{f.token}.rb" if f.sourcefile_path.blank?
+      return "#{formula.tap.default_remote}/blob/HEAD/Casks/#{formula.token}.rb" if formula.sourcefile_path.blank?
 
-      f.sourcefile_path.relative_path_from(f.tap.path)
+      formula.sourcefile_path.relative_path_from(formula.tap.path)
     end
-    github_remote_path(f.tap.remote, path)
+    github_remote_path(formula.tap.remote, path)
   end
 
-  def info_formula(f, args:)
+  def info_formula(formula, args:)
     specs = []
 
-    if (stable = f.stable)
-      s = "stable #{stable.version}"
-      s += " (bottled)" if stable.bottled? && f.pour_bottle?
-      specs << s
+    if (stable = formula.stable)
+      string = "stable #{stable.version}"
+      string += " (bottled)" if stable.bottled? && formula.pour_bottle?
+      specs << string
     end
 
-    specs << "HEAD" if f.head
+    specs << "HEAD" if formula.head
 
     attrs = []
-    attrs << "pinned at #{f.pinned_version}" if f.pinned?
-    attrs << "keg-only" if f.keg_only?
+    attrs << "pinned at #{formula.pinned_version}" if formula.pinned?
+    attrs << "keg-only" if formula.keg_only?
 
-    puts "#{oh1_title(f.full_name)}: #{specs * ", "}#{" [#{attrs * ", "}]" unless attrs.empty?}"
-    puts f.desc if f.desc
-    puts Formatter.url(f.homepage) if f.homepage
+    puts "#{oh1_title(formula.full_name)}: #{specs * ", "}#{" [#{attrs * ", "}]" unless attrs.empty?}"
+    puts formula.desc if formula.desc
+    puts Formatter.url(formula.homepage) if formula.homepage
 
-    deprecate_disable_type, deprecate_disable_reason = DeprecateDisable.deprecate_disable_info f
+    deprecate_disable_type, deprecate_disable_reason = DeprecateDisable.deprecate_disable_info formula
     if deprecate_disable_type.present?
       if deprecate_disable_reason.present?
         puts "#{deprecate_disable_type.capitalize} because it #{deprecate_disable_reason}!"
@@ -289,9 +289,9 @@ module Homebrew
       end
     end
 
-    conflicts = f.conflicts.map do |c|
-      reason = " (because #{c.reason})" if c.reason
-      "#{c.name}#{reason}"
+    conflicts = formula.conflicts.map do |conflict|
+      reason = " (because #{conflict.reason})" if conflict.reason
+      "#{conflict.name}#{reason}"
     end.sort!
     unless conflicts.empty?
       puts <<~EOS
@@ -300,7 +300,7 @@ module Homebrew
       EOS
     end
 
-    kegs = f.installed_kegs
+    kegs = formula.installed_kegs
     heads, versioned = kegs.partition { |k| k.version.head? }
     kegs = [
       *heads.sort_by { |k| -Tab.for_keg(k).time.to_i },
@@ -316,37 +316,37 @@ module Homebrew
       end
     end
 
-    puts "From: #{Formatter.url(github_info(f))}"
+    puts "From: #{Formatter.url(github_info(formula))}"
 
-    puts "License: #{SPDX.license_expression_to_string f.license}" if f.license.present?
+    puts "License: #{SPDX.license_expression_to_string formula.license}" if formula.license.present?
 
-    unless f.deps.empty?
+    unless formula.deps.empty?
       ohai "Dependencies"
       %w[build required recommended optional].map do |type|
-        deps = f.deps.send(type).uniq
+        deps = formula.deps.send(type).uniq
         puts "#{type.capitalize}: #{decorate_dependencies deps}" unless deps.empty?
       end
     end
 
-    unless f.requirements.to_a.empty?
+    unless formula.requirements.to_a.empty?
       ohai "Requirements"
       %w[build required recommended optional].map do |type|
-        reqs = f.requirements.select(&:"#{type}?")
+        reqs = formula.requirements.select(&:"#{type}?")
         next if reqs.to_a.empty?
 
         puts "#{type.capitalize}: #{decorate_requirements(reqs)}"
       end
     end
 
-    if !f.options.empty? || f.head
+    if !formula.options.empty? || formula.head
       ohai "Options"
-      Options.dump_for_formula f
+      Options.dump_for_formula formula
     end
 
-    caveats = Caveats.new(f)
+    caveats = Caveats.new(formula)
     ohai "Caveats", caveats.to_s unless caveats.empty?
 
-    Utils::Analytics.formula_output(f, args: args)
+    Utils::Analytics.formula_output(formula, args: args)
   end
 
   def decorate_dependencies(dependencies)

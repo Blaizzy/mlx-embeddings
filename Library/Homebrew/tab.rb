@@ -143,37 +143,37 @@ class Tab < OpenStruct
 
   # Returns a {Tab} for an already installed formula,
   # or a fake one if the formula is not installed.
-  def self.for_formula(f)
+  def self.for_formula(formula)
     paths = []
 
-    paths << f.opt_prefix.resolved_path if f.opt_prefix.symlink? && f.opt_prefix.directory?
+    paths << formula.opt_prefix.resolved_path if formula.opt_prefix.symlink? && formula.opt_prefix.directory?
 
-    paths << f.linked_keg.resolved_path if f.linked_keg.symlink? && f.linked_keg.directory?
+    paths << formula.linked_keg.resolved_path if formula.linked_keg.symlink? && formula.linked_keg.directory?
 
-    if (dirs = f.installed_prefixes).length == 1
+    if (dirs = formula.installed_prefixes).length == 1
       paths << dirs.first
     end
 
-    paths << f.latest_installed_prefix
+    paths << formula.latest_installed_prefix
 
-    path = paths.map { |pn| pn/FILENAME }.find(&:file?)
+    path = paths.map { |pathname| pathname/FILENAME }.find(&:file?)
 
     if path
       tab = from_file(path)
-      used_options = remap_deprecated_options(f.deprecated_options, tab.used_options)
+      used_options = remap_deprecated_options(formula.deprecated_options, tab.used_options)
       tab.used_options = used_options.as_flags
     else
       # Formula is not installed. Return a fake tab.
       tab = empty
-      tab.unused_options = f.options.as_flags
+      tab.unused_options = formula.options.as_flags
       tab.source = {
-        "path"     => f.specified_path.to_s,
-        "tap"      => f.tap&.name,
-        "spec"     => f.active_spec_sym.to_s,
+        "path"     => formula.specified_path.to_s,
+        "tap"      => formula.tap&.name,
+        "spec"     => formula.active_spec_sym.to_s,
         "versions" => {
-          "stable"         => f.stable&.version.to_s,
-          "head"           => f.head&.version.to_s,
-          "version_scheme" => f.version_scheme,
+          "stable"         => formula.stable&.version.to_s,
+          "head"           => formula.head&.version.to_s,
+          "version_scheme" => formula.version_scheme,
         },
       }
     end

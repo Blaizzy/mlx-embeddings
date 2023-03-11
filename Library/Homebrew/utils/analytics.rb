@@ -282,10 +282,10 @@ module Utils
         end
       end
 
-      def formula_output(f, args:)
+      def formula_output(formula, args:)
         return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
 
-        json = Homebrew::API::Formula.fetch f.name
+        json = Homebrew::API::Formula.fetch formula.name
         return if json.blank? || json["analytics"].blank?
 
         get_analytics(json, args: args)

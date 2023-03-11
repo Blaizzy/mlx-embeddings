@@ -653,9 +653,9 @@ class Version
 
   private
 
-  sig { params(a: Integer, b: Integer).returns(Integer) }
-  def max(a, b)
-    (a > b) ? a : b
+  sig { params(first: Integer, second: Integer).returns(Integer) }
+  def max(first, second)
+    (first > second) ? first : second
   end
 
   sig { returns(T::Array[Token]) }
