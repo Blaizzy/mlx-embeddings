@@ -18,9 +18,9 @@ class BuildEnvironment
     self
   end
 
-  sig { params(o: Symbol).returns(T.self_type) }
-  def <<(o)
-    @settings << o
+  sig { params(option: Symbol).returns(T.self_type) }
+  def <<(option)
+    @settings << option
     self
   end
 

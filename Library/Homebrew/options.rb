@@ -139,8 +139,8 @@ class Options
     map(&:flag)
   end
 
-  def include?(o)
-    any? { |opt| opt == o || opt.name == o || opt.flag == o }
+  def include?(option)
+    any? { |opt| opt == option || opt.name == option || opt.flag == option }
   end
 
   alias to_ary to_a

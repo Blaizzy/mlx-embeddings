@@ -189,7 +189,6 @@ Naming/MethodParameterName:
       - AllowedNames
   AllowedNames:
     [
-      "o",
       "pr",
     ]
 
