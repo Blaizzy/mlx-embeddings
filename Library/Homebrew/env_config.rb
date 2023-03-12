@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "set"
+
 module Homebrew
   # Helper module for querying Homebrew-specific environment variables.
   #
@@ -421,12 +423,15 @@ module Homebrew
       method_name
     end
 
-    CUSTOM_IMPLEMENTATIONS = %w[
-      HOMEBREW_MAKE_JOBS
-      HOMEBREW_CASK_OPTS
-    ].freeze
+    CUSTOM_IMPLEMENTATIONS = Set.new([
+      :HOMEBREW_MAKE_JOBS,
+      :HOMEBREW_CASK_OPTS,
+    ]).freeze
 
     ENVS.each do |env, hash|
+      # Needs a custom implementation.
+      next if CUSTOM_IMPLEMENTATIONS.include?(env)
+
       method_name = env_method_name(env, hash)
       env = env.to_s
 
@@ -435,9 +440,6 @@ module Homebrew
           ENV[env].present?
         end
       elsif hash[:default].present?
-        # Needs a custom implementation.
-        next if CUSTOM_IMPLEMENTATIONS.include?(env)
-
         define_method(method_name) do
           ENV[env].presence || hash.fetch(:default).to_s
         end
