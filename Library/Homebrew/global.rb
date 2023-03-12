@@ -7,8 +7,8 @@ require "English"
 require "fileutils"
 require "json"
 require "json/add/exception"
-require "ostruct"
 require "forwardable"
+require "set"
 
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
@@ -16,7 +16,6 @@ require "active_support/core_ext/object/blank"
 require "active_support/core_ext/string/filters"
 require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
-require "i18n"
 require "active_support/core_ext/hash/except"
 require "active_support/core_ext/kernel/reporting"
 require "active_support/core_ext/hash/keys"
@@ -25,9 +24,6 @@ require "active_support/core_ext/file/atomic"
 require "active_support/core_ext/enumerable"
 require "active_support/core_ext/string/exclude"
 require "active_support/core_ext/string/indent"
-
-I18n.backend.available_locales # Initialize locales so they can be overwritten.
-I18n.backend.store_translations :en, support: { array: { last_word_connector: " and " } }
 
 HOMEBREW_API_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_API_DEFAULT_DOMAIN").freeze
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_BOTTLE_DEFAULT_DOMAIN").freeze
@@ -147,8 +143,6 @@ ORIGINAL_PATHS = PATH.new(ENV.fetch("HOMEBREW_PATH")).map do |p|
 rescue
   nil
 end.compact.freeze
-
-require "set"
 
 require "system_command"
 require "exceptions"

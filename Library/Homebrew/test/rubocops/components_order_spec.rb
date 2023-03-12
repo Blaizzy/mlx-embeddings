@@ -1014,7 +1014,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
 
             resource do
               on_macos do
-              ^^^^^^^^^^^ `on_macos` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version`, and `sha256` (in order).
+              ^^^^^^^^^^^ `on_macos` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version` and `sha256` (in order).
                 sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
                 url "https://brew.sh/resource2.tar.gz"
               end
@@ -1081,7 +1081,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
 
             resource do
               on_macos do
-              ^^^^^^^^^^^ `on_macos` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version`, and `sha256` (in order).
+              ^^^^^^^^^^^ `on_macos` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version` and `sha256` (in order).
                 if foo == :bar
                   url "https://brew.sh/resource2.tar.gz"
                   sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
@@ -1112,7 +1112,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
               end
 
               on_arm do
-              ^^^^^^^^^ `on_arm` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version`, and `sha256` (in order).
+              ^^^^^^^^^ `on_arm` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version` and `sha256` (in order).
                 sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
                 url "https://brew.sh/resource2.tar.gz"
               end
@@ -1158,7 +1158,7 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
               end
 
               on_arm do
-              ^^^^^^^^^ `on_arm` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version`, and `sha256` (in order).
+              ^^^^^^^^^ `on_arm` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version` and `sha256` (in order).
                 if foo == :bar
                   url "https://brew.sh/resource2.tar.gz"
                   sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"

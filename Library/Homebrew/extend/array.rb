@@ -48,7 +48,7 @@ class Array
   # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
   # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
   # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  def to_sentence(words_connector: ", ", two_words_connector: " and ", last_word_connector: ", and ")
+  def to_sentence(words_connector: ", ", two_words_connector: " and ", last_word_connector: " and ")
     case length
     when 0
       +""
