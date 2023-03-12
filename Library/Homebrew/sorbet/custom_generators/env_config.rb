@@ -24,7 +24,7 @@ File.open("#{__dir__}/../../env_config.rbi", "w") do |file|
   methods.each do |method|
     return_type = if method.end_with?("?")
       T::Boolean
-    elsif default = dynamic_methods[method][:default]
+    elsif (default = dynamic_methods[method][:default])F
       default.class
     else
       T.nilable(String)
