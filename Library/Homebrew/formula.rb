@@ -2517,12 +2517,12 @@ class Formula
       $stdout.flush
 
       unless $CHILD_STATUS.success?
-        log_lines = Homebrew::EnvConfig.fail_log_lines.to_s
+        log_lines = Homebrew::EnvConfig.fail_log_lines
 
         log.flush
         if !verbose? || verbose_using_dots
           puts "Last #{log_lines} lines from #{logfn}:"
-          Kernel.system "/usr/bin/tail", "-n", log_lines, logfn
+          Kernel.system "/usr/bin/tail", "-n", log_lines.to_s, logfn
         end
         log.puts
 
