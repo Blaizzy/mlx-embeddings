@@ -8,7 +8,7 @@ def nilable?(method)
   %w[browser editor github_api_token].include?(method)
 end
 
-File.open("#{File.dirname(__FILE__)}/../../env_config.rbi", "w") do |file|
+File.open("#{__dir__}/../../env_config.rbi", "w") do |file|
   file.write(<<~RUBY)
     # typed: strict
 
@@ -23,15 +23,15 @@ File.open("#{File.dirname(__FILE__)}/../../env_config.rbi", "w") do |file|
     dynamic_methods[name] = { default: hash[:default] }
   end
 
-  methods = Homebrew::EnvConfig.methods(false).map(&:to_s).sort.select { |method| dynamic_methods.key?(method) }
+  methods = Homebrew::EnvConfig.methods(false).map(&:to_s).select { |method| dynamic_methods.key?(method) }.sort
 
   methods.each do |method|
     return_type = if method.end_with?("?")
       T::Boolean
-    elsif dynamic_methods[method][:default].instance_of?(Integer)
-      Integer
+    elsif default = dynamic_methods[method][:default]
+      default.class
     else
-      nilable?(method) ? T.nilable(String) : String
+      T.nilable(String)
     end
 
     file.write(<<-RUBY)
@@ -39,8 +39,8 @@ File.open("#{File.dirname(__FILE__)}/../../env_config.rbi", "w") do |file|
   def self.#{method}; end
     RUBY
 
-    file.write("\n") unless methods.last == method
+    file.write("\n") unless method == methods.last
   end
 
-  file.write("end\n")
+  file.puts "end"
 end
