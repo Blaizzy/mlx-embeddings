@@ -7,22 +7,22 @@ require "keg"
 #
 # @api private
 class FormulaPin
-  def initialize(f)
-    @f = f
+  def initialize(formula)
+    @formula = formula
   end
 
   def path
-    HOMEBREW_PINNED_KEGS/@f.name
+    HOMEBREW_PINNED_KEGS/@formula.name
   end
 
   def pin_at(version)
     HOMEBREW_PINNED_KEGS.mkpath
-    version_path = @f.rack/version
+    version_path = @formula.rack/version
     path.make_relative_symlink(version_path) if !pinned? && version_path.exist?
   end
 
   def pin
-    pin_at(@f.installed_kegs.map(&:version).max)
+    pin_at(@formula.installed_kegs.map(&:version).max)
   end
 
   def unpin
@@ -35,7 +35,7 @@ class FormulaPin
   end
 
   def pinnable?
-    !@f.installed_prefixes.empty?
+    !@formula.installed_prefixes.empty?
   end
 
   def pinned_version

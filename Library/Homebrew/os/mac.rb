@@ -117,11 +117,11 @@ module OS
       sdk_locator.sdk_if_applicable(version)
     end
 
-    def sdk_for_formula(f, version = nil, check_only_runtime_requirements: false)
+    def sdk_for_formula(formula, version = nil, check_only_runtime_requirements: false)
       # If the formula requires Xcode, don't return the CLT SDK
       # If check_only_runtime_requirements is true, don't necessarily return the
       # Xcode SDK if the XcodeRequirement is only a build or test requirement.
-      return Xcode.sdk if f.requirements.any? do |req|
+      return Xcode.sdk if formula.requirements.any? do |req|
         next false unless req.is_a? XcodeRequirement
         next false if check_only_runtime_requirements && req.build? && !req.test?
 

@@ -155,21 +155,21 @@ module Homebrew
       @cleaned_up_paths = Set.new
     end
 
-    def self.install_formula_clean!(f, dry_run: false)
+    def self.install_formula_clean!(formula, dry_run: false)
       return if Homebrew::EnvConfig.no_install_cleanup?
-      return unless f.latest_version_installed?
-      return if skip_clean_formula?(f)
+      return unless formula.latest_version_installed?
+      return if skip_clean_formula?(formula)
 
       if dry_run
-        ohai "Would run `brew cleanup #{f}`"
+        ohai "Would run `brew cleanup #{formula}`"
       else
-        ohai "Running `brew cleanup #{f}`..."
+        ohai "Running `brew cleanup #{formula}`..."
       end
 
       puts_no_install_cleanup_disable_message_if_not_already!
       return if dry_run
 
-      Cleanup.new.cleanup_formula(f)
+      Cleanup.new.cleanup_formula(formula)
     end
 
     def self.puts_no_install_cleanup_disable_message
@@ -187,11 +187,11 @@ module Homebrew
       @puts_no_install_cleanup_disable_message_if_not_already = true
     end
 
-    def self.skip_clean_formula?(f)
+    def self.skip_clean_formula?(formula)
       return false if Homebrew::EnvConfig.no_cleanup_formulae.blank?
 
       @skip_clean_formulae ||= Homebrew::EnvConfig.no_cleanup_formulae.split(",")
-      @skip_clean_formulae.include?(f.name) || (@skip_clean_formulae & f.aliases).present?
+      @skip_clean_formulae.include?(formula.name) || (@skip_clean_formulae & formula.aliases).present?
     end
 
     def self.periodic_clean_due?

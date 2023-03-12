@@ -1,5 +1,5 @@
 # typed: strict
 
-class URL
+module Homebrew::Assertions
   include Kernel
 end

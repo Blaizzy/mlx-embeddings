@@ -269,17 +269,7 @@ auto-update() {
   # If we've checked for updates, we don't need to check again.
   export HOMEBREW_AUTO_UPDATE_CHECKED="1"
 
-  AUTO_UPDATE_COMMANDS=(
-    install
-    upgrade
-    bump-formula-pr
-    bump-cask-pr
-    bundle
-    release
-  )
-
-  if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_COMMANDS[@]}" ||
-     [[ "${HOMEBREW_COMMAND}" == "tap" && "${HOMEBREW_ARG_COUNT}" -gt 1 ]]
+  if [[ -n "${HOMEBREW_AUTO_UPDATE_COMMAND}" ]]
   then
     export HOMEBREW_AUTO_UPDATING="1"
 
@@ -814,6 +804,22 @@ then
 
   # Don't allow non-developers to customise Ruby warnings.
   unset HOMEBREW_RUBY_WARNINGS
+fi
+
+# Check for commands that should call `brew update --auto-update` first.
+AUTO_UPDATE_COMMANDS=(
+  install
+  outdated
+  upgrade
+  bump-formula-pr
+  bump-cask-pr
+  bundle
+  release
+)
+if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_COMMANDS[@]}" ||
+   [[ "${HOMEBREW_COMMAND}" == "tap" && "${HOMEBREW_ARG_COUNT}" -gt 1 ]]
+then
+  export HOMEBREW_AUTO_UPDATE_COMMAND="1"
 fi
 
 # Disable Ruby options we don't need.

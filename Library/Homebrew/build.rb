@@ -198,19 +198,19 @@ class Build
     keg.detect_cxx_stdlibs(skip_executables: true)
   end
 
-  def fixopt(f)
-    path = if f.linked_keg.directory? && f.linked_keg.symlink?
-      f.linked_keg.resolved_path
-    elsif f.prefix.directory?
-      f.prefix
-    elsif (kids = f.rack.children).size == 1 && kids.first.directory?
+  def fixopt(formula)
+    path = if formula.linked_keg.directory? && formula.linked_keg.symlink?
+      formula.linked_keg.resolved_path
+    elsif formula.prefix.directory?
+      formula.prefix
+    elsif (kids = formula.rack.children).size == 1 && kids.first.directory?
       kids.first
     else
       raise
     end
     Keg.new(path).optlink(verbose: args.verbose?)
   rescue
-    raise "#{f.opt_prefix} not present or broken\nPlease reinstall #{f.full_name}. Sorry :("
+    raise "#{formula.opt_prefix} not present or broken\nPlease reinstall #{formula.full_name}. Sorry :("
   end
 end
 

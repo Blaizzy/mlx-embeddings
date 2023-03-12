@@ -14,8 +14,8 @@ class Cleaner
   include Context
 
   # Create a cleaner for the given formula.
-  def initialize(f)
-    @f = f
+  def initialize(formula)
+    @formula = formula
   end
 
   # Clean the keg of the formula.
@@ -24,9 +24,9 @@ class Cleaner
 
     # Many formulae include 'lib/charset.alias', but it is not strictly needed
     # and will conflict if more than one formula provides it
-    observe_file_removal @f.lib/"charset.alias"
+    observe_file_removal @formula.lib/"charset.alias"
 
-    [@f.bin, @f.sbin, @f.lib].each { |d| clean_dir(d) if d.exist? }
+    [@formula.bin, @formula.sbin, @formula.lib].each { |dir| clean_dir(dir) if dir.exist? }
 
     # Get rid of any info 'dir' files, so they don't conflict at the link stage
     #
@@ -47,11 +47,11 @@ class Cleaner
     # [1]: https://github.com/Homebrew/brew/pull/11597
     # [2]: https://github.com/Homebrew/homebrew-core/issues/100190
     # [3]: https://github.com/Homebrew/brew/pull/13215
-    Dir.glob(@f.info/"**/dir").each do |f|
-      info_dir_file = Pathname(f)
+    Dir.glob(@formula.info/"**/dir").each do |file|
+      info_dir_file = Pathname(file)
       next unless info_dir_file.file?
-      next if info_dir_file == @f.info/@f.name/"dir"
-      next if @f.skip_clean?(info_dir_file)
+      next if info_dir_file == @formula.info/@formula.name/"dir"
+      next if @formula.skip_clean?(info_dir_file)
 
       observe_file_removal info_dir_file
     end
@@ -73,8 +73,8 @@ class Cleaner
   def prune
     dirs = []
     symlinks = []
-    @f.prefix.find do |path|
-      if path == @f.libexec || @f.skip_clean?(path)
+    @formula.prefix.find do |path|
+      if path == @formula.libexec || @formula.skip_clean?(path)
         Find.prune
       elsif path.symlink?
         symlinks << path
@@ -121,7 +121,7 @@ class Cleaner
     directory.find do |path|
       path.extend(ObserverPathnameExtension)
 
-      Find.prune if @f.skip_clean? path
+      Find.prune if @formula.skip_clean? path
 
       next if path.directory?
 
@@ -149,14 +149,14 @@ class Cleaner
     require "language/perl"
     require "utils/shebang"
 
-    basepath = @f.prefix.realpath
+    basepath = @formula.prefix.realpath
     basepath.find do |path|
-      Find.prune if @f.skip_clean? path
+      Find.prune if @formula.skip_clean? path
 
       next if path.directory? || path.symlink?
 
       begin
-        Utils::Shebang.rewrite_shebang Language::Perl::Shebang.detected_perl_shebang(@f), path
+        Utils::Shebang.rewrite_shebang Language::Perl::Shebang.detected_perl_shebang(@formula), path
       rescue ShebangDetectionError
         break
       end

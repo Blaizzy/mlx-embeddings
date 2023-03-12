@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Utils
@@ -25,7 +25,7 @@ module Utils
     def formulae_with_no_formula_dependents(formulae)
       return [] if formulae.blank?
 
-      dependents = []
+      dependents = T.let([], T::Array[Formula])
       formulae.each do |formula|
         dependents += formula.runtime_formula_dependencies
 
@@ -33,7 +33,7 @@ module Utils
         next if Tab.for_keg(formula.any_installed_keg).poured_from_bottle
 
         formula.deps.select(&:build?).each do |dep|
-          suppress(FormulaUnavailableError) { dependents << dep.to_formula }
+          Kernel.suppress(FormulaUnavailableError) { dependents << dep.to_formula }
         end
       end
       formulae - dependents

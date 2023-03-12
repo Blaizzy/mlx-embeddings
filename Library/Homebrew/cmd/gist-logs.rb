@@ -35,22 +35,24 @@ module Homebrew
     end
   end
 
-  def gistify_logs(f, args:)
-    files = load_logs(f.logs)
-    build_time = f.logs.ctime
+  def gistify_logs(formula, args:)
+    files = load_logs(formula.logs)
+    build_time = formula.logs.ctime
     timestamp = build_time.strftime("%Y-%m-%d_%H-%M-%S")
 
     s = StringIO.new
     SystemConfig.dump_verbose_config s
     # Dummy summary file, asciibetically first, to control display title of gist
-    files["# #{f.name} - #{timestamp}.txt"] = { content: brief_build_info(f, with_hostname: args.with_hostname?) }
+    files["# #{formula.name} - #{timestamp}.txt"] = {
+      content: brief_build_info(formula, with_hostname: args.with_hostname?),
+    }
     files["00.config.out"] = { content: s.string }
     files["00.doctor.out"] = { content: Utils.popen_read("#{HOMEBREW_PREFIX}/bin/brew", "doctor", err: :out) }
-    unless f.core_formula?
+    unless formula.core_formula?
       tap = <<~EOS
-        Formula: #{f.name}
-            Tap: #{f.tap}
-           Path: #{f.path}
+        Formula: #{formula.name}
+            Tap: #{formula.tap}
+           Path: #{formula.path}
       EOS
       files["00.tap.out"] = { content: tap }
     end
@@ -58,10 +60,10 @@ module Homebrew
     odie "`brew gist-logs` requires HOMEBREW_GITHUB_API_TOKEN to be set!" if GitHub::API.credentials_type == :none
 
     # Description formatted to work well as page title when viewing gist
-    descr = if f.core_formula?
-      "#{f.name} on #{OS_VERSION} - Homebrew build logs"
+    descr = if formula.core_formula?
+      "#{formula.name} on #{OS_VERSION} - Homebrew build logs"
     else
-      "#{f.name} (#{f.full_name}) on #{OS_VERSION} - Homebrew build logs"
+      "#{formula.name} (#{formula.full_name}) on #{OS_VERSION} - Homebrew build logs"
     end
 
     begin
@@ -73,22 +75,24 @@ module Homebrew
       EOS
     end
 
-    url = GitHub.create_issue(f.tap, "#{f.name} failed to build on #{MacOS.full_version}", url) if args.new_issue?
+    if args.new_issue?
+      url = GitHub.create_issue(formula.tap, "#{formula.name} failed to build on #{MacOS.full_version}", url)
+    end
 
     puts url if url
   end
 
-  def brief_build_info(f, with_hostname:)
-    build_time_str = f.logs.ctime.strftime("%Y-%m-%d %H:%M:%S")
-    s = +<<~EOS
-      Homebrew build logs for #{f.full_name} on #{OS_VERSION}
+  def brief_build_info(formula, with_hostname:)
+    build_time_string = formula.logs.ctime.strftime("%Y-%m-%d %H:%M:%S")
+    string = +<<~EOS
+      Homebrew build logs for #{formula.full_name} on #{OS_VERSION}
     EOS
     if with_hostname
       hostname = Socket.gethostname
-      s << "Host: #{hostname}\n"
+      string << "Host: #{hostname}\n"
     end
-    s << "Build date: #{build_time_str}\n"
-    s.freeze
+    string << "Build date: #{build_time_string}\n"
+    string.freeze
   end
 
   # Causes some terminals to display secure password entry indicators.

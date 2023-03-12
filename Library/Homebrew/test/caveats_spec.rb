@@ -10,7 +10,7 @@ describe Caveats do
   let(:f) { formula { url "foo-1.0" } }
 
   specify "#f" do
-    expect(caveats.f).to eq(f)
+    expect(caveats.formula).to eq(f)
   end
 
   describe "#empty?" do

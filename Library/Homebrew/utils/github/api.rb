@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "tempfile"
@@ -214,7 +214,7 @@ module GitHub
 
       headers_tmpfile = Tempfile.new("github_api_headers", HOMEBREW_TEMP)
       begin
-        if data
+        if data_tmpfile
           data_tmpfile.write data
           data_tmpfile.close
           args += ["--data", "@#{data_tmpfile.path}"]
@@ -222,7 +222,7 @@ module GitHub
           args += ["--request", request_method.to_s] if request_method
         end
 
-        args += ["--dump-header", headers_tmpfile.path]
+        args += ["--dump-header", T.must(headers_tmpfile.path)]
 
         output, errors, status = curl_output("--location", url.to_s, *args, secrets: [token])
         output, _, http_code = output.rpartition("\n")

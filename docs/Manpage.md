@@ -755,12 +755,6 @@ upgraded formulae or, every 30 days, for all formulae.
   Print install times for each package at the end of the run.
 * `--cask`:
   Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks.
-* `--[no-]binaries`:
-  Disable/enable linking of helper executables (default: enabled).
-* `--require-sha`:
-  Require all casks to have a checksum.
-* `--[no-]quarantine`:
-  Disable/enable quarantining of downloads (default: enabled).
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 * `-g`, `--greedy`:
@@ -769,6 +763,12 @@ upgraded formulae or, every 30 days, for all formulae.
   Also include casks with `version :latest`.
 * `--greedy-auto-updates`:
   Also include casks with `auto_updates true`.
+* `--[no-]binaries`:
+  Disable/enable linking of helper executables (default: enabled).
+* `--require-sha`:
+  Require all casks to have a checksum.
+* `--[no-]quarantine`:
+  Disable/enable quarantining of downloads (default: enabled).
 
 ### `uses` [*`options`*] *`formula`* [...]
 
