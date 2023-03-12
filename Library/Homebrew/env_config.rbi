@@ -1,10 +1,10 @@
 # typed: strict
 
 module Homebrew::EnvConfig
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.additional_google_analytics_id; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.all_proxy; end
 
   sig { returns(Integer) }
@@ -16,10 +16,10 @@ module Homebrew::EnvConfig
   sig { returns(String) }
   def self.arch; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.artifact_domain; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.auto_update_secs; end
 
   sig { returns(T::Boolean) }
@@ -28,10 +28,10 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.bat?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.bat_config_path; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.bat_theme; end
 
   sig { returns(T::Boolean) }
@@ -82,16 +82,16 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.disable_load_formula?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.display; end
 
   sig { returns(T::Boolean) }
   def self.display_install_times?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.docker_registry_basic_auth_token; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.docker_registry_token; end
 
   sig { returns(T.nilable(String)) }
@@ -103,7 +103,7 @@ module Homebrew::EnvConfig
   sig { returns(Integer) }
   def self.fail_log_lines; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.forbidden_licenses; end
 
   sig { returns(T::Boolean) }
@@ -118,13 +118,13 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.force_vendor_ruby?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.ftp_proxy; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.git_email; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.git_name; end
 
   sig { returns(String) }
@@ -133,16 +133,16 @@ module Homebrew::EnvConfig
   sig { returns(T.nilable(String)) }
   def self.github_api_token; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.github_packages_token; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.github_packages_user; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.http_proxy; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.https_proxy; end
 
   sig { returns(String) }
@@ -163,7 +163,7 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.no_bootsnap?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.no_cleanup_formulae; end
 
   sig { returns(T::Boolean) }
@@ -199,10 +199,10 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.no_installed_dependents_check?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.no_proxy; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.pip_index_url; end
 
   sig { returns(T::Boolean) }
@@ -217,13 +217,13 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.sorbet_runtime?; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.ssh_config_path; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.sudo_askpass; end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def self.svn; end
 
   sig { returns(String) }

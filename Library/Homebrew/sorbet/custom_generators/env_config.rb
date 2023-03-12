@@ -4,10 +4,6 @@
 require_relative "../../global"
 require_relative "../../env_config"
 
-def nilable?(method)
-  %w[browser editor github_api_token].include?(method)
-end
-
 File.open("#{__dir__}/../../env_config.rbi", "w") do |file|
   file.write(<<~RUBY)
     # typed: strict

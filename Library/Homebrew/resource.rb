@@ -296,7 +296,7 @@ class Resource
 
     # PyPI packages: PEP 503 – Simple Repository API <https://peps.python.org/pep-0503>
     if Homebrew::EnvConfig.pip_index_url.present?
-      pip_index_base_url = Homebrew::EnvConfig.pip_index_url.chomp("/").chomp("/simple")
+      pip_index_base_url = T.must(Homebrew::EnvConfig.pip_index_url).chomp("/").chomp("/simple")
       %w[https://files.pythonhosted.org https://pypi.org].each do |base_url|
         extra_urls << url.sub(base_url, pip_index_base_url) if url.start_with?("#{base_url}/packages")
       end
