@@ -803,6 +803,7 @@ class RSpec::Mocks::Matchers::Receive
   def description; end
   def does_not_match?(subject, &block); end
   def exactly(*args, &block); end
+  def inspect(*args, &block); end
   def matcher_name; end
   def matches?(subject, &block); end
   def never(*args, &block); end
@@ -817,6 +818,7 @@ class RSpec::Mocks::Matchers::Receive
   def thrice(*args, &block); end
   def time(*args, &block); end
   def times(*args, &block); end
+  def to_s(*args, &block); end
   def twice(*args, &block); end
   def with(*args, &block); end
 
