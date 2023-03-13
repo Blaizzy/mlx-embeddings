@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "os/mac/version"
@@ -38,7 +38,7 @@ module OS
       end
     end
 
-    sig { params(version: Version).void }
+    sig { params(version: String).void }
     def full_version=(version)
       @full_version = Version.new(version.chomp)
       @version = nil

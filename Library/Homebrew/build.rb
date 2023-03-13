@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # This script is loaded by formula_installer as a separate instance.
@@ -235,12 +235,12 @@ rescue Exception => e # rubocop:disable Lint/RescueException
   # BuildErrors are specific to build processes and not other
   # children, which is why we create the necessary state here
   # and not in Utils.safe_fork.
-  case error_hash["json_class"]
-  when "BuildError"
+  case e
+  when BuildError
     error_hash["cmd"] = e.cmd
     error_hash["args"] = e.args
     error_hash["env"] = e.env
-  when "ErrorDuringExecution"
+  when ErrorDuringExecution
     error_hash["cmd"] = e.cmd
     error_hash["status"] = if e.status.is_a?(Process::Status)
       {
