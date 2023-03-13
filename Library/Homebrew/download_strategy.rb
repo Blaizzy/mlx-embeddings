@@ -1059,6 +1059,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
              args:  ["config", "core.sparseCheckout", "true"],
              chdir: cached_location
 
+    (git_dir/"info").mkpath
     (git_dir/"info"/"sparse-checkout").atomic_write("#{@only_path}\n")
   end
 end
