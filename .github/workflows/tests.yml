@@ -5,6 +5,7 @@ on:
     branches:
       - master
   pull_request:
+  merge_group:
 
 permissions:
   contents: read
@@ -311,6 +312,7 @@ jobs:
         run: sudo chmod -R g-w,o-w /home/linuxbrew/.linuxbrew/Homebrew
 
       - name: Run brew tests
+        if: github.event_name == 'pull_request' || matrix.name != 'tests (online)'
         run: |
           # brew tests
 
