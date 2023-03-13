@@ -165,7 +165,7 @@ module Cask
 
         version_os_hash
       ensure
-        MacOS.full_version = actual_version || MacOS.full_version.to_s
+        MacOS.full_version = actual_version if actual_version
       end
     end
 
