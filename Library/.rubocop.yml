@@ -301,10 +301,6 @@ Sorbet/StrictSigil:
   Include:
     - "**/*.rbi"
 
-# Conflicts with type signatures on `attr_*`s.
-Style/AccessorGrouping:
-  Enabled: false
-
 # Require &&/|| instead of and/or
 Style/AndOr:
   EnforcedStyle: always
