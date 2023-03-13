@@ -105,7 +105,7 @@ module Cask
       @allow_reassignment = allow_reassignment
       @loaded_from_api = loaded_from_api
       @loader = loader
-      # https://github.com/sorbet/sorbet/issues/6843
+      # Sorbet has trouble with bound procs assigned to ivars: https://github.com/sorbet/sorbet/issues/6843
       instance_variable_set(:@block, block)
 
       @default_config = config || Config.new
@@ -139,7 +139,7 @@ module Cask
     def timestamped_versions
       relative_paths = Pathname.glob(metadata_timestamped_path(version: "*", timestamp: "*"))
                                .map { |p| p.relative_path_from(p.parent.parent) }
-      # https://github.com/sorbet/sorbet/issues/6844
+      # Sorbet is unaware that Pathname is sortable: https://github.com/sorbet/sorbet/issues/6844
       T.unsafe(relative_paths).sort_by(&:basename) # sort by timestamp
        .map { |p| p.split.map(&:to_s) }
     end
