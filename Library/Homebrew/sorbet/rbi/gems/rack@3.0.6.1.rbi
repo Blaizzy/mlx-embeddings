@@ -695,6 +695,18 @@ Rack::Multipart::MULTIPART_CONTENT_TYPE = T.let(T.unsafe(nil), Regexp)
 class Rack::Multipart::MultipartPartLimitError < ::Errno::EMFILE; end
 class Rack::Multipart::MultipartTotalPartLimitError < ::StandardError; end
 
+class Rack::Multipart::ParamList
+  def initialize; end
+
+  def <<(pair); end
+  def to_params_hash; end
+
+  class << self
+    def make_params; end
+    def normalize_params(params, key, value); end
+  end
+end
+
 class Rack::Multipart::Parser
   def initialize(boundary, tempfile, bufsize, query_parser); end
 
@@ -846,18 +858,20 @@ class Rack::QueryParser
   def initialize(params_class, _key_space_limit = T.unsafe(nil), param_depth_limit); end
 
   def make_params; end
+  def missing_value; end
   def new_depth_limit(param_depth_limit); end
   def normalize_params(params, name, v, _depth = T.unsafe(nil)); end
   def param_depth_limit; end
   def parse_nested_query(qs, separator = T.unsafe(nil)); end
   def parse_query(qs, separator = T.unsafe(nil), &unescaper); end
+  def split_query(qs, separator = T.unsafe(nil), &unescaper); end
 
   private
 
   def _normalize_params(params, name, v, depth); end
   def params_hash_has_key?(hash, key); end
   def params_hash_type?(obj); end
-  def unescape(s); end
+  def unescape(string, encoding = T.unsafe(nil)); end
 
   class << self
     def make_default(_key_space_limit = T.unsafe(nil), param_depth_limit); end
@@ -894,8 +908,10 @@ Rack::RACK_REQUEST_COOKIE_STRING = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_FORM_ERROR = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_FORM_HASH = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_FORM_INPUT = T.let(T.unsafe(nil), String)
+Rack::RACK_REQUEST_FORM_PAIRS = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_FORM_VARS = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_QUERY_HASH = T.let(T.unsafe(nil), String)
+Rack::RACK_REQUEST_QUERY_PAIRS = T.let(T.unsafe(nil), String)
 Rack::RACK_REQUEST_QUERY_STRING = T.let(T.unsafe(nil), String)
 Rack::RACK_RESPONSE_FINISHED = T.let(T.unsafe(nil), String)
 Rack::RACK_SESSION = T.let(T.unsafe(nil), String)
@@ -983,6 +999,7 @@ module Rack::Request::Helpers
   def authority; end
   def base_url; end
   def body; end
+  def body_param_list; end
   def content_charset; end
   def content_length; end
   def content_type; end
@@ -1015,6 +1032,7 @@ module Rack::Request::Helpers
   def port; end
   def post?; end
   def put?; end
+  def query_param_list; end
   def query_string; end
   def referer; end
   def referrer; end
@@ -1041,6 +1059,7 @@ module Rack::Request::Helpers
 
   def allowed_scheme(header); end
   def default_session; end
+  def expand_params(pairs, query_parser = T.unsafe(nil)); end
   def forwarded_priority; end
   def forwarded_scheme; end
   def get_http_forwarded(token); end
@@ -1051,6 +1070,7 @@ module Rack::Request::Helpers
   def reject_trusted_ip_addresses(ip_addresses); end
   def split_authority(authority); end
   def split_header(value); end
+  def split_query(query, d = T.unsafe(nil)); end
   def wrap_ipv6(host); end
   def x_forwarded_proto_priority; end
 end
