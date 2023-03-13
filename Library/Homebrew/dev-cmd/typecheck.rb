@@ -66,6 +66,7 @@ module Homebrew
 
         ohai "Updating homegrown RBI files..."
         safe_system "bundle", "exec", "ruby", "sorbet/custom_generators/tty.rb"
+        safe_system "bundle", "exec", "ruby", "sorbet/custom_generators/env_config.rb"
 
         ohai "Updating Tapioca RBI files..."
         safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args

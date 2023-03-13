@@ -285,8 +285,8 @@ class Resource
 
     # glibc-bootstrap
     if url.start_with?("https://github.com/Homebrew/glibc-bootstrap/releases/download")
-      if Homebrew::EnvConfig.artifact_domain.present?
-        extra_urls << url.sub("https://github.com", Homebrew::EnvConfig.artifact_domain)
+      if (artifact_domain = Homebrew::EnvConfig.artifact_domain.presence)
+        extra_urls << url.sub("https://github.com", artifact_domain)
       end
       if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
         tag, filename = url.split("/").last(2)
@@ -295,8 +295,8 @@ class Resource
     end
 
     # PyPI packages: PEP 503 – Simple Repository API <https://peps.python.org/pep-0503>
-    if Homebrew::EnvConfig.pip_index_url.present?
-      pip_index_base_url = Homebrew::EnvConfig.pip_index_url.chomp("/").chomp("/simple")
+    if (pip_index_url = Homebrew::EnvConfig.pip_index_url.presence)
+      pip_index_base_url = pip_index_url.chomp("/").chomp("/simple")
       %w[https://files.pythonhosted.org https://pypi.org].each do |base_url|
         extra_urls << url.sub(base_url, pip_index_base_url) if url.start_with?("#{base_url}/packages")
       end
