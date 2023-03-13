@@ -2269,12 +2269,10 @@ class RuboCop::Cop::Layout::BlockEndNewline < ::RuboCop::Cop::Base
 
   private
 
-  def end_of_method_chain(node); end
   def last_heredoc_argument(node); end
   def message(node); end
   def offense_range(node); end
-  def register_offense(node); end
-  def replacement(node); end
+  def register_offense(node, offense_range); end
 end
 
 RuboCop::Cop::Layout::BlockEndNewline::MSG = T.let(T.unsafe(nil), String)
@@ -6083,6 +6081,7 @@ class RuboCop::Cop::Lint::Syntax < ::RuboCop::Cop::Base
   def add_offense_from_diagnostic(diagnostic, ruby_version); end
   def add_offense_from_error(error); end
   def beautify_message(message); end
+  def find_severity(_range, _severity); end
 end
 
 class RuboCop::Cop::Lint::ToEnumArguments < ::RuboCop::Cop::Base
@@ -7928,13 +7927,13 @@ class RuboCop::Cop::Style::AccessorGrouping < ::RuboCop::Cop::Base
   def class_send_elements(class_node); end
   def group_accessors(node, accessors); end
   def groupable_accessor?(node); end
+  def groupable_sibling_accessors(send_node); end
   def grouped_style?; end
   def message(send_node); end
   def preferred_accessors(node); end
   def previous_line_comment?(node); end
   def separate_accessors(node); end
   def separated_style?; end
-  def sibling_accessors(send_node); end
 end
 
 RuboCop::Cop::Style::AccessorGrouping::GROUPED_MSG = T.let(T.unsafe(nil), String)
