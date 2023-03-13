@@ -1,7 +1,9 @@
 # typed: false
 # frozen_string_literal: true
 
-describe Cask::Cmd::Uninstall, :cask do
+require "cask/uninstall"
+
+describe Cask::Uninstall, :cask do
   it "displays the uninstallation progress" do
     caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
 
@@ -15,23 +17,22 @@ describe Cask::Cmd::Uninstall, :cask do
     EOS
 
     expect do
-      described_class.run("local-caffeine")
+      described_class.uninstall_casks(caffeine)
     end.to output(output).to_stdout
   end
 
-  it "shows an error when a bad Cask is provided" do
-    expect { described_class.run("notacask") }
-      .to raise_error(Cask::CaskUnavailableError, /is unavailable/)
-  end
-
   it "shows an error when a Cask is provided that's not installed" do
-    expect { described_class.run("local-caffeine") }
+    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+
+    expect { described_class.uninstall_casks(caffeine) }
       .to raise_error(Cask::CaskNotInstalledError, /is not installed/)
   end
 
   it "tries anyway on a non-present Cask when --force is given" do
+    caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
+
     expect do
-      described_class.run("local-caffeine", "--force")
+      described_class.uninstall_casks(caffeine, force: true)
     end.not_to raise_error
   end
 
@@ -45,7 +46,7 @@ describe Cask::Cmd::Uninstall, :cask do
     expect(caffeine).to be_installed
     expect(transmission).to be_installed
 
-    described_class.run("local-caffeine", "local-transmission")
+    described_class.uninstall_casks(caffeine, transmission)
 
     expect(caffeine).not_to be_installed
     expect(caffeine.config.appdir.join("Transmission.app")).not_to exist
@@ -62,13 +63,13 @@ describe Cask::Cmd::Uninstall, :cask do
 
     cask.config.appdir.join("MyFancyApp.app").rmtree
 
-    expect { described_class.run("with-uninstall-script-app") }
+    expect { described_class.uninstall_casks(cask) }
       .to raise_error(Cask::CaskError, /uninstall script .* does not exist/)
 
     expect(cask).to be_installed
 
     expect do
-      described_class.run("with-uninstall-script-app", "--force")
+      described_class.uninstall_casks(cask, force: true)
     end.not_to raise_error
 
     expect(cask).not_to be_installed
@@ -101,13 +102,13 @@ describe Cask::Cmd::Uninstall, :cask do
     end
 
     it "uninstalls one version at a time" do
-      described_class.run("versioned-cask")
+      described_class.uninstall_casks(Cask::Cask.new("versioned-cask"))
 
       expect(caskroom_path.join(first_installed_version)).to exist
       expect(caskroom_path.join(last_installed_version)).not_to exist
       expect(caskroom_path).to exist
 
-      described_class.run("versioned-cask")
+      described_class.uninstall_casks(Cask::Cask.new("versioned-cask"))
 
       expect(caskroom_path.join(first_installed_version)).not_to exist
       expect(caskroom_path).not_to exist
@@ -116,7 +117,7 @@ describe Cask::Cmd::Uninstall, :cask do
     it "displays a message when versions remain installed" do
       expect do
         expect do
-          described_class.run("versioned-cask")
+          described_class.uninstall_casks(Cask::Cask.new("versioned-cask"))
         end.not_to output.to_stderr
       end.to output(/#{token} #{first_installed_version} is still installed./).to_stdout
     end
@@ -148,7 +149,7 @@ describe Cask::Cmd::Uninstall, :cask do
     end
 
     it "can still uninstall them" do
-      described_class.run("ive-been-renamed")
+      described_class.uninstall_casks(Cask::Cask.new("ive-been-renamed"))
 
       expect(app).not_to exist
       expect(caskroom_path).not_to exist

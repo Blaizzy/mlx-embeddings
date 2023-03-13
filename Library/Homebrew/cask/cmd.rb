@@ -14,7 +14,6 @@ require "cask/cmd/audit"
 require "cask/cmd/fetch"
 require "cask/cmd/install"
 require "cask/cmd/reinstall"
-require "cask/cmd/uninstall"
 
 module Cask
   # Implementation of the `brew cask` command-line interface.
