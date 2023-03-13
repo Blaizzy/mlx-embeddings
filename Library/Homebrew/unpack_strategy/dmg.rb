@@ -27,6 +27,14 @@ module UnpackStrategy
       ]).freeze
       private_constant :DMG_METADATA
 
+      class Error < RuntimeError; end
+
+      class EmptyError < Error
+        def initialize(path)
+          super "BOM for path '#{path}' is empty."
+        end
+      end
+
       refine Pathname do
         extend T::Sig
 
@@ -61,7 +69,7 @@ module UnpackStrategy
 
           bom_paths = result.stdout.split("\0")
 
-          raise "BOM for path '#{self}' is empty." if bom_paths.empty?
+          raise EmptyError, self if bom_paths.empty?
 
           bom_paths
             .reject { |path| Pathname(path).dmg_metadata? }
@@ -123,11 +131,26 @@ module UnpackStrategy
 
       sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
       def extract_to_dir(unpack_dir, basename:, verbose:)
+        bom = begin
+          tries ||= 10
+
+          path.bom
+        rescue Bom::EmptyError => e
+          raise "#{e} No retries left." if (tries -= 1).zero?
+
+          sleep 1
+          retry
+        end
+
+        # TODO: Remove this if we actually ever hit this, i.e. if we actually found
+        #       some files after waiting longer for the DMG to be mounted.
+        raise "BOM for path '#{path}' was empty but retrying for #{10 - tries} seconds helped." if tries != 10
+
         Tempfile.open(["", ".bom"]) do |bomfile|
           bomfile.close
 
           Tempfile.open(["", ".list"]) do |filelist|
-            filelist.puts(path.bom)
+            filelist.puts(bom)
             filelist.close
 
             system_command! "mkbom",
