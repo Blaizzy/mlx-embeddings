@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'uri'
+
 module Rack
   class QueryParser
     DEFAULT_SEP = /[&] */n
@@ -37,19 +39,42 @@ module Rack
       @param_depth_limit = param_depth_limit
     end
 
-    # Stolen from Mongrel, with some small modifications:
+    # Originally stolen from Mongrel, now with some modifications:
     # Parses a query string by breaking it up at the '&'.  You can also use this
     # to parse cookies by changing the characters used in the second parameter
     # (which defaults to '&').
-    def parse_query(qs, separator = nil, &unescaper)
-      unescaper ||= method(:unescape)
+    #
+    # Returns an array of 2-element arrays, where the first element is the
+    # key and the second element is the value.
+    def split_query(qs, separator = nil, &unescaper)
+      pairs = []
 
+      if qs && !qs.empty?
+        unescaper ||= method(:unescape)
+
+        qs.split(separator ? (COMMON_SEP[separator] || /[#{separator}] */n) : DEFAULT_SEP).each do |p|
+          next if p.empty?
+          pair = p.split('=', 2).map!(&unescaper)
+          pair << nil if pair.length == 1
+          pairs << pair
+        end
+      end
+
+      pairs
+    rescue ArgumentError => e
+      raise InvalidParameterError, e.message, e.backtrace
+    end
+
+    # Parses a query string by breaking it up at the '&'.  You can also use this
+    # to parse cookies by changing the characters used in the second parameter
+    # (which defaults to '&').
+    #
+    # Returns a hash where each value is a string (when a key only appears once)
+    # or an array of strings (when a key appears more than once).
+    def parse_query(qs, separator = nil, &unescaper)
       params = make_params
 
-      (qs || '').split(separator ? (COMMON_SEP[separator] || /[#{separator}] */n) : DEFAULT_SEP).each do |p|
-        next if p.empty?
-        k, v = p.split('=', 2).map!(&unescaper)
-
+      split_query(qs, separator, &unescaper).each do |k, v|
         if cur = params[k]
           if cur.class == Array
             params[k] << v
@@ -61,7 +86,7 @@ module Rack
         end
       end
 
-      return params.to_h
+      params.to_h
     end
 
     # parse_nested_query expands a query string into structural types. Supported
@@ -72,17 +97,11 @@ module Rack
     def parse_nested_query(qs, separator = nil)
       params = make_params
 
-      unless qs.nil? || qs.empty?
-        (qs || '').split(separator ? (COMMON_SEP[separator] || /[#{separator}] */n) : DEFAULT_SEP).each do |p|
-          k, v = p.split('=', 2).map! { |s| unescape(s) }
-
-          _normalize_params(params, k, v, 0)
-        end
+      split_query(qs, separator).each do |k, v|
+        _normalize_params(params, k, v, 0)
       end
 
-      return params.to_h
-    rescue ArgumentError => e
-      raise InvalidParameterError, e.message, e.backtrace
+      params.to_h
     end
 
     # normalize_params recursively expands parameters into structural types. If
@@ -92,6 +111,14 @@ module Rack
     # earlier versions of rack.
     def normalize_params(params, name, v, _depth=nil)
       _normalize_params(params, name, v, 0)
+    end
+
+    # This value is used by default when a parameter is missing (nil). This
+    # usually happens when a parameter is specified without an `=value` part.
+    # The default value is an empty string, but this can be overridden by
+    # subclasses.
+    def missing_value
+      String.new
     end
 
     private def _normalize_params(params, name, v, depth)
@@ -128,7 +155,7 @@ module Rack
 
       return if k.empty?
 
-      v ||= String.new
+      v ||= missing_value
 
       if after == ''
         if k == '[]' && depth != 0
@@ -190,8 +217,8 @@ module Rack
       true
     end
 
-    def unescape(s)
-      Utils.unescape(s)
+    def unescape(string, encoding = Encoding::UTF_8)
+      URI.decode_www_form_component(string, encoding)
     end
 
     class Params
