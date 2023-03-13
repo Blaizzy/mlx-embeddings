@@ -225,7 +225,6 @@ module Cask
       already_installed_artifacts = []
 
       odebug "Installing artifacts"
-      odebug "#{artifacts.length} #{::Utils.pluralize("artifact", artifacts.length)} defined", artifacts
 
       artifacts.each do |artifact|
         next unless artifact.respond_to?(:install_phase)
