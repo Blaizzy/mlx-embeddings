@@ -149,7 +149,7 @@ module Homebrew
             if want_keg_like_cask
               cask_version = Cask::Cask.new(name, config: config).versions.first
               cask = Cask::Cask.new(name, config: config) do
-                self.version cask_version if cask_version
+                version cask_version if cask_version
               end
               return cask
             end
