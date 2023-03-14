@@ -351,16 +351,6 @@ module Kernel
     # rubocop:enable Style/GlobalVars
   end
 
-  sig { returns(String) }
-  def capture_stderr
-    old = $stderr
-    $stderr = StringIO.new
-    yield
-    $stderr.string
-  ensure
-    $stderr = old
-  end
-
   def redirect_stdout(file)
     out = $stdout.dup
     $stdout.reopen(file)
@@ -426,17 +416,6 @@ module Kernel
 
   def paths
     @paths ||= ORIGINAL_PATHS.uniq.map(&:to_s)
-  end
-
-  def parse_author!(author)
-    match_data = /^(?<name>[^<]+?)[ \t]*<(?<email>[^>]+?)>$/.match(author)
-    if match_data
-      name = match_data[:name]
-      email = match_data[:email]
-    end
-    raise UsageError, "Unable to parse name and email." if name.blank? && email.blank?
-
-    { name: name, email: email }
   end
 
   def disk_usage_readable(size_in_bytes)
