@@ -79,6 +79,7 @@ module Kernel
     Homebrew.failed = true
   end
 
+  sig { params(error: T.any(String, Exception)).returns(T.noreturn) }
   def odie(error)
     onoe error
     exit 1

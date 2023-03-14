@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -8,29 +8,30 @@ require "software_spec"
 require "tap"
 
 def with_monkey_patch
+  # Since `method_defined?` is not a supported type guard, the use of `alias_method` below is not typesafe:
   BottleSpecification.class_eval do
-    alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
+    T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
     define_method(:method_missing) do |*|
       # do nothing
     end
   end
 
   Module.class_eval do
-    alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
+    T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
     define_method(:method_missing) do |*|
       # do nothing
     end
   end
 
   Resource.class_eval do
-    alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
+    T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
     define_method(:method_missing) do |*|
       # do nothing
     end
   end
 
   DependencyCollector.class_eval do
-    alias_method :old_parse_symbol_spec, :parse_symbol_spec if method_defined?(:parse_symbol_spec)
+    T.unsafe(self).alias_method :old_parse_symbol_spec, :parse_symbol_spec if method_defined?(:parse_symbol_spec)
     define_method(:parse_symbol_spec) do |*|
       # do nothing
     end
@@ -40,28 +41,28 @@ def with_monkey_patch
 ensure
   BottleSpecification.class_eval do
     if method_defined?(:old_method_missing)
-      alias_method :method_missing, :old_method_missing
+      T.unsafe(self).alias_method :method_missing, :old_method_missing
       undef :old_method_missing
     end
   end
 
   Module.class_eval do
     if method_defined?(:old_method_missing)
-      alias_method :method_missing, :old_method_missing
+      T.unsafe(self).alias_method :method_missing, :old_method_missing
       undef :old_method_missing
     end
   end
 
   Resource.class_eval do
     if method_defined?(:old_method_missing)
-      alias_method :method_missing, :old_method_missing
+      T.unsafe(self).alias_method :method_missing, :old_method_missing
       undef :old_method_missing
     end
   end
 
   DependencyCollector.class_eval do
     if method_defined?(:old_parse_symbol_spec)
-      alias_method :parse_symbol_spec, :old_parse_symbol_spec
+      T.unsafe(self).alias_method :parse_symbol_spec, :old_parse_symbol_spec
       undef :old_parse_symbol_spec
     end
   end
@@ -70,12 +71,10 @@ end
 module Homebrew
   extend T::Sig
 
-  module_function
-
   BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m.freeze
 
   sig { returns(CLI::Parser) }
-  def extract_args
+  def self.extract_args
     Homebrew::CLI::Parser.new do
       usage_banner "`extract` [`--version=`] [`--force`] <formula> <tap>"
       description <<~EOS
@@ -95,7 +94,7 @@ module Homebrew
     end
   end
 
-  def extract
+  def self.extract
     args = extract_args.parse
 
     if (match = args.named.first.match(HOMEBREW_TAP_FORMULA_REGEX))
@@ -126,8 +125,8 @@ module Homebrew
       ohai "Searching repository history"
       version = args.version
       version_segments = Gem::Version.new(version).segments if Gem::Version.correct?(version)
-      rev = nil
-      test_formula = nil
+      rev = T.let(nil, T.nilable(String))
+      test_formula = T.let(nil, T.nilable(Formula))
       result = ""
       loop do
         rev = rev.nil? ? "HEAD" : "#{rev}~1"
@@ -166,7 +165,7 @@ module Homebrew
     else
       # Search in the root directory of <repo> as well as recursively in all of its subdirectories
       files = Dir[repo/"{,**/}"].map do |dir|
-        Pathname.glob(["#{dir}/#{name}.rb"]).find(&:file?)
+        Pathname.glob("#{dir}/#{name}.rb").find(&:file?)
       end.compact
 
       if files.empty?
@@ -174,11 +173,11 @@ module Homebrew
         rev, (path,) = Utils::Git.last_revision_commit_of_files(repo, pattern)
         odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
         file = repo/path
-        version = formula_at_revision(repo, name, file, rev).version
+        version = T.must(formula_at_revision(repo, name, file, rev)).version
         result = Utils::Git.last_revision_of_file(repo, file)
       else
-        file = files.first.realpath
-        rev = "HEAD"
+        file = files.fetch(0).realpath
+        rev = T.let("HEAD", T.nilable(String))
         version = Formulary.factory(file).version
         result = File.read(file)
       end
@@ -214,7 +213,8 @@ module Homebrew
   end
 
   # @private
-  def formula_at_revision(repo, name, file, rev)
+  sig { params(repo: Pathname, name: String, file: Pathname, rev: String).returns(T.nilable(Formula)) }
+  def self.formula_at_revision(repo, name, file, rev)
     return if rev.empty?
 
     contents = Utils::Git.last_revision_of_file(repo, file, before_commit: rev)

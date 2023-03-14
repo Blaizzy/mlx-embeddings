@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "tap"
@@ -7,10 +7,8 @@ require "cli/parser"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def tap_new_args
+  def self.tap_new_args
     Homebrew::CLI::Parser.new do
       usage_banner "`tap-new` [<options>] <user>`/`<repo>"
       description <<~EOS
@@ -31,7 +29,7 @@ module Homebrew
     end
   end
 
-  def tap_new
+  def self.tap_new
     args = tap_new_args.parse
 
     label = args.pull_label || "pr-pull"
@@ -176,7 +174,7 @@ module Homebrew
     EOS
   end
 
-  def write_path(tap, filename, content)
+  def self.write_path(tap, filename, content)
     path = tap.path/filename
     tap.path.mkpath
     odie "#{path} already exists" if path.exist?

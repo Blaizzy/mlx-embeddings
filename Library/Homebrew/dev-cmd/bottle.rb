@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula"
@@ -38,10 +38,8 @@ ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def bottle_args
+  def self.bottle_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Generate a bottle (binary package) from a formula that was installed with
@@ -94,7 +92,7 @@ module Homebrew
     end
   end
 
-  def bottle
+  def self.bottle
     args = bottle_args.parse
 
     if args.merge?
@@ -107,7 +105,7 @@ module Homebrew
     end
   end
 
-  def keg_contain?(string, keg, ignores, formula_and_runtime_deps_names = nil, args:)
+  def self.keg_contain?(string, keg, ignores, formula_and_runtime_deps_names = nil, args:)
     @put_string_exists_header, @put_filenames = nil
 
     print_filename = lambda do |str, filename|
@@ -124,7 +122,7 @@ module Homebrew
       @put_filenames << filename
     end
 
-    result = false
+    result = T.let(false, T::Boolean)
 
     keg.each_unique_file_matching(string) do |file|
       next if Metafiles::EXTENSIONS.include?(file.extname) # Skip document files.
@@ -157,7 +155,7 @@ module Homebrew
     keg_contain_absolute_symlink_starting_with?(string, keg, args: args) || result
   end
 
-  def keg_contain_absolute_symlink_starting_with?(string, keg, args:)
+  def self.keg_contain_absolute_symlink_starting_with?(string, keg, args:)
     absolute_symlinks_start_with_string = []
     keg.find do |pn|
       next if !pn.symlink? || !(link = pn.readlink).absolute?
@@ -175,7 +173,7 @@ module Homebrew
     !absolute_symlinks_start_with_string.empty?
   end
 
-  def cellar_parameter_needed?(cellar)
+  def self.cellar_parameter_needed?(cellar)
     default_cellars = [
       Homebrew::DEFAULT_MACOS_CELLAR,
       Homebrew::DEFAULT_MACOS_ARM_CELLAR,
@@ -184,7 +182,7 @@ module Homebrew
     cellar.present? && default_cellars.exclude?(cellar)
   end
 
-  def generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
+  def self.generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
     line = "sha256 "
     tag_column += line.length
     digest_column += line.length
@@ -199,7 +197,7 @@ module Homebrew
     %Q(#{line}"#{digest}")
   end
 
-  def bottle_output(bottle, root_url_using)
+  def self.bottle_output(bottle, root_url_using)
     cellars = bottle.checksums.map do |checksum|
       cellar = checksum["cellar"]
       next unless cellar_parameter_needed? cellar
@@ -227,13 +225,13 @@ module Homebrew
     erb.result(erb_binding).gsub(/^\s*$\n/, "")
   end
 
-  def sudo_purge
+  def self.sudo_purge
     return unless ENV["HOMEBREW_BOTTLE_SUDO_PURGE"]
 
     system "/usr/bin/sudo", "--non-interactive", "/usr/sbin/purge"
   end
 
-  def setup_tar_and_args!(args, mtime)
+  def self.setup_tar_and_args!(args, mtime)
     # Without --only-json-tab bottles are never reproducible
     default_tar_args = ["tar", [].freeze].freeze
     return default_tar_args unless args.only_json_tab?
@@ -261,7 +259,7 @@ module Homebrew
     ["#{gnu_tar.opt_bin}/gtar", gnutar_args].freeze
   end
 
-  def formula_ignores(formula)
+  def self.formula_ignores(formula)
     ignores = []
     cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
     prefix_regex = Regexp.escape(HOMEBREW_PREFIX)
@@ -291,7 +289,7 @@ module Homebrew
     ignores.compact
   end
 
-  def bottle_formula(formula, args:)
+  def self.bottle_formula(formula, args:)
     local_bottle_json = args.json? && formula.local_bottle_path.present?
 
     unless local_bottle_json
@@ -425,7 +423,7 @@ module Homebrew
           sudo_purge
           # Set filename as it affects the tarball checksum.
           relocatable_tar_path = "#{formula}-bottle.tar"
-          mv tar_path, relocatable_tar_path
+          mv T.must(tar_path), relocatable_tar_path
           # Use gzip, faster to compress than bzip2, faster to uncompress than bzip2
           # or an uncompressed tarball (and more bandwidth friendly).
           Utils::Gzip.compress_with_options(relocatable_tar_path,
@@ -572,13 +570,13 @@ module Homebrew
     json_path.write(JSON.pretty_generate(json))
   end
 
-  def parse_json_files(filenames)
+  def self.parse_json_files(filenames)
     filenames.map do |filename|
       JSON.parse(File.read(filename))
     end
   end
 
-  def merge_json_files(json_files)
+  def self.merge_json_files(json_files)
     json_files.reduce({}) do |hash, json_file|
       json_file.each_value do |json_hash|
         json_bottle = json_hash["bottle"]
@@ -591,7 +589,7 @@ module Homebrew
     end
   end
 
-  def merge(args:)
+  def self.merge(args:)
     bottles_hash = merge_json_files(parse_json_files(args.named))
 
     any_cellars = ["any", "any_skip_relocation"]
@@ -660,7 +658,7 @@ module Homebrew
         end
       end
 
-      all_bottle_hash = nil
+      all_bottle_hash = T.let(nil, T.nilable(Hash))
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
         filename = Bottle::Filename.new(
           formula_name,
@@ -745,7 +743,7 @@ module Homebrew
     end
   end
 
-  def merge_bottle_spec(old_keys, old_bottle_spec, new_bottle_hash)
+  def self.merge_bottle_spec(old_keys, old_bottle_spec, new_bottle_hash)
     mismatches = []
     checksums = []
 
@@ -785,12 +783,12 @@ module Homebrew
     [mismatches, checksums]
   end
 
-  def old_checksums(formula, formula_ast, bottle_hash, args:)
+  def self.old_checksums(formula, formula_ast, bottle_hash, args:)
     bottle_node = formula_ast.bottle_block
     return if bottle_node.nil?
     return [] unless args.keep_old?
 
-    old_keys = Utils::AST.body_children(bottle_node.body).map(&:method_name)
+    old_keys = T.cast(Utils::AST.body_children(bottle_node.body), T::Array[RuboCop::AST::SendNode]).map(&:method_name)
     old_bottle_spec = formula.bottle_specification
     mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
     if mismatches.present?

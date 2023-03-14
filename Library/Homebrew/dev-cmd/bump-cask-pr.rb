@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask"
@@ -158,7 +158,7 @@ module Homebrew
       m = /^ +url "(.+?)"\n/m.match(old_contents)
       odie "Could not find old URL in cask!" if m.nil?
 
-      old_base_url = m.captures.first
+      old_base_url = m.captures.fetch(0)
 
       replacement_pairs << [
         /#{Regexp.escape(old_base_url)}/,
