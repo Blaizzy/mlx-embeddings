@@ -6,7 +6,7 @@ module RuboCop
     # Constants available globally for use in all cask cops.
     module Constants
       STANZA_GROUPS = [
-        [:arch, :on_arch_conditional],
+        [:on_arm, :on_intel, :arch, :on_arch_conditional],
         [:version, :sha256],
         [:language],
         [:url, :appcast, :name, :desc, :homepage],

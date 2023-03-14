@@ -474,4 +474,65 @@ describe RuboCop::Cop::Cask::StanzaOrder do
 
     include_examples "does not report any offenses"
   end
+
+  context "when `on_arch` blocks are out of order" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          on_intel do
+            url "https://foo.brew.sh/foo-intel.zip"
+            sha256 :no_check
+            version :latest
+          end
+
+          on_arm do
+            url "https://foo.brew.sh/foo-arm.zip"
+            sha256 :no_check
+            version :latest
+          end
+
+          name "Foo"
+        end
+      CASK
+    end
+
+    let(:expected_offenses) do
+      [{
+        message:  "`on_intel` stanza out of order",
+        severity: :convention,
+        line:     2,
+        column:   2,
+        source:   "on_intel do\n    url \"https://foo.brew.sh/foo-intel.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
+      }, {
+        message:  "`on_arm` stanza out of order",
+        severity: :convention,
+        line:     8,
+        column:   2,
+        source:   "on_arm do\n    url \"https://foo.brew.sh/foo-arm.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
+      }]
+    end
+
+    let(:correct_source) do
+      <<~CASK
+        cask 'foo' do
+          on_arm do
+            url "https://foo.brew.sh/foo-arm.zip"
+            sha256 :no_check
+            version :latest
+          end
+
+          on_intel do
+            url "https://foo.brew.sh/foo-intel.zip"
+            sha256 :no_check
+            version :latest
+          end
+
+          name "Foo"
+        end
+      CASK
+    end
+
+    include_examples "reports offenses"
+    include_examples "autocorrects source"
+  end
 end
