@@ -535,4 +535,121 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     include_examples "reports offenses"
     include_examples "autocorrects source"
   end
+
+  # TODO: detect out-of-order stanzas in nested expressions
+  context "when the on_arch and on_os stanzas are nested" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          on_arm do
+            url "https://foo.brew.sh/foo-arm-all.zip"
+            sha256 :no_check
+            version :latest
+          end
+
+          on_intel do
+            on_ventura do
+              url "https://foo.brew.sh/foo-intel-ventura.zip"
+              sha256 :no_check
+            end
+            on_mojave do
+              url "https://foo.brew.sh/foo-intel-mojave.zip"
+              sha256 :no_check
+            end
+            on_catalina do
+              url "https://foo.brew.sh/foo-intel-catalina.zip"
+              sha256 :no_check
+            end
+            on_big_sur do
+              url "https://foo.brew.sh/foo-intel-big-sur.zip"
+              sha256 :no_check
+            end
+
+            version :latest
+          end
+
+          name "Foo"
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
+  context "when the on_os stanzas are out of order" do
+    let(:source) do
+      <<~CASK
+        cask "foo" do
+          on_ventura do
+            url "https://foo.brew.sh/foo-ventura.zip"
+            sha256 :no_check
+          end
+          on_catalina do
+            url "https://foo.brew.sh/foo-catalina.zip"
+            sha256 :no_check
+          end
+          on_mojave do
+            url "https://foo.brew.sh/foo-mojave.zip"
+            sha256 :no_check
+          end
+          on_big_sur do
+            url "https://foo.brew.sh/foo-big-sur.zip"
+            sha256 :no_check
+          end
+
+          name "Foo"
+        end
+      CASK
+    end
+
+    let(:expected_offenses) do
+      [{
+        message:  "`on_catalina` stanza out of order",
+        severity: :convention,
+        line:     6,
+        column:   2,
+        source:   "on_catalina do\n    url \"https://foo.brew.sh/foo-catalina.zip\"\n    sha256 :no_check\n  end",
+      }, {
+        message:  "`on_mojave` stanza out of order",
+        severity: :convention,
+        line:     10,
+        column:   2,
+        source:   "on_mojave do\n    url \"https://foo.brew.sh/foo-mojave.zip\"\n    sha256 :no_check\n  end",
+      }, {
+        message:  "`on_big_sur` stanza out of order",
+        severity: :convention,
+        line:     14,
+        column:   2,
+        source:   "on_big_sur do\n    url \"https://foo.brew.sh/foo-big-sur.zip\"\n    sha256 :no_check\n  end",
+      }]
+    end
+
+    let(:correct_source) do
+      <<~CASK
+        cask "foo" do
+          on_ventura do
+            url "https://foo.brew.sh/foo-ventura.zip"
+            sha256 :no_check
+          end
+          on_big_sur do
+            url "https://foo.brew.sh/foo-big-sur.zip"
+            sha256 :no_check
+          end
+          on_catalina do
+            url "https://foo.brew.sh/foo-catalina.zip"
+            sha256 :no_check
+          end
+          on_mojave do
+            url "https://foo.brew.sh/foo-mojave.zip"
+            sha256 :no_check
+          end
+
+          name "Foo"
+        end
+      CASK
+    end
+
+    include_examples "reports offenses"
+    include_examples "autocorrects source"
+  end
 end

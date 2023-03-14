@@ -5,9 +5,11 @@ module RuboCop
   module Cask
     # Constants available globally for use in all cask cops.
     module Constants
+      ON_SYSTEM_METHODS = [:arm, :intel, *MacOSVersions::SYMBOLS.keys].map { |option| :"on_#{option}" }.freeze
+
       STANZA_GROUPS = [
         [:arch, :on_arch_conditional],
-        [:on_arm, :on_intel],
+        ON_SYSTEM_METHODS,
         [:version, :sha256],
         [:language],
         [:url, :appcast, :name, :desc, :homepage],
@@ -56,8 +58,6 @@ module RuboCop
         end.freeze
 
       STANZA_ORDER = STANZA_GROUPS.flatten.freeze
-
-      ON_SYSTEM_METHODS = [:arm, :intel, *MacOSVersions::SYMBOLS.keys].map { |option| :"on_#{option}" }.freeze
     end
   end
 end
