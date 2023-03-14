@@ -23,7 +23,9 @@ RUN apt-get update \
   fonts-dejavu-core \
   g++ \
   gawk \
+  gh \
   git \
+  gpg \
   less \
   libz-dev \
   locales \
@@ -31,7 +33,9 @@ RUN apt-get update \
   netbase \
   openssh-client \
   patch \
+  skopeo \
   sudo \
+  unzip \
   uuid-runtime \
   tzdata \
   jq \
