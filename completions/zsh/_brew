@@ -1728,7 +1728,6 @@ _brew_tests() {
     '--debug[Display any debugging information]' \
     '--generic[Run only OS-agnostic tests]' \
     '--help[Show this message]' \
-    '--no-compat[Do not load the compatibility layer when running tests]' \
     '--online[Include tests that use the GitHub API and tests that use any of the taps for official external commands]' \
     '(--changed)--only[Run only test_script`_spec.rb`. Appending `:`line_number will start at a specific line]' \
     '--quiet[Make some output more quiet]' \

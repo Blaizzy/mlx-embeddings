@@ -288,10 +288,6 @@ module Homebrew
         default_text: "`$NO_COLOR`.",
         boolean:      true,
       },
-      HOMEBREW_NO_COMPAT:                        {
-        description: "If set, disable all use of legacy compatibility code.",
-        boolean:     true,
-      },
       HOMEBREW_NO_EMOJI:                         {
         description: "If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build.",
         boolean:     true,

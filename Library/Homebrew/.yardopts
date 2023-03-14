@@ -6,7 +6,6 @@
 --template-path yard/templates
 --exclude test/
 --exclude vendor/
---exclude compat/
 extend/os/**/*.rb
 **/*.rb
 -
