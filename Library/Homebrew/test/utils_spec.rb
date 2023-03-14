@@ -33,6 +33,19 @@ describe Utils do
     end
   end
 
+  specify ".parse_author!" do
+    parse_error_msg = /Unable to parse name and email/
+
+    expect(described_class.parse_author!("John Doe <john.doe@example.com>"))
+      .to eq({ name: "John Doe", email: "john.doe@example.com" })
+    expect { described_class.parse_author!("") }
+      .to raise_error(parse_error_msg)
+    expect { described_class.parse_author!("John Doe") }
+      .to raise_error(parse_error_msg)
+    expect { described_class.parse_author!("<john.doe@example.com>") }
+      .to raise_error(parse_error_msg)
+  end
+
   describe ".pluralize" do
     it "combines the stem with the default suffix based on the count" do
       expect(described_class.pluralize("foo", 0)).to eq("foos")

@@ -132,6 +132,18 @@ module Utils
     "#{stem}#{suffix}"
   end
 
+  sig { params(author: String).returns({ email: String, name: String }) }
+  def self.parse_author!(author)
+    match_data = /^(?<name>[^<]+?)[ \t]*<(?<email>[^>]+?)>$/.match(author)
+    if match_data
+      name = match_data[:name]
+      email = match_data[:email]
+    end
+    raise UsageError, "Unable to parse name and email." if name.blank? && email.blank?
+
+    { name: T.must(name), email: T.must(email) }
+  end
+
   # Makes an underscored, lowercase form from the expression in the string.
   #
   # Changes '::' to '/' to convert namespaces to paths.
