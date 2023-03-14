@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask/cache"
@@ -12,8 +12,18 @@ module Cask
   module CaskLoader
     extend Context
 
+    module ILoader
+      extend T::Sig
+      extend T::Helpers
+      interface!
+
+      sig { abstract.params(config: Config).returns(Cask) }
+      def load(config:); end
+    end
+
     # Loads a cask from a string.
     class FromContentLoader
+      include ILoader
       attr_reader :content, :tap
 
       def self.can_load?(ref)
@@ -112,7 +122,6 @@ module Cask
         return false unless ref.to_s.match?(@uri_regex)
 
         uri = URI(ref)
-        return false unless uri
         return false unless uri.path
 
         true
@@ -123,7 +132,7 @@ module Cask
       sig { params(url: T.any(URI::Generic, String)).void }
       def initialize(url)
         @url = URI(url)
-        super Cache.path/File.basename(@url.path)
+        super Cache.path/File.basename(T.must(@url.path))
       end
 
       def load(config:)
@@ -185,6 +194,7 @@ module Cask
 
     # Loads a cask from an existing {Cask} instance.
     class FromInstanceLoader
+      include ILoader
       def self.can_load?(ref)
         ref.is_a?(Cask)
       end
@@ -200,6 +210,7 @@ module Cask
 
     # Loads a cask from the JSON API.
     class FromAPILoader
+      include ILoader
       attr_reader :token, :path
 
       def self.can_load?(ref)

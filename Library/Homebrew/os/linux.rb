@@ -82,7 +82,7 @@ module OS
       nil
     end
 
-    def sdk_path
+    def sdk_path(_version = nil)
       nil
     end
 

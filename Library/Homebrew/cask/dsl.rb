@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "locale"
@@ -196,7 +196,7 @@ module Cask
 
     # @api public
     def url(*args, **options, &block)
-      caller_location = caller_locations[0]
+      caller_location = T.must(caller_locations).fetch(0)
 
       set_unique_stanza(:url, args.empty? && options.empty? && !block) do
         if block
@@ -237,14 +237,14 @@ module Cask
       set_unique_stanza(:sha256, should_return) do
         @on_system_blocks_exist = true if arm.present? || intel.present?
 
-        arg ||= on_arch_conditional(arm: arm, intel: intel)
-        case arg
+        val = arg || on_arch_conditional(arm: arm, intel: intel)
+        case val
         when :no_check
-          arg
+          val
         when String
-          Checksum.new(arg)
+          Checksum.new(val)
         else
-          raise CaskInvalidError.new(cask, "invalid 'sha256' value: #{arg.inspect}")
+          raise CaskInvalidError.new(cask, "invalid 'sha256' value: #{val.inspect}")
         end
       end
     end

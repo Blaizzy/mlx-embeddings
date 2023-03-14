@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cask/cask_loader"
@@ -83,6 +83,19 @@ module Cask
       @tap
     end
 
+    sig {
+      params(
+        token:              String,
+        sourcefile_path:    T.nilable(Pathname),
+        source:             T.nilable(String),
+        tap:                T.nilable(Tap),
+        loaded_from_api:    T::Boolean,
+        config:             T.nilable(Config),
+        allow_reassignment: T::Boolean,
+        loader:             T.nilable(CaskLoader::ILoader),
+        block:              T.nilable(T.proc.bind(DSL).void),
+      ).void
+    }
     def initialize(token, sourcefile_path: nil, source: nil, tap: nil, loaded_from_api: false,
                    config: nil, allow_reassignment: false, loader: nil, &block)
       @token = token
@@ -92,7 +105,8 @@ module Cask
       @allow_reassignment = allow_reassignment
       @loaded_from_api = loaded_from_api
       @loader = loader
-      @block = block
+      # Sorbet has trouble with bound procs assigned to ivars: https://github.com/sorbet/sorbet/issues/6843
+      instance_variable_set(:@block, block)
 
       @default_config = config || Config.new
 
@@ -123,10 +137,11 @@ module Cask
 
     sig { returns(T::Array[[String, String]]) }
     def timestamped_versions
-      Pathname.glob(metadata_timestamped_path(version: "*", timestamp: "*"))
-              .map { |p| p.relative_path_from(p.parent.parent) }
-              .sort_by(&:basename) # sort by timestamp
-              .map { |p| p.split.map(&:to_s) }
+      relative_paths = Pathname.glob(metadata_timestamped_path(version: "*", timestamp: "*"))
+                               .map { |p| p.relative_path_from(p.parent.parent) }
+      # Sorbet is unaware that Pathname is sortable: https://github.com/sorbet/sorbet/issues/6844
+      T.unsafe(relative_paths).sort_by(&:basename) # sort by timestamp
+       .map { |p| p.split.map(&:to_s) }
     end
 
     def versions
@@ -150,7 +165,7 @@ module Cask
 
         version_os_hash
       ensure
-        MacOS.full_version = actual_version
+        MacOS.full_version = actual_version if actual_version
       end
     end
 
