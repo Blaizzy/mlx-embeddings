@@ -20,10 +20,9 @@ describe "globally-scoped helper methods" do
 
   describe "#odie" do
     it "exits with 1" do
-      expect(self).to receive(:exit).and_return(1)
       expect do
         odie "foo"
-      end.to output("Error: foo\n").to_stderr
+      end.to output("Error: foo\n").to_stderr.and raise_error SystemExit
     end
   end
 
