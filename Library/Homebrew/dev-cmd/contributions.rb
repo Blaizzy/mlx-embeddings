@@ -175,14 +175,7 @@ module Homebrew
         author:        GitHub.count_repo_commits(repo_full_name, person, "author", args),
         committer:     GitHub.count_repo_commits(repo_full_name, person, "committer", args),
         coauthorships: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", args),
-        reviews:       GitHub.count_issues(
-          "",
-          is:          "pr",
-          repo:        repo_full_name,
-          reviewed_by: person,
-          review:      "approved",
-          args:        args,
-        ),
+        reviews:       count_reviews(repo_full_name, person, args),
       }
     end
 
@@ -210,5 +203,13 @@ module Homebrew
     cmd << "--after=#{args.from}" if args.from
 
     Utils.safe_popen_read(*cmd).lines.count { |l| l.include?(person) }
+  end
+
+  sig { params(repo_full_name: String, person: String, args: Homebrew::CLI::Args).returns(Integer) }
+  def count_reviews(repo_full_name, person, args)
+    # Users who have made their contributions private are not searchable to determine counts.
+    return 0 if GitHub::API.open_rest("https://api.github.com/users/#{user}/events").empty?
+
+    GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, review: "approved", args: args)
   end
 end
