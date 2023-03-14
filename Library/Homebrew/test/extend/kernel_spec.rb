@@ -182,14 +182,6 @@ describe "globally-scoped helper methods" do
     expect(which_editor).to eq("vemate -w")
   end
 
-  specify "#capture_stderr" do
-    err = capture_stderr do
-      $stderr.print "test"
-    end
-
-    expect(err).to eq("test")
-  end
-
   describe "#pretty_duration" do
     it "converts seconds to a human-readable string" do
       expect(pretty_duration(1)).to eq("1 second")
