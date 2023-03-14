@@ -18,9 +18,7 @@ module PyPI
   class Package
     extend T::Sig
 
-    attr_accessor :name
-    attr_accessor :extras
-    attr_accessor :version
+    attr_accessor :name, :extras, :version
 
     sig { params(package_string: String, is_url: T::Boolean).void }
     def initialize(package_string, is_url: false)
