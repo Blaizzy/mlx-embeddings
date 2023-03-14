@@ -23,9 +23,7 @@ RUN apt-get update \
   fonts-dejavu-core \
   g++ \
   gawk \
-  gh \
   git \
-  gpg \
   less \
   libz-dev \
   locales \
@@ -33,13 +31,12 @@ RUN apt-get update \
   netbase \
   openssh-client \
   patch \
-  skopeo \
   sudo \
   unzip \
   uuid-runtime \
   tzdata \
   jq \
-  && if [[ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]]; then apt-get install gpg; fi \
+  && if [[ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]]; then apt-get install gh gpg skopeo; fi \
   && apt-get remove --purge -y software-properties-common \
   && apt-get autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
