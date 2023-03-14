@@ -109,7 +109,7 @@ module Debrew
         Menu.choose do |menu|
           menu.prompt = "Choose an action: "
 
-          menu.choice(:raise) { raise(e) }
+          menu.choice(:raise) { raise(exception) }
           menu.choice(:ignore) { return :ignore } if exception.is_a?(Ignorable::ExceptionMixin)
           menu.choice(:backtrace) { puts exception.backtrace }
 
