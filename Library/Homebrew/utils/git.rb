@@ -7,6 +7,8 @@ module Utils
   # @see GitRepositoryExtension
   # @api private
   module Git
+    extend T::Sig
+
     module_function
 
     def available?
@@ -76,6 +78,10 @@ module Utils
       [rev, paths]
     end
 
+    sig {
+      params(repo: T.any(Pathname, String), file: T.any(Pathname, String), before_commit: T.nilable(String))
+        .returns(String)
+    }
     def last_revision_of_file(repo, file, before_commit: nil)
       relative_file = Pathname(file).relative_path_from(repo)
       commit_hash = last_revision_commit_of_file(repo, relative_file, before_commit: before_commit)

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula"
@@ -22,10 +22,8 @@ require "tap_auditor"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def audit_args
+  def self.audit_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Check <formula> for Homebrew coding style violations. This should be run before
@@ -103,7 +101,7 @@ module Homebrew
   end
 
   sig { void }
-  def audit
+  def self.audit
     args = audit_args.parse
 
     Homebrew.auditing = true
@@ -117,7 +115,7 @@ module Homebrew
     strict = new_formula || args.strict?
     online = new_formula || args.online?
     skip_style = args.skip_style? || args.no_named? || args.tap
-    no_named_args = false
+    no_named_args = T.let(false, T::Boolean)
 
     ENV.activate_extensions!
     ENV.setup_build_environment
@@ -195,7 +193,7 @@ module Homebrew
     # load licenses
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
-    new_formula_problem_lines = []
+    new_formula_problem_lines = T.let([], T::Array[String])
     formula_results = audit_formulae.sort.to_h do |f|
       only = only_cops ? ["style"] : args.only
       options = {
@@ -320,16 +318,16 @@ module Homebrew
     end
   end
 
-  def format_problem_lines(problems)
+  def self.format_problem_lines(problems)
     problems.uniq
             .map { |message:, location:| format_problem(message, location) }
   end
 
-  def format_problem(message, location)
+  def self.format_problem(message, location)
     "* #{location&.to_s&.dup&.concat(": ")}#{message.chomp.gsub("\n", "\n    ")}"
   end
 
-  def without_api(&block)
+  def self.without_api(&block)
     return yield if Homebrew::EnvConfig.no_install_from_api?
 
     with_env(HOMEBREW_NO_INSTALL_FROM_API: "1", HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API: "1", &block)
