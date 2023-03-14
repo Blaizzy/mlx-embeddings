@@ -344,13 +344,23 @@ class Pathname
   end
 
   # @private
+  def which_install_info
+    @which_install_info ||=
+      if File.executable?("/usr/bin/install-info")
+        "/usr/bin/install-info"
+      elsif Formula["texinfo"].any_version_installed?
+        Formula["texinfo"].opt_bin/"install-info"
+      end
+  end
+
+  # @private
   def install_info
-    quiet_system "/usr/bin/install-info", "--quiet", to_s, "#{dirname}/dir"
+    quiet_system(which_install_info, "--quiet", to_s, "#{dirname}/dir")
   end
 
   # @private
   def uninstall_info
-    quiet_system "/usr/bin/install-info", "--delete", "--quiet", to_s, "#{dirname}/dir"
+    quiet_system(which_install_info, "--delete", "--quiet", to_s, "#{dirname}/dir")
   end
 
   # Writes an exec script in this folder for each target pathname.
