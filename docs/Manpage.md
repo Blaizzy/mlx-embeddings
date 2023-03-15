@@ -468,6 +468,13 @@ to be missing dependencies.
 * `--hide`:
   Act as if none of the specified *`hidden`* are installed. *`hidden`* should be a comma-separated list of formulae.
 
+### `nodenv-sync`
+
+Create symlinks for Homebrew's installed NodeJS versions in ~/.nodenv/versions.
+
+Note that older version symlinks will also be created so e.g. NodeJS 19.1.0 will
+also be symlinked to 19.0.0.
+
 ### `options` [*`options`*] [*`formula`* ...]
 
 Show install options specific to *`formula`*.
@@ -513,6 +520,13 @@ issuing the `brew upgrade` *`formula`* command. See also `unpin`.
 ### `postinstall` *`installed_formula`* [...]
 
 Rerun the post-install steps for *`formula`*.
+
+### `rbenv-sync`
+
+Create symlinks for Homebrew's installed Ruby versions in ~/.rbenv/versions.
+
+Note that older version symlinks will also be created so e.g. Ruby 3.2.1 will
+also be symlinked to 3.2.0.
 
 ### `readall` [*`options`*] [*`tap`* ...]
 

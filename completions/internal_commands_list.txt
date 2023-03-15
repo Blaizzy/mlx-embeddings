@@ -63,6 +63,7 @@ log
 ls
 migrate
 missing
+nodenv-sync
 options
 outdated
 pin
@@ -72,6 +73,7 @@ pr-publish
 pr-pull
 pr-upload
 prof
+rbenv-sync
 readall
 reinstall
 release
