@@ -209,6 +209,9 @@ module Homebrew
   def count_reviews(repo_full_name, person, args)
     GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, review: "approved", args: args)
   rescue GitHub::API::ValidationFailedError
+    if args.verbose?
+      onoe "Couldn't search GitHub for PRs by #{person}. Their profile might be private. Defaulting to 0."
+    end
     0 # Users who have made their contributions private are not searchable to determine counts.
   end
 end
