@@ -652,6 +652,12 @@ Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\f
 \fB\-\-hide\fR
 Act as if none of the specified \fIhidden\fR are installed\. \fIhidden\fR should be a comma\-separated list of formulae\.
 .
+.SS "\fBnodenv\-sync\fR"
+Create symlinks for Homebrew\'s installed NodeJS versions in ~/\.nodenv/versions\.
+.
+.P
+Note that older version symlinks will also be created so e\.g\. NodeJS 19\.1\.0 will also be symlinked to 19\.0\.0\.
+.
 .SS "\fBoptions\fR [\fIoptions\fR] [\fIformula\fR \.\.\.]"
 Show install options specific to \fIformula\fR\.
 .
@@ -715,6 +721,12 @@ Pin the specified \fIformula\fR, preventing them from being upgraded when issuin
 .
 .SS "\fBpostinstall\fR \fIinstalled_formula\fR [\.\.\.]"
 Rerun the post\-install steps for \fIformula\fR\.
+.
+.SS "\fBrbenv\-sync\fR"
+Create symlinks for Homebrew\'s installed Ruby versions in ~/\.rbenv/versions\.
+.
+.P
+Note that older version symlinks will also be created so e\.g\. Ruby 3\.2\.1 will also be symlinked to 3\.2\.0\.
 .
 .SS "\fBreadall\fR [\fIoptions\fR] [\fItap\fR \.\.\.]"
 Import all items from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all items when making significant changes to \fBformula\.rb\fR, testing the performance of loading all items or checking if any current formulae/casks have Ruby issues\.

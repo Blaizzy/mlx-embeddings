@@ -1079,6 +1079,13 @@ __fish_brew_complete_arg 'missing' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'missing' -a '(__fish_brew_suggest_formulae_all)'
 
 
+__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in ~/'
+__fish_brew_complete_arg 'nodenv-sync' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'nodenv-sync' -l help -d 'Show this message'
+__fish_brew_complete_arg 'nodenv-sync' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'nodenv-sync' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'options' 'Show install options specific to formula'
 __fish_brew_complete_arg 'options' -l command -d 'Show options for the specified command'
 __fish_brew_complete_arg 'options' -l compact -d 'Show all options on a single line separated by spaces'
@@ -1196,6 +1203,13 @@ __fish_brew_complete_arg 'prof' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'prof' -l stackprof -d 'Use `stackprof` instead of `ruby-prof` (the default)'
 __fish_brew_complete_arg 'prof' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'prof' -a '(__fish_brew_suggest_commands)'
+
+
+__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/'
+__fish_brew_complete_arg 'rbenv-sync' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'rbenv-sync' -l help -d 'Show this message'
+__fish_brew_complete_arg 'rbenv-sync' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'rbenv-sync' -l verbose -d 'Make some output more verbose'
 
 
 __fish_brew_complete_cmd 'readall' 'Import all items from the specified tap, or from all installed taps if none is provided'

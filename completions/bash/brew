@@ -1540,6 +1540,22 @@ _brew_missing() {
   __brew_complete_formulae
 }
 
+_brew_nodenv_sync() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
+}
+
 _brew_options() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -1738,6 +1754,22 @@ _brew_prof() {
     *) ;;
   esac
   __brew_complete_commands
+}
+
+_brew_rbenv_sync() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
 }
 
 _brew_readall() {
@@ -2603,6 +2635,7 @@ _brew() {
     ls) _brew_ls ;;
     migrate) _brew_migrate ;;
     missing) _brew_missing ;;
+    nodenv-sync) _brew_nodenv_sync ;;
     options) _brew_options ;;
     outdated) _brew_outdated ;;
     pin) _brew_pin ;;
@@ -2612,6 +2645,7 @@ _brew() {
     pr-pull) _brew_pr_pull ;;
     pr-upload) _brew_pr_upload ;;
     prof) _brew_prof ;;
+    rbenv-sync) _brew_rbenv_sync ;;
     readall) _brew_readall ;;
     reinstall) _brew_reinstall ;;
     release) _brew_release ;;
