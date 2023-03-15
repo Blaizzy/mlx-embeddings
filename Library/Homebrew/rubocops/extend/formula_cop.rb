@@ -206,8 +206,7 @@ module RuboCop
       end
 
       def file_path_allowed?
-        paths_to_exclude = [%r{/Library/Homebrew/compat/},
-                            %r{/Library/Homebrew/test/}]
+        paths_to_exclude = [%r{/Library/Homebrew/test/}]
         return true if @file_path.nil? # file_path is nil when source is directly passed to the cop, e.g. in specs
 
         @file_path !~ Regexp.union(paths_to_exclude)

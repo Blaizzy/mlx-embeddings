@@ -118,10 +118,6 @@ RSpec.configure do |config|
   config.include(Test::Helper::MkTmpDir)
   config.include(Test::Helper::OutputAsTTY)
 
-  config.before(:each, :needs_compat) do
-    skip "Requires the compatibility layer." if ENV["HOMEBREW_NO_COMPAT"]
-  end
-
   config.before(:each, :needs_linux) do
     skip "Not running on Linux." unless OS.linux?
   end

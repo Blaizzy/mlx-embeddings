@@ -1511,8 +1511,6 @@ Run Homebrew's unit and integration tests.
   Generate code coverage reports.
 * `--generic`:
   Run only OS-agnostic tests.
-* `--no-compat`:
-  Do not load the compatibility layer when running tests.
 * `--online`:
   Include tests that use the GitHub API and tests that use any of the taps for official external commands.
 * `--byebug`:
@@ -2203,9 +2201,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not print text with colour added.
 
   *Default:* `$NO_COLOR`.
-
-- `HOMEBREW_NO_COMPAT`
-  <br>If set, disable all use of legacy compatibility code.
 
 - `HOMEBREW_NO_EMOJI`
   <br>If set, do not print `HOMEBREW_INSTALL_BADGE` on a successful build.

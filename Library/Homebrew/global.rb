@@ -70,7 +70,6 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.freeze
 
 require "env_config"
-require "compat/early" unless Homebrew::EnvConfig.no_compat?
 require "macos_versions"
 require "os"
 require "messages"
@@ -151,5 +150,3 @@ require "utils"
 require "official_taps"
 require "tap"
 require "tap_constants"
-
-require "compat/late" unless Homebrew::EnvConfig.no_compat?

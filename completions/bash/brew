@@ -2090,7 +2090,6 @@ _brew_tests() {
       --debug
       --generic
       --help
-      --no-compat
       --online
       --only
       --quiet

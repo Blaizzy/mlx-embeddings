@@ -19,8 +19,6 @@ module Homebrew
              description: "Generate code coverage reports."
       switch "--generic",
              description: "Run only OS-agnostic tests."
-      switch "--no-compat",
-             description: "Do not load the compatibility layer when running tests."
       switch "--online",
              description: "Include tests that use the GitHub API and tests that use any of the taps for " \
                           "official external commands."
@@ -125,7 +123,6 @@ module Homebrew
       end
 
       parallel_rspec_log_name = "parallel_runtime_rspec"
-      parallel_rspec_log_name = "#{parallel_rspec_log_name}.no_compat" if args.no_compat?
       parallel_rspec_log_name = "#{parallel_rspec_log_name}.generic" if args.generic?
       parallel_rspec_log_name = "#{parallel_rspec_log_name}.online" if args.online?
       parallel_rspec_log_name = "#{parallel_rspec_log_name}.log"
@@ -230,7 +227,6 @@ module Homebrew
     ENV["HOMEBREW_TESTS"] = "1"
     ENV["HOMEBREW_NO_AUTO_UPDATE"] = "1"
     ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
-    ENV["HOMEBREW_NO_COMPAT"] = "1" if args.no_compat?
     ENV["HOMEBREW_TEST_GENERIC_OS"] = "1" if args.generic?
     ENV["HOMEBREW_TEST_ONLINE"] = "1" if args.online?
     ENV["HOMEBREW_SORBET_RUNTIME"] = "1"

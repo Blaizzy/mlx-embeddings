@@ -63,7 +63,6 @@ SimpleCov.start do
   add_filter %r{^/constants.rb$}
   add_filter %r{^/postinstall.rb$}
   add_filter %r{^/test.rb$}
-  add_filter %r{^/compat/}
   add_filter %r{^/dev-cmd/tests.rb$}
   add_filter %r{^/test/}
   add_filter %r{^/vendor/}

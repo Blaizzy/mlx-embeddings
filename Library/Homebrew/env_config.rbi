@@ -170,9 +170,6 @@ module Homebrew::EnvConfig
   def self.no_color?; end
 
   sig { returns(T::Boolean) }
-  def self.no_compat?; end
-
-  sig { returns(T::Boolean) }
   def self.no_emoji?; end
 
   sig { returns(T::Boolean) }

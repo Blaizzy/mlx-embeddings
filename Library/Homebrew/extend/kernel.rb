@@ -112,7 +112,6 @@ module Kernel
 
     # Try to show the most relevant location in message, i.e. (if applicable):
     # - Location in a formula.
-    # - Location outside of 'compat/'.
     # - Location of caller of deprecated method (if all else fails).
     backtrace = caller
 
