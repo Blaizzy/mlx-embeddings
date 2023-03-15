@@ -208,7 +208,7 @@ module Homebrew
   sig { params(repo_full_name: String, person: String, args: Homebrew::CLI::Args).returns(Integer) }
   def count_reviews(repo_full_name, person, args)
     # Users who have made their contributions private are not searchable to determine counts.
-    return 0 if GitHub::API.open_rest("https://api.github.com/users/#{user}/events").empty?
+    return 0 if GitHub::API.open_rest("https://api.github.com/users/#{person}/events").empty?
 
     GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, review: "approved", args: args)
   end
