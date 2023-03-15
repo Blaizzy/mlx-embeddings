@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "uri"
@@ -15,9 +15,7 @@ module GitHub
 
   include SystemCommand::Mixin
 
-  module_function
-
-  def check_runs(repo: nil, commit: nil, pr: nil)
+  def self.check_runs(repo: nil, commit: nil, pr: nil)
     if pr
       repo = pr.fetch("base").fetch("repo").fetch("full_name")
       commit = pr.fetch("head").fetch("sha")
@@ -26,83 +24,83 @@ module GitHub
     API.open_rest(url_to("repos", repo, "commits", commit, "check-runs"))
   end
 
-  def create_check_run(repo:, data:)
+  def self.create_check_run(repo:, data:)
     API.open_rest(url_to("repos", repo, "check-runs"), data: data)
   end
 
-  def issues(repo:, **filters)
+  def self.issues(repo:, **filters)
     uri = url_to("repos", repo, "issues")
     uri.query = URI.encode_www_form(filters)
     API.open_rest(uri)
   end
 
-  def search_issues(query, **qualifiers)
+  def self.search_issues(query, **qualifiers)
     search_results_items("issues", query, **qualifiers)
   end
 
-  def count_issues(query, **qualifiers)
+  def self.count_issues(query, **qualifiers)
     search_results_count("issues", query, **qualifiers)
   end
 
-  def create_gist(files, description, private:)
+  def self.create_gist(files, description, private:)
     url = "#{API_URL}/gists"
     data = { "public" => !private, "files" => files, "description" => description }
     API.open_rest(url, data: data, scopes: CREATE_GIST_SCOPES)["html_url"]
   end
 
-  def create_issue(repo, title, body)
+  def self.create_issue(repo, title, body)
     url = "#{API_URL}/repos/#{repo}/issues"
     data = { "title" => title, "body" => body }
     API.open_rest(url, data: data, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
   end
 
-  def repository(user, repo)
+  def self.repository(user, repo)
     API.open_rest(url_to("repos", user, repo))
   end
 
-  def search_code(repo: nil, user: "Homebrew", path: ["Formula", "Casks", "."], filename: nil, extension: "rb")
+  def self.search_code(repo: nil, user: "Homebrew", path: ["Formula", "Casks", "."], filename: nil, extension: "rb")
     search_results_items("code", user: user, path: path, filename: filename, extension: extension, repo: repo)
   end
 
-  def issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil)
+  def self.issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil)
     return [] unless tap_remote_repo
 
     search_issues(name, repo: tap_remote_repo, state: state, in: "title")
   end
 
-  def user
+  def self.user
     @user ||= API.open_rest("#{API_URL}/user")
   end
 
-  def permission(repo, user)
+  def self.permission(repo, user)
     API.open_rest("#{API_URL}/repos/#{repo}/collaborators/#{user}/permission")
   end
 
-  def write_access?(repo, user = nil)
+  def self.write_access?(repo, user = nil)
     user ||= self.user["login"]
     ["admin", "write"].include?(permission(repo, user)["permission"])
   end
 
-  def branch_exists?(user, repo, branch)
+  def self.branch_exists?(user, repo, branch)
     API.open_rest("#{API_URL}/repos/#{user}/#{repo}/branches/#{branch}")
     true
   rescue API::HTTPNotFoundError
     false
   end
 
-  def pull_requests(repo, **options)
+  def self.pull_requests(repo, **options)
     url = "#{API_URL}/repos/#{repo}/pulls?#{URI.encode_www_form(options)}"
     API.open_rest(url)
   end
 
-  def merge_pull_request(repo, number:, sha:, merge_method:, commit_message: nil)
+  def self.merge_pull_request(repo, number:, sha:, merge_method:, commit_message: nil)
     url = "#{API_URL}/repos/#{repo}/pulls/#{number}/merge"
     data = { sha: sha, merge_method: merge_method }
     data[:commit_message] = commit_message if commit_message
     API.open_rest(url, data: data, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def print_pull_requests_matching(query, only = nil)
+  def self.print_pull_requests_matching(query, only = nil)
     open_or_closed_prs = search_issues(query, is: only, type: "pr", user: "Homebrew")
 
     open_prs, closed_prs = open_or_closed_prs.partition { |pr| pr["state"] == "open" }
@@ -125,7 +123,7 @@ module GitHub
     puts "No pull requests found for #{query.inspect}" if open_prs.blank? && closed_prs.blank?
   end
 
-  def create_fork(repo, org: nil)
+  def self.create_fork(repo, org: nil)
     url = "#{API_URL}/repos/#{repo}/forks"
     data = {}
     data[:organization] = org if org
@@ -133,7 +131,7 @@ module GitHub
     API.open_rest(url, data: data, scopes: scopes)
   end
 
-  def fork_exists?(repo, org: nil)
+  def self.fork_exists?(repo, org: nil)
     _, reponame = repo.split("/")
 
     username = org || API.open_rest(url_to("user")) { |json| json["login"] }
@@ -144,19 +142,19 @@ module GitHub
     true
   end
 
-  def create_pull_request(repo, title, head, base, body)
+  def self.create_pull_request(repo, title, head, base, body)
     url = "#{API_URL}/repos/#{repo}/pulls"
     data = { title: title, head: head, base: base, body: body }
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     API.open_rest(url, data: data, scopes: scopes)
   end
 
-  def private_repo?(full_name)
+  def self.private_repo?(full_name)
     uri = url_to "repos", full_name
     API.open_rest(uri) { |json| json["private"] }
   end
 
-  def search_query_string(*main_params, **qualifiers)
+  def self.search_query_string(*main_params, **qualifiers)
     params = main_params
 
     if (args = qualifiers.fetch(:args, nil))
@@ -176,27 +174,27 @@ module GitHub
     "q=#{URI.encode_www_form_component(params.compact.join(" "))}&per_page=100"
   end
 
-  def url_to(*subroutes)
+  def self.url_to(*subroutes)
     URI.parse([API_URL, *subroutes].join("/"))
   end
 
-  def search(entity, *queries, **qualifiers)
+  def self.search(entity, *queries, **qualifiers)
     uri = url_to "search", entity
     uri.query = search_query_string(*queries, **qualifiers)
     API.open_rest(uri)
   end
 
-  def search_results_items(entity, *queries, **qualifiers)
+  def self.search_results_items(entity, *queries, **qualifiers)
     json = search(entity, *queries, **qualifiers)
     json.fetch("items", [])
   end
 
-  def search_results_count(entity, *queries, **qualifiers)
+  def self.search_results_count(entity, *queries, **qualifiers)
     json = search(entity, *queries, **qualifiers)
     json.fetch("total_count", 0)
   end
 
-  def approved_reviews(user, repo, pr, commit: nil)
+  def self.approved_reviews(user, repo, pr, commit: nil)
     query = <<~EOS
       { repository(name: "#{repo}", owner: "#{user}") {
           pullRequest(number: #{pr}) {
@@ -237,38 +235,38 @@ module GitHub
     end.compact
   end
 
-  def dispatch_event(user, repo, event, **payload)
+  def self.dispatch_event(user, repo, event, **payload)
     url = "#{API_URL}/repos/#{user}/#{repo}/dispatches"
     API.open_rest(url, data:           { event_type: event, client_payload: payload },
                        request_method: :POST,
                        scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def workflow_dispatch_event(user, repo, workflow, ref, **inputs)
+  def self.workflow_dispatch_event(user, repo, workflow, ref, **inputs)
     url = "#{API_URL}/repos/#{user}/#{repo}/actions/workflows/#{workflow}/dispatches"
     API.open_rest(url, data:           { ref: ref, inputs: inputs },
                        request_method: :POST,
                        scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def get_release(user, repo, tag)
+  def self.get_release(user, repo, tag)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases/tags/#{tag}"
     API.open_rest(url, request_method: :GET)
   end
 
-  def get_latest_release(user, repo)
+  def self.get_latest_release(user, repo)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases/latest"
     API.open_rest(url, request_method: :GET)
   end
 
-  def generate_release_notes(user, repo, tag, previous_tag: nil)
+  def self.generate_release_notes(user, repo, tag, previous_tag: nil)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases/generate-notes"
     data = { tag_name: tag }
     data[:previous_tag_name] = previous_tag if previous_tag.present?
     API.open_rest(url, data: data, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def create_or_update_release(user, repo, tag, id: nil, name: nil, body: nil, draft: false)
+  def self.create_or_update_release(user, repo, tag, id: nil, name: nil, body: nil, draft: false)
     url = "#{API_URL}/repos/#{user}/#{repo}/releases"
     method = if id
       url += "/#{id}"
@@ -285,13 +283,13 @@ module GitHub
     API.open_rest(url, data: data, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def upload_release_asset(user, repo, id, local_file: nil, remote_file: nil)
+  def self.upload_release_asset(user, repo, id, local_file: nil, remote_file: nil)
     url = "https://uploads.github.com/repos/#{user}/#{repo}/releases/#{id}/assets"
     url += "?name=#{remote_file}" if remote_file
     API.open_rest(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def get_workflow_run(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
+  def self.get_workflow_run(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
 
     # GraphQL unfortunately has no way to get the workflow yml name, so we need an extra REST call.
@@ -344,7 +342,7 @@ module GitHub
     [check_suite, user, repo, pr, workflow_id, scopes, artifact_name]
   end
 
-  def get_artifact_url(workflow_array)
+  def self.get_artifact_url(workflow_array)
     check_suite, user, repo, pr, workflow_id, scopes, artifact_name = *workflow_array
     if check_suite.empty?
       raise API::Error, <<~EOS
@@ -379,7 +377,7 @@ module GitHub
     artifact.last["archive_download_url"]
   end
 
-  def public_member_usernames(org, per_page: 100)
+  def self.public_member_usernames(org, per_page: 100)
     url = "#{API_URL}/orgs/#{org}/public_members"
     members = []
 
@@ -391,7 +389,7 @@ module GitHub
     end
   end
 
-  def members_by_team(org, team)
+  def self.members_by_team(org, team)
     query = <<~EOS
         { organization(login: "#{org}") {
           teams(first: 100) {
@@ -420,11 +418,11 @@ module GitHub
     result["organization"]["team"]["members"]["nodes"].to_h { |member| [member["login"], member["name"]] }
   end
 
-  def sponsorships(user)
-    has_next_page = true
+  def self.sponsorships(user)
+    has_next_page = T.let(true, T::Boolean)
     after = ""
-    sponsorships = []
-    errors = []
+    sponsorships = T.let([], T::Array[Hash])
+    errors = T.let([], T::Array[Hash])
     while has_next_page
       query = <<~EOS
           { organization(login: "#{user}") {
@@ -494,7 +492,7 @@ module GitHub
     end
   end
 
-  def get_repo_license(user, repo)
+  def self.get_repo_license(user, repo)
     response = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/license")
     return unless response.key?("license")
 
@@ -503,7 +501,7 @@ module GitHub
     nil
   end
 
-  def fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
+  def self.fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
     if version.present?
       query = "#{name} #{version} is:pr"
       regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i
@@ -519,7 +517,7 @@ module GitHub
     []
   end
 
-  def check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, args:, version: nil)
+  def self.check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, args:, version: nil)
     pull_requests = fetch_pull_requests(name, tap_remote_repo, state: state, version: version).select do |pr|
       get_pull_request_changed_files(
         tap_remote_repo, pr["number"]
@@ -544,11 +542,11 @@ module GitHub
     end
   end
 
-  def get_pull_request_changed_files(tap_remote_repo, pr)
+  def self.get_pull_request_changed_files(tap_remote_repo, pr)
     API.open_rest(url_to("repos", tap_remote_repo, "pulls", pr, "files"))
   end
 
-  def forked_repo_info!(tap_remote_repo, org: nil)
+  def self.forked_repo_info!(tap_remote_repo, org: nil)
     response = create_fork(tap_remote_repo, org: org)
     # GitHub API responds immediately but fork takes a few seconds to be ready.
     sleep 1 until fork_exists?(tap_remote_repo, org: org)
@@ -565,7 +563,7 @@ module GitHub
     [remote_url, username]
   end
 
-  def create_bump_pr(info, args:)
+  def self.create_bump_pr(info, args:)
     tap = info[:tap]
     sourcefile_path = info[:sourcefile_path]
     old_contents = info[:old_contents]
@@ -658,7 +656,7 @@ module GitHub
     end
   end
 
-  def pull_request_commits(user, repo, pr, per_page: 100)
+  def self.pull_request_commits(user, repo, pr, per_page: 100)
     pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
     commits_api = pr_data["commits_url"]
     commit_count = pr_data["commits"]
@@ -679,12 +677,12 @@ module GitHub
     end
   end
 
-  def pull_request_labels(user, repo, pr)
+  def self.pull_request_labels(user, repo, pr)
     pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
     pr_data["labels"].map { |label| label["name"] }
   end
 
-  def last_commit(user, repo, ref)
+  def self.last_commit(user, repo, ref, version)
     return if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = curl_output(
@@ -702,7 +700,7 @@ module GitHub
     commit
   end
 
-  def multiple_short_commits_exist?(user, repo, commit)
+  def self.multiple_short_commits_exist?(user, repo, commit)
     return if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = curl_output(
@@ -717,7 +715,7 @@ module GitHub
     output[/^Status: (200)/, 1] != "200"
   end
 
-  def repo_commits_for_user(nwo, user, filter, args)
+  def self.repo_commits_for_user(nwo, user, filter, args)
     return if Homebrew::EnvConfig.no_github_api?
 
     params = ["#{filter}=#{user}"]
@@ -731,7 +729,7 @@ module GitHub
     commits
   end
 
-  def count_repo_commits(nwo, user, filter, args)
+  def self.count_repo_commits(nwo, user, filter, args)
     return if Homebrew::EnvConfig.no_github_api?
 
     author_shas = repo_commits_for_user(nwo, user, "author", args)

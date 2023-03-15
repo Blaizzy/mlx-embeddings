@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Utils
@@ -9,45 +9,43 @@ module Utils
   module Git
     extend T::Sig
 
-    module_function
-
-    def available?
+    def self.available?
       version.present?
     end
 
-    def version
+    def self.version
       return @version if defined?(@version)
 
       stdout, _, status = system_command(git, args: ["--version"], verbose: false, print_stderr: false)
       @version = status.success? ? stdout.chomp[/git version (\d+(?:\.\d+)*)/, 1] : nil
     end
 
-    def path
+    def self.path
       return unless available?
       return @path if defined?(@path)
 
       @path = Utils.popen_read(git, "--homebrew=print-path").chomp.presence
     end
 
-    def git
+    def self.git
       return @git if defined?(@git)
 
       @git = HOMEBREW_SHIMS_PATH/"shared/git"
     end
 
-    def remote_exists?(url)
+    def self.remote_exists?(url)
       return true unless available?
 
       quiet_system "git", "ls-remote", url
     end
 
-    def clear_available_cache
+    def self.clear_available_cache
       remove_instance_variable(:@version) if defined?(@version)
       remove_instance_variable(:@path) if defined?(@path)
       remove_instance_variable(:@git) if defined?(@git)
     end
 
-    def last_revision_commit_of_file(repo, file, before_commit: nil)
+    def self.last_revision_commit_of_file(repo, file, before_commit: nil)
       args = if before_commit.nil?
         ["--skip=1"]
       else
@@ -57,7 +55,7 @@ module Utils
       Utils.popen_read(git, "-C", repo, "log", "--format=%h", "--abbrev=7", "--max-count=1", *args, "--", file).chomp
     end
 
-    def last_revision_commit_of_files(repo, files, before_commit: nil)
+    def self.last_revision_commit_of_files(repo, files, before_commit: nil)
       args = if before_commit.nil?
         ["--skip=1"]
       else
@@ -82,19 +80,19 @@ module Utils
       params(repo: T.any(Pathname, String), file: T.any(Pathname, String), before_commit: T.nilable(String))
         .returns(String)
     }
-    def last_revision_of_file(repo, file, before_commit: nil)
+    def self.last_revision_of_file(repo, file, before_commit: nil)
       relative_file = Pathname(file).relative_path_from(repo)
       commit_hash = last_revision_commit_of_file(repo, relative_file, before_commit: before_commit)
       file_at_commit(repo, file, commit_hash)
     end
 
-    def file_at_commit(repo, file, commit)
+    def self.file_at_commit(repo, file, commit)
       relative_file = Pathname(file)
       relative_file = relative_file.relative_path_from(repo) if relative_file.absolute?
       Utils.popen_read(git, "-C", repo, "show", "#{commit}:#{relative_file}")
     end
 
-    def ensure_installed!
+    def self.ensure_installed!
       return if available?
 
       # we cannot install brewed git if homebrew/core is unavailable.
@@ -114,7 +112,7 @@ module Utils
       raise "Git is unavailable" unless available?
     end
 
-    def set_name_email!(author: true, committer: true)
+    def self.set_name_email!(author: true, committer: true)
       if Homebrew::EnvConfig.git_name
         ENV["GIT_AUTHOR_NAME"] = Homebrew::EnvConfig.git_name if author
         ENV["GIT_COMMITTER_NAME"] = Homebrew::EnvConfig.git_name if committer
@@ -126,17 +124,16 @@ module Utils
       ENV["GIT_COMMITTER_EMAIL"] = Homebrew::EnvConfig.git_email if committer
     end
 
-    def setup_gpg!
+    def self.setup_gpg!
       gnupg_bin = HOMEBREW_PREFIX/"opt/gnupg/bin"
       return unless gnupg_bin.directory?
 
-      ENV["PATH"] = PATH.new(ENV.fetch("PATH"))
-                        .prepend(gnupg_bin)
+      ENV["PATH"] = PATH.new(ENV.fetch("PATH")).prepend(gnupg_bin).to_s
     end
 
     # Special case of `git cherry-pick` that permits non-verbose output and
     # optional resolution on merge conflict.
-    def cherry_pick!(repo, *args, resolve: false, verbose: false)
+    def self.cherry_pick!(repo, *args, resolve: false, verbose: false)
       cmd = [git, "-C", repo, "cherry-pick"] + args
       output = Utils.popen_read(*cmd, err: :out)
       if $CHILD_STATUS.success?
@@ -148,7 +145,7 @@ module Utils
       end
     end
 
-    def supports_partial_clone_sparse_checkout?
+    def self.supports_partial_clone_sparse_checkout?
       # There is some support for partial clones prior to 2.20, but we avoid using it
       # due to performance issues
       Version.create(version) >= Version.create("2.20.0")
