@@ -9,7 +9,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=DL3008
 
 # /etc/lsb-release is checked inside the container and sets DISTRIB_RELEASE.
-# shellcheck disable=SC1091,SC2154
+# We need `[` instead of `[[` because the shell is `/bin/sh`.
+# shellcheck disable=SC1091,SC2154,SC2292
 RUN apt-get update \
   && apt-get install -y --no-install-recommends software-properties-common gnupg-agent \
   && add-apt-repository -y ppa:git-core/ppa \
@@ -36,7 +37,7 @@ RUN apt-get update \
   uuid-runtime \
   tzdata \
   jq \
-  && if [[ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]]; then apt-get install gh gpg skopeo; fi \
+  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]; then apt-get install -y --no-install-recommends gh gpg skopeo; fi \
   && apt-get remove --purge -y software-properties-common \
   && apt-get autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
