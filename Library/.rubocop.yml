@@ -390,7 +390,6 @@ Style/NumericLiterals:
 Style/OpenStructUse:
   Exclude:
     - "Homebrew/cli/args.rb"
-    - "Homebrew/tab.rb"
     - "Taps/**/*.rb"
 
 # Rescuing `StandardError` is an understood default.
