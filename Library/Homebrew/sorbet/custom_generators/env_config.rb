@@ -13,7 +13,7 @@ File.open("#{__dir__}/../../env_config.rbi", "w") do |file|
 
   dynamic_methods = {}
   Homebrew::EnvConfig::ENVS.each do |env, hash|
-    next if Homebrew::EnvConfig::CUSTOM_IMPLEMENTATIONS.include?(env.to_s)
+    next if Homebrew::EnvConfig::CUSTOM_IMPLEMENTATIONS.include?(env)
 
     name = Homebrew::EnvConfig.env_method_name(env, hash)
     dynamic_methods[name] = { default: hash[:default] }

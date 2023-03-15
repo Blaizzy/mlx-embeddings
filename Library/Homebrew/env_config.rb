@@ -415,6 +415,7 @@ module Homebrew
       },
     }.freeze
 
+    sig { params(env: Symbol, hash: T::Hash[Symbol, T.untyped]).returns(String) }
     def env_method_name(env, hash)
       method_name = env.to_s
                        .sub(/^HOMEBREW_/, "")
