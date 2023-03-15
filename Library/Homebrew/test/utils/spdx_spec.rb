@@ -33,17 +33,12 @@ describe SPDX do
   end
 
   describe ".download_latest_license_data!", :needs_network do
-    let(:tmp_json_path) { Pathname.new(TEST_TMPDIR) }
-
-    after do
-      FileUtils.rm_f tmp_json_path/"spdx_licenses.json"
-      FileUtils.rm_f tmp_json_path/"spdx_exceptions.json"
-    end
+    let(:download_dir) { mktmpdir }
 
     it "downloads latest license data" do
-      described_class.download_latest_license_data! to: tmp_json_path
-      expect(tmp_json_path/"spdx_licenses.json").to exist
-      expect(tmp_json_path/"spdx_exceptions.json").to exist
+      described_class.download_latest_license_data! to: download_dir
+      expect(download_dir/"spdx_licenses.json").to exist
+      expect(download_dir/"spdx_exceptions.json").to exist
     end
   end
 
