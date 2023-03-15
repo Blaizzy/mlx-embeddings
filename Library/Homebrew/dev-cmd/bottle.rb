@@ -400,7 +400,6 @@ module Homebrew
         tab = Tab.for_keg(keg)
         original_tab = tab.dup
         tab.poured_from_bottle = false
-        tab.HEAD = nil
         tab.time = nil
         tab.changed_files = changed_files.dup
         if args.only_json_tab?

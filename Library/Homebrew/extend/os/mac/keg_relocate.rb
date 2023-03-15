@@ -157,8 +157,8 @@ class Keg
     brewed_perl = runtime_dependencies&.any? { |dep| dep["full_name"] == "perl" && dep["declared_directly"] }
     perl_path = if brewed_perl || name == "perl"
       "#{HOMEBREW_PREFIX}/opt/perl/bin/perl"
-    elsif tab["built_on"].present?
-      perl_path = "/usr/bin/perl#{tab["built_on"]["preferred_perl"]}"
+    elsif tab.built_on.present?
+      perl_path = "/usr/bin/perl#{tab.built_on["preferred_perl"]}"
 
       # For `:all` bottles, we could have built this bottle with a Perl we don't have.
       # Such bottles typically don't have strict version requirements.

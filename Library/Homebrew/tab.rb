@@ -1,22 +1,24 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cxxstdlib"
-require "ostruct"
 require "options"
 require "json"
 require "development_tools"
 require "extend/cachable"
 
-# Inherit from OpenStruct to gain a generic initialization method that takes a
-# hash and creates an attribute for each key and value. Rather than calling
-# `new` directly, use one of the class methods like {Tab.create}.
-class Tab < OpenStruct
+# Rather than calling `new` directly, use one of the class methods like {Tab.create}.
+class Tab
   extend T::Sig
 
   extend Cachable
 
   FILENAME = "INSTALL_RECEIPT.json"
+
+  attr_accessor :homebrew_version, :tabfile, :built_as_bottle, :installed_as_dependency, :installed_on_request,
+                :changed_files, :poured_from_bottle, :loaded_from_api, :time, :stdlib, :aliases, :arch, :source,
+                :built_on
+  attr_writer :used_options, :unused_options, :compiler, :runtime_dependencies, :source_modified_time
 
   # Instantiates a Tab for a new installation of a formula.
   def self.create(formula, compiler, stdlib)
@@ -120,7 +122,7 @@ class Tab < OpenStruct
       empty
     end
 
-    tab["tabfile"] = path
+    tab.tabfile = path
     tab
   end
 
@@ -226,6 +228,10 @@ class Tab < OpenStruct
     end
   end
 
+  def initialize(attributes = {})
+    attributes.each { |key, value| instance_variable_set("@#{key}", value) }
+  end
+
   def any_args_or_options?
     !used_options.empty? || !unused_options.empty?
   end
@@ -255,15 +261,15 @@ class Tab < OpenStruct
   end
 
   def used_options
-    Options.create(super)
+    Options.create(@used_options)
   end
 
   def unused_options
-    Options.create(super)
+    Options.create(@unused_options)
   end
 
   def compiler
-    super || DevelopmentTools.default_compiler
+    @compiler || DevelopmentTools.default_compiler
   end
 
   def parsed_homebrew_version
@@ -275,7 +281,7 @@ class Tab < OpenStruct
   def runtime_dependencies
     # Homebrew versions prior to 1.1.6 generated incorrect runtime dependency
     # lists.
-    super unless parsed_homebrew_version < "1.1.6"
+    @runtime_dependencies unless parsed_homebrew_version < "1.1.6"
   end
 
   def cxxstdlib
@@ -324,7 +330,7 @@ class Tab < OpenStruct
 
   sig { returns(Time) }
   def source_modified_time
-    Time.at(super || 0)
+    Time.at(@source_modified_time || 0)
   end
 
   def to_json(options = nil)
