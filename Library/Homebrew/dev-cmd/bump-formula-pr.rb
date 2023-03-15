@@ -362,7 +362,7 @@ module Homebrew
         pr_message += <<~XML
           <details>
             <summary>#{pre}release notes</summary>
-            #{github_release_data["body"]}
+            <pre>#{github_release_data["body"]}</pre>
           </details>
         XML
       end
