@@ -9,7 +9,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=DL3008
 
 # /etc/lsb-release is checked inside the container and sets DISTRIB_RELEASE.
-# shellcheck disable=SC1091,SC2154
+# We need `[` instead of `[[` because the shell is `/bin/sh`.
+# shellcheck disable=SC1091,SC2154,SC2292
 RUN apt-get update \
   && apt-get install -y --no-install-recommends software-properties-common gnupg-agent \
   && add-apt-repository -y ppa:git-core/ppa \
