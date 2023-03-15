@@ -965,7 +965,7 @@ Same as above in hash form:
 ```ruby
 service do
   run [opt_bin/"beanstalkd", "test"]
-  keep_alive { always: true }
+  keep_alive always: true
 end
 ```
 
@@ -974,7 +974,7 @@ Keep alive until the service exits with a non-zero return code:
 ```ruby
 service do
   run [opt_bin/"beanstalkd", "test"]
-  keep_alive { succesful_exit: true }
+  keep_alive succesful_exit: true
 end
 ```
 
@@ -983,7 +983,7 @@ Keep alive only if the job crashed:
 ```ruby
 service do
   run [opt_bin/"beanstalkd", "test"]
-  keep_alive { crashed: true }
+  keep_alive crashed: true
 end
 ```
 
@@ -992,7 +992,7 @@ Keep alive as long as a file exists:
 ```ruby
 service do
   run [opt_bin/"beanstalkd", "test"]
-  keep_alive { path: "/some/path" }
+  keep_alive path: "/some/path"
 end
 ```
 
