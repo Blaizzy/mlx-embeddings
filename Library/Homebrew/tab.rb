@@ -15,7 +15,10 @@ class Tab
 
   FILENAME = "INSTALL_RECEIPT.json"
 
-  attr_accessor :homebrew_version, :used_options, :unused_options, :tabfile, :built_as_bottle, :installed_as_dependency, :installed_on_request, :changed_files, :poured_from_bottle, :loaded_from_api, :time, :source_modified_time, :stdlib, :compiler, :aliases, :runtime_dependencies, :arch, :source, :built_on, :HEAD
+  attr_accessor :homebrew_version, :tabfile, :built_as_bottle, :installed_as_dependency, :installed_on_request,
+                :changed_files, :poured_from_bottle, :loaded_from_api, :time, :stdlib, :aliases, :arch, :source,
+                :built_on
+  attr_writer :used_options, :unused_options, :compiler, :runtime_dependencies, :source_modified_time
 
   # Instantiates a Tab for a new installation of a formula.
   def self.create(formula, compiler, stdlib)

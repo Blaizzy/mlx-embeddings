@@ -29,7 +29,6 @@ describe Tab do
       "changed_files"        => [],
       "time"                 => time,
       "source_modified_time" => 0,
-      "HEAD"                 => TEST_SHA1,
       "compiler"             => "clang",
       "stdlib"               => "libcxx",
       "runtime_dependencies" => [],
@@ -71,7 +70,6 @@ describe Tab do
     expect(tab).not_to be_head
     expect(tab.tap).to be_nil
     expect(tab.time).to be_nil
-    expect(tab.HEAD).to be_nil
     expect(tab.runtime_dependencies).to be_nil
     expect(tab.stable_version).to be_nil
     expect(tab.head_version).to be_nil
@@ -154,7 +152,6 @@ describe Tab do
   end
 
   specify "other attributes" do
-    expect(tab.HEAD).to eq(TEST_SHA1)
     expect(tab.tap.name).to eq("homebrew/core")
     expect(tab.time).to eq(time)
     expect(tab).not_to be_built_as_bottle
@@ -179,7 +176,6 @@ describe Tab do
       expect(tab.tap.name).to eq("homebrew/core")
       expect(tab.spec).to eq(:stable)
       expect(tab.time).to eq(Time.at(1_403_827_774).to_i)
-      expect(tab.HEAD).to eq(TEST_SHA1)
       expect(tab.cxxstdlib.compiler).to eq(:clang)
       expect(tab.cxxstdlib.type).to eq(:libcxx)
       expect(tab.runtime_dependencies).to eq(runtime_dependencies)
@@ -207,7 +203,6 @@ describe Tab do
       expect(tab.tap.name).to eq("homebrew/core")
       expect(tab.spec).to eq(:stable)
       expect(tab.time).to eq(Time.at(1_403_827_774).to_i)
-      expect(tab.HEAD).to eq(TEST_SHA1)
       expect(tab.cxxstdlib.compiler).to eq(:clang)
       expect(tab.cxxstdlib.type).to eq(:libcxx)
       expect(tab.runtime_dependencies).to eq(runtime_dependencies)
@@ -229,7 +224,6 @@ describe Tab do
       expect(tab.tap.name).to eq("homebrew/core")
       expect(tab.spec).to eq(:stable)
       expect(tab.time).to eq(Time.at(1_403_827_774).to_i)
-      expect(tab.HEAD).to eq(TEST_SHA1)
       expect(tab.cxxstdlib.compiler).to eq(:clang)
       expect(tab.cxxstdlib.type).to eq(:libcxx)
       expect(tab.runtime_dependencies).to be_nil
