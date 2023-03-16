@@ -7,8 +7,6 @@ GZIP_BUFFER_SIZE = 64 * 1024
 
 module Utils
   # Helper functions for creating gzip files.
-  #
-  # @api private
   module Gzip
     extend T::Sig
 
