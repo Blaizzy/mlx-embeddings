@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "json"
@@ -112,8 +112,8 @@ class AbstractDownloadStrategy
       return
     end
 
-    if File.directory? entries.first
-      Dir.chdir(entries.first, &block)
+    if File.directory? entries.fetch(0)
+      Dir.chdir(entries.fetch(0), &block)
     else
       yield
     end
@@ -472,7 +472,6 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     lines = output.to_s.lines.map(&:chomp)
 
     final_url = curl_response_follow_redirections(parsed_output[:responses], url)
-    final_url ||= url
 
     content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
 
@@ -603,7 +602,6 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   attr_writer :resolved_basename
 
   def initialize(url, name, version, **meta)
-    meta ||= {}
     meta[:headers] ||= []
     # GitHub Packages authorization header.
     # HOMEBREW_GITHUB_PACKAGES_AUTH set in brew.sh
@@ -723,7 +721,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
   # @api public
   sig { returns(Time) }
   def source_modified_time
-    time = if Version.create(Utils::Svn.version) >= Version.create("1.9")
+    time = if Version.create(T.must(Utils::Svn.version)) >= Version.create("1.9")
       out, = silent_command("svn", args: ["info", "--show-item", "last-changed-date"], chdir: cached_location)
       out
     else
@@ -913,7 +911,7 @@ class GitDownloadStrategy < VCSDownloadStrategy
     args << "--no-checkout" << "--filter=blob:none" if partial_clone_sparse_checkout?
 
     args << "-c" << "advice.detachedHead=false" # silences detached head warning
-    args << @url << cached_location
+    args << @url << cached_location.to_s
   end
 
   sig { returns(String) }
@@ -1071,14 +1069,15 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
   def initialize(url, name, version, **meta)
     super
 
-    return unless %r{^https?://github\.com/(?<user>[^/]+)/(?<repo>[^/]+)\.git$} =~ @url
+    match_data = %r{^https?://github\.com/(?<user>[^/]+)/(?<repo>[^/]+)\.git$}.match(@url)
+    return unless match_data
 
-    @user = user
-    @repo = repo
+    @user = match_data[:user]
+    @repo = match_data[:repo]
   end
 
   def commit_outdated?(commit)
-    @last_commit ||= GitHub.last_commit(@user, @repo, @ref)
+    @last_commit ||= GitHub.last_commit(@user, @repo, @ref, version)
     if @last_commit
       return true unless commit
       return true unless @last_commit.start_with?(commit)
@@ -1103,7 +1102,7 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
     end
   end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def default_branch
     return @default_branch if defined?(@default_branch)
 
