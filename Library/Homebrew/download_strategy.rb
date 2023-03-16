@@ -1070,10 +1070,10 @@ class GitHubGitDownloadStrategy < GitDownloadStrategy
     super
 
     match_data = %r{^https?://github\.com/(?<user>[^/]+)/(?<repo>[^/]+)\.git$}.match(@url)
-    if match_data
-      @user = match_data[:user]
-      @repo = match_data[:repo]
-    end
+    return unless match_data
+
+    @user = match_data[:user]
+    @repo = match_data[:repo]
   end
 
   def commit_outdated?(commit)

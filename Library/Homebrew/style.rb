@@ -35,11 +35,11 @@ module Homebrew
     end
 
     def self.check_style_impl(files, output_type,
-                         fix: false,
-                         except_cops: nil, only_cops: nil,
-                         display_cop_names: false,
-                         reset_cache: false,
-                         debug: false, verbose: false)
+                              fix: false,
+                              except_cops: nil, only_cops: nil,
+                              display_cop_names: false,
+                              reset_cache: false,
+                              debug: false, verbose: false)
       raise ArgumentError, "Invalid output type: #{output_type.inspect}" if [:print, :json].exclude?(output_type)
 
       shell_files, ruby_files =
@@ -79,8 +79,8 @@ module Homebrew
     RUBOCOP = (HOMEBREW_LIBRARY_PATH/"utils/rubocop.rb").freeze
 
     def self.run_rubocop(files, output_type,
-                    fix: false, except_cops: nil, only_cops: nil, display_cop_names: false, reset_cache: false,
-                    debug: false, verbose: false)
+                         fix: false, except_cops: nil, only_cops: nil, display_cop_names: false, reset_cache: false,
+                         debug: false, verbose: false)
       Homebrew.install_bundler_gems!
 
       require "warnings"
