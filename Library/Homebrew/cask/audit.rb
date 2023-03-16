@@ -805,7 +805,7 @@ module Cask
 
       if cask.url && !cask.url.using
         validate_url_for_https_availability(cask.url, "binary URL", cask.token, cask.tap,
-                                            user_agents: [cask.url.user_agent])
+                                            user_agents: [cask.url.user_agent], referer: cask.url&.referer)
       end
 
       if cask.appcast && appcast?

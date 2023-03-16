@@ -371,6 +371,14 @@ describe "Utils::Curl" do
       expect { curl_args(*args, retry_max_time: "test") }.to raise_error(TypeError)
     end
 
+    it "uses `--referer` when :referer is present" do
+      expect(curl_args(*args, referer: "https://brew.sh").join(" ")).to include("--referer https://brew.sh")
+    end
+
+    it "doesn't use `--referer` when :referer is nil" do
+      expect(curl_args(*args, referer: nil).join(" ")).not_to include("--referer")
+    end
+
     it "uses HOMEBREW_USER_AGENT_FAKE_SAFARI when `:user_agent` is `:browser` or `:fake`" do
       expect(curl_args(*args, user_agent: :browser).join(" "))
         .to include("--user-agent #{HOMEBREW_USER_AGENT_FAKE_SAFARI}")
