@@ -604,11 +604,11 @@ describe RuboCop::Cop::Cask::StanzaOrder do
 
     let(:expected_offenses) do
       [{
-        message:  "`on_catalina` stanza out of order",
+        message:  "`on_ventura` stanza out of order",
         severity: :convention,
-        line:     6,
+        line:     2,
         column:   2,
-        source:   "on_catalina do\n    url \"https://foo.brew.sh/foo-catalina.zip\"\n    sha256 :no_check\n  end",
+        source:   "on_ventura do\n    url \"https://foo.brew.sh/foo-ventura.zip\"\n    sha256 :no_check\n  end",
       }, {
         message:  "`on_mojave` stanza out of order",
         severity: :convention,
@@ -627,20 +627,20 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     let(:correct_source) do
       <<~CASK
         cask "foo" do
-          on_ventura do
-            url "https://foo.brew.sh/foo-ventura.zip"
-            sha256 :no_check
-          end
-          on_big_sur do
-            url "https://foo.brew.sh/foo-big-sur.zip"
+          on_mojave do
+            url "https://foo.brew.sh/foo-mojave.zip"
             sha256 :no_check
           end
           on_catalina do
             url "https://foo.brew.sh/foo-catalina.zip"
             sha256 :no_check
           end
-          on_mojave do
-            url "https://foo.brew.sh/foo-mojave.zip"
+          on_big_sur do
+            url "https://foo.brew.sh/foo-big-sur.zip"
+            sha256 :no_check
+          end
+          on_ventura do
+            url "https://foo.brew.sh/foo-ventura.zip"
             sha256 :no_check
           end
 
