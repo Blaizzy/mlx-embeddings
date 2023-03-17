@@ -53,7 +53,7 @@ describe Locale do
     it { is_expected.to include("zh") }
     it { is_expected.to include("zh-CN") }
     it { is_expected.to include("CN") }
-    it { is_expected.to include("CN-Hans") }
+    it { is_expected.to include("Hans-CN") }
     it { is_expected.to include("Hans") }
     it { is_expected.to include("zh-Hans-CN") }
   end
