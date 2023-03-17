@@ -386,8 +386,8 @@ The following methods may be called to generate standard warning messages:
 | `reboot`                           | Users should reboot to complete installation.
 | `files_in_usr_local`               | The cask installs files to `/usr/local`, which may confuse Homebrew.
 | `discontinued`                     | All software development has been officially discontinued upstream.
-| `kext`                             | Users may need to enable their kexts in *System Preferences → Security & Privacy → General*.
-| `unsigned_accessibility`           | Users will need to re-enable the app on each update in *System Preferences → Security & Privacy → Privacy* as it is unsigned.
+| `kext`                             | Users may need to enable their kexts in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → General* in earlier macOS versions).
+| `unsigned_accessibility`           | Users will need to re-enable the app on each update in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → Privacy* in earlier macOS versions) as it is unsigned.
 | `license "web_page"`               | Users may find the software's usage license at `web_page`.
 | `free_license "web_page"`          | Users may obtain an official license to use the software at `web_page`.
 
