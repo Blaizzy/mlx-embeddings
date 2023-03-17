@@ -47,12 +47,12 @@ class Locale
       return if (sep && scanner.eos?) || (sep.nil? && !scanner.eos?)
     end
 
-    if (region = scanner.scan(REGION_REGEX))
+    if (script = scanner.scan(SCRIPT_REGEX))
       sep = scanner.scan(/-/)
       return if (sep && scanner.eos?) || (sep.nil? && !scanner.eos?)
     end
 
-    script = scanner.scan(SCRIPT_REGEX)
+    region = scanner.scan(REGION_REGEX)
 
     return unless scanner.eos?
 
