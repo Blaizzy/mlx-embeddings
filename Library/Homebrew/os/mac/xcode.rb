@@ -318,7 +318,9 @@ module OS
 
       sig { returns(String) }
       def update_instructions
-        software_update_location = if MacOS.version >= "10.14"
+        software_update_location = if MacOS.version >= "13"
+          "System Settings"
+        elsif MacOS.version >= "10.14"
           "System Preferences"
         else
           "the App Store"

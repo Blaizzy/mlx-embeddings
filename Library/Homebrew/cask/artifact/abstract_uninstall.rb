@@ -160,9 +160,15 @@ module Cask
 
       sig { returns(String) }
       def automation_access_instructions
+        navigation_path = if MacOS.version >= :ventura
+          "System Settings → Privacy & Security"
+        else
+          "System Preferences → Security & Privacy → Privacy"
+        end
+
         <<~EOS
           Enable Automation access for "Terminal → System Events" in:
-            System Preferences → Security & Privacy → Privacy → Automation
+            #{navigation_path} → Automation
           if you haven't already.
         EOS
       end
@@ -371,8 +377,14 @@ module Cask
           rescue Errno::EPERM
             raise if File.readable?(File.expand_path("~/Library/Application Support/com.apple.TCC"))
 
+            navigation_path = if MacOS.version >= :ventura
+              "System Settings → Privacy & Security"
+            else
+              "System Preferences → Security & Privacy → Privacy"
+            end
+
             odie "Unable to remove some files. Please enable Full Disk Access for your terminal under " \
-                 "System Preferences → Security & Privacy → Privacy → Full Disk Access."
+                 "#{navigation_path} → Full Disk Access."
           end
         end
       end

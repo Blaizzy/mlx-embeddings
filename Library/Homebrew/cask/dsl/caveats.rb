@@ -58,10 +58,16 @@ module Cask
       caveat :kext do
         next if MacOS.version < :high_sierra
 
+        navigation_path = if MacOS.version >= :ventura
+          "System Settings → Privacy & Security"
+        else
+          "System Preferences → Security & Privacy → General"
+        end
+
         <<~EOS
           #{@cask} requires a kernel extension to work.
           If the installation fails, retry after you enable it in:
-            System Preferences → Security & Privacy → General
+            #{navigation_path}
 
           For more information, refer to vendor documentation or this Apple Technical Note:
             #{Formatter.url("https://developer.apple.com/library/content/technotes/tn2459/_index.html")}
@@ -71,10 +77,10 @@ module Cask
       caveat :unsigned_accessibility do |access = "Accessibility"|
         # access: the category in the privacy settings the app requires.
 
-        navigation_path = if MacOS.version < :ventura
-          "System Preferences → Security & Privacy → Privacy"
-        else
+        navigation_path = if MacOS.version >= :ventura
           "System Settings → Privacy & Security"
+        else
+          "System Preferences → Security & Privacy → Privacy"
         end
 
         <<~EOS
