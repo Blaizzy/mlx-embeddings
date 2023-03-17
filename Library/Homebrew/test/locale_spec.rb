@@ -9,7 +9,7 @@ describe Locale do
       expect(described_class.parse("zh")).to eql(described_class.new("zh", nil, nil))
       expect(described_class.parse("zh-CN")).to eql(described_class.new("zh", "CN", nil))
       expect(described_class.parse("zh-Hans")).to eql(described_class.new("zh", nil, "Hans"))
-      expect(described_class.parse("zh-CN-Hans")).to eql(described_class.new("zh", "CN", "Hans"))
+      expect(described_class.parse("zh-Hans-CN")).to eql(described_class.new("zh", "CN", "Hans"))
     end
 
     it "correctly parses a string with a UN M.49 region code" do
@@ -22,6 +22,7 @@ describe Locale do
       end
 
       it "a string in a wrong format" do
+        expect { described_class.parse("zh-CN-Hans") }.to raise_error(Locale::ParserError)
         expect { described_class.parse("zh_CN_Hans") }.to raise_error(Locale::ParserError)
         expect { described_class.parse("zhCNHans") }.to raise_error(Locale::ParserError)
         expect { described_class.parse("zh-CN_Hans") }.to raise_error(Locale::ParserError)
@@ -52,16 +53,16 @@ describe Locale do
     it { is_expected.to include("zh") }
     it { is_expected.to include("zh-CN") }
     it { is_expected.to include("CN") }
-    it { is_expected.to include("CN-Hans") }
+    it { is_expected.to include("Hans-CN") }
     it { is_expected.to include("Hans") }
-    it { is_expected.to include("zh-CN-Hans") }
+    it { is_expected.to include("zh-Hans-CN") }
   end
 
   describe "#eql?" do
     subject(:locale) { described_class.new("zh", "CN", "Hans") }
 
     context "when all parts match" do
-      it { is_expected.to eql("zh-CN-Hans") }
+      it { is_expected.to eql("zh-Hans-CN") }
       it { is_expected.to eql(locale) }
     end
 
@@ -69,7 +70,7 @@ describe Locale do
       it { is_expected.not_to eql("zh") }
       it { is_expected.not_to eql("zh-CN") }
       it { is_expected.not_to eql("CN") }
-      it { is_expected.not_to eql("CN-Hans") }
+      it { is_expected.not_to eql("Hans-CN") }
       it { is_expected.not_to eql("Hans") }
     end
 
