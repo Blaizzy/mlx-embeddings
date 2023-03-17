@@ -56,6 +56,7 @@ module Utils
         show_output:     T.nilable(T::Boolean),
         show_error:      T.nilable(T::Boolean),
         user_agent:      T.any(String, Symbol, NilClass),
+        referer:         T.nilable(String),
       ).returns(T::Array[T.untyped])
     }
     def curl_args(
@@ -66,7 +67,8 @@ module Utils
       retry_max_time: nil,
       show_output: false,
       show_error: true,
-      user_agent: nil
+      user_agent: nil,
+      referer: nil
     )
       args = []
 
@@ -107,6 +109,8 @@ module Utils
       args << "--retry" << retries if retries&.positive?
 
       args << "--retry-max-time" << retry_max_time.round if retry_max_time.present?
+
+      args << "--referer" << referer if referer.present?
 
       args + extra_args
     end
@@ -238,7 +242,7 @@ module Utils
       set_cookie_header.compact.any? { |cookie| cookie.match?(/^(visid_incap|incap_ses)_/i) }
     end
 
-    def curl_check_http_content(url, url_type, specs: {}, user_agents: [:default],
+    def curl_check_http_content(url, url_type, specs: {}, user_agents: [:default], referer: nil,
                                 check_content: false, strict: false, use_homebrew_curl: false)
       return unless url.start_with? "http"
 
@@ -254,6 +258,7 @@ module Utils
               hash_needed:       true,
               use_homebrew_curl: use_homebrew_curl,
               user_agent:        user_agent,
+              referer:           referer,
             )
           rescue Timeout::Error
             next
@@ -276,6 +281,7 @@ module Utils
             hash_needed:       hash_needed,
             use_homebrew_curl: use_homebrew_curl,
             user_agent:        user_agent,
+            referer:           referer,
           )
         break if http_status_ok?(details[:status_code])
       end
@@ -364,7 +370,7 @@ module Utils
 
     def curl_http_content_headers_and_checksum(
       url, specs: {}, hash_needed: false,
-      use_homebrew_curl: false, user_agent: :default
+      use_homebrew_curl: false, user_agent: :default, referer: nil
     )
       file = Tempfile.new.tap(&:close)
 
@@ -385,7 +391,8 @@ module Utils
         connect_timeout:   15,
         max_time:          max_time,
         retry_max_time:    max_time,
-        user_agent:        user_agent
+        user_agent:        user_agent,
+        referer:           referer
       )
 
       parsed_output = parse_curl_output(output)
