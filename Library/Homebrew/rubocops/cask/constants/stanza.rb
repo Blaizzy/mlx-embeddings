@@ -14,8 +14,8 @@ module RuboCop
 
       STANZA_GROUPS = [
         [:arch, :on_arch_conditional],
-        ON_SYSTEM_METHODS_STANZA_ORDER,
         [:version, :sha256],
+        ON_SYSTEM_METHODS_STANZA_ORDER,
         [:language],
         [:url, :appcast, :name, :desc, :homepage],
         [:livecheck],
