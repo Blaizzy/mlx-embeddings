@@ -27,7 +27,7 @@ module GitHub
       delimiter = "ghadelimiter_#{SecureRandom.uuid}"
 
       if name.include?(delimiter) || value.include?(delimiter)
-        raise Error, "`name` and `value` must not contain the delimiter"
+        raise "`name` and `value` must not contain the delimiter"
       end
 
       <<~EOS
@@ -103,10 +103,6 @@ module GitHub
       def relevant?
         @file.descend.next.to_s != ".."
       end
-    end
-
-    # Generic GitHub Actions error.
-    class Error < RuntimeError
     end
   end
 end
