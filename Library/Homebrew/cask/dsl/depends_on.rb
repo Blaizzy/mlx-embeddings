@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "delegate"
@@ -38,7 +38,7 @@ module Cask
         pairs.each do |key, value|
           raise "invalid depends_on key: '#{key.inspect}'" unless VALID_KEYS.include?(key)
 
-          self[key] = send(:"#{key}=", *value)
+          __getobj__[key] = send(:"#{key}=", *value)
         end
       end
 
@@ -54,15 +54,18 @@ module Cask
       def macos=(*args)
         raise "Only a single 'depends_on macos' is allowed." if defined?(@macos)
 
+        # workaround for https://github.com/sorbet/sorbet/issues/6860
+        first_arg = args.first&.to_s
+
         begin
           @macos = if args.count > 1
             MacOSRequirement.new([args], comparator: "==")
           elsif MacOSVersions::SYMBOLS.key?(args.first)
             MacOSRequirement.new([args.first], comparator: "==")
-          elsif /^\s*(?<comparator><|>|[=<>]=)\s*:(?<version>\S+)\s*$/ =~ args.first
-            MacOSRequirement.new([version.to_sym], comparator: comparator)
-          elsif /^\s*(?<comparator><|>|[=<>]=)\s*(?<version>\S+)\s*$/ =~ args.first
-            MacOSRequirement.new([version], comparator: comparator)
+          elsif (md = /^\s*(?<comparator><|>|[=<>]=)\s*:(?<version>\S+)\s*$/.match(first_arg))
+            MacOSRequirement.new([T.must(md[:version]).to_sym], comparator: md[:comparator])
+          elsif (md = /^\s*(?<comparator><|>|[=<>]=)\s*(?<version>\S+)\s*$/.match(first_arg))
+            MacOSRequirement.new([md[:version]], comparator: md[:comparator])
           else # rubocop:disable Lint/DuplicateBranch
             MacOSRequirement.new([args.first], comparator: "==")
           end

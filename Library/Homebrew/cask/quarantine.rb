@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "development_tools"
@@ -11,29 +11,27 @@ module Cask
   module Quarantine
     extend T::Sig
 
-    module_function
-
     QUARANTINE_ATTRIBUTE = "com.apple.quarantine"
 
     QUARANTINE_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/quarantine.swift").freeze
 
-    def swift
+    def self.swift
       @swift ||= DevelopmentTools.locate("swift")
     end
-    private :swift
+    private_class_method :swift
 
-    def xattr
+    def self.xattr
       @xattr ||= DevelopmentTools.locate("xattr")
     end
-    private :xattr
+    private_class_method :xattr
 
-    def swift_target_args
+    def self.swift_target_args
       ["-target", "#{Hardware::CPU.arch}-apple-macosx#{MacOS.version}"]
     end
-    private :swift_target_args
+    private_class_method :swift_target_args
 
     sig { returns(Symbol) }
-    def check_quarantine_support
+    def self.check_quarantine_support
       odebug "Checking quarantine support"
 
       if !system_command(xattr, args: ["-h"], print_stderr: false).success?
@@ -58,13 +56,13 @@ module Cask
       end
     end
 
-    def available?
+    def self.available?
       @status ||= check_quarantine_support
 
       @status == :quarantine_available
     end
 
-    def detect(file)
+    def self.detect(file)
       return if file.nil?
 
       odebug "Verifying Gatekeeper status of #{file}"
@@ -76,13 +74,13 @@ module Cask
       quarantine_status
     end
 
-    def status(file)
+    def self.status(file)
       system_command(xattr,
                      args:         ["-p", QUARANTINE_ATTRIBUTE, file],
                      print_stderr: false).stdout.rstrip
     end
 
-    def toggle_no_translocation_bit(attribute)
+    def self.toggle_no_translocation_bit(attribute)
       fields = attribute.split(";")
 
       # Fields: status, epoch, download agent, event ID
@@ -94,7 +92,7 @@ module Cask
       fields.join(";")
     end
 
-    def release!(download_path: nil)
+    def self.release!(download_path: nil)
       return unless detect(download_path)
 
       odebug "Releasing #{download_path} from quarantine"
@@ -112,7 +110,7 @@ module Cask
       raise CaskQuarantineReleaseError.new(download_path, quarantiner.stderr)
     end
 
-    def cask!(cask: nil, download_path: nil, action: true)
+    def self.cask!(cask: nil, download_path: nil, action: true)
       return if cask.nil? || download_path.nil?
 
       return if detect(download_path)
@@ -139,7 +137,7 @@ module Cask
       end
     end
 
-    def propagate(from: nil, to: nil)
+    def self.propagate(from: nil, to: nil)
       return if from.nil? || to.nil?
 
       raise CaskError, "#{from} was not quarantined properly." unless detect(from)
