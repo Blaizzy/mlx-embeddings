@@ -94,7 +94,7 @@ class Caveats
         end
       end
     end
-    s << "\n"
+    s
   end
 
   private
