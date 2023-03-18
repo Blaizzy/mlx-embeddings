@@ -45,7 +45,7 @@ module OS
       sig { returns(T.self_type) }
       def strip_patch
         # Big Sur is 11.x but Catalina is 10.15.x.
-        if major >= 11
+        if T.must(major) >= 11
           self.class.new(major.to_s)
         else
           major_minor
