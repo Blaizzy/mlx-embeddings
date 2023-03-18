@@ -913,4 +913,81 @@ describe Homebrew::Service do
       expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test", "macos"])
     end
   end
+
+  describe "#serialize" do
+    context "with a single run command" do
+      let(:serialized_hash) do
+        {
+          "environment_variables" => {
+            ":PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+          },
+          "run"                   => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
+          "run_type"              => ":immediate",
+          "working_dir"           => "$HOME",
+        }
+      end
+
+      it "replaces local paths with placeholders" do
+        f = stub_formula do
+          service do
+            run [opt_bin/"beanstalkd", "test"]
+            environment_variables PATH: std_service_path_env
+            working_dir Dir.home
+          end
+        end
+
+        expect(f.service.serialize).to eq(serialized_hash)
+      end
+    end
+
+    context "with OS specific run commands" do
+      let(:serialized_hash) do
+        {
+          "run"      => {
+            ":macos" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "macos"],
+            ":linux" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "linux"],
+          },
+          "run_type" => ":immediate",
+        }
+      end
+
+      it "replaces local paths with placeholders" do
+        f = stub_formula do
+          service do
+            run macos: [opt_bin/"beanstalkd", "macos"], linux: [opt_bin/"beanstalkd", "linux"]
+          end
+        end
+
+        expect(f.service.serialize).to eq(serialized_hash)
+      end
+    end
+  end
+
+  describe ".deserialize" do
+    let(:serialized_hash) do
+      {
+        "environment_variables" => {
+          ":PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+        },
+        "run"                   => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
+        "run_type"              => ":immediate",
+        "working_dir"           => "$HOME",
+      }
+    end
+
+    let(:deserialized_hash) do
+      {
+        "environment_variables" => {
+          PATH: "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+        },
+        "run"                   => ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "test"],
+        "run_type"              => :immediate,
+        "working_dir"           => Dir.home,
+      }
+    end
+
+    it "replaces placeholders with local paths" do
+      expect(described_class.deserialize(serialized_hash)).to eq(deserialized_hash)
+    end
+  end
 end
