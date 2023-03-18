@@ -218,7 +218,9 @@ describe Cask::Cask, :cask do
 
   describe "#to_h" do
     let(:expected_json) { File.read("#{TEST_FIXTURE_DIR}/cask/everything.json").strip }
-    let(:expected_json_ventura) { File.read("#{TEST_FIXTURE_DIR}/cask/everything-ventura-caveats.json").strip }
+    let(:expected_json_after_ventura) do
+      File.read("#{TEST_FIXTURE_DIR}/cask/everything-systemsettings-caveats.json").strip
+    end
 
     context "when loaded from cask file" do
       it "returns expected hash" do
@@ -226,7 +228,7 @@ describe Cask::Cask, :cask do
 
         expect(hash).to be_a(Hash)
         if MacOS.version >= :ventura
-          expect(JSON.pretty_generate(hash)).to eq(expected_json_ventura)
+          expect(JSON.pretty_generate(hash)).to eq(expected_json_after_ventura)
         else
           expect(JSON.pretty_generate(hash)).to eq(expected_json)
         end
