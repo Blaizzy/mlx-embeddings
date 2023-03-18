@@ -473,7 +473,7 @@ module Homebrew
       keg_only_message = text.to_s.match(/keg_only\s+["'](.*)["']/).captures&.first
       return unless keg_only_message&.include?("HOMEBREW_PREFIX")
 
-      problem "`keg_only` reason should not include `HOMEBREW_PREFIX` as it provides confusing output."
+      problem "`keg_only` reason should not include `HOMEBREW_PREFIX` as it creates confusing `brew info` output."
     end
 
     def audit_versioned_keg_only
