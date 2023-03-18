@@ -23,9 +23,6 @@ module Cask
     HOMEBREW_PREFIX_PLACEHOLDER = "$HOMEBREW_PREFIX"
     APPDIR_PLACEHOLDER = "$APPDIR"
 
-    # TODO: can be removed when API JSON is regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
-    HOMEBREW_OLD_PREFIX_PLACEHOLDER = "$(brew --prefix)"
-
     attr_reader :token, :sourcefile_path, :source, :config, :default_config, :loader
     attr_accessor :download, :allow_reassignment
 
