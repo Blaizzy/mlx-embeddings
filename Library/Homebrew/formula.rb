@@ -1043,7 +1043,7 @@ class Formula
   def service
     return unless service?
 
-    Homebrew::Service.new(self, &self.class.service)
+    @service ||= Homebrew::Service.new(self, &self.class.service)
   end
 
   # @private
@@ -2132,6 +2132,7 @@ class Formula
       "disabled"                 => disabled?,
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
+      "service"                  => service&.serialize,
       "tap_git_head"             => tap_git_head,
       "ruby_source_checksum"     => {},
     }
