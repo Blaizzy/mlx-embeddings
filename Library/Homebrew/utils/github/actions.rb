@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "securerandom"
 require "utils/tty"
 
 module GitHub
@@ -16,6 +17,24 @@ module GitHub
       string.gsub("%", "%25")
             .gsub("\n", "%0A")
             .gsub("\r", "%0D")
+    end
+
+    sig { params(name: String, value: String).returns(String) }
+    def self.format_multiline_string(name, value)
+      # Format multiline strings for environment files
+      # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+
+      delimiter = "ghadelimiter_#{SecureRandom.uuid}"
+
+      if name.include?(delimiter) || value.include?(delimiter)
+        raise Error, "`name` and `value` must not contain the delimiter"
+      end
+
+      <<~EOS
+        #{name}<<#{delimiter}
+        #{value}
+        #{delimiter}
+      EOS
     end
 
     # Helper class for formatting annotations on GitHub Actions.
@@ -84,6 +103,10 @@ module GitHub
       def relevant?
         @file.descend.next.to_s != ".."
       end
+    end
+
+    # Generic GitHub Actions error.
+    class Error < RuntimeError
     end
   end
 end
