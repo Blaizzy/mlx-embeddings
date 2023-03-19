@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula_installer"
@@ -241,7 +241,7 @@ module Cask
       save_download_sha if @cask.version.latest?
     rescue => e
       begin
-        already_installed_artifacts.each do |artifact|
+        already_installed_artifacts&.each do |artifact|
           if artifact.respond_to?(:uninstall_phase)
             odebug "Reverting installation of artifact of class #{artifact.class}"
             artifact.uninstall_phase(command: @command, verbose: verbose?, force: force?)
@@ -296,7 +296,7 @@ module Cask
 
       graph = ::Utils::TopologicalHash.graph_package_dependencies(@cask)
 
-      raise CaskSelfReferencingDependencyError, cask.token if graph[@cask].include?(@cask)
+      raise CaskSelfReferencingDependencyError, @cask.token if graph[@cask].include?(@cask)
 
       ::Utils::TopologicalHash.graph_package_dependencies(primary_container.dependencies, graph)
 
