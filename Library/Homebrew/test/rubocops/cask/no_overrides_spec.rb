@@ -9,6 +9,21 @@ describe RuboCop::Cop::Cask::NoOverrides do
 
   subject(:cop) { described_class.new }
 
+  context "when there are no on_system blocks" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          version '1.2.3'
+          url 'https://brew.sh/foo.pkg'
+
+          name 'Foo'
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when there are no top-level standalone stanzas" do
     let(:source) do
       <<~CASK
