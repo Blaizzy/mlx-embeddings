@@ -22,6 +22,8 @@ module Homebrew
              description: "Download the bottles but don't upload them."
       switch "--no-commit",
              description: "Do not generate a new commit before uploading."
+      switch "--no-cherry-pick",
+             description: "Do not cherry-pick commits from the pull request branch."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--clean",
@@ -450,7 +452,7 @@ module Homebrew
           original_commit = ENV["GITHUB_SHA"].presence || tap.path.git_head
 
           unless args.no_commit?
-            cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
+            cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
             if !args.no_autosquash? && !args.dry_run?
               autosquash!(original_commit, tap: tap,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
@@ -458,7 +460,13 @@ module Homebrew
             signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
-          unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
+          # TODO: Fix determination of `original_commit` above for the `--no-cherry-pick` flag.
+          #       When we pull to the PR branch that contains the commits we want to merge,
+          #       `#formulae_need_bottles?` mistakenly returns `true`, because it thinks
+          #       that no formulae have changed. We probably want to use the commit identified
+          #       by `git merge-base`.
+          if !formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args) &&
+             !args.no_cherry_pick?
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
           end
