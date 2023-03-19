@@ -20,7 +20,7 @@ module RuboCop
             # TODO: We probably only want to disallow `version`, `url`, and `sha256` stanzas being overridden?
             next unless RuboCop::Cask::Constants::STANZA_ORDER.include?(stanza.stanza_name)
             # Skip if the stanza we detect is already in an `on_*` block.
-            next if stanza.parent_node.block_type? && stanza.parent_node.method_name.to_s.start_with?("on_")
+            next if stanza.parent_node.block_type? && RuboCop::Cask::Constants::ON_SYSTEM_METHODS.include?(stanza.parent_node.method_name)
 
             add_offense(stanza.source_range, message: format(MESSAGE, stanza: stanza.stanza_name))
           end
