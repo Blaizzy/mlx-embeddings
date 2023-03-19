@@ -94,7 +94,8 @@ class Caveats
         end
       end
     end
-    s << "\n"
+    s << "\n" unless s.end_with?("\n")
+    s
   end
 
   private
