@@ -11,7 +11,6 @@ require "cask/config"
 
 require "cask/cmd/abstract_command"
 require "cask/cmd/audit"
-require "cask/cmd/fetch"
 require "cask/cmd/install"
 require "cask/cmd/reinstall"
 

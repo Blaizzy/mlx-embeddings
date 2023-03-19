@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "cask/cmd/audit"
-require "cask/cmd/fetch"
 require "cask/cmd/install"
 require "cask/cask_loader"
 require "cask/download"
@@ -29,7 +28,8 @@ describe Cask::Quarantine, :cask do
     end
 
     it "quarantines Cask fetches" do
-      Cask::Cmd::Fetch.run("local-transmission")
+      download = Cask::Download.new(Cask::CaskLoader.load("local-transmission"), quarantine: true)
+      download.fetch
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
       cached_location = Cask::Download.new(local_transmission).fetch
 
@@ -50,7 +50,8 @@ describe Cask::Quarantine, :cask do
     end
 
     it "quarantines Cask installs even if the fetch was not" do
-      Cask::Cmd::Fetch.run("local-transmission", "--no-quarantine")
+      download = Cask::Download.new(Cask::CaskLoader.load("local-transmission"), quarantine: false)
+      download.fetch
 
       Cask::Cmd::Install.run("local-transmission")
 
@@ -144,7 +145,8 @@ describe Cask::Quarantine, :cask do
     end
 
     it "does not quarantine Cask fetches" do
-      Cask::Cmd::Fetch.run("local-transmission", "--no-quarantine")
+      download = Cask::Download.new(Cask::CaskLoader.load("local-transmission"), quarantine: false)
+      download.fetch
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
       cached_location = Cask::Download.new(local_transmission).fetch
 
@@ -165,7 +167,8 @@ describe Cask::Quarantine, :cask do
     end
 
     it "does not quarantine Cask installs even if the fetch was" do
-      Cask::Cmd::Fetch.run("local-transmission")
+      download = Cask::Download.new(Cask::CaskLoader.load("local-transmission"), quarantine: true)
+      download.fetch
 
       Cask::Cmd::Install.run("local-transmission", "--no-quarantine")
 
