@@ -1431,6 +1431,7 @@ _brew_pr_pull() {
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '(--no-autosquash)--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
     '(--message)--no-autosquash[Skip automatically reformatting and rewording commits in the pull request to our preferred format]' \
+    '--no-cherry-pick[Do not cherry-pick commits from the pull request branch]' \
     '--no-commit[Do not generate a new commit before uploading]' \
     '--no-upload[Download the bottles but don'\''t upload them]' \
     '--quiet[Make some output more quiet]' \

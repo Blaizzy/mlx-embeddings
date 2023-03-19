@@ -1169,6 +1169,7 @@ __fish_brew_complete_arg 'pr-pull' -l ignore-missing-artifacts -d 'Comma-separat
 __fish_brew_complete_arg 'pr-pull' -l keep-old -d 'If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL'
 __fish_brew_complete_arg 'pr-pull' -l message -d 'Message to include when autosquashing revision bumps, deletions, and rebuilds'
 __fish_brew_complete_arg 'pr-pull' -l no-autosquash -d 'Skip automatically reformatting and rewording commits in the pull request to our preferred format'
+__fish_brew_complete_arg 'pr-pull' -l no-cherry-pick -d 'Do not cherry-pick commits from the pull request branch'
 __fish_brew_complete_arg 'pr-pull' -l no-commit -d 'Do not generate a new commit before uploading'
 __fish_brew_complete_arg 'pr-pull' -l no-upload -d 'Download the bottles but don\'t upload them'
 __fish_brew_complete_arg 'pr-pull' -l quiet -d 'Make some output more quiet'

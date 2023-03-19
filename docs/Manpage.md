@@ -1360,6 +1360,8 @@ Requires write access to the repository.
   Download the bottles but don't upload them.
 * `--no-commit`:
   Do not generate a new commit before uploading.
+* `--no-cherry-pick`:
+  Do not cherry-pick commits from the pull request branch.
 * `-n`, `--dry-run`:
   Print what would be done rather than doing it.
 * `--clean`:

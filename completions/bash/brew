@@ -1697,6 +1697,7 @@ _brew_pr_pull() {
       --keep-old
       --message
       --no-autosquash
+      --no-cherry-pick
       --no-commit
       --no-upload
       --quiet
