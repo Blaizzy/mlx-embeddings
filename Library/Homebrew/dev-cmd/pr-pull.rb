@@ -449,7 +449,13 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          original_commit = ENV["GITHUB_SHA"].presence || tap.path.git_head
+          current_branch_head = ENV["GITHUB_SHA"] || tap.git_head
+          original_commit = if args.no_cherry_pick?
+            # TODO: Handle the case where `merge-base` returns multiple commits.
+            Utils.safe_popen_read("git", "-C", tap.path, "merge-base", "origin/HEAD", current_branch_head).strip
+          else
+            current_branch_head
+          end
 
           unless args.no_commit?
             cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
@@ -460,13 +466,7 @@ module Homebrew
             signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
-          # TODO: Fix determination of `original_commit` above for the `--no-cherry-pick` flag.
-          #       When we pull to the PR branch that contains the commits we want to merge,
-          #       `#formulae_need_bottles?` mistakenly returns `true`, because it thinks
-          #       that no formulae have changed. We probably want to use the commit identified
-          #       by `git merge-base`.
-          if !formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args) &&
-             !args.no_cherry_pick?
+          unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
           end
