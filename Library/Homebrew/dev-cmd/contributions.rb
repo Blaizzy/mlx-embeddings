@@ -64,7 +64,8 @@ module Homebrew
       results[user] = scan_repositories(repos, user, args)
       grand_totals[user] = total(results[user])
 
-      puts "#{user} contributed #{grand_totals[user].values.sum} #{Utils.pluralize("time", grand_totals[user].values.sum)} #{time_period(args)}."
+      contributions = grand_totals[user].values.sum
+      puts "#{user} contributed #{contributions} #{Utils.pluralize("time", contributions)} #{time_period(args)}."
       puts generate_csv(T.must(user), results[user], grand_totals[user]) if args.csv?
       return
     end
@@ -79,7 +80,8 @@ module Homebrew
       results[username] = scan_repositories(repos, username, args)
       grand_totals[username] = total(results[username])
 
-      puts "#{username} contributed #{grand_totals[username].values.sum} #{Utils.pluralize("time", grand_totals[username].values.sum)} #{time_period(args)}."
+      contributions = grand_totals[username].values.sum
+      puts "#{username} contributed #{contributions} #{Utils.pluralize("time", contributions)} #{time_period(args)}."
     end
 
     puts generate_maintainers_csv(grand_totals) if args.csv?
