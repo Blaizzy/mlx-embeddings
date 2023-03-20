@@ -132,19 +132,15 @@ module UnpackStrategy
       sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
       def extract_to_dir(unpack_dir, basename:, verbose:)
         bom = begin
-          tries ||= 10
+          tries ||= 3
 
           path.bom
         rescue Bom::EmptyError => e
-          raise "#{e} No retries left." if (tries -= 1).zero?
+          raise e if (tries -= 1).zero?
 
           sleep 1
           retry
         end
-
-        # TODO: Remove this if we actually ever hit this, i.e. if we actually found
-        #       some files after waiting longer for the DMG to be mounted.
-        raise "BOM for path '#{path}' was empty but retrying for #{10 - tries} seconds helped." if tries != 10
 
         Tempfile.open(["", ".bom"]) do |bomfile|
           bomfile.close
