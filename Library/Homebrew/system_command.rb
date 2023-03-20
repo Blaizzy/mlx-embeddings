@@ -7,7 +7,6 @@ require "shellwords"
 
 require "extend/io"
 require "extend/predicable"
-require "extend/hash_validator"
 
 require "extend/time"
 

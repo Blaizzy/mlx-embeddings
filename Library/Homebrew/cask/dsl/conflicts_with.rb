@@ -3,9 +3,6 @@
 
 require "delegate"
 
-require "extend/hash_validator"
-using HashValidator
-
 module Cask
   class DSL
     # Class corresponding to the `conflicts_with` stanza.

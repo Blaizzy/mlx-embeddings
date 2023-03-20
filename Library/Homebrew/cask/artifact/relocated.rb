@@ -3,9 +3,6 @@
 
 require "cask/artifact/abstract_artifact"
 
-require "extend/hash_validator"
-using HashValidator
-
 module Cask
   module Artifact
     # Superclass for all artifacts which have a source and a target location.

@@ -6,9 +6,6 @@ require "json"
 require "lazy_object"
 require "locale"
 
-require "extend/hash_validator"
-using HashValidator
-
 module Cask
   # Configuration for installing casks.
   #
