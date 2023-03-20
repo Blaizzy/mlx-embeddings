@@ -6,7 +6,7 @@ require "formula_installer"
 
 describe Utils::Analytics do
   before do
-    described_class.clear_additional_tags_cache
+    described_class.clear_cache
   end
 
   describe "::label_google" do
@@ -45,64 +45,68 @@ describe Utils::Analytics do
     end
   end
 
-  describe "::additional_tags_influx" do
+  describe "::default_tags_influx" do
     let(:ci) { ", CI" if ENV["CI"] }
 
     it "returns OS_VERSION and prefix when HOMEBREW_PREFIX is a custom prefix on intel" do
       expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
-      expect(described_class.additional_tags_influx).to have_key(:prefix)
-      expect(described_class.additional_tags_influx[:prefix]).to eq "custom-prefix"
+      expect(described_class.default_tags_influx).to have_key(:prefix)
+      expect(described_class.default_tags_influx[:prefix]).to eq "custom-prefix"
     end
 
     it "returns OS_VERSION, ARM and prefix when HOMEBREW_PREFIX is a custom prefix on arm" do
       expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
-      expect(described_class.additional_tags_influx).to have_key(:arch)
-      expect(described_class.additional_tags_influx[:arch]).to eq HOMEBREW_PHYSICAL_PROCESSOR
-      expect(described_class.additional_tags_influx).to have_key(:prefix)
-      expect(described_class.additional_tags_influx[:prefix]).to eq "custom-prefix"
+      expect(described_class.default_tags_influx).to have_key(:arch)
+      expect(described_class.default_tags_influx[:arch]).to eq HOMEBREW_PHYSICAL_PROCESSOR
+      expect(described_class.default_tags_influx).to have_key(:prefix)
+      expect(described_class.default_tags_influx[:prefix]).to eq "custom-prefix"
     end
 
     it "returns OS_VERSION, Rosetta and prefix when HOMEBREW_PREFIX is a custom prefix on Rosetta", :needs_macos do
       expect(Homebrew).to receive(:default_prefix?).and_return(false).at_least(:once)
-      expect(described_class.additional_tags_influx).to have_key(:prefix)
-      expect(described_class.additional_tags_influx[:prefix]).to eq "custom-prefix"
+      expect(described_class.default_tags_influx).to have_key(:prefix)
+      expect(described_class.default_tags_influx[:prefix]).to eq "custom-prefix"
     end
 
     it "does not include prefix when HOMEBREW_PREFIX is the default prefix" do
       expect(Homebrew).to receive(:default_prefix?).and_return(true).at_least(:once)
-      expect(described_class.additional_tags_influx).to have_key(:prefix)
-      expect(described_class.additional_tags_influx[:prefix]).to eq HOMEBREW_PREFIX.to_s
+      expect(described_class.default_tags_influx).to have_key(:prefix)
+      expect(described_class.default_tags_influx[:prefix]).to eq HOMEBREW_PREFIX.to_s
     end
 
     it "includes CI when ENV['CI'] is set" do
       ENV["CI"] = "1"
-      expect(described_class.additional_tags_influx).to have_key(:ci)
+      expect(described_class.default_tags_influx).to have_key(:ci)
     end
 
     it "includes developer when ENV['HOMEBREW_DEVELOPER'] is set" do
       expect(Homebrew::EnvConfig).to receive(:developer?).and_return(true)
-      expect(described_class.additional_tags_influx).to have_key(:developer)
+      expect(described_class.default_tags_influx).to have_key(:developer)
     end
   end
 
   describe "::report_event" do
     let(:f) { formula { url "foo-1.0" } }
-    let(:options) { ["--head"].join }
-    let(:action)  { "#{f.full_name} #{options}".strip }
+    let(:package_name)  { f.name }
+    let(:tap_name) { f.tap.name }
+    let(:on_request) { false }
+    let(:options) { "--HEAD" }
 
     context "when ENV vars is set" do
       it "returns nil when HOMEBREW_NO_ANALYTICS is true" do
         ENV["HOMEBREW_NO_ANALYTICS"] = "true"
         expect(described_class).not_to receive(:report_google)
         expect(described_class).not_to receive(:report_influx)
-        described_class.report_event(:install, action)
+        described_class.report_event(:install, package_name: package_name, tap_name: tap_name,
+          on_request: on_request, options: options)
       end
 
       it "returns nil when HOMEBREW_NO_ANALYTICS_THIS_RUN is true" do
         ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "true"
         expect(described_class).not_to receive(:report_google)
         expect(described_class).not_to receive(:report_influx)
-        described_class.report_event(:install, action)
+        described_class.report_event(:install, package_name: package_name, tap_name: tap_name,
+          on_request: on_request, options: options)
       end
 
       it "returns nil when HOMEBREW_ANALYTICS_DEBUG is true" do
@@ -112,7 +116,8 @@ describe Utils::Analytics do
         expect(described_class).to receive(:report_google)
         expect(described_class).to receive(:report_influx)
 
-        described_class.report_event(:install, action)
+        described_class.report_event(:install, package_name: package_name, tap_name: tap_name,
+          on_request: on_request, options: options)
       end
     end
 
@@ -120,40 +125,47 @@ describe Utils::Analytics do
       ENV.delete("HOMEBREW_NO_ANALYTICS_THIS_RUN")
       ENV.delete("HOMEBREW_NO_ANALYTICS")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
-      expect(Homebrew::EnvConfig).to receive(:developer?).and_return(false)
-      expect(described_class).to receive(:report_google).with(:event, hash_including(ea: action)).once
-      expect(described_class).to receive(:report_influx).with(:install, "formula_name --head", false,
-                                                              hash_including(developer: false)).once
-      described_class.report_event(:install, action)
+      expect(described_class).to receive(:report_google).with(:event,
+                                                              hash_including(ea: "#{package_name} #{options}")).once
+      expect(described_class).to receive(:report_influx).with(:install, hash_including(package_name: package_name,
+                                                                                       on_request:   on_request)).once
+      described_class.report_event(:install, package_name: package_name, tap_name: tap_name,
+          on_request: on_request, options: options)
     end
 
     it "sends to google twice on request" do
       ENV.delete("HOMEBREW_NO_ANALYTICS_THIS_RUN")
       ENV.delete("HOMEBREW_NO_ANALYTICS")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
-      expect(Homebrew::EnvConfig).to receive(:developer?).and_return(false)
-      expect(described_class).to receive(:report_google).with(:event, hash_including(ea: action, ec: :install)).once
       expect(described_class).to receive(:report_google).with(:event,
-                                                              hash_including(ea: action,
+                                                              hash_including(ea: "#{package_name} #{options}",
+                                                                             ec: :install)).once
+      expect(described_class).to receive(:report_google).with(:event,
+                                                              hash_including(ea: "#{package_name} #{options}",
                                                                              ec: :install_on_request)).once
-      expect(described_class).to receive(:report_influx).with(:install, "formula_name --head", true,
-                                                              hash_including(developer: false)).once
+      expect(described_class).to receive(:report_influx).with(:install,
+                                                              hash_including(package_name: package_name,
+                                                                             on_request:   true)).once
 
-      described_class.report_event(:install, action, on_request: true)
+      described_class.report_event(:install, package_name: package_name, tap_name: tap_name,
+          on_request: true, options: options)
     end
   end
 
   describe "::report_influx" do
     let(:f) { formula { url "foo-1.0" } }
-    let(:options) { ["--head"].join }
-    let(:action)  { "#{f.full_name} #{options}".strip }
+    let(:package_name)  { f.name }
+    let(:tap_name) { f.tap.name }
+    let(:on_request) { false }
+    let(:options) { "--HEAD" }
 
     it "outputs in debug mode" do
       ENV.delete("HOMEBREW_NO_ANALYTICS_THIS_RUN")
       ENV.delete("HOMEBREW_NO_ANALYTICS")
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
       expect(described_class).to receive(:deferred_curl).once
-      described_class.report_influx(:install, action, true, developer: true, CI: true)
+      described_class.report_influx(:install, package_name: package_name, tap_name: tap_name, on_request: on_request,
+options: options)
     end
   end
 

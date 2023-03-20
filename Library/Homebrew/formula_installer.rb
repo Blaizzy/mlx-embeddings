@@ -414,9 +414,9 @@ class FormulaInstaller
     options = display_options(formula).join(" ")
     oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip if show_header?
 
-    if formula.tap&.should_report_analytics?
-      action = "#{formula.full_name} #{options}".strip
-      Utils::Analytics.report_event(:formula_install, action, on_request: installed_on_request?)
+    if (tap = formula.tap) && tap.should_report_analytics?
+      Utils::Analytics.report_event(:formula_install, package_name: formula.name, tap_name: tap.name,
+on_request: installed_on_request?, options: options)
     end
 
     self.class.attempted << formula

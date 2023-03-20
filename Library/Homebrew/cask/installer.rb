@@ -112,8 +112,9 @@ module Cask
 
       install_artifacts
 
-      if @cask.tap&.should_report_analytics?
-        ::Utils::Analytics.report_event(:cask_install, @cask.token, on_request: true)
+      if (tap = @cask.tap) && tap.should_report_analytics?
+        ::Utils::Analytics.report_event(:cask_install, package_name: @cask.token, tap_name: tap.name,
+on_request: true)
       end
 
       purge_backed_up_versioned_files
