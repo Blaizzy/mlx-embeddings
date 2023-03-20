@@ -26,7 +26,7 @@ module RuboCop
             # Skip if the stanza we detect is already in an `on_*` block.
             next if stanza.parent_node.block_type? && ON_SYSTEM_METHODS.include?(stanza.parent_node.method_name)
             # Skip if the stanza outside of a block is not also in an `on_*` block.
-            next if on_system_stanzas(on_blocks).none?(stanza.stanza_name)
+            next unless on_system_stanzas(on_blocks).include?(stanza.stanza_name)
 
             add_offense(stanza.source_range, message: format(MESSAGE, stanza: stanza.stanza_name))
           end
