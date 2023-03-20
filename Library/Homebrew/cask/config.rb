@@ -169,10 +169,12 @@ module Cask
 
     DEFAULT_DIRS.each_key do |dir|
       define_method(dir) do
+        T.bind(self, Config)
         explicit.fetch(dir, env.fetch(dir, default.fetch(dir)))
       end
 
       define_method(:"#{dir}=") do |path|
+        T.bind(self, Config)
         explicit[dir] = Pathname(path).expand_path
       end
     end

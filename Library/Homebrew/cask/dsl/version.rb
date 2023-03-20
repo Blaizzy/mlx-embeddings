@@ -32,6 +32,7 @@ module Cask
         def define_divider_deletion_method(divider)
           method_name = deletion_method_name(divider)
           define_method(method_name) do
+            T.bind(self, Version)
             version { delete(divider) }
           end
         end
@@ -49,6 +50,7 @@ module Cask
         def define_divider_conversion_method(left_divider, right_divider)
           method_name = conversion_method_name(left_divider, right_divider)
           define_method(method_name) do
+            T.bind(self, Version)
             version { gsub(left_divider, right_divider) }
           end
         end

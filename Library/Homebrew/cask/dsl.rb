@@ -339,6 +339,7 @@ module Cask
 
     ORDINARY_ARTIFACT_CLASSES.each do |klass|
       define_method(klass.dsl_key) do |*args, **kwargs|
+        T.bind(self, DSL)
         if [*artifacts.map(&:class), klass].include?(Artifact::StageOnly) &&
            (artifacts.map(&:class) & ACTIVATABLE_ARTIFACT_CLASSES).any?
           raise CaskInvalidError.new(cask, "'stage_only' must be the only activatable artifact.")
@@ -355,6 +356,7 @@ module Cask
     ARTIFACT_BLOCK_CLASSES.each do |klass|
       [klass.dsl_key, klass.uninstall_dsl_key].each do |dsl_key|
         define_method(dsl_key) do |&block|
+          T.bind(self, DSL)
           artifacts.add(klass.new(cask, dsl_key => block))
         end
       end

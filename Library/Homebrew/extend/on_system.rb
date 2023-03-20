@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "simulate_system"
@@ -9,17 +9,15 @@ module OnSystem
   ARCH_OPTIONS = [:intel, :arm].freeze
   BASE_OS_OPTIONS = [:macos, :linux].freeze
 
-  module_function
-
   sig { params(arch: Symbol).returns(T::Boolean) }
-  def arch_condition_met?(arch)
+  def self.arch_condition_met?(arch)
     raise ArgumentError, "Invalid arch condition: #{arch.inspect}" if ARCH_OPTIONS.exclude?(arch)
 
     arch == Homebrew::SimulateSystem.current_arch
   end
 
   sig { params(os_name: Symbol, or_condition: T.nilable(Symbol)).returns(T::Boolean) }
-  def os_condition_met?(os_name, or_condition = nil)
+  def self.os_condition_met?(os_name, or_condition = nil)
     return Homebrew::SimulateSystem.send("simulating_or_running_on_#{os_name}?") if BASE_OS_OPTIONS.include?(os_name)
 
     raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOSVersions::SYMBOLS.key?(os_name)
@@ -46,17 +44,17 @@ module OnSystem
   end
 
   sig { params(method_name: Symbol).returns(Symbol) }
-  def condition_from_method_name(method_name)
+  def self.condition_from_method_name(method_name)
     method_name.to_s.sub(/^on_/, "").to_sym
   end
 
   sig { params(base: Class).void }
-  def setup_arch_methods(base)
+  def self.setup_arch_methods(base)
     ARCH_OPTIONS.each do |arch|
       base.define_method("on_#{arch}") do |&block|
         @on_system_blocks_exist = true
 
-        return unless OnSystem.arch_condition_met? OnSystem.condition_from_method_name(__method__)
+        return unless OnSystem.arch_condition_met? OnSystem.condition_from_method_name(T.must(__method__))
 
         @called_in_on_system_block = true
         result = block.call
@@ -75,12 +73,12 @@ module OnSystem
   end
 
   sig { params(base: Class).void }
-  def setup_base_os_methods(base)
+  def self.setup_base_os_methods(base)
     BASE_OS_OPTIONS.each do |base_os|
       base.define_method("on_#{base_os}") do |&block|
         @on_system_blocks_exist = true
 
-        return unless OnSystem.os_condition_met? OnSystem.condition_from_method_name(__method__)
+        return unless OnSystem.os_condition_met? OnSystem.condition_from_method_name(T.must(__method__))
 
         @called_in_on_system_block = true
         result = block.call
@@ -118,12 +116,12 @@ module OnSystem
   end
 
   sig { params(base: Class).void }
-  def setup_macos_methods(base)
+  def self.setup_macos_methods(base)
     MacOSVersions::SYMBOLS.each_key do |os_name|
       base.define_method("on_#{os_name}") do |or_condition = nil, &block|
         @on_system_blocks_exist = true
 
-        os_condition = OnSystem.condition_from_method_name __method__
+        os_condition = OnSystem.condition_from_method_name T.must(__method__)
         return unless OnSystem.os_condition_met? os_condition, or_condition
 
         @called_in_on_system_block = true
