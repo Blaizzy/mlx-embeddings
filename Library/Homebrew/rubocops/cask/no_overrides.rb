@@ -15,7 +15,8 @@ module RuboCop
         EOS
 
         def on_cask(cask_block)
-          return if (cask_stanzas = cask_block.toplevel_stanzas).empty?
+          cask_stanzas = cask_block.toplevel_stanzas
+
           # Skip if there are no `on_*` blocks.
           return unless (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).any?
 
