@@ -233,7 +233,7 @@ module Homebrew
 
     unless updated_taps.empty?
       auto_update_header args: args
-      puts "Updated #{Utils.pluralize("tap", updated_taps.count, includecount: true)} (#{updated_taps.to_sentence})."
+      puts "Updated #{Utils.pluralize("tap", updated_taps.count, include_count: true)} (#{updated_taps.to_sentence})."
       updated = true
     end
 
@@ -656,11 +656,11 @@ class ReporterHub
     elsif report_all
       if (changed_formulae = select_formula_or_cask(:M).count) && changed_formulae.positive?
         ohai "Modified Formulae",
-             "Modified #{Utils.pluralize("formula", changed_formulae, plural: "e", includecount: true)}."
+             "Modified #{Utils.pluralize("formula", changed_formulae, plural: "e", include_count: true)}."
       end
 
       if (changed_casks = select_formula_or_cask(:MC).count) && changed_casks.positive?
-        ohai "Modified Casks", "Modified #{Utils.pluralize("cask", changed_casks, includecount: true)}."
+        ohai "Modified Casks", "Modified #{Utils.pluralize("cask", changed_casks, include_count: true)}."
       end
     else
       outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)

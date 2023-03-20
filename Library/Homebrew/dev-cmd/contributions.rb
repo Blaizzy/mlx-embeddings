@@ -65,7 +65,7 @@ module Homebrew
       grand_totals[user] = total(results[user])
 
       puts "#{user} contributed #{Utils.pluralize("time", grand_totals[user].values.sum,
-                                                  includecount: true)} #{time_period(args)}."
+                                                  include_count: true)} #{time_period(args)}."
       puts generate_csv(T.must(user), results[user], grand_totals[user]) if args.csv?
       return
     end
@@ -81,7 +81,7 @@ module Homebrew
       grand_totals[username] = total(results[username])
 
       puts "#{username} contributed #{Utils.pluralize("time", grand_totals[username].values.sum,
-                                                      includecount: true)} #{time_period(args)}."
+                                                      include_count: true)} #{time_period(args)}."
     end
 
     puts generate_maintainers_csv(grand_totals) if args.csv?

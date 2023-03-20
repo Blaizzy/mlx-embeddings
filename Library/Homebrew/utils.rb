@@ -126,12 +126,12 @@ module Utils
 
   # A lightweight alternative to `ActiveSupport::Inflector.pluralize`:
   # Combines `stem` with the `singular` or `plural` suffix based on `count`.
-  # Adds a prefix of the count value if `includecount` is set to true.
+  # Adds a prefix of the count value if `include_count` is set to true.
   sig {
-    params(stem: String, count: Integer, plural: String, singular: String, includecount: T::Boolean).returns(String)
+    params(stem: String, count: Integer, plural: String, singular: String, include_count: T::Boolean).returns(String)
   }
-  def self.pluralize(stem, count, plural: "s", singular: "", includecount: false)
-    prefix = includecount ? "#{count} " : ""
+  def self.pluralize(stem, count, plural: "s", singular: "", include_count: false)
+    prefix = include_count ? "#{count} " : ""
     suffix = (count == 1) ? singular : plural
     "#{prefix}#{stem}#{suffix}"
   end

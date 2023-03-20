@@ -72,9 +72,9 @@ describe Utils do
     end
 
     it "includes the count when requested" do
-      expect(described_class.pluralize("foo", 0, includecount: true)).to eq("0 foos")
-      expect(described_class.pluralize("foo", 1, includecount: true)).to eq("1 foo")
-      expect(described_class.pluralize("foo", 2, includecount: true)).to eq("2 foos")
+      expect(described_class.pluralize("foo", 0, include_count: true)).to eq("0 foos")
+      expect(described_class.pluralize("foo", 1, include_count: true)).to eq("1 foo")
+      expect(described_class.pluralize("foo", 2, include_count: true)).to eq("2 foos")
     end
   end
 

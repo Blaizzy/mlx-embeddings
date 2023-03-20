@@ -454,7 +454,7 @@ module Cask
       artifacts = @cask.artifacts
 
       odebug "Uninstalling artifacts"
-      odebug "#{::Utils.pluralize("artifact", artifacts.length, includecount: true)} defined", artifacts
+      odebug "#{::Utils.pluralize("artifact", artifacts.length, include_count: true)} defined", artifacts
 
       artifacts.each do |artifact|
         if artifact.respond_to?(:uninstall_phase)
