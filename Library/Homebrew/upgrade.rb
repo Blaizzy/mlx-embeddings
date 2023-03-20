@@ -310,10 +310,10 @@ module Homebrew
       if upgradeable_dependents.blank?
         ohai "No outdated dependents to upgrade!" unless dry_run
       else
-        dependent_plural = Utils.pluralize("dependent", upgradeable_dependents.count)
         formula_plural = Utils.pluralize("formula", installed_formulae.count, plural: "e")
         upgrade_verb = dry_run ? "Would upgrade" : "Upgrading"
-        ohai "#{upgrade_verb} #{upgradeable_dependents.count} #{dependent_plural} of upgraded #{formula_plural}:"
+        ohai "#{upgrade_verb} #{Utils.pluralize("dependent", upgradeable_dependents.count,
+                                                include_count: true)} of upgraded #{formula_plural}:"
         Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
         formulae_upgrades = upgradeable_dependents.map do |f|
           name = f.full_specified_name
@@ -386,9 +386,8 @@ module Homebrew
       if reinstallable_broken_dependents.blank?
         ohai "No broken dependents to reinstall!"
       else
-        count = reinstallable_broken_dependents.count
-        plural = Utils.pluralize("dependent", reinstallable_broken_dependents.count)
-        ohai "Reinstalling #{count} #{plural} with broken linkage from source:"
+        ohai "Reinstalling #{Utils.pluralize("dependent", reinstallable_broken_dependents.count,
+                                             include_count: true)} with broken linkage from source:"
         Upgrade.puts_no_installed_dependents_check_disable_message_if_not_already!
         puts reinstallable_broken_dependents.map(&:full_specified_name)
                                             .join(", ")

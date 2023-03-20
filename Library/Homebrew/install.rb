@@ -326,8 +326,8 @@ module Homebrew
 
       if dry_run
         if (formulae_name_to_install = formulae_to_install.map(&:name))
-          plural = Utils.pluralize("formula", formulae_name_to_install.count, plural: "e")
-          ohai "Would install #{formulae_name_to_install.count} #{plural}:"
+          ohai "Would install #{Utils.pluralize("formula", formulae_name_to_install.count,
+                                                plural: "e", include_count: true)}:"
           puts formulae_name_to_install.join(" ")
 
           formula_installers.each do |fi|
@@ -355,8 +355,8 @@ module Homebrew
     def print_dry_run_dependencies(formula, dependencies, &block)
       return if dependencies.empty?
 
-      plural = Utils.pluralize("dependenc", dependencies.count, plural: "ies", singular: "y")
-      ohai "Would install #{dependencies.count} #{plural} for #{formula.name}:"
+      ohai "Would install #{Utils.pluralize("dependenc", dependencies.count, plural: "ies", singular: "y",
+                                            include_count: true)} for #{formula.name}:"
       formula_names = dependencies.map(&:first).map(&:to_formula).map(&block)
       puts formula_names.join(" ")
     end

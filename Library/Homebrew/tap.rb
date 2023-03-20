@@ -475,15 +475,15 @@ class Tap
     contents = []
 
     if (command_count = command_files.count).positive?
-      contents << "#{command_count} #{Utils.pluralize("command", command_count)}"
+      contents << Utils.pluralize("command", command_count, include_count: true)
     end
 
     if (cask_count = cask_files.count).positive?
-      contents << "#{cask_count} #{Utils.pluralize("cask", cask_count)}"
+      contents << Utils.pluralize("cask", cask_count, include_count: true)
     end
 
     if (formula_count = formula_files.count).positive?
-      contents << "#{formula_count} #{Utils.pluralize("formula", formula_count, plural: "e")}"
+      contents << Utils.pluralize("formula", formula_count, plural: "e", include_count: true)
     end
 
     contents
