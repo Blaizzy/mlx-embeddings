@@ -21,7 +21,7 @@ module RuboCop
 
           cask_stanzas.each do |stanza|
             # Skip if the stanza is itself an `on_*` block.
-            next unless RuboCop::Cask::Constants::STANZA_ORDER.include?(stanza.stanza_name)
+            next if ON_SYSTEM_METHODS.include?(stanza.stanza_name)
             # Skip if the stanza we detect is already in an `on_*` block.
             next if stanza.parent_node.block_type? && ON_SYSTEM_METHODS.include?(stanza.parent_node.method_name)
             # Skip if the stanza outside of a block is not also in an `on_*` block.
