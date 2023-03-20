@@ -110,8 +110,8 @@ module Cask
         return
       end
 
-      @env&.assert_valid_keys!(*self.class.defaults.keys)
-      @explicit.assert_valid_keys!(*self.class.defaults.keys)
+      @env&.assert_valid_keys(*self.class.defaults.keys)
+      @explicit.assert_valid_keys(*self.class.defaults.keys)
     end
 
     sig { returns(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])]) }

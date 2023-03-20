@@ -22,7 +22,7 @@ module Cask
       ].freeze
 
       def initialize(**options)
-        options.assert_valid_keys!(*VALID_KEYS)
+        options.assert_valid_keys(*VALID_KEYS)
 
         conflicts = options.transform_values { |v| Set.new(Kernel.Array(v)) }
         conflicts.default = Set.new

@@ -18,7 +18,7 @@ module Cask
       attr_reader :path, :stanza_options
 
       def self.from_args(cask, path, **stanza_options)
-        stanza_options.assert_valid_keys!(:allow_untrusted, :choices)
+        stanza_options.assert_valid_keys(:allow_untrusted, :choices)
         new(cask, path, **stanza_options)
       end
 

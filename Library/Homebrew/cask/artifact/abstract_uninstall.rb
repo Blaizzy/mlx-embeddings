@@ -38,7 +38,7 @@ module Cask
       attr_reader :directives
 
       def initialize(cask, directives)
-        directives.assert_valid_keys!(*ORDERED_DIRECTIVES)
+        directives.assert_valid_keys(*ORDERED_DIRECTIVES)
 
         super(cask, **directives)
         directives[:signal] = Array(directives[:signal]).flatten.each_slice(2).to_a
