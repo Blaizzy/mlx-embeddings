@@ -76,7 +76,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
     let(:expected_offenses) do
       [{
         message:  <<~EOS,
-          Do not use top-level `version` stanza as the default, add an `on_{system}` block instead.
+          Do not use a top-level `version` stanza as the default. Add it to an `on_{system}` block instead.
           Use `:or_older` or `:or_newer` to specify a range of macOS versions.
         EOS
         severity: :convention,

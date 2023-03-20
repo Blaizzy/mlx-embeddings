@@ -10,7 +10,7 @@ module RuboCop
 
         ON_SYSTEM_METHODS = RuboCop::Cask::Constants::ON_SYSTEM_METHODS
         MESSAGE = <<~EOS
-          Do not use top-level `%<stanza>s` stanza as the default, add an `on_{system}` block instead.
+          Do not use a top-level `%<stanza>s` stanza as the default. Add it to an `on_{system}` block instead.
           Use `:or_older` or `:or_newer` to specify a range of macOS versions.
         EOS
 
