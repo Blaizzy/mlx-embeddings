@@ -6,8 +6,6 @@ require_relative "directory"
 module UnpackStrategy
   # Strategy for unpacking Subversion repositories.
   class Subversion < Directory
-    
-
     def self.can_extract?(path)
       super && (path/".svn").directory?
     end

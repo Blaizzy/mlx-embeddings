@@ -8,8 +8,6 @@ module UnpackStrategy
   class LuaRock < Uncompressed
     extend T::Sig
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".rock"]

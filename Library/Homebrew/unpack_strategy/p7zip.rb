@@ -8,8 +8,6 @@ module UnpackStrategy
 
     include UnpackStrategy
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".7z"]

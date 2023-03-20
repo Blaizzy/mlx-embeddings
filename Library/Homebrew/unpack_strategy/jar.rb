@@ -8,8 +8,6 @@ module UnpackStrategy
   class Jar < Uncompressed
     extend T::Sig
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".apk", ".jar"]

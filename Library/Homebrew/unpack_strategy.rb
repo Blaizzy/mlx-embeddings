@@ -159,9 +159,9 @@ module UnpackStrategy
   # Helper method for iterating over directory trees.
   sig {
     params(
-        pathname: Pathname,
-        _block: T.proc.params(path: Pathname).void,
-      ).returns(T.nilable(Pathname))
+      pathname: Pathname,
+      _block:   T.proc.params(path: Pathname).void,
+    ).returns(T.nilable(Pathname))
   }
   def each_directory(pathname, &_block)
     pathname.find do |path|

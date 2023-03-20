@@ -8,8 +8,6 @@ module UnpackStrategy
   class Sit < GenericUnar
     extend T::Sig
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".sit"]

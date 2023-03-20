@@ -8,8 +8,6 @@ module UnpackStrategy
   class Executable < Uncompressed
     extend T::Sig
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".sh", ".bash"]

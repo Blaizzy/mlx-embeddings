@@ -11,8 +11,6 @@ module UnpackStrategy
     include UnpackStrategy
     extend SystemCommand::Mixin
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [

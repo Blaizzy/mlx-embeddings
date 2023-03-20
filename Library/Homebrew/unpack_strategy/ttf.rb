@@ -8,8 +8,6 @@ module UnpackStrategy
   class Ttf < Uncompressed
     extend T::Sig
 
-    
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".ttc", ".ttf"]
