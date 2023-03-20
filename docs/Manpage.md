@@ -517,6 +517,10 @@ information is displayed in interactive shells, and suppressed otherwise.
 Pin the specified *`formula`*, preventing them from being upgraded when
 issuing the `brew upgrade` *`formula`* command. See also `unpin`.
 
+### `postgresql-upgrade-database`
+
+Upgrades the database for the `postgresql` formula.
+
 ### `postinstall` *`installed_formula`* [...]
 
 Rerun the post-install steps for *`formula`*.
