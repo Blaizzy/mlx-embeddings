@@ -467,6 +467,7 @@ class Pathname
     []
   end
 
+  sig { returns(String) }
   def magic_number
     @magic_number ||= if directory?
       ""
@@ -477,11 +478,13 @@ class Pathname
     end
   end
 
+  sig { returns(String) }
   def file_type
     @file_type ||= system_command("file", args: ["-b", self], print_stderr: false)
                    .stdout.chomp
   end
 
+  sig { returns(T::Array[String]) }
   def zipinfo
     @zipinfo ||= system_command("zipinfo", args: ["-1", self], print_stderr: false)
                  .stdout
