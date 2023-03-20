@@ -33,7 +33,7 @@ module RuboCop
         end
 
         def on_system_stanzas(on_system)
-          names = []
+          names = Set.new
           method_nodes = on_system.map(&:method_node)
           method_nodes.each do |node|
             next unless node.block_type?
@@ -42,7 +42,7 @@ module RuboCop
               child.each_node(:send) do |send_node|
                 next if ON_SYSTEM_METHODS.include?(send_node.method_name)
 
-                names << send_node.method_name
+                names.add(send_node.method_name)
               end
             end
           end
