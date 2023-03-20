@@ -466,6 +466,28 @@ class Pathname
   def rpaths
     []
   end
+
+  def magic_number
+    @magic_number ||= if directory?
+      ""
+    else
+      # Length of the longest regex (currently Tar).
+      # The `T.let` is a workaround until we have https://github.com/sorbet/sorbet/pull/6865
+      T.let(binread(262), T.nilable(String)) || ""
+    end
+  end
+
+  def file_type
+    @file_type ||= system_command("file", args: ["-b", self], print_stderr: false)
+                   .stdout.chomp
+  end
+
+  def zipinfo
+    @zipinfo ||= system_command("zipinfo", args: ["-1", self], print_stderr: false)
+                 .stdout
+                 .encode(Encoding::UTF_8, invalid: :replace)
+                 .split("\n")
+  end
 end
 
 require "extend/os/pathname"

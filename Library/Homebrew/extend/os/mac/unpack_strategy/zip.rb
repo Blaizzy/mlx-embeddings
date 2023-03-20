@@ -11,7 +11,7 @@ module UnpackStrategy
       include UnpackStrategy
       include SystemCommand::Mixin
 
-      using Magic
+      
 
       sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
       def extract_to_dir(unpack_dir, basename:, verbose:)

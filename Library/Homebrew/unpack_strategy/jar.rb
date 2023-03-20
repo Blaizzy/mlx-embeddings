@@ -8,7 +8,7 @@ module UnpackStrategy
   class Jar < Uncompressed
     extend T::Sig
 
-    using Magic
+    
 
     sig { returns(T::Array[String]) }
     def self.extensions

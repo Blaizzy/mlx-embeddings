@@ -1,28 +1,7 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "system_command"
-
-# Helper module for iterating over directory trees.
-#
-# @api private
-module PathnameEachDirectory
-  refine Pathname do
-    extend T::Sig
-
-    sig {
-      type_parameters(:T)
-        .params(
-          _block: T.proc.params(path: Pathname).returns(T.type_parameter(:T)),
-        ).returns(T.type_parameter(:T))
-    }
-    def each_directory(&_block)
-      find do |path|
-        yield path if path.directory?
-      end
-    end
-  end
-end
 
 # Module containing all available strategies for unpacking archives.
 #
@@ -32,38 +11,6 @@ module UnpackStrategy
   extend T::Helpers
 
   include SystemCommand::Mixin
-
-  using PathnameEachDirectory
-
-  # Helper module for identifying the file type.
-  module Magic
-    # Length of the longest regex (currently Tar).
-    MAX_MAGIC_NUMBER_LENGTH = 262
-    private_constant :MAX_MAGIC_NUMBER_LENGTH
-
-    refine Pathname do
-      def magic_number
-        @magic_number ||= if directory?
-          ""
-        else
-          binread(MAX_MAGIC_NUMBER_LENGTH) || ""
-        end
-      end
-
-      def file_type
-        @file_type ||= system_command("file", args: ["-b", self], print_stderr: false)
-                       .stdout.chomp
-      end
-
-      def zipinfo
-        @zipinfo ||= system_command("zipinfo", args: ["-1", self], print_stderr: false)
-                     .stdout
-                     .encode(Encoding::UTF_8, invalid: :replace)
-                     .split("\n")
-      end
-    end
-  end
-  private_constant :Magic
 
   def self.strategies
     @strategies ||= [
@@ -195,7 +142,7 @@ module UnpackStrategy
       end
 
       # Ensure all extracted directories are writable.
-      tmp_unpack_dir.each_directory do |path|
+      each_directory(tmp_unpack_dir) do |path|
         next if path.writable?
 
         FileUtils.chmod "u+w", path, verbose: verbose
@@ -207,6 +154,19 @@ module UnpackStrategy
 
   def dependencies
     []
+  end
+
+  # Helper method for iterating over directory trees.
+  sig {
+    params(
+        pathname: Pathname,
+        _block: T.proc.params(path: Pathname).void,
+      ).returns(T.nilable(Pathname))
+  }
+  def each_directory(pathname, &_block)
+    pathname.find do |path|
+      yield path if path.directory?
+    end
   end
 end
 

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "tempfile"
@@ -12,6 +12,8 @@ module UnpackStrategy
 
     # Helper module for listing the contents of a volume mounted from a disk image.
     module Bom
+      extend T::Sig
+
       DMG_METADATA = Set.new(%w[
         .background
         .com.apple.timemachine.donotpresent
@@ -35,106 +37,100 @@ module UnpackStrategy
         end
       end
 
-      refine Pathname do
-        extend T::Sig
+      # Check if path is considered disk image metadata.
+      sig { params(pathname: Pathname).returns(T::Boolean) }
+      def self.dmg_metadata?(pathname)
+        DMG_METADATA.include?(pathname.cleanpath.ascend.to_a.last.to_s)
+      end
 
-        # Check if path is considered disk image metadata.
-        sig { returns(T::Boolean) }
-        def dmg_metadata?
-          DMG_METADATA.include?(cleanpath.ascend.to_a.last.to_s)
+      # Check if path is a symlink to a system directory (commonly to /Applications).
+      sig { params(pathname: Pathname).returns(T::Boolean) }
+      def self.system_dir_symlink?(pathname)
+        pathname.symlink? && MacOS.system_dir?(pathname.dirname.join(pathname.readlink))
+      end
+
+      sig { params(pathname: Pathname).returns(String) }
+      def self.bom(pathname)
+        tries = 0
+        result = loop do
+          # We need to use `find` here instead of Ruby in order to properly handle
+          # file names containing special characters, such as “e” + “´” vs. “é”.
+          r = system_command("find", args: [".", "-print0"], chdir: pathname, print_stderr: false)
+          tries += 1
+
+          # Spurious bug on CI, which in most cases can be worked around by retrying.
+          break r unless r.stderr.match?(/Interrupted system call/i)
+
+          raise "Command `#{r.command.shelljoin}` was interrupted." if tries >= 3
         end
 
-        # Check if path is a symlink to a system directory (commonly to /Applications).
-        sig { returns(T::Boolean) }
-        def system_dir_symlink?
-          symlink? && MacOS.system_dir?(dirname.join(readlink))
-        end
+        odebug "Command `#{result.command.shelljoin}` in '#{pathname}' took #{tries} tries." if tries > 1
 
-        sig { returns(String) }
-        def bom
-          tries = 0
-          result = loop do
-            # We need to use `find` here instead of Ruby in order to properly handle
-            # file names containing special characters, such as “e” + “´” vs. “é”.
-            r = system_command("find", args: [".", "-print0"], chdir: self, print_stderr: false)
-            tries += 1
+        bom_paths = result.stdout.split("\0")
 
-            # Spurious bug on CI, which in most cases can be worked around by retrying.
-            break r unless r.stderr.match?(/Interrupted system call/i)
+        raise EmptyError, pathname if bom_paths.empty?
 
-            raise "Command `#{r.command.shelljoin}` was interrupted." if tries >= 3
-          end
-
-          odebug "Command `#{result.command.shelljoin}` in '#{self}' took #{tries} tries." if tries > 1
-
-          bom_paths = result.stdout.split("\0")
-
-          raise EmptyError, self if bom_paths.empty?
-
-          bom_paths
-            .reject { |path| Pathname(path).dmg_metadata? }
-            .reject { |path| (self/path).system_dir_symlink? }
-            .join("\n")
-        end
+        bom_paths
+          .reject { |path| dmg_metadata?(Pathname(path)) }
+          .reject { |path| system_dir_symlink?(pathname/path) }
+          .join("\n")
       end
     end
-    private_constant :Bom
 
     # Strategy for unpacking a volume mounted from a disk image.
     class Mount
       extend T::Sig
 
-      using Bom
       include UnpackStrategy
 
       def eject(verbose: false)
-        tries ||= 3
+        tries = 3
+        begin
+          return unless path.exist?
 
-        return unless path.exist?
+          if tries > 1
+            disk_info = system_command!(
+              "diskutil",
+              args:         ["info", "-plist", path],
+              print_stderr: false,
+              verbose:      verbose,
+            )
 
-        if tries > 1
-          disk_info = system_command!(
-            "diskutil",
-            args:         ["info", "-plist", path],
-            print_stderr: false,
-            verbose:      verbose,
-          )
+            # For HFS, just use <mount-path>
+            # For APFS, find the <physical-store> corresponding to <mount-path>
+            eject_paths = disk_info.plist
+                                  .fetch("APFSPhysicalStores", [])
+                                  .map { |store| store["APFSPhysicalStore"] }
+                                  .compact
+                                  .presence || [path]
 
-          # For HFS, just use <mount-path>
-          # For APFS, find the <physical-store> corresponding to <mount-path>
-          eject_paths = disk_info.plist
-                                 .fetch("APFSPhysicalStores", [])
-                                 .map { |store| store["APFSPhysicalStore"] }
-                                 .compact
-                                 .presence || [path]
-
-          eject_paths.each do |eject_path|
+            eject_paths.each do |eject_path|
+              system_command! "diskutil",
+                              args:         ["eject", eject_path],
+                              print_stderr: false,
+                              verbose:      verbose
+            end
+          else
             system_command! "diskutil",
-                            args:         ["eject", eject_path],
+                            args:         ["unmount", "force", path],
                             print_stderr: false,
                             verbose:      verbose
           end
-        else
-          system_command! "diskutil",
-                          args:         ["unmount", "force", path],
-                          print_stderr: false,
-                          verbose:      verbose
-        end
-      rescue ErrorDuringExecution => e
-        raise e if (tries -= 1).zero?
+        rescue ErrorDuringExecution => e
+          raise e if (tries -= 1).zero?
 
-        sleep 1
-        retry
+          sleep 1
+          retry
+        end
       end
 
       private
 
       sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
       def extract_to_dir(unpack_dir, basename:, verbose:)
+        tries = 3
         bom = begin
-          tries ||= 3
-
-          path.bom
+          Bom.bom(path)
         rescue Bom::EmptyError => e
           raise e if (tries -= 1).zero?
 

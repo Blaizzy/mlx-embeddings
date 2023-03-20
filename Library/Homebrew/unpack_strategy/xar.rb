@@ -8,7 +8,7 @@ module UnpackStrategy
 
     include UnpackStrategy
 
-    using Magic
+    
 
     sig { returns(T::Array[String]) }
     def self.extensions

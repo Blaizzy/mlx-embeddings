@@ -8,7 +8,7 @@ module UnpackStrategy
   class Executable < Uncompressed
     extend T::Sig
 
-    using Magic
+    
 
     sig { returns(T::Array[String]) }
     def self.extensions
