@@ -6,9 +6,6 @@ require "plist"
 require "utils/user"
 require "cask/artifact/abstract_artifact"
 
-require "extend/hash_validator"
-using HashValidator
-
 module Cask
   module Artifact
     # Artifact corresponding to the `pkg` stanza.
@@ -18,7 +15,7 @@ module Cask
       attr_reader :path, :stanza_options
 
       def self.from_args(cask, path, **stanza_options)
-        stanza_options.assert_valid_keys!(:allow_untrusted, :choices)
+        stanza_options.assert_valid_keys(:allow_untrusted, :choices)
         new(cask, path, **stanza_options)
       end
 
