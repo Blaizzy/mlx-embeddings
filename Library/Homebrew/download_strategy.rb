@@ -491,10 +491,13 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
         end
       end
 
+      filename = content_disposition.filename if filename.blank?
+      next if filename.blank?
+
       # Servers may include '/' in their Content-Disposition filename header. Take only the basename of this, because:
       # - Unpacking code assumes this is a single file - not something living in a subdirectory.
       # - Directory traversal attacks are possible without limiting this to just the basename.
-      File.basename(filename || content_disposition.filename)
+      File.basename(filename)
     end
 
     filenames = lines.map(&parse_content_disposition).compact
