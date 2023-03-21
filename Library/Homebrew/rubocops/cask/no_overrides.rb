@@ -20,13 +20,15 @@ module RuboCop
           # Skip if there are no `on_*` blocks.
           return unless (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).any?
 
+          stanzas_in_blocks = on_system_stanzas(on_blocks)
+
           cask_stanzas.each do |stanza|
             # Skip if the stanza is itself an `on_*` block.
             next if ON_SYSTEM_METHODS.include?(stanza.stanza_name)
             # Skip if the stanza we detect is already in an `on_*` block.
             next if stanza.parent_node.block_type? && ON_SYSTEM_METHODS.include?(stanza.parent_node.method_name)
             # Skip if the stanza outside of a block is not also in an `on_*` block.
-            next unless on_system_stanzas(on_blocks).include?(stanza.stanza_name)
+            next unless stanzas_in_blocks.include?(stanza.stanza_name)
 
             add_offense(stanza.source_range, message: format(MESSAGE, stanza: stanza.stanza_name))
           end
