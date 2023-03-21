@@ -40,6 +40,8 @@ module RuboCop
 
             node.child_nodes.each do |child|
               child.each_node(:send) do |send_node|
+                # Skip string interpolations (`:begin` inside `:dstr`).
+                next if send_node.begin_type? && send_node.parent_node.dstr_type?
                 next if ON_SYSTEM_METHODS.include?(send_node.method_name)
 
                 names.add(send_node.method_name)
