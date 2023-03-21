@@ -36,7 +36,15 @@ module RuboCop
         end
 
         def toplevel_stanzas
-          @toplevel_stanzas ||= stanzas.select(&:toplevel_stanza?)
+          # If a `cask` block only contains one stanza, it is that stanza's direct parent,
+          # otherwise stanzas are grouped in a block and `cask` is that block's parent.
+          is_toplevel_stanza = if cask_body.begin_block?
+            ->(stanza) { stanza.parent_node.parent.cask_block? }
+          else
+            ->(stanza) { stanza.parent_node.cask_block? }
+          end
+
+          @toplevel_stanzas ||= stanzas.select(&is_toplevel_stanza)
         end
 
         def sorted_toplevel_stanzas
