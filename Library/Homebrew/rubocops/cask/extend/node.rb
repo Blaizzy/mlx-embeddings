@@ -17,6 +17,8 @@ module RuboCop
       def_node_matcher :cask_block?, "(block (send nil? :cask _) args ...)"
       def_node_matcher :arch_variable?, "(lvasgn _ (send nil? :on_arch_conditional ...))"
 
+      def_node_matcher :begin_block?, "(begin ...)"
+
       def stanza?
         return true if arch_variable?
 

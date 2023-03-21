@@ -52,10 +52,6 @@ module RuboCop
           stanza_group == other.stanza_group
         end
 
-        def toplevel_stanza?
-          parent_node.cask_block? || parent_node.parent.cask_block?
-        end
-
         def ==(other)
           self.class == other.class && stanza_node == other.stanza_node
         end
