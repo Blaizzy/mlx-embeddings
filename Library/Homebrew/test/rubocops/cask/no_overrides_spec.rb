@@ -38,6 +38,29 @@ describe RuboCop::Cop::Cask::NoOverrides do
     include_examples "does not report any offenses"
   end
 
+  context "when there are livecheck blocks within `on_*` blocks, ignore their contents" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          on_intel do
+            livecheck do
+              url 'https://brew.sh/foo' # Livecheck should be allowed since it's a different "kind" of URL.
+            end
+            version '1.2.3'
+          end
+
+          on_arm do
+            version '2.3.4'
+          end
+
+          url 'https://brew.sh/foo.pkg'
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when there's only one difference between the `on_*` blocks" do
     let(:source) do
       <<~CASK
