@@ -491,7 +491,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
         end
       end
 
-      filename ||= content_disposition.filename
+      filename = content_disposition.filename if filename.blank?
       next if filename.blank?
 
       # Servers may include '/' in their Content-Disposition filename header. Take only the basename of this, because:
