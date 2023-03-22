@@ -6469,6 +6469,8 @@ end
 class RuboCop::AST::Node
   def arch_variable?(param0=T.unsafe(nil)); end
 
+  def begin_block?(param0=T.unsafe(nil)); end
+
   def block_args(param0=T.unsafe(nil)); end
 
   def block_body(param0=T.unsafe(nil)); end
