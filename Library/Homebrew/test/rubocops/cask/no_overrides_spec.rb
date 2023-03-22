@@ -46,6 +46,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
           version '1.2.3'
           on_mojave :or_later do
             url "https://brew.sh/foo-\#{version}-\#{arch}.pkg"
+            sha256 "aaa"
           end
         end
       CASK
@@ -54,7 +55,30 @@ describe RuboCop::Cop::Cask::NoOverrides do
     include_examples "does not report any offenses"
   end
 
-  context "when there are livecheck blocks within `on_*` blocks, ignore their contents" do
+  context "when there are single-line livecheck blocks within `on_*` blocks, ignore their contents" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          on_intel do
+            livecheck do
+              url 'https://brew.sh/foo' # Livecheck should be allowed since it's a different "kind" of URL.
+            end
+            version '1.2.3'
+          end
+          on_arm do
+            version '2.3.4'
+          end
+
+          url 'https://brew.sh/foo.pkg'
+          sha256 "bbb"
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
+  context "when there are multi-line livecheck blocks within `on_*` blocks, ignore their contents" do
     let(:source) do
       <<~CASK
         cask 'foo' do
@@ -70,6 +94,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
           end
 
           url 'https://brew.sh/foo.pkg'
+          sha256 "bbb"
         end
       CASK
     end
