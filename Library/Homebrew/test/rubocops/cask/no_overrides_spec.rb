@@ -43,7 +43,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
       <<~CASK
         cask 'foo' do
           arch arm: "arm64", intel: "x86"
-          version = '1.2.3'
+          version '1.2.3'
           on_mojave :or_later do
             url "https://brew.sh/foo-\#{version}-\#{arch}.pkg"
           end

@@ -44,8 +44,8 @@ module RuboCop
                 next if send_node.method_name == :livecheck
                 next if send_node.parent.block_type? && send_node.parent.method_name == :livecheck
 
-                # Skip string interpolations (`:begin` inside `:dstr`).
-                next if send_node.begin_type? && send_node.parent_node.dstr_type?
+                # Skip string interpolations (`:send` inside `:begin` inside `:dstr`).
+                next if send_node.parent.begin_type? && send_node.parent.parent.dstr_type?
                 next if ON_SYSTEM_METHODS.include?(send_node.method_name)
 
                 names.add(send_node.method_name)
