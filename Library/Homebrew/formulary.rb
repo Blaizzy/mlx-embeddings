@@ -265,7 +265,7 @@ module Formulary
 
       if (service_hash = json_formula["service"])
         service_hash = Homebrew::Service.deserialize(service_hash)
-        run_params = service_hash.delete("run")
+        run_params = service_hash.delete(:run)
         service do
           if run_params.is_a?(Hash)
             run(**run_params)

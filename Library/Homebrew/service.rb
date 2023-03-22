@@ -510,54 +510,9 @@ module Homebrew
       @eval_service_block = true
     end
 
-    # Recursively prepare the service hash for inclusion in the formula API JSON.
-    # - Replace each Symbol with a String prefixed by ":"
-    # - Replace the local HOMEBREW_PREFIX with "$HOMEBREW_PREFIX"
-    # - Replace the local home directory with "$HOME"
-    def serialize(elem = to_h)
-      case elem
-      when String, Pathname
-        elem.to_s.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
-            .gsub(Dir.home, "$HOME")
-      when Symbol
-        elem.inspect
-      when Array
-        elem.map { |value| serialize(value) }
-      when Hash
-        elem.to_h do |key, value|
-          key = key.inspect if key.is_a?(Symbol)
-          [key, serialize(value)]
-        end
-      else
-        elem
-      end
-    end
-
-    # Recursively turn the service API hash values back into what is expected by the formula DSL.
-    # - Replace each String prefixed with ":" with a Symbol
-    # - Replace "$HOMEBREW_PREFIX" with the local HOMEBREW_PREFIX environment variable
-    # - Replace "$HOME" with the local home directory
-    def self.deserialize(elem)
-      case elem
-      when String
-        return T.must(elem[1..]).to_sym if elem.start_with?(":")
-
-        elem.gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
-            .gsub("$HOME", Dir.home)
-      when Array
-        elem.map { |value| deserialize(value) }
-      when Hash
-        elem.to_h do |key, value|
-          key = key[1..].to_sym if key.start_with?(":")
-          [key, deserialize(value)]
-        end
-      else
-        elem
-      end
-    end
-
+    # Prepare the service hash for inclusion in the formula API JSON.
     sig { returns(Hash) }
-    def to_h
+    def serialize
       eval_service_block
 
       cron_string = if @cron.present?
@@ -569,24 +524,77 @@ module Homebrew
       sockets_string = "#{@sockets[:type]}://#{@sockets[:host]}:#{@sockets[:port]}" if @sockets.present?
 
       {
-        "run"                   => @run_params,
-        "run_type"              => @run_type,
-        "interval"              => @interval,
-        "cron"                  => cron_string,
-        "keep_alive"            => @keep_alive,
-        "launch_only_once"      => @launch_only_once,
-        "require_root"          => @require_root,
-        "environment_variables" => @environment_variables.presence,
-        "working_dir"           => @working_dir,
-        "root_dir"              => @root_dir,
-        "input_path"            => @input_path,
-        "log_path"              => @log_path,
-        "error_log_path"        => @error_log_path,
-        "restart_delay"         => @restart_delay,
-        "process_type"          => @process_type,
-        "macos_legacy_timers"   => @macos_legacy_timers,
-        "sockets"               => sockets_string,
+        run:                   @run_params,
+        run_type:              @run_type,
+        interval:              @interval,
+        cron:                  cron_string,
+        keep_alive:            @keep_alive,
+        launch_only_once:      @launch_only_once,
+        require_root:          @require_root,
+        environment_variables: @environment_variables.presence,
+        working_dir:           @working_dir,
+        root_dir:              @root_dir,
+        input_path:            @input_path,
+        log_path:              @log_path,
+        error_log_path:        @error_log_path,
+        restart_delay:         @restart_delay,
+        process_type:          @process_type,
+        macos_legacy_timers:   @macos_legacy_timers,
+        sockets:               sockets_string,
       }.compact
+    end
+
+    # Turn the service API hash values back into what is expected by the formula DSL.
+    sig { params(api_hash: Hash).returns(Hash) }
+    def self.deserialize(api_hash)
+      hash = {}
+      hash[:run] =
+        case api_hash["run"]
+        when Hash
+          api_hash["run"].to_h do |key, array|
+            [
+              key.to_sym,
+              array.map { |value| replace_placeholders(value) },
+            ]
+          end
+        when Array
+          api_hash["run"].map { |value| replace_placeholders(value) }
+        end
+
+      hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")
+
+      if api_hash.key?("environment_variables")
+        hash[:environment_variables] = api_hash["environment_variables"].to_h do |key, value|
+          [key.to_sym, replace_placeholders(value)]
+        end
+      end
+
+      %w[run_type process_type].each do |key|
+        next unless (value = api_hash[key])
+
+        hash[key.to_sym] = value.to_sym
+      end
+
+      %w[working_dir root_dir input_path log_path error_log_path].each do |key|
+        next unless (value = api_hash[key])
+
+        hash[key.to_sym] = replace_placeholders(value)
+      end
+
+      %w[interval cron launch_only_once require_root restart_delay macos_legacy_timers sockets].each do |key|
+        next if (value = api_hash[key]).nil?
+
+        hash[key.to_sym] = value
+      end
+
+      hash
+    end
+
+    # Replace API path placeholders with local paths.
+    sig { params(string: String).returns(String) }
+    def self.replace_placeholders(string)
+      string.gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+            .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
     end
   end
 end
