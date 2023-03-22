@@ -61,10 +61,10 @@ describe RuboCop::Cop::Cask::NoOverrides do
           on_intel do
             livecheck do
               url 'https://brew.sh/foo' # Livecheck should be allowed since it's a different "kind" of URL.
+              strategy :sparkle
             end
             version '1.2.3'
           end
-
           on_arm do
             version '2.3.4'
           end
