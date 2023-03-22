@@ -8,8 +8,6 @@ module UnpackStrategy
   class MicrosoftOfficeXml < Uncompressed
     extend T::Sig
 
-    using Magic
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [

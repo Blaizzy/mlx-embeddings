@@ -6,8 +6,6 @@ require_relative "directory"
 module UnpackStrategy
   # Strategy for unpacking Mercurial repositories.
   class Mercurial < Directory
-    using Magic
-
     def self.can_extract?(path)
       super && (path/".hg").directory?
     end
