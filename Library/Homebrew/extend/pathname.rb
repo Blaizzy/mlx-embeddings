@@ -472,9 +472,10 @@ class Pathname
     @magic_number ||= if directory?
       ""
     else
+      max_magic_number_length = 262
       # Length of the longest regex (currently Tar).
-      # The `T.let` is a workaround until we have https://github.com/sorbet/sorbet/pull/6865
-      T.let(binread(262), T.nilable(String)) || ""
+      # FIXME: The `T.let` is a workaround until we have https://github.com/sorbet/sorbet/pull/6865
+      T.let(binread(max_magic_number_length), T.nilable(String)) || ""
     end
   end
 
