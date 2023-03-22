@@ -50,6 +50,7 @@ module Homebrew
     FileUtils.mkdir_p directories
 
     Formulary.enable_factory_cache!
+    Formula.generating_hash!
 
     tap.formula_names.each do |name|
       formula = Formulary.factory(name)

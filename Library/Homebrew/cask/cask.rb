@@ -6,6 +6,7 @@ require "cask/config"
 require "cask/dsl"
 require "cask/metadata"
 require "utils/bottles"
+require "extend/api_hashable"
 
 module Cask
   # An instance of a cask.
@@ -16,11 +17,9 @@ module Cask
 
     extend Forwardable
     extend Predicable
+    extend APIHashable
     include Metadata
 
-    # Needs a leading slash to avoid `File.expand.path` complaining about non-absolute home.
-    HOME_PLACEHOLDER = "/$HOME"
-    HOMEBREW_PREFIX_PLACEHOLDER = "$HOMEBREW_PREFIX"
     APPDIR_PLACEHOLDER = "$APPDIR"
 
     # TODO: can be removed when API JSON is regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
@@ -30,37 +29,6 @@ module Cask
     attr_accessor :download, :allow_reassignment
 
     attr_predicate :loaded_from_api?
-
-    class << self
-      def generating_hash!
-        return if generating_hash?
-
-        # Apply monkeypatches for API generation
-        @old_homebrew_prefix = HOMEBREW_PREFIX
-        @old_home = Dir.home
-        Object.send(:remove_const, :HOMEBREW_PREFIX)
-        Object.const_set(:HOMEBREW_PREFIX, Pathname(HOMEBREW_PREFIX_PLACEHOLDER))
-        ENV["HOME"] = HOME_PLACEHOLDER
-
-        @generating_hash = true
-      end
-
-      def generated_hash!
-        return unless generating_hash?
-
-        # Revert monkeypatches for API generation
-        Object.send(:remove_const, :HOMEBREW_PREFIX)
-        Object.const_set(:HOMEBREW_PREFIX, @old_homebrew_prefix)
-        ENV["HOME"] = @old_home
-
-        @generating_hash = false
-      end
-
-      def generating_hash?
-        @generating_hash ||= false
-        @generating_hash == true
-      end
-    end
 
     def self.all
       # TODO: ideally avoid using ARGV by moving to e.g. CLI::Parser

@@ -329,8 +329,8 @@ module Cask
         # TODO: HOMEBREW_OLD_PREFIX_PLACEHOLDER can be removed when API JSON is
         #       regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
         string.to_s
-              .gsub(Cask::HOME_PLACEHOLDER, Dir.home)
-              .gsub(Cask::HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+              .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
+              .gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
               .gsub(Cask::APPDIR_PLACEHOLDER, appdir)
               .gsub(Cask::HOMEBREW_OLD_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
       end
