@@ -38,6 +38,22 @@ describe RuboCop::Cop::Cask::NoOverrides do
     include_examples "does not report any offenses"
   end
 
+  context "when there are `arch` variables in the `url` in the `on_*` blocks" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86"
+          version = '1.2.3'
+          on_mojave :or_later do
+            url "https://brew.sh/foo-\#{version}-\#{arch}.pkg"
+          end
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when there are livecheck blocks within `on_*` blocks, ignore their contents" do
     let(:source) do
       <<~CASK
