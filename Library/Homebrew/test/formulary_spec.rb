@@ -274,8 +274,8 @@ describe Formulary do
             "caveats"                  => "example caveat string",
             "service"                  => {
               "run"         => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
-              "run_type"    => :immediate,
-              "working_dir" => "$HOME",
+              "run_type"    => "immediate",
+              "working_dir" => "/$HOME",
             },
           }.merge(extra_items),
         }

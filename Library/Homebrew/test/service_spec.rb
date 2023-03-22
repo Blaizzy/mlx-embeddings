@@ -915,51 +915,33 @@ describe Homebrew::Service do
   end
 
   describe "#serialize" do
-    context "with a single run command" do
-      let(:serialized_hash) do
-        {
-          "environment_variables" => {
-            ":PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
-          },
-          "run"                   => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
-          "run_type"              => ":immediate",
-          "working_dir"           => "$HOME",
-        }
-      end
-
-      it "replaces local paths with placeholders" do
-        f = stub_formula do
-          service do
-            run [opt_bin/"beanstalkd", "test"]
-            environment_variables PATH: std_service_path_env
-            working_dir Dir.home
-          end
-        end
-
-        expect(f.service.serialize).to eq(serialized_hash)
-      end
+    let(:serialized_hash) do
+      {
+        environment_variables: {
+          PATH: "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+        },
+        run:                   [Pathname("$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd"), "test"],
+        run_type:              :immediate,
+        working_dir:           "/$HOME",
+        cron:                  "0 0 * * 0",
+        sockets:               "tcp://0.0.0.0:80",
+      }
     end
 
-    context "with OS specific run commands" do
-      let(:serialized_hash) do
-        {
-          "run"      => {
-            ":macos" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "macos"],
-            ":linux" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "linux"],
-          },
-          "run_type" => ":immediate",
-        }
-      end
-
-      it "replaces local paths with placeholders" do
-        f = stub_formula do
-          service do
-            run macos: [opt_bin/"beanstalkd", "macos"], linux: [opt_bin/"beanstalkd", "linux"]
-          end
+    it "replaces local paths with placeholders" do
+      f = stub_formula do
+        service do
+          run [opt_bin/"beanstalkd", "test"]
+          environment_variables PATH: std_service_path_env
+          working_dir Dir.home
+          cron "@weekly"
+          sockets "tcp://0.0.0.0:80"
         end
-
-        expect(f.service.serialize).to eq(serialized_hash)
       end
+
+      Formula.generating_hash!
+      expect(f.service.serialize).to eq(serialized_hash)
+      Formula.generated_hash!
     end
   end
 
@@ -967,22 +949,24 @@ describe Homebrew::Service do
     let(:serialized_hash) do
       {
         "environment_variables" => {
-          ":PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+          "PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
         },
         "run"                   => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
-        "run_type"              => ":immediate",
-        "working_dir"           => "$HOME",
+        "run_type"              => "immediate",
+        "working_dir"           => HOMEBREW_HOME_PLACEHOLDER,
+        "keep_alive"            => { "successful_exit" => false },
       }
     end
 
     let(:deserialized_hash) do
       {
-        "environment_variables" => {
+        environment_variables: {
           PATH: "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
         },
-        "run"                   => ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "test"],
-        "run_type"              => :immediate,
-        "working_dir"           => Dir.home,
+        run:                   ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "test"],
+        run_type:              :immediate,
+        working_dir:           Dir.home,
+        keep_alive:            { successful_exit: false },
       }
     end
 
