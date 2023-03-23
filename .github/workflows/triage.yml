@@ -6,11 +6,8 @@ on:
       - opened
       - synchronize
       - reopened
-      - closed
       - labeled
       - unlabeled
-  schedule:
-    - cron: "0 */3 * * *" # every 3 hours
 
 permissions: {}
 
@@ -21,18 +18,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: startsWith(github.repository, 'Homebrew/')
     steps:
-      - name: Re-run this workflow
-        if: github.event_name == 'schedule' || github.event.action == 'closed'
-        uses: reitermarkus/rerun-workflow@7381e98aa2bc4464acef4b60ade8d1d1d90e6e65
-        with:
-          token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
-          continuous-label: waiting for feedback
-          trigger-labels: critical
-          workflow: triage.yml
       - name: Review pull request
         if: >
           (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
-            github.event.action != 'closed' && github.event.pull_request.state != 'closed'
+            github.event.pull_request.state != 'closed'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.HOMEBREW_BREW_TRIAGE_PULL_REQUESTS_TOKEN }}
@@ -51,36 +40,6 @@ jobs:
               })
             }
 
-            async function findComment(pullRequestNumber, id) {
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pullRequestNumber,
-              })
-
-              const regex = new RegExp(`<!--\\s*#${id}\\s*-->`)
-              return comments.filter(comment => comment.body.match(regex))[0]
-            }
-
-            async function createOrUpdateComment(pullRequestNumber, id, message) {
-              const beginComment = await findComment(pullRequestNumber, id)
-
-              const body = `<!-- #${id} -->\n\n${message}`
-              if (beginComment) {
-                await github.rest.issues.updateComment({
-                  ...context.repo,
-                  comment_id: beginComment.id,
-                  body,
-                })
-              } else {
-                await github.rest.issues.createComment({
-                  ...context.repo,
-                  issue_number: pullRequestNumber,
-                  body,
-                })
-              }
-            }
-
             async function approvalsByAuthenticatedUser(pullRequestNumber) {
               const { data: user } = await github.rest.users.getAuthenticated()
 
@@ -91,42 +50,6 @@ jobs:
 
               const approvals = reviews.filter(review => review.state == 'APPROVED')
               return approvals.filter(review => review.user.login == user.login)
-            }
-
-            async function dismissApprovals(pullRequestNumber, message) {
-              const reviews = await approvalsByAuthenticatedUser(pullRequestNumber)
-              for (const review of reviews) {
-                await github.rest.pulls.dismissReview({
-                  ...context.repo,
-                  pull_number: pullRequestNumber,
-                  review_id: review.id,
-                  message: message
-                });
-              }
-            }
-
-            function offsetDate(start, offsetHours, skippedDays) {
-              let end = new Date(start)
-
-              end.setUTCHours(end.getUTCHours() + (offsetHours % 24))
-
-              while (skippedDays.includes(end.getUTCDay()) || offsetHours >= 24) {
-                if (!skippedDays.includes(end.getUTCDay())) {
-                  offsetHours -= 24
-                }
-
-                end.setUTCDate(end.getUTCDate() + 1)
-              }
-
-              if (skippedDays.includes(start.getUTCDay())) {
-                end.setUTCHours(offsetHours, 0, 0)
-              }
-
-              return end
-            }
-
-            function formatDate(date) {
-              return date.toISOString().replace(/\.\d+Z$/, ' UTC').replace('T', ' at ')
             }
 
             async function reviewPullRequest(pullRequestNumber) {
@@ -147,65 +70,14 @@ jobs:
                 return
               }
 
-              const reviewLabel = 'waiting for feedback'
               const criticalLabel = 'critical'
-
               const labels = pullRequest.labels.map(label => label.name)
-              const hasReviewLabel = labels.includes(reviewLabel)
               const hasCriticalLabel = labels.includes(criticalLabel)
 
-              const offsetHours = 24
-              const skippedDays = [
-                6, // Saturday
-                0, // Sunday
-              ]
-
-              const currentDate = new Date()
-              const reviewStartDate = new Date(pullRequest.created_at)
-              const reviewEndDate = offsetDate(reviewStartDate, offsetHours, skippedDays)
-              const reviewEnded = currentDate > reviewEndDate
-
-              if (reviewEnded || hasCriticalLabel) {
-                let message
-                if (hasCriticalLabel && !reviewEnded) {
-                  message = `Review period skipped due to \`${criticalLabel}\` label.`
-                } else {
-                  message = 'Review period ended.'
-                }
-
-                if (hasReviewLabel) {
-                  await github.rest.issues.removeLabel({
-                    ...context.repo,
-                    issue_number: pullRequestNumber,
-                    name: reviewLabel,
-                  })
-                }
-
+              if (hasCriticalLabel) {
+                const message = `Review granted due to \`${criticalLabel}\` label.`
                 core.info(message)
-                await createOrUpdateComment(pullRequestNumber, 'review-period-end', message)
                 await approvePullRequest(pullRequestNumber)
-              } else {
-                const message = `Review period will end on ${formatDate(reviewEndDate)}.`
-                core.info(message)
-
-                await dismissApprovals(pullRequestNumber, 'Review period has not ended yet.')
-                await createOrUpdateComment(pullRequestNumber, 'review-period-begin', message)
-
-                const endComment = await findComment(pullRequestNumber, 'review-period-end')
-                if (endComment) {
-                  await github.rest.issues.deleteComment({
-                    ...context.repo,
-                    comment_id: endComment.id,
-                  })
-                }
-
-                await github.rest.issues.addLabels({
-                  ...context.repo,
-                  issue_number: pullRequestNumber,
-                  labels: [reviewLabel],
-                })
-
-                core.setFailed('Review period has not ended yet.')
               }
             }
 
