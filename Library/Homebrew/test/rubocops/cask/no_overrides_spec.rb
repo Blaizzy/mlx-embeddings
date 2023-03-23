@@ -55,6 +55,22 @@ describe RuboCop::Cop::Cask::NoOverrides do
     include_examples "does not report any offenses"
   end
 
+  context "when there are `version` interpolations in `on_*` blocks with methods called on them" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          version 0.99,123.3
+
+          on_mojave :or_later do
+            url "https://brew.sh/foo-\#{version.csv.first}-\#{version.csv.second}.pkg"
+          end
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when there are single-line livecheck blocks within `on_*` blocks, ignore their contents" do
     let(:source) do
       <<~CASK
