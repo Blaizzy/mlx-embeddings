@@ -12,7 +12,7 @@ module Utils
   # @api private
   module Analytics
     INFLUX_BUCKET = "analytics"
-    INFLUX_TOKEN = "9eMkCRwRWS7xjPR_HbF5tBffKmnyRFSup7rq41tHZLOpnBsjVtRFd-y9R_P9OCcB3kr1ftDEzxcxTehcufy1SQ=="
+    INFLUX_TOKEN = "sSE5_ENBUUhuh3vL3QDi6Rqo96DDZznBYoBT_TEdYnjj8IH2H_1PQD2qkAP0nnSwEIKvfQvW3Sb24GWYT35jqg=="
     INFLUX_HOST = "https://europe-west1-1.gcp.cloud2.influxdata.com"
     INFLUX_ORG = "9a707721bb47fc02"
 
@@ -72,27 +72,36 @@ module Utils
       end
 
       sig {
-        params(measurement: Symbol, package_and_options: String, on_request: T::Boolean,
-               additional_tags: T::Hash[Symbol, T.untyped]).void
+        params(measurement: Symbol, package_name: String, tap_name: String, on_request: T::Boolean,
+               options: String).void
       }
-      def report_influx(measurement, package_and_options, on_request, additional_tags = {})
-        # convert on_request to a boolean
+      def report_influx(measurement, package_name:, tap_name:, on_request:, options:)
+        # ensure on_request is a boolean
         on_request = on_request ? true : false
 
-        # Append general information to device information
-        tags = additional_tags.merge(package_and_options: package_and_options, on_request: on_request)
-                              .compact
-                              .map { |k, v| "#{k}=#{v.to_s.sub(" ", "\\ ")}" } # convert to key/value parameters
-                              .join(",")
+        # ensure options are removed (by `.compact` below) if empty
+        options = nil if options.blank?
+
+        # Tags are always implicitly strings and must have low cardinality.
+        tags = default_tags_influx.merge(on_request: on_request)
+                                  .map { |k, v| "#{k}=#{v}" }
+                                  .join(",")
+
+        # Fields need explicitly wrapped with quotes and can have high cardinality.
+        fields = default_fields_influx.merge(package: package_name, tap_name: tap_name, options: options)
+                                      .compact
+                                      .map { |k, v| %Q(#{k}="#{v}") }
+                                      .join(",")
 
         args = [
           "--max-time", "3",
+          "--header", "Authorization: Token #{INFLUX_TOKEN}",
           "--header", "Content-Type: text/plain; charset=utf-8",
           "--header", "Accept: application/json",
-          "--header", "Authorization: Token #{INFLUX_TOKEN}",
-          "--data-raw", "#{measurement},#{tags} count=1i #{Time.now.to_i}"
+          "--data-binary", "#{measurement},#{tags} #{fields} #{Time.now.to_i}"
         ]
 
+        # Second precision is highest we can do and has the lowest performance cost.
         url = "#{INFLUX_HOST}/api/v2/write?bucket=#{INFLUX_BUCKET}&precision=s"
         deferred_curl(url, args)
       end
@@ -111,10 +120,20 @@ module Utils
         end
       end
 
-      sig { params(measurement: Symbol, package_and_options: String, on_request: T::Boolean).void }
-      def report_event(measurement, package_and_options, on_request: false)
+      sig {
+        params(measurement: Symbol, package_name: String, tap_name: String,
+               on_request: T::Boolean, options: String).void
+      }
+      def report_event(measurement, package_name:, tap_name:, on_request:, options: "")
+        report_influx_event(measurement, package_name: package_name, tap_name: tap_name, on_request: on_request,
+options: options)
+
+        package_and_options = package_name
+        if tap_name.present? && tap_name != "homebrew/core" && tap_name != "homebrew/cask"
+          package_and_options = "#{tap_name}/#{package_and_options}"
+        end
+        package_and_options = "#{package_and_options} #{options}" if options.present?
         report_google_event(measurement, package_and_options, on_request: on_request)
-        report_influx_event(measurement, package_and_options, on_request: on_request)
       end
 
       sig { params(category: Symbol, action: String, on_request: T::Boolean).void }
@@ -138,11 +157,15 @@ module Utils
                       ev: nil)
       end
 
-      sig { params(measurement: Symbol, package_and_options: String, on_request: T::Boolean).void }
-      def report_influx_event(measurement, package_and_options, on_request: false)
+      sig {
+        params(measurement: Symbol, package_name: String, tap_name: String, on_request: T::Boolean,
+               options: String).void
+      }
+      def report_influx_event(measurement, package_name:, tap_name:, on_request: false, options: "")
         return if not_this_run? || disabled?
 
-        report_influx(measurement, package_and_options, on_request, additional_tags_influx)
+        report_influx(measurement, package_name: package_name, tap_name: tap_name, on_request: on_request,
+options: options)
       end
 
       sig { params(exception: BuildError).void }
@@ -171,16 +194,15 @@ module Utils
       def report_influx_error(exception)
         return if not_this_run? || disabled?
 
-        return unless exception.formula.tap
-        return unless exception.formula.tap.should_report_analytics?
+        formula = exception.formula
+        return unless formula
 
-        formula_full_name = exception.formula.full_name
-        package_and_options = if (options = exception.options.to_a.map(&:to_s).join(" ").presence)
-          "#{formula_full_name} #{options}".strip
-        else
-          formula_full_name
-        end
-        report_influx_event(:build_error, package_and_options)
+        tap = formula.tap
+        return unless tap
+        return unless tap.should_report_analytics?
+
+        options = exception.options.to_a.map(&:to_s).join(" ")
+        report_influx_event(:build_error, package_name: formula.name, tap_name: tap.name, options: options)
       end
 
       def messages_displayed?
@@ -322,9 +344,10 @@ module Utils
       end
       alias generic_arch_label_google arch_label_google
 
-      def clear_additional_tags_cache
+      def clear_cache
         remove_instance_variable(:@label_google) if instance_variable_defined?(:@label_google)
-        remove_instance_variable(:@additional_tags_influx) if instance_variable_defined?(:@additional_tags_influx)
+        remove_instance_variable(:@default_tags_influx) if instance_variable_defined?(:@default_tags_influx)
+        remove_instance_variable(:@default_fields_influx) if instance_variable_defined?(:@default_fields_influx)
       end
 
       sig { returns(String) }
@@ -339,25 +362,40 @@ module Utils
       end
 
       sig { returns(T::Hash[Symbol, String]) }
-      def additional_tags_influx
-        @additional_tags_influx ||= begin
-          version = HOMEBREW_VERSION.match(/^[\d.]+/)[0]
-          version = "#{version}-dev" if HOMEBREW_VERSION.include?("-")
+      def default_tags_influx
+        @default_tags_influx ||= begin
+          # Only display default prefixes to reduce cardinality and improve privacy
           prefix = Homebrew.default_prefix? ? HOMEBREW_PREFIX.to_s : "custom-prefix"
 
-          # Cleanup quotes and patch/patchset versions to reduce cardinality.
-          os_version = OS_VERSION.tr('"', "")
-                                 .gsub(/(\d+\.\d+)(\.\d+)?(-\d)?/, '\1')
+          # Tags are always strings and must have low cardinality.
+          {
+            ci:             ENV["CI"].present?,
+            prefix:         prefix,
+            default_prefix: Homebrew.default_prefix?,
+            developer:      Homebrew::EnvConfig.developer?,
+            devcmdrun:      config_true?(:devcmdrun),
+            arch:           HOMEBREW_PHYSICAL_PROCESSOR,
+            os:             HOMEBREW_SYSTEM,
+          }
+        end
+      end
+
+      # remove os_version starting with " or number
+      # remove macOS patch release
+      sig { returns(T::Hash[Symbol, String]) }
+      def default_fields_influx
+        @default_fields_influx ||= begin
+          version = HOMEBREW_VERSION.match(/^[\d.]+/)[0]
+          version = "#{version}-dev" if HOMEBREW_VERSION.include?("-")
+
+          # Only include OS versions with an actual name.
+          os_name_and_version = if (os_version = OS_VERSION.presence) && os_version.downcase.match?(/^[a-z]/)
+            os_version
+          end
 
           {
             version:             version,
-            prefix:              prefix,
-            default_prefix:      Homebrew.default_prefix?,
-            ci:                  ENV["CI"].present?,
-            developer:           Homebrew::EnvConfig.developer?,
-            arch:                HOMEBREW_PHYSICAL_PROCESSOR,
-            os:                  HOMEBREW_SYSTEM,
-            os_name_and_version: os_version,
+            os_name_and_version: os_name_and_version,
           }
         end
       end

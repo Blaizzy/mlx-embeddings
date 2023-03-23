@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "keg_relocate"
@@ -524,8 +524,8 @@ class Keg
   end
 
   def delete_pyc_files!
-    find { |pn| pn.delete if PYC_EXTENSIONS.include?(pn.extname) }
-    find { |pn| FileUtils.rm_rf pn if pn.basename.to_s == "__pycache__" }
+    path.find { |pn| pn.delete if PYC_EXTENSIONS.include?(pn.extname) }
+    path.find { |pn| FileUtils.rm_rf pn if pn.basename.to_s == "__pycache__" }
   end
 
   def binary_executable_or_library_files

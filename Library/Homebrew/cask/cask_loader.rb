@@ -326,13 +326,10 @@ module Cask
       end
 
       def from_h_string_gsubs(string, appdir)
-        # TODO: HOMEBREW_OLD_PREFIX_PLACEHOLDER can be removed when API JSON is
-        #       regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
         string.to_s
               .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
               .gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
               .gsub(HOMEBREW_CASK_APPDIR_PLACEHOLDER, appdir)
-              .gsub(Cask::HOMEBREW_OLD_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
       end
 
       def from_h_array_gsubs(array, appdir)

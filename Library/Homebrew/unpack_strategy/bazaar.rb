@@ -8,8 +8,6 @@ module UnpackStrategy
   class Bazaar < Directory
     extend T::Sig
 
-    using Magic
-
     def self.can_extract?(path)
       super && (path/".bzr").directory?
     end

@@ -25,6 +25,10 @@ curl() {
   if [[ -z "${CURL_EXECUTABLE}" ]]
   then
     CURL_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/shared/curl" --homebrew=print-path)"
+    if [[ -z "${CURL_EXECUTABLE}" ]]
+    then
+      odie "Can't find a working Curl!"
+    fi
   fi
   "${CURL_EXECUTABLE}" "$@"
 }
@@ -33,6 +37,10 @@ git() {
   if [[ -z "${GIT_EXECUTABLE}" ]]
   then
     GIT_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/shared/git" --homebrew=print-path)"
+    if [[ -z "${GIT_EXECUTABLE}" ]]
+    then
+      odie "Can't find a working Git!"
+    fi
   fi
   "${GIT_EXECUTABLE}" "$@"
 }

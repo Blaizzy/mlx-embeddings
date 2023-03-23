@@ -124,7 +124,7 @@ module Homebrew
     return unless HOMEBREW_CELLAR.exist?
 
     count = Formula.racks.length
-    puts "#{count} #{Utils.pluralize("keg", count)}, #{HOMEBREW_CELLAR.dup.abv}"
+    puts "#{Utils.pluralize("keg", count, include_count: true)}, #{HOMEBREW_CELLAR.dup.abv}"
   end
 
   sig { params(args: CLI::Args).void }

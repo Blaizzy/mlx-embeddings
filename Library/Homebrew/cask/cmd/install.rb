@@ -85,8 +85,7 @@ module Cask
 
         if dry_run
           if (casks_to_install = casks.reject(&:installed?).presence)
-            plural = ::Utils.pluralize("cask", casks_to_install.count)
-            ohai "Would install #{casks_to_install.count} #{plural}:"
+            ohai "Would install #{::Utils.pluralize("cask", casks_to_install.count, include_count: true)}:"
             puts casks_to_install.map(&:full_name).join(" ")
           end
           casks.each do |cask|
@@ -97,8 +96,8 @@ module Cask
                                      .map(&:name)
             next if dep_names.blank?
 
-            plural = ::Utils.pluralize("dependenc", dep_names.count, plural: "ies", singular: "y")
-            ohai "Would install #{dep_names.count} #{plural} for #{cask.full_name}:"
+            ohai "Would install #{::Utils.pluralize("dependenc", dep_names.count, plural: "ies", singular: "y",
+                                                    include_count: true)} for #{cask.full_name}:"
             puts dep_names.join(" ")
           end
           return

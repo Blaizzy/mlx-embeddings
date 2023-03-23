@@ -3,9 +3,6 @@
 
 require "cask/artifact/abstract_artifact"
 
-require "extend/hash_validator"
-using HashValidator
-
 module Cask
   module Artifact
     # Artifact corresponding to the `installer` stanza.
@@ -67,7 +64,7 @@ module Cask
           )
         end
 
-        args.assert_valid_keys!(*VALID_KEYS)
+        args.assert_valid_keys(*VALID_KEYS)
         new(cask, **args)
       end
 

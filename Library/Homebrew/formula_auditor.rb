@@ -466,6 +466,16 @@ module Homebrew
               "They must not be upgraded to version 7.11 or newer."
     end
 
+    def audit_keg_only_reason
+      return unless @core_tap
+      return unless formula.keg_only?
+
+      keg_only_message = text.to_s.match(/keg_only\s+["'](.*)["']/)&.captures&.first
+      return unless keg_only_message&.include?("HOMEBREW_PREFIX")
+
+      problem "`keg_only` reason should not include `HOMEBREW_PREFIX` as it creates confusing `brew info` output."
+    end
+
     def audit_versioned_keg_only
       return unless @versioned_formula
       return unless @core_tap

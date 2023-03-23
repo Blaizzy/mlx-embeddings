@@ -55,6 +55,8 @@
 - [Prose Style Guidelines](Prose-Style-Guidelines.md)
 - [Type Checking with Sorbet](Typechecking.md)
 
+- [Ruby API Documentation](https://rubydoc.brew.sh) (e.g. for `Formula` etc.)
+
 ## Maintainers
 
 - [New Maintainer Checklist](New-Maintainer-Checklist.md)
@@ -68,7 +70,6 @@
 - [Brew Test Bot for Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
 - [Releases](Releases.md)
-- [Developer/Internal API Documentation](https://rubydoc.brew.sh)
 
 ## Governance
 

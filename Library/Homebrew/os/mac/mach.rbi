@@ -1,5 +1,5 @@
 # typed: strict
 
-module UnpackStrategy
+module MachOShim
   include Kernel
 end

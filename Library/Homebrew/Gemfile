@@ -28,6 +28,7 @@ gem "rubocop", require: false
 gem "rubocop-ast", require: false
 gem "simplecov", require: false
 gem "simplecov-cobertura", require: false
+gem "stackprof", require: false
 gem "warning", require: false
 
 group :sorbet, optional: true do

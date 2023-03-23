@@ -908,7 +908,7 @@ module Homebrew
               0
             end
 
-            "#{tap.path} (#{cask_count} #{Utils.pluralize("cask", cask_count)})"
+            "#{tap.path} (#{Utils.pluralize("cask", cask_count, include_count: true)})"
           end
         end)
 

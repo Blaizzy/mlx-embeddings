@@ -249,6 +249,32 @@ describe Caveats do
           expect(caveats).to include("#{f.opt_share}/pkgconfig")
         end
       end
+
+      context "when joining different caveat types together" do
+        let(:f) do
+          formula do
+            url "foo-1.0"
+            keg_only "some reason"
+
+            def caveats
+              "something else"
+            end
+
+            service do
+              run [bin/"cmd"]
+            end
+          end
+        end
+
+        let(:caveats) { described_class.new(f).caveats }
+
+        it "adds the correct amount of new lines to the output" do
+          expect(caveats).to include("something else")
+          expect(caveats).to include("keg-only")
+          expect(caveats).to include("if you don't want/need a background service")
+          expect(caveats.count("\n")).to eq(9)
+        end
+      end
     end
 
     describe "shell completions" do

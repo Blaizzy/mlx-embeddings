@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "env_config"
@@ -124,7 +124,9 @@ module Cask
 
       return true if caught_exceptions.empty?
       raise MultipleCaskErrors, caught_exceptions if caught_exceptions.count > 1
-      raise caught_exceptions.first if caught_exceptions.count == 1
+      raise caught_exceptions.fetch(0) if caught_exceptions.count == 1
+
+      false
     end
 
     def self.upgrade_cask(

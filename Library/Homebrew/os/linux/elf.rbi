@@ -1,5 +1,5 @@
 # typed: strict
 
-module GitRepositoryExtension
+module ELFShim
   requires_ancestor { Pathname }
 end

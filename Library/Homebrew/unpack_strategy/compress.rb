@@ -8,8 +8,6 @@ module UnpackStrategy
   class Compress < Tar
     extend T::Sig
 
-    using Magic
-
     sig { returns(T::Array[String]) }
     def self.extensions
       [".Z"]

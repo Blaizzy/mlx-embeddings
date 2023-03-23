@@ -22,6 +22,8 @@ module Homebrew
              description: "Download the bottles but don't upload them."
       switch "--no-commit",
              description: "Do not generate a new commit before uploading."
+      switch "--no-cherry-pick",
+             description: "Do not cherry-pick commits from the pull request branch."
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--clean",
@@ -447,10 +449,16 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          original_commit = ENV["GITHUB_SHA"].presence || tap.path.git_head
+          current_branch_head = ENV["GITHUB_SHA"] || tap.git_head
+          original_commit = if args.no_cherry_pick?
+            # TODO: Handle the case where `merge-base` returns multiple commits.
+            Utils.safe_popen_read("git", "-C", tap.path, "merge-base", "origin/HEAD", current_branch_head).strip
+          else
+            current_branch_head
+          end
 
           unless args.no_commit?
-            cherry_pick_pr!(user, repo, pr, path: tap.path, args: args)
+            cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
             if !args.no_autosquash? && !args.dry_run?
               autosquash!(original_commit, tap: tap,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)

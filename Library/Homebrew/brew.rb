@@ -1,6 +1,7 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
+# `HOMEBREW_STACKPROF` should be set via `brew prof --stackprof`, not manually.
 if ENV["HOMEBREW_STACKPROF"]
   require "rubygems"
   require "stackprof"
@@ -35,8 +36,8 @@ begin
   empty_argv = ARGV.empty?
   help_flag_list = %w[-h --help --usage -?]
   help_flag = !ENV["HOMEBREW_HELP"].nil?
-  help_cmd_index = nil
-  cmd = nil
+  help_cmd_index = T.let(nil, T.nilable(Integer))
+  cmd = T.let(nil, T.nilable(String))
 
   ARGV.each_with_index do |arg, i|
     break if help_flag && cmd
@@ -64,7 +65,7 @@ begin
   path.prepend(HOMEBREW_SHIMS_PATH/"shared")
   homebrew_path.prepend(HOMEBREW_SHIMS_PATH/"shared")
 
-  ENV["PATH"] = path
+  ENV["PATH"] = path.to_s
 
   require "commands"
   require "settings"
@@ -76,7 +77,7 @@ begin
     homebrew_path.append(Tap.cmd_directories)
 
     # External commands expect a normal PATH
-    ENV["PATH"] = homebrew_path
+    ENV["PATH"] = homebrew_path.to_s
   end
 
   # Usage instructions should be displayed if and only if one of:

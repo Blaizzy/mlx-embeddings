@@ -188,6 +188,7 @@ __brew_internal_commands() {
     'options:Show install options specific to formula'
     'outdated:List installed casks and formulae that have an updated version available'
     'pin:Pin the specified formula, preventing them from being upgraded when issuing the `brew upgrade` formula command'
+    'postgresql-upgrade-database:Upgrades the database for the `postgresql` formula'
     'postinstall:Rerun the post-install steps for formula'
     'pr-automerge:Find pull requests that can be automatically merged using `brew pr-publish`'
     'pr-publish:Publish bottles for a pull request with GitHub Actions'
@@ -1375,6 +1376,15 @@ _brew_pin() {
     '*::installed_formula:__brew_installed_formulae'
 }
 
+# brew postgresql-upgrade-database
+_brew_postgresql_upgrade_database() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
 # brew postinstall
 _brew_postinstall() {
   _arguments \
@@ -1431,6 +1441,7 @@ _brew_pr_pull() {
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '(--no-autosquash)--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
     '(--message)--no-autosquash[Skip automatically reformatting and rewording commits in the pull request to our preferred format]' \
+    '--no-cherry-pick[Do not cherry-pick commits from the pull request branch]' \
     '--no-commit[Do not generate a new commit before uploading]' \
     '--no-upload[Download the bottles but don'\''t upload them]' \
     '--quiet[Make some output more quiet]' \

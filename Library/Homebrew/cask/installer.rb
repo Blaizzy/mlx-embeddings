@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula_installer"
@@ -112,8 +112,9 @@ module Cask
 
       install_artifacts
 
-      if @cask.tap&.should_report_analytics?
-        ::Utils::Analytics.report_event(:cask_install, @cask.token, on_request: true)
+      if (tap = @cask.tap) && tap.should_report_analytics?
+        ::Utils::Analytics.report_event(:cask_install, package_name: @cask.token, tap_name: tap.name,
+on_request: true)
       end
 
       purge_backed_up_versioned_files
@@ -241,7 +242,7 @@ module Cask
       save_download_sha if @cask.version.latest?
     rescue => e
       begin
-        already_installed_artifacts.each do |artifact|
+        already_installed_artifacts&.each do |artifact|
           if artifact.respond_to?(:uninstall_phase)
             odebug "Reverting installation of artifact of class #{artifact.class}"
             artifact.uninstall_phase(command: @command, verbose: verbose?, force: force?)
@@ -296,7 +297,7 @@ module Cask
 
       graph = ::Utils::TopologicalHash.graph_package_dependencies(@cask)
 
-      raise CaskSelfReferencingDependencyError, cask.token if graph[@cask].include?(@cask)
+      raise CaskSelfReferencingDependencyError, @cask.token if graph[@cask].include?(@cask)
 
       ::Utils::TopologicalHash.graph_package_dependencies(primary_container.dependencies, graph)
 
@@ -454,7 +455,7 @@ module Cask
       artifacts = @cask.artifacts
 
       odebug "Uninstalling artifacts"
-      odebug "#{artifacts.length} #{::Utils.pluralize("artifact", artifacts.length)} defined", artifacts
+      odebug "#{::Utils.pluralize("artifact", artifacts.length, include_count: true)} defined", artifacts
 
       artifacts.each do |artifact|
         if artifact.respond_to?(:uninstall_phase)

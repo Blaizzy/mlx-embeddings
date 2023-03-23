@@ -188,6 +188,7 @@ GEM
       sorbet (>= 0.5.9204)
       sorbet-runtime (>= 0.5.9204)
       thor (>= 0.19.2)
+    stackprof (0.2.24)
     tapioca (0.7.3)
       bundler (>= 1.17.3)
       pry (>= 0.12.2)
@@ -257,6 +258,7 @@ DEPENDENCIES
   sorbet-runtime
   sorbet-static-and-runtime
   spoom
+  stackprof
   tapioca
   warning
 

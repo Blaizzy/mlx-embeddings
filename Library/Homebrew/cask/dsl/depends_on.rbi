@@ -1,5 +1,5 @@
 # typed: strict
 
-module UnpackStrategy
+class Cask::DSL::DependsOn
   include Kernel
 end

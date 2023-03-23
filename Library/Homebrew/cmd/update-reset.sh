@@ -12,6 +12,10 @@ git() {
     # HOMEBREW_LIBRARY is set by bin/brew
     # shellcheck disable=SC2154
     GIT_EXECUTABLE="$("${HOMEBREW_LIBRARY}/Homebrew/shims/shared/git" --homebrew=print-path)"
+    if [[ -z "${GIT_EXECUTABLE}" ]]
+    then
+      odie "Can't find a working Git!"
+    fi
   fi
   "${GIT_EXECUTABLE}" "$@"
 }
