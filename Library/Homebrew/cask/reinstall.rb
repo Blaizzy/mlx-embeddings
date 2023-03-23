@@ -17,20 +17,15 @@ module Cask
     )
       require "cask/installer"
 
-      options = {
-        binaries:       binaries,
-        verbose:        verbose,
-        force:          force,
-        skip_cask_deps: skip_cask_deps,
-        require_sha:    require_sha,
-        quarantine:     quarantine,
-        zap:            zap,
-      }.compact
-
-      options[:quarantine] = true if options[:quarantine].nil?
-
       casks.each do |cask|
-        Installer.new(cask, **options).reinstall
+        Installer.new(cask,
+                      binaries:       binaries,
+                      verbose:        verbose,
+                      force:          force,
+                      skip_cask_deps: skip_cask_deps,
+                      require_sha:    require_sha,
+                      quarantine:     quarantine || true,
+                      zap:            zap).reinstall
       end
     end
   end
