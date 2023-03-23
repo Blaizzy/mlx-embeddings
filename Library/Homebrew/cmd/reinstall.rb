@@ -150,7 +150,7 @@ module Homebrew
     )
 
     if casks.any?
-      Cask::Cmd::Reinstall.reinstall_casks(
+      Cask::Reinstall.reinstall_casks(
         *casks,
         binaries:       args.binaries?,
         verbose:        args.verbose?,
