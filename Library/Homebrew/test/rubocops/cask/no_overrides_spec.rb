@@ -38,6 +38,26 @@ describe RuboCop::Cop::Cask::NoOverrides do
     include_examples "does not report any offenses"
   end
 
+  context "when there are top-level stanzas also in `on_*` blocks that should not override" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          version '1.2.3'
+
+          on_arm do
+            binary "foo-\#{version}-arm64"
+          end
+
+          app "foo-\#{version}.app"
+
+          binary "foo-\#{version}"
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when there are `arch` variables in the `url` in the `on_*` blocks" do
     let(:source) do
       <<~CASK
