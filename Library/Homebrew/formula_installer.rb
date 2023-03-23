@@ -49,6 +49,7 @@ class FormulaInstaller
     installed_on_request: true,
     show_header: false,
     build_bottle: false,
+    skip_post_install: false,
     force_bottle: false,
     bottle_arch: nil,
     ignore_deps: false,
@@ -80,6 +81,7 @@ class FormulaInstaller
     @only_deps = only_deps
     @build_from_source_formulae = build_from_source_formulae
     @build_bottle = build_bottle
+    @skip_post_install = skip_post_install
     @bottle_arch = bottle_arch
     @formula.force_bottle ||= force_bottle
     @force_bottle = @formula.force_bottle
@@ -138,6 +140,11 @@ class FormulaInstaller
   sig { returns(T::Boolean) }
   def build_bottle?
     @build_bottle.present?
+  end
+
+  sig { returns(T::Boolean) }
+  def skip_post_install?
+    @skip_post_install.present?
   end
 
   sig { params(output_warning: T::Boolean).returns(T::Boolean) }
@@ -782,8 +789,12 @@ on_request: installed_on_request?, options: options)
 
     Homebrew::Install.global_post_install
 
-    if build_bottle?
-      ohai "Not running 'post_install' as we're building a bottle"
+    if build_bottle? || skip_post_install?
+      if build_bottle?
+        ohai "Not running 'post_install' as we're building a bottle"
+      elsif skip_post_install?
+        ohai "Skipping 'post_install' on request"
+      end
       puts "You can run it manually using:"
       puts "  brew postinstall #{formula.full_name}"
     else
