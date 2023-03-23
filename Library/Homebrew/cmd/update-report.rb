@@ -580,7 +580,7 @@ class Reporter
     @diff ||= if installed_from_api?
       # Hack `git diff` output with regexes to look like `git diff-tree` output.
       # Yes, I know this is a bit filthy but it saves duplicating the #report logic.
-      diff_output = Utils.popen_read("git", "diff", api_names_txt, api_names_before_txt)
+      diff_output = Utils.popen_read("git", "diff", api_names_before_txt, api_names_txt)
       header_regex = /^(---|\+\+\+) /.freeze
       add_delete_characters = ["+", "-"].freeze
 
