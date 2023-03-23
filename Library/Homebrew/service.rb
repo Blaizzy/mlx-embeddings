@@ -46,7 +46,8 @@ module Homebrew
     }
     def run(command = nil, macos: nil, linux: nil)
       # Save parameters for serialization
-      @run_params ||= command || { macos: macos, linux: linux }.compact
+      @run_params ||= command
+      @run_params ||= { macos: macos, linux: linux }.compact
 
       command ||= on_system_conditional(macos: macos, linux: linux)
       case T.unsafe(command)
@@ -554,11 +555,11 @@ module Homebrew
           api_hash["run"].to_h do |key, array|
             [
               key.to_sym,
-              array.map { |value| replace_placeholders(value) },
+              array.map(&method(:replace_placeholders)),
             ]
           end
         when Array
-          api_hash["run"].map { |value| replace_placeholders(value) }
+          api_hash["run"].map(&method(:replace_placeholders))
         end
 
       hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")

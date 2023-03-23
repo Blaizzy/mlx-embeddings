@@ -331,7 +331,7 @@ module Cask
         string.to_s
               .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
               .gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
-              .gsub(Cask::APPDIR_PLACEHOLDER, appdir)
+              .gsub(HOMEBREW_CASK_APPDIR_PLACEHOLDER, appdir)
               .gsub(Cask::HOMEBREW_OLD_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
       end
 

@@ -375,7 +375,7 @@ module Cask
 
     # @api public
     def appdir
-      return Cask::APPDIR_PLACEHOLDER if Cask.generating_hash?
+      return HOMEBREW_CASK_APPDIR_PLACEHOLDER if Cask.generating_hash?
 
       cask.config.appdir
     end

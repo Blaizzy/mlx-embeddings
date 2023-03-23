@@ -20,8 +20,6 @@ module Cask
     extend APIHashable
     include Metadata
 
-    APPDIR_PLACEHOLDER = "$APPDIR"
-
     # TODO: can be removed when API JSON is regenerated with HOMEBREW_PREFIX_PLACEHOLDER.
     HOMEBREW_OLD_PREFIX_PLACEHOLDER = "$(brew --prefix)"
 

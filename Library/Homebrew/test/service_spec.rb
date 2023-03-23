@@ -928,6 +928,8 @@ describe Homebrew::Service do
       }
     end
 
+    # @note The calls to `Formula.generating_hash!` and `Formula.generated_hash!`
+    #   are not idempotent so they can only be used in one test.
     it "replaces local paths with placeholders" do
       f = stub_formula do
         service do
