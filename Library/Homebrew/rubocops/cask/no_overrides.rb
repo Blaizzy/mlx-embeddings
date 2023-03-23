@@ -43,7 +43,9 @@ module RuboCop
                 # Skip (nested) livecheck blocks as its `url` is different to a download `url`.
                 next if send_node.method_name == :livecheck || inside_livecheck_block?(send_node)
                 # Skip string interpolations.
-                next if send_node.ancestors.drop_while { |a| !a.begin_type? }.any?(&:dstr_type?)
+                if send_node.ancestors.drop_while { |a| !a.begin_type? }.any? { |a| a.dstr_type? || a.regexp_type? }
+                  next
+                end
                 next if ON_SYSTEM_METHODS.include?(send_node.method_name)
 
                 names.add(send_node.method_name)

@@ -71,6 +71,29 @@ describe RuboCop::Cop::Cask::NoOverrides do
     include_examples "does not report any offenses"
   end
 
+  context "when there are `arch` interpolations in regexps in `on_*` blocks" do
+    let(:source) do
+      <<~CASK
+        cask 'foo' do
+          arch arm: "arm64", intel: "x86"
+
+          version 0.99,123.3
+
+          on_mojave :or_later do
+            url "https://brew.sh/foo-\#{arch}-\#{version.csv.first}-\#{version.csv.last}.pkg"
+
+            livecheck do
+              url "https://brew.sh/foo/releases.html"
+              regex(/href=.*?foo[._-]v?(\d+(?:.\d+)+)-\#{arch}.pkg/i)
+            end
+          end
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when there are single-line livecheck blocks within `on_*` blocks, ignore their contents" do
     let(:source) do
       <<~CASK
