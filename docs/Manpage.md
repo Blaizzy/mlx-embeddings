@@ -352,6 +352,8 @@ is already installed but outdated.
   Generate debug symbols on build. Source will be retained in a cache directory.
 * `--build-bottle`:
   Prepare the formula for eventual bottling during installation, skipping any post-install steps.
+* `--skip-post-install`:
+  Install but skip any post-install steps.
 * `--bottle-arch`:
   Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on.
 * `--display-times`:

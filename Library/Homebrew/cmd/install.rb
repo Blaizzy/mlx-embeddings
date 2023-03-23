@@ -98,6 +98,9 @@ module Homebrew
           description: "Prepare the formula for eventual bottling during installation, skipping any " \
                        "post-install steps.",
         }],
+        [:switch, "--skip-post-install", {
+          description: "Install but skip any post-install steps.",
+        }],
         [:flag, "--bottle-arch=", {
           depends_on:  "--build-bottle",
           description: "Optimise bottles for the specified architecture rather than the oldest " \
