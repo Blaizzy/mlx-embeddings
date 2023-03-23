@@ -17,6 +17,8 @@ module Cask
     )
       require "cask/installer"
 
+      quarantine = true if quarantine.nil?
+
       casks.each do |cask|
         Installer.new(cask,
                       binaries:       binaries,
@@ -24,7 +26,7 @@ module Cask
                       force:          force,
                       skip_cask_deps: skip_cask_deps,
                       require_sha:    require_sha,
-                      quarantine:     quarantine || true,
+                      quarantine:     quarantine,
                       zap:            zap).reinstall
       end
     end
