@@ -1,10 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require "cask/installer"
-require "cask/reinstall"
-
-describe Cask::Reinstall, :cask do
+describe Cask::Cmd::Reinstall, :cask do
   it "displays the reinstallation progress" do
     caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
 
@@ -23,7 +20,7 @@ describe Cask::Reinstall, :cask do
     EOS
 
     expect do
-      described_class.reinstall_casks(Cask::CaskLoader.load("local-caffeine"))
+      described_class.run("local-caffeine")
     end.to output(output).to_stdout
   end
 
@@ -48,7 +45,7 @@ describe Cask::Reinstall, :cask do
     EOS
 
     expect do
-      described_class.reinstall_casks(Cask::CaskLoader.load("local-caffeine"), zap: true)
+      described_class.run("local-caffeine", "--zap")
     end.to output(output).to_stdout
   end
 
@@ -57,14 +54,14 @@ describe Cask::Reinstall, :cask do
 
     expect(Cask::CaskLoader.load(cask_path("local-transmission"))).to be_installed
 
-    described_class.reinstall_casks(Cask::CaskLoader.load("local-transmission"))
+    described_class.run("local-transmission")
     expect(Cask::CaskLoader.load(cask_path("local-transmission"))).to be_installed
   end
 
   it "allows reinstalling a non installed Cask" do
     expect(Cask::CaskLoader.load(cask_path("local-transmission"))).not_to be_installed
 
-    described_class.reinstall_casks(Cask::CaskLoader.load("local-transmission"))
+    described_class.run("local-transmission")
     expect(Cask::CaskLoader.load(cask_path("local-transmission"))).to be_installed
   end
 end
