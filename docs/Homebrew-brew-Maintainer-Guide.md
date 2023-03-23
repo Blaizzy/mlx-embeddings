@@ -25,11 +25,9 @@ If possible, PRs should also have GPG-signed commits (see the private `ops` repo
 
 ### Automatic approvals
 
-To ensure that non-urgent PRs have the opportunity to be seen and reviewed by any other maintainers who wish to take a look, all PRs require an approval before they can be merged. However, not every PR is reviewed by another maintainer, and some PRs are urgent enough that they need to be merged without an approval by another maintainer.
+To ensure that non-urgent PRs have the opportunity to be seen and reviewed by any other maintainers who wish to take a look, all PRs require an approval before they can be merged. However, some PRs are urgent enough that they need to be merged without an approval by another maintainer.
 
-As a compromise between always needing a review and allowing maintainers to merge PRs they deem ready, the `Triage` CI job will ensure that PRs cannot be merged until they've been open for 24 hours (only counting hours that occur Monday to Friday). After the triage period has expired, the CI job will show up as "passed" and [@BrewTestBot](https://github.com/BrewTestBot) will approve the PR, allowing it to be merged. This gives all maintainers a reasonable opportunity to review every PR, but won't block any PR for lack of reviews.
-
-If the PR is urgent enough that it is necessary to bypass that 24 hour window, the `critical` label should be applied to the PR. When this label is applied, the `Triage` CI job will immediately be successful and [@BrewTestBot](https://github.com/BrewTestBot) will approve the PR.
+As a compromise between always needing a review and allowing maintainers to merge PRs they deem critical, the `Triage` CI job will ensure that if a PR is labelled `critical`, [@BrewTestBot](https://github.com/BrewTestBot) approves the PR, allowing it to be merged.
 
 ## CI
 
