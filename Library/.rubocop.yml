@@ -182,15 +182,10 @@ Naming/MethodName:
   AllowedPatterns:
     - '\A(fetch_)?HEAD\?\Z'
 
-# TODO: remove all of these
 Naming/MethodParameterName:
   inherit_mode:
     merge:
       - AllowedNames
-  AllowedNames:
-    [
-      "pr", # TODO: Remove if https://github.com/rubocop/rubocop/pull/11690 is merged or we change the variable names.
-    ]
 
 # Both styles are used depending on context,
 # e.g. `sha256` and `something_countable_1`.

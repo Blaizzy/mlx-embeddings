@@ -15,10 +15,10 @@ module GitHub
 
   include SystemCommand::Mixin
 
-  def self.check_runs(repo: nil, commit: nil, pr: nil)
-    if pr
-      repo = pr.fetch("base").fetch("repo").fetch("full_name")
-      commit = pr.fetch("head").fetch("sha")
+  def self.check_runs(repo: nil, commit: nil, pull_request: nil)
+    if pull_request
+      repo = pull_request.fetch("base").fetch("repo").fetch("full_name")
+      commit = pull_request.fetch("head").fetch("sha")
     end
 
     API.open_rest(url_to("repos", repo, "commits", commit, "check-runs"))
@@ -194,10 +194,10 @@ module GitHub
     json.fetch("total_count", 0)
   end
 
-  def self.approved_reviews(user, repo, pr, commit: nil)
+  def self.approved_reviews(user, repo, pull_request, commit: nil)
     query = <<~EOS
       { repository(name: "#{repo}", owner: "#{user}") {
-          pullRequest(number: #{pr}) {
+          pullRequest(number: #{pull_request}) {
             reviews(states: APPROVED, first: 100) {
               nodes {
                 author {
@@ -289,7 +289,7 @@ module GitHub
     API.open_rest(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def self.get_workflow_run(user, repo, pr, workflow_id: "tests.yml", artifact_name: "bottles")
+  def self.get_workflow_run(user, repo, pull_request, workflow_id: "tests.yml", artifact_name: "bottles")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
 
     # GraphQL unfortunately has no way to get the workflow yml name, so we need an extra REST call.
@@ -326,7 +326,7 @@ module GitHub
     variables = {
       user: user,
       repo: repo,
-      pr:   pr.to_i,
+      pr:   pull_request.to_i,
     }
     result = API.open_graphql(query, variables: variables, scopes: scopes)
 
@@ -339,7 +339,7 @@ module GitHub
       []
     end
 
-    [check_suite, user, repo, pr, workflow_id, scopes, artifact_name]
+    [check_suite, user, repo, pull_request, workflow_id, scopes, artifact_name]
   end
 
   def self.get_artifact_url(workflow_array)
@@ -542,8 +542,8 @@ module GitHub
     end
   end
 
-  def self.get_pull_request_changed_files(tap_remote_repo, pr)
-    API.open_rest(url_to("repos", tap_remote_repo, "pulls", pr, "files"))
+  def self.get_pull_request_changed_files(tap_remote_repo, pull_request)
+    API.open_rest(url_to("repos", tap_remote_repo, "pulls", pull_request, "files"))
   end
 
   def self.forked_repo_info!(tap_remote_repo, org: nil)
@@ -656,8 +656,8 @@ module GitHub
     end
   end
 
-  def self.pull_request_commits(user, repo, pr, per_page: 100)
-    pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
+  def self.pull_request_commits(user, repo, pull_request, per_page: 100)
+    pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pull_request))
     commits_api = pr_data["commits_url"]
     commit_count = pr_data["commits"]
     commits = []
@@ -677,8 +677,8 @@ module GitHub
     end
   end
 
-  def self.pull_request_labels(user, repo, pr)
-    pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pr))
+  def self.pull_request_labels(user, repo, pull_request)
+    pr_data = API.open_rest(url_to("repos", user, repo, "pulls", pull_request))
     pr_data["labels"].map { |label| label["name"] }
   end
 
