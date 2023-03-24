@@ -18,7 +18,7 @@ GEM
     commander (4.6.0)
       highline (~> 2.0.0)
     concurrent-ruby (1.2.2)
-    connection_pool (2.3.0)
+    connection_pool (2.4.0)
     did_you_mean (1.6.3)
     diff-lcs (1.5.0)
     docile (1.4.0)
