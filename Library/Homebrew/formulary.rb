@@ -5,6 +5,7 @@ require "digest/md5"
 require "extend/cachable"
 require "tab"
 require "utils/bottles"
+require "service"
 
 require "active_support/core_ext/hash/deep_transform_values"
 
