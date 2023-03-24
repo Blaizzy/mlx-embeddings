@@ -30,6 +30,7 @@ require "find"
 require "utils/spdx"
 require "extend/on_system"
 require "api"
+require "extend/api_hashable"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
@@ -69,6 +70,7 @@ class Formula
   extend Forwardable
   extend Cachable
   extend Predicable
+  extend APIHashable
 
   # The name of this {Formula}.
   # e.g. `this-formula`
@@ -1043,7 +1045,7 @@ class Formula
   def service
     return unless service?
 
-    Homebrew::Service.new(self, &self.class.service)
+    @service ||= Homebrew::Service.new(self, &self.class.service)
   end
 
   # @private
@@ -2132,6 +2134,7 @@ class Formula
       "disabled"                 => disabled?,
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
+      "service"                  => service&.serialize,
       "tap_git_head"             => tap_git_head,
       "ruby_source_checksum"     => {},
     }

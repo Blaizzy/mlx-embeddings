@@ -327,9 +327,9 @@ module Cask
 
       def from_h_string_gsubs(string, appdir)
         string.to_s
-              .gsub(Cask::HOME_PLACEHOLDER, Dir.home)
-              .gsub(Cask::HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
-              .gsub(Cask::APPDIR_PLACEHOLDER, appdir)
+              .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
+              .gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+              .gsub(HOMEBREW_CASK_APPDIR_PLACEHOLDER, appdir)
       end
 
       def from_h_array_gsubs(array, appdir)

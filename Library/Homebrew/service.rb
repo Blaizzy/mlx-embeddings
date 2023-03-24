@@ -45,6 +45,10 @@ module Homebrew
       ).returns(T.nilable(Array))
     }
     def run(command = nil, macos: nil, linux: nil)
+      # Save parameters for serialization
+      @run_params ||= command
+      @run_params ||= { macos: macos, linux: linux }.compact
+
       command ||= on_system_conditional(macos: macos, linux: linux)
       case T.unsafe(command)
       when nil
@@ -156,7 +160,7 @@ module Homebrew
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def requires_root?
-      instance_eval(&@service_block)
+      eval_service_block
       @require_root.present? && @require_root == true
     end
 
@@ -192,7 +196,7 @@ module Homebrew
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def keep_alive?
-      instance_eval(&@service_block)
+      eval_service_block
       @keep_alive.present? && @keep_alive[:always] != false
     end
 
@@ -320,7 +324,7 @@ module Homebrew
       parsed
     end
 
-    sig { params(variables: T::Hash[String, String]).returns(T.nilable(T::Hash[String, String])) }
+    sig { params(variables: T::Hash[Symbol, String]).returns(T.nilable(T::Hash[Symbol, String])) }
     def environment_variables(variables = {})
       case T.unsafe(variables)
       when Hash
@@ -351,7 +355,7 @@ module Homebrew
 
     sig { returns(T.nilable(T::Array[String])) }
     def command
-      instance_eval(&@service_block)
+      eval_service_block
       @run&.map(&:to_s)
     end
 
@@ -359,7 +363,7 @@ module Homebrew
     # @return [String]
     sig { returns(String) }
     def manual_command
-      instance_eval(&@service_block)
+      eval_service_block
       vars = @environment_variables.except(:PATH)
                                    .map { |k, v| "#{k}=\"#{v}\"" }
 
@@ -372,7 +376,7 @@ module Homebrew
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def timed?
-      instance_eval(&@service_block)
+      eval_service_block
       @run_type == RUN_TYPE_CRON || @run_type == RUN_TYPE_INTERVAL
     end
 
@@ -484,7 +488,7 @@ module Homebrew
         Unit=#{@formula.service_name}
       EOS
 
-      instance_eval(&@service_block)
+      eval_service_block
       options = []
       options << "Persistent=true" if @run_type == RUN_TYPE_CRON
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
@@ -496,6 +500,102 @@ module Homebrew
       end
 
       timer + options.join("\n")
+    end
+
+    # Only evaluate the service block once.
+    sig { void }
+    def eval_service_block
+      return if @eval_service_block
+
+      instance_eval(&@service_block)
+      @eval_service_block = true
+    end
+
+    # Prepare the service hash for inclusion in the formula API JSON.
+    sig { returns(Hash) }
+    def serialize
+      eval_service_block
+
+      cron_string = if @cron.present?
+        [:Minute, :Hour, :Day, :Month, :Weekday]
+          .map { |key| @cron[key].to_s }
+          .join(" ")
+      end
+
+      sockets_string = "#{@sockets[:type]}://#{@sockets[:host]}:#{@sockets[:port]}" if @sockets.present?
+
+      {
+        run:                   @run_params,
+        run_type:              @run_type,
+        interval:              @interval,
+        cron:                  cron_string,
+        keep_alive:            @keep_alive,
+        launch_only_once:      @launch_only_once,
+        require_root:          @require_root,
+        environment_variables: @environment_variables.presence,
+        working_dir:           @working_dir,
+        root_dir:              @root_dir,
+        input_path:            @input_path,
+        log_path:              @log_path,
+        error_log_path:        @error_log_path,
+        restart_delay:         @restart_delay,
+        process_type:          @process_type,
+        macos_legacy_timers:   @macos_legacy_timers,
+        sockets:               sockets_string,
+      }.compact
+    end
+
+    # Turn the service API hash values back into what is expected by the formula DSL.
+    sig { params(api_hash: Hash).returns(Hash) }
+    def self.deserialize(api_hash)
+      hash = {}
+      hash[:run] =
+        case api_hash["run"]
+        when Hash
+          api_hash["run"].to_h do |key, array|
+            [
+              key.to_sym,
+              array.map(&method(:replace_placeholders)),
+            ]
+          end
+        when Array
+          api_hash["run"].map(&method(:replace_placeholders))
+        end
+
+      hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")
+
+      if api_hash.key?("environment_variables")
+        hash[:environment_variables] = api_hash["environment_variables"].to_h do |key, value|
+          [key.to_sym, replace_placeholders(value)]
+        end
+      end
+
+      %w[run_type process_type].each do |key|
+        next unless (value = api_hash[key])
+
+        hash[key.to_sym] = value.to_sym
+      end
+
+      %w[working_dir root_dir input_path log_path error_log_path].each do |key|
+        next unless (value = api_hash[key])
+
+        hash[key.to_sym] = replace_placeholders(value)
+      end
+
+      %w[interval cron launch_only_once require_root restart_delay macos_legacy_timers sockets].each do |key|
+        next if (value = api_hash[key]).nil?
+
+        hash[key.to_sym] = value
+      end
+
+      hash
+    end
+
+    # Replace API path placeholders with local paths.
+    sig { params(string: String).returns(String) }
+    def self.replace_placeholders(string)
+      string.gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+            .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
     end
   end
 end

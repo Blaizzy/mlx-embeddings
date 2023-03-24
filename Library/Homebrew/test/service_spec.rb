@@ -913,4 +913,67 @@ describe Homebrew::Service do
       expect(command).to eq(["#{HOMEBREW_PREFIX}/opt/#{name}/bin/beanstalkd", "test", "macos"])
     end
   end
+
+  describe "#serialize" do
+    let(:serialized_hash) do
+      {
+        environment_variables: {
+          PATH: "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+        },
+        run:                   [Pathname("$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd"), "test"],
+        run_type:              :immediate,
+        working_dir:           "/$HOME",
+        cron:                  "0 0 * * 0",
+        sockets:               "tcp://0.0.0.0:80",
+      }
+    end
+
+    # @note The calls to `Formula.generating_hash!` and `Formula.generated_hash!`
+    #   are not idempotent so they can only be used in one test.
+    it "replaces local paths with placeholders" do
+      f = stub_formula do
+        service do
+          run [opt_bin/"beanstalkd", "test"]
+          environment_variables PATH: std_service_path_env
+          working_dir Dir.home
+          cron "@weekly"
+          sockets "tcp://0.0.0.0:80"
+        end
+      end
+
+      Formula.generating_hash!
+      expect(f.service.serialize).to eq(serialized_hash)
+      Formula.generated_hash!
+    end
+  end
+
+  describe ".deserialize" do
+    let(:serialized_hash) do
+      {
+        "environment_variables" => {
+          "PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+        },
+        "run"                   => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
+        "run_type"              => "immediate",
+        "working_dir"           => HOMEBREW_HOME_PLACEHOLDER,
+        "keep_alive"            => { "successful_exit" => false },
+      }
+    end
+
+    let(:deserialized_hash) do
+      {
+        environment_variables: {
+          PATH: "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
+        },
+        run:                   ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "test"],
+        run_type:              :immediate,
+        working_dir:           Dir.home,
+        keep_alive:            { successful_exit: false },
+      }
+    end
+
+    it "replaces placeholders with local paths" do
+      expect(described_class.deserialize(serialized_hash)).to eq(deserialized_hash)
+    end
+  end
 end

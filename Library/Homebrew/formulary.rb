@@ -263,6 +263,21 @@ module Formulary
         raise "Cannot build from source from abstract formula."
       end
 
+      if (service_hash = json_formula["service"])
+        service_hash = Homebrew::Service.deserialize(service_hash)
+        run_params = service_hash.delete(:run)
+        service do
+          if run_params.is_a?(Hash)
+            run(**run_params)
+          else
+            run run_params
+          end
+          service_hash.each do |key, arg|
+            public_send(key, arg)
+          end
+        end
+      end
+
       @caveats_string = json_formula["caveats"]
       def caveats
         self.class.instance_variable_get(:@caveats_string)
