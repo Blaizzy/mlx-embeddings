@@ -82,19 +82,19 @@ module Homebrew
     [subject, body, trailers]
   end
 
-  def self.signoff!(path, pr: nil, dry_run: false)
+  def self.signoff!(path, pull_request: nil, dry_run: false)
     subject, body, trailers = separate_commit_message(path.git_commit_message)
 
-    if pr
+    if pull_request
       # This is a tap pull request and approving reviewers should also sign-off.
       tap = Tap.from_path(path)
-      review_trailers = GitHub.approved_reviews(tap.user, tap.full_name.split("/").last, pr).map do |r|
+      review_trailers = GitHub.approved_reviews(tap.user, tap.full_name.split("/").last, pull_request).map do |r|
         "Signed-off-by: #{r["name"]} <#{r["email"]}>"
       end
       trailers = trailers.lines.concat(review_trailers).map(&:strip).uniq.join("\n")
 
       # Append the close message as well, unless the commit body already includes it.
-      close_message = "Closes ##{pr}."
+      close_message = "Closes ##{pull_request}."
       body += "\n\n#{close_message}" unless body.include? close_message
     end
 
@@ -288,26 +288,26 @@ module Homebrew
     raise
   end
 
-  def self.cherry_pick_pr!(user, repo, pr, args:, path: ".")
+  def self.cherry_pick_pr!(user, repo, pull_request, args:, path: ".")
     if args.dry_run?
       puts <<~EOS
-        git fetch --force origin +refs/pull/#{pr}/head
+        git fetch --force origin +refs/pull/#{pull_request}/head
         git merge-base HEAD FETCH_HEAD
         git cherry-pick --ff --allow-empty $merge_base..FETCH_HEAD
       EOS
       return
     end
 
-    commits = GitHub.pull_request_commits(user, repo, pr)
+    commits = GitHub.pull_request_commits(user, repo, pull_request)
     safe_system "git", "-C", path, "fetch", "--quiet", "--force", "origin", commits.last
-    ohai "Using #{commits.count} commit#{"s" unless commits.count == 1} from ##{pr}"
+    ohai "Using #{commits.count} commit#{"s" unless commits.count == 1} from ##{pull_request}"
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
-  def self.formulae_need_bottles?(tap, original_commit, user, repo, pr, args:)
+  def self.formulae_need_bottles?(tap, original_commit, user, repo, pull_request, args:)
     return if args.dry_run?
 
-    labels = GitHub.pull_request_labels(user, repo, pr)
+    labels = GitHub.pull_request_labels(user, repo, pull_request)
 
     return false if labels.include?("CI-syntax-only") || labels.include?("CI-no-bottles")
 
@@ -352,7 +352,7 @@ module Homebrew
     formulae + casks
   end
 
-  def self.download_artifact(url, dir, pr)
+  def self.download_artifact(url, dir, pull_request)
     odie "Credentials must be set to access the Artifacts API" if GitHub::API.credentials_type == :none
 
     token = GitHub::API.credentials
@@ -362,20 +362,26 @@ module Homebrew
     # preferred over system `curl` and `tar` as this leverages the Homebrew
     # cache to avoid repeated downloads of (possibly large) bottles.
     FileUtils.chdir dir do
-      downloader = GitHubArtifactDownloadStrategy.new(url, "artifact", pr, curl_args: curl_args, secrets: [token])
+      downloader = GitHubArtifactDownloadStrategy.new(
+        url,
+        "artifact",
+        pull_request,
+        curl_args: curl_args,
+        secrets:   [token],
+      )
       downloader.fetch
       downloader.stage
     end
   end
 
-  def self.pr_check_conflicts(repo, pr)
+  def self.pr_check_conflicts(repo, pull_request)
     long_build_pr_files = GitHub.issues(
       repo: repo, state: "open", labels: "no long build conflict",
     ).each_with_object({}) do |long_build_pr, hash|
       next unless long_build_pr.key?("pull_request")
 
       number = long_build_pr["number"]
-      next if number == pr.to_i
+      next if number == pull_request.to_i
 
       GitHub.get_pull_request_changed_files(repo, number).each do |file|
         key = file["filename"]
@@ -386,7 +392,7 @@ module Homebrew
 
     return if long_build_pr_files.blank?
 
-    this_pr_files = GitHub.get_pull_request_changed_files(repo, pr)
+    this_pr_files = GitHub.get_pull_request_changed_files(repo, pull_request)
 
     conflicts = this_pr_files.each_with_object({}) do |file, hash|
       filename = file["filename"]
@@ -463,7 +469,7 @@ module Homebrew
               autosquash!(original_commit, tap: tap,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
-            signoff!(tap.path, pr: pr, dry_run: args.dry_run?) unless args.clean?
+            signoff!(tap.path, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
           unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
