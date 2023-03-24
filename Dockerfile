@@ -37,7 +37,8 @@ RUN apt-get update \
   uuid-runtime \
   tzdata \
   jq \
-  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]; then apt-get install -y --no-install-recommends gh gpg skopeo; fi \
+  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 18 ]; then apt-get install -y --no-install-recommends gpg; fi \
+  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 22 ]; then apt-get install -y --no-install-recommends gh skopeo; fi \
   && apt-get remove --purge -y software-properties-common \
   && apt-get autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
