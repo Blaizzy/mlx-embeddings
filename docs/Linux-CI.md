@@ -1,6 +1,6 @@
 # Linux CI in `homebrew/core`
 
-We currently use Ubuntu 16.04 for bottling in `homebrew/core`.
+We currently use Ubuntu 22.04 for bottling in `homebrew/core`.
 
 ## Ubuntu vs. other Linux distributions
 
@@ -12,7 +12,8 @@ Our bottles are compatible with other distributions like Debian/CentOS, even whe
 
 ## Past and next versions
 
-We are currently moving our CI to Ubuntu 22.04. This work will probably be done before end of 2022.
+We have moved our CI to Ubuntu 22.04
+
 Moving from Ubuntu 16.04 to Ubuntu 22.04 (and thus skipping version 18.04 and 20.04) took longer than expected.
 
 We plan to proceed with regular updates from 2022 onwards. We aim to use the latest Ubuntu LTS version for our CI.

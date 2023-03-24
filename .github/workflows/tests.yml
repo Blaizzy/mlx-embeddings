@@ -189,30 +189,6 @@ jobs:
           docker tag brew "homebrew/ubuntu22.04:master"
           docker push "homebrew/ubuntu22.04:master"
 
-      - name: Build deprecated 16.04 Docker image
-        if: github.ref == 'refs/heads/master'
-        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
-        run: |
-          echo "homebrew/ubuntu16.04:master is deprecated and will soon be retired. Use homebrew/ubuntu22.04:master or homebrew/ubuntu18.04 or homebrew/brew. For CI, homebrew/ubuntu22.04:master is recommended." > .docker-deprecate
-          docker build -t brew-deprecated --build-arg=version=16.04 \
-               --label org.opencontainers.image.created="$(date --rfc-3339=seconds --utc)" \
-               --label org.opencontainers.image.url="https://brew.sh" \
-               --label org.opencontainers.image.documentation="https://docs.brew.sh" \
-               --label org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}" \
-               --label org.opencontainers.image.revision="${GITHUB_SHA}" \
-               --label org.opencontainers.image.vendor="${GITHUB_REPOSITORY_OWNER}" \
-               --label org.opencontainers.image.licenses="BSD-2-Clause" \
-               --label org.opencontainers.image.support.end-of-support="2022-09-07T00:00:00Z" \
-               .
-
-      - name: Deploy the deprecated 16.04 Docker image to GitHub Packages and Docker Hub
-        if: github.ref == 'refs/heads/master'
-        run: |
-          docker tag brew-deprecated "ghcr.io/homebrew/ubuntu16.04:master"
-          docker push "ghcr.io/homebrew/ubuntu16.04:master"
-          docker tag brew-deprecated "homebrew/ubuntu16.04:master"
-          docker push "homebrew/ubuntu16.04:master"
-
   update-test:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.runs-on }}
