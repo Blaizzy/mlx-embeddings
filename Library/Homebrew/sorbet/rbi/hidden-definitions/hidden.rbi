@@ -5184,6 +5184,7 @@ class Object
   HOMEBREW_BREW_FILE = ::T.let(nil, ::T.untyped)
   HOMEBREW_CACHE = ::T.let(nil, ::T.untyped)
   HOMEBREW_CACHE_FORMULA = ::T.let(nil, ::T.untyped)
+  HOMEBREW_CASK_APPDIR_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_CASK_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_CELLAR = ::T.let(nil, ::T.untyped)
   HOMEBREW_CORE_DEFAULT_GIT_REMOTE = ::T.let(nil, ::T.untyped)
@@ -5195,6 +5196,7 @@ class Object
   HOMEBREW_DEFAULT_TEMP = ::T.let(nil, ::T.untyped)
   HOMEBREW_DOCS_WWW = ::T.let(nil, ::T.untyped)
   HOMEBREW_GITHUB_PACKAGES_AUTH = ::T.let(nil, ::T.untyped)
+  HOMEBREW_HOME_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY = ::T.let(nil, ::T.untyped)
   HOMEBREW_LIBRARY_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_LINKED_KEGS = ::T.let(nil, ::T.untyped)
@@ -5754,6 +5756,11 @@ module RSpec::Matchers
   def not_raise_error(*args, &block); end
 
   def not_to_output(*args, &block); end
+end
+
+module RSpec::Sorbet::Doubles
+  extend ::T::Sig
+  extend ::T::Helpers
 end
 
 module Racc
