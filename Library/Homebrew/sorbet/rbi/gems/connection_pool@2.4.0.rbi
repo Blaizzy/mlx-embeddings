@@ -8,7 +8,7 @@ class ConnectionPool
   def initialize(options = T.unsafe(nil), &block); end
 
   def available; end
-  def checkin; end
+  def checkin(force: T.unsafe(nil)); end
   def checkout(options = T.unsafe(nil)); end
   def reload(&block); end
   def shutdown(&block); end
@@ -17,12 +17,14 @@ class ConnectionPool
   def with(options = T.unsafe(nil)); end
 
   class << self
+    def after_fork; end
     def wrap(options, &block); end
   end
 end
 
 ConnectionPool::DEFAULTS = T.let(T.unsafe(nil), Hash)
 class ConnectionPool::Error < ::RuntimeError; end
+ConnectionPool::INSTANCES = T.let(T.unsafe(nil), ObjectSpace::WeakMap[T.untyped])
 class ConnectionPool::PoolShuttingDownError < ::ConnectionPool::Error; end
 
 class ConnectionPool::TimedStack
