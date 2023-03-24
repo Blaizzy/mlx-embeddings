@@ -5758,6 +5758,11 @@ module RSpec::Matchers
   def not_to_output(*args, &block); end
 end
 
+module RSpec::Sorbet::Doubles
+  extend ::T::Sig
+  extend ::T::Helpers
+end
+
 module Racc
   Racc_No_Extensions = ::T.let(nil, ::T.untyped)
 end

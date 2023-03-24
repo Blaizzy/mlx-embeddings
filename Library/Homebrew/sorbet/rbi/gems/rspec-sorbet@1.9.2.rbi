@@ -42,16 +42,49 @@ module RSpec::Sorbet
 end
 
 module RSpec::Sorbet::Doubles
+  requires_ancestor { Kernel }
+
+  sig { void }
   def allow_doubles!; end
-  def allow_instance_doubles!; end
+
+  def allow_instance_doubles!(*args, &blk); end
+
+  sig { params(clear_existing: T::Boolean).void }
+  def reset!(clear_existing: T.unsafe(nil)); end
 
   private
 
+  sig { params(signature: T.untyped, opts: T::Hash[T.untyped, T.untyped]).void }
   def call_validation_error_handler(signature, opts); end
+
+  sig { returns(T.nilable(T::Boolean)) }
+  def configured; end
+
+  def configured=(_arg0); end
+
+  sig { params(message: ::String).returns(T::Boolean) }
   def double_message_with_ellipsis?(message); end
+
+  sig { returns(T.nilable(T.proc.params(signature: T.untyped, opts: T::Hash[T.untyped, T.untyped]).void)) }
+  def existing_call_validation_error_handler; end
+
+  def existing_call_validation_error_handler=(_arg0); end
+
+  sig { returns(T.nilable(T.proc.params(signature: ::Exception).void)) }
+  def existing_inline_type_error_handler; end
+
+  def existing_inline_type_error_handler=(_arg0); end
+
+  sig { params(signature: T.untyped, opts: T.untyped).void }
   def handle_call_validation_error(signature, opts); end
+
+  sig { params(error: ::Exception).void }
   def inline_type_error_handler(error); end
+
+  sig { params(message: ::String).returns(T::Boolean) }
   def typed_array_message?(message); end
+
+  sig { params(message: ::String).returns(T::Boolean) }
   def unable_to_check_type_for_message?(message); end
 end
 
