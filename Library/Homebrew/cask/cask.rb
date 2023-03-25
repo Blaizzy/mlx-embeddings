@@ -322,29 +322,32 @@ module Cask
 
       hash_keys_to_skip = %w[outdated installed versions]
 
-      if @dsl.on_system_blocks_exist?
-        [:arm, :intel].each do |arch|
-          MacOSVersions::SYMBOLS.each_key do |os_name|
-            bottle_tag = ::Utils::Bottles::Tag.new(system: os_name, arch: arch)
-            next unless bottle_tag.valid_combination?
+      begin
+        if @dsl.on_system_blocks_exist?
+          [:arm, :intel].each do |arch|
+            MacOSVersions::SYMBOLS.each_key do |os_name|
+              bottle_tag = ::Utils::Bottles::Tag.new(system: os_name, arch: arch)
+              next unless bottle_tag.valid_combination?
 
-            Homebrew::SimulateSystem.os = os_name
-            Homebrew::SimulateSystem.arch = arch
+              Homebrew::SimulateSystem.os = os_name
+              Homebrew::SimulateSystem.arch = arch
 
-            refresh
+              refresh
 
-            to_h.each do |key, value|
-              next if hash_keys_to_skip.include? key
-              next if value.to_s == hash[key].to_s
+              to_h.each do |key, value|
+                next if hash_keys_to_skip.include? key
+                next if value.to_s == hash[key].to_s
 
-              variations[bottle_tag.to_sym] ||= {}
-              variations[bottle_tag.to_sym][key] = value
+                variations[bottle_tag.to_sym] ||= {}
+                variations[bottle_tag.to_sym][key] = value
+              end
             end
           end
         end
+      ensure
+        Homebrew::SimulateSystem.clear
       end
 
-      Homebrew::SimulateSystem.clear
       refresh
 
       hash["variations"] = variations
