@@ -122,8 +122,39 @@ jobs:
                                          homebrew/cask-fonts \
                                          homebrew/cask-versions
 
-  tap-audit:
-    name: tap audit
+  formula-audit:
+    name: formula audit
+    needs: syntax
+    if: startsWith(github.repository, 'Homebrew/')
+    runs-on: ubuntu-22.04
+    env:
+      HOMEBREW_NO_INSTALL_FROM_API: 1
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Bundler RubyGems
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Install Bundler RubyGems
+        run: brew install-bundler-gems --groups=sorbet
+
+      - name: Set up the homebrew/core tap
+        run: brew tap homebrew/core
+
+      - name: Run brew readall on homebrew/core
+        run: brew readall --aliases homebrew/core
+
+      - name: Run brew audit --skip-style on homebrew/core
+        run: brew audit --skip-style --except=version --display-failures-only --tap=homebrew/core
+
+  cask-audit:
+    name: cask audit
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: macos-12
@@ -144,19 +175,15 @@ jobs:
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems --groups=sorbet
 
-      - name: Set up Homebrew cask and formula taps
+      - name: Set up Homebrew all cask taps
         run: |
           brew tap homebrew/cask
           brew tap homebrew/cask-drivers
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
-          brew tap homebrew/core
 
-      - name: Run brew readall on all taps
-        run: brew readall --eval-all --aliases
-
-      - name: Run brew audit --skip-style on formulae
-        run: brew audit --skip-style --except=version --display-failures-only --tap=homebrew/core
+      - name: Run brew readall on all casks
+        run: brew readall homebrew/cask homebrew/cask-drivers homebrew/cask-fonts homebrew/cask-versions
 
       - name: Run brew audit --skip-style on casks
         run: |
