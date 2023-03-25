@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "formula"
@@ -653,7 +653,7 @@ on_request: installed_on_request?, options: options)
     inherited_options
   end
 
-  sig { params(deps: T::Array[[Formula, Options]]).void }
+  sig { params(deps: T::Array[[Dependency, Options]]).void }
   def install_dependencies(deps)
     if deps.empty? && only_deps?
       puts "All dependencies for #{formula.full_name} are satisfied."
@@ -745,7 +745,7 @@ on_request: installed_on_request?, options: options)
     fi.finish
   rescue Exception => e # rubocop:disable Lint/RescueException
     ignore_interrupts do
-      tmp_keg.rename(installed_keg) if tmp_keg && !installed_keg.directory?
+      tmp_keg.rename(installed_keg.to_s) if tmp_keg && !installed_keg.directory?
       linked_keg.link(verbose: verbose?) if keg_was_linked
     end
     raise unless e.is_a? FormulaInstallationAlreadyAttemptedError
@@ -1266,7 +1266,7 @@ on_request: installed_on_request?, options: options)
     keg.relocate_build_prefix(keg, prefix, HOMEBREW_PREFIX)
   end
 
-  sig { params(output: T.nilable(String)).void }
+  sig { override.params(output: T.nilable(String)).void }
   def problem_if_output(output)
     return unless output
 
