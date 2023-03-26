@@ -15,6 +15,7 @@ module Cask
 
     DEFAULT_DIRS = {
       appdir:               "/Applications",
+      keyboard_layoutdir:   "/Library/Keyboard Layouts",
       colorpickerdir:       "~/Library/ColorPickers",
       prefpanedir:          "~/Library/PreferencePanes",
       qlplugindir:          "~/Library/QuickLook",
@@ -40,6 +41,7 @@ module Cask
     def self.from_args(args)
       new(explicit: {
         appdir:               args.appdir,
+        keyboard_layoutdir:   args.keyboard_layoutdir,
         colorpickerdir:       args.colorpickerdir,
         prefpanedir:          args.prefpanedir,
         qlplugindir:          args.qlplugindir,
