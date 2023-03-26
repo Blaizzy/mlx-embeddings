@@ -745,7 +745,7 @@ on_request: installed_on_request?, options: options)
     fi.finish
   rescue Exception => e # rubocop:disable Lint/RescueException
     ignore_interrupts do
-      tmp_keg.rename(installed_keg.to_s) if tmp_keg && !installed_keg.directory?
+      tmp_keg.rename(installed_keg.to_path) if tmp_keg && !installed_keg.directory?
       linked_keg.link(verbose: verbose?) if keg_was_linked
     end
     raise unless e.is_a? FormulaInstallationAlreadyAttemptedError

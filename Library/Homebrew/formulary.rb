@@ -130,10 +130,10 @@ module Formulary
   end
 
   def self.load_formula_from_api(name, flags:)
-    namespace = "FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
+    namespace = :"FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
 
     mod = Module.new
-    remove_const(namespace.to_sym) if const_defined?(namespace)
+    remove_const(namespace) if const_defined?(namespace)
     const_set(namespace, mod)
 
     mod.const_set(:BUILD_FLAGS, flags)
@@ -491,14 +491,16 @@ module Formulary
     def initialize(url, from: nil)
       @url = url
       @from = from
-      uri_path = T.must(URI(url).path)
+      uri_path = URI(url).path
+      raise ArgumentError, "URL has no path component" unless uri_path
+
       formula = File.basename(uri_path, ".rb")
       super formula, HOMEBREW_CACHE_FORMULA/File.basename(uri_path)
     end
 
     def load_file(flags:, ignore_errors:)
       if @from != :formula_installer
-        if (md = %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb}.match(url))
+        if (md = url.match(%r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb}))
           raise UnsupportedInstallationMethod,
                 "Installation of #{md[:name]} from a GitHub commit URL is unsupported! " \
                 "`brew extract #{md[:name]}` to a stable tap on GitHub instead."
@@ -514,7 +516,7 @@ module Formulary
       curl_download url, to: path
       super
     rescue MethodDeprecatedError => e
-      if (match_data = %r{github.com/(?<user>[\w-]+)/(?<repo>[\w-]+)/}.match(url))
+      if (match_data = url.match(%r{github.com/(?<user>[\w-]+)/(?<repo>[\w-]+)/}))
         e.issues_url = "https://github.com/#{match_data[:user]}/#{match_data[:repo]}/issues/new"
       end
       raise
