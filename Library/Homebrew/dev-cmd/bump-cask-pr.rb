@@ -144,7 +144,7 @@ module Homebrew
 
               replacement_pairs << [new_hash_cask.sha256.to_s, download.sha256]
             end
-
+          ensure
             Homebrew::SimulateSystem.clear
           end
         elsif new_hash.present?

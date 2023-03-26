@@ -103,13 +103,15 @@ module Readall
             bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)
             next unless bottle_tag.valid_combination?
 
-            Homebrew::SimulateSystem.arch = arch
-            Homebrew::SimulateSystem.os = os_name
+            begin
+              Homebrew::SimulateSystem.arch = arch
+              Homebrew::SimulateSystem.os = os_name
 
-            success = false unless valid_formulae?(tap.formula_files, bottle_tag: bottle_tag)
-            success = false unless valid_casks?(tap.cask_files, bottle_tag: bottle_tag)
-
-            Homebrew::SimulateSystem.clear
+              success = false unless valid_formulae?(tap.formula_files, bottle_tag: bottle_tag)
+              success = false unless valid_casks?(tap.cask_files, bottle_tag: bottle_tag)
+            ensure
+              Homebrew::SimulateSystem.clear
+            end
           end
         end
       end

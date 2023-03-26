@@ -20,6 +20,10 @@ module Homebrew
         Download a bottle (if available) or source packages for <formula>e
         and binaries for <cask>s. For files, also print SHA-256 checksums.
       EOS
+      # This is needed for testing cask downloads on CI.
+      flag "--arch=",
+           description: "Download for the given arch.",
+           hidden:      true
       flag "--bottle-tag=",
            description: "Download a bottle for given tag."
       switch "--HEAD",
@@ -65,6 +69,10 @@ module Homebrew
 
   def self.fetch
     args = fetch_args.parse
+
+    if (arch = args.arch)
+      SimulateSystem.arch = arch.to_sym
+    end
 
     bucket = if args.deps?
       args.named.to_formulae_and_casks.flat_map do |formula_or_cask|
