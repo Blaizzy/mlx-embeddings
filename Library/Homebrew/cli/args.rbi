@@ -274,6 +274,9 @@ module Homebrew
       def appdir; end
 
       sig { returns(T.nilable(String)) }
+      def keyboard_layoutdir; end
+
+      sig { returns(T.nilable(String)) }
       def fontdir; end
 
       sig { returns(T.nilable(String)) }
