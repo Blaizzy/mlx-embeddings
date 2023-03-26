@@ -78,11 +78,16 @@ module RuboCop
         end
       end
 
-      def audit_arch_conditionals(body_node, allowed_methods: [], allowed_blocks: [])
+      def audit_arch_conditionals(body_node, allowed_methods: [], allowed_blocks: [], optional_blocks: [])
         ARCH_OPTIONS.each do |arch_option|
           else_method = (arch_option == :arm) ? :on_intel : :on_arm
           if_arch_node_search(body_node, arch: :"#{arch_option}?") do |if_node, else_node|
-            next if if_node_is_allowed?(if_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+            next if if_node_is_allowed?(
+              if_node,
+              allowed_methods: allowed_methods,
+              allowed_blocks:  allowed_blocks,
+              optional_blocks: optional_blocks,
+            )
 
             if_statement_problem(if_node, "if Hardware::CPU.#{arch_option}?", "on_#{arch_option}",
                                  else_method: else_method, else_node: else_node)
@@ -93,7 +98,12 @@ module RuboCop
           hardware_cpu_search(body_node, method: method) do |method_node|
             # These should already be caught by `if_arch_node_search`
             next if method_node.parent.source.start_with? "if #{method_node.source}"
-            next if if_node_is_allowed?(method_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+            next if if_node_is_allowed?(
+              method_node,
+              allowed_methods: allowed_methods,
+              allowed_blocks:  allowed_blocks,
+              optional_blocks: optional_blocks,
+            )
 
             offending_node(method_node)
             problem "Don't use `#{method_node.source}`, use `on_arm` and `on_intel` blocks instead."
@@ -101,7 +111,7 @@ module RuboCop
         end
       end
 
-      def audit_base_os_conditionals(body_node, allowed_methods: [], allowed_blocks: [])
+      def audit_base_os_conditionals(body_node, allowed_methods: [], allowed_blocks: [], optional_blocks: [])
         BASE_OS_OPTIONS.each do |base_os_option|
           os_method, else_method = if base_os_option == :macos
             [:mac?, :on_linux]
@@ -109,7 +119,12 @@ module RuboCop
             [:linux?, :on_macos]
           end
           if_base_os_node_search(body_node, base_os: os_method) do |if_node, else_node|
-            next if if_node_is_allowed?(if_node, allowed_methods: allowed_methods, allowed_blocks: allowed_blocks)
+            next if if_node_is_allowed?(
+              if_node,
+              allowed_methods: allowed_methods,
+              allowed_blocks:  allowed_blocks,
+              optional_blocks: optional_blocks,
+            )
 
             if_statement_problem(if_node, "if OS.#{os_method}", "on_#{base_os_option}",
                                  else_method: else_method, else_node: else_node)
@@ -170,15 +185,16 @@ module RuboCop
         end
       end
 
-      def if_node_is_allowed?(if_node, allowed_methods: [], allowed_blocks: [])
+      def if_node_is_allowed?(if_node, allowed_methods: [], allowed_blocks: [], optional_blocks: [])
         # TODO: check to see if it's legal
         valid = T.let(false, T::Boolean)
+        allowed_and_optional_blocks = allowed_blocks + optional_blocks
         if_node.each_ancestor do |ancestor|
           valid_method_names = case ancestor.type
           when :def
             allowed_methods
           when :block
-            allowed_blocks
+            allowed_and_optional_blocks
           else
             next
           end
