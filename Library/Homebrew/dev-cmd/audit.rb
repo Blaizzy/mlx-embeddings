@@ -31,6 +31,10 @@ module Homebrew
         locally available formulae and casks and skip style checks. Will exit with a
         non-zero status if any errors are found.
       EOS
+      # This is needed for auditing ARM casks in CI.
+      flag "--arch=",
+           description: "Audit the given CPU architecture.",
+           hidden:      true
       switch "--strict",
              description: "Run additional, stricter style checks."
       switch "--git",
@@ -103,6 +107,10 @@ module Homebrew
   sig { void }
   def self.audit
     args = audit_args.parse
+
+    if (arch = args.arch)
+      SimulateSystem.arch = arch.to_sym
+    end
 
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
