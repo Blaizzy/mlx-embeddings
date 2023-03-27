@@ -25,7 +25,7 @@ describe Homebrew::Cleanup do
     FileUtils.rm_rf HOMEBREW_LIBRARY/"Homebrew"
   end
 
-  describe "::PathnameUtils.prune?" do
+  describe "::prune?" do
     subject(:path) { HOMEBREW_CACHE/"foo" }
 
     before do
@@ -35,11 +35,11 @@ describe Homebrew::Cleanup do
     it "returns true when ctime and mtime < days_default" do
       allow_any_instance_of(Pathname).to receive(:ctime).and_return((DateTime.now - 2).to_time)
       allow_any_instance_of(Pathname).to receive(:mtime).and_return((DateTime.now - 2).to_time)
-      expect(described_class::PathnameUtils.prune?(path, 1)).to be true
+      expect(described_class.prune?(path, 1)).to be true
     end
 
     it "returns false when ctime and mtime >= days_default" do
-      expect(described_class::PathnameUtils.prune?(path, 2)).to be false
+      expect(described_class.prune?(path, 2)).to be false
     end
   end
 

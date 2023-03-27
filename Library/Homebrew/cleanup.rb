@@ -15,129 +15,127 @@ module Homebrew
     CLEANUP_DEFAULT_DAYS = Homebrew::EnvConfig.cleanup_periodic_full_days.to_i.freeze
     private_constant :CLEANUP_DEFAULT_DAYS
 
-    module PathnameUtils
-      class << self
-        extend T::Sig
+    class << self
+      extend T::Sig
 
-        sig { params(pathname: Pathname).returns(T::Boolean) }
-        def incomplete?(pathname)
-          pathname.extname.end_with?(".incomplete")
+      sig { params(pathname: Pathname).returns(T::Boolean) }
+      def incomplete?(pathname)
+        pathname.extname.end_with?(".incomplete")
+      end
+
+      sig { params(pathname: Pathname).returns(T::Boolean) }
+      def nested_cache?(pathname)
+        pathname.directory? && %w[
+          cargo_cache
+          go_cache
+          go_mod_cache
+          glide_home
+          java_cache
+          npm_cache
+          gclient_cache
+        ].include?(pathname.basename.to_s)
+      end
+
+      sig { params(pathname: Pathname).returns(T::Boolean) }
+      def go_cache_directory?(pathname)
+        # Go makes its cache contents read-only to ensure cache integrity,
+        # which makes sense but is something we need to undo for cleanup.
+        pathname.directory? && %w[go_cache go_mod_cache].include?(pathname.basename.to_s)
+      end
+
+      sig { params(pathname: Pathname, days: T.nilable(Integer)).returns(T::Boolean) }
+      def prune?(pathname, days)
+        return false unless days
+        return true if days.zero?
+        return true if pathname.symlink? && !pathname.exist?
+
+        days_ago = (DateTime.now - days).to_time
+        pathname.mtime < days_ago && pathname.ctime < days_ago
+      end
+
+      sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
+      def stale?(pathname, scrub: false)
+        return false unless pathname.resolved_path.file?
+
+        if pathname.dirname.basename.to_s == "Cask"
+          stale_cask?(pathname, scrub)
+        else
+          stale_formula?(pathname, scrub)
         end
+      end
 
-        sig { params(pathname: Pathname).returns(T::Boolean) }
-        def nested_cache?(pathname)
-          pathname.directory? && %w[
-            cargo_cache
-            go_cache
-            go_mod_cache
-            glide_home
-            java_cache
-            npm_cache
-            gclient_cache
-          ].include?(pathname.basename.to_s)
-        end
+      private
 
-        sig { params(pathname: Pathname).returns(T::Boolean) }
-        def go_cache_directory?(pathname)
-          # Go makes its cache contents read-only to ensure cache integrity,
-          # which makes sense but is something we need to undo for cleanup.
-          pathname.directory? && %w[go_cache go_mod_cache].include?(pathname.basename.to_s)
-        end
+      sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
+      def stale_formula?(pathname, scrub)
+        return false unless HOMEBREW_CELLAR.directory?
 
-        sig { params(pathname: Pathname, days: T.nilable(Integer)).returns(T::Boolean) }
-        def prune?(pathname, days)
-          return false unless days
-          return true if days.zero?
-          return true if pathname.symlink? && !pathname.exist?
-
-          days_ago = (DateTime.now - days).to_time
-          pathname.mtime < days_ago && pathname.ctime < days_ago
-        end
-
-        sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
-        def stale?(pathname, scrub: false)
-          return false unless pathname.resolved_path.file?
-
-          if pathname.dirname.basename.to_s == "Cask"
-            stale_cask?(pathname, scrub)
-          else
-            stale_formula?(pathname, scrub)
-          end
-        end
-
-        private
-
-        sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
-        def stale_formula?(pathname, scrub)
-          return false unless HOMEBREW_CELLAR.directory?
-
-          version = if HOMEBREW_BOTTLES_EXTNAME_REGEX.match?(to_s)
-            begin
-              Utils::Bottles.resolve_version(pathname)
-            rescue
-              nil
-            end
-          end
-          basename_str = pathname.basename.to_s
-
-          version ||= basename_str[/\A.*(?:--.*?)*--(.*?)#{Regexp.escape(pathname.extname)}\Z/, 1]
-          version ||= basename_str[/\A.*--?(.*?)#{Regexp.escape(pathname.extname)}\Z/, 1]
-
-          return false unless version
-
-          version = Version.new(version)
-
-          unless (formula_name = basename_str[/\A(.*?)(?:--.*?)*--?(?:#{Regexp.escape(version.to_s)})/, 1])
-            return false
-          end
-
-          formula = begin
-            Formulary.from_rack(HOMEBREW_CELLAR/formula_name)
-          rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+        version = if HOMEBREW_BOTTLES_EXTNAME_REGEX.match?(to_s)
+          begin
+            Utils::Bottles.resolve_version(pathname)
+          rescue
             nil
           end
+        end
+        basename_str = pathname.basename.to_s
 
-          return false if formula.blank?
+        version ||= basename_str[/\A.*(?:--.*?)*--(.*?)#{Regexp.escape(pathname.extname)}\Z/, 1]
+        version ||= basename_str[/\A.*--?(.*?)#{Regexp.escape(pathname.extname)}\Z/, 1]
 
-          resource_name = basename_str[/\A.*?--(.*?)--?(?:#{Regexp.escape(version.to_s)})/, 1]
+        return false unless version
 
-          if resource_name == "patch"
-            patch_hashes = formula.stable&.patches&.select(&:external?)&.map(&:resource)&.map(&:version)
-            return true unless patch_hashes&.include?(Checksum.new(version.to_s))
-          elsif resource_name && (resource_version = formula.stable&.resources&.dig(resource_name)&.version)
-            return true if resource_version != version
-          elsif formula.version > version
-            return true
-          end
+        version = Version.new(version)
 
-          return true if scrub && !formula.latest_version_installed?
-          return true if Utils::Bottles.file_outdated?(formula, pathname)
-
-          false
+        unless (formula_name = basename_str[/\A(.*?)(?:--.*?)*--?(?:#{Regexp.escape(version.to_s)})/, 1])
+          return false
         end
 
-        sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
-        def stale_cask?(pathname, scrub)
-          basename = pathname.basename
-          return false unless (name = basename.to_s[/\A(.*?)--/, 1])
-
-          cask = begin
-            Cask::CaskLoader.load(name)
-          rescue Cask::CaskError
-            nil
-          end
-
-          return false if cask.blank?
-          return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}--#{Regexp.escape(cask.version)}\b/)
-          return true if scrub && cask.versions.exclude?(cask.version)
-
-          if cask.version.latest?
-            cleanup_threshold = (DateTime.now - CLEANUP_DEFAULT_DAYS).to_time
-            return pathname.mtime < cleanup_threshold && pathname.ctime < cleanup_threshold
-          end
-
-          false
+        formula = begin
+          Formulary.from_rack(HOMEBREW_CELLAR/formula_name)
+        rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+          nil
         end
+
+        return false if formula.blank?
+
+        resource_name = basename_str[/\A.*?--(.*?)--?(?:#{Regexp.escape(version.to_s)})/, 1]
+
+        if resource_name == "patch"
+          patch_hashes = formula.stable&.patches&.select(&:external?)&.map(&:resource)&.map(&:version)
+          return true unless patch_hashes&.include?(Checksum.new(version.to_s))
+        elsif resource_name && (resource_version = formula.stable&.resources&.dig(resource_name)&.version)
+          return true if resource_version != version
+        elsif formula.version > version
+          return true
+        end
+
+        return true if scrub && !formula.latest_version_installed?
+        return true if Utils::Bottles.file_outdated?(formula, pathname)
+
+        false
+      end
+
+      sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
+      def stale_cask?(pathname, scrub)
+        basename = pathname.basename
+        return false unless (name = basename.to_s[/\A(.*?)--/, 1])
+
+        cask = begin
+          Cask::CaskLoader.load(name)
+        rescue Cask::CaskError
+          nil
+        end
+
+        return false if cask.blank?
+        return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}--#{Regexp.escape(cask.version)}\b/)
+        return true if scrub && cask.versions.exclude?(cask.version)
+
+        if cask.version.latest?
+          cleanup_threshold = (DateTime.now - CLEANUP_DEFAULT_DAYS).to_time
+          return pathname.mtime < cleanup_threshold && pathname.ctime < cleanup_threshold
+        end
+
+        false
       end
     end
 
@@ -192,9 +190,10 @@ module Homebrew
     end
 
     def self.skip_clean_formula?(formula)
-      return false if Homebrew::EnvConfig.no_cleanup_formulae.blank?
+      no_cleanup_formula = Homebrew::EnvConfig.no_cleanup_formulae
+      return false if no_cleanup_formula.blank?
 
-      @skip_clean_formulae ||= T.must(Homebrew::EnvConfig.no_cleanup_formulae).split(",")
+      @skip_clean_formulae ||= no_cleanup_formula.split(",")
       @skip_clean_formulae.include?(formula.name) || (@skip_clean_formulae & formula.aliases).present?
     end
 
@@ -315,7 +314,7 @@ module Homebrew
       logs_days = [days, CLEANUP_DEFAULT_DAYS].min
 
       HOMEBREW_LOGS.subdirs.each do |dir|
-        cleanup_path(dir) { dir.rmtree } if PathnameUtils.prune?(dir, logs_days)
+        cleanup_path(dir) { dir.rmtree } if self.class.prune?(dir, logs_days)
       end
     end
 
@@ -331,7 +330,7 @@ module Homebrew
                                                   .map(&:resolved_path)
 
       (downloads - referenced_downloads).each do |download|
-        if PathnameUtils.incomplete?(download)
+        if self.class.incomplete?(download)
           begin
             LockFile.new(download.basename).with_lock do
               download.unlink
@@ -354,11 +353,11 @@ module Homebrew
       entries.each do |path|
         next if path == PERIODIC_CLEAN_FILE
 
-        FileUtils.chmod_R 0755, path if PathnameUtils.go_cache_directory?(path) && !dry_run?
-        next cleanup_path(path) { path.unlink } if PathnameUtils.incomplete?(path)
-        next cleanup_path(path) { FileUtils.rm_rf path } if PathnameUtils.nested_cache?(path)
+        FileUtils.chmod_R 0755, path if self.class.go_cache_directory?(path) && !dry_run?
+        next cleanup_path(path) { path.unlink } if self.class.incomplete?(path)
+        next cleanup_path(path) { FileUtils.rm_rf path } if self.class.nested_cache?(path)
 
-        if PathnameUtils.prune?(path, days)
+        if self.class.prune?(path, days)
           if path.file? || path.symlink?
             cleanup_path(path) { path.unlink }
           elsif path.directory? && path.to_s.include?("--")
@@ -368,7 +367,7 @@ module Homebrew
         end
 
         # If we've specified --prune don't do the (expensive) .stale? check.
-        cleanup_path(path) { path.unlink } if !prune? && PathnameUtils.stale?(path, scrub: scrub?)
+        cleanup_path(path) { path.unlink } if !prune? && self.class.stale?(path, scrub: scrub?)
       end
 
       cleanup_unreferenced_downloads
@@ -489,7 +488,7 @@ module Homebrew
           if child.basename.to_s == "__pycache__"
             child.find do |path|
               next unless path.extname == ".pyc"
-              next unless PathnameUtils.prune?(path, days)
+              next unless self.class.prune?(path, days)
 
               unused_pyc_files << path
             end
