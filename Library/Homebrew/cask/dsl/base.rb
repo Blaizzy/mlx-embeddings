@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cask/utils"
+require "extend/on_system"
 
 module Cask
   class DSL
@@ -16,7 +17,7 @@ module Cask
         @command = command
       end
 
-      def_delegators :@cask, :token, :version, :caskroom_path, :staged_path, :appdir, :language
+      def_delegators :@cask, :token, :version, :caskroom_path, :staged_path, :appdir, :language, :arch
 
       def system_command(executable, **options)
         @command.run!(executable, **options)

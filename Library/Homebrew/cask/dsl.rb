@@ -68,6 +68,7 @@ module Cask
 
     DSL_METHODS = Set.new([
       :appcast,
+      :arch,
       :artifacts,
       :auto_updates,
       :caveats,
