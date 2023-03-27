@@ -1164,6 +1164,7 @@ _brew_instal() {
       --interactive
       --internet-plugindir
       --keep-tmp
+      --keyboard-layoutdir
       --language
       --mdimporterdir
       --no-binaries
@@ -1226,6 +1227,7 @@ _brew_install() {
       --interactive
       --internet-plugindir
       --keep-tmp
+      --keyboard-layoutdir
       --language
       --mdimporterdir
       --no-binaries
@@ -1838,6 +1840,7 @@ _brew_reinstall() {
       --interactive
       --internet-plugindir
       --keep-tmp
+      --keyboard-layoutdir
       --language
       --mdimporterdir
       --no-binaries
@@ -2495,6 +2498,7 @@ _brew_upgrade() {
       --interactive
       --internet-plugindir
       --keep-tmp
+      --keyboard-layoutdir
       --language
       --mdimporterdir
       --no-binaries
