@@ -1653,6 +1653,9 @@ These options are applicable to the `install`, `reinstall`, and `upgrade` subcom
 * `--appdir`:
   Target location for Applications (default: `/Applications`).
 
+* `--keyboard-layoutdir`:
+  Target location for Keyboard Layouts (default: `/Library/Keyboard Layouts`).
+
 * `--colorpickerdir`:
   Target location for Color Pickers (default: `~/Library/ColorPickers`).
 
