@@ -811,7 +811,12 @@ EOS
         CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
         if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
         then
-          rm -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt"
+          if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" ]]
+          then
+            mv -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" \
+              "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.before.txt"
+          fi
+
           if [[ "${formula_or_cask}" == "formula" ]]
           then
             rm -f "${HOMEBREW_CACHE}/api/formula_aliases.txt"
