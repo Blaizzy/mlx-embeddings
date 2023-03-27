@@ -30,10 +30,10 @@ module Cask
         odebug "Deleting pkg files"
         @command.run!(
           "/usr/bin/xargs",
-          args:      ["-0", "--", "/bin/rm", "--"],
-          input:     pkgutil_bom_files.join("\0"),
-          sudo:      true,
-          sudo_user: "root",
+          args:         ["-0", "--", "/bin/rm", "--"],
+          input:        pkgutil_bom_files.join("\0"),
+          sudo:         true,
+          sudo_as_root: true,
         )
       end
 
@@ -41,10 +41,10 @@ module Cask
         odebug "Deleting pkg symlinks and special files"
         @command.run!(
           "/usr/bin/xargs",
-          args:      ["-0", "--", "/bin/rm", "--"],
-          input:     pkgutil_bom_specials.join("\0"),
-          sudo:      true,
-          sudo_user: "root",
+          args:         ["-0", "--", "/bin/rm", "--"],
+          input:        pkgutil_bom_specials.join("\0"),
+          sudo:         true,
+          sudo_as_root: true,
         )
       end
 
@@ -61,7 +61,12 @@ module Cask
     sig { void }
     def forget
       odebug "Unregistering pkg receipt (aka forgetting)"
-      @command.run!("/usr/sbin/pkgutil", args: ["--forget", package_id], sudo: true, sudo_user: "root")
+      @command.run!(
+        "/usr/sbin/pkgutil",
+        args:         ["--forget", package_id],
+        sudo:         true,
+        sudo_as_root: true,
+      )
     end
 
     sig { returns(T::Array[Pathname]) }
@@ -114,10 +119,10 @@ module Cask
     def rmdir(path)
       @command.run!(
         "/usr/bin/xargs",
-        args:      ["-0", "--", RMDIR_SH.to_s],
-        input:     Array(path).join("\0"),
-        sudo:      true,
-        sudo_user: "root",
+        args:         ["-0", "--", RMDIR_SH.to_s],
+        input:        Array(path).join("\0"),
+        sudo:         true,
+        sudo_as_root: true,
       )
     end
 

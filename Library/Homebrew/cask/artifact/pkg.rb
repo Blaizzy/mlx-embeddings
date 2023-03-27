@@ -62,7 +62,14 @@ module Cask
             "USER"     => User.current,
             "USERNAME" => User.current,
           }
-          command.run!("/usr/sbin/installer", sudo: true, sudo_user: "root", args: args, print_stdout: true, env: env)
+          command.run!(
+            "/usr/sbin/installer",
+            sudo:         true,
+            sudo_as_root: true,
+            args:         args,
+            print_stdout: true,
+            env:          env,
+          )
         end
       end
 

@@ -22,7 +22,12 @@ module Cask
       private
 
       def delete_keyboard_layout_cache(command: nil, **_)
-        command.run!("/bin/rm", args: ["-f", "--", "/System/Library/Caches/com.apple.IntlDataCache.le*"], sudo: true)
+        command.run!(
+          "/bin/rm",
+          args:         ["-f", "--", "/System/Library/Caches/com.apple.IntlDataCache.le*"],
+          sudo:         true,
+          sudo_as_root: true,
+        )
       end
     end
   end
