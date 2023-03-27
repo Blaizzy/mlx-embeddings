@@ -500,10 +500,11 @@ module Formulary
 
     def load_file(flags:, ignore_errors:)
       if @from != :formula_installer
-        if (md = url.match(%r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb}))
+        match = url.match(%r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb})
+        if match
           raise UnsupportedInstallationMethod,
-                "Installation of #{md[:name]} from a GitHub commit URL is unsupported! " \
-                "`brew extract #{md[:name]}` to a stable tap on GitHub instead."
+                "Installation of #{match[:name]} from a GitHub commit URL is unsupported! " \
+                "`brew extract #{match[:name]}` to a stable tap on GitHub instead."
         elsif url.match?(%r{^(https?|ftp)://})
           raise UnsupportedInstallationMethod,
                 "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! " \
