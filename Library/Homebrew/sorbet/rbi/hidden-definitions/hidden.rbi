@@ -3007,6 +3007,10 @@ class Cask::Config
 
   def internet_plugindir=(path); end
 
+  def keyboard_layoutdir(); end
+
+  def keyboard_layoutdir=(path); end
+
   def mdimporterdir(); end
 
   def mdimporterdir=(path); end
@@ -6553,6 +6557,8 @@ class RuboCop::Cask::AST::Stanza
   def installer?(); end
 
   def internet_plugin?(); end
+
+  def keyboard_layout?(); end
 
   def language?(); end
 

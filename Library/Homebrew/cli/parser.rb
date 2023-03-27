@@ -37,6 +37,10 @@ module Homebrew
             description: "Target location for Applications " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:appdir]}`).",
           }],
+          [:flag, "--keyboard-layoutdir=", {
+            description: "Target location for Keyboard Layouts " \
+                         "(default: `#{Cask::Config::DEFAULT_DIRS[:keyboard_layoutdir]}`).",
+          }],
           [:flag, "--colorpickerdir=", {
             description: "Target location for Color Pickers " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:colorpickerdir]}`).",

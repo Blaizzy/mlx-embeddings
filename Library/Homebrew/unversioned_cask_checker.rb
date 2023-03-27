@@ -32,6 +32,11 @@ module Homebrew
     end
 
     sig { returns(T::Array[Cask::Artifact::Qlplugin]) }
+    def keyboard_layouts
+      @keyboard_layouts ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::KeyboardLayout) }
+    end
+
+    sig { returns(T::Array[Cask::Artifact::Qlplugin]) }
     def qlplugins
       @qlplugins ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Qlplugin) }
     end
@@ -93,7 +98,7 @@ module Homebrew
 
         installer.extract_primary_container(to: dir)
 
-        info_plist_paths = apps.concat(qlplugins, installers).flat_map do |artifact|
+        info_plist_paths = apps.concat(keyboard_layouts, qlplugins, installers).flat_map do |artifact|
           source = artifact.is_a?(Cask::Artifact::Installer) ? artifact.path : artifact.source.basename
           top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
         end

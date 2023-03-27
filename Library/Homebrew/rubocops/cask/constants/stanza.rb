@@ -29,6 +29,7 @@ module RuboCop
           :font,
           :input_method,
           :internet_plugin,
+          :keyboard_layout,
           :prefpane,
           :qlplugin,
           :mdimporter,
