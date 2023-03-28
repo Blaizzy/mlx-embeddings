@@ -697,9 +697,7 @@ class ReporterHub
     return if msg.blank?
 
     puts
-    puts <<~EOS
-      You have #{msg} installed.
-    EOS
+    puts "You have #{msg} installed."
     # If we're auto-updating, don't need to suggest commands that we're perhaps
     # already running.
     return if auto_update
