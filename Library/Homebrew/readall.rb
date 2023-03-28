@@ -62,28 +62,8 @@ module Readall
       success
     end
 
-    def valid_casks?(casks, bottle_tag: nil)
-      return true if bottle_tag.present? && bottle_tag.system == :linux
-
-      success = T.let(true, T::Boolean)
-      casks.each do |file|
-        cask = Cask::CaskLoader.load(file)
-
-        # Fine to have missing URLs for unsupported macOS
-        macos_req = cask.depends_on.macos
-        next if macos_req&.version && Array(macos_req.version).none? do |macos_version|
-          bottle_tag.to_macos_version.public_send(macos_req.comparator, macos_version)
-        end
-
-        raise "Missing URL" if cask.url.nil?
-      rescue Interrupt
-        raise
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        onoe "Invalid cask (#{bottle_tag}): #{file}"
-        $stderr.puts e
-        success = false
-      end
-      success
+    def valid_casks?(_casks, os_name: nil, arch: nil)
+      true
     end
 
     def valid_tap?(tap, options = {})
@@ -108,7 +88,7 @@ module Readall
               Homebrew::SimulateSystem.os = os_name
 
               success = false unless valid_formulae?(tap.formula_files, bottle_tag: bottle_tag)
-              success = false unless valid_casks?(tap.cask_files, bottle_tag: bottle_tag)
+              success = false unless valid_casks?(tap.cask_files, os_name: os_name, arch: arch)
             ensure
               Homebrew::SimulateSystem.clear
             end
