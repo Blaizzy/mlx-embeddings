@@ -36,8 +36,6 @@ module Homebrew
       flag   "--workflow=",
              description: "Target workflow filename (default: `publish-commit-bottles.yml`)."
 
-      conflicts "--clean", "--autosquash"
-
       named_args :pull_request, min: 1
     end
   end
