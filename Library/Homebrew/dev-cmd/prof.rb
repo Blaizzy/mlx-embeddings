@@ -41,6 +41,7 @@ module Homebrew
     end
 
     if args.stackprof?
+      # Already installed from Gemfile but use this to setup PATH and LOADPATH
       Homebrew.install_gem_setup_path! "stackprof"
       with_env HOMEBREW_STACKPROF: "1" do
         system(*HOMEBREW_RUBY_EXEC_ARGS, brew_rb, *args.named)
@@ -48,9 +49,8 @@ module Homebrew
       output_filename = "prof/d3-flamegraph.html"
       safe_system "stackprof --d3-flamegraph prof/stackprof.dump > #{output_filename}"
     else
-      # NOTE: ruby-prof v1.4.3 is the last version that supports Ruby 2.6.x
-      # TODO: Remove explicit version arg when we move to a newer version of Ruby
-      Homebrew.install_gem_setup_path! "ruby-prof", version: "1.4.3"
+      # Already installed from Gemfile but use this to setup PATH and LOADPATH
+      Homebrew.install_gem_setup_path! "ruby-prof"
       output_filename = "prof/call_stack.html"
       safe_system "ruby-prof", "--printer=call_stack", "--file=#{output_filename}", brew_rb, "--", *args.named
     end

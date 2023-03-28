@@ -17,6 +17,7 @@ gem "byebug", require: false
 gem "json_schemer", require: false
 gem "minitest", require: false
 gem "parallel_tests", require: false
+gem "pry", require: false
 gem "ronn", require: false
 gem "rspec", require: false
 gem "rspec-github", require: false
@@ -26,6 +27,9 @@ gem "rspec-retry", require: false
 gem "rspec-sorbet", require: false
 gem "rubocop", require: false
 gem "rubocop-ast", require: false
+# NOTE: ruby-prof v1.4.3 is the last version that supports Ruby 2.6.x
+# TODO: remove explicit version when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
+gem "ruby-prof", "1.4.3", require: false
 gem "simplecov", require: false
 gem "simplecov-cobertura", require: false
 gem "stackprof", require: false
@@ -52,7 +56,7 @@ gem "rubocop-sorbet"
 gem "ruby-macho"
 gem "sorbet-runtime"
 
-# remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
+# TODO: remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
 install_if -> { RUBY_VERSION < "2.7" } do
   gem "did_you_mean"
 end
