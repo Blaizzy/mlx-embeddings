@@ -67,6 +67,10 @@ module Homebrew
 
       inputs[:pull_request] = issue
 
+      pr_labels = GitHub.pull_request_labels(user, repo, issue)
+      oh1 "Found `autosquash` label on ##{issue}. Requesting autosquash."
+      inputs[:autosquash] = true if pr_labels.include?("autosquash")
+
       if args.tap.present? && !T.must("#{user}/#{repo}".casecmp(tap.full_name)).zero?
         odie "Pull request URL is for #{user}/#{repo} but `--tap=#{tap.full_name}` was specified!"
       end

@@ -308,10 +308,8 @@ module Homebrew
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
-  def self.formulae_need_bottles?(tap, original_commit, user, repo, pull_request, args:)
+  def self.formulae_need_bottles?(tap, original_commit, labels, args:)
     return if args.dry_run?
-
-    labels = GitHub.pull_request_labels(user, repo, pull_request)
 
     return false if labels.include?("CI-syntax-only") || labels.include?("CI-no-bottles")
 
@@ -456,6 +454,11 @@ module Homebrew
         opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
       end
 
+      pr_labels = GitHub.pull_request_labels(user, repo, pr)
+      if pr_labels.include?("autosquash") && !args.autosquash?
+        opoo "Pull request is labelled `autosquash`: do you need to pass `--autosquash`?"
+      end
+
       pr_check_conflicts("#{user}/#{repo}", pr)
 
       ohai "Fetching #{tap} pull request ##{pr}"
@@ -478,7 +481,7 @@ module Homebrew
             signoff!(tap.path, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
-          unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
+          unless formulae_need_bottles?(tap, original_commit, pr_labels, args: args)
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
           end
