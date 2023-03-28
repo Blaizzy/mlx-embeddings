@@ -23,8 +23,7 @@ module Homebrew
                           "to our preferred format."
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request " \
-                          "to the preferred format, even if supported on the target tap.",
-             replacement: "`--autosquash` to opt in"
+                          "to the preferred format, even if supported on the target tap."
       switch "--large-runner",
              description: "Run the upload job on a large runner."
       flag   "--branch=",
@@ -68,8 +67,10 @@ module Homebrew
       inputs[:pull_request] = issue
 
       pr_labels = GitHub.pull_request_labels(user, repo, issue)
-      oh1 "Found `autosquash` label on ##{issue}. Requesting autosquash."
-      inputs[:autosquash] = true if pr_labels.include?("autosquash")
+      if pr_labels.include?("autosquash")
+        oh1 "Found `autosquash` label on ##{issue}. Requesting autosquash."
+        inputs[:autosquash] = true
+      end
 
       if args.tap.present? && !T.must("#{user}/#{repo}".casecmp(tap.full_name)).zero?
         odie "Pull request URL is for #{user}/#{repo} but `--tap=#{tap.full_name}` was specified!"

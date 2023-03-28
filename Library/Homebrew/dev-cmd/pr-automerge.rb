@@ -33,8 +33,7 @@ module Homebrew
                           "in the pull request to the preferred format."
       switch "--no-autosquash",
              description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits " \
-                          "in the pull request to the preferred format.",
-             replacement: "`--autosquash` to opt in"
+                          "in the pull request to the preferred format."
       switch "--ignore-failures",
              description: "Include pull requests that have failing status checks."
 

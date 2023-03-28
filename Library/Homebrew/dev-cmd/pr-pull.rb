@@ -36,8 +36,7 @@ module Homebrew
                           "preferred format."
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request to our " \
-                          "preferred format.",
-             replacement: "`--autosquash` to opt in"
+                          "preferred format."
       switch "--branch-okay",
              description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
       switch "--resolve",
