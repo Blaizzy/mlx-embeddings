@@ -65,7 +65,7 @@ module Homebrew
              description: "Prefix every line of output with the file or formula name being audited, to " \
                           "make output easy to grep."
       switch "--display-failures-only",
-             description: "Only display casks that fail the audit. This is the default for formulae."
+             description: "Only display casks that fail the audit. This is the default for formulae and casks."
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running " \
                           "`brew style` separately. Enabled by default unless a formula is specified by name."
@@ -242,24 +242,26 @@ module Homebrew
       require "cask/cmd/abstract_command"
       require "cask/cmd/audit"
 
+      if args.display_failures_only?
+        odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
+      end
+
       # For switches, we add `|| nil` so that `nil` will be passed instead of `false` if they aren't set.
       # This way, we can distinguish between "not set" and "set to false".
       Cask::Cmd::Audit.audit_casks(
         *audit_casks,
-        download:              nil,
+        download:        nil,
         # No need for `|| nil` for `--[no-]signing` because boolean switches are already `nil` if not passed
-        signing:               args.signing?,
-        online:                args.online? || nil,
-        strict:                args.strict? || nil,
-        new_cask:              args.new_cask? || nil,
-        token_conflicts:       args.token_conflicts? || nil,
-        quarantine:            nil,
-        any_named_args:        !no_named_args,
-        language:              nil,
-        display_passes:        args.verbose? || args.named.count == 1,
-        display_failures_only: args.display_failures_only?,
-        only:                  args.only,
-        except:                args.except,
+        signing:         args.signing?,
+        online:          args.online? || nil,
+        strict:          args.strict? || nil,
+        new_cask:        args.new_cask? || nil,
+        token_conflicts: args.token_conflicts? || nil,
+        quarantine:      nil,
+        any_named_args:  !no_named_args,
+        language:        nil,
+        only:            args.only,
+        except:          args.except,
       )
     end
 

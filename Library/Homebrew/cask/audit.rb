@@ -109,14 +109,12 @@ module Cask
         Formatter.error("failed")
       elsif warnings?
         Formatter.warning("warning")
-      else
-        Formatter.success("passed")
       end
     end
 
-    sig { params(include_passed: T::Boolean, include_warnings: T::Boolean).returns(T.nilable(String)) }
-    def summary(include_passed: false, include_warnings: true)
-      return if success? && !include_passed
+    sig { params(include_warnings: T::Boolean).returns(T.nilable(String)) }
+    def summary(include_warnings: true)
+      return if success?
       return if warnings? && !errors? && !include_warnings
 
       summary = ["audit for #{cask}: #{result}"]
