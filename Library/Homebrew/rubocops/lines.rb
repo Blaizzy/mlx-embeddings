@@ -401,7 +401,6 @@ module RuboCop
 
         NO_ON_SYSTEM_METHOD_NAMES = [:install, :post_install].freeze
         NO_ON_SYSTEM_BLOCK_NAMES = [:service, :test].freeze
-        CAN_HAVE_ON_SYSTEM_BLOCK_NAMES = [:resource].freeze
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           NO_ON_SYSTEM_METHOD_NAMES.each do |formula_method_name|
@@ -421,13 +420,11 @@ module RuboCop
 
           audit_arch_conditionals(body_node,
                                   allowed_methods: NO_ON_SYSTEM_METHOD_NAMES,
-                                  allowed_blocks:  NO_ON_SYSTEM_BLOCK_NAMES,
-                                  optional_blocks: CAN_HAVE_ON_SYSTEM_BLOCK_NAMES)
+                                  allowed_blocks:  NO_ON_SYSTEM_BLOCK_NAMES)
 
           audit_base_os_conditionals(body_node,
                                      allowed_methods: NO_ON_SYSTEM_METHOD_NAMES,
-                                     allowed_blocks:  NO_ON_SYSTEM_BLOCK_NAMES,
-                                     optional_blocks: CAN_HAVE_ON_SYSTEM_BLOCK_NAMES)
+                                     allowed_blocks:  NO_ON_SYSTEM_BLOCK_NAMES)
 
           audit_macos_version_conditionals(body_node,
                                            allowed_methods:     NO_ON_SYSTEM_METHOD_NAMES,
