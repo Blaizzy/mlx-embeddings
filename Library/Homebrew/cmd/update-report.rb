@@ -225,9 +225,9 @@ module Homebrew
             updated_taps << tap.name
             hub.add(reporter, auto_update: args.auto_update?)
           end
+        else
+          FileUtils.cp names_txt, names_before_txt
         end
-
-        FileUtils.cp names_txt, names_before_txt
       end
     end
 
@@ -239,14 +239,14 @@ module Homebrew
 
     if updated
       if hub.empty?
-        puts "No changes to formulae." unless args.quiet?
+        puts no_changes_message unless args.quiet?
       else
         if ENV.fetch("HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED", false)
           opoo "HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED is now the default behaviour, " \
                "so you can unset it from your environment."
         end
 
-        hub.dump(updated_formula_report: !args.auto_update?) unless args.quiet?
+        hub.dump(auto_update: args.auto_update?) unless args.quiet?
         hub.reporters.each(&:migrate_tap_migration)
         hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
 
@@ -301,6 +301,10 @@ module Homebrew
       The #{new_tag} changelog can be found at:
         #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
     EOS
+  end
+
+  def no_changes_message
+    "No changes to formulae or casks."
   end
 
   def shorten_revision(revision)
@@ -627,7 +631,7 @@ class ReporterHub
 
   delegate empty?: :@hash
 
-  def dump(updated_formula_report: true)
+  def dump(auto_update: false)
     report_all = ENV["HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"].present?
     if report_all && !Homebrew::EnvConfig.no_install_from_api?
       odeprecated "HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"
@@ -644,10 +648,10 @@ class ReporterHub
     outdated_formulae = []
     outdated_casks = []
 
-    if updated_formula_report && report_all
+    if !auto_update && report_all
       dump_modified_formula_report
       dump_modified_cask_report
-    elsif updated_formula_report
+    elsif !auto_update
       outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
       output_dump_formula_or_cask_report "Outdated Formulae", outdated_formulae
 
@@ -693,8 +697,12 @@ class ReporterHub
     return if msg.blank?
 
     puts
+    puts "You have #{msg} installed."
+    # If we're auto-updating, don't need to suggest commands that we're perhaps
+    # already running.
+    return if auto_update
+
     puts <<~EOS
-      You have #{msg} installed.
       You can upgrade #{update_pronoun} with #{Tty.bold}brew upgrade#{Tty.reset}
       or list #{update_pronoun} with #{Tty.bold}brew outdated#{Tty.reset}.
     EOS
