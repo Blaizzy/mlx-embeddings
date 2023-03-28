@@ -27,14 +27,17 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--clean",
-             depends_on:  "--no-autosquash",
              description: "Do not amend the commits from pull requests."
       switch "--keep-old",
              description: "If the formula specifies a rebuild version, " \
                           "attempt to preserve its value in the generated DSL."
+      switch "--autosquash",
+             description: "Automatically reformat and reword commits in the pull request to our " \
+                          "preferred format."
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request to our " \
-                          "preferred format."
+                          "preferred format.",
+             replacement: "`--autosquash` to opt in"
       switch "--branch-okay",
              description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
       switch "--resolve",
@@ -46,6 +49,7 @@ module Homebrew
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--message=",
+             depends_on:  "--autosquash",
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
@@ -62,7 +66,7 @@ module Homebrew
       comma_array "--ignore-missing-artifacts",
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
-      conflicts "--no-autosquash", "--message"
+      conflicts "--clean", "--autosquash"
 
       named_args :pull_request, min: 1
     end
@@ -424,6 +428,8 @@ module Homebrew
   def self.pr_pull
     args = pr_pull_args.parse
 
+    odeprecated "`brew pr-pull --no-autosquash`" if args.no_autosquash?
+
     # Needed when extracting the CI artifact.
     ensure_executable!("unzip", reason: "extracting CI artifacts")
 
@@ -465,7 +471,7 @@ module Homebrew
 
           unless args.no_commit?
             cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
-            if !args.no_autosquash? && !args.dry_run?
+            if args.autosquash? && !args.dry_run?
               autosquash!(original_commit, tap: tap,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
