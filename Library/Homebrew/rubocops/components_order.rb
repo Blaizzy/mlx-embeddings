@@ -27,6 +27,11 @@ module RuboCop
             [{ name: :patch, type: :method_call }, { name: :patch, type: :block_call }],
           ]
 
+          head_blocks = find_blocks(body_node, :head)
+          head_blocks.each do |head_block|
+            check_block_component_order(FORMULA_COMPONENT_PRECEDENCE_LIST, head_block)
+          end
+
           on_system_methods.each do |on_method|
             on_method_blocks = find_blocks(body_node, on_method)
             next if on_method_blocks.empty?
@@ -41,6 +46,8 @@ module RuboCop
 
           resource_blocks = find_blocks(body_node, :resource)
           resource_blocks.each do |resource_block|
+            check_block_component_order(FORMULA_COMPONENT_PRECEDENCE_LIST, resource_block)
+
             on_system_blocks = {}
 
             on_system_methods.each do |on_method|
@@ -109,6 +116,11 @@ module RuboCop
               end
             end
           end
+        end
+
+        def check_block_component_order(component_precedence_list, block)
+          @present_components, offensive_node = check_order(component_precedence_list, block.body)
+          component_problem(*offensive_node) if offensive_node
         end
 
         def check_on_system_block_content(component_precedence_list, on_system_block)

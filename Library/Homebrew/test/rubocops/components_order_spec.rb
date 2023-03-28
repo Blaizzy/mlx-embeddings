@@ -803,7 +803,37 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
       RUBY
     end
 
+    context "when in a head block" do
+      it "reports an offense if stanzas inside `head` blocks are out of order" do
+        expect_offense(<<~RUBY)
+          class Foo < Formula
+            homepage "https://brew.sh"
+
+            head do
+              depends_on "bar"
+              url "https://github.com/foo/foo.git", branch: "main"
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `url` (line 6) should be put before `depends_on` (line 5)
+            end
+          end
+        RUBY
+      end
+    end
+
     context "when in a resource block" do
+      it "reports an offense if stanzas inside `resource` blocks are out of order" do
+        expect_offense(<<~RUBY)
+          class Foo < Formula
+            homepage "https://brew.sh"
+
+            resource do
+              sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
+              url "https://brew.sh/resource1.tar.gz"
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `url` (line 6) should be put before `sha256` (line 5)
+            end
+          end
+        RUBY
+      end
+
       it "reports no offenses for a valid `on_macos` and `on_linux` block" do
         expect_no_offenses(<<~RUBY)
           class Foo < Formula
@@ -1106,15 +1136,14 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-              on_intel do
-                url "https://brew.sh/resource2.tar.gz"
-                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
-              end
-
               on_arm do
               ^^^^^^^^^ `on_arm` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version` and `sha256` (in order).
                 sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
                 url "https://brew.sh/resource2.tar.gz"
+              end
+              on_intel do
+                url "https://brew.sh/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
               end
             end
           end
@@ -1127,11 +1156,6 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-              on_intel do
-                url "https://brew.sh/resource2.tar.gz"
-                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
-              end
-
               on_arm do
                 if foo == :bar
                   url "https://brew.sh/resource2.tar.gz"
@@ -1140,6 +1164,10 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
                   url "https://brew.sh/resource1.tar.gz"
                   sha256 "686372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
                 end
+              end
+              on_intel do
+                url "https://brew.sh/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
               end
             end
           end
@@ -1152,11 +1180,6 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
             url "https://brew.sh/foo-1.0.tgz"
 
             resource do
-              on_intel do
-                url "https://brew.sh/resource2.tar.gz"
-                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
-              end
-
               on_arm do
               ^^^^^^^^^ `on_arm` blocks within `resource` blocks must contain at least `url` and `sha256` and at most `url`, `mirror`, `version` and `sha256` (in order).
                 if foo == :bar
@@ -1166,6 +1189,10 @@ describe RuboCop::Cop::FormulaAudit::ComponentsOrder do
                   sha256 "686372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
                   url "https://brew.sh/resource1.tar.gz"
                 end
+              end
+              on_intel do
+                url "https://brew.sh/resource2.tar.gz"
+                sha256 "586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"
               end
             end
           end
