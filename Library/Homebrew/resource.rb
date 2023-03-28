@@ -28,6 +28,7 @@ class Resource
   # formula name before initialization of the formula.
   attr_accessor :name
 
+  sig { params(name: T.nilable(String), block: T.nilable(T.proc.bind(Resource).void)).void }
   def initialize(name = nil, &block)
     # Ensure this is synced with `initialize_dup` and `freeze` (excluding simple objects like integers and booleans)
     @name = name

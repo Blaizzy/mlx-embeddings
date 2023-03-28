@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "deprecate_disable"
@@ -391,7 +391,7 @@ module Homebrew
                   "canonical name (#{conflicting_formula.name}) instead of #{conflict.name}"
         end
 
-        reverse_conflict_found = false
+        reverse_conflict_found = T.let(false, T::Boolean)
         conflicting_formula.conflicts.each do |reverse_conflict|
           reverse_conflict_formula = Formulary.factory(reverse_conflict.name)
           if tap.formula_renames.key?(reverse_conflict.name) || tap.aliases.include?(reverse_conflict.name)
@@ -732,14 +732,14 @@ module Homebrew
       current_revision = formula.revision
       current_url = formula.stable.url
 
-      previous_version = nil
-      previous_version_scheme = nil
-      previous_revision = nil
+      previous_version = T.let(nil, T.nilable(Version))
+      previous_version_scheme = T.let(nil, T.nilable(Integer))
+      previous_revision = T.let(nil, T.nilable(Integer))
 
-      newest_committed_version = nil
-      newest_committed_checksum = nil
-      newest_committed_revision = nil
-      newest_committed_url = nil
+      newest_committed_version = T.let(nil, T.nilable(Version))
+      newest_committed_checksum = T.let(nil, T.nilable(String))
+      newest_committed_revision = T.let(nil, T.nilable(Integer))
+      newest_committed_url = T.let(nil, T.nilable(String))
 
       fv.rev_list("origin/HEAD") do |rev|
         begin

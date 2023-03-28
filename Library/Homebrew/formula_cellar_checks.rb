@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "utils/shell"
@@ -7,6 +7,17 @@ require "utils/shell"
 #
 # @api private
 module FormulaCellarChecks
+  extend T::Sig
+  extend T::Helpers
+
+  abstract!
+
+  sig { abstract.returns(Formula) }
+  def formula; end
+
+  sig { abstract.params(output: T.nilable(String)).void }
+  def problem_if_output(output); end
+
   def check_env_path(bin)
     # warn the user if stuff was installed outside of their PATH
     return unless bin.directory?
@@ -407,7 +418,7 @@ module FormulaCellarChecks
       end
     end
 
-    has_cpuid_instruction = false
+    has_cpuid_instruction = T.let(false, T::Boolean)
     Utils.popen_read(objdump, "--disassemble", file) do |io|
       until io.eof?
         instruction = io.readline.split("\t")[@instruction_column_index[objdump]]&.strip

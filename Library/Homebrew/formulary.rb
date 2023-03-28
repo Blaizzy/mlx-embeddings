@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "digest/md5"
@@ -56,7 +56,7 @@ module Formulary
         namespace = Utils.deconstantize(klass.name)
         next if Utils.deconstantize(namespace) != name
 
-        remove_const(Utils.demodulize(namespace))
+        remove_const(Utils.demodulize(namespace).to_sym)
       end
     end
 
@@ -67,6 +67,7 @@ module Formulary
   module PathnameWriteMkpath
     refine Pathname do
       def write(content, offset = nil, **open_args)
+        T.bind(self, Pathname)
         raise "Will not overwrite #{self}" if exist? && !offset && !open_args[:mode]&.match?(/^a\+?$/)
 
         dirname.mkpath
@@ -129,7 +130,7 @@ module Formulary
   end
 
   def self.load_formula_from_api(name, flags:)
-    namespace = "FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
+    namespace = :"FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
 
     mod = Module.new
     remove_const(namespace) if const_defined?(namespace)
@@ -268,6 +269,7 @@ module Formulary
         service_hash = Homebrew::Service.deserialize(service_hash)
         run_params = service_hash.delete(:run)
         service do
+          T.bind(self, Homebrew::Service)
           if run_params.is_a?(Hash)
             run(**run_params)
           else
@@ -306,7 +308,7 @@ module Formulary
       end
     end
 
-    klass.loaded_from_api = true
+    T.cast(klass, T.class_of(Formula)).loaded_from_api = true
     mod.const_set(class_s, klass)
 
     cache[:api] ||= {}
@@ -351,7 +353,7 @@ module Formulary
 
   def self.class_s(name)
     class_name = name.capitalize
-    class_name.gsub!(/[-_.\s]([a-zA-Z0-9])/) { Regexp.last_match(1).upcase }
+    class_name.gsub!(/[-_.\s]([a-zA-Z0-9])/) { T.must(Regexp.last_match(1)).upcase }
     class_name.tr!("+", "x")
     class_name.sub!(/(.)@(\d)/, "\\1AT\\2")
     class_name
@@ -489,17 +491,20 @@ module Formulary
     def initialize(url, from: nil)
       @url = url
       @from = from
-      uri = URI(url)
-      formula = File.basename(uri.path, ".rb")
-      super formula, HOMEBREW_CACHE_FORMULA/File.basename(uri.path)
+      uri_path = URI(url).path
+      raise ArgumentError, "URL has no path component" unless uri_path
+
+      formula = File.basename(uri_path, ".rb")
+      super formula, HOMEBREW_CACHE_FORMULA/File.basename(uri_path)
     end
 
     def load_file(flags:, ignore_errors:)
       if @from != :formula_installer
-        if %r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<formula_name>[\w+-.@]+).rb} =~ url
+        match = url.match(%r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb})
+        if match
           raise UnsupportedInstallationMethod,
-                "Installation of #{formula_name} from a GitHub commit URL is unsupported! " \
-                "`brew extract #{formula_name}` to a stable tap on GitHub instead."
+                "Installation of #{match[:name]} from a GitHub commit URL is unsupported! " \
+                "`brew extract #{match[:name]}` to a stable tap on GitHub instead."
         elsif url.match?(%r{^(https?|ftp)://})
           raise UnsupportedInstallationMethod,
                 "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! " \
@@ -512,8 +517,8 @@ module Formulary
       curl_download url, to: path
       super
     rescue MethodDeprecatedError => e
-      if %r{github.com/(?<user>[\w-]+)/(?<repo>[\w-]+)/} =~ url
-        e.issues_url = "https://github.com/#{user}/#{repo}/issues/new"
+      if (match_data = url.match(%r{github.com/(?<user>[\w-]+)/(?<repo>[\w-]+)/}))
+        e.issues_url = "https://github.com/#{match_data[:user]}/#{match_data[:repo]}/issues/new"
       end
       raise
     end
