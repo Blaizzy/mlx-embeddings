@@ -101,4 +101,8 @@ module Stdenv
   def no_weak_imports
     append "LDFLAGS", "-Wl,-no_weak_imports" if no_weak_imports_support?
   end
+
+  def no_fixup_chains
+    append "LDFLAGS", "-Wl,-no_fixup_chains" if no_fixup_chains_support?
+  end
 end

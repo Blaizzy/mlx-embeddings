@@ -221,7 +221,7 @@ class Cmd
       args << "-Wl,-undefined,dynamic_lookup"
     when /^-isysroot=/, /^--sysroot=/
       if mac?
-        sdk = arg.split("=")[1..-1].join("=")
+        sdk = arg.split("=", 2).last
         # We set the sysroot for macOS SDKs
         args << arg unless sdk.downcase.include? "osx"
       else
@@ -318,9 +318,11 @@ class Cmd
     when :ld
       args << "-headerpad_max_install_names"
       args << "-no_weak_imports" if no_weak_imports?
+      args << "-no_fixup_chains" if no_fixup_chains?
     when :ccld, :cxxld
       args << "-Wl,-headerpad_max_install_names"
       args << "-Wl,-no_weak_imports" if no_weak_imports?
+      args << "-Wl,-no_fixup_chains" if no_fixup_chains?
     end
     args
   end
@@ -414,6 +416,32 @@ class Cmd
 
   def debug_symbols?
     config.include?("D")
+  end
+
+  def no_fixup_chains?
+    return false unless config.include?("f")
+    return false unless calls_ld?
+    return true if @args.include?("-Wl,-undefined,dynamic_lookup")
+
+    args_consecutive_pairs = @args.each_cons(2)
+    return true if args_consecutive_pairs.include?(["-undefined", "dynamic_lookup"])
+    return true if args_consecutive_pairs.include?(["-Wl,-undefined", "-Wl,dynamic_lookup"])
+
+    # The next flag would produce an error, but we fix it in `refurbish_arg`.
+    @args.include?("-undefineddynamic_lookup")
+  end
+
+  def calls_ld?
+    return true if mode == :ld
+    return false unless [:ccld, :cxxld].include?(mode)
+
+    fuse_ld_flags = @args.find_all { |arg| arg.match?(/^-fuse-ld=/) }
+    return true if fuse_ld_flags.empty?
+
+    fuse_ld_flag = fuse_ld_flags.last.strip
+    fuse_ld_arg = fuse_ld_flag.split("=", 2).last
+
+    (fuse_ld_arg == "ld") || fuse_ld_arg.end_with?("/usr/bin/ld")
   end
 
   def canonical_path(path)
