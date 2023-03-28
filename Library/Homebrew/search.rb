@@ -113,7 +113,7 @@ module Homebrew
 
         if formula&.any_version_installed?
           pretty_installed(name)
-        else
+        elsif formula.nil? || formula.valid_platform?
           name
         end
       end.compact
