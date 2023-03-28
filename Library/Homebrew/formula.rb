@@ -1948,6 +1948,13 @@ class Formula
     !tap.core_tap?
   end
 
+  # True if this formula can be installed on this platform
+  # Redefined in extend/os.
+  # @private
+  def valid_platform?
+    requirements.none?(MacOSRequirement) && requirements.none?(LinuxRequirement)
+  end
+
   # @private
   def print_tap_action(options = {})
     return unless tap?

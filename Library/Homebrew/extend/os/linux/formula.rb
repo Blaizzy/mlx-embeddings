@@ -6,6 +6,7 @@ class Formula
   undef loader_path
   undef deuniversalize_machos
   undef add_global_deps_to_spec
+  undef valid_platform?
 
   sig { params(name: String, version: T.nilable(T.any(String, Integer))).returns(String) }
   def shared_library(name, version = nil)
@@ -42,5 +43,10 @@ class Formula
       ].compact.freeze
     end
     @global_deps.each { |dep| spec.dependency_collector.add(dep) }
+  end
+
+  sig { returns(T::Boolean) }
+  def valid_platform?
+    requirements.none?(MacOSRequirement)
   end
 end
