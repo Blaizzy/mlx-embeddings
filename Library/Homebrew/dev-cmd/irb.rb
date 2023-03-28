@@ -64,7 +64,6 @@ module Homebrew
     end
 
     if args.pry?
-      Homebrew.install_gem_setup_path! "pry"
       require "pry"
     else
       require "irb"

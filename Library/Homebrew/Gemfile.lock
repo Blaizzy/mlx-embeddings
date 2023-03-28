@@ -157,6 +157,7 @@ GEM
     rubocop-sorbet (0.7.0)
       rubocop (>= 0.90.0)
     ruby-macho (3.0.0)
+    ruby-prof (1.4.3)
     ruby-progressbar (1.13.0)
     rubyntlm (0.6.3)
     simplecov (0.22.0)
@@ -239,6 +240,7 @@ DEPENDENCIES
   parlour
   patchelf
   plist
+  pry
   ronn
   rspec
   rspec-github
@@ -253,6 +255,7 @@ DEPENDENCIES
   rubocop-rspec
   rubocop-sorbet
   ruby-macho
+  ruby-prof (= 1.4.3)
   simplecov
   simplecov-cobertura
   sorbet-runtime
