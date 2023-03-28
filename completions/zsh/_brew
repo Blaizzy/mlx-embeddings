@@ -1407,6 +1407,7 @@ _brew_pr_automerge() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--ignore-failures[Include pull requests that have failing status checks]' \
+    '--no-autosquash[Instruct `brew pr-publish` to skip automatically reformatting and rewording commits in the pull request to the preferred format]' \
     '--publish[Run `brew pr-publish` on matching pull requests]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
@@ -1427,6 +1428,7 @@ _brew_pr_publish() {
     '--help[Show this message]' \
     '--large-runner[Run the upload job on a large runner]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
+    '--no-autosquash[Skip automatically reformatting and rewording commits in the pull request to the preferred format, even if supported on the target tap]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--verbose[Make some output more verbose]' \
@@ -1447,6 +1449,7 @@ _brew_pr_pull() {
     '--ignore-missing-artifacts[Comma-separated list of workflows which can be ignored if they have not been run]' \
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
+    '--no-autosquash[Skip automatically reformatting and rewording commits in the pull request to our preferred format]' \
     '--no-cherry-pick[Do not cherry-pick commits from the pull request branch]' \
     '--no-commit[Do not generate a new commit before uploading]' \
     '--no-upload[Download the bottles but don'\''t upload them]' \
