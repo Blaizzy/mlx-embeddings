@@ -1421,7 +1421,7 @@ _brew_pr_automerge() {
 # brew pr-publish
 _brew_pr_publish() {
   _arguments \
-    '(--clean)--autosquash[If supported on the target tap, automatically reformat and reword commits to our preferred format]' \
+    '--autosquash[If supported on the target tap, automatically reformat and reword commits to our preferred format]' \
     '--branch[Branch to use the workflow from (default: `master`)]' \
     '--commit-bottles-to-pr-branch[Push bottle commits to the pull request branch]' \
     '--debug[Display any debugging information]' \
