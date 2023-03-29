@@ -226,7 +226,8 @@ module Homebrew
     ohai bump_subject
   end
 
-  def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false)
+  # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
+  def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
     original_head = tap.path.git_head
 
     commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
@@ -285,9 +286,9 @@ module Homebrew
       end
     end
   rescue
-    opoo "Autosquash encountered an error; resetting to original cherry-picked state at #{original_head}"
+    opoo "Autosquash encountered an error; resetting to original state at #{original_head}"
     system "git", "-C", tap.path, "reset", "--hard", original_head
-    system "git", "-C", tap.path, "cherry-pick", "--abort"
+    system "git", "-C", tap.path, "cherry-pick", "--abort" if cherry_picked
     raise
   end
 
@@ -474,7 +475,7 @@ module Homebrew
           unless args.no_commit?
             cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
             if args.autosquash? && !args.dry_run?
-              autosquash!(original_commit, tap: tap,
+              autosquash!(original_commit, tap: tap, cherry_picked: !args.no_cherry_pick?,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
             signoff!(tap.path, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
