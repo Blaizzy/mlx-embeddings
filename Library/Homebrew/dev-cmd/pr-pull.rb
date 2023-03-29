@@ -471,6 +471,7 @@ module Homebrew
           else
             current_branch_head
           end
+          odebug "Pull request merge-base: #{original_commit}"
 
           unless args.no_commit?
             cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
