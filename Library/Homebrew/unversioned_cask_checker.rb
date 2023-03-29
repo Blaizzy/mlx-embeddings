@@ -41,6 +41,16 @@ module Homebrew
       @qlplugins ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Qlplugin) }
     end
 
+    sig { returns(T::Array[Cask::Artifact::Colorpicker]) }
+    def colorpickers
+      @colorpickers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Colorpicker) }
+    end
+
+    sig { returns(T::Array[Cask::Artifact::Mdimporter]) }
+    def mdimporters
+      @mdimporters ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Mdimporter) }
+    end
+
     sig { returns(T::Array[Cask::Artifact::Installer]) }
     def installers
       @installers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Installer) }
@@ -98,7 +108,14 @@ module Homebrew
 
         installer.extract_primary_container(to: dir)
 
-        info_plist_paths = apps.concat(keyboard_layouts, qlplugins, installers).flat_map do |artifact|
+        info_plist_paths = [
+          *apps,
+          *keyboard_layouts,
+          *mdimporters,
+          *colorpickers,
+          *qlplugins,
+          *installers,
+        ].flat_map do |artifact|
           source = artifact.is_a?(Cask::Artifact::Installer) ? artifact.path : artifact.source.basename
           top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
         end
