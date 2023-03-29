@@ -1661,6 +1661,7 @@ _brew_pr_automerge() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --autosquash
       --debug
       --help
       --ignore-failures
@@ -1685,9 +1686,12 @@ _brew_pr_publish() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --autosquash
       --branch
+      --commit-bottles-to-pr-branch
       --debug
       --help
+      --large-runner
       --message
       --no-autosquash
       --quiet
@@ -1707,6 +1711,7 @@ _brew_pr_pull() {
     -*)
       __brewcomp "
       --artifact
+      --autosquash
       --branch-okay
       --clean
       --committer

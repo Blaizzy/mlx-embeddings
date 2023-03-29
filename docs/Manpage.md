@@ -1330,11 +1330,13 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 * `--with-label`:
   Pull requests must have this label.
 * `--without-labels`:
-  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`).
+  Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `CI-published-bottle-commits`).
 * `--without-approval`:
   Pull requests do not require approval to be merged.
 * `--publish`:
   Run `brew pr-publish` on matching pull requests.
+* `--autosquash`:
+  Instruct `brew pr-publish` to automatically reformat and reword commits in the pull request to the preferred format.
 * `--no-autosquash`:
   Instruct `brew pr-publish` to skip automatically reformatting and rewording commits in the pull request to the preferred format.
 * `--ignore-failures`:
@@ -1345,10 +1347,16 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 Publish bottles for a pull request with GitHub Actions.
 Requires write access to the repository.
 
+* `--commit-bottles-to-pr-branch`:
+  Push bottle commits to the pull request branch.
+* `--autosquash`:
+  If supported on the target tap, automatically reformat and reword commits to our preferred format.
 * `--no-autosquash`:
   Skip automatically reformatting and rewording commits in the pull request to the preferred format, even if supported on the target tap.
+* `--large-runner`:
+  Run the upload job on a large runner.
 * `--branch`:
-  Branch to publish to (default: `master`).
+  Branch to use the workflow from (default: `master`).
 * `--message`:
   Message to include when autosquashing revision bumps, deletions, and rebuilds.
 * `--tap`:
@@ -1374,6 +1382,8 @@ Requires write access to the repository.
   Do not amend the commits from pull requests.
 * `--keep-old`:
   If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
+* `--autosquash`:
+  Automatically reformat and reword commits in the pull request to our preferred format.
 * `--no-autosquash`:
   Skip automatically reformatting and rewording commits in the pull request to our preferred format.
 * `--branch-okay`:

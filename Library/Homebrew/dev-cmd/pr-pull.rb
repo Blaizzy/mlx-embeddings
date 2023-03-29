@@ -27,11 +27,13 @@ module Homebrew
       switch "-n", "--dry-run",
              description: "Print what would be done rather than doing it."
       switch "--clean",
-             depends_on:  "--no-autosquash",
              description: "Do not amend the commits from pull requests."
       switch "--keep-old",
              description: "If the formula specifies a rebuild version, " \
                           "attempt to preserve its value in the generated DSL."
+      switch "--autosquash",
+             description: "Automatically reformat and reword commits in the pull request to our " \
+                          "preferred format."
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request to our " \
                           "preferred format."
@@ -46,6 +48,7 @@ module Homebrew
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--message=",
+             depends_on:  "--autosquash",
              description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
@@ -62,7 +65,7 @@ module Homebrew
       comma_array "--ignore-missing-artifacts",
                   description: "Comma-separated list of workflows which can be ignored if they have not been run."
 
-      conflicts "--no-autosquash", "--message"
+      conflicts "--clean", "--autosquash"
 
       named_args :pull_request, min: 1
     end
@@ -223,7 +226,8 @@ module Homebrew
     ohai bump_subject
   end
 
-  def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false)
+  # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
+  def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
     original_head = tap.path.git_head
 
     commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
@@ -282,9 +286,9 @@ module Homebrew
       end
     end
   rescue
-    opoo "Autosquash encountered an error; resetting to original cherry-picked state at #{original_head}"
+    opoo "Autosquash encountered an error; resetting to original state at #{original_head}"
     system "git", "-C", tap.path, "reset", "--hard", original_head
-    system "git", "-C", tap.path, "cherry-pick", "--abort"
+    system "git", "-C", tap.path, "cherry-pick", "--abort" if cherry_picked
     raise
   end
 
@@ -304,10 +308,8 @@ module Homebrew
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 
-  def self.formulae_need_bottles?(tap, original_commit, user, repo, pull_request, args:)
+  def self.formulae_need_bottles?(tap, original_commit, labels, args:)
     return if args.dry_run?
-
-    labels = GitHub.pull_request_labels(user, repo, pull_request)
 
     return false if labels.include?("CI-syntax-only") || labels.include?("CI-no-bottles")
 
@@ -424,6 +426,8 @@ module Homebrew
   def self.pr_pull
     args = pr_pull_args.parse
 
+    odeprecated "`brew pr-pull --no-autosquash`" if args.no_autosquash?
+
     # Needed when extracting the CI artifact.
     ensure_executable!("unzip", reason: "extracting CI artifacts")
 
@@ -450,6 +454,11 @@ module Homebrew
         opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
       end
 
+      pr_labels = GitHub.pull_request_labels(user, repo, pr)
+      if pr_labels.include?("autosquash") && !args.autosquash?
+        opoo "Pull request is labelled `autosquash`: do you need to pass `--autosquash`?"
+      end
+
       pr_check_conflicts("#{user}/#{repo}", pr)
 
       ohai "Fetching #{tap} pull request ##{pr}"
@@ -462,17 +471,18 @@ module Homebrew
           else
             current_branch_head
           end
+          odebug "Pull request merge-base: #{original_commit}"
 
           unless args.no_commit?
             cherry_pick_pr!(user, repo, pr, path: tap.path, args: args) unless args.no_cherry_pick?
-            if !args.no_autosquash? && !args.dry_run?
-              autosquash!(original_commit, tap: tap,
+            if args.autosquash? && !args.dry_run?
+              autosquash!(original_commit, tap: tap, cherry_picked: !args.no_cherry_pick?,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
             signoff!(tap.path, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
-          unless formulae_need_bottles?(tap, original_commit, user, repo, pr, args: args)
+          unless formulae_need_bottles?(tap, original_commit, pr_labels, args: args)
             ohai "Skipping artifacts for ##{pr} as the formulae don't need bottles"
             next
           end
