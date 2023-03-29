@@ -101,25 +101,14 @@ class MessagePack::Factory::Pool
 
   def dump(object); end
   def load(data); end
+  def packer(&block); end
+  def unpacker(&block); end
 end
 
-class MessagePack::Factory::Pool::AbstractPool
+class MessagePack::Factory::Pool::MemberPool
   def initialize(size, &block); end
 
-  def checkin(member); end
-  def checkout; end
-end
-
-class MessagePack::Factory::Pool::PackerPool < ::MessagePack::Factory::Pool::AbstractPool
-  private
-
-  def reset(packer); end
-end
-
-class MessagePack::Factory::Pool::UnpackerPool < ::MessagePack::Factory::Pool::AbstractPool
-  private
-
-  def reset(unpacker); end
+  def with; end
 end
 
 class MessagePack::Packer
