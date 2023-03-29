@@ -365,30 +365,6 @@ describe Cask::DSL, :cask do
     end
   end
 
-  describe "appcast stanza" do
-    let(:token) { "with-appcast" }
-
-    it "allows appcasts to be specified" do
-      expect(cask.appcast.to_s).to match(/^http/)
-    end
-
-    context "when multiple appcasts are defined" do
-      let(:token) { "invalid/invalid-appcast-multiple" }
-
-      it "raises an error" do
-        expect { cask }.to raise_error(Cask::CaskInvalidError, /'appcast' stanza may only appear once/)
-      end
-    end
-
-    context "when appcast URL is invalid" do
-      let(:token) { "invalid/invalid-appcast-url" }
-
-      it "refuses to load" do
-        expect { cask }.to raise_error(Cask::CaskInvalidError)
-      end
-    end
-  end
-
   describe "depends_on stanza" do
     let(:token) { "invalid/invalid-depends-on-key" }
 

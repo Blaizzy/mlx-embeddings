@@ -540,7 +540,6 @@ module Homebrew
         urls << package_or_resource.head.url if package_or_resource.head
         urls << package_or_resource.homepage if package_or_resource.homepage
       when Cask::Cask
-        urls << package_or_resource.appcast.to_s if package_or_resource.appcast
         urls << package_or_resource.url.to_s if package_or_resource.url
         urls << package_or_resource.homepage if package_or_resource.homepage
       when Resource

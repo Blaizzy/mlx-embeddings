@@ -16,7 +16,8 @@ module Cask
           switch "--[no-]download",
                  description: "Audit the downloaded file"
           switch "--[no-]appcast",
-                 description: "Audit the appcast"
+                 description: "Audit the appcast",
+                 replacement: false
           switch "--[no-]token-conflicts",
                  description: "Audit for token conflicts"
           switch "--[no-]signing",
@@ -49,7 +50,6 @@ module Cask
         results = self.class.audit_casks(
           *casks,
           download:              args.download?,
-          appcast:               args.appcast?,
           online:                args.online?,
           strict:                args.strict?,
           signing:               args.signing?,
@@ -73,7 +73,6 @@ module Cask
       def self.audit_casks(
         *casks,
         download:,
-        appcast:,
         online:,
         strict:,
         signing:,
@@ -89,7 +88,6 @@ module Cask
       )
         options = {
           audit_download:        download,
-          audit_appcast:         appcast,
           audit_online:          online,
           audit_strict:          strict,
           audit_signing:         signing,

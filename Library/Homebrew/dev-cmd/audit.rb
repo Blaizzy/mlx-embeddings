@@ -49,7 +49,8 @@ module Homebrew
                           "for Homebrew. This should be used when creating new formula and implies " \
                           "`--strict` and `--online`."
       switch "--[no-]appcast",
-             description: "Audit the appcast."
+             description: "Audit the appcast.",
+             replacement: false
       switch "--[no-]signing",
              description: "Audit for signed apps, which are required on ARM"
       switch "--token-conflicts",
@@ -246,8 +247,6 @@ module Homebrew
       Cask::Cmd::Audit.audit_casks(
         *audit_casks,
         download:              nil,
-        # No need for `|| nil` for `--[no-]appcast` because boolean switches are already `nil` if not passed
-        appcast:               args.appcast?,
         # No need for `|| nil` for `--[no-]signing` because boolean switches are already `nil` if not passed
         signing:               args.signing?,
         online:                args.online? || nil,

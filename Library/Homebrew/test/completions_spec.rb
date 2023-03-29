@@ -208,9 +208,9 @@ describe Homebrew::Completions do
 
       it "handles --[no]- options correctly" do
         options = described_class.command_options("audit")
-        expect(options.key?("--appcast")).to be true
-        expect(options.key?("--no-appcast")).to be true
-        expect(options["--appcast"] == options["--no-appcast"]).to be true
+        expect(options.key?("--signing")).to be true
+        expect(options.key?("--no-signing")).to be true
+        expect(options["--signing"] == options["--no-signing"]).to be true
       end
 
       it "return an empty array if command is not found" do
