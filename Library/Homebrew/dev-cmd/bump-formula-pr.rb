@@ -121,7 +121,7 @@ module Homebrew
     # spamming during normal output.
     Homebrew.install_bundler_gems!
 
-    tap_remote_repo = formula.tap.remote_repo
+    tap_remote_repo = formula.tap.full_name || formula.tap.remote_repo
     remote = "origin"
     remote_branch = formula.tap.path.git_origin_branch
     previous_branch = "-"
