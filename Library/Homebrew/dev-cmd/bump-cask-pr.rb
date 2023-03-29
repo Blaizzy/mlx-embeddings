@@ -196,7 +196,7 @@ module Homebrew
   end
 
   def check_pull_requests(cask, state:, args:, version: nil)
-    tap_remote_repo = cask.tap.remote_repo || cask.tap.full_name
+    tap_remote_repo = cask.tap.full_name || cask.tap.remote_repo
     GitHub.check_for_duplicate_pull_requests(cask.token, tap_remote_repo,
                                              state:   state,
                                              version: version,
