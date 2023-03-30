@@ -144,7 +144,7 @@ module GitHub
 
   def self.create_pull_request(repo, title, head, base, body)
     url = "#{API_URL}/repos/#{repo}/pulls"
-    data = { title: title, head: head, base: base, body: body }
+    data = { title: title, head: head, base: base, body: body, maintainer_can_modify: true }
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
     API.open_rest(url, data: data, scopes: scopes)
   end
