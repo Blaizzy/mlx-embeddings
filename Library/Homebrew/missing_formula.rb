@@ -179,7 +179,7 @@ module Homebrew
             return
           end
 
-          commit_message = commit_message.reject(&:empty?).join("\n  ")
+          commit_message = T.must(commit_message).reject(&:empty?).join("\n  ")
 
           commit_message.sub!(/ \(#(\d+)\)$/, " (#{tap.issues_url}/\\1)")
           commit_message.gsub!(/(Closes|Fixes) #(\d+)/, "\\1 #{tap.issues_url}/\\2")

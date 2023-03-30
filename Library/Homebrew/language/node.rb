@@ -34,7 +34,7 @@ module Language
       output = Utils.popen_read("npm", "pack", "--ignore-scripts")
       raise "npm failed to pack #{Dir.pwd}" if !$CHILD_STATUS.exitstatus.zero? || output.lines.empty?
 
-      output.lines.last.chomp
+      output.lines.fetch(-1).chomp
     end
 
     def self.setup_npm_environment

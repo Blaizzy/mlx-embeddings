@@ -234,13 +234,13 @@ module Homebrew
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
 
     # Generate a bidirectional mapping of commits <=> formula/cask files.
-    files_to_commits = {}
+    files_to_commits = T.let({}, T::Hash[String, T::Array[String]])
     commits_to_files = commits.to_h do |commit|
       files = Utils.safe_popen_read("git", "-C", tap.path, "diff-tree", "--diff-filter=AMD",
                                     "-r", "--name-only", "#{commit}^", commit).lines.map(&:strip)
       files.each do |file|
         files_to_commits[file] ||= []
-        files_to_commits[file] << commit
+        files_to_commits.fetch(file) << commit
         tap_file = tap.path/file
         if (tap_file.dirname == tap.formula_dir || tap_file.dirname == tap.cask_dir) &&
            File.extname(file) == ".rb"
@@ -266,14 +266,14 @@ module Homebrew
       next if processed_commits.include? commit
 
       files = commits_to_files[commit]
-      if files.length == 1 && files_to_commits[files.first].length == 1
+      if files.length == 1 && files_to_commits.fetch(files.first).length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
         reword_package_commit(commit, files.first, path: tap.path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits << commit
-      elsif files.length == 1 && files_to_commits[files.first].length > 1
+      elsif files.length == 1 && files_to_commits.fetch(files.first).length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
-        commits = files_to_commits[file]
+        commits = files_to_commits.fetch(file)
         squash_package_commits(commits, file, path: tap.path, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits += commits
       else
@@ -336,7 +336,7 @@ module Homebrew
       rescue FormulaUnavailableError
         nil
       end
-    end.compact
+    end
     casks = Utils.popen_read("git", "-C", tap.path, "diff-tree",
                              "-r", "--name-only", "--diff-filter=AM",
                              original_commit, "HEAD", "--", tap.cask_dir)
@@ -351,7 +351,7 @@ module Homebrew
         nil
       end
     end.compact
-    formulae + casks
+    T.must(formulae).compact + casks
   end
 
   def self.download_artifact(url, dir, pull_request)

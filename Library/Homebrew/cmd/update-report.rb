@@ -130,7 +130,7 @@ module Homebrew
 
       new_tag = Utils.popen_read(
         "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
-      ).lines.first.chomp
+      ).lines.fetch(0).chomp
 
       Settings.write "latesttag", new_tag if new_tag != old_tag
 
@@ -286,6 +286,8 @@ module Homebrew
     puts
 
     new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
+    raise "Invalid new tag: #{new_tag}" if !new_major_version || !new_minor_version || !new_patch_version
+
     old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
     if old_tag.blank? || new_major_version > old_major_version \
         || new_minor_version > old_minor_version

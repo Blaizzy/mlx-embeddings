@@ -338,7 +338,7 @@ class Keg
         # Some binaries contain strings with lists of files
         # e.g. `/usr/local/lib/foo:/usr/local/share/foo:/usr/lib/foo`
         # Each item in the list should be checked separately
-        match.split(":").each do |sub_match|
+        T.must(match).split(":").each do |sub_match|
           # Not all items in the list may be matches
           next unless sub_match.match? path_regex
           next if linked_libraries.include? sub_match # Don't bother reporting a string if it was found by otool
