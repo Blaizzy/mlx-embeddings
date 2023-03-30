@@ -9,11 +9,11 @@ module Utils
 
   sig {
     params(
-      args:    T.any(String, T::Hash[String, String]),
+      args:    T.any(Pathname, String, T::Hash[String, String]),
       safe:    T::Boolean,
-      options: Symbol,
+      options: T.untyped,
       block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(String)
+    ).returns(T.nilable(String))
   }
   def self.popen_read(*args, safe: false, **options, &block)
     output = popen(args, "rb", options, &block)
@@ -24,10 +24,10 @@ module Utils
 
   sig {
     params(
-      args:    T.any(String, T::Hash[String, String]),
-      options: Symbol,
+      args:    T.any(Pathname, String, T::Hash[String, String]),
+      options: T.untyped,
       block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(String)
+    ).returns(T.nilable(String))
   }
   def self.safe_popen_read(*args, **options, &block)
     popen_read(*args, safe: true, **options, &block)
@@ -35,11 +35,11 @@ module Utils
 
   sig {
     params(
-      args:    T.any(String, T::Hash[String, String]),
+      args:    T.any(Pathname, String, T::Hash[String, String]),
       safe:    T::Boolean,
-      options: Symbol,
+      options: T.untyped,
       _block:  T.proc.params(io: IO).void,
-    ).returns(String)
+    ).returns(T.nilable(String))
   }
   def self.popen_write(*args, safe: false, **options, &_block)
     output = ""
@@ -66,10 +66,10 @@ module Utils
 
   sig {
     params(
-      args:    T.any(String, T::Hash[String, String]),
-      options: Symbol,
+      args:    T.any(Pathname, String, T::Hash[String, String]),
+      options: T.untyped,
       block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(String)
+    ).returns(T.nilable(String))
   }
   def self.safe_popen_write(*args, **options, &block)
     popen_write(*args, safe: true, **options, &block)
@@ -77,11 +77,11 @@ module Utils
 
   sig {
     params(
-      args:    T::Array[T.any(String, T::Hash[String, String])],
+      args:    T::Array[T.any(Pathname, String, T::Hash[String, String])],
       mode:    String,
       options: T::Hash[Symbol, T.untyped],
       block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(String)
+    ).returns(T.nilable(String))
   }
   def self.popen(args, mode, options = {}, &block)
     IO.popen("-", mode) do |pipe|

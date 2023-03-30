@@ -117,6 +117,6 @@ module GitRepositoryExtension
       raise "Git is unavailable"
     end
 
-    T.unsafe(Utils).popen_read(Utils::Git.git, *args, safe: safe, chdir: self, err: err).chomp.presence
+    Utils.popen_read(Utils::Git.git, *args, safe: safe, chdir: self, err: err).chomp.presence
   end
 end

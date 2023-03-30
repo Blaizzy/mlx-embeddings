@@ -199,7 +199,7 @@ module Homebrew
 
   sig { params(repo_path: Pathname, person: String, trailer: String, args: Homebrew::CLI::Args).returns(Integer) }
   def git_log_trailers_cmd(repo_path, person, trailer, args)
-    cmd = ["git", "-C", repo_path.to_s, "log", "--oneline"]
+    cmd = ["git", "-C", repo_path, "log", "--oneline"]
     cmd << "--format='%(trailers:key=#{trailer}:)'"
     cmd << "--before=#{args.to}" if args.to
     cmd << "--after=#{args.from}" if args.from
