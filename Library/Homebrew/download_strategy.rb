@@ -464,7 +464,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     end
 
     output, _, _status = curl_output(
-      "--location", "--silent", "--head", "--request", "GET", url.to_s,
+      "--location", "--silent", "--head", url.to_s,
       timeout: timeout
     )
     parsed_output = parse_curl_output(output)
