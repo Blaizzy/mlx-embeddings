@@ -26,7 +26,7 @@ module Homebrew
         EOS
         when "pil" then <<~EOS
           Instead of PIL, consider pillow:
-            pip2 install pillow
+            brew install pillow
         EOS
         when "macruby" then <<~EOS
           MacRuby has been discontinued. Consider RubyMotion:
@@ -42,7 +42,7 @@ module Homebrew
         EOS
         when "gsutil" then <<~EOS
           gsutil is available through pip:
-            pip2 install gsutil
+            pip3 install gsutil
         EOS
         when "gfortran" then <<~EOS
           GNU Fortran is part of the GCC formula:
