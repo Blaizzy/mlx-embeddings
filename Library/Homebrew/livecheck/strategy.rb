@@ -59,8 +59,6 @@ module Homebrew
       PAGE_HEADERS_CURL_ARGS = ([
         # We only need the response head (not the body)
         "--head",
-        # Some servers may not allow a HEAD request, so we use GET
-        "--request", "GET"
       ] + DEFAULT_CURL_ARGS).freeze
 
       # `curl` arguments used in `Strategy#page_content` method.
