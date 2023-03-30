@@ -908,8 +908,6 @@ non-zero status if any errors are found.
   Evaluate all available formulae and casks, whether installed or not, to audit them. Implied if `HOMEBREW_EVAL_ALL` is set.
 * `--new`:
   Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`.
-* `--[no-]appcast`:
-  Audit the appcast.
 * `--[no-]signing`:
   Audit for signed apps, which are required on ARM
 * `--token-conflicts`:

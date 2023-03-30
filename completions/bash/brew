@@ -346,7 +346,6 @@ _brew_audit() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --appcast
       --audit-debug
       --cask
       --debug
@@ -362,7 +361,6 @@ _brew_audit() {
       --help
       --installed
       --new
-      --no-appcast
       --no-signing
       --online
       --only
