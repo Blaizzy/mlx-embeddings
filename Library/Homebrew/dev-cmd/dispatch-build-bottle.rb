@@ -87,8 +87,7 @@ module Homebrew
       # These cannot be passed as nil to GitHub API
       inputs[:timeout] = args.timeout if args.timeout
       inputs[:issue] = args.issue if args.issue
-      inputs[:upload] = args.upload?.to_s if args.upload?
-      inputs[:wheezy] = args.linux_wheezy?.to_s if args.linux_wheezy?
+      inputs[:upload] = args.upload?
 
       ohai "Dispatching #{tap} bottling request of formula \"#{formula.name}\" for #{runners.join(", ")}"
       GitHub.workflow_dispatch_event(user, repo, workflow, ref, inputs)
