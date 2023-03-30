@@ -9,14 +9,13 @@ module Utils
 
   sig {
     params(
-      arg0:    T.any(String, T::Hash[String, String]),
-      args:    String,
+      args:    T.any(String, T::Hash[String, String]),
       safe:    T::Boolean,
       options: Symbol,
       block:   T.nilable(T.proc.params(io: IO).void),
     ).returns(String)
   }
-  def self.popen_read(arg0, *args, safe: false, **options, &block)
+  def self.popen_read(*args, safe: false, **options, &block)
     output = popen(args, "rb", options, &block)
     return output if !safe || $CHILD_STATUS.success?
 
@@ -25,26 +24,24 @@ module Utils
 
   sig {
     params(
-      arg0:    T.any(String, T::Hash[String, String]),
-      args:    String,
+      args:    T.any(String, T::Hash[String, String]),
       options: Symbol,
       block:   T.nilable(T.proc.params(io: IO).void),
     ).returns(String)
   }
-  def self.safe_popen_read(arg0, *args, **options, &block)
+  def self.safe_popen_read(*args, **options, &block)
     popen_read(*args, safe: true, **options, &block)
   end
 
   sig {
     params(
-      arg0:    T.any(String, T::Hash[String, String]),
-      args:    String,
+      args:    T.any(String, T::Hash[String, String]),
       safe:    T::Boolean,
       options: Symbol,
       _block:  T.proc.params(io: IO).void,
     ).returns(String)
   }
-  def self.popen_write(arg0, *args, safe: false, **options, &_block)
+  def self.popen_write(*args, safe: false, **options, &_block)
     output = ""
     popen(args, "w+b", options) do |pipe|
       # Before we yield to the block, capture as much output as we can
@@ -69,13 +66,12 @@ module Utils
 
   sig {
     params(
-      arg0:    T.any(String, T::Hash[String, String]),
-      args:    String,
+      args:    T.any(String, T::Hash[String, String]),
       options: Symbol,
       block:   T.nilable(T.proc.params(io: IO).void),
     ).returns(String)
   }
-  def self.safe_popen_write(arg0, *args, **options, &block)
+  def self.safe_popen_write(*args, **options, &block)
     popen_write(*args, safe: true, **options, &block)
   end
 
