@@ -16,8 +16,6 @@ module Homebrew
         Publish bottles for a pull request with GitHub Actions.
         Requires write access to the repository.
       EOS
-      switch "--commit-bottles-to-pr-branch",
-             description: "Push bottle commits to the pull request branch."
       switch "--autosquash",
              description: "If supported on the target tap, automatically reformat and reword commits " \
                           "to our preferred format."
@@ -50,9 +48,8 @@ module Homebrew
     ref = args.branch || "master"
 
     inputs = {
-      commit_bottles_to_pr_branch: args.commit_bottles_to_pr_branch?,
-      autosquash:                  args.autosquash?,
-      large_runner:                args.large_runner?,
+      autosquash:   args.autosquash?,
+      large_runner: args.large_runner?,
     }
     inputs[:message] = args.message if args.message.presence
 

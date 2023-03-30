@@ -74,7 +74,7 @@ module Homebrew
       pr_urls << pr["html_url"]
     end
 
-    publish_args = ["pr-publish", "--commit-bottles-to-pr-branch"]
+    publish_args = ["pr-publish"]
     publish_args << "--tap=#{tap}" if tap
     publish_args << "--workflow=#{args.workflow}" if args.workflow
     publish_args << "--autosquash" if args.autosquash?
