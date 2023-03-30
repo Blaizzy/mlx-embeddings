@@ -1160,7 +1160,6 @@ __fish_brew_complete_arg 'pr-automerge' -l workflow -d 'Workflow file to use wit
 __fish_brew_complete_cmd 'pr-publish' 'Publish bottles for a pull request with GitHub Actions'
 __fish_brew_complete_arg 'pr-publish' -l autosquash -d 'If supported on the target tap, automatically reformat and reword commits to our preferred format'
 __fish_brew_complete_arg 'pr-publish' -l branch -d 'Branch to use the workflow from (default: `master`)'
-__fish_brew_complete_arg 'pr-publish' -l commit-bottles-to-pr-branch -d 'Push bottle commits to the pull request branch'
 __fish_brew_complete_arg 'pr-publish' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pr-publish' -l help -d 'Show this message'
 __fish_brew_complete_arg 'pr-publish' -l large-runner -d 'Run the upload job on a large runner'

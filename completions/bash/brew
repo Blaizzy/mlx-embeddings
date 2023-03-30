@@ -1688,7 +1688,6 @@ _brew_pr_publish() {
       __brewcomp "
       --autosquash
       --branch
-      --commit-bottles-to-pr-branch
       --debug
       --help
       --large-runner
