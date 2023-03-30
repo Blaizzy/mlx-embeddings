@@ -71,23 +71,14 @@ module Cask
       @errors ||= []
     end
 
-    def warnings
-      @warnings ||= []
-    end
-
     sig { returns(T::Boolean) }
     def errors?
       errors.any?
     end
 
     sig { returns(T::Boolean) }
-    def warnings?
-      warnings.any?
-    end
-
-    sig { returns(T::Boolean) }
     def success?
-      !(errors? || warnings?)
+      !errors?
     end
 
     sig { params(message: T.nilable(String), location: T.nilable(String)).void }
@@ -97,36 +88,22 @@ module Cask
 
     sig { params(message: T.nilable(String), location: T.nilable(String)).void }
     def add_warning(message, location: nil)
-      if strict?
-        add_error message, location: location
-      else
-        warnings << ({ message: message, location: location })
-      end
+      # Warnings are ignored unless `--strict` is passed in which case they're turned into errors.
+      add_error(message, location: location) if strict?
     end
 
     def result
-      if errors?
-        Formatter.error("failed")
-      elsif warnings?
-        Formatter.warning("warning")
-      end
+      Formatter.error("failed") if errors?
     end
 
-    sig { params(include_warnings: T::Boolean).returns(T.nilable(String)) }
-    def summary(include_warnings: true)
+    sig { returns(T.nilable(String)) }
+    def summary
       return if success?
-      return if warnings? && !errors? && !include_warnings
 
       summary = ["audit for #{cask}: #{result}"]
 
       errors.each do |error|
         summary << " #{Formatter.error("-")} #{error[:message]}"
-      end
-
-      if include_warnings
-        warnings.each do |warning|
-          summary << " #{Formatter.warning("-")} #{warning[:message]}"
-        end
       end
 
       summary.join("\n")

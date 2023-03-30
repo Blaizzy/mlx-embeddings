@@ -45,7 +45,6 @@ module Cask
     LANGUAGE_BLOCK_LIMIT = 10
 
     def audit
-      warnings = Set.new
       errors = Set.new
 
       if !language && language_blocks
@@ -59,23 +58,19 @@ module Cask
 
         sample_languages.each_key do |l|
           audit = audit_languages(l)
-          summary = audit.summary(include_warnings: output_warnings?)
-          if summary.present? && output_summary?(audit)
+          if audit.summary.present? && output_summary?(audit)
             ohai "Auditing language: #{l.map { |lang| "'#{lang}'" }.to_sentence}" if output_summary?
-            puts summary
+            puts audit.summary
           end
-          warnings += audit.warnings
           errors += audit.errors
         end
       else
         audit = audit_cask_instance(cask)
-        summary = audit.summary(include_warnings: output_warnings?)
-        puts summary if summary.present? && output_summary?(audit)
-        warnings += audit.warnings
+        puts audit.summary if audit.summary.present? && output_summary?(audit)
         errors += audit.errors
       end
 
-      { warnings: warnings, errors: errors }
+      { errors: errors }
     end
 
     private

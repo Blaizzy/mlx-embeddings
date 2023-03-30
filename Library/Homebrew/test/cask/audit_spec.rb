@@ -13,23 +13,14 @@ describe Cask::Audit, :cask do
   end
 
   def passed?(audit)
-    !audit.errors? && !audit.warnings?
+    !audit.errors?
   end
 
   def outcome(audit)
     if passed?(audit)
       "passed"
     else
-      message = ""
-
-      message += "warned with #{audit.warnings.map { |e| e.fetch(:message).inspect }.join(",")}" if audit.warnings?
-
-      if audit.errors?
-        message += " and " if audit.warnings?
-        message += "errored with #{audit.errors.map { |e| e.fetch(:message).inspect }.join(",")}"
-      end
-
-      message
+      "errored with #{audit.errors.map { |e| e.fetch(:message).inspect }.join(",")}"
     end
   end
 
@@ -55,7 +46,7 @@ describe Cask::Audit, :cask do
 
   matcher :warn_with do |message|
     match do |audit|
-      include_msg?(audit.warnings, message)
+      include_msg?(audit.errors, message)
     end
 
     failure_message do |audit|
@@ -118,20 +109,20 @@ describe Cask::Audit, :cask do
   describe "#result" do
     subject { audit.result }
 
+    context "when there are no errors and `--strict` is not passed so we should not show anything" do
+      before do
+        audit.add_warning "eh"
+      end
+
+      it { is_expected.not_to match(/failed/) }
+    end
+
     context "when there are errors" do
       before do
         audit.add_error "bad"
       end
 
       it { is_expected.to match(/failed/) }
-    end
-
-    context "when there are warnings" do
-      before do
-        audit.add_warning "eh"
-      end
-
-      it { is_expected.to match(/warning/) }
     end
 
     context "when there are errors and warnings" do
@@ -143,8 +134,33 @@ describe Cask::Audit, :cask do
       it { is_expected.to match(/failed/) }
     end
 
-    context "when there are no errors or warnings" do
-      it { is_expected.to match(/passed/) }
+    context "when there are errors and warnings and `--strict` is passed" do
+      let(:strict) { true }
+
+      before do
+        audit.add_error "very bad"
+        audit.add_warning "a little bit bad"
+      end
+
+      it { is_expected.to match(/failed/) }
+    end
+
+    context "when there are warnings and `--strict` is not passed" do
+      before do
+        audit.add_warning "a little bit bad"
+      end
+
+      it { is_expected.not_to match(/failed/) }
+    end
+
+    context "when there are warnings and `--strict` is passed" do
+      let(:strict) { true }
+
+      before do
+        audit.add_warning "a little bit bad"
+      end
+
+      it { is_expected.to match(/failed/) }
     end
   end
 
@@ -984,9 +1000,20 @@ describe Cask::Audit, :cask do
       context "when cask token conflicts with a core formula" do
         let(:formula_names) { %w[with-binary other-formula] }
 
-        it "warns about duplicates" do
-          expect(audit).to receive(:core_formula_names).and_return(formula_names)
-          expect(run).to warn_with(/possible duplicate/)
+        context "when `--strict` is passed" do
+          let(:strict) { true }
+
+          it "warns about duplicates" do
+            expect(audit).to receive(:core_formula_names).and_return(formula_names)
+            expect(run).to warn_with(/possible duplicate/)
+          end
+        end
+
+        context "when `--strict` is not passed" do
+          it "does not warn about duplicates" do
+            expect(audit).to receive(:core_formula_names).and_return(formula_names)
+            expect(run).not_to warn_with(/possible duplicate/)
+          end
         end
       end
 
@@ -1058,8 +1085,8 @@ describe Cask::Audit, :cask do
       context "when `new_cask` is false" do
         let(:new_cask) { false }
 
-        it "warns" do
-          expect(run).to warn_with(/should have a description/)
+        it "does not warn" do
+          expect(run).not_to warn_with(/should have a description/)
         end
       end
 

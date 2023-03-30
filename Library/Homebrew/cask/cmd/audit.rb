@@ -90,7 +90,6 @@ module Cask
           quarantine:            quarantine,
           language:              language,
           any_named_args:        any_named_args,
-          display_failures_only: display_failures_only,
           only:                  only,
           except:                except,
         }.compact
