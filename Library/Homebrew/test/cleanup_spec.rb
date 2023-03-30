@@ -167,7 +167,7 @@ describe Homebrew::Cleanup do
     end
 
     context "when given a `:latest` cask" do
-      let(:cask) { Cask::CaskLoader.load("latest-with-appcast") }
+      let(:cask) { Cask::CaskLoader.load("latest") }
 
       it "does not remove the download for the latest version" do
         download = Cask::Cache.path/"#{cask.token}--#{cask.version}"

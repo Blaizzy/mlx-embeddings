@@ -120,9 +120,6 @@ end
 module Cask
   class Audit
     sig { returns(T::Boolean) }
-    def appcast?; end
-
-    sig { returns(T::Boolean) }
     def new_cask?; end
 
     sig { returns(T::Boolean) }

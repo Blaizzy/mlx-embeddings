@@ -70,11 +70,13 @@ describe Cask::Audit, :cask do
   let(:except) { [] }
   let(:strict) { nil }
   let(:token_conflicts) { nil }
+  let(:signing) { nil }
   let(:audit) do
     described_class.new(cask, online:          online,
                               strict:          strict,
                               new_cask:        new_cask,
                               token_conflicts: token_conflicts,
+                              signing:         signing,
                               only:            only,
                               except:          except)
   end
@@ -99,9 +101,13 @@ describe Cask::Audit, :cask do
     context "when `online` is specified" do
       let(:online) { true }
 
-      it "implies `appcast`" do
-        expect(audit.appcast?).to be true
+      it "implies `download`" do
+        expect(audit.download).to be_truthy
       end
+    end
+
+    context "when `signing` is specified" do
+      let(:signing) { true }
 
       it "implies `download`" do
         expect(audit.download).to be_truthy
@@ -761,7 +767,7 @@ describe Cask::Audit, :cask do
       end
 
       context "when the download is hosted on SourceForge and has a livecheck" do
-        let(:cask_token) { "sourceforge-with-appcast" }
+        let(:cask_token) { "sourceforge-with-livecheck" }
 
         it { is_expected.not_to error_with(message) }
       end
@@ -774,48 +780,57 @@ describe Cask::Audit, :cask do
       end
 
       context "when the download is hosted on DevMate and has a livecheck" do
-        let(:cask_token) { "devmate-with-appcast" }
+        let(:cask_token) { "devmate-with-livecheck" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the download is hosted on DevMate and does not have a livecheck" do
-        let(:cask_token) { "devmate-without-appcast" }
+        let(:cask_token) { "devmate-without-livecheck" }
 
         it { is_expected.to error_with(message) }
       end
 
       context "when the download is hosted on HockeyApp and has a livecheck" do
-        let(:cask_token) { "hockeyapp-with-appcast" }
+        let(:cask_token) { "hockeyapp-with-livecheck" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the download is hosted on HockeyApp and does not have a livecheck" do
-        let(:cask_token) { "hockeyapp-without-appcast" }
+        let(:cask_token) { "hockeyapp-without-livecheck" }
 
         it { is_expected.to error_with(message) }
       end
     end
 
-    describe "latest with appcast checks" do
-      let(:only) { ["latest_with_appcast_or_livecheck"] }
-      let(:message) { "Casks with an `appcast` should not use `version :latest`." }
+    describe "latest with livecheck checks" do
+      let(:only) { ["latest_with_livecheck"] }
+      let(:message) { "Casks with a `livecheck` should not use `version :latest`." }
 
-      context "when the Cask is :latest and does not have an appcast" do
+      context "when the Cask is :latest and does not have a livecheck" do
         let(:cask_token) { "version-latest" }
 
         it { is_expected.not_to error_with(message) }
       end
 
-      context "when the Cask is versioned and has an appcast" do
-        let(:cask_token) { "with-appcast" }
+      context "when the Cask is versioned and has a livecheck with skip information" do
+        let(:cask_token) { "latest-with-livecheck-skip" }
 
-        it { is_expected.not_to error_with(message) }
+        it { is_expected.to pass }
       end
 
-      context "when the Cask is :latest and has an appcast" do
-        let(:cask_token) { "latest-with-appcast" }
+      context "when the Cask is versioned and has a livecheck" do
+        let(:cask_token) { "latest-with-livecheck" }
+
+        it { is_expected.to error_with(message) }
+      end
+    end
+
+    describe "appcast" do
+      context "when the Cask has an appcast" do
+        let(:cask_token) { "with-appcast" }
+        let(:message) { "`appcast` should be replaced with a `livecheck`." }
 
         it { is_expected.to error_with(message) }
       end

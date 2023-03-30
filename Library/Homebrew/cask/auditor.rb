@@ -17,7 +17,6 @@ module Cask
     def initialize(
       cask,
       audit_download: nil,
-      audit_appcast: nil,
       audit_online: nil,
       audit_strict: nil,
       audit_signing: nil,
@@ -33,7 +32,6 @@ module Cask
     )
       @cask = cask
       @audit_download = audit_download
-      @audit_appcast = audit_appcast
       @audit_online = audit_online
       @audit_new_cask = audit_new_cask
       @audit_strict = audit_strict
@@ -120,7 +118,6 @@ module Cask
     def audit_cask_instance(cask)
       audit = Audit.new(
         cask,
-        appcast:         @audit_appcast,
         online:          @audit_online,
         strict:          @audit_strict,
         signing:         @audit_signing,

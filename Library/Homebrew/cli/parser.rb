@@ -156,7 +156,7 @@ module Homebrew
       end
 
       def switch(*names, description: nil, replacement: nil, env: nil, depends_on: nil,
-                 method: :on, hidden: false)
+                 method: :on, hidden: false, disable: false)
         global_switch = names.first.is_a?(Symbol)
         return if global_switch
 
@@ -167,7 +167,7 @@ module Homebrew
           description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
         end
         @parser.public_send(method, *names, *wrap_option_desc(description)) do |value|
-          odisabled "the `#{names.first}` switch", replacement unless replacement.nil?
+          odeprecated "the `#{names.first}` switch", replacement, disable: disable if !replacement.nil? || disable
           value = true if names.none? { |name| name.start_with?("--[no-]") }
 
           set_switch(*names, value: value, from: :args)

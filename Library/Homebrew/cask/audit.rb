@@ -20,11 +20,11 @@ module Cask
 
     attr_reader :cask, :download
 
-    attr_predicate :appcast?, :new_cask?, :strict?, :signing?, :online?, :token_conflicts?
+    attr_predicate :new_cask?, :strict?, :signing?, :online?, :token_conflicts?
 
     def initialize(
       cask,
-      appcast: nil, download: nil, quarantine: nil,
+      download: nil, quarantine: nil,
       token_conflicts: nil, online: nil, strict: nil, signing: nil,
       new_cask: nil, only: [], except: []
     )
@@ -34,15 +34,10 @@ module Cask
       signing = new_cask if signing.nil?
       token_conflicts = new_cask if token_conflicts.nil?
 
-      # `online` implies `appcast` and `download`
-      appcast = online if appcast.nil?
-      download = online if download.nil?
-
-      # `signing` implies `download`
-      download = signing if download.nil?
+      # `online` and `signing` imply `download`
+      download = online || signing if download.nil?
 
       @cask = cask
-      @appcast = appcast
       @download = Download.new(cask, quarantine: quarantine) if download
       @online = online
       @strict = strict
@@ -292,22 +287,15 @@ module Cask
     end
 
     sig { void }
-    def audit_appcast_and_livecheck
+    def audit_appcast
       return unless cask.appcast
 
-      if cask.livecheckable?
-        add_error "Cask has a `livecheck`, the `appcast` should be removed."
-      elsif new_cask?
-        add_error "New casks should use a `livecheck` instead of an `appcast`."
-      end
+      add_error "`appcast` should be replaced with a `livecheck`."
     end
 
     sig { void }
-    def audit_latest_with_appcast_or_livecheck
+    def audit_latest_with_livecheck
       return unless cask.version.latest?
-
-      add_error "Casks with an `appcast` should not use `version :latest`." if cask.appcast
-
       return unless cask.livecheckable?
       return if cask.livecheck.skip?
 
@@ -326,8 +314,10 @@ module Cask
 
     sig { params(livecheck_result: T.any(NilClass, T::Boolean, Symbol)).void }
     def audit_hosting_with_livecheck(livecheck_result: audit_livecheck_version)
-      return if cask.discontinued? || cask.version.latest?
-      return if block_url_offline? || cask.appcast || cask.livecheckable?
+      return if cask.discontinued?
+      return if cask.version.latest?
+      return if block_url_offline?
+      return if cask.livecheckable?
       return if livecheck_result == :auto_detected
 
       add_livecheck = "please add a livecheck. See #{Formatter.url(LIVECHECK_REFERENCE_URL)}"
@@ -478,7 +468,7 @@ module Cask
     end
 
     sig { void }
-    def audit_appcast_unneeded_long_version
+    def audit_livecheck_unneeded_long_version
       return unless cask.livecheck.strategy == :sparkle
       return unless cask.version.csv.second
       return if cask.url.to_s.include? cask.version.csv.second
@@ -561,7 +551,7 @@ module Cask
 
     sig { returns(T.any(NilClass, T::Boolean, Symbol)) }
     def audit_livecheck_version
-      return unless appcast?
+      return unless online?
 
       referenced_cask, = Homebrew::Livecheck.resolve_livecheck_reference(cask)
 
@@ -581,16 +571,8 @@ module Cask
         cask,
         referenced_formula_or_cask: referenced_cask,
       )&.fetch(:latest)
-      if cask.version.to_s == latest_version.to_s
-        if cask.appcast
-          add_error "Version '#{latest_version}' was automatically detected by livecheck; " \
-                    "the appcast should be removed."
-        end
 
-        return :auto_detected
-      end
-
-      return :appcast if cask.appcast && !cask.livecheckable?
+      return :auto_detected if cask.version.to_s == latest_version.to_s
 
       add_error "Version '#{cask.version}' differs from '#{latest_version}' retrieved by livecheck."
 
@@ -641,33 +623,6 @@ module Cask
       end
       add_error "Upstream defined #{min_os_string.to_sym.inspect} as the minimum OS version " \
                 "and the cask defined #{min_os_symbol}"
-    end
-
-    sig { void }
-    def audit_appcast_contains_version
-      return unless appcast?
-      return if cask.appcast.to_s.empty?
-      return if cask.appcast.must_contain == :no_check
-
-      appcast_url = cask.appcast.to_s
-      begin
-        details = curl_http_content_headers_and_checksum(appcast_url, user_agent: HOMEBREW_USER_AGENT_FAKE_SAFARI)
-        appcast_contents = details[:file]
-      rescue
-        add_error "appcast at URL '#{Formatter.url(appcast_url)}' offline or looping"
-        return
-      end
-
-      version_stanza = cask.version.to_s
-      adjusted_version_stanza = cask.appcast.must_contain.presence || version_stanza.match(/^[[:alnum:].]+/)[0]
-      return if appcast_contents.blank?
-      return if appcast_contents.include?(adjusted_version_stanza)
-
-      add_error <<~EOS.chomp
-        appcast at URL '#{Formatter.url(appcast_url)}' does not contain \
-        the version number '#{adjusted_version_stanza}':
-        #{appcast_contents}
-      EOS
     end
 
     sig { void }
@@ -808,8 +763,9 @@ module Cask
                                             user_agents: [cask.url.user_agent], referer: cask.url&.referer)
       end
 
-      if cask.appcast && appcast?
-        validate_url_for_https_availability(cask.appcast, "appcast URL", cask.token, cask.tap, check_content: true)
+      if cask.livecheckable? && !cask.livecheck.url.is_a?(Symbol)
+        validate_url_for_https_availability(cask.livecheck.url, "livecheck URL", cask.token, cask.tap,
+                                            check_content: true)
       end
 
       return unless cask.homepage
@@ -841,7 +797,6 @@ module Cask
 
       _, user, repo = *regex.match(cask.url.to_s)
       _, user, repo = *regex.match(cask.homepage) unless user
-      _, user, repo = *regex.match(cask.appcast.to_s) unless user
       return if !user || !repo
 
       repo.gsub!(/.git$/, "")
