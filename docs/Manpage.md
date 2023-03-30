@@ -1347,8 +1347,6 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
 Publish bottles for a pull request with GitHub Actions.
 Requires write access to the repository.
 
-* `--commit-bottles-to-pr-branch`:
-  Push bottle commits to the pull request branch.
 * `--autosquash`:
   If supported on the target tap, automatically reformat and reword commits to our preferred format.
 * `--no-autosquash`:
