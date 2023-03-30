@@ -141,6 +141,7 @@ Having a common order for stanzas makes casks easier to update and parse. Below 
     font
     input_method
     internet_plugin
+    keyboard_layout
     prefpane
     qlplugin
     mdimporter
@@ -190,25 +191,26 @@ Each cask must declare one or more *artifacts* (i.e. something to install).
 | name                             | multiple occurrences allowed? | value |
 | -------------------------------- | :---------------------------: | ----- |
 | [`app`](#stanza-app)             | yes                           | Relative path to an `.app` that should be moved into the `/Applications` folder on installation.
+| [`suite`](#stanza-suite)         | yes                           | Relative path to a containing directory that should be moved into the `/Applications` folder on installation.
 | [`pkg`](#stanza-pkg)             | yes                           | Relative path to a `.pkg` file containing the distribution.
+| [`installer`](#stanza-installer) | yes                           | Describes an executable which must be run to complete the installation.
 | [`binary`](#stanza-binary)       | yes                           | Relative path to a Binary that should be linked into the `$(brew --prefix)/bin` folder on installation.
+| `manpage`                        | yes                           | Relative path to a Man Page that should be linked into the respective man page folder on installation, e.g. `/usr/local/share/man/man3` for `my_app.3`.
 | `colorpicker`                    | yes                           | Relative path to a ColorPicker plugin that should be moved into the `~/Library/ColorPickers` folder on installation.
 | `dictionary`                     | yes                           | Relative path to a Dictionary that should be moved into the `~/Library/Dictionaries` folder on installation.
 | `font`                           | yes                           | Relative path to a Font that should be moved into the `~/Library/Fonts` folder on installation.
-| `input_method`                   | yes                           | Relative path to a Input Method that should be moved into the `~/Library/Input Methods` folder on installation.
-| `internet_plugin`                | yes                           | Relative path to a Service that should be moved into the `~/Library/Internet Plug-Ins` folder on installation.
-| `manpage`                        | yes                           | Relative path to a Man Page that should be linked into the respective man page folder on installation, e.g. `/usr/local/share/man/man3` for `my_app.3`.
+| `input_method`                   | yes                           | Relative path to an Input Method that should be moved into the `~/Library/Input Methods` folder on installation.
+| `internet_plugin`                | yes                           | Relative path to an Internet Plugin that should be moved into the `~/Library/Internet Plug-Ins` folder on installation.
+| `keyboard_layout`                | yes                           | Relative path to a Keyboard Layout that should be moved into the `/Library/Keyboard Layouts` folder on installation.
 | `prefpane`                       | yes                           | Relative path to a Preference Pane that should be moved into the `~/Library/PreferencePanes` folder on installation.
 | `qlplugin`                       | yes                           | Relative path to a QuickLook Plugin that should be moved into the `~/Library/QuickLook` folder on installation.
-| `mdimporter`                     | yes                           | Relative path to a Spotlight metadata importer that should be moved into the `~/Library/Spotlight` folder on installation.
+| `mdimporter`                     | yes                           | Relative path to a Spotlight Metadata Importer that should be moved into the `~/Library/Spotlight` folder on installation.
 | `screen_saver`                   | yes                           | Relative path to a Screen Saver that should be moved into the `~/Library/Screen Savers` folder on installation.
 | `service`                        | yes                           | Relative path to a Service that should be moved into the `~/Library/Services` folder on installation.
-| `audio_unit_plugin`              | yes                           | Relative path to an Audio Unit plugin that should be moved into the `~/Library/Audio/Components` folder on installation.
+| `audio_unit_plugin`              | yes                           | Relative path to an Audio Unit Plugin that should be moved into the `~/Library/Audio/Components` folder on installation.
 | `vst_plugin`                     | yes                           | Relative path to a VST Plugin that should be moved into the `~/Library/Audio/VST` folder on installation.
 | `vst3_plugin`                    | yes                           | Relative path to a VST3 Plugin that should be moved into the `~/Library/Audio/VST3` folder on installation.
-| [`suite`](#stanza-suite)         | yes                           | Relative path to a containing directory that should be moved into the `/Applications` folder on installation.
 | `artifact`                       | yes                           | Relative path to an arbitrary path that should be moved on installation. Must provide an absolute path as a `target`. (Example: [free-gpgmail.rb](https://github.com/Homebrew/homebrew-cask/blob/8bc2da7270292f899b9819972cf2ee647b8c6a3e/Casks/free-gpgmail.rb#L39)) This is only for unusual cases; the `app` stanza is strongly preferred when moving `.app` bundles.
-| [`installer`](#stanza-installer) | yes                           | Describes an executable which must be run to complete the installation.
 | `stage_only`                     | no                            | `true`. Asserts that the cask contains no activatable artifacts.
 
 ### Optional Stanzas
