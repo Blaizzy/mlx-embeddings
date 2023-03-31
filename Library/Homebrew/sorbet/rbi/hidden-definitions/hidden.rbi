@@ -5011,10 +5011,6 @@ class Net::HTTP
   ENVIRONMENT_VARIABLE_IS_MULTIUSER_SAFE = ::T.let(nil, ::T.untyped)
 end
 
-class Net::HTTP::Persistent
-  HAVE_OPENSSL = ::T.let(nil, ::T.untyped)
-end
-
 class Net::HTTPAlreadyReported
   HAS_BODY = ::T.let(nil, ::T.untyped)
 end

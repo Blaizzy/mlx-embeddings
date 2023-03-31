@@ -94,6 +94,7 @@ end
 class Net::HTTP::Persistent::Connection
   def initialize(http_class, http_args, ssl_generation); end
 
+  def close; end
   def finish; end
   def http; end
   def http=(_arg0); end
@@ -110,6 +111,7 @@ end
 Net::HTTP::Persistent::DEFAULT_POOL_SIZE = T.let(T.unsafe(nil), Integer)
 Net::HTTP::Persistent::EPOCH = T.let(T.unsafe(nil), Time)
 class Net::HTTP::Persistent::Error < ::StandardError; end
+Net::HTTP::Persistent::HAVE_OPENSSL = T.let(T.unsafe(nil), String)
 
 class Net::HTTP::Persistent::Pool < ::ConnectionPool
   def initialize(options = T.unsafe(nil), &block); end
