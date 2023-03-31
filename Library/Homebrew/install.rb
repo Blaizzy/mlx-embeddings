@@ -281,7 +281,8 @@ module Homebrew
       debug: false,
       quiet: false,
       verbose: false,
-      dry_run: false
+      dry_run: false,
+      skip_post_install: false
     )
       formula_installers = formulae_to_install.map do |formula|
         Migrator.migrate_if_needed(formula, force: force, dry_run: dry_run)
@@ -307,6 +308,7 @@ module Homebrew
           debug:                      debug,
           quiet:                      quiet,
           verbose:                    verbose,
+          skip_post_install:          skip_post_install,
         )
 
         begin
