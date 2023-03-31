@@ -416,7 +416,6 @@ _brew_analytics() {
 # brew audit
 _brew_audit() {
   _arguments \
-    '--appcast[Audit the appcast]' \
     '--audit-debug[Enable debugging and profiling of audit methods]' \
     '--debug[Display any debugging information]' \
     '(--skip-style --only-cops --except-cops)--display-cop-names[Include the RuboCop cop name for each violation in the output]' \
@@ -430,7 +429,6 @@ _brew_audit() {
     '--help[Show this message]' \
     '(--all)--installed[Only check formulae and casks that are currently installed]' \
     '--new[Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`]' \
-    '--no-appcast[Audit the appcast]' \
     '--no-signing[Audit for signed apps, which are required on ARM]' \
     '--online[Run additional, slower style checks that require a network connection]' \
     '(--except --only-cops --except-cops)--only[Specify a comma-separated method list to only run the methods named `audit_`method]' \
