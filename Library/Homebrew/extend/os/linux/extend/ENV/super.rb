@@ -40,11 +40,8 @@ module Superenv
     paths = []
     # Add paths for GCC headers when building against glibc@2.13 because we have to use -nostdinc.
     if deps.any? { |d| d.name == "glibc@2.13" }
-      env_cc = cc
-      raise "No CC compiler found in ENV" if env_cc.nil?
-
-      gcc_include_dir = Utils.safe_popen_read(env_cc, "--print-file-name=include").chomp
-      gcc_include_fixed_dir = Utils.safe_popen_read(env_cc, "--print-file-name=include-fixed").chomp
+      gcc_include_dir = Utils.safe_popen_read(cc, "--print-file-name=include").chomp
+      gcc_include_fixed_dir = Utils.safe_popen_read(cc, "--print-file-name=include-fixed").chomp
       paths << gcc_include_dir << gcc_include_fixed_dir
     end
     paths

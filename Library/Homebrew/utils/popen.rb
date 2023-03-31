@@ -1,20 +1,10 @@
-# typed: strict
+# typed: true
 # frozen_string_literal: true
 
 module Utils
-  extend T::Sig
-
   IO_DEFAULT_BUFFER_SIZE = 4096
   private_constant :IO_DEFAULT_BUFFER_SIZE
 
-  sig {
-    params(
-      args:    T.any(Pathname, String, T::Hash[String, String]),
-      safe:    T::Boolean,
-      options: T.untyped,
-      block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(T.nilable(String))
-  }
   def self.popen_read(*args, safe: false, **options, &block)
     output = popen(args, "rb", options, &block)
     return output if !safe || $CHILD_STATUS.success?
@@ -22,26 +12,11 @@ module Utils
     raise ErrorDuringExecution.new(args, status: $CHILD_STATUS, output: [[:stdout, output]])
   end
 
-  sig {
-    params(
-      args:    T.any(Pathname, String, T::Hash[String, String]),
-      options: T.untyped,
-      block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(T.nilable(String))
-  }
   def self.safe_popen_read(*args, **options, &block)
     popen_read(*args, safe: true, **options, &block)
   end
 
-  sig {
-    params(
-      args:    T.any(Pathname, String, T::Hash[String, String]),
-      safe:    T::Boolean,
-      options: T.untyped,
-      _block:  T.proc.params(io: IO).void,
-    ).returns(T.nilable(String))
-  }
-  def self.popen_write(*args, safe: false, **options, &_block)
+  def self.popen_write(*args, safe: false, **options)
     output = ""
     popen(args, "w+b", options) do |pipe|
       # Before we yield to the block, capture as much output as we can
@@ -56,7 +31,7 @@ module Utils
       pipe.wait_readable
 
       # Capture the rest of the output
-      output += T.must(pipe.read)
+      output += pipe.read
       output.freeze
     end
     return output if !safe || $CHILD_STATUS.success?
@@ -64,29 +39,14 @@ module Utils
     raise ErrorDuringExecution.new(args, status: $CHILD_STATUS, output: [[:stdout, output]])
   end
 
-  sig {
-    params(
-      args:    T.any(Pathname, String, T::Hash[String, String]),
-      options: T.untyped,
-      block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(T.nilable(String))
-  }
   def self.safe_popen_write(*args, **options, &block)
     popen_write(*args, safe: true, **options, &block)
   end
 
-  sig {
-    params(
-      args:    T::Array[T.any(Pathname, String, T::Hash[String, String])],
-      mode:    String,
-      options: T::Hash[Symbol, T.untyped],
-      block:   T.nilable(T.proc.params(io: IO).void),
-    ).returns(T.nilable(String))
-  }
-  def self.popen(args, mode, options = {}, &block)
+  def self.popen(args, mode, options = {})
     IO.popen("-", mode) do |pipe|
       if pipe
-        return pipe.read unless block
+        return pipe.read unless block_given?
 
         yield pipe
       else

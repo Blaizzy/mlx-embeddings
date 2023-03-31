@@ -131,7 +131,7 @@ module ELFShim
       return if needed.empty?
 
       ldd = DevelopmentTools.locate "ldd"
-      ldd_output = Utils.popen_read(T.must(ldd), path.expand_path.to_s).split("\n")
+      ldd_output = Utils.popen_read(ldd, path.expand_path.to_s).split("\n")
       return unless $CHILD_STATUS.success?
 
       ldd_paths = ldd_output.map do |line|
