@@ -250,6 +250,7 @@ module Homebrew
       quiet:                      args.quiet?,
       verbose:                    args.verbose?,
       dry_run:                    args.dry_run?,
+      skip_post_install:          args.skip_post_install?,
     )
 
     Upgrade.check_installed_dependents(
