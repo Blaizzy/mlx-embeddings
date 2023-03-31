@@ -81,15 +81,12 @@ module Cask
       !errors?
     end
 
-    sig { params(message: T.nilable(String), location: T.nilable(String)).void }
-    def add_error(message, location: nil)
-      errors << ({ message: message, location: location })
-    end
+    sig { params(message: T.nilable(String), location: T.nilable(String), strictish: T::Boolean).void }
+    def add_error(message, location: nil, strictish: false)
+      # Only raise non-critical audits if the user specified `--strict`.
+      return if strictish && !@strict
 
-    sig { params(message: T.nilable(String), location: T.nilable(String)).void }
-    def add_warning(message, location: nil)
-      # Warnings are ignored unless `--strict` is passed in which case they're turned into errors.
-      add_error(message, location: location) if strict?
+      errors << ({ message: message, location: location })
     end
 
     def result
@@ -195,7 +192,7 @@ module Cask
       # increases the maintenance burden.
       return if cask.tap == "homebrew/cask-fonts"
 
-      add_warning "Cask should have a description. Please add a `desc` stanza." if cask.desc.blank?
+      add_error("Cask should have a description. Please add a `desc` stanza.", strictish: true) if cask.desc.blank?
     end
 
     sig { void }
@@ -383,8 +380,10 @@ module Cask
       return unless token_conflicts?
       return unless core_formula_names.include?(cask.token)
 
-      add_warning "possible duplicate, cask token conflicts with Homebrew core formula: " \
-                  "#{Formatter.url(core_formula_url)}"
+      add_error(
+        "possible duplicate, cask token conflicts with Homebrew core formula: #{Formatter.url(core_formula_url)}",
+        strictish: true,
+      )
     end
 
     sig { void }
@@ -418,18 +417,19 @@ module Cask
         add_error "cask token contains version designation '#{match_data[:designation]}'"
       end
 
-      add_warning "cask token mentions launcher" if token.end_with? "launcher"
+      add_error("cask token mentions launcher", strictish: true) if token.end_with? "launcher"
 
-      add_warning "cask token mentions desktop" if token.end_with? "desktop"
+      add_error("cask token mentions desktop", strictish: true) if token.end_with? "desktop"
 
-      add_warning "cask token mentions platform" if token.end_with? "mac", "osx", "macos"
+      add_error("cask token mentions platform", strictish: true) if token.end_with? "mac", "osx", "macos"
 
-      add_warning "cask token mentions architecture" if token.end_with? "x86", "32_bit", "x86_64", "64_bit"
+      add_error("cask token mentions architecture", strictish: true) if token.end_with? "x86", "32_bit", "x86_64",
+                                                                                        "64_bit"
 
       frameworks = %w[cocoa qt gtk wx java]
       return if frameworks.include?(token) || !token.end_with?(*frameworks)
 
-      add_warning "cask token mentions framework"
+      add_error("cask token mentions framework", strictish: true)
     end
 
     sig { void }
@@ -449,7 +449,10 @@ module Cask
       return if cask.url.to_s.include? cask.version.csv.second
       return if cask.version.csv.third.present? && cask.url.to_s.include?(cask.version.csv.third)
 
-      add_warning "Download does not require additional version components. Use `&:short_version` in the livecheck"
+      add_error(
+        "Download does not require additional version components. Use `&:short_version` in the livecheck",
+        strictish: true,
+      )
     end
 
     sig { void }
@@ -493,7 +496,7 @@ module Cask
               "#{message} fix the signature of their app."
             end
 
-            add_warning message
+            add_error(message, strictish: true)
           when Artifact::Pkg
             path = downloaded_path
             next unless path.exist?
@@ -501,7 +504,7 @@ module Cask
             result = system_command("pkgutil", args: ["--check-signature", path], print_stderr: false)
 
             unless result.success?
-              add_warning <<~EOS
+              add_error(<<~EOS, strictish: true)
                 Signature verification failed:
                 #{result.merged_output}
                 macOS on ARM requires applications to be signed.
@@ -513,7 +516,7 @@ module Cask
             result = system_command("stapler", args: ["validate", path], print_stderr: false)
             next if result.success?
 
-            add_warning <<~EOS
+            add_error(<<~EOS, strictish: true)
               Signature verification failed:
               #{result.merged_output}
               macOS on ARM requires applications to be signed.
@@ -638,16 +641,9 @@ module Cask
 
       metadata = SharedAudits.github_repo_data(user, repo)
       return if metadata.nil?
-
       return unless metadata["archived"]
 
-      message = "GitHub repo is archived"
-
-      if cask.discontinued?
-        add_warning message
-      else
-        add_error message
-      end
+      add_error("GitHub repo is archived", strictish: cask.discontinued?)
     end
 
     sig { void }
@@ -659,16 +655,9 @@ module Cask
 
       metadata = SharedAudits.gitlab_repo_data(user, repo)
       return if metadata.nil?
-
       return unless metadata["archived"]
 
-      message = "GitLab repo is archived"
-
-      if cask.discontinued?
-        add_warning message
-      else
-        add_error message
-      end
+      add_error("GitLab repo is archived", strictish: cask.discontinued?)
     end
 
     sig { void }
