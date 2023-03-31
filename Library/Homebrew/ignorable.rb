@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "warnings"
@@ -30,7 +30,7 @@ module Ignorable
         rescue Exception => e # rubocop:disable Lint/RescueException
           unless e.is_a?(ScriptError)
             e.extend(ExceptionMixin)
-            e.continuation = continuation
+            T.cast(e, ExceptionMixin).continuation = continuation
           end
           super(e)
         end
@@ -47,7 +47,6 @@ module Ignorable
 
   def self.unhook_raise
     Object.class_eval do
-      # False positive - https://github.com/rubocop/rubocop/issues/5022
       alias_method :raise, :original_raise
       alias_method :fail, :original_raise
       undef :original_raise
