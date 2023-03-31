@@ -239,6 +239,9 @@ module Homebrew
       HOMEBREW_GITHUB_PACKAGES_USER:             {
         description: "Use this username when accessing the GitHub Packages Registry (where bottles may be stored).",
       },
+      HOMEBREW_GREEDY:                           {
+        description: "Pass this value to brew upgrade greedy.",
+      },
       HOMEBREW_INSTALL_BADGE:                    {
         description:  "Print this text before the installation summary of each successful build.",
         default_text: 'The "Beer Mug" emoji.',
