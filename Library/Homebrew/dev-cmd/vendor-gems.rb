@@ -30,7 +30,7 @@ module Homebrew
 
     Homebrew.install_bundler!
 
-    ENV["BUNDLE_WITH"] = "sorbet"
+    ENV["BUNDLE_WITH"] = VALID_GEM_GROUPS.join(":")
 
     # System Ruby does not pick up the correct SDK by default.
     ENV["SDKROOT"] = MacOS.sdk_path if ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]

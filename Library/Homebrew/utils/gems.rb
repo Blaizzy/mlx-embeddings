@@ -12,6 +12,8 @@ module Homebrew
   # After updating this, run `brew vendor-gems --update=--bundler`.
   HOMEBREW_BUNDLER_VERSION = "2.3.26"
 
+  VALID_GEM_GROUPS = ["sorbet", "prof"].freeze
+
   module_function
 
   def ruby_bindir
@@ -133,6 +135,9 @@ module Homebrew
     old_bundle_with = ENV.fetch("BUNDLE_WITH", nil)
     old_bundle_frozen = ENV.fetch("BUNDLE_FROZEN", nil)
     old_sdkroot = ENV.fetch("SDKROOT", nil)
+
+    invalid_groups = groups - VALID_GEM_GROUPS
+    raise ArgumentError, "Invalid gem groups: #{invalid_groups.join(", ")}" unless invalid_groups.empty?
 
     install_bundler!
 
