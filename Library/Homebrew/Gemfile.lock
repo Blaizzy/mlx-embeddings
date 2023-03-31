@@ -61,7 +61,7 @@ GEM
     msgpack (1.7.0)
     mustache (1.1.1)
     net-http-digest_auth (1.4.1)
-    net-http-persistent (4.0.1)
+    net-http-persistent (4.0.2)
       connection_pool (~> 2.2)
     nokogiri (1.13.10)
       mini_portile2 (~> 2.8.0)
