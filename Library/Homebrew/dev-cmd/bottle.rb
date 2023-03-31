@@ -232,8 +232,11 @@ module Homebrew
   end
 
   def self.setup_tar_and_args!(args, mtime)
+    # TODO: Refactor and move to extend/os
     # Without --only-json-tab bottles are never reproducible
-    default_tar_args = ["tar", [].freeze].freeze
+    tar_args =
+      OS.mac? ? ["--no-mac-metadata", "--no-acls", "--no-xattrs"].freeze : ["--no-acls", "--no-xattrs"].freeze # rubocop:disable Homebrew/MoveToExtendOS
+    default_tar_args = ["tar", tar_args].freeze
     return default_tar_args unless args.only_json_tab?
 
     # Ensure tar is set up for reproducibility.
