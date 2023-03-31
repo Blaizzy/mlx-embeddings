@@ -170,7 +170,7 @@ class RSpec::Mocks::AnyInstance::ExpectationChain < ::RSpec::Mocks::AnyInstance:
   def verify_invocation_order(_rspec_method_name, *_args, &_block); end
 end
 
-class RSpec::Mocks::AnyInstance::FluentInterfaceProxy
+class RSpec::Mocks::AnyInstance::FluentInterfaceProxy < ::BasicObject
   def initialize(targets); end
 
   def method_missing(*args, &block); end
