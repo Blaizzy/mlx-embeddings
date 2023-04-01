@@ -67,6 +67,14 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
       virtualenv.pip_install res
     end
+
+    it "works without build isolation" do
+      expect(formula).to receive(:system)
+        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
+              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "--no-build-isolation", "foo")
+        .and_return(true)
+      virtualenv.pip_install("foo", build_isolation: false)
+    end
   end
 
   describe "#pip_install_and_link" do
