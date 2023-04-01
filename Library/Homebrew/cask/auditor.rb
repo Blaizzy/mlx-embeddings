@@ -83,10 +83,6 @@ module Cask
       audit.errors?
     end
 
-    def output_warnings?
-      @new_cask.present? || @audit_strict.present?
-    end
-
     def audit_languages(languages)
       original_config = cask.config
       localized_config = original_config.merge(Config.new(explicit: { languages: languages }))
