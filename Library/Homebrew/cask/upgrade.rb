@@ -40,6 +40,7 @@ module Cask
       require_sha: nil
     )
 
+    if
       quarantine = true if quarantine.nil?
 
       outdated_casks = if casks.empty?
