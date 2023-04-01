@@ -46,8 +46,11 @@ module Homebrew
     }
     def run(command = nil, macos: nil, linux: nil)
       # Save parameters for serialization
-      @run_params ||= command
-      @run_params ||= { macos: macos, linux: linux }.compact
+      if command
+        @run_params = command
+      elsif macos || linux
+        @run_params = { macos: macos, linux: linux }.compact
+      end
 
       command ||= on_system_conditional(macos: macos, linux: linux)
       case T.unsafe(command)
@@ -551,15 +554,22 @@ module Homebrew
       hash = {}
       hash[:run] =
         case api_hash["run"]
-        when Hash
-          api_hash["run"].to_h do |key, array|
-            [
-              key.to_sym,
-              array.map(&method(:replace_placeholders)),
-            ]
-          end
+        when String
+          replace_placeholders(api_hash["run"])
         when Array
           api_hash["run"].map(&method(:replace_placeholders))
+        when Hash
+          api_hash["run"].to_h do |key, elem|
+            run_cmd = if elem.is_a?(Array)
+              elem.map(&method(:replace_placeholders))
+            else
+              replace_placeholders(elem)
+            end
+
+            [key.to_sym, run_cmd]
+          end
+        else
+          raise ArgumentError, "Unexepected run command: #{api_hash["run"]}"
         end
 
       hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")

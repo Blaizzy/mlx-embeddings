@@ -975,5 +975,37 @@ describe Homebrew::Service do
     it "replaces placeholders with local paths" do
       expect(described_class.deserialize(serialized_hash)).to eq(deserialized_hash)
     end
+
+    describe "run command" do
+      it "handles String argument correctly" do
+        expect(described_class.deserialize({
+          "run" => "$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd",
+        })).to eq({
+          run: "#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd",
+        })
+      end
+
+      it "handles Array argument correctly" do
+        expect(described_class.deserialize({
+          "run" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "--option"],
+        })).to eq({
+          run: ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "--option"],
+        })
+      end
+
+      it "handles Hash argument correctly" do
+        expect(described_class.deserialize({
+          "run" => {
+            "linux" => "$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd",
+            "macos" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "--option"],
+          },
+        })).to eq({
+          run: {
+            linux: "#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd",
+            macos: ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "--option"],
+          },
+        })
+      end
+    end
   end
 end
