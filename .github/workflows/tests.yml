@@ -151,7 +151,7 @@ jobs:
         run: brew readall --aliases homebrew/core
 
       - name: Run brew audit --skip-style on homebrew/core
-        run: brew audit --skip-style --except=version --display-failures-only --tap=homebrew/core
+        run: brew audit --skip-style --except=version --tap=homebrew/core
 
   cask-audit:
     name: cask audit
@@ -187,10 +187,10 @@ jobs:
 
       - name: Run brew audit --skip-style on casks
         run: |
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask-drivers
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask-fonts
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask-versions
+          brew audit --skip-style --except=version --tap=homebrew/cask
+          brew audit --skip-style --except=version --tap=homebrew/cask-drivers
+          brew audit --skip-style --except=version --tap=homebrew/cask-fonts
+          brew audit --skip-style --except=version --tap=homebrew/cask-versions
 
   vendored-gems:
     name: vendored gems
