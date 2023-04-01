@@ -309,7 +309,7 @@ module Language
             "--ignore-installed"
           ]
           args << "--no-build-isolation" unless build_isolation
-          @formula.system @venv_root/"bin/pip", "install", args, *targets
+          @formula.system @venv_root/"bin/pip", "install", *args, *targets
         end
       end
     end
