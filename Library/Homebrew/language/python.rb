@@ -308,7 +308,7 @@ module Language
             "--use-feature=no-binary-enable-wheel-cache",
             "--ignore-installed"
           ]
-          args << "--no-build-isolation" if not build_isolation
+          args << "--no-build-isolation" unless build_isolation
           @formula.system @venv_root/"bin/pip", "install", args, *targets
         end
       end
