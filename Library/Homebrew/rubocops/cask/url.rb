@@ -8,13 +8,13 @@ module RuboCop
       #
       # @example
       #   # bad
-      #   url "https://example.com/foo.dmg",
-      #     verified: "https://example.com"
+      #   url "https://example.com/download/foo.dmg",
+      #     verified: "https://example.com/download"
       #
       #
       #   # good
-      #   url "https://example.com/foo.dmg",
-      #     verified: "example.com"
+      #   url "https://example.com/download/foo.dmg",
+      #     verified: "example.com/download/"
       #
       class Url < Base
         extend AutoCorrector
@@ -30,13 +30,24 @@ module RuboCop
           hash_node.each_pair do |key_node, value_node|
             next unless key_node.source == "verified"
             next unless value_node.str_type?
-            next unless value_node.source.start_with?(%r{^"https?://})
+
+            if value_node.source.start_with?(%r{^"https?://})
+              add_offense(
+                value_node.source_range,
+                message: "Verified URL parameter value should not start with https:// or http://.",
+              ) do |corrector|
+                corrector.replace(value_node.source_range, value_node.source.gsub(%r{^"https?://}, "\""))
+              end
+            end
+
+            next unless value_node.str_content.gsub(%r{https?://}, "").include?("/") # Skip if the stanza has no path.
+            next if value_node.str_content.end_with?("/")
 
             add_offense(
               value_node.source_range,
-              message: "Verified URL parameter value should not start with https:// or http://.",
+              message: "Verified URL parameter value should end with a /.",
             ) do |corrector|
-              corrector.replace(value_node.source_range, value_node.source.gsub(%r{^"https?://}, "\""))
+              corrector.replace(value_node.source_range, value_node.source.gsub(/"$/, "/\""))
             end
           end
         end
