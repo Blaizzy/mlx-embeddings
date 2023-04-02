@@ -14,7 +14,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-              verified: "example.com"
+              verified: "example.com/download/"
         end
       CASK
     end
@@ -27,7 +27,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-              verified: "https://example.com"
+              verified: "https://example.com/download/"
         end
       CASK
     end
@@ -38,7 +38,7 @@ describe RuboCop::Cop::Cask::Url do
         severity: :convention,
         line:     3,
         column:   16,
-        source:   "\"https://example.com\"",
+        source:   "\"https://example.com/download/\"",
       }]
     end
 
@@ -46,7 +46,114 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-              verified: "example.com"
+              verified: "example.com/download/"
+        end
+      CASK
+    end
+
+    include_examples "reports offenses"
+    include_examples "autocorrects source"
+  end
+
+  context "when url 'verified' value does not have a path component" do
+    context "when the URL ends with a slash" do
+      let(:source) do
+        <<~CASK
+          cask "foo" do
+            url "https://example.org/",
+                verified: "example.org/"
+          end
+        CASK
+      end
+
+      include_examples "does not report any offenses"
+    end
+
+    context "when the URL does not end with a slash" do
+      let(:source) do
+        <<~CASK
+          cask "foo" do
+            url "https://example.org/",
+                verified: "example.org"
+          end
+        CASK
+      end
+
+      let(:expected_offenses) do
+        [{
+          message:  "Verified URL parameter value should end with a /.",
+          severity: :convention,
+          line:     3,
+          column:   16,
+          source:   "\"example.org\"",
+        }]
+      end
+
+      let(:correct_source) do
+        <<~CASK
+          cask "foo" do
+            url "https://example.org/",
+                verified: "example.org/"
+          end
+        CASK
+      end
+
+      include_examples "reports offenses"
+      include_examples "autocorrects source"
+    end
+  end
+
+  context "when the URL does not end with a slash" do
+    let(:source) do
+      <<~CASK
+        cask "foo" do
+          url "https://github.com/Foo",
+              verified: "github.com/Foo"
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
+  context "when the url ends with a / and the verified value does too" do
+    let(:source) do
+      <<~CASK
+        cask "foo" do
+          url "https://github.com/",
+              verified: "github.com/"
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
+  context "when the url ends with a / and the verified value does not" do
+    let(:source) do
+      <<~CASK
+        cask "foo" do
+          url "https://github.com/",
+              verified: "github.com"
+        end
+      CASK
+    end
+
+    let(:expected_offenses) do
+      [{
+        message:  "Verified URL parameter value should end with a /.",
+        severity: :convention,
+        line:     3,
+        column:   16,
+        source:   "\"github.com\"",
+      }]
+    end
+
+    let(:correct_source) do
+      <<~CASK
+        cask "foo" do
+          url "https://github.com/",
+              verified: "github.com/"
         end
       CASK
     end
@@ -59,8 +166,8 @@ describe RuboCop::Cop::Cask::Url do
     let(:source) do
       <<~CASK
         cask "foo" do
-          url "https://example.com/download/foo-v1.2.0.dmg",
-              verified: "example.com/download/"
+          url "https://github.com/Foo/foo/releases/download/v1.2.0/foo-v1.2.0.dmg",
+              verified: "github.com/Foo/foo/"
         end
       CASK
     end
@@ -72,8 +179,8 @@ describe RuboCop::Cop::Cask::Url do
     let(:source) do
       <<~CASK
         cask "foo" do
-          url "https://example.com/download/foo-v1.2.0.dmg",
-              verified: "example.com/download"
+          url "https://github.com/Foo/foo/releases/download/v1.2.0/foo-v1.2.0.dmg",
+              verified: "github.com/Foo/foo"
         end
       CASK
     end
@@ -84,15 +191,15 @@ describe RuboCop::Cop::Cask::Url do
         severity: :convention,
         line:     3,
         column:   16,
-        source:   "\"example.com/download\"",
+        source:   "\"github.com/Foo/foo\"",
       }]
     end
 
     let(:correct_source) do
       <<~CASK
         cask "foo" do
-          url "https://example.com/download/foo-v1.2.0.dmg",
-              verified: "example.com/download/"
+          url "https://github.com/Foo/foo/releases/download/v1.2.0/foo-v1.2.0.dmg",
+              verified: "github.com/Foo/foo/"
         end
       CASK
     end

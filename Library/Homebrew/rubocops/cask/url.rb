@@ -24,6 +24,7 @@ module RuboCop
         def on_url_stanza(stanza)
           return if stanza.stanza_node.block_type?
 
+          url_string = stanza.stanza_node.first_argument.str_content
           hash_node = stanza.stanza_node.last_argument
           return unless hash_node.hash_type?
 
@@ -40,7 +41,9 @@ module RuboCop
               end
             end
 
-            next unless value_node.str_content.gsub(%r{https?://}, "").include?("/") # Skip if the stanza has no path.
+            # Skip if the URL and the verified value are the same.
+            next if value_node.str_content == url_string.delete_prefix("https://").delete_prefix("http://")
+            # Skip if the verified value ends with a slash.
             next if value_node.str_content.end_with?("/")
 
             add_offense(
