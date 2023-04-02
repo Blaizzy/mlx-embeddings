@@ -9,12 +9,12 @@ module RuboCop
       # @example
       #   # bad
       #   url "https://example.com/download/foo.dmg",
-      #     verified: "https://example.com/download"
+      #       verified: "https://example.com/download"
       #
       #
       #   # good
       #   url "https://example.com/download/foo.dmg",
-      #     verified: "example.com/download/"
+      #       verified: "example.com/download/"
       #
       class Url < Base
         extend AutoCorrector

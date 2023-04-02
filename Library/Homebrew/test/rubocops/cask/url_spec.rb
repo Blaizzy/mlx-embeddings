@@ -14,7 +14,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-            verified: "example.com"
+              verified: "example.com"
         end
       CASK
     end
@@ -27,7 +27,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-            verified: "https://example.com"
+              verified: "https://example.com"
         end
       CASK
     end
@@ -37,7 +37,7 @@ describe RuboCop::Cop::Cask::Url do
         message:  "Verified URL parameter value should not start with https:// or http://.",
         severity: :convention,
         line:     3,
-        column:   14,
+        column:   16,
         source:   "\"https://example.com\"",
       }]
     end
@@ -46,7 +46,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-            verified: "example.com"
+              verified: "example.com"
         end
       CASK
     end
@@ -60,7 +60,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-            verified: "example.com/download/"
+              verified: "example.com/download/"
         end
       CASK
     end
@@ -73,7 +73,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-            verified: "example.com/download"
+              verified: "example.com/download"
         end
       CASK
     end
@@ -83,7 +83,7 @@ describe RuboCop::Cop::Cask::Url do
         message:  "Verified URL parameter value should end with a /.",
         severity: :convention,
         line:     3,
-        column:   14,
+        column:   16,
         source:   "\"example.com/download\"",
       }]
     end
@@ -92,7 +92,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           url "https://example.com/download/foo-v1.2.0.dmg",
-            verified: "example.com/download/"
+              verified: "example.com/download/"
         end
       CASK
     end
