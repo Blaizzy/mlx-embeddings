@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 class Keg
@@ -108,7 +108,7 @@ class Keg
   # Needed to make symlink permissions consistent on macOS and Linux for
   # reproducible bottles.
   def consistent_reproducible_symlink_permissions!
-    find do |file|
+    path.find do |file|
       File.lchmod 0777, file if file.symlink?
     end
   end
