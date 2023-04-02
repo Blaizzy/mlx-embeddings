@@ -35,7 +35,7 @@ module RuboCop
             if value_node.source.start_with?(%r{^"https?://})
               add_offense(
                 value_node.source_range,
-                message: "Verified URL parameter value should not start with https:// or http://.",
+                message: "Verified URL parameter value should not contain a URL scheme.",
               ) do |corrector|
                 corrector.replace(value_node.source_range, value_node.source.gsub(%r{^"https?://}, "\""))
               end

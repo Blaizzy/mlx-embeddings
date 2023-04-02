@@ -34,7 +34,7 @@ describe RuboCop::Cop::Cask::Url do
 
     let(:expected_offenses) do
       [{
-        message:  "Verified URL parameter value should not start with https:// or http://.",
+        message:  "Verified URL parameter value should not contain a URL scheme.",
         severity: :convention,
         line:     3,
         column:   16,
