@@ -175,6 +175,20 @@ describe RuboCop::Cop::Cask::Url do
     include_examples "does not report any offenses"
   end
 
+  context "when the url has interpolation in it and the verified url ends with a /" do
+    let(:source) do
+      <<~CASK
+        cask "foo" do
+          version "1.2.3"
+          url "https://example.com/download/foo-v\#{version}.dmg",
+              verified: "example.com/download/"
+        end
+      CASK
+    end
+
+    include_examples "does not report any offenses"
+  end
+
   context "when the url 'verified' value has a path component that doesn't end with a /" do
     let(:source) do
       <<~CASK
