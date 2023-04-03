@@ -1,12 +1,13 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "cli/parser"
 
 module Homebrew
-  module_function
+  extend T::Sig
 
-  def determine_test_runners_args
+  sig { returns(Homebrew::CLI::Parser) }
+  def self.determine_test_runners_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
         `determine-test-runners` <testing-formulae> [<deleted-formulae>]
@@ -22,7 +23,8 @@ module Homebrew
     end
   end
 
-  def determine_test_runners
+  sig { void }
+  def self.determine_test_runners
     odie "This command is supported only on Linux!"
   end
 end

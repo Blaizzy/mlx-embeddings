@@ -1,72 +1,98 @@
-# typed: false
+# typed: strict
 # frozen_string_literal: true
 
 require "formula"
 
 class TestRunnerFormula
-  attr_reader :name, :formula
+  extend T::Sig
 
+  sig { returns(String) }
+  attr_reader :name
+
+  sig { returns(Formula) }
+  attr_reader :formula
+
+  sig { params(name: String).void }
   def initialize(name)
-    @name = name
-    @formula = Formula[name]
+    @name = T.let(name, String)
+    @formula = T.let(Formula[name], Formula)
+    @dependent_hash = T.let({}, T::Hash[T::Boolean, T::Array[TestRunnerFormula]])
     freeze
   end
 
+  sig { returns(T::Boolean) }
   def macos_only?
     formula.requirements.any? { |r| r.is_a?(MacOSRequirement) && !r.version_specified? }
   end
 
+  sig { returns(T::Boolean) }
   def linux_only?
     formula.requirements.any?(LinuxRequirement)
   end
 
+  sig { returns(T::Boolean) }
   def x86_64_only?
     formula.requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :x86_64) }
   end
 
+  sig { returns(T::Boolean) }
   def arm64_only?
     formula.requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :arm64) }
   end
 
+  sig { returns(T.nilable(MacOSRequirement)) }
   def versioned_macos_requirement
     formula.requirements.find { |r| r.is_a?(MacOSRequirement) && r.version_specified? }
   end
 
+  sig { params(macos_version: MacOS::Version).returns(T::Boolean) }
   def compatible_with?(macos_version)
-    return true if versioned_macos_requirement.blank?
+    # Assign to a variable to assist type-checking.
+    requirement = versioned_macos_requirement
+    return true if requirement.blank?
 
-    macos_version.public_send(versioned_macos_requirement.comparator, versioned_macos_requirement.version)
+    macos_version.public_send(requirement.comparator, requirement.version)
   end
 
+  sig { returns(T::Array[TestRunnerFormula]) }
   def dependents
-    @dependent_hash ||= {}
     @dependent_hash[ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?] ||= with_env(HOMEBREW_STDERR: "1") do
       Utils.safe_popen_read(
         HOMEBREW_BREW_FILE, "uses", "--formulae", "--eval-all", "--include-build", "--include-test", name
       ).split("\n").map { |dependent| TestRunnerFormula.new(dependent) }.freeze
     end
 
-    @dependent_hash[ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?]
+    T.must(@dependent_hash[ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?])
   end
 end
 
 module Homebrew
-  module_function
+  extend T::Sig
 
-  def formulae_have_untested_dependents?(testing_formulae, reject_platform:, reject_arch:, select_macos_version:)
+  sig {
+    params(
+      testing_formulae:     T::Array[TestRunnerFormula],
+      reject_platform:      T.nilable(Symbol),
+      reject_arch:          T.nilable(Symbol),
+      select_macos_version: T.nilable(MacOS::Version),
+    ).returns(T::Boolean)
+  }
+  def self.formulae_have_untested_dependents?(testing_formulae, reject_platform:, reject_arch:, select_macos_version:)
     testing_formulae.any? do |formula|
       # If the formula has a platform/arch/macOS version requirement, then its
       # dependents don't need to be tested if these requirements are not satisfied.
-      next false if reject_platform && formula.method("#{reject_platform}_only?").call
-      next false if reject_arch && formula.method("#{reject_arch}_only?").call
+      next false if reject_platform && formula.method("#{reject_platform}_only?".to_sym).call
+      next false if reject_arch && formula.method("#{reject_arch}_only?".to_sym).call
       next false if select_macos_version && !formula.compatible_with?(select_macos_version)
 
       compatible_dependents = formula.dependents.dup
 
-      compatible_dependents.reject! { |dependent_f| dependent_f.method("#{reject_arch}_only?").call } if reject_arch
+      if reject_arch
+        compatible_dependents.reject! { |dependent_f| dependent_f.method("#{reject_arch}_only?".to_sym).call }
+      end
 
       if reject_platform
-        compatible_dependents.reject! { |dependent_f| dependent_f.method("#{reject_platform}_only?").call }
+        compatible_dependents.reject! { |dependent_f| dependent_f.method("#{reject_platform}_only?".to_sym).call }
       end
 
       if select_macos_version
@@ -77,12 +103,22 @@ module Homebrew
     end
   end
 
-  def add_runner?(formulae,
-                  dependents:,
-                  deleted_formulae:,
-                  reject_platform: nil,
-                  reject_arch: nil,
-                  select_macos_version: nil)
+  sig {
+    params(
+      formulae:             T::Array[TestRunnerFormula],
+      dependents:           T::Boolean,
+      deleted_formulae:     T.nilable(T::Array[String]),
+      reject_platform:      T.nilable(Symbol),
+      reject_arch:          T.nilable(Symbol),
+      select_macos_version: T.nilable(MacOS::Version),
+    ).returns(T::Boolean)
+  }
+  def self.add_runner?(formulae,
+                       dependents:,
+                       deleted_formulae:,
+                       reject_platform: nil,
+                       reject_arch: nil,
+                       select_macos_version: nil)
     if dependents
       formulae_have_untested_dependents?(
         formulae,
@@ -94,15 +130,19 @@ module Homebrew
       return true if deleted_formulae.present?
 
       compatible_formulae = formulae.dup
-      compatible_formulae.reject! { |formula| formula.method("#{reject_platform}_only?").call } if reject_platform
-      compatible_formulae.reject! { |formula| formula.method("#{reject_arch}_only?").call } if reject_arch
+
+      compatible_formulae.reject! { |formula| formula.method("#{reject_arch}_only?".to_sym).call } if reject_arch
       compatible_formulae.select! { |formula| formula.compatible_with?(select_macos_version) } if select_macos_version
+      if reject_platform
+        compatible_formulae.reject! { |formula| formula.method("#{reject_platform}_only?".to_sym).call }
+      end
 
       compatible_formulae.present?
     end
   end
 
-  def determine_test_runners
+  sig { void }
+  def self.determine_test_runners
     args = determine_test_runners_args.parse
     testing_formulae = args.named.first.split(",")
     testing_formulae.map! { |name| TestRunnerFormula.new(name) }
