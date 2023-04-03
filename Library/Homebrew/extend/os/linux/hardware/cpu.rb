@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Hardware
@@ -111,7 +111,10 @@ module Hardware
       end
 
       %w[aes altivec avx avx2 lm ssse3 sse4_2].each do |flag|
-        define_method("#{flag}?") { flags.include? flag }
+        define_method("#{flag}?") do
+          T.bind(self, T.class_of(Hardware::CPU))
+          flags.include? flag
+        end
       end
 
       def sse3?
