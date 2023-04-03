@@ -33,7 +33,6 @@ describe "brew determine-test-runners" do
   it "assigns all runners for formulae without any requirements", :integration_test, :needs_linux do
     setup_test_formula "testball"
 
-    ohai runner_env
     expect { brew "determine-test-runners", "testball", runner_env }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
@@ -51,6 +50,20 @@ describe "brew determine-test-runners" do
 
     expect(File.read(github_output)).not_to be_empty
     expect(get_runners(github_output)).to eq(all_runners)
+  end
+
+  describe "--dependents" do
+    it "assigns no runners when a formula has no dependents", :integration_test, :needs_linux do
+      setup_test_formula "testball"
+
+      expect { brew "determine-test-runners", "--dependents", "testball", runner_env }
+        .to not_to_output.to_stdout
+        .and not_to_output.to_stderr
+        .and be_a_success
+
+      expect(File.read(github_output)).not_to be_empty
+      expect(get_runners(github_output)).to be_empty
+    end
   end
 end
 
