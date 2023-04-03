@@ -174,15 +174,15 @@ module Homebrew
               The currently linked version is: #{formula.linked_version}
             EOS
           end
+        elsif only_dependencies
+          msg = nil
+          return true
         elsif !formula.linked? || formula.keg_only?
           msg = <<~EOS
             #{msg}, it's just not linked.
             To link this version, run:
               brew link #{formula}
           EOS
-        elsif only_dependencies
-          msg = nil
-          return true
         else
           msg = if quiet
             nil
