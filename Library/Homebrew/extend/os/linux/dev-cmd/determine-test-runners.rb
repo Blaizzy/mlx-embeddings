@@ -197,6 +197,9 @@ module Homebrew
           dependents:       args.dependents?,
         )
 
+        github_run_id = ENV.fetch("GITHUB_RUN_ID") { raise "GITHUB_RUN_ID is not defined" }
+        github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT") { raise "GITHUB_RUN_ATTEMPT is not defined" }
+
         MacOSVersions::SYMBOLS.each_value do |version|
           macos_version = MacOS::Version.new(version)
           next if macos_version.outdated_release? || macos_version.prerelease?
@@ -211,7 +214,7 @@ module Homebrew
             next # No formulae to test on this macOS version.
           end
 
-          ephemeral_suffix = "-#{ENV.fetch("GITHUB_RUN_ID")}-#{ENV.fetch("GITHUB_RUN_ATTEMPT")}"
+          ephemeral_suffix = "-#{github_run_id}-#{github_run_attempt}"
           runners << { runner: "#{macos_version}#{ephemeral_suffix}", cleanup: false } if add_intel_runners
 
           next unless add_m1_runners

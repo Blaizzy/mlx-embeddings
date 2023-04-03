@@ -24,7 +24,7 @@ describe "brew determine-test-runners" do
       "HOMEBREW_LINUX_CLEANUP" => "false",
       "GITHUB_RUN_ID"          => ephemeral_suffix.split("-").second,
       "GITHUB_RUN_ATTEMPT"     => ephemeral_suffix.split("-").third,
-    }
+    }.freeze
   end
 
   it_behaves_like "parseable arguments"
@@ -33,6 +33,20 @@ describe "brew determine-test-runners" do
     expect { brew "determine-test-runners" }
       .to not_to_output.to_stdout
       .and be_a_failure
+  end
+
+  it "fails when the necessary environment variables are missing", :integration_test, :needs_linux do
+    setup_test_formula "testball"
+
+    runner_env.each_key do |k|
+      runner_env_dup = runner_env.dup
+      runner_env_dup[k] = nil
+
+      expect { brew "determine-test-runners", "testball", runner_env_dup }
+        .to not_to_output.to_stdout
+        .and output("Error: #{k} is not defined\n").to_stderr
+        .and be_a_failure
+    end
   end
 
   it "assigns all runners for formulae without any requirements", :integration_test, :needs_linux do
