@@ -126,7 +126,7 @@ module Homebrew
             # Installers are sometimes contained within an `.app`, so try both.
             installer_path = artifact.path
             installer_path.ascend
-                          .flat_map { |path| (path == installer_path || path.extname == ".app") ? [path] : [] }
+                          .select { |path| path == installer_path || path.extname == ".app" }
                           .sort
           else
             [artifact.source.basename]
