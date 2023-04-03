@@ -613,6 +613,14 @@ __fish_brew_complete_arg 'desc; and not __fish_seen_argument -l cask -l casks' -
 __fish_brew_complete_arg 'desc; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
 
+__fish_brew_complete_cmd 'determine-test-runners' 'Determines the runners used to test formulae or their dependents'
+__fish_brew_complete_arg 'determine-test-runners' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'determine-test-runners' -l dependents -d 'Determine runners for testing dependents'
+__fish_brew_complete_arg 'determine-test-runners' -l help -d 'Show this message'
+__fish_brew_complete_arg 'determine-test-runners' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'determine-test-runners' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'developer' 'Control Homebrew\'s developer mode'
 __fish_brew_complete_sub_cmd 'developer' 'state'
 __fish_brew_complete_sub_cmd 'developer' 'on'

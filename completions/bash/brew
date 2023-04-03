@@ -788,6 +788,23 @@ _brew_desc() {
   __brew_complete_casks
 }
 
+_brew_determine_test_runners() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --dependents
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
+}
+
 _brew_developer() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2628,6 +2645,7 @@ _brew() {
     create) _brew_create ;;
     deps) _brew_deps ;;
     desc) _brew_desc ;;
+    determine-test-runners) _brew_determine_test_runners ;;
     developer) _brew_developer ;;
     dispatch-build-bottle) _brew_dispatch_build_bottle ;;
     docs) _brew_docs ;;
