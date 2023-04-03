@@ -62,7 +62,7 @@ class TestRunnerFormula
       ).split("\n").map { |dependent| TestRunnerFormula.new(dependent) }.freeze
     end
 
-    T.must(@dependent_hash[ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?])
+    @dependent_hash.fetch(ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?)
   end
 end
 
@@ -81,18 +81,16 @@ module Homebrew
     testing_formulae.any? do |formula|
       # If the formula has a platform/arch/macOS version requirement, then its
       # dependents don't need to be tested if these requirements are not satisfied.
-      next false if reject_platform && formula.method("#{reject_platform}_only?".to_sym).call
-      next false if reject_arch && formula.method("#{reject_arch}_only?".to_sym).call
+      next false if reject_platform && formula.method(:"#{reject_platform}_only?").call
+      next false if reject_arch && formula.method(:"#{reject_arch}_only?").call
       next false if select_macos_version && !formula.compatible_with?(select_macos_version)
 
       compatible_dependents = formula.dependents.dup
 
-      if reject_arch
-        compatible_dependents.reject! { |dependent_f| dependent_f.method("#{reject_arch}_only?".to_sym).call }
-      end
+      compatible_dependents.reject! { |dependent_f| dependent_f.method(:"#{reject_arch}_only?").call } if reject_arch
 
       if reject_platform
-        compatible_dependents.reject! { |dependent_f| dependent_f.method("#{reject_platform}_only?".to_sym).call }
+        compatible_dependents.reject! { |dependent_f| dependent_f.method(:"#{reject_platform}_only?").call }
       end
 
       if select_macos_version
@@ -131,11 +129,9 @@ module Homebrew
 
       compatible_formulae = formulae.dup
 
-      compatible_formulae.reject! { |formula| formula.method("#{reject_arch}_only?".to_sym).call } if reject_arch
+      compatible_formulae.reject! { |formula| formula.method(:"#{reject_arch}_only?").call } if reject_arch
       compatible_formulae.select! { |formula| formula.compatible_with?(select_macos_version) } if select_macos_version
-      if reject_platform
-        compatible_formulae.reject! { |formula| formula.method("#{reject_platform}_only?".to_sym).call }
-      end
+      compatible_formulae.reject! { |formula| formula.method(:"#{reject_platform}_only?").call } if reject_platform
 
       compatible_formulae.present?
     end
