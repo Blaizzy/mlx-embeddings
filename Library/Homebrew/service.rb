@@ -569,7 +569,7 @@ module Homebrew
             [key.to_sym, run_cmd]
           end
         else
-          raise ArgumentError, "Unexepected run command: #{api_hash["run"]}"
+          raise ArgumentError, "Unexpected run command: #{api_hash["run"]}"
         end
 
       hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")
