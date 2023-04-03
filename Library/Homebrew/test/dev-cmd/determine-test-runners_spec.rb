@@ -5,24 +5,24 @@ require "dev-cmd/determine-test-runners"
 require "cmd/shared_examples/args_parse"
 
 describe "brew determine-test-runners" do
-  it_behaves_like "parseable arguments"
-
-  let(:github_output) { "#{TEST_TMPDIR}/github_output" }
-  let(:runner_env) {
-    {
-      "HOMEBREW_LINUX_RUNNER" => "ubuntu-latest",
-      "HOMEBREW_LINUX_CLEANUP" => "false",
-      "GITHUB_RUN_ID" => "12345",
-      "GITHUB_RUN_ATTEMPT" => "1",
-      "GITHUB_OUTPUT" => github_output,
-    }
-  }
-  # TODO: Generate this dynamically based on our supported macOS versions.
-  let(:all_runners) { ["11", "11-arm64", "12", "12-arm64", "13", "13-arm64", "ubuntu-latest"] }
-
-  after(:each) do
+  after do
     FileUtils.rm_f github_output
   end
+
+  # TODO: Generate this dynamically based on our supported macOS versions.
+  let(:all_runners) { %w[11 11-arm64 12 12-arm64 13 13-arm64 ubuntu-latest] }
+  let(:github_output) { "#{TEST_TMPDIR}/github_output" }
+  let(:runner_env) do
+    {
+      "HOMEBREW_LINUX_RUNNER"  => "ubuntu-latest",
+      "HOMEBREW_LINUX_CLEANUP" => "false",
+      "GITHUB_RUN_ID"          => "12345",
+      "GITHUB_RUN_ATTEMPT"     => "1",
+      "GITHUB_OUTPUT"          => github_output,
+    }
+  end
+
+  it_behaves_like "parseable arguments"
 
   it "fails without any arguments", :integration_test do
     expect { brew "determine-test-runners" }
