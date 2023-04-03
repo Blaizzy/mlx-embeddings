@@ -12,16 +12,17 @@ describe "brew determine-test-runners" do
   # TODO: Generate this dynamically based on our supported macOS versions.
   let(:linux_runner) { "ubuntu-22.04" }
   let(:all_runners) { ["11", "11-arm64", "12", "12-arm64", "13", "13-arm64", linux_runner] }
-  let(:intel_runners) { ["11", "12", "13", linux_runner] }
-  let(:arm64_runners) { %w[11-arm64 12-arm64 13-arm64] }
+  let(:intel_runners) { all_runners.reject { |r| r.end_with? "-arm64" } }
+  let(:arm64_runners) { all_runners.select { |r| r.end_with? "-arm64" } }
   let(:macos_runners) { all_runners - [linux_runner] }
   let(:github_output) { "#{TEST_TMPDIR}/github_output" }
+  let(:ephemeral_suffix) { "-12345-1" }
   let(:runner_env) do
     {
       "HOMEBREW_LINUX_RUNNER"  => linux_runner,
       "HOMEBREW_LINUX_CLEANUP" => "false",
-      "GITHUB_RUN_ID"          => "12345",
-      "GITHUB_RUN_ATTEMPT"     => "1",
+      "GITHUB_RUN_ID"          => ephemeral_suffix.split("-").second,
+      "GITHUB_RUN_ATTEMPT"     => ephemeral_suffix.split("-").third,
       "GITHUB_OUTPUT"          => github_output,
     }
   end
@@ -127,6 +128,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq([linux_runner])
   end
 
+  # TODO: Keep this updated to use the newest supported macOS version.
   it "assigns only compatible runners when there is a versioned macOS requirement", :integration_test, :needs_linux do
     setup_test_formula "needs-macos-13", <<~RUBY
       url "https://brew.sh/needs-macos-13-1.0.tar.gz"
@@ -151,6 +153,6 @@ end
 
 def get_runners(file)
   runner_hash = parse_runner_hash(file)
-  runner_hash.map { |item| item["runner"].delete_suffix("-12345-1") }
+  runner_hash.map { |item| item["runner"].delete_suffix(ephemeral_suffix) }
              .sort
 end
