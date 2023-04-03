@@ -41,6 +41,11 @@ module Homebrew
       @qlplugins ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Qlplugin) }
     end
 
+    sig { returns(T::Array[Cask::Artifact::ScreenSaver]) }
+    def screen_savers
+      @screen_savers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::ScreenSaver) }
+    end
+
     sig { returns(T::Array[Cask::Artifact::Colorpicker]) }
     def colorpickers
       @colorpickers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Colorpicker) }
@@ -115,6 +120,7 @@ module Homebrew
           *colorpickers,
           *qlplugins,
           *installers,
+          *screen_savers,
         ].flat_map do |artifact|
           source = artifact.is_a?(Cask::Artifact::Installer) ? artifact.path : artifact.source.basename
           top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
