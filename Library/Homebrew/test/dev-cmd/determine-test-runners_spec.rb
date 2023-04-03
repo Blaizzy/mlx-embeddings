@@ -158,6 +158,7 @@ describe "brew determine-test-runners" do
 
     expect(File.read(github_output)).not_to be_empty
     expect(get_runners(github_output)).to eq(["13", "13-arm64", linux_runner])
+    expect(get_runners(github_output)).not_to eq(all_runners)
   end
 end
 
