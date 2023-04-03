@@ -65,7 +65,8 @@ module Homebrew
              description: "Prefix every line of output with the file or formula name being audited, to " \
                           "make output easy to grep."
       switch "--display-failures-only",
-             description: "Only display casks that fail the audit. This is the default for formulae and casks."
+             description: "Only display casks that fail the audit. This is the default for formulae and casks.",
+             hidden:      true
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running " \
                           "`brew style` separately. Enabled by default unless a formula is specified by name."
