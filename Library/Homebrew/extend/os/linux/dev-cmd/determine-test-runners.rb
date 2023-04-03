@@ -3,25 +3,33 @@
 
 require "formula"
 
-class Formula
+class TestRunnerFormula
+  attr_reader :name, :formula
+
+  def initialize(name)
+    @name = name
+    @formula = Formula[name]
+    freeze
+  end
+
   def macos_only?
-    requirements.any? { |r| r.is_a?(MacOSRequirement) && !r.version_specified? }
+    formula.requirements.any? { |r| r.is_a?(MacOSRequirement) && !r.version_specified? }
   end
 
   def linux_only?
-    requirements.any?(LinuxRequirement)
+    formula.requirements.any?(LinuxRequirement)
   end
 
   def x86_64_only?
-    requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :x86_64) }
+    formula.requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :x86_64) }
   end
 
   def arm64_only?
-    requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :arm64) }
+    formula.requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :arm64) }
   end
 
   def versioned_macos_requirement
-    requirements.find { |r| r.is_a?(MacOSRequirement) && r.version_specified? }
+    formula.requirements.find { |r| r.is_a?(MacOSRequirement) && r.version_specified? }
   end
 
   def compatible_with?(macos_version)
@@ -35,7 +43,7 @@ class Formula
     @dependent_hash[ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?] ||= with_env(HOMEBREW_STDERR: "1") do
       Utils.safe_popen_read(
         HOMEBREW_BREW_FILE, "uses", "--formulae", "--eval-all", "--include-build", "--include-test", name
-      ).split("\n").map { |dependent| Formula[dependent] }.freeze
+      ).split("\n").map { |dependent| TestRunnerFormula.new(dependent) }.freeze
     end
 
     @dependent_hash[ENV["HOMEBREW_SIMULATE_MACOS_ON_LINUX"].present?]
@@ -97,7 +105,7 @@ module Homebrew
   def determine_test_runners
     args = determine_test_runners_args.parse
     testing_formulae = args.named.first.split(",")
-    testing_formulae.map! { |name| Formula[name] }
+    testing_formulae.map! { |name| TestRunnerFormula.new(name) }
                     .freeze
     deleted_formulae = args.named.second&.split(",")
 
