@@ -22,6 +22,9 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
+      - name: Install Bundler RubyGems
+        run: brew install-bundler-gems --groups=prof
+
       - name: Configure Git user
         uses: Homebrew/actions/git-user-config@master
         with:
