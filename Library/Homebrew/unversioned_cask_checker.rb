@@ -122,8 +122,19 @@ module Homebrew
           *installers,
           *screen_savers,
         ].flat_map do |artifact|
-          source = artifact.is_a?(Cask::Artifact::Installer) ? artifact.path : artifact.source.basename
-          top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
+          sources = if artifact.is_a?(Cask::Artifact::Installer)
+            # Installers are sometimes contained within an `.app`, so try both.
+            installer_path = artifact.path
+            installer_path.ascend
+                          .flat_map { |path| (path == installer_path || path.extname == ".app") ? [path] : [] }
+                          .sort
+          else
+            [artifact.source.basename]
+          end
+
+          sources.flat_map do |source|
+            top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
+          end
         end
 
         info_plist_paths.each(&parse_info_plist)
