@@ -54,7 +54,7 @@ module Homebrew
     start_commit = T.let("", T.untyped)
     end_commit = "HEAD"
     cd HOMEBREW_REPOSITORY do
-      start_commit = if (commit = T.let(args.commit, T.nilable(String)))
+      start_commit = if (commit = args.commit)
         commit
       elsif (date = args.before)
         Utils.popen_read("git", "rev-list", "-n1", "--before=#{date}", "origin/master").chomp
