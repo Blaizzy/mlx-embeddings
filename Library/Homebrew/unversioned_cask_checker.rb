@@ -41,6 +41,16 @@ module Homebrew
       @qlplugins ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Qlplugin) }
     end
 
+    sig { returns(T::Array[Cask::Artifact::Dictionary]) }
+    def dictionaries
+      @dictionaries ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Dictionary) }
+    end
+
+    sig { returns(T::Array[Cask::Artifact::ScreenSaver]) }
+    def screen_savers
+      @screen_savers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::ScreenSaver) }
+    end
+
     sig { returns(T::Array[Cask::Artifact::Colorpicker]) }
     def colorpickers
       @colorpickers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Colorpicker) }
@@ -113,11 +123,24 @@ module Homebrew
           *keyboard_layouts,
           *mdimporters,
           *colorpickers,
+          *dictionaries,
           *qlplugins,
           *installers,
+          *screen_savers,
         ].flat_map do |artifact|
-          source = artifact.is_a?(Cask::Artifact::Installer) ? artifact.path : artifact.source.basename
-          top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
+          sources = if artifact.is_a?(Cask::Artifact::Installer)
+            # Installers are sometimes contained within an `.app`, so try both.
+            installer_path = artifact.path
+            installer_path.ascend
+                          .select { |path| path == installer_path || path.extname == ".app" }
+                          .sort
+          else
+            [artifact.source.basename]
+          end
+
+          sources.flat_map do |source|
+            top_level_info_plists(Pathname.glob(dir/"**"/source/"Contents"/"Info.plist")).sort
+          end
         end
 
         info_plist_paths.each(&parse_info_plist)
