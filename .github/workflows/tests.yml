@@ -38,7 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Install shellcheck and shfmt
         run: brew install shellcheck shfmt
@@ -80,7 +80,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Run brew style on homebrew-core
         run: brew style --display-cop-names homebrew/core
@@ -142,7 +142,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Set up the homebrew/core tap
         run: brew tap homebrew/core
@@ -173,7 +173,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Set up Homebrew all cask taps
         run: |
@@ -209,7 +209,7 @@ jobs:
       # Can't cache this because we need to check that it doesn't fail the
       # "uncommitted RubyGems" step with a cold cache.
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Check for uncommitted RubyGems
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
@@ -318,7 +318,7 @@ jobs:
           restore-keys: ${{ runner.os }}-rubygems-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=sorbet
 
       - name: Create parallel test log directory
         run: mkdir tests

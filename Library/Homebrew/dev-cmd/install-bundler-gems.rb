@@ -24,14 +24,9 @@ module Homebrew
   def install_bundler_gems
     args = install_bundler_gems_args.parse
 
-    groups = args.groups
-
     # Clear previous settings. We want to fully replace - not append.
-    Homebrew::Settings.delete(:gemgroups) if groups
+    Homebrew::Settings.delete(:gemgroups) if args.groups
 
-    groups ||= []
-    groups |= VALID_GEM_GROUPS if groups.delete("all")
-
-    Homebrew.install_bundler_gems!(groups: groups)
+    Homebrew.install_bundler_gems!(groups: args.groups || [])
   end
 end
