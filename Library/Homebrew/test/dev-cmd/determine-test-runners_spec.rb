@@ -16,7 +16,7 @@ describe "brew determine-test-runners" do
   let(:arm64_runners) { all_runners - intel_runners }
   let(:macos_runners) { all_runners - [linux_runner] }
   # We need to make sure we write to a different path for each example.
-  let(:github_output) { "#{TEST_TMPDIR}/github_output#{TestRunnerTestHelper.new.number}" }
+  let(:github_output) { "#{TEST_TMPDIR}/github_output#{DetermineRunnerTestHelper.new.number}" }
   let(:ephemeral_suffix) { "-12345-1" }
   let(:runner_env) do
     {
@@ -158,7 +158,7 @@ def get_runners(file)
              .sort
 end
 
-class TestRunnerTestHelper
+class DetermineRunnerTestHelper
   @instances = 0
 
   class << self
