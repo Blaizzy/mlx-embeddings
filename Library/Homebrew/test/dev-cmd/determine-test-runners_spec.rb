@@ -163,13 +163,19 @@ describe "brew determine-test-runners" do
   end
 
   describe "--dependents" do
-    it "fails on macOS", :integration_test, :needs_macos do
+    it "assignes no runners for formulae with no dependents", :integration_test do
       setup_test_formula "testball"
 
-      expect { brew "determine-test-runners", "--dependents", "testball", runner_env.dup }
+      expect do
+        brew "determine-test-runners", "--dependents", "testball",
+             runner_env.merge({ "GITHUB_OUTPUT" => github_output })
+      end
         .to not_to_output.to_stdout
-        .and output("Error: `--dependents` is supported only on Linux!\n").to_stderr
-        .and be_a_failure
+        .and not_to_output.to_stderr
+        .and be_a_success
+
+      expect(File.read(github_output)).not_to be_empty
+      expect(get_runners(github_output)).to eq([])
     end
   end
 end
