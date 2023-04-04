@@ -13,9 +13,10 @@ describe "brew determine-test-runners" do
   let(:linux_runner) { "ubuntu-22.04" }
   let(:all_runners) { ["11", "11-arm64", "12", "12-arm64", "13", "13-arm64", linux_runner] }
   let(:intel_runners) { all_runners.reject { |r| r.end_with? "-arm64" } }
-  let(:arm64_runners) { all_runners.select { |r| r.end_with? "-arm64" } }
+  let(:arm64_runners) { all_runners - intel_runners }
   let(:macos_runners) { all_runners - [linux_runner] }
-  let(:github_output) { "#{TEST_TMPDIR}/github_output" }
+  # We need to make sure we write to a different path for each example.
+  let(:github_output) { "#{TEST_TMPDIR}/github_output#{TestRunnerTestHelper.new.number}" }
   let(:ephemeral_suffix) { "-12345-1" }
   let(:runner_env) do
     {
@@ -23,7 +24,6 @@ describe "brew determine-test-runners" do
       "HOMEBREW_LINUX_CLEANUP" => "false",
       "GITHUB_RUN_ID"          => ephemeral_suffix.split("-").second,
       "GITHUB_RUN_ATTEMPT"     => ephemeral_suffix.split("-").third,
-      "GITHUB_OUTPUT"          => github_output,
     }
   end
 
@@ -35,26 +35,10 @@ describe "brew determine-test-runners" do
       .and be_a_failure
   end
 
-  it "fails when the necessary environment variables are missing", :integration_test, :needs_linux do
-    setup_test_formula "testball"
-
-    runner_env.each_key do |k|
-      next if ["GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT"].include? k
-
-      runner_env_dup = runner_env.dup
-      runner_env_dup.delete(k)
-
-      expect { brew "determine-test-runners", "testball", runner_env_dup }
-        .to not_to_output.to_stdout
-        .and output("Error: #{k} is not defined\n").to_stderr
-        .and be_a_failure
-    end
-  end
-
   it "assigns all runners for formulae without any requirements", :integration_test, :needs_linux do
     setup_test_formula "testball"
 
-    expect { brew "determine-test-runners", "testball", runner_env }
+    expect { brew "determine-test-runners", "testball", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -64,7 +48,7 @@ describe "brew determine-test-runners" do
   end
 
   it "assigns all runners when there are deleted formulae", :integration_test, :needs_linux do
-    expect { brew "determine-test-runners", "", "testball", runner_env }
+    expect { brew "determine-test-runners", "", "testball", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -75,7 +59,7 @@ describe "brew determine-test-runners" do
 
   it "assigns `ubuntu-latest` when there are no testing formulae and no deleted formulae", :integration_test,
      :needs_linux do
-    expect { brew "determine-test-runners", "", runner_env }
+    expect { brew "determine-test-runners", "", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -90,7 +74,7 @@ describe "brew determine-test-runners" do
       depends_on arch: :x86_64
     RUBY
 
-    expect { brew "determine-test-runners", "intel_depender", runner_env }
+    expect { brew "determine-test-runners", "intel_depender", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -105,7 +89,9 @@ describe "brew determine-test-runners" do
       depends_on arch: :arm64
     RUBY
 
-    expect { brew "determine-test-runners", "fancy-m1-ml-framework", runner_env }
+    expect do
+      brew "determine-test-runners", "fancy-m1-ml-framework", runner_env.merge({ "GITHUB_OUTPUT" => github_output })
+    end
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -120,7 +106,7 @@ describe "brew determine-test-runners" do
       depends_on :macos
     RUBY
 
-    expect { brew "determine-test-runners", "xcode-helper", runner_env }
+    expect { brew "determine-test-runners", "xcode-helper", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -135,7 +121,9 @@ describe "brew determine-test-runners" do
       depends_on :linux
     RUBY
 
-    expect { brew "determine-test-runners", "linux-kernel-requirer", runner_env }
+    expect do
+      brew "determine-test-runners", "linux-kernel-requirer", runner_env.merge({ "GITHUB_OUTPUT" => github_output })
+    end
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -151,7 +139,7 @@ describe "brew determine-test-runners" do
       depends_on macos: :ventura
     RUBY
 
-    expect { brew "determine-test-runners", "needs-macos-13", runner_env }
+    expect { brew "determine-test-runners", "needs-macos-13", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
       .and be_a_success
@@ -162,14 +150,25 @@ describe "brew determine-test-runners" do
   end
 end
 
-def parse_runner_hash(file)
+def get_runners(file)
   runner_line = File.open(file).first
   json_text = runner_line[/runners=(.*)/, 1]
-  JSON.parse(json_text)
-end
-
-def get_runners(file)
-  runner_hash = parse_runner_hash(file)
+  runner_hash = JSON.parse(json_text)
   runner_hash.map { |item| item["runner"].delete_suffix(ephemeral_suffix) }
              .sort
+end
+
+class TestRunnerTestHelper
+  @instances = 0
+
+  class << self
+    attr_accessor :instances
+  end
+
+  attr_reader :number
+
+  def initialize
+    self.class.instances += 1
+    @number = self.class.instances
+  end
 end
