@@ -104,7 +104,7 @@ module Cask
       message << "during #{section} " if section
       message << "on Cask #{token}."
 
-      opoo "#{message}\n#{error_message_with_suggestions}"
+      ofail "#{message}\n#{error_message_with_suggestions}"
     end
   end
 end
