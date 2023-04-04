@@ -10,13 +10,9 @@ module Addressable::IDNA
   class << self
     def to_ascii(input); end
     def to_unicode(input); end
-    def unicode_normalize_kc(input); end
 
     private
 
-    def lookup_unicode_combining_class(codepoint); end
-    def lookup_unicode_compatibility(codepoint); end
-    def lookup_unicode_composition(unpacked); end
     def lookup_unicode_lowercase(codepoint); end
     def punycode_adapt(delta, numpoints, firsttime); end
     def punycode_basic?(codepoint); end
@@ -25,28 +21,13 @@ module Addressable::IDNA
     def punycode_delimiter?(codepoint); end
     def punycode_encode(unicode); end
     def punycode_encode_digit(d); end
-    def ucs4_to_utf8(char, buffer); end
-    def unicode_compose(unpacked); end
-    def unicode_compose_pair(ch_one, ch_two); end
-    def unicode_decompose(unpacked); end
-    def unicode_decompose_hangul(codepoint); end
     def unicode_downcase(input); end
-    def unicode_sort_canonical(unpacked); end
   end
 end
 
 Addressable::IDNA::ACE_MAX_LENGTH = T.let(T.unsafe(nil), Integer)
 Addressable::IDNA::ACE_PREFIX = T.let(T.unsafe(nil), String)
 Addressable::IDNA::COMPOSITION_TABLE = T.let(T.unsafe(nil), Hash)
-Addressable::IDNA::HANGUL_LBASE = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_LCOUNT = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_NCOUNT = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_SBASE = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_SCOUNT = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_TBASE = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_TCOUNT = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_VBASE = T.let(T.unsafe(nil), Integer)
-Addressable::IDNA::HANGUL_VCOUNT = T.let(T.unsafe(nil), Integer)
 Addressable::IDNA::PUNYCODE_BASE = T.let(T.unsafe(nil), Integer)
 Addressable::IDNA::PUNYCODE_DAMP = T.let(T.unsafe(nil), Integer)
 Addressable::IDNA::PUNYCODE_DELIMITER = T.let(T.unsafe(nil), Integer)
@@ -226,6 +207,10 @@ class Addressable::URI
   def split_path(path); end
   def validate; end
 
+  private
+
+  def reset_ivs; end
+
   class << self
     def convert_path(path); end
     def encode(uri, return_type = T.unsafe(nil)); end
@@ -265,6 +250,7 @@ Addressable::URI::CharacterClasses::SUB_DELIMS = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::UNRESERVED = T.let(T.unsafe(nil), String)
 Addressable::URI::EMPTY_STR = T.let(T.unsafe(nil), String)
 class Addressable::URI::InvalidURIError < ::StandardError; end
+Addressable::URI::NONE = T.let(T.unsafe(nil), Object)
 Addressable::URI::NORMPATH = T.let(T.unsafe(nil), Regexp)
 module Addressable::URI::NormalizeCharacterClasses; end
 Addressable::URI::NormalizeCharacterClasses::FRAGMENT = T.let(T.unsafe(nil), Regexp)
