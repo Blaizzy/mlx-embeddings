@@ -570,7 +570,7 @@ class Tap
     file = file.expand_path(path)
     return false unless ruby_file?(file)
 
-    file.to_s.start_with?("#{formula_dir}/")
+    file.to_s.start_with?("#{formula_dir}/") && !file.to_s.start_with?("#{cask_dir}/")
   end
 
   # return true if given path would present a {Cask} file in this {Tap}.
