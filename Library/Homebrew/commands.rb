@@ -203,6 +203,10 @@ module Commands
 
     if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       if short
+        # We only consider a dot as a full stop if it is either followed by a
+        # whitespace or at the end of the description. In this way we can
+        # prevent cutting off a sentence in the middle due to dots in URLs or
+        # paths.
         cmd_parser.description.split(/\.(?>\s|$)/).first
       else
         cmd_parser.description
