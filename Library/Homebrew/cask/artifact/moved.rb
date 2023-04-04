@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cask/artifact/relocated"
+require "cask/quarantine"
 
 module Cask
   module Artifact
@@ -97,7 +98,9 @@ module Cask
             command.run!("/bin/cp", args: ["-pR", "#{source}/*", "#{source}/.*", "#{target}/"],
                                     sudo: true)
           end
-          # TODO: copy extended attributes
+          unless Quarantine.copy_xattrs(source, target)
+            opoo "Unable to transfer extended attributes on the root directory"
+          end
           source.rmtree
         elsif target.dirname.writable?
           FileUtils.move(source, target)
