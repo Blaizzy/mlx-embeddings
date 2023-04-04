@@ -219,7 +219,9 @@ module Commands
         match_data = /^#:  (?<desc>\w.*+)$/.match(line)
         if match_data
           desc = match_data[:desc]
-          return T.must(desc).split(".").first if short
+          # The same splitting logic is used here.
+          # See comment for Ruby commands above.
+          return T.must(desc).split(/\.(?>\s|$)/).first if short
 
           return desc
         end
