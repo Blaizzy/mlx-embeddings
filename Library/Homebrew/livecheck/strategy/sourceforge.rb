@@ -98,7 +98,7 @@ module Homebrew
         def self.find_versions(url:, regex: nil, **unused, &block)
           generated = generate_input_values(url)
 
-          T.unsafe(PageMatch).find_versions(
+          PageMatch.find_versions(
             url:   generated[:url] || url,
             regex: regex || generated[:regex],
             **unused,
