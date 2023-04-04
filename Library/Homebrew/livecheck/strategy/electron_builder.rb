@@ -54,7 +54,7 @@ module Homebrew
                   "#{Utils.demodulize(T.must(name))} only supports a regex when using a `strategy` block"
           end
 
-          T.unsafe(Yaml).find_versions(
+          Yaml.find_versions(
             url:              url,
             regex:            regex,
             provided_content: provided_content,

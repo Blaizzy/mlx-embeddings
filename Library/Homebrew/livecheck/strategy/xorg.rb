@@ -123,7 +123,7 @@ module Homebrew
 
           # Use the cached page content to avoid duplicate fetches
           cached_content = @page_data[generated_url]
-          match_data = T.unsafe(PageMatch).find_versions(
+          match_data = PageMatch.find_versions(
             url:              generated_url,
             regex:            regex || generated[:regex],
             provided_content: cached_content,

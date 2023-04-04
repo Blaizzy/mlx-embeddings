@@ -101,7 +101,7 @@ class Sandbox
     begin
       command = [SANDBOX_EXEC, "-f", seatbelt.path, *args]
       # Start sandbox in a pseudoterminal to prevent access of the parent terminal.
-      T.unsafe(PTY).spawn(*command) do |r, w, pid|
+      PTY.spawn(*command) do |r, w, pid|
         # Set the PTY's window size to match the parent terminal.
         # Some formula tests are sensitive to the terminal size and fail if this is not set.
         winch = proc do |_sig|
