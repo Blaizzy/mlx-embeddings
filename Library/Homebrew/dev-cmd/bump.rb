@@ -72,7 +72,7 @@ module Homebrew
 
       ambiguous_casks = []
       if !args.formula? && !args.cask?
-        ambiguous_casks = formulae_and_casks \
+        ambiguous_casks = formulae_and_casks
                           .group_by { |item| Livecheck.package_or_resource_name(item, full_name: true) }
                           .values
                           .select { |items| items.length > 1 }

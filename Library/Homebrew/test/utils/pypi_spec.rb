@@ -155,7 +155,7 @@ describe PyPI do
 
     describe "<=>" do
       it "returns -1" do
-        expect(package <=> other_package).to eq((-1))
+        expect(package <=> other_package).to eq(-1)
       end
 
       it "returns 0" do

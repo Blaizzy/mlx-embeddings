@@ -236,7 +236,7 @@ describe SystemCommand do
             "-c",
             'printf "\r%s" "###################                                                       27.6%" 1>&2',
           ]
-      end.to output( \
+      end.to output(
         "\r###################                                                       27.6%",
       ).to_stderr
     end

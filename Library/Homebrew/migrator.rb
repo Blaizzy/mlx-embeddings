@@ -360,14 +360,14 @@ class Migrator
 
   # Remove `opt/oldname` link if it belongs to newname.
   def unlink_oldname_opt
-    return unless old_opt_record
+    return if old_opt_record.blank?
+    return unless old_opt_record.symlink?
+    return unless old_opt_record.exist?
+    return unless new_linked_keg_record.exist?
+    return if new_linked_keg_record.realpath != old_opt_record.realpath
 
-    if old_opt_record.symlink? && old_opt_record.exist? \
-        && new_linked_keg_record.exist? \
-        && new_linked_keg_record.realpath == old_opt_record.realpath
-      old_opt_record.unlink
-      old_opt_record.parent.rmdir_if_possible
-    end
+    old_opt_record.unlink
+    old_opt_record.parent.rmdir_if_possible
   end
 
   # Remove `Cellar/oldname` if it exists.

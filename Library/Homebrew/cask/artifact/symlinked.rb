@@ -56,7 +56,7 @@ module Cask
           message = "It seems there is already #{self.class.english_article} " \
                     "#{self.class.english_name} at '#{target}'"
 
-          if force && target.symlink? && \
+          if force && target.symlink? &&
              (target.realpath == source.realpath || target.realpath.to_s.start_with?("#{cask.caskroom_path}/"))
             opoo "#{message}; overwriting."
             target.delete

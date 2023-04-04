@@ -120,7 +120,7 @@ class SoftwareSpec
   end
 
   def bottled?(tag = nil)
-    bottle_tag?(tag) && \
+    bottle_tag?(tag) &&
       (tag.present? || bottle_specification.compatible_locations? || owner.force_bottle)
   end
 
