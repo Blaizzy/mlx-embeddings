@@ -203,7 +203,7 @@ module Commands
 
     if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       if short
-        cmd_parser.description.split(".").first
+        cmd_parser.description.split(/\.(?>\s|$)/).first
       else
         cmd_parser.description
       end
