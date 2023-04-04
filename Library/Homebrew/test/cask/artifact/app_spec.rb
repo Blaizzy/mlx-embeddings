@@ -323,13 +323,13 @@ describe Cask::Artifact::App, :cask do
       inode = target_path.stat.ino
       expect(contents_path).to exist
 
-      app.uninstall_phase(command: command, force: force, upgrade: true)
+      app.uninstall_phase(command: command, force: force, upgrade_or_reinstall: true)
 
       expect(target_path).to exist
       expect(target_path.children).to be_empty
       expect(contents_path).not_to exist
 
-      app.install_phase(command: command, adopt: adopt, force: force, upgrade: true)
+      app.install_phase(command: command, adopt: adopt, force: force, upgrade_or_reinstall: true)
       expect(target_path).to exist
       expect(target_path.stat.ino).to eq(inode)
 

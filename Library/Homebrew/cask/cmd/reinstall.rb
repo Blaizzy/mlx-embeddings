@@ -41,6 +41,7 @@ module Cask
           force:          force,
           skip_cask_deps: skip_cask_deps,
           require_sha:    require_sha,
+          reinstall:      true,
           quarantine:     quarantine,
           zap:            zap,
         }.compact
@@ -48,7 +49,7 @@ module Cask
         options[:quarantine] = true if options[:quarantine].nil?
 
         casks.each do |cask|
-          Installer.new(cask, **options).reinstall
+          Installer.new(cask, **options).install
         end
       end
     end

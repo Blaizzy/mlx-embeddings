@@ -270,8 +270,8 @@ module Cask
         end
       end
 
-      def uninstall_login_item(*login_items, command: nil, upgrade: false, **_)
-        return if upgrade
+      def uninstall_login_item(*login_items, command: nil, upgrade_or_reinstall: false, **_)
+        return if upgrade_or_reinstall
 
         apps = cask.artifacts.select { |a| a.class.dsl_key == :app }
         derived_login_items = apps.map { |a| { path: a.target } }

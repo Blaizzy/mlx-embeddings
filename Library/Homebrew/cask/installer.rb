@@ -22,7 +22,7 @@ module Cask
 
     def initialize(cask, command: SystemCommand, force: false, adopt: false,
                    skip_cask_deps: false, binaries: true, verbose: false,
-                   zap: false, require_sha: false, upgrade: false,
+                   zap: false, require_sha: false, upgrade: false, reinstall: false,
                    installed_as_dependency: false, quarantine: true,
                    verify_download_integrity: true, quiet: false)
       @cask = cask
@@ -34,7 +34,7 @@ module Cask
       @verbose = verbose
       @zap = zap
       @require_sha = require_sha
-      @reinstall = false
+      @reinstall = reinstall
       @upgrade = upgrade
       @installed_as_dependency = installed_as_dependency
       @quarantine = quarantine
@@ -143,17 +143,11 @@ on_request: true)
       end
     end
 
-    def reinstall
-      odebug "Cask::Installer#reinstall"
-      @reinstall = true
-      install
-    end
-
     def uninstall_existing_cask
       return unless @cask.installed?
 
       # Always force uninstallation, ignore method parameter
-      cask_installer = Installer.new(@cask, verbose: verbose?, force: true, upgrade: upgrade?)
+      cask_installer = Installer.new(@cask, verbose: verbose?, force: true, upgrade: upgrade?, reinstall: true)
       zap? ? cask_installer.zap : cask_installer.uninstall
     end
 
@@ -234,7 +228,8 @@ on_request: true)
 
         next if artifact.is_a?(Artifact::Binary) && !binaries?
 
-        artifact.install_phase(command: @command, verbose: verbose?, adopt: adopt?, force: force?, upgrade: upgrade?)
+        artifact.install_phase(command: @command, verbose: verbose?, adopt: adopt?, force: force?,
+                               upgrade_or_reinstall: upgrade? || reinstall?)
         already_installed_artifacts.unshift(artifact)
       end
 
@@ -461,7 +456,11 @@ on_request: true)
         if artifact.respond_to?(:uninstall_phase)
           odebug "Uninstalling artifact of class #{artifact.class}"
           artifact.uninstall_phase(
-            command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+            command:              @command,
+            verbose:              verbose?,
+            skip:                 clear,
+            force:                force?,
+            upgrade_or_reinstall: upgrade? || reinstall?,
           )
         end
 
@@ -469,7 +468,11 @@ on_request: true)
 
         odebug "Post-uninstalling artifact of class #{artifact.class}"
         artifact.post_uninstall_phase(
-          command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+          command:              @command,
+          verbose:              verbose?,
+          skip:                 clear,
+          force:                force?,
+          upgrade_or_reinstall: upgrade? || reinstall?,
         )
       end
     end
