@@ -35,7 +35,7 @@ describe "brew determine-test-runners" do
       .and be_a_failure
   end
 
-  it "fails when the necessary environment variables are missing", :integration_test, :needs_linux do
+  it "fails when the necessary environment variables are missing", :integration_test do
     setup_test_formula "testball"
 
     runner_env.each_key do |k|
@@ -49,7 +49,7 @@ describe "brew determine-test-runners" do
     end
   end
 
-  it "assigns all runners for formulae without any requirements", :integration_test, :needs_linux do
+  it "assigns all runners for formulae without any requirements", :integration_test do
     setup_test_formula "testball"
 
     expect { brew "determine-test-runners", "testball", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
@@ -61,7 +61,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq(all_runners)
   end
 
-  it "assigns all runners when there are deleted formulae", :integration_test, :needs_linux do
+  it "assigns all runners when there are deleted formulae", :integration_test do
     expect { brew "determine-test-runners", "", "testball", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
@@ -71,8 +71,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq(all_runners)
   end
 
-  it "assigns `ubuntu-latest` when there are no testing formulae and no deleted formulae", :integration_test,
-     :needs_linux do
+  it "assigns `ubuntu-latest` when there are no testing formulae and no deleted formulae", :integration_test do
     expect { brew "determine-test-runners", "", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
       .to not_to_output.to_stdout
       .and not_to_output.to_stderr
@@ -82,7 +81,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq(["ubuntu-latest"])
   end
 
-  it "assigns only Intel runners when a formula `depends_on arch: :x86_64`", :integration_test, :needs_linux do
+  it "assigns only Intel runners when a formula `depends_on arch: :x86_64`", :integration_test do
     setup_test_formula "intel_depender", <<~RUBY
       url "https://brew.sh/intel_depender-1.0.tar.gz"
       depends_on arch: :x86_64
@@ -97,7 +96,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq(intel_runners)
   end
 
-  it "assigns only ARM64 runners when a formula `depends_on arch: :arm64`", :integration_test, :needs_linux do
+  it "assigns only ARM64 runners when a formula `depends_on arch: :arm64`", :integration_test do
     setup_test_formula "fancy-m1-ml-framework", <<~RUBY
       url "https://brew.sh/fancy-m1-ml-framework-1.0.tar.gz"
       depends_on arch: :arm64
@@ -114,7 +113,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq(arm64_runners)
   end
 
-  it "assigns only macOS runners when a formula `depends_on :macos`", :integration_test, :needs_linux do
+  it "assigns only macOS runners when a formula `depends_on :macos`", :integration_test do
     setup_test_formula "xcode-helper", <<~RUBY
       url "https://brew.sh/xcode-helper-1.0.tar.gz"
       depends_on :macos
@@ -129,7 +128,7 @@ describe "brew determine-test-runners" do
     expect(get_runners(github_output)).to eq(macos_runners)
   end
 
-  it "assigns only Linux runners when a formula `depends_on :linux`", :integration_test, :needs_linux do
+  it "assigns only Linux runners when a formula `depends_on :linux`", :integration_test do
     setup_test_formula "linux-kernel-requirer", <<~RUBY
       url "https://brew.sh/linux-kernel-requirer-1.0.tar.gz"
       depends_on :linux
@@ -147,7 +146,7 @@ describe "brew determine-test-runners" do
   end
 
   # TODO: Keep this updated to use the newest supported macOS version.
-  it "assigns only compatible runners when there is a versioned macOS requirement", :integration_test, :needs_linux do
+  it "assigns only compatible runners when there is a versioned macOS requirement", :integration_test do
     setup_test_formula "needs-macos-13", <<~RUBY
       url "https://brew.sh/needs-macos-13-1.0.tar.gz"
       depends_on macos: :ventura
@@ -161,6 +160,17 @@ describe "brew determine-test-runners" do
     expect(File.read(github_output)).not_to be_empty
     expect(get_runners(github_output)).to eq(["13", "13-arm64", linux_runner])
     expect(get_runners(github_output)).not_to eq(all_runners)
+  end
+
+  describe "--dependents" do
+    it "fails on macOS", :integration_test, :needs_macos do
+      setup_test_formula "testball"
+
+      expect { brew "determine-test-runners", "--dependents", "testball", runner_env.dup }
+        .to not_to_output.to_stdout
+        .and output("Error: `--dependents` is supported only on Linux!\n").to_stderr
+        .and be_a_failure
+    end
   end
 end
 
