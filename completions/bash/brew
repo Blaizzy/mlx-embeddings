@@ -795,6 +795,7 @@ _brew_determine_test_runners() {
       __brewcomp "
       --debug
       --dependents
+      --eval-all
       --help
       --quiet
       --verbose
