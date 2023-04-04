@@ -31,8 +31,18 @@ class TestRunnerFormula
   end
 
   sig { returns(T::Boolean) }
+  def macos_compatible?
+    !linux_only?
+  end
+
+  sig { returns(T::Boolean) }
   def linux_only?
     formula.requirements.any?(LinuxRequirement)
+  end
+
+  sig { returns(T::Boolean) }
+  def linux_compatible?
+    !macos_only?
   end
 
   sig { returns(T::Boolean) }
@@ -41,8 +51,18 @@ class TestRunnerFormula
   end
 
   sig { returns(T::Boolean) }
+  def x86_64_compatible?
+    !arm64_only?
+  end
+
+  sig { returns(T::Boolean) }
   def arm64_only?
     formula.requirements.any? { |r| r.is_a?(ArchRequirement) && (r.arch == :arm64) }
+  end
+
+  sig { returns(T::Boolean) }
+  def arm64_compatible?
+    !x86_64_only?
   end
 
   sig { returns(T.nilable(MacOSRequirement)) }
@@ -59,22 +79,39 @@ class TestRunnerFormula
     macos_version.public_send(requirement.comparator, requirement.version)
   end
 
-  sig { params(cache_key: Symbol).returns(T::Array[TestRunnerFormula]) }
-  def dependents(cache_key)
-    formula_selector, eval_all_env = if eval_all || Homebrew::EnvConfig.eval_all?
-      [:all, "1"]
-    else
-      [:installed, nil]
-    end
+  SIMULATE_SYSTEM_SYMBOLS = T.let({ arm64: :arm, x86_64: :intel }.freeze, T::Hash[Symbol, Symbol])
 
-    @dependent_hash[cache_key] ||= with_env(HOMEBREW_EVAL_ALL: eval_all_env) do
-      Formula.send(formula_selector)
-             .select { |candidate_f| candidate_f.deps.map(&:name).include?(name) }
-             .map { |f| TestRunnerFormula.new(f, eval_all: eval_all) }
-             .freeze
-    end
+  sig {
+    params(
+      platform:      Symbol,
+      arch:          Symbol,
+      macos_version: T.nilable(Symbol),
+    ).returns(T::Array[TestRunnerFormula])
+  }
+  def dependents(platform:, arch:, macos_version:)
+    cache_key = :"#{platform}_#{arch}_#{macos_version}"
 
-    @dependent_hash.fetch(cache_key)
+    @dependent_hash.fetch(cache_key) do
+      all = eval_all || Homebrew::EnvConfig.eval_all?
+      formula_selector, eval_all_env = if all
+        [:all, "1"]
+      else
+        [:installed, nil]
+      end
+
+      with_env(HOMEBREW_EVAL_ALL: eval_all_env) do
+        Formulary.clear_cache
+        Homebrew::SimulateSystem.arch = SIMULATE_SYSTEM_SYMBOLS.fetch(arch)
+        Homebrew::SimulateSystem.os = macos_version || platform
+
+        Formula.send(formula_selector)
+               .select { |candidate_f| candidate_f.deps.map(&:name).include?(name) }
+               .map { |f| TestRunnerFormula.new(f, eval_all: all) }
+               .freeze
+      ensure
+        Homebrew::SimulateSystem.clear
+      end
+    end
   end
 end
 
@@ -100,29 +137,29 @@ module Homebrew
       hide_from_man_page!
     end
   end
+
   sig {
     params(
-      testing_formulae:     T::Array[TestRunnerFormula],
-      reject_platform:      T.nilable(Symbol),
-      reject_arch:          T.nilable(Symbol),
-      select_macos_version: T.nilable(OS::Mac::Version),
+      testing_formulae: T::Array[TestRunnerFormula],
+      platform:         Symbol,
+      arch:             Symbol,
+      macos_version:    T.nilable(OS::Mac::Version),
     ).returns(T::Boolean)
   }
-  def self.formulae_have_untested_dependents?(testing_formulae, reject_platform:, reject_arch:, select_macos_version:)
+  def self.formulae_have_untested_dependents?(testing_formulae, platform:, arch:, macos_version:)
     testing_formulae.any? do |formula|
       # If the formula has a platform/arch/macOS version requirement, then its
       # dependents don't need to be tested if these requirements are not satisfied.
-      next false if reject_platform && formula.send(:"#{reject_platform}_only?")
-      next false if reject_arch && formula.send(:"#{reject_arch}_only?")
-      next false if select_macos_version && !formula.compatible_with?(select_macos_version)
+      next false unless formula.send(:"#{platform}_compatible?")
+      next false unless formula.send(:"#{arch}_compatible?")
+      next false if macos_version && !formula.compatible_with?(macos_version)
 
-      compatible_dependents = formula.dependents(:"#{reject_platform}_#{reject_arch}_#{select_macos_version}").dup
+      compatible_dependents = formula.dependents(platform: platform, arch: arch, macos_version: macos_version&.to_sym)
+                                     .dup
 
-      compatible_dependents.reject! { |dependent_f| dependent_f.send(:"#{reject_arch}_only?") } if reject_arch
-      compatible_dependents.reject! { |dependent_f| dependent_f.send(:"#{reject_platform}_only?") } if reject_platform
-      if select_macos_version
-        compatible_dependents.select! { |dependent_f| dependent_f.compatible_with?(select_macos_version) }
-      end
+      compatible_dependents.select! { |dependent_f| dependent_f.send(:"#{platform}_compatible?") }
+      compatible_dependents.select! { |dependent_f| dependent_f.send(:"#{arch}_compatible?") }
+      compatible_dependents.select! { |dependent_f| dependent_f.compatible_with?(macos_version) } if macos_version
 
       (compatible_dependents - testing_formulae).present?
     end
@@ -130,35 +167,30 @@ module Homebrew
 
   sig {
     params(
-      formulae:             T::Array[TestRunnerFormula],
-      dependents:           T::Boolean,
-      deleted_formulae:     T.nilable(T::Array[String]),
-      reject_platform:      T.nilable(Symbol),
-      reject_arch:          T.nilable(Symbol),
-      select_macos_version: T.nilable(OS::Mac::Version),
+      formulae:         T::Array[TestRunnerFormula],
+      dependents:       T::Boolean,
+      deleted_formulae: T.nilable(T::Array[String]),
+      platform:         Symbol,
+      arch:             Symbol,
+      macos_version:    T.nilable(OS::Mac::Version),
     ).returns(T::Boolean)
   }
-  def self.add_runner?(formulae,
-                       dependents:,
-                       deleted_formulae:,
-                       reject_platform: nil,
-                       reject_arch: nil,
-                       select_macos_version: nil)
+  def self.add_runner?(formulae, dependents:, deleted_formulae:, platform:, arch:, macos_version: nil)
     if dependents
       formulae_have_untested_dependents?(
         formulae,
-        reject_platform:      reject_platform,
-        reject_arch:          reject_arch,
-        select_macos_version: select_macos_version,
+        platform:      platform,
+        arch:          arch,
+        macos_version: macos_version,
       )
     else
       return true if deleted_formulae.present?
 
       compatible_formulae = formulae.dup
 
-      compatible_formulae.reject! { |formula| formula.send(:"#{reject_platform}_only?") } if reject_platform
-      compatible_formulae.reject! { |formula| formula.send(:"#{reject_arch}_only?") } if reject_arch
-      compatible_formulae.select! { |formula| formula.compatible_with?(select_macos_version) } if select_macos_version
+      compatible_formulae.select! { |formula| formula.send(:"#{platform}_compatible?") }
+      compatible_formulae.select! { |formula| formula.send(:"#{arch}_compatible?") }
+      compatible_formulae.select! { |formula| formula.compatible_with?(macos_version) } if macos_version
 
       compatible_formulae.present?
     end
@@ -195,16 +227,10 @@ module Homebrew
       cleanup:   linux_cleanup == "true",
     }
 
-    if args.dependents?
-      Homebrew::SimulateSystem.os = :linux
-      Homebrew::SimulateSystem.arch = :intel
-      Formulary.clear_cache
-    end
-
     if add_runner?(
       testing_formulae,
-      reject_platform:  :macos,
-      reject_arch:      :arm64,
+      platform:         :linux,
+      arch:             :x86_64,
       deleted_formulae: deleted_formulae,
       dependents:       args.dependents?,
     )
@@ -215,40 +241,28 @@ module Homebrew
     github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT") { raise "GITHUB_RUN_ATTEMPT is not defined" }
     ephemeral_suffix = "-#{github_run_id}-#{github_run_attempt}"
 
-    MacOSVersions::SYMBOLS.each do |symbol, version|
+    MacOSVersions::SYMBOLS.each_value do |version|
       macos_version = OS::Mac::Version.new(version)
       next if macos_version.outdated_release? || macos_version.prerelease?
 
-      if args.dependents?
-        Formulary.clear_cache
-        Homebrew::SimulateSystem.os = symbol
-        Homebrew::SimulateSystem.arch = :intel
-      end
-
       if add_runner?(
         testing_formulae,
-        reject_platform:      :linux,
-        reject_arch:          :arm64,
-        select_macos_version: macos_version,
-        deleted_formulae:     deleted_formulae,
-        dependents:           args.dependents?,
+        platform:         :macos,
+        arch:             :x86_64,
+        macos_version:    macos_version,
+        deleted_formulae: deleted_formulae,
+        dependents:       args.dependents?,
       )
         runners << { runner: "#{version}#{ephemeral_suffix}", cleanup: false }
       end
 
-      if args.dependents?
-        Formulary.clear_cache
-        Homebrew::SimulateSystem.os = symbol
-        Homebrew::SimulateSystem.arch = :arm
-      end
-
       next unless add_runner?(
         testing_formulae,
-        reject_platform:      :linux,
-        reject_arch:          :x86_64,
-        select_macos_version: macos_version,
-        deleted_formulae:     deleted_formulae,
-        dependents:           args.dependents?,
+        platform:         :macos,
+        arch:             :arm64,
+        macos_version:    macos_version,
+        deleted_formulae: deleted_formulae,
+        dependents:       args.dependents?,
       )
 
       runner_name = "#{version}-arm64"
