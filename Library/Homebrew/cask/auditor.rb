@@ -70,7 +70,7 @@ module Cask
         errors += audit.errors
       end
 
-      { errors: errors }
+      errors
     end
 
     private

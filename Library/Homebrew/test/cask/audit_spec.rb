@@ -101,7 +101,7 @@ describe Cask::Audit, :cask do
 
     context "when there are no errors and `--strict` is not passed so we should not show anything" do
       before do
-        audit.add_error("eh", strictish: true)
+        audit.add_error("eh", strict_only: true)
       end
 
       it { is_expected.not_to match(/failed/) }
@@ -118,7 +118,7 @@ describe Cask::Audit, :cask do
     context "when there are errors and warnings" do
       before do
         audit.add_error "bad"
-        audit.add_error("eh", strictish: true)
+        audit.add_error("eh", strict_only: true)
       end
 
       it { is_expected.to match(/failed/) }
@@ -129,7 +129,7 @@ describe Cask::Audit, :cask do
 
       before do
         audit.add_error "very bad"
-        audit.add_error("a little bit bad", strictish: true)
+        audit.add_error("a little bit bad", strict_only: true)
       end
 
       it { is_expected.to match(/failed/) }
@@ -137,7 +137,7 @@ describe Cask::Audit, :cask do
 
     context "when there are warnings and `--strict` is not passed" do
       before do
-        audit.add_error("a little bit bad", strictish: true)
+        audit.add_error("a little bit bad", strict_only: true)
       end
 
       it { is_expected.not_to match(/failed/) }
@@ -147,7 +147,7 @@ describe Cask::Audit, :cask do
       let(:strict) { true }
 
       before do
-        audit.add_error("a little bit bad", strictish: true)
+        audit.add_error("a little bit bad", strict_only: true)
       end
 
       it { is_expected.to match(/failed/) }

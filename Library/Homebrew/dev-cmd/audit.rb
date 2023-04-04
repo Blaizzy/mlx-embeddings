@@ -266,11 +266,11 @@ module Homebrew
       )
     end
 
-    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
+    failed_casks = cask_results.reject { |_, result| result.empty? }
 
     cask_count = failed_casks.count
 
-    cask_problem_count = failed_casks.sum { |_, result| result[:warnings].count + result[:errors].count }
+    cask_problem_count = failed_casks.sum { |_, result| result.count }
     new_formula_problem_count += new_formula_problem_lines.count
     total_problems_count = problem_count + new_formula_problem_count + cask_problem_count + tap_problem_count
 

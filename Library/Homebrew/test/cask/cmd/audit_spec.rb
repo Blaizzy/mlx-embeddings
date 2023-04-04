@@ -6,7 +6,7 @@ require "cask/auditor"
 describe Cask::Cmd::Audit, :cask do
   let(:cask) { Cask::Cask.new("cask") }
   let(:cask_with_many_languages) { Cask::CaskLoader.load(cask_path("with-many-languages")) }
-  let(:result) { { warnings: Set.new, errors: Set.new } }
+  let(:result) { Set.new }
 
   describe "selection of Casks to audit" do
     it "audits all Casks if no tokens are given" do

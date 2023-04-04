@@ -60,7 +60,7 @@ module Cask
           except:          [],
         )
 
-        failed_casks = results.reject { |_, result| result[:errors].empty? }.map(&:first)
+        failed_casks = results.reject { |_, result| result.empty? }.map(&:first)
         return if failed_casks.empty?
 
         raise CaskError, "audit failed for casks: #{failed_casks.join(" ")}"
