@@ -54,6 +54,8 @@ module OS
   module Mac
     module_function
 
+    ::MacOS = OS::Mac
+
     raise "Loaded OS::Linux on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
     def version

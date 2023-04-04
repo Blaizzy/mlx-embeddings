@@ -46,7 +46,7 @@ class TestRunnerFormula
     formula.requirements.find { |r| r.is_a?(MacOSRequirement) && r.version_specified? }
   end
 
-  sig { params(macos_version: MacOS::Version).returns(T::Boolean) }
+  sig { params(macos_version: OS::Mac::Version).returns(T::Boolean) }
   def compatible_with?(macos_version)
     # Assign to a variable to assist type-checking.
     requirement = versioned_macos_requirement
@@ -93,7 +93,7 @@ module Homebrew
       testing_formulae:     T::Array[TestRunnerFormula],
       reject_platform:      T.nilable(Symbol),
       reject_arch:          T.nilable(Symbol),
-      select_macos_version: T.nilable(MacOS::Version),
+      select_macos_version: T.nilable(OS::Mac::Version),
     ).returns(T::Boolean)
   }
   def self.formulae_have_untested_dependents?(testing_formulae, reject_platform:, reject_arch:, select_macos_version:)
@@ -123,7 +123,7 @@ module Homebrew
       deleted_formulae:     T.nilable(T::Array[String]),
       reject_platform:      T.nilable(Symbol),
       reject_arch:          T.nilable(Symbol),
-      select_macos_version: T.nilable(MacOS::Version),
+      select_macos_version: T.nilable(OS::Mac::Version),
     ).returns(T::Boolean)
   }
   def self.add_runner?(formulae,
@@ -200,7 +200,7 @@ module Homebrew
     ephemeral_suffix = "-#{github_run_id}-#{github_run_attempt}"
 
     MacOSVersions::SYMBOLS.each do |symbol, version|
-      macos_version = MacOS::Version.new(version)
+      macos_version = OS::Mac::Version.new(version)
       next if macos_version.outdated_release? || macos_version.prerelease?
 
       if args.dependents?

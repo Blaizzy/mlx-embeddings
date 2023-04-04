@@ -55,7 +55,6 @@ module OS
   LINUX_PREFERRED_GCC_COMPILER_FORMULA = "gcc@11" # https://packages.ubuntu.com/jammy/gcc
   LINUX_PREFERRED_GCC_RUNTIME_FORMULA = "gcc"
 
-  require "os/generic"
   if OS.mac?
     require "os/mac"
     # Don't tell people to report issues on unsupported configurations.

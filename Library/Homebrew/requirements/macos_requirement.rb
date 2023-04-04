@@ -23,9 +23,9 @@ class MacOSRequirement < Requirement
   def initialize(tags = [], comparator: ">=")
     @version = begin
       if comparator == "==" && tags.first.respond_to?(:map)
-        tags.first.map { |s| MacOS::Version.from_symbol(s) }
+        tags.first.map { |s| OS::Mac::Version.from_symbol(s) }
       else
-        MacOS::Version.from_symbol(tags.first) unless tags.empty?
+        OS::Mac::Version.from_symbol(tags.first) unless tags.empty?
       end
     rescue MacOSVersionError => e
       if DISABLED_MACOS_VERSIONS.include?(e.version)
@@ -43,7 +43,7 @@ class MacOSRequirement < Requirement
       end
 
       # Otherwise fallback to the oldest allowed if comparator is >=.
-      MacOS::Version.new(HOMEBREW_MACOS_OLDEST_ALLOWED) if comparator == ">="
+      OS::Mac::Version.new(HOMEBREW_MACOS_OLDEST_ALLOWED) if comparator == ">="
     end
 
     @comparator = comparator
@@ -56,7 +56,7 @@ class MacOSRequirement < Requirement
 
   satisfy(build_env: false) do
     T.bind(self, MacOSRequirement)
-    next Array(@version).any? { |v| MacOS.version.public_send(@comparator, v) } if OS.mac? && version_specified?
+    next Array(@version).any? { |v| OS::Mac.version.public_send(@comparator, v) } if OS.mac? && version_specified?
     next true if OS.mac?
     next true if @version
 
