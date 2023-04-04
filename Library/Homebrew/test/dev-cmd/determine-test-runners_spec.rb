@@ -167,7 +167,7 @@ describe "brew determine-test-runners" do
       setup_test_formula "testball"
 
       expect do
-        brew "determine-test-runners", "--dependents", "testball",
+        brew "determine-test-runners", "--eval-all", "--dependents", "testball",
              runner_env.merge({ "GITHUB_OUTPUT" => github_output })
       end
         .to not_to_output.to_stdout

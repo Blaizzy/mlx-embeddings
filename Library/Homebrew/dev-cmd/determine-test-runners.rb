@@ -13,11 +13,15 @@ class TestRunnerFormula
   sig { returns(Formula) }
   attr_reader :formula
 
-  sig { params(formula: Formula).void }
-  def initialize(formula)
+  sig { returns(T::Boolean) }
+  attr_reader :eval_all
+
+  sig { params(formula: Formula, eval_all: T::Boolean).void }
+  def initialize(formula, eval_all: Homebrew::EnvConfig.eval_all?)
     @formula = T.let(formula, Formula)
     @name = T.let(formula.name, String)
     @dependent_hash = T.let({}, T::Hash[Symbol, T::Array[TestRunnerFormula]])
+    @eval_all = T.let(eval_all, T::Boolean)
     freeze
   end
 
@@ -57,11 +61,16 @@ class TestRunnerFormula
 
   sig { params(cache_key: Symbol).returns(T::Array[TestRunnerFormula]) }
   def dependents(cache_key)
-    # TODO: Check that `--eval-all` or `HOMEBREW_EVAL_ALL` is set.
-    @dependent_hash[cache_key] ||= with_env(HOMEBREW_EVAL_ALL: "1") do
-      Formula.all
+    formula_selector, eval_all_env = if eval_all || Homebrew::EnvConfig.eval_all?
+      [:all, "1"]
+    else
+      [:installed, nil]
+    end
+
+    @dependent_hash[cache_key] ||= with_env(HOMEBREW_EVAL_ALL: eval_all_env) do
+      Formula.send(formula_selector)
              .select { |candidate_f| candidate_f.deps.map(&:name).include?(name) }
-             .map { |f| TestRunnerFormula.new(f) }
+             .map { |f| TestRunnerFormula.new(f, eval_all: eval_all) }
              .freeze
     end
 
@@ -80,8 +89,11 @@ module Homebrew
 
         Determines the runners used to test formulae or their dependents.
       EOS
+      switch "--eval-all",
+             description: "Evaluate all available formulae, whether installed or not, to determine testing " \
+                          "dependents."
       switch "--dependents",
-             description: "Determine runners for testing dependents."
+             description: "Determine runners for testing dependents. Requires `--eval-all` or `HOMEBREW_EVAL_ALL`."
 
       named_args min: 1, max: 2
 
@@ -156,10 +168,14 @@ module Homebrew
   def self.determine_test_runners
     args = determine_test_runners_args.parse
 
+    eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
+
+    odie "`--dependents` requires `--eval-all` or `HOMEBREW_EVAL_ALL`!" if args.dependents? && !eval_all
+
     Formulary.enable_factory_cache!
 
     testing_formulae = args.named.first.split(",")
-    testing_formulae.map! { |name| TestRunnerFormula.new(Formula[name]) }
+    testing_formulae.map! { |name| TestRunnerFormula.new(Formula[name], eval_all: eval_all) }
                     .freeze
     deleted_formulae = args.named.second&.split(",")
 
