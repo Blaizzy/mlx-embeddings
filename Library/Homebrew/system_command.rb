@@ -200,7 +200,7 @@ class SystemCommand
     pid = T.let(nil, T.nilable(Integer))
     raw_stdin, raw_stdout, raw_stderr, raw_wait_thr = ignore_interrupts do
       Open3.popen3(env, [executable, executable], *args, **options)
-       .tap { |*, wait_thr| pid = wait_thr.pid }
+           .tap { |*, wait_thr| pid = wait_thr.pid }
     end
 
     write_input_to(raw_stdin)
