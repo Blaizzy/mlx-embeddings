@@ -41,6 +41,11 @@ module Homebrew
       @qlplugins ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Qlplugin) }
     end
 
+    sig { returns(T::Array[Cask::Artifact::Dictionary]) }
+    def dictionaries
+      @dictionaries ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::Dictionary) }
+    end
+
     sig { returns(T::Array[Cask::Artifact::ScreenSaver]) }
     def screen_savers
       @screen_savers ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::ScreenSaver) }
@@ -118,6 +123,7 @@ module Homebrew
           *keyboard_layouts,
           *mdimporters,
           *colorpickers,
+          *dictionaries,
           *qlplugins,
           *installers,
           *screen_savers,
