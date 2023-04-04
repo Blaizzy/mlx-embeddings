@@ -43,6 +43,8 @@ module RuboCop
 
             # Skip if the URL and the verified value are the same.
             next if value_node.source == url_stanza.source.gsub(%r{^"https?://}, "\"")
+            # Skip if the URL has two path components, eg: `https://github.com/google/fonts.git`.
+            next if url_stanza.source.gsub(%r{^"https?://}, "\"").count("/") == 2
             # Skip if the verified value ends with a slash.
             next if value_node.str_content.end_with?("/")
 

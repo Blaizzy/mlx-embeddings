@@ -104,16 +104,31 @@ describe RuboCop::Cop::Cask::Url do
   end
 
   context "when the URL does not end with a slash" do
-    let(:source) do
-      <<~CASK
-        cask "foo" do
-          url "https://github.com/Foo",
-              verified: "github.com/Foo"
-        end
-      CASK
+    describe "and it has one path component" do
+      let(:source) do
+        <<~CASK
+          cask "foo" do
+            url "https://github.com/Foo",
+                verified: "github.com/Foo"
+          end
+        CASK
+      end
+
+      include_examples "does not report any offenses"
     end
 
-    include_examples "does not report any offenses"
+    describe "and it has two path components" do
+      let(:source) do
+        <<~CASK
+          cask "foo" do
+            url "https://github.com/foo/foo.git",
+                verified: "github.com/foo/foo"
+          end
+        CASK
+      end
+
+      include_examples "does not report any offenses"
+    end
   end
 
   context "when the url ends with a / and the verified value does too" do
