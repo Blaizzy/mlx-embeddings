@@ -311,4 +311,29 @@ describe Cask::Artifact::App, :cask do
       end
     end
   end
+
+  describe "upgrade" do
+    # Fix for https://github.com/Homebrew/homebrew-cask/issues/102721
+    it "reuses the same directory" do
+      install_phase
+
+      contents_path = target_path.join("Contents/Info.plist")
+
+      expect(target_path).to exist
+      inode = target_path.stat.ino
+      expect(contents_path).to exist
+
+      app.uninstall_phase(command: command, force: force, upgrade: true)
+
+      expect(target_path).to exist
+      expect(target_path.children).to be_empty
+      expect(contents_path).not_to exist
+
+      app.install_phase(command: command, adopt: adopt, force: force, upgrade: true)
+      expect(target_path).to exist
+      expect(target_path.stat.ino).to eq(inode)
+
+      expect(contents_path).to exist
+    end
+  end
 end
