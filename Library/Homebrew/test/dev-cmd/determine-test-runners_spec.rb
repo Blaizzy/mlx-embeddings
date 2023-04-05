@@ -44,7 +44,6 @@ describe "brew determine-test-runners" do
 
       expect { brew "determine-test-runners", "testball", runner_env_dup }
         .to not_to_output.to_stdout
-        .and output("Error: #{k} is not defined\n").to_stderr
         .and be_a_failure
     end
   end

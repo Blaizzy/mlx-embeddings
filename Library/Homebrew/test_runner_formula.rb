@@ -17,6 +17,7 @@ class TestRunnerFormula
 
   sig { params(formula: Formula, eval_all: T::Boolean).void }
   def initialize(formula, eval_all: Homebrew::EnvConfig.eval_all?)
+    Formulary.enable_factory_cache!
     @formula = T.let(formula, Formula)
     @name = T.let(formula.name, String)
     @dependent_hash = T.let({}, T::Hash[Symbol, T::Array[TestRunnerFormula]])
