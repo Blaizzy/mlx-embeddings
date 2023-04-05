@@ -32,6 +32,11 @@ module Commands
     "lc"          => "livecheck",
     "tc"          => "typecheck",
   }.freeze
+  # This pattern is used to split descriptions at full stops. We only consider a
+  # dot as a full stop if it is either followed by a whitespace or at the end of
+  # the description. In this way we can prevent cutting off a sentence in the
+  # middle due to dots in URLs or paths.
+  DESCRIPTION_SPLITTING_PATTERN = /\.(?>\s|$)/.freeze
 
   def valid_internal_cmd?(cmd)
     require?(HOMEBREW_CMD_PATH/cmd)
@@ -203,7 +208,7 @@ module Commands
 
     if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       if short
-        cmd_parser.description.split(/\.(?>\s|$)/).first
+        cmd_parser.description.split(DESCRIPTION_SPLITTING_PATTERN).first
       else
         cmd_parser.description
       end
@@ -215,7 +220,7 @@ module Commands
         match_data = /^#:  (?<desc>\w.*+)$/.match(line)
         if match_data
           desc = match_data[:desc]
-          return T.must(desc).split(".").first if short
+          return T.must(desc).split(DESCRIPTION_SPLITTING_PATTERN).first if short
 
           return desc
         end
