@@ -93,6 +93,26 @@ describe Version do
     expect(described_class.create("1.2.3")).to be < described_class.create("1.2.3-p34")
   end
 
+  specify "compare" do
+    expect(described_class.create("0.1").compare('==', described_class.create("0.1.0"))).to be true
+    expect(described_class.create("0.1").compare('<', described_class.create("0.2"))).to be true
+    expect(described_class.create("1.2.3").compare('>', described_class.create("1.2.2"))).to be true
+    expect(described_class.create("1.2.4").compare('<', described_class.create("1.2.4.1"))).to be true
+    expect(described_class.create("0.1").compare('!=', described_class.create("0.1.0"))).to be false
+    expect(described_class.create("0.1").compare('>=', described_class.create("0.2"))).to be false
+    expect(described_class.create("1.2.3").compare('<=', described_class.create("1.2.2"))).to be false
+    expect(described_class.create("1.2.4").compare('>=', described_class.create("1.2.4.1"))).to be false
+
+    expect(described_class.create("1.2.3").compare('>', described_class.create("1.2.3alpha4"))).to be true
+    expect(described_class.create("1.2.3").compare('>', described_class.create("1.2.3beta2"))).to be true
+    expect(described_class.create("1.2.3").compare('>', described_class.create("1.2.3rc3"))).to be true
+    expect(described_class.create("1.2.3").compare('<', described_class.create("1.2.3-p34"))).to be true
+    expect(described_class.create("1.2.3").compare('<=', described_class.create("1.2.3alpha4"))).to be false
+    expect(described_class.create("1.2.3").compare('<=', described_class.create("1.2.3beta2"))).to be false
+    expect(described_class.create("1.2.3").compare('<=', described_class.create("1.2.3rc3"))).to be false
+    expect(described_class.create("1.2.3").compare('>=', described_class.create("1.2.3-p34"))).to be false
+  end
+
   specify "HEAD" do
     expect(described_class.create("HEAD")).to be > described_class.create("1.2.3")
     expect(described_class.create("HEAD-abcdef")).to be > described_class.create("1.2.3")
