@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "pkg_version"
+require "version/head"
 require "version/null"
 require "version/parser"
 
@@ -532,6 +533,19 @@ class Version
     false
   end
 
+  sig { params(comparator: String, other: Version).returns(T::Boolean) }
+  def compare(comparator, other)
+    case comparator
+    when ">=" then self >= other
+    when ">" then self > other
+    when "<" then self < other
+    when "<=" then self <= other
+    when "==" then self == other
+    when "!=" then self != other
+    else raise ArgumentError, "Unknown comparator: #{comparator}"
+    end
+  end
+
   sig { params(other: T.untyped).returns(T.nilable(Integer)) }
   def <=>(other)
     # Needed to retain API compatibility with older string comparisons
@@ -661,36 +675,5 @@ class Version
   sig { returns(T::Array[Token]) }
   def tokenize
     version.scan(SCAN_PATTERN).map { |token| Token.create(T.cast(token, String)) }
-  end
-end
-
-# A formula's HEAD version.
-# @see https://docs.brew.sh/Formula-Cookbook#unstable-versions-head Unstable versions (head)
-#
-# @api private
-class HeadVersion < Version
-  extend T::Sig
-
-  sig { returns(T.nilable(String)) }
-  attr_reader :commit
-
-  def initialize(*)
-    super
-    @commit = @version[/^HEAD-(.+)$/, 1]
-  end
-
-  sig { params(commit: T.nilable(String)).void }
-  def update_commit(commit)
-    @commit = commit
-    @version = if commit
-      "HEAD-#{commit}"
-    else
-      "HEAD"
-    end
-  end
-
-  sig { returns(T::Boolean) }
-  def head?
-    true
   end
 end

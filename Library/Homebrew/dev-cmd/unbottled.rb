@@ -202,7 +202,7 @@ module Homebrew
           when MacOSRequirement
             next true unless r.version_specified?
 
-            macos_version.public_send(r.comparator, r.version)
+            macos_version.compare(r.comparator, r.version)
           when XcodeRequirement
             next true unless r.version
 
