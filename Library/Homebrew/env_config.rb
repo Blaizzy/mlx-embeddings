@@ -345,7 +345,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_UPGRADE_GREEDY:                   {
-        description: "If set, run `--greedy` with all upgrade commands",
+        description: "If set, run `--greedy` with all upgrade commands.",
         boolean:     true,
       },
       HOMEBREW_SIMULATE_MACOS_ON_LINUX:          {
