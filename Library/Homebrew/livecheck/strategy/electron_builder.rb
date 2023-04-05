@@ -45,7 +45,7 @@ module Homebrew
             regex:            T.nilable(Regexp),
             provided_content: T.nilable(String),
             unused:           T.nilable(T::Hash[Symbol, T.untyped]),
-            block:            T.untyped,
+            block:            T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, provided_content: nil, **unused, &block)
