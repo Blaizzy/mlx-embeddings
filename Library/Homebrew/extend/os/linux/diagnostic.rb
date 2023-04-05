@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "tempfile"
@@ -46,7 +46,7 @@ module Homebrew
         f.write "#!/bin/sh\n"
         f.chmod 0700
         f.close
-        return if system f.path
+        return if system T.must(f.path)
 
         <<~EOS
           The directory #{HOMEBREW_TEMP} does not permit executing
@@ -56,12 +56,12 @@ module Homebrew
             echo 'export HOMEBREW_TEMP=~/tmp' >> #{shell_profile}
         EOS
       ensure
-        f.unlink
+        f&.unlink
       end
 
       def check_xdg_data_dirs
-        return if ENV["XDG_DATA_DIRS"].blank?
-        return if ENV["XDG_DATA_DIRS"].split("/").include?(HOMEBREW_PREFIX/"share")
+        xdg_data_dirs = ENV.fetch("XDG_DATA_DIRS", nil)
+        return if xdg_data_dirs.blank? || xdg_data_dirs.split("/").include?(HOMEBREW_PREFIX/"share")
 
         <<~EOS
           Homebrew's share was not found in your XDG_DATA_DIRS but you have

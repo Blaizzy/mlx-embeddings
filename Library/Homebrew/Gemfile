@@ -27,8 +27,12 @@ gem "rspec-retry", require: false
 gem "rspec-sorbet", require: false
 gem "rubocop", require: false
 gem "rubocop-ast", require: false
+# NOTE: ruby-prof v1.4.3 is the last version that supports Ruby 2.6.x
+# TODO: remove explicit version when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
+gem "ruby-prof", "1.4.3", require: false
 gem "simplecov", require: false
 gem "simplecov-cobertura", require: false
+gem "stackprof", require: false
 gem "warning", require: false
 
 group :sorbet, optional: true do
@@ -36,13 +40,6 @@ group :sorbet, optional: true do
   gem "sorbet-static-and-runtime", require: false
   gem "spoom", require: false
   gem "tapioca", require: false
-end
-
-group :prof, optional: true do
-  # NOTE: ruby-prof v1.4.3 is the last version that supports Ruby 2.6.x
-  # TODO: remove explicit version when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
-  gem "ruby-prof", "1.4.3", require: false
-  gem "stackprof", require: false
 end
 
 # vendored gems

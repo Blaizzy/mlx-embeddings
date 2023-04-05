@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # Helper functions for updating PyPI resources.
@@ -6,8 +6,6 @@
 # @api private
 module PyPI
   extend T::Sig
-
-  module_function
 
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
   private_constant :PYTHONHOSTED_URL_PREFIX
@@ -35,13 +33,16 @@ module PyPI
         return
       end
 
-      @name = package_string
-      @name, @version = @name.split("==") if @name.include? "=="
+      if package_string.include? "=="
+        @name, @version = package_string.split("==")
+      else
+        @name = package_string
+      end
 
-      return unless (match = @name.match(/^(.*?)\[(.+)\]$/))
+      return unless (match = T.must(@name).match(/^(.*?)\[(.+)\]$/))
 
       @name = match[1]
-      @extras = match[2].split ","
+      @extras = T.must(match[2]).split ","
     end
 
     # Get name, URL, SHA-256 checksum, and latest version for a given PyPI package.
@@ -87,7 +88,7 @@ module PyPI
 
     sig { params(other: Package).returns(T::Boolean) }
     def same_package?(other)
-      @name.tr("_", "-").casecmp(other.name.tr("_", "-")).zero?
+      T.must(@name.tr("_", "-").casecmp(other.name.tr("_", "-"))).zero?
     end
 
     # Compare only names so we can use .include? and .uniq on a Package array
@@ -109,7 +110,7 @@ module PyPI
   end
 
   sig { params(url: String, version: T.any(String, Version)).returns(T.nilable(String)) }
-  def update_pypi_url(url, version)
+  def self.update_pypi_url(url, version)
     package = Package.new url, is_url: true
 
     return unless package.valid_pypi_package?
@@ -133,8 +134,9 @@ module PyPI
       ignore_non_pypi_packages: T.nilable(T::Boolean),
     ).returns(T.nilable(T::Boolean))
   }
-  def update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil, exclude_packages: nil,
-                               print_only: false, silent: false, ignore_non_pypi_packages: false)
+  def self.update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil,
+                                    exclude_packages: nil, print_only: false, silent: false,
+                                    ignore_non_pypi_packages: false)
 
     auto_update_list = formula.tap&.pypi_formula_mappings
     if auto_update_list.present? && auto_update_list.key?(formula.full_name) &&
@@ -282,7 +284,7 @@ module PyPI
     true
   end
 
-  def json_to_packages(json_tree, main_package, exclude_packages)
+  def self.json_to_packages(json_tree, main_package, exclude_packages)
     return [] if json_tree.blank?
 
     json_tree.flat_map do |package_json|

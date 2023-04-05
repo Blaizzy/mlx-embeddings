@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -161,7 +161,7 @@ module Homebrew
             # specifies the strategy and contains a `strategy` block
             next if (livecheck_strategy != strategy_symbol) || !block_provided
           elsif strategy.const_defined?(:PRIORITY) &&
-                !strategy::PRIORITY.positive? &&
+                !strategy.const_get(:PRIORITY).positive? &&
                 livecheck_strategy != strategy_symbol
             # Ignore strategies with a priority of 0 or lower, unless the
             # strategy is specified in the `livecheck` block
@@ -174,7 +174,7 @@ module Homebrew
         # Sort usable strategies in descending order by priority, using the
         # DEFAULT_PRIORITY when a strategy doesn't contain a PRIORITY constant
         usable_strategies.sort_by do |strategy|
-          (strategy.const_defined?(:PRIORITY) ? -strategy::PRIORITY : -DEFAULT_PRIORITY)
+          (strategy.const_defined?(:PRIORITY) ? -strategy.const_get(:PRIORITY) : -DEFAULT_PRIORITY)
         end
       end
 
@@ -216,7 +216,7 @@ module Homebrew
       # @return [Hash]
       sig { params(url: String, homebrew_curl: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
       def self.page_content(url, homebrew_curl: false)
-        stderr = nil
+        stderr = T.let(nil, T.nilable(String))
         [:default, :browser].each do |user_agent|
           stdout, stderr, status = curl_with_workarounds(
             *PAGE_CONTENT_CURL_ARGS, url,

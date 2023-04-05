@@ -1152,7 +1152,7 @@ class Formula
         ENV.activate_extensions!
 
         etc_var_dirs = [bottle_prefix/"etc", bottle_prefix/"var"]
-        T.unsafe(Find).find(*etc_var_dirs.select(&:directory?)) do |path|
+        Find.find(*etc_var_dirs.select(&:directory?)) do |path|
           path = Pathname.new(path)
           path.extend(InstallRenamed)
           path.cp_path_sub(bottle_prefix, HOMEBREW_PREFIX)
@@ -2672,7 +2672,7 @@ class Formula
     out.close
     args.map!(&:to_s)
     begin
-      T.unsafe(Kernel).exec(cmd, *args)
+      Kernel.exec(cmd, *args)
     rescue
       nil
     end

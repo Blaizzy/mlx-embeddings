@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -60,10 +60,10 @@ module Homebrew
 
     odie "No #{name} #{pg_version_data}.* version installed!" unless old_bin
 
-    server_stopped = false
-    moved_data = false
-    initdb_run = false
-    upgraded = false
+    server_stopped = T.let(false, T::Boolean)
+    moved_data = T.let(false, T::Boolean)
+    initdb_run = T.let(false, T::Boolean)
+    upgraded = T.let(false, T::Boolean)
 
     begin
       # Following instructions from:
@@ -88,7 +88,7 @@ module Homebrew
         system "#{old_bin}/pg_ctl", "-w", "-D", datadir, "start"
       end
 
-      initdb_args = []
+      initdb_args = T.let([], T::Array[String])
       locale_settings = %w[
         lc_collate
         lc_ctype

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module Homebrew
@@ -379,7 +379,7 @@ module Homebrew
             real_tmp = tmp.realpath.parent
             where_tmp = volumes.which real_tmp
           ensure
-            Dir.delete tmp
+            Dir.delete tmp.to_s
           end
         rescue
           return

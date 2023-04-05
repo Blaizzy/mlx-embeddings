@@ -882,7 +882,7 @@ There are two ways to add `launchd` plists and `systemd` services to a formula, 
 
    ```ruby
    service do
-     run bin/"script"
+     run opt_bin/"script"
    end
    ```
 

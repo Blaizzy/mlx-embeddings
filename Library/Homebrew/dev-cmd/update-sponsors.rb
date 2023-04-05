@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -40,7 +40,8 @@ module Homebrew
 
     named_sponsors = []
     logo_sponsors = []
-    largest_monthly_amount = 0
+    # FIXME: This T.let should be unnecessary https://github.com/sorbet/sorbet/issues/6894
+    largest_monthly_amount = T.let(0, T.untyped)
 
     GitHub.sponsorships("Homebrew").each do |s|
       largest_monthly_amount = [s[:monthly_amount], s[:closest_tier_monthly_amount]].max

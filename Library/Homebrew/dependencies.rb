@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "delegate"
@@ -16,19 +16,19 @@ class Dependencies < SimpleDelegator
   alias eql? ==
 
   def optional
-    select(&:optional?)
+    __getobj__.select(&:optional?)
   end
 
   def recommended
-    select(&:recommended?)
+    __getobj__.select(&:recommended?)
   end
 
   def build
-    select(&:build?)
+    __getobj__.select(&:build?)
   end
 
   def required
-    select(&:required?)
+    __getobj__.select(&:required?)
   end
 
   def default
@@ -37,7 +37,7 @@ class Dependencies < SimpleDelegator
 
   sig { returns(String) }
   def inspect
-    "#<#{self.class.name}: #{to_a}>"
+    "#<#{self.class.name}: #{__getobj__}>"
   end
 end
 
@@ -52,11 +52,11 @@ class Requirements < SimpleDelegator
   end
 
   def <<(other)
-    if other.is_a?(Comparable)
-      grep(other.class) do |req|
+    if other.is_a?(Object) && other.is_a?(Comparable)
+      __getobj__.grep(other.class) do |req|
         return self if req > other
 
-        delete(req)
+        __getobj__.delete(req)
       end
     end
     super
@@ -65,6 +65,6 @@ class Requirements < SimpleDelegator
 
   sig { returns(String) }
   def inspect
-    "#<#{self.class.name}: {#{to_a.join(", ")}}>"
+    "#<#{self.class.name}: {#{__getobj__.to_a.join(", ")}}>"
   end
 end

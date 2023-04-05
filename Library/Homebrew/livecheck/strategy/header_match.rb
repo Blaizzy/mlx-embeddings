@@ -44,7 +44,7 @@ module Homebrew
           params(
             headers: T::Hash[String, String],
             regex:   T.nilable(Regexp),
-            block:   T.untyped,
+            block:   T.nilable(Proc),
           ).returns(T::Array[String])
         }
         def self.versions_from_headers(headers, regex = nil, &block)
@@ -79,7 +79,7 @@ module Homebrew
             regex:         T.nilable(Regexp),
             homebrew_curl: T::Boolean,
             _unused:       T.nilable(T::Hash[Symbol, T.untyped]),
-            block:         T.untyped,
+            block:         T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, homebrew_curl: false, **_unused, &block)
