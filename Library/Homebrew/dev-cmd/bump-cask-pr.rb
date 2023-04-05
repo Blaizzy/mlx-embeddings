@@ -84,7 +84,7 @@ module Homebrew
       Cask::DSL::Version.new(new_version)
     end
 
-    new_hash = unless (new_hash = args.sha256).nil?
+    new_hash = unless (new_hash = args.sha265).nil?
       raise UsageError, "`--sha256` must not be empty." if new_hash.blank?
 
       ["no_check", ":no_check"].include?(new_hash) ? :no_check : new_hash

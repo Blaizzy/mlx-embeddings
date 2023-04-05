@@ -42,9 +42,7 @@ module Cask
 
       quarantine = true if quarantine.nil?
 
-      if Homebrew::EnvConfig.upgrade_greedy?
-        greedy = true
-      end
+      greedy = true if Homebrew::EnvConfig.upgrade_greedy?
 
       outdated_casks = if casks.empty?
         Caskroom.casks(config: Config.from_args(args)).select do |cask|
