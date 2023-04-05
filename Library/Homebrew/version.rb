@@ -532,6 +532,19 @@ class Version
     false
   end
 
+  sig { params(comparator: String, other: Version).returns(T::Boolean) }
+  def compare(comparator, other)
+    case comparator
+    when ">=" then self >= other
+    when ">" then self > other
+    when "<" then self < other
+    when "<=" then self <= other
+    when "==" then self == other
+    when "!=" then self != other
+    else raise ArgumentError, "Unknown comparator: #{comparator}"
+    end
+  end
+
   sig { params(other: T.untyped).returns(T.nilable(Integer)) }
   def <=>(other)
     # Needed to retain API compatibility with older string comparisons
