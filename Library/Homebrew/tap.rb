@@ -569,7 +569,7 @@ class Tap
     file = Pathname.new(file) unless file.is_a? Pathname
     file = file.expand_path(path)
     return false unless ruby_file?(file)
-    return false if cask_pathname?(file)
+    return false if cask_file?(file)
 
     file.to_s.start_with?("#{formula_dir}/")
   end
