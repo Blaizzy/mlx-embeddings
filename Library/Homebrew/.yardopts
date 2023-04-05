@@ -2,6 +2,7 @@
 --main README.md
 --markup markdown
 --no-private
+--plugin sorbet
 --load yard/ignore_directives.rb
 --template-path yard/templates
 --exclude test/
