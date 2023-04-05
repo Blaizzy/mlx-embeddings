@@ -649,7 +649,7 @@ __fish_brew_complete_arg 'dispatch-build-bottle' -l workflow -d 'Dispatch specif
 __fish_brew_complete_arg 'dispatch-build-bottle' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'docs' 'Open Homebrew\'s online documentation (https://docs'
+__fish_brew_complete_cmd 'docs' 'Open Homebrew\'s online documentation (https://docs.brew.sh) in a browser'
 __fish_brew_complete_arg 'docs' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'docs' -l help -d 'Show this message'
 __fish_brew_complete_arg 'docs' -l quiet -d 'Make some output more quiet'
@@ -738,14 +738,14 @@ __fish_brew_complete_arg 'formula' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae'
+__fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae.brew.sh'
 __fish_brew_complete_arg 'generate-cask-api' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-cask-api' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-cask-api' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'generate-cask-api' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae'
+__fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae.brew.sh'
 __fish_brew_complete_arg 'generate-formula-api' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-formula-api' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-formula-api' -l quiet -d 'Make some output more quiet'
@@ -1090,7 +1090,7 @@ __fish_brew_complete_arg 'missing' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'missing' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in ~/'
+__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in ~/.nodenv/versions'
 __fish_brew_complete_arg 'nodenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'nodenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'nodenv-sync' -l quiet -d 'Make some output more quiet'
@@ -1228,7 +1228,7 @@ __fish_brew_complete_arg 'prof' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'prof' -a '(__fish_brew_suggest_commands)'
 
 
-__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/'
+__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/.rbenv/versions'
 __fish_brew_complete_arg 'rbenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'rbenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'rbenv-sync' -l quiet -d 'Make some output more quiet'
