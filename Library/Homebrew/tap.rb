@@ -561,7 +561,7 @@ class Tap
     file.extname == ".rb"
   end
 
-  # return true if given path would present a {Formula} file in this {Tap}.
+  # returns true if given path would present a {Formula} file in this {Tap}.
   # accepts both absolute path and relative path (relative to this {Tap}'s path)
   # @private
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
@@ -569,11 +569,12 @@ class Tap
     file = Pathname.new(file) unless file.is_a? Pathname
     file = file.expand_path(path)
     return false unless ruby_file?(file)
+    return false if cask_pathname?(file)
 
-    file.to_s.start_with?("#{formula_dir}/") && !file.to_s.start_with?("#{cask_dir}/")
+    file.to_s.start_with?("#{formula_dir}/")
   end
 
-  # return true if given path would present a {Cask} file in this {Tap}.
+  # returns true if given path would present a {Cask} file in this {Tap}.
   # accepts both absolute path and relative path (relative to this {Tap}'s path)
   # @private
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
