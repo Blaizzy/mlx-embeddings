@@ -57,6 +57,7 @@ class GitHubRunner < T::Struct
   const :arch, Symbol
   const :spec, T.any(LinuxRunnerSpec, MacOSRunnerSpec)
   const :macos_version, T.nilable(OS::Mac::Version)
+  prop  :active, T::Boolean, default: false
 end
 
 class GitHubRunnerMatrix
@@ -69,6 +70,24 @@ class GitHubRunnerMatrix
 
   RunnerSpec = T.type_alias { T.any(LinuxRunnerSpec, MacOSRunnerSpec) }
   private_constant :RunnerSpec
+
+  MacOSRunnerSpecHash = T.type_alias { { name: String, runner: String, cleanup: T::Boolean } }
+  private_constant :MacOSRunnerSpecHash
+
+  LinuxRunnerSpecHash = T.type_alias do
+    {
+      name:      String,
+      runner:    String,
+      container: T::Hash[Symbol, String],
+      workdir:   String,
+      timeout:   Integer,
+      cleanup:   T::Boolean,
+    }
+  end
+  private_constant :LinuxRunnerSpecHash
+
+  RunnerSpecHash = T.type_alias { T.any(LinuxRunnerSpecHash, MacOSRunnerSpecHash) }
+  private_constant :RunnerSpecHash
   # rubocop:enable Style/MutableConstant
 
   sig { returns(T::Array[GitHubRunner]) }
@@ -89,18 +108,14 @@ class GitHubRunnerMatrix
     @available_runners = T.let([], T::Array[GitHubRunner])
     generate_available_runners!
 
-    @active_runners = T.let(
-      @available_runners.select { |runner| active_runner?(runner) },
-      T::Array[GitHubRunner],
-    )
-
     freeze
   end
 
-  sig { returns(T::Array[T::Hash[Symbol, T.untyped]]) }
+  sig { returns(T::Array[RunnerSpecHash]) }
   def active_runner_specs_hash
-    @active_runners.map(&:spec)
-                   .map(&:to_h)
+    @available_runners.select(&:active)
+                      .map(&:spec)
+                      .map(&:to_h)
   end
 
   sig { returns(LinuxRunnerSpec) }
@@ -121,9 +136,31 @@ class GitHubRunnerMatrix
     )
   end
 
+  VALID_PLATFORMS = T.let([:macos, :linux].freeze, T::Array[Symbol])
+  VALID_ARCHES = T.let([:arm64, :x86_64].freeze, T::Array[Symbol])
+
+  sig {
+    params(
+      platform:      Symbol,
+      arch:          Symbol,
+      spec:          RunnerSpec,
+      macos_version: T.nilable(OS::Mac::Version),
+    ).returns(GitHubRunner)
+  }
+  def create_runner(platform, arch, spec, macos_version = nil)
+    raise "Unexpected platform: #{platform}" if VALID_PLATFORMS.exclude?(platform)
+    raise "Unexpected arch: #{arch}" if VALID_ARCHES.exclude?(arch)
+
+    runner = GitHubRunner.new(platform: platform, arch: arch, spec: spec, macos_version: macos_version)
+    runner.active = active_runner?(runner)
+    runner.freeze
+  end
+
   sig { void }
   def generate_available_runners!
-    @available_runners << GitHubRunner.new(platform: :linux, arch: :x86_64, spec: linux_runner_spec)
+    return if @available_runners.present?
+
+    @available_runners << create_runner(:linux, :x86_64, linux_runner_spec)
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
     github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT")
@@ -138,12 +175,7 @@ class GitHubRunnerMatrix
         runner:  "#{version}#{ephemeral_suffix}",
         cleanup: false,
       )
-      @available_runners << GitHubRunner.new(
-        platform:      :macos,
-        arch:          :x86_64,
-        spec:          spec,
-        macos_version: macos_version,
-      )
+      @available_runners << create_runner(:macos, :x86_64, spec, macos_version)
 
       next unless macos_version >= :big_sur
 
@@ -155,12 +187,7 @@ class GitHubRunnerMatrix
       end
 
       spec = MacOSRunnerSpec.new(name: "macOS #{version}-arm64", runner: runner, cleanup: cleanup)
-      @available_runners << GitHubRunner.new(
-        platform:      :macos,
-        arch:          :arm64,
-        spec:          spec,
-        macos_version: macos_version,
-      )
+      @available_runners << create_runner(:macos, :arm64, spec, macos_version)
     end
   end
 
