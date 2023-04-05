@@ -498,7 +498,7 @@ class Tap
         formula_dir.find
       else
         formula_dir.children
-      end.select(&method(:ruby_file?))
+      end.select(&method(:formula_file?))
     else
       []
     end
