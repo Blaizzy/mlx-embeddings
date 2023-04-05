@@ -146,7 +146,7 @@ module Homebrew
           params(
             content: String,
             regex:   T.nilable(Regexp),
-            block:   T.untyped,
+            block:   T.nilable(Proc),
           ).returns(T::Array[String])
         }
         def self.versions_from_content(content, regex = nil, &block)
@@ -181,7 +181,7 @@ module Homebrew
             url:     String,
             regex:   T.nilable(Regexp),
             _unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:   T.untyped,
+            block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **_unused, &block)
