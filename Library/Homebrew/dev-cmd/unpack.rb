@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "stringio"
@@ -8,10 +8,8 @@ require "cli/parser"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def unpack_args
+  def self.unpack_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Unpack the source files for <formula> into subdirectories of the current
@@ -33,7 +31,7 @@ module Homebrew
     end
   end
 
-  def unpack
+  def self.unpack
     args = unpack_args.parse
 
     formulae = args.named.to_formulae
@@ -69,10 +67,11 @@ module Homebrew
       next unless args.git?
 
       ohai "Setting up Git repository"
-      cd stage_dir
-      system "git", "init", "-q"
-      system "git", "add", "-A"
-      system "git", "commit", "-q", "-m", "brew-unpack"
+      cd(stage_dir) do
+        system "git", "init", "-q"
+        system "git", "add", "-A"
+        system "git", "commit", "-q", "-m", "brew-unpack"
+      end
     end
   end
 end
