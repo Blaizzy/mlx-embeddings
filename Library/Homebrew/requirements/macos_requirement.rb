@@ -56,7 +56,7 @@ class MacOSRequirement < Requirement
 
   satisfy(build_env: false) do
     T.bind(self, MacOSRequirement)
-    next Array(@version).any? { |v| MacOS.version.public_send(@comparator, v) } if OS.mac? && version_specified?
+    next Array(@version).any? { |v| MacOS.version.compare(@comparator, v) } if OS.mac? && version_specified?
     next true if OS.mac?
     next true if @version
 
