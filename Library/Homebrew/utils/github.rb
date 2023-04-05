@@ -418,6 +418,17 @@ module GitHub
     result["organization"]["team"]["members"]["nodes"].to_h { |member| [member["login"], member["name"]] }
   end
 
+  sig {
+    params(user: String)
+      .returns(
+        T::Array[{
+          closest_tier_monthly_amount: Integer,
+          login:                       String,
+          monthly_amount:              Integer,
+          name:                        String,
+        }],
+      )
+  }
   def self.sponsorships(user)
     has_next_page = T.let(true, T::Boolean)
     after = ""
