@@ -32,5 +32,4 @@ class Version
       true
     end
   end
-
 end
