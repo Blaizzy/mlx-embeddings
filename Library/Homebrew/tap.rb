@@ -870,7 +870,7 @@ class CoreTap < Tap
 
   sig { returns(String) }
   def remote
-    super if installed? || Homebrew::EnvConfig.no_install_from_api?
+    super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::EnvConfig.core_git_remote
   end
@@ -988,7 +988,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Array[String]) }
   def aliases
-    return super if installed? || Homebrew::EnvConfig.no_install_from_api?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_aliases.keys
   end
@@ -996,7 +996,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Array[String]) }
   def formula_names
-    return super if installed? || Homebrew::EnvConfig.no_install_from_api?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_formulae.keys
   end
