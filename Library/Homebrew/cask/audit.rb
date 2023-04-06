@@ -643,7 +643,8 @@ module Cask
       return if metadata.nil?
       return unless metadata["archived"]
 
-      add_error("GitHub repo is archived", strict_only: cask.discontinued?)
+      # Discontinued casks shouldn't show up as errors.
+      add_error("GitHub repo is archived", strict_only: !cask.discontinued?)
     end
 
     sig { void }
