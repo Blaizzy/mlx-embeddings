@@ -104,7 +104,7 @@ class TestRunnerFormula
         Homebrew::SimulateSystem.arch = SIMULATE_SYSTEM_SYMBOLS.fetch(arch)
         Homebrew::SimulateSystem.os = macos_version || platform
 
-        Formula.send(formula_selector)
+        Formula.public_send(formula_selector)
                .select { |candidate_f| candidate_f.deps.map(&:name).include?(name) }
                .map { |f| TestRunnerFormula.new(f, eval_all: all) }
                .freeze
