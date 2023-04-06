@@ -658,7 +658,8 @@ module Cask
       return if metadata.nil?
       return unless metadata["archived"]
 
-      add_error("GitLab repo is archived", strict_only: cask.discontinued?)
+      # Discontinued casks shouldn't show up as errors.
+      add_error("GitLab repo is archived") unless cask.discontinued?
     end
 
     sig { void }
