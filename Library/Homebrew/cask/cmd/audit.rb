@@ -60,7 +60,7 @@ module Cask
           except:          [],
         )
 
-        failed_casks = results.reject { |_, result| result.empty? }.map(&:first)
+        failed_casks = results.reject { |_, result| result[:errors].empty? }.map(&:first)
         return if failed_casks.empty?
 
         raise CaskError, "audit failed for casks: #{failed_casks.join(" ")}"
@@ -102,7 +102,7 @@ module Cask
 
         casks.to_h do |cask|
           odebug "Auditing Cask #{cask}"
-          [cask.sourcefile_path, Auditor.audit(cask, **options)]
+          [cask.sourcefile_path, { errors: Auditor.audit(cask, **options), warnings: [] }]
         end
       end
     end

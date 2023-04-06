@@ -266,7 +266,7 @@ module Homebrew
       )
     end
 
-    failed_casks = cask_results.reject { |_, result| result.empty? }
+    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
 
     cask_count = failed_casks.count
 
