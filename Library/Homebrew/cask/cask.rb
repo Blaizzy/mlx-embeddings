@@ -241,6 +241,15 @@ module Cask
       end
     end
 
+    def ruby_source_path
+      return @ruby_source_path if defined?(@ruby_source_path)
+
+      return unless sourcefile_path
+      return unless tap
+
+      @ruby_source_path = sourcefile_path.relative_path_from(tap.path)
+    end
+
     def ruby_source_checksum
       @ruby_source_checksum ||= {
         "sha256" => Digest::SHA256.file(sourcefile_path).hexdigest,
@@ -259,7 +268,9 @@ module Cask
       raise ArgumentError, "Expected cask to be loaded from the API" unless loaded_from_api?
 
       @languages = json_cask[:languages]
-      @tap_git_head = json_cask[:tap_git_head]
+      @tap_git_head = json_cask.fetch(:tap_git_head, "HEAD")
+
+      @ruby_source_path = json_cask[:ruby_source_path]
       @ruby_source_checksum = json_cask[:ruby_source_checksum].freeze
     end
 
@@ -308,6 +319,7 @@ module Cask
         "auto_updates"         => auto_updates,
         "tap_git_head"         => tap_git_head,
         "languages"            => languages,
+        "ruby_source_path"     => ruby_source_path,
         "ruby_source_checksum" => ruby_source_checksum,
       }
     end
