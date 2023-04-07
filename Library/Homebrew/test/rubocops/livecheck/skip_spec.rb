@@ -12,7 +12,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckSkip do
         url "https://brew.sh/foo-1.0.tgz"
 
         livecheck do
-        ^^^^^^^^^^^^ Skipped formulae must not contain other livecheck information.
+        ^^^^^^^^^^^^ FormulaAudit/LivecheckSkip: Skipped formulae must not contain other livecheck information.
           skip "Not maintained"
           url :stable
         end

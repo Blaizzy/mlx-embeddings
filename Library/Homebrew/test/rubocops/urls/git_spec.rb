@@ -56,7 +56,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git URLs
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/GitUrls: Formulae in homebrew/core should specify a revision for git URLs
               tag: "v1.0.0"
         end
       RUBY
@@ -67,7 +67,7 @@ describe RuboCop::Cop::FormulaAudit::GitUrls do
         class Foo < Formula
           desc "foo"
           url "https://github.com/foo/bar.git",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should specify a revision for git URLs
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/GitUrls: Formulae in homebrew/core should specify a revision for git URLs
               shallow: false,
               tag:     "v1.0.0"
         end

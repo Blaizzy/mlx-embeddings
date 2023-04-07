@@ -13,7 +13,6 @@ inherit_mode:
 
 AllCops:
   TargetRubyVersion: 2.6
-  DisplayCopNames: false
   ActiveSupportExtensionsEnabled: true
   NewCops: enable
   Include:

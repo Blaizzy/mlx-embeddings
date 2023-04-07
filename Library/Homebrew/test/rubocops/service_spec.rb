@@ -13,7 +13,7 @@ describe RuboCop::Cop::FormulaAudit::Service do
 
         service do
           run [bin/"foo", "run", "-config", etc/"foo/config.json"]
-               ^^^ Use `opt_bin` instead of `bin` in service blocks.
+               ^^^ FormulaAudit/Service: Use `opt_bin` instead of `bin` in service blocks.
         end
       end
     RUBY

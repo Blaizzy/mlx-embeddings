@@ -20,7 +20,7 @@ describe RuboCop::Cop::Cask::NoDslVersion do
     let(:correct_source) { "cask 'foo' do; end" }
     let(:expected_offenses) do
       [{
-        message:  "Use `cask 'foo'` instead of `cask :v1 => 'foo'`",
+        message:  "Cask/NoDslVersion: Use `cask 'foo'` instead of `cask :v1 => 'foo'`",
         severity: :convention,
         line:     1,
         column:   0,

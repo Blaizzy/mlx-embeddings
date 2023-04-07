@@ -194,7 +194,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
             url "#{offense_info["url"]}"
           end
         RUBY
-        expected_offenses = [{ message:  offense_info["msg"],
+        expected_offenses = [{ message:  "FormulaAudit/Urls: #{offense_info["msg"]}",
                                severity: :convention,
                                line:     3,
                                column:   offense_info["col"],
@@ -219,7 +219,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
 
           stable do
             url "git://github.com/foo.git",
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Please use https:// for git://github.com/foo.git
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Urls: Please use https:// for git://github.com/foo.git
                 :tag => "v1.0.1",
                 :revision => "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             version "1.0.1"
@@ -234,7 +234,7 @@ describe RuboCop::Cop::FormulaAudit::Urls do
           desc "foo"
           url "https://ftpmirror.fnu.org/foo/foo-1.0.tar.gz"
           mirror "https://ftpmirror.fnu.org/foo/foo-1.0.tar.gz"
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ URL should not be duplicated as a mirror: https://ftpmirror.fnu.org/foo/foo-1.0.tar.gz
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Urls: URL should not be duplicated as a mirror: https://ftpmirror.fnu.org/foo/foo-1.0.tar.gz
         end
       RUBY
     end

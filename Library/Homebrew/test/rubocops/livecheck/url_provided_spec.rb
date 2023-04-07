@@ -12,7 +12,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckUrlProvided do
         url "https://brew.sh/foo-1.0.tgz"
 
         livecheck do
-        ^^^^^^^^^^^^ A `url` must be provided to livecheck.
+        ^^^^^^^^^^^^ FormulaAudit/LivecheckUrlProvided: A `url` must be provided to livecheck.
           regex(%r{href=.*?/formula[._-]v?(\\d+(?:\\.\\d+)+)\\.t}i)
         end
       end

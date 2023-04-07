@@ -182,7 +182,7 @@ module Homebrew
 
       ambiguous_casks = []
       if handle_name_conflict
-        ambiguous_casks = formulae_and_casks_to_check \
+        ambiguous_casks = formulae_and_casks_to_check
                           .group_by { |item| package_or_resource_name(item, full_name: true) }
                           .values
                           .select { |items| items.length > 1 }

@@ -54,7 +54,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
     end
     let(:expected_offenses) do
       [{
-        message:  "Use 'version.csv.first' instead of 'version.before_comma' " \
+        message:  "Cask/UrlLegacyCommaSeparators: Use 'version.csv.first' instead of 'version.before_comma' " \
                   "and 'version.csv.second' instead of 'version.after_comma'",
         severity: :convention,
         line:     3,
@@ -87,7 +87,7 @@ describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators do
     end
     let(:expected_offenses) do
       [{
-        message:  "Use 'version.csv.first' instead of 'version.before_comma' " \
+        message:  "Cask/UrlLegacyCommaSeparators: Use 'version.csv.first' instead of 'version.before_comma' " \
                   "and 'version.csv.second' instead of 'version.after_comma'",
         severity: :convention,
         line:     3,

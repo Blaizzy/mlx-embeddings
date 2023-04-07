@@ -14,7 +14,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckRegexCaseInsensitive do
         livecheck do
           url :stable
           regex(%r{href=.*?/formula[._-]v?(\\d+(?:\\.\\d+)+)\\.t})
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Regexes should be case-insensitive unless sensitivity is explicitly required for proper matching.
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/LivecheckRegexCaseInsensitive: Regexes should be case-insensitive unless sensitivity is explicitly required for proper matching.
         end
       end
     RUBY

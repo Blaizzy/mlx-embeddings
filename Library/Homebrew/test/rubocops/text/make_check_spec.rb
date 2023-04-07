@@ -27,7 +27,7 @@ describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
         desc "foo"
         url 'https://brew.sh/foo-1.0.tgz'
         system "make", "-j1", "test"
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core (except e.g. cryptography, libraries) should not run build-time checks
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAuditStrict/MakeCheck: Formulae in homebrew/core (except e.g. cryptography, libraries) should not run build-time checks
       end
     RUBY
   end

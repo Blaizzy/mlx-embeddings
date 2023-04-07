@@ -14,7 +14,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckRegexParentheses do
         livecheck do
           url :stable
           regex %r{href=.*?/formula[._-]v?(\\d+(?:\\.\\d+)+)\\.t}i
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ The `regex` call should always use parentheses.
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/LivecheckRegexParentheses: The `regex` call should always use parentheses.
         end
       end
     RUBY

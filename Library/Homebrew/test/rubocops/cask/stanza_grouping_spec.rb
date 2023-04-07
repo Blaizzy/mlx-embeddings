@@ -10,10 +10,10 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
   subject(:cop) { described_class.new }
 
   let(:missing_line_msg) do
-    "stanza groups should be separated by a single empty line"
+    "Cask/StanzaGrouping: stanza groups should be separated by a single empty line"
   end
   let(:extra_line_msg) do
-    "stanzas within the same group should have no lines between them"
+    "Cask/StanzaGrouping: stanzas within the same group should have no lines between them"
   end
 
   context "when there is only one stanza" do
