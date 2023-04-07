@@ -72,6 +72,11 @@ module OS
         self >= HOMEBREW_MACOS_NEWEST_UNSUPPORTED
       end
 
+      sig { returns(T::Boolean) }
+      def unsupported_release?
+        outdated_release? || prerelease?
+      end
+
       # For {OS::Mac::Version} compatibility.
       sig { returns(T::Boolean) }
       def requires_nehalem_cpu?

@@ -114,7 +114,7 @@ class GitHubRunnerMatrix
 
     MacOSVersions::SYMBOLS.each_value do |version|
       macos_version = OS::Mac::Version.new(version)
-      next if macos_version.outdated_release? || macos_version.prerelease?
+      next if macos_version.unsupported_release?
 
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-x86_64",
