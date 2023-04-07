@@ -96,7 +96,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
 
           def install
             puts "python@3.8"
-                 ^^^^^^^^^^^^ References to `python@3.8` should match the specified python dependency (`python@3.9`)
+                 ^^^^^^^^^^^^ FormulaAudit/PythonVersions: References to `python@3.8` should match the specified python dependency (`python@3.9`)
           end
         end
       RUBY
@@ -119,7 +119,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
 
           def install
             puts "python3.8"
-                 ^^^^^^^^^^^ References to `python3.8` should match the specified python dependency (`python3.9`)
+                 ^^^^^^^^^^^ FormulaAudit/PythonVersions: References to `python3.8` should match the specified python dependency (`python3.9`)
           end
         end
       RUBY
@@ -142,7 +142,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
 
           def install
             puts "python@3.10"
-                 ^^^^^^^^^^^^^ References to `python@3.10` should match the specified python dependency (`python@3.11`)
+                 ^^^^^^^^^^^^^ FormulaAudit/PythonVersions: References to `python@3.10` should match the specified python dependency (`python@3.11`)
           end
         end
       RUBY
@@ -165,7 +165,7 @@ describe RuboCop::Cop::FormulaAudit::PythonVersions do
 
           def install
             puts "python3.10"
-                 ^^^^^^^^^^^^ References to `python3.10` should match the specified python dependency (`python3.11`)
+                 ^^^^^^^^^^^^ FormulaAudit/PythonVersions: References to `python3.10` should match the specified python dependency (`python3.11`)
           end
         end
       RUBY

@@ -10,7 +10,7 @@ describe RuboCop::Cop::FormulaAudit::ClassInheritance do
     it "reports an offense when not using spaces for class inheritance" do
       expect_offense(<<~RUBY, "/homebrew-core/Formula/foo.rb")
         class Foo<Formula
-                  ^^^^^^^ Use a space in class inheritance: class Foo < Formula
+                  ^^^^^^^ FormulaAudit/ClassInheritance: Use a space in class inheritance: class Foo < Formula
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
         end

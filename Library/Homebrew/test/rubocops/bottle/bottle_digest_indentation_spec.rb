@@ -75,9 +75,9 @@ describe RuboCop::Cop::FormulaAudit::BottleDigestIndentation do
           rebuild 4
           sha256 arm64_big_sur: "aaaaaaaa"
           sha256 big_sur: "faceb00c"
-                          ^^^^^^^^^^ Align bottle digests
+                          ^^^^^^^^^^ FormulaAudit/BottleDigestIndentation: Align bottle digests
           sha256 catalina: "deadbeef"
-                           ^^^^^^^^^^ Align bottle digests
+                           ^^^^^^^^^^ FormulaAudit/BottleDigestIndentation: Align bottle digests
         end
       end
     RUBY
@@ -105,9 +105,9 @@ describe RuboCop::Cop::FormulaAudit::BottleDigestIndentation do
           rebuild 4
           sha256 cellar: :any,                arm64_big_sur: "aaaaaaaa"
           sha256 cellar: "/usr/local/Cellar", big_sur: "faceb00c"
-                                                       ^^^^^^^^^^ Align bottle digests
+                                                       ^^^^^^^^^^ FormulaAudit/BottleDigestIndentation: Align bottle digests
           sha256                              catalina: "deadbeef"
-                                                        ^^^^^^^^^^ Align bottle digests
+                                                        ^^^^^^^^^^ FormulaAudit/BottleDigestIndentation: Align bottle digests
         end
       end
     RUBY

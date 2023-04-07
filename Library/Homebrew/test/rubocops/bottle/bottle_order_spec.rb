@@ -122,7 +122,7 @@ describe RuboCop::Cop::FormulaAudit::BottleOrder do
         url "https://brew.sh/foo-1.0.tgz"
 
         bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+        ^^^^^^^^^ FormulaAudit/BottleOrder: ARM bottles should be listed before Intel bottles
           rebuild 4
           sha256 big_sur: "faceb00c"
           sha256 catalina: "deadbeef"
@@ -151,7 +151,7 @@ describe RuboCop::Cop::FormulaAudit::BottleOrder do
         url "https://brew.sh/foo-1.0.tgz"
 
         bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+        ^^^^^^^^^ FormulaAudit/BottleOrder: ARM bottles should be listed before Intel bottles
           rebuild 4
           sha256 big_sur: "faceb00c"
           sha256 arm64_catalina: "aaaaaaaa"
@@ -182,7 +182,7 @@ describe RuboCop::Cop::FormulaAudit::BottleOrder do
         url "https://brew.sh/foo-1.0.tgz"
 
         bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+        ^^^^^^^^^ FormulaAudit/BottleOrder: ARM bottles should be listed before Intel bottles
           rebuild 4
           sha256 cellar: "/usr/local/Cellar",  big_sur:        "faceb00c"
           sha256                               catalina:       "deadbeef"
@@ -213,7 +213,7 @@ describe RuboCop::Cop::FormulaAudit::BottleOrder do
         url "https://brew.sh/foo-1.0.tgz"
 
         bottle do
-        ^^^^^^^^^ ARM bottles should be listed before Intel bottles
+        ^^^^^^^^^ FormulaAudit/BottleOrder: ARM bottles should be listed before Intel bottles
           cellar :any
           sha256 "faceb00c" => :big_sur
           sha256 "aaaaaaaa" => :arm64_big_sur

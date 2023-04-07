@@ -14,7 +14,7 @@ describe RuboCop::Cop::FormulaAudit::Caveats do
           url "https://brew.sh/foo-1.0.tgz"
            def caveats
             "setuid"
-            ^^^^^^^^ Don't recommend setuid in the caveats, suggest sudo instead.
+            ^^^^^^^^ FormulaAudit/Caveats: Don't recommend setuid in the caveats, suggest sudo instead.
           end
         end
       RUBY
@@ -27,7 +27,7 @@ describe RuboCop::Cop::FormulaAudit::Caveats do
           url "https://brew.sh/foo-1.0.tgz"
            def caveats
             "\\x1B"
-            ^^^^^^ Don't use ANSI escape codes in the caveats.
+            ^^^^^^ FormulaAudit/Caveats: Don't use ANSI escape codes in the caveats.
           end
         end
       RUBY
@@ -38,7 +38,7 @@ describe RuboCop::Cop::FormulaAudit::Caveats do
           url "https://brew.sh/foo-1.0.tgz"
            def caveats
             "\\u001b"
-            ^^^^^^^^ Don't use ANSI escape codes in the caveats.
+            ^^^^^^^^ FormulaAudit/Caveats: Don't use ANSI escape codes in the caveats.
           end
         end
       RUBY

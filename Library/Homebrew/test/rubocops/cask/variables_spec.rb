@@ -62,7 +62,7 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  'Use `arch arm: "darwin-arm64", intel: "darwin"` instead of ' \
+        message:  'Cask/Variables: Use `arch arm: "darwin-arm64", intel: "darwin"` instead of ' \
                   '`arch = Hardware::CPU.intel? ? "darwin" : "darwin-arm64"`',
         severity: :convention,
         line:     2,
@@ -93,7 +93,7 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  "Use `arch arm: :darwin_arm64, intel: :darwin` instead of " \
+        message:  "Cask/Variables: Use `arch arm: :darwin_arm64, intel: :darwin` instead of " \
                   "`arch = Hardware::CPU.intel? ? :darwin : :darwin_arm64`",
         severity: :convention,
         line:     2,
@@ -124,7 +124,7 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  'Use `arch arm: "arm64"` instead of ' \
+        message:  'Cask/Variables: Use `arch arm: "arm64"` instead of ' \
                   '`arch = Hardware::CPU.intel? ? "" : "arm64"`',
         severity: :convention,
         line:     2,
@@ -155,8 +155,8 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  'Use `folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` instead of ' \
-                  '`folder = Hardware::CPU.intel? ? "darwin" : "darwin-arm64"`',
+        message:  'Cask/Variables: Use `folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` ' \
+                  'instead of `folder = Hardware::CPU.intel? ? "darwin" : "darwin-arm64"`',
         severity: :convention,
         line:     2,
         column:   2,
@@ -186,7 +186,7 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  'Use `folder = on_arch_conditional intel: "amd64"` instead of ' \
+        message:  'Cask/Variables: Use `folder = on_arch_conditional intel: "amd64"` instead of ' \
                   '`folder = Hardware::CPU.intel? ? "amd64" : ""`',
         severity: :convention,
         line:     2,
@@ -219,15 +219,15 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  'Use `arch arm: "darwin-arm64", intel: "darwin"` instead of ' \
+        message:  'Cask/Variables: Use `arch arm: "darwin-arm64", intel: "darwin"` instead of ' \
                   '`arch = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"`',
         severity: :convention,
         line:     2,
         column:   2,
         source:   'arch = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"',
       }, {
-        message:  'Use `folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` instead of ' \
-                  '`folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"`',
+        message:  'Cask/Variables: Use `folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` ' \
+                  'instead of `folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"`',
         severity: :convention,
         line:     3,
         column:   2,
@@ -259,15 +259,15 @@ describe RuboCop::Cop::Cask::Variables do
     end
     let(:expected_offenses) do
       [{
-        message:  'Use `folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` instead of ' \
-                  '`folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"`',
+        message:  'Cask/Variables: Use `folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` instead ' \
+                  'of `folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"`',
         severity: :convention,
         line:     2,
         column:   2,
         source:   'folder = Hardware::CPU.arm? ? "darwin-arm64" : "darwin"',
       }, {
-        message:  'Use `platform = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` instead of ' \
-                  '`platform = Hardware::CPU.intel? ? "darwin": "darwin-arm64"`',
+        message:  'Cask/Variables: Use `platform = on_arch_conditional arm: "darwin-arm64", intel: "darwin"` ' \
+                  'instead of `platform = Hardware::CPU.intel? ? "darwin": "darwin-arm64"`',
         severity: :convention,
         line:     3,
         column:   2,

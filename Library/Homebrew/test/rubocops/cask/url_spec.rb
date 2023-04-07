@@ -34,7 +34,7 @@ describe RuboCop::Cop::Cask::Url do
 
     let(:expected_offenses) do
       [{
-        message:  "Verified URL parameter value should not contain a URL scheme.",
+        message:  "Cask/Url: Verified URL parameter value should not contain a URL scheme.",
         severity: :convention,
         line:     3,
         column:   16,
@@ -81,7 +81,7 @@ describe RuboCop::Cop::Cask::Url do
 
       let(:expected_offenses) do
         [{
-          message:  "Verified URL parameter value should end with a /.",
+          message:  "Cask/Url: Verified URL parameter value should end with a /.",
           severity: :convention,
           line:     3,
           column:   16,
@@ -156,7 +156,7 @@ describe RuboCop::Cop::Cask::Url do
 
     let(:expected_offenses) do
       [{
-        message:  "Verified URL parameter value should end with a /.",
+        message:  "Cask/Url: Verified URL parameter value should end with a /.",
         severity: :convention,
         line:     3,
         column:   16,
@@ -195,7 +195,7 @@ describe RuboCop::Cop::Cask::Url do
       <<~CASK
         cask "foo" do
           version "1.2.3"
-          url "https://example.com/download/foo-v\#{version}.dmg",
+          url "Cask/Url: https://example.com/download/foo-v\#{version}.dmg",
               verified: "example.com/download/"
         end
       CASK
@@ -216,7 +216,7 @@ describe RuboCop::Cop::Cask::Url do
 
     let(:expected_offenses) do
       [{
-        message:  "Verified URL parameter value should end with a /.",
+        message:  "Cask/Url: Verified URL parameter value should end with a /.",
         severity: :convention,
         line:     3,
         column:   16,

@@ -12,7 +12,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckRegexIfPageMatch do
         url "https://brew.sh/foo-1.0.tgz"
 
         livecheck do
-        ^^^^^^^^^^^^ A `regex` is required if `strategy :page_match` is present.
+        ^^^^^^^^^^^^ FormulaAudit/LivecheckRegexIfPageMatch: A `regex` is required if `strategy :page_match` is present.
           url :stable
           strategy :page_match
         end

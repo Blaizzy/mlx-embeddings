@@ -49,7 +49,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `on_intel` in `postflight do`, use `if Hardware::CPU.intel?` instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `on_intel` in `postflight do`, use `if Hardware::CPU.intel?` instead.
+          EOS
           severity: :convention,
           line:     3,
           column:   4,
@@ -87,7 +89,8 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `on_monterey` in `postflight do`, use `if MacOS.version == :monterey` instead.",
+          message:  "Cask/OnSystemConditionals: Don't use `on_monterey` in `postflight do`, use " \
+                    "`if MacOS.version == :monterey` instead.",
           severity: :convention,
           line:     3,
           column:   4,
@@ -125,7 +128,7 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `on_monterey :or_older` in `postflight do`, " \
+          message:  "Cask/OnSystemConditionals: Don't use `on_monterey :or_older` in `postflight do`, " \
                     "use `if MacOS.version <= :monterey` instead.",
           severity: :convention,
           line:     3,
@@ -196,9 +199,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  'Use `sha256 arm: "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b", ' \
-                    'intel: "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"` instead of ' \
-                    "nesting the `sha256` stanzas in `on_intel` and `on_arm` blocks",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Use `sha256 arm: "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b", intel: "67cdb8a02803ef37fdbf7e0be205863172e41a561ca446cd84f0d7ab35a99d94"` instead of nesting the `sha256` stanzas in `on_intel` and `on_arm` blocks
+          EOS
           severity: :convention,
           line:     5,
           column:   2,
@@ -278,7 +281,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `Hardware::CPU.arm?`, use `on_arm` and `on_intel` blocks instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `Hardware::CPU.arm?`, use `on_arm` and `on_intel` blocks instead.
+          EOS
           severity: :convention,
           line:     2,
           column:   5,
@@ -303,7 +308,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `Hardware::CPU.intel?`, use `on_arm` and `on_intel` blocks instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `Hardware::CPU.intel?`, use `on_arm` and `on_intel` blocks instead.
+          EOS
           severity: :convention,
           line:     2,
           column:   5,
@@ -327,7 +334,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `Hardware::CPU.arch`, use `on_arm` and `on_intel` blocks instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `Hardware::CPU.arch`, use `on_arm` and `on_intel` blocks instead.
+          EOS
           severity: :convention,
           line:     5,
           column:   44,
@@ -354,7 +363,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `if MacOS.version == :catalina`, use `on_catalina do` instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `if MacOS.version == :catalina`, use `on_catalina do` instead.
+          EOS
           severity: :convention,
           line:     2,
           column:   2,
@@ -379,7 +390,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `if MacOS.version <= :catalina`, use `on_catalina :or_older do` instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `if MacOS.version <= :catalina`, use `on_catalina :or_older do` instead.
+          EOS
           severity: :convention,
           line:     2,
           column:   2,
@@ -404,7 +417,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `if MacOS.version >= :catalina`, use `on_catalina :or_newer do` instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `if MacOS.version >= :catalina`, use `on_catalina :or_newer do` instead.
+          EOS
           severity: :convention,
           line:     2,
           column:   2,
@@ -428,7 +443,9 @@ describe RuboCop::Cop::Cask::OnSystemConditionals do
       end
       let(:expected_offenses) do
         [{
-          message:  "Don't use `MacOS.version == :monterey`, use `on_{macos_version}` blocks instead.",
+          message:  <<~EOS.chomp,
+            Cask/OnSystemConditionals: Don't use `MacOS.version == :monterey`, use `on_{macos_version}` blocks instead.
+          EOS
           severity: :convention,
           line:     5,
           column:   44,

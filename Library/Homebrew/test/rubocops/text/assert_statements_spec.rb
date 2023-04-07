@@ -13,7 +13,7 @@ describe RuboCop::Cop::FormulaAudit::AssertStatements do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           assert File.read("inbox").include?("Sample message 1")
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `assert_match` instead of `assert ...include?`
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/AssertStatements: Use `assert_match` instead of `assert ...include?`
         end
       RUBY
     end
@@ -24,7 +24,7 @@ describe RuboCop::Cop::FormulaAudit::AssertStatements do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           assert File.exist? "default.ini"
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^ Use `assert_predicate <path_to_file>, :exist?` instead of `assert File.exist? "default.ini"`
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/AssertStatements: Use `assert_predicate <path_to_file>, :exist?` instead of `assert File.exist? "default.ini"`
         end
       RUBY
     end
@@ -35,7 +35,7 @@ describe RuboCop::Cop::FormulaAudit::AssertStatements do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           assert !File.exist?("default.ini")
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `refute_predicate <path_to_file>, :exist?` instead of `assert !File.exist?("default.ini")`
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/AssertStatements: Use `refute_predicate <path_to_file>, :exist?` instead of `assert !File.exist?("default.ini")`
         end
       RUBY
     end
@@ -46,7 +46,7 @@ describe RuboCop::Cop::FormulaAudit::AssertStatements do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           assert File.executable? f
-                 ^^^^^^^^^^^^^^^^^^ Use `assert_predicate <path_to_file>, :executable?` instead of `assert File.executable? f`
+                 ^^^^^^^^^^^^^^^^^^ FormulaAudit/AssertStatements: Use `assert_predicate <path_to_file>, :executable?` instead of `assert File.executable? f`
         end
       RUBY
     end

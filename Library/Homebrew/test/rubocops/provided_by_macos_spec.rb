@@ -13,7 +13,7 @@ describe RuboCop::Cop::FormulaAudit::ProvidedByMacos do
         homepage "https://brew.sh"
 
         keg_only :provided_by_macos
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae that are `keg_only :provided_by_macos` should be added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/ProvidedByMacos: Formulae that are `keg_only :provided_by_macos` should be added to the `PROVIDED_BY_MACOS_FORMULAE` list (in the Homebrew/brew repo)
       end
     RUBY
   end
