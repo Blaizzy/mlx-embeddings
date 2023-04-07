@@ -2,63 +2,7 @@
 # frozen_string_literal: true
 
 require "test_runner_formula"
-
-class LinuxRunnerSpec < T::Struct
-  extend T::Sig
-
-  const :name, String
-  const :runner, String
-  const :container, T::Hash[Symbol, String]
-  const :workdir, String
-  const :timeout, Integer
-  const :cleanup, T::Boolean
-
-  sig {
-    returns({
-      name:      String,
-      runner:    String,
-      container: T::Hash[Symbol, String],
-      workdir:   String,
-      timeout:   Integer,
-      cleanup:   T::Boolean,
-    })
-  }
-  def to_h
-    {
-      name:      name,
-      runner:    runner,
-      container: container,
-      workdir:   workdir,
-      timeout:   timeout,
-      cleanup:   cleanup,
-    }
-  end
-end
-
-class MacOSRunnerSpec < T::Struct
-  extend T::Sig
-
-  const :name, String
-  const :runner, String
-  const :cleanup, T::Boolean
-
-  sig { returns({ name: String, runner: String, cleanup: T::Boolean }) }
-  def to_h
-    {
-      name:    name,
-      runner:  runner,
-      cleanup: cleanup,
-    }
-  end
-end
-
-class GitHubRunner < T::Struct
-  const :platform, Symbol
-  const :arch, Symbol
-  const :spec, T.any(LinuxRunnerSpec, MacOSRunnerSpec)
-  const :macos_version, T.nilable(OS::Mac::Version)
-  prop  :active, T::Boolean, default: false
-end
+require "github_runner"
 
 class GitHubRunnerMatrix
   extend T::Sig
@@ -91,7 +35,7 @@ class GitHubRunnerMatrix
   # rubocop:enable Style/MutableConstant
 
   sig { returns(T::Array[GitHubRunner]) }
-  attr_reader :available_runners
+  attr_reader :runners
 
   sig {
     params(
@@ -105,18 +49,20 @@ class GitHubRunnerMatrix
     @deleted_formulae = T.let(deleted_formulae, MaybeStringArray)
     @dependent_matrix = T.let(dependent_matrix, T::Boolean)
 
-    @available_runners = T.let([], T::Array[GitHubRunner])
-    generate_available_runners!
+    @runners = T.let([], T::Array[GitHubRunner])
+    generate_runners!
 
     freeze
   end
 
   sig { returns(T::Array[RunnerSpecHash]) }
   def active_runner_specs_hash
-    @available_runners.select(&:active)
-                      .map(&:spec)
-                      .map(&:to_h)
+    runners.select(&:active)
+           .map(&:spec)
+           .map(&:to_h)
   end
+
+  private
 
   sig { returns(LinuxRunnerSpec) }
   def linux_runner_spec
@@ -157,10 +103,10 @@ class GitHubRunnerMatrix
   end
 
   sig { void }
-  def generate_available_runners!
-    return if @available_runners.present?
+  def generate_runners!
+    return if @runners.present?
 
-    @available_runners << create_runner(:linux, :x86_64, linux_runner_spec)
+    @runners << create_runner(:linux, :x86_64, linux_runner_spec)
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
     github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT")
@@ -175,7 +121,7 @@ class GitHubRunnerMatrix
         runner:  "#{version}#{ephemeral_suffix}",
         cleanup: false,
       )
-      @available_runners << create_runner(:macos, :x86_64, spec, macos_version)
+      @runners << create_runner(:macos, :x86_64, spec, macos_version)
 
       next unless macos_version >= :big_sur
 
@@ -187,8 +133,10 @@ class GitHubRunnerMatrix
       end
 
       spec = MacOSRunnerSpec.new(name: "macOS #{version}-arm64", runner: runner, cleanup: cleanup)
-      @available_runners << create_runner(:macos, :arm64, spec, macos_version)
+      @runners << create_runner(:macos, :arm64, spec, macos_version)
     end
+
+    @runners.freeze
   end
 
   sig { params(runner: GitHubRunner).returns(T::Boolean) }
