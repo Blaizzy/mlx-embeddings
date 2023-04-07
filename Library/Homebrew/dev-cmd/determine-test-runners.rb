@@ -44,12 +44,6 @@ module Homebrew
     runner_matrix = GitHubRunnerMatrix.new(testing_formulae, deleted_formulae, dependent_matrix: args.dependents?)
     runners = runner_matrix.active_runner_specs_hash
 
-    if !args.dependents? && runners.blank?
-      # If there are no tests to run, add a runner that is meant to do nothing
-      # to support making the `tests` job a required status check.
-      runners << { name: "macOS 13-arm64", runner: "ubuntu-latest", no_op: true }
-    end
-
     github_output = ENV.fetch("GITHUB_OUTPUT")
     File.open(github_output, "a") do |f|
       f.puts("runners=#{runners.to_json}")
