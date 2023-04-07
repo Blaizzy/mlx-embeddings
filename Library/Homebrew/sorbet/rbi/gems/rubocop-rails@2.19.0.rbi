@@ -514,6 +514,7 @@ class RuboCop::Cop::Rails::CreateTableWithTimestamps < ::RuboCop::Cop::Base
   def created_at_or_updated_at_included?(param0); end
   def on_send(node); end
   def timestamps_included?(param0); end
+  def use_id_false_option?(param0); end
 
   private
 
@@ -848,11 +849,11 @@ class RuboCop::Cop::Rails::FilePath < ::RuboCop::Cop::Base
 
   private
 
+  def build_message(require_to_s); end
   def check_for_file_join_with_rails_root(node); end
   def check_for_rails_root_join_with_slash_separated_path(node); end
   def check_for_rails_root_join_with_string_arguments(node); end
-  def message(_range); end
-  def register_offense(node); end
+  def register_offense(node, require_to_s:); end
   def string_with_slash?(node); end
 end
 
@@ -986,6 +987,7 @@ class RuboCop::Cop::Rails::HttpPositionalArguments < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::TargetRailsVersion
 
   def http_request?(param0 = T.unsafe(nil)); end
+  def include_rack_test_methods?(param0 = T.unsafe(nil)); end
   def kwsplat_hash?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 
@@ -999,6 +1001,7 @@ class RuboCop::Cop::Rails::HttpPositionalArguments < ::RuboCop::Cop::Base
   def in_routing_block?(node); end
   def needs_conversion?(data); end
   def special_keyword_arg?(node); end
+  def use_rack_test_methods?; end
 end
 
 RuboCop::Cop::Rails::HttpPositionalArguments::KEYWORD_ARGS = T.let(T.unsafe(nil), Array)
@@ -1330,6 +1333,7 @@ RuboCop::Cop::Rails::Output::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::Output::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::OutputSafety < ::RuboCop::Cop::Base
+  def i18n_method?(param0); end
   def on_csend(node); end
   def on_send(node); end
 
@@ -1612,12 +1616,16 @@ RuboCop::Cop::Rails::RedundantTravelBack::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Rails::RedundantTravelBack::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::ReflectionClassName < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
   def association_with_reflection(param0 = T.unsafe(nil)); end
+  def const_or_string(param0 = T.unsafe(nil)); end
   def on_send(node); end
   def reflection_class_name(param0 = T.unsafe(nil)); end
 
   private
 
+  def autocorrect(corrector, class_config); end
   def reflection_class_value?(class_value); end
   def str_assigned?(reflection_class_name); end
 end
@@ -2017,6 +2025,20 @@ class RuboCop::Cop::Rails::TableNameAssignment < ::RuboCop::Cop::Base
 end
 
 RuboCop::Cop::Rails::TableNameAssignment::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Rails::ThreeStateBooleanColumn < ::RuboCop::Cop::Base
+  def change_column_null?(param0, param1, param2); end
+  def on_send(node); end
+  def required_options?(param0 = T.unsafe(nil)); end
+  def three_state_boolean?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def table_node(node); end
+end
+
+RuboCop::Cop::Rails::ThreeStateBooleanColumn::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Rails::ThreeStateBooleanColumn::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Rails::TimeZone < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
