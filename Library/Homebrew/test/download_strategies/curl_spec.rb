@@ -12,6 +12,10 @@ describe CurlDownloadStrategy do
   let(:specs) { { user: "download:123456" } }
   let(:artifact_domain) { nil }
 
+  before do
+    allow(strategy).to receive(:curl_head).and_return({ responses: [{ headers: {} }] })
+  end
+
   it "parses the opts and sets the corresponding args" do
     expect(strategy.send(:_curl_args)).to eq(["--user", "download:123456"])
   end
@@ -190,48 +194,48 @@ describe CurlDownloadStrategy do
   end
 
   describe "#cached_location" do
-    subject(:cached_location) { described_class.new(url, name, version, **specs).cached_location }
+    subject(:cached_location) { strategy.cached_location }
 
     context "when URL ends with file" do
-      it {
+      it "falls back to the file name in the URL" do
         expect(cached_location).to eq(
           HOMEBREW_CACHE/"downloads/3d1c0ae7da22be9d83fb1eb774df96b7c4da71d3cf07e1cb28555cf9a5e5af70--foo.tar.gz",
         )
-      }
+      end
     end
 
     context "when URL file is in middle" do
       let(:url) { "https://example.com/foo.tar.gz/from/this/mirror" }
 
-      it {
+      it "falls back to the file name in the URL" do
         expect(cached_location).to eq(
           HOMEBREW_CACHE/"downloads/1ab61269ba52c83994510b1e28dd04167a2f2e8393a35a9c50c1f7d33fd8f619--foo.tar.gz",
         )
-      }
+      end
     end
 
     context "with a file name trailing the URL path" do
       let(:url) { "https://example.com/cask.dmg" }
 
-      it {
+      it "falls back to the file extension in the URL" do
         expect(cached_location.extname).to eq(".dmg")
-      }
+      end
     end
 
     context "with a file name trailing the first query parameter" do
       let(:url) { "https://example.com/download?file=cask.zip&a=1" }
 
-      it {
+      it "falls back to the file extension in the URL" do
         expect(cached_location.extname).to eq(".zip")
-      }
+      end
     end
 
     context "with a file name trailing the second query parameter" do
       let(:url) { "https://example.com/dl?a=1&file=cask.zip&b=2" }
 
-      it {
+      it "falls back to the file extension in the URL" do
         expect(cached_location.extname).to eq(".zip")
-      }
+      end
     end
 
     context "with an unusually long query string" do
@@ -253,10 +257,10 @@ describe CurlDownloadStrategy do
         ].join
       end
 
-      it {
+      it "falls back to the file extension in the URL" do
         expect(cached_location.extname).to eq(".zip")
         expect(cached_location.to_path.length).to be_between(0, 255)
-      }
+      end
     end
   end
 end

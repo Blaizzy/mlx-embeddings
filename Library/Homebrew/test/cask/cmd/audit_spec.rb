@@ -6,7 +6,7 @@ require "cask/auditor"
 describe Cask::Cmd::Audit, :cask do
   let(:cask) { Cask::Cask.new("cask") }
   let(:cask_with_many_languages) { Cask::CaskLoader.load(cask_path("with-many-languages")) }
-  let(:result) { { warnings: Set.new, errors: Set.new } }
+  let(:result) { Set.new }
 
   describe "selection of Casks to audit" do
     it "audits all Casks if no tokens are given" do
@@ -25,7 +25,6 @@ describe Cask::Cmd::Audit, :cask do
         .with(
           cask,
           audit_new_cask: false, quarantine: true, any_named_args: true,
-          display_failures_only: false, display_passes: true,
           only: [], except: []
         )
         .and_return(result)
@@ -40,7 +39,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_new_cask: false, quarantine: true, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -54,7 +52,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_download: true, audit_new_cask: false, quarantine: true, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -68,7 +65,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_token_conflicts: true, audit_new_cask: false, quarantine: true, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -82,7 +78,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_strict: true, audit_new_cask: false, quarantine: true, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -96,7 +91,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_online: true, audit_new_cask: false, quarantine: true, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -110,7 +104,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_new_cask: true, quarantine: true, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -124,7 +117,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_new_cask: false, quarantine: true, language: ["de-AT"], any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -138,7 +130,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_new_cask: false, quarantine: false, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)
@@ -154,7 +145,6 @@ describe Cask::Cmd::Audit, :cask do
       .with(
         cask,
         audit_new_cask: false, quarantine: false, any_named_args: true,
-        display_failures_only: false, display_passes: true,
         only: [], except: []
       )
       .and_return(result)

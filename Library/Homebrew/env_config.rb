@@ -344,6 +344,10 @@ module Homebrew
         description: "If set, use Pry for the `brew irb` command.",
         boolean:     true,
       },
+      HOMEBREW_UPGRADE_GREEDY:                   {
+        description: "If set, pass `--greedy` to all cask upgrade commands.",
+        boolean:     true,
+      },
       HOMEBREW_SIMULATE_MACOS_ON_LINUX:          {
         description: "If set, running Homebrew on Linux will simulate certain macOS code paths. This is useful " \
                      "when auditing macOS formulae while on Linux.",

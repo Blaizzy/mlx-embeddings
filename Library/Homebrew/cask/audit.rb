@@ -71,64 +71,36 @@ module Cask
       @errors ||= []
     end
 
-    def warnings
-      @warnings ||= []
-    end
-
     sig { returns(T::Boolean) }
     def errors?
       errors.any?
     end
 
     sig { returns(T::Boolean) }
-    def warnings?
-      warnings.any?
-    end
-
-    sig { returns(T::Boolean) }
     def success?
-      !(errors? || warnings?)
+      !errors?
     end
 
-    sig { params(message: T.nilable(String), location: T.nilable(String)).void }
-    def add_error(message, location: nil)
+    sig { params(message: T.nilable(String), location: T.nilable(String), strict_only: T::Boolean).void }
+    def add_error(message, location: nil, strict_only: false)
+      # Only raise non-critical audits if the user specified `--strict`.
+      return if strict_only && !@strict
+
       errors << ({ message: message, location: location })
     end
 
-    sig { params(message: T.nilable(String), location: T.nilable(String)).void }
-    def add_warning(message, location: nil)
-      if strict?
-        add_error message, location: location
-      else
-        warnings << ({ message: message, location: location })
-      end
-    end
-
     def result
-      if errors?
-        Formatter.error("failed")
-      elsif warnings?
-        Formatter.warning("warning")
-      else
-        Formatter.success("passed")
-      end
+      Formatter.error("failed") if errors?
     end
 
-    sig { params(include_passed: T::Boolean, include_warnings: T::Boolean).returns(T.nilable(String)) }
-    def summary(include_passed: false, include_warnings: true)
-      return if success? && !include_passed
-      return if warnings? && !errors? && !include_warnings
+    sig { returns(T.nilable(String)) }
+    def summary
+      return if success?
 
       summary = ["audit for #{cask}: #{result}"]
 
       errors.each do |error|
         summary << " #{Formatter.error("-")} #{error[:message]}"
-      end
-
-      if include_warnings
-        warnings.each do |warning|
-          summary << " #{Formatter.warning("-")} #{warning[:message]}"
-        end
       end
 
       summary.join("\n")
@@ -220,7 +192,7 @@ module Cask
       # increases the maintenance burden.
       return if cask.tap == "homebrew/cask-fonts"
 
-      add_warning "Cask should have a description. Please add a `desc` stanza." if cask.desc.blank?
+      add_error("Cask should have a description. Please add a `desc` stanza.", strict_only: true) if cask.desc.blank?
     end
 
     sig { void }
@@ -408,8 +380,10 @@ module Cask
       return unless token_conflicts?
       return unless core_formula_names.include?(cask.token)
 
-      add_warning "possible duplicate, cask token conflicts with Homebrew core formula: " \
-                  "#{Formatter.url(core_formula_url)}"
+      add_error(
+        "possible duplicate, cask token conflicts with Homebrew core formula: #{Formatter.url(core_formula_url)}",
+        strict_only: true,
+      )
     end
 
     sig { void }
@@ -443,18 +417,19 @@ module Cask
         add_error "cask token contains version designation '#{match_data[:designation]}'"
       end
 
-      add_warning "cask token mentions launcher" if token.end_with? "launcher"
+      add_error("cask token mentions launcher", strict_only: true) if token.end_with? "launcher"
 
-      add_warning "cask token mentions desktop" if token.end_with? "desktop"
+      add_error("cask token mentions desktop", strict_only: true) if token.end_with? "desktop"
 
-      add_warning "cask token mentions platform" if token.end_with? "mac", "osx", "macos"
+      add_error("cask token mentions platform", strict_only: true) if token.end_with? "mac", "osx", "macos"
 
-      add_warning "cask token mentions architecture" if token.end_with? "x86", "32_bit", "x86_64", "64_bit"
+      add_error("cask token mentions architecture", strict_only: true) if token.end_with? "x86", "32_bit", "x86_64",
+                                                                                          "64_bit"
 
       frameworks = %w[cocoa qt gtk wx java]
       return if frameworks.include?(token) || !token.end_with?(*frameworks)
 
-      add_warning "cask token mentions framework"
+      add_error("cask token mentions framework", strict_only: true)
     end
 
     sig { void }
@@ -474,7 +449,10 @@ module Cask
       return if cask.url.to_s.include? cask.version.csv.second
       return if cask.version.csv.third.present? && cask.url.to_s.include?(cask.version.csv.third)
 
-      add_warning "Download does not require additional version components. Use `&:short_version` in the livecheck"
+      add_error(
+        "Download does not require additional version components. Use `&:short_version` in the livecheck",
+        strict_only: true,
+      )
     end
 
     sig { void }
@@ -518,7 +496,7 @@ module Cask
               "#{message} fix the signature of their app."
             end
 
-            add_warning message
+            add_error(message, strict_only: true)
           when Artifact::Pkg
             path = downloaded_path
             next unless path.exist?
@@ -526,7 +504,7 @@ module Cask
             result = system_command("pkgutil", args: ["--check-signature", path], print_stderr: false)
 
             unless result.success?
-              add_warning <<~EOS
+              add_error(<<~EOS, strict_only: true)
                 Signature verification failed:
                 #{result.merged_output}
                 macOS on ARM requires applications to be signed.
@@ -538,7 +516,7 @@ module Cask
             result = system_command("stapler", args: ["validate", path], print_stderr: false)
             next if result.success?
 
-            add_warning <<~EOS
+            add_error(<<~EOS, strict_only: true)
               Signature verification failed:
               #{result.merged_output}
               macOS on ARM requires applications to be signed.
@@ -663,16 +641,10 @@ module Cask
 
       metadata = SharedAudits.github_repo_data(user, repo)
       return if metadata.nil?
-
       return unless metadata["archived"]
 
-      message = "GitHub repo is archived"
-
-      if cask.discontinued?
-        add_warning message
-      else
-        add_error message
-      end
+      # Discontinued casks shouldn't show up as errors.
+      add_error("GitHub repo is archived", strict_only: !cask.discontinued?)
     end
 
     sig { void }
@@ -684,16 +656,10 @@ module Cask
 
       metadata = SharedAudits.gitlab_repo_data(user, repo)
       return if metadata.nil?
-
       return unless metadata["archived"]
 
-      message = "GitLab repo is archived"
-
-      if cask.discontinued?
-        add_warning message
-      else
-        add_error message
-      end
+      # Discontinued casks shouldn't show up as errors.
+      add_error("GitLab repo is archived") unless cask.discontinued?
     end
 
     sig { void }

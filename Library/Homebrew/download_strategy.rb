@@ -463,15 +463,10 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       url = url.sub(%r{^https?://#{GitHubPackages::URL_DOMAIN}/}o, "#{domain.chomp("/")}/")
     end
 
-    output, _, _status = curl_output(
-      "--location", "--silent", "--head", "--request", "GET", url.to_s,
-      timeout: timeout
-    )
-    parsed_output = parse_curl_output(output)
+    parsed_output = curl_head(url.to_s, timeout: timeout)
+    parsed_headers = parsed_output.fetch(:responses).map { |r| r.fetch(:headers) }
 
-    lines = output.to_s.lines.map(&:chomp)
-
-    final_url = curl_response_follow_redirections(parsed_output[:responses], url)
+    final_url = curl_response_follow_redirections(parsed_output.fetch(:responses), url)
 
     content_disposition_parser = Mechanize::HTTP::ContentDispositionParser.new
 
@@ -500,19 +495,20 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       File.basename(filename)
     end
 
-    filenames = lines.map(&parse_content_disposition).compact
+    filenames = parsed_headers.flat_map do |headers|
+      next [] unless (header = headers["content-disposition"])
 
-    time =
-      lines.map { |line| line[/^Last-Modified:\s*(.+)/i, 1] }
-           .compact
+      [*parse_content_disposition.call("Content-Disposition: #{header}")]
+    end
+
+    time = parsed_headers
+           .flat_map { |headers| [*headers["last-modified"]] }
            .map { |t| t.match?(/^\d+$/) ? Time.at(t.to_i) : Time.parse(t) }
            .last
 
-    file_size =
-      lines.map { |line| line[/^Content-Length:\s*(\d+)/i, 1] }
-           .compact
-           .map(&:to_i)
-           .last
+    file_size = parsed_headers
+                .flat_map { |headers| [*headers["content-length"]&.to_i] }
+                .last
 
     is_redirection = url != final_url
     basename = filenames.last || parse_basename(final_url, search_query: !is_redirection)
