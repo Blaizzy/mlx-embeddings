@@ -401,11 +401,11 @@ module Cask
       self.for(ref, need_path: true).path
     end
 
-    def self.load(ref, config: nil)
-      self.for(ref).load(config: config)
+    def self.load(ref, config: nil, warn: true)
+      self.for(ref, warn: warn).load(config: config)
     end
 
-    def self.for(ref, need_path: false)
+    def self.for(ref, need_path: false, warn: true)
       [
         FromInstanceLoader,
         FromContentLoader,
@@ -422,7 +422,7 @@ module Cask
         end
       end
 
-      case (possible_tap_casks = tap_paths(ref)).count
+      case (possible_tap_casks = tap_paths(ref, warn: warn)).count
       when 1
         return FromTapPathLoader.new(possible_tap_casks.first)
       when 2..Float::INFINITY
@@ -441,9 +441,13 @@ module Cask
       Tap.default_cask_tap.cask_dir/"#{token.to_s.downcase}.rb"
     end
 
-    def self.tap_paths(token)
+    def self.tap_paths(token, warn: true)
+      token = token.to_s.downcase
+
       Tap.map do |tap|
-        find_cask_in_tap(token.to_s.downcase, tap)
+        new_token = tap.cask_renames[token]
+        opoo "Cask #{token} was renamed to #{new_token}." if new_token && warn
+        find_cask_in_tap(new_token || token, tap)
       end.select(&:exist?)
     end
 

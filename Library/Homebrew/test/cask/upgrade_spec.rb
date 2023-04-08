@@ -3,8 +3,12 @@
 require "cask/upgrade"
 
 describe Cask::Upgrade, :cask do
-  let(:version_latest_path_second) { version_latest.config.appdir.join("Caffeine Pro.app") }
-  let(:version_latest_path_first) { version_latest.config.appdir.join("Caffeine Mini.app") }
+  let(:version_latest_paths) do
+    [
+      version_latest.config.appdir.join("Caffeine Mini.app"),
+      version_latest.config.appdir.join("Caffeine Pro.app"),
+    ]
+  end
   let(:version_latest) { Cask::CaskLoader.load("version-latest") }
   let(:auto_updates_path) { auto_updates.config.appdir.join("MyFancyApp.app") }
   let(:auto_updates) { Cask::CaskLoader.load("auto-updates") }
@@ -38,81 +42,81 @@ describe Cask::Upgrade, :cask do
       it "updates all the installed Casks when no token is provided" do
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         described_class.upgrade_casks(args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.3"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.61")
+        expect(local_transmission.installed_version).to eq "2.61"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).not_to be_a_directory
         expect(renamed_app_new_path).to be_a_directory
-        expect(renamed_app.versions).to include("2.0.0")
+        expect(renamed_app.installed_version).to eq "2.0.0"
       end
 
       it "updates only the Casks specified in the command line" do
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         described_class.upgrade_casks(local_caffeine, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.3"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
       end
 
       it 'updates "auto_updates" and "latest" Casks when their tokens are provided in the command line' do
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         described_class.upgrade_casks(local_caffeine, auto_updates, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.3"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.61"
       end
     end
 
@@ -120,24 +124,24 @@ describe Cask::Upgrade, :cask do
       it 'includes the Casks with "auto_updates true" or "version latest"' do
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_first).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         # Change download sha so that :latest cask decides to update itself
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
@@ -146,50 +150,49 @@ describe Cask::Upgrade, :cask do
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.3"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.61"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.61")
+        expect(local_transmission.installed_version).to eq "2.61"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).not_to be_a_directory
         expect(renamed_app_new_path).to be_a_directory
-        expect(renamed_app.versions).to include("2.0.0")
+        expect(renamed_app.installed_version).to eq "2.0.0"
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_second).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         expect(version_latest.outdated_download_sha?).to be(false)
       end
 
       it 'does not include the Casks with "auto_updates true" or "version latest" when the version did not change' do
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         described_class.upgrade_casks(auto_updates, greedy: true, args: args)
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.61"
 
         described_class.upgrade_casks(auto_updates, greedy: true, args: args)
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.61"
       end
 
       it 'does not include the Casks with "version latest" when the version did not change' do
         expect(version_latest).to be_installed
-        expect(version_latest_path_first).to be_a_directory
-        expect(version_latest_path_second).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         # Change download sha so that :latest cask decides to update itself
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
@@ -197,17 +200,15 @@ describe Cask::Upgrade, :cask do
         described_class.upgrade_casks(version_latest, greedy: true, args: args)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_first).to be_a_directory
-        expect(version_latest_path_second).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         expect(version_latest.outdated_download_sha?).to be(false)
 
         described_class.upgrade_casks(version_latest, greedy: true, args: args)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_first).to be_a_directory
-        expect(version_latest_path_second).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         expect(version_latest.outdated_download_sha?).to be(false)
       end
     end
@@ -236,34 +237,31 @@ describe Cask::Upgrade, :cask do
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         described_class.upgrade_casks(dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
-        expect(local_caffeine.versions).not_to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
-        expect(local_transmission.versions).not_to include("2.61")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
-        expect(renamed_app.versions).not_to include("2.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
       end
 
       it "would update only the Casks specified in the command line" do
@@ -271,23 +269,21 @@ describe Cask::Upgrade, :cask do
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         described_class.upgrade_casks(local_caffeine, dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
-        expect(local_caffeine.versions).not_to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
-        expect(local_transmission.versions).not_to include("2.61")
+        expect(local_transmission.installed_version).to eq "2.60"
       end
 
       it 'would update "auto_updates" and "latest" Casks when their tokens are provided in the command line' do
@@ -295,34 +291,31 @@ describe Cask::Upgrade, :cask do
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         described_class.upgrade_casks(local_caffeine, auto_updates, dry_run: true, args: args)
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
-        expect(local_caffeine.versions).not_to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
-        expect(auto_updates.versions).not_to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
-        expect(renamed_app.versions).not_to include("2.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
       end
     end
 
@@ -332,20 +325,20 @@ describe Cask::Upgrade, :cask do
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         expect(version_latest).to be_installed
         # Change download sha so that :latest cask decides to update itself
@@ -356,24 +349,20 @@ describe Cask::Upgrade, :cask do
 
         expect(local_caffeine).to be_installed
         expect(local_caffeine_path).to be_a_directory
-        expect(local_caffeine.versions).to include("1.2.2")
-        expect(local_caffeine.versions).not_to include("1.2.3")
+        expect(local_caffeine.installed_version).to eq "1.2.2"
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
-        expect(auto_updates.versions).not_to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         expect(local_transmission).to be_installed
         expect(local_transmission_path).to be_a_directory
-        expect(local_transmission.versions).to include("2.60")
-        expect(local_transmission.versions).not_to include("2.61")
+        expect(local_transmission.installed_version).to eq "2.60"
 
         expect(renamed_app).to be_installed
         expect(renamed_app_old_path).to be_a_directory
         expect(renamed_app_new_path).not_to be_a_directory
-        expect(renamed_app.versions).to include("1.0.0")
-        expect(renamed_app.versions).not_to include("2.0.0")
+        expect(renamed_app.installed_version).to eq "1.0.0"
 
         expect(version_latest).to be_installed
         expect(version_latest.outdated_download_sha?).to be(true)
@@ -384,23 +373,21 @@ describe Cask::Upgrade, :cask do
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
+        expect(auto_updates.installed_version).to eq "2.57"
 
         described_class.upgrade_casks(auto_updates, dry_run: true, greedy: true, args: args)
 
         expect(auto_updates).to be_installed
         expect(auto_updates_path).to be_a_directory
-        expect(auto_updates.versions).to include("2.57")
-        expect(auto_updates.versions).not_to include("2.61")
+        expect(auto_updates.installed_version).to eq "2.57"
       end
 
       it 'would update outdated Casks with "version latest"' do
         expect(described_class).not_to receive(:upgrade_cask)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_first).to be_a_directory
-        expect(version_latest_path_second).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         # Change download sha so that :latest cask decides to update itself
         version_latest.download_sha_path.write("fake download sha")
         expect(version_latest.outdated_download_sha?).to be(true)
@@ -408,9 +395,8 @@ describe Cask::Upgrade, :cask do
         described_class.upgrade_casks(version_latest, dry_run: true, greedy: true, args: args)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_first).to be_a_directory
-        expect(version_latest_path_second).to be_a_directory
-        expect(version_latest.versions).to include("latest")
+        expect(version_latest_paths).to all be_a_directory
+        expect(version_latest.installed_version).to eq "latest"
         expect(version_latest.outdated_download_sha?).to be(true)
       end
     end
@@ -440,7 +426,7 @@ describe Cask::Upgrade, :cask do
 
       expect(will_fail_if_upgraded).to be_installed
       expect(will_fail_if_upgraded_path).to be_a_file
-      expect(will_fail_if_upgraded.versions).to include("1.2.2")
+      expect(will_fail_if_upgraded.installed_version).to eq "1.2.2"
 
       expect do
         described_class.upgrade_casks(will_fail_if_upgraded, args: args)
@@ -448,7 +434,7 @@ describe Cask::Upgrade, :cask do
 
       expect(will_fail_if_upgraded).to be_installed
       expect(will_fail_if_upgraded_path).to be_a_file
-      expect(will_fail_if_upgraded.versions).to include("1.2.2")
+      expect(will_fail_if_upgraded.installed_version).to eq "1.2.2"
       expect(will_fail_if_upgraded.staged_path).not_to exist
     end
 
@@ -458,7 +444,7 @@ describe Cask::Upgrade, :cask do
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
-      expect(bad_checksum.versions).to include("1.2.2")
+      expect(bad_checksum.installed_version).to eq "1.2.2"
 
       expect do
         described_class.upgrade_casks(bad_checksum, args: args)
@@ -466,7 +452,7 @@ describe Cask::Upgrade, :cask do
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
-      expect(bad_checksum.versions).to include("1.2.2")
+      expect(bad_checksum.installed_version).to eq "1.2.2"
       expect(bad_checksum.staged_path).not_to exist
     end
   end
@@ -495,15 +481,15 @@ describe Cask::Upgrade, :cask do
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
-      expect(bad_checksum.versions).to include("1.2.2")
+      expect(bad_checksum.installed_version).to eq "1.2.2"
 
       expect(local_transmission).to be_installed
       expect(local_transmission_path).to be_a_directory
-      expect(local_transmission.versions).to include("2.60")
+      expect(local_transmission.installed_version).to eq "2.60"
 
       expect(bad_checksum_2).to be_installed
       expect(bad_checksum_2_path).to be_a_file
-      expect(bad_checksum_2.versions).to include("1.2.2")
+      expect(bad_checksum_2.installed_version).to eq "1.2.2"
 
       expect do
         described_class.upgrade_casks(args: args)
@@ -511,16 +497,16 @@ describe Cask::Upgrade, :cask do
 
       expect(bad_checksum).to be_installed
       expect(bad_checksum_path).to be_a_directory
-      expect(bad_checksum.versions).to include("1.2.2")
+      expect(bad_checksum.installed_version).to eq "1.2.2"
       expect(bad_checksum.staged_path).not_to exist
 
       expect(local_transmission).to be_installed
       expect(local_transmission_path).to be_a_directory
-      expect(local_transmission.versions).to include("2.61")
+      expect(local_transmission.installed_version).to eq "2.61"
 
       expect(bad_checksum_2).to be_installed
       expect(bad_checksum_2_path).to be_a_file
-      expect(bad_checksum_2.versions).to include("1.2.2")
+      expect(bad_checksum_2.installed_version).to eq "1.2.2"
       expect(bad_checksum_2.staged_path).not_to exist
     end
   end

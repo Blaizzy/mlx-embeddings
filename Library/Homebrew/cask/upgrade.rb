@@ -95,8 +95,7 @@ module Cask
       caught_exceptions = []
 
       upgradable_casks = outdated_casks.map do |c|
-        if !c.installed_caskfile.exist? && c.tap.to_s == "homebrew/cask" &&
-           Homebrew::API::Cask.all_casks.key?(c.token)
+        if !c.installed? && c.tap.to_s == "homebrew/cask" && Homebrew::API::Cask.all_casks.key?(c.token)
           odie <<~EOS
             The cask '#{c.token}' was affected by a bug and cannot be upgraded as-is. To fix this, run:
               brew reinstall --cask --force #{c.token}
@@ -192,7 +191,7 @@ module Cask
         new_cask_installer.install_artifacts(predecessor: old_cask)
         new_artifacts_installed = true
 
-        # If successful, wipe the old cask from staging
+        # If successful, wipe the old cask from staging.
         old_cask_installer.finalize_upgrade
       rescue => e
         new_cask_installer.uninstall_artifacts(successor: old_cask) if new_artifacts_installed

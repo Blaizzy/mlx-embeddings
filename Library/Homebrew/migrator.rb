@@ -106,15 +106,14 @@ class Migrator
 
   def self.migrate_if_needed(formula, force:, dry_run: false)
     oldnames = Migrator.oldnames_needing_migration(formula)
-    return if oldnames.empty?
 
     begin
-      if dry_run
-        ohai "Would migrate #{oldnames.to_sentence} to #{formula.name}"
-        return
-      end
-
       oldnames.each do |oldname|
+        if dry_run
+          oh1 "Would migrate formula #{Formatter.identifier(oldname)} to #{Formatter.identifier(formula.name)}"
+          next
+        end
+
         migrator = Migrator.new(formula, oldname, force: force)
         migrator.migrate
       end
@@ -205,7 +204,7 @@ class Migrator
   end
 
   def migrate
-    oh1 "Processing #{Formatter.identifier(oldname)} formula rename to #{Formatter.identifier(newname)}"
+    oh1 "Migrating formula #{Formatter.identifier(oldname)} to #{Formatter.identifier(newname)}"
     lock
     unlink_oldname
     unlink_newname if new_cellar.exist?

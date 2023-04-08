@@ -80,7 +80,7 @@ module Homebrew
           cache["aliases"]
         end
 
-        sig { returns(Hash) }
+        sig { returns(T::Hash[String, String]) }
         def all_renames
           unless cache.key?("renames")
             json_updated = download_and_cache_data!

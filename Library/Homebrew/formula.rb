@@ -502,7 +502,8 @@ class Formula
   # Old names for the formula.
   def oldnames
     @oldnames ||= if tap
-      tap.formula_renames.select { |_, oldname| oldname == name }.keys
+      tap.formula_renames
+         .flat_map { |old_name, new_name| (new_name == name) ? old_name : [] }
     else
       []
     end

@@ -78,6 +78,17 @@ module Cask
       end
     end
 
+    # An old name for the cask.
+    sig { returns(T::Array[String]) }
+    def old_tokens
+      @old_tokens ||= if tap
+        tap.cask_renames
+           .flat_map { |old_token, new_token| (new_token == token) ? old_token : [] }
+      else
+        []
+      end
+    end
+
     def config=(config)
       @config = config
 
@@ -96,20 +107,16 @@ module Cask
       define_method(method_name) { |&block| @dsl.send(method_name, &block) }
     end
 
-    sig { returns(T::Array[[String, String]]) }
-    def timestamped_versions
-      relative_paths = Pathname.glob(metadata_timestamped_path(version: "*", timestamp: "*"))
+    sig { params(caskroom_path: Pathname).returns(T::Array[[String, String]]) }
+    def timestamped_versions(caskroom_path: self.caskroom_path)
+      relative_paths = Pathname.glob(metadata_timestamped_path(
+                                       version: "*", timestamp: "*",
+                                       caskroom_path: caskroom_path
+                                     ))
                                .map { |p| p.relative_path_from(p.parent.parent) }
       # Sorbet is unaware that Pathname is sortable: https://github.com/sorbet/sorbet/issues/6844
       T.unsafe(relative_paths).sort_by(&:basename) # sort by timestamp
        .map { |p| p.split.map(&:to_s) }
-    end
-
-    def versions
-      timestamped_versions.map(&:first)
-                          .reverse
-                          .uniq
-                          .reverse
     end
 
     def full_name
@@ -119,8 +126,9 @@ module Cask
       "#{tap.name}/#{token}"
     end
 
+    sig { returns(T::Boolean) }
     def installed?
-      !versions.empty?
+      installed_caskfile&.exist? || false
     end
 
     # The caskfile is needed during installation when there are
@@ -131,18 +139,41 @@ module Cask
 
     sig { returns(T.nilable(Time)) }
     def install_time
-      _, time = timestamped_versions.last
-      return unless time
-
-      Time.strptime(time, Metadata::TIMESTAMP_FORMAT)
+      # <caskroom_path>/.metadata/<version>/<timestamp>/Casks/<token>.{rb,json} -> <timestamp>
+      time = installed_caskfile&.dirname&.dirname&.basename&.to_s
+      Time.strptime(time, Metadata::TIMESTAMP_FORMAT) if time
     end
 
+    sig { returns(T.nilable(Pathname)) }
     def installed_caskfile
-      installed_version = timestamped_versions.last
-      caskfile_dir = metadata_main_container_path.join(*installed_version, "Casks")
-      return caskfile_dir.join("#{token}.json") if caskfile_dir.join("#{token}.json").exist?
+      installed_caskroom_path = caskroom_path
+      installed_token = token
 
-      caskfile_dir.join("#{token}.rb")
+      # Check if the cask is installed with an old name.
+      old_tokens.each do |old_token|
+        old_caskroom_path = Caskroom.path/old_token
+        next if !old_caskroom_path.directory? || old_caskroom_path.symlink?
+
+        installed_caskroom_path = old_caskroom_path
+        installed_token = old_token
+        break
+      end
+
+      installed_version = timestamped_versions(caskroom_path: installed_caskroom_path).last
+      return unless installed_version
+
+      caskfile_dir = metadata_main_container_path(caskroom_path: installed_caskroom_path)
+                     .join(*installed_version, "Casks")
+
+      ["json", "rb"]
+        .map { |ext| caskfile_dir.join("#{installed_token}.#{ext}") }
+        .find(&:exist?)
+    end
+
+    sig { returns(T.nilable(String)) }
+    def installed_version
+      # <caskroom_path>/.metadata/<version>/<timestamp>/Casks/<token>.{rb,json} -> <version>
+      installed_caskfile&.dirname&.dirname&.dirname&.basename&.to_s
     end
 
     def config_path
@@ -173,6 +204,7 @@ module Cask
       current_download_sha.blank? || current_download_sha != new_download_sha
     end
 
+    sig { returns(Pathname) }
     def caskroom_path
       @caskroom_path ||= Caskroom.path.join(token)
     end
@@ -182,26 +214,23 @@ module Cask
                          greedy_auto_updates: greedy_auto_updates).empty?
     end
 
+    # TODO: Rename to `outdated_version` and only return one version.
     def outdated_versions(greedy: false, greedy_latest: false, greedy_auto_updates: false)
       # special case: tap version is not available
       return [] if version.nil?
 
       if version.latest?
-        return versions if (greedy || greedy_latest) && outdated_download_sha?
+        return [installed_version] if (greedy || greedy_latest) && outdated_download_sha?
 
         return []
       elsif auto_updates && !greedy && !greedy_auto_updates
         return []
       end
 
-      installed = versions
-      current   = installed.last
-
       # not outdated unless there is a different version on tap
-      return [] if current == version
+      return [] if installed_version == version
 
-      # collect all installed versions that are different than tap version and return them
-      installed.reject { |v| v == version }
+      [installed_version]
     end
 
     def outdated_info(greedy, verbose, json, greedy_latest, greedy_auto_updates)
@@ -279,6 +308,7 @@ module Cask
       {
         "token"                => token,
         "full_token"           => full_name,
+        "old_tokens"           => old_tokens,
         "tap"                  => tap&.name,
         "name"                 => name,
         "desc"                 => desc,
@@ -287,7 +317,7 @@ module Cask
         "url_specs"            => url_specs,
         "appcast"              => appcast,
         "version"              => version,
-        "installed"            => versions.last,
+        "installed"            => installed_version,
         "outdated"             => outdated?,
         "sha256"               => sha256,
         "artifacts"            => artifacts_list,
@@ -349,7 +379,7 @@ module Cask
 
     def api_to_local_hash(hash)
       hash["token"] = token
-      hash["installed"] = versions.last
+      hash["installed"] = installed_version
       hash["outdated"] = outdated?
       hash
     end

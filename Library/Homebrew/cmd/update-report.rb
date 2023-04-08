@@ -3,6 +3,7 @@
 
 require "migrator"
 require "formulary"
+require "cask/cask_loader"
 require "descriptions"
 require "cleanup"
 require "description_cache_store"
@@ -246,6 +247,7 @@ module Homebrew
 
         hub.dump(auto_update: args.auto_update?) unless args.quiet?
         hub.reporters.each(&:migrate_tap_migration)
+        hub.reporters.each(&:migrate_cask_rename)
         hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
 
         CacheStoreDatabase.use(:descriptions) do |db|
@@ -390,6 +392,14 @@ class Reporter
         when "M"
           # Report updated casks
           @report[:MC] << tap.formula_file_to_name(src)
+        when /^R\d{0,3}/
+          src_full_name = tap.formula_file_to_name(src)
+          dst_full_name = tap.formula_file_to_name(dst)
+          # Don't report formulae that are moved within a tap but not renamed
+          next if src_full_name == dst_full_name
+
+          @report[:DC] << src_full_name
+          @report[:AC] << dst_full_name
         end
       end
 
@@ -414,6 +424,41 @@ class Reporter
         @report[:D] << src_full_name
         @report[:A] << dst_full_name
       end
+    end
+
+    renamed_casks = Set.new
+    @report[:DC].each do |old_full_name|
+      old_name = old_full_name.split("/").last
+      new_name = tap.cask_renames[old_name]
+      next unless new_name
+
+      new_full_name = if tap.name == "homebrew/cask"
+        new_name
+      else
+        "#{tap}/#{new_name}"
+      end
+
+      renamed_casks << [old_full_name, new_full_name] if @report[:AC].include?(new_full_name)
+    end
+
+    @report[:AC].each do |new_full_name|
+      new_name = new_full_name.split("/").last
+      old_name = tap.cask_renames.key(new_name)
+      next unless old_name
+
+      old_full_name = if tap.name == "homebrew/cask"
+        old_name
+      else
+        "#{tap}/#{old_name}"
+      end
+
+      renamed_casks << [old_full_name, new_full_name]
+    end
+
+    if renamed_casks.any?
+      @report[:AC] -= renamed_casks.map(&:last)
+      @report[:DC] -= renamed_casks.map(&:first)
+      @report[:RC] = renamed_casks.to_a
     end
 
     renamed_formulae = Set.new
@@ -445,7 +490,7 @@ class Reporter
       renamed_formulae << [old_full_name, new_full_name]
     end
 
-    if renamed_formulae.present?
+    if renamed_formulae.any?
       @report[:A] -= renamed_formulae.map(&:last)
       @report[:D] -= renamed_formulae.map(&:first)
       @report[:R] = renamed_formulae.to_a
@@ -541,6 +586,12 @@ class Reporter
     end
   end
 
+  def migrate_cask_rename
+    Cask::Caskroom.casks.each do |cask|
+      Cask::Migrator.migrate_if_needed(cask)
+    end
+  end
+
   def migrate_formula_rename(force:, verbose:)
     Formula.installed.each do |formula|
       next unless Migrator.needs_migration?(formula)
@@ -631,6 +682,7 @@ class ReporterHub
     dump_new_formula_report
     dump_new_cask_report
     dump_renamed_formula_report if report_all
+    dump_renamed_cask_report if report_all
     dump_deleted_formula_report(report_all)
     dump_deleted_cask_report(report_all)
 
@@ -721,6 +773,16 @@ class ReporterHub
     end
 
     output_dump_formula_or_cask_report "Renamed Formulae", formulae
+  end
+
+  def dump_renamed_cask_report
+    casks = select_formula_or_cask(:RC).sort.map do |name, new_name|
+      name = pretty_installed(name) if installed?(name)
+      new_name = pretty_installed(new_name) if installed?(new_name)
+      "#{name} -> #{new_name}"
+    end
+
+    output_dump_formula_or_cask_report "Renamed Casks", casks
   end
 
   def dump_deleted_formula_report(report_all)
