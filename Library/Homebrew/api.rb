@@ -116,11 +116,13 @@ module Homebrew
       end
     end
 
-    sig { params(name: String, git_head: T.nilable(String), sha256: T.nilable(String)).returns(String) }
-    def self.fetch_homebrew_cask_source(name, git_head: nil, sha256: nil)
+    sig {
+      params(name: String, path: T.any(Pathname, String), git_head: String,
+             sha256: T.nilable(String)).returns(String)
+    }
+    def self.fetch_homebrew_cask_source(name, path:, git_head:, sha256: nil)
       # TODO: unify with formula logic (https://github.com/Homebrew/brew/issues/14746)
-      git_head = "master" if git_head.blank?
-      raw_endpoint = "#{git_head}/Casks/#{name}.rb"
+      raw_endpoint = "#{git_head}/#{path}"
       return cache[raw_endpoint] if cache.present? && cache.key?(raw_endpoint)
 
       # This API sometimes returns random 404s so needs a fallback at formulae.brew.sh.

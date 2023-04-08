@@ -255,10 +255,12 @@ module Formulary
       end
 
       resource "ruby-source" do
-        url "https://raw.githubusercontent.com/Homebrew/homebrew-core/#{json_formula["tap_git_head"]}/Formula/#{name}.rb"
-        if (ruby_source_sha256 = json_formula.dig("ruby_source_checksum", "sha256")).present?
-          sha256 ruby_source_sha256
-        end
+        tap_git_head = json_formula.fetch("tap_git_head", "HEAD")
+        ruby_source_path = json_formula.fetch("ruby_source_path", "Formula/#{name}.rb")
+        ruby_source_sha256 = json_formula.dig("ruby_source_checksum", "sha256")
+
+        url "https://raw.githubusercontent.com/Homebrew/homebrew-core/#{tap_git_head}/#{ruby_source_path}"
+        sha256 ruby_source_sha256 if ruby_source_sha256
       end
 
       def install

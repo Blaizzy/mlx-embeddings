@@ -72,14 +72,14 @@ describe Homebrew::API do
   describe "::fetch_file_source" do
     it "fetches a file" do
       mock_curl_output stdout: json
-      fetched_json = described_class.fetch_homebrew_cask_source("foo", git_head: "master")
+      fetched_json = described_class.fetch_homebrew_cask_source("foo", path: "Casks/foo.rb", git_head: "HEAD")
       expect(fetched_json).to eq json
     end
 
     it "raises an error if the file does not exist" do
       mock_curl_output success: false
       expect do
-        described_class.fetch_homebrew_cask_source("bar", git_head: "master")
+        described_class.fetch_homebrew_cask_source("bar", path: "Casks/bar.rb", git_head: "HEAD")
       end.to raise_error(ArgumentError, /No valid file found/)
     end
   end
