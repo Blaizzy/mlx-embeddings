@@ -35,14 +35,16 @@ module Cask
 
       private
 
-      def move(adopt: false, force: false, verbose: false, upgrade_or_reinstall: false, reinstall: false,
+      def move(adopt: false, force: false, verbose: false, predecessor: nil, reinstall: false,
                command: nil, **options)
         unless source.exist?
           raise CaskError, "It seems the #{self.class.english_name} source '#{source}' is not there."
         end
 
         if Utils.path_occupied?(target)
-          if upgrade_or_reinstall && target.directory? && target.children.empty?
+          if !predecessor.nil? && target.directory? && target.children.empty? && predecessor.artifacts.any? do |a|
+               a.class.dsl_key == self.class.dsl_key && a.target == target
+             end
             # An upgrade removed the directory contents but left the directory itself (see below).
             unless source.directory?
               if target.parent.writable? && !force
@@ -149,13 +151,15 @@ module Cask
         delete(target, force: force, command: command, **options)
       end
 
-      def delete(target, force: false, upgrade_or_reinstall: false, command: nil, **_)
+      def delete(target, force: false, successor: nil, command: nil, **_)
         ohai "Removing #{self.class.english_name} '#{target}'"
         raise CaskError, "Cannot remove undeletable #{self.class.english_name}." if MacOS.undeletable?(target)
 
         return unless Utils.path_occupied?(target)
 
-        if upgrade_or_reinstall && target.directory?
+        if !successor.nil? && target.directory? && successor.artifacts.any? do |a|
+             a.class.dsl_key == self.class.dsl_key && a.target == self.target
+           end
           # If an app folder is deleted, macOS considers the app uninstalled and removes some data.
           # Remove only the contents to handle this case.
           target.children.each do |child|
