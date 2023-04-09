@@ -121,7 +121,6 @@ jobs:
           directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
           branch: ${{ steps.update.outputs.branch }}
           force: true
-          origin_branch: "master"
 
       - name: Open a pull request
         if: steps.update.outputs.pull_request == 'true'
