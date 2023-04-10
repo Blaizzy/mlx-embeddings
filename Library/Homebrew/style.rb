@@ -101,7 +101,6 @@ module Homebrew
       end
 
       args += ["--extra-details"] if verbose
-      args += ["--display-cop-names"] if display_cop_names || verbose
 
       if except_cops
         except_cops.map! { |cop| RuboCop::Cop::Cop.registry.qualified_cop_name(cop.to_s, "") }

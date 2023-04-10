@@ -60,7 +60,8 @@ module Homebrew
       switch "--fix",
              description: "Fix style violations automatically using RuboCop's auto-correct feature."
       switch "--display-cop-names",
-             description: "Include the RuboCop cop name for each violation in the output."
+             description: "Include the RuboCop cop name for each violation in the output. This is the default.",
+             hidden:      true
       switch "--display-filename",
              description: "Prefix every line of output with the file or formula name being audited, to " \
                           "make output easy to grep."
@@ -92,9 +93,6 @@ module Homebrew
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"
-      conflicts "--display-cop-names", "--skip-style"
-      conflicts "--display-cop-names", "--only-cops"
-      conflicts "--display-cop-names", "--except-cops"
       conflicts "--formula", "--cask"
       conflicts "--installed", "--all"
 
@@ -208,7 +206,6 @@ module Homebrew
         spdx_license_data:   spdx_license_data,
         spdx_exception_data: spdx_exception_data,
         style_offenses:      style_offenses&.for_path(f.path),
-        display_cop_names:   args.display_cop_names?,
       }.compact
 
       audit_proc = proc { FormulaAuditor.new(f, **options).tap(&:audit) }
