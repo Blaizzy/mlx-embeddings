@@ -56,7 +56,7 @@ jobs:
           else
             BRANCH=sponsors-maintainers-man-completions
           fi
-          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
 
           if git ls-remote --exit-code --heads origin "${BRANCH}"
           then
@@ -100,11 +100,11 @@ jobs:
 
           if [[ -n "$COMMITTED" ]]
           then
-            echo "committed=true" >> $GITHUB_OUTPUT
+            echo "committed=true" >> "$GITHUB_OUTPUT"
             PULL_REQUEST_STATE="$(gh pr view --json=state | jq -r ".state")"
             if [[ "${PULL_REQUEST_STATE}" != "OPEN" ]]
             then
-              echo "pull_request=true" >> $GITHUB_OUTPUT
+              echo "pull_request=true" >> "$GITHUB_OUTPUT"
             fi
           fi
         env:
