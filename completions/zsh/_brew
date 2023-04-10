@@ -158,6 +158,7 @@ __brew_internal_commands() {
     'create:Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
     'deps:Show dependencies for formula'
     'desc:Display formula'\''s name and one-line description'
+    'determine-test-runners:Determines the runners used to test formulae or their dependents'
     'developer:Control Homebrew'\''s developer mode'
     'dispatch-build-bottle:Build bottles for these formulae with GitHub Actions'
     'docs:Open Homebrew'\''s online documentation (https://docs.brew.sh) in a browser'
@@ -752,6 +753,17 @@ _brew_desc() {
     - cask \
     '--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
+}
+
+# brew determine-test-runners
+_brew_determine_test_runners() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--dependents[Determine runners for testing dependents. Requires `--eval-all` or `HOMEBREW_EVAL_ALL`]' \
+    '--eval-all[Evaluate all available formulae, whether installed or not, to determine testing dependents]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
 }
 
 # brew developer

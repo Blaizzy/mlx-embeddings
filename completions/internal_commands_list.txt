@@ -30,6 +30,7 @@ contributions
 create
 deps
 desc
+determine-test-runners
 developer
 dispatch-build-bottle
 docs
