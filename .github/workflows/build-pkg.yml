@@ -23,7 +23,7 @@ jobs:
       - name: Version name
         id: print-version
         run: |
-          echo "version=$(git -C brew describe --tags --always)" > $GITHUB_OUTPUT
+          echo "version=$(git -C brew describe --tags --always)" >> "$GITHUB_OUTPUT"
       - name: Build package
         run: |
          pkgbuild --root brew \
