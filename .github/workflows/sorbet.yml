@@ -1,6 +1,11 @@
 name: Update Sorbet files
 
 on:
+  pull_request:
+    paths:
+      - Library/Homebrew/dev-cmd/typecheck.rb
+      - Library/Homebrew/sorbet/**
+      - "!Library/Homebrew/sorbet/rbi/**"
   push:
     paths:
       - .github/workflows/sorbet.yml
@@ -23,20 +28,19 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Configure Git user
+        if: github.event_name != 'pull_request'
         uses: Homebrew/actions/git-user-config@master
         with:
           username: BrewTestBot
 
       - name: Set up commit signing
+        if: github.event_name != 'pull_request'
         uses: Homebrew/actions/setup-commit-signing@master
         with:
           signing_key: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY }}
 
       - name: Update RBI files
         id: update
-        env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
-          HOMEBREW_GPG_PASSPHRASE: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY_PASSPHRASE }}
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
         run: |
           git fetch origin
@@ -53,6 +57,15 @@ jobs:
           fi
 
           brew typecheck --update --suggest-typed
+
+      - name: Commit changes
+        id: commit
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
+          HOMEBREW_GPG_PASSPHRASE: ${{ secrets.BREWTESTBOT_GPG_SIGNING_SUBKEY_PASSPHRASE }}
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
+        run: |
           if ! git diff --stat --exit-code "Library/Homebrew/sorbet"
           then
             git add "Library/Homebrew/sorbet"
@@ -75,7 +88,7 @@ jobs:
           fi
 
       - name: Push commits
-        if: steps.update.outputs.committed == 'true'
+        if: steps.commit.outputs.committed == 'true'
         uses: Homebrew/actions/git-try-push@master
         with:
           token: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
@@ -85,7 +98,7 @@ jobs:
           origin_branch: "master"
 
       - name: Open a pull request
-        if: steps.update.outputs.pull_request == 'true'
+        if: steps.commit.outputs.pull_request == 'true'
         run: hub pull-request --no-edit
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
