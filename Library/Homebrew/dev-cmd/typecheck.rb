@@ -45,10 +45,12 @@ module Homebrew
   def self.typecheck
     args = typecheck_args.parse
 
-    Homebrew.install_bundler_gems!(groups: ["sorbet"])
+    update = args.update? || args.update_all?
+    groups = update ? VALID_GEM_GROUPS : ["sorbet"]
+    Homebrew.install_bundler_gems!(groups: groups)
 
     HOMEBREW_LIBRARY_PATH.cd do
-      if args.update? || args.update_all?
+      if update
         odisabled "brew typecheck --update --fail-if-not-changed" if args.fail_if_not_changed?
 
         excluded_gems = [
