@@ -478,6 +478,7 @@ class RuboCop::Cop::Performance::RedundantEqualityComparisonBlock < ::RuboCop::C
 
   private
 
+  def allow_regexp_match?; end
   def new_argument(block_argument, block_body); end
   def offense_range(node); end
   def one_block_argument?(block_arguments); end
@@ -489,6 +490,7 @@ end
 RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::COMPARISON_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::IS_A_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::REGEXP_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Performance::RedundantEqualityComparisonBlock::TARGET_METHODS = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Performance::RedundantMatch < ::RuboCop::Cop::Base
@@ -755,6 +757,7 @@ class RuboCop::Cop::Performance::StringIdentifierArgument < ::RuboCop::Cop::Base
   def on_send(node); end
 end
 
+RuboCop::Cop::Performance::StringIdentifierArgument::COMMAND_METHODS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Performance::StringIdentifierArgument::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Performance::StringIdentifierArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
