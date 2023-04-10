@@ -46,7 +46,7 @@ module Homebrew
     args = typecheck_args.parse
 
     update = args.update? || args.update_all?
-    groups = update ? VALID_GEM_GROUPS : ["sorbet"]
+    groups = update ? Homebrew.valid_gem_groups : ["sorbet"]
     Homebrew.install_bundler_gems!(groups: groups)
 
     HOMEBREW_LIBRARY_PATH.cd do
