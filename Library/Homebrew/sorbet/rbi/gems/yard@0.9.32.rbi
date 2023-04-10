@@ -134,32 +134,6 @@ Module::DELEGATION_RESERVED_METHOD_NAMES = T.let(T.unsafe(nil), Set)
 Module::RUBY_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
 RUBY19 = T.let(T.unsafe(nil), TrueClass)
 
-class Rack::Request
-  include ::Rack::Request::Env
-  include ::Rack::Request::Helpers
-
-  def initialize(env); end
-
-  def delete_param(k); end
-  def params; end
-  def query; end
-  def update_param(k, v); end
-  def version_supplied; end
-  def version_supplied=(_arg0); end
-  def xhr?; end
-
-  class << self
-    def forwarded_priority; end
-    def forwarded_priority=(_arg0); end
-    def ip_filter; end
-    def ip_filter=(_arg0); end
-    def x_forwarded_proto_priority; end
-    def x_forwarded_proto_priority=(_arg0); end
-  end
-end
-
-Rack::Request::ALLOWED_SCHEMES = T.let(T.unsafe(nil), Array)
-
 class String
   include ::Comparable
   include ::JSON::Ext::Generator::GeneratorMethods::String
@@ -205,6 +179,8 @@ module YARD
     def ruby18?; end
     def ruby19?; end
     def ruby2?; end
+    def ruby31?; end
+    def ruby3?; end
     def windows?; end
   end
 end
@@ -1420,7 +1396,12 @@ class YARD::Handlers::Ruby::MixinHandler < ::YARD::Handlers::Ruby::Base
   def recipient(mixin); end
 end
 
-class YARD::Handlers::Ruby::ModuleFunctionHandler < ::YARD::Handlers::Ruby::Base; end
+class YARD::Handlers::Ruby::ModuleFunctionHandler < ::YARD::Handlers::Ruby::Base
+  include ::YARD::Handlers::Ruby::DecoratorHandlerMethods
+
+  def make_module_function(instance_method, namespace); end
+end
+
 class YARD::Handlers::Ruby::ModuleHandler < ::YARD::Handlers::Ruby::Base; end
 
 class YARD::Handlers::Ruby::PrivateClassMethodHandler < ::YARD::Handlers::Ruby::Base
@@ -2405,6 +2386,7 @@ class YARD::Parser::Ruby::ModuleNode < ::YARD::Parser::Ruby::KeywordNode
 end
 
 class YARD::Parser::Ruby::ParameterNode < ::YARD::Parser::Ruby::AstNode
+  def args_forward; end
   def block_param; end
   def double_splat_param; end
   def named_params; end
@@ -2635,6 +2617,7 @@ class YARD::Parser::Ruby::RipperParser < ::Ripper
 end
 
 YARD::Parser::Ruby::RipperParser::AST_TOKENS = T.let(T.unsafe(nil), Array)
+YARD::Parser::Ruby::RipperParser::COMMENT_SKIP_NODE_TYPES = T.let(T.unsafe(nil), Array)
 YARD::Parser::Ruby::RipperParser::MAPPINGS = T.let(T.unsafe(nil), Hash)
 YARD::Parser::Ruby::RipperParser::REV_MAPPINGS = T.let(T.unsafe(nil), Hash)
 
@@ -2950,6 +2933,8 @@ class YARD::Server::Adapter
   end
 end
 
+YARD::Server::CR = T.let(T.unsafe(nil), String)
+YARD::Server::CRLF = T.let(T.unsafe(nil), String)
 module YARD::Server::Commands; end
 
 class YARD::Server::Commands::Base
@@ -3080,7 +3065,7 @@ class YARD::Server::Commands::ListCommand < ::YARD::Server::Commands::LibraryCom
 end
 
 class YARD::Server::Commands::RootRequestCommand < ::YARD::Server::Commands::Base
-  include ::WEBrick::HTTPUtils
+  include ::YARD::Server::HTTPUtils
   include ::YARD::Server::Commands::StaticFileHelpers
 
   def run; end
@@ -3107,7 +3092,7 @@ class YARD::Server::Commands::SearchCommand < ::YARD::Server::Commands::LibraryC
 end
 
 class YARD::Server::Commands::StaticFileCommand < ::YARD::Server::Commands::LibraryCommand
-  include ::WEBrick::HTTPUtils
+  include ::YARD::Server::HTTPUtils
   include ::YARD::Server::Commands::StaticFileHelpers
 
   def run; end
@@ -3116,7 +3101,7 @@ end
 YARD::Server::Commands::StaticFileCommand::STATIC_PATHS = T.let(T.unsafe(nil), Array)
 
 module YARD::Server::Commands::StaticFileHelpers
-  include ::WEBrick::HTTPUtils
+  include ::YARD::Server::HTTPUtils
 
   def favicon?; end
   def static_template_file?; end
@@ -3155,6 +3140,88 @@ class YARD::Server::DocServerSerializer < ::YARD::Serializers::FileSystemSeriali
 end
 
 class YARD::Server::FinishRequest < ::RuntimeError; end
+
+module YARD::Server::HTTPUtils
+  private
+
+  def _escape(str, regex); end
+  def _make_regex(str); end
+  def _make_regex!(str); end
+  def _unescape(str, regex); end
+  def dequote(str); end
+  def escape(str); end
+  def escape8bit(str); end
+  def escape_form(str); end
+  def escape_path(str); end
+  def load_mime_types(file); end
+  def mime_type(filename, mime_tab); end
+  def normalize_path(path); end
+  def parse_form_data(io, boundary); end
+  def parse_header(raw); end
+  def parse_query(str); end
+  def parse_qvalues(value); end
+  def parse_range_header(ranges_specifier); end
+  def quote(str); end
+  def split_header_value(str); end
+  def unescape(str); end
+  def unescape_form(str); end
+
+  class << self
+    def _escape(str, regex); end
+    def _make_regex(str); end
+    def _make_regex!(str); end
+    def _unescape(str, regex); end
+    def dequote(str); end
+    def escape(str); end
+    def escape8bit(str); end
+    def escape_form(str); end
+    def escape_path(str); end
+    def load_mime_types(file); end
+    def mime_type(filename, mime_tab); end
+    def normalize_path(path); end
+    def parse_form_data(io, boundary); end
+    def parse_header(raw); end
+    def parse_query(str); end
+    def parse_qvalues(value); end
+    def parse_range_header(ranges_specifier); end
+    def quote(str); end
+    def split_header_value(str); end
+    def unescape(str); end
+    def unescape_form(str); end
+  end
+end
+
+YARD::Server::HTTPUtils::DefaultMimeTypes = T.let(T.unsafe(nil), Hash)
+YARD::Server::HTTPUtils::ESCAPED = T.let(T.unsafe(nil), Regexp)
+
+class YARD::Server::HTTPUtils::FormData < ::String
+  def initialize(*args); end
+
+  def <<(str); end
+  def [](*key); end
+  def append_data(data); end
+  def each_data; end
+  def filename; end
+  def filename=(_arg0); end
+  def list; end
+  def name; end
+  def name=(_arg0); end
+  def next_data=(_arg0); end
+  def to_ary; end
+  def to_s; end
+
+  protected
+
+  def next_data; end
+end
+
+YARD::Server::HTTPUtils::FormData::EmptyHeader = T.let(T.unsafe(nil), Hash)
+YARD::Server::HTTPUtils::FormData::EmptyRawHeader = T.let(T.unsafe(nil), Array)
+YARD::Server::HTTPUtils::NONASCII = T.let(T.unsafe(nil), Regexp)
+YARD::Server::HTTPUtils::UNESCAPED = T.let(T.unsafe(nil), Regexp)
+YARD::Server::HTTPUtils::UNESCAPED_FORM = T.let(T.unsafe(nil), Regexp)
+YARD::Server::HTTPUtils::UNESCAPED_PCHAR = T.let(T.unsafe(nil), Regexp)
+YARD::Server::LF = T.let(T.unsafe(nil), String)
 class YARD::Server::LibraryNotPreparedError < ::RuntimeError; end
 
 class YARD::Server::LibraryVersion
@@ -3195,23 +3262,6 @@ class YARD::Server::LibraryVersion
 end
 
 class YARD::Server::NotFoundError < ::RuntimeError; end
-
-class YARD::Server::RackAdapter < ::YARD::Server::Adapter
-  include ::WEBrick::HTTPUtils
-
-  def call(env); end
-  def start; end
-
-  private
-
-  def print_start_message(server); end
-end
-
-class YARD::Server::RackMiddleware
-  def initialize(app, opts = T.unsafe(nil)); end
-
-  def call(env); end
-end
 
 class YARD::Server::Router
   include ::YARD::Server::StaticCaching
@@ -3330,6 +3380,7 @@ class YARD::Tags::Directive
 
   protected
 
+  def inside_directive?; end
   def parser; end
 end
 
