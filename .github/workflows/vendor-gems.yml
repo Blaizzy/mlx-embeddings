@@ -57,10 +57,10 @@ jobs:
           gh pr checkout '${{ github.event.pull_request.number || github.event.inputs.pull_request }}'
 
           branch="$(git branch --show-current)"
-          echo "branch=${branch}" >> $GITHUB_OUTPUT
+          echo "branch=${branch}" >> "$GITHUB_OUTPUT"
 
           gem_name="$(echo "${branch}" | sed -E 's|.*/||;s|(.*)-.*$|\1|')"
-          echo "gem_name=${gem_name}" >> $GITHUB_OUTPUT
+          echo "gem_name=${gem_name}" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
