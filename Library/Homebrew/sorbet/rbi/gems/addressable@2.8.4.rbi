@@ -8,8 +8,10 @@ module Addressable; end
 
 module Addressable::IDNA
   class << self
+    def _deprecated_unicode_normalize_kc(value); end
     def to_ascii(input); end
     def to_unicode(input); end
+    def unicode_normalize_kc(*args, &block); end
 
     private
 
