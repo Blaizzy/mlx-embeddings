@@ -1938,6 +1938,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Only run the formulae detection steps.
 * `--only-formulae-dependents`:
   Only run the formulae dependents steps.
+* `--only-bottles-fetch`:
+  Only run the bottles fetch steps. This optional post-upload test checks that all the bottles were uploaded correctly. It is not run unless requested and only needs to be run on a single machine. The bottle commit to be tested must be on the tested branch.
 * `--only-cleanup-after`:
   Only run the post-cleanup step. Needs `--cleanup`.
 * `--testing-formulae`:
