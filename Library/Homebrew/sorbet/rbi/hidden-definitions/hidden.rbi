@@ -4243,6 +4243,10 @@ module Gem
   def self.remove_unresolved_default_spec(spec); end
 end
 
+class GitHubRunner
+  def self.inherited(s); end
+end
+
 class HTTP::Cookie
   def self.parse(set_cookie, origin, options=T.unsafe(nil), &block); end
 end
@@ -4691,6 +4695,10 @@ class KeyError
   include ::DidYouMean::Correctable
 end
 
+class LinuxRunnerSpec
+  def self.inherited(s); end
+end
+
 class Logger
   SEV_LABEL = ::T.let(nil, ::T.untyped)
 end
@@ -4705,6 +4713,10 @@ end
 
 module Logger::Period
   SiD = ::T.let(nil, ::T.untyped)
+end
+
+class MacOSRunnerSpec
+  def self.inherited(s); end
 end
 
 module MachOShim
