@@ -5,6 +5,8 @@ require "cli/parser"
 require "utils/github"
 require "manpages"
 
+require "active_support/core_ext/hash/slice"
+
 module Homebrew
   extend T::Sig
 
