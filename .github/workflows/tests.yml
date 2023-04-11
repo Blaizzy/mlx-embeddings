@@ -43,7 +43,7 @@ jobs:
       - name: Install shellcheck and shfmt
         run: brew install shellcheck shfmt
 
-      - run: brew style --display-cop-names
+      - run: brew style
 
       - run: brew typecheck
 
@@ -83,7 +83,7 @@ jobs:
         run: brew install-bundler-gems --groups=sorbet
 
       - name: Run brew style on homebrew-core
-        run: brew style --display-cop-names homebrew/core
+        run: brew style homebrew/core
 
       - name: Set up all Homebrew taps
         run: |
@@ -105,22 +105,22 @@ jobs:
 
       - name: Run brew style on official taps
         run: |
-          brew style --display-cop-names homebrew/bundle \
-                                         homebrew/services \
-                                         homebrew/test-bot
+          brew style homebrew/bundle \
+                     homebrew/services \
+                     homebrew/test-bot
 
-          brew style --display-cop-names homebrew/aliases\
-                                         homebrew/autoupdate\
-                                         homebrew/command-not-found \
-                                         homebrew/formula-analytics \
-                                         homebrew/portable-ruby
+          brew style homebrew/aliases \
+                     homebrew/autoupdate\
+                     homebrew/command-not-found \
+                     homebrew/formula-analytics \
+                     homebrew/portable-ruby
 
       - name: Run brew style on cask taps
         run: |
-          brew style --display-cop-names homebrew/cask \
-                                         homebrew/cask-drivers \
-                                         homebrew/cask-fonts \
-                                         homebrew/cask-versions
+          brew style homebrew/cask \
+                     homebrew/cask-drivers \
+                     homebrew/cask-fonts \
+                     homebrew/cask-versions
 
   formula-audit:
     name: formula audit
