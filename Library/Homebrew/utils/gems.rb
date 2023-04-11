@@ -14,6 +14,24 @@ module Homebrew
 
   module_function
 
+  # @api private
+  def gemfile
+    File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
+  end
+
+  # @api private
+  def valid_gem_groups
+    install_bundler!
+    require "bundler"
+
+    Bundler.with_unbundled_env do
+      ENV["BUNDLE_GEMFILE"] = gemfile
+      groups = Bundler::Definition.build(Bundler.default_gemfile, Bundler.default_lockfile, false).groups
+      groups.delete(:default)
+      groups.map(&:to_s)
+    end
+  end
+
   def ruby_bindir
     "#{RbConfig::CONFIG["prefix"]}/bin"
   end
@@ -134,6 +152,9 @@ module Homebrew
     old_bundle_frozen = ENV.fetch("BUNDLE_FROZEN", nil)
     old_sdkroot = ENV.fetch("SDKROOT", nil)
 
+    invalid_groups = groups - valid_gem_groups
+    raise ArgumentError, "Invalid gem groups: #{invalid_groups.join(", ")}" unless invalid_groups.empty?
+
     install_bundler!
 
     require "settings"
@@ -142,7 +163,7 @@ module Homebrew
     groups |= (Homebrew::Settings.read(:gemgroups)&.split(";") || [])
     groups.sort!
 
-    ENV["BUNDLE_GEMFILE"] = File.join(ENV.fetch("HOMEBREW_LIBRARY"), "Homebrew", "Gemfile")
+    ENV["BUNDLE_GEMFILE"] = gemfile
     ENV["BUNDLE_WITH"] = groups.join(" ")
     ENV["BUNDLE_FROZEN"] = "true"
 
