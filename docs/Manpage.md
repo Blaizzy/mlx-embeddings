@@ -916,8 +916,6 @@ non-zero status if any errors are found.
   Check the formulae within the given tap, specified as *`user`*`/`*`repo`*.
 * `--fix`:
   Fix style violations automatically using RuboCop's auto-correct feature.
-* `--display-cop-names`:
-  Include the RuboCop cop name for each violation in the output.
 * `--display-filename`:
   Prefix every line of output with the file or formula name being audited, to make output easy to grep.
 * `--skip-style`:
@@ -1486,8 +1484,6 @@ including core code and all formulae.
 
 * `--fix`:
   Fix style violations automatically using RuboCop's auto-correct feature.
-* `--display-cop-names`:
-  Include the RuboCop cop name for each violation in the output.
 * `--reset-cache`:
   Reset the RuboCop cache.
 * `--formula`:
