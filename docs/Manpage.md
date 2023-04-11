@@ -602,12 +602,11 @@ reinstalled formulae or, every 30 days, for all formulae.
 
 Perform a substring search of cask tokens and formula names for *`text`*. If *`text`*
 is flanked by slashes, it is interpreted as a regular expression.
-The search for *`text`* is extended online to `homebrew/core` and `homebrew/cask`.
 
 * `--formula`:
-  Search online and locally for formulae.
+  Search for formulae.
 * `--cask`:
-  Search online and locally for casks.
+  Search for casks.
 * `--desc`:
   Search for formulae with a description matching *`text`* and casks with a name or description matching *`text`*.
 * `--eval-all`:

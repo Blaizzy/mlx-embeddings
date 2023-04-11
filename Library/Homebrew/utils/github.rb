@@ -58,10 +58,6 @@ module GitHub
     API.open_rest(url_to("repos", user, repo))
   end
 
-  def self.search_code(repo: nil, user: "Homebrew", path: ["Formula", "Casks", "."], filename: nil, extension: "rb")
-    search_results_items("code", user: user, path: path, filename: filename, extension: extension, repo: repo)
-  end
-
   def self.issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil)
     return [] unless tap_remote_repo
 
