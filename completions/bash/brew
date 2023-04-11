@@ -349,7 +349,6 @@ _brew_audit() {
       --audit-debug
       --cask
       --debug
-      --display-cop-names
       --display-filename
       --eval-all
       --except
@@ -2025,7 +2024,6 @@ _brew_style() {
       __brewcomp "
       --cask
       --debug
-      --display-cop-names
       --except-cops
       --fix
       --formula
