@@ -1,7 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "cask/cmd/audit"
 require "cask/cmd/install"
 require "cask/cask_loader"
 require "cask/download"
@@ -30,17 +29,6 @@ describe Cask::Quarantine, :cask do
     it "quarantines Cask fetches" do
       download = Cask::Download.new(Cask::CaskLoader.load("local-transmission"), quarantine: true)
       download.fetch
-      local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-      cached_location = Cask::Download.new(local_transmission).fetch
-
-      expect(cached_location).to be_quarantined
-    end
-
-    it "quarantines Cask audits" do
-      expect do
-        Cask::Cmd::Audit.run("local-transmission", "--download")
-      end.to not_raise_error.and not_to_output.to_stderr
-
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
       cached_location = Cask::Download.new(local_transmission).fetch
 
@@ -145,17 +133,6 @@ describe Cask::Quarantine, :cask do
     it "does not quarantine Cask fetches" do
       download = Cask::Download.new(Cask::CaskLoader.load("local-transmission"), quarantine: false)
       download.fetch
-      local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-      cached_location = Cask::Download.new(local_transmission).fetch
-
-      expect(cached_location).not_to be_quarantined
-    end
-
-    it "does not quarantine Cask audits" do
-      expect do
-        Cask::Cmd::Audit.run("local-transmission", "--download", "--no-quarantine")
-      end.to not_raise_error.and not_to_output.to_stderr
-
       local_transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
       cached_location = Cask::Download.new(local_transmission).fetch
 

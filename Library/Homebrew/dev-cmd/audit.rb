@@ -237,8 +237,6 @@ module Homebrew
     cask_results = if audit_casks.empty?
       {}
     else
-      require "cask/cmd/abstract_command"
-      require "cask/cmd/audit"
 
       if args.display_failures_only?
         odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
@@ -246,21 +244,31 @@ module Homebrew
 
       # For switches, we add `|| nil` so that `nil` will be passed instead of `false` if they aren't set.
       # This way, we can distinguish between "not set" and "set to false".
-      Cask::Cmd::Audit.audit_casks(
-        *audit_casks,
-        download:        nil,
+      options = {
+        audit_download:        nil,
         # No need for `|| nil` for `--[no-]signing` because boolean switches are already `nil` if not passed
-        signing:         args.signing?,
-        online:          args.online? || nil,
-        strict:          args.strict? || nil,
-        new_cask:        args.new_cask? || nil,
-        token_conflicts: args.token_conflicts? || nil,
-        quarantine:      nil,
-        any_named_args:  !no_named_args,
-        language:        nil,
-        only:            args.only,
-        except:          args.except,
-      )
+        audit_online:          (args.online? || nil),
+        audit_strict:          (args.strict? || nil),
+        audit_signing:         args.signing?,
+        audit_new_cask:        (args.new_cask? || nil),
+        audit_token_conflicts: (args.token_conflicts? || nil),
+        quarantine:            nil,
+        language:              nil,
+        any_named_args:        !no_named_args,
+        only:                  args.only,
+        except:                args.except,
+      }.compact
+
+      options[:quarantine] = true if options[:quarantine].nil?
+
+      Homebrew.auditing = true
+
+      require "cask/auditor"
+
+      audit_casks.to_h do |cask|
+        odebug "Auditing Cask #{cask}"
+        [cask.sourcefile_path, { errors: Cask::Auditor.audit(cask, **options), warnings: [] }]
+      end
     end
 
     failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
