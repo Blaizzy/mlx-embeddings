@@ -8,6 +8,7 @@ describe Cask::DSL::Caveats, :cask do
 
   let(:cask) { Cask::CaskLoader.load(cask_path("basic-cask")) }
   let(:dsl) { caveats }
+
   it_behaves_like Cask::DSL::Base
 
   # TODO: add tests for Caveats DSL methods
