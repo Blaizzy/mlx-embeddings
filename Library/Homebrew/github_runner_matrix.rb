@@ -110,7 +110,9 @@ class GitHubRunnerMatrix
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
     github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT")
-    ephemeral_suffix = "-#{github_run_id}-#{github_run_attempt}"
+    ephemeral_suffix = +"-#{github_run_id}-#{github_run_attempt}"
+    ephemeral_suffix << "-deps" if @dependent_matrix
+    ephemeral_suffix.freeze
 
     MacOSVersions::SYMBOLS.each_value do |version|
       macos_version = OS::Mac::Version.new(version)
@@ -126,7 +128,9 @@ class GitHubRunnerMatrix
       next unless macos_version >= :big_sur
 
       # Use bare metal runner when testing dependents on ARM64 Monterey.
-      runner, cleanup = if (macos_version >= :ventura && @dependent_matrix) || macos_version >= :monterey
+      use_ephemeral = (macos_version >= :ventura && @dependent_matrix) ||
+                      (macos_version >= :monterey && !@dependent_matrix)
+      runner, cleanup = if use_ephemeral
         ["#{version}-arm64#{ephemeral_suffix}", false]
       else
         ["#{version}-arm64", true]
