@@ -32,7 +32,7 @@ module RuboCop
 
           @stanzas ||= cask_body.each_node
                                 .select(&:stanza?)
-                                .map { |node| Stanza.new(node, cask_node) }
+                                .map { |node| Stanza.new(node) }
         end
 
         def toplevel_stanzas

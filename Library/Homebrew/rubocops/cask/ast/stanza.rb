@@ -12,12 +12,11 @@ module RuboCop
       class Stanza
         extend Forwardable
 
-        def initialize(method_node, cask_node)
+        def initialize(method_node)
           @method_node = method_node
-          @cask_node = cask_node
         end
 
-        attr_reader :method_node, :cask_node
+        attr_reader :method_node
 
         alias stanza_node method_node
 
@@ -59,7 +58,10 @@ module RuboCop
         end
 
         def comments_hash
-          @comments_hash ||= Parser::Source::Comment.associate_locations(cask_node, stanza_comments(stanza_node))
+          @comments_hash ||= Parser::Source::Comment.associate_locations(
+            stanza_node.parent,
+            stanza_comments(stanza_node),
+          )
         end
 
         def ==(other)
