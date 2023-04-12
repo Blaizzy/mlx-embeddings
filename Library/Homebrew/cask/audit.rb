@@ -476,7 +476,7 @@ module Cask
         artifacts.each do |artifact|
           case artifact
           when Artifact::Moved
-            path = tmpdir/artifact.source.basename
+            path = tmpdir/artifact.source.relative_path_from(cask.staged_path)
             next unless path.exist?
 
             result = system_command("codesign", args: ["--verify", path], print_stderr: false)
@@ -498,7 +498,7 @@ module Cask
 
             add_error(message, strict_only: true)
           when Artifact::Pkg
-            path = downloaded_path
+            path = tmpdir/artifact.path.relative_path_from(cask.staged_path)
             next unless path.exist?
 
             result = system_command("pkgutil", args: ["--check-signature", path], print_stderr: false)
