@@ -28,7 +28,7 @@ module RuboCop
         end
 
         def source_range_with_comments
-          stanza_comments(stanza_node).reduce(source_range) do |range, comment|
+          comments.reduce(source_range) do |range, comment|
             range.join(comment.loc.expression)
           end
         end
@@ -51,8 +51,8 @@ module RuboCop
           stanza_group == other.stanza_group
         end
 
-        def stanza_comments(stanza_node)
-          stanza_node.each_node.reduce([]) do |comments, node|
+        def comments
+          @comments ||= stanza_node.each_node.reduce([]) do |comments, node|
             comments | comments_hash[node.loc]
           end
         end
@@ -60,7 +60,7 @@ module RuboCop
         def comments_hash
           @comments_hash ||= Parser::Source::Comment.associate_locations(
             stanza_node.parent,
-            stanza_comments(stanza_node),
+            comments,
           )
         end
 
