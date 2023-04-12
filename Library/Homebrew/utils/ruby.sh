@@ -1,4 +1,6 @@
-export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.8
+# When bumping, run `brew vendor-gems --update=--ruby`
+# When bumping to a new major/minor version, also update the bounds in the Gemfile
+export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.10
 
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
