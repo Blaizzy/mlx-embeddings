@@ -51,6 +51,10 @@ module RuboCop
           @sorted_toplevel_stanzas ||= sort_stanzas(toplevel_stanzas)
         end
 
+        def stanzaify(nodes)
+          nodes.map { |node| Stanza.new(node, stanza_comments(node)) }
+        end
+
         private
 
         def sort_stanzas(stanzas)
