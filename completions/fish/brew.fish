@@ -85,27 +85,14 @@ end
 ######################
 # These functions return lists of suggestions for arguments completion
 
-function __fish_brew_ruby_parse_json -a file parser -d 'Parses given JSON file with Ruby'
-    # parser is any chain of methods to call on the parsed JSON
-    ruby -e "require('json'); JSON.parse(File.read('$file'))$parser"
-end
-
 function __fish_brew_suggest_formulae_all -d 'Lists all available formulae with their descriptions'
-    # store the brew cache path in a var (because calling (brew --cache) is slow)
-    set -q __brew_cache_path
-    or set -gx __brew_cache_path (brew --cache)
-
-    if test -f "$__brew_cache_path/descriptions.json"
-        __fish_brew_ruby_parse_json "$__brew_cache_path/descriptions.json" \
-            '.each{ |k, v| puts([k, v].reject(&:nil?).join("\t")) }'
-    else
-        brew formulae
-    end
+    brew formulae
 end
 
 function __fish_brew_suggest_formulae_installed
-    brew list --formula
+    command ls -1 (brew --cellar)
 end
+
 
 function __fish_brew_suggest_formulae_outdated -d "List of outdated formulae with the information about potential upgrade"
     brew outdated --formula --verbose \
@@ -130,7 +117,7 @@ function __fish_brew_suggest_casks_all -d "Lists locally available casks"
 end
 
 function __fish_brew_suggest_casks_installed -d "Lists installed casks"
-    brew list --cask -1
+    command ls -1 (brew --caskroom)
 end
 
 function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the information about potential upgrade"
@@ -140,7 +127,9 @@ function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the in
 end
 
 function __fish_brew_suggest_taps_installed -d "List all available taps"
-    brew tap
+    command find (brew --repo)/Library/Taps -mindepth 2 -maxdepth 2 -type d \
+    | string replace homebrew- "" \
+    | string replace (brew --repo)/Library/Taps/ ""
 end
 
 function __fish_brew_suggest_commands -d "Lists all commands names, including aliases"
