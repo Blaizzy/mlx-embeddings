@@ -268,11 +268,11 @@ module Homebrew
           only:                  args.only,
           except:                args.except,
         )
-        [cask.sourcefile_path, errors]
+        [cask.sourcefile_path, { errors: errors, warnings: [] }]
       end
     end
 
-    failed_casks = cask_results.reject { |_, errors| errors.empty? }
+    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
 
     cask_count = failed_casks.count
 
