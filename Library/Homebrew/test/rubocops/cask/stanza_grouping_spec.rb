@@ -545,6 +545,41 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
       include_examples "autocorrects source"
     end
 
+    describe "nested `on_*` blocks with comments" do
+      let(:source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
+
+              sha256 :no_check # comment on same line
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+            end
+          end
+        CASK
+      end
+
+      let(:correct_source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
+              sha256 :no_check # comment on same line
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+            end
+          end
+        CASK
+      end
+
+      include_examples "autocorrects source"
+    end
+
     # TODO: Maybe this should be fixed too?
     describe "inner erroneously grouped nested livecheck block contents are ignored" do
       let(:source) do

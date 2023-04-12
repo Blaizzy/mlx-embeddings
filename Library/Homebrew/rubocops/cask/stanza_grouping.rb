@@ -32,7 +32,7 @@ module RuboCop
 
             block_contents = on_block.child_nodes.select(&:begin_type?)
             inner_nodes = block_contents.map(&:child_nodes).flatten.select(&:send_type?)
-            inner_stanzas = inner_nodes.map { |node| RuboCop::Cask::AST::Stanza.new(node) }
+            inner_stanzas = inner_nodes.map { |node| RuboCop::Cask::AST::Stanza.new(node, processed_source.comments) }
 
             add_offenses(inner_stanzas)
           end
