@@ -248,7 +248,7 @@ module Homebrew
 
       audit_casks.to_h do |cask|
         odebug "Auditing Cask #{cask}"
-        [cask.sourcefile_path, { errors: Cask::Auditor.audit(
+        errors = Cask::Auditor.audit(
           cask,
           # For switches, we add `|| nil` so that `nil` will be passed
           # instead of `false` if they aren't set.
@@ -267,11 +267,12 @@ module Homebrew
           any_named_args:        !no_named_args,
           only:                  args.only,
           except:                args.except,
-        ), warnings: [] }]
+        )
+        [cask.sourcefile_path, errors]
       end
     end
 
-    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
+    failed_casks = cask_results.reject { |_, errors| errors.empty? }
 
     cask_count = failed_casks.count
 
