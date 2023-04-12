@@ -360,7 +360,7 @@ _brew___repository() {
 _brew__s() {
   _arguments \
     '(--repology --macports --fink --opensuse --fedora --debian --ubuntu)--archlinux[Search for text in the given database]' \
-    '--cask[Search online and locally for casks]' \
+    '--cask[Search for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
     '(--repology --macports --fink --opensuse --fedora --archlinux --ubuntu)--debian[Search for text in the given database]' \
     '--debug[Display any debugging information]' \
@@ -368,7 +368,7 @@ _brew__s() {
     '--eval-all[Evaluate all available formulae and casks, whether installed or not, to search their descriptions. Implied if `HOMEBREW_EVAL_ALL` is set]' \
     '(--repology --macports --fink --opensuse --archlinux --debian --ubuntu)--fedora[Search for text in the given database]' \
     '(--repology --macports --opensuse --fedora --archlinux --debian --ubuntu)--fink[Search for text in the given database]' \
-    '--formula[Search online and locally for formulae]' \
+    '--formula[Search for formulae]' \
     '--help[Show this message]' \
     '(--repology --fink --opensuse --fedora --archlinux --debian --ubuntu)--macports[Search for text in the given database]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \
@@ -1634,7 +1634,7 @@ _brew_ruby() {
 _brew_search() {
   _arguments \
     '(--repology --macports --fink --opensuse --fedora --debian --ubuntu)--archlinux[Search for text in the given database]' \
-    '--cask[Search online and locally for casks]' \
+    '--cask[Search for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
     '(--repology --macports --fink --opensuse --fedora --archlinux --ubuntu)--debian[Search for text in the given database]' \
     '--debug[Display any debugging information]' \
@@ -1642,7 +1642,7 @@ _brew_search() {
     '--eval-all[Evaluate all available formulae and casks, whether installed or not, to search their descriptions. Implied if `HOMEBREW_EVAL_ALL` is set]' \
     '(--repology --macports --fink --opensuse --archlinux --debian --ubuntu)--fedora[Search for text in the given database]' \
     '(--repology --macports --opensuse --fedora --archlinux --debian --ubuntu)--fink[Search for text in the given database]' \
-    '--formula[Search online and locally for formulae]' \
+    '--formula[Search for formulae]' \
     '--help[Show this message]' \
     '(--repology --fink --opensuse --fedora --archlinux --debian --ubuntu)--macports[Search for text in the given database]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \

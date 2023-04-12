@@ -315,8 +315,8 @@ module Homebrew
     ohai "Searching for similarly named #{package_types.join(" and ")}..."
 
     # Don't treat formula/cask name as a regex
-    query = string_or_regex = name
-    all_formulae, all_casks = Search.search_names(query, string_or_regex, args)
+    string_or_regex = name
+    all_formulae, all_casks = Search.search_names(string_or_regex, args)
 
     if all_formulae.any?
       ohai "Formulae", Formatter.columns(all_formulae)
