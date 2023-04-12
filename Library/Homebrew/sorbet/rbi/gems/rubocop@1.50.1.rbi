@@ -11160,8 +11160,8 @@ class RuboCop::Cop::Style::ParallelAssignment < ::RuboCop::Cop::Base
   def allowed_lhs?(node); end
   def allowed_masign?(lhs_elements, rhs_elements); end
   def allowed_rhs?(node); end
-  def assignment_corrector(node, order); end
-  def autocorrect(corrector, node); end
+  def assignment_corrector(node, rhs, order); end
+  def autocorrect(corrector, node, lhs, rhs); end
   def find_valid_order(left_elements, right_elements); end
   def modifier_statement?(node); end
   def return_of_method_call?(node); end
@@ -11185,12 +11185,14 @@ end
 class RuboCop::Cop::Style::ParallelAssignment::GenericCorrector
   include ::RuboCop::Cop::Alignment
 
-  def initialize(node, config, new_elements); end
+  def initialize(node, rhs, modifier, config, new_elements); end
 
   def config; end
   def correction; end
   def correction_range; end
   def node; end
+  def rescue_result; end
+  def rhs; end
 
   protected
 
@@ -11730,8 +11732,10 @@ class RuboCop::Cop::Style::RedundantLineContinuation < ::RuboCop::Cop::Base
   def argument_newline?(node); end
   def ends_with_backslash_without_comment?(source_line); end
   def find_node_for_line(line); end
-  def inside_string_literal?(range); end
+  def inside_string_literal?(range, token); end
+  def inside_string_literal_or_method_with_argument?(range); end
   def method_call_with_arguments?(node); end
+  def method_with_argument?(current_token, next_token); end
   def redundant_line_continuation?(range); end
   def require_line_continuation?(range); end
   def same_line?(node, line); end
