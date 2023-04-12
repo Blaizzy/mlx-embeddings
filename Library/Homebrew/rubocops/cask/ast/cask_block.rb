@@ -32,7 +32,7 @@ module RuboCop
 
           @stanzas ||= cask_body.each_node
                                 .select(&:stanza?)
-                                .map { |node| Stanza.new(node, stanza_comments(node)) }
+                                .map { |node| Stanza.new(node, cask_node) }
         end
 
         def toplevel_stanzas
@@ -51,10 +51,6 @@ module RuboCop
           @sorted_toplevel_stanzas ||= sort_stanzas(toplevel_stanzas)
         end
 
-        def stanzaify(nodes)
-          nodes.map { |node| Stanza.new(node, stanza_comments(node)) }
-        end
-
         private
 
         def sort_stanzas(stanzas)
@@ -71,17 +67,6 @@ module RuboCop
 
         def stanza_order_index(stanza)
           Constants::STANZA_ORDER.index(stanza.stanza_name)
-        end
-
-        def stanza_comments(stanza_node)
-          stanza_node.each_node.reduce([]) do |comments, node|
-            comments | comments_hash[node.loc]
-          end
-        end
-
-        def comments_hash
-          @comments_hash ||= Parser::Source::Comment
-                             .associate_locations(cask_node, comments)
         end
       end
     end

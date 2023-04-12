@@ -31,7 +31,8 @@ module RuboCop
             next unless on_block.block_type?
 
             block_contents = on_block.child_nodes.select(&:begin_type?)
-            inner_stanzas = stanzaify(block_contents.map(&:child_nodes).flatten.select(&:send_type?))
+            inner_nodes = block_contents.map(&:child_nodes).flatten.select(&:send_type?)
+            inner_stanzas = inner_nodes.map { |node| RuboCop::Cask::AST::Stanza.new(node, cask_node) }
 
             add_offenses(inner_stanzas)
           end
@@ -41,7 +42,7 @@ module RuboCop
 
         attr_reader :cask_block, :line_ops
 
-        def_delegators :cask_block, :cask_node, :stanzaify, :toplevel_stanzas
+        def_delegators :cask_block, :cask_node, :toplevel_stanzas
 
         def add_offenses(stanzas)
           stanzas.each_cons(2) do |stanza, next_stanza|
