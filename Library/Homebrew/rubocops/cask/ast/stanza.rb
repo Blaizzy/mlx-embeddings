@@ -28,7 +28,7 @@ module RuboCop
         end
 
         def source_range_with_comments
-          comments.reduce(source_range) do |range, comment|
+          stanza_comments(stanza_node).reduce(source_range) do |range, comment|
             range.join(comment.loc.expression)
           end
         end
