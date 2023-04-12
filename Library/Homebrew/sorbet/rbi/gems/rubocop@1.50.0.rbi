@@ -2311,6 +2311,7 @@ class RuboCop::Cop::Layout::ClassStructure < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_class(class_node); end
+  def on_sclass(class_node); end
 
   private
 
@@ -4741,6 +4742,18 @@ end
 
 RuboCop::Cop::Lint::DuplicateMagicComment::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Lint::DuplicateMatchPattern < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::TargetRubyVersion
+
+  def on_case_match(case_node); end
+
+  private
+
+  def pattern_identity(pattern); end
+end
+
+RuboCop::Cop::Lint::DuplicateMatchPattern::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Lint::DuplicateMethods < ::RuboCop::Cop::Base
   def initialize(config = T.unsafe(nil), options = T.unsafe(nil)); end
 
@@ -5754,11 +5767,17 @@ class RuboCop::Cop::Lint::RedundantStringCoercion < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_interpolation(begin_node); end
+  def on_send(node); end
   def to_s_without_args?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def register_offense(node, context); end
 end
 
 RuboCop::Cop::Lint::RedundantStringCoercion::MSG_DEFAULT = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Lint::RedundantStringCoercion::MSG_SELF = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Lint::RedundantStringCoercion::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Lint::RedundantWithIndex < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -6625,6 +6644,7 @@ class RuboCop::Cop::Metrics::ClassLength < ::RuboCop::Cop::Base
 
   def on_casgn(node); end
   def on_class(node); end
+  def on_sclass(node); end
 
   private
 
@@ -8390,6 +8410,9 @@ class RuboCop::Cop::Style::ClassEqualityComparison < ::RuboCop::Cop::Base
   def class_name(class_node, node); end
   def class_name_method?(method_name); end
   def offense_range(receiver_node, node); end
+  def require_cbase?(class_node); end
+  def trim_string_quotes(class_node); end
+  def unable_to_determine_type?(class_node); end
 end
 
 RuboCop::Cop::Style::ClassEqualityComparison::CLASS_NAME_METHODS = T.let(T.unsafe(nil), Array)
@@ -10517,7 +10540,7 @@ class RuboCop::Cop::Style::MultilineMethodSignature < ::RuboCop::Cop::Base
   private
 
   def arguments_range(node); end
-  def autocorrect(corrector, node); end
+  def autocorrect(corrector, node, begin_of_arguments); end
   def closing_line(node); end
   def correction_exceeds_max_line_length?(node); end
   def definition_width(node); end
@@ -11703,16 +11726,20 @@ class RuboCop::Cop::Style::RedundantLineContinuation < ::RuboCop::Cop::Base
 
   private
 
+  def argument_is_method?(node); end
   def argument_newline?(node); end
   def ends_with_backslash_without_comment?(source_line); end
   def find_node_for_line(line); end
+  def inside_string_literal?(range); end
+  def method_call_with_arguments?(node); end
   def redundant_line_continuation?(range); end
   def require_line_continuation?(range); end
   def same_line?(node, line); end
-  def starts_with_plus_or_minus?(source_line); end
+  def start_with_arithmetic_operator?(source_line); end
   def string_concatenation?(source_line); end
 end
 
+RuboCop::Cop::Style::RedundantLineContinuation::ALLOWED_STRING_TOKENS = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::Style::RedundantLineContinuation::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Style::RedundantParentheses < ::RuboCop::Cop::Base
@@ -12791,6 +12818,7 @@ class RuboCop::Cop::Style::TrailingBodyOnClass < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
   def on_class(node); end
+  def on_sclass(node); end
 end
 
 RuboCop::Cop::Style::TrailingBodyOnClass::MSG = T.let(T.unsafe(nil), String)

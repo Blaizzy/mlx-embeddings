@@ -102,7 +102,7 @@ module Debrew
     raise(exception) if !active? || !debugged_exceptions.add?(exception) || !mu_try_lock
 
     begin
-      puts exception.backtrace.first.to_s
+      puts exception.backtrace.first
       puts Formatter.error(exception, label: exception.class.name)
 
       loop do
