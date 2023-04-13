@@ -458,39 +458,22 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     include_examples "autocorrects source"
   end
 
-  # TODO: detect out-of-order stanzas in nested expressions
-  context "when stanzas are nested in a conditional expression" do
-    let(:source) do
-      <<~CASK
-        cask 'foo' do
-          if true
-            sha256 :no_check
-            version :latest
-          end
-        end
-      CASK
-    end
-
-    include_examples "does not report any offenses"
-  end
-
   context "when `on_arch` blocks are out of order" do
     let(:source) do
       <<~CASK
         cask 'foo' do
           on_intel do
+            version :latest
+            sha256 :no_check
+
             url "https://foo.brew.sh/foo-intel.zip"
-            sha256 :no_check
-            version :latest
           end
-
           on_arm do
-            url "https://foo.brew.sh/foo-arm.zip"
-            sha256 :no_check
             version :latest
-          end
+            sha256 :no_check
 
-          name "Foo"
+            url "https://foo.brew.sh/foo-arm.zip"
+          end
         end
       CASK
     end
@@ -501,13 +484,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
         severity: :convention,
         line:     2,
         column:   2,
-        source:   "on_intel do\n    url \"https://foo.brew.sh/foo-intel.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
+        source:   "on_intel do\n    version :latest\n    sha256 :no_check\n\n    url \"https://foo.brew.sh/foo-intel.zip\"\n  end", # rubocop:disable Layout/LineLength
       }, {
         message:  "Cask/StanzaOrder: `on_arm` stanza out of order",
         severity: :convention,
         line:     8,
         column:   2,
-        source:   "on_arm do\n    url \"https://foo.brew.sh/foo-arm.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
+        source:   "on_arm do\n    version :latest\n    sha256 :no_check\n\n    url \"https://foo.brew.sh/foo-arm.zip\"\n  end", # rubocop:disable Layout/LineLength
       }]
     end
 
@@ -515,18 +498,17 @@ describe RuboCop::Cop::Cask::StanzaOrder do
       <<~CASK
         cask 'foo' do
           on_arm do
+            version :latest
+            sha256 :no_check
+
             url "https://foo.brew.sh/foo-arm.zip"
-            sha256 :no_check
-            version :latest
           end
-
           on_intel do
-            url "https://foo.brew.sh/foo-intel.zip"
-            sha256 :no_check
             version :latest
-          end
+            sha256 :no_check
 
-          name "Foo"
+            url "https://foo.brew.sh/foo-intel.zip"
+          end
         end
       CASK
     end
@@ -535,44 +517,42 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     include_examples "autocorrects source"
   end
 
-  # TODO: detect out-of-order stanzas in nested expressions
-  context "when the on_arch and on_os stanzas are nested" do
+  context "when the `on_arch` blocks contents are out of order" do
     let(:source) do
       <<~CASK
         cask 'foo' do
           on_arm do
-            url "https://foo.brew.sh/foo-arm-all.zip"
-            sha256 :no_check
-            version :latest
+            url "https://foo.brew.sh/foo-arm.zip"
+            sha256 "123abc"
+            version "1.0"
           end
-
           on_intel do
-            on_ventura do
-              url "https://foo.brew.sh/foo-intel-ventura.zip"
-              sha256 :no_check
-            end
-            on_mojave do
-              url "https://foo.brew.sh/foo-intel-mojave.zip"
-              sha256 :no_check
-            end
-            on_catalina do
-              url "https://foo.brew.sh/foo-intel-catalina.zip"
-              sha256 :no_check
-            end
-            on_big_sur do
-              url "https://foo.brew.sh/foo-intel-big-sur.zip"
-              sha256 :no_check
-            end
-
-            version :latest
+            url "https://foo.brew.sh/foo-intel.zip"
+            sha256 "abc123"
+            version "0.9" # comment here
           end
-
-          name "Foo"
         end
       CASK
     end
 
-    include_examples "does not report any offenses"
+    let(:correct_source) do
+      <<~CASK
+        cask 'foo' do
+          on_arm do
+            version "1.0"
+            sha256 "123abc"
+            url "https://foo.brew.sh/foo-arm.zip"
+          end
+          on_intel do
+            version "0.9" # comment here
+            sha256 "abc123"
+            url "https://foo.brew.sh/foo-intel.zip"
+          end
+        end
+      CASK
+    end
+
+    include_examples "autocorrects source"
   end
 
   context "when the on_os stanzas are out of order" do
@@ -580,20 +560,20 @@ describe RuboCop::Cop::Cask::StanzaOrder do
       <<~CASK
         cask "foo" do
           on_ventura do
-            url "https://foo.brew.sh/foo-ventura.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-ventura.zip"
           end
           on_catalina do
-            url "https://foo.brew.sh/foo-catalina.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-catalina.zip"
           end
           on_mojave do
-            url "https://foo.brew.sh/foo-mojave.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-mojave.zip"
           end
           on_big_sur do
-            url "https://foo.brew.sh/foo-big-sur.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-big-sur.zip"
           end
 
           name "Foo"
@@ -607,19 +587,19 @@ describe RuboCop::Cop::Cask::StanzaOrder do
         severity: :convention,
         line:     2,
         column:   2,
-        source:   "on_ventura do\n    url \"https://foo.brew.sh/foo-ventura.zip\"\n    sha256 :no_check\n  end",
+        source:   "on_ventura do\n    sha256 :no_check\n    url \"https://foo.brew.sh/foo-ventura.zip\"\n  end",
       }, {
         message:  "Cask/StanzaOrder: `on_mojave` stanza out of order",
         severity: :convention,
         line:     10,
         column:   2,
-        source:   "on_mojave do\n    url \"https://foo.brew.sh/foo-mojave.zip\"\n    sha256 :no_check\n  end",
+        source:   "on_mojave do\n    sha256 :no_check\n    url \"https://foo.brew.sh/foo-mojave.zip\"\n  end",
       }, {
         message:  "Cask/StanzaOrder: `on_big_sur` stanza out of order",
         severity: :convention,
         line:     14,
         column:   2,
-        source:   "on_big_sur do\n    url \"https://foo.brew.sh/foo-big-sur.zip\"\n    sha256 :no_check\n  end",
+        source:   "on_big_sur do\n    sha256 :no_check\n    url \"https://foo.brew.sh/foo-big-sur.zip\"\n  end",
       }]
     end
 
@@ -627,20 +607,20 @@ describe RuboCop::Cop::Cask::StanzaOrder do
       <<~CASK
         cask "foo" do
           on_mojave do
-            url "https://foo.brew.sh/foo-mojave.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-mojave.zip"
           end
           on_catalina do
-            url "https://foo.brew.sh/foo-catalina.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-catalina.zip"
           end
           on_big_sur do
-            url "https://foo.brew.sh/foo-big-sur.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-big-sur.zip"
           end
           on_ventura do
-            url "https://foo.brew.sh/foo-ventura.zip"
             sha256 :no_check
+            url "https://foo.brew.sh/foo-ventura.zip"
           end
 
           name "Foo"

@@ -51,6 +51,10 @@ module RuboCop
           @sorted_toplevel_stanzas ||= sort_stanzas(toplevel_stanzas)
         end
 
+        def sorted_inner_stanzas(stanzas)
+          sort_stanzas(stanzas)
+        end
+
         private
 
         def sort_stanzas(stanzas)
