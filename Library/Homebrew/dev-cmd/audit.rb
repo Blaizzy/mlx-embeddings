@@ -253,7 +253,6 @@ module Homebrew
           # For switches, we add `|| nil` so that `nil` will be passed
           # instead of `false` if they aren't set.
           # This way, we can distinguish between "not set" and "set to false".
-          audit_download:        nil,
           audit_online:          (args.online? || nil),
           audit_strict:          (args.strict? || nil),
 
@@ -263,7 +262,6 @@ module Homebrew
           audit_new_cask:        (args.new_cask? || nil),
           audit_token_conflicts: (args.token_conflicts? || nil),
           quarantine:            true,
-          language:              nil,
           any_named_args:        !no_named_args,
           only:                  args.only,
           except:                args.except,
