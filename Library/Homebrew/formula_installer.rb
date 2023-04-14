@@ -1040,7 +1040,7 @@ on_request: installed_on_request?, options: options)
       return
     end
 
-    if formula.service? && formula.service.command.present?
+    if formula.service? && formula.service.command?
       service_path = formula.systemd_service_path
       service_path.atomic_write(formula.service.to_systemd_unit)
       service_path.chmod 0644
@@ -1052,7 +1052,7 @@ on_request: installed_on_request?, options: options)
       end
     end
 
-    service = if formula.service? && formula.service.command.present?
+    service = if formula.service? && formula.service.command?
       formula.service.to_plist
     elsif formula.plist
       formula.plist

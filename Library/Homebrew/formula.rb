@@ -1015,13 +1015,13 @@ class Formula
   # The generated launchd {.plist} service name.
   sig { returns(String) }
   def plist_name
-    "homebrew.mxcl.#{name}"
+    service.plist_name
   end
 
   # The generated service name.
   sig { returns(String) }
   def service_name
-    "homebrew.#{name}"
+    service.service_name
   end
 
   # The generated launchd {.plist} file path.
@@ -1051,8 +1051,6 @@ class Formula
 
   # The service specification of the software.
   def service
-    return unless service?
-
     @service ||= Homebrew::Service.new(self, &self.class.service)
   end
 
@@ -2169,7 +2167,7 @@ class Formula
       "disabled"                 => disabled?,
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
-      "service"                  => service&.serialize,
+      "service"                  => (service.serialize if service?),
       "tap_git_head"             => tap_git_head,
       "ruby_source_path"         => ruby_source_path,
       "ruby_source_checksum"     => {},

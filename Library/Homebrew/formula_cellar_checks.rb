@@ -288,7 +288,7 @@ module FormulaCellarChecks
   def check_service_command(formula)
     return unless formula.prefix.directory?
     return unless formula.service?
-    return if formula.service.command.blank?
+    return unless formula.service.command?
 
     "Service command does not exist" unless File.exist?(formula.service.command.first)
   end

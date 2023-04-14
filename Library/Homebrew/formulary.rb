@@ -261,9 +261,10 @@ module Formulary
         run_params = service_hash.delete(:run)
         service do
           T.bind(self, Homebrew::Service)
-          if run_params.is_a?(Hash)
+          case run_params
+          when Hash
             run(**run_params)
-          else
+          when Array, String
             run run_params
           end
           service_hash.each do |key, arg|
