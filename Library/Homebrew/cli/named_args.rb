@@ -11,7 +11,24 @@ module Homebrew
     #
     # @api private
     class NamedArgs < Array
-      def initialize(*args, parent: Args.new, override_spec: nil, force_bottle: false, flags: [], cask_options: false)
+      sig {
+        params(
+          args:          String,
+          parent:        Args,
+          override_spec: Symbol,
+          force_bottle:  T::Boolean,
+          flags:         T::Array[String],
+          cask_options:  T::Boolean,
+        ).void
+      }
+      def initialize(
+        *args,
+        parent: Args.new,
+        override_spec: T.unsafe(nil),
+        force_bottle: T.unsafe(nil),
+        flags: T.unsafe(nil),
+        cask_options: false
+      )
         require "cask/cask"
         require "cask/cask_loader"
         require "formulary"
@@ -50,11 +67,17 @@ module Homebrew
           warn:               T::Boolean,
         ).returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
       }
-      def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil, uniq: true,
-                                warn: true)
+      def to_formulae_and_casks(
+        only: parent&.only_formula_or_cask,
+        ignore_unavailable: nil,
+        method: T.unsafe(nil),
+        uniq: true,
+        warn: T.unsafe(nil)
+      )
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
-          load_formula_or_cask(name, only: only, method: method, warn: warn)
+          options = { warn: warn }.compact
+          load_formula_or_cask(name, only: only, method: method, **options)
         rescue FormulaUnreadableError, FormulaClassUnavailableError,
                TapFormulaUnreadableError, TapFormulaClassUnavailableError,
                Cask::CaskUnreadableError
@@ -88,14 +111,15 @@ module Homebrew
         end.uniq.freeze
       end
 
-      def load_formula_or_cask(name, only: nil, method: nil, warn: true)
+      def load_formula_or_cask(name, only: nil, method: nil, warn: nil)
         unreadable_error = nil
 
         if only != :cask
           begin
             formula = case method
             when nil, :factory
-              Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags, warn: warn)
+              options = { warn: warn, force_bottle: @force_bottle, flags: @flags }.compact
+              Formulary.factory(name, *@override_spec, **options)
             when :resolve
               resolve_formula(name)
             when :latest_kegs
@@ -126,7 +150,8 @@ module Homebrew
 
           begin
             config = Cask::Config.from_args(@parent) if @cask_options
-            cask = Cask::CaskLoader.load(name, config: config, warn: warn)
+            options = { warn: warn }.compact
+            cask = Cask::CaskLoader.load(name, config: config, **options)
 
             if unreadable_error.present?
               onoe <<~EOS
@@ -177,7 +202,7 @@ module Homebrew
       private :load_formula_or_cask
 
       def resolve_formula(name)
-        Formulary.resolve(name, spec: spec, force_bottle: @force_bottle, flags: @flags)
+        Formulary.resolve(name, **{ spec: @override_spec, force_bottle: @force_bottle, flags: @flags }.compact)
       end
       private :resolve_formula
 
@@ -305,11 +330,6 @@ module Homebrew
           end
         end.uniq
       end
-
-      def spec
-        @override_spec
-      end
-      private :spec
 
       def resolve_kegs(name)
         raise UsageError if name.blank?

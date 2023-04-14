@@ -343,7 +343,7 @@ module Homebrew
           nil
         end
         if libiconv&.linked_keg&.directory?
-          unless libiconv.keg_only?
+          unless libiconv&.keg_only?
             <<~EOS
               A libiconv formula is installed and linked.
               This will break stuff. For serious. Unlink it.

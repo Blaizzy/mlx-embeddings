@@ -10,12 +10,16 @@ module Homebrew
         force_bottle:               T::Boolean,
         bottle_tag:                 T.nilable(Symbol),
         build_from_source_formulae: T::Array[String],
+        os:                         T.nilable(Symbol),
+        arch:                       T.nilable(Symbol),
       ).returns(T::Boolean)
     }
-    def fetch_bottle?(formula, force_bottle:, bottle_tag:, build_from_source_formulae:)
+    def fetch_bottle?(formula, force_bottle:, bottle_tag:, build_from_source_formulae:, os:, arch:)
       bottle = formula.bottle
 
       return true if force_bottle && bottle.present?
+      return true if os.present?
+      return true if arch.present?
       return true if bottle_tag.present? && formula.bottled?(bottle_tag)
 
       bottle.present? &&
