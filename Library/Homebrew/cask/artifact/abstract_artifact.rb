@@ -82,6 +82,7 @@ module Cask
             Service,
             InputMethod,
             InternetPlugin,
+            KeyboardLayout,
             AudioUnitPlugin,
             VstPlugin,
             Vst3Plugin,
