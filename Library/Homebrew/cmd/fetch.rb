@@ -20,9 +20,9 @@ module Homebrew
         Download a bottle (if available) or source packages for <formula>e
         and binaries for <cask>s. For files, also print SHA-256 checksums.
       EOS
-      # This is needed for testing cask downloads on CI.
+      # This is needed for downloading ARM casks in CI.
       flag "--arch=",
-           description: "Download for the given arch.",
+           description: "Download for the given CPU architecture.",
            hidden:      true
       flag "--bottle-tag=",
            description: "Download a bottle for given tag."
