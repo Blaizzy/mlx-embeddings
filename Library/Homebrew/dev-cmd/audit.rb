@@ -242,8 +242,6 @@ module Homebrew
         odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
       end
 
-      Homebrew.auditing = true
-
       require "cask/auditor"
 
       audit_casks.to_h do |cask|
