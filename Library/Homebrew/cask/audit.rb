@@ -474,55 +474,21 @@ module Cask
         primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
 
         artifacts.each do |artifact|
-          case artifact
-          when Artifact::Moved
-            path = tmpdir/artifact.source.relative_path_from(cask.staged_path)
-            next unless path.exist?
+          artifact_path = artifact.is_a?(Artifact::Pkg) ? artifact.path : artifact.source
+          path = tmpdir/artifact_path.relative_path_from(cask.staged_path)
 
-            result = system_command("codesign", args: ["--verify", path], print_stderr: false)
+          next unless path.exist?
 
-            next if result.success?
+          result = system_command("spctl", args: ["--assess", "--type", "install", path], print_stderr: false)
 
-            message = <<~EOS
-              Signature verification failed:
-              #{result.merged_output}
-              macOS on ARM requires applications to be signed.
-              Please contact the upstream developer to let them know they should
-            EOS
+          next if result.success?
 
-            message = if result.stderr.include?("not signed at all")
-              "#{message} sign their app."
-            else
-              "#{message} fix the signature of their app."
-            end
-
-            add_error(message, strict_only: true)
-          when Artifact::Pkg
-            path = tmpdir/artifact.path.relative_path_from(cask.staged_path)
-            next unless path.exist?
-
-            result = system_command("pkgutil", args: ["--check-signature", path], print_stderr: false)
-
-            unless result.success?
-              add_error(<<~EOS, strict_only: true)
-                Signature verification failed:
-                #{result.merged_output}
-                macOS on ARM requires applications to be signed.
-                Please contact the upstream developer to let them know they should sign their package.
-              EOS
-              next
-            end
-
-            result = system_command("stapler", args: ["validate", path], print_stderr: false)
-            next if result.success?
-
-            add_error(<<~EOS, strict_only: true)
-              Signature verification failed:
-              #{result.merged_output}
-              macOS on ARM requires applications to be signed.
-              Please contact the upstream developer to let them know they should notarize their package.
-            EOS
-          end
+          add_error(<<~EOS, strict_only: true)
+            Signature verification failed:
+            #{result.merged_output}
+            macOS on ARM requires software to be signed.
+            Please contact the upstream developer to let them know they should sign and notarize their software.
+          EOS
         end
       end
     end
