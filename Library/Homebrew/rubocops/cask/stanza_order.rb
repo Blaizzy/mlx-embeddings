@@ -6,29 +6,24 @@ require "forwardable"
 module RuboCop
   module Cop
     module Cask
-      # This cop checks that a cask's stanzas are ordered correctly.
+      # This cop checks that a cask's stanzas are ordered correctly, including nested within `on_*` blocks.
       # @see https://docs.brew.sh/Cask-Cookbook#stanza-order
       class StanzaOrder < Base
         extend Forwardable
         extend AutoCorrector
         include CaskHelp
 
-        ON_SYSTEM_METHODS = RuboCop::Cask::Constants::ON_SYSTEM_METHODS
         MESSAGE = "`%<stanza>s` stanza out of order"
 
         def on_cask(cask_block)
           @cask_block = cask_block
           add_offenses(toplevel_stanzas)
 
-          return unless (on_blocks = toplevel_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).any?
+          return unless (on_blocks = on_system_methods(toplevel_stanzas)).any?
 
-          on_blocks.map(&:method_node).each do |on_block|
-            next unless on_block.block_type?
-
-            block_contents = on_block.child_nodes.select(&:begin_type?)
-            inner_nodes = block_contents.map(&:child_nodes).flatten.select(&:send_type?)
-            inner_stanzas = inner_nodes.map { |node| RuboCop::Cask::AST::Stanza.new(node, processed_source.comments) }
-            add_offenses(inner_stanzas, inner: true)
+          on_blocks.map(&:method_node).select(&:block_type?).each do |on_block|
+            stanzas = inner_stanzas(on_block, processed_source.comments)
+            add_offenses(stanzas, inner: true)
           end
         end
 

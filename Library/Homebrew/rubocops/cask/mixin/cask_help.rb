@@ -22,6 +22,16 @@ module RuboCop
           cask_block = RuboCop::Cask::AST::CaskBlock.new(block_node, comments)
           on_cask(cask_block)
         end
+
+        def on_system_methods(cask_stanzas)
+          cask_stanzas.select { |s| RuboCop::Cask::Constants::ON_SYSTEM_METHODS.include?(s.stanza_name) }
+        end
+
+        def inner_stanzas(block_node, comments)
+          block_contents = block_node.child_nodes.select(&:begin_type?)
+          inner_nodes = block_contents.map(&:child_nodes).flatten.select(&:send_type?)
+          inner_nodes.map { |n| RuboCop::Cask::AST::Stanza.new(n, comments) }
+        end
       end
     end
   end

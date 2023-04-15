@@ -6,7 +6,7 @@ require "forwardable"
 module RuboCop
   module Cop
     module Cask
-      # This cop checks that a cask's stanzas are grouped correctly.
+      # This cop checks that a cask's stanzas are grouped correctly, including nested within `on_*` blocks.
       # @see https://docs.brew.sh/Cask-Cookbook#stanza-order
       class StanzaGrouping < Base
         extend Forwardable
@@ -14,7 +14,6 @@ module RuboCop
         include CaskHelp
         include RangeHelp
 
-        ON_SYSTEM_METHODS = RuboCop::Cask::Constants::ON_SYSTEM_METHODS
         MISSING_LINE_MSG = "stanza groups should be separated by a single empty line"
         EXTRA_LINE_MSG = "stanzas within the same group should have no lines between them"
 
@@ -24,17 +23,11 @@ module RuboCop
           cask_stanzas = cask_block.toplevel_stanzas
           add_offenses(cask_stanzas)
 
-          # If present, check grouping of stanzas within `on_*` blocks.
-          return if (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).none?
+          return unless (on_blocks = on_system_methods(cask_stanzas)).any?
 
-          on_blocks.map(&:method_node).each do |on_block|
-            next unless on_block.block_type?
-
-            block_contents = on_block.child_nodes.select(&:begin_type?)
-            inner_nodes = block_contents.map(&:child_nodes).flatten.select(&:send_type?)
-            inner_stanzas = inner_nodes.map { |node| RuboCop::Cask::AST::Stanza.new(node, processed_source.comments) }
-
-            add_offenses(inner_stanzas)
+          on_blocks.map(&:method_node).select(&:block_type?).each do |on_block|
+            stanzas = inner_stanzas(on_block, processed_source.comments)
+            add_offenses(stanzas)
           end
         end
 

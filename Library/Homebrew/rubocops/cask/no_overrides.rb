@@ -7,7 +7,6 @@ module RuboCop
       class NoOverrides < Base
         include CaskHelp
 
-        ON_SYSTEM_METHODS = RuboCop::Cask::Constants::ON_SYSTEM_METHODS
         # These stanzas can be overridden by `on_*` blocks, so take them into account.
         # TODO: Update this list if new stanzas are added to `Cask::DSL` that call `set_unique_stanza`.
         OVERRIDEABLE_METHODS = [
@@ -22,8 +21,7 @@ module RuboCop
         def on_cask(cask_block)
           cask_stanzas = cask_block.toplevel_stanzas
 
-          # Skip if there are no `on_*` blocks.
-          return if (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).none?
+          return unless (on_blocks = on_system_methods(cask_stanzas)).any?
 
           stanzas_in_blocks = on_system_stanzas(on_blocks)
 
@@ -40,9 +38,7 @@ module RuboCop
         def on_system_stanzas(on_system)
           names = Set.new
           method_nodes = on_system.map(&:method_node)
-          method_nodes.each do |node|
-            next unless node.block_type?
-
+          method_nodes.select(&:block_type?).each do |node|
             node.child_nodes.each do |child|
               child.each_node(:send) do |send_node|
                 # Skip (nested) livecheck blocks as its `url` is different to a download `url`.
@@ -51,7 +47,7 @@ module RuboCop
                 if send_node.ancestors.drop_while { |a| !a.begin_type? }.any? { |a| a.dstr_type? || a.regexp_type? }
                   next
                 end
-                next if ON_SYSTEM_METHODS.include?(send_node.method_name)
+                next if RuboCop::Cask::Constants::ON_SYSTEM_METHODS.include?(send_node.method_name)
 
                 names.add(send_node.method_name)
               end
