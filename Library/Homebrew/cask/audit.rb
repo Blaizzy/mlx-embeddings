@@ -634,6 +634,9 @@ module Cask
 
     sig { void }
     def audit_github_repository_archived
+      # Discontinued casks may have an archived repo.
+      return if cask.discontinued?
+
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
@@ -641,14 +644,15 @@ module Cask
 
       metadata = SharedAudits.github_repo_data(user, repo)
       return if metadata.nil?
-      return unless metadata["archived"]
 
-      # Discontinued casks shouldn't show up as errors.
-      add_error("GitHub repo is archived", strict_only: !cask.discontinued?)
+      add_error "GitHub repo is archived" if metadata["archived"]
     end
 
     sig { void }
     def audit_gitlab_repository_archived
+      # Discontinued casks may have an archived repo.
+      return if cask.discontinued?
+
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
@@ -656,10 +660,8 @@ module Cask
 
       metadata = SharedAudits.gitlab_repo_data(user, repo)
       return if metadata.nil?
-      return unless metadata["archived"]
 
-      # Discontinued casks shouldn't show up as errors.
-      add_error("GitLab repo is archived") unless cask.discontinued?
+      add_error "GitLab repo is archived" if metadata["archived"]
     end
 
     sig { void }
