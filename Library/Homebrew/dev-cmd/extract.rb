@@ -113,7 +113,7 @@ module Homebrew
     end
     destination_tap.install unless destination_tap.installed?
 
-    repo = source_tap.path
+    repo = source_tap.git_repo.pathname
     pattern = if source_tap.core_tap?
       [repo/"Formula/#{name}.rb"]
     else

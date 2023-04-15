@@ -15,7 +15,7 @@ module Utils
   def self.git_head(repo = Pathname.pwd, length: nil, safe: true)
     return git_short_head(repo, length: length) if length.present?
 
-    repo = Pathname(repo).extend(GitRepositoryExtension)
+    repo = GitRepoPath.new(Pathname(repo))
     repo.git_head(safe: safe)
   end
 
@@ -28,7 +28,7 @@ module Utils
     ).returns(T.nilable(String))
   }
   def self.git_short_head(repo = Pathname.pwd, length: nil, safe: true)
-    repo = Pathname(repo).extend(GitRepositoryExtension)
+    repo = GitRepoPath.new(Pathname(repo))
     repo.git_short_head(length: length, safe: safe)
   end
 
@@ -40,7 +40,7 @@ module Utils
     ).returns(T.nilable(String))
   }
   def self.git_branch(repo = Pathname.pwd, safe: true)
-    repo = Pathname(repo).extend(GitRepositoryExtension)
+    repo = GitRepoPath.new(Pathname(repo))
     repo.git_branch(safe: safe)
   end
 
@@ -53,7 +53,7 @@ module Utils
     ).returns(T.nilable(String))
   }
   def self.git_commit_message(repo = Pathname.pwd, commit: "HEAD", safe: true)
-    repo = Pathname(repo).extend(GitRepositoryExtension)
+    repo = GitRepoPath.new(Pathname(repo))
     repo.git_commit_message(commit, safe: safe)
   end
 end

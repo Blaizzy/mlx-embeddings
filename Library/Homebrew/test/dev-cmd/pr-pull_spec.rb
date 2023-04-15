@@ -81,7 +81,7 @@ describe "brew pr-pull" do
     let(:tap) { Tap.fetch("Homebrew", "foo") }
     let(:formula_file) { tap.path/"Formula/foo.rb" }
     let(:cask_file) { tap.cask_dir/"food.rb" }
-    let(:path) { (Tap::TAP_DIRECTORY/"homebrew/homebrew-foo").extend(GitRepositoryExtension) }
+    let(:path) { GitRepoPath.new(Tap::TAP_DIRECTORY/"homebrew/homebrew-foo") }
 
     describe "#autosquash!" do
       it "squashes a formula or cask correctly" do

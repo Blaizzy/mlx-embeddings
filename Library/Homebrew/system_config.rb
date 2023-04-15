@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "hardware"
@@ -32,9 +32,9 @@ module SystemConfig
       end
     end
 
-    sig { returns(Pathname) }
+    sig { returns(GitRepoPath) }
     def homebrew_repo
-      HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
+      GitRepoPath.new(HOMEBREW_REPOSITORY)
     end
 
     sig { returns(String) }
@@ -69,7 +69,7 @@ module SystemConfig
 
     sig { returns(String) }
     def core_tap_origin
-      CoreTap.instance.remote || "(none)"
+      CoreTap.instance.remote
     end
 
     sig { returns(String) }
@@ -132,8 +132,9 @@ module SystemConfig
     def describe_curl
       out, = system_command(curl_executable, args: ["--version"], verbose: false)
 
-      if /^curl (?<curl_version>[\d.]+)/ =~ out
-        "#{curl_version} => #{curl_path}"
+      match_data = /^curl (?<curl_version>[\d.]+)/.match(out)
+      if match_data
+        "#{match_data[:curl_version]} => #{curl_path}"
       else
         "N/A"
       end

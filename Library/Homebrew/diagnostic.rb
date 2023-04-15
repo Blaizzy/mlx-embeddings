@@ -126,6 +126,7 @@ module Homebrew
         EOS
       end
 
+      sig { params(repository_path: GitRepoPath, desired_origin: String).returns(T.nilable(String)) }
       def examine_git_origin(repository_path, desired_origin)
         return if !Utils::Git.available? || !repository_path.git?
 

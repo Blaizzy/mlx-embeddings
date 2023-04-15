@@ -93,7 +93,10 @@ class Tap
 
   # The local path to this {Tap}.
   # e.g. `/usr/local/Library/Taps/user/homebrew-repo`
+  sig { returns(GitRepoPath) }
   attr_reader :path
+
+  alias git_repo path
 
   # @private
   def initialize(user, repo)
@@ -101,8 +104,7 @@ class Tap
     @repo = repo
     @name = "#{@user}/#{@repo}".downcase
     @full_name = "#{@user}/homebrew-#{@repo}"
-    @path = TAP_DIRECTORY/@full_name.downcase
-    @path.extend(GitRepositoryExtension)
+    @path = GitRepoPath.new(TAP_DIRECTORY/@full_name.downcase)
     @alias_table = nil
     @alias_reverse_table = nil
   end
@@ -315,7 +317,7 @@ class Tap
       ignore_interrupts do
         # wait for git to possibly cleanup the top directory when interrupt happens.
         sleep 0.1
-        FileUtils.rm_rf path
+        FileUtils.rm_rf git_repo.pathname
         path.parent.rmdir_if_possible
       end
       raise
@@ -386,7 +388,7 @@ class Tap
       $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
     end
 
-    current_upstream_head = path.git_origin_branch
+    current_upstream_head = T.must(path.git_origin_branch)
     return if requested_remote.blank? && path.git_origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
@@ -395,7 +397,7 @@ class Tap
     safe_system "git", "-C", path, *args
     path.git_origin_set_head_auto
 
-    new_upstream_head = path.git_origin_branch
+    new_upstream_head = T.must(path.git_origin_branch)
     return if new_upstream_head == current_upstream_head
 
     path.git_rename_branch old: current_upstream_head, new: new_upstream_head
@@ -462,7 +464,7 @@ class Tap
 
   sig { returns(T::Array[Pathname]) }
   def potential_formula_dirs
-    @potential_formula_dirs ||= [path/"Formula", path/"HomebrewFormula", path].freeze
+    @potential_formula_dirs ||= [path/"Formula", path/"HomebrewFormula", git_repo.pathname].freeze
   end
 
   # Path to the directory of all {Cask} files for this {Tap}.
@@ -567,7 +569,7 @@ class Tap
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def formula_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
-    file = file.expand_path(path)
+    file = file.expand_path(git_repo.pathname)
     return false unless ruby_file?(file)
     return false if cask_file?(file)
 
@@ -580,7 +582,7 @@ class Tap
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def cask_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
-    file = file.expand_path(path)
+    file = file.expand_path(git_repo.pathname)
     return false unless ruby_file?(file)
 
     file.to_s.start_with?("#{cask_dir}/")
