@@ -9,6 +9,12 @@ module Cask
     #
     # @api private
     class VstPlugin < Moved
+      extend T::Sig
+
+      sig { returns(String) }
+      def self.english_name
+        "VST Plugin"
+      end
     end
   end
 end
