@@ -579,38 +579,5 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
 
       include_examples "autocorrects source"
     end
-
-    # TODO: Maybe this should be fixed too?
-    describe "inner erroneously grouped nested livecheck block contents are ignored" do
-      let(:source) do
-        <<~CASK
-          cask 'foo' do
-            on_arm do
-              version "1.0.2"
-              sha256 :no_check
-
-              url "https://foo.brew.sh/foo-arm.zip"
-
-              livecheck do
-                url "https://foo.brew.sh/foo-arm-versions.html"
-              end
-            end
-            on_intel do
-              version "0.9.8"
-              sha256 :no_check
-
-              url "https://foo.brew.sh/foo-intel.zip"
-
-              livecheck do
-                regex(/RegExhibit\s+(\d+(?:.\d+)+)/i)
-                url "https://foo.brew.sh/foo-intel-versions.html"
-              end
-            end
-          end
-        CASK
-      end
-
-      include_examples "does not report any offenses"
-    end
   end
 end
