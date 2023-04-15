@@ -138,7 +138,7 @@ class Tap
   def remote
     return default_remote unless installed?
 
-    @remote ||= path.git_origin
+    @remote ||= path.origin_url
   end
 
   # The remote repository name of this {Tap}.
@@ -166,28 +166,28 @@ class Tap
 
   # True if this {Tap} is a Git repository.
   def git?
-    path.git?
+    path.git_repo?
   end
 
   # git branch for this {Tap}.
   def git_branch
     raise TapUnavailableError, name unless installed?
 
-    path.git_branch
+    path.branch_name
   end
 
   # git HEAD for this {Tap}.
   def git_head
     raise TapUnavailableError, name unless installed?
 
-    @git_head ||= path.git_head
+    @git_head ||= path.head_ref
   end
 
   # Time since last git commit for this {Tap}.
   def git_last_commit
     raise TapUnavailableError, name unless installed?
 
-    path.git_last_commit
+    path.last_committed
   end
 
   # The issues URL of this {Tap}.
@@ -388,20 +388,20 @@ class Tap
       $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
     end
 
-    current_upstream_head = T.must(path.git_origin_branch)
-    return if requested_remote.blank? && path.git_origin_has_branch?(current_upstream_head)
+    current_upstream_head = T.must(path.origin_branch_name)
+    return if requested_remote.blank? && path.origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
     args << "--quiet" if quiet
     args << "origin"
     safe_system "git", "-C", path, *args
-    path.git_origin_set_head_auto
+    path.set_head_origin_auto
 
-    new_upstream_head = T.must(path.git_origin_branch)
+    new_upstream_head = T.must(path.origin_branch_name)
     return if new_upstream_head == current_upstream_head
 
-    path.git_rename_branch old: current_upstream_head, new: new_upstream_head
-    path.git_branch_set_upstream local: new_upstream_head, origin: new_upstream_head
+    path.rename_branch old: current_upstream_head, new: new_upstream_head
+    path.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
 
     return if quiet
 

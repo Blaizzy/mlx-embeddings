@@ -128,9 +128,9 @@ module Homebrew
 
       sig { params(repository_path: GitRepoPath, desired_origin: String).returns(T.nilable(String)) }
       def examine_git_origin(repository_path, desired_origin)
-        return if !Utils::Git.available? || !repository_path.git?
+        return if !Utils::Git.available? || !repository_path.git_repo?
 
-        current_origin = repository_path.git_origin
+        current_origin = repository_path.origin_url
 
         if current_origin.nil?
           <<~EOS

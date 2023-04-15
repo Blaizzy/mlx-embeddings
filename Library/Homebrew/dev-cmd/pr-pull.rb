@@ -86,7 +86,7 @@ module Homebrew
   end
 
   def self.signoff!(path, pull_request: nil, dry_run: false)
-    subject, body, trailers = separate_commit_message(path.git_commit_message)
+    subject, body, trailers = separate_commit_message(path.commit_message)
 
     if pull_request
       # This is a tap pull request and approving reviewers should also sign-off.
@@ -167,7 +167,7 @@ module Homebrew
     new_package = Utils::Git.file_at_commit(path, file, "HEAD")
 
     bump_subject = determine_bump_subject(old_package, new_package, package_file, reason: reason).strip
-    subject, body, trailers = separate_commit_message(path.git_commit_message)
+    subject, body, trailers = separate_commit_message(path.commit_message)
 
     if subject != bump_subject && !subject.start_with?("#{package_name}:")
       safe_system("git", "-C", path, "commit", "--amend", "-q",
@@ -192,7 +192,7 @@ module Homebrew
     messages = []
     trailers = []
     commits.each do |commit|
-      subject, body, trailer = separate_commit_message(path.git_commit_message(commit))
+      subject, body, trailer = separate_commit_message(path.commit_message(commit))
       body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
       messages << "* #{subject}\n#{body}".strip
       trailers << trailer
@@ -228,7 +228,7 @@ module Homebrew
 
   # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
   def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
-    original_head = tap.path.git_head
+    original_head = tap.path.head_ref
 
     commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
@@ -450,8 +450,8 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      if !tap.path.git_default_origin_branch? || args.branch_okay? || args.clean?
-        opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
+      if !tap.path.default_origin_branch? || args.branch_okay? || args.clean?
+        opoo "Current branch is #{tap.path.branch_name}: do you need to pull inside #{tap.path.origin_branch_name}?"
       end
 
       pr_labels = GitHub.pull_request_labels(user, repo, pr)
@@ -464,7 +464,7 @@ module Homebrew
       ohai "Fetching #{tap} pull request ##{pr}"
       Dir.mktmpdir pr do |dir|
         cd dir do
-          current_branch_head = ENV["GITHUB_SHA"] || tap.git_head
+          current_branch_head = ENV["GITHUB_SHA"] || tap.head_ref
           original_commit = if args.no_cherry_pick?
             # TODO: Handle the case where `merge-base` returns multiple commits.
             Utils.safe_popen_read("git", "-C", tap.path, "merge-base", "origin/HEAD", current_branch_head).strip

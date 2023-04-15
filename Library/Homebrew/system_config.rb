@@ -39,17 +39,17 @@ module SystemConfig
 
     sig { returns(String) }
     def head
-      homebrew_repo.git_head || "(none)"
+      homebrew_repo.head_ref || "(none)"
     end
 
     sig { returns(String) }
     def last_commit
-      homebrew_repo.git_last_commit || "never"
+      homebrew_repo.last_committed || "never"
     end
 
     sig { returns(String) }
     def origin
-      homebrew_repo.git_origin || "(none)"
+      homebrew_repo.origin_url || "(none)"
     end
 
     sig { returns(String) }
