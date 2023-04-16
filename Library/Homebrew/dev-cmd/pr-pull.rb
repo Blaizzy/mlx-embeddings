@@ -156,7 +156,7 @@ module Homebrew
 
   # Cherry picks a single commit that modifies a single file.
   # Potentially rewords this commit using {determine_bump_subject}.
-  def self.reword_package_commit(commit, file, reason: "", verbose: false, resolve: false, git_repo:)
+  def self.reword_package_commit(commit, file, git_repo:, reason: "", verbose: false, resolve: false)
     package_file = git_repo.pathname / file
     package_name = package_file.basename.to_s.chomp(".rb")
 
@@ -181,7 +181,7 @@ module Homebrew
   # Cherry picks multiple commits that each modify a single file.
   # Words the commit according to {determine_bump_subject} with the body
   # corresponding to all the original commit messages combined.
-  def self.squash_package_commits(commits, file, reason: "", verbose: false, resolve: false, git_repo:)
+  def self.squash_package_commits(commits, file, git_repo:, reason: "", verbose: false, resolve: false)
     odebug "Squashing #{file}: #{commits.join " "}"
 
     # Format commit messages into something similar to `git fmt-merge-message`.
@@ -204,7 +204,8 @@ module Homebrew
 
     # Get the author and date of the first commit of this series, which we use for the squashed commit.
     original_author = authors.shift
-    original_date = Utils.safe_popen_read "git", "-C", git_repo.pathname, "show", "--no-patch", "--pretty=%ad", commits.first
+    original_date = Utils.safe_popen_read "git", "-C", git_repo.pathname, "show", "--no-patch", "--pretty=%ad",
+                                          commits.first
 
     # Generate trailers for coauthors and combine them with the existing trailers.
     co_author_trailers = authors.map { |au| "Co-authored-by: #{au}" }
@@ -268,13 +269,15 @@ module Homebrew
       files = commits_to_files[commit]
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
-        reword_package_commit(commit, files.first, git_repo: tap.git_repo, reason: reason, verbose: verbose, resolve: resolve)
+        reword_package_commit(commit, files.first, git_repo: tap.git_repo, reason: reason, verbose: verbose,
+resolve: resolve)
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
-        squash_package_commits(commits, file, git_repo: tap.git_repo, reason: reason, verbose: verbose, resolve: resolve)
+        squash_package_commits(commits, file, git_repo: tap.git_repo, reason: reason, verbose: verbose,
+resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
