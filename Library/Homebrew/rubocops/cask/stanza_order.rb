@@ -37,12 +37,13 @@ module RuboCop
         def add_offenses(stanzas, inner: false)
           sorted_stanzas = inner ? sorted_inner_stanzas(stanzas) : sorted_toplevel_stanzas
           offending_stanzas(stanzas, sorted_stanzas).each do |stanza|
+            puts "offending stanza: #{stanza.stanza_name}"
             message = format(MESSAGE, stanza: stanza.stanza_name)
             add_offense(stanza.source_range_with_comments, message: message) do |corrector|
               correct_stanza_index = stanzas.index(stanza)
               correct_stanza = sorted_stanzas[correct_stanza_index]
-              corrector.replace(stanza.source_range_with_comments,
-                                correct_stanza.source_with_comments)
+              puts "correct stanza: #{correct_stanza.stanza_name}"
+              corrector.replace(stanza.source_range_with_comments, correct_stanza.source_with_comments)
             end
           end
         end
