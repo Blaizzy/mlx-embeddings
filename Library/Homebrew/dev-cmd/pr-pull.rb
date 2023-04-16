@@ -212,11 +212,11 @@ module Homebrew
     trailers = [trailers + co_author_trailers].flatten.uniq.compact
 
     # Apply the patch series but don't commit anything yet.
-    Utils::Git.cherry_pick!(git_repo, "--no-commit", *commits, verbose: verbose, resolve: resolve)
+    Utils::Git.cherry_pick!(git_repo.pathname, "--no-commit", *commits, verbose: verbose, resolve: resolve)
 
     # Determine the bump subject by comparing the original state of the tree to its current state.
     package_file = git_repo.pathname / file
-    old_package = Utils::Git.file_at_commit(git_repo, file, "#{commits.first}^")
+    old_package = Utils::Git.file_at_commit(git_repo.pathname, file, "#{commits.first}^")
     new_package = package_file.read
     bump_subject = determine_bump_subject(old_package, new_package, package_file, reason: reason)
 
@@ -229,7 +229,8 @@ module Homebrew
 
   # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
   def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
-    original_head = tap.git_repo.head_ref
+    git_repo = tap.git_repo
+    original_head = git_repo.head_ref
 
     commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
@@ -269,15 +270,15 @@ module Homebrew
       files = commits_to_files[commit]
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
-        reword_package_commit(commit, files.first, git_repo: tap.git_repo, reason: reason, verbose: verbose,
-                              resolve: resolve)
+        reword_package_commit(
+          commit, files.first, git_repo: git_repo, reason: reason, verbose: verbose, resolve: resolve
+        )
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
-        squash_package_commits(commits, file, git_repo: tap.git_repo, reason: reason, verbose: verbose,
-                               resolve: resolve)
+        squash_package_commits(commits, file, git_repo: git_repo, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
@@ -483,7 +484,7 @@ module Homebrew
               autosquash!(original_commit, tap: tap, cherry_picked: !args.no_cherry_pick?,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
-            signoff!(tap.git_repo, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
+            signoff!(git_repo, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
           unless formulae_need_bottles?(tap, original_commit, pr_labels, args: args)

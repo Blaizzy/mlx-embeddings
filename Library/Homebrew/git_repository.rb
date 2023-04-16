@@ -4,13 +4,19 @@
 require "utils/git"
 require "utils/popen"
 
-# Extensions to {Pathname} for querying Git repository information.
+# Given a {Pathname}, provides methods for querying Git repository information.
 # @see Utils::Git
 # @api private
-class GitRepository < SimpleDelegator
+class GitRepository
   extend T::Sig
 
-  alias pathname __getobj__
+  sig { returns(Pathname) }
+  attr_reader :pathname
+
+  sig { params(pathname: Pathname).void }
+  def initialize(pathname)
+    @pathname = pathname
+  end
 
   sig { returns(T::Boolean) }
   def git_repo?

@@ -391,7 +391,7 @@ class Tap
       $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
     end
 
-    current_upstream_head = git_repo.origin_branch_name
+    current_upstream_head = T.must(git_repo.origin_branch_name)
     return if requested_remote.blank? && git_repo.origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
@@ -400,7 +400,7 @@ class Tap
     safe_system "git", "-C", path, *args
     git_repo.set_head_origin_auto
 
-    new_upstream_head = git_repo.origin_branch_name
+    new_upstream_head = T.must(git_repo.origin_branch_name)
     return if new_upstream_head == current_upstream_head
 
     git_repo.rename_branch old: current_upstream_head, new: new_upstream_head
