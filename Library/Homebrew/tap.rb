@@ -93,9 +93,12 @@ class Tap
 
   # The local path to this {Tap}.
   # e.g. `/usr/local/Library/Taps/user/homebrew-repo`
+  sig { returns(Pathname) }
   attr_reader :path
 
-  alias git_repo path
+  # The git repository of this {Tap}.
+  sig { returns(GitRepository) }
+  attr_reader :git_repo
 
   # @private
   def initialize(user, repo)
@@ -103,7 +106,8 @@ class Tap
     @repo = repo
     @name = "#{@user}/#{@repo}".downcase
     @full_name = "#{@user}/homebrew-#{@repo}"
-    @path = GitRepoPath.new(TAP_DIRECTORY/@full_name.downcase)
+    @path = TAP_DIRECTORY/@full_name.downcase
+    @git_repo = GitRepository.new(@path)
     @alias_table = nil
     @alias_reverse_table = nil
   end
@@ -165,7 +169,7 @@ class Tap
 
   # True if this {Tap} is a Git repository.
   def git?
-    path.git_repo?
+    git_repo.git_repo?
   end
 
   # git branch for this {Tap}.

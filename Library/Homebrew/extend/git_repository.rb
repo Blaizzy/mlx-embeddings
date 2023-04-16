@@ -7,7 +7,7 @@ require "utils/popen"
 # Extensions to {Pathname} for querying Git repository information.
 # @see Utils::Git
 # @api private
-class GitRepoPath < SimpleDelegator
+class GitRepository < SimpleDelegator
   extend T::Sig
 
   alias pathname __getobj__

@@ -270,14 +270,14 @@ module Homebrew
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
         reword_package_commit(commit, files.first, git_repo: tap.git_repo, reason: reason, verbose: verbose,
-resolve: resolve)
+                              resolve: resolve)
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
         squash_package_commits(commits, file, git_repo: tap.git_repo, reason: reason, verbose: verbose,
-resolve: resolve)
+                               resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
@@ -483,7 +483,7 @@ resolve: resolve)
               autosquash!(original_commit, tap: tap, cherry_picked: !args.no_cherry_pick?,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
-            signoff!(tap.path, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
+            signoff!(tap.git_repo, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
           unless formulae_need_bottles?(tap, original_commit, pr_labels, args: args)

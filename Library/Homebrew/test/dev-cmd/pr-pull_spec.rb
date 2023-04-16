@@ -113,7 +113,7 @@ describe "brew pr-pull" do
           File.write(cask_file, cask_version)
           safe_system Utils::Git.git, "commit", cask_file, "-m", "version", "--author=#{secondary_author}"
           described_class.autosquash!(original_hash, tap: tap)
-          git_repo = GitRepoPath.new(path)
+          git_repo = GitRepository.new(path)
           expect(git_repo.commit_message).to include("food 2.0")
           expect(git_repo.commit_message).to include("Co-authored-by: #{secondary_author}")
         end
@@ -129,7 +129,7 @@ describe "brew pr-pull" do
           safe_system Utils::Git.git, "add", formula_file
           safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
         end
-        described_class.signoff!(tap.path)
+        described_class.signoff!(tap.git_repo)
         expect(tap.git_repo.commit_message).to include("Signed-off-by:")
 
         (path/"Casks").mkpath
@@ -138,7 +138,7 @@ describe "brew pr-pull" do
           safe_system Utils::Git.git, "add", cask_file
           safe_system Utils::Git.git, "commit", "-m", "food 1.0 (new cask)"
         end
-        described_class.signoff!(tap.path)
+        described_class.signoff!(tap.git_repo)
         expect(tap.git_repo.commit_message).to include("Signed-off-by:")
       end
     end
