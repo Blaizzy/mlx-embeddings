@@ -93,7 +93,6 @@ class Tap
 
   # The local path to this {Tap}.
   # e.g. `/usr/local/Library/Taps/user/homebrew-repo`
-  sig { returns(GitRepoPath) }
   attr_reader :path
 
   alias git_repo path
@@ -138,7 +137,7 @@ class Tap
   def remote
     return default_remote unless installed?
 
-    @remote ||= path.origin_url
+    @remote ||= git_repo.origin_url
   end
 
   # The remote repository name of this {Tap}.
@@ -173,21 +172,21 @@ class Tap
   def git_branch
     raise TapUnavailableError, name unless installed?
 
-    path.branch_name
+    git_repo.branch_name
   end
 
   # git HEAD for this {Tap}.
   def git_head
     raise TapUnavailableError, name unless installed?
 
-    @git_head ||= path.head_ref
+    @git_head ||= git_repo.head_ref
   end
 
   # Time since last git commit for this {Tap}.
   def git_last_commit
     raise TapUnavailableError, name unless installed?
 
-    path.last_committed
+    git_repo.last_committed
   end
 
   # The issues URL of this {Tap}.
@@ -317,7 +316,7 @@ class Tap
       ignore_interrupts do
         # wait for git to possibly cleanup the top directory when interrupt happens.
         sleep 0.1
-        FileUtils.rm_rf git_repo.pathname
+        FileUtils.rm_rf path
         path.parent.rmdir_if_possible
       end
       raise
@@ -388,20 +387,20 @@ class Tap
       $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
     end
 
-    current_upstream_head = T.must(path.origin_branch_name)
-    return if requested_remote.blank? && path.origin_has_branch?(current_upstream_head)
+    current_upstream_head = git_repo.origin_branch_name
+    return if requested_remote.blank? && git_repo.origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
     args << "--quiet" if quiet
     args << "origin"
     safe_system "git", "-C", path, *args
-    path.set_head_origin_auto
+    git_repo.set_head_origin_auto
 
-    new_upstream_head = T.must(path.origin_branch_name)
+    new_upstream_head = git_repo.origin_branch_name
     return if new_upstream_head == current_upstream_head
 
-    path.rename_branch old: current_upstream_head, new: new_upstream_head
-    path.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
+    git_repo.rename_branch old: current_upstream_head, new: new_upstream_head
+    git_repo.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
 
     return if quiet
 
@@ -464,7 +463,7 @@ class Tap
 
   sig { returns(T::Array[Pathname]) }
   def potential_formula_dirs
-    @potential_formula_dirs ||= [path/"Formula", path/"HomebrewFormula", git_repo.pathname].freeze
+    @potential_formula_dirs ||= [path/"Formula", path/"HomebrewFormula", path].freeze
   end
 
   # Path to the directory of all {Cask} files for this {Tap}.
@@ -569,7 +568,7 @@ class Tap
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def formula_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
-    file = file.expand_path(git_repo.pathname)
+    file = file.expand_path(path)
     return false unless ruby_file?(file)
     return false if cask_file?(file)
 
@@ -582,7 +581,7 @@ class Tap
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def cask_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
-    file = file.expand_path(git_repo.pathname)
+    file = file.expand_path(path)
     return false unless ruby_file?(file)
 
     file.to_s.start_with?("#{cask_dir}/")

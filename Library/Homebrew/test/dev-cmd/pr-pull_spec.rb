@@ -81,7 +81,7 @@ describe "brew pr-pull" do
     let(:tap) { Tap.fetch("Homebrew", "foo") }
     let(:formula_file) { tap.path/"Formula/foo.rb" }
     let(:cask_file) { tap.cask_dir/"food.rb" }
-    let(:path) { GitRepoPath.new(Tap::TAP_DIRECTORY/"homebrew/homebrew-foo") }
+    let(:path) { Pathname(Tap::TAP_DIRECTORY/"homebrew/homebrew-foo") }
 
     describe "#autosquash!" do
       it "squashes a formula or cask correctly" do
@@ -98,8 +98,8 @@ describe "brew pr-pull" do
           File.write(formula_file, formula_version)
           safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
           described_class.autosquash!(original_hash, tap: tap)
-          expect(tap.path.commit_message).to include("foo 2.0")
-          expect(tap.path.commit_message).to include("Co-authored-by: #{secondary_author}")
+          expect(tap.git_repo.commit_message).to include("foo 2.0")
+          expect(tap.git_repo.commit_message).to include("Co-authored-by: #{secondary_author}")
         end
 
         (path/"Casks").mkpath
@@ -113,8 +113,9 @@ describe "brew pr-pull" do
           File.write(cask_file, cask_version)
           safe_system Utils::Git.git, "commit", cask_file, "-m", "version", "--author=#{secondary_author}"
           described_class.autosquash!(original_hash, tap: tap)
-          expect(path.commit_message).to include("food 2.0")
-          expect(path.commit_message).to include("Co-authored-by: #{secondary_author}")
+          git_repo = GitRepoPath.new(path)
+          expect(git_repo.commit_message).to include("food 2.0")
+          expect(git_repo.commit_message).to include("Co-authored-by: #{secondary_author}")
         end
       end
     end
@@ -129,7 +130,7 @@ describe "brew pr-pull" do
           safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
         end
         described_class.signoff!(tap.path)
-        expect(tap.path.commit_message).to include("Signed-off-by:")
+        expect(tap.git_repo.commit_message).to include("Signed-off-by:")
 
         (path/"Casks").mkpath
         cask_file.write(cask)
@@ -138,7 +139,7 @@ describe "brew pr-pull" do
           safe_system Utils::Git.git, "commit", "-m", "food 1.0 (new cask)"
         end
         described_class.signoff!(tap.path)
-        expect(tap.path.commit_message).to include("Signed-off-by:")
+        expect(tap.git_repo.commit_message).to include("Signed-off-by:")
       end
     end
 

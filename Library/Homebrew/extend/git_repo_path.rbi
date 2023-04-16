@@ -7,11 +7,4 @@ class GitRepoPath < SimpleDelegator
   # @see https://github.com/sorbet/sorbet/issues/2378#issuecomment-569474238
   sig { returns(Pathname) }
   def __getobj__; end
-
-  def /(_arg0); end
-  def parent; end
-  def abv; end
-  def rmtree; end
-  def cd; end
-  def directory?; end
 end
