@@ -30,7 +30,7 @@ module Homebrew
     Homebrew::Settings.delete(:gemgroups) if groups
 
     groups ||= []
-    groups |= VALID_GEM_GROUPS if groups.delete("all")
+    groups |= Homebrew.valid_gem_groups if groups.delete("all")
 
     Homebrew.install_bundler_gems!(groups: groups)
   end

@@ -42,51 +42,6 @@ module Homebrew
       end
     end
 
-    def search_taps(query, silent: false)
-      if query.match?(Regexp.union(HOMEBREW_TAP_FORMULA_REGEX, HOMEBREW_TAP_CASK_REGEX))
-        _, _, query = query.split("/", 3)
-      end
-
-      results = { formulae: [], casks: [] }
-
-      return results if Homebrew::EnvConfig.no_github_api?
-
-      unless silent
-        # Use stderr to avoid breaking parsed output
-        $stderr.puts Formatter.headline("Searching taps on GitHub...", color: :blue)
-      end
-
-      matches = begin
-        GitHub.search_code(
-          user:      "Homebrew",
-          path:      ["Formula", "Casks", "."],
-          filename:  query,
-          extension: "rb",
-        )
-      rescue GitHub::API::Error => e
-        opoo "Error searching on GitHub: #{e}\n"
-        nil
-      end
-
-      return results if matches.blank?
-
-      matches.each do |match|
-        name = File.basename(match["path"], ".rb")
-        tap = Tap.fetch(match["repository"]["full_name"])
-        full_name = "#{tap.name}/#{name}"
-
-        next if tap.installed?
-
-        if match["path"].start_with?("Casks/")
-          results[:casks] = [*results[:casks], full_name].sort
-        else
-          results[:formulae] = [*results[:formulae], full_name].sort
-        end
-      end
-
-      results
-    end
-
     def search_formulae(string_or_regex)
       if string_or_regex.is_a?(String) && string_or_regex.match?(HOMEBREW_TAP_FORMULA_REGEX)
         return begin
@@ -129,12 +84,11 @@ module Homebrew
       end
 
       cask_tokens = Tap.flat_map(&:cask_tokens).map do |c|
-        c.sub(%r{^homebrew/cask.*/}, "")
-      end
+        next if c.start_with?("homebrew/cask/") && !Homebrew::EnvConfig.no_install_from_api?
 
-      if !Tap.fetch("homebrew/cask").installed? && !Homebrew::EnvConfig.no_install_from_api?
-        cask_tokens += Homebrew::API::Cask.all_casks.keys
-      end
+        c.sub(%r{^homebrew/cask.*/}, "")
+      end.compact
+      cask_tokens |= Homebrew::API::Cask.all_casks.keys unless Homebrew::EnvConfig.no_install_from_api?
 
       results = search(cask_tokens, string_or_regex)
       results += DidYouMean::SpellChecker.new(dictionary: cask_tokens)
@@ -150,19 +104,17 @@ module Homebrew
       end.uniq
     end
 
-    def search_names(query, string_or_regex, args)
+    def search_names(string_or_regex, args)
       both = !args.formula? && !args.cask?
 
-      remote_results = search_taps(query, silent: true)
-
       all_formulae = if args.formula? || both
-        search_formulae(string_or_regex) + remote_results[:formulae]
+        search_formulae(string_or_regex)
       else
         []
       end
 
       all_casks = if args.cask? || both
-        search_casks(string_or_regex) + remote_results[:casks]
+        search_casks(string_or_regex)
       else
         []
       end

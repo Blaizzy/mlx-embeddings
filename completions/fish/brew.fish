@@ -85,27 +85,14 @@ end
 ######################
 # These functions return lists of suggestions for arguments completion
 
-function __fish_brew_ruby_parse_json -a file parser -d 'Parses given JSON file with Ruby'
-    # parser is any chain of methods to call on the parsed JSON
-    ruby -e "require('json'); JSON.parse(File.read('$file'))$parser"
-end
-
 function __fish_brew_suggest_formulae_all -d 'Lists all available formulae with their descriptions'
-    # store the brew cache path in a var (because calling (brew --cache) is slow)
-    set -q __brew_cache_path
-    or set -gx __brew_cache_path (brew --cache)
-
-    if test -f "$__brew_cache_path/descriptions.json"
-        __fish_brew_ruby_parse_json "$__brew_cache_path/descriptions.json" \
-            '.each{ |k, v| puts([k, v].reject(&:nil?).join("\t")) }'
-    else
-        brew formulae
-    end
+    brew formulae
 end
 
 function __fish_brew_suggest_formulae_installed
-    brew list --formula
+    command ls -1 (brew --cellar)
 end
+
 
 function __fish_brew_suggest_formulae_outdated -d "List of outdated formulae with the information about potential upgrade"
     brew outdated --formula --verbose \
@@ -130,7 +117,7 @@ function __fish_brew_suggest_casks_all -d "Lists locally available casks"
 end
 
 function __fish_brew_suggest_casks_installed -d "Lists installed casks"
-    brew list --cask -1
+    command ls -1 (brew --caskroom)
 end
 
 function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the information about potential upgrade"
@@ -140,7 +127,9 @@ function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the in
 end
 
 function __fish_brew_suggest_taps_installed -d "List all available taps"
-    brew tap
+    command find (brew --repo)/Library/Taps -mindepth 2 -maxdepth 2 -type d \
+    | string replace homebrew- "" \
+    | string replace (brew --repo)/Library/Taps/ ""
 end
 
 function __fish_brew_suggest_commands -d "Lists all commands names, including aliases"
@@ -277,7 +266,7 @@ __fish_brew_complete_arg '--repository' -a '(__fish_brew_suggest_taps_installed)
 
 __fish_brew_complete_cmd '-S' 'Perform a substring search of cask tokens and formula names for text'
 __fish_brew_complete_arg '-S' -l archlinux -d 'Search for text in the given database'
-__fish_brew_complete_arg '-S' -l cask -d 'Search online and locally for casks'
+__fish_brew_complete_arg '-S' -l cask -d 'Search for casks'
 __fish_brew_complete_arg '-S' -l closed -d 'Search for only closed GitHub pull requests'
 __fish_brew_complete_arg '-S' -l debian -d 'Search for text in the given database'
 __fish_brew_complete_arg '-S' -l debug -d 'Display any debugging information'
@@ -285,7 +274,7 @@ __fish_brew_complete_arg '-S' -l desc -d 'Search for formulae with a description
 __fish_brew_complete_arg '-S' -l eval-all -d 'Evaluate all available formulae and casks, whether installed or not, to search their descriptions. Implied if `HOMEBREW_EVAL_ALL` is set'
 __fish_brew_complete_arg '-S' -l fedora -d 'Search for text in the given database'
 __fish_brew_complete_arg '-S' -l fink -d 'Search for text in the given database'
-__fish_brew_complete_arg '-S' -l formula -d 'Search online and locally for formulae'
+__fish_brew_complete_arg '-S' -l formula -d 'Search for formulae'
 __fish_brew_complete_arg '-S' -l help -d 'Show this message'
 __fish_brew_complete_arg '-S' -l macports -d 'Search for text in the given database'
 __fish_brew_complete_arg '-S' -l open -d 'Search for only open GitHub pull requests'
@@ -331,8 +320,6 @@ __fish_brew_complete_cmd 'audit' 'Check formula for Homebrew coding style violat
 __fish_brew_complete_arg 'audit' -l audit-debug -d 'Enable debugging and profiling of audit methods'
 __fish_brew_complete_arg 'audit' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'audit' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'audit' -l display-cop-names -d 'Include the RuboCop cop name for each violation in the output'
-__fish_brew_complete_arg 'audit' -l display-failures-only -d 'Only display casks that fail the audit. This is the default for formulae'
 __fish_brew_complete_arg 'audit' -l display-filename -d 'Prefix every line of output with the file or formula name being audited, to make output easy to grep'
 __fish_brew_complete_arg 'audit' -l eval-all -d 'Evaluate all available formulae and casks, whether installed or not, to audit them. Implied if `HOMEBREW_EVAL_ALL` is set'
 __fish_brew_complete_arg 'audit' -l except -d 'Specify a comma-separated method list to skip running the methods named `audit_`method'
@@ -613,6 +600,15 @@ __fish_brew_complete_arg 'desc; and not __fish_seen_argument -l cask -l casks' -
 __fish_brew_complete_arg 'desc; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
 
+__fish_brew_complete_cmd 'determine-test-runners' 'Determines the runners used to test formulae or their dependents'
+__fish_brew_complete_arg 'determine-test-runners' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'determine-test-runners' -l dependents -d 'Determine runners for testing dependents. Requires `--eval-all` or `HOMEBREW_EVAL_ALL`'
+__fish_brew_complete_arg 'determine-test-runners' -l eval-all -d 'Evaluate all available formulae, whether installed or not, to determine testing dependents'
+__fish_brew_complete_arg 'determine-test-runners' -l help -d 'Show this message'
+__fish_brew_complete_arg 'determine-test-runners' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'determine-test-runners' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'developer' 'Control Homebrew\'s developer mode'
 __fish_brew_complete_sub_cmd 'developer' 'state'
 __fish_brew_complete_sub_cmd 'developer' 'on'
@@ -640,7 +636,7 @@ __fish_brew_complete_arg 'dispatch-build-bottle' -l workflow -d 'Dispatch specif
 __fish_brew_complete_arg 'dispatch-build-bottle' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'docs' 'Open Homebrew\'s online documentation (https://docs'
+__fish_brew_complete_cmd 'docs' 'Open Homebrew\'s online documentation (https://docs.brew.sh) in a browser'
 __fish_brew_complete_arg 'docs' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'docs' -l help -d 'Show this message'
 __fish_brew_complete_arg 'docs' -l quiet -d 'Make some output more quiet'
@@ -729,14 +725,14 @@ __fish_brew_complete_arg 'formula' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae'
+__fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae.brew.sh'
 __fish_brew_complete_arg 'generate-cask-api' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-cask-api' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-cask-api' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'generate-cask-api' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae'
+__fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae.brew.sh'
 __fish_brew_complete_arg 'generate-formula-api' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-formula-api' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-formula-api' -l quiet -d 'Make some output more quiet'
@@ -1081,7 +1077,7 @@ __fish_brew_complete_arg 'missing' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'missing' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in ~/'
+__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in ~/.nodenv/versions'
 __fish_brew_complete_arg 'nodenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'nodenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'nodenv-sync' -l quiet -d 'Make some output more quiet'
@@ -1219,7 +1215,7 @@ __fish_brew_complete_arg 'prof' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'prof' -a '(__fish_brew_suggest_commands)'
 
 
-__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/'
+__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/.rbenv/versions'
 __fish_brew_complete_arg 'rbenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'rbenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'rbenv-sync' -l quiet -d 'Make some output more quiet'
@@ -1329,7 +1325,7 @@ __fish_brew_complete_arg 'ruby' -l r -d 'Load a library using `require`'
 
 __fish_brew_complete_cmd 'search' 'Perform a substring search of cask tokens and formula names for text'
 __fish_brew_complete_arg 'search' -l archlinux -d 'Search for text in the given database'
-__fish_brew_complete_arg 'search' -l cask -d 'Search online and locally for casks'
+__fish_brew_complete_arg 'search' -l cask -d 'Search for casks'
 __fish_brew_complete_arg 'search' -l closed -d 'Search for only closed GitHub pull requests'
 __fish_brew_complete_arg 'search' -l debian -d 'Search for text in the given database'
 __fish_brew_complete_arg 'search' -l debug -d 'Display any debugging information'
@@ -1337,7 +1333,7 @@ __fish_brew_complete_arg 'search' -l desc -d 'Search for formulae with a descrip
 __fish_brew_complete_arg 'search' -l eval-all -d 'Evaluate all available formulae and casks, whether installed or not, to search their descriptions. Implied if `HOMEBREW_EVAL_ALL` is set'
 __fish_brew_complete_arg 'search' -l fedora -d 'Search for text in the given database'
 __fish_brew_complete_arg 'search' -l fink -d 'Search for text in the given database'
-__fish_brew_complete_arg 'search' -l formula -d 'Search online and locally for formulae'
+__fish_brew_complete_arg 'search' -l formula -d 'Search for formulae'
 __fish_brew_complete_arg 'search' -l help -d 'Show this message'
 __fish_brew_complete_arg 'search' -l macports -d 'Search for text in the given database'
 __fish_brew_complete_arg 'search' -l open -d 'Search for only open GitHub pull requests'
@@ -1361,7 +1357,6 @@ __fish_brew_complete_arg 'sh' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_cmd 'style' 'Check formulae or files for conformance to Homebrew style guidelines'
 __fish_brew_complete_arg 'style' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'style' -l debug -d 'Display any debugging information'
-__fish_brew_complete_arg 'style' -l display-cop-names -d 'Include the RuboCop cop name for each violation in the output'
 __fish_brew_complete_arg 'style' -l except-cops -d 'Specify a comma-separated cops list to skip checking for violations of the listed RuboCop cops'
 __fish_brew_complete_arg 'style' -l fix -d 'Fix style violations automatically using RuboCop\'s auto-correct feature'
 __fish_brew_complete_arg 'style' -l formula -d 'Treat all named arguments as formulae'

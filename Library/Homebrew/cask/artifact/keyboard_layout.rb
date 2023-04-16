@@ -11,11 +11,6 @@ module Cask
     class KeyboardLayout < Moved
       extend T::Sig
 
-      sig { returns(String) }
-      def self.english_name
-        "Keyboard Layout"
-      end
-
       def install_phase(**options)
         super(**options)
         delete_keyboard_layout_cache(**options)

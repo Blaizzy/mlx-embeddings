@@ -64,4 +64,4 @@ jobs:
 
       - name: Process rubydoc comments
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew
-        run: bundle exec yard doc --plugin sorbet --no-output --fail-on-warning
+        run: bundle exec yard doc --no-output --fail-on-warning

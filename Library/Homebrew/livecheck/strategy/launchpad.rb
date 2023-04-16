@@ -75,13 +75,13 @@ module Homebrew
             url:    String,
             regex:  T.nilable(Regexp),
             unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:  T.untyped,
+            block:  T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: nil, **unused, &block)
           generated = generate_input_values(url)
 
-          T.unsafe(PageMatch).find_versions(url: generated[:url], regex: regex || DEFAULT_REGEX, **unused, &block)
+          PageMatch.find_versions(url: generated[:url], regex: regex || DEFAULT_REGEX, **unused, &block)
         end
       end
     end

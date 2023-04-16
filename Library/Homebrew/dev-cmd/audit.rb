@@ -31,6 +31,10 @@ module Homebrew
         locally available formulae and casks and skip style checks. Will exit with a
         non-zero status if any errors are found.
       EOS
+      # This is needed for auditing ARM casks in CI.
+      flag "--arch=",
+           description: "Audit the given CPU architecture.",
+           hidden:      true
       switch "--strict",
              description: "Run additional, stricter style checks."
       switch "--git",
@@ -60,12 +64,14 @@ module Homebrew
       switch "--fix",
              description: "Fix style violations automatically using RuboCop's auto-correct feature."
       switch "--display-cop-names",
-             description: "Include the RuboCop cop name for each violation in the output."
+             description: "Include the RuboCop cop name for each violation in the output. This is the default.",
+             hidden:      true
       switch "--display-filename",
              description: "Prefix every line of output with the file or formula name being audited, to " \
                           "make output easy to grep."
       switch "--display-failures-only",
-             description: "Only display casks that fail the audit. This is the default for formulae."
+             description: "Only display casks that fail the audit. This is the default for formulae and casks.",
+             hidden:      true
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running " \
                           "`brew style` separately. Enabled by default unless a formula is specified by name."
@@ -91,9 +97,6 @@ module Homebrew
       conflicts "--only", "--except"
       conflicts "--only-cops", "--except-cops", "--strict"
       conflicts "--only-cops", "--except-cops", "--only"
-      conflicts "--display-cop-names", "--skip-style"
-      conflicts "--display-cop-names", "--only-cops"
-      conflicts "--display-cop-names", "--except-cops"
       conflicts "--formula", "--cask"
       conflicts "--installed", "--all"
 
@@ -104,6 +107,10 @@ module Homebrew
   sig { void }
   def self.audit
     args = audit_args.parse
+
+    if (arch = args.arch)
+      SimulateSystem.arch = arch.to_sym
+    end
 
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
@@ -207,7 +214,6 @@ module Homebrew
         spdx_license_data:   spdx_license_data,
         spdx_exception_data: spdx_exception_data,
         style_offenses:      style_offenses&.for_path(f.path),
-        display_cop_names:   args.display_cop_names?,
       }.compact
 
       audit_proc = proc { FormulaAuditor.new(f, **options).tap(&:audit) }
@@ -242,24 +248,26 @@ module Homebrew
       require "cask/cmd/abstract_command"
       require "cask/cmd/audit"
 
+      if args.display_failures_only?
+        odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
+      end
+
       # For switches, we add `|| nil` so that `nil` will be passed instead of `false` if they aren't set.
       # This way, we can distinguish between "not set" and "set to false".
       Cask::Cmd::Audit.audit_casks(
         *audit_casks,
-        download:              nil,
+        download:        nil,
         # No need for `|| nil` for `--[no-]signing` because boolean switches are already `nil` if not passed
-        signing:               args.signing?,
-        online:                args.online? || nil,
-        strict:                args.strict? || nil,
-        new_cask:              args.new_cask? || nil,
-        token_conflicts:       args.token_conflicts? || nil,
-        quarantine:            nil,
-        any_named_args:        !no_named_args,
-        language:              nil,
-        display_passes:        args.verbose? || args.named.count == 1,
-        display_failures_only: args.display_failures_only?,
-        only:                  args.only,
-        except:                args.except,
+        signing:         args.signing?,
+        online:          args.online? || nil,
+        strict:          args.strict? || nil,
+        new_cask:        args.new_cask? || nil,
+        token_conflicts: args.token_conflicts? || nil,
+        quarantine:      nil,
+        any_named_args:  !no_named_args,
+        language:        nil,
+        only:            args.only,
+        except:          args.except,
       )
     end
 
@@ -267,7 +275,7 @@ module Homebrew
 
     cask_count = failed_casks.count
 
-    cask_problem_count = failed_casks.sum { |_, result| result[:warnings].count + result[:errors].count }
+    cask_problem_count = failed_casks.sum { |_, result| result.count }
     new_formula_problem_count += new_formula_problem_lines.count
     total_problems_count = problem_count + new_formula_problem_count + cask_problem_count + tap_problem_count
 

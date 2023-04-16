@@ -14,7 +14,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckRegexExtension do
         livecheck do
           url :stable
           regex(%r{href=.*?/formula[._-]v?(\\d+(?:\\.\\d+)+)\\.tgz}i)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `\\.t` instead of `\\.tgz`
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/LivecheckRegexExtension: Use `\\.t` instead of `\\.tgz`
         end
       end
     RUBY

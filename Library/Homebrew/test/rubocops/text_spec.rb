@@ -10,7 +10,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
     it 'reports an offense if `require "formula"` is present' do
       expect_offense(<<~RUBY)
         require "formula"
-        ^^^^^^^^^^^^^^^^^ `require "formula"` is now unnecessary
+        ^^^^^^^^^^^^^^^^^ FormulaAudit/Text: `require "formula"` is now unnecessary
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
           homepage "https://brew.sh"
@@ -33,7 +33,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           depends_on "openssl"
           depends_on "libressl" => :optional
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Formulae should not depend on both OpenSSL and LibreSSL (even optionally).
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Formulae should not depend on both OpenSSL and LibreSSL (even optionally).
         end
       RUBY
 
@@ -44,7 +44,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           depends_on "openssl"
           depends_on "libressl"
-          ^^^^^^^^^^^^^^^^^^^^^ Formulae should not depend on both OpenSSL and LibreSSL (even optionally).
+          ^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Formulae should not depend on both OpenSSL and LibreSSL (even optionally).
         end
       RUBY
     end
@@ -55,7 +55,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
           url "https://brew.sh/foo-1.0.tgz"
           homepage "https://brew.sh"
           depends_on "veclibfort"
-          ^^^^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library.
+          ^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library.
         end
       RUBY
     end
@@ -66,7 +66,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
           url "https://brew.sh/foo-1.0.tgz"
           homepage "https://brew.sh"
           depends_on "lapack"
-          ^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library.
+          ^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library.
         end
       RUBY
     end
@@ -79,7 +79,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "go", "get", "bar"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^ Do not use `go get`. Please ask upstream to implement Go vendoring
+            ^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Do not use `go get`. Please ask upstream to implement Go vendoring
           end
         end
       RUBY
@@ -93,7 +93,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "xcodebuild", "foo", "bar"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use "xcodebuild *args" instead of "system 'xcodebuild', *args"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: use "xcodebuild *args" instead of "system 'xcodebuild', *args"
           end
         end
       RUBY
@@ -107,11 +107,11 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "xcodebuild", "foo", "bar"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ use "xcodebuild *args" instead of "system 'xcodebuild', *args"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: use "xcodebuild *args" instead of "system 'xcodebuild', *args"
           end
 
           def plist
-          ^^^^^^^^^ Please set plist_options when using a formula-defined plist.
+          ^^^^^^^^^ FormulaAudit/Text: Please set plist_options when using a formula-defined plist.
             <<~XML
               <?xml version="1.0" encoding="UTF-8"?>
               <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -130,7 +130,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
     it 'reports an offense if `require "language/go"` is present' do
       expect_offense(<<~RUBY)
         require "language/go"
-        ^^^^^^^^^^^^^^^^^^^^^ require "language/go" is unnecessary unless using `go_resource`s
+        ^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: require "language/go" is unnecessary unless using `go_resource`s
 
         class Foo < Formula
           url "https://brew.sh/foo-1.0.tgz"
@@ -138,7 +138,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "go", "get", "bar"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^ Do not use `go get`. Please ask upstream to implement Go vendoring
+            ^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Do not use `go get`. Please ask upstream to implement Go vendoring
           end
         end
       RUBY
@@ -152,7 +152,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             Formula.factory(name)
-            ^^^^^^^^^^^^^^^^^^^^^ "Formula.factory(name)" is deprecated in favor of "Formula[name]"
+            ^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: "Formula.factory(name)" is deprecated in favor of "Formula[name]"
           end
         end
       RUBY
@@ -166,7 +166,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "dep", "ensure"
-            ^^^^^^^^^^^^^^^^^^^^^^ use "dep", "ensure", "-vendor-only"
+            ^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: use "dep", "ensure", "-vendor-only"
           end
         end
       RUBY
@@ -180,7 +180,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
 
           def install
             system "cargo", "build"
-            ^^^^^^^^^^^^^^^^^^^^^^^ use "cargo", "install", *std_cargo_args
+            ^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: use "cargo", "install", *std_cargo_args
           end
         end
       RUBY
@@ -204,7 +204,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
         class Foo < Formula
           def install
             system "make && make install"
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use separate `make` calls
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Use separate `make` calls
           end
         end
       RUBY
@@ -215,7 +215,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
         class Foo < Formula
           def install
             ohai "foo \#{bar + "baz"}"
-                      ^^^^^^^^^^^^^^ Do not concatenate paths in string interpolation
+                      ^^^^^^^^^^^^^^ FormulaAudit/Text: Do not concatenate paths in string interpolation
           end
         end
       RUBY
@@ -226,7 +226,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
         class Foo < Formula
           def install
             ohai prefix + "bin"
-                 ^^^^^^^^^^^^^^ Use `bin` instead of `prefix + "bin"`
+                 ^^^^^^^^^^^^^^ FormulaAudit/Text: Use `bin` instead of `prefix + "bin"`
           end
         end
       RUBY
@@ -235,7 +235,7 @@ describe RuboCop::Cop::FormulaAudit::Text do
         class Foo < Formula
           def install
             ohai prefix + "bin/foo"
-                 ^^^^^^^^^^^^^^^^^^ Use `bin` instead of `prefix + "bin"`
+                 ^^^^^^^^^^^^^^^^^^ FormulaAudit/Text: Use `bin` instead of `prefix + "bin"`
           end
         end
       RUBY

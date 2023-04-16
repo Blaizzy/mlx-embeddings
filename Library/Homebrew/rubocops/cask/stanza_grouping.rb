@@ -14,16 +14,28 @@ module RuboCop
         include CaskHelp
         include RangeHelp
 
-        MISSING_LINE_MSG = "stanza groups should be separated by a single " \
-                           "empty line"
-
-        EXTRA_LINE_MSG = "stanzas within the same group should have no lines " \
-                         "between them"
+        ON_SYSTEM_METHODS = RuboCop::Cask::Constants::ON_SYSTEM_METHODS
+        MISSING_LINE_MSG = "stanza groups should be separated by a single empty line"
+        EXTRA_LINE_MSG = "stanzas within the same group should have no lines between them"
 
         def on_cask(cask_block)
           @cask_block = cask_block
           @line_ops = {}
-          add_offenses
+          cask_stanzas = cask_block.toplevel_stanzas
+          add_offenses(cask_stanzas)
+
+          # If present, check grouping of stanzas within `on_*` blocks.
+          return unless (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).any?
+
+          on_blocks.map(&:method_node).each do |on_block|
+            next unless on_block.block_type?
+
+            block_contents = on_block.child_nodes.select(&:begin_type?)
+            inner_nodes = block_contents.map(&:child_nodes).flatten.select(&:send_type?)
+            inner_stanzas = inner_nodes.map { |node| RuboCop::Cask::AST::Stanza.new(node, processed_source.comments) }
+
+            add_offenses(inner_stanzas)
+          end
         end
 
         private
@@ -32,8 +44,8 @@ module RuboCop
 
         def_delegators :cask_block, :cask_node, :toplevel_stanzas
 
-        def add_offenses
-          toplevel_stanzas.each_cons(2) do |stanza, next_stanza|
+        def add_offenses(stanzas)
+          stanzas.each_cons(2) do |stanza, next_stanza|
             next unless next_stanza
 
             if missing_line_after?(stanza, next_stanza)

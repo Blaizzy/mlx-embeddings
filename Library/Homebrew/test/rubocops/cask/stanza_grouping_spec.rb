@@ -10,10 +10,10 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
   subject(:cop) { described_class.new }
 
   let(:missing_line_msg) do
-    "stanza groups should be separated by a single empty line"
+    "Cask/StanzaGrouping: stanza groups should be separated by a single empty line"
   end
   let(:extra_line_msg) do
-    "stanzas within the same group should have no lines between them"
+    "Cask/StanzaGrouping: stanzas within the same group should have no lines between them"
   end
 
   context "when there is only one stanza" do
@@ -506,20 +506,111 @@ describe RuboCop::Cop::Cask::StanzaGrouping do
     include_examples "autocorrects source"
   end
 
-  # TODO: detect incorrectly grouped stanzas in nested expressions
-  context "when stanzas are nested in a conditional expression" do
-    let(:source) do
-      <<~CASK
-        cask 'foo' do
-          if true
-            version :latest
+  context "when stanzas are nested one-level in `on_*` blocks" do
+    describe "basic nesting" do
+      let(:source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
 
-            sha256 :no_check
+              sha256 :no_check
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+              url "https://foo.brew.sh/foo-intel.zip"
+            end
           end
-        end
-      CASK
+        CASK
+      end
+
+      let(:correct_source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
+              sha256 :no_check
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+
+              url "https://foo.brew.sh/foo-intel.zip"
+            end
+          end
+        CASK
+      end
+
+      include_examples "autocorrects source"
     end
 
-    include_examples "does not report any offenses"
+    describe "nested `on_*` blocks with comments" do
+      let(:source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
+
+              sha256 :no_check # comment on same line
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+            end
+          end
+        CASK
+      end
+
+      let(:correct_source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
+              sha256 :no_check # comment on same line
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+            end
+          end
+        CASK
+      end
+
+      include_examples "autocorrects source"
+    end
+
+    # TODO: Maybe this should be fixed too?
+    describe "inner erroneously grouped nested livecheck block contents are ignored" do
+      let(:source) do
+        <<~CASK
+          cask 'foo' do
+            on_arm do
+              version "1.0.2"
+              sha256 :no_check
+
+              url "https://foo.brew.sh/foo-arm.zip"
+
+              livecheck do
+                url "https://foo.brew.sh/foo-arm-versions.html"
+              end
+            end
+            on_intel do
+              version "0.9.8"
+              sha256 :no_check
+
+              url "https://foo.brew.sh/foo-intel.zip"
+
+              livecheck do
+                regex(/RegExhibit\s+(\d+(?:.\d+)+)/i)
+                url "https://foo.brew.sh/foo-intel-versions.html"
+              end
+            end
+          end
+        CASK
+      end
+
+      include_examples "does not report any offenses"
+    end
   end
 end

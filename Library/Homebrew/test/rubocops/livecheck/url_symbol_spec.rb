@@ -13,7 +13,7 @@ describe RuboCop::Cop::FormulaAudit::LivecheckUrlSymbol do
 
         livecheck do
           url "https://brew.sh/foo-1.0.tgz"
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `url :stable`
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/LivecheckUrlSymbol: Use `url :stable`
         end
       end
     RUBY

@@ -836,15 +836,15 @@ Skip installing cask dependencies\.
 For use with \fBbrew reinstall \-\-cask\fR\. Remove all files associated with a cask\. \fIMay remove files which are shared between applications\.\fR
 .
 .SS "\fBsearch\fR, \fB\-S\fR [\fIoptions\fR] \fItext\fR|\fB/\fR\fIregex\fR\fB/\fR [\.\.\.]"
-Perform a substring search of cask tokens and formula names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\. The search for \fItext\fR is extended online to \fBhomebrew/core\fR and \fBhomebrew/cask\fR\.
+Perform a substring search of cask tokens and formula names for \fItext\fR\. If \fItext\fR is flanked by slashes, it is interpreted as a regular expression\.
 .
 .TP
 \fB\-\-formula\fR
-Search online and locally for formulae\.
+Search for formulae\.
 .
 .TP
 \fB\-\-cask\fR
-Search online and locally for casks\.
+Search for casks\.
 .
 .TP
 \fB\-\-desc\fR
@@ -1279,16 +1279,8 @@ Check the formulae within the given tap, specified as \fIuser\fR\fB/\fR\fIrepo\f
 Fix style violations automatically using RuboCop\'s auto\-correct feature\.
 .
 .TP
-\fB\-\-display\-cop\-names\fR
-Include the RuboCop cop name for each violation in the output\.
-.
-.TP
 \fB\-\-display\-filename\fR
 Prefix every line of output with the file or formula name being audited, to make output easy to grep\.
-.
-.TP
-\fB\-\-display\-failures\-only\fR
-Only display casks that fail the audit\. This is the default for formulae\.
 .
 .TP
 \fB\-\-skip\-style\fR
@@ -2124,10 +2116,6 @@ Lists of \fIfile\fR, \fItap\fR and \fIformula\fR may not be combined\. If none a
 Fix style violations automatically using RuboCop\'s auto\-correct feature\.
 .
 .TP
-\fB\-\-display\-cop\-names\fR
-Include the RuboCop cop name for each violation in the output\.
-.
-.TP
 \fB\-\-reset\-cache\fR
 Reset the RuboCop cache\.
 .
@@ -2787,6 +2775,10 @@ Only run the formulae detection steps\.
 Only run the formulae dependents steps\.
 .
 .TP
+\fB\-\-only\-bottles\-fetch\fR
+Only run the bottles fetch steps\. This optional post\-upload test checks that all the bottles were uploaded correctly\. It is not run unless requested and only needs to be run on a single machine\. The bottle commit to be tested must be on the tested branch\.
+.
+.TP
 \fB\-\-only\-cleanup\-after\fR
 Only run the post\-cleanup step\. Needs \fB\-\-cleanup\fR\.
 .
@@ -3341,6 +3333,12 @@ If set, \fBbrew install <formula>\fR will use this URL to download PyPI package 
 If set, use Pry for the \fBbrew irb\fR command\.
 .
 .TP
+\fBHOMEBREW_UPGRADE_GREEDY\fR
+.
+.br
+If set, pass \fB\-\-greedy\fR to all cask upgrade commands\.
+.
+.TP
 \fBHOMEBREW_SIMULATE_MACOS_ON_LINUX\fR
 .
 .br
@@ -3483,13 +3481,13 @@ Homebrew API: \fIhttps://rubydoc\.brew\.sh\fR
 Homebrew\'s Project Leader is Mike McQuaid\.
 .
 .P
-Homebrew\'s Project Leadership Committee is Colin Dean, Issy Long, Jonathan Chang, Mike McQuaid, Misty De Méo, and Sean Molenaar\.
+Homebrew\'s Project Leadership Committee is Colin Dean, Issy Long, Jonathan Chang, Mike McQuaid, Misty De Méo and Sean Molenaar\.
 .
 .P
-Homebrew\'s Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid, and Rylan Polster\.
+Homebrew\'s Technical Steering Committee is Bo Anderson, FX Coudert, Michka Popoff, Mike McQuaid and Rylan Polster\.
 .
 .P
-Homebrew\'s maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Markus Reiter, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam Ford, Sean Molenaar, and Thierry Moisan\.
+Homebrew\'s maintainers are Alexander Bayandin, Bevan Kay, Bo Anderson, Branch Vincent, Caleb Xu, Carlo Cabrera, Daniel Nachun, David Baumgold, Dawid Dziurla, Dustin Rodrigues, Eric Knibbe, FX Coudert, George Adams, Issy Long, Markus Reiter, Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna, Patrick Linnane, Razvan Azamfirei, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam Ford, Sean Molenaar and Thierry Moisan\.
 .
 .P
 Former maintainers with significant contributions include Misty De Méo, Shaun Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew\'s creator: Max Howell\.

@@ -124,7 +124,7 @@ module RuboCop
         end
 
         def check_on_system_block_content(component_precedence_list, on_system_block)
-          if on_system_block.body.block_type? && !on_system_methods.include?(on_system_block.body.method_name) # rubocop:disable Style/InverseMethods (false positive)
+          if on_system_block.body.block_type? && !on_system_methods.include?(on_system_block.body.method_name)
             offending_node(on_system_block)
             problem "Nest `#{on_system_block.method_name}` blocks inside `#{on_system_block.body.method_name}` " \
                     "blocks when there is only one inner block." do |corrector|

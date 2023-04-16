@@ -7,7 +7,7 @@ homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? && !ENV["HOMEBREW_B
 
 # portable ruby doesn't play nice with bootsnap
 
-homebrew_bootsnap_enabled &&= !RUBY_PATH.to_s.include?("/vendor/portable-ruby/") # rubocop:disable Style/InverseMethods
+homebrew_bootsnap_enabled &&= !RUBY_PATH.to_s.include?("/vendor/portable-ruby/")
 
 homebrew_bootsnap_enabled &&= if ENV["HOMEBREW_MACOS_VERSION"]
   # Apple Silicon doesn't play nice with bootsnap

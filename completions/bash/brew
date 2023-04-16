@@ -349,8 +349,6 @@ _brew_audit() {
       --audit-debug
       --cask
       --debug
-      --display-cop-names
-      --display-failures-only
       --display-filename
       --eval-all
       --except
@@ -786,6 +784,24 @@ _brew_desc() {
   esac
   __brew_complete_formulae
   __brew_complete_casks
+}
+
+_brew_determine_test_runners() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --dependents
+      --eval-all
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
 }
 
 _brew_developer() {
@@ -2008,7 +2024,6 @@ _brew_style() {
       __brewcomp "
       --cask
       --debug
-      --display-cop-names
       --except-cops
       --fix
       --formula
@@ -2628,6 +2643,7 @@ _brew() {
     create) _brew_create ;;
     deps) _brew_deps ;;
     desc) _brew_desc ;;
+    determine-test-runners) _brew_determine_test_runners ;;
     developer) _brew_developer ;;
     dispatch-build-bottle) _brew_dispatch_build_bottle ;;
     docs) _brew_docs ;;

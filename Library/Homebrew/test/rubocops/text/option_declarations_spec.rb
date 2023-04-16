@@ -14,7 +14,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             build.without? "bar"
-            ^^^^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.without?`.
+            ^^^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Formulae in homebrew/core should not use `build.without?`.
           end
         end
       RUBY
@@ -27,7 +27,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def install
             build.with? "bar"
-            ^^^^^^^^^^^^^^^^^ Formulae in homebrew/core should not use `build.with?`.
+            ^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Formulae in homebrew/core should not use `build.with?`.
           end
         end
       RUBY
@@ -37,7 +37,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "bar" if build.without?("baz")
-                              ^^^^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.without?("baz")`
+                              ^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Use `:optional` or `:recommended` instead of `if build.without?("baz")`
         end
       RUBY
     end
@@ -46,7 +46,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
       expect_offense(<<~RUBY)
         class Foo < Formula
           depends_on "bar" if build.with?("baz")
-                              ^^^^^^^^^^^^^^^^^^ Use `:optional` or `:recommended` instead of `if build.with?("baz")`
+                              ^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Use `:optional` or `:recommended` instead of `if build.with?("baz")`
         end
       RUBY
     end
@@ -58,7 +58,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return unless build.without? "bar"
-                          ^^^^^^^^^^^^^^^^^^^^ Use if build.with? "bar" instead of unless build.without? "bar"
+                          ^^^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Use if build.with? "bar" instead of unless build.without? "bar"
           end
         end
       RUBY
@@ -71,7 +71,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return unless build.with? "bar"
-                          ^^^^^^^^^^^^^^^^^ Use if build.without? "bar" instead of unless build.with? "bar"
+                          ^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Use if build.without? "bar" instead of unless build.with? "bar"
           end
         end
       RUBY
@@ -84,7 +84,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if !build.with? "bar"
-                      ^^^^^^^^^^^^^^^^^^ Don't negate 'build.with?': use 'build.without?'
+                      ^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Don't negate 'build.with?': use 'build.without?'
           end
         end
       RUBY
@@ -97,7 +97,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if !build.without? "bar"
-                      ^^^^^^^^^^^^^^^^^^^^^ Don't negate 'build.without?': use 'build.with?'
+                      ^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Don't negate 'build.without?': use 'build.with?'
           end
         end
       RUBY
@@ -110,7 +110,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if build.without? "--without-bar"
-                                     ^^^^^^^^^^^^^^^ Don't duplicate 'without': Use `build.without? "bar"` to check for "--without-bar"
+                                     ^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Don't duplicate 'without': Use `build.without? "bar"` to check for "--without-bar"
           end
         end
       RUBY
@@ -123,7 +123,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if build.with? "--with-bar"
-                                  ^^^^^^^^^^^^ Don't duplicate 'with': Use `build.with? "bar"` to check for "--with-bar"
+                                  ^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Don't duplicate 'with': Use `build.with? "bar"` to check for "--with-bar"
           end
         end
       RUBY
@@ -136,7 +136,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
           def post_install
             return if build.include? "foo"
-                      ^^^^^^^^^^^^^^^^^^^^ `build.include?` is deprecated
+                      ^^^^^^^^^^^^^^^^^^^^ FormulaAudit/OptionDeclarations: `build.include?` is deprecated
           end
         end
       RUBY
@@ -149,7 +149,7 @@ describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
           url 'https://brew.sh/foo-1.0.tgz'
 
           def options
-          ^^^^^^^^^^^ Use new-style option definitions
+          ^^^^^^^^^^^ FormulaAudit/OptionDeclarations: Use new-style option definitions
             [["--bar", "desc"]]
           end
         end

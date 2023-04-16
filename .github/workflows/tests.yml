@@ -43,7 +43,7 @@ jobs:
       - name: Install shellcheck and shfmt
         run: brew install shellcheck shfmt
 
-      - run: brew style --display-cop-names
+      - run: brew style
 
       - run: brew typecheck
 
@@ -83,7 +83,7 @@ jobs:
         run: brew install-bundler-gems --groups=all
 
       - name: Run brew style on homebrew-core
-        run: brew style --display-cop-names homebrew/core
+        run: brew style homebrew/core
 
       - name: Set up all Homebrew taps
         run: |
@@ -105,22 +105,22 @@ jobs:
 
       - name: Run brew style on official taps
         run: |
-          brew style --display-cop-names homebrew/bundle \
-                                         homebrew/services \
-                                         homebrew/test-bot
+          brew style homebrew/bundle \
+                     homebrew/services \
+                     homebrew/test-bot
 
-          brew style --display-cop-names homebrew/aliases\
-                                         homebrew/autoupdate\
-                                         homebrew/command-not-found \
-                                         homebrew/formula-analytics \
-                                         homebrew/portable-ruby
+          brew style homebrew/aliases \
+                     homebrew/autoupdate\
+                     homebrew/command-not-found \
+                     homebrew/formula-analytics \
+                     homebrew/portable-ruby
 
       - name: Run brew style on cask taps
         run: |
-          brew style --display-cop-names homebrew/cask \
-                                         homebrew/cask-drivers \
-                                         homebrew/cask-fonts \
-                                         homebrew/cask-versions
+          brew style homebrew/cask \
+                     homebrew/cask-drivers \
+                     homebrew/cask-fonts \
+                     homebrew/cask-versions
 
   formula-audit:
     name: formula audit
@@ -151,7 +151,7 @@ jobs:
         run: brew readall --aliases homebrew/core
 
       - name: Run brew audit --skip-style on homebrew/core
-        run: brew audit --skip-style --except=version --display-failures-only --tap=homebrew/core
+        run: brew audit --skip-style --except=version --tap=homebrew/core
 
   cask-audit:
     name: cask audit
@@ -187,10 +187,10 @@ jobs:
 
       - name: Run brew audit --skip-style on casks
         run: |
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask-drivers
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask-fonts
-          brew audit --skip-style --except=version --display-failures-only --tap=homebrew/cask-versions
+          brew audit --skip-style --except=version --tap=homebrew/cask
+          brew audit --skip-style --except=version --tap=homebrew/cask-drivers
+          brew audit --skip-style --except=version --tap=homebrew/cask-fonts
+          brew audit --skip-style --except=version --tap=homebrew/cask-versions
 
   vendored-gems:
     name: vendored gems
@@ -373,7 +373,7 @@ jobs:
           HOMEBREW_BUILDPULSE_ACCOUNT_ID: 1503512
           HOMEBREW_BUILDPULSE_REPOSITORY_ID: 53238813
 
-      - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
+      - uses: codecov/codecov-action@40a12dcee2df644d47232dde008099a3e9e4f865
         with:
           directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
           files: Library/Homebrew/test/coverage/coverage.xml

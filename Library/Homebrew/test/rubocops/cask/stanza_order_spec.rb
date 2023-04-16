@@ -56,13 +56,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "`sha256` stanza out of order",
+        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "sha256 :no_check",
       }, {
-        message:  "`version` stanza out of order",
+        message:  "Cask/StanzaOrder: `version` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
@@ -96,19 +96,19 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "`version` stanza out of order",
+        message:  "Cask/StanzaOrder: `version` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "version :latest",
       }, {
-        message:  "`sha256` stanza out of order",
+        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
         source:   "sha256 :no_check",
       }, {
-        message:  "`arch` stanza out of order",
+        message:  "Cask/StanzaOrder: `arch` stanza out of order",
         severity: :convention,
         line:     4,
         column:   2,
@@ -144,13 +144,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "`sha256` stanza out of order",
+        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
         source:   "sha256 :no_check",
       }, {
-        message:  "`on_arch_conditional` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_arch_conditional` stanza out of order",
         severity: :convention,
         line:     5,
         column:   2,
@@ -186,13 +186,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "`on_arch_conditional` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_arch_conditional` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   'folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"',
       }, {
-        message:  "`arch` stanza out of order",
+        message:  "Cask/StanzaOrder: `arch` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
@@ -232,26 +232,26 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "`url` stanza out of order",
+        message:  "Cask/StanzaOrder: `url` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "url 'https://foo.brew.sh/foo.zip'",
       }, {
-        message:  "`uninstall` stanza out of order",
+        message:  "Cask/StanzaOrder: `uninstall` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
         source:   "uninstall :quit => 'com.example.foo'," \
                   "\n            :kext => 'com.example.foo.kext'",
       }, {
-        message:  "`version` stanza out of order",
+        message:  "Cask/StanzaOrder: `version` stanza out of order",
         severity: :convention,
         line:     5,
         column:   2,
         source:   "version :latest",
       }, {
-        message:  "`sha256` stanza out of order",
+        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
         severity: :convention,
         line:     7,
         column:   2,
@@ -498,13 +498,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
 
     let(:expected_offenses) do
       [{
-        message:  "`on_intel` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_intel` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "on_intel do\n    url \"https://foo.brew.sh/foo-intel.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
       }, {
-        message:  "`on_arm` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_arm` stanza out of order",
         severity: :convention,
         line:     8,
         column:   2,
@@ -604,19 +604,19 @@ describe RuboCop::Cop::Cask::StanzaOrder do
 
     let(:expected_offenses) do
       [{
-        message:  "`on_ventura` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_ventura` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "on_ventura do\n    url \"https://foo.brew.sh/foo-ventura.zip\"\n    sha256 :no_check\n  end",
       }, {
-        message:  "`on_mojave` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_mojave` stanza out of order",
         severity: :convention,
         line:     10,
         column:   2,
         source:   "on_mojave do\n    url \"https://foo.brew.sh/foo-mojave.zip\"\n    sha256 :no_check\n  end",
       }, {
-        message:  "`on_big_sur` stanza out of order",
+        message:  "Cask/StanzaOrder: `on_big_sur` stanza out of order",
         severity: :convention,
         line:     14,
         column:   2,

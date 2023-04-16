@@ -43,7 +43,7 @@ describe RuboCop::Cop::FormulaAudit::LicenseArrays do
           desc "foo"
           url 'https://brew.sh/foo-1.0.tgz'
           license ["MIT", "0BSD"]
-          ^^^^^^^^^^^^^^^^^^^^^^^ Use `license any_of: ["MIT", "0BSD"]` instead of `license ["MIT", "0BSD"]`
+          ^^^^^^^^^^^^^^^^^^^^^^^ FormulaAudit/LicenseArrays: Use `license any_of: ["MIT", "0BSD"]` instead of `license ["MIT", "0BSD"]`
         end
       RUBY
 

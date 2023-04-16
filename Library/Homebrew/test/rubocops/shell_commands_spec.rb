@@ -15,7 +15,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   system "foo bar"
-                         ^^^^^^^^^ Separate `system` commands into `"foo", "bar"`
+                         ^^^^^^^^^ Homebrew/ShellCommands: Separate `system` commands into `"foo", "bar"`
                 end
               end
             RUBY
@@ -34,7 +34,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   system "\#{bin}/foo bar"
-                         ^^^^^^^^^^^^^^^^ Separate `system` commands into `"\#{bin}/foo", "bar"`
+                         ^^^^^^^^^^^^^^^^ Homebrew/ShellCommands: Separate `system` commands into `"\#{bin}/foo", "bar"`
                 end
               end
             RUBY
@@ -83,7 +83,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   Utils.popen_read("foo bar")
-                                   ^^^^^^^^^ Separate `Utils.popen_read` commands into `"foo", "bar"`
+                                   ^^^^^^^^^ Homebrew/ShellCommands: Separate `Utils.popen_read` commands into `"foo", "bar"`
                 end
               end
             RUBY
@@ -102,7 +102,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   Utils.safe_popen_read("foo bar")
-                                        ^^^^^^^^^ Separate `Utils.safe_popen_read` commands into `"foo", "bar"`
+                                        ^^^^^^^^^ Homebrew/ShellCommands: Separate `Utils.safe_popen_read` commands into `"foo", "bar"`
                 end
               end
             RUBY
@@ -121,7 +121,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   Utils.popen_write("foo bar")
-                                    ^^^^^^^^^ Separate `Utils.popen_write` commands into `"foo", "bar"`
+                                    ^^^^^^^^^ Homebrew/ShellCommands: Separate `Utils.popen_write` commands into `"foo", "bar"`
                 end
               end
             RUBY
@@ -140,7 +140,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   Utils.safe_popen_write("foo bar")
-                                         ^^^^^^^^^ Separate `Utils.safe_popen_write` commands into `"foo", "bar"`
+                                         ^^^^^^^^^ Homebrew/ShellCommands: Separate `Utils.safe_popen_write` commands into `"foo", "bar"`
                 end
               end
             RUBY
@@ -159,7 +159,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   Utils.popen_read("\#{bin}/foo bar")
-                                   ^^^^^^^^^^^^^^^^ Separate `Utils.popen_read` commands into `"\#{bin}/foo", "bar"`
+                                   ^^^^^^^^^^^^^^^^ Homebrew/ShellCommands: Separate `Utils.popen_read` commands into `"\#{bin}/foo", "bar"`
                 end
               end
             RUBY
@@ -198,7 +198,7 @@ module RuboCop
               class Foo < Formula
                 def install
                   Utils.popen_read({ "SHELL" => "bash"}, "foo bar")
-                                                         ^^^^^^^^^ Separate `Utils.popen_read` commands into `"foo", "bar"`
+                                                         ^^^^^^^^^ Homebrew/ShellCommands: Separate `Utils.popen_read` commands into `"foo", "bar"`
                 end
               end
             RUBY
@@ -222,7 +222,7 @@ module RuboCop
             expect_offense(<<~RUBY)
               fork do
                 exec "foo bar > output"
-                     ^^^^^^^^^^^^^^^^^^ Don't use shell metacharacters in `exec`. Implement the logic in Ruby instead, using methods like `$stdout.reopen`.
+                     ^^^^^^^^^^^^^^^^^^ Homebrew/ExecShellMetacharacters: Don't use shell metacharacters in `exec`. Implement the logic in Ruby instead, using methods like `$stdout.reopen`.
               end
             RUBY
           end

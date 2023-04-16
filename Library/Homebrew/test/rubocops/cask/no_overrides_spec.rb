@@ -201,7 +201,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
     let(:expected_offenses) do
       [{
         message:  <<~EOS,
-          Do not use a top-level `sha256` stanza as the default. Add it to an `on_{system}` block instead.
+          Cask/NoOverrides: Do not use a top-level `sha256` stanza as the default. Add it to an `on_{system}` block instead.
           Use `:or_older` or `:or_newer` to specify a range of macOS versions.
         EOS
         severity: :convention,
@@ -210,7 +210,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
         source:   "sha256 \"aaa\"",
       }, {
         message:  <<~EOS,
-          Do not use a top-level `url` stanza as the default. Add it to an `on_{system}` block instead.
+          Cask/NoOverrides: Do not use a top-level `url` stanza as the default. Add it to an `on_{system}` block instead.
           Use `:or_older` or `:or_newer` to specify a range of macOS versions.
         EOS
         severity: :convention,
@@ -240,7 +240,7 @@ describe RuboCop::Cop::Cask::NoOverrides do
     let(:expected_offenses) do
       [{
         message:  <<~EOS,
-          Do not use a top-level `version` stanza as the default. Add it to an `on_{system}` block instead.
+          Cask/NoOverrides: Do not use a top-level `version` stanza as the default. Add it to an `on_{system}` block instead.
           Use `:or_older` or `:or_newer` to specify a range of macOS versions.
         EOS
         severity: :convention,

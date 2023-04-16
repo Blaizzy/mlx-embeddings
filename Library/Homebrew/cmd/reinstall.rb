@@ -11,6 +11,7 @@ require "cleanup"
 require "cask/cmd"
 require "cask/utils"
 require "cask/macos"
+require "cask/reinstall"
 require "upgrade"
 require "api"
 
@@ -150,7 +151,7 @@ module Homebrew
     )
 
     if casks.any?
-      Cask::Cmd::Reinstall.reinstall_casks(
+      Cask::Reinstall.reinstall_casks(
         *casks,
         binaries:       args.binaries?,
         verbose:        args.verbose?,

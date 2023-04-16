@@ -45,14 +45,12 @@ describe Language::Node do
 
     it "raises error with non zero exitstatus" do
       allow(Utils).to receive(:popen_read).with(*npm_pack_cmd).and_return(`false`)
-      expect { described_class.std_npm_install_args(npm_install_arg) }.to \
-        raise_error("npm failed to pack #{Dir.pwd}")
+      expect { described_class.std_npm_install_args(npm_install_arg) }.to raise_error("npm failed to pack #{Dir.pwd}")
     end
 
     it "raises error with empty npm pack output" do
       allow(Utils).to receive(:popen_read).with(*npm_pack_cmd).and_return(`true`)
-      expect { described_class.std_npm_install_args(npm_install_arg) }.to \
-        raise_error("npm failed to pack #{Dir.pwd}")
+      expect { described_class.std_npm_install_args(npm_install_arg) }.to raise_error("npm failed to pack #{Dir.pwd}")
     end
 
     it "does not raise error with a zero exitstatus" do

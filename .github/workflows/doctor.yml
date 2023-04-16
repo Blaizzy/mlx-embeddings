@@ -17,13 +17,14 @@ jobs:
   tests:
     strategy:
       matrix:
-        runner:
-          - "13-arm64-${{github.run_id}}-${{github.run_attempt}}"
-          - "12-arm64"
-          - "12-${{github.run_id}}-${{github.run_attempt}}"
-          - "11-arm64"
-          - "11-${{github.run_id}}-${{github.run_attempt}}"
-          - "10.15-${{github.run_id}}-${{github.run_attempt}}"
+        include:
+          - runner: "13-arm64-${{github.run_id}}-${{github.run_attempt}}"
+          - runner: "12-arm64-${{github.run_id}}-${{github.run_attempt}}"
+          - runner: "12-${{github.run_id}}-${{github.run_attempt}}"
+          - runner: "11-arm64"
+            cleanup: true
+          - runner: "11-${{github.run_id}}-${{github.run_attempt}}"
+          - runner: "10.15-${{github.run_id}}-${{github.run_attempt}}"
       fail-fast: false
     runs-on: ${{ matrix.runner }}
     env:
@@ -37,9 +38,9 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - run: brew test-bot --only-cleanup-before
-        if: !contains(matrix.runner, github.run_id)
+        if: matrix.cleanup
 
       - run: brew doctor
 
       - run: brew test-bot --only-cleanup-after
-        if: always() && !contains(matrix.runner, github.run_id)
+        if: always() && matrix.cleanup

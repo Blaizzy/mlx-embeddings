@@ -17,13 +17,13 @@ class Locale
   LANGUAGE_REGEX = /(?:[a-z]{2,3})/.freeze
   private_constant :LANGUAGE_REGEX
 
-  # ISO 3166-1 or UN M.49
-  REGION_REGEX = /(?:[A-Z]{2}|\d{3})/.freeze
-  private_constant :REGION_REGEX
-
   # ISO 15924
   SCRIPT_REGEX = /(?:[A-Z][a-z]{3})/.freeze
   private_constant :SCRIPT_REGEX
+
+  # ISO 3166-1 or UN M.49
+  REGION_REGEX = /(?:[A-Z]{2}|\d{3})/.freeze
+  private_constant :REGION_REGEX
 
   LOCALE_REGEX = /\A((?:#{LANGUAGE_REGEX}|#{REGION_REGEX}|#{SCRIPT_REGEX})(?:-|$)){1,3}\Z/.freeze
   private_constant :LOCALE_REGEX
@@ -56,18 +56,18 @@ class Locale
 
     return unless scanner.eos?
 
-    new(language, region, script)
+    new(language, script, region)
   end
 
-  attr_reader :language, :region, :script
+  attr_reader :language, :script, :region
 
-  def initialize(language, region, script)
+  def initialize(language, script, region)
     raise ArgumentError, "#{self.class} cannot be empty" if language.nil? && region.nil? && script.nil?
 
     {
       language: language,
-      region:   region,
       script:   script,
+      region:   region,
     }.each do |key, value|
       next if value.nil?
 
@@ -84,7 +84,7 @@ class Locale
       return false if other.nil?
     end
 
-    [:language, :region, :script].all? do |var|
+    [:language, :script, :region].all? do |var|
       if other.public_send(var).nil?
         true
       else
@@ -99,7 +99,7 @@ class Locale
       return false if other.nil?
     end
 
-    [:language, :region, :script].all? do |var|
+    [:language, :script, :region].all? do |var|
       public_send(var) == other.public_send(var)
     end
   end
@@ -112,6 +112,6 @@ class Locale
 
   sig { returns(String) }
   def to_s
-    [@language, @region, @script].compact.join("-")
+    [@language, @script, @region].compact.join("-")
   end
 end

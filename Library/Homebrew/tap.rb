@@ -498,7 +498,7 @@ class Tap
         formula_dir.find
       else
         formula_dir.children
-      end.select(&method(:ruby_file?))
+      end.select(&method(:formula_file?))
     else
       []
     end
@@ -561,7 +561,7 @@ class Tap
     file.extname == ".rb"
   end
 
-  # return true if given path would present a {Formula} file in this {Tap}.
+  # returns true if given path would present a {Formula} file in this {Tap}.
   # accepts both absolute path and relative path (relative to this {Tap}'s path)
   # @private
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
@@ -569,11 +569,12 @@ class Tap
     file = Pathname.new(file) unless file.is_a? Pathname
     file = file.expand_path(path)
     return false unless ruby_file?(file)
+    return false if cask_file?(file)
 
     file.to_s.start_with?("#{formula_dir}/")
   end
 
-  # return true if given path would present a {Cask} file in this {Tap}.
+  # returns true if given path would present a {Cask} file in this {Tap}.
   # accepts both absolute path and relative path (relative to this {Tap}'s path)
   # @private
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
@@ -870,7 +871,7 @@ class CoreTap < Tap
 
   sig { returns(String) }
   def remote
-    super if installed? || Homebrew::EnvConfig.no_install_from_api?
+    super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::EnvConfig.core_git_remote
   end
@@ -988,7 +989,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Array[String]) }
   def aliases
-    return super if installed? || Homebrew::EnvConfig.no_install_from_api?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_aliases.keys
   end
@@ -996,7 +997,7 @@ class CoreTap < Tap
   # @private
   sig { returns(T::Array[String]) }
   def formula_names
-    return super if installed? || Homebrew::EnvConfig.no_install_from_api?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_formulae.keys
   end
