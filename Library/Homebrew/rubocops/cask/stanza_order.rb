@@ -36,7 +36,7 @@ module RuboCop
 
         def add_offenses(stanzas, inner: false)
           sorted_stanzas = inner ? sorted_inner_stanzas(stanzas) : sorted_toplevel_stanzas
-          offending_stanzas(stanzas, inner: inner).each do |stanza|
+          offending_stanzas(stanzas, sorted_stanzas).each do |stanza|
             message = format(MESSAGE, stanza: stanza.stanza_name)
             add_offense(stanza.source_range_with_comments, message: message) do |corrector|
               correct_stanza_index = stanzas.index(stanza)
@@ -47,8 +47,7 @@ module RuboCop
           end
         end
 
-        def offending_stanzas(stanzas, inner: false)
-          sorted_stanzas = inner ? sorted_inner_stanzas(stanzas) : sorted_toplevel_stanzas
+        def offending_stanzas(stanzas, sorted_stanzas)
           stanza_pairs = stanzas.zip(sorted_stanzas)
           stanza_pairs.each_with_object([]) do |stanza_pair, offending_stanzas|
             stanza, sorted_stanza = *stanza_pair
