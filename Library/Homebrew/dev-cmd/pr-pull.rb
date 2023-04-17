@@ -85,12 +85,12 @@ module Homebrew
     [subject, body, trailers]
   end
 
-  def self.signoff!(path, pull_request: nil, dry_run: false)
-    subject, body, trailers = separate_commit_message(path.git_commit_message)
+  def self.signoff!(git_repo, pull_request: nil, dry_run: false)
+    subject, body, trailers = separate_commit_message(git_repo.commit_message)
 
     if pull_request
       # This is a tap pull request and approving reviewers should also sign-off.
-      tap = Tap.from_path(path)
+      tap = Tap.from_path(git_repo.pathname)
       review_trailers = GitHub.approved_reviews(tap.user, tap.full_name.split("/").last, pull_request).map do |r|
         "Signed-off-by: #{r["name"]} <#{r["email"]}>"
       end
@@ -101,7 +101,7 @@ module Homebrew
       body += "\n\n#{close_message}" unless body.include? close_message
     end
 
-    git_args = Utils::Git.git, "-C", path, "commit", "--amend", "--signoff", "--allow-empty", "--quiet",
+    git_args = Utils::Git.git, "-C", git_repo.pathname, "commit", "--amend", "--signoff", "--allow-empty", "--quiet",
                "--message", subject, "--message", body, "--message", trailers
 
     if dry_run
@@ -156,21 +156,21 @@ module Homebrew
 
   # Cherry picks a single commit that modifies a single file.
   # Potentially rewords this commit using {determine_bump_subject}.
-  def self.reword_package_commit(commit, file, reason: "", verbose: false, resolve: false, path: ".")
-    package_file = Pathname.new(path) / file
+  def self.reword_package_commit(commit, file, git_repo:, reason: "", verbose: false, resolve: false)
+    package_file = git_repo.pathname / file
     package_name = package_file.basename.to_s.chomp(".rb")
 
     odebug "Cherry-picking #{package_file}: #{commit}"
-    Utils::Git.cherry_pick!(path, commit, verbose: verbose, resolve: resolve)
+    Utils::Git.cherry_pick!(git_repo, commit, verbose: verbose, resolve: resolve)
 
-    old_package = Utils::Git.file_at_commit(path, file, "HEAD^")
-    new_package = Utils::Git.file_at_commit(path, file, "HEAD")
+    old_package = Utils::Git.file_at_commit(git_repo, file, "HEAD^")
+    new_package = Utils::Git.file_at_commit(git_repo, file, "HEAD")
 
     bump_subject = determine_bump_subject(old_package, new_package, package_file, reason: reason).strip
-    subject, body, trailers = separate_commit_message(path.git_commit_message)
+    subject, body, trailers = separate_commit_message(git_repo.commit_message)
 
     if subject != bump_subject && !subject.start_with?("#{package_name}:")
-      safe_system("git", "-C", path, "commit", "--amend", "-q",
+      safe_system("git", "-C", git_repo.pathname, "commit", "--amend", "-q",
                   "-m", bump_subject, "-m", subject, "-m", body, "-m", trailers)
       ohai bump_subject
     else
@@ -181,7 +181,7 @@ module Homebrew
   # Cherry picks multiple commits that each modify a single file.
   # Words the commit according to {determine_bump_subject} with the body
   # corresponding to all the original commit messages combined.
-  def self.squash_package_commits(commits, file, reason: "", verbose: false, resolve: false, path: ".")
+  def self.squash_package_commits(commits, file, git_repo:, reason: "", verbose: false, resolve: false)
     odebug "Squashing #{file}: #{commits.join " "}"
 
     # Format commit messages into something similar to `git fmt-merge-message`.
@@ -192,35 +192,36 @@ module Homebrew
     messages = []
     trailers = []
     commits.each do |commit|
-      subject, body, trailer = separate_commit_message(path.git_commit_message(commit))
+      subject, body, trailer = separate_commit_message(git_repo.commit_message(commit))
       body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
       messages << "* #{subject}\n#{body}".strip
       trailers << trailer
     end
 
     # Get the set of authors in this series.
-    authors = Utils.safe_popen_read("git", "-C", path, "show",
+    authors = Utils.safe_popen_read("git", "-C", git_repo.pathname, "show",
                                     "--no-patch", "--pretty=%an <%ae>", *commits).lines.map(&:strip).uniq.compact
 
     # Get the author and date of the first commit of this series, which we use for the squashed commit.
     original_author = authors.shift
-    original_date = Utils.safe_popen_read "git", "-C", path, "show", "--no-patch", "--pretty=%ad", commits.first
+    original_date = Utils.safe_popen_read "git", "-C", git_repo.pathname, "show", "--no-patch", "--pretty=%ad",
+                                          commits.first
 
     # Generate trailers for coauthors and combine them with the existing trailers.
     co_author_trailers = authors.map { |au| "Co-authored-by: #{au}" }
     trailers = [trailers + co_author_trailers].flatten.uniq.compact
 
     # Apply the patch series but don't commit anything yet.
-    Utils::Git.cherry_pick!(path, "--no-commit", *commits, verbose: verbose, resolve: resolve)
+    Utils::Git.cherry_pick!(git_repo.pathname, "--no-commit", *commits, verbose: verbose, resolve: resolve)
 
     # Determine the bump subject by comparing the original state of the tree to its current state.
-    package_file = Pathname.new(path) / file
-    old_package = Utils::Git.file_at_commit(path, file, "#{commits.first}^")
+    package_file = git_repo.pathname / file
+    old_package = Utils::Git.file_at_commit(git_repo.pathname, file, "#{commits.first}^")
     new_package = package_file.read
     bump_subject = determine_bump_subject(old_package, new_package, package_file, reason: reason)
 
     # Commit with the new subject, body, and trailers.
-    safe_system("git", "-C", path, "commit", "--quiet",
+    safe_system("git", "-C", git_repo.pathname, "commit", "--quiet",
                 "-m", bump_subject, "-m", messages.join("\n"), "-m", trailers.join("\n"),
                 "--author", original_author, "--date", original_date, "--", file)
     ohai bump_subject
@@ -228,7 +229,8 @@ module Homebrew
 
   # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
   def self.autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
-    original_head = tap.path.git_head
+    git_repo = tap.git_repo
+    original_head = git_repo.head_ref
 
     commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
                                     "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
@@ -268,13 +270,15 @@ module Homebrew
       files = commits_to_files[commit]
       if files.length == 1 && files_to_commits[files.first].length == 1
         # If there's a 1:1 mapping of commits to files, just cherry pick and (maybe) reword.
-        reword_package_commit(commit, files.first, path: tap.path, reason: reason, verbose: verbose, resolve: resolve)
+        reword_package_commit(
+          commit, files.first, git_repo: git_repo, reason: reason, verbose: verbose, resolve: resolve
+        )
         processed_commits << commit
       elsif files.length == 1 && files_to_commits[files.first].length > 1
         # If multiple commits modify a single file, squash them down into a single commit.
         file = files.first
         commits = files_to_commits[file]
-        squash_package_commits(commits, file, path: tap.path, reason: reason, verbose: verbose, resolve: resolve)
+        squash_package_commits(commits, file, git_repo: git_repo, reason: reason, verbose: verbose, resolve: resolve)
         processed_commits += commits
       else
         # We can't split commits (yet) so just raise an error.
@@ -450,8 +454,9 @@ module Homebrew
       _, user, repo, pr = *url_match
       odie "Not a GitHub pull request: #{arg}" unless pr
 
-      if !tap.path.git_default_origin_branch? || args.branch_okay? || args.clean?
-        opoo "Current branch is #{tap.path.git_branch}: do you need to pull inside #{tap.path.git_origin_branch}?"
+      git_repo = tap.git_repo
+      if !git_repo.default_origin_branch? || args.branch_okay? || args.clean?
+        opoo "Current branch is #{git_repo.branch_name}: do you need to pull inside #{git_repo.origin_branch_name}?"
       end
 
       pr_labels = GitHub.pull_request_labels(user, repo, pr)
@@ -479,7 +484,7 @@ module Homebrew
               autosquash!(original_commit, tap: tap, cherry_picked: !args.no_cherry_pick?,
                           verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
             end
-            signoff!(tap.path, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
+            signoff!(git_repo, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
           end
 
           unless formulae_need_bottles?(tap, original_commit, pr_labels, args: args)

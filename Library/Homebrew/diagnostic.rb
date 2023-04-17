@@ -126,10 +126,11 @@ module Homebrew
         EOS
       end
 
+      sig { params(repository_path: GitRepository, desired_origin: String).returns(T.nilable(String)) }
       def examine_git_origin(repository_path, desired_origin)
-        return if !Utils::Git.available? || !repository_path.git?
+        return if !Utils::Git.available? || !repository_path.git_repo?
 
-        current_origin = repository_path.git_origin
+        current_origin = repository_path.origin_url
 
         if current_origin.nil?
           <<~EOS
@@ -155,8 +156,8 @@ module Homebrew
       def broken_tap(tap)
         return unless Utils::Git.available?
 
-        repo = HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
-        return unless repo.git?
+        repo = GitRepository.new(HOMEBREW_REPOSITORY)
+        return unless repo.git_repo?
 
         message = <<~EOS
           #{tap.full_name} was not tapped properly! Run:
@@ -168,7 +169,7 @@ module Homebrew
 
         tap_head = tap.git_head
         return message if tap_head.blank?
-        return if tap_head != repo.git_head
+        return if tap_head != repo.head_ref
 
         message
       end
@@ -516,7 +517,7 @@ module Homebrew
       end
 
       def check_brew_git_origin
-        repo = HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
+        repo = GitRepository.new(HOMEBREW_REPOSITORY)
         examine_git_origin(repo, Homebrew::EnvConfig.brew_git_remote)
       end
 
@@ -528,14 +529,14 @@ module Homebrew
           CoreTap.ensure_installed!
         end
 
-        broken_tap(coretap) || examine_git_origin(coretap.path, Homebrew::EnvConfig.core_git_remote)
+        broken_tap(coretap) || examine_git_origin(coretap.git_repo, Homebrew::EnvConfig.core_git_remote)
       end
 
       def check_casktap_integrity
         default_cask_tap = Tap.default_cask_tap
         return unless default_cask_tap.installed?
 
-        broken_tap(default_cask_tap) || examine_git_origin(default_cask_tap.path, default_cask_tap.remote)
+        broken_tap(default_cask_tap) || examine_git_origin(default_cask_tap.git_repo, default_cask_tap.remote)
       end
 
       sig { returns(T.nilable(String)) }
