@@ -89,15 +89,11 @@ class SoftwareSpec
     @resource.owner = self
     resources.each_value do |r|
       r.owner = self
-      r.version ||= begin
-        raise "#{full_name}: version missing for \"#{r.name}\" resource!" if version.nil?
+      next if r.version
 
-        if version.head?
-          Version.create("HEAD")
-        else
-          version.dup
-        end
-      end
+      raise "#{full_name}: version missing for \"#{r.name}\" resource!" if version.nil?
+
+      r.version(version.head? ? Version.create("HEAD") : version.dup)
     end
     patches.each { |p| p.owner = self }
   end
@@ -281,7 +277,7 @@ end
 class HeadSoftwareSpec < SoftwareSpec
   def initialize(flags: [])
     super
-    @resource.version = Version.create("HEAD")
+    @resource.version(Version.create("HEAD"))
   end
 
   def verify_download_integrity(_filename)
@@ -340,7 +336,6 @@ class Bottle
   def initialize(formula, spec, tag = nil)
     @name = formula.name
     @resource = Resource.new
-    @resource.specs[:bottle] = true
     @resource.owner = formula
     @spec = spec
 
@@ -350,7 +345,7 @@ class Bottle
     @cellar = tag_spec.cellar
     @rebuild = spec.rebuild
 
-    @resource.version = formula.pkg_version.to_s
+    @resource.version(formula.pkg_version.to_s)
     @resource.checksum = tag_spec.checksum
 
     @fetch_tab_retried = false
@@ -468,13 +463,15 @@ class Bottle
         using:   CurlGitHubPackagesDownloadStrategy,
         headers: ["Accept: application/vnd.oci.image.index.v1+json"],
       )
-      resource.downloader.resolved_basename = "#{name}-#{version_rebuild}.bottle_manifest.json"
+      T.cast(resource.downloader, CurlGitHubPackagesDownloadStrategy).resolved_basename =
+        "#{name}-#{version_rebuild}.bottle_manifest.json"
       resource
     end
   end
 
   def select_download_strategy(specs)
     specs[:using] ||= DownloadStrategyDetector.detect(@root_url)
+    specs[:bottle] = true
     specs
   end
 

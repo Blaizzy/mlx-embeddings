@@ -21,10 +21,33 @@ module Cask
     end
 
     # Loads a cask from a string.
-    class FromContentLoader
+    class AbstractContentLoader
       include ILoader
-      attr_reader :content, :tap
+      extend T::Helpers
+      abstract!
 
+      sig { returns(String) }
+      attr_reader :content
+
+      sig { returns(T.nilable(Tap)) }
+      attr_reader :tap
+
+      private
+
+      sig {
+        overridable.params(
+          header_token: String,
+          options:      T.untyped,
+          block:        T.nilable(T.proc.bind(DSL).void),
+        ).returns(Cask)
+      }
+      def cask(header_token, **options, &block)
+        Cask.new(header_token, source: content, tap: tap, **options, config: @config, &block)
+      end
+    end
+
+    # Loads a cask from a string.
+    class FromContentLoader < AbstractContentLoader
       def self.can_load?(ref)
         return false unless ref.respond_to?(:to_str)
 
@@ -42,6 +65,8 @@ module Cask
       end
 
       def initialize(content, tap: nil)
+        super()
+
         @content = content.force_encoding("UTF-8")
         @tap = tap
       end
@@ -51,16 +76,10 @@ module Cask
 
         instance_eval(content, __FILE__, __LINE__)
       end
-
-      private
-
-      def cask(header_token, **options, &block)
-        Cask.new(header_token, source: content, tap: tap, **options, config: @config, &block)
-      end
     end
 
     # Loads a cask from a path.
-    class FromPathLoader < FromContentLoader
+    class FromPathLoader < AbstractContentLoader
       def self.can_load?(ref)
         path = Pathname(ref)
         %w[.rb .json].include?(path.extname) && path.expand_path.exist?
@@ -68,11 +87,15 @@ module Cask
 
       attr_reader :token, :path
 
-      def initialize(path) # rubocop:disable Lint/MissingSuper
+      def initialize(path, token: nil)
+        super()
+
         path = Pathname(path).expand_path
 
         @token = path.basename(path.extname).to_s
+
         @path = path
+        @tap = Homebrew::API.tap_from_source_download(path)
       end
 
       def load(config:)
@@ -153,8 +176,8 @@ module Cask
       end
 
       def initialize(path)
-        @tap = Tap.from_path(path)
         super(path)
+        @tap = Tap.from_path(path)
       end
     end
 
@@ -172,7 +195,7 @@ module Cask
       end
 
       def load(config:)
-        raise TapCaskUnavailableError.new(tap, token) unless tap.installed?
+        raise TapCaskUnavailableError.new(tap, token) unless T.must(tap).installed?
 
         super
       end
@@ -215,12 +238,12 @@ module Cask
         return false unless ref.is_a?(String)
         return false unless ref.match?(HOMEBREW_MAIN_TAP_CASK_REGEX)
 
-        token = ref.delete_prefix("homebrew/cask/")
+        token = ref.sub(%r{^homebrew/(?:homebrew-)?cask/}i, "")
         Homebrew::API::Cask.all_casks.key?(token)
       end
 
       def initialize(token, from_json: nil)
-        @token = token.delete_prefix("homebrew/cask/")
+        @token = token.sub(%r{^homebrew/(?:homebrew-)?cask/}i, "")
         @path = CaskLoader.default_path(token)
         @from_json = from_json
       end

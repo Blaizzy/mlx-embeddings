@@ -413,7 +413,7 @@ module Homebrew
     resource.url(url, specs)
     resource.owner = Resource.new(formula.name)
     forced_version = new_version && new_version != resource.version.to_s
-    resource.version = new_version if forced_version
+    resource.version(new_version) if forced_version
     odie "Couldn't identify version, specify it using `--version=`." if resource.version.blank?
     [resource.fetch, forced_version]
   end

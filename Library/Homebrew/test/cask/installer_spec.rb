@@ -240,7 +240,8 @@ describe Cask::Installer, :cask do
       let(:content) { File.read(path) }
 
       it "installs cask" do
-        expect(Homebrew::API::Cask).to receive(:fetch_source).once.and_return(content)
+        source_caffeine = Cask::CaskLoader.load(path)
+        expect(Homebrew::API::Cask).to receive(:source_download).once.and_return(source_caffeine)
 
         caffeine = Cask::CaskLoader.load(path)
         expect(caffeine).to receive(:loaded_from_api?).once.and_return(true)
@@ -307,7 +308,8 @@ describe Cask::Installer, :cask do
       end
 
       it "uninstalls cask" do
-        expect(Homebrew::API::Cask).to receive(:fetch_source).twice.and_return(content)
+        source_caffeine = Cask::CaskLoader.load(path)
+        expect(Homebrew::API::Cask).to receive(:source_download).twice.and_return(source_caffeine)
 
         caffeine = Cask::CaskLoader.load(path)
         expect(caffeine).to receive(:loaded_from_api?).twice.and_return(true)

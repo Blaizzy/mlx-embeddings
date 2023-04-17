@@ -15,7 +15,7 @@ describe Formulary do
 
         bottle do
           root_url "file://#{bottle_dir}"
-          sha256 cellar: :any_skip_relocation, #{Utils::Bottles.tag}: "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149"
+          sha256 cellar: :any_skip_relocation, #{Utils::Bottles.tag}: "d7b9f4e8bf83608b71fe958a99f19f2e5e68bb2582965d32e41759c24f1aef97"
         end
 
         def install
@@ -243,7 +243,7 @@ describe Formulary do
                   Utils::Bottles.tag.to_s => {
                     "cellar" => ":any",
                     "url"    => "file://#{bottle_dir}/#{formula_name}",
-                    "sha256" => "8f9aecd233463da6a4ea55f5f88fc5841718c013f3e2a7941350d6130f1dc149",
+                    "sha256" => "d7b9f4e8bf83608b71fe958a99f19f2e5e68bb2582965d32e41759c24f1aef97",
                   },
                 },
               },

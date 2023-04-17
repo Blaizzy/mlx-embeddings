@@ -252,15 +252,6 @@ module Formulary
         link_overwrite overwrite_path
       end
 
-      resource "ruby-source" do
-        tap_git_head = json_formula.fetch("tap_git_head", "HEAD")
-        ruby_source_path = json_formula.fetch("ruby_source_path", "Formula/#{name}.rb")
-        ruby_source_sha256 = json_formula.dig("ruby_source_checksum", "sha256")
-
-        url "https://raw.githubusercontent.com/Homebrew/homebrew-core/#{tap_git_head}/#{ruby_source_path}"
-        sha256 ruby_source_sha256 if ruby_source_sha256
-      end
-
       def install
         raise "Cannot build from source from abstract formula."
       end
@@ -306,6 +297,17 @@ module Formulary
       @versioned_formulae_array = json_formula["versioned_formulae"]
       def versioned_formulae_names
         self.class.instance_variable_get(:@versioned_formulae_array)
+      end
+
+      @ruby_source_path_string = json_formula["ruby_source_path"]
+      def ruby_source_path
+        self.class.instance_variable_get(:@ruby_source_path_string)
+      end
+
+      @ruby_source_checksum_hash = json_formula["ruby_source_checksum"]
+      def ruby_source_checksum
+        checksum_hash = self.class.instance_variable_get(:@ruby_source_checksum_hash)
+        Checksum.new(checksum_hash["sha256"]) if checksum_hash&.key?("sha256")
       end
     end
 
@@ -384,10 +386,13 @@ module Formulary
     attr_reader :path
     # The name used to install the formula
     attr_reader :alias_path
+    # The formula's tap (nil if it should be implicitly determined)
+    attr_reader :tap
 
-    def initialize(name, path)
+    def initialize(name, path, tap: nil)
       @name = name
-      @path = path.resolved_path
+      @path = path
+      @tap = tap
     end
 
     # Gets the formula instance.
@@ -396,7 +401,7 @@ module Formulary
     def get_formula(spec, alias_path: nil, force_bottle: false, flags: [], ignore_errors: false)
       alias_path ||= self.alias_path
       klass(flags: flags, ignore_errors: ignore_errors)
-        .new(name, path, spec, alias_path: alias_path, force_bottle: force_bottle)
+        .new(name, path, spec, alias_path: alias_path, tap: tap, force_bottle: force_bottle)
     end
 
     def klass(flags:, ignore_errors:)
@@ -473,12 +478,7 @@ module Formulary
     def initialize(path)
       path = Pathname.new(path).expand_path
       name = path.basename(".rb").to_s
-
-      # For files we've downloaded, they will be prefixed with `{URL MD5}--`.
-      # Remove that prefix to get the original filename.
-      name = name.split("--", 2).last if path.dirname == HOMEBREW_CACHE/"downloads"
-
-      super name, path
+      super name, path, tap: Homebrew::API.tap_from_source_download(path)
     end
   end
 
@@ -498,18 +498,16 @@ module Formulary
     end
 
     def load_file(flags:, ignore_errors:)
-      if @from != :formula_installer
-        match = url.match(%r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb})
-        if match
-          raise UnsupportedInstallationMethod,
-                "Installation of #{match[:name]} from a GitHub commit URL is unsupported! " \
-                "`brew extract #{match[:name]}` to a stable tap on GitHub instead."
-        elsif url.match?(%r{^(https?|ftp)://})
-          raise UnsupportedInstallationMethod,
-                "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! " \
-                "`brew extract` or `brew create` and `brew tap-new` to create a formula file in a tap " \
-                "on GitHub instead."
-        end
+      match = url.match(%r{githubusercontent.com/[\w-]+/[\w-]+/[a-f0-9]{40}(?:/Formula)?/(?<name>[\w+-.@]+).rb})
+      if match
+        raise UnsupportedInstallationMethod,
+              "Installation of #{match[:name]} from a GitHub commit URL is unsupported! " \
+              "`brew extract #{match[:name]}` to a stable tap on GitHub instead."
+      elsif url.match?(%r{^(https?|ftp)://})
+        raise UnsupportedInstallationMethod,
+              "Non-checksummed download of #{name} formula file from an arbitrary URL is unsupported! " \
+              "`brew extract` or `brew create` and `brew tap-new` to create a formula file in a tap " \
+              "on GitHub instead."
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)
@@ -525,30 +523,28 @@ module Formulary
 
   # Loads tapped formulae.
   class TapLoader < FormulaLoader
-    attr_reader :tap
-
     def initialize(tapped_name, from: nil)
       warn = [:keg, :rack].exclude?(from)
-      name, path = formula_name_path(tapped_name, warn: warn)
-      super name, path
+      name, path, tap = formula_name_path(tapped_name, warn: warn)
+      super name, path, tap: tap
     end
 
     def formula_name_path(tapped_name, warn: true)
       user, repo, name = tapped_name.split("/", 3).map(&:downcase)
-      @tap = Tap.fetch user, repo
-      path = find_formula_from_name(name)
+      tap = Tap.fetch user, repo
+      path = find_formula_from_name(name, tap)
 
       unless path.file?
-        if (possible_alias = @tap.alias_dir/name).file?
+        if (possible_alias = tap.alias_dir/name).file?
           path = possible_alias.resolved_path
           name = path.basename(".rb").to_s
-        elsif (new_name = @tap.formula_renames[name]) &&
-              (new_path = find_formula_from_name(new_name)).file?
+        elsif (new_name = tap.formula_renames[name]) &&
+              (new_path = find_formula_from_name(new_name, tap)).file?
           old_name = name
           path = new_path
           name = new_name
-          new_name = @tap.core_tap? ? name : "#{@tap}/#{name}"
-        elsif (new_tap_name = @tap.tap_migrations[name])
+          new_name = tap.core_tap? ? name : "#{tap}/#{name}"
+        elsif (new_tap_name = tap.tap_migrations[name])
           new_tap_user, new_tap_repo, = new_tap_name.split("/")
           new_tap_name = "#{new_tap_user}/#{new_tap_repo}"
           new_tap = Tap.fetch new_tap_name
@@ -562,7 +558,7 @@ module Formulary
         opoo "Use #{new_name} instead of deprecated #{old_name}" if warn && old_name && new_name
       end
 
-      [name, path]
+      [name, path, tap]
     end
 
     def get_formula(spec, alias_path: nil, force_bottle: false, flags: [], ignore_errors: false)
@@ -584,8 +580,8 @@ module Formulary
 
     private
 
-    def find_formula_from_name(name)
-      Formulary.find_formula_in_tap(name, @tap)
+    def find_formula_from_name(name, tap)
+      Formulary.find_formula_in_tap(name, tap)
     end
   end
 
@@ -768,7 +764,7 @@ module Formulary
     when URL_START_REGEX
       return FromUrlLoader.new(ref, from: from)
     when HOMEBREW_TAP_FORMULA_REGEX
-      if ref.start_with?("homebrew/core/") && !Homebrew::EnvConfig.no_install_from_api?
+      if ref.match?(%r{^homebrew/(?:homebrew-)?core/}i) && !Homebrew::EnvConfig.no_install_from_api?
         name = ref.split("/", 3).last
         return FormulaAPILoader.new(name) if Homebrew::API::Formula.all_formulae.key?(name)
         return AliasAPILoader.new(name) if Homebrew::API::Formula.all_aliases.key?(name)

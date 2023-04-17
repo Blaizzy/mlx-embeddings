@@ -206,14 +206,14 @@ describe Formula do
   example "installed alias with tap" do
     tap = Tap.new("user", "repo")
     name = "foo"
-    path = "#{tap.path}/Formula/#{name}.rb"
+    path = tap.path/"Formula/#{name}.rb"
     f = formula name, path: path do
       url "foo-1.0"
     end
 
     build_values_with_no_installed_alias = [
       BuildOptions.new(Options.new, f.options),
-      Tab.new(source: { "path" => f.path }),
+      Tab.new(source: { "path" => f.path.to_s }),
     ]
     build_values_with_no_installed_alias.each do |build|
       f.build = build

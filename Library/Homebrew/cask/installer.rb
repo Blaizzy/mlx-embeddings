@@ -562,13 +562,7 @@ on_request: true)
     end
 
     def load_cask_from_source_api!
-      cask_source = Homebrew::API::Cask.fetch_source(
-        @cask.token,
-        path:     @cask.ruby_source_path || "Casks/#{@cask.token}.rb",
-        git_head: @cask.tap_git_head,
-        sha256:   @cask.ruby_source_checksum["sha256"],
-      )
-      @cask = CaskLoader::FromContentLoader.new(cask_source, tap: @cask.tap).load(config: @cask.config)
+      @cask = Homebrew::API::Cask.source_download(@cask)
     end
   end
 end

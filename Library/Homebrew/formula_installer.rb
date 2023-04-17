@@ -1191,16 +1191,7 @@ on_request: installed_on_request?, options: options)
     if pour_bottle?(output_warning: true)
       formula.fetch_bottle_tab
     else
-      if formula.class.loaded_from_api
-        # TODO: unify with cask logic (https://github.com/Homebrew/brew/issues/14746)
-        resource = formula.resource("ruby-source")
-        resource.fetch
-        @formula = Formulary.factory(resource.cached_download,
-                                     formula.active_spec_sym,
-                                     alias_path: formula.alias_path,
-                                     flags:      formula.class.build_flags,
-                                     from:       :formula_installer)
-      end
+      @formula = Homebrew::API::Formula.source_download(formula) if formula.class.loaded_from_api
 
       formula.fetch_patches
       formula.resources.each(&:fetch)

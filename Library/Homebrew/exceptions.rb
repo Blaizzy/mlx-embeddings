@@ -603,13 +603,16 @@ class CompilerSelectionError < RuntimeError
   end
 end
 
-# Raised in {Resource#fetch}.
+# Raised in {Downloadable#fetch}.
 class DownloadError < RuntimeError
-  def initialize(resource, cause)
+  attr_reader :cause
+
+  def initialize(downloadable, cause)
     super <<~EOS
-      Failed to download resource #{resource.download_name.inspect}
+      Failed to download resource #{downloadable.download_name.inspect}
       #{cause.message}
     EOS
+    @cause = cause
     set_backtrace(cause.backtrace)
   end
 end

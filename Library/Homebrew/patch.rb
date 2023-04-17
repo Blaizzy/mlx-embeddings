@@ -125,8 +125,8 @@ class ExternalPatch
   end
 
   def owner=(owner)
-    resource.owner   = owner
-    resource.version = resource.checksum || ERB::Util.url_encode(resource.url)
+    resource.owner = owner
+    resource.version(resource.checksum&.hexdigest || ERB::Util.url_encode(resource.url))
   end
 
   def apply

@@ -181,7 +181,7 @@ class Formula
   attr_accessor :force_bottle
 
   # @private
-  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+  def initialize(name, path, spec, alias_path: nil, tap: nil, force_bottle: false)
     # Only allow instances of subclasses. The base class does not hold any spec information (URLs etc).
     raise "Do not call `Formula.new' directly without a subclass." unless self.class < Formula
 
@@ -191,7 +191,8 @@ class Formula
     self.class.freeze
 
     @name = name
-    @path = path
+    @unresolved_path = path
+    @path = path.resolved_path
     @alias_path = alias_path
     @alias_name = (File.basename(alias_path) if alias_path)
     @revision = self.class.revision || 0
@@ -199,7 +200,8 @@ class Formula
 
     @force_bottle = force_bottle
 
-    @tap = if path == Formulary.core_path(name)
+    @tap = tap
+    @tap ||= if path == Formulary.core_path(name)
       CoreTap.instance
     else
       Tap.from_path(path)
@@ -320,7 +322,7 @@ class Formula
   # The path that was specified to find this formula.
   def specified_path
     default_specified_path = Pathname(alias_path) if alias_path.present?
-    default_specified_path ||= path
+    default_specified_path ||= @unresolved_path
 
     return default_specified_path if default_specified_path.presence&.exist?
     return local_bottle_path if local_bottle_path.presence&.exist?
@@ -2095,6 +2097,18 @@ class Formula
   end
 
   # @private
+  sig { returns(T.nilable(String)) }
+  def ruby_source_path
+    path.relative_path_from(tap.path).to_s if tap && path.exist?
+  end
+
+  # @private
+  sig { returns(T.nilable(Checksum)) }
+  def ruby_source_checksum
+    Checksum.new(Digest::SHA256.file(path).hexdigest) if path.exist?
+  end
+
+  # @private
   def to_hash
     dependencies = deps
 
@@ -2157,6 +2171,7 @@ class Formula
       "disable_reason"           => disable_reason,
       "service"                  => service&.serialize,
       "tap_git_head"             => tap_git_head,
+      "ruby_source_path"         => ruby_source_path,
       "ruby_source_checksum"     => {},
     }
 
@@ -2208,14 +2223,9 @@ class Formula
       }
     end
 
-    if self.class.loaded_from_api && active_spec.resource_defined?("ruby-source")
+    if (source_checksum = ruby_source_checksum)
       hsh["ruby_source_checksum"] = {
-        "sha256" => resource("ruby-source").checksum.hexdigest,
-      }
-    elsif !self.class.loaded_from_api && path.exist?
-      hsh["ruby_source_path"] = (path.relative_path_from(tap.path).to_s if tap)
-      hsh["ruby_source_checksum"] = {
-        "sha256" => Digest::SHA256.file(path).hexdigest,
+        "sha256" => source_checksum.hexdigest,
       }
     end
 
