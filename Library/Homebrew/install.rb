@@ -56,43 +56,6 @@ module Homebrew
         end
       end
 
-      def check_cpu
-        return unless Hardware::CPU.ppc?
-
-        odie <<~EOS
-          Sorry, Homebrew does not support your computer's CPU architecture!
-          For PowerPC Mac (PPC32/PPC64BE) support, see:
-            #{Formatter.url("https://github.com/mistydemeo/tigerbrew")}
-        EOS
-      end
-      private_class_method :check_cpu
-
-      def attempt_directory_creation
-        Keg::MUST_EXIST_DIRECTORIES.each do |dir|
-          FileUtils.mkdir_p(dir) unless dir.exist?
-
-          # Create these files to ensure that these directories aren't removed
-          # by the Catalina installer.
-          # (https://github.com/Homebrew/brew/issues/6263)
-          keep_file = dir/".keepme"
-          FileUtils.touch(keep_file) unless keep_file.exist?
-        rescue
-          nil
-        end
-      end
-      private_class_method :attempt_directory_creation
-
-      def check_cc_argv(cc)
-        return unless cc
-
-        @checks ||= Diagnostic::Checks.new
-        opoo <<~EOS
-          You passed `--cc=#{cc}`.
-          #{@checks.please_create_pull_requests}
-        EOS
-      end
-      private_class_method :check_cc_argv
-
       def install_formula?(
         formula,
         head: false,
@@ -342,15 +305,6 @@ module Homebrew
         end
       end
 
-      def install_formula(formula_installer)
-        formula = formula_installer.formula
-
-        upgrade = formula.linked? && formula.outdated? && !formula.head? && !Homebrew::EnvConfig.no_install_upgrade?
-
-        Upgrade.install_formula(formula_installer, upgrade: upgrade)
-      end
-      private_class_method :install_formula
-
       def print_dry_run_dependencies(formula, dependencies, &block)
         return if dependencies.empty?
 
@@ -358,6 +312,50 @@ module Homebrew
                                             include_count: true)} for #{formula.name}:"
         formula_names = dependencies.map(&:first).map(&:to_formula).map(&block)
         puts formula_names.join(" ")
+      end
+
+      private
+
+      def check_cc_argv(cc)
+        return unless cc
+
+        @checks ||= Diagnostic::Checks.new
+        opoo <<~EOS
+          You passed `--cc=#{cc}`.
+          #{@checks.please_create_pull_requests}
+        EOS
+      end
+
+      def attempt_directory_creation
+        Keg::MUST_EXIST_DIRECTORIES.each do |dir|
+          FileUtils.mkdir_p(dir) unless dir.exist?
+
+          # Create these files to ensure that these directories aren't removed
+          # by the Catalina installer.
+          # (https://github.com/Homebrew/brew/issues/6263)
+          keep_file = dir/".keepme"
+          FileUtils.touch(keep_file) unless keep_file.exist?
+        rescue
+          nil
+        end
+      end
+
+      def check_cpu
+        return unless Hardware::CPU.ppc?
+
+        odie <<~EOS
+          Sorry, Homebrew does not support your computer's CPU architecture!
+          For PowerPC Mac (PPC32/PPC64BE) support, see:
+            #{Formatter.url("https://github.com/mistydemeo/tigerbrew")}
+        EOS
+      end
+
+      def install_formula(formula_installer)
+        formula = formula_installer.formula
+
+        upgrade = formula.linked? && formula.outdated? && !formula.head? && !Homebrew::EnvConfig.no_install_upgrade?
+
+        Upgrade.install_formula(formula_installer, upgrade: upgrade)
       end
     end
   end
