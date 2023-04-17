@@ -545,9 +545,9 @@ module Homebrew
         return unless Utils::Git.available?
 
         commands = Tap.map do |tap|
-          next if tap.path.git_default_origin_branch?
+          next if tap.git_repo.default_origin_branch?
 
-          "git -C $(brew --repo #{tap.name}) checkout #{tap.path.git_origin_branch}"
+          "git -C $(brew --repo #{tap.name}) checkout #{tap.git_repo.origin_branch_name}"
         end.compact
 
         return if commands.blank?
