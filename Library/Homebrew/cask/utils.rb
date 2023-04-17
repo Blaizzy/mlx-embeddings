@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "utils/user"
-require "yaml"
 require "open3"
 require "stringio"
 
