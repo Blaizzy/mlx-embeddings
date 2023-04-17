@@ -50,8 +50,6 @@ module OS
 
   # rubocop:disable Style/Documentation
   module Mac
-    module_function
-
     ::MacOS = OS::Mac
 
     raise "Loaded OS::Linux on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
@@ -85,8 +83,6 @@ module OS
     end
 
     module Xcode
-      module_function
-
       def self.version
         ::Version::NULL
       end
@@ -97,8 +93,6 @@ module OS
     end
 
     module CLT
-      module_function
-
       def self.version
         ::Version::NULL
       end

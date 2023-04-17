@@ -182,7 +182,9 @@ module GitHub
       EOS
     end
 
-    def self.open_rest(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
+    def self.open_rest(
+      url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true
+    )
       # This is a no-op if the user is opting out of using the GitHub API.
       return block_given? ? yield({}) : {} if Homebrew::EnvConfig.no_github_api?
 

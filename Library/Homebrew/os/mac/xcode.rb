@@ -261,8 +261,6 @@ module OS
     module CLT
       extend T::Sig
 
-      module_function
-
       # The original Mavericks CLT package ID
       EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables"
       MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base" # obsolete

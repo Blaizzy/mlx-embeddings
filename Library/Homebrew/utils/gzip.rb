@@ -19,7 +19,7 @@ module Utils
       ).returns(Pathname)
     }
     def self.compress_with_options(path, mtime: ENV["SOURCE_DATE_EPOCH"].to_i, orig_name: File.basename(path),
-                              output: "#{path}.gz")
+                                   output: "#{path}.gz")
       # Ideally, we would just set mtime = 0 if SOURCE_DATE_EPOCH is absent, but Ruby's
       # Zlib::GzipWriter does not properly handle the case of setting mtime = 0:
       # https://bugs.ruby-lang.org/issues/16285
