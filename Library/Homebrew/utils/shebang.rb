@@ -8,8 +8,6 @@ module Utils
   module Shebang
     extend T::Sig
 
-    module_function
-
     # Specification on how to rewrite a given shebang.
     #
     # @api private
@@ -33,7 +31,7 @@ module Utils
     #
     # @api public
     sig { params(rewrite_info: RewriteInfo, paths: T::Array[T.any(String, Pathname)]).void }
-    def rewrite_shebang(rewrite_info, *paths)
+    def self.rewrite_shebang(rewrite_info, *paths)
       paths.each do |f|
         f = Pathname(f)
         next unless f.file?

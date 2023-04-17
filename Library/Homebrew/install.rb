@@ -12,8 +12,7 @@ module Homebrew
   #
   # @api private
   module Install
-    module_function
-
+    class << self
     def perform_preinstall_checks(all_fatal: false, cc: nil)
       check_prefix
       check_cpu
@@ -23,7 +22,6 @@ module Homebrew
       Diagnostic.checks(:fatal_preinstall_checks)
     end
     alias generic_perform_preinstall_checks perform_preinstall_checks
-    module_function :generic_perform_preinstall_checks
 
     def perform_build_from_source_checks(all_fatal: false)
       Diagnostic.checks(:fatal_build_from_source_checks)
@@ -32,7 +30,6 @@ module Homebrew
 
     def global_post_install; end
     alias generic_global_post_install global_post_install
-    module_function :generic_global_post_install
 
     def check_prefix
       if (Hardware::CPU.intel? || Hardware::CPU.in_rosetta2?) &&
@@ -363,6 +360,7 @@ module Homebrew
       puts formula_names.join(" ")
     end
   end
+end
 end
 
 require "extend/os/install"

@@ -10,8 +10,6 @@ module Utils
   module Gzip
     extend T::Sig
 
-    module_function
-
     sig {
       params(
         path:      T.any(String, Pathname),
@@ -20,7 +18,7 @@ module Utils
         output:    T.any(String, Pathname),
       ).returns(Pathname)
     }
-    def compress_with_options(path, mtime: ENV["SOURCE_DATE_EPOCH"].to_i, orig_name: File.basename(path),
+    def self.compress_with_options(path, mtime: ENV["SOURCE_DATE_EPOCH"].to_i, orig_name: File.basename(path),
                               output: "#{path}.gz")
       # Ideally, we would just set mtime = 0 if SOURCE_DATE_EPOCH is absent, but Ruby's
       # Zlib::GzipWriter does not properly handle the case of setting mtime = 0:
@@ -55,7 +53,7 @@ module Utils
         mtime:        T.any(Integer, Time),
       ).returns(T::Array[Pathname])
     }
-    def compress(*paths, reproducible: true, mtime: ENV["SOURCE_DATE_EPOCH"].to_i)
+    def self.compress(*paths, reproducible: true, mtime: ENV["SOURCE_DATE_EPOCH"].to_i)
       if reproducible
         paths.map do |path|
           compress_with_options(path, mtime: mtime)

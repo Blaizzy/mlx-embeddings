@@ -92,10 +92,8 @@ module Language
 
     # Mixin module for {Formula} adding shebang rewrite features.
     module Shebang
-      module_function
-
       # @private
-      def python_shebang_rewrite_info(python_path)
+      def self.python_shebang_rewrite_info(python_path)
         Utils::Shebang::RewriteInfo.new(
           %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)},
           28, # the length of "#! /usr/bin/env pythonx.yyy "
@@ -103,7 +101,7 @@ module Language
         )
       end
 
-      def detected_python_shebang(formula = self, use_python_from_path: false)
+      def self.detected_python_shebang(formula = self, use_python_from_path: false)
         python_path = if use_python_from_path
           "/usr/bin/env python3"
         else
