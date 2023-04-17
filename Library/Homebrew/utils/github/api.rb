@@ -33,8 +33,6 @@ module GitHub
   module API
     extend T::Sig
 
-    module_function
-
     # Generic API error.
     class Error < RuntimeError
       attr_reader :github_message
@@ -119,7 +117,7 @@ module GitHub
     # Gets the password field from `git-credential-osxkeychain` for github.com,
     # but only if that password looks like a GitHub Personal Access Token.
     sig { returns(T.nilable(String)) }
-    def keychain_username_password
+    def self.keychain_username_password
       github_credentials = Utils.popen_write("git", "credential-osxkeychain", "get") do |pipe|
         pipe.write "protocol=https\nhost=github.com\n"
       end
@@ -141,12 +139,12 @@ module GitHub
       nil
     end
 
-    def credentials
+    def self.credentials
       @credentials ||= Homebrew::EnvConfig.github_api_token || keychain_username_password
     end
 
     sig { returns(Symbol) }
-    def credentials_type
+    def self.credentials_type
       if Homebrew::EnvConfig.github_api_token
         :env_token
       elsif keychain_username_password
@@ -158,7 +156,7 @@ module GitHub
 
     # Given an API response from GitHub, warn the user if their credentials
     # have insufficient permissions.
-    def credentials_error_message(response_headers, needed_scopes)
+    def self.credentials_error_message(response_headers, needed_scopes)
       return if response_headers.empty?
 
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
@@ -184,7 +182,9 @@ module GitHub
       EOS
     end
 
-    def open_rest(url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true)
+    def self.open_rest(
+      url, data: nil, data_binary_path: nil, request_method: nil, scopes: [].freeze, parse_json: true
+    )
       # This is a no-op if the user is opting out of using the GitHub API.
       return block_given? ? yield({}) : {} if Homebrew::EnvConfig.no_github_api?
 
@@ -253,7 +253,7 @@ module GitHub
       end
     end
 
-    def paginate_rest(url, additional_query_params: nil, per_page: 100)
+    def self.paginate_rest(url, additional_query_params: nil, per_page: 100)
       (1..API_MAX_PAGES).each do |page|
         result = API.open_rest("#{url}?per_page=#{per_page}&page=#{page}&#{additional_query_params}")
         break if result.blank?
@@ -262,7 +262,7 @@ module GitHub
       end
     end
 
-    def open_graphql(query, variables: nil, scopes: [].freeze, raise_errors: true)
+    def self.open_graphql(query, variables: nil, scopes: [].freeze, raise_errors: true)
       data = { query: query, variables: variables }
       result = open_rest("#{API_URL}/graphql", scopes: scopes, data: data, request_method: "POST")
 
@@ -277,7 +277,7 @@ module GitHub
       end
     end
 
-    def raise_error(output, errors, http_code, headers, scopes)
+    def self.raise_error(output, errors, http_code, headers, scopes)
       json = begin
         JSON.parse(output)
       rescue

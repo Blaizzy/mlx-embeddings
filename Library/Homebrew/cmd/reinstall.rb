@@ -18,10 +18,8 @@ require "api"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def reinstall_args
+  def self.reinstall_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Uninstall and then reinstall a <formula> or <cask> using the same options it was
@@ -92,7 +90,7 @@ module Homebrew
     end
   end
 
-  def reinstall
+  def self.reinstall
     args = reinstall_args.parse
 
     formulae, casks = args.named.to_formulae_and_casks(method: :resolve)

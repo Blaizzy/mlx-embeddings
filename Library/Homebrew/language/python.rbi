@@ -1,11 +1,5 @@
 # typed: strict
 
-module Language::Python
-  module Shebang
-    include Kernel
-  end
-
-  module Virtualenv
-    requires_ancestor { Formula }
-  end
+module Language::Python::Virtualenv
+  requires_ancestor { Formula }
 end

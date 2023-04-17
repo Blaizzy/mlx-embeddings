@@ -15,10 +15,8 @@ require "upgrade"
 module Homebrew
   extend T::Sig
 
-  module_function
-
   sig { returns(CLI::Parser) }
-  def install_args
+  def self.install_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Install a <formula> or <cask>. Additional options specific to a <formula> may be
@@ -146,7 +144,7 @@ module Homebrew
     end
   end
 
-  def install
+  def self.install
     args = install_args.parse
 
     if args.env.present?
