@@ -5,10 +5,12 @@ module Utils
   module Shell
     extend T::Sig
 
+    module_function
+
     # Take a path and heuristically convert it to a shell name,
     # return `nil` if there's no match.
     sig { params(path: String).returns(T.nilable(Symbol)) }
-    def self.from_path(path)
+    def from_path(path)
       # we only care about the basename
       shell_name = File.basename(path)
       # handle possible version suffix like `zsh-5.2`
@@ -17,23 +19,23 @@ module Utils
     end
 
     sig { params(default: String).returns(String) }
-    def self.preferred_path(default: "")
+    def preferred_path(default: "")
       ENV.fetch("SHELL", default)
     end
 
     sig { returns(T.nilable(Symbol)) }
-    def self.preferred
+    def preferred
       from_path(preferred_path)
     end
 
     sig { returns(T.nilable(Symbol)) }
-    def self.parent
+    def parent
       from_path(`ps -p #{Process.ppid} -o ucomm=`.strip)
     end
 
     # Quote values. Quoting keys is overkill.
     sig { params(key: String, value: String, shell: T.nilable(Symbol)).returns(T.nilable(String)) }
-    def self.export_value(key, value, shell = preferred)
+    def export_value(key, value, shell = preferred)
       case shell
       when :bash, :ksh, :mksh, :sh, :zsh
         "export #{key}=\"#{sh_quote(value)}\""
@@ -49,7 +51,7 @@ module Utils
 
     # Return the shell profile file based on user's preferred shell.
     sig { returns(String) }
-    def self.profile
+    def profile
       case preferred
       when :bash
         bash_profile = "#{Dir.home}/.bash_profile"
@@ -62,7 +64,7 @@ module Utils
     end
 
     sig { params(variable: String, value: String).returns(T.nilable(String)) }
-    def self.set_variable_in_profile(variable, value)
+    def set_variable_in_profile(variable, value)
       case preferred
       when :bash, :ksh, :sh, :zsh, nil
         "echo 'export #{variable}=#{sh_quote(value)}' >> #{profile}"
@@ -74,7 +76,7 @@ module Utils
     end
 
     sig { params(path: String).returns(T.nilable(String)) }
-    def self.prepend_path_in_profile(path)
+    def prepend_path_in_profile(path)
       case preferred
       when :bash, :ksh, :mksh, :sh, :zsh, nil
         "echo 'export PATH=\"#{sh_quote(path)}:$PATH\"' >> #{profile}"
@@ -99,7 +101,7 @@ module Utils
     UNSAFE_SHELL_CHAR = %r{([^A-Za-z0-9_\-.,:/@~\n])}.freeze
 
     sig { params(str: String).returns(String) }
-    def self.csh_quote(str)
+    def csh_quote(str)
       # ruby's implementation of shell_escape
       str = str.to_s
       return "''" if str.empty?
@@ -113,7 +115,7 @@ module Utils
     end
 
     sig { params(str: String).returns(String) }
-    def self.sh_quote(str)
+    def sh_quote(str)
       # ruby's implementation of shell_escape
       str = str.to_s
       return "''" if str.empty?
