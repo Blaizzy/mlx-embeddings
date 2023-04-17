@@ -576,7 +576,7 @@ module GitHub
     old_contents = info[:old_contents]
     additional_files = info[:additional_files] || []
     remote = info[:remote] || "origin"
-    remote_branch = info[:remote_branch] || tap.path.git_origin_branch
+    remote_branch = info[:remote_branch] || tap.git_repo.origin_branch_name
     branch = info[:branch_name]
     commit_message = info[:commit_message]
     previous_branch = info[:previous_branch] || "-"
