@@ -197,10 +197,13 @@ class SystemCommand
     }
     options[:chdir] = chdir if chdir
 
-    pid = T.let(nil, T.nilable(Integer))
     raw_stdin, raw_stdout, raw_stderr, raw_wait_thr = ignore_interrupts do
-      Open3.popen3(env, [executable, executable], *args, **options)
-           .tap { |*, wait_thr| pid = wait_thr.pid }
+      Open3.popen3(
+        env.merge({ "COLUMNS" => Tty.width.to_s }),
+        [executable, executable],
+        *args,
+        **options,
+      )
     end
 
     write_input_to(raw_stdin)
@@ -228,7 +231,7 @@ class SystemCommand
     thread_done_queue << true
     line_thread.join
   rescue Interrupt
-    Process.kill("INT", pid) if pid && !sudo?
+    Process.kill("INT", raw_wait_thr.pid) if raw_wait_thr && !sudo?
     raise Interrupt
   rescue SystemCallError => e
     @status = $CHILD_STATUS
