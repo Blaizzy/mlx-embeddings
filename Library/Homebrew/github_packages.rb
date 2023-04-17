@@ -363,7 +363,7 @@ class GitHubPackages
         "sh.brew.bottle.cpu.variant"        => cpu_variant,
         "sh.brew.bottle.digest"             => tar_gz_sha256,
         "sh.brew.bottle.glibc.version"      => glibc_version,
-        "sh.brew.bottle.size"               => local_file_size,
+        "sh.brew.bottle.size"               => local_file_size.to_s,
         "sh.brew.tab"                       => tab.to_json,
       }.reject { |_, v| v.blank? }
 
