@@ -85,7 +85,9 @@ module Homebrew
 
     def audit_checksum
       return if spec_name == :head
-      return if DownloadStrategyDetector.detect(url, using) > CurlDownloadStrategy
+      # rubocop:disable Style/InvertibleUnlessCondition (non-invertible)
+      return unless DownloadStrategyDetector.detect(url, using) <= CurlDownloadStrategy
+      # rubocop:enable Style/InvertibleUnlessCondition
 
       problem "Checksum is missing" if checksum.blank?
     end
