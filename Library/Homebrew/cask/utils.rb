@@ -3,7 +3,6 @@
 
 require "utils/user"
 require "open3"
-require "stringio"
 
 BUG_REPORTS_URL = "https://github.com/Homebrew/homebrew-cask#reporting-bugs"
 
