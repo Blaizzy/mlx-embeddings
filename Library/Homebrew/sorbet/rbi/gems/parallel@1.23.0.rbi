@@ -5,18 +5,19 @@
 # Please instead update this file by running `bin/tapioca gem parallel`.
 
 module Parallel
-  extend ::Parallel::ProcessorCount
-
   class << self
     def all?(*args, &block); end
     def any?(*args, &block); end
     def each(array, options = T.unsafe(nil), &block); end
     def each_with_index(array, options = T.unsafe(nil), &block); end
+    def filter_map(*args, &block); end
     def flat_map(*args, &block); end
     def in_processes(options = T.unsafe(nil), &block); end
     def in_threads(options = T.unsafe(nil)); end
     def map(source, options = T.unsafe(nil), &block); end
     def map_with_index(array, options = T.unsafe(nil), &block); end
+    def physical_processor_count; end
+    def processor_count; end
     def worker_number; end
     def worker_number=(worker_num); end
 
@@ -68,12 +69,6 @@ class Parallel::JobFactory
 end
 
 class Parallel::Kill < ::Parallel::Break; end
-
-module Parallel::ProcessorCount
-  def physical_processor_count; end
-  def processor_count; end
-end
-
 Parallel::Stop = T.let(T.unsafe(nil), Object)
 
 class Parallel::UndumpableException < ::StandardError
