@@ -460,7 +460,9 @@ module Cask
       return if !signing? || download.blank? || cask.url.blank?
 
       odebug "Auditing signing"
-      artifacts = cask.artifacts.select { |k| k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::App) }
+      artifacts = cask.artifacts.select do |k|
+        k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::App) || k.is_a?(Artifact::Binary)
+      end
 
       return if artifacts.empty?
 
