@@ -107,7 +107,7 @@ module Homebrew
               raise
             end
 
-            warn_if_cask_conflicts(name, "formula") unless only == :formula
+            warn_if_cask_conflicts(name, "formula") if only != :formula
             return formula
           rescue FormulaUnreadableError, FormulaClassUnavailableError,
                  TapFormulaUnreadableError, TapFormulaClassUnavailableError => e

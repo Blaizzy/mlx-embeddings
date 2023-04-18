@@ -306,7 +306,7 @@ module Homebrew
 
     commits = GitHub.pull_request_commits(user, repo, pull_request)
     safe_system "git", "-C", path, "fetch", "--quiet", "--force", "origin", commits.last
-    ohai "Using #{commits.count} commit#{"s" unless commits.count == 1} from ##{pull_request}"
+    ohai "Using #{commits.count} commit#{"s" if commits.count != 1} from ##{pull_request}"
     Utils::Git.cherry_pick!(path, "--ff", "--allow-empty", *commits, verbose: args.verbose?, resolve: args.resolve?)
   end
 

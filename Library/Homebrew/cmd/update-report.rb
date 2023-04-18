@@ -377,7 +377,7 @@ class Reporter
       src = Pathname.new paths.first
       dst = Pathname.new paths.last
 
-      next unless dst.extname == ".rb"
+      next if dst.extname != ".rb"
 
       if paths.any? { |p| tap.cask_file?(p) }
         case status
@@ -505,7 +505,7 @@ class Reporter
       next unless (dir = HOMEBREW_CELLAR/name).exist? # skip if formula is not installed.
 
       tabs = dir.subdirs.map { |d| Tab.for_keg(Keg.new(d)) }
-      next unless tabs.first.tap == tap # skip if installed formula is not from this tap.
+      next if tabs.first.tap != tap # skip if installed formula is not from this tap.
 
       new_tap = Tap.fetch(new_tap_name)
       # For formulae migrated to cask: Auto-install cask or provide install instructions.

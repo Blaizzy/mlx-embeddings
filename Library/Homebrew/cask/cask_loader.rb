@@ -275,7 +275,7 @@ module Cask
                 next [:arch, :arm64]
               end
 
-              next [dep_key, dep_value] unless dep_key == :macos
+              next [dep_key, dep_value] if dep_key != :macos
 
               dep_type = dep_value.keys.first
               if dep_type == :==
@@ -294,7 +294,7 @@ module Cask
 
           if json_cask[:container].present?
             container_hash = json_cask[:container].to_h do |container_key, container_value|
-              next [container_key, container_value] unless container_key == :type
+              next [container_key, container_value] if container_key != :type
 
               [container_key, container_value.to_sym]
             end

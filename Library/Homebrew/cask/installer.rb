@@ -177,7 +177,7 @@ on_request: true)
 
     def verify_has_sha
       odebug "Checking cask has checksum"
-      return unless @cask.sha256 == :no_check
+      return if @cask.sha256 != :no_check
 
       raise CaskError, <<~EOS
         Cask '#{@cask}' does not have a sha256 checksum defined and was not installed.

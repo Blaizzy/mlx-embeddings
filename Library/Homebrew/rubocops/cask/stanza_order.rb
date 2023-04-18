@@ -43,7 +43,7 @@ module RuboCop
           stanza_pairs = toplevel_stanzas.zip(sorted_toplevel_stanzas)
           stanza_pairs.each_with_object([]) do |stanza_pair, offending_stanzas|
             stanza, sorted_stanza = *stanza_pair
-            offending_stanzas << stanza unless stanza == sorted_stanza
+            offending_stanzas << stanza if stanza != sorted_stanza
           end
         end
       end

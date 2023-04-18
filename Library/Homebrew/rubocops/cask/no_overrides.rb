@@ -23,7 +23,7 @@ module RuboCop
           cask_stanzas = cask_block.toplevel_stanzas
 
           # Skip if there are no `on_*` blocks.
-          return unless (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).any?
+          return if (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).none?
 
           stanzas_in_blocks = on_system_stanzas(on_blocks)
 

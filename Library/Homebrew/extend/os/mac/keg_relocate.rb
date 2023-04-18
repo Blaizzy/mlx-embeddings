@@ -51,7 +51,7 @@ class Keg
                   !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s)
 
           new_name = fixed_name(file, bad_name)
-          change_install_name(bad_name, new_name, file) unless new_name == bad_name
+          change_install_name(bad_name, new_name, file) if new_name != bad_name
         end
 
         each_linkage_for(file, :rpaths) do |bad_name|

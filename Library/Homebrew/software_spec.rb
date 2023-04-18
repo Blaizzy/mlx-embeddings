@@ -158,7 +158,7 @@ class SoftwareSpec
         raise ArgumentError, "option name must be string or symbol; got a #{name.class}: #{name}"
       end
       raise ArgumentError, "option name is required" if name.empty?
-      raise ArgumentError, "option name must be longer than one character: #{name}" unless name.length > 1
+      raise ArgumentError, "option name must be longer than one character: #{name}" if name.length <= 1
       raise ArgumentError, "option name must not start with dashes: #{name}" if name.start_with?("-")
 
       Option.new(name, description)

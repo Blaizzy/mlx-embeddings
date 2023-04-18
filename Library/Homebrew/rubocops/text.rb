@@ -128,7 +128,7 @@ module RuboCop
             problem "Use `\#{pkgshare}` instead of `\#{share}/#{@formula_name}`"
           end
 
-          return unless formula_tap == "homebrew-core"
+          return if formula_tap != "homebrew-core"
 
           find_method_with_args(body_node, :env, :std) do
             problem "`env :std` in homebrew/core formulae is deprecated"

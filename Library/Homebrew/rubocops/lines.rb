@@ -38,7 +38,7 @@ module RuboCop
         def audit_formula(_node, class_node, parent_class_node, _body_node)
           begin_pos = start_column(parent_class_node)
           end_pos = end_column(class_node)
-          return unless begin_pos-end_pos != 3
+          return if begin_pos-end_pos == 3
 
           problem "Use a space in class inheritance: " \
                   "class #{@formula_name.capitalize} < #{class_name(parent_class_node)}"
@@ -208,7 +208,7 @@ module RuboCop
           return if body_node.nil?
 
           # Enforce use of OpenMPI for MPI dependency in core
-          return unless formula_tap == "homebrew-core"
+          return if formula_tap != "homebrew-core"
 
           find_method_with_args(body_node, :depends_on, "mpich") do
             problem "Formulae in homebrew/core should use 'depends_on \"open-mpi\"' " \
@@ -228,7 +228,7 @@ module RuboCop
           return if body_node.nil?
 
           # Disallow use of PyOxidizer as a dependency in core
-          return unless formula_tap == "homebrew-core"
+          return if formula_tap != "homebrew-core"
 
           find_method_with_args(body_node, :depends_on, "pyoxidizer") do
             problem "Formulae in homebrew/core should not use '#{@offensive_node.source}'."
@@ -466,7 +466,7 @@ module RuboCop
             replacement_args = %w[]
             replacement_args << executable.source
             replacement_args << subcmd.source
-            replacement_args << "base_name: \"#{base_name}\"" unless base_name == @formula_name
+            replacement_args << "base_name: \"#{base_name}\"" if base_name != @formula_name
             replacement_args << "shells: [:#{shell}]"
             unless shell_parameter_format.nil?
               replacement_args << "shell_parameter_format: #{shell_parameter_format.inspect}"
@@ -546,7 +546,7 @@ module RuboCop
             # the rest are kwargs we need to filter out
             method_commands = node.arguments.filter { |arg| arg.send_type? || arg.str_type? }
             next_method_commands = offenses[i + 1].arguments.filter { |arg| arg.send_type? || arg.str_type? }
-            unless method_commands == next_method_commands
+            if method_commands != next_method_commands
               shells.delete_at(i)
               next
             end
@@ -594,7 +594,7 @@ module RuboCop
           # Check for long inreplace block vars
           find_all_blocks(body_node, :inreplace) do |node|
             block_arg = node.arguments.children.first
-            next unless block_arg.source.size > 1
+            next if block_arg.source.size <= 1
 
             problem "\"inreplace <filenames> do |s|\" is preferred over \"|#{block_arg.source}|\"."
           end
@@ -792,7 +792,7 @@ module RuboCop
           end
 
           find_instance_method_call(body_node, "Dir", :[]) do |method|
-            next unless parameters(method).size == 1
+            next if parameters(method).size != 1
 
             path = parameters(method).first
             next unless path.str_type?

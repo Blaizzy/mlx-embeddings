@@ -78,14 +78,14 @@ module Homebrew
         end
       end
 
-      return unless url_strategy == DownloadStrategyDetector.detect("", using)
+      return if url_strategy != DownloadStrategyDetector.detect("", using)
 
       problem "Redundant :using value in URL"
     end
 
     def audit_checksum
       return if spec_name == :head
-      return unless DownloadStrategyDetector.detect(url, using) <= CurlDownloadStrategy
+      return if DownloadStrategyDetector.detect(url, using) > CurlDownloadStrategy
 
       problem "Checksum is missing" if checksum.blank?
     end

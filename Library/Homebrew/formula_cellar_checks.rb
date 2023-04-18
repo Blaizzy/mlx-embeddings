@@ -332,7 +332,7 @@ module FormulaCellarChecks
     mismatches = {}
     keg.binary_executable_or_library_files.each do |file|
       farch = file.arch
-      mismatches[file] = farch unless farch == Hardware::CPU.arch
+      mismatches[file] = farch if farch != Hardware::CPU.arch
     end
     return if mismatches.empty?
 
