@@ -8,7 +8,9 @@ module Language
   module Perl
     # Helper module for replacing `perl` shebangs.
     module Shebang
-      def self.detected_perl_shebang(formula = self)
+      module_function
+
+      def detected_perl_shebang(formula = self)
         perl_path = if formula.deps.map(&:name).include? "perl"
           Formula["perl"].opt_bin/"perl"
         elsif formula.uses_from_macos_names.include? "perl"
