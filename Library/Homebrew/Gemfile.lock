@@ -74,7 +74,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.13.10-x86_64-linux)
       racc (~> 1.4)
-    parallel (1.22.1)
+    parallel (1.23.0)
     parallel_tests (3.13.0)
       parallel
     parlour (8.1.0)
