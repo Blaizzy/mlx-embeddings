@@ -5,7 +5,6 @@ require "cli/parser"
 require "formula_installer"
 require "install"
 require "upgrade"
-require "cask/cmd"
 require "cask/utils"
 require "cask/upgrade"
 require "cask/macos"
@@ -100,7 +99,18 @@ module Homebrew
         [:switch, "--greedy-auto-updates", {
           description: "Also include casks with `auto_updates true`.",
         }],
-        *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
+        [:switch, "--[no-]binaries", {
+          description: "Disable/enable linking of helper executables (default: enabled).",
+          env:         :cask_opts_binaries,
+        }],
+        [:switch, "--require-sha",  {
+          description: "Require all casks to have a checksum.",
+          env:         :cask_opts_require_sha,
+        }],
+        [:switch, "--[no-]quarantine", {
+          description: "Disable/enable quarantining of downloads (default: enabled).",
+          env:         :cask_opts_quarantine,
+        }],
       ].each do |args|
         options = args.pop
         send(*args, **options)
