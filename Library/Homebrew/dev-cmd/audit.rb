@@ -239,7 +239,7 @@ module Homebrew
         end
       end
 
-      [f.path, { errors: fa.problems + fa.new_formula_problems, warnings: [] }]
+      [f.path, fa.problems + fa.new_formula_problems]
     end
 
     cask_results = if audit_casks.empty?
@@ -272,11 +272,11 @@ module Homebrew
           only:                  args.only,
           except:                args.except,
         )
-        [cask.sourcefile_path, { errors: errors, warnings: [] }]
+        [cask.sourcefile_path, errors]
       end
     end
 
-    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
+    failed_casks = cask_results.select { |_, problems| problems.present? }
 
     cask_count = failed_casks.count
 
@@ -309,20 +309,17 @@ module Homebrew
 
     return unless ENV["GITHUB_ACTIONS"]
 
-    annotations = formula_results.merge(cask_results).flat_map do |path, result|
-      (
-        result[:warnings].map { |w| [:warning, w] } +
-        result[:errors].map { |e| [:error, e] }
-      ).map do |type, problem|
-        GitHub::Actions::Annotation.new(
-          type,
-          problem[:message],
-          file:   path,
-          line:   problem[:location]&.line,
-          column: problem[:location]&.column,
-        )
-      end
-    end
+    annotations = formula_results.merge(cask_results).flat_map do |path, problem|
+      next if problem.blank?
+
+      GitHub::Actions::Annotation.new(
+        :error,
+        problem[:message],
+        file:   path,
+        line:   problem[:location]&.line,
+        column: problem[:location]&.column,
+      )
+    end.compact
 
     annotations.each do |annotation|
       puts annotation if annotation.relevant?
