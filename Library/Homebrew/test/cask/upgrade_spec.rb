@@ -26,7 +26,7 @@ describe Cask::Upgrade, :cask do
     end
 
     before do
-      installed.each { |cask| Cask::Cmd::Install.run(cask) }
+      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
@@ -191,7 +191,7 @@ describe Cask::Upgrade, :cask do
     end
 
     before do
-      installed.each { |cask| Cask::Cmd::Install.run(cask) }
+      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
@@ -358,7 +358,7 @@ describe Cask::Upgrade, :cask do
     end
 
     before do
-      installed.each { |cask| Cask::Cmd::Install.run(cask) }
+      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
@@ -414,7 +414,7 @@ describe Cask::Upgrade, :cask do
     end
 
     before do
-      installed.each { |cask| Cask::Cmd::Install.run(cask) }
+      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
