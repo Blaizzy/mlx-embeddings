@@ -53,7 +53,7 @@ describe Cask::Reinstall, :cask do
   end
 
   it "allows reinstalling a Cask" do
-    Cask::Cmd::Install.run("local-transmission")
+    Cask::Installer.new(Cask::CaskLoader.load(cask_path("local-transmission"))).install
 
     expect(Cask::CaskLoader.load(cask_path("local-transmission"))).to be_installed
 

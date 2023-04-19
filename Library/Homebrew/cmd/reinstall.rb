@@ -8,7 +8,6 @@ require "install"
 require "reinstall"
 require "cli/parser"
 require "cleanup"
-require "cask/cmd"
 require "cask/utils"
 require "cask/macos"
 require "cask/reinstall"
@@ -75,8 +74,29 @@ module Homebrew
       formula_options
       [
         [:switch, "--cask", "--casks", { description: "Treat all named arguments as casks." }],
-        *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
-        *Cask::Cmd::Install::OPTIONS.map(&:dup),
+        [:switch, "--[no-]binaries", {
+          description: "Disable/enable linking of helper executables (default: enabled).",
+          env:         :cask_opts_binaries,
+        }],
+        [:switch, "--require-sha",  {
+          description: "Require all casks to have a checksum.",
+          env:         :cask_opts_require_sha,
+        }],
+        [:switch, "--[no-]quarantine", {
+          description: "Disable/enable quarantining of downloads (default: enabled).",
+          env:         :cask_opts_quarantine,
+        }],
+        [:switch, "--adopt", {
+          description: "Adopt existing artifacts in the destination that are identical to those being installed. " \
+                       "Cannot be combined with --force.",
+        }],
+        [:switch, "--skip-cask-deps", {
+          description: "Skip installing cask dependencies.",
+        }],
+        [:switch, "--zap", {
+          description: "For use with `brew reinstall --cask`. Remove all files associated with a cask. " \
+                       "*May remove files which are shared between applications.*",
+        }],
       ].each do |args|
         options = args.pop
         send(*args, **options)
