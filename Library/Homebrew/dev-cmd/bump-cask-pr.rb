@@ -136,7 +136,7 @@ module Homebrew
         opoo "Ignoring specified `--sha256=` argument." if new_hash.is_a?(String)
         replacement_pairs << [/"#{old_hash}"/, ":no_check"] if old_hash != :no_check
       elsif old_hash == :no_check && new_hash != :no_check
-        replacement_pairs << [":no_check", "\"#{new_hash}\""]
+        replacement_pairs << [":no_check", "\"#{new_hash}\""] if new_hash.is_a?(String)
       elsif old_hash != :no_check
         if new_hash.nil? || cask.languages.present?
           if new_hash && cask.languages.present?
