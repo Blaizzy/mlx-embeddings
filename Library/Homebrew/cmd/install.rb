@@ -204,7 +204,6 @@ module Homebrew
     end
 
     if casks.any?
-      quarantine = args.quarantine?.nil? ? true : args.quarantine?
 
       if args.dry_run?
         if (casks_to_install = casks.reject(&:installed?).presence)
@@ -236,7 +235,7 @@ module Homebrew
                             adopt:          args.adopt?,
                             require_sha:    args.require_sha?,
                             skip_cask_deps: args.skip_cask_deps?,
-                            quarantine:     quarantine,
+                            quarantine:     args.quarantine?,
                             quiet:          args.quiet?).install
       end
     end
