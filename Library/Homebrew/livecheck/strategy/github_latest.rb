@@ -48,7 +48,10 @@ module Homebrew
 
         # The default regex used to identify a version from a tag when a regex
         # isn't provided.
-        DEFAULT_REGEX = %r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i.freeze
+        DEFAULT_REGEX = /v?(\d+(?:\.\d+)+)/i.freeze
+
+        # Keys in the JSON that could contain the version.
+        VERSION_KEYS = ["name", "tag_name"].freeze
 
         # Whether the strategy can be applied to the provided URL.
         #
@@ -57,6 +60,42 @@ module Homebrew
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
           URL_MATCH_REGEX.match?(url)
+        end
+
+        # Uses the regex to match release information in content or, if a block is
+        # provided, passes the page content to the block to handle matching.
+        # With either approach, an array of unique matches is returned.
+        #
+        # @param content [Array] list of releases
+        # @param regex [Regexp] a regex used for matching versions in the content
+        # @param block [Proc, nil] a block to match the content
+        # @return [Array]
+        sig {
+          params(
+            content: T::Array[T::Hash[String, T.untyped]],
+            regex:   Regexp,
+            block:   T.nilable(Proc),
+          ).returns(T::Array[String])
+        }
+        def self.versions_from_content(content, regex, &block)
+          if block.present?
+            block_return_value = if regex.present?
+              yield(content, regex)
+            else
+              yield(content)
+            end
+            return Strategy.handle_block_return(block_return_value)
+          end
+
+          content.reject(&:blank?).map do |release|
+            next if release["draft"] || release["prerelease"]
+
+            value = T.let(nil, T.untyped)
+            VERSION_KEYS.find do |key|
+              value = release[key]&.match(regex)&.to_s
+            end
+            value
+          end.compact.uniq
         end
 
         # Extracts information from a provided URL and uses it to generate
@@ -75,6 +114,8 @@ module Homebrew
 
           # Example URL: `https://github.com/example/example/releases/latest`
           values[:url] = "https://github.com/#{match[:username]}/#{match[:repository]}/releases/latest"
+          values[:username] = match[:username]
+          values[:repository] = match[:repository]
 
           values
         end
@@ -87,18 +128,26 @@ module Homebrew
         # @return [Hash]
         sig {
           params(
-            url:    String,
-            regex:  T.nilable(Regexp),
-            unused: T.nilable(T::Hash[Symbol, T.untyped]),
-            block:  T.nilable(Proc),
+            url:     String,
+            regex:   Regexp,
+            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex: nil, **unused, &block)
+        def self.find_versions(url:, regex: DEFAULT_REGEX, **_unused, &block)
+          match_data = { matches: {}, regex: regex }
           generated = generate_input_values(url)
+          return match_data if generated.blank?
 
-          PageMatch.find_versions(url: generated[:url], regex: regex || DEFAULT_REGEX, **unused, &block)
+          release = GitHub.get_latest_release(generated[:username], generated[:repository])
+          versions_from_content([release], regex, &block).each do |match_text|
+            match_data[:matches][match_text] = Version.new(match_text)
+          end
+
+          match_data
         end
       end
     end
+    GitHubLatest = Homebrew::Livecheck::Strategy::GithubLatest
   end
 end
