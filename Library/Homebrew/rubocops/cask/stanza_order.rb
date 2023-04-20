@@ -17,46 +17,38 @@ module RuboCop
 
         def on_cask(cask_block)
           @cask_block = cask_block
-          stanzas = [toplevel_stanzas]
 
-          puts "before on blocks: #{stanzas.first.map(&:stanza_name)}"
-          if (on_blocks = on_system_methods(stanzas.first)).any?
-            on_blocks.map(&:method_node).select(&:block_type?).each do |on_block|
-              stanzas.push(inner_stanzas(on_block, processed_source.comments))
-            end
+          # Find all the stanzas that are direct children of the cask block or one of its `on_*` blocks.
+          puts "toplevel_stanzas: #{toplevel_stanzas.map(&:stanza_name).inspect}"
+          outer_and_inner_stanzas = toplevel_stanzas + toplevel_stanzas.map do |stanza|
+            return stanza unless stanza.method_node&.block_type?
+
+            inner_stanzas(stanza.method_node, stanza.comments)
           end
 
-          puts "after on blocks: #{stanzas.last.map(&:method_node).select(&:send_type?).map(&:method_name) }" if on_blocks
-          add_offenses(stanzas)
+          puts "outer_and_inner_stanzas: #{outer_and_inner_stanzas.flatten.map(&:stanza_name).inspect}"
+          add_offenses(outer_and_inner_stanzas.flatten)
         end
 
         private
 
         attr_reader :cask_block
 
-        def_delegators :cask_block, :cask_node, :toplevel_stanzas,
-                       :sorted_toplevel_stanzas
+        def_delegators :cask_block, :cask_node, :toplevel_stanzas
 
         def add_offenses(outer_and_inner_stanzas)
-          outer_and_inner_stanzas.map do |stanza_types|
-            offending_stanzas(stanza_types, sorted_toplevel_stanzas).flatten.compact.each do |stanza|
-              name = stanza.respond_to?(:method_name) ? stanza.method_name : stanza.stanza_name
-              message = format(MESSAGE, stanza: name)
-              add_offense(stanza.source_range_with_comments, message: message) do |corrector|
-                correct_stanza_index = outer_and_inner_stanzas.flatten.index(stanza)
-                correct_stanza = sorted_toplevel_stanzas[correct_stanza_index]
-                corrector.replace(stanza&.source_range_with_comments, correct_stanza&.source_with_comments)
-              end
+          outer_and_inner_stanzas.each_cons(2) do |stanza1, stanza2|
+            next if stanza_order_index(stanza1.stanza_name) < stanza_order_index(stanza2.stanza_name)
+
+            puts "#{stanza2.stanza_name} should come before #{stanza1.stanza_name}"
+            add_offense(stanza1.method_node, message: format(MESSAGE, stanza: stanza1.stanza_name)) do |corrector|
+              # TODO: Move the stanza to the correct location.
             end
           end
         end
 
-        def offending_stanzas(stanzas, sorted_stanzas)
-          stanza_pairs = stanzas.zip(sorted_stanzas)
-          stanza_pairs.each_with_object([]) do |stanza_pair, offending_stanzas|
-            stanza, sorted_stanza = *stanza_pair
-            offending_stanzas << stanza if stanza != sorted_stanza
-          end
+        def stanza_order_index(stanza_name)
+          RuboCop::Cask::Constants::STANZA_ORDER.index(stanza_name)
         end
       end
     end
