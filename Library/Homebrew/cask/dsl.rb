@@ -327,7 +327,7 @@ module Cask
 
     # @api public
     def livecheck(&block)
-      @livecheck ||= Livecheck.new(self)
+      @livecheck ||= Livecheck.new(cask)
       return @livecheck unless block
 
       if !@cask.allow_reassignment && @livecheckable
