@@ -295,6 +295,14 @@ Sorbet/StrictSigil:
   Include:
     - "**/*.rbi"
 
+Sorbet/TrueSigil:
+  Enabled: true
+  Exclude:
+    - "Taps/**/*"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
+    - "Homebrew/test/**/*.rb"
+
 # Require &&/|| instead of and/or
 Style/AndOr:
   EnforcedStyle: always
