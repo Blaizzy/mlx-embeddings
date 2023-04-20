@@ -374,9 +374,6 @@ Style/HashAsLastArrayItem:
     - "**/Formula/**/*.rb"
 
 Style/InvertibleUnlessCondition:
-  inherit_mode:
-    override:
-      - InverseMethods
   Enabled: true
   InverseMethods:
     # Favor `if a != b` over `unless a == b`
