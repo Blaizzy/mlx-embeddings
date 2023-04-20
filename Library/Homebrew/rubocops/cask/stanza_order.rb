@@ -17,14 +17,17 @@ module RuboCop
 
         def on_cask(cask_block)
           @cask_block = cask_block
-          add_offenses(toplevel_stanzas)
+          stanzas = [toplevel_stanzas]
 
-          return unless (on_blocks = on_system_methods(toplevel_stanzas)).any?
-
-          on_blocks.map(&:method_node).select(&:block_type?).each do |on_block|
-            stanzas = inner_stanzas(on_block, processed_source.comments)
-            add_offenses(stanzas, inner: true)
+          puts "before on blocks: #{stanzas.first.map(&:stanza_name)}"
+          if (on_blocks = on_system_methods(stanzas.first)).any?
+            on_blocks.map(&:method_node).select(&:block_type?).each do |on_block|
+              stanzas.push(inner_stanzas(on_block, processed_source.comments))
+            end
           end
+
+          puts "after on blocks: #{stanzas.last.map(&:method_node).select(&:send_type?).map(&:method_name) }" if on_blocks
+          add_offenses(stanzas)
         end
 
         private
@@ -32,18 +35,18 @@ module RuboCop
         attr_reader :cask_block
 
         def_delegators :cask_block, :cask_node, :toplevel_stanzas,
-                       :sorted_toplevel_stanzas, :sorted_inner_stanzas
+                       :sorted_toplevel_stanzas
 
-        def add_offenses(stanzas, inner: false)
-          sorted_stanzas = inner ? sorted_inner_stanzas(stanzas) : sorted_toplevel_stanzas
-          offending_stanzas(stanzas, sorted_stanzas).each do |stanza|
-            puts "offending stanza: #{stanza.stanza_name}"
-            message = format(MESSAGE, stanza: stanza.stanza_name)
-            add_offense(stanza.source_range_with_comments, message: message) do |corrector|
-              correct_stanza_index = stanzas.index(stanza)
-              correct_stanza = sorted_stanzas[correct_stanza_index]
-              puts "correct stanza: #{correct_stanza.stanza_name}"
-              corrector.replace(stanza.source_range_with_comments, correct_stanza.source_with_comments)
+        def add_offenses(outer_and_inner_stanzas)
+          outer_and_inner_stanzas.map do |stanza_types|
+            offending_stanzas(stanza_types, sorted_toplevel_stanzas).flatten.compact.each do |stanza|
+              name = stanza.respond_to?(:method_name) ? stanza.method_name : stanza.stanza_name
+              message = format(MESSAGE, stanza: name)
+              add_offense(stanza.source_range_with_comments, message: message) do |corrector|
+                correct_stanza_index = outer_and_inner_stanzas.flatten.index(stanza)
+                correct_stanza = sorted_toplevel_stanzas[correct_stanza_index]
+                corrector.replace(stanza&.source_range_with_comments, correct_stanza&.source_with_comments)
+              end
             end
           end
         end

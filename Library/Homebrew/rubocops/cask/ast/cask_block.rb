@@ -51,10 +51,6 @@ module RuboCop
           @sorted_toplevel_stanzas ||= sort_stanzas(toplevel_stanzas)
         end
 
-        def sorted_inner_stanzas(stanzas)
-          sort_stanzas(stanzas)
-        end
-
         private
 
         def sort_stanzas(stanzas)
@@ -70,7 +66,8 @@ module RuboCop
         end
 
         def stanza_order_index(stanza)
-          Constants::STANZA_ORDER.index(stanza.stanza_name)
+          stanza_name = stanza.respond_to?(:method_name) ? stanza.method_name : stanza.stanza_name
+          Constants::STANZA_ORDER.index(stanza_name)
         end
       end
     end
