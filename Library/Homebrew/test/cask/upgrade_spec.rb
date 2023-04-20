@@ -4,8 +4,8 @@
 require "cask/upgrade"
 
 describe Cask::Upgrade, :cask do
-  let(:version_latest_path_2) { version_latest.config.appdir.join("Caffeine Pro.app") }
-  let(:version_latest_path_1) { version_latest.config.appdir.join("Caffeine Mini.app") }
+  let(:version_latest_path_second) { version_latest.config.appdir.join("Caffeine Pro.app") }
+  let(:version_latest_path_first) { version_latest.config.appdir.join("Caffeine Mini.app") }
   let(:version_latest) { Cask::CaskLoader.load("version-latest") }
   let(:auto_updates_path) { auto_updates.config.appdir.join("MyFancyApp.app") }
   let(:auto_updates) { Cask::CaskLoader.load("auto-updates") }
@@ -108,7 +108,7 @@ describe Cask::Upgrade, :cask do
         expect(local_transmission.versions).to include("2.60")
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
+        expect(version_latest_path_first).to be_a_directory
         expect(version_latest.versions).to include("latest")
         # Change download sha so that :latest cask decides to update itself
         version_latest.download_sha_path.write("fake download sha")
@@ -129,7 +129,7 @@ describe Cask::Upgrade, :cask do
         expect(local_transmission.versions).to include("2.61")
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest_path_second).to be_a_directory
         expect(version_latest.versions).to include("latest")
         expect(version_latest.outdated_download_sha?).to be(false)
       end
@@ -154,8 +154,8 @@ describe Cask::Upgrade, :cask do
 
       it 'does not include the Casks with "version latest" when the version did not change' do
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest_path_first).to be_a_directory
+        expect(version_latest_path_second).to be_a_directory
         expect(version_latest.versions).to include("latest")
         # Change download sha so that :latest cask decides to update itself
         version_latest.download_sha_path.write("fake download sha")
@@ -164,16 +164,16 @@ describe Cask::Upgrade, :cask do
         described_class.upgrade_casks(version_latest, greedy: true, args: args)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest_path_first).to be_a_directory
+        expect(version_latest_path_second).to be_a_directory
         expect(version_latest.versions).to include("latest")
         expect(version_latest.outdated_download_sha?).to be(false)
 
         described_class.upgrade_casks(version_latest, greedy: true, args: args)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest_path_first).to be_a_directory
+        expect(version_latest_path_second).to be_a_directory
         expect(version_latest.versions).to include("latest")
         expect(version_latest.outdated_download_sha?).to be(false)
       end
@@ -331,8 +331,8 @@ describe Cask::Upgrade, :cask do
         expect(described_class).not_to receive(:upgrade_cask)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest_path_first).to be_a_directory
+        expect(version_latest_path_second).to be_a_directory
         expect(version_latest.versions).to include("latest")
         # Change download sha so that :latest cask decides to update itself
         version_latest.download_sha_path.write("fake download sha")
@@ -341,8 +341,8 @@ describe Cask::Upgrade, :cask do
         described_class.upgrade_casks(version_latest, dry_run: true, greedy: true, args: args)
 
         expect(version_latest).to be_installed
-        expect(version_latest_path_1).to be_a_directory
-        expect(version_latest_path_2).to be_a_directory
+        expect(version_latest_path_first).to be_a_directory
+        expect(version_latest_path_second).to be_a_directory
         expect(version_latest.versions).to include("latest")
         expect(version_latest.outdated_download_sha?).to be(true)
       end

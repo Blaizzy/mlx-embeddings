@@ -77,15 +77,14 @@ describe PkgVersion do
   end
 
   describe "#hash" do
-    let(:p1) { described_class.new(Version.create("1.0"), 1) }
-    let(:p2) { described_class.new(Version.create("1.0"), 1) }
-    let(:p3) { described_class.new(Version.create("1.1"), 1) }
-    let(:p4) { described_class.new(Version.create("1.0"), 0) }
+    let(:version_one_revision_one) { described_class.new(Version.create("1.0"), 1) }
+    let(:version_one_dot_one_revision_one) { described_class.new(Version.create("1.1"), 1) }
+    let(:version_one_revision_zero) { described_class.new(Version.create("1.0"), 0) }
 
     it "returns a hash based on the version and revision" do
-      expect(p1.hash).to eq(p2.hash)
-      expect(p1.hash).not_to eq(p3.hash)
-      expect(p1.hash).not_to eq(p4.hash)
+      expect(version_one_revision_one.hash).to eq(described_class.new(Version.create("1.0"), 1).hash)
+      expect(version_one_revision_one.hash).not_to eq(version_one_dot_one_revision_one.hash)
+      expect(version_one_revision_one.hash).not_to eq(version_one_revision_zero.hash)
     end
   end
 

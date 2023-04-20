@@ -67,11 +67,11 @@ describe Homebrew::Cleanup do
     end
 
     context "when it can't remove a keg" do
-      let(:f1) { Class.new(Testball) { version "0.1" }.new }
-      let(:f2) { Class.new(Testball) { version "0.2" }.new }
+      let(:formula_zero_dot_one) { Class.new(Testball) { version "0.1" }.new }
+      let(:formula_zero_dot_two) { Class.new(Testball) { version "0.2" }.new }
 
       before do
-        [f1, f2].each do |f|
+        [formula_zero_dot_one, formula_zero_dot_two].each do |f|
           f.brew do
             f.install
           end
@@ -85,13 +85,13 @@ describe Homebrew::Cleanup do
       end
 
       it "doesn't remove any kegs" do
-        cleanup.cleanup_formula f2
-        expect(f1.installed_kegs.size).to eq(2)
+        cleanup.cleanup_formula formula_zero_dot_one
+        expect(formula_zero_dot_one.installed_kegs.size).to eq(2)
       end
 
       it "lists the unremovable kegs" do
-        cleanup.cleanup_formula f2
-        expect(cleanup.unremovable_kegs).to contain_exactly(f1.installed_kegs[0])
+        cleanup.cleanup_formula formula_zero_dot_two
+        expect(cleanup.unremovable_kegs).to contain_exactly(formula_zero_dot_one.installed_kegs[0])
       end
     end
   end

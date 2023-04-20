@@ -203,10 +203,10 @@ describe "Exception" do
   end
 
   describe ChecksumMismatchError do
-    subject { described_class.new("/file.tar.gz", hash1, hash2) }
+    subject { described_class.new("/file.tar.gz", expected_checksum, actual_checksum) }
 
-    let(:hash1) { instance_double(Checksum, to_s: "deadbeef") }
-    let(:hash2) { instance_double(Checksum, to_s: "deadcafe") }
+    let(:expected_checksum) { instance_double(Checksum, to_s: "deadbeef") }
+    let(:actual_checksum) { instance_double(Checksum, to_s: "deadcafe") }
 
     its(:to_s) { is_expected.to match(/SHA256 mismatch/) }
   end
