@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require "utils/string_inreplace_extension"

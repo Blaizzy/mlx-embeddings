@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 describe "brew bundle", :integration_test do

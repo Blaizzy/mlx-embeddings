@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require "rubocops/move_to_extend_os"

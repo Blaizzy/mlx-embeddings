@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require "rubocops/uses_from_macos"

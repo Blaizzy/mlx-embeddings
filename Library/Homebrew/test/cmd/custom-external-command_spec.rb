@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 describe "brew custom-external-command", :integration_test do

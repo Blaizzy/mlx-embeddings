@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 describe Cask::Artifact::PreflightBlock, :cask do

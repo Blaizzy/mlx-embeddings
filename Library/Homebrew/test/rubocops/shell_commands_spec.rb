@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require "rubocops/shell_commands"
