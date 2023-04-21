@@ -281,11 +281,7 @@ Sorbet/ConstantsFromStrings:
   Enabled: false
 
 Sorbet/FalseSigil:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/**/*.rb"
-    - "**/{Formula,Casks}/**/*.rb"
-    - "Homebrew/test/**/Casks/**/*.rb"
+  Enabled: false
 
 Sorbet/StrictSigil:
   inherit_mode:
