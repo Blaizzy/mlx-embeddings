@@ -6,10 +6,10 @@ module RuboCop
       # Checks that no expectations are set on Capybara's `current_path`.
       #
       # The
-      # https://www.rubydoc.info/github/teamcapybara/capybara/main/Capybara/RSpecMatchers#have_current_path-instance_method[`have_current_path` matcher]
+      # https://www.rubydoc.info/github/teamcapybara/capybara/master/Capybara/RSpecMatchers#have_current_path-instance_method[`have_current_path` matcher]
       # should be used on `page` to set expectations on Capybara's
       # current path, since it uses
-      # https://github.com/teamcapybara/capybara/blob/main/README.md#asynchronous-javascript-ajax-and-friends[Capybara's waiting functionality]
+      # https://github.com/teamcapybara/capybara/blob/master/README.md#asynchronous-javascript-ajax-and-friends[Capybara's waiting functionality]
       # which ensures that preceding actions (like `click_link`) have
       # completed.
       #
@@ -30,6 +30,7 @@ module RuboCop
       #
       class CurrentPathExpectation < ::RuboCop::Cop::Base
         extend AutoCorrector
+        include RangeHelp
 
         MSG = 'Do not set an RSpec expectation on `current_path` in ' \
               'Capybara feature specs - instead, use the ' \
@@ -85,8 +86,7 @@ module RuboCop
         end
 
         def rewrite_expectation(corrector, node, to_symbol, matcher_node)
-          current_path_node = node.first_argument
-          corrector.replace(current_path_node, 'page')
+          corrector.replace(node.first_argument, 'page')
           corrector.replace(node.parent.loc.selector, 'to')
           matcher_method = if to_symbol == :to
                              'have_current_path'
@@ -94,6 +94,7 @@ module RuboCop
                              'have_no_current_path'
                            end
           corrector.replace(matcher_node.loc.selector, matcher_method)
+          add_argument_parentheses(corrector, matcher_node.first_argument)
           add_ignore_query_options(corrector, node)
         end
 
@@ -109,6 +110,20 @@ module RuboCop
           else
             Regexp.new(regexp_node.value).inspect
           end
+        end
+
+        def add_argument_parentheses(corrector, arg_node)
+          return unless method_call_with_no_parentheses?(arg_node)
+
+          first_argument_range = range_with_surrounding_space(
+            arg_node.first_argument.source_range, side: :left
+          )
+          corrector.insert_before(first_argument_range, '(')
+          corrector.insert_after(arg_node.last_argument, ')')
+        end
+
+        def method_call_with_no_parentheses?(arg_node)
+          arg_node.send_type? && arg_node.arguments? && !arg_node.parenthesized?
         end
 
         # `have_current_path` with no options will include the querystring

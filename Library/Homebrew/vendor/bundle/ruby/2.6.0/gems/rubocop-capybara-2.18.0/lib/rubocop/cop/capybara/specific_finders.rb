@@ -19,7 +19,7 @@ module RuboCop
 
         include RangeHelp
 
-        MSG = 'Prefer `find_by` over `find`.'
+        MSG = 'Prefer `find_by_id` over `find`.'
         RESTRICT_ON_SEND = %i[find].freeze
 
         # @!method find_argument(node)
@@ -68,7 +68,7 @@ module RuboCop
         def register_offense(node, id, classes = [])
           add_offense(offense_range(node)) do |corrector|
             corrector.replace(node.loc.selector, 'find_by_id')
-            corrector.replace(node.first_argument.loc.expression,
+            corrector.replace(node.first_argument,
                               id.delete('\\'))
             unless classes.compact.empty?
               autocorrect_classes(corrector, node, classes)
@@ -117,7 +117,7 @@ module RuboCop
           if node.loc.end
             node.loc.end.end_pos
           else
-            node.loc.expression.end_pos
+            node.source_range.end_pos
           end
         end
       end

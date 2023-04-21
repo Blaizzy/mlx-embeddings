@@ -75,7 +75,7 @@ module RuboCop
         end
 
         def offense_range(node, receiver)
-          receiver.loc.selector.with(end_pos: node.loc.expression.end_pos)
+          receiver.loc.selector.with(end_pos: node.source_range.end_pos)
         end
 
         def message(action, selector)

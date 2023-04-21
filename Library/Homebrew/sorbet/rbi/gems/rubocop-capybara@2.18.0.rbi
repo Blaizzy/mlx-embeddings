@@ -63,6 +63,7 @@ module RuboCop::Cop::Capybara::CssSelector
 end
 
 class RuboCop::Cop::Capybara::CurrentPathExpectation < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def as_is_matcher(param0 = T.unsafe(nil)); end
@@ -72,9 +73,11 @@ class RuboCop::Cop::Capybara::CurrentPathExpectation < ::RuboCop::Cop::Base
 
   private
 
+  def add_argument_parentheses(corrector, arg_node); end
   def add_ignore_query_options(corrector, node); end
   def autocorrect(corrector, node); end
   def convert_regexp_node_to_literal(corrector, matcher_node, regexp_node); end
+  def method_call_with_no_parentheses?(arg_node); end
   def regexp_node_to_regexp_expr(regexp_node); end
   def rewrite_expectation(corrector, node, to_symbol, matcher_node); end
 

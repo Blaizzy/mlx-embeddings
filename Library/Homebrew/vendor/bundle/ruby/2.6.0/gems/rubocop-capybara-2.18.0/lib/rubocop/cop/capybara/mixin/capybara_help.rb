@@ -4,6 +4,7 @@ module RuboCop
   module Cop
     module Capybara
       # Help methods for capybara.
+      # @api private
       module CapybaraHelp
         COMMON_OPTIONS = %w[
           id class style
