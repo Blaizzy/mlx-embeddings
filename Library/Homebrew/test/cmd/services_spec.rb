@@ -1,4 +1,4 @@
-# typed: false
+
 # frozen_string_literal: true
 
 describe "brew services", :integration_test, :needs_network do

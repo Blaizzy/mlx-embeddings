@@ -1,4 +1,4 @@
-# typed: false
+
 # frozen_string_literal: true
 
 describe Cask::DSL::Version, :cask do

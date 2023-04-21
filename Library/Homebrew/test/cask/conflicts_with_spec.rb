@@ -1,4 +1,4 @@
-# typed: false
+
 # frozen_string_literal: true
 
 describe "conflicts_with", :cask do
