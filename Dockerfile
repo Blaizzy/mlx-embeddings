@@ -38,7 +38,7 @@ RUN apt-get update \
   uuid-runtime \
   tzdata \
   jq \
-  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 22 ]; then apt-get install -y --no-install-recommends gh skopeo; fi \
+  && if [ "$(. /etc/lsb-release; echo "${DISTRIB_RELEASE}" | cut -d. -f1)" -ge 22 ]; then apt-get install -y --no-install-recommends skopeo; fi \
   && apt-get remove --purge -y software-properties-common \
   && apt-get autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
@@ -66,6 +66,7 @@ RUN mkdir -p \
   && git -C .linuxbrew/Homebrew remote set-url origin https://github.com/Homebrew/brew \
   && git -C .linuxbrew/Homebrew fetch origin \
   && HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
+  && HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_FROM_API=1 brew install gh \
   && brew install-bundler-gems \
   && brew cleanup \
   && { git -C .linuxbrew/Homebrew config --unset gc.auto; true; } \
