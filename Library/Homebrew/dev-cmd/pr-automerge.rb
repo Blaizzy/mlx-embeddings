@@ -23,7 +23,8 @@ module Homebrew
              description: "Pull requests must have this label."
       comma_array "--without-labels",
                   description: "Pull requests must not have these labels (default: " \
-                               "`do not merge`, `new formula`, `automerge-skip`, `CI-published-bottle-commits`)."
+                               "`do not merge`, `new formula`, `automerge-skip`, " \
+                               "`pre-release`, `CI-published-bottle-commits`)."
       switch "--without-approval",
              description: "Pull requests do not require approval to be merged."
       switch "--publish",
@@ -50,6 +51,7 @@ module Homebrew
       "do not merge",
       "new formula",
       "automerge-skip",
+      "pre-release",
       "CI-published-bottle-commits",
     ]
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
