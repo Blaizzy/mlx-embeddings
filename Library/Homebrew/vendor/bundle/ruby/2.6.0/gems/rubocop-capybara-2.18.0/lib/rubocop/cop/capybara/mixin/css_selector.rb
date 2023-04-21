@@ -4,6 +4,7 @@ module RuboCop
   module Cop
     module Capybara
       # Helps parsing css selector.
+      # @api private
       module CssSelector
         module_function
 

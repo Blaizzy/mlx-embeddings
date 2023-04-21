@@ -31,7 +31,7 @@ module RuboCop
         CAPYBARA_MATCHERS = %w[
           selector css xpath text title current_path link button
           field checked_field unchecked_field select table
-          sibling ancestor
+          sibling ancestor content
         ].freeze
         POSITIVE_MATCHERS =
           Set.new(CAPYBARA_MATCHERS) { |element| :"have_#{element}" }.freeze
