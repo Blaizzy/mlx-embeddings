@@ -483,7 +483,7 @@ describe Cask::Audit, :cask do
             cask 'signing-cask-test' do
               version '1.0'
               url "https://brew.sh/index.html"
-              binary 'Audit.app'
+              artifact "example.pdf", target: "/Library/Application Support/example"
             end
           RUBY
         end
