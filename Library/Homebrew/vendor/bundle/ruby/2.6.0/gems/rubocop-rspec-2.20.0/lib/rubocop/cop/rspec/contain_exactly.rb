@@ -3,7 +3,11 @@
 module RuboCop
   module Cop
     module RSpec
-      # Prefer `match_array` when matching array values.
+      # Checks where `contain_exactly` is used.
+      #
+      # This cop checks for the following:
+      # - Prefer `match_array` when matching array values.
+      # - Prefer `be_empty` when using `contain_exactly` with no arguments.
       #
       # @example
       #   # bad
@@ -14,6 +18,7 @@ module RuboCop
       #
       #   # good
       #   it { is_expected.to contain_exactly(content, *array) }
+      #
       class ContainExactly < Base
         extend AutoCorrector
 
@@ -21,21 +26,27 @@ module RuboCop
         RESTRICT_ON_SEND = %i[contain_exactly].freeze
 
         def on_send(node)
-          return unless node.each_child_node.all?(&:splat_type?)
+          return if node.arguments.empty?
 
-          add_offense(node) do |corrector|
-            autocorrect(node, corrector)
-          end
+          check_populated_collection(node)
         end
 
         private
 
-        def autocorrect(node, corrector)
+        def check_populated_collection(node)
+          return unless node.each_child_node.all?(&:splat_type?)
+
+          add_offense(node) do |corrector|
+            autocorrect_for_populated_array(node, corrector)
+          end
+        end
+
+        def autocorrect_for_populated_array(node, corrector)
           arrays = node.arguments.map do |splat_node|
             splat_node.children.first
           end
           corrector.replace(
-            node.source_range,
+            node,
             "match_array(#{arrays.map(&:source).join(' + ')})"
           )
         end

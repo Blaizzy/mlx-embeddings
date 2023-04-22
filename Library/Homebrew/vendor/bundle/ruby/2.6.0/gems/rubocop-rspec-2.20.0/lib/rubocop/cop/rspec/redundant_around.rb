@@ -41,11 +41,7 @@ module RuboCop
 
         # @!method match_redundant_around_hook_block?(node)
         def_node_matcher :match_redundant_around_hook_block?, <<~PATTERN
-          (block
-            (send _ :around ...)
-            (args _?)
-            (send _ :run)
-          )
+          ({block numblock} (send _ :around ...) ... (send _ :run))
         PATTERN
 
         # @!method match_redundant_around_hook_send?(node)

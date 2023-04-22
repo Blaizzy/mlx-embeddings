@@ -144,6 +144,12 @@ RSpec/Be:
   StyleGuide: https://rspec.rubystyle.guide/#be-matcher
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Be
 
+RSpec/BeEmpty:
+  Description: Prefer using `be_empty` when checking for an empty array.
+  Enabled: pending
+  VersionAdded: '2.20'
+  Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/BeEmpty
+
 RSpec/BeEq:
   Description: Check for expectations where `be(...)` can replace `eq(...)`.
   Enabled: pending
@@ -202,8 +208,8 @@ RSpec/ClassCheck:
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ClassCheck
 
 RSpec/ContainExactly:
-  Description: Prefer `match_array` when matching array values.
-  Enabled: true
+  Description: Checks where `contain_exactly` is used.
+  Enabled: pending
   VersionAdded: '2.19'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ContainExactly
 
@@ -503,6 +509,13 @@ RSpec/ImplicitSubject:
   VersionChanged: '2.13'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ImplicitSubject
 
+RSpec/IndexedLet:
+  Description: Do not set up test data using indexes (e.g., `item_1`, `item_2`).
+  Enabled: pending
+  VersionAdded: '2.20'
+  Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/IndexedLet
+  Max: 1
+
 RSpec/InstanceSpy:
   Description: Checks for `instance_double` used with `have_received`.
   Enabled: true
@@ -563,8 +576,8 @@ RSpec/LetSetup:
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/LetSetup
 
 RSpec/MatchArray:
-  Description: Prefer `contain_exactly` when matching an array literal.
-  Enabled: true
+  Description: Checks where `match_array` is used.
+  Enabled: pending
   VersionAdded: '2.19'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/MatchArray
 
@@ -1048,8 +1061,9 @@ RSpec/Rails/HttpStatus:
   SupportedStyles:
     - numeric
     - symbolic
+    - be_status
   VersionAdded: '1.23'
-  VersionChanged: '2.0'
+  VersionChanged: '2.20'
   Reference: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/Rails/HttpStatus
 
 RSpec/Rails/InferredSpecType:

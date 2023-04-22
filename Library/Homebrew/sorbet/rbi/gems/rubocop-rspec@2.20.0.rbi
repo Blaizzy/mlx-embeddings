@@ -85,6 +85,16 @@ end
 RuboCop::Cop::RSpec::Be::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::Be::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::RSpec::BeEmpty < ::RuboCop::Cop::RSpec::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def expect_array_matcher?(param0 = T.unsafe(nil)); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::RSpec::BeEmpty::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::RSpec::BeEmpty::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
 class RuboCop::Cop::RSpec::BeEq < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
 
@@ -219,7 +229,8 @@ class RuboCop::Cop::RSpec::ContainExactly < ::RuboCop::Cop::RSpec::Base
 
   private
 
-  def autocorrect(node, corrector); end
+  def autocorrect_for_populated_array(node, corrector); end
+  def check_populated_collection(node); end
 end
 
 RuboCop::Cop::RSpec::ContainExactly::MSG = T.let(T.unsafe(nil), String)
@@ -325,7 +336,7 @@ RuboCop::Cop::RSpec::DescribedClass::DESCRIBED_CLASS = T.let(T.unsafe(nil), Stri
 RuboCop::Cop::RSpec::DescribedClass::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::DescribedClassModuleWrapping < ::RuboCop::Cop::RSpec::Base
-  def find_rspec_blocks(param0); end
+  def include_rspec_blocks?(param0); end
   def on_module(node); end
 end
 
@@ -662,6 +673,7 @@ class RuboCop::Cop::RSpec::FactoryBot::ConsistentParenthesesStyle < ::RuboCop::C
   end
 end
 
+RuboCop::Cop::RSpec::FactoryBot::ConsistentParenthesesStyle::AMBIGUOUS_TYPES = T.let(T.unsafe(nil), Array)
 RuboCop::Cop::RSpec::FactoryBot::ConsistentParenthesesStyle::FACTORY_CALLS = T.let(T.unsafe(nil), Set)
 RuboCop::Cop::RSpec::FactoryBot::ConsistentParenthesesStyle::MSG_OMIT_PARENS = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::FactoryBot::ConsistentParenthesesStyle::MSG_REQUIRE_PARENS = T.let(T.unsafe(nil), String)
@@ -938,6 +950,19 @@ RuboCop::Cop::RSpec::ImplicitSubject::MSG_REQUIRE_EXPLICIT = T.let(T.unsafe(nil)
 RuboCop::Cop::RSpec::ImplicitSubject::MSG_REQUIRE_IMPLICIT = T.let(T.unsafe(nil), String)
 RuboCop::Cop::RSpec::ImplicitSubject::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::RSpec::IndexedLet < ::RuboCop::Cop::RSpec::Base
+  def let_name(param0 = T.unsafe(nil)); end
+  def on_block(node); end
+
+  private
+
+  def filter_indexed_lets(candidates); end
+  def indexed_let?(node); end
+end
+
+RuboCop::Cop::RSpec::IndexedLet::INDEX_REGEX = T.let(T.unsafe(nil), Regexp)
+RuboCop::Cop::RSpec::IndexedLet::MSG = T.let(T.unsafe(nil), String)
+
 module RuboCop::Cop::RSpec::InflectedHelper
   include ::RuboCop::RSpec::Language
   extend ::RuboCop::AST::NodePattern::Macros
@@ -1107,7 +1132,12 @@ end
 class RuboCop::Cop::RSpec::MatchArray < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
 
+  def match_array_with_empty_array?(param0 = T.unsafe(nil)); end
   def on_send(node); end
+
+  private
+
+  def check_populated_array(node); end
 end
 
 RuboCop::Cop::RSpec::MatchArray::MSG = T.let(T.unsafe(nil), String)
@@ -1346,6 +1376,7 @@ class RuboCop::Cop::RSpec::PendingWithoutReason < ::RuboCop::Cop::RSpec::Base
   def pending_step_without_reason?(param0 = T.unsafe(nil)); end
   def skipped_by_example_group_method?(param0 = T.unsafe(nil)); end
   def skipped_by_example_method?(param0 = T.unsafe(nil)); end
+  def skipped_by_example_method_with_block?(param0 = T.unsafe(nil)); end
   def skipped_in_example?(param0 = T.unsafe(nil)); end
 
   private
@@ -1354,7 +1385,7 @@ class RuboCop::Cop::RSpec::PendingWithoutReason < ::RuboCop::Cop::RSpec::Base
   def on_pending_by_metadata(node); end
   def on_skipped_by_example_group_method(node); end
   def on_skipped_by_example_method(node); end
-  def on_skipped_by_in_example_method(node, _direct_parent); end
+  def on_skipped_by_in_example_method(node); end
   def parent_node(node); end
 end
 
@@ -1405,41 +1436,54 @@ class RuboCop::Cop::RSpec::Rails::HttpStatus < ::RuboCop::Cop::RSpec::Base
   def checker_class; end
 end
 
-class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker
-  def initialize(node); end
-
-  def message; end
-  def node; end
+class RuboCop::Cop::RSpec::Rails::HttpStatus::BeStatusStyleChecker < ::RuboCop::Cop::RSpec::Rails::HttpStatus::StyleCheckerBase
+  def current; end
+  def offense_range; end
   def offensive?; end
-  def preferred_style; end
+  def prefer; end
 
   private
 
-  def allowed_symbol?; end
   def number; end
   def symbol; end
 end
 
-RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker::ALLOWED_STATUSES = T.let(T.unsafe(nil), Array)
-RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker::MSG = T.let(T.unsafe(nil), String)
+class RuboCop::Cop::RSpec::Rails::HttpStatus::NumericStyleChecker < ::RuboCop::Cop::RSpec::Rails::HttpStatus::StyleCheckerBase
+  def current; end
+  def offensive?; end
+  def prefer; end
+
+  private
+
+  def number; end
+  def symbol; end
+end
+
 RuboCop::Cop::RSpec::Rails::HttpStatus::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker
+class RuboCop::Cop::RSpec::Rails::HttpStatus::StyleCheckerBase
   def initialize(node); end
 
+  def allowed_symbol?; end
+  def custom_http_status_code?; end
   def message; end
   def node; end
+  def offense_range; end
+end
+
+RuboCop::Cop::RSpec::Rails::HttpStatus::StyleCheckerBase::ALLOWED_STATUSES = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::RSpec::Rails::HttpStatus::StyleCheckerBase::MSG = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker < ::RuboCop::Cop::RSpec::Rails::HttpStatus::StyleCheckerBase
+  def current; end
   def offensive?; end
-  def preferred_style; end
+  def prefer; end
 
   private
 
-  def custom_http_status_code?; end
   def number; end
   def symbol; end
 end
-
-RuboCop::Cop::RSpec::Rails::HttpStatus::SymbolicStyleChecker::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::Rails::InferredSpecType < ::RuboCop::Cop::RSpec::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -1683,11 +1727,16 @@ end
 RuboCop::Cop::RSpec::ScatteredLet::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::RSpec::ScatteredSetup < ::RuboCop::Cop::RSpec::Base
+  include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
+
   def on_block(node); end
 
   private
 
+  def autocorrect(corrector, first_occurrence, occurrence); end
   def lines_msg(numbers); end
+  def message(occurrences, occurrence); end
   def repeated_hooks(node); end
 end
 
