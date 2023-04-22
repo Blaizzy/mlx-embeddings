@@ -1,4 +1,3 @@
-# typed: false
 # frozen_string_literal: true
 
 require "macos_runner_spec"
