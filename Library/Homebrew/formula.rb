@@ -2199,7 +2199,7 @@ class Formula
         "sha256" => resource("ruby-source").checksum.hexdigest,
       }
     elsif !self.class.loaded_from_api && path.exist?
-      hsh["ruby_source_path"] = path.relative_path_from(tap.path).to_s
+      hsh["ruby_source_path"] = (path.relative_path_from(tap.path).to_s if tap)
       hsh["ruby_source_checksum"] = {
         "sha256" => Digest::SHA256.file(path).hexdigest,
       }
