@@ -309,16 +309,16 @@ module Homebrew
 
     return unless ENV["GITHUB_ACTIONS"]
 
-    annotations = formula_results.merge(cask_results).flat_map do |path, problem|
-      next if problem.blank?
-
-      GitHub::Actions::Annotation.new(
-        :error,
-        problem[:message],
-        file:   path,
-        line:   problem[:location]&.line,
-        column: problem[:location]&.column,
-      )
+    annotations = formula_results.merge(cask_results).flat_map do |path, problems|
+      problems.map do |problem|
+        GitHub::Actions::Annotation.new(
+          :error,
+          problem[:message],
+          file:   path,
+          line:   problem[:location]&.line,
+          column: problem[:location]&.column,
+        )
+      end
     end.compact
 
     annotations.each do |annotation|
