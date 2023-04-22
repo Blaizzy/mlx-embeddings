@@ -270,7 +270,7 @@ describe Formulary do
             "conflicts_with"           => ["conflicting_formula"],
             "conflicts_with_reasons"   => ["it does"],
             "link_overwrite"           => ["bin/abc"],
-            "caveats"                  => "example caveat string",
+            "caveats"                  => "example caveat string\n/$HOME\n$HOMEBREW_PREFIX",
             "service"                  => {
               "run"         => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
               "run_type"    => "immediate",
@@ -356,7 +356,7 @@ describe Formulary do
         expect(formula.conflicts.map(&:reason)).to include "it does"
         expect(formula.class.link_overwrite_paths).to include "bin/abc"
 
-        expect(formula.caveats).to eq "example caveat string"
+        expect(formula.caveats).to eq "example caveat string\n#{Dir.home}\n#{HOMEBREW_PREFIX}"
 
         expect(formula).to be_a_service
         expect(formula.service.command).to eq(["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "test"])
