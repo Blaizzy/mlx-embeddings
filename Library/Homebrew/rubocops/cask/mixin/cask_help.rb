@@ -13,14 +13,20 @@ module RuboCop
         sig { abstract.params(cask_block: RuboCop::Cask::AST::CaskBlock).void }
         def on_cask(cask_block); end
 
+        def on_cask_stanza_block(cask_stanza_block); end
+
         def on_block(block_node)
           super if defined? super
-          return unless respond_to?(:on_cask)
-          return unless block_node.cask_block?
 
-          comments = processed_source.comments
-          cask_block = RuboCop::Cask::AST::CaskBlock.new(block_node, comments)
-          on_cask(cask_block)
+          if respond_to?(:on_cask_stanza_block) && (block_node.cask_block? || block_node.on_system_block?)
+            on_cask_stanza_block(block_node)
+          end
+
+          if respond_to?(:on_cask) && block_node.cask_block?
+            comments = processed_source.comments
+            cask_block = RuboCop::Cask::AST::CaskBlock.new(block_node, comments)
+            on_cask(cask_block)
+          end
         end
 
         def on_system_methods(cask_stanzas)
