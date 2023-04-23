@@ -197,10 +197,10 @@ module Homebrew
     begin
       formulae, casks = args.named.to_formulae_and_casks
                             .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
-    rescue FormulaOrCaskUnavailableError, Cask::CaskUnavailableError => e
+    rescue FormulaOrCaskUnavailableError, Cask::CaskUnavailableError
       retry if Tap.install_default_cask_tap_if_necessary(force: args.cask?)
 
-      raise e
+      raise
     end
 
     if casks.any?
@@ -237,6 +237,8 @@ module Homebrew
                             skip_cask_deps: args.skip_cask_deps?,
                             quarantine:     args.quarantine?,
                             quiet:          args.quiet?).install
+      rescue Cask::CaskAlreadyInstalledError => e
+        opoo e.message
       end
     end
 
