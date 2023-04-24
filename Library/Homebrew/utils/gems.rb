@@ -155,6 +155,12 @@ module Homebrew
     invalid_groups = groups - valid_gem_groups
     raise ArgumentError, "Invalid gem groups: #{invalid_groups.join(", ")}" unless invalid_groups.empty?
 
+    # tests should not modify the state of the repo
+    if ENV["HOMEBREW_TESTS"]
+      setup_gem_environment!
+      return
+    end
+
     install_bundler!
 
     require "settings"
