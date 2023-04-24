@@ -226,7 +226,7 @@ module PyPI
       EOS
     end
 
-    found_packages = json_to_packages(JSON.parse(pip_output), main_package, exclude_packages).uniq
+    found_packages = pip_report_to_packages(JSON.parse(pip_output), main_package, exclude_packages).uniq
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
@@ -288,17 +288,16 @@ module PyPI
     name.gsub(/[-_.]+/, "-").downcase
   end
 
-  def self.json_to_packages(json_tree, main_package, exclude_packages)
-    return [] if json_tree.blank?
+  def self.pip_report_to_packages(report, main_package, exclude_packages)
+    return [] if report.blank?
 
-    json_tree.flat_map do |package_json|
-      package = Package.new("#{package_json["name"]}==#{package_json["version"]}")
-      dependencies = if package == main_package || exclude_packages.exclude?(package)
-        json_to_packages(package_json["dependencies"], main_package, exclude_packages)
-      else
-        []
-      end
-      [package] + dependencies
+    report["install"].filter_map do |package|
+      name = normalize_python_package(package["metadata"]["name"])
+      version = package["metadata"]["version"]
+
+      package = "#{name}==#{version}"
+
+      package if exclude_packages.exclude? package
     end
   end
 end
