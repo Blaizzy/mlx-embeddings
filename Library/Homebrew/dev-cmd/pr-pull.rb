@@ -161,10 +161,10 @@ module Homebrew
     package_name = package_file.basename.to_s.chomp(".rb")
 
     odebug "Cherry-picking #{package_file}: #{commit}"
-    Utils::Git.cherry_pick!(git_repo, commit, verbose: verbose, resolve: resolve)
+    Utils::Git.cherry_pick!(git_repo.to_s, commit, verbose: verbose, resolve: resolve)
 
-    old_package = Utils::Git.file_at_commit(git_repo, file, "HEAD^")
-    new_package = Utils::Git.file_at_commit(git_repo, file, "HEAD")
+    old_package = Utils::Git.file_at_commit(git_repo.to_s, file, "HEAD^")
+    new_package = Utils::Git.file_at_commit(git_repo.to_s, file, "HEAD")
 
     bump_subject = determine_bump_subject(old_package, new_package, package_file, reason: reason).strip
     subject, body, trailers = separate_commit_message(git_repo.commit_message)
