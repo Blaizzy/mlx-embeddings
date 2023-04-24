@@ -110,10 +110,9 @@ class GitRepository
   end
 
   sig { returns(String) }
-  def to_str
-    pathname.to_str
+  def to_s
+    pathname.to_s
   end
-  alias to_s to_str
 
   private
 
