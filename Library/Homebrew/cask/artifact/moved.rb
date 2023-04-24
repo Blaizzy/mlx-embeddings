@@ -42,9 +42,7 @@ module Cask
         end
 
         if Utils.path_occupied?(target)
-          if !predecessor.nil? && target.directory? && target.children.empty? && predecessor.artifacts.any? do |a|
-               a.instance_of?(self.class) && instance_of?(a.class) && a.target == target
-             end
+          if target.directory? && target.children.empty? && matching_artifact?(predecessor)
             # An upgrade removed the directory contents but left the directory itself (see below).
             unless source.directory?
               if target.parent.writable? && !force
@@ -124,6 +122,14 @@ module Cask
         add_altname_metadata(target, source.basename, command: command)
       end
 
+      def matching_artifact?(cask)
+        return false unless cask
+
+        cask.artifacts.any? do |a|
+          a.instance_of?(self.class) && instance_of?(a.class) && a.target == target
+        end
+      end
+
       def move_back(skip: false, force: false, command: nil, **options)
         FileUtils.rm source if source.symlink? && source.dirname.join(source.readlink) == target
 
@@ -157,9 +163,7 @@ module Cask
 
         return unless Utils.path_occupied?(target)
 
-        if !successor.nil? && target.directory? && successor.artifacts.any? do |a|
-             a.instance_of?(self.class) && instance_of?(a.class) && a.target == self.target
-           end
+        if target.directory? && matching_artifact?(successor)
           # If an app folder is deleted, macOS considers the app uninstalled and removes some data.
           # Remove only the contents to handle this case.
           target.children.each do |child|
