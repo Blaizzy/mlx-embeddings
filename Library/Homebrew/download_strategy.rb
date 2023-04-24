@@ -404,20 +404,22 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       ohai "Downloading #{url}"
 
-      resolved_url, _, url_time, _, is_redirection =
+      use_cached_location = cached_location.exist?
+      use_cached_location = false if version.respond_to?(:latest?) && version.latest?
+
+      resolved_url, _, last_modified, _, is_redirection = begin
         resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
+      rescue ErrorDuringExecution
+        raise unless use_cached_location
+      end
+
       # Authorization is no longer valid after redirects
       meta[:headers]&.delete_if { |header| header.start_with?("Authorization") } if is_redirection
 
-      fresh = if cached_location.exist? && url_time
-        url_time <= cached_location.mtime
-      elsif version.respond_to?(:latest?)
-        !version.latest?
-      else
-        true
-      end
+      # The cached location is no longer fresh if Last-Modified is after the file's timestamp
+      use_cached_location = false if cached_location.exist? && last_modified && last_modified > cached_location.mtime
 
-      if cached_location.exist? && fresh
+      if use_cached_location
         puts "Already downloaded: #{cached_location}"
       else
         begin
