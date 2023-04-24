@@ -295,7 +295,7 @@ module PyPI
       name = normalize_python_package(package["metadata"]["name"])
       version = package["metadata"]["version"]
 
-      package = "#{name}==#{version}"
+      package = Package.new "#{name}==#{version}"
 
       package if exclude_packages.exclude? package
     end.compact
