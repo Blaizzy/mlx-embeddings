@@ -212,11 +212,11 @@ module PyPI
       end
     end
 
-    ensure_formula_installed!("pipgrip")
+    ensure_formula_installed!("python")
 
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
     command =
-      [Formula["pipgrip"].opt_bin/"pipgrip", "--json", "--tree", "--no-cache-dir", *input_packages.map(&:to_s)]
+      [Formula["python"].bin/"python", "-m", "pip", "install", "-q", "--dry-run", "--ignore-installed", "--report", "/dev/stdout", *input_packages.map(&:to_s)]
     pipgrip_output = Utils.popen_read(*command)
     unless $CHILD_STATUS.success?
       odie <<~EOS
@@ -282,6 +282,10 @@ module PyPI
     end
 
     true
+  end
+
+  def self.normalize_python_package(name)
+    name.gsub(/[-_.]+/, "-").downcase
   end
 
   def self.json_to_packages(json_tree, main_package, exclude_packages)
