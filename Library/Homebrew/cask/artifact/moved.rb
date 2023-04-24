@@ -43,7 +43,7 @@ module Cask
 
         if Utils.path_occupied?(target)
           if !predecessor.nil? && target.directory? && target.children.empty? && predecessor.artifacts.any? do |a|
-               a.class.dsl_key == self.class.dsl_key && a.target == target
+               a.instance_of?(self.class) && instance_of?(a.class) && a.target == target
              end
             # An upgrade removed the directory contents but left the directory itself (see below).
             unless source.directory?
@@ -158,7 +158,7 @@ module Cask
         return unless Utils.path_occupied?(target)
 
         if !successor.nil? && target.directory? && successor.artifacts.any? do |a|
-             a.class.dsl_key == self.class.dsl_key && a.target == self.target
+             a.instance_of?(self.class) && instance_of?(a.class) && a.target == self.target
            end
           # If an app folder is deleted, macOS considers the app uninstalled and removes some data.
           # Remove only the contents to handle this case.
