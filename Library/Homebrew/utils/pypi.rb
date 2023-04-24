@@ -216,7 +216,7 @@ module PyPI
 
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
     command =
-      [Formula["python"].bin/"python", "-m", "pip", "install", "-q", "--dry-run", "--ignore-installed", "--report", "/dev/stdout", *input_packages.map(&:to_s)]
+      [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--dry-run", "--ignore-installed", "--report", "/dev/stdout", *input_packages.map(&:to_s)]
     pipgrip_output = Utils.popen_read(*command)
     unless $CHILD_STATUS.success?
       odie <<~EOS
