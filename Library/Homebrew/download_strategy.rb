@@ -8,8 +8,12 @@ require "lazy_object"
 require "cgi"
 require "lock_file"
 
-require "mechanize/version"
-require "mechanize/http/content_disposition_parser"
+# Need to define this before requiring Mechanize to avoid:
+#   uninitialized constant Mechanize
+# rubocop:disable Lint/EmptyClass
+class Mechanize; end
+require "vendor/gems/mechanize/lib/mechanize/http/content_disposition_parser"
+# rubocop:enable Lint/EmptyClass
 
 require "utils/curl"
 require "utils/github"

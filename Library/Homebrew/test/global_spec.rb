@@ -17,4 +17,9 @@ describe "brew", :integration_test do
     # ActiveSupport inflections are slow to load, so we don't use them.
     expect { ActiveSupport::Inflector }.to raise_error(NameError)
   end
+
+  it "does not require Nokogiri" do
+    # The latest version of Nokogiri for Ruby 2.6 has multiple CVEs.
+    expect { Nokogiri }.to raise_error(NameError)
+  end
 end
