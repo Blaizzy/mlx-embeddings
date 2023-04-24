@@ -109,6 +109,12 @@ class GitRepository
     popen_git("log", "-1", "--pretty=%B", commit, "--", safe: safe, err: :out)&.strip
   end
 
+  sig { returns(String) }
+  def to_str
+    pathname.to_str
+  end
+  alias to_s to_str
+
   private
 
   sig { params(args: T.untyped, safe: T::Boolean, err: T.nilable(Symbol)).returns(T.nilable(String)) }
