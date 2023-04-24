@@ -291,13 +291,13 @@ module PyPI
   def self.pip_report_to_packages(report, main_package, exclude_packages)
     return [] if report.blank?
 
-    report["install"].filter_map do |package|
+    report["install"].map do |package|
       name = normalize_python_package(package["metadata"]["name"])
       version = package["metadata"]["version"]
 
       package = "#{name}==#{version}"
 
       package if exclude_packages.exclude? package
-    end
+    end.compact
   end
 end
