@@ -915,7 +915,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
 
     args << "--no-checkout" << "--filter=blob:none" if partial_clone_sparse_checkout?
 
-    args << "-c" << "advice.detachedHead=false" # silences detached head warning
+    args << "--config" << "advice.detachedHead=false" # silences detached head warning
+    args << "--config" << "core.fsmonitor=false" # prevent fsmonitor from watching this repo
     args << @url << cached_location.to_s
   end
 
@@ -947,6 +948,9 @@ class GitDownloadStrategy < VCSDownloadStrategy
              chdir: cached_location
     command! "git",
              args:  ["config", "advice.detachedHead", "false"],
+             chdir: cached_location
+    command! "git",
+             args:  ["config", "core.fsmonitor", "false"],
              chdir: cached_location
 
     return unless partial_clone_sparse_checkout?
