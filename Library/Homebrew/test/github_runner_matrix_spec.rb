@@ -7,6 +7,7 @@ describe GitHubRunnerMatrix do
   before do
     allow(ENV).to receive(:fetch).with("HOMEBREW_LINUX_RUNNER").and_return("ubuntu-latest")
     allow(ENV).to receive(:fetch).with("HOMEBREW_LINUX_CLEANUP").and_return("false")
+    allow(ENV).to receive(:fetch).with("HOMEBREW_MACOS_TIMEOUT").and_return("90")
     allow(ENV).to receive(:fetch).with("GITHUB_RUN_ID").and_return("12345")
     allow(ENV).to receive(:fetch).with("GITHUB_RUN_ATTEMPT").and_return("1")
   end

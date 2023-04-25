@@ -4,7 +4,7 @@ require "github_runner"
 
 describe GitHubRunner do
   let(:runner) do
-    spec = MacOSRunnerSpec.new(name: "macOS 11-arm64", runner: "11-arm64", cleanup: true)
+    spec = MacOSRunnerSpec.new(name: "macOS 11-arm64", runner: "11-arm64", timeout: 90, cleanup: true)
     version = OS::Mac::Version.new("11")
     described_class.new(platform: :macos, arch: :arm64, spec: spec, macos_version: version)
   end

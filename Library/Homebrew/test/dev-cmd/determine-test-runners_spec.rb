@@ -16,6 +16,7 @@ describe "brew determine-test-runners" do
     {
       "HOMEBREW_LINUX_RUNNER"  => linux_runner,
       "HOMEBREW_LINUX_CLEANUP" => "false",
+      "HOMEBREW_MACOS_TIMEOUT" => "90",
       "GITHUB_RUN_ID"          => ephemeral_suffix.split("-").second,
       "GITHUB_RUN_ATTEMPT"     => ephemeral_suffix.split("-").third,
     }.freeze
