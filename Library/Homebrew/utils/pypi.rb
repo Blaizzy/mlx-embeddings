@@ -286,6 +286,8 @@ module PyPI
   end
 
   def self.normalize_python_package(name)
+    # This normalization is defined in the PyPA packaging specifications;
+    # https://packaging.python.org/en/latest/specifications/name-normalization/#name-normalization
     name.gsub(/[-_.]+/, "-").downcase
   end
 
