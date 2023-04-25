@@ -15,7 +15,7 @@ class GitHubRunnerMatrix
   RunnerSpec = T.type_alias { T.any(LinuxRunnerSpec, MacOSRunnerSpec) }
   private_constant :RunnerSpec
 
-  MacOSRunnerSpecHash = T.type_alias { { name: String, runner: String, cleanup: T::Boolean } }
+  MacOSRunnerSpecHash = T.type_alias { { name: String, runner: String, timeout: Integer, cleanup: T::Boolean } }
   private_constant :MacOSRunnerSpecHash
 
   LinuxRunnerSpecHash = T.type_alias do
@@ -110,6 +110,7 @@ class GitHubRunnerMatrix
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
     github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT")
+    timeout            = ENV.fetch("HOMEBREW_MACOS_TIMEOUT").to_i
     ephemeral_suffix = +"-#{github_run_id}-#{github_run_attempt}"
     ephemeral_suffix << "-deps" if @dependent_matrix
     ephemeral_suffix.freeze
@@ -118,9 +119,16 @@ class GitHubRunnerMatrix
       macos_version = OS::Mac::Version.new(version)
       next if macos_version.unsupported_release?
 
+      # Intel Big Sur is a bit slower than the other runners,
+      # so give it a little bit more time. The comparison below
+      # should be `==`, but it returns typecheck errors.
+      runner_timeout = timeout
+      runner_timeout += 30 if macos_version <= :big_sur
+
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-x86_64",
         runner:  "#{version}#{ephemeral_suffix}",
+        timeout: runner_timeout,
         cleanup: false,
       )
       @runners << create_runner(:macos, :x86_64, spec, macos_version)
@@ -136,7 +144,7 @@ class GitHubRunnerMatrix
         ["#{version}-arm64", true]
       end
 
-      spec = MacOSRunnerSpec.new(name: "macOS #{version}-arm64", runner: runner, cleanup: cleanup)
+      spec = MacOSRunnerSpec.new(name: "macOS #{version}-arm64", runner: runner, timeout: timeout, cleanup: cleanup)
       @runners << create_runner(:macos, :arm64, spec, macos_version)
     end
 
