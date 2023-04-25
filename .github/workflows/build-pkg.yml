@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-13
     env:
       IDENTIFIER: sh.brew.Homebrew
       TMP_PATH: /tmp/brew
