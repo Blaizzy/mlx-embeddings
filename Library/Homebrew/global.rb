@@ -12,17 +12,17 @@ require "set"
 
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
-require "active_support/core_ext/object/blank"
-require "active_support/core_ext/string/filters"
-require "active_support/core_ext/object/try"
 require "active_support/core_ext/array/access"
-require "active_support/core_ext/hash/except"
-require "active_support/core_ext/kernel/reporting"
-require "active_support/core_ext/hash/keys"
-require "active_support/core_ext/hash/deep_merge"
-require "active_support/core_ext/file/atomic"
 require "active_support/core_ext/enumerable"
+require "active_support/core_ext/file/atomic"
+require "active_support/core_ext/hash/deep_merge"
+require "active_support/core_ext/hash/except"
+require "active_support/core_ext/hash/keys"
+require "active_support/core_ext/kernel/reporting"
+require "active_support/core_ext/object/blank"
+require "active_support/core_ext/object/try"
 require "active_support/core_ext/string/exclude"
+require "active_support/core_ext/string/filters"
 require "active_support/core_ext/string/indent"
 
 HOMEBREW_API_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_API_DEFAULT_DOMAIN").freeze
