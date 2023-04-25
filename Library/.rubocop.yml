@@ -34,32 +34,18 @@ Bundler/GemVersion:
 
 Cask/Desc:
   Description: "Ensure that the desc stanza conforms to various content and style checks."
-  Enabled: true
 
 Cask/HomepageUrlTrailingSlash:
   Description: "Ensure that the homepage url has a slash after the domain name."
-  Enabled: true
 
 Cask/NoDslVersion:
   Description: "Do not use the deprecated DSL version syntax in your cask header."
-  Enabled: true
 
 Cask/StanzaGrouping:
   Description: "Ensure that cask stanzas are grouped correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
-  Enabled: true
 
 Cask/StanzaOrder:
   Description: "Ensure that cask stanzas are sorted correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
-  Enabled: true
-
-FormulaAudit:
-  Enabled: true
-
-FormulaAuditStrict:
-  Enabled: true
-
-Homebrew:
-  Enabled: true
 
 # only used internally
 Homebrew/MoveToExtendOS:
@@ -232,10 +218,6 @@ Naming/MethodParameterName:
 Naming/VariableNumber:
   Enabled: false
 
-# Does not hinder readability, so might as well enable it.
-Performance/CaseWhenSplat:
-  Enabled: true
-
 # Makes code less readable for minor performance increases.
 Performance/Caller:
   Enabled: false
@@ -259,41 +241,8 @@ Rails:
   Exclude:
     - "Homebrew/rubocops/**/*"
 
-# These relate to ActiveSupport and not other parts of Rails.
-Rails/ActiveSupportAliases:
-  Enabled: true
-Rails/Blank:
-  Enabled: true
-Rails/CompactBlank:
-  Enabled: true
 Rails/Delegate:
   Enabled: false # TODO
-Rails/DelegateAllowBlank:
-  Enabled: true
-Rails/DurationArithmetic:
-  Enabled: true
-Rails/ExpandedDateRange:
-  Enabled: true
-Rails/Inquiry:
-  Enabled: true
-Rails/NegateInclude:
-  Enabled: true
-Rails/PluralizationGrammar:
-  Enabled: true
-Rails/Presence:
-  Enabled: true
-Rails/Present:
-  Enabled: true
-Rails/RelativeDateConstant:
-  Enabled: true
-Rails/SafeNavigation:
-  Enabled: true
-Rails/SafeNavigationWithBlank:
-  Enabled: true
-Rails/StripHeredoc:
-  Enabled: true
-Rails/ToFormattedS:
-  Enabled: true
 
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
@@ -357,20 +306,14 @@ Sorbet/IgnoreSigil:
 Sorbet/StrongSigil:
   Enabled: false
 
-# T::Sig is monkey-patched into Module
-Sorbet/RedundantExtendTSig:
-  Enabled: true
-
 Sorbet/StrictSigil:
   inherit_mode:
     override:
       - Include
-  Enabled: true
   Include:
     - "**/*.rbi"
 
 Sorbet/TrueSigil:
-  Enabled: true
   Exclude:
     - "Taps/**/*"
     - "/**/{Formula,Casks}/**/*.rb"
@@ -381,10 +324,6 @@ Sorbet/TrueSigil:
 Style/AndOr:
   EnforcedStyle: always
 
-# Avoid leaking resources.
-Style/AutoResourceCleanup:
-  Enabled: true
-
 # This makes these a little more obvious.
 Style/BarePercentLiterals:
   EnforcedStyle: percent_q
@@ -392,10 +331,6 @@ Style/BarePercentLiterals:
 Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
-
-# Use consistent style for better readability.
-Style/CollectionMethods:
-  Enabled: true
 
 # TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
 Style/ArrayCoercion:
@@ -447,7 +382,6 @@ Style/YodaExpression:
 
 # Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
-  Enabled: true
   Include:
     - "Taps/*/*/*.rb"
     - "/**/{Formula,Casks}/**/*.rb"
@@ -527,10 +461,6 @@ Style/OpenStructUse:
 Style/RescueStandardError:
   EnforcedStyle: implicit
 
-# Returning `nil` is unnecessary.
-Style/ReturnNil:
-  Enabled: true
-
 # We have no use for using `warn` because we
 # are calling Ruby with warnings disabled.
 Style/StderrPuts:
@@ -551,10 +481,6 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
-# Use consistent method names.
-Style/StringMethods:
-  Enabled: true
-
 # An array of symbols is more readable than a symbol array
 # and also allows for easier grepping.
 Style/SymbolArray:
@@ -574,7 +500,6 @@ Style/TrailingCommaInHashLiteral:
 
 # `unless ... ||` and `unless ... &&` are hard to mentally parse
 Style/UnlessLogicalOperators:
-  Enabled: true
   EnforcedStyle: forbid_logical_operators
 
 # a bit confusing to non-Rubyists but useful for longer arrays
