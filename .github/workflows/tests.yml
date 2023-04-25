@@ -157,7 +157,7 @@ jobs:
     name: cask audit
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
-    runs-on: macos-12
+    runs-on: macos-13
     env:
       HOMEBREW_NO_INSTALL_FROM_API: 1
     steps:
@@ -258,8 +258,8 @@ jobs:
         include:
           - name: update-test (Ubuntu 22.04)
             runs-on: ubuntu-22.04
-          - name: update-test (macOS 12)
-            runs-on: macos-12
+          - name: update-test (macOS 13)
+            runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -300,9 +300,9 @@ jobs:
           - name: tests (Ubuntu 20.04)
             test-flags: --coverage
             runs-on: ubuntu-20.04
-          - name: tests (macOS 12)
+          - name: tests (macOS 13)
             test-flags: --coverage
-            runs-on: macos-12
+            runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -390,8 +390,8 @@ jobs:
             runs-on: ubuntu-22.04
           - name: test default formula (Ubuntu 20.04)
             runs-on: ubuntu-20.04
-          - name: test default formula (macOS 12)
-            runs-on: macos-12
+          - name: test default formula (macOS 13)
+            runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
