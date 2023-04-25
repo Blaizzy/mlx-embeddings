@@ -12,8 +12,6 @@ require "system_command"
 # @api private
 module SystemConfig
   class << self
-    extend T::Sig
-
     include SystemCommand::Mixin
 
     def clang

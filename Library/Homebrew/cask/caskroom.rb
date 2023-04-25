@@ -8,8 +8,6 @@ module Cask
   #
   # @api private
   module Caskroom
-    extend T::Sig
-
     sig { returns(Pathname) }
     def self.path
       @path ||= HOMEBREW_PREFIX/"Caskroom"

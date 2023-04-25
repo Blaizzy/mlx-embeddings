@@ -6,8 +6,6 @@ require "test_runner_formula"
 require "github_runner_matrix"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(Homebrew::CLI::Parser) }
   def self.determine_test_runners_args
     Homebrew::CLI::Parser.new do

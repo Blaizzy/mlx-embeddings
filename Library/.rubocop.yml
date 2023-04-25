@@ -280,8 +280,13 @@ RSpec/Focus:
 Sorbet/ConstantsFromStrings:
   Enabled: false
 
+# This is already the default
 Sorbet/FalseSigil:
   Enabled: false
+
+# T::Sig is monkey-patched into Module
+Sorbet/RedundantExtendTSig:
+  Enabled: true
 
 Sorbet/StrictSigil:
   inherit_mode:

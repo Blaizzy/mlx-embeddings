@@ -8,8 +8,6 @@ require "utils/popen"
 # @see Utils::Git
 # @api private
 class GitRepository
-  extend T::Sig
-
   sig { returns(Pathname) }
   attr_reader :pathname
 

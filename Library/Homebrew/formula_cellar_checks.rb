@@ -7,7 +7,6 @@ require "utils/shell"
 #
 # @api private
 module FormulaCellarChecks
-  extend T::Sig
   extend T::Helpers
 
   abstract!

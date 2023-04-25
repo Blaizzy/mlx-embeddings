@@ -7,8 +7,6 @@ module OS
     #
     # @api private
     module Xcode
-      extend T::Sig
-
       DEFAULT_BUNDLE_PATH = Pathname("/Applications/Xcode.app").freeze
       BUNDLE_ID = "com.apple.dt.Xcode"
       OLD_BUNDLE_ID = "com.apple.Xcode"
@@ -259,8 +257,6 @@ module OS
     #
     # @api private
     module CLT
-      extend T::Sig
-
       # The original Mavericks CLT package ID
       EXECUTABLE_PKG_ID = "com.apple.pkg.CLTools_Executables"
       MAVERICKS_NEW_PKG_ID = "com.apple.pkg.CLTools_Base" # obsolete

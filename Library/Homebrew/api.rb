@@ -11,8 +11,6 @@ module Homebrew
   #
   # @api private
   module API
-    extend T::Sig
-
     extend Cachable
 
     HOMEBREW_CACHE_API = (HOMEBREW_CACHE/"api").freeze

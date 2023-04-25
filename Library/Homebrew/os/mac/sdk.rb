@@ -9,8 +9,6 @@ module OS
     #
     # @api private
     class SDK
-      extend T::Sig
-
       # 11.x SDKs are explicitly excluded - we want the MacOSX11.sdk symlink instead.
       VERSIONED_SDK_REGEX = /MacOSX(10\.\d+|\d+)\.sdk$/.freeze
 
@@ -35,7 +33,6 @@ module OS
     #
     # @api private
     class BaseSDKLocator
-      extend T::Sig
       extend T::Helpers
 
       abstract!
@@ -146,8 +143,6 @@ module OS
     #
     # @api private
     class XcodeSDKLocator < BaseSDKLocator
-      extend T::Sig
-
       sig { override.returns(Symbol) }
       def source
         :xcode
@@ -173,8 +168,6 @@ module OS
     #
     # @api private
     class CLTSDKLocator < BaseSDKLocator
-      extend T::Sig
-
       sig { override.returns(Symbol) }
       def source
         :clt

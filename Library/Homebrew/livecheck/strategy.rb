@@ -10,8 +10,6 @@ module Homebrew
     #
     # @api private
     module Strategy
-      extend T::Sig
-
       module_function
 
       # {Strategy} priorities informally range from 1 to 10, where 10 is the

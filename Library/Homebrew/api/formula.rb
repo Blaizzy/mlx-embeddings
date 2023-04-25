@@ -11,7 +11,6 @@ module Homebrew
     module Formula
       class << self
         include Cachable
-        extend T::Sig
 
         private :cache
 

@@ -11,8 +11,6 @@ module Homebrew
     #
     # @api private
     class NamedArgs < Array
-      extend T::Sig
-
       def initialize(*args, parent: Args.new, override_spec: nil, force_bottle: false, flags: [], cask_options: false)
         require "cask/cask"
         require "cask/cask_loader"

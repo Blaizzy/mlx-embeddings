@@ -11,8 +11,6 @@ module Cask
   #
   # @api private
   class Config
-    extend T::Sig
-
     DEFAULT_DIRS = {
       appdir:               "/Applications",
       keyboard_layoutdir:   "/Library/Keyboard Layouts",

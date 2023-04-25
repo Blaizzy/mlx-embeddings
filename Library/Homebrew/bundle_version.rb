@@ -8,8 +8,6 @@ module Homebrew
   #
   # @api private
   class BundleVersion
-    extend T::Sig
-
     include Comparable
 
     extend SystemCommand::Mixin

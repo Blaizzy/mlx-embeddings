@@ -17,8 +17,6 @@ module Homebrew
   #
   # @api private
   module Livecheck
-    extend T::Sig
-
     module_function
 
     GITEA_INSTANCES = %w[

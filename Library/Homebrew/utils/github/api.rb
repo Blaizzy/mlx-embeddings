@@ -31,8 +31,6 @@ module GitHub
   #
   # @api private
   module API
-    extend T::Sig
-
     # Generic API error.
     class Error < RuntimeError
       attr_reader :github_message

@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 module Superenv
-  extend T::Sig
-
   class << self
     # The location of Homebrew's shims on macOS.
     def shims_path

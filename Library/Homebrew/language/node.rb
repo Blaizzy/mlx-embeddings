@@ -6,8 +6,6 @@ module Language
   #
   # @api public
   module Node
-    extend T::Sig
-
     sig { returns(String) }
     def self.npm_cache_config
       "cache=#{HOMEBREW_CACHE}/npm_cache"

@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 class MacOSRunnerSpec < T::Struct
-  extend T::Sig
-
   const :name, String
   const :runner, String
   const :cleanup, T::Boolean

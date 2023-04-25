@@ -6,8 +6,6 @@ require "os/mac/xcode"
 # @private
 class DevelopmentTools
   class << self
-    extend T::Sig
-
     alias generic_locate locate
     undef installed?, default_compiler, curl_handles_most_https_certificates?,
           subversion_handles_most_https_certificates?

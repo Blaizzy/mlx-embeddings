@@ -9,8 +9,6 @@ module Utils
   # @api private
   module Bottles
     class << self
-      extend T::Sig
-
       # Gets the tag for the running OS.
       def tag(symbol = nil)
         return Tag.from_symbol(symbol) if symbol.present?
@@ -124,8 +122,6 @@ module Utils
 
     # Denotes the arch and OS of a bottle.
     class Tag
-      extend T::Sig
-
       attr_reader :system, :arch
 
       sig { params(value: Symbol).returns(T.attached_class) }
@@ -245,8 +241,6 @@ module Utils
 
     # The specification for a specific tag
     class TagSpecification
-      extend T::Sig
-
       sig { returns(Utils::Bottles::Tag) }
       attr_reader :tag
 
@@ -265,8 +259,6 @@ module Utils
 
     # Collector for bottle specifications.
     class Collector
-      extend T::Sig
-
       sig { void }
       def initialize
         @tag_specs = T.let({}, T::Hash[Utils::Bottles::Tag, Utils::Bottles::TagSpecification])

@@ -4,8 +4,6 @@
 require "formula"
 
 class TestRunnerFormula
-  extend T::Sig
-
   sig { returns(String) }
   attr_reader :name
 

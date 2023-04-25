@@ -7,8 +7,6 @@ require "api"
 require "os/mac/xcode"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

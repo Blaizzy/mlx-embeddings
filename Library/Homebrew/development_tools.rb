@@ -6,8 +6,6 @@ require "version"
 # @private
 class DevelopmentTools
   class << self
-    extend T::Sig
-
     sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
       # Don't call tools (cc, make, strip, etc.) directly!

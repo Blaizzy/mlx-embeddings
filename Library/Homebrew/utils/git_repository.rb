@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 module Utils
-  extend T::Sig
-
   # Gets the full commit hash of the HEAD commit.
   sig {
     params(

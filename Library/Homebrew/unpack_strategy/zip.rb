@@ -4,8 +4,6 @@
 module UnpackStrategy
   # Strategy for unpacking ZIP archives.
   class Zip
-    extend T::Sig
-
     include UnpackStrategy
 
     sig { returns(T::Array[String]) }

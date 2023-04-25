@@ -9,8 +9,6 @@ require "tab"
 #
 # @api private
 class Migrator
-  extend T::Sig
-
   include Context
 
   # Error for when a migration is necessary.

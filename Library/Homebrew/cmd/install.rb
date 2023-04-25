@@ -13,8 +13,6 @@ require "cli/parser"
 require "upgrade"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.install_args
     Homebrew::CLI::Parser.new do

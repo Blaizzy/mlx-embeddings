@@ -5,8 +5,6 @@ require "test_runner_formula"
 require "github_runner"
 
 class GitHubRunnerMatrix
-  extend T::Sig
-
   # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
   # rubocop:disable Style/MutableConstant
   MaybeStringArray = T.type_alias { T.nilable(T::Array[String]) }

@@ -4,8 +4,6 @@
 require "simulate_system"
 
 module OnSystem
-  extend T::Sig
-
   ARCH_OPTIONS = [:intel, :arm].freeze
   BASE_OS_OPTIONS = [:macos, :linux].freeze
 
@@ -139,8 +137,6 @@ module OnSystem
   end
 
   module MacOSAndLinux
-    extend T::Sig
-
     sig { params(base: Class).void }
     def self.included(base)
       OnSystem.setup_arch_methods(base)
@@ -150,8 +146,6 @@ module OnSystem
   end
 
   module MacOSOnly
-    extend T::Sig
-
     sig { params(base: Class).void }
     def self.included(base)
       OnSystem.setup_arch_methods(base)

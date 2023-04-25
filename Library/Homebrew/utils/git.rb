@@ -7,8 +7,6 @@ module Utils
   # @see GitRepository
   # @api private
   module Git
-    extend T::Sig
-
     def self.available?
       version.present?
     end

@@ -17,8 +17,6 @@ module Utils
     INFLUX_ORG = "9a707721bb47fc02"
 
     class << self
-      extend T::Sig
-
       include Context
 
       sig { params(type: Symbol, metadata: T::Hash[Symbol, T.untyped]).void }

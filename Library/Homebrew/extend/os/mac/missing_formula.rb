@@ -7,9 +7,7 @@ require "cask/caskroom"
 
 module Homebrew
   module MissingFormula
-    extend T::Sig
     class << self
-      extend T::Sig
       sig { params(name: String).returns(T.nilable(String)) }
       def disallowed_reason(name)
         case name.downcase

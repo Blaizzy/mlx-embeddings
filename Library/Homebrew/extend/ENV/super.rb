@@ -15,8 +15,6 @@ require "development_tools"
 # 7. Simpler formulae that *just work*
 # 8. Build-system agnostic configuration of the toolchain
 module Superenv
-  extend T::Sig
-
   include SharedEnvExtension
 
   # @private

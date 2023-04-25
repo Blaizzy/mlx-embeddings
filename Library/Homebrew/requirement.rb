@@ -12,8 +12,6 @@ require "build_environment"
 #
 # @api private
 class Requirement
-  extend T::Sig
-
   include Dependable
   extend Cachable
 
@@ -164,8 +162,6 @@ class Requirement
   end
 
   class << self
-    extend T::Sig
-
     include BuildEnvironment::DSL
 
     attr_reader :env_proc, :build

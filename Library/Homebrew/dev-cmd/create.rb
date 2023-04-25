@@ -9,8 +9,6 @@ require "utils/pypi"
 require "cask/cask_loader"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

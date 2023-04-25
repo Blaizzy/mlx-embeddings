@@ -4,8 +4,6 @@
 module Homebrew
   # @api private
   module Fetch
-    extend T::Sig
-
     sig { params(formula: Formula, args: CLI::Args).returns(T::Boolean) }
     def fetch_bottle?(formula, args:)
       bottle = formula.bottle

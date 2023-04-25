@@ -5,7 +5,6 @@ module RuboCop
   module Cop
     module Cask
       class NoOverrides < Base
-        extend T::Sig
         include CaskHelp
 
         ON_SYSTEM_METHODS = RuboCop::Cask::Constants::ON_SYSTEM_METHODS

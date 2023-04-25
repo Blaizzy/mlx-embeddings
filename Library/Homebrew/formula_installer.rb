@@ -27,8 +27,6 @@ require "service"
 #
 # @api private
 class FormulaInstaller
-  extend T::Sig
-
   include FormulaCellarChecks
   extend Predicable
 

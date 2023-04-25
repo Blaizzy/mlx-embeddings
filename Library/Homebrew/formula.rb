@@ -58,8 +58,6 @@ require "extend/api_hashable"
 #   end
 # end</pre>
 class Formula
-  extend T::Sig
-
   include FileUtils
   include Utils::Inreplace
   include Utils::Shebang
@@ -2726,7 +2724,7 @@ class Formula
   # The methods below define the formula DSL.
   class << self
     extend Predicable
-    extend T::Sig
+
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux
 

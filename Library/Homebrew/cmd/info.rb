@@ -14,8 +14,6 @@ require "deprecate_disable"
 require "api"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   VALID_DAYS = %w[30 90 365].freeze

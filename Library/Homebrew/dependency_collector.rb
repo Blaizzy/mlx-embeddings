@@ -18,8 +18,6 @@ require "extend/cachable"
 # This class is used by `depends_on` in the formula DSL to turn dependency
 # specifications into the proper kinds of dependencies and requirements.
 class DependencyCollector
-  extend T::Sig
-
   extend Cachable
 
   attr_reader :deps, :requirements

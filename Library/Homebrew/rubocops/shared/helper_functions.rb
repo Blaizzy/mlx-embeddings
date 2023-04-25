@@ -14,7 +14,6 @@ module RuboCop
     #
     # @api private
     module HelperFunctions
-      extend T::Sig
       include RangeHelp
 
       # Checks for regex match of pattern in the node and

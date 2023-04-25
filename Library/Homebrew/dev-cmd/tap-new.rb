@@ -5,8 +5,6 @@ require "tap"
 require "cli/parser"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.tap_new_args
     Homebrew::CLI::Parser.new do

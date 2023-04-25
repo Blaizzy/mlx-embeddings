@@ -32,8 +32,6 @@ module Homebrew
       #
       # @api public
       class GithubLatest
-        extend T::Sig
-
         NICE_NAME = "GitHub - Latest"
 
         # A priority of zero causes livecheck to skip the strategy. We do this

@@ -7,8 +7,6 @@ module Homebrew
   # @api private
   class SimulateSystem
     class << self
-      extend T::Sig
-
       attr_reader :arch, :os
 
       sig { params(new_os: Symbol).void }

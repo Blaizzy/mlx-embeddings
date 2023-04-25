@@ -8,8 +8,6 @@ module Utils
   #
   # @api private
   module Inreplace
-    extend T::Sig
-
     # Error during text replacement.
     class Error < RuntimeError
       def initialize(errors)

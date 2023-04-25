@@ -7,8 +7,6 @@ require "version"
 #
 # @api private
 module OS
-  extend T::Sig
-
   # Check if the operating system is macOS.
   #
   # @api public

@@ -14,8 +14,6 @@ require "active_support/core_ext/hash/deep_transform_values"
 #
 # @api private
 module Formulary
-  extend T::Sig
-
   extend Cachable
 
   URL_START_REGEX = %r{(https?|ftp|file)://}.freeze
@@ -486,8 +484,6 @@ module Formulary
 
   # Loads formulae from URLs.
   class FromUrlLoader < FormulaLoader
-    extend T::Sig
-
     attr_reader :url
 
     sig { params(url: T.any(URI::Generic, String), from: T.nilable(Symbol)).void }

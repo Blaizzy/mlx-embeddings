@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 module SharedEnvExtension
-  extend T::Sig
-
   def setup_build_environment(formula: nil, cc: nil, build_bottle: false, bottle_arch: nil, testing_formula: false,
                               debug_symbols: false)
     generic_shared_setup_build_environment(formula: formula, cc: cc, build_bottle: build_bottle,

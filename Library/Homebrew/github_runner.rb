@@ -5,8 +5,6 @@ require "linux_runner_spec"
 require "macos_runner_spec"
 
 class GitHubRunner < T::Struct
-  extend T::Sig
-
   const :platform, Symbol
   const :arch, Symbol
   const :spec, T.any(LinuxRunnerSpec, MacOSRunnerSpec)

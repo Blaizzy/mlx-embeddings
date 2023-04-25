@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 module Hardware
-  extend T::Sig
   sig { params(version: T.nilable(Version)).returns(Symbol) }
   def self.oldest_cpu(version = nil)
     version = if version

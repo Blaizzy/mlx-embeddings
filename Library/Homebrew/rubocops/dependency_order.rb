@@ -11,7 +11,6 @@ module RuboCop
       # precedence order:
       # build-time > test > normal > recommended > optional
       class DependencyOrder < FormulaCop
-        extend T::Sig
         extend AutoCorrector
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)

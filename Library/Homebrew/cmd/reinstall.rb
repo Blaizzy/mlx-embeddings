@@ -15,8 +15,6 @@ require "upgrade"
 require "api"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.reinstall_args
     Homebrew::CLI::Parser.new do

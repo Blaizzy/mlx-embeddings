@@ -27,8 +27,6 @@ using TimeRemaining
 #
 # @api private
 class AbstractDownloadStrategy
-  extend T::Sig
-
   extend Forwardable
   include FileUtils
   include Context
@@ -709,8 +707,6 @@ end
 #
 # @api public
 class SubversionDownloadStrategy < VCSDownloadStrategy
-  extend T::Sig
-
   def initialize(url, name, version, **meta)
     super
     @url = @url.sub("svn+http://", "")
@@ -1135,8 +1131,6 @@ end
 #
 # @api public
 class CVSDownloadStrategy < VCSDownloadStrategy
-  extend T::Sig
-
   def initialize(url, name, version, **meta)
     super
     @url = @url.sub(%r{^cvs://}, "")
@@ -1217,8 +1211,6 @@ end
 #
 # @api public
 class MercurialDownloadStrategy < VCSDownloadStrategy
-  extend T::Sig
-
   def initialize(url, name, version, **meta)
     super
     @url = @url.sub(%r{^hg://}, "")
@@ -1281,8 +1273,6 @@ end
 #
 # @api public
 class BazaarDownloadStrategy < VCSDownloadStrategy
-  extend T::Sig
-
   def initialize(url, name, version, **meta)
     super
     @url.sub!(%r{^bzr://}, "")
@@ -1346,8 +1336,6 @@ end
 #
 # @api public
 class FossilDownloadStrategy < VCSDownloadStrategy
-  extend T::Sig
-
   def initialize(url, name, version, **meta)
     super
     @url = @url.sub(%r{^fossil://}, "")

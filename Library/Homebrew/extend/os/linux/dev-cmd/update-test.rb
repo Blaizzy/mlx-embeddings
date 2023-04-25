@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 module Homebrew
-  extend T::Sig
-
   class << self
     alias generic_git_tags git_tags
 
