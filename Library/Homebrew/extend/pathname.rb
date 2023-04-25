@@ -6,8 +6,6 @@ require "resource"
 require "metafiles"
 
 module DiskUsageExtension
-  extend T::Sig
-
   sig { returns(Integer) }
   def disk_usage
     return @disk_usage if defined?(@disk_usage)
@@ -78,8 +76,6 @@ end
 # Homebrew extends Ruby's `Pathname` to make our code more readable.
 # @see https://ruby-doc.org/stdlib-2.6.3/libdoc/pathname/rdoc/Pathname.html Ruby's Pathname API
 class Pathname
-  extend T::Sig
-
   include DiskUsageExtension
 
   # Moves a file from the original location to the {Pathname}'s.
@@ -498,11 +494,7 @@ require "extend/os/pathname"
 
 # @private
 module ObserverPathnameExtension
-  extend T::Sig
-
   class << self
-    extend T::Sig
-
     include Context
 
     sig { returns(Integer) }

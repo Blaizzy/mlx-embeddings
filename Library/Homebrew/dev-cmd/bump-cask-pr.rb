@@ -7,8 +7,6 @@ require "cli/parser"
 require "utils/tar"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

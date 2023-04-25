@@ -15,8 +15,6 @@ HIDDEN_DESC_PLACEHOLDER = "@@HIDDEN@@"
 module Homebrew
   module CLI
     class Parser
-      extend T::Sig
-
       attr_reader :processed_options, :hide_from_man_page, :named_args_type
 
       def self.from_cmd_path(cmd_path)
@@ -680,8 +678,6 @@ module Homebrew
     end
 
     class MaxNamedArgumentsError < UsageError
-      extend T::Sig
-
       sig { params(maximum: Integer, types: T::Array[Symbol]).void }
       def initialize(maximum, types: [])
         super case maximum
@@ -698,8 +694,6 @@ module Homebrew
     end
 
     class MinNamedArgumentsError < UsageError
-      extend T::Sig
-
       sig { params(minimum: Integer, types: T::Array[Symbol]).void }
       def initialize(minimum, types: [])
         types << :named if types.empty?
@@ -711,8 +705,6 @@ module Homebrew
     end
 
     class NumberOfNamedArgumentsError < UsageError
-      extend T::Sig
-
       sig { params(minimum: Integer, types: T::Array[Symbol]).void }
       def initialize(minimum, types: [])
         types << :named if types.empty?

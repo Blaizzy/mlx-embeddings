@@ -4,8 +4,6 @@
 require "os/linux/glibc"
 
 class DependencyCollector
-  extend T::Sig
-
   undef gcc_dep_if_needed
   undef glibc_dep_if_needed
   undef init_global_dep_tree_if_needed!

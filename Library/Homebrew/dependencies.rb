@@ -7,8 +7,6 @@ require "delegate"
 #
 # @api private
 class Dependencies < SimpleDelegator
-  extend T::Sig
-
   def initialize(*args)
     super(args)
   end
@@ -45,8 +43,6 @@ end
 #
 # @api private
 class Requirements < SimpleDelegator
-  extend T::Sig
-
   def initialize(*args)
     super(Set.new(args))
   end

@@ -8,7 +8,6 @@ module Homebrew
   # `service` block and stores related instance variables. Most of these methods
   # also return the related instance variable when no argument is provided.
   class Service
-    extend T::Sig
     extend Forwardable
     include OnSystem::MacOSAndLinux
 

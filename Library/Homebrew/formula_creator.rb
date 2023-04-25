@@ -9,8 +9,6 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    extend T::Sig
-
     attr_reader :args, :url, :sha256, :desc, :homepage
     attr_accessor :name, :version, :tap, :path, :mode, :license
 

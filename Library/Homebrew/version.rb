@@ -10,8 +10,6 @@ require "version/parser"
 #
 # @api private
 class Version
-  extend T::Sig
-
   include Comparable
 
   sig { params(name: T.any(String, Symbol), full: T::Boolean).returns(Regexp) }
@@ -21,7 +19,6 @@ class Version
 
   # A part of a {Version}.
   class Token
-    extend T::Sig
     extend T::Helpers
     abstract!
 
@@ -105,8 +102,6 @@ class Version
 
   # A pseudo-token representing the absence of a token.
   class NullToken < Token
-    extend T::Sig
-
     sig { override.returns(NilClass) }
     attr_reader :value
 
@@ -174,7 +169,6 @@ class Version
   # A token consisting of only numbers.
   class NumericToken < Token
     PATTERN = /[0-9]+/i.freeze
-    extend T::Sig
 
     sig { override.returns(Integer) }
     attr_reader :value

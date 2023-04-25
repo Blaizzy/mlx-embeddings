@@ -11,7 +11,6 @@ module Cask
     #
     # @api private
     class DependsOn < SimpleDelegator
-      extend T::Sig
       VALID_KEYS = Set.new([
         :formula,
         :cask,

@@ -6,8 +6,6 @@ require "tsort"
 module Utils
   # Topologically sortable hash map.
   class TopologicalHash < Hash
-    extend T::Sig
-
     include TSort
 
     sig {

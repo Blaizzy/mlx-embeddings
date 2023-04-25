@@ -12,8 +12,6 @@ module Homebrew
   #
   # @api private
   module Manpages
-    extend T::Sig
-
     Variables = Struct.new(
       :alumni,
       :commands,

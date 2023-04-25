@@ -7,8 +7,6 @@ module RuboCop
       # This class wraps the AST method node that represents the cask header. It
       # includes various helper methods to aid cops in their analysis.
       class CaskHeader
-        extend T::Sig
-
         def initialize(method_node)
           @method_node = method_node
         end

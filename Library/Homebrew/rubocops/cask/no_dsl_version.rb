@@ -19,8 +19,6 @@ module RuboCop
       #     ...
       #   end
       class NoDslVersion < Base
-        extend T::Sig
-
         extend Forwardable
         extend AutoCorrector
         include CaskHelp

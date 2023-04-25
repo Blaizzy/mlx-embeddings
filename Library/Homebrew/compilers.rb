@@ -100,7 +100,6 @@ end
 #
 # @api private
 class CompilerSelector
-  extend T::Sig
   include CompilerConstants
 
   Compiler = Struct.new(:type, :name, :version)

@@ -48,8 +48,6 @@ module Homebrew
 
     # Diagnostic checks.
     class Checks
-      extend T::Sig
-
       def initialize(verbose: true)
         @verbose = verbose
       end

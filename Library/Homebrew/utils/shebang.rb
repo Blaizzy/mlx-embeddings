@@ -6,16 +6,12 @@ module Utils
   #
   # @api private
   module Shebang
-    extend T::Sig
-
     module_function
 
     # Specification on how to rewrite a given shebang.
     #
     # @api private
     class RewriteInfo
-      extend T::Sig
-
       attr_reader :regex, :max_length, :replacement
 
       sig { params(regex: Regexp, max_length: Integer, replacement: T.any(String, Pathname)).void }

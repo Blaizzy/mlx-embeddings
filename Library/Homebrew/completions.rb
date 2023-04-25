@@ -10,8 +10,6 @@ module Homebrew
   #
   # @api private
   module Completions
-    extend T::Sig
-
     Variables = Struct.new(
       :aliases,
       :builtin_command_descriptions,

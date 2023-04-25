@@ -3,8 +3,6 @@
 
 class DevelopmentTools
   class << self
-    extend T::Sig
-
     sig { params(tool: String).returns(T.nilable(Pathname)) }
     def locate(tool)
       (@locate ||= {}).fetch(tool) do |key|

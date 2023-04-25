@@ -9,8 +9,6 @@ require "os/mac/keg"
 module OS
   # Helper module for querying system information on macOS.
   module Mac
-    extend T::Sig
-
     ::MacOS = OS::Mac
 
     raise "Loaded OS::Mac on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]

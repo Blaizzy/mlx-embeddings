@@ -7,8 +7,6 @@ require "cask/caskroom"
 require "dependencies_helpers"
 
 module Homebrew
-  extend T::Sig
-
   extend DependenciesHelpers
 
   sig { returns(CLI::Parser) }

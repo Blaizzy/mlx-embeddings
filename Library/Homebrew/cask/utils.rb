@@ -11,8 +11,6 @@ module Cask
   #
   # @api private
   module Utils
-    extend T::Sig
-
     def self.gain_permissions_remove(path, command: SystemCommand)
       if path.respond_to?(:rmtree) && path.exist?
         gain_permissions(path, ["-R"], command) do |p|

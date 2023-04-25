@@ -8,8 +8,6 @@ class Version
   #
   # @api private
   class NullVersion < Version
-    extend T::Sig
-
     include Comparable
     include Singleton
 

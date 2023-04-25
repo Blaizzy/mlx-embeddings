@@ -14,14 +14,10 @@ require "extend/time"
 #
 # @api private
 class SystemCommand
-  extend T::Sig
-
   using TimeRemaining
 
   # Helper functions for calling {SystemCommand.run}.
   module Mixin
-    extend T::Sig
-
     def system_command(executable, **options)
       SystemCommand.run(executable, **options)
     end
@@ -282,8 +278,6 @@ class SystemCommand
 
   # Result containing the output and exit status of a finished sub-process.
   class Result
-    extend T::Sig
-
     include Context
 
     attr_accessor :command, :status, :exit_status

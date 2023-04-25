@@ -5,8 +5,6 @@
 #
 # @api private
 class StringInreplaceExtension
-  extend T::Sig
-
   attr_accessor :errors, :inreplace_string
 
   sig { params(string: String).void }

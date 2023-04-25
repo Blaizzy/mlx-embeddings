@@ -11,7 +11,6 @@ module Homebrew
     module Cask
       class << self
         include Cachable
-        extend T::Sig
 
         private :cache
 

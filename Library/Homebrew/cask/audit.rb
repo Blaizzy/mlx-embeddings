@@ -14,8 +14,6 @@ module Cask
   #
   # @api private
   class Audit
-    extend T::Sig
-
     extend Predicable
 
     attr_reader :cask, :download

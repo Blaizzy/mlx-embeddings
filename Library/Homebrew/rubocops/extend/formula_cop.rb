@@ -9,7 +9,6 @@ module RuboCop
     #
     # @api private
     class FormulaCop < Base
-      extend T::Sig
       extend T::Helpers
       include RangeHelp
       include HelperFunctions

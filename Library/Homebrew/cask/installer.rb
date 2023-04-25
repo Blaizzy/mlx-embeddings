@@ -16,8 +16,6 @@ module Cask
   #
   # @api private
   class Installer
-    extend T::Sig
-
     extend Predicable
 
     def initialize(cask, command: SystemCommand, force: false, adopt: false,

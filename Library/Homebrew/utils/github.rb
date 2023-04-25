@@ -11,8 +11,6 @@ require "system_command"
 #
 # @api private
 module GitHub
-  extend T::Sig
-
   include SystemCommand::Mixin
 
   def self.check_runs(repo: nil, commit: nil, pull_request: nil)

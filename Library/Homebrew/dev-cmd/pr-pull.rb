@@ -8,8 +8,6 @@ require "tmpdir"
 require "formula"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.pr_pull_args
     Homebrew::CLI::Parser.new do
@@ -530,8 +528,6 @@ module Homebrew
 end
 
 class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
-  extend T::Sig
-
   def fetch(timeout: nil)
     ohai "Downloading #{url}"
     if cached_location.exist?

@@ -5,8 +5,6 @@ require "cli/parser"
 require "csv"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   PRIMARY_REPOS = %w[brew core cask].freeze

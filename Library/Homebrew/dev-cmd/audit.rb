@@ -20,8 +20,6 @@ require "formula_auditor"
 require "tap_auditor"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.audit_args
     Homebrew::CLI::Parser.new do

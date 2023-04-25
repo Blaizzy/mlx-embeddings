@@ -14,8 +14,6 @@ require "extend/on_system"
 #
 # @api private
 class Resource
-  extend T::Sig
-
   include Context
   include FileUtils
   include OnSystem::MacOSAndLinux
@@ -343,8 +341,6 @@ end
 #
 # @api private
 class ResourceStageContext
-  extend T::Sig
-
   extend Forwardable
 
   # The {Resource} that is being staged.

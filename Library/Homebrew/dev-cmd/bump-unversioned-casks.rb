@@ -10,8 +10,6 @@ require "tap"
 require "unversioned_cask_checker"
 
 module Homebrew
-  extend T::Sig
-
   extend SystemCommand::Mixin
 
   sig { returns(CLI::Parser) }

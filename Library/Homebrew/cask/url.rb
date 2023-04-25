@@ -5,12 +5,8 @@
 #
 # @api private
 class URL < Delegator
-  extend T::Sig
-
   # @api private
   class DSL
-    extend T::Sig
-
     attr_reader :uri, :specs,
                 :verified, :using,
                 :tag, :branch, :revisions, :revision,
@@ -79,12 +75,8 @@ class URL < Delegator
 
   # @api private
   class BlockDSL
-    extend T::Sig
-
     # To access URL associated with page contents.
     module PageWithURL
-      extend T::Sig
-
       # @api public
       sig { returns(URI::Generic) }
       attr_accessor :url

@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 class LinuxRunnerSpec < T::Struct
-  extend T::Sig
-
   const :name, String
   const :runner, String
   const :container, T::Hash[Symbol, String]

@@ -9,8 +9,6 @@ module Cask
     #
     # @api private
     class KeyboardLayout < Moved
-      extend T::Sig
-
       def install_phase(**options)
         super(**options)
         delete_keyboard_layout_cache(**options)

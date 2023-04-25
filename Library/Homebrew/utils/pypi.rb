@@ -5,8 +5,6 @@
 #
 # @api private
 module PyPI
-  extend T::Sig
-
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
   private_constant :PYTHONHOSTED_URL_PREFIX
 
@@ -14,8 +12,6 @@ module PyPI
   #
   # @api private
   class Package
-    extend T::Sig
-
     attr_accessor :name, :extras, :version
 
     sig { params(package_string: String, is_url: T::Boolean).void }

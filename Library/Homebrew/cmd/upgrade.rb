@@ -11,8 +11,6 @@ require "cask/macos"
 require "api"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

@@ -11,8 +11,6 @@ module OS
     #
     # @api private
     class Version < ::Version
-      extend T::Sig
-
       sig { params(version: Symbol).returns(T.attached_class) }
       def self.from_symbol(version)
         str = MacOSVersions::SYMBOLS.fetch(version) { raise MacOSVersionError, version }

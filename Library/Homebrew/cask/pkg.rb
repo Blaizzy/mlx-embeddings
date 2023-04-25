@@ -8,8 +8,6 @@ module Cask
   #
   # @api private
   class Pkg
-    extend T::Sig
-
     sig { params(regexp: String, command: T.class_of(SystemCommand)).returns(T::Array[Pkg]) }
     def self.all_matching(regexp, command)
       command.run("/usr/sbin/pkgutil", args: ["--pkgs=#{regexp}"]).stdout.split("\n").map do |package_id|

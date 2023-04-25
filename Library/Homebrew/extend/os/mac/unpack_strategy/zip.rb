@@ -6,8 +6,6 @@ require "system_command"
 module UnpackStrategy
   class Zip
     module MacOSZipExtension
-      extend T::Sig
-
       include UnpackStrategy
       include SystemCommand::Mixin
 

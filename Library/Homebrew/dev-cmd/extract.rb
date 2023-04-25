@@ -69,8 +69,6 @@ ensure
 end
 
 module Homebrew
-  extend T::Sig
-
   BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m.freeze
 
   sig { returns(CLI::Parser) }

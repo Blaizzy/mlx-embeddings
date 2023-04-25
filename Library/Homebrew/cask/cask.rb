@@ -13,8 +13,6 @@ module Cask
   #
   # @api private
   class Cask
-    extend T::Sig
-
     extend Forwardable
     extend Predicable
     extend APIHashable

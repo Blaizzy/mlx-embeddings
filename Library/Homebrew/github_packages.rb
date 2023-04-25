@@ -9,8 +9,6 @@ require "zlib"
 #
 # @api private
 class GitHubPackages
-  extend T::Sig
-
   include Context
 
   URL_DOMAIN = "ghcr.io"

@@ -7,8 +7,6 @@ require "cli/parser"
 require "cask/download"
 
 module Homebrew
-  extend T::Sig
-
   extend Fetch
 
   FETCH_MAX_TRIES = 5

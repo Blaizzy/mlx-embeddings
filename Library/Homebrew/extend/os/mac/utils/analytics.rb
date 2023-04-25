@@ -4,8 +4,6 @@
 module Utils
   module Analytics
     class << self
-      extend T::Sig
-
       sig { returns(String) }
       def custom_prefix_label_google
         return generic_custom_prefix_label_google if Hardware::CPU.arm?

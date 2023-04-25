@@ -12,8 +12,6 @@ require "dependencies_helpers"
 require "ostruct"
 
 module Homebrew
-  extend T::Sig
-
   extend DependenciesHelpers
 
   sig { returns(CLI::Parser) }

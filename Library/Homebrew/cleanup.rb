@@ -16,8 +16,6 @@ module Homebrew
     private_constant :CLEANUP_DEFAULT_DAYS
 
     class << self
-      extend T::Sig
-
       sig { params(pathname: Pathname).returns(T::Boolean) }
       def incomplete?(pathname)
         pathname.extname.end_with?(".incomplete")

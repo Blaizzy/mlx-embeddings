@@ -6,8 +6,6 @@ require "cli/parser"
 require "env_config"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

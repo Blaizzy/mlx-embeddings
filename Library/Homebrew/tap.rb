@@ -14,8 +14,6 @@ require "settings"
 # {#user} represents the GitHub username and {#repo} represents the repository
 # name without the leading `homebrew-`.
 class Tap
-  extend T::Sig
-
   extend Cachable
 
   TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
@@ -849,8 +847,6 @@ end
 
 # A specialized {Tap} class for the core formulae.
 class CoreTap < Tap
-  extend T::Sig
-
   # @private
   sig { void }
   def initialize
@@ -1010,8 +1006,6 @@ end
 
 # Permanent configuration per {Tap} using `git-config(1)`.
 class TapConfig
-  extend T::Sig
-
   attr_reader :tap
 
   sig { params(tap: Tap).void }

@@ -8,8 +8,6 @@ GZIP_BUFFER_SIZE = 64 * 1024
 module Utils
   # Helper functions for creating gzip files.
   module Gzip
-    extend T::Sig
-
     sig {
       params(
         path:      T.any(String, Pathname),

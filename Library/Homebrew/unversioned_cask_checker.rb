@@ -11,9 +11,7 @@ module Homebrew
   #
   # @api private
   class UnversionedCaskChecker
-    extend T::Sig
-
-    sig {  returns(Cask::Cask) }
+    sig { returns(Cask::Cask) }
     attr_reader :cask
 
     sig { params(cask: Cask::Cask).void }

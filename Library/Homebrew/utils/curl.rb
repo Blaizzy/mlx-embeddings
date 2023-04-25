@@ -10,8 +10,6 @@ module Utils
   #
   # @api private
   module Curl
-    extend T::Sig
-
     using TimeRemaining
 
     # This regex is used to extract the part of an ETag within quotation marks,

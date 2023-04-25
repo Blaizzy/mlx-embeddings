@@ -17,8 +17,6 @@ module Homebrew
       #
       # @api public
       class Pypi
-        extend T::Sig
-
         NICE_NAME = "PyPI"
 
         # The `Regexp` used to extract the package name and suffix (e.g., file
