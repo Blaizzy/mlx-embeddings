@@ -28,7 +28,7 @@ module PyPI
         end
         raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
 
-        @name = normalize_python_package(match[1])
+        @name = PyPI.normalize_python_package(match[1])
         @version = match[2]
         return
       end
