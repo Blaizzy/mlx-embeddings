@@ -24,7 +24,7 @@ module PyPI
         end
         raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
 
-        @name = match[1]
+        @name = PyPI.normalize_python_package(match[1])
         @version = match[2]
         return
       end
@@ -208,12 +208,13 @@ module PyPI
       end
     end
 
-    ensure_formula_installed!("pipgrip")
+    ensure_formula_installed!("python")
 
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
     command =
-      [Formula["pipgrip"].opt_bin/"pipgrip", "--json", "--tree", "--no-cache-dir", *input_packages.map(&:to_s)]
-    pipgrip_output = Utils.popen_read(*command)
+      [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--dry-run", "--ignore-installed", "--report",
+       "/dev/stdout", *input_packages.map(&:to_s)]
+    pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
     unless $CHILD_STATUS.success?
       odie <<~EOS
         Unable to determine dependencies for "#{input_packages.join(" ")}" because of a failure when running
@@ -222,7 +223,7 @@ module PyPI
       EOS
     end
 
-    found_packages = json_to_packages(JSON.parse(pipgrip_output), main_package, exclude_packages).uniq
+    found_packages = pip_report_to_packages(JSON.parse(pip_output), exclude_packages).uniq
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
@@ -280,17 +281,22 @@ module PyPI
     true
   end
 
-  def self.json_to_packages(json_tree, main_package, exclude_packages)
-    return [] if json_tree.blank?
+  def self.normalize_python_package(name)
+    # This normalization is defined in the PyPA packaging specifications;
+    # https://packaging.python.org/en/latest/specifications/name-normalization/#name-normalization
+    name.gsub(/[-_.]+/, "-").downcase
+  end
 
-    json_tree.flat_map do |package_json|
-      package = Package.new("#{package_json["name"]}==#{package_json["version"]}")
-      dependencies = if package == main_package || exclude_packages.exclude?(package)
-        json_to_packages(package_json["dependencies"], main_package, exclude_packages)
-      else
-        []
-      end
-      [package] + dependencies
-    end
+  def self.pip_report_to_packages(report, exclude_packages)
+    return [] if report.blank?
+
+    report["install"].map do |package|
+      name = normalize_python_package(package["metadata"]["name"])
+      version = package["metadata"]["version"]
+
+      package = Package.new "#{name}==#{version}"
+
+      package if exclude_packages.exclude? package
+    end.compact
   end
 end
