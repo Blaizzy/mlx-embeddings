@@ -226,7 +226,7 @@ module PyPI
       EOS
     end
 
-    found_packages = pip_report_to_packages(JSON.parse(pip_output), main_package, exclude_packages).uniq
+    found_packages = pip_report_to_packages(JSON.parse(pip_output), exclude_packages).uniq
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
@@ -288,7 +288,7 @@ module PyPI
     name.gsub(/[-_.]+/, "-").downcase
   end
 
-  def self.pip_report_to_packages(report, main_package, exclude_packages)
+  def self.pip_report_to_packages(report, exclude_packages)
     return [] if report.blank?
 
     report["install"].map do |package|
