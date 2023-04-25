@@ -14,6 +14,7 @@ inherit_mode:
 AllCops:
   TargetRubyVersion: 2.6
   ActiveSupportExtensionsEnabled: true
+  EnabledByDefault: true
   NewCops: enable
   Include:
     - "**/*.rbi"
@@ -24,6 +25,12 @@ AllCops:
     - "Homebrew/bin/*"
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Bundler/GemComment:
+  Enabled: false
+Bundler/GemVersion:
+  Enabled: false
 
 Cask/Desc:
   Description: "Ensure that the desc stanza conforms to various content and style checks."
@@ -68,6 +75,34 @@ Layout/ArgumentAlignment:
 # this is a bit less "floaty"
 Layout/CaseIndentation:
   EnforcedStyle: end
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Layout/ClassStructure:
+  Enabled: false
+Layout/EmptyLineAfterMultilineCondition:
+  Enabled: false
+Layout/FirstArrayElementLineBreak:
+  Enabled: false
+Layout/FirstHashElementLineBreak:
+  Enabled: false
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: false
+Layout/FirstMethodParameterLineBreak:
+  Enabled: false
+Layout/MultilineArrayLineBreaks:
+  Enabled: false
+Layout/MultilineAssignmentLayout:
+  Enabled: false
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: false
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: false
+Layout/MultilineMethodParameterLineBreaks:
+  Enabled: false
+Layout/RedundantLineBreak:
+  Enabled: false
+Layout/SingleLineBlockChain:
+  Enabled: false
 
 # significantly less indentation involved; more consistent
 Layout/FirstArrayElementIndentation:
@@ -133,6 +168,12 @@ Layout/SpaceBeforeBrackets:
 
 # favour parens-less DSL-style arguments
 Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Lint/ConstantResolution:
+  Enabled: false
+Lint/NumberConversion:
   Enabled: false
 
 Lint/DuplicateBranch:
@@ -203,6 +244,14 @@ Performance/Caller:
 Performance/MethodObjectAsBlock:
   Enabled: false
 
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Performance/ChainArrayAllocation:
+  Enabled: false
+Performance/IoReadlines:
+  Enabled: false
+Performance/OpenStruct:
+  Enabled: false
+
 Rails:
   # Selectively enable what we want.
   Enabled: false
@@ -258,6 +307,16 @@ RSpec/StubbedMock:
 RSpec/SubjectStub:
   Enabled: false
 
+# TODO: These cops come from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+RSpec/AlignLeftLetBrace:
+  Enabled: false
+RSpec/AlignRightLetBrace:
+  Enabled: false
+RSpec/MessageExpectation:
+  Enabled: false
+RSpec/Pending:
+  Enabled: false
+
 # We use `allow(:foo).to receive(:bar)` everywhere.
 RSpec/MessageSpies:
   EnforcedStyle: receive
@@ -282,6 +341,20 @@ Sorbet/ConstantsFromStrings:
 
 # This is already the default
 Sorbet/FalseSigil:
+  Enabled: false
+
+# TODO: These cops come from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Sorbet/EnforceSignatures:
+  Enabled: false
+Sorbet/ForbidTUnsafe:
+  Enabled: false
+Sorbet/ForbidTUntyped:
+  Enabled: false
+Sorbet/HasSigil:
+  Enabled: false
+Sorbet/IgnoreSigil:
+  Enabled: false
+Sorbet/StrongSigil:
   Enabled: false
 
 # T::Sig is monkey-patched into Module
@@ -323,6 +396,54 @@ Style/BlockDelimiters:
 # Use consistent style for better readability.
 Style/CollectionMethods:
   Enabled: true
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Style/ArrayCoercion:
+  Enabled: false
+Style/AsciiComments:
+  Enabled: false
+Style/ClassMethodsDefinitions:
+  Enabled: false
+Style/ConstantVisibility:
+  Enabled: false
+Style/Copyright:
+  Enabled: false
+Style/DateTime:
+  Enabled: false
+Style/DocumentationMethod:
+  Enabled: false
+Style/ImplicitRuntimeError:
+  Enabled: false
+Style/InlineComment:
+  Enabled: false
+Style/IpAddresses:
+  Enabled: false
+Style/MethodCallWithArgsParentheses:
+  Enabled: false
+Style/MethodCalledOnDoEndBlock:
+  Enabled: false
+Style/MissingElse:
+  Enabled: false
+Style/MultilineMethodSignature:
+  Enabled: false
+Style/OptionHash:
+  Enabled: false
+Style/RequireOrder:
+  Enabled: false
+Style/Send:
+  Enabled: false
+Style/SingleLineBlockParams:
+  Enabled: false
+Style/StaticClass:
+  Enabled: false
+Style/StringHashKeys:
+  Enabled: false
+Style/TopLevelMethodDefinition:
+  Enabled: false
+Style/TrailingCommaInBlockArgs:
+  Enabled: false
+Style/YodaExpression:
+  Enabled: false
 
 # Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
@@ -374,7 +495,6 @@ Style/HashAsLastArrayItem:
     - "**/Formula/**/*.rb"
 
 Style/InvertibleUnlessCondition:
-  Enabled: true
   InverseMethods:
     # Favor `if a != b` over `unless a == b`
     :==: :!=
