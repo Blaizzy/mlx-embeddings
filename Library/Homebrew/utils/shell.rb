@@ -3,8 +3,6 @@
 
 module Utils
   module Shell
-    extend T::Sig
-
     module_function
 
     # Take a path and heuristically convert it to a shell name,

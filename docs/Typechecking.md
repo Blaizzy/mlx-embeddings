@@ -8,7 +8,7 @@ The [Sorbet Documentation] is a good place to get started if you want to dive de
 
 ### Inline Type Annotations
 
-To add type annotations to a class or module, we extend it with the `T::Sig` module (read this as `Type::Signature`). This adds the `sig` method which is used to annotate method signatures. Here's a simple example:
+The `sig` method is used to annotate method signatures. Here's a simple example:
 
 ```ruby
 class MyClass

@@ -10,8 +10,6 @@ module Homebrew
     #
     # @api private
     module SkipConditions
-      extend T::Sig
-
       module_function
 
       sig {

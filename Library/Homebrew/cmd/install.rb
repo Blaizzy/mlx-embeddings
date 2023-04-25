@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 require "cask/config"
-require "cask/cmd"
-require "cask/cmd/install"
+require "cask/installer"
+require "cask_dependent"
 require "missing_formula"
 require "formula_installer"
 require "development_tools"
@@ -13,12 +13,8 @@ require "cli/parser"
 require "upgrade"
 
 module Homebrew
-  extend T::Sig
-
-  module_function
-
   sig { returns(CLI::Parser) }
-  def install_args
+  def self.install_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Install a <formula> or <cask>. Additional options specific to a <formula> may be
@@ -129,8 +125,29 @@ module Homebrew
       formula_options
       [
         [:switch, "--cask", "--casks", { description: "Treat all named arguments as casks." }],
-        *Cask::Cmd::AbstractCommand::OPTIONS.map(&:dup),
-        *Cask::Cmd::Install::OPTIONS.map(&:dup),
+        [:switch, "--[no-]binaries", {
+          description: "Disable/enable linking of helper executables (default: enabled).",
+          env:         :cask_opts_binaries,
+        }],
+        [:switch, "--require-sha",  {
+          description: "Require all casks to have a checksum.",
+          env:         :cask_opts_require_sha,
+        }],
+        [:switch, "--[no-]quarantine", {
+          description: "Disable/enable quarantining of downloads (default: enabled).",
+          env:         :cask_opts_quarantine,
+        }],
+        [:switch, "--adopt", {
+          description: "Adopt existing artifacts in the destination that are identical to those being installed. " \
+                       "Cannot be combined with --force.",
+        }],
+        [:switch, "--skip-cask-deps", {
+          description: "Skip installing cask dependencies.",
+        }],
+        [:switch, "--zap", {
+          description: "For use with `brew reinstall --cask`. Remove all files associated with a cask. " \
+                       "*May remove files which are shared between applications.*",
+        }],
       ].each do |args|
         options = args.pop
         send(*args, **options)
@@ -146,7 +163,7 @@ module Homebrew
     end
   end
 
-  def install
+  def self.install
     args = install_args.parse
 
     if args.env.present?
@@ -178,25 +195,49 @@ module Homebrew
     begin
       formulae, casks = args.named.to_formulae_and_casks
                             .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
-    rescue FormulaOrCaskUnavailableError, Cask::CaskUnavailableError => e
+    rescue FormulaOrCaskUnavailableError, Cask::CaskUnavailableError
       retry if Tap.install_default_cask_tap_if_necessary(force: args.cask?)
 
-      raise e
+      raise
     end
 
     if casks.any?
-      Cask::Cmd::Install.install_casks(
-        *casks,
-        binaries:       args.binaries?,
-        verbose:        args.verbose?,
-        force:          args.force?,
-        adopt:          args.adopt?,
-        require_sha:    args.require_sha?,
-        skip_cask_deps: args.skip_cask_deps?,
-        quarantine:     args.quarantine?,
-        quiet:          args.quiet?,
-        dry_run:        args.dry_run?,
-      )
+
+      if args.dry_run?
+        if (casks_to_install = casks.reject(&:installed?).presence)
+          ohai "Would install #{::Utils.pluralize("cask", casks_to_install.count, include_count: true)}:"
+          puts casks_to_install.map(&:full_name).join(" ")
+        end
+        casks.each do |cask|
+          dep_names = CaskDependent.new(cask)
+                                   .runtime_dependencies
+                                   .reject(&:installed?)
+                                   .map(&:to_formula)
+                                   .map(&:name)
+          next if dep_names.blank?
+
+          ohai "Would install #{::Utils.pluralize("dependenc", dep_names.count, plural: "ies", singular: "y",
+                                                  include_count: true)} for #{cask.full_name}:"
+          puts dep_names.join(" ")
+        end
+        return
+      end
+
+      require "cask/installer"
+
+      casks.each do |cask|
+        Cask::Installer.new(cask,
+                            binaries:       args.binaries?,
+                            verbose:        args.verbose?,
+                            force:          args.force?,
+                            adopt:          args.adopt?,
+                            require_sha:    args.require_sha?,
+                            skip_cask_deps: args.skip_cask_deps?,
+                            quarantine:     args.quarantine?,
+                            quiet:          args.quiet?).install
+      rescue Cask::CaskAlreadyInstalledError => e
+        opoo e.message
+      end
     end
 
     # if the user's flags will prevent bottle only-installations when no

@@ -32,7 +32,7 @@ jobs:
           contains(github.event.pull_request.title, '/Library/Homebrew')
         )
       )
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -71,9 +71,9 @@ jobs:
         run: |
           if [[ "${GITHUB_EVENT_NAME}" == "pull_request_target" || "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]
           then
-            brew vendor-gems
+            brew vendor-gems --non-bundler-gems
           else
-            brew vendor-gems --no-commit
+            brew vendor-gems --non-bundler-gems --no-commit
           fi
 
       - name: Update RBI files

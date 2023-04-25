@@ -20,8 +20,6 @@ require "formula_auditor"
 require "tap_auditor"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.audit_args
     Homebrew::CLI::Parser.new do
@@ -239,39 +237,44 @@ module Homebrew
         end
       end
 
-      [f.path, { errors: fa.problems + fa.new_formula_problems, warnings: [] }]
+      [f.path, fa.problems + fa.new_formula_problems]
     end
 
     cask_results = if audit_casks.empty?
       {}
     else
-      require "cask/cmd/abstract_command"
-      require "cask/cmd/audit"
 
       if args.display_failures_only?
         odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
       end
 
-      # For switches, we add `|| nil` so that `nil` will be passed instead of `false` if they aren't set.
-      # This way, we can distinguish between "not set" and "set to false".
-      Cask::Cmd::Audit.audit_casks(
-        *audit_casks,
-        download:        nil,
-        # No need for `|| nil` for `--[no-]signing` because boolean switches are already `nil` if not passed
-        signing:         args.signing?,
-        online:          args.online? || nil,
-        strict:          args.strict? || nil,
-        new_cask:        args.new_cask? || nil,
-        token_conflicts: args.token_conflicts? || nil,
-        quarantine:      nil,
-        any_named_args:  !no_named_args,
-        language:        nil,
-        only:            args.only,
-        except:          args.except,
-      )
+      require "cask/auditor"
+
+      audit_casks.to_h do |cask|
+        odebug "Auditing Cask #{cask}"
+        errors = Cask::Auditor.audit(
+          cask,
+          # For switches, we add `|| nil` so that `nil` will be passed
+          # instead of `false` if they aren't set.
+          # This way, we can distinguish between "not set" and "set to false".
+          audit_online:          (args.online? || nil),
+          audit_strict:          (args.strict? || nil),
+
+          # No need for `|| nil` for `--[no-]signing`
+          # because boolean switches are already `nil` if not passed
+          audit_signing:         args.signing?,
+          audit_new_cask:        (args.new_cask? || nil),
+          audit_token_conflicts: (args.token_conflicts? || nil),
+          quarantine:            true,
+          any_named_args:        !no_named_args,
+          only:                  args.only,
+          except:                args.except,
+        )
+        [cask.sourcefile_path, errors]
+      end
     end
 
-    failed_casks = cask_results.reject { |_, result| result[:errors].empty? }
+    failed_casks = cask_results.select { |_, problems| problems.present? }
 
     cask_count = failed_casks.count
 
@@ -304,20 +307,17 @@ module Homebrew
 
     return unless ENV["GITHUB_ACTIONS"]
 
-    annotations = formula_results.merge(cask_results).flat_map do |path, result|
-      (
-        result[:warnings].map { |w| [:warning, w] } +
-        result[:errors].map { |e| [:error, e] }
-      ).map do |type, problem|
+    annotations = formula_results.merge(cask_results).flat_map do |path, problems|
+      problems.map do |problem|
         GitHub::Actions::Annotation.new(
-          type,
+          :error,
           problem[:message],
           file:   path,
           line:   problem[:location]&.line,
           column: problem[:location]&.column,
         )
       end
-    end
+    end.compact
 
     annotations.each do |annotation|
       puts annotation if annotation.relevant?

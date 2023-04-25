@@ -49,7 +49,6 @@ end
 gem "activesupport"
 gem "addressable"
 gem "concurrent-ruby"
-gem "mechanize"
 gem "patchelf"
 gem "plist"
 gem "rubocop-performance"

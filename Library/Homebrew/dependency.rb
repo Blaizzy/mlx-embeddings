@@ -7,8 +7,6 @@ require "dependable"
 #
 # @api private
 class Dependency
-  extend T::Sig
-
   extend Forwardable
   include Dependable
   extend Cachable
@@ -82,8 +80,6 @@ class Dependency
   end
 
   class << self
-    extend T::Sig
-
     # Expand the dependencies of each dependent recursively, optionally yielding
     # `[dependent, dep]` pairs to allow callers to apply arbitrary filters to
     # the list.

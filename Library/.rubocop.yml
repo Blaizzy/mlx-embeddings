@@ -280,12 +280,13 @@ RSpec/Focus:
 Sorbet/ConstantsFromStrings:
   Enabled: false
 
+# This is already the default
 Sorbet/FalseSigil:
-  Exclude:
-    - "Taps/**/*"
-    - "/**/{Formula,Casks}/**/*.rb"
-    - "**/{Formula,Casks}/**/*.rb"
-    - "Homebrew/test/**/Casks/**/*.rb"
+  Enabled: false
+
+# T::Sig is monkey-patched into Module
+Sorbet/RedundantExtendTSig:
+  Enabled: true
 
 Sorbet/StrictSigil:
   inherit_mode:
@@ -294,6 +295,14 @@ Sorbet/StrictSigil:
   Enabled: true
   Include:
     - "**/*.rbi"
+
+Sorbet/TrueSigil:
+  Enabled: true
+  Exclude:
+    - "Taps/**/*"
+    - "/**/{Formula,Casks}/**/*.rb"
+    - "**/{Formula,Casks}/**/*.rb"
+    - "Homebrew/test/**/*.rb"
 
 # Require &&/|| instead of and/or
 Style/AndOr:

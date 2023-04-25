@@ -24,8 +24,6 @@ module Hardware
     INTEL_64BIT_OLDEST_CPU = :core2
 
     class << self
-      extend T::Sig
-
       def optimization_flags
         @optimization_flags ||= {
           native:             arch_flag("native"),

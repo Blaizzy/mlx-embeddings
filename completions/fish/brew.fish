@@ -117,11 +117,11 @@ function __fish_brew_suggest_casks_all -d "Lists locally available casks"
 end
 
 function __fish_brew_suggest_casks_installed -d "Lists installed casks"
-    command ls -1 (brew --caskroom)
+    command ls -1 (brew --caskroom) 2>/dev/null
 end
 
 function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the information about potential upgrade"
-    brew outdated --cask --verbose \
+    brew outdated --cask --verbose 2>/dev/null \
         # replace first space with tab to make the following a description in the completions list:
         | string replace -r '\s' '\t'
 end
@@ -1147,7 +1147,7 @@ __fish_brew_complete_arg 'pr-automerge' -l tap -d 'Target tap repository (defaul
 __fish_brew_complete_arg 'pr-automerge' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'pr-automerge' -l with-label -d 'Pull requests must have this label'
 __fish_brew_complete_arg 'pr-automerge' -l without-approval -d 'Pull requests do not require approval to be merged'
-__fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `CI-published-bottle-commits`)'
+__fish_brew_complete_arg 'pr-automerge' -l without-labels -d 'Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `pre-release`, `CI-published-bottle-commits`)'
 __fish_brew_complete_arg 'pr-automerge' -l workflow -d 'Workflow file to use with `brew pr-publish`'
 
 

@@ -6,8 +6,6 @@ require "cli/parser"
 require "cask/download"
 
 module Homebrew
-  extend T::Sig
-
   extend Fetch
 
   sig { returns(CLI::Parser) }

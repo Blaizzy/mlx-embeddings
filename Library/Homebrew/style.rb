@@ -325,8 +325,6 @@ module Homebrew
 
     # Source location of a style offense.
     class LineLocation
-      extend T::Sig
-
       attr_reader :line, :column
 
       def initialize(json)

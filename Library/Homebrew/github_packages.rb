@@ -9,8 +9,6 @@ require "zlib"
 #
 # @api private
 class GitHubPackages
-  extend T::Sig
-
   include Context
 
   URL_DOMAIN = "ghcr.io"
@@ -356,11 +354,14 @@ class GitHubPackages
 
       documentation = "https://formulae.brew.sh/formula/#{formula_name}" if formula_core_tap
 
+      local_file_size = File.size(local_file)
+
       descriptor_annotations_hash = {
         "org.opencontainers.image.ref.name" => tag,
         "sh.brew.bottle.cpu.variant"        => cpu_variant,
         "sh.brew.bottle.digest"             => tar_gz_sha256,
         "sh.brew.bottle.glibc.version"      => glibc_version,
+        "sh.brew.bottle.size"               => local_file_size.to_s,
         "sh.brew.tab"                       => tab.to_json,
       }.reject { |_, v| v.blank? }
 

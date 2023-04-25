@@ -4247,10 +4247,6 @@ class GitHubRunner
   def self.inherited(s); end
 end
 
-class HTTP::Cookie
-  def self.parse(set_cookie, origin, options=T.unsafe(nil), &block); end
-end
-
 class Hardware::CPU
   def self.lm?(); end
 end
@@ -4725,6 +4721,68 @@ module MachOShim
   def rpaths(*args, &block); end
 end
 
+class Mechanize::HTTP
+end
+
+class Mechanize::HTTP::ContentDisposition
+  def creation_date(); end
+
+  def creation_date=(_); end
+
+  def filename(); end
+
+  def filename=(_); end
+
+  def modification_date(); end
+
+  def modification_date=(_); end
+
+  def parameters(); end
+
+  def parameters=(_); end
+
+  def read_date(); end
+
+  def read_date=(_); end
+
+  def size=(_); end
+
+  def type(); end
+
+  def type=(_); end
+end
+
+class Mechanize::HTTP::ContentDisposition
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
+class Mechanize::HTTP::ContentDispositionParser
+  def parse(content_disposition, header=T.unsafe(nil)); end
+
+  def parse_parameters(); end
+
+  def rfc_2045_quoted_string(); end
+
+  def rfc_2045_token(); end
+
+  def rfc_2045_value(); end
+
+  def scanner(); end
+
+  def scanner=(scanner); end
+
+  def spaces(); end
+end
+
+class Mechanize::HTTP::ContentDispositionParser
+  def self.parse(content_disposition); end
+end
+
+class Mechanize::HTTP
+end
+
 class MessagePack::Packer
   def reset(); end
 
@@ -4992,12 +5050,6 @@ module Mutex_m
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
-module NKF
-  AUTO = ::T.let(nil, ::T.untyped)
-  NOCONV = ::T.let(nil, ::T.untyped)
-  UNKNOWN = ::T.let(nil, ::T.untyped)
-end
-
 class Net::BufferedIO
   def write_timeout(); end
 
@@ -5153,10 +5205,6 @@ class NilClass
   def to_d(); end
 end
 
-class Nokogiri::CSS::Parser
-  Racc_debug_parser = ::T.let(nil, ::T.untyped)
-end
-
 class OS::Mac::BaseSDKLocator
   def initialize(*args, &blk); end
 end
@@ -5170,10 +5218,6 @@ class Object
   include ::Minitest::Expectations
   include ::Utils::Curl
   include ::SystemCommand::Mixin
-  def __send(*arg); end
-
-  def __send!(*arg); end
-
   def deep_dup(); end
 
   def duplicable?(); end
@@ -5494,6 +5538,8 @@ class Parlour::Types::Type
   extend ::T::InterfaceWrapper::Helpers
 end
 
+ParseError = Racc::ParseError
+
 class Parser::Ruby26
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
 end
@@ -5787,6 +5833,21 @@ class Racc::CparseParams
 end
 
 class Racc::CparseParams
+end
+
+class Racc::Parser
+  Racc_Main_Parsing_Routine = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Id_C = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Revision = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Revision_C = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Revision_R = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Version = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Version_C = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Core_Version_R = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Revision = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Type = ::T.let(nil, ::T.untyped)
+  Racc_Runtime_Version = ::T.let(nil, ::T.untyped)
+  Racc_YY_Parse_Method = ::T.let(nil, ::T.untyped)
 end
 
 class Random
@@ -6520,6 +6581,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
+  SET_STATUS_CODE = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_T_TRANSLATE_L_LOCALIZE = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
@@ -8235,14 +8297,6 @@ class String
   def shellescape(); end
 
   def shellsplit(); end
-
-  def to_nfc(); end
-
-  def to_nfd(); end
-
-  def to_nfkc(); end
-
-  def to_nfkd(); end
 end
 
 class StringScanner
@@ -8467,213 +8521,6 @@ end
 
 class WeakRef
   def initialize(orig); end
-end
-
-class WebRobots
-  def allowed?(url); end
-
-  def crawl_delay(url); end
-
-  def create_cache(); end
-
-  def disallowed?(url); end
-
-  def error(url); end
-
-  def error!(url); end
-
-  def flush_cache(); end
-
-  def initialize(user_agent, options=T.unsafe(nil)); end
-
-  def option(url, token); end
-
-  def options(url); end
-
-  def reset(url); end
-
-  def sitemaps(url); end
-
-  def user_agent(); end
-end
-
-class WebRobots::Error
-end
-
-class WebRobots::Error
-end
-
-class WebRobots::ParseError
-  def initialize(message, site); end
-
-  def site(); end
-end
-
-class WebRobots::ParseError
-end
-
-class WebRobots::RobotsTxt
-  def allow?(request_uri, user_agent=T.unsafe(nil)); end
-
-  def crawl_delay(user_agent=T.unsafe(nil)); end
-
-  def error(); end
-
-  def error!(); end
-
-  def error=(error); end
-
-  def initialize(site, records, options=T.unsafe(nil)); end
-
-  def options(user_agent=T.unsafe(nil)); end
-
-  def site(); end
-
-  def sitemaps(); end
-
-  def timestamp(); end
-  DISALLOW_ALL = ::T.let(nil, ::T.untyped)
-end
-
-class WebRobots::RobotsTxt::AccessControlLine
-  def match?(request_uri); end
-end
-
-class WebRobots::RobotsTxt::AccessControlLine
-end
-
-class WebRobots::RobotsTxt::AgentLine
-  def pattern(); end
-end
-
-class WebRobots::RobotsTxt::AgentLine
-end
-
-class WebRobots::RobotsTxt::AllowLine
-  def allow?(); end
-end
-
-class WebRobots::RobotsTxt::AllowLine
-end
-
-class WebRobots::RobotsTxt::CrawlDelayLine
-  def delay(); end
-end
-
-class WebRobots::RobotsTxt::CrawlDelayLine
-end
-
-class WebRobots::RobotsTxt::DisallowLine
-  def allow?(); end
-end
-
-class WebRobots::RobotsTxt::DisallowLine
-end
-
-class WebRobots::RobotsTxt::ExtentionLine
-end
-
-class WebRobots::RobotsTxt::ExtentionLine
-end
-
-class WebRobots::RobotsTxt::Line
-  def compile(); end
-
-  def initialize(token, value); end
-
-  def token(); end
-
-  def value(); end
-end
-
-class WebRobots::RobotsTxt::Line
-end
-
-class WebRobots::RobotsTxt::Parser
-  def _reduce_1(val, _values, result); end
-
-  def _reduce_17(val, _values, result); end
-
-  def _reduce_18(val, _values, result); end
-
-  def _reduce_19(val, _values, result); end
-
-  def _reduce_2(val, _values, result); end
-
-  def _reduce_20(val, _values, result); end
-
-  def _reduce_21(val, _values, result); end
-
-  def _reduce_24(val, _values, result); end
-
-  def _reduce_25(val, _values, result); end
-
-  def _reduce_26(val, _values, result); end
-
-  def _reduce_28(val, _values, result); end
-
-  def _reduce_31(val, _values, result); end
-
-  def _reduce_32(val, _values, result); end
-
-  def _reduce_38(val, _values, result); end
-
-  def _reduce_39(val, _values, result); end
-
-  def _reduce_40(val, _values, result); end
-
-  def _reduce_41(val, _values, result); end
-
-  def _reduce_none(val, _values, result); end
-
-  def initialize(target, crawl_delay_handler=T.unsafe(nil)); end
-
-  def on_error(token_id, value, stack); end
-
-  def parse(input, site); end
-
-  def parse!(input, site); end
-
-  def parse_error(message); end
-  KNOWN_TOKENS = ::T.let(nil, ::T.untyped)
-  RE_KNOWN_TOKENS = ::T.let(nil, ::T.untyped)
-  Racc_arg = ::T.let(nil, ::T.untyped)
-  Racc_debug_parser = ::T.let(nil, ::T.untyped)
-  Racc_token_to_s_table = ::T.let(nil, ::T.untyped)
-end
-
-class WebRobots::RobotsTxt::Parser
-end
-
-class WebRobots::RobotsTxt::Record
-  def allow?(request_uri); end
-
-  def default?(); end
-
-  def delay(); end
-
-  def initialize(agentlines, rulelines); end
-
-  def match?(user_agent); end
-
-  def options(); end
-end
-
-class WebRobots::RobotsTxt::Record
-end
-
-class WebRobots::RobotsTxt
-  def self.unfetchable(site, reason, target=T.unsafe(nil)); end
-end
-
-class WebRobots
-end
-
-module Webrobots
-  VERSION = ::T.let(nil, ::T.untyped)
-end
-
-module Webrobots
 end
 
 module YARDSorbet::Directives

@@ -6,8 +6,6 @@ require "cli/parser"
 require "cask/caskroom"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.doctor_args
     Homebrew::CLI::Parser.new do

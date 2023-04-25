@@ -4,8 +4,6 @@
 # Contains shorthand Homebrew utility methods like `ohai`, `opoo`, `odisabled`.
 # TODO: move these out of `Kernel`.
 module Kernel
-  extend T::Sig
-
   def require?(path)
     return false if path.nil?
 

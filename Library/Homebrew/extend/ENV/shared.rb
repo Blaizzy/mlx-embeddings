@@ -11,8 +11,6 @@ require "development_tools"
 # @see Stdenv
 # @see https://www.rubydoc.info/stdlib/Env Ruby's ENV API
 module SharedEnvExtension
-  extend T::Sig
-
   include CompilerConstants
 
   CC_FLAG_VARS = %w[CFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS].freeze

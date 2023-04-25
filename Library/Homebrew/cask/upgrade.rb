@@ -7,8 +7,6 @@ require "cask/config"
 module Cask
   # @api private
   class Upgrade
-    extend T::Sig
-
     sig {
       params(
         casks:               Cask,

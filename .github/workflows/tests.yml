@@ -135,7 +135,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Cache Bundler RubyGems
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ${{ steps.set-up-homebrew.outputs.gems-path }}
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -157,7 +157,7 @@ jobs:
     name: cask audit
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
-    runs-on: macos-12
+    runs-on: macos-13
     env:
       HOMEBREW_NO_INSTALL_FROM_API: 1
     steps:
@@ -166,7 +166,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Cache Bundler RubyGems
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ${{ steps.set-up-homebrew.outputs.gems-path }}
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -258,8 +258,8 @@ jobs:
         include:
           - name: update-test (Ubuntu 22.04)
             runs-on: ubuntu-22.04
-          - name: update-test (macOS 12)
-            runs-on: macos-12
+          - name: update-test (macOS 13)
+            runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -300,9 +300,9 @@ jobs:
           - name: tests (Ubuntu 20.04)
             test-flags: --coverage
             runs-on: ubuntu-20.04
-          - name: tests (macOS 12)
+          - name: tests (macOS 13)
             test-flags: --coverage
-            runs-on: macos-12
+            runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -373,7 +373,7 @@ jobs:
           HOMEBREW_BUILDPULSE_ACCOUNT_ID: 1503512
           HOMEBREW_BUILDPULSE_REPOSITORY_ID: 53238813
 
-      - uses: codecov/codecov-action@40a12dcee2df644d47232dde008099a3e9e4f865
+      - uses: codecov/codecov-action@894ff025c7b54547a9a2a1e9f228beae737ad3c2
         with:
           directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
           files: Library/Homebrew/test/coverage/coverage.xml
@@ -390,8 +390,8 @@ jobs:
             runs-on: ubuntu-22.04
           - name: test default formula (Ubuntu 20.04)
             runs-on: ubuntu-20.04
-          - name: test default formula (macOS 12)
-            runs-on: macos-12
+          - name: test default formula (macOS 13)
+            runs-on: macos-13
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew

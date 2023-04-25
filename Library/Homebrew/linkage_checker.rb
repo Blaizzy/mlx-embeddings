@@ -10,8 +10,6 @@ require "fiddle"
 #
 # @api private
 class LinkageChecker
-  extend T::Sig
-
   attr_reader :undeclared_deps, :keg, :formula, :store
 
   def initialize(keg, formula = nil, cache_db:, rebuild_cache: false)

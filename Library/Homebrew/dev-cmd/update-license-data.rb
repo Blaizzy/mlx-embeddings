@@ -6,7 +6,6 @@ require "utils/spdx"
 require "system_command"
 
 module Homebrew
-  extend T::Sig
   include SystemCommand::Mixin
 
   module_function

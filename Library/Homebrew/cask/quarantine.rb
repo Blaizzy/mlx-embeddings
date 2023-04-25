@@ -9,8 +9,6 @@ module Cask
   #
   # @api private
   module Quarantine
-    extend T::Sig
-
     QUARANTINE_ATTRIBUTE = "com.apple.quarantine"
 
     QUARANTINE_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/quarantine.swift").freeze

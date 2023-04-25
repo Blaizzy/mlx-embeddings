@@ -7,8 +7,6 @@ module Cask
     #
     # @api private
     class Version < ::String
-      extend T::Sig
-
       DIVIDERS = {
         "." => :dots,
         "-" => :hyphens,

@@ -9,7 +9,6 @@ module Cask
     #
     # @api private
     class AbstractArtifact
-      extend T::Sig
       extend T::Helpers
       abstract!
 

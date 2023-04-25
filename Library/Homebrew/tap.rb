@@ -14,8 +14,6 @@ require "settings"
 # {#user} represents the GitHub username and {#repo} represents the repository
 # name without the leading `homebrew-`.
 class Tap
-  extend T::Sig
-
   extend Cachable
 
   TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
@@ -93,7 +91,12 @@ class Tap
 
   # The local path to this {Tap}.
   # e.g. `/usr/local/Library/Taps/user/homebrew-repo`
+  sig { returns(Pathname) }
   attr_reader :path
+
+  # The git repository of this {Tap}.
+  sig { returns(GitRepository) }
+  attr_reader :git_repo
 
   # @private
   def initialize(user, repo)
@@ -102,7 +105,7 @@ class Tap
     @name = "#{@user}/#{@repo}".downcase
     @full_name = "#{@user}/homebrew-#{@repo}"
     @path = TAP_DIRECTORY/@full_name.downcase
-    @path.extend(GitRepositoryExtension)
+    @git_repo = GitRepository.new(@path)
     @alias_table = nil
     @alias_reverse_table = nil
   end
@@ -136,7 +139,7 @@ class Tap
   def remote
     return default_remote unless installed?
 
-    @remote ||= path.git_origin
+    @remote ||= git_repo.origin_url
   end
 
   # The remote repository name of this {Tap}.
@@ -164,28 +167,28 @@ class Tap
 
   # True if this {Tap} is a Git repository.
   def git?
-    path.git?
+    git_repo.git_repo?
   end
 
   # git branch for this {Tap}.
   def git_branch
     raise TapUnavailableError, name unless installed?
 
-    path.git_branch
+    git_repo.branch_name
   end
 
   # git HEAD for this {Tap}.
   def git_head
     raise TapUnavailableError, name unless installed?
 
-    @git_head ||= path.git_head
+    @git_head ||= git_repo.head_ref
   end
 
   # Time since last git commit for this {Tap}.
   def git_last_commit
     raise TapUnavailableError, name unless installed?
 
-    path.git_last_commit
+    git_repo.last_committed
   end
 
   # The issues URL of this {Tap}.
@@ -386,20 +389,20 @@ class Tap
       $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
     end
 
-    current_upstream_head = path.git_origin_branch
-    return if requested_remote.blank? && path.git_origin_has_branch?(current_upstream_head)
+    current_upstream_head = T.must(git_repo.origin_branch_name)
+    return if requested_remote.blank? && git_repo.origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
     args << "--quiet" if quiet
     args << "origin"
     safe_system "git", "-C", path, *args
-    path.git_origin_set_head_auto
+    git_repo.set_head_origin_auto
 
-    new_upstream_head = path.git_origin_branch
+    new_upstream_head = T.must(git_repo.origin_branch_name)
     return if new_upstream_head == current_upstream_head
 
-    path.git_rename_branch old: current_upstream_head, new: new_upstream_head
-    path.git_branch_set_upstream local: new_upstream_head, origin: new_upstream_head
+    git_repo.rename_branch old: current_upstream_head, new: new_upstream_head
+    git_repo.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
 
     return if quiet
 
@@ -844,8 +847,6 @@ end
 
 # A specialized {Tap} class for the core formulae.
 class CoreTap < Tap
-  extend T::Sig
-
   # @private
   sig { void }
   def initialize
@@ -1005,8 +1006,6 @@ end
 
 # Permanent configuration per {Tap} using `git-config(1)`.
 class TapConfig
-  extend T::Sig
-
   attr_reader :tap
 
   sig { params(tap: Tap).void }

@@ -13,7 +13,6 @@ module Cask
     extend Context
 
     module ILoader
-      extend T::Sig
       extend T::Helpers
       interface!
 
@@ -110,8 +109,6 @@ module Cask
 
     # Loads a cask from a URI.
     class FromURILoader < FromPathLoader
-      extend T::Sig
-
       def self.can_load?(ref)
         # Cache compiled regex
         @uri_regex ||= begin
@@ -362,8 +359,6 @@ module Cask
 
     # Pseudo-loader which raises an error when trying to load the corresponding cask.
     class NullLoader < FromPathLoader
-      extend T::Sig
-
       def self.can_load?(*)
         true
       end

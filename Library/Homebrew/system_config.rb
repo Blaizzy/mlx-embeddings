@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "hardware"
@@ -12,8 +12,6 @@ require "system_command"
 # @api private
 module SystemConfig
   class << self
-    extend T::Sig
-
     include SystemCommand::Mixin
 
     def clang
@@ -32,24 +30,24 @@ module SystemConfig
       end
     end
 
-    sig { returns(Pathname) }
+    sig { returns(GitRepository) }
     def homebrew_repo
-      HOMEBREW_REPOSITORY.dup.extend(GitRepositoryExtension)
+      GitRepository.new(HOMEBREW_REPOSITORY)
     end
 
     sig { returns(String) }
     def head
-      homebrew_repo.git_head || "(none)"
+      homebrew_repo.head_ref || "(none)"
     end
 
     sig { returns(String) }
     def last_commit
-      homebrew_repo.git_last_commit || "never"
+      homebrew_repo.last_committed || "never"
     end
 
     sig { returns(String) }
     def origin
-      homebrew_repo.git_origin || "(none)"
+      homebrew_repo.origin_url || "(none)"
     end
 
     sig { returns(String) }
@@ -69,7 +67,7 @@ module SystemConfig
 
     sig { returns(String) }
     def core_tap_origin
-      CoreTap.instance.remote || "(none)"
+      CoreTap.instance.remote
     end
 
     sig { returns(String) }
@@ -132,8 +130,9 @@ module SystemConfig
     def describe_curl
       out, = system_command(curl_executable, args: ["--version"], verbose: false)
 
-      if /^curl (?<curl_version>[\d.]+)/ =~ out
-        "#{curl_version} => #{curl_path}"
+      match_data = /^curl (?<curl_version>[\d.]+)/.match(out)
+      if match_data
+        "#{match_data[:curl_version]} => #{curl_path}"
       else
         "N/A"
       end

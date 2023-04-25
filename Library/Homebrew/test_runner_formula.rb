@@ -4,8 +4,6 @@
 require "formula"
 
 class TestRunnerFormula
-  extend T::Sig
-
   sig { returns(String) }
   attr_reader :name
 
@@ -91,7 +89,7 @@ class TestRunnerFormula
   def dependents(platform:, arch:, macos_version:)
     cache_key = :"#{platform}_#{arch}_#{macos_version}"
 
-    @dependent_hash.fetch(cache_key) do
+    @dependent_hash[cache_key] ||= begin
       all = eval_all || Homebrew::EnvConfig.eval_all?
       formula_selector, eval_all_env = if all
         [:all, "1"]
@@ -112,5 +110,7 @@ class TestRunnerFormula
         Homebrew::SimulateSystem.clear
       end
     end
+
+    @dependent_hash.fetch(cache_key)
   end
 end

@@ -8,8 +8,6 @@ require "manpages"
 require "active_support/core_ext/hash/slice"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

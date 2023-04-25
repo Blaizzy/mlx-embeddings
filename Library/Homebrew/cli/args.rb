@@ -6,8 +6,6 @@ require "ostruct"
 module Homebrew
   module CLI
     class Args < OpenStruct
-      extend T::Sig
-
       attr_reader :options_only, :flags_only
 
       # undefine tap to allow --tap argument

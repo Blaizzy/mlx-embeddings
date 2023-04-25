@@ -7,8 +7,6 @@ class Version
   #
   # @api private
   class HeadVersion < Version
-    extend T::Sig
-
     sig { returns(T.nilable(String)) }
     attr_reader :commit
 

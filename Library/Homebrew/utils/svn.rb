@@ -9,8 +9,6 @@ module Utils
   # @api private
   module Svn
     class << self
-      extend T::Sig
-
       include SystemCommand::Mixin
 
       sig { returns(T::Boolean) }

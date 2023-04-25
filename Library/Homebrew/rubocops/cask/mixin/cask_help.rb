@@ -7,7 +7,7 @@ module RuboCop
       # Common functionality for cops checking casks.
       module CaskHelp
         extend T::Helpers
-        extend T::Sig
+
         abstract!
 
         sig { abstract.params(cask_block: RuboCop::Cask::AST::CaskBlock).void }

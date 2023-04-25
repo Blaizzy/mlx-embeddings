@@ -9,8 +9,6 @@ module Cask
     #
     # @api private
     class Relocated < AbstractArtifact
-      extend T::Sig
-
       def self.from_args(cask, *args)
         source_string, target_hash = args
 

@@ -5,8 +5,6 @@ require "formula"
 require "options"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

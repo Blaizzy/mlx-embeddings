@@ -27,8 +27,6 @@ module Homebrew
       #
       # @api public
       class Xml
-        extend T::Sig
-
         NICE_NAME = "XML"
 
         # A priority of zero causes livecheck to skip the strategy. We do this

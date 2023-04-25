@@ -9,8 +9,6 @@ require "extend/cachable"
 
 # Rather than calling `new` directly, use one of the class methods like {Tab.create}.
 class Tab
-  extend T::Sig
-
   extend Cachable
 
   FILENAME = "INSTALL_RECEIPT.json"

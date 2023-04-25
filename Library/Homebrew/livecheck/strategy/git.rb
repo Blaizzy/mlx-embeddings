@@ -24,8 +24,6 @@ module Homebrew
       #
       # @api public
       class Git
-        extend T::Sig
-
         # The priority of the strategy on an informal scale of 1 to 10 (from
         # lowest to highest).
         PRIORITY = 8

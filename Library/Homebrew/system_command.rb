@@ -14,14 +14,10 @@ require "extend/time"
 #
 # @api private
 class SystemCommand
-  extend T::Sig
-
   using TimeRemaining
 
   # Helper functions for calling {SystemCommand.run}.
   module Mixin
-    extend T::Sig
-
     def system_command(executable, **options)
       SystemCommand.run(executable, **options)
     end
@@ -197,10 +193,13 @@ class SystemCommand
     }
     options[:chdir] = chdir if chdir
 
-    pid = T.let(nil, T.nilable(Integer))
     raw_stdin, raw_stdout, raw_stderr, raw_wait_thr = ignore_interrupts do
-      Open3.popen3(env, [executable, executable], *args, **options)
-           .tap { |*, wait_thr| pid = wait_thr.pid }
+      Open3.popen3(
+        env.merge({ "COLUMNS" => Tty.width.to_s }),
+        [executable, executable],
+        *args,
+        **options,
+      )
     end
 
     write_input_to(raw_stdin)
@@ -228,7 +227,7 @@ class SystemCommand
     thread_done_queue << true
     line_thread.join
   rescue Interrupt
-    Process.kill("INT", pid) if pid && !sudo?
+    Process.kill("INT", raw_wait_thr.pid) if raw_wait_thr && !sudo?
     raise Interrupt
   rescue SystemCallError => e
     @status = $CHILD_STATUS
@@ -279,8 +278,6 @@ class SystemCommand
 
   # Result containing the output and exit status of a finished sub-process.
   class Result
-    extend T::Sig
-
     include Context
 
     attr_accessor :command, :status, :exit_status

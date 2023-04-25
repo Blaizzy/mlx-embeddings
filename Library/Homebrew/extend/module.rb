@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Module
+  include T::Sig
+
   def attr_rw(*attrs)
     attrs.each do |attr|
       module_eval <<-EOS, __FILE__, __LINE__+1

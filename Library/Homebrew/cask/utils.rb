@@ -2,9 +2,7 @@
 # frozen_string_literal: true
 
 require "utils/user"
-require "yaml"
 require "open3"
-require "stringio"
 
 BUG_REPORTS_URL = "https://github.com/Homebrew/homebrew-cask#reporting-bugs"
 
@@ -13,8 +11,6 @@ module Cask
   #
   # @api private
   module Utils
-    extend T::Sig
-
     def self.gain_permissions_remove(path, command: SystemCommand)
       if path.respond_to?(:rmtree) && path.exist?
         gain_permissions(path, ["-R"], command) do |p|

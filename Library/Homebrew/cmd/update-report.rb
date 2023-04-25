@@ -11,8 +11,6 @@ require "settings"
 require "linuxbrew-core-migration"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   def auto_update_header(args:)
@@ -607,8 +605,6 @@ class Reporter
 end
 
 class ReporterHub
-  extend T::Sig
-
   extend Forwardable
 
   attr_reader :reporters

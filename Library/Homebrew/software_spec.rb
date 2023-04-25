@@ -15,8 +15,6 @@ require "os/mac/version"
 require "extend/on_system"
 
 class SoftwareSpec
-  extend T::Sig
-
   extend Forwardable
   include OnSystem::MacOSAndLinux
 
@@ -293,8 +291,6 @@ end
 
 class Bottle
   class Filename
-    extend T::Sig
-
     attr_reader :name, :version, :tag, :rebuild
 
     def self.create(formula, tag, rebuild)
@@ -509,8 +505,6 @@ end
 
 class BottleSpecification
   RELOCATABLE_CELLARS = [:any, :any_skip_relocation].freeze
-
-  extend T::Sig
 
   attr_rw :rebuild
   attr_accessor :tap

@@ -24,7 +24,6 @@ require "extend/kernel"
 
 module Homebrew
   extend Context
-  extend T::Sig
 
   def self._system(cmd, *args, **options)
     pid = fork do
@@ -87,8 +86,6 @@ module Homebrew
 end
 
 module Utils
-  extend T::Sig
-
   # Removes the rightmost segment from the constant expression in the string.
   #
   #   deconstantize('Net::HTTP')   # => "Net"

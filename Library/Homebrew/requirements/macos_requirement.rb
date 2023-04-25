@@ -7,8 +7,6 @@ require "requirement"
 #
 # @api private
 class MacOSRequirement < Requirement
-  extend T::Sig
-
   fatal true
 
   attr_reader :comparator, :version

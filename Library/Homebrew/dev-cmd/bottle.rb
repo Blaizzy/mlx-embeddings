@@ -36,8 +36,6 @@ ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
 ].freeze
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.bottle_args
     Homebrew::CLI::Parser.new do

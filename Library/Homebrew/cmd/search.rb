@@ -8,8 +8,6 @@ require "cli/parser"
 require "search"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   PACKAGE_MANAGERS = {

@@ -6,8 +6,6 @@ module Cask
   #
   # @api private
   module Cache
-    extend T::Sig
-
     sig { returns(Pathname) }
     def self.path
       @path ||= HOMEBREW_CACHE/"Cask"

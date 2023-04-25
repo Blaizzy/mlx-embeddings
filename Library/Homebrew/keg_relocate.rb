@@ -12,8 +12,6 @@ class Keg
   NULL_BYTE_STRING = "\\x00"
 
   class Relocation
-    extend T::Sig
-
     RELOCATABLE_PATH_REGEX_PREFIX = /(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))/.freeze
 
     def initialize

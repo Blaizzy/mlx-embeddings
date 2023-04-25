@@ -5,8 +5,6 @@ require "tap"
 require "cli/parser"
 
 module Homebrew
-  extend T::Sig
-
   sig { returns(CLI::Parser) }
   def self.tap_new_args
     Homebrew::CLI::Parser.new do
@@ -72,7 +70,7 @@ module Homebrew
         test-bot:
           strategy:
             matrix:
-              os: [ubuntu-22.04, macos-12]
+              os: [ubuntu-22.04, macos-13]
           runs-on: ${{ matrix.os }}
           steps:
             - name: Set up Homebrew

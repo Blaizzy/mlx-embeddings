@@ -13,8 +13,6 @@ module Cask
     #
     # @api private
     class AbstractUninstall < AbstractArtifact
-      extend T::Sig
-
       ORDERED_DIRECTIVES = [
         :early_script,
         :launchctl,

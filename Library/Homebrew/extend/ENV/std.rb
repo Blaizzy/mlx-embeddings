@@ -6,8 +6,6 @@ require "extend/ENV/shared"
 
 # @api private
 module Stdenv
-  extend T::Sig
-
   include SharedEnvExtension
 
   # @private

@@ -10,8 +10,6 @@ require "extend/cachable"
 #
 # @api private
 class Keg
-  extend T::Sig
-
   extend Cachable
 
   # Error for when a keg is already linked.
@@ -40,8 +38,6 @@ class Keg
 
   # Error for when a file already exists or belongs to another keg.
   class ConflictError < LinkError
-    extend T::Sig
-
     sig { returns(String) }
     def suggestion
       conflict = Keg.for(dst)
@@ -72,8 +68,6 @@ class Keg
 
   # Error for when a directory is not writable.
   class DirectoryNotWritableError < LinkError
-    extend T::Sig
-
     sig { returns(String) }
     def to_s
       <<~EOS

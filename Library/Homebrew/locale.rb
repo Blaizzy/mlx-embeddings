@@ -7,8 +7,6 @@
 #
 # @api private
 class Locale
-  extend T::Sig
-
   # Error when a string cannot be parsed to a `Locale`.
   class ParserError < StandardError
   end

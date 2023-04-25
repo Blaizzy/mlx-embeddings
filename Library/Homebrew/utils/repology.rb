@@ -9,13 +9,10 @@ require "utils/curl"
 module Repology
   HOMEBREW_CORE = "homebrew"
   HOMEBREW_CASK = "homebrew_casks"
-
-  module_function
-
   MAX_PAGINATION = 15
   private_constant :MAX_PAGINATION
 
-  def query_api(last_package_in_response = "", repository:)
+  def self.query_api(last_package_in_response = "", repository:)
     last_package_in_response += "/" if last_package_in_response.present?
     url = "https://repology.org/api/v1/projects/#{last_package_in_response}?inrepo=#{repository}&outdated=1"
 
@@ -31,7 +28,7 @@ module Repology
     raise
   end
 
-  def single_package_query(name, repository:)
+  def self.single_package_query(name, repository:)
     url = "https://repology.org/tools/project-by?repo=#{repository}&" \
           "name_type=srcname&target_page=api_v1_project&name=#{name}"
 
@@ -50,7 +47,7 @@ module Repology
     nil
   end
 
-  def parse_api_response(limit = nil, last_package = "", repository:)
+  def self.parse_api_response(limit = nil, last_package = "", repository:)
     package_term = case repository
     when HOMEBREW_CORE
       "formulae"
@@ -83,7 +80,7 @@ module Repology
     outdated_packages.sort.to_h
   end
 
-  def latest_version(repositories)
+  def self.latest_version(repositories)
     # The status is "unique" when the package is present only in Homebrew, so
     # Repology has no way of knowing if the package is up-to-date.
     is_unique = repositories.find do |repo|

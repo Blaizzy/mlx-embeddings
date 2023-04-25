@@ -9,8 +9,6 @@ require "socket"
 require "cli/parser"
 
 module Homebrew
-  extend T::Sig
-
   extend Install
 
   module_function

@@ -6,8 +6,6 @@ module Homebrew
   #
   # @api private
   class TapAuditor
-    extend T::Sig
-
     attr_reader :name, :path, :formula_names, :formula_aliases, :cask_tokens,
                 :tap_audit_exceptions, :tap_style_exceptions, :tap_pypi_formula_mappings, :problems
 

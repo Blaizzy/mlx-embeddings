@@ -8,8 +8,6 @@ require "json"
 #
 # @api private
 class GitHubReleases
-  extend T::Sig
-
   include Context
   include Utils::Curl
 

@@ -7,7 +7,6 @@ require "system_command"
 #
 # @api private
 module UnpackStrategy
-  extend T::Sig
   extend T::Helpers
 
   include SystemCommand::Mixin

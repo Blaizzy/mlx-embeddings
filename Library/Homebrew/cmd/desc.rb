@@ -7,8 +7,6 @@ require "description_cache_store"
 require "cli/parser"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }

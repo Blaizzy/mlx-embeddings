@@ -7,8 +7,6 @@ require "livecheck/livecheck"
 require "livecheck/strategy"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   WATCHLIST_PATH = File.expand_path(Homebrew::EnvConfig.livecheck_watchlist).freeze

@@ -8,8 +8,6 @@ module Homebrew
   #
   # @api private
   module EnvConfig
-    extend T::Sig
-
     module_function
 
     ENVS = {

@@ -7,8 +7,6 @@ require "utils/pypi"
 require "utils/tar"
 
 module Homebrew
-  extend T::Sig
-
   module_function
 
   sig { returns(CLI::Parser) }
@@ -123,7 +121,7 @@ module Homebrew
 
     tap_remote_repo = formula.tap.full_name || formula.tap.remote_repo
     remote = "origin"
-    remote_branch = formula.tap.path.git_origin_branch
+    remote_branch = formula.tap.git_repo.origin_branch_name
     previous_branch = "-"
 
     check_open_pull_requests(formula, tap_remote_repo, args: args)

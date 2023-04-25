@@ -155,6 +155,12 @@ module Homebrew
     invalid_groups = groups - valid_gem_groups
     raise ArgumentError, "Invalid gem groups: #{invalid_groups.join(", ")}" unless invalid_groups.empty?
 
+    # tests should not modify the state of the repo
+    if ENV["HOMEBREW_TESTS"]
+      setup_gem_environment!
+      return
+    end
+
     install_bundler!
 
     require "settings"
@@ -194,8 +200,18 @@ module Homebrew
           end
           false
         end
-      else
+      elsif system bundle, "clean" # even if we have nothing to install, we may have removed gems
         true
+      else
+        message = <<~EOS
+          failed to run `#{bundle} clean`!
+        EOS
+        if only_warn_on_failure
+          opoo_if_defined message
+        else
+          odie_if_defined message
+        end
+        false
       end
 
       if bundle_installed
