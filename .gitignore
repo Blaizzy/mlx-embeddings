@@ -184,12 +184,14 @@
 **/vendor/bundle/ruby/*/gems/strscan-*/
 **/vendor/bundle/ruby/*/gems/tapioca-*/
 **/vendor/bundle/ruby/*/gems/thor-*/
+**/vendor/bundle/ruby/*/gems/tzinfo-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/unparser-*/
 **/vendor/bundle/ruby/*/gems/uri_template-*/
 **/vendor/bundle/ruby/*/gems/webrobots-*/
 **/vendor/bundle/ruby/*/gems/yard-*/
 **/vendor/bundle/ruby/*/gems/yard-sorbet-*/
+**/vendor/bundle/ruby/*/gems/zeitwerk-*/
 **/vendor/cache/
 **/vendor/specifications/
 
