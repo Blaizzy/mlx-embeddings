@@ -33,7 +33,9 @@ module Utils
         next if Tab.for_keg(formula.any_installed_keg).poured_from_bottle
 
         formula.deps.select(&:build?).each do |dep|
-          Kernel.suppress(FormulaUnavailableError) { dependents << dep.to_formula }
+          dependents << dep.to_formula
+        rescue FormulaUnavailableError
+          # do nothing
         end
       end
       formulae - dependents

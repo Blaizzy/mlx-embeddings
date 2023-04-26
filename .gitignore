@@ -80,7 +80,6 @@
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/string/inflections.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/string/multibyte.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/enumerable.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/kernel/reporting.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/i18n.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/inflector/transliterate.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/inflector/methods.rb
