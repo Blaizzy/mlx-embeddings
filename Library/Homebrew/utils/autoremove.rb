@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Utils
@@ -11,6 +11,7 @@ module Utils
       # dependents that weren't installed on request and without
       # build dependencies for {Formula} installed from source.
       # @private
+      sig { params(formulae: T::Array[Formula], casks: T::Array[Cask::Cask]).returns(T::Array[Formula]) }
       def removable_formulae(formulae, casks)
         unused_formulae = unused_formulae_with_no_formula_dependents(formulae)
         unused_formulae - formulae_with_cask_dependents(casks)
@@ -20,6 +21,7 @@ module Utils
 
       # An array of all installed {Formula} with {Cask} dependents.
       # @private
+      sig { params(casks: T::Array[Cask::Cask]).returns(T::Array[Formula]) }
       def formulae_with_cask_dependents(casks)
         casks.flat_map { |cask| cask.depends_on[:formula] }
              .compact
@@ -31,6 +33,7 @@ module Utils
       # dependents for bottles and without build {Formula} dependents
       # for those built from source.
       # @private
+      sig { params(formulae: T::Array[Formula]).returns(T::Array[Formula]) }
       def formulae_with_no_formula_dependents(formulae)
         dependents = T.let([], T::Array[Formula])
         formulae.each do |formula|
@@ -51,6 +54,7 @@ module Utils
       # Recursive function that returns an array of {Formula} without
       # {Formula} dependents that weren't installed on request.
       # @private
+      sig { params(formulae: T::Array[Formula]).returns(T::Array[Formula]) }
       def unused_formulae_with_no_formula_dependents(formulae)
         unused_formulae = formulae_with_no_formula_dependents(formulae).reject do |f|
           Tab.for_keg(f.any_installed_keg).installed_on_request
