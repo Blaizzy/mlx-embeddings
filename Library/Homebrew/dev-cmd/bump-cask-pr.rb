@@ -190,7 +190,7 @@ module Homebrew
 
       replacement_pairs << [
         /#{Regexp.escape(old_base_url)}/,
-        new_base_url,
+        new_base_url.to_s,
       ]
     end
 
