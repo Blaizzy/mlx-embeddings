@@ -7,6 +7,15 @@ module Utils
   # @private
   module Autoremove
     class << self
+      # An array of {Formula} without {Formula} or {Cask}
+      # dependents that weren't installed on request and without
+      # build dependencies for {Formula} installed from source.
+      # @private
+      def removable_formulae(formulae, casks)
+        unused_formulae = unused_formulae_with_no_formula_dependents(formulae)
+        unused_formulae - formulae_with_cask_dependents(casks)
+      end
+
       # An array of all installed {Formula} with {Cask} dependents.
       # @private
       def formulae_with_cask_dependents(casks)
@@ -54,15 +63,6 @@ module Utils
         unused_formulae
       end
       private_class_method :unused_formulae_with_no_formula_dependents
-
-      # An array of {Formula} without {Formula} or {Cask}
-      # dependents that weren't installed on request and without
-      # build dependencies for {Formula} installed from source.
-      # @private
-      def removable_formulae(formulae, casks)
-        unused_formulae = unused_formulae_with_no_formula_dependents(formulae)
-        unused_formulae - formulae_with_cask_dependents(casks)
-      end
     end
   end
 end
