@@ -1216,7 +1216,7 @@ class Formula
   # @private
   def link_overwrite?(path)
     # Don't overwrite files not created by Homebrew.
-    return false unless path.stat.uid == HOMEBREW_BREW_FILE.stat.uid
+    return false if path.stat.uid != HOMEBREW_BREW_FILE.stat.uid
 
     # Don't overwrite files belong to other keg except when that
     # keg's formula is deleted.
@@ -1352,7 +1352,7 @@ class Formula
     @lock.lock
     return unless oldname
     return unless (oldname_rack = HOMEBREW_CELLAR/oldname).exist?
-    return unless oldname_rack.resolved_path == rack
+    return if oldname_rack.resolved_path != rack
 
     @oldname_lock = FormulaLock.new(oldname)
     @oldname_lock.lock
@@ -2501,7 +2501,7 @@ class Formula
             while (buf = rd.gets)
               log.puts buf
               # make sure dots printed with interval of at least 1 min.
-              next unless (Time.now - last_dot) > 60
+              next if (Time.now - last_dot) <= 60
 
               print "."
               $stdout.flush

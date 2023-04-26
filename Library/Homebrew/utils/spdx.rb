@@ -201,7 +201,7 @@ module SPDX
 
     forbidden_licenses.each do |_, license_info|
       forbidden_name, forbidden_version, forbidden_or_later = *license_info
-      next unless forbidden_name == name
+      next if forbidden_name != name
 
       return true if forbidden_or_later && forbidden_version <= version
 

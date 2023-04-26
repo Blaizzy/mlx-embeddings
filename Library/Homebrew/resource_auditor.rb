@@ -78,14 +78,16 @@ module Homebrew
         end
       end
 
-      return unless url_strategy == DownloadStrategyDetector.detect("", using)
+      return if url_strategy != DownloadStrategyDetector.detect("", using)
 
       problem "Redundant :using value in URL"
     end
 
     def audit_checksum
       return if spec_name == :head
+      # rubocop:disable Style/InvertibleUnlessCondition (non-invertible)
       return unless DownloadStrategyDetector.detect(url, using) <= CurlDownloadStrategy
+      # rubocop:enable Style/InvertibleUnlessCondition
 
       problem "Checksum is missing" if checksum.blank?
     end

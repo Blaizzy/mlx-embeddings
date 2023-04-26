@@ -131,7 +131,7 @@ class GitHubRunnerMatrix
       )
       @runners << create_runner(:macos, :x86_64, spec, macos_version)
 
-      next unless macos_version >= :big_sur
+      next if macos_version < :big_sur
 
       # Use bare metal runner when testing dependents on ARM64 Monterey.
       use_ephemeral = macos_version >= (@dependent_matrix ? :ventura : :monterey)

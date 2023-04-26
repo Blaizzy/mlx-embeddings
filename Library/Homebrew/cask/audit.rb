@@ -143,7 +143,7 @@ module Cask
         k.is_a?(Artifact::PostflightBlock) &&
           k.directives.key?(:postflight)
       end
-      return unless count > 1
+      return if count <= 1
 
       add_error "only a single postflight stanza is allowed"
     end
@@ -166,7 +166,7 @@ module Cask
 
       add_error "only a single uninstall_postflight stanza is allowed" if count > 1
 
-      return unless cask.artifacts.count { |k| k.is_a?(Artifact::Zap) } > 1
+      return if cask.artifacts.count { |k| k.is_a?(Artifact::Zap) } <= 1
 
       add_error "only a single zap stanza is allowed"
     end
@@ -210,7 +210,7 @@ module Cask
       return unless cask.version
 
       odebug "Auditing version :latest does not appear as a string ('latest')"
-      return unless cask.version.raw_version == "latest"
+      return if cask.version.raw_version != "latest"
 
       add_error "you should use version :latest instead of version 'latest'"
     end
@@ -251,7 +251,7 @@ module Cask
 
       odebug "Auditing sha256 is not a known invalid value"
       empty_sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      return unless cask.sha256 == empty_sha256
+      return if cask.sha256 != empty_sha256
 
       add_error "cannot use the sha256 for an empty string: #{empty_sha256}"
     end
@@ -442,7 +442,7 @@ module Cask
 
     sig { void }
     def audit_livecheck_unneeded_long_version
-      return unless cask.livecheck.strategy == :sparkle
+      return if cask.livecheck.strategy != :sparkle
       return unless cask.version.csv.second
       return if cask.url.to_s.include? cask.version.csv.second
       return if cask.version.csv.third.present? && cask.url.to_s.include?(cask.version.csv.third)
@@ -526,7 +526,7 @@ module Cask
     def audit_livecheck_min_os
       return unless online?
       return unless cask.livecheckable?
-      return unless cask.livecheck.strategy == :sparkle
+      return if cask.livecheck.strategy != :sparkle
 
       out, _, status = curl_output("--fail", "--silent", "--location", cask.livecheck.url)
       return unless status.success?

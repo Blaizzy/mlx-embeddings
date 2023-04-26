@@ -373,6 +373,14 @@ Style/HashAsLastArrayItem:
     - "/**/Formula/**/*.rb"
     - "**/Formula/**/*.rb"
 
+Style/InvertibleUnlessCondition:
+  Enabled: true
+  InverseMethods:
+    # Favor `if a != b` over `unless a == b`
+    :==: :!=
+    # Unset this (prefer `unless a.zero?` over `if a.nonzero?`)
+    :zero?:
+
 # would rather freeze too much than too little
 Style/MutableConstant:
   EnforcedStyle: strict

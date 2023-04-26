@@ -192,7 +192,7 @@ module GitHub
       # rubocop:enable Style/FormatStringToken
 
       token = credentials
-      args += ["--header", "Authorization: token #{token}"] unless credentials_type == :none
+      args += ["--header", "Authorization: token #{token}"] if credentials_type != :none
       args += ["--header", "X-GitHub-Api-Version:2022-11-28"]
 
       data_tmpfile = nil

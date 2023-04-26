@@ -25,7 +25,7 @@ module RuboCop
           add_offenses(cask_stanzas)
 
           # If present, check grouping of stanzas within `on_*` blocks.
-          return unless (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).any?
+          return if (on_blocks = cask_stanzas.select { |s| ON_SYSTEM_METHODS.include?(s.stanza_name) }).none?
 
           on_blocks.map(&:method_node).each do |on_block|
             next unless on_block.block_type?

@@ -285,7 +285,7 @@ class Pathname
     raise ChecksumMissingError if expected.blank?
 
     actual = Checksum.new(sha256.downcase)
-    raise ChecksumMismatchError.new(self, expected, actual) unless expected == actual
+    raise ChecksumMismatchError.new(self, expected, actual) if expected != actual
   end
 
   alias to_str to_s

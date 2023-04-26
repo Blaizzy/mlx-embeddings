@@ -57,7 +57,7 @@ module Cask
           args = { script: args }
         end
 
-        unless args.keys.count == 1
+        if args.keys.count != 1
           raise CaskInvalidError.new(
             cask,
             "invalid 'installer' stanza: Only one of #{VALID_KEYS.inspect} is permitted.",

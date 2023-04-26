@@ -500,7 +500,7 @@ module Homebrew
         return unless Utils::Git.available?
 
         autocrlf = HOMEBREW_REPOSITORY.cd { `git config --get core.autocrlf`.chomp }
-        return unless autocrlf == "true"
+        return if autocrlf != "true"
 
         <<~EOS
           Suspicious Git newline settings found.
@@ -786,7 +786,7 @@ module Homebrew
             next unless dir.exist?
 
             dir.children.each do |path|
-              next unless path.extname == ".rb"
+              next if path.extname != ".rb"
 
               bad_tap_files[tap] ||= []
               bad_tap_files[tap] << path

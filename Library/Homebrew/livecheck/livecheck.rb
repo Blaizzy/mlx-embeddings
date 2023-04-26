@@ -606,13 +606,13 @@ module Homebrew
       when Formula
         [:stable, :head].each do |spec_name|
           next unless (spec = formula_or_cask.send(spec_name))
-          next unless spec.using == :homebrew_curl
+          next if spec.using != :homebrew_curl
 
           domain = Addressable::URI.parse(spec.url)&.domain
           homebrew_curl_root_domains << domain if domain.present?
         end
       when Cask::Cask
-        return false unless formula_or_cask.url.using == :homebrew_curl
+        return false if formula_or_cask.url.using != :homebrew_curl
 
         domain = Addressable::URI.parse(formula_or_cask.url.to_s)&.domain
         homebrew_curl_root_domains << domain if domain.present?

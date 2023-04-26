@@ -485,7 +485,7 @@ module Homebrew
           # Clean up old *.pyc files in the top-level __pycache__.
           if child.basename.to_s == "__pycache__"
             child.find do |path|
-              next unless path.extname == ".pyc"
+              next if path.extname != ".pyc"
               next unless self.class.prune?(path, days)
 
               unused_pyc_files << path

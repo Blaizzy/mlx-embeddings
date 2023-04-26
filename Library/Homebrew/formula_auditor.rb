@@ -430,7 +430,7 @@ module Homebrew
     end
 
     def audit_postgresql
-      return unless formula.name == "postgresql"
+      return if formula.name != "postgresql"
       return unless @core_tap
 
       major_version = formula.version.major.to_i
