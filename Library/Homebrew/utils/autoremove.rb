@@ -23,8 +23,6 @@ module Utils
     # for those built from source.
     # @private
     def formulae_with_no_formula_dependents(formulae)
-      return [] if formulae.blank?
-
       dependents = T.let([], T::Array[Formula])
       formulae.each do |formula|
         dependents += formula.runtime_formula_dependencies
@@ -50,7 +48,7 @@ module Utils
         Tab.for_keg(f.any_installed_keg).installed_on_request
       end
 
-      if unused_formulae.present?
+      unless unused_formulae.empty?
         unused_formulae += unused_formulae_with_no_formula_dependents(formulae - unused_formulae)
       end
 
