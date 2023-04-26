@@ -100,6 +100,9 @@ class GitHubRunnerMatrix
     runner.freeze
   end
 
+  NEWEST_GITHUB_ACTIONS_MACOS_RUNNER = :ventura
+  GITHUB_ACTIONS_RUNNER_TIMEOUT = 360
+
   sig { void }
   def generate_runners!
     return if @runners.present?
@@ -109,6 +112,8 @@ class GitHubRunnerMatrix
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
     github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT")
     timeout            = ENV.fetch("HOMEBREW_MACOS_TIMEOUT").to_i
+    use_github_runner  = ENV.fetch("HOMEBREW_MACOS_BUILD_ON_GITHUB_RUNNER", "false") == "true"
+
     ephemeral_suffix = +"-#{github_run_id}-#{github_run_attempt}"
     ephemeral_suffix << "-deps" if @dependent_matrix
     ephemeral_suffix.freeze
@@ -123,9 +128,18 @@ class GitHubRunnerMatrix
       runner_timeout = timeout
       runner_timeout += 30 if macos_version <= :big_sur
 
+      # Use GitHub Actions macOS Runner for testing dependents if compatible with timeout.
+      runner = if (@dependent_matrix || use_github_runner) &&
+                  macos_version <= NEWEST_GITHUB_ACTIONS_MACOS_RUNNER &&
+                  runner_timeout <= GITHUB_ACTIONS_RUNNER_TIMEOUT
+        "macos-#{version}"
+      else
+        "#{version}#{ephemeral_suffix}"
+      end
+
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-x86_64",
-        runner:  "#{version}#{ephemeral_suffix}",
+        runner:  runner,
         timeout: runner_timeout,
         cleanup: false,
       )
