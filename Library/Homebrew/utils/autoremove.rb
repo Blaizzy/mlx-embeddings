@@ -16,6 +16,8 @@ module Utils
         unused_formulae - formulae_with_cask_dependents(casks)
       end
 
+      private
+
       # An array of all installed {Formula} with {Cask} dependents.
       # @private
       def formulae_with_cask_dependents(casks)
@@ -24,7 +26,6 @@ module Utils
              .map { |f| Formula[f] }
              .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
       end
-      private_class_method :formulae_with_cask_dependents
 
       # An array of all installed {Formula} without runtime {Formula}
       # dependents for bottles and without build {Formula} dependents
@@ -46,7 +47,6 @@ module Utils
         end
         formulae - dependents
       end
-      private_class_method :formulae_with_no_formula_dependents
 
       # Recursive function that returns an array of {Formula} without
       # {Formula} dependents that weren't installed on request.
@@ -62,7 +62,6 @@ module Utils
 
         unused_formulae
       end
-      private_class_method :unused_formulae_with_no_formula_dependents
     end
   end
 end
