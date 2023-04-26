@@ -235,14 +235,28 @@ Performance/OpenStruct:
   Enabled: false
 
 Rails:
-  # Selectively enable what we want.
-  Enabled: false
   # Do not use ActiveSupport in RuboCops.
   Exclude:
     - "Homebrew/rubocops/**/*"
 
 Rails/Delegate:
   Enabled: false # TODO
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Rails/ArelStar:
+  Enabled: false
+Rails/Date:
+  Enabled: false
+Rails/RakeEnvironment:
+  Enabled: false
+Rails/Pluck:
+  Enabled: false
+Rails/SaveBang:
+  Enabled: false
+Rails/SkipsModelValidations:
+  Enabled: false
+Rails/TimeZone:
+  Enabled: false
 
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
