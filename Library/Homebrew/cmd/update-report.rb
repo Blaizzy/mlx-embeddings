@@ -545,27 +545,20 @@ class Reporter
     Formula.installed.each do |formula|
       next unless Migrator.needs_migration?(formula)
 
-      oldname = formula.oldname
-      oldname_rack = HOMEBREW_CELLAR/oldname
+      oldnames_to_migrate = formula.oldnames.select do |oldname|
+        oldname_rack = HOMEBREW_CELLAR/oldname
+        next false unless oldname_rack.exist?
 
-      if oldname_rack.subdirs.empty?
-        oldname_rack.rmdir_if_possible
-        next
+        if oldname_rack.subdirs.empty?
+          oldname_rack.rmdir_if_possible
+          next false
+        end
+
+        true
       end
+      next if oldnames_to_migrate.empty?
 
-      new_name = tap.formula_renames[oldname]
-      next unless new_name
-
-      new_full_name = "#{tap}/#{new_name}"
-
-      begin
-        f = Formulary.factory(new_full_name)
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        onoe "#{e.message}\n#{e.backtrace&.join("\n")}" if Homebrew::EnvConfig.developer?
-        next
-      end
-
-      Migrator.migrate_if_needed(f, force: force)
+      Migrator.migrate_if_needed(formula, force: force)
     end
   end
 

@@ -25,9 +25,13 @@ module Homebrew
                                                                      target: HOMEBREW_CACHE_API/"formula.jws.json"
 
           cache["aliases"] = {}
+          cache["renames"] = {}
           cache["formulae"] = json_formulae.to_h do |json_formula|
             json_formula["aliases"].each do |alias_name|
               cache["aliases"][alias_name] = json_formula["name"]
+            end
+            (json_formula["oldnames"] || [json_formula["oldname"]].compact).each do |oldname|
+              cache["renames"][oldname] = json_formula["name"]
             end
 
             [json_formula["name"], json_formula.except("name")]
@@ -55,6 +59,16 @@ module Homebrew
           end
 
           cache["aliases"]
+        end
+
+        sig { returns(Hash) }
+        def all_renames
+          unless cache.key?("renames")
+            json_updated = download_and_cache_data!
+            write_names_and_aliases(regenerate: json_updated)
+          end
+
+          cache["renames"]
         end
 
         sig { params(regenerate: T::Boolean).void }

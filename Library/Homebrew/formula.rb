@@ -222,7 +222,7 @@ class Formula
     @pin = FormulaPin.new(self)
     @follow_installed_alias = true
     @prefix_returns_versioned_prefix = false
-    @oldname_lock = nil
+    @oldname_locks = []
   end
 
   # @private
@@ -491,10 +491,18 @@ class Formula
   delegate resource: :active_spec
 
   # An old name for the formula.
+  # @deprecated Use #{#oldnames} instead.
   def oldname
-    @oldname ||= if tap
-      formula_renames = tap.formula_renames
-      formula_renames.to_a.rassoc(name).first if formula_renames.value?(name)
+    # odeprecated "Formula#oldname", "Formula#oldnames"
+    @oldname ||= oldnames.first
+  end
+
+  # Old names for the formula.
+  def oldnames
+    @oldnames ||= if tap
+      tap.formula_renames.select { |_, oldname| oldname == name }.keys
+    else
+      []
     end
   end
 
@@ -1350,34 +1358,41 @@ class Formula
   def lock
     @lock = FormulaLock.new(name)
     @lock.lock
-    return unless oldname
-    return unless (oldname_rack = HOMEBREW_CELLAR/oldname).exist?
-    return if oldname_rack.resolved_path != rack
 
-    @oldname_lock = FormulaLock.new(oldname)
-    @oldname_lock.lock
+    oldnames.each do |oldname|
+      next unless (oldname_rack = HOMEBREW_CELLAR/oldname).exist?
+      next if oldname_rack.resolved_path != rack
+
+      oldname_lock = FormulaLock.new(oldname)
+      oldname_lock.lock
+      @oldname_locks << oldname_lock
+    end
   end
 
   # @private
   def unlock
     @lock&.unlock
-    @oldname_lock&.unlock
+    @oldname_locks.each(&:unlock)
+  end
+
+  # @private
+  def oldnames_to_migrate
+    oldnames.select do |oldname|
+      old_rack = HOMEBREW_CELLAR/oldname
+      next false unless old_rack.directory?
+      next false if old_rack.subdirs.empty?
+
+      tap == Tab.for_keg(old_rack.subdirs.min).tap
+    end
   end
 
   def migration_needed?
-    return false unless oldname
-    return false if rack.exist?
-
-    old_rack = HOMEBREW_CELLAR/oldname
-    return false unless old_rack.directory?
-    return false if old_rack.subdirs.empty?
-
-    tap == Tab.for_keg(old_rack.subdirs.min).tap
+    !oldnames_to_migrate.empty? && !rack.exist?
   end
 
   # @private
   def outdated_kegs(fetch_head: false)
-    raise Migrator::MigrationNeededError, self if migration_needed?
+    raise Migrator::MigrationNeededError.new(oldnames_to_migrate.first, name) if migration_needed?
 
     cache_key = "#{full_name}-#{fetch_head}"
     Formula.cache[:outdated_kegs] ||= {}
@@ -1499,7 +1514,7 @@ class Formula
 
   # @private
   def possible_names
-    [name, oldname, *aliases].compact
+    [name, *oldnames, *aliases].compact
   end
 
   def to_s
@@ -2087,7 +2102,8 @@ class Formula
       "name"                     => name,
       "full_name"                => full_name,
       "tap"                      => tap&.name,
-      "oldname"                  => oldname,
+      "oldname"                  => oldnames.first, # deprecated
+      "oldnames"                 => oldnames,
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
       "desc"                     => desc,

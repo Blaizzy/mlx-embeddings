@@ -293,9 +293,9 @@ module Formulary
         self.class.instance_variable_get(:@tap_git_head_string)
       end
 
-      @oldname_string = json_formula["oldname"]
-      def oldname
-        self.class.instance_variable_get(:@oldname_string)
+      @oldnames_array = json_formula["oldnames"] || [json_formula["oldname"]].compact
+      def oldnames
+        self.class.instance_variable_get(:@oldnames_array)
       end
 
       @aliases_array = json_formula["aliases"]
