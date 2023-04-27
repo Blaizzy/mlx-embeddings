@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # heavily based on Masao Mutoh's gettext String interpolation extension
 # http://github.com/mutoh/gettext/blob/f6566738b981fe0952548c421042ad1e0cdfb31e/lib/gettext/core_ext/string.rb
 
@@ -10,6 +12,11 @@ module I18n
   INTERPOLATION_PATTERN = Regexp.union(DEFAULT_INTERPOLATION_PATTERNS)
   deprecate_constant :INTERPOLATION_PATTERN
 
+  INTERPOLATION_PATTERNS_CACHE = Hash.new do |hash, patterns|
+    hash[patterns] = Regexp.union(patterns)
+  end
+  private_constant :INTERPOLATION_PATTERNS_CACHE
+
   class << self
     # Return String or raises MissingInterpolationArgument exception.
     # Missing argument's logic is handled by I18n.config.missing_interpolation_argument_handler.
@@ -20,7 +27,12 @@ module I18n
     end
 
     def interpolate_hash(string, values)
-      string.gsub(Regexp.union(config.interpolation_patterns)) do |match|
+      pattern = INTERPOLATION_PATTERNS_CACHE[config.interpolation_patterns]
+      interpolated = false
+
+      interpolated_string = string.gsub(pattern) do |match|
+        interpolated = true
+
         if match == '%%'
           '%'
         else
@@ -34,6 +46,8 @@ module I18n
           $3 ? sprintf("%#{$3}", value) : value
         end
       end
+
+      interpolated ? interpolated_string : string
     end
   end
 end

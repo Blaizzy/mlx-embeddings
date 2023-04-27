@@ -54,7 +54,7 @@ module I18n
         end
 
         deep_interpolation = options[:deep_interpolation]
-        values = Utils.except(options, *RESERVED_KEYS)
+        values = Utils.except(options, *RESERVED_KEYS) unless options.empty?
         if values
           entry = if deep_interpolation
             deep_interpolate(locale, entry, values)
@@ -66,7 +66,7 @@ module I18n
       end
 
       def exists?(locale, key, options = EMPTY_HASH)
-        lookup(locale, key) != nil
+        lookup(locale, key, options[:scope]) != nil
       end
 
       # Acts the same as +strftime+, but uses a localized version of the
@@ -123,7 +123,12 @@ module I18n
         # first translation that can be resolved. Otherwise it tries to resolve
         # the translation directly.
         def default(locale, object, subject, options = EMPTY_HASH)
-          options = options.reject { |key, value| key == :default }
+          if options.size == 1 && options.has_key?(:default)
+            options = {}
+          else
+            options = Utils.except(options, :default)
+          end
+
           case subject
           when Array
             subject.each do |item|
@@ -166,7 +171,7 @@ module I18n
         # Other backends can implement more flexible or complex pluralization rules.
         def pluralize(locale, entry, count)
           entry = entry.reject { |k, _v| k == :attributes } if entry.is_a?(Hash)
-          return entry unless entry.is_a?(Hash) && count && entry.values.none? { |v| v.is_a?(Hash) }
+          return entry unless entry.is_a?(Hash) && count
 
           key = pluralization_key(entry, count)
           raise InvalidPluralizationData.new(entry, count, key) unless entry.has_key?(key)
@@ -282,8 +287,8 @@ module I18n
             when '%^b' then I18n.t!(:"date.abbr_month_names",               :locale => locale, :format => format)[object.mon].upcase
             when '%B' then I18n.t!(:"date.month_names",                     :locale => locale, :format => format)[object.mon]
             when '%^B' then I18n.t!(:"date.month_names",                    :locale => locale, :format => format)[object.mon].upcase
-            when '%p' then I18n.t!(:"time.#{object.hour < 12 ? :am : :pm}", :locale => locale, :format => format).upcase if object.respond_to? :hour
-            when '%P' then I18n.t!(:"time.#{object.hour < 12 ? :am : :pm}", :locale => locale, :format => format).downcase if object.respond_to? :hour
+            when '%p' then I18n.t!(:"time.#{(object.respond_to?(:hour) ? object.hour : 0) < 12 ? :am : :pm}", :locale => locale, :format => format).upcase
+            when '%P' then I18n.t!(:"time.#{(object.respond_to?(:hour) ? object.hour : 0) < 12 ? :am : :pm}", :locale => locale, :format => format).downcase
             end
           end
         rescue MissingTranslationData => e
