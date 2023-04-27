@@ -269,7 +269,7 @@ describe Formula do
 
   specify "#migration_needed" do
     f = Testball.new("newname")
-    f.instance_variable_set(:@oldname, "oldname")
+    f.instance_variable_set(:@oldnames, ["oldname"])
     f.instance_variable_set(:@tap, CoreTap.instance)
 
     oldname_prefix = (HOMEBREW_CELLAR/"oldname/2.20")

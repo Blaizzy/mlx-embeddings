@@ -173,7 +173,7 @@ module Homebrew
           # Check if the formula we try to install is the same as installed
           # but not migrated one. If --force is passed then install anyway.
           opoo <<~EOS
-            #{formula.oldname} is already installed, it's just not migrated.
+            #{formula.oldnames_to_migrate.first} is already installed, it's just not migrated.
             To migrate this formula, run:
               brew migrate #{formula}
             Or to force-install it, run:
