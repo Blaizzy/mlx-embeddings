@@ -129,19 +129,19 @@ class GitHubRunnerMatrix
       runner_timeout += 30 if macos_version <= :big_sur
 
       # Use GitHub Actions macOS Runner for testing dependents if compatible with timeout.
-      runner = if (@dependent_matrix || use_github_runner) &&
-                  macos_version <= NEWEST_GITHUB_ACTIONS_MACOS_RUNNER &&
-                  runner_timeout <= GITHUB_ACTIONS_RUNNER_TIMEOUT
-        "macos-#{version}"
+      runner, cleanup = if (@dependent_matrix || use_github_runner) &&
+                           macos_version <= NEWEST_GITHUB_ACTIONS_MACOS_RUNNER &&
+                           runner_timeout <= GITHUB_ACTIONS_RUNNER_TIMEOUT
+        ["macos-#{version}", true]
       else
-        "#{version}#{ephemeral_suffix}"
+        ["#{version}#{ephemeral_suffix}", false]
       end
 
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-x86_64",
         runner:  runner,
         timeout: runner_timeout,
-        cleanup: false,
+        cleanup: cleanup,
       )
       @runners << create_runner(:macos, :x86_64, spec, macos_version)
 
