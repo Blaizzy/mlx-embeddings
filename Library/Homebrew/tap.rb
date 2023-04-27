@@ -933,9 +933,11 @@ class CoreTap < Tap
   # @private
   sig { returns(Hash) }
   def formula_renames
-    @formula_renames ||= begin
+    @formula_renames ||= if Homebrew::EnvConfig.no_install_from_api?
       self.class.ensure_installed!
       super
+    else
+      Homebrew::API::Formula.all_renames
     end
   end
 
