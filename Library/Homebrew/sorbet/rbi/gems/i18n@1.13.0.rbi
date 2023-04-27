@@ -333,6 +333,10 @@ module I18n::Backend::Pluralization
 
   def pluralizer(locale); end
   def pluralizers; end
+
+  private
+
+  def symbolic_count(count); end
 end
 
 class I18n::Backend::Simple
@@ -357,6 +361,8 @@ module I18n::Backend::Simple::Implementation
   def init_translations; end
   def lookup(locale, key, scope = T.unsafe(nil), options = T.unsafe(nil)); end
 end
+
+I18n::Backend::Simple::Implementation::MUTEX = T.let(T.unsafe(nil), Thread::Mutex)
 
 module I18n::Backend::Transliterator
   def transliterate(locale, string, replacement = T.unsafe(nil)); end
@@ -495,6 +501,7 @@ end
 
 I18n::Gettext::PLURAL_SEPARATOR = T.let(T.unsafe(nil), String)
 I18n::INTERPOLATION_PATTERN = T.let(T.unsafe(nil), Regexp)
+I18n::INTERPOLATION_PATTERNS_CACHE = T.let(T.unsafe(nil), Hash)
 
 class I18n::InvalidFilenames < ::I18n::ArgumentError
   def initialize(file_errors); end
@@ -644,48 +651,11 @@ end
 
 module I18n::Tests; end
 
-module I18n::Tests::Basics
-  def teardown; end
-end
-
-module I18n::Tests::Defaults
-  def setup; end
-end
-
-module I18n::Tests::Interpolation; end
-module I18n::Tests::Link; end
-
 module I18n::Tests::Localization
-  include ::I18n::Tests::Localization::Date
-  include ::I18n::Tests::Localization::DateTime
-  include ::I18n::Tests::Localization::Procs
-  include ::I18n::Tests::Localization::Time
-
   class << self
     def included(base); end
   end
 end
-
-module I18n::Tests::Localization::Date
-  def setup; end
-end
-
-module I18n::Tests::Localization::DateTime
-  def setup; end
-end
-
-module I18n::Tests::Localization::Procs; end
-
-module I18n::Tests::Localization::Time
-  def setup; end
-end
-
-module I18n::Tests::Lookup
-  def setup; end
-end
-
-module I18n::Tests::Pluralization; end
-module I18n::Tests::Procs; end
 
 class I18n::UnknownFileType < ::I18n::ArgumentError
   def initialize(type, filename); end
