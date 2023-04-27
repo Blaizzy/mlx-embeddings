@@ -147,7 +147,7 @@ on_request: true)
 
       # Always force uninstallation, ignore method parameter
       cask_installer = Installer.new(@cask, verbose: verbose?, force: true, upgrade: upgrade?, reinstall: true)
-      zap? ? cask_installer.zap(successor: @cask) : cask_installer.uninstall(successor: @cask)
+      zap? ? cask_installer.zap : cask_installer.uninstall(successor: @cask)
     end
 
     sig { returns(String) }
@@ -476,10 +476,10 @@ on_request: true)
       end
     end
 
-    def zap(successor: nil)
+    def zap
       load_installed_caskfile!
       ohai "Implied `brew uninstall --cask #{@cask}`"
-      uninstall_artifacts(successor: successor)
+      uninstall_artifacts
       if (zap_stanzas = @cask.artifacts.select { |a| a.is_a?(Artifact::Zap) }).empty?
         opoo "No zap stanza present for Cask '#{@cask}'"
       else
