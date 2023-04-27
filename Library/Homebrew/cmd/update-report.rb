@@ -598,8 +598,6 @@ class Reporter
 end
 
 class ReporterHub
-  extend Forwardable
-
   attr_reader :reporters
 
   sig { void }
@@ -618,7 +616,9 @@ class ReporterHub
     @hash.update(report) { |_key, oldval, newval| oldval.concat(newval) }
   end
 
-  delegate empty?: :@hash
+  def empty?
+    @hash.empty?
+  end
 
   def dump(auto_update: false)
     report_all = ENV["HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"].present?
