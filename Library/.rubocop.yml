@@ -14,6 +14,7 @@ inherit_mode:
 AllCops:
   TargetRubyVersion: 2.6
   ActiveSupportExtensionsEnabled: true
+  EnabledByDefault: true
   NewCops: enable
   Include:
     - "**/*.rbi"
@@ -25,34 +26,26 @@ AllCops:
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"
 
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Bundler/GemComment:
+  Enabled: false
+Bundler/GemVersion:
+  Enabled: false
+
 Cask/Desc:
   Description: "Ensure that the desc stanza conforms to various content and style checks."
-  Enabled: true
 
 Cask/HomepageUrlTrailingSlash:
   Description: "Ensure that the homepage url has a slash after the domain name."
-  Enabled: true
 
 Cask/NoDslVersion:
   Description: "Do not use the deprecated DSL version syntax in your cask header."
-  Enabled: true
 
 Cask/StanzaGrouping:
   Description: "Ensure that cask stanzas are grouped correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
-  Enabled: true
 
 Cask/StanzaOrder:
   Description: "Ensure that cask stanzas are sorted correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
-  Enabled: true
-
-FormulaAudit:
-  Enabled: true
-
-FormulaAuditStrict:
-  Enabled: true
-
-Homebrew:
-  Enabled: true
 
 # only used internally
 Homebrew/MoveToExtendOS:
@@ -68,6 +61,34 @@ Layout/ArgumentAlignment:
 # this is a bit less "floaty"
 Layout/CaseIndentation:
   EnforcedStyle: end
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Layout/ClassStructure:
+  Enabled: false
+Layout/EmptyLineAfterMultilineCondition:
+  Enabled: false
+Layout/FirstArrayElementLineBreak:
+  Enabled: false
+Layout/FirstHashElementLineBreak:
+  Enabled: false
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: false
+Layout/FirstMethodParameterLineBreak:
+  Enabled: false
+Layout/MultilineArrayLineBreaks:
+  Enabled: false
+Layout/MultilineAssignmentLayout:
+  Enabled: false
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: false
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: false
+Layout/MultilineMethodParameterLineBreaks:
+  Enabled: false
+Layout/RedundantLineBreak:
+  Enabled: false
+Layout/SingleLineBlockChain:
+  Enabled: false
 
 # significantly less indentation involved; more consistent
 Layout/FirstArrayElementIndentation:
@@ -135,6 +156,12 @@ Layout/SpaceBeforeBrackets:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Lint/ConstantResolution:
+  Enabled: false
+Lint/NumberConversion:
+  Enabled: false
+
 Lint/DuplicateBranch:
   Exclude:
     - "Taps/*/*/*.rb"
@@ -191,10 +218,6 @@ Naming/MethodParameterName:
 Naming/VariableNumber:
   Enabled: false
 
-# Does not hinder readability, so might as well enable it.
-Performance/CaseWhenSplat:
-  Enabled: true
-
 # Makes code less readable for minor performance increases.
 Performance/Caller:
   Enabled: false
@@ -203,48 +226,37 @@ Performance/Caller:
 Performance/MethodObjectAsBlock:
   Enabled: false
 
-Rails:
-  # Selectively enable what we want.
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Performance/ChainArrayAllocation:
   Enabled: false
+Performance/IoReadlines:
+  Enabled: false
+Performance/OpenStruct:
+  Enabled: false
+
+Rails:
   # Do not use ActiveSupport in RuboCops.
   Exclude:
     - "Homebrew/rubocops/**/*"
 
-# These relate to ActiveSupport and not other parts of Rails.
-Rails/ActiveSupportAliases:
-  Enabled: true
-Rails/Blank:
-  Enabled: true
-Rails/CompactBlank:
-  Enabled: true
 Rails/Delegate:
   Enabled: false # TODO
-Rails/DelegateAllowBlank:
-  Enabled: true
-Rails/DurationArithmetic:
-  Enabled: true
-Rails/ExpandedDateRange:
-  Enabled: true
-Rails/Inquiry:
-  Enabled: true
-Rails/NegateInclude:
-  Enabled: true
-Rails/PluralizationGrammar:
-  Enabled: true
-Rails/Presence:
-  Enabled: true
-Rails/Present:
-  Enabled: true
-Rails/RelativeDateConstant:
-  Enabled: true
-Rails/SafeNavigation:
-  Enabled: true
-Rails/SafeNavigationWithBlank:
-  Enabled: true
-Rails/StripHeredoc:
-  Enabled: true
-Rails/ToFormattedS:
-  Enabled: true
+
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Rails/ArelStar:
+  Enabled: false
+Rails/Date:
+  Enabled: false
+Rails/RakeEnvironment:
+  Enabled: false
+Rails/Pluck:
+  Enabled: false
+Rails/SaveBang:
+  Enabled: false
+Rails/SkipsModelValidations:
+  Enabled: false
+Rails/TimeZone:
+  Enabled: false
 
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
@@ -256,6 +268,16 @@ RSpec/FilePath:
 RSpec/StubbedMock:
   Enabled: false
 RSpec/SubjectStub:
+  Enabled: false
+
+# TODO: These cops come from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+RSpec/AlignLeftLetBrace:
+  Enabled: false
+RSpec/AlignRightLetBrace:
+  Enabled: false
+RSpec/MessageExpectation:
+  Enabled: false
+RSpec/Pending:
   Enabled: false
 
 # We use `allow(:foo).to receive(:bar)` everywhere.
@@ -284,20 +306,28 @@ Sorbet/ConstantsFromStrings:
 Sorbet/FalseSigil:
   Enabled: false
 
-# T::Sig is monkey-patched into Module
-Sorbet/RedundantExtendTSig:
-  Enabled: true
+# TODO: These cops come from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Sorbet/EnforceSignatures:
+  Enabled: false
+Sorbet/ForbidTUnsafe:
+  Enabled: false
+Sorbet/ForbidTUntyped:
+  Enabled: false
+Sorbet/HasSigil:
+  Enabled: false
+Sorbet/IgnoreSigil:
+  Enabled: false
+Sorbet/StrongSigil:
+  Enabled: false
 
 Sorbet/StrictSigil:
   inherit_mode:
     override:
       - Include
-  Enabled: true
   Include:
     - "**/*.rbi"
 
 Sorbet/TrueSigil:
-  Enabled: true
   Exclude:
     - "Taps/**/*"
     - "/**/{Formula,Casks}/**/*.rb"
@@ -308,10 +338,6 @@ Sorbet/TrueSigil:
 Style/AndOr:
   EnforcedStyle: always
 
-# Avoid leaking resources.
-Style/AutoResourceCleanup:
-  Enabled: true
-
 # This makes these a little more obvious.
 Style/BarePercentLiterals:
   EnforcedStyle: percent_q
@@ -320,13 +346,56 @@ Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
 
-# Use consistent style for better readability.
-Style/CollectionMethods:
-  Enabled: true
+# TODO: This group of cops comes from `EnabledByDefault: true`. We should maybe enable the ones with < 100 offenses.
+Style/ArrayCoercion:
+  Enabled: false
+Style/AsciiComments:
+  Enabled: false
+Style/ClassMethodsDefinitions:
+  Enabled: false
+Style/ConstantVisibility:
+  Enabled: false
+Style/Copyright:
+  Enabled: false
+Style/DateTime:
+  Enabled: false
+Style/DocumentationMethod:
+  Enabled: false
+Style/ImplicitRuntimeError:
+  Enabled: false
+Style/InlineComment:
+  Enabled: false
+Style/IpAddresses:
+  Enabled: false
+Style/MethodCallWithArgsParentheses:
+  Enabled: false
+Style/MethodCalledOnDoEndBlock:
+  Enabled: false
+Style/MissingElse:
+  Enabled: false
+Style/MultilineMethodSignature:
+  Enabled: false
+Style/OptionHash:
+  Enabled: false
+Style/RequireOrder:
+  Enabled: false
+Style/Send:
+  Enabled: false
+Style/SingleLineBlockParams:
+  Enabled: false
+Style/StaticClass:
+  Enabled: false
+Style/StringHashKeys:
+  Enabled: false
+Style/TopLevelMethodDefinition:
+  Enabled: false
+Style/TrailingCommaInBlockArgs:
+  Enabled: false
+Style/YodaExpression:
+  Enabled: false
 
 # Don't allow cops to be disabled in casks and formulae.
 Style/DisableCopsWithinSourceCodeDirective:
-  Enabled: true
   Include:
     - "Taps/*/*/*.rb"
     - "/**/{Formula,Casks}/**/*.rb"
@@ -374,7 +443,6 @@ Style/HashAsLastArrayItem:
     - "**/Formula/**/*.rb"
 
 Style/InvertibleUnlessCondition:
-  Enabled: true
   InverseMethods:
     # Favor `if a != b` over `unless a == b`
     :==: :!=
@@ -407,10 +475,6 @@ Style/OpenStructUse:
 Style/RescueStandardError:
   EnforcedStyle: implicit
 
-# Returning `nil` is unnecessary.
-Style/ReturnNil:
-  Enabled: true
-
 # We have no use for using `warn` because we
 # are calling Ruby with warnings disabled.
 Style/StderrPuts:
@@ -431,10 +495,6 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
-# Use consistent method names.
-Style/StringMethods:
-  Enabled: true
-
 # An array of symbols is more readable than a symbol array
 # and also allows for easier grepping.
 Style/SymbolArray:
@@ -454,7 +514,6 @@ Style/TrailingCommaInHashLiteral:
 
 # `unless ... ||` and `unless ... &&` are hard to mentally parse
 Style/UnlessLogicalOperators:
-  Enabled: true
   EnforcedStyle: forbid_logical_operators
 
 # a bit confusing to non-Rubyists but useful for longer arrays
