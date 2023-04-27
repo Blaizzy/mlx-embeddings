@@ -62,10 +62,11 @@ class GitHubRunnerMatrix
 
   private
 
+  SELF_HOSTED_LINUX_RUNNER = "linux-self-hosted-1"
+
   sig { returns(LinuxRunnerSpec) }
   def linux_runner_spec
-    linux_runner  = ENV.fetch("HOMEBREW_LINUX_RUNNER")
-    linux_cleanup = ENV.fetch("HOMEBREW_LINUX_CLEANUP")
+    linux_runner = ENV.fetch("HOMEBREW_LINUX_RUNNER")
 
     LinuxRunnerSpec.new(
       name:      "Linux",
@@ -76,7 +77,7 @@ class GitHubRunnerMatrix
       },
       workdir:   "/github/home",
       timeout:   4320,
-      cleanup:   linux_cleanup == "true",
+      cleanup:   linux_runner == SELF_HOSTED_LINUX_RUNNER,
     )
   end
 
