@@ -134,16 +134,6 @@ class BottleSpecification
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module BuildEnvironment::DSL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class BuildEnvironment
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Bundler::APIResponseInvalidDependenciesError
   def status_code(); end
 end
@@ -2948,34 +2938,14 @@ end
 module CGI::HtmlExtension
 end
 
-class Cask::AbstractCaskErrorWithToken
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Cask::Artifact::AbstractArtifact
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
 end
 
-module Cask::Cache
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Cask::CaskLoader::ILoader
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Cask::CaskQuarantineError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::CaskUnspecifiedError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Cask::Config
@@ -3086,21 +3056,6 @@ class Cask::DSL::Version
   def underscores_to_hyphens(); end
 end
 
-class Cask::DSL::Version
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Cask::Denylist
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::MultipleCaskErrors
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Caveats
   def empty?(*args, &block); end
 
@@ -3130,6 +3085,11 @@ class CompilerSelector::Compiler
   def self.[](*arg); end
 
   def self.members(); end
+end
+
+class CompilerSelector
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Concurrent::RubyThreadPoolExecutor
@@ -3175,11 +3135,6 @@ end
 
 class Delegator
   include ::ActiveSupport::Tryable
-end
-
-class Dependencies
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class DevelopmentTools
@@ -4262,15 +4217,6 @@ class Hash
   def deep_transform_values!(&block); end
 end
 
-module Homebrew::API::Analytics
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::CLI::Args
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Homebrew::Completions::Variables
   def self.[](*arg); end
 
@@ -4296,12 +4242,6 @@ class Homebrew::Livecheck::Strategy::Sparkle::Item
 end
 
 class Homebrew::Livecheck::Strategy::Sparkle::Item
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
-class Homebrew::Manpages::Variables
   def self.[](*arg); end
 
   def self.members(); end
@@ -4676,15 +4616,13 @@ module Kernel
 end
 
 module Kernel
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
   def self.fork(); end
 
-  def self.hpricot_slate_method_added(name); end
-
   def self.load(*arg); end
+
+  def self.method_added(name); end
 end
 
 class KeyError
@@ -5229,13 +5167,11 @@ class Object
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
   BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
-  COMMAND_DESC_WIDTH = ::T.let(nil, ::T.untyped)
   CROSS_COMPILING = ::T.let(nil, ::T.untyped)
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
   FORMULA_COMPONENT_PRECEDENCE_LIST = ::T.let(nil, ::T.untyped)
   GZIP_BUFFER_SIZE = ::T.let(nil, ::T.untyped)
-  HIDDEN_DESC_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_API_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLES_EXTNAME_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
@@ -5297,8 +5233,6 @@ class Object
   LINUXBREW_CORE_MIGRATION_LIST = ::T.let(nil, ::T.untyped)
   OFFICIAL_CASK_TAPS = ::T.let(nil, ::T.untyped)
   OFFICIAL_CMD_TAPS = ::T.let(nil, ::T.untyped)
-  OPTION_DESC_WIDTH = ::T.let(nil, ::T.untyped)
-  ORIGINAL_PATHS = ::T.let(nil, ::T.untyped)
   OS_VERSION = ::T.let(nil, ::T.untyped)
   PATCH_A_SHA256 = ::T.let(nil, ::T.untyped)
   PATCH_B_SHA256 = ::T.let(nil, ::T.untyped)
@@ -5317,15 +5251,11 @@ class Object
   RUBY_RELEASE_DATE = ::T.let(nil, ::T.untyped)
   RUBY_REVISION = ::T.let(nil, ::T.untyped)
   RUBY_VERSION = ::T.let(nil, ::T.untyped)
-  SOURCE_PATH = ::T.let(nil, ::T.untyped)
   STDERR = ::T.let(nil, ::T.untyped)
   STDIN = ::T.let(nil, ::T.untyped)
   STDOUT = ::T.let(nil, ::T.untyped)
-  TARGET_DOC_PATH = ::T.let(nil, ::T.untyped)
-  TARGET_MAN_PATH = ::T.let(nil, ::T.untyped)
   TESTBALL_PATCHES_SHA256 = ::T.let(nil, ::T.untyped)
   TESTBALL_SHA256 = ::T.let(nil, ::T.untyped)
-  TEST_DIRECTORIES = ::T.let(nil, ::T.untyped)
   TEST_FIXTURE_DIR = ::T.let(nil, ::T.untyped)
   TEST_SHA256 = ::T.let(nil, ::T.untyped)
   TEST_TMPDIR = ::T.let(nil, ::T.untyped)
@@ -5435,104 +5365,34 @@ class PATH
   def each(*args, &block); end
 end
 
-class PATH
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module ParallelTests
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
 
-class Parlour::ConflictResolver
-  extend ::T::Sig
-end
-
 class Parlour::Conversion::Converter
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Parlour::Debugging::Tree
-  extend ::T::Sig
-end
-
-module Parlour::Debugging
-  extend ::T::Sig
-end
-
-class Parlour::Generator
-  extend ::T::Sig
 end
 
 module Parlour::Mixin::Searchable
-  extend ::T::Sig
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Parlour::Options
-  extend ::T::Sig
-end
-
-class Parlour::ParseError
-  extend ::T::Sig
 end
 
 class Parlour::Plugin
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Parlour::RbiGenerator::Parameter
-  extend ::T::Sig
-end
-
-class Parlour::RbiGenerator::StructProp
-  extend ::T::Sig
-end
-
-class Parlour::RbsGenerator::Block
-  extend ::T::Sig
-end
-
-class Parlour::RbsGenerator::MethodSignature
-  extend ::T::Sig
-end
-
-class Parlour::RbsGenerator::Parameter
-  extend ::T::Sig
-end
-
-module Parlour::TypeLoader
-  extend ::T::Sig
-end
-
-class Parlour::TypeParser::NodePath
-  extend ::T::Sig
-end
-
-class Parlour::TypeParser
-  extend ::T::Sig
 end
 
 class Parlour::TypedObject
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
 end
 
-class Parlour::Types::Proc::Parameter
-  extend ::T::Sig
-end
-
 class Parlour::Types::Type
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
@@ -5637,17 +5497,8 @@ end
 
 class RBI::ASTVisitor
   extend ::T::Helpers
-  extend ::T::Sig
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class RBI::File
-  extend ::T::Sig
-end
-
-class RBI::Formatter
-  extend ::T::Sig
 end
 
 class RBI::Index
@@ -5655,50 +5506,19 @@ class RBI::Index
 end
 
 module RBI::Indexable
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class RBI::Loc
-  extend ::T::Sig
 end
 
 class RBI::Node
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class RBI::ParseError
-  extend ::T::Sig
-end
-
-class RBI::Parser
-  extend ::T::Sig
-end
-
-class RBI::Rewriters::Merge::Conflict
-  extend ::T::Sig
-end
-
-class RBI::Rewriters::Merge
-  extend ::T::Sig
-end
-
-class RBI::Rewriters::RemoveKnownDefinitions::Operation
-  extend ::T::Sig
-end
-
-class RBI::UnexpectedParserError
-  extend ::T::Sig
 end
 
 class RBI::Visitor
   extend ::T::Helpers
-  extend ::T::Sig
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
 end
@@ -5804,24 +5624,7 @@ class RSpec::Expectations::MultipleExpectationsNotMetError
   include ::RSpec::Core::MultipleExceptionError::InterfaceTag
 end
 
-module RSpec::Matchers
-  def a_json_string(*expected, &block_arg); end
-
-  def a_string_containing(*args, &block); end
-
-  def array_including_cons(*expected, &block_arg); end
-
-  def be_a_failure(*args, &block); end
-
-  def have_failed(*args, &block); end
-
-  def not_raise_error(*args, &block); end
-
-  def not_to_output(*args, &block); end
-end
-
 module RSpec::Sorbet::Doubles
-  extend ::T::Sig
   extend ::T::Helpers
 end
 
@@ -5872,15 +5675,6 @@ end
 
 module Readline
   def self.completion_quote_character(); end
-end
-
-class ReporterHub
-  def empty?(*args, &block); end
-end
-
-class Requirements
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Resolv::DNS
@@ -7858,6 +7652,11 @@ class RubyVM
   def self.resolve_feature_path(arg); end
 end
 
+class Sandbox
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 ScanError = StringScanner::Error
 
 class Set
@@ -8130,153 +7929,36 @@ class SoftwareSpec
   def on_ventura(or_condition=T.unsafe(nil), &block); end
 end
 
-class Spoom::Cli::Bump
-  extend ::T::Sig
-end
-
 module Spoom::Cli::Helper
   HIGHLIGHT_COLOR = ::T.let(nil, ::T.untyped)
 end
 
 module Spoom::Cli::Helper
-  extend ::T::Sig
   extend ::T::Helpers
-end
-
-class Spoom::Cli::Main
-  extend ::T::Sig
-end
-
-module Spoom::Colorize
-  extend ::T::Sig
 end
 
 class Spoom::Coverage::D3::Base
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-module Spoom::Coverage::D3
-  extend ::T::Sig
-end
-
-class Spoom::Coverage::Snapshot
-  extend ::T::Sig
 end
 
 class Spoom::Coverage::Template
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-module Spoom::Coverage
-  extend ::T::Sig
-end
-
-class Spoom::FileTree::Node
-  extend ::T::Sig
-end
-
-class Spoom::FileTree
-  extend ::T::Sig
-end
-
-module Spoom::Git
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Client
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Diagnostic
-  extend ::T::Sig
-end
-
-class Spoom::LSP::DocumentSymbol
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Error::Diagnostics
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Hover
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Location
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Message
-  extend ::T::Sig
-end
-
-class Spoom::LSP::Position
-  extend ::T::Sig
 end
 
 module Spoom::LSP::PrintableSymbol
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Spoom::LSP::Range
-  extend ::T::Sig
-end
-
-class Spoom::LSP::ResponseError
-  extend ::T::Sig
-end
-
-class Spoom::LSP::SignatureHelp
-  extend ::T::Sig
 end
 
 class Spoom::Printer
-  extend ::T::Sig
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Spoom::Sorbet::Config
-  extend ::T::Sig
-end
-
-class Spoom::Sorbet::Errors::Error
-  extend ::T::Sig
-end
-
-class Spoom::Sorbet::Errors::Parser
-  extend ::T::Sig
-end
-
-module Spoom::Sorbet::Errors
-  extend ::T::Sig
-end
-
-module Spoom::Sorbet::MetricsParser
-  extend ::T::Sig
-end
-
-module Spoom::Sorbet::Sigils
-  extend ::T::Sig
-end
-
-class Spoom::Timeline
-  extend ::T::Sig
-end
-
-module Spoom
-  extend ::T::Sig
 end
 
 module Stdenv
@@ -8318,10 +8000,6 @@ end
 
 class Symbol
   def to_msgpack_ext(); end
-end
-
-module Tapioca
-  extend ::T::Sig
 end
 
 class Tempfile
@@ -8457,26 +8135,6 @@ class URITemplate::RFC6570::Expression::PathParameters
   PAIR_IF_EMPTY = ::T.let(nil, ::T.untyped)
 end
 
-module URL::BlockDSL::PageWithURL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class URL::BlockDSL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class URL::DSL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class URL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class UnboundMethod
   include ::MethodSource::SourceLocation::UnboundMethodExtensions
   include ::MethodSource::MethodExtensions
@@ -8521,50 +8179,6 @@ end
 
 class WeakRef
   def initialize(orig); end
-end
-
-module YARDSorbet::Directives
-  extend ::T::Sig
-end
-
-class YARDSorbet::Handlers::AbstractDSLHandler
-  extend ::T::Sig
-end
-
-class YARDSorbet::Handlers::EnumsHandler
-  extend ::T::Sig
-end
-
-class YARDSorbet::Handlers::IncludeHandler
-  extend ::T::Sig
-end
-
-class YARDSorbet::Handlers::MixesInClassMethodsHandler
-  extend ::T::Sig
-end
-
-class YARDSorbet::Handlers::SigHandler
-  extend ::T::Sig
-end
-
-module YARDSorbet::Handlers::StructClassHandler
-  extend ::T::Sig
-end
-
-class YARDSorbet::Handlers::StructPropHandler
-  extend ::T::Sig
-end
-
-module YARDSorbet::NodeUtils
-  extend ::T::Sig
-end
-
-module YARDSorbet::SigToYARD
-  extend ::T::Sig
-end
-
-module YARDSorbet::TagUtils
-  extend ::T::Sig
 end
 
 class Zlib::Deflate
