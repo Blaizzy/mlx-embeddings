@@ -375,7 +375,7 @@ jobs:
 
       - uses: codecov/codecov-action@894ff025c7b54547a9a2a1e9f228beae737ad3c2
         with:
-          directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
+          root_dir: ${{ steps.set-up-homebrew.outputs.repository-path }}
           files: Library/Homebrew/test/coverage/coverage.xml
 
   test-default-formula:
