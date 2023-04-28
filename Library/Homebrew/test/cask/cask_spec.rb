@@ -231,7 +231,7 @@ describe Cask::Cask, :cask do
 
     context "when loaded from json file" do
       it "returns expected hash" do
-        expect(Homebrew::API::Cask).not_to receive(:fetch_source)
+        expect(Homebrew::API::Cask).not_to receive(:source_download)
         hash = Cask::CaskLoader::FromAPILoader.new(
           "everything", from_json: JSON.parse(expected_json)
         ).load(config: nil).to_h

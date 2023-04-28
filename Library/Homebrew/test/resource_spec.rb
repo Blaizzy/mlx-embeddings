@@ -143,7 +143,7 @@ describe Resource do
 
   describe "#download_strategy" do
     it "returns the download strategy" do
-      strategy = Object.new
+      strategy = Class.new(AbstractDownloadStrategy)
       expect(DownloadStrategyDetector)
         .to receive(:detect).with("foo", nil).and_return(strategy)
       resource.url("foo")

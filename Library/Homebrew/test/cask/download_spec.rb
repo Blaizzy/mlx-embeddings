@@ -12,6 +12,7 @@ module Cask
       let(:downloaded_path) { Pathname.new("cask.zip") }
 
       before do
+        allow(downloaded_path).to receive(:file?).and_return(true)
         allow(downloaded_path).to receive(:sha256).and_return(computed_sha256)
       end
 

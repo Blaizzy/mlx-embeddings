@@ -51,11 +51,15 @@ module Homebrew
         pathname.mtime < days_ago && pathname.ctime < days_ago
       end
 
-      sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
-      def stale?(pathname, scrub: false)
+      sig { params(entry: { path: Pathname, type: T.nilable(Symbol) }, scrub: T::Boolean).returns(T::Boolean) }
+      def stale?(entry, scrub: false)
+        pathname = entry[:path]
         return false unless pathname.resolved_path.file?
 
-        if pathname.dirname.basename.to_s == "Cask"
+        case entry[:type]
+        when :api_source
+          stale_api_source?(pathname, scrub)
+        when :cask
           stale_cask?(pathname, scrub)
         else
           stale_formula?(pathname, scrub)
@@ -63,6 +67,31 @@ module Homebrew
       end
 
       private
+
+      sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
+      def stale_api_source?(pathname, scrub)
+        return true if scrub
+
+        org, repo, git_head, type, basename = pathname.each_filename.to_a.last(5)
+
+        name = "#{org}/#{repo}/#{File.basename(T.must(basename), ".rb")}"
+        package = if type == "Cask"
+          begin
+            Cask::CaskLoader.load(name)
+          rescue Cask::CaskError
+            nil
+          end
+        else
+          begin
+            Formulary.factory(name)
+          rescue FormulaUnavailableError
+            nil
+          end
+        end
+        return true if package.nil?
+
+        package.tap_git_head != git_head
+      end
 
       sig { params(pathname: Pathname, scrub: T::Boolean).returns(T::Boolean) }
       def stale_formula?(pathname, scrub)
@@ -235,6 +264,7 @@ module Homebrew
         Cleanup.autoremove(dry_run: dry_run?) if Homebrew::EnvConfig.autoremove?
 
         cleanup_cache
+        cleanup_empty_api_source_directories
         cleanup_logs
         cleanup_lockfiles
         cleanup_python_site_packages
@@ -287,14 +317,14 @@ module Homebrew
     def cleanup_formula(formula, quiet: false, ds_store: true, cache_db: true)
       formula.eligible_kegs_for_cleanup(quiet: quiet)
              .each(&method(:cleanup_keg))
-      cleanup_cache(Pathname.glob(cache/"#{formula.name}--*"))
+      cleanup_cache(Pathname.glob(cache/"#{formula.name}--*").map { |path| { path: path, type: nil } })
       rm_ds_store([formula.rack]) if ds_store
       cleanup_cache_db(formula.rack) if cache_db
       cleanup_lockfiles(FormulaLock.new(formula.name).path)
     end
 
     def cleanup_cask(cask, ds_store: true)
-      cleanup_cache(Pathname.glob(cache/"Cask/#{cask.token}--*"))
+      cleanup_cache(Pathname.glob(cache/"Cask/#{cask.token}--*").map { |path| { path: path, type: :cask } })
       rm_ds_store([cask.caskroom_path]) if ds_store
       cleanup_lockfiles(CaskLock.new(cask.token).path)
     end
@@ -316,16 +346,35 @@ module Homebrew
       end
     end
 
+    def cache_files
+      files = cache.directory? ? cache.children : []
+      cask_files = (cache/"Cask").directory? ? (cache/"Cask").children : []
+      api_source_files = (cache/"api-source").glob("*/*/*/*/*") # org/repo/git_head/type/file.rb
+
+      files.map { |path| { path: path, type: nil } } +
+        cask_files.map { |path| { path: path, type: :cask } } +
+        api_source_files.map { |path| { path: path, type: :api_source } }
+    end
+
+    def cleanup_empty_api_source_directories(directory = cache/"api-source")
+      return if dry_run?
+      return unless directory.directory?
+
+      directory.each_child do |child|
+        next unless child.directory?
+
+        cleanup_empty_api_source_directories(child)
+        child.rmdir if child.empty?
+      end
+    end
+
     def cleanup_unreferenced_downloads
       return if dry_run?
       return unless (cache/"downloads").directory?
 
       downloads = (cache/"downloads").children
 
-      referenced_downloads = [cache, cache/"Cask"].select(&:directory?)
-                                                  .flat_map(&:children)
-                                                  .select(&:symlink?)
-                                                  .map(&:resolved_path)
+      referenced_downloads = cache_files.map { |file| file[:path] }.select(&:symlink?).map(&:resolved_path)
 
       (downloads - referenced_downloads).each do |download|
         if self.class.incomplete?(download)
@@ -346,9 +395,10 @@ module Homebrew
     end
 
     def cleanup_cache(entries = nil)
-      entries ||= [cache, cache/"Cask"].select(&:directory?).flat_map(&:children)
+      entries ||= cache_files
 
-      entries.each do |path|
+      entries.each do |entry|
+        path = entry[:path]
         next if path == PERIODIC_CLEAN_FILE
 
         FileUtils.chmod_R 0755, path if self.class.go_cache_directory?(path) && !dry_run?
@@ -365,7 +415,7 @@ module Homebrew
         end
 
         # If we've specified --prune don't do the (expensive) .stale? check.
-        cleanup_path(path) { path.unlink } if !prune? && self.class.stale?(path, scrub: scrub?)
+        cleanup_path(path) { path.unlink } if !prune? && self.class.stale?(entry, scrub: scrub?)
       end
 
       cleanup_unreferenced_downloads

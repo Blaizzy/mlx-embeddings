@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "extend/cachable"
+require "api/download"
 
 module Homebrew
   module API
@@ -17,6 +18,24 @@ module Homebrew
         sig { params(name: String).returns(Hash) }
         def fetch(name)
           Homebrew::API.fetch "formula/#{name}.json"
+        end
+
+        sig { params(formula: ::Formula).returns(::Formula) }
+        def source_download(formula)
+          path = formula.ruby_source_path || "Formula/#{formula.name}.rb"
+          git_head = formula.tap_git_head || "HEAD"
+          tap = formula.tap&.full_name || "Homebrew/homebrew-core"
+
+          download = Homebrew::API::Download.new(
+            "https://raw.githubusercontent.com/#{tap}/#{git_head}/#{path}",
+            formula.ruby_source_checksum,
+            cache: HOMEBREW_CACHE_API_SOURCE/"#{tap}/#{git_head}/Formula",
+          )
+          download.fetch
+          Formulary.factory(download.symlink_location,
+                            formula.active_spec_sym,
+                            alias_path: formula.alias_path,
+                            flags:      formula.class.build_flags)
         end
 
         sig { returns(T::Boolean) }
