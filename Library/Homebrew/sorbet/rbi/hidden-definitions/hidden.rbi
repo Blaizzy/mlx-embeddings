@@ -2943,6 +2943,15 @@ class Cask::Artifact::AbstractArtifact
   extend ::T::InterfaceWrapper::Helpers
 end
 
+class Cask::CaskLoader::AbstractContentLoader
+  def initialize(*args, &blk); end
+end
+
+class Cask::CaskLoader::AbstractContentLoader
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
+end
+
 module Cask::CaskLoader::ILoader
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
@@ -3300,6 +3309,11 @@ end
 
 class Dir
   def self.exists?(arg); end
+end
+
+class Downloadable
+  extend ::T::Private::Abstract::Hooks
+  extend ::T::InterfaceWrapper::Helpers
 end
 
 class ELFTools::Structs::ELF32_PhdrBe
@@ -5154,8 +5168,8 @@ end
 
 class Object
   include ::Minitest::Expectations
-  include ::Utils::Curl
   include ::SystemCommand::Mixin
+  include ::Utils::Curl
   def deep_dup(); end
 
   def duplicable?(); end
