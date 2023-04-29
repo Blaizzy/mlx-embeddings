@@ -733,13 +733,22 @@ module Homebrew
         end
         puts "Homebrew curl?:   Yes" if debug && homebrew_curl.present?
 
-        strategy_data = strategy.find_versions(
-          url:           url,
+        strategy_args = {
           regex:         livecheck_regex,
           homebrew_curl: homebrew_curl,
-          cask:          cask,
-          &livecheck_strategy_block
-        )
+        }
+        # TODO: Set `cask`/`url` args based on the presence of the keyword arg
+        # in the strategy's `#find_versions` method once we figure out why
+        # `strategy.method(:find_versions).parameters` isn't working as
+        # expected.
+        if strategy_name == "ExtractPlist"
+          strategy_args[:cask] = cask if cask.present?
+        else
+          strategy_args[:url] = url
+        end
+        strategy_args.compact!
+
+        strategy_data = strategy.find_versions(**strategy_args, &livecheck_strategy_block)
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]
@@ -912,12 +921,13 @@ module Homebrew
         puts if debug && strategy.blank?
         next if strategy.blank?
 
-        strategy_data = strategy.find_versions(
+        strategy_args = {
           url:           url,
           regex:         livecheck_regex,
           homebrew_curl: false,
-          &livecheck_strategy_block
-        )
+        }.compact
+
+        strategy_data = strategy.find_versions(**strategy_args, &livecheck_strategy_block)
         match_version_map = strategy_data[:matches]
         regex = strategy_data[:regex]
         messages = strategy_data[:messages]

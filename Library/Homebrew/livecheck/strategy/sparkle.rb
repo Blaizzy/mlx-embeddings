@@ -190,6 +190,7 @@ module Homebrew
 
           match_data.merge!(Strategy.page_content(url))
           content = match_data.delete(:content)
+          return match_data if content.blank?
 
           versions_from_content(content, regex, &block).each do |version_text|
             match_data[:matches][version_text] = Version.new(version_text)

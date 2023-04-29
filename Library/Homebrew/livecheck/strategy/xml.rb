@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "rexml/document"
+
 module Homebrew
   module Livecheck
     module Strategy
@@ -53,8 +55,6 @@ module Homebrew
         # @return [REXML::Document, nil]
         sig { params(content: String).returns(T.nilable(REXML::Document)) }
         def self.parse_xml(content)
-          require "rexml/document"
-
           parsing_tries = 0
           begin
             REXML::Document.new(content)
