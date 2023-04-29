@@ -9,12 +9,14 @@ describe SystemCommand do
         env:          env,
         must_succeed: true,
         sudo:         sudo,
+        sudo_as_root: sudo_as_root,
       )
     end
 
     let(:env_args) { ["bash", "-c", 'printf "%s" "${A?}" "${B?}" "${C?}"'] }
     let(:env) { { "A" => "1", "B" => "2", "C" => "3" } }
     let(:sudo) { false }
+    let(:sudo_as_root) { false }
 
     context "when given some environment variables" do
       its("run!.stdout") { is_expected.to eq("123") }
@@ -45,8 +47,9 @@ describe SystemCommand do
       end
     end
 
-    context "when given some environment variables and sudo: true" do
+    context "when given some environment variables and sudo: true, sudo_as_root: false" do
       let(:sudo) { true }
+      let(:sudo_as_root) { false }
 
       describe "the resulting command line" do
         it "includes the given variables explicitly" do
@@ -55,6 +58,27 @@ describe SystemCommand do
             .with(
               an_instance_of(Hash), ["/usr/bin/sudo", "/usr/bin/sudo"], "-E",
               "A=1", "B=2", "C=3", "--", "env", *env_args, pgroup: nil
+            )
+            .and_wrap_original do |original_popen3, *_, &block|
+              original_popen3.call("true", &block)
+            end
+
+          command.run!
+        end
+      end
+    end
+
+    context "when given some environment variables and sudo: true, sudo_as_root: true" do
+      let(:sudo) { true }
+      let(:sudo_as_root) { true }
+
+      describe "the resulting command line" do
+        it "includes the given variables explicitly" do
+          expect(Open3)
+            .to receive(:popen3)
+            .with(
+              an_instance_of(Hash), ["/usr/bin/sudo", "/usr/bin/sudo"], "-u", "root",
+              "-E", "A=1", "B=2", "C=3", "--", "env", *env_args, pgroup: nil
             )
             .and_wrap_original do |original_popen3, *_, &block|
               original_popen3.call("true", &block)

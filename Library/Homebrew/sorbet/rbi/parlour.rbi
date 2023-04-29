@@ -108,6 +108,9 @@ class SystemCommand
   def sudo?; end
 
   sig { returns(T::Boolean) }
+  def sudo_as_root?; end
+
+  sig { returns(T::Boolean) }
   def print_stdout?; end
 
   sig { returns(T::Boolean) }

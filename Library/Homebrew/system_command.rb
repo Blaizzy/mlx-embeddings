@@ -65,6 +65,7 @@ class SystemCommand
       executable:   T.any(String, Pathname),
       args:         T::Array[T.any(String, Integer, Float, URI::Generic)],
       sudo:         T::Boolean,
+      sudo_as_root: T::Boolean,
       env:          T::Hash[String, String],
       input:        T.any(String, T::Array[String]),
       must_succeed: T::Boolean,
@@ -81,6 +82,7 @@ class SystemCommand
     executable,
     args: [],
     sudo: false,
+    sudo_as_root: false,
     env: {},
     input: [],
     must_succeed: false,
@@ -95,7 +97,11 @@ class SystemCommand
     require "extend/ENV"
     @executable = executable
     @args = args
+
+    raise ArgumentError, "sudo_as_root cannot be set if sudo is false" if !sudo && sudo_as_root
+
     @sudo = sudo
+    @sudo_as_root = sudo_as_root
     env.each_key do |name|
       next if /^[\w&&\D]\w*$/.match?(name)
 
@@ -122,7 +128,7 @@ class SystemCommand
 
   attr_reader :executable, :args, :input, :chdir, :env
 
-  attr_predicate :sudo?, :print_stdout?, :print_stderr?, :must_succeed?
+  attr_predicate :sudo?, :sudo_as_root?, :print_stdout?, :print_stderr?, :must_succeed?
 
   sig { returns(T::Boolean) }
   def debug?
@@ -153,8 +159,10 @@ class SystemCommand
 
   sig { returns(T::Array[String]) }
   def sudo_prefix
+    user_flags = []
+    user_flags += ["-u", "root"] if sudo_as_root?
     askpass_flags = ENV.key?("SUDO_ASKPASS") ? ["-A"] : []
-    ["/usr/bin/sudo", *askpass_flags, "-E", *env_args, "--"]
+    ["/usr/bin/sudo", *user_flags, *askpass_flags, "-E", *env_args, "--"]
   end
 
   sig { returns(T::Array[String]) }

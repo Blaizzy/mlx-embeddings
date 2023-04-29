@@ -105,30 +105,47 @@ module Cask
 
         all_services.each do |service|
           ohai "Removing launchctl service #{service}"
-          booleans.each do |with_sudo|
+          booleans.each do |sudo|
             plist_status = command.run(
               "/bin/launchctl",
-              args: ["list", service],
-              sudo: with_sudo, print_stderr: false
+              args:         ["list", service],
+              sudo:         sudo,
+              sudo_as_root: sudo,
+              print_stderr: false,
             ).stdout
             if plist_status.start_with?("{")
-              command.run!("/bin/launchctl", args: ["remove", service], sudo: with_sudo)
+              command.run!(
+                "/bin/launchctl",
+                args:         ["remove", service],
+                sudo:         sudo,
+                sudo_as_root: sudo,
+              )
               sleep 1
             end
             paths = [
               +"/Library/LaunchAgents/#{service}.plist",
               +"/Library/LaunchDaemons/#{service}.plist",
             ]
-            paths.each { |elt| elt.prepend(Dir.home).freeze } unless with_sudo
+            paths.each { |elt| elt.prepend(Dir.home).freeze } unless sudo
             paths = paths.map { |elt| Pathname(elt) }.select(&:exist?)
             paths.each do |path|
-              command.run!("/bin/rm", args: ["-f", "--", path], sudo: with_sudo)
+              command.run!("/bin/rm", args: ["-f", "--", path], sudo: sudo, sudo_as_root: sudo)
             end
             # undocumented and untested: pass a path to uninstall :launchctl
             next unless Pathname(service).exist?
 
-            command.run!("/bin/launchctl", args: ["unload", "-w", "--", service], sudo: with_sudo)
-            command.run!("/bin/rm", args: ["-f", "--", service], sudo: with_sudo)
+            command.run!(
+              "/bin/launchctl",
+              args:         ["unload", "-w", "--", service],
+              sudo:         sudo,
+              sudo_as_root: sudo,
+            )
+            command.run!(
+              "/bin/rm",
+              args:         ["-f", "--", service],
+              sudo:         sudo,
+              sudo_as_root: sudo,
+            )
             sleep 1
           end
         end
@@ -301,14 +318,35 @@ module Cask
       def uninstall_kext(*kexts, command: nil, **_)
         kexts.each do |kext|
           ohai "Unloading kernel extension #{kext}"
-          is_loaded = system_command!("/usr/sbin/kextstat", args: ["-l", "-b", kext], sudo: true).stdout
+          is_loaded = system_command!(
+            "/usr/sbin/kextstat",
+            args:         ["-l", "-b", kext],
+            sudo:         true,
+            sudo_as_root: true,
+          ).stdout
           if is_loaded.length > 1
-            system_command!("/sbin/kextunload", args: ["-b", kext], sudo: true)
+            system_command!(
+              "/sbin/kextunload",
+              args:         ["-b", kext],
+              sudo:         true,
+              sudo_as_root: true,
+            )
             sleep 1
           end
-          system_command!("/usr/sbin/kextfind", args: ["-b", kext], sudo: true).stdout.chomp.lines.each do |kext_path|
+          found_kexts = system_command!(
+            "/usr/sbin/kextfind",
+            args:         ["-b", kext],
+            sudo:         true,
+            sudo_as_root: true,
+          ).stdout.chomp.lines
+          found_kexts.each do |kext_path|
             ohai "Removing kernel extension #{kext_path}"
-            system_command!("/bin/rm", args: ["-rf", kext_path], sudo: true)
+            system_command!(
+              "/bin/rm",
+              args:         ["-rf", kext_path],
+              sudo:         true,
+              sudo_as_root: true,
+            )
           end
         end
       end
