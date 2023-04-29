@@ -52,7 +52,7 @@ class Zeitwerk::GemInflector < ::Zeitwerk::Inflector
 end
 
 class Zeitwerk::GemLoader < ::Zeitwerk::Loader
-  def initialize(root_file, warn_on_extra_files:); end
+  def initialize(root_file, namespace:, warn_on_extra_files:); end
 
   def setup; end
 
@@ -61,7 +61,7 @@ class Zeitwerk::GemLoader < ::Zeitwerk::Loader
   def warn_on_extra_files; end
 
   class << self
-    def _new(root_file, warn_on_extra_files:); end
+    def __new(root_file, namespace:, warn_on_extra_files:); end
   end
 end
 
@@ -85,6 +85,7 @@ class Zeitwerk::Loader
   include ::Zeitwerk::Loader::Config
   include ::Zeitwerk::Loader::EagerLoad
   extend ::Zeitwerk::Internal
+  extend ::Zeitwerk::RealModName
 
   def initialize; end
 
@@ -130,6 +131,7 @@ class Zeitwerk::Loader
     def eager_load_all; end
     def eager_load_namespace(mod); end
     def for_gem(warn_on_extra_files: T.unsafe(nil)); end
+    def for_gem_extension(namespace); end
   end
 end
 
@@ -239,7 +241,7 @@ module Zeitwerk::Registry
     def inception?(cpath); end
     def inceptions; end
     def loader_for(path); end
-    def loader_for_gem(root_file, warn_on_extra_files:); end
+    def loader_for_gem(root_file, namespace:, warn_on_extra_files:); end
     def loaders; end
     def on_unload(loader); end
     def register_autoload(loader, abspath); end
