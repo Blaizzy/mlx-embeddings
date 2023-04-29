@@ -15,14 +15,9 @@ describe OS::Mac::Version do
     expect(version).to be < :catalina
   end
 
-  specify "comparison with Fixnum" do
+  specify "comparison with Integer" do
     expect(version).to be > 10
     expect(version).to be < 11
-  end
-
-  specify "comparison with Float" do
-    expect(version).to be > 10.13
-    expect(version).to be < 10.15
   end
 
   specify "comparison with String" do

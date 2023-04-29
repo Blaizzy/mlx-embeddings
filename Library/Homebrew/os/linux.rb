@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "os/mac/version"
 require "utils"
 
 module OS
@@ -53,11 +54,11 @@ module OS
     raise "Loaded OS::Linux on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
     def self.version
-      ::Version::NULL
+      Version::NULL
     end
 
     def self.full_version
-      ::Version::NULL
+      Version::NULL
     end
 
     def self.languages

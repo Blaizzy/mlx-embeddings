@@ -190,6 +190,7 @@ class Resource < Downloadable
     @download_strategy = @url.download_strategy
   end
 
+  sig { params(val: T.nilable(T.any(String, Version))).returns(T.nilable(Version)) }
   def version(val = nil)
     return super() if val.nil?
 

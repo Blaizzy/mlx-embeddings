@@ -30,18 +30,29 @@ module OS
 
       sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
       def <=>(other)
-        @comparison_cache.fetch(other) do
+        return @comparison_cache[other] if @comparison_cache.key?(other)
+
+        result = case other
+        when Symbol
           if MacOSVersions::SYMBOLS.key?(other) && to_sym == other
             0
           else
             v = MacOSVersions::SYMBOLS.fetch(other) { other.to_s }
-            @comparison_cache[other] = super(::Version.new(v))
+            super(v)
           end
+        else
+          super
         end
+
+        @comparison_cache[other] = result unless frozen?
+
+        result
       end
 
       sig { returns(T.self_type) }
       def strip_patch
+        return self if null?
+
         # Big Sur is 11.x but Catalina is 10.15.x.
         if T.must(major) >= 11
           self.class.new(major.to_s)
@@ -52,12 +63,24 @@ module OS
 
       sig { returns(Symbol) }
       def to_sym
-        @to_sym ||= MacOSVersions::SYMBOLS.invert.fetch(strip_patch.to_s, :dunno)
+        return @sym if defined?(@sym)
+
+        sym = MacOSVersions::SYMBOLS.invert.fetch(strip_patch.to_s, :dunno)
+
+        @sym = sym unless frozen?
+
+        sym
       end
 
       sig { returns(String) }
       def pretty_name
-        @pretty_name ||= to_sym.to_s.split("_").map(&:capitalize).join(" ").freeze
+        return @pretty_name if defined?(@pretty_name)
+
+        pretty_name = to_sym.to_s.split("_").map(&:capitalize).join(" ").freeze
+
+        @pretty_name = pretty_name unless frozen?
+
+        pretty_name
       end
 
       sig { returns(T::Boolean) }
@@ -78,6 +101,8 @@ module OS
       # For {OS::Mac::Version} compatibility.
       sig { returns(T::Boolean) }
       def requires_nehalem_cpu?
+        return false if null?
+
         unless Hardware::CPU.intel?
           raise "Unexpected architecture: #{Hardware::CPU.arch}. This only works with Intel architecture."
         end
@@ -90,6 +115,9 @@ module OS
       alias requires_sse41? requires_nehalem_cpu?
       alias requires_sse42? requires_nehalem_cpu?
       alias requires_popcnt? requires_nehalem_cpu?
+
+      # Represents the absence of a version.
+      NULL = Version.new("10.0").tap { |v| v.instance_variable_set(:@version, nil) }.freeze
     end
   end
 end
