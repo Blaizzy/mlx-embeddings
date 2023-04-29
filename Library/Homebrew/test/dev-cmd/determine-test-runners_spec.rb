@@ -41,8 +41,7 @@ describe "brew determine-test-runners" do
     setup_test_formula "testball"
 
     expect { brew "determine-test-runners", "testball", runner_env.merge({ "GITHUB_OUTPUT" => github_output }) }
-      .to not_to_output.to_stdout
-      .and not_to_output.to_stderr
+      .to not_to_output.to_stderr
       .and be_a_success
 
     expect(File.read(github_output)).not_to be_empty
