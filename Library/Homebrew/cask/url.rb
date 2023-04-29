@@ -87,7 +87,8 @@ module Cask
         params(
           uri:   T.nilable(T.any(URI::Generic, String)),
           dsl:   T.nilable(::Cask::DSL),
-          block: T.proc.params(arg0: T.all(String, PageWithURL)).returns(T.untyped),
+          block: T.proc.params(arg0: T.all(String, PageWithURL))
+                       .returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash])),
         ).void
       }
       def initialize(uri, dsl: nil, &block)
@@ -96,7 +97,7 @@ module Cask
         @block = block
       end
 
-      sig { returns(T.untyped) }
+      sig { returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash])) }
       def call
         if @uri
           result = curl_output("--fail", "--silent", "--location", @uri)
@@ -116,8 +117,9 @@ module Cask
       sig {
         params(
           uri:   T.any(URI::Generic, String),
-          block: T.proc.params(arg0: T.all(String, PageWithURL)).returns(T.untyped),
-        ).void
+          block: T.proc.params(arg0: T.all(String, PageWithURL))
+                       .returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash])),
+        ).returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash]))
       }
       def url(uri, &block)
         self.class.new(uri, &block).call
@@ -156,7 +158,10 @@ module Cask
         only_path:       T.nilable(String),
         caller_location: Thread::Backtrace::Location,
         dsl:             T.nilable(::Cask::DSL),
-        block:           T.nilable(T.proc.params(arg0: T.all(String, BlockDSL::PageWithURL)).returns(T.untyped)),
+        block:           T.nilable(
+          T.proc.params(arg0: T.all(String, BlockDSL::PageWithURL))
+                .returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash])),
+        ),
       ).void
     }
     def initialize(
@@ -181,10 +186,9 @@ module Cask
       super(
         if block
           LazyObject.new do
-            *args = BlockDSL.new(uri, dsl: dsl, &block).call
-            options = args.last.is_a?(Hash) ? args.pop : {}
-            uri = T.let(args.first, T.any(URI::Generic, String))
-            DSL.new(uri, **options)
+            uri2, options = *BlockDSL.new(uri, dsl: dsl, &block).call
+            options ||= {}
+            DSL.new(uri2, **options)
           end
         else
           DSL.new(
