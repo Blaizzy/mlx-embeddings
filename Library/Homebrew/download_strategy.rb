@@ -202,7 +202,7 @@ class VCSDownloadStrategy < AbstractDownloadStrategy
 
     if cached_location.exist? && repo_valid?
       puts "Updating #{cached_location}"
-      update(timeout: timeout)
+      update(timeout: end_time)
     elsif cached_location.exist?
       puts "Removing invalid repository from cache"
       clear_cache
