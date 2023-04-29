@@ -42,6 +42,8 @@ module Homebrew
     runner_matrix = GitHubRunnerMatrix.new(testing_formulae, deleted_formulae, dependent_matrix: args.dependents?)
     runners = runner_matrix.active_runner_specs_hash
 
+    ohai "Runners", JSON.pretty_generate(runners)
+
     github_output = ENV.fetch("GITHUB_OUTPUT")
     File.open(github_output, "a") do |f|
       f.puts("runners=#{runners.to_json}")
