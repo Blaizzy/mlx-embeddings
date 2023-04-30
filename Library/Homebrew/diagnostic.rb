@@ -843,8 +843,9 @@ module Homebrew
       end
 
       def check_for_unnecessary_core_tap
-        return if ENV["HOMEBREW_DEVELOPER"]
-        return if ENV["HOMEBREW_NO_INSTALL_FROM_API"]
+        return if Homebrew::EnvConfig.developer?
+        return if Homebrew::EnvConfig.no_install_from_api?
+        return if Homebrew::Settings.read("devcmdrun") == "true"
         return unless CoreTap.instance.installed?
 
         <<~EOS
@@ -856,9 +857,11 @@ module Homebrew
       end
 
       def check_for_unnecessary_cask_tap
-        return if ENV["HOMEBREW_DEVELOPER"]
-        return if ENV["HOMEBREW_NO_INSTALL_FROM_API"]
-        return unless (cask_tap = Tap.fetch("homebrew", "cask")).installed?
+        return if Homebrew::EnvConfig.developer?
+        return if Homebrew::EnvConfig.no_install_from_api?
+        return if Homebrew::Settings.read("devcmdrun") == "true"
+        cask_tap = Tap.fetch("homebrew", "cask")
+        return unless cask_tap.installed?
 
         <<~EOS
           You have an unnecessary local Cask tap.
