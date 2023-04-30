@@ -842,6 +842,36 @@ module Homebrew
         EOS
       end
 
+      def check_for_unnecessary_core_tap
+        return if Homebrew::EnvConfig.developer?
+        return if Homebrew::EnvConfig.no_install_from_api?
+        return if Homebrew::Settings.read("devcmdrun") == "true"
+        return unless CoreTap.instance.installed?
+
+        <<~EOS
+          You have an unnecessary local Core tap!
+          This can cause problems installing up-to-date formulae.
+          Please remove it by running:
+           brew untap #{CoreTap.instance.name}
+        EOS
+      end
+
+      def check_for_unnecessary_cask_tap
+        return if Homebrew::EnvConfig.developer?
+        return if Homebrew::EnvConfig.no_install_from_api?
+        return if Homebrew::Settings.read("devcmdrun") == "true"
+
+        cask_tap = Tap.fetch("homebrew", "cask")
+        return unless cask_tap.installed?
+
+        <<~EOS
+          You have an unnecessary local Cask tap.
+          This can cause problems installing up-to-date casks.
+          Please remove it by running:
+            brew untap #{cask_tap.name}
+        EOS
+      end
+
       def check_cask_software_versions
         add_info "Homebrew Version", HOMEBREW_VERSION
         add_info "macOS", MacOS.full_version
