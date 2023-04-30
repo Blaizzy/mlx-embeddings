@@ -860,6 +860,7 @@ module Homebrew
         return if Homebrew::EnvConfig.developer?
         return if Homebrew::EnvConfig.no_install_from_api?
         return if Homebrew::Settings.read("devcmdrun") == "true"
+
         cask_tap = Tap.fetch("homebrew", "cask")
         return unless cask_tap.installed?
 
