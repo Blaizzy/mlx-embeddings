@@ -494,7 +494,10 @@ class Version
   def initialize(val, detected_from_url: false)
     raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
 
-    @version = val.to_str
+    version = val.to_str
+    raise ArgumentError, "Version must not be empty" if version.blank?
+
+    @version = version
     @detected_from_url = detected_from_url
   end
 
@@ -677,11 +680,6 @@ class Version
 
     major_minor_patch = T.must(tokens[0..2])
     major_minor_patch.empty? ? NULL : self.class.new(major_minor_patch.join("."))
-  end
-
-  sig { returns(T::Boolean) }
-  def empty?
-    version&.empty? || false
   end
 
   sig { returns(Integer) }
