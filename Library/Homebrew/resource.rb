@@ -194,7 +194,7 @@ class Resource < Downloadable
   def version(val = nil)
     return super() if val.nil?
 
-    @version = case val
+    @version = case T.unsafe(val)
     when String
       val.blank? ? Version::NULL : Version.new(val)
     when Version

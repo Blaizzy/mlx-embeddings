@@ -974,7 +974,7 @@ module Homebrew
           end
         end
 
-        res_current = resource.version
+        res_current = T.must(resource.version)
         res_latest = Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(resource, v) })
 
         return status_hash(resource, "error", ["Unable to get versions"], verbose: verbose) if res_latest.blank?
