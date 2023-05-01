@@ -1277,7 +1277,7 @@ end
 class BazaarDownloadStrategy < VCSDownloadStrategy
   def initialize(url, name, version, **meta)
     super
-    @url.sub!(%r{^bzr://}, "")
+    @url = @url.sub(%r{^bzr://}, "")
   end
 
   # @see AbstractDownloadStrategy#source_modified_time
