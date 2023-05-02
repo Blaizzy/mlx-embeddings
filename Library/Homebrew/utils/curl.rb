@@ -205,7 +205,7 @@ module Utils
       curl_with_workarounds(*args, print_stderr: false, show_output: true, **options)
     end
 
-    def curl_head(*args, **options)
+    def curl_head(*args, wanted_headers: [], **options)
       [[], ["--request", "GET"]].each do |request_args|
         result = curl_output(
           "--fail", "--location", "--silent", "--head", *request_args, *args,
@@ -216,9 +216,9 @@ module Utils
         if result.success? || result.exit_status == 22
           parsed_output = parse_curl_output(result.stdout)
 
-          # If we didn't get a `Content-Disposition` header yet, retry using `GET`.
-          next if request_args.empty? &&
-                  parsed_output.fetch(:responses).none? { |r| r.fetch(:headers).key?("content-disposition") }
+          # If we didn't get any wanted header yet, retry using `GET`.
+          next if request_args.empty? && wanted_headers.any? &&
+                  parsed_output.fetch(:responses).none? { |r| (r.fetch(:headers).keys & wanted_headers).any? }
 
           return parsed_output if result.success?
         end

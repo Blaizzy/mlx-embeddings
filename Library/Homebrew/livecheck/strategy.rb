@@ -10,6 +10,8 @@ module Homebrew
     #
     # @api private
     module Strategy
+      extend Utils::Curl
+
       module_function
 
       # {Strategy} priorities informally range from 1 to 10, where 10 is the
@@ -52,14 +54,6 @@ module Homebrew
         # messages in output
         "--silent"
       ].freeze
-
-      # `curl` arguments used in `Strategy#page_headers` method.
-      PAGE_HEADERS_CURL_ARGS = ([
-        # We only need the response head (not the body)
-        "--head",
-        # Some servers may not allow a HEAD request, so we use GET
-        "--request", "GET"
-      ] + DEFAULT_CURL_ARGS).freeze
 
       # `curl` arguments used in `Strategy#page_content` method.
       PAGE_CONTENT_CURL_ARGS = ([
@@ -188,11 +182,12 @@ module Homebrew
         headers = []
 
         [:default, :browser].each do |user_agent|
-          output, _, status = curl_with_workarounds(
-            *PAGE_HEADERS_CURL_ARGS, url,
-            **DEFAULT_CURL_OPTIONS,
+          output, _, status = curl_head(
+            url,
+            wanted_headers:    ["location", "content-disposition"],
             use_homebrew_curl: homebrew_curl,
-            user_agent:        user_agent
+            user_agent:        user_agent,
+            **DEFAULT_CURL_OPTIONS,
           )
           next unless status.success?
 
@@ -216,7 +211,7 @@ module Homebrew
       def self.page_content(url, homebrew_curl: false)
         stderr = T.let(nil, T.nilable(String))
         [:default, :browser].each do |user_agent|
-          stdout, stderr, status = curl_with_workarounds(
+          stdout, stderr, status = curl_output(
             *PAGE_CONTENT_CURL_ARGS, url,
             **DEFAULT_CURL_OPTIONS,
             use_homebrew_curl: homebrew_curl,
