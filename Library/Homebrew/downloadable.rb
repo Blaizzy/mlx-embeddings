@@ -109,12 +109,12 @@ class Downloadable
     EOS
   end
 
-  private
-
   sig { overridable.returns(String) }
   def download_name
     File.basename(determine_url.to_s)
   end
+
+  private
 
   sig { overridable.returns(T.nilable(URL)) }
   def determine_url

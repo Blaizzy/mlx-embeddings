@@ -81,6 +81,11 @@ module Cask
       super
     end
 
+    sig { override.returns(String) }
+    def download_name
+      cask.token
+    end
+
     private
 
     def quarantine(path)
@@ -92,11 +97,6 @@ module Cask
       else
         Quarantine.release!(download_path: path)
       end
-    end
-
-    sig { override.returns(String) }
-    def download_name
-      cask.token
     end
 
     sig { override.returns(T.nilable(::URL)) }
