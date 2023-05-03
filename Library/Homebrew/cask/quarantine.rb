@@ -177,13 +177,15 @@ module Cask
     def self.copy_xattrs(from, to)
       odebug "Copying xattrs from #{from} to #{to}"
 
-      system_command!(swift,
-                      args: [
-                        *swift_target_args,
-                        COPY_XATTRS_SCRIPT,
-                        from,
-                        to,
-                      ])
+      system_command!(
+        swift,
+        args: [
+          *swift_target_args,
+          COPY_XATTRS_SCRIPT,
+          from,
+          to,
+        ],
+      )
     end
   end
 end

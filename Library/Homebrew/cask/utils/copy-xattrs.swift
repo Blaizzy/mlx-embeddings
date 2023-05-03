@@ -15,66 +15,66 @@ guard CommandLine.arguments.count >= 3 else {
     exit(2)
 }
 
-CommandLine.arguments[2].withCString { destPath in
-    let destNamesLen = listxattr(destPath, nil, 0, 0)
-    if destNamesLen == -1 {
+CommandLine.arguments[2].withCString { destinationPath in
+    let destinationNamesLength = listxattr(destinationPath, nil, 0, 0)
+    if destinationNamesLength == -1 {
         print("listxattr for destination failed: \(errno)", to: &SwiftErr.stream)
         exit(1)
     }
-    let destNamesBuf = UnsafeMutablePointer<Int8>.allocate(capacity: destNamesLen)
-    if listxattr(destPath, destNamesBuf, destNamesLen, 0) != destNamesLen {
+    let destinationNamesBuffer = UnsafeMutablePointer<Int8>.allocate(capacity: destinationNamesLength)
+    if listxattr(destinationPath, destinationNamesBuffer, destinationNamesLength, 0) != destinationNamesLength {
         print("Attributes changed during system call", to: &SwiftErr.stream)
         exit(1)
     }
 
-    var destNamesIdx = 0
-    while destNamesIdx < destNamesLen {
-        let attribute = destNamesBuf + destNamesIdx
+    var destinationNamesIndex = 0
+    while destinationNamesIndex < destinationNamesLength {
+        let attribute = destinationNamesBuffer + destinationNamesIndex
 
-        if removexattr(destPath, attribute, 0) != 0 {
+        if removexattr(destinationPath, attribute, 0) != 0 {
             print("removexattr for \(String(cString: attribute)) failed: \(errno)", to: &SwiftErr.stream)
             exit(1)
         }
 
-        destNamesIdx += strlen(attribute) + 1
+        destinationNamesIndex += strlen(attribute) + 1
     }
-    destNamesBuf.deallocate()
+    destinationNamesBuffer.deallocate()
 
     CommandLine.arguments[1].withCString { sourcePath in
-        let sourceNamesLen = listxattr(sourcePath, nil, 0, 0)
-        if sourceNamesLen == -1 {
+        let sourceNamesLength = listxattr(sourcePath, nil, 0, 0)
+        if sourceNamesLength == -1 {
             print("listxattr for source failed: \(errno)", to: &SwiftErr.stream)
             exit(1)
         }
-        let sourceNamesBuf = UnsafeMutablePointer<Int8>.allocate(capacity: sourceNamesLen)
-        if listxattr(sourcePath, sourceNamesBuf, sourceNamesLen, 0) != sourceNamesLen {
+        let sourceNamesBuffer = UnsafeMutablePointer<Int8>.allocate(capacity: sourceNamesLength)
+        if listxattr(sourcePath, sourceNamesBuffer, sourceNamesLength, 0) != sourceNamesLength {
             print("Attributes changed during system call", to: &SwiftErr.stream)
             exit(1)
         }
 
-        var sourceNamesIdx = 0
-        while sourceNamesIdx < sourceNamesLen {
-            let attribute = sourceNamesBuf + sourceNamesIdx
+        var sourceNamesIndex = 0
+        while sourceNamesIndex < sourceNamesLength {
+            let attribute = sourceNamesBuffer + sourceNamesIndex
 
-            let valueLen = getxattr(sourcePath, attribute, nil, 0, 0, 0)
-            if valueLen == -1 {
+            let valueLength = getxattr(sourcePath, attribute, nil, 0, 0, 0)
+            if valueLength == -1 {
                 print("getxattr for \(String(cString: attribute)) failed: \(errno)", to: &SwiftErr.stream)
                 exit(1)
             }
-            let valueBuf = UnsafeMutablePointer<Int8>.allocate(capacity: valueLen)
-            if getxattr(sourcePath, attribute, valueBuf, valueLen, 0, 0) != valueLen {
+            let valueBuffer = UnsafeMutablePointer<Int8>.allocate(capacity: valueLength)
+            if getxattr(sourcePath, attribute, valueBuffer, valueLength, 0, 0) != valueLength {
                 print("Attributes changed during system call", to: &SwiftErr.stream)
                 exit(1)
             }
 
-            if setxattr(destPath, attribute, valueBuf, valueLen, 0, 0) != 0 {
+            if setxattr(destinationPath, attribute, valueBuffer, valueLength, 0, 0) != 0 {
                 print("setxattr for \(String(cString: attribute)) failed: \(errno)", to: &SwiftErr.stream)
                 exit(1)
             }
 
-            valueBuf.deallocate()
-            sourceNamesIdx += strlen(attribute) + 1
+            valueBuffer.deallocate()
+            sourceNamesIndex += strlen(attribute) + 1
         }
-        sourceNamesBuf.deallocate()
+        sourceNamesBuffer.deallocate()
     }
 }

@@ -93,7 +93,7 @@ module Cask
 
         raise CaskAlreadyInstalledError, @cask
       end
-      predecessor = (reinstall? && @cask.installed?) ? @cask : nil
+      predecessor = @cask if reinstall? && @cask.installed?
 
       check_conflicts
 
