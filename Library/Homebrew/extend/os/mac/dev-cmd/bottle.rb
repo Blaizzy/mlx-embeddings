@@ -4,6 +4,10 @@
 module Homebrew
   sig { returns(T::Array[String]) }
   def self.tar_args
-    ["--no-mac-metadata", "--no-acls", "--no-xattrs"].freeze
+    if MacOS.version >= :catalina
+      ["--no-mac-metadata", "--no-acls", "--no-xattrs"].freeze
+    else
+      [].freeze
+    end
   end
 end
