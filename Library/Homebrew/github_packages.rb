@@ -57,9 +57,20 @@ class GitHubPackages
     load_schemas!
 
     bottles_hash.each do |formula_full_name, bottle_hash|
+      # First, check that we won't encounter an error in the middle of uploading bottles.
+      preupload_check(user, token, skopeo, formula_full_name, bottle_hash,
+                      keep_old: keep_old, dry_run: dry_run, warn_on_error: warn_on_error)
+    end
+
+    # We intentionally iterate over `bottles_hash` twice to
+    # avoid erroring out in the middle of uploading bottles.
+    # rubocop:disable Style/CombinableLoops
+    bottles_hash.each do |formula_full_name, bottle_hash|
+      # Next, upload the bottles after checking them all.
       upload_bottle(user, token, skopeo, formula_full_name, bottle_hash,
                     keep_old: keep_old, dry_run: dry_run, warn_on_error: warn_on_error)
     end
+    # rubocop:enable Style/CombinableLoops
   end
 
   def self.version_rebuild(version, rebuild, bottle_tag = nil)
@@ -191,7 +202,7 @@ class GitHubPackages
     end
   end
 
-  def upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, keep_old:, dry_run:, warn_on_error:)
+  def preupload_check(user, token, skopeo, _formula_full_name, bottle_hash, keep_old:, dry_run:, warn_on_error:)
     formula_name = bottle_hash["formula"]["name"]
 
     _, org, repo, = *bottle_hash["bottle"]["root_url"].match(URL_REGEX)
@@ -236,6 +247,16 @@ class GitHubPackages
         end
       end
     end
+
+    [formula_name, org, repo, version, rebuild, version_rebuild, image_name, image_uri, keep_old]
+  end
+
+  def upload_bottle(user, token, skopeo, formula_full_name, bottle_hash, keep_old:, dry_run:, warn_on_error:)
+    # We run the preupload check twice to prevent TOCTOU bugs.
+    result = preupload_check(user, token, skopeo, formula_full_name, bottle_hash,
+                             keep_old: keep_old, dry_run: dry_run, warn_on_error: warn_on_error)
+
+    formula_name, org, repo, version, rebuild, version_rebuild, image_name, image_uri, keep_old = *result
 
     root = Pathname("#{formula_name}--#{version_rebuild}")
     FileUtils.rm_rf root
@@ -419,7 +440,7 @@ class GitHubPackages
       rescue ErrorDuringExecution
         retry_count += 1
         odie "Cannot perform an upload to registry after retrying multiple times!" if retry_count >= 5
-        sleep 5*retry_count
+        sleep 5 ** retry_count
         retry
       end
 
