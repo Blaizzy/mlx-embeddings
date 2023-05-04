@@ -2239,12 +2239,9 @@ class Formula
     # Take from API, merging in local install status.
     if self.class.loaded_from_api && !Homebrew::EnvConfig.no_install_from_api?
       json_formula = Homebrew::API::Formula.all_formulae[name].dup
-      json_formula["name"] = hash["name"]
-      json_formula["installed"] = hash["installed"]
-      json_formula["linked_keg"] = hash["linked_keg"]
-      json_formula["pinned"] = hash["pinned"]
-      json_formula["outdated"] = hash["outdated"]
-      return json_formula
+      return json_formula.merge(
+        hash.slice("name", "installed", "linked_keg", "pinned", "outdated"),
+      )
     end
 
     variations = {}
