@@ -134,9 +134,12 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: DEFAULT_REGEX, **_unused, &block)
-          match_data = { matches: {}, regex: regex }
+          match_data = { matches: {}, regex: regex, url: url }
+
           generated = generate_input_values(url)
           return match_data if generated.blank?
+
+          match_data[:url] = generated[:url]
 
           release = GitHub.get_latest_release(generated[:username], generated[:repository])
           versions_from_content([release], regex, &block).each do |match_text|
