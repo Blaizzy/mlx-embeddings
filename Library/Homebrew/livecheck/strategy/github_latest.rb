@@ -62,6 +62,28 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Extracts information from a provided URL and uses it to generate
+        # various input values used by the strategy to check for new versions.
+        # Some of these values act as defaults and can be overridden in a
+        # `livecheck` block.
+        #
+        # @param url [String] the URL used to generate values
+        # @return [Hash]
+        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
+        def self.generate_input_values(url)
+          values = {}
+
+          match = url.sub(/\.git$/i, "").match(URL_MATCH_REGEX)
+          return values if match.blank?
+
+          # Example URL: `https://github.com/example/example/releases/latest`
+          values[:url] = "https://github.com/#{match[:username]}/#{match[:repository]}/releases/latest"
+          values[:username] = match[:username]
+          values[:repository] = match[:repository]
+
+          values
+        end
+
         # Uses the regex to match release information in content or, if a block is
         # provided, passes the page content to the block to handle matching.
         # With either approach, an array of unique matches is returned.
@@ -96,28 +118,6 @@ module Homebrew
             end
             value
           end.compact.uniq
-        end
-
-        # Extracts information from a provided URL and uses it to generate
-        # various input values used by the strategy to check for new versions.
-        # Some of these values act as defaults and can be overridden in a
-        # `livecheck` block.
-        #
-        # @param url [String] the URL used to generate values
-        # @return [Hash]
-        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
-        def self.generate_input_values(url)
-          values = {}
-
-          match = url.sub(/\.git$/i, "").match(URL_MATCH_REGEX)
-          return values if match.blank?
-
-          # Example URL: `https://github.com/example/example/releases/latest`
-          values[:url] = "https://github.com/#{match[:username]}/#{match[:repository]}/releases/latest"
-          values[:username] = match[:username]
-          values[:repository] = match[:repository]
-
-          values
         end
 
         # Generates a URL and regex (if one isn't provided) and passes them
