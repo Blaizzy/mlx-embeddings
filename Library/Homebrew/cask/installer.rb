@@ -20,7 +20,7 @@ module Cask
 
     def initialize(cask, command: SystemCommand, force: false, adopt: false,
                    skip_cask_deps: false, binaries: true, verbose: false,
-                   zap: false, require_sha: false, upgrade: false,
+                   zap: false, require_sha: false, upgrade: false, reinstall: false,
                    installed_as_dependency: false, quarantine: true,
                    verify_download_integrity: true, quiet: false)
       @cask = cask
@@ -32,7 +32,7 @@ module Cask
       @verbose = verbose
       @zap = zap
       @require_sha = require_sha
-      @reinstall = false
+      @reinstall = reinstall
       @upgrade = upgrade
       @installed_as_dependency = installed_as_dependency
       @quarantine = quarantine
@@ -93,6 +93,7 @@ module Cask
 
         raise CaskAlreadyInstalledError, @cask
       end
+      predecessor = @cask if reinstall? && @cask.installed?
 
       check_conflicts
 
@@ -108,7 +109,7 @@ module Cask
 
       @cask.config = @cask.default_config.merge(old_config)
 
-      install_artifacts
+      install_artifacts(predecessor: predecessor)
 
       if (tap = @cask.tap) && tap.should_report_analytics?
         ::Utils::Analytics.report_event(:cask_install, package_name: @cask.token, tap_name: tap.name,
@@ -141,18 +142,12 @@ on_request: true)
       end
     end
 
-    def reinstall
-      odebug "Cask::Installer#reinstall"
-      @reinstall = true
-      install
-    end
-
     def uninstall_existing_cask
       return unless @cask.installed?
 
       # Always force uninstallation, ignore method parameter
-      cask_installer = Installer.new(@cask, verbose: verbose?, force: true, upgrade: upgrade?)
-      zap? ? cask_installer.zap : cask_installer.uninstall
+      cask_installer = Installer.new(@cask, verbose: verbose?, force: true, upgrade: upgrade?, reinstall: true)
+      zap? ? cask_installer.zap : cask_installer.uninstall(successor: @cask)
     end
 
     sig { returns(String) }
@@ -219,7 +214,7 @@ on_request: true)
       Quarantine.propagate(from: primary_container.path, to: to)
     end
 
-    def install_artifacts
+    def install_artifacts(predecessor: nil)
       artifacts = @cask.artifacts
       already_installed_artifacts = []
 
@@ -232,7 +227,8 @@ on_request: true)
 
         next if artifact.is_a?(Artifact::Binary) && !binaries?
 
-        artifact.install_phase(command: @command, verbose: verbose?, adopt: adopt?, force: force?)
+        artifact.install_phase(command: @command, verbose: verbose?, adopt: adopt?, force: force?,
+                               predecessor: predecessor)
         already_installed_artifacts.unshift(artifact)
       end
 
@@ -394,10 +390,10 @@ on_request: true)
       @cask.download_sha_path.atomic_write(@cask.new_download_sha) if @cask.checksumable?
     end
 
-    def uninstall
+    def uninstall(successor: nil)
       load_installed_caskfile!
       oh1 "Uninstalling Cask #{Formatter.identifier(@cask)}"
-      uninstall_artifacts(clear: true)
+      uninstall_artifacts(clear: true, successor: successor)
       if !reinstall? && !upgrade?
         remove_download_sha
         remove_config_file
@@ -415,8 +411,8 @@ on_request: true)
       FileUtils.rm_f @cask.download_sha_path if @cask.download_sha_path.exist?
     end
 
-    def start_upgrade
-      uninstall_artifacts
+    def start_upgrade(successor:)
+      uninstall_artifacts(successor: successor)
       backup
     end
 
@@ -435,10 +431,10 @@ on_request: true)
       backup_metadata_path.rename @cask.metadata_versioned_path
     end
 
-    def revert_upgrade
+    def revert_upgrade(predecessor)
       opoo "Reverting upgrade for Cask #{@cask}"
       restore_backup
-      install_artifacts
+      install_artifacts(predecessor: predecessor)
     end
 
     def finalize_upgrade
@@ -449,7 +445,7 @@ on_request: true)
       puts summary
     end
 
-    def uninstall_artifacts(clear: false)
+    def uninstall_artifacts(clear: false, successor: nil)
       artifacts = @cask.artifacts
 
       odebug "Uninstalling artifacts"
@@ -459,7 +455,11 @@ on_request: true)
         if artifact.respond_to?(:uninstall_phase)
           odebug "Uninstalling artifact of class #{artifact.class}"
           artifact.uninstall_phase(
-            command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+            command:   @command,
+            verbose:   verbose?,
+            skip:      clear,
+            force:     force?,
+            successor: successor,
           )
         end
 
@@ -467,7 +467,11 @@ on_request: true)
 
         odebug "Post-uninstalling artifact of class #{artifact.class}"
         artifact.post_uninstall_phase(
-          command: @command, verbose: verbose?, skip: clear, force: force?, upgrade: upgrade?,
+          command:   @command,
+          verbose:   verbose?,
+          skip:      clear,
+          force:     force?,
+          successor: successor,
         )
       end
     end

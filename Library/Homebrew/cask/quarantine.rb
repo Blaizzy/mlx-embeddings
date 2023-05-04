@@ -12,6 +12,7 @@ module Cask
     QUARANTINE_ATTRIBUTE = "com.apple.quarantine"
 
     QUARANTINE_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/quarantine.swift").freeze
+    COPY_XATTRS_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/copy-xattrs.swift").freeze
 
     def self.swift
       @swift ||= DevelopmentTools.locate("swift")
@@ -171,6 +172,20 @@ module Cask
       return if quarantiner.success?
 
       raise CaskQuarantinePropagationError.new(to, quarantiner.stderr)
+    end
+
+    def self.copy_xattrs(from, to)
+      odebug "Copying xattrs from #{from} to #{to}"
+
+      system_command!(
+        swift,
+        args: [
+          *swift_target_args,
+          COPY_XATTRS_SCRIPT,
+          from,
+          to,
+        ],
+      )
     end
   end
 end

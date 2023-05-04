@@ -26,8 +26,9 @@ module Cask
                       force:          force,
                       skip_cask_deps: skip_cask_deps,
                       require_sha:    require_sha,
+                      reinstall:      true,
                       quarantine:     quarantine,
-                      zap:            zap).reinstall
+                      zap:            zap).install
       end
     end
   end

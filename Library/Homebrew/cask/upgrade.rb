@@ -180,22 +180,22 @@ module Cask
         new_cask_installer.fetch
 
         # Move the old cask's artifacts back to staging
-        old_cask_installer.start_upgrade
+        old_cask_installer.start_upgrade(successor: new_cask)
         # And flag it so in case of error
         started_upgrade = true
 
         # Install the new cask
         new_cask_installer.stage
 
-        new_cask_installer.install_artifacts
+        new_cask_installer.install_artifacts(predecessor: old_cask)
         new_artifacts_installed = true
 
         # If successful, wipe the old cask from staging
         old_cask_installer.finalize_upgrade
       rescue => e
-        new_cask_installer.uninstall_artifacts if new_artifacts_installed
+        new_cask_installer.uninstall_artifacts(successor: old_cask) if new_artifacts_installed
         new_cask_installer.purge_versioned_files
-        old_cask_installer.revert_upgrade if started_upgrade
+        old_cask_installer.revert_upgrade(predecessor: new_cask) if started_upgrade
         raise e
       end
 
