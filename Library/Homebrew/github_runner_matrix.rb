@@ -63,6 +63,7 @@ class GitHubRunnerMatrix
   private
 
   SELF_HOSTED_LINUX_RUNNER = "linux-self-hosted-1"
+  GITHUB_ACTIONS_LONG_TIMEOUT = 4320
 
   sig { returns(LinuxRunnerSpec) }
   def linux_runner_spec
@@ -76,7 +77,7 @@ class GitHubRunnerMatrix
         options: "--user=linuxbrew -e GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED",
       },
       workdir:   "/github/home",
-      timeout:   4320,
+      timeout:   GITHUB_ACTIONS_LONG_TIMEOUT,
       cleanup:   linux_runner == SELF_HOSTED_LINUX_RUNNER,
     )
   end
@@ -130,33 +131,41 @@ class GitHubRunnerMatrix
       runner_timeout += 30 if macos_version <= :big_sur
 
       # Use GitHub Actions macOS Runner for testing dependents if compatible with timeout.
-      runner, cleanup = if (@dependent_matrix || use_github_runner) &&
-                           macos_version <= NEWEST_GITHUB_ACTIONS_MACOS_RUNNER &&
-                           runner_timeout <= GITHUB_ACTIONS_RUNNER_TIMEOUT
-        ["macos-#{version}", true]
+      runner, runner_timeout = if (@dependent_matrix || use_github_runner) &&
+                                  macos_version <= NEWEST_GITHUB_ACTIONS_MACOS_RUNNER &&
+                                  runner_timeout <= GITHUB_ACTIONS_RUNNER_TIMEOUT
+        ["macos-#{version}", GITHUB_ACTIONS_RUNNER_TIMEOUT]
       else
-        ["#{version}#{ephemeral_suffix}", false]
+        ["#{version}#{ephemeral_suffix}", runner_timeout]
       end
 
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-x86_64",
         runner:  runner,
         timeout: runner_timeout,
-        cleanup: cleanup,
+        cleanup: !runner.end_with?(ephemeral_suffix),
       )
       @runners << create_runner(:macos, :x86_64, spec, macos_version)
 
       next if macos_version < :big_sur
 
+      runner = +"#{version}-arm64"
+
       # Use bare metal runner when testing dependents on ARM64 Monterey.
       use_ephemeral = macos_version >= (@dependent_matrix ? :ventura : :monterey)
-      runner, cleanup = if use_ephemeral
-        ["#{version}-arm64#{ephemeral_suffix}", false]
-      else
-        ["#{version}-arm64", true]
-      end
+      runner << ephemeral_suffix if use_ephemeral
 
-      spec = MacOSRunnerSpec.new(name: "macOS #{version}-arm64", runner: runner, timeout: timeout, cleanup: cleanup)
+      runner.freeze
+
+      # The ARM runners are typically over twice as fast as the Intel runners.
+      runner_timeout = timeout
+      runner_timeout /= 2 if timeout < GITHUB_ACTIONS_LONG_TIMEOUT
+      spec = MacOSRunnerSpec.new(
+        name:    "macOS #{version}-arm64",
+        runner:  runner,
+        timeout: runner_timeout,
+        cleanup: !runner.end_with?(ephemeral_suffix),
+      )
       @runners << create_runner(:macos, :arm64, spec, macos_version)
     end
 
