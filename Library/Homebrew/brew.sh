@@ -81,7 +81,7 @@ case "$*" in
     ;;
   shellenv)
     source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"
-    homebrew-shellenv
+    homebrew-shellenv "$1"
     exit 0
     ;;
   formulae)
