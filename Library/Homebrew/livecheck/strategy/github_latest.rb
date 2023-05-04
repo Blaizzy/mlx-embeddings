@@ -76,8 +76,7 @@ module Homebrew
           match = url.sub(/\.git$/i, "").match(URL_MATCH_REGEX)
           return values if match.blank?
 
-          # Example URL: `https://github.com/example/example/releases/latest`
-          values[:url] = "https://github.com/#{match[:username]}/#{match[:repository]}/releases/latest"
+          values[:url] = "https://api.github.com/repos/#{match[:username]}/#{match[:repository]}/releases/latest"
           values[:username] = match[:username]
           values[:repository] = match[:repository]
 
