@@ -883,29 +883,6 @@ then
   fi
 fi
 
-if [[ -n "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_DEVELOPER_COMMAND}" ]]
-then
-  # Always run with Sorbet for Homebrew developers or Homebrew developer commands.
-  export HOMEBREW_SORBET_RUNTIME="1"
-fi
-
-# brew audit and brew readall is currently failing with Sorbet for homebrew/core.
-# TODO: fix this and remove this if block.
-if [[ -n "${HOMEBREW_SORBET_RUNTIME}" ]]
-then
-  NO_SORBET_RUNTIME_COMMANDS=(
-    audit
-    readall
-  )
-
-  if check-array-membership "${HOMEBREW_COMMAND}" "${NO_SORBET_RUNTIME_COMMANDS[@]}"
-  then
-    unset HOMEBREW_SORBET_RUNTIME
-  fi
-
-  unset NO_SORBET_RUNTIME_COMMANDS
-fi
-
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
 then
   if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]]
