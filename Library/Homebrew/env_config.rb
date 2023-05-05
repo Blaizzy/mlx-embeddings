@@ -357,8 +357,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_SORBET_RUNTIME:                   {
-        description: "If set, enable runtime typechecking using Sorbet. " \
-                     "Set by default for HOMEBREW_DEVELOPER or when running developer commands.",
+        description: "If set, enable runtime typechecking using Sorbet.",
         boolean:     true,
       },
       HOMEBREW_SSH_CONFIG_PATH:                  {
