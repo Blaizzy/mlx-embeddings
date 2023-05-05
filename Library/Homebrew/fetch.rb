@@ -18,7 +18,12 @@ module Homebrew
       bottle = formula.bottle
 
       return true if force_bottle && bottle.present?
-      return true if os.present?
+      if os.present?
+        return true
+      elsif ENV["HOMEBREW_TEST_GENERIC_OS"].present?
+        # `:generic` bottles don't exist, and `--os` flag is not specified.
+        return false
+      end
       return true if arch.present?
       return true if bottle_tag.present? && formula.bottled?(bottle_tag)
 

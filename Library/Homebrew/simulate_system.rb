@@ -23,8 +23,8 @@ module Homebrew
         old_arch = self.arch
 
         begin
-          self.os = os if os
-          self.arch = arch if arch
+          self.os = os if os && os != current_os
+          self.arch = arch if arch && arch != current_arch
 
           yield
         ensure
