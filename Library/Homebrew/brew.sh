@@ -850,6 +850,9 @@ if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]] ||
 then
   export HOMEBREW_DEVELOPER_COMMAND="1"
 
+  # Always run developer commands with Sorbet.
+  export HOMEBREW_SORBET_RUNTIME="1"
+
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
     NO_INSTALL_FROM_API_COMMANDS=(
@@ -881,6 +884,14 @@ then
 
     unset NO_INSTALL_FROM_API_COMMANDS
   fi
+fi
+
+# brew readall is currently failing with Sorbet for homebrew/core.
+# TODO: fix this and remove this HOMEBREW_COMMAND conditional.
+if [[ -n "${HOMEBREW_DEVELOPER}" && "${HOMEBREW_COMMAND}" != "readall" ]]
+then
+  # Always run with Sorbet for Homebrew developers.
+  export HOMEBREW_SORBET_RUNTIME="1"
 fi
 
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
