@@ -158,8 +158,7 @@ class GitHubRunnerMatrix
       runner.freeze
 
       # The ARM runners are typically over twice as fast as the Intel runners.
-      runner_timeout = timeout
-      runner_timeout /= 2 if timeout < GITHUB_ACTIONS_LONG_TIMEOUT
+      runner_timeout /= 2 if runner_timeout < GITHUB_ACTIONS_LONG_TIMEOUT
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-arm64",
         runner:  runner,
