@@ -473,7 +473,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       url = url.sub(%r{^https?://#{GitHubPackages::URL_DOMAIN}/}o, "#{domain.chomp("/")}/")
     end
 
-    parsed_output = curl_head(url.to_s, wanted_headers: ["content-disposition"], timeout: timeout)
+    parsed_output = curl_headers(url.to_s, wanted_headers: ["content-disposition"], timeout: timeout)
     parsed_headers = parsed_output.fetch(:responses).map { |r| r.fetch(:headers) }
 
     final_url = curl_response_follow_redirections(parsed_output.fetch(:responses), url)

@@ -205,7 +205,7 @@ module Utils
       curl_with_workarounds(*args, print_stderr: false, show_output: true, **options)
     end
 
-    def curl_head(*args, wanted_headers: [], **options)
+    def curl_headers(*args, wanted_headers: [], **options)
       [[], ["--request", "GET"]].each do |request_args|
         result = curl_output(
           "--fail", "--location", "--silent", "--head", *request_args, *args,

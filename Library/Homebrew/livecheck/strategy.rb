@@ -182,7 +182,7 @@ module Homebrew
         headers = []
 
         [:default, :browser].each do |user_agent|
-          output, _, status = curl_head(
+          output, _, status = curl_headers(
             url,
             wanted_headers:    ["location", "content-disposition"],
             use_homebrew_curl: homebrew_curl,
