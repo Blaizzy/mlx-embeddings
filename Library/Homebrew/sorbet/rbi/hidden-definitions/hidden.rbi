@@ -6373,6 +6373,8 @@ class RuboCop::AST::Node
 
   def method_node(param0=T.unsafe(nil)); end
 
+  def on_system_block?(param0=T.unsafe(nil)); end
+
   def val_node(param0=T.unsafe(nil)); end
 end
 
@@ -6505,11 +6507,60 @@ class RuboCop::Cask::AST::Stanza
 end
 
 module RuboCop::Cop::Cask::CaskHelp
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+module RuboCop::Cop::Cask::CaskHelp
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
 end
 
+class RuboCop::Cop::Cask::Desc
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::HomepageUrlTrailingSlash
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::NoDslVersion
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::NoOverrides
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+module RuboCop::Cop::Cask::OnDescStanza
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+module RuboCop::Cop::Cask::OnHomepageStanza
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::OnSystemConditionals
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+module RuboCop::Cop::Cask::OnUrlStanza
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::StanzaGrouping
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::StanzaOrder
+  include ::RuboCop::Cop::CommentsHelp
+end
+
+class RuboCop::Cop::Cask::Url
+  include ::RuboCop::Cop::CommentsHelp
+end
+
 class RuboCop::Cop::Cask::Variables
+  include ::RuboCop::Cop::CommentsHelp
   def variable_assignment(param0); end
 end
 

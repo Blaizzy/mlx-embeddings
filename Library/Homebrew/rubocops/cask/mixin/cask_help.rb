@@ -6,31 +6,39 @@ module RuboCop
     module Cask
       # Common functionality for cops checking casks.
       module CaskHelp
-        extend T::Helpers
+        prepend CommentsHelp
 
-        abstract!
-
-        sig { abstract.params(cask_block: RuboCop::Cask::AST::CaskBlock).void }
+        sig { overridable.params(cask_block: RuboCop::Cask::AST::CaskBlock).void }
         def on_cask(cask_block); end
 
+        sig { overridable.params(cask_stanza_block: RuboCop::Cask::AST::StanzaBlock).void }
         def on_cask_stanza_block(cask_stanza_block); end
 
+        # FIXME: Workaround until https://github.com/rubocop/rubocop/pull/11858 is released.
+        def find_end_line(node)
+          return node.loc.end.line if node.block_type? || node.numblock_type?
+
+          super
+        end
+
+        sig { params(block_node: RuboCop::AST::BlockNode).void }
         def on_block(block_node)
           super if defined? super
 
-          if respond_to?(:on_cask_stanza_block) && (block_node.cask_block? || block_node.on_system_block?)
-            on_cask_stanza_block(block_node)
-          end
+          return if !block_node.cask_block? && !block_node.cask_on_system_block?
 
-          if respond_to?(:on_cask) && block_node.cask_block?
-            comments = processed_source.comments
-            cask_block = RuboCop::Cask::AST::CaskBlock.new(block_node, comments)
-            on_cask(cask_block)
-          end
+          comments = comments_in_range(block_node).to_a
+          stanza_block = RuboCop::Cask::AST::StanzaBlock.new(block_node, comments)
+          on_cask_stanza_block(stanza_block)
+
+          return unless block_node.cask_block?
+
+          cask_block = RuboCop::Cask::AST::CaskBlock.new(block_node, comments)
+          on_cask(cask_block)
         end
 
         def on_system_methods(cask_stanzas)
-          cask_stanzas.select { |s| RuboCop::Cask::Constants::ON_SYSTEM_METHODS.include?(s.stanza_name) }
+          cask_stanzas.select(&:on_system_block?)
         end
 
         def inner_stanzas(block_node, comments)

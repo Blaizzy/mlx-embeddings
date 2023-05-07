@@ -489,8 +489,8 @@ describe RuboCop::Cop::Cask::StanzaOrder do
           end
           on_intel do
             version :latest
-            sha256 :no_check
 
+            sha256 :no_check
             url "https://foo.brew.sh/foo-intel.zip"
           end
         end
@@ -533,24 +533,24 @@ describe RuboCop::Cop::Cask::StanzaOrder do
       <<~CASK
         cask "foo" do
           on_mojave do
-            version "0.6"
+            version :latest
             sha256 "ghi789"
             url "https://foo.brew.sh/foo-mojave.zip"
           end
           on_catalina do
-            sha256 "def456"
             version "0.7"
+            sha256 "def456"
             url "https://foo.brew.sh/foo-catalina.zip"
           end
           on_big_sur do
-            version "0.8"
+            version :latest
             sha256 "jkl012"
 
             url "https://foo.brew.sh/foo-big-sur.zip"
           end
           on_ventura do
             version :latest
-            sha256 :no_check
+            sha256 "abc123"
             url "https://foo.brew.sh/foo-ventura.zip"
           end
         end

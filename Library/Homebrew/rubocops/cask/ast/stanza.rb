@@ -23,6 +23,7 @@ module RuboCop
 
         def_delegator :stanza_node, :parent, :parent_node
         def_delegator :stanza_node, :arch_variable?
+        def_delegator :stanza_node, :on_system_block?
 
         def source_range
           stanza_node.location_expression
@@ -48,6 +49,10 @@ module RuboCop
           Constants::STANZA_GROUP_HASH[stanza_name]
         end
 
+        def stanza_index
+          Constants::STANZA_ORDER.index(stanza_name)
+        end
+
         def same_group?(other)
           stanza_group == other.stanza_group
         end
@@ -65,7 +70,6 @@ module RuboCop
         def ==(other)
           self.class == other.class && stanza_node == other.stanza_node
         end
-
         alias eql? ==
 
         Constants::STANZA_ORDER.each do |stanza_name|

@@ -9,45 +9,57 @@ module RuboCop
       # This cop checks that a cask's stanzas are ordered correctly, including nested within `on_*` blocks.
       # @see https://docs.brew.sh/Cask-Cookbook#stanza-order
       class StanzaOrder < Base
+        include IgnoredNode
         extend Forwardable
         extend AutoCorrector
         include CaskHelp
 
         MESSAGE = "`%<stanza>s` stanza out of order"
 
-        def on_cask(cask_block)
-          @cask_block = cask_block
+        def on_cask_stanza_block(stanza_block)
+          stanzas = stanza_block.stanzas
+          ordered_stanzas = sort_stanzas(stanzas)
 
-          # Find all the stanzas that are direct children of the cask block or one of its `on_*` blocks.
-          puts "toplevel_stanzas: #{toplevel_stanzas.map(&:stanza_name).inspect}"
-          outer_and_inner_stanzas = toplevel_stanzas + toplevel_stanzas.map do |stanza|
-            return stanza unless stanza.method_node&.block_type?
+          return if stanzas == ordered_stanzas
 
-            inner_stanzas(stanza.method_node, stanza.comments)
-          end
+          stanzas.zip(ordered_stanzas).each do |stanza_before, stanza_after|
+            next if stanza_before == stanza_after
 
-          puts "outer_and_inner_stanzas: #{outer_and_inner_stanzas.flatten.map(&:stanza_name).inspect}"
-          add_offenses(outer_and_inner_stanzas.flatten)
-        end
+            add_offense(
+              stanza_before.method_node,
+              message: format(MESSAGE, stanza: stanza_before.stanza_name),
+            ) do |corrector|
+              next if part_of_ignored_node?(stanza_before.method_node)
 
-        private
+              corrector.replace(
+                stanza_before.source_range_with_comments,
+                stanza_after.source_with_comments,
+              )
 
-        attr_reader :cask_block
-
-        def_delegators :cask_block, :cask_node, :toplevel_stanzas
-
-        def add_offenses(outer_and_inner_stanzas)
-          outer_and_inner_stanzas.each_cons(2) do |stanza1, stanza2|
-            next if stanza_order_index(stanza1.stanza_name) < stanza_order_index(stanza2.stanza_name)
-
-            puts "#{stanza2.stanza_name} should come before #{stanza1.stanza_name}"
-            add_offense(stanza1.method_node, message: format(MESSAGE, stanza: stanza1.stanza_name)) do |corrector|
-              # TODO: Move the stanza to the correct location.
+              # Ignore node so that nested content is not auto-corrected and clobbered.
+              ignore_node(stanza_before.method_node)
             end
           end
         end
 
-        def stanza_order_index(stanza_name)
+        private
+
+        def sort_stanzas(stanzas)
+          stanzas.sort do |stanza1, stanza2|
+            i1 = stanza1.stanza_index
+            i2 = stanza2.stanza_index
+
+            if i1 == i2
+              i1 = stanzas.index(stanza1)
+              i2 = stanzas.index(stanza2)
+            end
+
+            i1 - i2
+          end
+        end
+
+        def stanza_order_index(stanza)
+          stanza_name = stanza.respond_to?(:method_name) ? stanza.method_name : stanza.stanza_name
           RuboCop::Cask::Constants::STANZA_ORDER.index(stanza_name)
         end
       end
