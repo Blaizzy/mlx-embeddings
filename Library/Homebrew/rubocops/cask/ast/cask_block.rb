@@ -8,7 +8,6 @@ module RuboCop
     module AST
       class StanzaBlock
         extend T::Helpers
-        extend T::Sig
 
         sig { returns(RuboCop::AST::BlockNode) }
         attr_reader :block_node

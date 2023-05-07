@@ -21,7 +21,7 @@ module RuboCop
         def on_cask(cask_block)
           cask_stanzas = cask_block.toplevel_stanzas
 
-          return unless (on_blocks = on_system_methods(cask_stanzas)).any?
+          return if (on_blocks = on_system_methods(cask_stanzas)).none?
 
           stanzas_in_blocks = on_system_stanzas(on_blocks)
 

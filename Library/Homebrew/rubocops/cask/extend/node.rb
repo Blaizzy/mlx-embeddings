@@ -5,8 +5,6 @@ module RuboCop
   module AST
     # Extensions for RuboCop's AST Node class.
     class Node
-      extend T::Sig
-
       include RuboCop::Cask::Constants
 
       def_node_matcher :method_node, "{$(send ...) (block $(send ...) ...)}"

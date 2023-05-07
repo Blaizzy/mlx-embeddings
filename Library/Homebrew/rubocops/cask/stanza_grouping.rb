@@ -23,7 +23,7 @@ module RuboCop
           cask_stanzas = cask_block.toplevel_stanzas
           add_offenses(cask_stanzas)
 
-          return unless (on_blocks = on_system_methods(cask_stanzas)).any?
+          return if (on_blocks = on_system_methods(cask_stanzas)).none?
 
           on_blocks.map(&:method_node).select(&:block_type?).each do |on_block|
             stanzas = inner_stanzas(on_block, processed_source.comments)
