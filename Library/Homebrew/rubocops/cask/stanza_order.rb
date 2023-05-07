@@ -42,6 +42,12 @@ module RuboCop
           end
         end
 
+        def on_new_investigation
+          super
+
+          ignored_nodes.clear
+        end
+
         private
 
         def sort_stanzas(stanzas)

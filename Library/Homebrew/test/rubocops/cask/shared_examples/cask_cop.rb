@@ -27,11 +27,11 @@ module CaskCop
     offenses = inspect_source(source)
     expect(offenses.size).to eq(expected_offenses.size)
     expected_offenses.zip(offenses).each do |expected, actual|
-      expect_offense(expected, actual)
+      expect_offense2(expected, actual)
     end
   end
 
-  def expect_offense(expected, actual)
+  def expect_offense2(expected, actual)
     expect(actual.message).to eq(expected[:message])
     expect(actual.severity).to eq(expected[:severity])
     expect(actual.line).to eq(expected[:line])
