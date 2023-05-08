@@ -50,6 +50,9 @@ module Homebrew
 
     sig { params(short_version: T.nilable(String), version: T.nilable(String)).void }
     def initialize(short_version, version)
+      # Remove version from short version, if present.
+      short_version = short_version&.sub(/\s*\(#{Regexp.escape(version)}\)\Z/, "") if version
+
       @short_version = short_version.presence
       @version = version.presence
 
@@ -78,8 +81,6 @@ module Homebrew
     def nice_parts
       short_version = self.short_version
       version = self.version
-
-      short_version = short_version&.delete_suffix("(#{version})") if version
 
       return [T.must(short_version)] if short_version == version
 
