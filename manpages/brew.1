@@ -898,11 +898,14 @@ Search for \fItext\fR in the given database\.
 \fB\-\-ubuntu\fR
 Search for \fItext\fR in the given database\.
 .
-.SS "\fBshellenv\fR"
+.SS "\fBshellenv [bash|csh|fish|pwsh|sh|tcsh|zsh]\fR"
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
 The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. To help guarantee idempotence, this command produces no output when Homebrew\'s \fBbin\fR and \fBsbin\fR directories are first and second respectively in your \fBPATH\fR\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval "$(brew shellenv)"\fR
+.
+.P
+The shell can be specified explicitly with a supported shell name parameter\. Unknown shells will output POSIX exports\.
 .
 .SS "\fBtap\fR [\fIoptions\fR] [\fIuser\fR\fB/\fR\fIrepo\fR] [\fIURL\fR]"
 Tap a formula repository\.
