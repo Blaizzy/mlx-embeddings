@@ -12,7 +12,7 @@ describe CurlDownloadStrategy do
   let(:artifact_domain) { nil }
 
   before do
-    allow(strategy).to receive(:curl_head).and_return({ responses: [{ headers: {} }] })
+    allow(strategy).to receive(:curl_headers).and_return({ responses: [{ headers: {} }] })
   end
 
   it "parses the opts and sets the corresponding args" do
