@@ -16,7 +16,9 @@ describe Homebrew::Livecheck::Strategy::GithubLatest do
 
   let(:generated) do
     {
-      url: "https://github.com/abc/def/releases/latest",
+      url:        "https://api.github.com/repos/abc/def/releases/latest",
+      username:   "abc",
+      repository: "def",
     }
   end
 
