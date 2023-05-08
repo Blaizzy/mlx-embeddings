@@ -7,7 +7,7 @@ module Utils
       undef tag
 
       def tag(symbol = nil)
-        return Utils::Bottles::Tag.from_symbol(symbol.to_sym) if symbol.present?
+        return Utils::Bottles::Tag.from_symbol(symbol) if symbol.present?
 
         Utils::Bottles::Tag.new(system: MacOS.version.to_sym, arch: Hardware::CPU.arch)
       end

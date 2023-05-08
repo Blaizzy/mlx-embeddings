@@ -11,7 +11,7 @@ module Utils
     class << self
       # Gets the tag for the running OS.
       def tag(symbol = nil)
-        return Tag.from_symbol(symbol.to_sym) if symbol.present?
+        return Tag.from_symbol(symbol) if symbol.present?
 
         @tag ||= Tag.new(system: HOMEBREW_SYSTEM.downcase.to_sym,
                          arch:   HOMEBREW_PROCESSOR.downcase.to_sym)
