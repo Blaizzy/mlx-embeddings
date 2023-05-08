@@ -27,11 +27,11 @@ module CaskCop
     offenses = inspect_source(source)
     expect(offenses.size).to eq(expected_offenses.size)
     expected_offenses.zip(offenses).each do |expected, actual|
-      expect_offense(expected, actual)
+      expect_offense2(expected, actual)
     end
   end
 
-  def expect_offense(expected, actual)
+  def expect_offense2(expected, actual)
     expect(actual.message).to eq(expected[:message])
     expect(actual.severity).to eq(expected[:severity])
     expect(actual.line).to eq(expected[:line])
@@ -39,8 +39,24 @@ module CaskCop
     expect(actual.location.source).to eq(expected[:source])
   end
 
+  # TODO: Replace with `expect_correction` from `rubocop-rspec`.
   def expect_autocorrected_source(source, correct_source)
-    new_source = autocorrect_source(source)
-    expect(new_source).to eq(Array(correct_source).join("\n"))
+    correct_source = Array(correct_source).join("\n")
+
+    current_source = source
+
+    # RuboCop runs auto-correction in a loop to handle nested offenses.
+    loop do
+      current_source = autocorrect_source(current_source)
+
+      if (ignored_nodes = cop.instance_variable_get(:@ignored_nodes)) && ignored_nodes.any?
+        ignored_nodes.clear
+        next
+      end
+
+      break
+    end
+
+    expect(current_source).to eq correct_source
   end
 end

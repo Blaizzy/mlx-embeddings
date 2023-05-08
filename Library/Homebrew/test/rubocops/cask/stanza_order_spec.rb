@@ -3,10 +3,8 @@
 require "rubocops/rubocop-cask"
 require "test/rubocops/cask/shared_examples/cask_cop"
 
-describe RuboCop::Cop::Cask::StanzaOrder do
+describe RuboCop::Cop::Cask::StanzaOrder, :config do
   include CaskCop
-
-  subject(:cop) { described_class.new }
 
   context "when there is only one stanza" do
     let(:source) do
@@ -55,13 +53,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
+        message:  "`sha256` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "sha256 :no_check",
       }, {
-        message:  "Cask/StanzaOrder: `version` stanza out of order",
+        message:  "`version` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
@@ -95,19 +93,19 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "Cask/StanzaOrder: `version` stanza out of order",
+        message:  "`version` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "version :latest",
       }, {
-        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
+        message:  "`sha256` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
         source:   "sha256 :no_check",
       }, {
-        message:  "Cask/StanzaOrder: `arch` stanza out of order",
+        message:  "`arch` stanza out of order",
         severity: :convention,
         line:     4,
         column:   2,
@@ -143,13 +141,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
+        message:  "`sha256` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
         source:   "sha256 :no_check",
       }, {
-        message:  "Cask/StanzaOrder: `on_arch_conditional` stanza out of order",
+        message:  "`on_arch_conditional` stanza out of order",
         severity: :convention,
         line:     5,
         column:   2,
@@ -185,13 +183,13 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "Cask/StanzaOrder: `on_arch_conditional` stanza out of order",
+        message:  "`on_arch_conditional` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   'folder = on_arch_conditional arm: "darwin-arm64", intel: "darwin"',
       }, {
-        message:  "Cask/StanzaOrder: `arch` stanza out of order",
+        message:  "`arch` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
@@ -231,26 +229,26 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     end
     let(:expected_offenses) do
       [{
-        message:  "Cask/StanzaOrder: `url` stanza out of order",
+        message:  "`url` stanza out of order",
         severity: :convention,
         line:     2,
         column:   2,
         source:   "url 'https://foo.brew.sh/foo.zip'",
       }, {
-        message:  "Cask/StanzaOrder: `uninstall` stanza out of order",
+        message:  "`uninstall` stanza out of order",
         severity: :convention,
         line:     3,
         column:   2,
         source:   "uninstall :quit => 'com.example.foo'," \
                   "\n            :kext => 'com.example.foo.kext'",
       }, {
-        message:  "Cask/StanzaOrder: `version` stanza out of order",
+        message:  "`version` stanza out of order",
         severity: :convention,
         line:     5,
         column:   2,
         source:   "version :latest",
       }, {
-        message:  "Cask/StanzaOrder: `sha256` stanza out of order",
+        message:  "`sha256` stanza out of order",
         severity: :convention,
         line:     7,
         column:   2,
@@ -458,197 +456,108 @@ describe RuboCop::Cop::Cask::StanzaOrder do
     include_examples "autocorrects source"
   end
 
-  # TODO: detect out-of-order stanzas in nested expressions
-  context "when stanzas are nested in a conditional expression" do
-    let(:source) do
-      <<~CASK
-        cask 'foo' do
-          if true
-            sha256 :no_check
-            version :latest
-          end
-        end
-      CASK
-    end
-
-    include_examples "does not report any offenses"
-  end
-
-  context "when `on_arch` blocks are out of order" do
+  context "when `on_arch` blocks and their contents are out of order" do
     let(:source) do
       <<~CASK
         cask 'foo' do
           on_intel do
             url "https://foo.brew.sh/foo-intel.zip"
-            sha256 :no_check
-            version :latest
-          end
 
+            version :latest
+            sha256 :no_check
+          end
           on_arm do
-            url "https://foo.brew.sh/foo-arm.zip"
-            sha256 :no_check
             version :latest
-          end
+            sha256 :no_check
 
-          name "Foo"
+            url "https://foo.brew.sh/foo-arm.zip"
+          end
         end
       CASK
-    end
-
-    let(:expected_offenses) do
-      [{
-        message:  "Cask/StanzaOrder: `on_intel` stanza out of order",
-        severity: :convention,
-        line:     2,
-        column:   2,
-        source:   "on_intel do\n    url \"https://foo.brew.sh/foo-intel.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
-      }, {
-        message:  "Cask/StanzaOrder: `on_arm` stanza out of order",
-        severity: :convention,
-        line:     8,
-        column:   2,
-        source:   "on_arm do\n    url \"https://foo.brew.sh/foo-arm.zip\"\n    sha256 :no_check\n    version :latest\n  end", # rubocop:disable Layout/LineLength
-      }]
     end
 
     let(:correct_source) do
       <<~CASK
         cask 'foo' do
           on_arm do
+            version :latest
+            sha256 :no_check
+
             url "https://foo.brew.sh/foo-arm.zip"
-            sha256 :no_check
-            version :latest
           end
-
           on_intel do
+            version :latest
+
+            sha256 :no_check
             url "https://foo.brew.sh/foo-intel.zip"
-            sha256 :no_check
-            version :latest
           end
-
-          name "Foo"
         end
       CASK
     end
 
-    include_examples "reports offenses"
     include_examples "autocorrects source"
   end
 
-  # TODO: detect out-of-order stanzas in nested expressions
-  context "when the on_arch and on_os stanzas are nested" do
-    let(:source) do
-      <<~CASK
-        cask 'foo' do
-          on_arm do
-            url "https://foo.brew.sh/foo-arm-all.zip"
-            sha256 :no_check
-            version :latest
-          end
-
-          on_intel do
-            on_ventura do
-              url "https://foo.brew.sh/foo-intel-ventura.zip"
-              sha256 :no_check
-            end
-            on_mojave do
-              url "https://foo.brew.sh/foo-intel-mojave.zip"
-              sha256 :no_check
-            end
-            on_catalina do
-              url "https://foo.brew.sh/foo-intel-catalina.zip"
-              sha256 :no_check
-            end
-            on_big_sur do
-              url "https://foo.brew.sh/foo-intel-big-sur.zip"
-              sha256 :no_check
-            end
-
-            version :latest
-          end
-
-          name "Foo"
+  it "registers an offense when `on_os` stanzas and their contents are out of order" do
+    expect_offense <<~CASK
+      cask "foo" do
+        on_ventura do
+        ^^^^^^^^^^^^^ `on_ventura` stanza out of order
+          sha256 "abc123"
+          ^^^^^^^^^^^^^^^ `sha256` stanza out of order
+          version :latest
+          ^^^^^^^^^^^^^^^ `version` stanza out of order
+          url "https://foo.brew.sh/foo-ventura.zip"
         end
-      CASK
-    end
-
-    include_examples "does not report any offenses"
-  end
-
-  context "when the on_os stanzas are out of order" do
-    let(:source) do
-      <<~CASK
-        cask "foo" do
-          on_ventura do
-            url "https://foo.brew.sh/foo-ventura.zip"
-            sha256 :no_check
-          end
-          on_catalina do
-            url "https://foo.brew.sh/foo-catalina.zip"
-            sha256 :no_check
-          end
-          on_mojave do
-            url "https://foo.brew.sh/foo-mojave.zip"
-            sha256 :no_check
-          end
-          on_big_sur do
-            url "https://foo.brew.sh/foo-big-sur.zip"
-            sha256 :no_check
-          end
-
-          name "Foo"
+        on_catalina do
+          sha256 "def456"
+          ^^^^^^^^^^^^^^^ `sha256` stanza out of order
+          version "0.7"
+          ^^^^^^^^^^^^^ `version` stanza out of order
+          url "https://foo.brew.sh/foo-catalina.zip"
         end
-      CASK
-    end
-
-    let(:expected_offenses) do
-      [{
-        message:  "Cask/StanzaOrder: `on_ventura` stanza out of order",
-        severity: :convention,
-        line:     2,
-        column:   2,
-        source:   "on_ventura do\n    url \"https://foo.brew.sh/foo-ventura.zip\"\n    sha256 :no_check\n  end",
-      }, {
-        message:  "Cask/StanzaOrder: `on_mojave` stanza out of order",
-        severity: :convention,
-        line:     10,
-        column:   2,
-        source:   "on_mojave do\n    url \"https://foo.brew.sh/foo-mojave.zip\"\n    sha256 :no_check\n  end",
-      }, {
-        message:  "Cask/StanzaOrder: `on_big_sur` stanza out of order",
-        severity: :convention,
-        line:     14,
-        column:   2,
-        source:   "on_big_sur do\n    url \"https://foo.brew.sh/foo-big-sur.zip\"\n    sha256 :no_check\n  end",
-      }]
-    end
-
-    let(:correct_source) do
-      <<~CASK
-        cask "foo" do
-          on_mojave do
-            url "https://foo.brew.sh/foo-mojave.zip"
-            sha256 :no_check
-          end
-          on_catalina do
-            url "https://foo.brew.sh/foo-catalina.zip"
-            sha256 :no_check
-          end
-          on_big_sur do
-            url "https://foo.brew.sh/foo-big-sur.zip"
-            sha256 :no_check
-          end
-          on_ventura do
-            url "https://foo.brew.sh/foo-ventura.zip"
-            sha256 :no_check
-          end
-
-          name "Foo"
+        on_mojave do
+        ^^^^^^^^^^^^ `on_mojave` stanza out of order
+          version :latest
+          sha256 "ghi789"
+          url "https://foo.brew.sh/foo-mojave.zip"
         end
-      CASK
-    end
+        on_big_sur do
+        ^^^^^^^^^^^^^ `on_big_sur` stanza out of order
+          sha256 "jkl012"
+          ^^^^^^^^^^^^^^^ `sha256` stanza out of order
+          version :latest
+          ^^^^^^^^^^^^^^^ `version` stanza out of order
 
-    include_examples "reports offenses"
-    include_examples "autocorrects source"
+          url "https://foo.brew.sh/foo-big-sur.zip"
+        end
+      end
+    CASK
+
+    expect_correction <<~CASK
+      cask "foo" do
+        on_mojave do
+          version :latest
+          sha256 "ghi789"
+          url "https://foo.brew.sh/foo-mojave.zip"
+        end
+        on_catalina do
+          version "0.7"
+          sha256 "def456"
+          url "https://foo.brew.sh/foo-catalina.zip"
+        end
+        on_big_sur do
+          version :latest
+          sha256 "jkl012"
+
+          url "https://foo.brew.sh/foo-big-sur.zip"
+        end
+        on_ventura do
+          version :latest
+          sha256 "abc123"
+          url "https://foo.brew.sh/foo-ventura.zip"
+        end
+      end
+    CASK
   end
 end
