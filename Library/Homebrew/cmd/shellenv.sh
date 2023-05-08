@@ -24,7 +24,7 @@ homebrew-shellenv() {
   then
     HOMEBREW_SHELL_NAME="$1"
   else
-    HOMEBREW_SHELL_NAME="$(/bin/ps -p "${PPID}" -c -o comm=)}"
+    HOMEBREW_SHELL_NAME="$(/bin/ps -p "${PPID}" -c -o comm=)"
   fi
 
   case "${HOMEBREW_SHELL_NAME}" in
