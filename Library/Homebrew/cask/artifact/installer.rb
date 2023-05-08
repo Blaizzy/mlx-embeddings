@@ -18,9 +18,8 @@ module Cask
       module ManualInstaller
         def install_phase(**)
           puts <<~EOS
-            To complete the installation of Cask #{cask}, you must also
-            run the installer at:
-              #{cask.staged_path.join(path)}
+            Cask #{cask} only provides a manual installer. To run it and complete the installation:
+              open #{cask.staged_path.join(path).to_s.shellescape}
           EOS
         end
       end

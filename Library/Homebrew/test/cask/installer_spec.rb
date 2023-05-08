@@ -112,9 +112,8 @@ describe Cask::Installer, :cask do
         <<~EOS,
           ==> Downloading file://#{HOMEBREW_LIBRARY_PATH}/test/support/fixtures/cask/caffeine.zip
           ==> Installing Cask with-installer-manual
-          To complete the installation of Cask with-installer-manual, you must also
-          run the installer at:
-            #{with_installer_manual.staged_path.join("Caffeine.app")}
+          Cask with-installer-manual only provides a manual installer. To run it and complete the installation:
+            open #{with_installer_manual.staged_path.join("Caffeine.app")}
           🍺  with-installer-manual was successfully installed!
         EOS
       ).to_stdout
