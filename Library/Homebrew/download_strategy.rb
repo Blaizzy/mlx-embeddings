@@ -386,6 +386,14 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     super
     @try_partial = true
     @mirrors = meta.fetch(:mirrors, [])
+
+    # Merge `:header` with `:headers`.
+    if (header = meta.delete(:header))
+      meta[:headers] ||= []
+      meta[:headers] << header
+    end
+
+    super
   end
 
   # Download and cache the file at {#cached_location}.
@@ -553,7 +561,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
     args += ["--user", meta.fetch(:user)] if meta.key?(:user)
 
-    args += [meta[:header], meta[:headers]].flatten.compact.flat_map { |h| ["--header", h.strip] }
+    args += meta.fetch(:headers, []).flat_map { |h| ["--header", h.strip] }
 
     if meta[:insecure]
       unless @insecure_warning_shown
