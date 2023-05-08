@@ -9,7 +9,7 @@ module Homebrew
       bottle = formula.bottle
 
       return true if args.force_bottle? && bottle.present?
-      return true if args.bottle_tag.present? && formula.bottled?(args.bottle_tag)
+      return true if args.bottle_tag.present? && formula.bottled?(args.bottle_tag&.to_sym)
 
       bottle.present? &&
         formula.pour_bottle? &&
