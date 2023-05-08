@@ -23,7 +23,7 @@ module RuboCop
         extend AutoCorrector
         include CaskHelp
 
-        MESSAGE = "Use `%<preferred>s` instead of `%<current>s`"
+        MESSAGE = "Use `%<preferred>s` instead of `%<current>s`."
 
         def on_cask(cask_block)
           @cask_header = cask_block.header

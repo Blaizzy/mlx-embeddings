@@ -13,10 +13,9 @@ module RuboCop
           :appcast, :arch, :auto_updates, :conflicts_with, :container,
           :desc, :homepage, :sha256, :url, :version
         ].freeze
-        MESSAGE = <<~EOS
-          Do not use a top-level `%<stanza>s` stanza as the default. Add it to an `on_{system}` block instead.
-          Use `:or_older` or `:or_newer` to specify a range of macOS versions.
-        EOS
+        MESSAGE = "Do not use a top-level `%<stanza>s` stanza as the default. " \
+                  "Add it to an `on_{system}` block instead. " \
+                  "Use `:or_older` or `:or_newer` to specify a range of macOS versions."
 
         def on_cask(cask_block)
           cask_stanzas = cask_block.toplevel_stanzas
