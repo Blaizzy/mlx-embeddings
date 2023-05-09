@@ -6389,6 +6389,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
+  SET_ON_ARM_ON_INTEL_ON_VENTURA_ETC = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
@@ -6508,11 +6509,6 @@ end
 
 module RuboCop::Cop::Cask::CaskHelp
   include ::RuboCop::Cop::CommentsHelp
-end
-
-module RuboCop::Cop::Cask::CaskHelp
-  extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class RuboCop::Cop::Cask::Desc
