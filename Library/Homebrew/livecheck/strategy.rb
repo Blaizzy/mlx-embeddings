@@ -182,16 +182,18 @@ module Homebrew
         headers = []
 
         [:default, :browser].each do |user_agent|
-          output, _, status = curl_headers(
-            url,
-            wanted_headers:    ["location", "content-disposition"],
-            use_homebrew_curl: homebrew_curl,
-            user_agent:        user_agent,
-            **DEFAULT_CURL_OPTIONS,
-          )
-          next unless status.success?
+          begin
+            parsed_output = curl_headers(
+              url,
+              wanted_headers:    ["location", "content-disposition"],
+              use_homebrew_curl: homebrew_curl,
+              user_agent:        user_agent,
+              **DEFAULT_CURL_OPTIONS,
+            )
+          rescue ErrorDuringExecution
+            next
+          end
 
-          parsed_output = parse_curl_output(output, max_iterations: MAX_PARSE_ITERATIONS)
           parsed_output[:responses].each { |response| headers << response[:headers] }
           break if headers.present?
         end
