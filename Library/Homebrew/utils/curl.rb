@@ -216,9 +216,14 @@ module Utils
         if result.success? || result.exit_status == 22
           parsed_output = parse_curl_output(result.stdout)
 
-          # If we didn't get any wanted header yet, retry using `GET`.
-          next if request_args.empty? && wanted_headers.any? &&
-                  parsed_output.fetch(:responses).none? { |r| (r.fetch(:headers).keys & wanted_headers).any? }
+          if request_args.empty?
+            # If we didn't get any wanted header yet, retry using `GET`.
+            next if wanted_headers.any? &&
+                    parsed_output.fetch(:responses).none? { |r| (r.fetch(:headers).keys & wanted_headers).any? }
+
+            # Some CDNs respond with 400 codes for `HEAD` but resolve with `GET`.
+            next if (400..499).cover?(parsed_output.fetch(:responses).last&.fetch(:status_code).to_i)
+          end
 
           return parsed_output if result.success?
         end
