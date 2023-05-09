@@ -94,7 +94,7 @@ If a maintainer is elected to the Homebrew's [Technical Steering Committee](http
 
 When they cease to be a TSC member, revoke or downgrade their access to all of the above.
 
-## System Owners
+## Owners
 
 The Project Leader, one other PLC member (ideally a maintainer) and one other TSC member should be made system owners on GitHub and Slack:
 
