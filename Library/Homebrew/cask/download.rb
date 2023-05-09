@@ -32,9 +32,9 @@ module Cask
       @checksum ||= cask.sha256 if cask.sha256 != :no_check
     end
 
-    sig { override.returns(T.nilable(::Version)) }
+    sig { override.returns(T.nilable(Version)) }
     def version
-      @version ||= ::Version.create(cask.version)
+      @version ||= Version.create(cask.version)
     end
 
     sig {

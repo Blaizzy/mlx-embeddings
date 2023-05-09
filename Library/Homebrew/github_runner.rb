@@ -8,7 +8,7 @@ class GitHubRunner < T::Struct
   const :platform, Symbol
   const :arch, Symbol
   const :spec, T.any(LinuxRunnerSpec, MacOSRunnerSpec)
-  const :macos_version, T.nilable(OS::Mac::Version)
+  const :macos_version, T.nilable(MacOSVersion)
   prop  :active, T::Boolean, default: false
 
   sig { returns(T::Boolean) }

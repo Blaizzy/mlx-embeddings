@@ -7,7 +7,7 @@ describe Formula do
   describe "#uses_from_macos" do
     before do
       allow(OS).to receive(:mac?).and_return(true)
-      allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.from_symbol(:sierra))
+      allow(OS::Mac).to receive(:version).and_return(MacOSVersion.from_symbol(:sierra))
     end
 
     it "adds a macOS dependency to all specs if the OS version meets requirements" do

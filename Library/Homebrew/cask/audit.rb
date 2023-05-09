@@ -549,8 +549,8 @@ module Cask
       return if min_os.blank?
 
       begin
-        min_os_string = OS::Mac::Version.new(min_os).strip_patch
-      rescue MacOSVersionError
+        min_os_string = MacOSVersion.new(min_os).strip_patch
+      rescue MacOSVersion::Error
         return
       end
 

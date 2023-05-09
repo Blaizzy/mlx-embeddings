@@ -303,13 +303,13 @@ module Cask
               dep_type = dep_value.keys.first
               if dep_type == :==
                 version_symbols = dep_value[dep_type].map do |version|
-                  MacOSVersions::SYMBOLS.key(version) || version
+                  MacOSVersion::SYMBOLS.key(version) || version
                 end
                 next [dep_key, version_symbols]
               end
 
               version_symbol = dep_value[dep_type].first
-              version_symbol = MacOSVersions::SYMBOLS.key(version_symbol) || version_symbol
+              version_symbol = MacOSVersion::SYMBOLS.key(version_symbol) || version_symbol
               [dep_key, "#{dep_type} :#{version_symbol}"]
             end.compact
             depends_on(**dep_hash)

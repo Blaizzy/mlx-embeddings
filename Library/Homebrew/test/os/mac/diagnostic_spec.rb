@@ -8,7 +8,7 @@ describe Homebrew::Diagnostic::Checks do
   specify "#check_for_unsupported_macos" do
     ENV.delete("HOMEBREW_DEVELOPER")
 
-    macos_version = OS::Mac::Version.new("10.14")
+    macos_version = MacOSVersion.new("10.14")
     allow(OS::Mac).to receive(:version).and_return(macos_version)
     allow(OS::Mac).to receive(:full_version).and_return(macos_version)
     allow(OS::Mac.version).to receive(:outdated_release?).and_return(false)
@@ -19,7 +19,7 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_if_xcode_needs_clt_installed" do
-    macos_version = OS::Mac::Version.new("10.11")
+    macos_version = MacOSVersion.new("10.11")
     allow(OS::Mac).to receive(:version).and_return(macos_version)
     allow(OS::Mac).to receive(:full_version).and_return(macos_version)
     allow(OS::Mac::Xcode).to receive(:installed?).and_return(true)
@@ -31,7 +31,7 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   specify "#check_ruby_version" do
-    macos_version = OS::Mac::Version.new("10.12")
+    macos_version = MacOSVersion.new("10.12")
     allow(OS::Mac).to receive(:version).and_return(macos_version)
     allow(OS::Mac).to receive(:full_version).and_return(macos_version)
     stub_const("RUBY_VERSION", "1.8.6")
@@ -41,7 +41,7 @@ describe Homebrew::Diagnostic::Checks do
   end
 
   describe "#check_if_supported_sdk_available" do
-    let(:macos_version) { OS::Mac::Version.new("11") }
+    let(:macos_version) { MacOSVersion.new("11") }
 
     before do
       allow(DevelopmentTools).to receive(:installed?).and_return(true)
@@ -87,8 +87,8 @@ describe Homebrew::Diagnostic::Checks do
     it "doesn't trigger when SDK versions are as expected" do
       allow(OS::Mac).to receive(:sdk_locator).and_return(OS::Mac::CLT.sdk_locator)
       allow_any_instance_of(OS::Mac::CLTSDKLocator).to receive(:all_sdks).and_return([
-        OS::Mac::SDK.new(OS::Mac::Version.new("11"), "/some/path/MacOSX.sdk", :clt),
-        OS::Mac::SDK.new(OS::Mac::Version.new("10.15"), "/some/path/MacOSX10.15.sdk", :clt),
+        OS::Mac::SDK.new(MacOSVersion.new("11"), "/some/path/MacOSX.sdk", :clt),
+        OS::Mac::SDK.new(MacOSVersion.new("10.15"), "/some/path/MacOSX10.15.sdk", :clt),
       ])
 
       expect(checks.check_broken_sdks).to be_nil
@@ -96,7 +96,7 @@ describe Homebrew::Diagnostic::Checks do
 
     it "triggers when the CLT SDK version doesn't match the folder name" do
       allow_any_instance_of(OS::Mac::CLTSDKLocator).to receive(:all_sdks).and_return([
-        OS::Mac::SDK.new(OS::Mac::Version.new("10.14"), "/some/path/MacOSX10.15.sdk", :clt),
+        OS::Mac::SDK.new(MacOSVersion.new("10.14"), "/some/path/MacOSX10.15.sdk", :clt),
       ])
 
       expect(checks.check_broken_sdks)
@@ -106,7 +106,7 @@ describe Homebrew::Diagnostic::Checks do
     it "triggers when the Xcode SDK version doesn't match the folder name" do
       allow(OS::Mac).to receive(:sdk_locator).and_return(OS::Mac::Xcode.sdk_locator)
       allow_any_instance_of(OS::Mac::XcodeSDKLocator).to receive(:all_sdks).and_return([
-        OS::Mac::SDK.new(OS::Mac::Version.new("10.14"), "/some/path/MacOSX10.15.sdk", :xcode),
+        OS::Mac::SDK.new(MacOSVersion.new("10.14"), "/some/path/MacOSX10.15.sdk", :xcode),
       ])
 
       expect(checks.check_broken_sdks)

@@ -11,7 +11,7 @@ require "dependency_collector"
 require "utils/bottles"
 require "patch"
 require "compilers"
-require "os/mac/version"
+require "macos_version"
 require "extend/on_system"
 
 class SoftwareSpec
@@ -203,8 +203,8 @@ class SoftwareSpec
       return if Homebrew::SimulateSystem.current_os == :macos && !bounds.key?(:since)
 
       if Homebrew::SimulateSystem.current_os != :macos
-        current_os = MacOS::Version.from_symbol(Homebrew::SimulateSystem.current_os)
-        since_os = MacOS::Version.from_symbol(bounds[:since]) if bounds.key?(:since)
+        current_os = MacOSVersion.from_symbol(Homebrew::SimulateSystem.current_os)
+        since_os = MacOSVersion.from_symbol(bounds[:since]) if bounds.key?(:since)
         return if current_os >= since_os
       end
     end
@@ -609,7 +609,7 @@ class BottleSpecification
       # Give arm64 bottles a higher priority so they are first
       priority = (tag.arch == :arm64) ? "2" : "1"
       "#{priority}.#{version}_#{tag}"
-    rescue MacOSVersionError
+    rescue MacOSVersion::Error
       # Sort non-MacOS tags below MacOS tags.
       "0.#{tag}"
     end

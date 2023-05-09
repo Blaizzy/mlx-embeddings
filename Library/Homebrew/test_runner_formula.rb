@@ -68,7 +68,7 @@ class TestRunnerFormula
     formula.requirements.find { |r| r.is_a?(MacOSRequirement) && r.version_specified? }
   end
 
-  sig { params(macos_version: OS::Mac::Version).returns(T::Boolean) }
+  sig { params(macos_version: MacOSVersion).returns(T::Boolean) }
   def compatible_with?(macos_version)
     # Assign to a variable to assist type-checking.
     requirement = versioned_macos_requirement

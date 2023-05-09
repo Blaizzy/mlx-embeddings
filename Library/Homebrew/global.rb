@@ -73,7 +73,7 @@ HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.
 
 require "extend/module"
 require "env_config"
-require "macos_versions"
+require "macos_version"
 require "os"
 require "messages"
 require "default_prefix"

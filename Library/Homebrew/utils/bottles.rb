@@ -189,9 +189,9 @@ module Utils
         to_sym.to_s
       end
 
-      sig { returns(OS::Mac::Version) }
+      sig { returns(MacOSVersion) }
       def to_macos_version
-        @to_macos_version ||= OS::Mac::Version.from_symbol(system)
+        @to_macos_version ||= MacOSVersion.from_symbol(system)
       end
 
       sig { returns(T::Boolean) }
@@ -203,7 +203,7 @@ module Utils
       def macos?
         to_macos_version
         true
-      rescue MacOSVersionError
+      rescue MacOSVersion::Error
         false
       end
 

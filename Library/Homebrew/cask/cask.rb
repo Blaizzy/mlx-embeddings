@@ -316,7 +316,7 @@ module Cask
       begin
         if @dsl.on_system_blocks_exist?
           [:arm, :intel].each do |arch|
-            MacOSVersions::SYMBOLS.each_key do |os_name|
+            MacOSVersion::SYMBOLS.each_key do |os_name|
               bottle_tag = ::Utils::Bottles::Tag.new(system: os_name, arch: arch)
               next unless bottle_tag.valid_combination?
 

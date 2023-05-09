@@ -55,6 +55,7 @@ module OS
 
   if OS.mac?
     require "os/mac"
+    require "hardware"
     # Don't tell people to report issues on unsupported configurations.
     if !OS::Mac.version.prerelease? &&
        !OS::Mac.version.outdated_release? &&

@@ -212,7 +212,7 @@ module RuboCop
       end
 
       def on_system_methods
-        @on_system_methods ||= [:intel, :arm, :macos, :linux, :system, *MacOSVersions::SYMBOLS.keys].map do |m|
+        @on_system_methods ||= [:intel, :arm, :macos, :linux, :system, *MacOSVersion::SYMBOLS.keys].map do |m|
           :"on_#{m}"
         end
       end

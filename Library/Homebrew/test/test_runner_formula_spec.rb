@@ -240,14 +240,14 @@ describe TestRunnerFormula do
     context "when a formula has a versioned MacOSRequirement" do
       context "when passed a compatible macOS version" do
         it "returns true" do
-          expect(described_class.new(needs_modern_compiler).compatible_with?(OS::Mac::Version.new("13")))
+          expect(described_class.new(needs_modern_compiler).compatible_with?(MacOSVersion.new("13")))
             .to be(true)
         end
       end
 
       context "when passed an incompatible macOS version" do
         it "returns false" do
-          expect(described_class.new(needs_modern_compiler).compatible_with?(OS::Mac::Version.new("11")))
+          expect(described_class.new(needs_modern_compiler).compatible_with?(MacOSVersion.new("11")))
             .to be(false)
         end
       end
@@ -255,8 +255,8 @@ describe TestRunnerFormula do
 
     context "when a formula has an unversioned MacOSRequirement" do
       it "returns true" do
-        MacOSVersions::SYMBOLS.each_value do |v|
-          version = OS::Mac::Version.new(v)
+        MacOSVersion::SYMBOLS.each_value do |v|
+          version = MacOSVersion.new(v)
           expect(described_class.new(xcode_helper).compatible_with?(version)).to be(true)
         end
       end
@@ -264,8 +264,8 @@ describe TestRunnerFormula do
 
     context "when a formula has no declared MacOSRequirement" do
       it "returns true" do
-        MacOSVersions::SYMBOLS.each_value do |v|
-          version = OS::Mac::Version.new(v)
+        MacOSVersion::SYMBOLS.each_value do |v|
+          version = MacOSVersion.new(v)
           expect(described_class.new(testball).compatible_with?(version)).to be(true)
           expect(described_class.new(linux_kernel_requirer).compatible_with?(version)).to be(true)
           expect(described_class.new(old_non_portable_software).compatible_with?(version)).to be(true)

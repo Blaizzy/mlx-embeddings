@@ -341,9 +341,9 @@ class Version
     parse(specs.fetch(:tag, url), detected_from_url: true)
   end
 
-  # TODO: `odeprecate` this and just use `Version.new`.
   sig { params(val: String).returns(Version) }
   def self.create(val)
+    # odeprecate "Version.create", "Version.new"
     new(val)
   end
 

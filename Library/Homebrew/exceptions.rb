@@ -767,16 +767,6 @@ class ChildProcessError < RuntimeError
   end
 end
 
-# Raised when a macOS version is unsupported.
-class MacOSVersionError < RuntimeError
-  attr_reader :version
-
-  def initialize(version)
-    @version = version
-    super "unknown or unsupported macOS version: #{version.inspect}"
-  end
-end
-
 # Raised when `detected_perl_shebang` etc cannot detect the shebang.
 class ShebangDetectionError < RuntimeError
   def initialize(type, reason)

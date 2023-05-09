@@ -35,7 +35,7 @@ module Utils
       def find_older_compatible_tag(tag)
         tag_version = begin
           tag.to_macos_version
-        rescue MacOSVersionError
+        rescue MacOSVersion::Error
           nil
         end
 
@@ -45,7 +45,7 @@ module Utils
           next if candidate.arch != tag.arch
 
           candidate.to_macos_version <= tag_version
-        rescue MacOSVersionError
+        rescue MacOSVersion::Error
           false
         end
       end
