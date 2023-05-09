@@ -213,18 +213,18 @@ module Utils
         )
 
         # 22 means a non-successful HTTP status code, not a `curl` error, so we still got some headers.
-        next if !result.success? && result.exit_status != 22
+        if result.success? || result.exit_status == 22
+          parsed_output = parse_curl_output(result.stdout)
 
-        parsed_output = parse_curl_output(result.stdout)
+          # If we didn't get any wanted header yet, retry using `GET`.
+          next if request_args.empty? && wanted_headers.any? &&
+                  parsed_output.fetch(:responses).none? { |r| (r.fetch(:headers).keys & wanted_headers).any? }
 
-        # If we didn't get any wanted header yet, retry using `GET`.
-        next if request_args.empty? && wanted_headers.any? &&
-                parsed_output.fetch(:responses).none? { |r| (r.fetch(:headers).keys & wanted_headers).any? }
+          return parsed_output if result.success?
+        end
 
-        return parsed_output if result.success?
+        result.assert_success!
       end
-
-      nil
     end
 
     # Check if a URL is protected by CloudFlare (e.g. badlion.net and jaxx.io).
