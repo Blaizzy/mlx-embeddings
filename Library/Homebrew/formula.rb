@@ -2249,7 +2249,7 @@ class Formula
 
     variations = {}
 
-    os_versions = [*MacOSVersions::SYMBOLS.keys, :linux]
+    os_versions = [*MacOSVersion::SYMBOLS.keys, :linux]
 
     begin
       if path.exist? && self.class.on_system_blocks_exist?

@@ -77,7 +77,7 @@ module Readall
         success = false unless valid_casks?(tap.cask_files)
       else
         arches = [:arm, :intel]
-        os_names = [*MacOSVersions::SYMBOLS.keys, :linux]
+        os_names = [*MacOSVersion::SYMBOLS.keys, :linux]
         arches.each do |arch|
           os_names.each do |os_name|
             bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)

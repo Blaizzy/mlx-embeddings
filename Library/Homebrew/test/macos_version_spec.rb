@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require "version"
-require "os/mac/version"
+require "macos_version"
 
-describe OS::Mac::Version do
+describe MacOSVersion do
   let(:version) { described_class.new("10.14") }
   let(:big_sur_major) { described_class.new("11.0") }
   let(:big_sur_update) { described_class.new("11.1") }
@@ -15,14 +14,9 @@ describe OS::Mac::Version do
     expect(version).to be < :catalina
   end
 
-  specify "comparison with Fixnum" do
+  specify "comparison with Integer" do
     expect(version).to be > 10
     expect(version).to be < 11
-  end
-
-  specify "comparison with Float" do
-    expect(version).to be > 10.13
-    expect(version).to be < 10.15
   end
 
   specify "comparison with String" do
@@ -59,7 +53,7 @@ describe OS::Mac::Version do
     it "raises an error if the version is not a valid macOS version" do
       expect do
         described_class.new("1.2")
-      end.to raise_error(MacOSVersionError, 'unknown or unsupported macOS version: "1.2"')
+      end.to raise_error(MacOSVersion::Error, 'unknown or unsupported macOS version: "1.2"')
     end
 
     it "creates a new version from a valid macOS version" do
@@ -72,7 +66,7 @@ describe OS::Mac::Version do
     it "raises an error if the symbol is not a valid macOS version" do
       expect do
         described_class.from_symbol(:foo)
-      end.to raise_error(MacOSVersionError, "unknown or unsupported macOS version: :foo")
+      end.to raise_error(MacOSVersion::Error, "unknown or unsupported macOS version: :foo")
     end
 
     it "creates a new version from a valid macOS version" do
@@ -86,7 +80,7 @@ describe OS::Mac::Version do
     expect(described_class.new("10.14").pretty_name).to eq("Mojave")
   end
 
-  specify "#requires_nehalem_cpu?" do
+  specify "#requires_nehalem_cpu?", :needs_macos do
     expect(Hardware::CPU).to receive(:type).at_least(:twice).and_return(:intel)
     expect(described_class.new("10.14").requires_nehalem_cpu?).to be true
     expect(described_class.new("10.12").requires_nehalem_cpu?).to be false

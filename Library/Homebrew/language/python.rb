@@ -7,10 +7,10 @@ module Language
   # @api public
   module Python
     def self.major_minor_version(python)
-      version = /\d\.\d+/.match `#{python} --version 2>&1`
+      version = `#{python} --version 2>&1`.chomp[/(\d\.\d+)/, 1]
       return unless version
 
-      Version.create(version.to_s)
+      Version.new(version)
     end
 
     def self.homebrew_site_packages(python = "python3.7")

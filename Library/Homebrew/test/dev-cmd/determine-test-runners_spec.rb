@@ -22,8 +22,8 @@ describe "brew determine-test-runners" do
   end
   let(:all_runners) do
     out = []
-    MacOSVersions::SYMBOLS.each_value do |v|
-      macos_version = OS::Mac::Version.new(v)
+    MacOSVersion::SYMBOLS.each_value do |v|
+      macos_version = MacOSVersion.new(v)
       next if macos_version.unsupported_release?
 
       out << v

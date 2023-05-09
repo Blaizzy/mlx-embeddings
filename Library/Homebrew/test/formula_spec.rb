@@ -978,10 +978,10 @@ describe Formula do
         catalina: "10.15",
         mojave:   "10.14",
       }
-      stub_const("MacOSVersions::SYMBOLS", symbols)
+      stub_const("MacOSVersion::SYMBOLS", symbols)
 
       # For consistency, always run on Monterey and ARM
-      allow(MacOS).to receive(:version).and_return(MacOS::Version.new("12"))
+      allow(MacOS).to receive(:version).and_return(MacOSVersion.new("12"))
       allow(Hardware::CPU).to receive(:type).and_return(:arm)
 
       formula_path.dirname.mkpath

@@ -53,11 +53,11 @@ module OS
     raise "Loaded OS::Linux on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
     def self.version
-      ::Version::NULL
+      MacOSVersion::NULL
     end
 
     def self.full_version
-      ::Version::NULL
+      MacOSVersion::NULL
     end
 
     def self.languages

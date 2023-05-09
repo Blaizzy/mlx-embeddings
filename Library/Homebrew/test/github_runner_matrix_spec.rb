@@ -13,7 +13,7 @@ describe GitHubRunnerMatrix do
   end
 
   let(:newest_supported_macos) do
-    MacOSVersions::SYMBOLS.find { |_, v| !OS::Mac::Version.new(v).prerelease? }
+    MacOSVersion::SYMBOLS.find { |_, v| !MacOSVersion.new(v).prerelease? }
   end
 
   let(:testball) { TestRunnerFormula.new(Testball.new) }

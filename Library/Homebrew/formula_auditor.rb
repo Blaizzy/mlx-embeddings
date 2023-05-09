@@ -757,7 +757,7 @@ module Homebrew
             newest_committed_revision ||= previous_revision
             newest_committed_url ||= stable.url
           end
-        rescue MacOSVersionError
+        rescue MacOSVersion::Error
           break
         end
 
@@ -893,7 +893,7 @@ module Homebrew
       # The formula has no variations, so all OS-version-arch triples depend on GCC.
       return false if variations.blank?
 
-      MacOSVersions::SYMBOLS.each_key do |macos_version|
+      MacOSVersion::SYMBOLS.each_key do |macos_version|
         [:arm, :intel].each do |arch|
           bottle_tag = Utils::Bottles::Tag.new(system: macos_version, arch: arch)
           next unless bottle_tag.valid_combination?

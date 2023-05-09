@@ -90,7 +90,7 @@ class GitHubRunnerMatrix
       platform:      Symbol,
       arch:          Symbol,
       spec:          RunnerSpec,
-      macos_version: T.nilable(OS::Mac::Version),
+      macos_version: T.nilable(MacOSVersion),
     ).returns(GitHubRunner)
   }
   def create_runner(platform, arch, spec, macos_version = nil)
@@ -120,8 +120,8 @@ class GitHubRunnerMatrix
     ephemeral_suffix << "-deps" if @dependent_matrix
     ephemeral_suffix.freeze
 
-    MacOSVersions::SYMBOLS.each_value do |version|
-      macos_version = OS::Mac::Version.new(version)
+    MacOSVersion::SYMBOLS.each_value do |version|
+      macos_version = MacOSVersion.new(version)
       next if macos_version.unsupported_release?
 
       # Intel Big Sur is a bit slower than the other runners,

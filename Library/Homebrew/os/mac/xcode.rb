@@ -15,7 +15,7 @@ module OS
       # Bump these when a new version is available from the App Store and our
       # CI systems have been updated.
       # This may be a beta version for a beta macOS.
-      sig { params(macos: MacOS::Version).returns(String) }
+      sig { params(macos: MacOSVersion).returns(String) }
       def self.latest_version(macos: MacOS.version)
         latest_stable = "14.3"
         case macos
@@ -136,12 +136,12 @@ module OS
         @sdk_locator ||= XcodeSDKLocator.new
       end
 
-      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
+      sig { params(version: T.nilable(MacOSVersion)).returns(T.nilable(SDK)) }
       def self.sdk(version = nil)
         sdk_locator.sdk_if_applicable(version)
       end
 
-      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
+      sig { params(version: T.nilable(MacOSVersion)).returns(T.nilable(Pathname)) }
       def self.sdk_path(version = nil)
         sdk(version)&.path
       end
@@ -283,12 +283,12 @@ module OS
         @sdk_locator ||= CLTSDKLocator.new
       end
 
-      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(SDK)) }
+      sig { params(version: T.nilable(MacOSVersion)).returns(T.nilable(SDK)) }
       def self.sdk(version = nil)
         sdk_locator.sdk_if_applicable(version)
       end
 
-      sig { params(version: T.nilable(MacOS::Version)).returns(T.nilable(Pathname)) }
+      sig { params(version: T.nilable(MacOSVersion)).returns(T.nilable(Pathname)) }
       def self.sdk_path(version = nil)
         sdk(version)&.path
       end

@@ -445,7 +445,7 @@ module Homebrew
           path_version = sdk.path.basename.to_s[MacOS::SDK::VERSIONED_SDK_REGEX, 1]
           next true if path_version.blank?
 
-          sdk.version == MacOS::Version.new(path_version).strip_patch
+          sdk.version == MacOSVersion.new(path_version).strip_patch
         end
 
         if locator.source == :clt

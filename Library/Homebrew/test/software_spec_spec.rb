@@ -176,7 +176,7 @@ describe SoftwareSpec do
     context "when running on macOS", :needs_macos do
       before do
         allow(OS).to receive(:mac?).and_return(true)
-        allow(OS::Mac).to receive(:version).and_return(OS::Mac::Version.from_symbol(:sierra))
+        allow(OS::Mac).to receive(:version).and_return(MacOSVersion.from_symbol(:sierra))
       end
 
       it "adds a macOS dependency if the OS version meets requirements" do
@@ -212,7 +212,7 @@ describe SoftwareSpec do
       it "raises an error if passing invalid OS versions" do
         expect do
           spec.uses_from_macos("foo", since: :bar)
-        end.to raise_error(MacOSVersionError, "unknown or unsupported macOS version: :bar")
+        end.to raise_error(MacOSVersion::Error, "unknown or unsupported macOS version: :bar")
       end
     end
   end

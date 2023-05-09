@@ -190,12 +190,15 @@ class Resource < Downloadable
     @download_strategy = @url.download_strategy
   end
 
+  sig { params(val: T.nilable(T.any(String, Version))).returns(T.nilable(Version)) }
   def version(val = nil)
     return super() if val.nil?
 
-    @version = case val
-    when String  then Version.create(val)
-    when Version then val
+    @version = case T.unsafe(val)
+    when String
+      val.blank? ? Version::NULL : Version.new(val)
+    when Version
+      val
     else
       # TODO: This can probably go if/when typechecking is enforced in taps.
       raise TypeError, "version '#{val.inspect}' should be a string"

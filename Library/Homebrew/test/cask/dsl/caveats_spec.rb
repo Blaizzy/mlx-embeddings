@@ -16,7 +16,7 @@ describe Cask::DSL::Caveats, :cask do
     let(:cask) { instance_double(Cask::Cask) }
 
     it "points to System Preferences on macOS Monterey and earlier" do
-      allow(MacOS).to receive(:version).and_return(MacOS::Version.new("12"))
+      allow(MacOS).to receive(:version).and_return(MacOSVersion.new("12"))
       caveats.eval_caveats do
         kext
       end
@@ -24,7 +24,7 @@ describe Cask::DSL::Caveats, :cask do
     end
 
     it "points to System Settings on macOS Ventura and later" do
-      allow(MacOS).to receive(:version).and_return(MacOS::Version.new("13"))
+      allow(MacOS).to receive(:version).and_return(MacOSVersion.new("13"))
       caveats.eval_caveats do
         kext
       end

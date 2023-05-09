@@ -461,7 +461,7 @@ esac
 # TODO: bump version when new macOS is released or announced
 # and also update references in docs/Installation.md,
 # https://github.com/Homebrew/install/blob/HEAD/install.sh and
-# MacOSVersions::SYMBOLS
+# MacOSVersion::SYMBOLS
 HOMEBREW_MACOS_NEWEST_UNSUPPORTED="14"
 # TODO: bump version when new macOS is released and also update
 # references in docs/Installation.md and

@@ -59,7 +59,7 @@ module Cask
         begin
           @macos = if args.count > 1
             MacOSRequirement.new([args], comparator: "==")
-          elsif MacOSVersions::SYMBOLS.key?(args.first)
+          elsif MacOSVersion::SYMBOLS.key?(args.first)
             MacOSRequirement.new([args.first], comparator: "==")
           elsif (md = /^\s*(?<comparator><|>|[=<>]=)\s*:(?<version>\S+)\s*$/.match(first_arg))
             MacOSRequirement.new([T.must(md[:version]).to_sym], comparator: md[:comparator])
@@ -68,7 +68,7 @@ module Cask
           else # rubocop:disable Lint/DuplicateBranch
             MacOSRequirement.new([args.first], comparator: "==")
           end
-        rescue MacOSVersionError => e
+        rescue MacOSVersion::Error, TypeError => e
           raise "invalid 'depends_on macos' value: #{e}"
         end
       end

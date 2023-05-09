@@ -91,7 +91,7 @@ module Formulary
       # access them from within the formula's class scope.
       mod.const_set(:BUILD_FLAGS, flags)
       mod.module_eval(contents, path)
-    rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError, MacOSVersionError => e
+    rescue NameError, ArgumentError, ScriptError, MethodDeprecatedError, MacOSVersion::Error => e
       if e.is_a?(Ignorable::ExceptionMixin)
         e.ignore
       else
@@ -223,7 +223,7 @@ module Formulary
         when :arch
           req["version"]&.to_sym
         when :macos, :maximum_macos
-          MacOSVersions::SYMBOLS.key(req["version"])
+          MacOSVersion::SYMBOLS.key(req["version"])
         else
           req["version"]
         end

@@ -7,7 +7,7 @@ module Readall
       return true if os_name == :linux
 
       current_macos_version = if os_name.is_a?(Symbol)
-        MacOS::Version.from_symbol(os_name)
+        MacOSVersion.from_symbol(os_name)
       else
         MacOS.version
       end

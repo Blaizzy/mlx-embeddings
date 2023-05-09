@@ -53,9 +53,9 @@ module Homebrew
         os, arch = element.then do |s|
           tag = Utils::Bottles::Tag.from_symbol(s.to_sym)
           [tag.to_macos_version, tag.arch]
-        rescue ArgumentError, MacOSVersionError
+        rescue ArgumentError, MacOSVersion::Error
           os, arch = s.split("-", 2)
-          [MacOS::Version.new(os), arch&.to_sym]
+          [MacOSVersion.new(os), arch&.to_sym]
         end
 
         if arch.present? && arch != :x86_64

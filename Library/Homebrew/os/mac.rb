@@ -1,7 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-require "os/mac/version"
+require "macos_version"
+
 require "os/mac/xcode"
 require "os/mac/sdk"
 require "os/mac/keg"
@@ -18,25 +19,25 @@ module OS
 
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
-    sig { returns(Version) }
+    sig { returns(MacOSVersion) }
     def self.version
       @version ||= full_version.strip_patch
     end
 
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
-    sig { returns(Version) }
+    sig { returns(MacOSVersion) }
     def self.full_version
       @full_version ||= if ENV["HOMEBREW_FAKE_EL_CAPITAN"] # for Portable Ruby building
-        Version.new("10.11.6")
+        MacOSVersion.new("10.11.6")
       else
-        Version.new(VERSION)
+        MacOSVersion.new(VERSION)
       end
     end
 
     sig { params(version: String).void }
     def self.full_version=(version)
-      @full_version = Version.new(version.chomp)
+      @full_version = MacOSVersion.new(version.chomp)
       @version = nil
     end
 

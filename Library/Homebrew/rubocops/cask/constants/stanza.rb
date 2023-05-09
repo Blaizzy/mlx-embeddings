@@ -5,11 +5,11 @@ module RuboCop
   module Cask
     # Constants available globally for use in all cask cops.
     module Constants
-      ON_SYSTEM_METHODS = [:arm, :intel, *MacOSVersions::SYMBOLS.keys].map { |option| :"on_#{option}" }.freeze
+      ON_SYSTEM_METHODS = [:arm, :intel, *MacOSVersion::SYMBOLS.keys].map { |option| :"on_#{option}" }.freeze
       ON_SYSTEM_METHODS_STANZA_ORDER = [
         :arm,
         :intel,
-        *MacOSVersions::SYMBOLS.reverse_each.to_h.keys, # Oldest OS blocks first since that's more common in Casks.
+        *MacOSVersion::SYMBOLS.reverse_each.to_h.keys, # Oldest OS blocks first since that's more common in Casks.
       ].map { |option, _| :"on_#{option}" }.freeze
 
       STANZA_GROUPS = [

@@ -220,7 +220,7 @@ describe Cask::Cask, :cask do
 
     context "when loaded from cask file" do
       it "returns expected hash" do
-        allow(MacOS).to receive(:version).and_return(MacOS::Version.new("13"))
+        allow(MacOS).to receive(:version).and_return(MacOSVersion.new("13"))
 
         hash = Cask::CaskLoader.load("everything").to_h
 
@@ -304,7 +304,7 @@ describe Cask::Cask, :cask do
         catalina: "10.15",
         mojave:   "10.14",
       }
-      stub_const("MacOSVersions::SYMBOLS", symbols)
+      stub_const("MacOSVersion::SYMBOLS", symbols)
 
       # For consistency, always run on Monterey and ARM
       MacOS.full_version = "12"
