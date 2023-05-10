@@ -96,7 +96,8 @@ module Homebrew
         f.print_tap_action verb: "Fetching"
 
         fetched_bottle = false
-        if fetch_bottle?(f, args: args)
+        if fetch_bottle?(f, force_bottle: args.force_bottle?, bottle_tag: args.bottle_tag&.to_sym,
+                         build_from_source_formulae: args.build_from_source_formulae)
           begin
             f.clear_cache if args.force?
             f.fetch_bottle_tab

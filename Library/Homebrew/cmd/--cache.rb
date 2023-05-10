@@ -58,7 +58,8 @@ module Homebrew
 
   sig { params(formula: Formula, args: CLI::Args).void }
   def self.print_formula_cache(formula, args:)
-    if fetch_bottle?(formula, args: args)
+    if fetch_bottle?(formula, force_bottle: args.force_bottle?, bottle_tag: args.bottle_tag&.to_sym,
+                     build_from_source_formulae: args.build_from_source_formulae)
       puts formula.bottle_for_tag(args.bottle_tag&.to_sym)&.cached_download
     elsif args.HEAD?
       puts formula.head.cached_download
