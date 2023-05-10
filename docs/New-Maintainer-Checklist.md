@@ -6,7 +6,7 @@
 - [Homebrew Maintainers](#maintainers)
 - [Project Leadership Committee](#plc)
 - [Technical Steering Committee](#tsc)
-- [System Owners](#owners "People with highest system privileges")
+- [Owners](#owners "People with highest system privileges")
 - [General Members](#members)
 
 ## Maintainers
