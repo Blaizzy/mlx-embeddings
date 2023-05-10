@@ -118,7 +118,9 @@ module Cask
           quarantine: quarantine, require_sha: require_sha
         )
       rescue => e
-        caught_exceptions << e.exception("#{new_cask.full_name}: #{e}")
+        new_exception = e.exception("#{new_cask.full_name}: #{e}")
+        new_exception.set_backtrace(e.backtrace)
+        caught_exceptions << new_exception
         next
       end
 
