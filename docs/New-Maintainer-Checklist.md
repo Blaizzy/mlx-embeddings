@@ -6,7 +6,7 @@
 - [Homebrew Maintainers](#maintainers)
 - [Project Leadership Committee](#plc)
 - [Technical Steering Committee](#tsc)
-- [Owners](#owners "People with highest system privileges")
+- [Owners](#owners)
 - [General Members](#members)
 
 ## Maintainers
@@ -96,13 +96,13 @@ When they cease to be a TSC member, revoke or downgrade their access to all of t
 
 ## Owners
 
-The Project Leader, one other PLC member (ideally a maintainer) and one other TSC member should be made system owners on GitHub and Slack:
+The Project Leader, one other PLC member (ideally a maintainer) and one other TSC member should be made owners on GitHub and Slack:
 
 - Make them owners on the [Homebrew GitHub organisation](https://github.com/orgs/Homebrew/people)
 - Make them owners on the [`machomebrew` private Slack](https://machomebrew.slack.com/admin)
 - Make them owners on the [`homebrew` private 1Password](https://homebrew.1password.com/people)
 
-When they cease to be a system owner, revoke or downgrade their access to all of the above.
+When they cease to be am owner, revoke or downgrade their access to all of the above.
 
 ## Members
 
