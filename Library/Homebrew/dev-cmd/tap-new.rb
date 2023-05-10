@@ -36,6 +36,7 @@ module Homebrew
 
         tap = args.named.to_taps.fetch(0)
         odie "Invalid tap name '#{tap}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
+        odie "Tap is already installed!" if tap.installed?
 
         titleized_user = tap.user.dup
         titleized_repo = tap.repo.dup
