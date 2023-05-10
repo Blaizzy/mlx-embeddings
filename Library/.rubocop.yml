@@ -38,9 +38,6 @@ Cask/Desc:
 Cask/HomepageUrlTrailingSlash:
   Description: "Ensure that the homepage url has a slash after the domain name."
 
-Cask/NoDslVersion:
-  Description: "Do not use the deprecated DSL version syntax in your cask header."
-
 Cask/StanzaGrouping:
   Description: "Ensure that cask stanzas are grouped correctly. More info at https://docs.brew.sh/Cask-Cookbook#stanza-order"
 

@@ -13,10 +13,6 @@ module RuboCop
 
         attr_reader :method_node
 
-        def dsl_version?
-          hash_node
-        end
-
         def header_str
           @header_str ||= source_range.source
         end
@@ -31,11 +27,7 @@ module RuboCop
         end
 
         def cask_token
-          @cask_token ||= if dsl_version?
-            pair_node.val_node.children.first
-          else
-            method_node.first_argument.str_content
-          end
+          @cask_token ||= method_node.first_argument.str_content
         end
 
         def hash_node
