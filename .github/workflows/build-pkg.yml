@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    if: github.repository_owner == 'Homebrew'
     runs-on: macos-13
     env:
       IDENTIFIER: sh.brew.Homebrew
