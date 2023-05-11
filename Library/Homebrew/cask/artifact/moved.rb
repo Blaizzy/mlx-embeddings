@@ -95,7 +95,7 @@ module Cask
             source.children.each { |child| FileUtils.move(child, target + child.basename) }
           else
             source.children.each do |child|
-              command.run!("/bin/cp", args: ["-pR", child, target + child.basename],
+              command.run!("/bin/cp", args: ["-pR", child, target/child.basename],
                                       sudo: true)
             end
           end
