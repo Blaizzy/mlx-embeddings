@@ -535,7 +535,7 @@ class Version
 
   sig { returns(T::Boolean) }
   def null?
-    @version.nil?
+    version.nil?
   end
 
   sig { params(comparator: String, other: Version).returns(T::Boolean) }
@@ -703,7 +703,25 @@ class Version
   def to_s
     version.to_s
   end
-  alias to_str to_s
+
+  sig { returns(String) }
+  def to_str
+    raise NoMethodError, "undefined method `to_str' for #{self.class}:NULL" if null?
+
+    T.must(version).to_str
+  end
+
+  sig { params(options: Hash).returns(String) }
+  def to_json(**options)
+    version.to_json(**options)
+  end
+
+  sig { params(method: T.any(Symbol, String), include_all: T::Boolean).returns(T::Boolean) }
+  def respond_to?(method, include_all = T.unsafe(nil))
+    return !null? if ["to_str", :to_str].include?(method)
+
+    super
+  end
 
   sig { returns(String) }
   def inspect
