@@ -340,17 +340,20 @@ describe Cask::Artifact::App, :cask do
 
       contents_path = target_path.join("Contents")
 
-      allow(target_path).to receive(:writable?).and_return false
+      expect(app.target).to receive(:writable?).at_least(:once).and_return false
       allow(command).to receive(:run!).and_call_original
       allow(command).to receive(:run!)
         .with("/bin/cp", args: ["-pR", source_path.join("Contents"), contents_path],
                          sudo: true)
         .and_wrap_original do |original_method, *args, **kwargs|
-          original_method.call(*args, sudo_as_root: false, **kwargs)
+          original_method.call(*args, **kwargs, sudo: false)
         end
+      expect(FileUtils).not_to receive(:move).with(source_path.join("Contents"), contents_path)
 
       app.uninstall_phase(command: command, force: force, successor: cask)
       expect(contents_path).not_to exist
+      expect(target_path).to exist
+      expect(source_path.join("Contents")).to exist
 
       app.install_phase(command: command, adopt: adopt, force: force, predecessor: cask)
       expect(contents_path).to exist
