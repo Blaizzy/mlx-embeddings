@@ -92,7 +92,7 @@ module Cask
 
         if target.directory?
           if target.writable?
-            source.children.each { |child| FileUtils.move(child, target + child.basename) }
+            source.children.each { |child| FileUtils.move(child, target/child.basename) }
           else
             source.children.each do |child|
               command.run!("/bin/cp", args: ["-pR", child, target/child.basename],
