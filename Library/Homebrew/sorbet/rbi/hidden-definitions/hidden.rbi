@@ -6520,10 +6520,6 @@ class RuboCop::Cop::Cask::HomepageUrlTrailingSlash
   include ::RuboCop::Cop::CommentsHelp
 end
 
-class RuboCop::Cop::Cask::NoDslVersion
-  include ::RuboCop::Cop::CommentsHelp
-end
-
 class RuboCop::Cop::Cask::NoOverrides
   include ::RuboCop::Cop::CommentsHelp
 end
