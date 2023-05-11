@@ -345,7 +345,7 @@ describe Cask::Artifact::App, :cask do
         .with("/bin/cp", args: ["-pR", source_path.join("Contents"), target_path],
                          sudo: true)
         .and_call_original
-      expect(command).to receive(:run!).with(any_args).and_call_original
+      allow(command).to receive(:run!).with(any_args).and_call_original
       expect(FileUtils).not_to receive(:move).with(source_path.join("Contents"), contents_path)
 
       app.uninstall_phase(command: command, force: force, successor: cask)
