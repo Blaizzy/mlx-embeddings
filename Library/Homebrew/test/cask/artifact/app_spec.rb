@@ -341,11 +341,11 @@ describe Cask::Artifact::App, :cask do
       contents_path = target_path.join("Contents")
 
       expect(app.target).to receive(:writable?).at_least(:once).and_return false
-      allow(command).to receive(:run!).and_call_original
       expect(command).to receive(:run!)
         .with("/bin/cp", args: ["-pR", source_path.join("Contents"), target_path],
                          sudo: true)
-      expect(command).to receive(:run!).with(any_args)
+        .and_call_original
+      expect(command).to receive(:run!).with(any_args).and_call_original
       expect(FileUtils).not_to receive(:move).with(source_path.join("Contents"), contents_path)
 
       app.uninstall_phase(command: command, force: force, successor: cask)
