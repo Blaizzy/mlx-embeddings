@@ -109,7 +109,7 @@ module Homebrew
         version ||= basename_str[/\A.*(?:--.*?)*--(.*?)#{Regexp.escape(pathname.extname)}\Z/, 1]
         version ||= basename_str[/\A.*--?(.*?)#{Regexp.escape(pathname.extname)}\Z/, 1]
 
-        return false unless version
+        return false if version.blank?
 
         version = Version.new(version)
 
