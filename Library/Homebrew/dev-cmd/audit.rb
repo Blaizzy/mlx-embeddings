@@ -155,7 +155,7 @@ module Homebrew
       end
     end
 
-    if audit_formulae.empty? && audit_casks.empty?
+    if audit_formulae.empty? && audit_casks.empty? && !args.tap
       ofail "No matching formulae or casks to audit!"
       return
     end
