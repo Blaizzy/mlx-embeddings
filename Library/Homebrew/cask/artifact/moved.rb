@@ -94,10 +94,8 @@ module Cask
           if target.writable?
             source.children.each { |child| FileUtils.move(child, target/child.basename) }
           else
-            source.children.each do |child|
-              command.run!("/bin/cp", args: ["-pR", child, target/child.basename],
-                                      sudo: true)
-            end
+            command.run!("/bin/cp", args: ["-pR", *source.children, target],
+                                    sudo: true)
           end
           Quarantine.copy_xattrs(source, target)
           source.rmtree

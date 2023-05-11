@@ -2,7 +2,7 @@
 
 describe Cask::Artifact::App, :cask do
   let(:cask) { Cask::CaskLoader.load(cask_path("local-caffeine")) }
-  let(:command) { SystemCommand }
+  let(:command) { NeverSudoSystemCommand }
   let(:adopt) { false }
   let(:force) { false }
   let(:app) { cask.artifacts.find { |a| a.is_a?(described_class) } }
@@ -342,12 +342,10 @@ describe Cask::Artifact::App, :cask do
 
       expect(app.target).to receive(:writable?).at_least(:once).and_return false
       allow(command).to receive(:run!).and_call_original
-      allow(command).to receive(:run!)
-        .with("/bin/cp", args: ["-pR", source_path.join("Contents"), contents_path],
+      expect(command).to receive(:run!)
+        .with("/bin/cp", args: ["-pR", source_path.join("Contents"), target_path],
                          sudo: true)
-        .and_wrap_original do |original_method, *args, **kwargs|
-          original_method.call(*args, **kwargs, sudo: false)
-        end
+      expect(command).to receive(:run!).with(any_args)
       expect(FileUtils).not_to receive(:move).with(source_path.join("Contents"), contents_path)
 
       app.uninstall_phase(command: command, force: force, successor: cask)
