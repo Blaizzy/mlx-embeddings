@@ -405,7 +405,10 @@ class Thor::CoreExt::HashWithIndifferentAccess < ::Hash
   def method_missing(method, *args); end
 end
 
-Thor::Correctable = DidYouMean::Correctable
+module Thor::Correctable
+  def corrections; end
+  def to_s; end
+end
 
 class Thor::DynamicCommand < ::Thor::Command
   def initialize(name, options = T.unsafe(nil)); end
@@ -566,6 +569,7 @@ class Thor::Option < ::Thor::Argument
   def initialize(name, options = T.unsafe(nil)); end
 
   def aliases; end
+  def aliases_for_usage; end
   def array?; end
   def boolean?; end
   def group; end
@@ -774,7 +778,7 @@ Thor::THOR_RESERVED_WORDS = T.let(T.unsafe(nil), Array)
 Thor::Task = Thor::Command
 
 class Thor::UndefinedCommandError < ::Thor::Error
-  include ::DidYouMean::Correctable
+  include ::Thor::Correctable
 
   def initialize(command, all_commands, namespace); end
 
@@ -793,7 +797,7 @@ end
 Thor::UndefinedTaskError = Thor::UndefinedCommandError
 
 class Thor::UnknownArgumentError < ::Thor::Error
-  include ::DidYouMean::Correctable
+  include ::Thor::Correctable
 
   def initialize(switches, unknown); end
 
