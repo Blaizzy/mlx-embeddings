@@ -214,6 +214,7 @@ on_request: true)
       Quarantine.propagate(from: primary_container.path, to: to)
     end
 
+    sig { params(predecessor: T.nilable(Cask)).void }
     def install_artifacts(predecessor: nil)
       artifacts = @cask.artifacts
       already_installed_artifacts = []
@@ -390,6 +391,7 @@ on_request: true)
       @cask.download_sha_path.atomic_write(@cask.new_download_sha) if @cask.checksumable?
     end
 
+    sig { params(successor: T.nilable(Cask)).void }
     def uninstall(successor: nil)
       load_installed_caskfile!
       oh1 "Uninstalling Cask #{Formatter.identifier(@cask)}"
@@ -411,6 +413,7 @@ on_request: true)
       FileUtils.rm_f @cask.download_sha_path if @cask.download_sha_path.exist?
     end
 
+    sig { params(successor: T.nilable(Cask)).void }
     def start_upgrade(successor:)
       uninstall_artifacts(successor: successor)
       backup
@@ -431,7 +434,8 @@ on_request: true)
       backup_metadata_path.rename @cask.metadata_versioned_path
     end
 
-    def revert_upgrade(predecessor)
+    sig { params(predecessor: Cask).void }
+    def revert_upgrade(predecessor:)
       opoo "Reverting upgrade for Cask #{@cask}"
       restore_backup
       install_artifacts(predecessor: predecessor)
@@ -445,6 +449,7 @@ on_request: true)
       puts summary
     end
 
+    sig { params(clear: T::Boolean, successor: T.nilable(Cask)).void }
     def uninstall_artifacts(clear: false, successor: nil)
       artifacts = @cask.artifacts
 

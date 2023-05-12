@@ -131,6 +131,18 @@ module Cask
       false
     end
 
+    sig {
+      params(
+        old_cask:       Cask,
+        new_cask:       Cask,
+        binaries:       T.nilable(T::Boolean),
+        force:          T.nilable(T::Boolean),
+        quarantine:     T.nilable(T::Boolean),
+        require_sha:    T.nilable(T::Boolean),
+        skip_cask_deps: T.nilable(T::Boolean),
+        verbose:        T.nilable(T::Boolean),
+      ).void
+    }
     def self.upgrade_cask(
       old_cask, new_cask,
       binaries:, force:, quarantine:, require_sha:, skip_cask_deps:, verbose:

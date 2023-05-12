@@ -174,6 +174,7 @@ module Cask
       raise CaskQuarantinePropagationError.new(to, quarantiner.stderr)
     end
 
+    sig { params(from: Pathname, to: Pathname).void }
     def self.copy_xattrs(from, to)
       odebug "Copying xattrs from #{from} to #{to}"
 
