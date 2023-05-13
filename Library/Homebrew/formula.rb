@@ -2251,34 +2251,27 @@ class Formula
 
     os_versions = [*MacOSVersion::SYMBOLS.keys, :linux]
 
-    begin
-      if path.exist? && self.class.on_system_blocks_exist?
-        formula_contents = path.read
-        [:arm, :intel].each do |arch|
-          os_versions.each do |os_name|
-            bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)
-            next unless bottle_tag.valid_combination?
+    if path.exist? && self.class.on_system_blocks_exist?
+      formula_contents = path.read
+      os_versions.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
+        bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
+        next unless bottle_tag.valid_combination?
 
-            Homebrew::SimulateSystem.os = os_name
-            Homebrew::SimulateSystem.arch = arch
+        Homebrew::SimulateSystem.with os: os, arch: arch do
+          variations_namespace = Formulary.class_s("Variations#{bottle_tag.to_sym.capitalize}")
+          variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
+                                                            flags: self.class.build_flags, ignore_errors: true)
+          variations_formula = variations_formula_class.new(name, path, :stable,
+                                                            alias_path: alias_path, force_bottle: force_bottle)
 
-            variations_namespace = Formulary.class_s("Variations#{bottle_tag.to_sym.capitalize}")
-            variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
-                                                              flags: self.class.build_flags, ignore_errors: true)
-            variations_formula = variations_formula_class.new(name, path, :stable,
-                                                              alias_path: alias_path, force_bottle: force_bottle)
+          variations_formula.to_hash.each do |key, value|
+            next if value.to_s == hash[key].to_s
 
-            variations_formula.to_hash.each do |key, value|
-              next if value.to_s == hash[key].to_s
-
-              variations[bottle_tag.to_sym] ||= {}
-              variations[bottle_tag.to_sym][key] = value
-            end
+            variations[bottle_tag.to_sym] ||= {}
+            variations[bottle_tag.to_sym][key] = value
           end
         end
       end
-    ensure
-      Homebrew::SimulateSystem.clear
     end
 
     hash["variations"] = variations

@@ -90,8 +90,7 @@ class TestRunnerFormula
     cache_key = :"#{platform}_#{arch}_#{macos_version}"
 
     @dependent_hash[cache_key] ||= begin
-      all = eval_all || Homebrew::EnvConfig.eval_all?
-      formula_selector, eval_all_env = if all
+      formula_selector, eval_all_env = if eval_all
         [:all, "1"]
       else
         [:installed, nil]
@@ -99,15 +98,16 @@ class TestRunnerFormula
 
       with_env(HOMEBREW_EVAL_ALL: eval_all_env) do
         Formulary.clear_cache
-        Homebrew::SimulateSystem.arch = SIMULATE_SYSTEM_SYMBOLS.fetch(arch)
-        Homebrew::SimulateSystem.os = macos_version || platform
 
-        Formula.public_send(formula_selector)
-               .select { |candidate_f| candidate_f.deps.map(&:name).include?(name) }
-               .map { |f| TestRunnerFormula.new(f, eval_all: all) }
-               .freeze
-      ensure
-        Homebrew::SimulateSystem.clear
+        os = macos_version || platform
+        arch = SIMULATE_SYSTEM_SYMBOLS.fetch(arch)
+
+        Homebrew::SimulateSystem.with os: os, arch: arch do
+          Formula.public_send(formula_selector)
+                 .select { |candidate_f| candidate_f.deps.map(&:name).include?(name) }
+                 .map { |f| TestRunnerFormula.new(f, eval_all: eval_all) }
+                 .freeze
+        end
       end
     end
 

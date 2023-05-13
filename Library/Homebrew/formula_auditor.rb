@@ -893,21 +893,19 @@ module Homebrew
       # The formula has no variations, so all OS-version-arch triples depend on GCC.
       return false if variations.blank?
 
-      MacOSVersion::SYMBOLS.each_key do |macos_version|
-        [:arm, :intel].each do |arch|
-          bottle_tag = Utils::Bottles::Tag.new(system: macos_version, arch: arch)
-          next unless bottle_tag.valid_combination?
+      MacOSVersion::SYMBOLS.keys.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
+        bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
+        next unless bottle_tag.valid_combination?
 
-          variation_dependencies = variations.dig(bottle_tag.to_sym, "dependencies")
-          # This variation either:
-          #   1. does not exist
-          #   2. has no variation-specific dependencies
-          # In either case, it matches Linux. We must check for `nil` because an empty
-          # array indicates that this variation does not depend on GCC.
-          return false if variation_dependencies.nil?
-          # We found a non-Linux variation that depends on GCC.
-          return false if variation_dependencies.include?("gcc")
-        end
+        variation_dependencies = variations.dig(bottle_tag.to_sym, "dependencies")
+        # This variation either:
+        #   1. does not exist
+        #   2. has no variation-specific dependencies
+        # In either case, it matches Linux. We must check for `nil` because an empty
+        # array indicates that this variation does not depend on GCC.
+        return false if variation_dependencies.nil?
+        # We found a non-Linux variation that depends on GCC.
+        return false if variation_dependencies.include?("gcc")
       end
 
       true

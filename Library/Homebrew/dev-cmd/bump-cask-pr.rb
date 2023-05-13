@@ -148,30 +148,28 @@ module Homebrew
           tmp_cask = Cask::CaskLoader.load(tmp_contents)
           tmp_config = tmp_cask.config
 
-          [:arm, :intel].each do |arch|
-            Homebrew::SimulateSystem.arch = arch
+          OnSystem::ARCH_OPTIONS.each do |arch|
+            SimulateSystem.with arch: arch do
+              languages = cask.languages
+              languages = [nil] if languages.empty?
+              languages.each do |language|
+                new_hash_config = if language.blank?
+                  tmp_config
+                else
+                  tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
+                end
 
-            languages = cask.languages
-            languages = [nil] if languages.empty?
-            languages.each do |language|
-              new_hash_config = if language.blank?
-                tmp_config
-              else
-                tmp_config.merge(Cask::Config.new(explicit: { languages: [language] }))
+                new_hash_cask = Cask::CaskLoader.load(tmp_contents)
+                new_hash_cask.config = new_hash_config
+                old_hash = new_hash_cask.sha256.to_s
+
+                cask_download = Cask::Download.new(new_hash_cask, quarantine: true)
+                download = cask_download.fetch(verify_download_integrity: false)
+                Utils::Tar.validate_file(download)
+
+                replacement_pairs << [new_hash_cask.sha256.to_s, download.sha256]
               end
-
-              new_hash_cask = Cask::CaskLoader.load(tmp_contents)
-              new_hash_cask.config = new_hash_config
-              old_hash = new_hash_cask.sha256.to_s
-
-              cask_download = Cask::Download.new(new_hash_cask, quarantine: true)
-              download = cask_download.fetch(verify_download_integrity: false)
-              Utils::Tar.validate_file(download)
-
-              replacement_pairs << [new_hash_cask.sha256.to_s, download.sha256]
             end
-          ensure
-            Homebrew::SimulateSystem.clear
           end
         elsif new_hash
           opoo "Cask contains multiple hashes; only updating hash for current arch." if cask.on_system_blocks_exist?

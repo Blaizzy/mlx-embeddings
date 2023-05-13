@@ -68,6 +68,7 @@ module Readall
 
     def valid_tap?(tap, options = {})
       success = true
+
       if options[:aliases]
         valid_aliases = valid_aliases?(tap.alias_dir, tap.formula_dir)
         success = false unless valid_aliases
@@ -76,25 +77,18 @@ module Readall
         success = false unless valid_formulae?(tap.formula_files)
         success = false unless valid_casks?(tap.cask_files)
       else
-        arches = [:arm, :intel]
         os_names = [*MacOSVersion::SYMBOLS.keys, :linux]
-        arches.each do |arch|
-          os_names.each do |os_name|
-            bottle_tag = Utils::Bottles::Tag.new(system: os_name, arch: arch)
-            next unless bottle_tag.valid_combination?
+        os_names.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
+          bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
+          next unless bottle_tag.valid_combination?
 
-            begin
-              Homebrew::SimulateSystem.arch = arch
-              Homebrew::SimulateSystem.os = os_name
-
-              success = false unless valid_formulae?(tap.formula_files, bottle_tag: bottle_tag)
-              success = false unless valid_casks?(tap.cask_files, os_name: os_name, arch: arch)
-            ensure
-              Homebrew::SimulateSystem.clear
-            end
+          Homebrew::SimulateSystem.with os: os, arch: arch do
+            success = false unless valid_formulae?(tap.formula_files, bottle_tag: bottle_tag)
+            success = false unless valid_casks?(tap.cask_files, os_name: os, arch: arch)
           end
         end
       end
+
       success
     end
 
