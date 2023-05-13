@@ -11,6 +11,17 @@ module Cask
   #
   # @api private
   module Utils
+    def self.gain_permissions_mkpath(path, command: SystemCommand)
+      dir = path.ascend.find(&:directory?)
+      return if path == dir
+
+      if dir.writable?
+        path.mkpath
+      else
+        command.run!("/bin/mkdir", args: ["-p", path], sudo: true)
+      end
+    end
+
     def self.gain_permissions_remove(path, command: SystemCommand)
       if path.respond_to?(:rmtree) && path.exist?
         gain_permissions(path, ["-R"], command) do |p|

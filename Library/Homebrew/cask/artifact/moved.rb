@@ -82,13 +82,7 @@ module Cask
 
         ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'"
 
-        unless target.dirname.exist?
-          if target.dirname.ascend.find(&:directory?).writable?
-            target.dirname.mkpath
-          else
-            command.run!("/bin/mkdir", args: ["-p", target.dirname], sudo: true)
-          end
-        end
+        Utils.gain_permissions_mkpath(target.dirname, command: command) unless target.dirname.exist?
 
         if target.directory?
           if target.writable?
