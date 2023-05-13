@@ -18,7 +18,17 @@ module Cask
       if dir.writable?
         path.mkpath
       else
-        command.run!("/bin/mkdir", args: ["-p", "--", path], sudo: true)
+        command.run!("/bin/mkdir", args: ["-p", "--", path], sudo: true, print_stderr: false)
+      end
+    end
+
+    def self.gain_permissions_rmdir(path, command: SystemCommand)
+      gain_permissions(path, [], command) do |p|
+        if p.parent.writable?
+          FileUtils.rmdir p
+        else
+          command.run!("/bin/rmdir", args: ["--", p], sudo: true, print_stderr: false)
+        end
       end
     end
 
@@ -45,9 +55,7 @@ module Cask
           end
         else
           recursive_flag = directory ? ["-R"] : []
-          command.run!("/bin/rm",
-                       args: recursive_flag + ["-f", "--", p],
-                       sudo: true)
+          command.run!("/bin/rm", args: recursive_flag + ["-f", "--", p], sudo: true, print_stderr: false)
         end
       end
     end
