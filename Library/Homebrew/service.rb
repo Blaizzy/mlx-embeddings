@@ -41,16 +41,9 @@ module Homebrew
       "homebrew.mxcl.#{@formula.name}"
     end
 
-    sig { params(name: T.nilable(String)).returns(String) }
-    def plist_name(name = nil)
-      case T.unsafe(name)
-      when nil
-        @plist_name ||= default_plist_name
-      when String
-        @plist_name = name
-      else
-        raise TypeError, "Service#plist_name expects a String"
-      end
+    sig { returns(String) }
+    def plist_name
+      @plist_name ||= default_plist_name
     end
 
     sig { returns(String) }
@@ -58,16 +51,17 @@ module Homebrew
       "homebrew.#{@formula.name}"
     end
 
-    sig { params(name: T.nilable(String)).returns(String) }
-    def service_name(name = nil)
-      case T.unsafe(name)
-      when nil
-        @service_name ||= default_service_name
-      when String
-        @service_name = name
-      else
-        raise TypeError, "Service#service_name expects a String"
-      end
+    sig { returns(String) }
+    def service_name
+      @service_name ||= default_service_name
+    end
+
+    sig { params(macos: T.nilable(String), linux: T.nilable(String)).void }
+    def name(macos: nil, linux: nil)
+      raise TypeError, "Service#name expects at least one String" if [macos, linux].none?(String)
+
+      @plist_name = macos if macos
+      @service_name = linux if linux
     end
 
     sig {
@@ -539,14 +533,13 @@ module Homebrew
     # Prepare the service hash for inclusion in the formula API JSON.
     sig { returns(Hash) }
     def serialize
-      custom_plist_name = plist_name if plist_name != default_plist_name
-      custom_service_name = service_name if service_name != default_service_name
+      name_params = {
+        macos: (plist_name if plist_name != default_plist_name),
+        linux: (service_name if service_name != default_service_name),
+      }.compact
 
       unless command?
-        return {
-          plist_name:   custom_plist_name,
-          service_name: custom_service_name,
-        }.compact
+        return name_params.blank? ? {} : { name: name_params }
       end
 
       cron_string = if @cron.present?
@@ -558,8 +551,7 @@ module Homebrew
       sockets_string = "#{@sockets[:type]}://#{@sockets[:host]}:#{@sockets[:port]}" if @sockets.present?
 
       {
-        plist_name:            custom_plist_name,
-        service_name:          custom_service_name,
+        name:                  name_params.presence,
         run:                   @run_params,
         run_type:              @run_type,
         interval:              @interval,
@@ -584,15 +576,10 @@ module Homebrew
     sig { params(api_hash: Hash).returns(Hash) }
     def self.deserialize(api_hash)
       hash = {}
-
-      %w[plist_name service_name].each do |key|
-        next if (value = api_hash[key]).nil?
-
-        hash[key.to_sym] = value
-      end
+      hash[:name] = api_hash["name"].transform_keys(&:to_sym) if api_hash.key?("name")
 
       # The service hash might not have a "run" command if it only documents
-      # an existing service file with "plist_name" or "service_name".
+      # an existing service file with the "name" command.
       return hash unless api_hash.key?("run")
 
       hash[:run] =

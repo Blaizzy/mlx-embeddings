@@ -211,8 +211,7 @@ describe Caveats do
         f = formula do
           url "foo-1.0"
           service do
-            plist_name "custom.mxcl.foo"
-            service_name "custom.foo"
+            name macos: "custom.mxcl.foo", linux: "custom.foo"
           end
         end
         expect(Utils::Service).to receive(:installed?).with(f).once.and_return(true)

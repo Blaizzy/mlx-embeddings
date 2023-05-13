@@ -736,14 +736,13 @@ describe Formula do
       f = formula do
         url "https://brew.sh/test-1.0.tbz"
         service do
-          plist_name "custom.macos.beanstalkd"
-          service_name "custom.linux.beanstalkd"
+          name macos: "custom.macos.beanstalkd", linux: "custom.linux.beanstalkd"
         end
       end
 
       expect(f.plist_name).to eq("custom.macos.beanstalkd")
       expect(f.service_name).to eq("custom.linux.beanstalkd")
-      expect(f.service.serialize.keys).to contain_exactly(:plist_name, :service_name)
+      expect(f.service.serialize.keys).to contain_exactly(:name)
     end
 
     specify "service helpers return data" do

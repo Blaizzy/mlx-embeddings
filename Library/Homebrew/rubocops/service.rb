@@ -21,11 +21,8 @@ module RuboCop
           share:    :opt_share,
         }.freeze
 
-        # These can be defined without using the `run` command.
-        RENAME_METHOD_CALLS = [:plist_name, :service_name].freeze
-
         # At least one of these methods must be defined in a service block.
-        REQUIRED_METHOD_CALLS = [:run, *RENAME_METHOD_CALLS].freeze
+        REQUIRED_METHOD_CALLS = [:run, :name].freeze
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           service_node = find_block(body_node, :service)
@@ -38,13 +35,12 @@ module RuboCop
           # so we don't show both of them at the same time.
           if (method_calls.keys & REQUIRED_METHOD_CALLS).empty?
             offending_node(service_node)
-            problem "Service blocks require `run`, `plist_name` or `service_name` to be defined."
+            problem "Service blocks require `run` or `name` to be defined."
           elsif !method_calls.key?(:run)
-            other_method_calls = method_calls.keys - RENAME_METHOD_CALLS
+            other_method_calls = method_calls.keys - [:name]
             if other_method_calls.any?
               offending_node(service_node)
-              problem "`run` must be defined to use methods other than " \
-                      "`service_name` and `plist_name` like #{other_method_calls}."
+              problem "`run` must be defined to use methods other than `name` like #{other_method_calls}."
             end
           end
 

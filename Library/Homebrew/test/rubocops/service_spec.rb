@@ -11,7 +11,7 @@ describe RuboCop::Cop::FormulaAudit::Service do
         url "https://brew.sh/foo-1.0.tgz"
 
         service do
-        ^^^^^^^^^^ FormulaAudit/Service: Service blocks require `run`, `plist_name` or `service_name` to be defined.
+        ^^^^^^^^^^ FormulaAudit/Service: Service blocks require `run` or `name` to be defined.
           run_type :cron
           working_dir "/tmp/example"
         end
@@ -25,8 +25,7 @@ describe RuboCop::Cop::FormulaAudit::Service do
         url "https://brew.sh/foo-1.0.tgz"
 
         service do
-          plist_name "custom.mcxl.foo"
-          service_name "custom.foo"
+          name macos: "custom.mcxl.foo", linux: "custom.foo"
         end
       end
     RUBY
@@ -38,9 +37,8 @@ describe RuboCop::Cop::FormulaAudit::Service do
         url "https://brew.sh/foo-1.0.tgz"
 
         service do
-        ^^^^^^^^^^ FormulaAudit/Service: `run` must be defined to use methods other than `service_name` and `plist_name` like [:working_dir].
-          plist_name "custom.mcxl.foo"
-          service_name "custom.foo"
+        ^^^^^^^^^^ FormulaAudit/Service: `run` must be defined to use methods other than `name` like [:working_dir].
+          name macos: "custom.mcxl.foo", linux: "custom.foo"
           working_dir "/tmp/example"
         end
       end
