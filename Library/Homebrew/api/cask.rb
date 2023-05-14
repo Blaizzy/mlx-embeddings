@@ -46,8 +46,15 @@ module Homebrew
           json_casks, updated = Homebrew::API.fetch_json_api_file "cask.jws.json",
                                                                   target: HOMEBREW_CACHE_API/"cask.jws.json"
 
+          cache["renames"] = {}
           cache["casks"] = json_casks.to_h do |json_cask|
-            [json_cask["token"], json_cask.except("token")]
+            token = json_cask.delete("token")
+
+            json_cask.fetch("old_tokens", []).each do |old_token|
+              cache["renames"][old_token] = token
+            end
+
+            [token, json_cask]
           end
 
           updated
@@ -61,7 +68,17 @@ module Homebrew
             write_names(regenerate: json_updated)
           end
 
-          cache["casks"]
+          cache.fetch("casks")
+        end
+
+        sig { returns(T::Hash[String, String]) }
+        def all_renames
+          unless cache.key?("renames")
+            json_updated = download_and_cache_data!
+            write_names(regenerate: json_updated)
+          end
+
+          cache.fetch("renames")
         end
 
         sig { params(regenerate: T::Boolean).void }

@@ -155,7 +155,7 @@ module Homebrew
 
         return false if cask.blank?
         return true unless basename.to_s.match?(/\A#{Regexp.escape(name)}--#{Regexp.escape(cask.version)}\b/)
-        return true if scrub && cask.versions.exclude?(cask.version)
+        return true if scrub && cask.installed_version != cask.version
 
         if cask.version.latest?
           cleanup_threshold = (DateTime.now - CLEANUP_DEFAULT_DAYS).to_time

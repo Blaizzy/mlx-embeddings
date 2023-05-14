@@ -7,6 +7,7 @@ require "utils/topological_hash"
 
 require "cask/config"
 require "cask/download"
+require "cask/migrator"
 require "cask/quarantine"
 
 require "cgi"
@@ -86,6 +87,8 @@ module Cask
     def install
       start_time = Time.now
       odebug "Cask::Installer#install"
+
+      Migrator.migrate_if_needed(@cask)
 
       old_config = @cask.config
       if @cask.installed? && !force? && !reinstall? && !upgrade?
@@ -228,8 +231,9 @@ on_request: true)
 
         next if artifact.is_a?(Artifact::Binary) && !binaries?
 
-        artifact.install_phase(command: @command, verbose: verbose?, adopt: adopt?, force: force?,
-                               predecessor: predecessor)
+        artifact.install_phase(
+          command: @command, verbose: verbose?, adopt: adopt?, force: force?, predecessor: predecessor,
+        )
         already_installed_artifacts.unshift(artifact)
       end
 
@@ -383,7 +387,6 @@ on_request: true)
     end
 
     def save_config_file
-      metadata_subdir
       @cask.config_path.atomic_write(@cask.config.to_json)
     end
 
@@ -410,7 +413,8 @@ on_request: true)
     end
 
     def remove_download_sha
-      FileUtils.rm_f @cask.download_sha_path if @cask.download_sha_path.exist?
+      FileUtils.rm_f @cask.download_sha_path
+      @cask.download_sha_path.parent.rmdir_if_possible
     end
 
     sig { params(successor: T.nilable(Cask)).void }
@@ -427,8 +431,8 @@ on_request: true)
     def restore_backup
       return if !backup_path.directory? || !backup_metadata_path.directory?
 
-      Pathname.new(@cask.staged_path).rmtree if @cask.staged_path.exist?
-      Pathname.new(@cask.metadata_versioned_path).rmtree if @cask.metadata_versioned_path.exist?
+      @cask.staged_path.rmtree if @cask.staged_path.exist?
+      @cask.metadata_versioned_path.rmtree if @cask.metadata_versioned_path.exist?
 
       backup_path.rename @cask.staged_path
       backup_metadata_path.rename @cask.metadata_versioned_path
@@ -544,6 +548,12 @@ on_request: true)
 
       # toplevel staged distribution
       @cask.caskroom_path.rmdir_if_possible unless upgrade?
+
+      # Remove symlinks for renamed casks if they are now broken.
+      @cask.old_tokens.each do |old_token|
+        old_caskroom_path = Caskroom.path/old_token
+        FileUtils.rm old_caskroom_path if old_caskroom_path.symlink? && !old_caskroom_path.exist?
+      end
     end
 
     def purge_caskroom_path
@@ -555,9 +565,11 @@ on_request: true)
 
     # load the same cask file that was used for installation, if possible
     def load_installed_caskfile!
+      Migrator.migrate_if_needed(@cask)
+
       installed_caskfile = @cask.installed_caskfile
 
-      if installed_caskfile.exist?
+      if installed_caskfile&.exist?
         begin
           @cask = CaskLoader.load(installed_caskfile)
           return

@@ -4,7 +4,7 @@ describe Cask::Cask, :cask do
   let(:cask) { described_class.new("versioned-cask") }
 
   context "when multiple versions are installed" do
-    describe "#versions" do
+    describe "#installed_version" do
       context "when there are duplicate versions" do
         it "uses the last unique version" do
           allow(cask).to receive(:timestamped_versions).and_return([
@@ -13,11 +13,11 @@ describe Cask::Cask, :cask do
             ["1.2.2", "1001"],
           ])
 
+          # Installed caskfile must exist to count as installed.
+          allow_any_instance_of(Pathname).to receive(:exist?).and_return(true)
+
           expect(cask).to receive(:timestamped_versions)
-          expect(cask.versions).to eq([
-            "1.2.3",
-            "1.2.2",
-          ])
+          expect(cask.installed_version).to eq("1.2.2")
         end
       end
     end
@@ -104,10 +104,10 @@ describe Cask::Cask, :cask do
       let(:cask) { described_class.new("basic-cask") }
 
       shared_examples "versioned casks" do |tap_version, expectations|
-        expectations.each do |installed_versions, expected_output|
-          context "when versions #{installed_versions.inspect} are installed and the tap version is #{tap_version}" do
+        expectations.each do |installed_version, expected_output|
+          context "when version #{installed_version.inspect} is installed and the tap version is #{tap_version}" do
             it {
-              allow(cask).to receive(:versions).and_return(installed_versions)
+              allow(cask).to receive(:installed_version).and_return(installed_version)
               allow(cask).to receive(:version).and_return(Cask::DSL::Version.new(tap_version))
               expect(cask).to receive(:outdated_versions).and_call_original
               expect(subject).to eq expected_output
@@ -118,16 +118,13 @@ describe Cask::Cask, :cask do
 
       describe "installed version is equal to tap version => not outdated" do
         include_examples "versioned casks", "1.2.3",
-                         ["1.2.3"]          => [],
-                         ["1.2.4", "1.2.3"] => []
+                         "1.2.3" => []
       end
 
       describe "installed version is different than tap version => outdated" do
         include_examples "versioned casks", "1.2.4",
-                         ["1.2.3"]                   => ["1.2.3"],
-                         ["1.2.4", "1.2.3"]          => ["1.2.3"],
-                         ["1.2.2", "1.2.3"]          => ["1.2.2", "1.2.3"],
-                         ["1.2.2", "1.2.4", "1.2.3"] => ["1.2.2", "1.2.3"]
+                         "1.2.3" => ["1.2.3"],
+                         "1.2.4" => []
       end
     end
 
@@ -142,7 +139,7 @@ describe Cask::Cask, :cask do
             subject { cask.outdated_versions(greedy: greedy) }
 
             it {
-              allow(cask).to receive(:versions).and_return(installed_version)
+              allow(cask).to receive(:installed_version).and_return(installed_version)
               allow(cask).to receive(:version).and_return(Cask::DSL::Version.new(tap_version))
               allow(cask).to receive(:outdated_download_sha?).and_return(outdated_sha)
               expect(cask).to receive(:outdated_versions).and_call_original
@@ -154,29 +151,29 @@ describe Cask::Cask, :cask do
 
       describe ":latest version installed, :latest version in tap" do
         include_examples ":latest cask", false, false, "latest",
-                         ["latest"] => []
+                         "latest" => []
         include_examples ":latest cask", true, false, "latest",
-                         ["latest"] => []
+                         "latest" => []
         include_examples ":latest cask", true, true, "latest",
-                         ["latest"] => ["latest"]
+                         "latest" => ["latest"]
       end
 
       describe "numbered version installed, :latest version in tap" do
         include_examples ":latest cask", false, false, "latest",
-                         ["1.2.3"] => []
+                         "1.2.3" => []
         include_examples ":latest cask", true, false, "latest",
-                         ["1.2.3"] => []
+                         "1.2.3" => []
         include_examples ":latest cask", true, true, "latest",
-                         ["1.2.3"] => ["1.2.3"]
+                         "1.2.3" => ["1.2.3"]
       end
 
       describe "latest version installed, numbered version in tap" do
         include_examples ":latest cask", false, false, "1.2.3",
-                         ["latest"] => ["latest"]
+                         "latest" => ["latest"]
         include_examples ":latest cask", true, false, "1.2.3",
-                         ["latest"] => ["latest"]
+                         "latest" => ["latest"]
         include_examples ":latest cask", true, true, "1.2.3",
-                         ["latest"] => ["latest"]
+                         "latest" => ["latest"]
       end
     end
   end

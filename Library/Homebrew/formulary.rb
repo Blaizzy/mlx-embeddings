@@ -523,8 +523,7 @@ module Formulary
 
   # Loads tapped formulae.
   class TapLoader < FormulaLoader
-    def initialize(tapped_name, from: nil)
-      warn = [:keg, :rack].exclude?(from)
+    def initialize(tapped_name, from: nil, warn: true)
       name, path, tap = formula_name_path(tapped_name, warn: warn)
       super name, path, tap: tap
     end
@@ -555,7 +554,7 @@ module Formulary
           new_name = new_tap.core_tap? ? name : new_tapped_name
         end
 
-        opoo "Use #{new_name} instead of deprecated #{old_name}" if warn && old_name && new_name
+        opoo "Formula #{old_name} was renamed to #{new_name}." if warn && old_name && new_name
       end
 
       [name, path, tap]
@@ -649,7 +648,7 @@ module Formulary
   # * a formula URL
   # * a local bottle reference
   def self.factory(
-    ref, spec = :stable, alias_path: nil, from: nil,
+    ref, spec = :stable, alias_path: nil, from: nil, warn: true,
     force_bottle: false, flags: [], ignore_errors: false
   )
     raise ArgumentError, "Formulae must have a ref!" unless ref
@@ -660,7 +659,7 @@ module Formulary
       return cache[:formulary_factory][cache_key]
     end
 
-    formula = loader_for(ref, from: from).get_formula(spec, alias_path: alias_path,
+    formula = loader_for(ref, from: from, warn: warn).get_formula(spec, alias_path: alias_path,
                                                       force_bottle: force_bottle, flags: flags,
                                                       ignore_errors: ignore_errors)
     if factory_cached?
@@ -683,7 +682,7 @@ module Formulary
     if keg
       from_keg(keg, spec, alias_path: alias_path, force_bottle: force_bottle, flags: flags)
     else
-      factory(rack.basename.to_s, spec || :stable, alias_path: alias_path, from: :rack,
+      factory(rack.basename.to_s, spec || :stable, alias_path: alias_path, from: :rack, warn: false,
               force_bottle: force_bottle, flags: flags)
     end
   end
@@ -704,15 +703,15 @@ module Formulary
     spec ||= tab.spec
 
     f = if tap.nil?
-      factory(keg.rack.basename.to_s, spec, alias_path: alias_path, from: :keg,
+      factory(keg.rack.basename.to_s, spec, alias_path: alias_path, from: :keg, warn: false,
               force_bottle: force_bottle, flags: flags)
     else
       begin
-        factory("#{tap}/#{keg.rack.basename}", spec, alias_path: alias_path, from: :keg,
+        factory("#{tap}/#{keg.rack.basename}", spec, alias_path: alias_path, from: :keg, warn: false,
                 force_bottle: force_bottle, flags: flags)
       rescue FormulaUnavailableError
         # formula may be migrated to different tap. Try to search in core and all taps.
-        factory(keg.rack.basename.to_s, spec, alias_path: alias_path, from: :keg,
+        factory(keg.rack.basename.to_s, spec, alias_path: alias_path, from: :keg, warn: false,
                 force_bottle: force_bottle, flags: flags)
       end
     end
@@ -757,7 +756,7 @@ module Formulary
     loader_for(ref).path
   end
 
-  def self.loader_for(ref, from: nil)
+  def self.loader_for(ref, from: nil, warn: true)
     case ref
     when HOMEBREW_BOTTLES_EXTNAME_REGEX
       return BottleLoader.new(ref)
@@ -770,7 +769,7 @@ module Formulary
         return AliasAPILoader.new(name) if Homebrew::API::Formula.all_aliases.key?(name)
       end
 
-      return TapLoader.new(ref, from: from)
+      return TapLoader.new(ref, from: from, warn: warn)
     end
 
     pathname_ref = Pathname.new(ref)
@@ -800,7 +799,9 @@ module Formulary
       return FormulaLoader.new(name, path)
     end
 
-    return TapLoader.new("#{CoreTap.instance}/#{ref}", from: from) if CoreTap.instance.formula_renames.key?(ref)
+    if CoreTap.instance.formula_renames.key?(ref)
+      return TapLoader.new("#{CoreTap.instance}/#{ref}", from: from, warn: warn)
+    end
 
     possible_taps = Tap.select { |tap| tap.formula_renames.key?(ref) }
 
@@ -809,7 +810,7 @@ module Formulary
       raise TapFormulaWithOldnameAmbiguityError.new(ref, possible_tap_newname_formulae)
     end
 
-    return TapLoader.new("#{possible_taps.first}/#{ref}", from: from) unless possible_taps.empty?
+    return TapLoader.new("#{possible_taps.first}/#{ref}", from: from, warn: warn) unless possible_taps.empty?
 
     possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{ref}/.brew/#{ref}.rb")
     return FormulaLoader.new(ref, possible_keg_formula) if possible_keg_formula.file?

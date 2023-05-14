@@ -47,12 +47,14 @@ module Homebrew
           ignore_unavailable: T.nilable(T::Boolean),
           method:             T.nilable(Symbol),
           uniq:               T::Boolean,
+          warn:               T::Boolean,
         ).returns(T::Array[T.any(Formula, Keg, Cask::Cask)])
       }
-      def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil, uniq: true)
+      def to_formulae_and_casks(only: parent&.only_formula_or_cask, ignore_unavailable: nil, method: nil, uniq: true,
+                                warn: true)
         @to_formulae_and_casks ||= {}
         @to_formulae_and_casks[only] ||= downcased_unique_named.flat_map do |name|
-          load_formula_or_cask(name, only: only, method: method)
+          load_formula_or_cask(name, only: only, method: method, warn: warn)
         rescue FormulaUnreadableError, FormulaClassUnavailableError,
                TapFormulaUnreadableError, TapFormulaClassUnavailableError,
                Cask::CaskUnreadableError
@@ -86,14 +88,14 @@ module Homebrew
         end.uniq.freeze
       end
 
-      def load_formula_or_cask(name, only: nil, method: nil)
+      def load_formula_or_cask(name, only: nil, method: nil, warn: true)
         unreadable_error = nil
 
         if only != :cask
           begin
             formula = case method
             when nil, :factory
-              Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags)
+              Formulary.factory(name, *spec, force_bottle: @force_bottle, flags: @flags, warn: warn)
             when :resolve
               resolve_formula(name)
             when :latest_kegs
@@ -124,7 +126,7 @@ module Homebrew
 
           begin
             config = Cask::Config.from_args(@parent) if @cask_options
-            cask = Cask::CaskLoader.load(name, config: config)
+            cask = Cask::CaskLoader.load(name, config: config, warn: warn)
 
             if unreadable_error.present?
               onoe <<~EOS
@@ -145,7 +147,7 @@ module Homebrew
             # If we're trying to get a keg-like Cask, do our best to handle it
             # not being readable and return something that can be used.
             if want_keg_like_cask
-              cask_version = Cask::Cask.new(name, config: config).versions.first
+              cask_version = Cask::Cask.new(name, config: config).installed_version
               cask = Cask::Cask.new(name, config: config) do
                 version cask_version if cask_version
               end

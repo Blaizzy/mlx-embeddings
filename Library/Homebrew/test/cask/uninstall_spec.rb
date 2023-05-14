@@ -112,14 +112,6 @@ describe Cask::Uninstall, :cask do
       expect(caskroom_path.join(first_installed_version)).not_to exist
       expect(caskroom_path).not_to exist
     end
-
-    it "displays a message when versions remain installed" do
-      expect do
-        expect do
-          described_class.uninstall_casks(Cask::Cask.new("versioned-cask"))
-        end.not_to output.to_stderr
-      end.to output(/#{token} #{first_installed_version} is still installed./).to_stdout
-    end
   end
 
   context "when Casks in Taps have been renamed or removed" do

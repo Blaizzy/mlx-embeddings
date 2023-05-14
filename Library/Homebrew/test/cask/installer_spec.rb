@@ -313,7 +313,7 @@ describe Cask::Installer, :cask do
         caffeine = Cask::CaskLoader.load(path)
         expect(caffeine).to receive(:loaded_from_api?).twice.and_return(true)
         expect(caffeine).to receive(:caskfile_only?).twice.and_return(true)
-        expect(caffeine).to receive(:installed_caskfile).once.and_return(invalid_path)
+        expect(caffeine).to receive(:installed_caskfile).twice.and_return(invalid_path)
 
         described_class.new(caffeine).install
         expect(Cask::CaskLoader.load(path)).to be_installed

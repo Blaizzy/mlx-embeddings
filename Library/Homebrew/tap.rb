@@ -18,6 +18,7 @@ class Tap
 
   TAP_DIRECTORY = (HOMEBREW_LIBRARY/"Taps").freeze
 
+  HOMEBREW_TAP_CASK_RENAMES_FILE = "cask_renames.json"
   HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
   HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
   HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
@@ -26,6 +27,7 @@ class Tap
 
   HOMEBREW_TAP_JSON_FILES = %W[
     #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
+    #{HOMEBREW_TAP_CASK_RENAMES_FILE}
     #{HOMEBREW_TAP_MIGRATIONS_FILE}
     #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
     #{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*.json
@@ -687,8 +689,20 @@ class Tap
     hash
   end
 
+  # Hash with tap cask renames.
+  sig { returns(T::Hash[String, String]) }
+  def cask_renames
+    @cask_renames ||= if name == "homebrew/cask" && !Homebrew::EnvConfig.no_install_from_api?
+      Homebrew::API::Cask.all_renames
+    elsif (rename_file = path/HOMEBREW_TAP_CASK_RENAMES_FILE).file?
+      JSON.parse(rename_file.read)
+    else
+      {}
+    end
+  end
+
   # Hash with tap formula renames.
-  sig { returns(Hash) }
+  sig { returns(T::Hash[String, String]) }
   def formula_renames
     @formula_renames ||= if (rename_file = path/HOMEBREW_TAP_FORMULA_RENAMES_FILE).file?
       JSON.parse(rename_file.read)
@@ -931,7 +945,7 @@ class CoreTap < Tap
   end
 
   # @private
-  sig { returns(Hash) }
+  sig { returns(T::Hash[String, String]) }
   def formula_renames
     @formula_renames ||= if Homebrew::EnvConfig.no_install_from_api?
       self.class.ensure_installed!

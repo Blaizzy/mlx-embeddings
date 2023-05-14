@@ -39,17 +39,14 @@ module Cask
     def self.installation_info(cask)
       return "Not installed\n" unless cask.installed?
 
-      install_info = +""
-      cask.versions.each do |version|
-        versioned_staged_path = cask.caskroom_path.join(version)
-        path_details = if versioned_staged_path.exist?
-          versioned_staged_path.abv
-        else
-          Formatter.error("does not exist")
-        end
-        install_info << "#{versioned_staged_path} (#{path_details})\n"
+      versioned_staged_path = cask.caskroom_path.join(cask.installed_version)
+      path_details = if versioned_staged_path.exist?
+        versioned_staged_path.abv
+      else
+        Formatter.error("does not exist")
       end
-      install_info.freeze
+
+      "#{versioned_staged_path} (#{path_details})\n"
     end
 
     def self.name_info(cask)
