@@ -638,7 +638,7 @@ Treat all named arguments as formulae\.
 \fB\-\-cask\fR
 Treat all named arguments as casks\.
 .
-.SS "\fBmigrate\fR [\fB\-\-force\fR] [\fB\-\-dry\-run\fR] \fIinstalled_formula\fR [\.\.\.]"
+.SS "\fBmigrate\fR [\fIoptions\fR] \fIinstalled_formula\fR|\fIinstalled_cask\fR [\.\.\.]"
 Migrate renamed packages to new names, where \fIformula\fR are old names of packages\.
 .
 .TP
@@ -648,6 +648,14 @@ Treat installed \fIformula\fR and provided \fIformula\fR as if they are from the
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Show what would be migrated, but do not actually migrate anything\.
+.
+.TP
+\fB\-\-formula\fR
+Only migrate formulae\.
+.
+.TP
+\fB\-\-cask\fR
+Only migrate casks\.
 .
 .SS "\fBmissing\fR [\fB\-\-hide=\fR] [\fIformula\fR \.\.\.]"
 Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\fR are provided, check all kegs\. Will exit with a non\-zero status if any kegs are found to be missing dependencies\.

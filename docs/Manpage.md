@@ -451,7 +451,7 @@ if no formula or cask is provided.
 * `--cask`:
   Treat all named arguments as casks.
 
-### `migrate` [`--force`] [`--dry-run`] *`installed_formula`* [...]
+### `migrate` [*`options`*] *`installed_formula`*|*`installed_cask`* [...]
 
 Migrate renamed packages to new names, where *`formula`* are old names of
 packages.
@@ -460,6 +460,10 @@ packages.
   Treat installed *`formula`* and provided *`formula`* as if they are from the same taps and migrate them anyway.
 * `-n`, `--dry-run`:
   Show what would be migrated, but do not actually migrate anything.
+* `--formula`:
+  Only migrate formulae.
+* `--cask`:
+  Only migrate casks.
 
 ### `missing` [`--hide=`] [*`formula`* ...]
 
