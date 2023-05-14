@@ -36,6 +36,15 @@ describe Utils::Bottles::Tag do
     expect(tag.to_sym).to eq(symbol)
   end
 
+  describe "#==" do
+    it "compares using the standardized arch" do
+      monterey_intel = described_class.new(system: :monterey, arch: :intel)
+      monterex_x86_64 = described_class.new(system: :monterey, arch: :x86_64)
+
+      expect(monterey_intel).to eq monterex_x86_64
+    end
+  end
+
   describe "#standardized_arch" do
     it "returns :x86_64 for :intel" do
       expect(described_class.new(system: :all, arch: :intel).standardized_arch).to eq(:x86_64)
@@ -47,21 +56,30 @@ describe Utils::Bottles::Tag do
   end
 
   describe "#valid_combination?" do
-    it "returns true for intel archs" do
+    it "returns true for Intel" do
       tag = described_class.new(system: :big_sur, arch: :intel)
       expect(tag.valid_combination?).to be true
       tag = described_class.new(system: :linux, arch: :x86_64)
       expect(tag.valid_combination?).to be true
     end
 
-    it "returns false for arm archs and macos versions older than big_sur" do
+    it "returns false for ARM on macOS Catalina or older" do
       tag = described_class.new(system: :catalina, arch: :arm64)
       expect(tag.valid_combination?).to be false
       tag = described_class.new(system: :mojave, arch: :arm)
       expect(tag.valid_combination?).to be false
     end
 
-    it "returns false for arm archs and linux" do
+    it "returns true for ARM on macOS Big Sur or newer" do
+      tag = described_class.new(system: :big_sur, arch: :arm64)
+      expect(tag.valid_combination?).to be true
+      tag = described_class.new(system: :monterey, arch: :arm)
+      expect(tag.valid_combination?).to be true
+      tag = described_class.new(system: :ventura, arch: :arm)
+      expect(tag.valid_combination?).to be true
+    end
+
+    it "returns false for ARM on Linux" do
       tag = described_class.new(system: :linux, arch: :arm64)
       expect(tag.valid_combination?).to be false
       tag = described_class.new(system: :linux, arch: :arm)

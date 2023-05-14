@@ -153,7 +153,7 @@ module Utils
         if other.is_a?(Symbol)
           to_sym == other
         else
-          self.class == other.class && system == other.system && arch == other.arch
+          self.class == other.class && system == other.system && standardized_arch == other.standardized_arch
         end
       end
 
@@ -162,7 +162,7 @@ module Utils
       end
 
       def hash
-        [system, arch].hash
+        [system, standardized_arch].hash
       end
 
       sig { returns(Symbol) }
