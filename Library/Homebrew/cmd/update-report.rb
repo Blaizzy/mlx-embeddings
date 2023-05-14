@@ -4,6 +4,7 @@
 require "migrator"
 require "formulary"
 require "cask/cask_loader"
+require "cask/migrator"
 require "descriptions"
 require "cleanup"
 require "description_cache_store"
