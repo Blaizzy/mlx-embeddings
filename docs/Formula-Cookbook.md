@@ -881,8 +881,20 @@ There are two ways to add `launchd` plists and `systemd` services to a formula, 
 2. If the formula does not provide a service file you can generate one using the following stanza:
 
    ```ruby
+   # 1. An individual command
    service do
      run opt_bin/"script"
+   end
+
+   # 2. A command with arguments
+   service do
+     run [opt_bin/"script", "--config", etc/"dir/config.yml"]
+   end
+
+   # 3. OS specific commands (If you omit one, the service file won't get generated for that OS.)
+   service do
+     run macos: [opt_bin/"macos_script", "standalone"],
+         linux: var/"special_linux_script"
    end
    ```
 
