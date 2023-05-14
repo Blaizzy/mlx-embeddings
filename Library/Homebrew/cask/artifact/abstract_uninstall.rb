@@ -482,32 +482,48 @@ module Cask
       end
 
       def recursive_rmdir(*directories, command: nil, **_)
-        success = T.let(true, T::Boolean)
-        each_resolved_path(:rmdir, directories) do |_path, resolved_paths|
-          resolved_paths.select(&method(:all_dirs?)).each do |resolved_path|
-            puts resolved_path.sub(Dir.home, "~")
+        directories.all? do |resolved_path|
+          puts resolved_path.sub(Dir.home, "~")
 
-            if (ds_store = resolved_path.join(".DS_Store")).exist?
-              command.run!("/bin/rm", args: ["-f", "--", ds_store], sudo: true, print_stderr: false)
-            end
+          if resolved_path.readable?
+            children = resolved_path.children
 
-            unless recursive_rmdir(*resolved_path.children, command: command)
-              success = false
-              next
-            end
+            next false unless children.all? { |child| child.directory? || child.basename.to_s == ".DS_Store" }
+          else
+            lines = command.run!("/bin/ls", args: ["-A", "-F", "--", resolved_path], sudo: true, print_stderr: false)
+                           .stdout.lines.map(&:chomp)
+                           .flat_map(&:chomp)
 
-            status = command.run("/bin/rmdir", args: ["--", resolved_path], sudo: true, print_stderr: false).success?
-            success &= status
+            # Using `-F` above outputs directories ending with `/`.
+            next false unless lines.all? { |l| l.end_with?("/") || l == ".DS_Store" }
+
+            children = lines.map { |l| resolved_path/l.delete_suffix("/") }
           end
+
+          # Directory counts as empty if it only contains a `.DS_Store`.
+          if children.include?(ds_store = resolved_path/".DS_Store")
+            Utils.gain_permissions_remove(ds_store, command: command)
+            children.delete(ds_store)
+          end
+
+          next false unless recursive_rmdir(*children, command: command)
+
+          Utils.gain_permissions_rmdir(resolved_path, command: command)
+
+          true
         end
-        success
       end
 
-      def uninstall_rmdir(*args, **kwargs)
-        return if args.empty?
+      def uninstall_rmdir(*directories, **kwargs)
+        return if directories.empty?
 
         ohai "Removing directories if empty:"
-        recursive_rmdir(*args, **kwargs)
+
+        each_resolved_path(:rmdir, directories) do |_path, resolved_paths|
+          next unless resolved_paths.all?(&:directory?)
+
+          recursive_rmdir(*resolved_paths, **kwargs)
+        end
       end
     end
   end
