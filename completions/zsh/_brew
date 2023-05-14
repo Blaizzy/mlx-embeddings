@@ -1318,7 +1318,11 @@ _brew_migrate() {
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     - installed_formula \
-    '*::installed_formula:__brew_installed_formulae'
+    '(--cask)--formula[Only migrate formulae]' \
+    '*::installed_formula:__brew_installed_formulae' \
+    - installed_cask \
+    '(--formula)--cask[Only migrate casks]' \
+    '*::installed_cask:__brew_installed_casks'
 }
 
 # brew missing
