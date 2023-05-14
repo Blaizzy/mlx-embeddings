@@ -153,6 +153,9 @@ jobs:
       - name: Run brew audit --skip-style on homebrew/core
         run: brew audit --skip-style --except=version --tap=homebrew/core
 
+      - name: Generate formula API
+        run: brew generate-formula-api
+
   cask-audit:
     name: cask audit
     needs: syntax
@@ -191,6 +194,9 @@ jobs:
           brew audit --skip-style --except=version --tap=homebrew/cask-drivers
           brew audit --skip-style --except=version --tap=homebrew/cask-fonts
           brew audit --skip-style --except=version --tap=homebrew/cask-versions
+
+      - name: Generate cask API
+        run: brew generate-cask-api
 
   vendored-gems:
     name: vendored gems
