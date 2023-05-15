@@ -19,10 +19,8 @@ module Homebrew
       def with(os: T.unsafe(nil), arch: T.unsafe(nil), &_block)
         raise ArgumentError, "At least one of `os` or `arch` must be specified." if !os && !arch
 
-        if self.os || self.arch
-          raise "Cannot simulate#{os&.inspect&.prepend(" ")}#{arch&.inspect&.prepend(" ")} while already " \
-                "simulating#{self.os&.inspect&.prepend(" ")}#{self.arch&.inspect&.prepend(" ")}."
-        end
+        old_os = self.os
+        old_arch = self.arch
 
         begin
           self.os = os if os
@@ -30,7 +28,8 @@ module Homebrew
 
           yield
         ensure
-          clear
+          @os = old_os
+          @arch = old_arch
         end
       end
 
