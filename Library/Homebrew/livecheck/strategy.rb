@@ -184,6 +184,8 @@ module Homebrew
         [:default, :browser].each do |user_agent|
           begin
             parsed_output = curl_headers(
+              "--max-redirs",
+              MAX_REDIRECTIONS.to_s,
               url,
               wanted_headers:    ["location", "content-disposition"],
               use_homebrew_curl: homebrew_curl,
