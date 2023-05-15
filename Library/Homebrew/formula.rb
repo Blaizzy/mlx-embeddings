@@ -427,6 +427,12 @@ class Formula
   # @see .version
   delegate version: :active_spec
 
+  # Whether this formula was loaded using the formulae.brew.sh API
+  # @!method loaded_from_api?
+  # @private
+  # @see .loaded_from_api?
+  delegate loaded_from_api?: :"self.class"
+
   def update_head_version
     return unless head?
     return unless head.downloader.is_a?(VCSDownloadStrategy)
@@ -2238,7 +2244,7 @@ class Formula
     hash = to_hash
 
     # Take from API, merging in local install status.
-    if self.class.loaded_from_api && !Homebrew::EnvConfig.no_install_from_api?
+    if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
       json_formula = Homebrew::API::Formula.all_formulae[name].dup
       return json_formula.merge(
         hash.slice("name", "installed", "linked_keg", "pinned", "outdated"),
@@ -2758,6 +2764,7 @@ class Formula
         @skip_clean_paths = Set.new
         @link_overwrite_paths = Set.new
         @allowed_missing_libraries = Set.new
+        @loaded_from_api = false
       end
     end
 
@@ -2784,7 +2791,7 @@ class Formula
 
     # Whether this formula was loaded using the formulae.brew.sh API
     # @private
-    attr_accessor :loaded_from_api
+    attr_predicate :loaded_from_api?
 
     # Whether this formula contains OS/arch-specific blocks
     # (e.g. `on_macos`, `on_arm`, `on_monterey :or_older`, `on_system :linux, macos: :big_sur_or_newer`).
