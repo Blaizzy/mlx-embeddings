@@ -591,7 +591,7 @@ describe Homebrew::Service do
     it "expands paths" do
       f = stub_formula do
         service do
-          run opt_bin/"beanstalkd"
+          run [opt_sbin/"sleepwatcher", "-V", "-s", "~/.sleep", "-w", "~/.wakeup"]
           working_dir "~"
         end
       end
@@ -614,7 +614,12 @@ describe Homebrew::Service do
         \t</array>
         \t<key>ProgramArguments</key>
         \t<array>
-        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
+        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/sbin/sleepwatcher</string>
+        \t\t<string>-V</string>
+        \t\t<string>-s</string>
+        \t\t<string>#{Dir.home}/.sleep</string>
+        \t\t<string>-w</string>
+        \t\t<string>#{Dir.home}/.wakeup</string>
         \t</array>
         \t<key>RunAtLoad</key>
         \t<true/>

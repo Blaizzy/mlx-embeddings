@@ -383,7 +383,7 @@ module Homebrew
 
     sig { returns(T.nilable(T::Array[String])) }
     def command
-      @run&.map(&:to_s)
+      @run&.map(&:to_s)&.map { |arg| arg.start_with?("~") ? File.expand_path(arg) : arg }
     end
 
     sig { returns(T::Boolean) }
