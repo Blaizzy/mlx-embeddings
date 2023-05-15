@@ -425,11 +425,11 @@ module Homebrew
       base[:TimeOut] = @restart_delay if @restart_delay.present?
       base[:ProcessType] = @process_type.to_s.capitalize if @process_type.present?
       base[:StartInterval] = @interval if @interval.present? && @run_type == RUN_TYPE_INTERVAL
-      base[:WorkingDirectory] = @working_dir if @working_dir.present?
-      base[:RootDirectory] = @root_dir if @root_dir.present?
-      base[:StandardInPath] = @input_path if @input_path.present?
-      base[:StandardOutPath] = @log_path if @log_path.present?
-      base[:StandardErrorPath] = @error_log_path if @error_log_path.present?
+      base[:WorkingDirectory] = File.expand_path(@working_dir) if @working_dir.present?
+      base[:RootDirectory] = File.expand_path(@root_dir) if @root_dir.present?
+      base[:StandardInPath] = File.expand_path(@input_path) if @input_path.present?
+      base[:StandardOutPath] = File.expand_path(@log_path) if @log_path.present?
+      base[:StandardErrorPath] = File.expand_path(@error_log_path) if @error_log_path.present?
       base[:EnvironmentVariables] = @environment_variables unless @environment_variables.empty?
 
       if keep_alive?
@@ -492,11 +492,11 @@ module Homebrew
 
       options << "Restart=always" if @keep_alive.present? && @keep_alive[:always].present?
       options << "RestartSec=#{restart_delay}" if @restart_delay.present?
-      options << "WorkingDirectory=#{@working_dir}" if @working_dir.present?
-      options << "RootDirectory=#{@root_dir}" if @root_dir.present?
-      options << "StandardInput=file:#{@input_path}" if @input_path.present?
-      options << "StandardOutput=append:#{@log_path}" if @log_path.present?
-      options << "StandardError=append:#{@error_log_path}" if @error_log_path.present?
+      options << "WorkingDirectory=#{File.expand_path(@working_dir)}" if @working_dir.present?
+      options << "RootDirectory=#{File.expand_path(@root_dir)}" if @root_dir.present?
+      options << "StandardInput=file:#{File.expand_path(@input_path)}" if @input_path.present?
+      options << "StandardOutput=append:#{File.expand_path(@log_path)}" if @log_path.present?
+      options << "StandardError=append:#{File.expand_path(@error_log_path)}" if @error_log_path.present?
       options += @environment_variables.map { |k, v| "Environment=\"#{k}=#{v}\"" } if @environment_variables.present?
 
       unit + options.join("\n")
