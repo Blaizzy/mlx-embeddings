@@ -16,6 +16,8 @@ module Homebrew
         The generated files are written to the current directory.
       EOS
 
+      switch "-n", "--dry-run", description: "Generate API data without writing it to files."
+
       named_args :none
     end
   end
@@ -39,13 +41,15 @@ module Homebrew
   end
 
   def generate_formula_api
-    generate_formula_api_args.parse
+    args = generate_formula_api_args.parse
 
     tap = CoreTap.instance
 
-    directories = ["_data/formula", "api/formula", "formula"]
-    FileUtils.rm_rf directories + ["_data/formula_canonical.json"]
-    FileUtils.mkdir_p directories
+    unless args.dry_run?
+      directories = ["_data/formula", "api/formula", "formula"]
+      FileUtils.rm_rf directories + ["_data/formula_canonical.json"]
+      FileUtils.mkdir_p directories
+    end
 
     Formulary.enable_factory_cache!
     Formula.generating_hash!
@@ -55,15 +59,17 @@ module Homebrew
       name = formula.name
       json = JSON.pretty_generate(formula.to_hash_with_variations)
 
-      File.write("_data/formula/#{name.tr("+", "_")}.json", "#{json}\n")
-      File.write("api/formula/#{name}.json", FORMULA_JSON_TEMPLATE)
-      File.write("formula/#{name}.html", html_template(name))
+      unless args.dry_run?
+        File.write("_data/formula/#{name.tr("+", "_")}.json", "#{json}\n")
+        File.write("api/formula/#{name}.json", FORMULA_JSON_TEMPLATE)
+        File.write("formula/#{name}.html", html_template(name))
+      end
     rescue
       onoe "Error while generating data for formula '#{name}'."
       raise
     end
 
     canonical_json = JSON.pretty_generate(tap.formula_renames.merge(tap.alias_table))
-    File.write("_data/formula_canonical.json", "#{canonical_json}\n")
+    File.write("_data/formula_canonical.json", "#{canonical_json}\n") unless args.dry_run?
   end
 end

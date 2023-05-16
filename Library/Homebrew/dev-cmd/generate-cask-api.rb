@@ -16,6 +16,8 @@ module Homebrew
         The generated files are written to the current directory.
       EOS
 
+      switch "-n", "--dry-run", description: "Generate API data without writing it to files."
+
       named_args :none
     end
   end
@@ -38,13 +40,15 @@ module Homebrew
   end
 
   def generate_cask_api
-    generate_cask_api_args.parse
+    args = generate_cask_api_args.parse
 
     tap = Tap.default_cask_tap
 
-    directories = ["_data/cask", "api/cask", "api/cask-source", "cask"].freeze
-    FileUtils.rm_rf directories
-    FileUtils.mkdir_p directories
+    unless args.dry_run?
+      directories = ["_data/cask", "api/cask", "api/cask-source", "cask"].freeze
+      FileUtils.rm_rf directories
+      FileUtils.mkdir_p directories
+    end
 
     Cask::Cask.generating_hash!
 
@@ -53,10 +57,12 @@ module Homebrew
       name = cask.token
       json = JSON.pretty_generate(cask.to_hash_with_variations)
 
-      File.write("_data/cask/#{name}.json", "#{json}\n")
-      File.write("api/cask/#{name}.json", CASK_JSON_TEMPLATE)
-      File.write("api/cask-source/#{name}.rb", path.read)
-      File.write("cask/#{name}.html", html_template(name))
+      unless args.dry_run?
+        File.write("_data/cask/#{name}.json", "#{json}\n")
+        File.write("api/cask/#{name}.json", CASK_JSON_TEMPLATE)
+        File.write("api/cask-source/#{name}.rb", path.read)
+        File.write("cask/#{name}.html", html_template(name))
+      end
     rescue
       onoe "Error while generating data for cask '#{path.stem}'."
       raise
