@@ -116,15 +116,14 @@ module Homebrew
             block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex: GithubRelease::DEFAULT_REGEX, **_unused, &block)
+        def self.find_versions(url:, regex: DEFAULT_REGEX, **_unused, &block)
           match_data = { matches: {}, regex: regex }
           match = url.delete_suffix(".git")
                      .match(URL_MATCH_REGEX)
           return match_data if match.blank?
 
           releases = GitHub::API.open_rest("https://api.github.com/repos/#{match[:username]}/#{match[:repository]}/releases")
-
-          GithubRelease.versions_from_content(releases, regex, &block).each do |match_text|
+          versions_from_content(releases, regex, &block).each do |match_text|
             match_data[:matches][match_text] = Version.new(match_text)
           end
 
