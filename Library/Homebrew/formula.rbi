@@ -3,6 +3,8 @@
 # This file provides definitions for Forwardable#delegate, which is currently not supported by Sorbet.
 
 class Formula
+  sig { returns(T::Boolean) }
+  def loaded_from_api?; end
   def bottle_defined?; end
   def bottle_tag?(tag = nil); end
   def bottled?(tag = nil); end

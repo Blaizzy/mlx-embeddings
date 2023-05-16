@@ -136,7 +136,7 @@ module Formulary
 
     mod.const_set(:BUILD_FLAGS, flags)
 
-    class_s = Formulary.class_s(name)
+    class_name = class_s(name)
     json_formula = Homebrew::API::Formula.all_formulae[name]
     json_formula = Homebrew::API.merge_variations(json_formula)
 
@@ -147,6 +147,8 @@ module Formulary
     end
 
     klass = Class.new(::Formula) do
+      @loaded_from_api = true
+
       desc json_formula["desc"]
       homepage json_formula["homepage"]
       license SPDX.string_to_license_expression(json_formula["license"])
@@ -311,8 +313,7 @@ module Formulary
       end
     end
 
-    T.cast(klass, T.class_of(Formula)).loaded_from_api = true
-    mod.const_set(class_s, klass)
+    mod.const_set(class_name, klass)
 
     cache[:api] ||= {}
     cache[:api][name] = klass
