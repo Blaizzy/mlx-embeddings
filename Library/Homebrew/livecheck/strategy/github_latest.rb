@@ -16,14 +16,15 @@ module Homebrew
       #
       # {GithubLatest} should only be used when the upstream repository has a
       # "latest" release for a suitable version and the strategy is necessary
-      # or appropriate (e.g. {Git} returns an unreleased version or the
-      # `stable` URL is a release asset). The strategy can only be applied by
-      # using `strategy :github_latest` in a `livecheck` block.
+      # or appropriate (e.g. the formula/cask uses a release asset or the
+      # {Git} strategy returns an unreleased version). The strategy can only
+      # be applied by using `strategy :github_latest` in a `livecheck` block.
       #
-      # The default regex identifies versions like `1.2.3`/`v1.2.3` in the
-      # release's tag name. This is a common tag format but a modified regex
-      # can be provided in a `livecheck` block to override the default if a
-      # repository uses a different format (e.g. `1.2.3d`, `1.2.3-4`, etc.).
+      # The default regex identifies versions like `1.2.3`/`v1.2.3` in a
+      # release's tag or title. This is a common tag format but a modified
+      # regex can be provided in a `livecheck` block to override the default
+      # if a repository uses a different format (e.g. `1.2.3d`, `1.2.3-4`,
+      # etc.).
       #
       # @api public
       class GithubLatest
