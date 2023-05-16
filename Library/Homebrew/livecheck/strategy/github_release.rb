@@ -5,7 +5,8 @@ module Homebrew
   module Livecheck
     module Strategy
       # The {GithubRelease} strategy identifies versions of software at
-      # github.com by checking a repository's release page.
+      # github.com by checking a repository's recent releases using the
+      # GitHub API.
       #
       # GitHub URLs take a few different formats:
       #
@@ -13,15 +14,18 @@ module Homebrew
       # * `https://github.com/example/example/archive/v1.2.3.tar.gz`
       # * `https://github.com/downloads/example/example/example-1.2.3.tar.gz`
       #
-      # This strategy should only be used when we know the upstream repository
-      # has releases and the tagged release is appropriate to use
-      # The strategy can only be applied by using `strategy :github_latest`
+      # {GithubRelease} should only be used when the upstream repository has
+      # releases for suitable versions and the strategy is necessary or
+      # appropriate (e.g. the formula/cask uses a release asset and the
+      # {GithubLatest} strategy isn't sufficient to identify the newest version.
+      # The strategy can only be applied by using `strategy :github_release`
       # in a `livecheck` block.
       #
-      # The default regex identifies versions like `1.2.3`/`v1.2.3` in the name or tag.
-      # This is a common tag format but a modified regex can be provided in a `livecheck`
-      # block to override the default if a repository uses a different format (e.g.
-      # `example-1.2.3`, `1.2.3d`, `1.2.3-4`, etc.).
+      # The default regex identifies versions like `1.2.3`/`v1.2.3` in each
+      # release's tag or title. This is a common tag format but a modified
+      # regex can be provided in a `livecheck` block to override the default
+      # if a repository uses a different format (e.g. `1.2.3d`, `1.2.3-4`,
+      # etc.).
       #
       # @api public
       class GithubRelease
@@ -43,7 +47,9 @@ module Homebrew
         # isn't provided.
         DEFAULT_REGEX = /v?(\d+(?:\.\d+)+)/i.freeze
 
-        # Keys in the JSON that could contain the version.
+        # Keys in the release JSON that could contain the version.
+        # The tag name is checked first, to better align with the {Git}
+        # strategy.
         VERSION_KEYS = ["tag_name", "name"].freeze
 
         # Whether the strategy can be applied to the provided URL.
@@ -55,12 +61,13 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
-        # Uses a regex to match the version from release JSON or, if a block is
+        # Uses a regex to match versions from release JSON or, if a block is
         # provided, passes the JSON to the block to handle matching. With
         # either approach, an array of unique matches is returned.
         #
-        # @param content [Array, Hash] list of releases or a single release
-        # @param regex [Regexp] a regex used for matching versions in the content
+        # @param content [Array, Hash] array of releases or a single release
+        # @param regex [Regexp] a regex used for matching versions in the
+        # content
         # @param block [Proc, nil] a block to match the content
         # @return [Array]
         sig {
@@ -95,8 +102,8 @@ module Homebrew
           end.compact.uniq
         end
 
-        # Generates a URL and regex (if one isn't provided) and passes them
-        # to {PageMatch.find_versions} to identify versions in the content.
+        # Generates the GitHub API URL for the repository's recent releases
+        # and identifies versions from the JSON response.
         #
         # @param url [String] the URL of the content to check
         # @param regex [Regexp] a regex used for matching versions in content
