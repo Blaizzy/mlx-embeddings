@@ -287,6 +287,10 @@ module Cask
       @token
     end
 
+    def inspect
+      "#<Cask #{token}#{sourcefile_path&.to_s&.prepend(" ")}>"
+    end
+
     def hash
       token.hash
     end
