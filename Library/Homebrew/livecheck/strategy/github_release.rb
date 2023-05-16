@@ -111,7 +111,7 @@ module Homebrew
         sig {
           params(
             url:     String,
-            regex:   T.nilable(Regexp),
+            regex:   Regexp,
             _unused: T.nilable(T::Hash[Symbol, T.untyped]),
             block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
