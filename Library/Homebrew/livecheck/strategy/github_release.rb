@@ -61,6 +61,27 @@ module Homebrew
           URL_MATCH_REGEX.match?(url)
         end
 
+        # Extracts information from a provided URL and uses it to generate
+        # various input values used by the strategy to check for new versions.
+        # Some of these values act as defaults and can be overridden in a
+        # `livecheck` block.
+        #
+        # @param url [String] the URL used to generate values
+        # @return [Hash]
+        sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
+        def self.generate_input_values(url)
+          values = {}
+
+          match = url.delete_suffix(".git").match(URL_MATCH_REGEX)
+          return values if match.blank?
+
+          values[:url] = "#{GitHub::API_URL}/repos/#{match[:username]}/#{match[:repository]}/releases"
+          values[:username] = match[:username]
+          values[:repository] = match[:repository]
+
+          values
+        end
+
         # Uses a regex to match versions from release JSON or, if a block is
         # provided, passes the JSON to the block to handle matching. With
         # either approach, an array of unique matches is returned.
@@ -117,12 +138,14 @@ module Homebrew
           ).returns(T::Hash[Symbol, T.untyped])
         }
         def self.find_versions(url:, regex: DEFAULT_REGEX, **_unused, &block)
-          match_data = { matches: {}, regex: regex }
-          match = url.delete_suffix(".git")
-                     .match(URL_MATCH_REGEX)
-          return match_data if match.blank?
+          match_data = { matches: {}, regex: regex, url: url }
 
-          releases = GitHub::API.open_rest("https://api.github.com/repos/#{match[:username]}/#{match[:repository]}/releases")
+          generated = generate_input_values(url)
+          return match_data if generated.blank?
+
+          match_data[:url] = generated[:url]
+
+          releases = GitHub::API.open_rest(generated[:url])
           versions_from_content(releases, regex, &block).each do |match_text|
             match_data[:matches][match_text] = Version.new(match_text)
           end

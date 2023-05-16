@@ -81,6 +81,7 @@ module Homebrew
         }
         def self.find_versions(url:, regex: GitHubRelease::DEFAULT_REGEX, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
+
           generated = generate_input_values(url)
           return match_data if generated.blank?
 
