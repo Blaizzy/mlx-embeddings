@@ -62,8 +62,24 @@ module Homebrew
     end
 
     def <=>(other)
-      [version, short_version].map { |v| v&.yield_self(&Version.public_method(:new)) || Version::NULL } <=>
-        [other.version, other.short_version].map { |v| v&.yield_self(&Version.public_method(:new)) || Version::NULL }
+      return super unless instance_of?(other.class)
+
+      make_version = ->(v) { v ? Version.new(v) : Version::NULL }
+
+      version = self.version.then(&make_version)
+      other_version = other.version.then(&make_version)
+
+      difference = version <=> other_version
+
+      # If `version` is equal or cannot be compared, compare `short_version` instead.
+      if difference.nil? || difference.zero?
+        short_version = self.short_version.then(&make_version)
+        other_short_version = other.short_version.then(&make_version)
+
+        return short_version <=> other_short_version
+      end
+
+      difference
     end
 
     def ==(other)
