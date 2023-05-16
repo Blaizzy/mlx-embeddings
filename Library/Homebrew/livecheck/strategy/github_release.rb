@@ -4,7 +4,7 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The {GithubRelease} strategy identifies versions of software at
+      # The {GithubReleases} strategy identifies versions of software at
       # github.com by checking a repository's recent releases using the
       # GitHub API.
       #
@@ -14,7 +14,7 @@ module Homebrew
       # * `https://github.com/example/example/archive/v1.2.3.tar.gz`
       # * `https://github.com/downloads/example/example/example-1.2.3.tar.gz`
       #
-      # {GithubRelease} should only be used when the upstream repository has
+      # {GithubReleases} should only be used when the upstream repository has
       # releases for suitable versions and the strategy is necessary or
       # appropriate (e.g. the formula/cask uses a release asset and the
       # {GithubLatest} strategy isn't sufficient to identify the newest version.
@@ -28,11 +28,11 @@ module Homebrew
       # etc.).
       #
       # @api public
-      class GithubRelease
+      class GithubReleases
         NICE_NAME = "GitHub - Releases"
 
         # A priority of zero causes livecheck to skip the strategy. We do this
-        # for {GithubRelease} so we can selectively apply the strategy using
+        # for {GithubReleases} so we can selectively apply the strategy using
         # `strategy :github_release` in a `livecheck` block.
         PRIORITY = 0
 
@@ -150,6 +150,6 @@ module Homebrew
         end
       end
     end
-    GitHubRelease = Homebrew::Livecheck::Strategy::GithubRelease
+    GitHubReleases = Homebrew::Livecheck::Strategy::GithubReleases
   end
 end

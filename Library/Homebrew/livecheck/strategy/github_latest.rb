@@ -41,7 +41,7 @@ module Homebrew
         # @return [Boolean]
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
-          GitHubRelease.match?(url)
+          GitHubReleases.match?(url)
         end
 
         # Extracts information from a provided URL and uses it to generate
@@ -55,7 +55,7 @@ module Homebrew
         def self.generate_input_values(url)
           values = {}
 
-          match = url.delete_suffix(".git").match(GitHubRelease::URL_MATCH_REGEX)
+          match = url.delete_suffix(".git").match(GitHubReleases::URL_MATCH_REGEX)
           return values if match.blank?
 
           values[:url] = "https://api.github.com/repos/#{match[:username]}/#{match[:repository]}/releases/latest"
@@ -79,7 +79,7 @@ module Homebrew
             block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex: GitHubRelease::DEFAULT_REGEX, **_unused, &block)
+        def self.find_versions(url:, regex: GitHubReleases::DEFAULT_REGEX, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           generated = generate_input_values(url)
@@ -88,7 +88,7 @@ module Homebrew
           match_data[:url] = generated[:url]
 
           release = GitHub.get_latest_release(generated[:username], generated[:repository])
-          GitHubRelease.versions_from_content(release, regex, &block).each do |match_text|
+          GitHubReleases.versions_from_content(release, regex, &block).each do |match_text|
             match_data[:matches][match_text] = Version.new(match_text)
           end
 

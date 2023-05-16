@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::GithubRelease do
+describe Homebrew::Livecheck::Strategy::GitHubReleases do
   subject(:github_release) { described_class }
 
   let(:github_urls) do
