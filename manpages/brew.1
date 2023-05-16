@@ -1782,17 +1782,25 @@ Overwrite the destination formula if it already exists\.
 .SS "\fBformula\fR \fIformula\fR [\.\.\.]"
 Display the path where \fIformula\fR is located\.
 .
-.SS "\fBgenerate\-cask\-api\fR"
+.SS "\fBgenerate\-cask\-api\fR [\fB\-\-dry\-run\fR]"
 Generates Cask API data files for formulae\.brew\.sh\.
 .
 .P
 The generated files are written to the current directory\.
 .
-.SS "\fBgenerate\-formula\-api\fR"
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Generate API data without writing it to files\.
+.
+.SS "\fBgenerate\-formula\-api\fR [\fB\-\-dry\-run\fR]"
 Generates Formula API data files for formulae\.brew\.sh\.
 .
 .P
 The generated files are written to the current directory\.
+.
+.TP
+\fB\-n\fR, \fB\-\-dry\-run\fR
+Generate API data without writing it to files\.
 .
 .SS "\fBgenerate\-man\-completions\fR"
 Generate Homebrew\'s manpages and shell completions\.

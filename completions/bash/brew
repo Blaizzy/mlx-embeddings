@@ -1014,6 +1014,7 @@ _brew_generate_cask_api() {
     -*)
       __brewcomp "
       --debug
+      --dry-run
       --help
       --quiet
       --verbose
@@ -1030,6 +1031,7 @@ _brew_generate_formula_api() {
     -*)
       __brewcomp "
       --debug
+      --dry-run
       --help
       --quiet
       --verbose

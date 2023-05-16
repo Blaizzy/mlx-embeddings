@@ -915,6 +915,7 @@ _brew_formula() {
 _brew_generate_cask_api() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--dry-run[Generate API data without writing it to files]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
@@ -924,6 +925,7 @@ _brew_generate_cask_api() {
 _brew_generate_formula_api() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--dry-run[Generate API data without writing it to files]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
