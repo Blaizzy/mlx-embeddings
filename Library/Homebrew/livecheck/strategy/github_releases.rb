@@ -18,7 +18,7 @@ module Homebrew
       # releases for suitable versions and the strategy is necessary or
       # appropriate (e.g. the formula/cask uses a release asset and the
       # {GithubLatest} strategy isn't sufficient to identify the newest version.
-      # The strategy can only be applied by using `strategy :github_release`
+      # The strategy can only be applied by using `strategy :github_releases`
       # in a `livecheck` block.
       #
       # The default regex identifies versions like `1.2.3`/`v1.2.3` in each
@@ -33,7 +33,7 @@ module Homebrew
 
         # A priority of zero causes livecheck to skip the strategy. We do this
         # for {GithubReleases} so we can selectively apply the strategy using
-        # `strategy :github_release` in a `livecheck` block.
+        # `strategy :github_releases` in a `livecheck` block.
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.

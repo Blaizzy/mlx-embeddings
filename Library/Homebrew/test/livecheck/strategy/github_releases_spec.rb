@@ -2,8 +2,8 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::GitHubReleases do
-  subject(:github_release) { described_class }
+describe Homebrew::Livecheck::Strategy::GithubReleases do
+  subject(:github_releases) { described_class }
 
   let(:github_urls) do
     {
@@ -14,7 +14,7 @@ describe Homebrew::Livecheck::Strategy::GitHubReleases do
   end
   let(:non_github_url) { "https://brew.sh/test" }
 
-  let(:regex) { github_release::DEFAULT_REGEX }
+  let(:regex) { github_releases::DEFAULT_REGEX }
 
   let(:generated) do
     {
@@ -85,55 +85,55 @@ describe Homebrew::Livecheck::Strategy::GitHubReleases do
 
   describe "::match?" do
     it "returns true for a GitHub release artifact URL" do
-      expect(github_release.match?(github_urls[:release_artifact])).to be true
+      expect(github_releases.match?(github_urls[:release_artifact])).to be true
     end
 
     it "returns true for a GitHub tag archive URL" do
-      expect(github_release.match?(github_urls[:tag_archive])).to be true
+      expect(github_releases.match?(github_urls[:tag_archive])).to be true
     end
 
     it "returns true for a GitHub repository upload URL" do
-      expect(github_release.match?(github_urls[:repository_upload])).to be true
+      expect(github_releases.match?(github_urls[:repository_upload])).to be true
     end
 
     it "returns false for a non-GitHub URL" do
-      expect(github_release.match?(non_github_url)).to be false
+      expect(github_releases.match?(non_github_url)).to be false
     end
   end
 
   describe "::generate_input_values" do
     it "returns a hash containing a url and regex for a GitHub release artifact URL" do
-      expect(github_release.generate_input_values(github_urls[:release_artifact])).to eq(generated)
+      expect(github_releases.generate_input_values(github_urls[:release_artifact])).to eq(generated)
     end
 
     it "returns a hash containing a url and regex for a GitHub tag archive URL" do
-      expect(github_release.generate_input_values(github_urls[:tag_archive])).to eq(generated)
+      expect(github_releases.generate_input_values(github_urls[:tag_archive])).to eq(generated)
     end
 
     it "returns a hash containing a url and regex for a GitHub repository upload URL" do
-      expect(github_release.generate_input_values(github_urls[:repository_upload])).to eq(generated)
+      expect(github_releases.generate_input_values(github_urls[:repository_upload])).to eq(generated)
     end
 
     it "returns an empty hash for a non-Github URL" do
-      expect(github_release.generate_input_values(non_github_url)).to eq({})
+      expect(github_releases.generate_input_values(non_github_url)).to eq({})
     end
   end
 
   describe "::versions_from_content" do
     it "returns an empty array if content is blank" do
-      expect(github_release.versions_from_content({}, regex)).to eq([])
+      expect(github_releases.versions_from_content({}, regex)).to eq([])
     end
 
     it "returns an array of version strings when given content" do
-      expect(github_release.versions_from_content(json, regex)).to eq(matches)
+      expect(github_releases.versions_from_content(json, regex)).to eq(matches)
     end
 
     it "returns an array of version strings when given content and a block" do
       # Returning a string from block
-      expect(github_release.versions_from_content(json, regex) { "1.2.3" }).to eq(["1.2.3"])
+      expect(github_releases.versions_from_content(json, regex) { "1.2.3" }).to eq(["1.2.3"])
 
       # Returning an array of strings from block
-      expect(github_release.versions_from_content(json, regex) do |json, regex|
+      expect(github_releases.versions_from_content(json, regex) do |json, regex|
         json.map do |release|
           next if release["draft"] || release["prerelease"]
 
@@ -146,11 +146,11 @@ describe Homebrew::Livecheck::Strategy::GitHubReleases do
     end
 
     it "allows a nil return from a block" do
-      expect(github_release.versions_from_content(json, regex) { next }).to eq([])
+      expect(github_releases.versions_from_content(json, regex) { next }).to eq([])
     end
 
     it "errors on an invalid return type from a block" do
-      expect { github_release.versions_from_content(json, regex) { 123 } }
+      expect { github_releases.versions_from_content(json, regex) { 123 } }
         .to raise_error(TypeError, Homebrew::Livecheck::Strategy::INVALID_BLOCK_RETURN_VALUE_MSG)
     end
   end
