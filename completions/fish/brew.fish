@@ -727,6 +727,7 @@ __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 __fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae.brew.sh'
 __fish_brew_complete_arg 'generate-cask-api' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'generate-cask-api' -l dry-run -d 'Generate API data without writing it to files'
 __fish_brew_complete_arg 'generate-cask-api' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-cask-api' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'generate-cask-api' -l verbose -d 'Make some output more verbose'
@@ -734,6 +735,7 @@ __fish_brew_complete_arg 'generate-cask-api' -l verbose -d 'Make some output mor
 
 __fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae.brew.sh'
 __fish_brew_complete_arg 'generate-formula-api' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'generate-formula-api' -l dry-run -d 'Generate API data without writing it to files'
 __fish_brew_complete_arg 'generate-formula-api' -l help -d 'Show this message'
 __fish_brew_complete_arg 'generate-formula-api' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'generate-formula-api' -l verbose -d 'Make some output more verbose'
