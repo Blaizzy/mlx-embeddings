@@ -48,7 +48,7 @@ class Dependency
     to_formula.latest_version_installed?
   end
 
-  def satisfied?(inherited_options)
+  def satisfied?(inherited_options = [])
     installed? && missing_options(inherited_options).empty?
   end
 
