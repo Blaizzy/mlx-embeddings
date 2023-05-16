@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "download_strategy"
 require "cli/parser"
 require "utils/github"
 require "tmpdir"
@@ -356,28 +355,6 @@ module Homebrew
     formulae + casks
   end
 
-  def self.download_artifact(url, dir, pull_request)
-    odie "Credentials must be set to access the Artifacts API" if GitHub::API.credentials_type == :none
-
-    token = GitHub::API.credentials
-    curl_args = ["--header", "Authorization: token #{token}"]
-
-    # Download the artifact as a zip file and unpack it into `dir`. This is
-    # preferred over system `curl` and `tar` as this leverages the Homebrew
-    # cache to avoid repeated downloads of (possibly large) bottles.
-    FileUtils.chdir dir do
-      downloader = GitHubArtifactDownloadStrategy.new(
-        url,
-        "artifact",
-        pull_request,
-        curl_args: curl_args,
-        secrets:   [token],
-      )
-      downloader.fetch
-      downloader.stage
-    end
-  end
-
   def self.pr_check_conflicts(repo, pull_request)
     long_build_pr_files = GitHub.issues(
       repo: repo, state: "open", labels: "no long build conflict",
@@ -505,7 +482,7 @@ module Homebrew
 
             ohai "Downloading bottles for workflow: #{workflow}"
             url = GitHub.get_artifact_url(workflow_run)
-            download_artifact(url, dir, pr)
+            GitHub.download_artifact(url, pr, dir)
           end
 
           next if args.no_upload?
@@ -524,36 +501,5 @@ module Homebrew
         end
       end
     end
-  end
-end
-
-class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
-  def fetch(timeout: nil)
-    ohai "Downloading #{url}"
-    if cached_location.exist?
-      puts "Already downloaded: #{cached_location}"
-    else
-      begin
-        curl "--location", "--create-dirs", "--output", temporary_path, url,
-             *meta.fetch(:curl_args, []),
-             secrets: meta.fetch(:secrets, []),
-             timeout: timeout
-      rescue ErrorDuringExecution
-        raise CurlDownloadStrategyError, url
-      end
-      ignore_interrupts do
-        cached_location.dirname.mkpath
-        temporary_path.rename(cached_location)
-        symlink_location.dirname.mkpath
-      end
-    end
-    FileUtils.ln_s cached_location.relative_path_from(symlink_location.dirname), symlink_location, force: true
-  end
-
-  private
-
-  sig { returns(String) }
-  def resolved_basename
-    "artifact.zip"
   end
 end
