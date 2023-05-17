@@ -28,7 +28,7 @@ module Homebrew
       switch "--installed",
              description: "Only list formulae and casks that are currently installed."
       switch "--skip-installed",
-             description: "Skip dependencies that are currently installed."
+             description: "Only list formulae and casks that are not currently installed."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to show " \
                           "their dependents."
