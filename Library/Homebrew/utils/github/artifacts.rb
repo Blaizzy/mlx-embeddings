@@ -5,7 +5,7 @@ require "download_strategy"
 require "utils/github"
 
 module GitHub
-  # Downloads an artifact from GitHub Actions.
+  # Download an artifact from GitHub Actions and unpack it into the current working directory.
   #
   # @param url [String] URL to download from
   # @param artifact_id [String] a value that uniquely identifies the downloaded artifact
@@ -13,13 +13,11 @@ module GitHub
   # @api private
   sig { params(url: String, artifact_id: String).void }
   def self.download_artifact(url, artifact_id)
-    odie "Credentials must be set to access the Artifacts API" if API.credentials_type == :none
+    raise API::MissingAuthenticationError if API.credentials == :none
 
+    # We use a download strategy here to leverage the Homebrew cache
+    # to avoid repeated downloads of (possibly large) bottles.
     token = API.credentials
-
-    # Download the artifact as a zip file and unpack it into `dir`. This is
-    # preferred over system `curl` and `tar` as this leverages the Homebrew
-    # cache to avoid repeated downloads of (possibly large) bottles.
     downloader = GitHubArtifactDownloadStrategy.new(url, artifact_id, token: token)
     downloader.fetch
     downloader.stage
