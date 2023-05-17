@@ -155,8 +155,6 @@ FILTERED_ENV=()
 ENV_VAR_NAMES=(
   HOME SHELL PATH TERM TERMINFO TERMINFO_DIRS COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
   http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY
-  GITHUB_ACTIONS GITHUB_WORKSPACE GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_STEP_SUMMARY
-  GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_ATTEMPT GITHUB_SHA GITHUB_HEAD_REF GITHUB_BASE_REF GITHUB_REF GITHUB_OUTPUT
 )
 # Filter all but the specific variables.
 for VAR in "${ENV_VAR_NAMES[@]}" "${!HOMEBREW_@}"
@@ -166,6 +164,19 @@ do
 
   FILTERED_ENV+=("${VAR}=${!VAR}")
 done
+
+if [[ -n "${CI:-}" ]]
+then
+  for VAR in "${!GITHUB_@}"
+  do
+    # Skip if variable value is empty.
+    [[ -z "${!VAR:-}" ]] && continue
+    # Skip variables that look like tokens.
+    [[ "${VAR}" = *TOKEN* ]] && continue
+
+    FILTERED_ENV+=("${VAR}=${!VAR}")
+  done
+fi
 unset VAR ENV_VAR_NAMES
 
 exec /usr/bin/env -i "${FILTERED_ENV[@]}" /bin/bash "${HOMEBREW_LIBRARY}/Homebrew/brew.sh" "$@"
