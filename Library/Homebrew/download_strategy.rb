@@ -637,9 +637,10 @@ end
 #
 # @api private
 class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
-  def initialize
-    super
+  def initialize(url, artifact_id, token:)
+    super(url, "artifact", artifact_id)
     @cache = HOMEBREW_CACHE/"gh-actions-artifact"
+    @token = token
   end
 
   def fetch(timeout: nil)
@@ -649,8 +650,8 @@ class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
     else
       begin
         curl "--location", "--create-dirs", "--output", temporary_path, url,
-             *meta.fetch(:curl_args, []),
-             secrets: meta.fetch(:secrets, []),
+             "--header", "Authorization: token #{@token}",
+             secrets: [@token],
              timeout: timeout
       rescue ErrorDuringExecution
         raise CurlDownloadStrategyError, url

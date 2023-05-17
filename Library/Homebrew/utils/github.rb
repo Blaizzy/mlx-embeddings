@@ -383,18 +383,11 @@ module GitHub
     odie "Credentials must be set to access the Artifacts API" if API.credentials_type == :none
 
     token = API.credentials
-    curl_args = ["--header", "Authorization: token #{token}"]
 
     # Download the artifact as a zip file and unpack it into `dir`. This is
     # preferred over system `curl` and `tar` as this leverages the Homebrew
     # cache to avoid repeated downloads of (possibly large) bottles.
-    downloader = GitHubArtifactDownloadStrategy.new(
-      url,
-      "artifact",
-      artifact_id,
-      curl_args: curl_args,
-      secrets:   [token],
-    )
+    downloader = GitHubArtifactDownloadStrategy.new(url, artifact_id, token: token)
     downloader.fetch
     downloader.stage
   end
