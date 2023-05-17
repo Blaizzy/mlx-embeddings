@@ -16,14 +16,15 @@ module Homebrew
       #
       # {GithubLatest} should only be used when the upstream repository has a
       # "latest" release for a suitable version and the strategy is necessary
-      # or appropriate (e.g. {Git} returns an unreleased version or the
-      # `stable` URL is a release asset). The strategy can only be applied by
-      # using `strategy :github_latest` in a `livecheck` block.
+      # or appropriate (e.g. the formula/cask uses a release asset or the
+      # {Git} strategy returns an unreleased version). The strategy can only
+      # be applied by using `strategy :github_latest` in a `livecheck` block.
       #
-      # The default regex identifies versions like `1.2.3`/`v1.2.3` in the
-      # release's tag name. This is a common tag format but a modified regex
-      # can be provided in a `livecheck` block to override the default if a
-      # repository uses a different format (e.g. `1.2.3d`, `1.2.3-4`, etc.).
+      # The default regex identifies versions like `1.2.3`/`v1.2.3` in a
+      # release's tag or title. This is a common tag format but a modified
+      # regex can be provided in a `livecheck` block to override the default
+      # if a repository uses a different format (e.g. `1.2.3d`, `1.2.3-4`,
+      # etc.).
       #
       # @api public
       class GithubLatest
@@ -34,28 +35,13 @@ module Homebrew
         # `strategy :github_latest` in a `livecheck` block.
         PRIORITY = 0
 
-        # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{
-          ^https?://github\.com
-          /(?:downloads/)?(?<username>[^/]+) # The GitHub username
-          /(?<repository>[^/]+)              # The GitHub repository name
-        }ix.freeze
-
-        # The default regex used to identify a version from a tag when a regex
-        # isn't provided.
-        DEFAULT_REGEX = /v?(\d+(?:\.\d+)+)/i.freeze
-
-        # Keys in the release JSON that could contain the version.
-        # Tag name first since that is closer to other livechecks.
-        VERSION_KEYS = ["tag_name", "name"].freeze
-
         # Whether the strategy can be applied to the provided URL.
         #
         # @param url [String] the URL to match against
         # @return [Boolean]
         sig { params(url: String).returns(T::Boolean) }
         def self.match?(url)
-          URL_MATCH_REGEX.match?(url)
+          GithubReleases.match?(url)
         end
 
         # Extracts information from a provided URL and uses it to generate
@@ -69,7 +55,7 @@ module Homebrew
         def self.generate_input_values(url)
           values = {}
 
-          match = url.sub(/\.git$/i, "").match(URL_MATCH_REGEX)
+          match = url.delete_suffix(".git").match(GithubReleases::URL_MATCH_REGEX)
           return values if match.blank?
 
           values[:url] = "https://api.github.com/repos/#{match[:username]}/#{match[:repository]}/releases/latest"
@@ -77,46 +63,6 @@ module Homebrew
           values[:repository] = match[:repository]
 
           values
-        end
-
-        # Uses a regex to match the version from release JSON or, if a block is
-        # provided, passes the JSON to the block to handle matching. With
-        # either approach, an array of unique matches is returned.
-        #
-        # @param content [Array, Hash] list of releases or a single release
-        # @param regex [Regexp] a regex used for matching versions in the content
-        # @param block [Proc, nil] a block to match the content
-        # @return [Array]
-        sig {
-          params(
-            content: T.any(T::Array[T::Hash[String, T.untyped]], T::Hash[String, T.untyped]),
-            regex:   Regexp,
-            block:   T.nilable(Proc),
-          ).returns(T::Array[String])
-        }
-        def self.versions_from_content(content, regex, &block)
-          if block.present?
-            block_return_value = if regex.present?
-              yield(content, regex)
-            else
-              yield(content)
-            end
-            return Strategy.handle_block_return(block_return_value)
-          end
-
-          content = [content] unless content.is_a?(Array)
-          content.reject(&:blank?).map do |release|
-            next if release["draft"] || release["prerelease"]
-
-            value = T.let(nil, T.untyped)
-            VERSION_KEYS.find do |key|
-              match = release[key]&.match(regex)
-              next if match.blank?
-
-              value = match[1]
-            end
-            value
-          end.compact.uniq
         end
 
         # Generates the GitHub API URL for the repository's "latest" release
@@ -133,7 +79,7 @@ module Homebrew
             block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
-        def self.find_versions(url:, regex: DEFAULT_REGEX, **_unused, &block)
+        def self.find_versions(url:, regex: GithubReleases::DEFAULT_REGEX, **_unused, &block)
           match_data = { matches: {}, regex: regex, url: url }
 
           generated = generate_input_values(url)
@@ -142,7 +88,7 @@ module Homebrew
           match_data[:url] = generated[:url]
 
           release = GitHub.get_latest_release(generated[:username], generated[:repository])
-          versions_from_content(release, regex, &block).each do |match_text|
+          GithubReleases.versions_from_content(release, regex, &block).each do |match_text|
             match_data[:matches][match_text] = Version.new(match_text)
           end
 

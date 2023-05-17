@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "livecheck/strategy/github_releases"
 require "livecheck/strategy/github_latest"
 
 describe Homebrew::Livecheck::Strategy::GithubLatest do
