@@ -30,7 +30,7 @@ module DependenciesHelpers
     end
 
     ignores << "recommended?" if args.skip_recommended?
-    ignores << "satisfied?" if args.skip_installed?
+    ignores << "satisfied?" if args.missing?
 
     [includes, ignores]
   end

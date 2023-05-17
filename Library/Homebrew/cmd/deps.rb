@@ -49,8 +49,8 @@ module Homebrew
       switch "--installed",
              description: "List dependencies for formulae that are currently installed. If <formula> is " \
                           "specified, list only its dependencies that are currently installed."
-      switch "--skip-installed",
-             description: "Skip dependencies for formulae that are currently installed."
+      switch "--missing",
+             description: "Show only missing dependencies."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to list " \
                           "their dependencies."
@@ -66,7 +66,7 @@ module Homebrew
              description: "Treat all named arguments as casks."
 
       conflicts "--tree", "--graph"
-      conflicts "--installed", "--skip-installed"
+      conflicts "--installed", "--missing"
       conflicts "--installed", "--eval-all"
       conflicts "--installed", "--all"
       conflicts "--formula", "--cask"

@@ -27,7 +27,7 @@ module Homebrew
              description: "Resolve more than one level of dependencies."
       switch "--installed",
              description: "Only list formulae and casks that are currently installed."
-      switch "--skip-installed",
+      switch "--missing",
              description: "Only list formulae and casks that are not currently installed."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to show " \
@@ -49,7 +49,7 @@ module Homebrew
 
       conflicts "--formula", "--cask"
       conflicts "--installed", "--all"
-      conflicts "--installed", "--skip-installed"
+      conflicts "--missing", "--installed"
 
       named_args :formula, min: 1
     end
