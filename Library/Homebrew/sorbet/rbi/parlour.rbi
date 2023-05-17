@@ -19,6 +19,9 @@ end
 
 class Formula
   sig { returns(T::Boolean) }
+  def self.loaded_from_api?; end
+
+  sig { returns(T::Boolean) }
   def self.on_system_blocks_exist?; end
 
   sig { params(arg: T.untyped).returns(T.untyped) }
