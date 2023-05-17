@@ -637,6 +637,11 @@ end
 #
 # @api private
 class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
+  def initialize
+    super
+    @cache = HOMEBREW_CACHE/"gh-actions-artifact"
+  end
+
   def fetch(timeout: nil)
     ohai "Downloading #{url}"
     if cached_location.exist?
