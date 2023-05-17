@@ -633,46 +633,6 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
   end
 end
 
-# Strategy for downloading an artifact from GitHub Actions.
-#
-# @api private
-class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
-  def initialize(url, artifact_id, token:)
-    super(url, "artifact", artifact_id)
-    @cache = HOMEBREW_CACHE/"gh-actions-artifact"
-    @token = token
-  end
-
-  def fetch(timeout: nil)
-    ohai "Downloading #{url}"
-    if cached_location.exist?
-      puts "Already downloaded: #{cached_location}"
-    else
-      begin
-        curl "--location", "--create-dirs", "--output", temporary_path, url,
-             "--header", "Authorization: token #{@token}",
-             secrets: [@token],
-             timeout: timeout
-      rescue ErrorDuringExecution
-        raise CurlDownloadStrategyError, url
-      end
-      ignore_interrupts do
-        cached_location.dirname.mkpath
-        temporary_path.rename(cached_location)
-        symlink_location.dirname.mkpath
-      end
-    end
-    FileUtils.ln_s cached_location.relative_path_from(symlink_location.dirname), symlink_location, force: true
-  end
-
-  private
-
-  sig { returns(String) }
-  def resolved_basename
-    "artifact.zip"
-  end
-end
-
 # Strategy for downloading a file from an Apache Mirror URL.
 #
 # @api public

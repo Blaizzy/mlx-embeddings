@@ -5,7 +5,6 @@ require "uri"
 require "utils/github/actions"
 require "utils/github/api"
 
-require "download_strategy"
 require "system_command"
 
 # Wrapper functions for the GitHub API.
@@ -370,26 +369,6 @@ module GitHub
     end
 
     artifact.last["archive_download_url"]
-  end
-
-  # Downloads an artifact from GitHub Actions.
-  #
-  # @param url [String] URL to download from
-  # @param artifact_id [String] a value that uniquely identifies the downloaded artifact
-  #
-  # @api private
-  sig { params(url: String, artifact_id: String).void }
-  def self.download_artifact(url, artifact_id)
-    odie "Credentials must be set to access the Artifacts API" if API.credentials_type == :none
-
-    token = API.credentials
-
-    # Download the artifact as a zip file and unpack it into `dir`. This is
-    # preferred over system `curl` and `tar` as this leverages the Homebrew
-    # cache to avoid repeated downloads of (possibly large) bottles.
-    downloader = GitHubArtifactDownloadStrategy.new(url, artifact_id, token: token)
-    downloader.fetch
-    downloader.stage
   end
 
   def self.public_member_usernames(org, per_page: 100)

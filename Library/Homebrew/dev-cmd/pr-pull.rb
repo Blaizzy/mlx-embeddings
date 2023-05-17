@@ -3,6 +3,7 @@
 
 require "cli/parser"
 require "utils/github"
+require "utils/github/artifacts"
 require "tmpdir"
 require "formula"
 
