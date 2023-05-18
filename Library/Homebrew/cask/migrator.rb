@@ -25,10 +25,9 @@ module Cask
 
       return unless (installed_caskfile = new_cask.installed_caskfile)
 
-      installed_token = installed_caskfile.relative_path_from(Caskroom.path).basename.to_s
-      return if new_cask.token == installed_token
-
       old_cask = CaskLoader.load(installed_caskfile)
+      return if new_cask.token == old_cask.token
+
       migrator = new(old_cask, new_cask)
       migrator.migrate(dry_run: dry_run)
     end
