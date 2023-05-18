@@ -88,7 +88,7 @@ describe DependencyCollector do
     it "creates a resource dependency from a '.rar' URL" do
       resource = Resource.new
       resource.url("https://brew.sh/foo.rar")
-      expect(collector.add(resource)).to eq(Dependency.new("unrar", [:build, :test]))
+      expect(collector.add(resource)).to eq(Dependency.new("libarchive", [:build, :test]))
     end
 
     it "raises a TypeError for unknown classes" do

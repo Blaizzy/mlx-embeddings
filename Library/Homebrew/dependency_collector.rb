@@ -179,6 +179,8 @@ class DependencyCollector
     if strategy <= HomebrewCurlDownloadStrategy
       @deps << curl_dep_if_needed(tags)
       parse_url_spec(spec.url, tags)
+    elsif strategy <= NoUnzipCurlDownloadStrategy
+      # ensure NoUnzip never adds any dependencies
     elsif strategy <= CurlDownloadStrategy
       parse_url_spec(spec.url, tags)
     elsif strategy <= GitDownloadStrategy
@@ -196,8 +198,7 @@ class DependencyCollector
     elsif strategy < AbstractDownloadStrategy
       # allow unknown strategies to pass through
     else
-      raise TypeError,
-            "#{strategy.inspect} is not an AbstractDownloadStrategy subclass"
+      raise TypeError, "#{strategy.inspect} is not an AbstractDownloadStrategy subclass"
     end
   end
 
@@ -209,7 +210,7 @@ class DependencyCollector
     when ".bz2"         then bzip2_dep_if_needed(tags)
     when ".lha", ".lzh" then Dependency.new("lha", tags)
     when ".lz"          then Dependency.new("lzip", tags)
-    when ".rar"         then Dependency.new("unrar", tags)
+    when ".rar"         then Dependency.new("libarchive", tags)
     when ".7z"          then Dependency.new("p7zip", tags)
     end
   end
