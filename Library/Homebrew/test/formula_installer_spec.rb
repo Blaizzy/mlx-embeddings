@@ -218,21 +218,21 @@ describe FormulaInstaller do
 
     it "works if service is set" do
       formula = Testball.new
+      service = Homebrew::Service.new(formula)
       launchd_service_path = formula.launchd_service_path
       service_path = formula.systemd_service_path
-      service = Homebrew::Service.new(formula)
       formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
-      expect(formula).to receive(:service).exactly(5).and_return(service)
+      expect(formula).to receive(:service).exactly(7).and_return(service)
       expect(formula).to receive(:launchd_service_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
 
       expect(service).to receive(:timed?).and_return(false)
+      expect(service).to receive(:command?).exactly(2).and_return(true)
       expect(service).to receive(:to_plist).and_return("plist")
       expect(service).to receive(:to_systemd_unit).and_return("unit")
-      expect(service).to receive(:command).exactly(2).and_return("/bin/sh")
 
       installer = described_class.new(formula)
       expect do
@@ -245,24 +245,24 @@ describe FormulaInstaller do
 
     it "works if timed service is set" do
       formula = Testball.new
+      service = Homebrew::Service.new(formula)
       launchd_service_path = formula.launchd_service_path
       service_path = formula.systemd_service_path
       timer_path = formula.systemd_timer_path
-      service = Homebrew::Service.new(formula)
       formula.opt_prefix.mkpath
 
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(true)
-      expect(formula).to receive(:service).exactly(6).and_return(service)
+      expect(formula).to receive(:service).exactly(9).and_return(service)
       expect(formula).to receive(:launchd_service_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
       expect(formula).to receive(:systemd_timer_path).and_call_original
 
-      expect(service).to receive(:to_plist).and_return("plist")
       expect(service).to receive(:timed?).and_return(true)
+      expect(service).to receive(:command?).exactly(2).and_return(true)
+      expect(service).to receive(:to_plist).and_return("plist")
       expect(service).to receive(:to_systemd_unit).and_return("unit")
       expect(service).to receive(:to_systemd_timer).and_return("timer")
-      expect(service).to receive(:command).exactly(2).and_return("/bin/sh")
 
       installer = described_class.new(formula)
       expect do

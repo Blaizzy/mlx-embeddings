@@ -28,12 +28,40 @@ module Homebrew
       @run_type = RUN_TYPE_IMMEDIATE
       @run_at_load = true
       @environment_variables = {}
-      @service_block = block
+      instance_eval(&block) if block
     end
 
     sig { returns(Formula) }
     def f
       @formula
+    end
+
+    sig { returns(String) }
+    def default_plist_name
+      "homebrew.mxcl.#{@formula.name}"
+    end
+
+    sig { returns(String) }
+    def plist_name
+      @plist_name ||= default_plist_name
+    end
+
+    sig { returns(String) }
+    def default_service_name
+      "homebrew.#{@formula.name}"
+    end
+
+    sig { returns(String) }
+    def service_name
+      @service_name ||= default_service_name
+    end
+
+    sig { params(macos: T.nilable(String), linux: T.nilable(String)).void }
+    def name(macos: nil, linux: nil)
+      raise TypeError, "Service#name expects at least one String" if [macos, linux].none?(String)
+
+      @plist_name = macos if macos
+      @service_name = linux if linux
     end
 
     sig {
@@ -162,7 +190,6 @@ module Homebrew
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def requires_root?
-      eval_service_block
       @require_root.present? && @require_root == true
     end
 
@@ -198,7 +225,6 @@ module Homebrew
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def keep_alive?
-      eval_service_block
       @keep_alive.present? && @keep_alive[:always] != false
     end
 
@@ -357,20 +383,22 @@ module Homebrew
 
     sig { returns(T.nilable(T::Array[String])) }
     def command
-      eval_service_block
       @run&.map(&:to_s)
+    end
+
+    sig { returns(T::Boolean) }
+    def command?
+      @run.present?
     end
 
     # Returns the `String` command to run manually instead of the service.
     # @return [String]
     sig { returns(String) }
     def manual_command
-      eval_service_block
       vars = @environment_variables.except(:PATH)
                                    .map { |k, v| "#{k}=\"#{v}\"" }
 
-      cmd = command
-      out = vars + cmd if cmd.present?
+      out = vars + command if command?
       out.join(" ")
     end
 
@@ -378,7 +406,6 @@ module Homebrew
     # @return [Boolean]
     sig { returns(T::Boolean) }
     def timed?
-      eval_service_block
       @run_type == RUN_TYPE_CRON || @run_type == RUN_TYPE_INTERVAL
     end
 
@@ -388,7 +415,7 @@ module Homebrew
     def to_plist
       # command needs to be first because it initializes all other values
       base = {
-        Label:            @formula.plist_name,
+        Label:            plist_name,
         ProgramArguments: command,
         RunAtLoad:        @run_at_load == true,
       }
@@ -487,10 +514,9 @@ module Homebrew
         WantedBy=timers.target
 
         [Timer]
-        Unit=#{@formula.service_name}
+        Unit=#{service_name}
       EOS
 
-      eval_service_block
       options = []
       options << "Persistent=true" if @run_type == RUN_TYPE_CRON
       options << "OnUnitActiveSec=#{@interval}" if @run_type == RUN_TYPE_INTERVAL
@@ -504,19 +530,17 @@ module Homebrew
       timer + options.join("\n")
     end
 
-    # Only evaluate the service block once.
-    sig { void }
-    def eval_service_block
-      return if @eval_service_block
-
-      instance_eval(&@service_block)
-      @eval_service_block = true
-    end
-
     # Prepare the service hash for inclusion in the formula API JSON.
     sig { returns(Hash) }
     def serialize
-      eval_service_block
+      name_params = {
+        macos: (plist_name if plist_name != default_plist_name),
+        linux: (service_name if service_name != default_service_name),
+      }.compact
+
+      unless command?
+        return name_params.blank? ? {} : { name: name_params }
+      end
 
       cron_string = if @cron.present?
         [:Minute, :Hour, :Day, :Month, :Weekday]
@@ -527,6 +551,7 @@ module Homebrew
       sockets_string = "#{@sockets[:type]}://#{@sockets[:host]}:#{@sockets[:port]}" if @sockets.present?
 
       {
+        name:                  name_params.presence,
         run:                   @run_params,
         run_type:              @run_type,
         interval:              @interval,
@@ -551,6 +576,12 @@ module Homebrew
     sig { params(api_hash: Hash).returns(Hash) }
     def self.deserialize(api_hash)
       hash = {}
+      hash[:name] = api_hash["name"].transform_keys(&:to_sym) if api_hash.key?("name")
+
+      # The service hash might not have a "run" command if it only documents
+      # an existing service file with the "name" command.
+      return hash unless api_hash.key?("run")
+
       hash[:run] =
         case api_hash["run"]
         when String

@@ -949,6 +949,10 @@ describe Homebrew::Service do
   describe ".deserialize" do
     let(:serialized_hash) do
       {
+        "name"                  => {
+          "linux" => "custom.systemd.name",
+          "macos" => "custom.launchd.name",
+        },
         "environment_variables" => {
           "PATH" => "$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
         },
@@ -961,6 +965,10 @@ describe Homebrew::Service do
 
     let(:deserialized_hash) do
       {
+        name:                  {
+          linux: "custom.systemd.name",
+          macos: "custom.launchd.name",
+        },
         environment_variables: {
           PATH: "#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/bin:/usr/sbin:/sbin",
         },

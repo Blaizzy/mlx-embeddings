@@ -272,6 +272,7 @@ describe Formulary do
             "link_overwrite"           => ["bin/abc"],
             "caveats"                  => "example caveat string\n/$HOME\n$HOMEBREW_PREFIX",
             "service"                  => {
+              "name"        => { macos: "custom.launchd.name", linux: "custom.systemd.name" },
               "run"         => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "test"],
               "run_type"    => "immediate",
               "working_dir" => "/$HOME",
@@ -362,6 +363,8 @@ describe Formulary do
         expect(formula.service.command).to eq(["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "test"])
         expect(formula.service.run_type).to eq(:immediate)
         expect(formula.service.working_dir).to eq(Dir.home)
+        expect(formula.plist_name).to eq("custom.launchd.name")
+        expect(formula.service_name).to eq("custom.systemd.name")
 
         expect do
           formula.install
