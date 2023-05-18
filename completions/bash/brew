@@ -747,6 +747,7 @@ _brew_deps() {
       --include-requirements
       --include-test
       --installed
+      --missing
       --quiet
       --skip-recommended
       --topological
@@ -2559,6 +2560,7 @@ _brew_uses() {
       --include-optional
       --include-test
       --installed
+      --missing
       --quiet
       --recursive
       --skip-recommended
