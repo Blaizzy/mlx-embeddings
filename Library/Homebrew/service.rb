@@ -538,9 +538,7 @@ module Homebrew
         linux: (service_name if service_name != default_service_name),
       }.compact
 
-      unless command?
-        return name_params.blank? ? {} : { name: name_params }
-      end
+      return { name: name_params }.compact_blank if @run_params.blank?
 
       cron_string = if @cron.present?
         [:Minute, :Hour, :Day, :Month, :Weekday]
