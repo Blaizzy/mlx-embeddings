@@ -720,7 +720,8 @@ _brew_deps() {
     '--include-optional[Include `:optional` dependencies for formula]' \
     '--include-requirements[Include requirements in addition to dependencies for formula]' \
     '--include-test[Include `:test` dependencies for formula (non-recursive)]' \
-    '(--eval-all --all)--installed[List dependencies for formulae that are currently installed. If formula is specified, list only its dependencies that are currently installed]' \
+    '(--missing --eval-all --all)--installed[List dependencies for formulae that are currently installed. If formula is specified, list only its dependencies that are currently installed]' \
+    '(--installed)--missing[Show only missing dependencies]' \
     '--quiet[Make some output more quiet]' \
     '--skip-recommended[Skip `:recommended` dependencies for formula]' \
     '--topological[Sort dependencies in topological order]' \
@@ -2058,7 +2059,8 @@ _brew_uses() {
     '--include-build[Include all formulae that specify formula as `:build` type dependency]' \
     '--include-optional[Include all formulae that specify formula as `:optional` type dependency]' \
     '--include-test[Include all formulae that specify formula as `:test` type dependency]' \
-    '(--all)--installed[Only list formulae and casks that are currently installed]' \
+    '(--all --missing)--installed[Only list formulae and casks that are currently installed]' \
+    '(--installed)--missing[Only list formulae and casks that are not currently installed]' \
     '--quiet[Make some output more quiet]' \
     '--recursive[Resolve more than one level of dependencies]' \
     '--skip-recommended[Skip all formulae that specify formula as `:recommended` type dependency]' \

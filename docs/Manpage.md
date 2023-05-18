@@ -165,6 +165,8 @@ show the intersection of dependencies for each formula.
   Mark any build, test, optional, or recommended dependencies as such in the output.
 * `--installed`:
   List dependencies for formulae that are currently installed. If *`formula`* is specified, list only its dependencies that are currently installed.
+* `--missing`:
+  Show only missing dependencies.
 * `--eval-all`:
   Evaluate all available formulae and casks, whether installed or not, to list their dependencies.
 * `--for-each`:
@@ -806,6 +808,8 @@ specify *`formula`* as a required or recommended dependency for their stable bui
   Resolve more than one level of dependencies.
 * `--installed`:
   Only list formulae and casks that are currently installed.
+* `--missing`:
+  Only list formulae and casks that are not currently installed.
 * `--eval-all`:
   Evaluate all available formulae and casks, whether installed or not, to show their dependents.
 * `--include-build`:
