@@ -173,29 +173,29 @@ module Utils
       destination = Pathname(to)
       destination.dirname.mkpath
 
+      args = ["--location", "--remote-time", "--output", destination, *args]
+
       if try_partial
         headers = begin
           parsed_output = curl_headers(*args, **options, wanted_headers: ["accept-ranges"])
-          parsed_output.fetch(:responses).last&.fetch(:headers)
+          parsed_output.fetch(:responses).last&.fetch(:headers) || {}
         rescue ErrorDuringExecution
-          nil
+          # Ignore errors here and let actual download fail instead.
+          {}
         end
 
-        # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
-        # Its absence indicates no support.
-        supports_partial = headers&.key?("accept-ranges") && headers["accept-ranges"] != "none"
+        # Any value for `Accept-Ranges` other than `none` indicates that the server
+        # supports partial requests. Its absence indicates no support.
+        supports_partial = headers.fetch("accept-ranges", "none") != "none"
+        content_length = headers["content-length"]&.to_i
 
-        if supports_partial &&
-           destination.exist? &&
-           headers&.key?("content-length") &&
-           destination.size == headers["content-length"].to_i
-          return # We've already downloaded all the bytes
+        if supports_partial && destination.exist?
+          # We've already downloaded all bytes.
+          return if destination.size == content_length
+
+          args = ["--continue-at", "-", *args]
         end
       end
-
-      args = ["--location", "--remote-time", "--output", destination, *args]
-      # continue-at shouldn't be used with servers that don't support partial requests.
-      args = ["--continue-at", "-", *args] if destination.exist? && supports_partial
 
       curl(*args, **options)
     end
