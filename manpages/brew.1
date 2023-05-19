@@ -281,6 +281,14 @@ Enable debugging and profiling of audit methods\.
 Download a bottle (if available) or source packages for \fIformula\fRe and binaries for \fIcask\fRs\. For files, also print SHA\-256 checksums\.
 .
 .TP
+\fB\-\-os\fR
+Download for the given operating system\.(Pass \fBall\fR to download for all operating systems\.)
+.
+.TP
+\fB\-\-arch\fR
+Download for the given CPU architecture\.(Pass \fBall\fR to download for all architectures\.)
+.
+.TP
 \fB\-\-bottle\-tag\fR
 Download a bottle for given tag\.
 .
@@ -1169,6 +1177,14 @@ Display Homebrew\'s download cache\. See also \fBHOMEBREW_CACHE\fR\.
 If \fIformula\fR is provided, display the file or directory used to cache \fIformula\fR\.
 .
 .TP
+\fB\-\-os\fR
+Show cache file for the given operating system\.(Pass \fBall\fR to show cache files for all operating systems\.)
+.
+.TP
+\fB\-\-arch\fR
+Show cache file for the given CPU architecture\.(Pass \fBall\fR to show cache files for all architectures\.)
+.
+.TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
 Show the cache file used when building from source\.
 .
@@ -1256,6 +1272,14 @@ Print the version numbers of Homebrew, Homebrew/homebrew\-core and Homebrew/home
 .
 .SS "\fBaudit\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
 Check \fIformula\fR for Homebrew coding style violations\. This should be run before submitting a new formula or cask\. If no \fIformula\fR|\fIcask\fR are provided, check all locally available formulae and casks and skip style checks\. Will exit with a non\-zero status if any errors are found\.
+.
+.TP
+\fB\-\-os\fR
+Audit the given operating system\. (Pass \fBall\fR to audit all operating systems\.)
+.
+.TP
+\fB\-\-arch\fR
+Audit the given CPU architecture\. (Pass \fBall\fR to audit all architectures\.)
 .
 .TP
 \fB\-\-strict\fR
