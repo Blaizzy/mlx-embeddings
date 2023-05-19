@@ -29,10 +29,10 @@ module Homebrew
         locally available formulae and casks and skip style checks. Will exit with a
         non-zero status if any errors are found.
       EOS
-      # This is needed for auditing ARM casks in CI.
-      flag "--arch=",
-           description: "Audit the given CPU architecture.",
-           hidden:      true
+      flag   "--os=",
+             description: "Audit the given operating system. (Pass `all` to audit all operating systems.)"
+      flag   "--arch=",
+             description: "Audit the given CPU architecture. (Pass `all` to audit all architectures.)"
       switch "--strict",
              description: "Run additional, stricter style checks."
       switch "--git",
@@ -106,9 +106,9 @@ module Homebrew
   def self.audit
     args = audit_args.parse
 
-    if (arch = args.arch)
-      SimulateSystem.arch = arch.to_sym
-    end
+    Formulary.enable_factory_cache!
+
+    os_arch_combinations = args.os_arch_combinations
 
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
@@ -200,7 +200,12 @@ module Homebrew
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
     new_formula_problem_lines = T.let([], T::Array[String])
-    formula_results = audit_formulae.sort.to_h do |f|
+
+    formula_results = {}
+
+    audit_formulae.sort.each do |f|
+      path = f.path
+
       only = only_cops ? ["style"] : args.only
       options = {
         new_formula:         new_formula,
@@ -214,63 +219,83 @@ module Homebrew
         style_offenses:      style_offenses&.for_path(f.path),
       }.compact
 
-      audit_proc = proc { FormulaAuditor.new(f, **options).tap(&:audit) }
+      os_arch_combinations.each do |os, arch|
+        SimulateSystem.with os: os, arch: arch do
+          odebug "Auditing Formula #{f} on os #{os} and arch #{arch}"
 
-      # Audit requires full Ruby source so disable API.
-      # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core clone.
-      fa = if f.core_formula?
-        without_api(&audit_proc)
-      else
-        audit_proc.call
-      end
+          Formulary.clear_cache
+          f = Formulary.factory(path)
 
-      if fa.problems.any? || fa.new_formula_problems.any?
-        formula_count += 1
-        problem_count += fa.problems.size
-        problem_lines = format_problem_lines(fa.problems)
-        corrected_problem_count += options.fetch(:style_offenses, []).count(&:corrected?)
-        new_formula_problem_lines += format_problem_lines(fa.new_formula_problems)
-        if args.display_filename?
-          puts problem_lines.map { |s| "#{f.path}: #{s}" }
-        else
-          puts "#{f.full_name}:", problem_lines.map { |s| "  #{s}" }
+          audit_proc = proc { FormulaAuditor.new(f, **options).tap(&:audit) }
+
+          # Audit requires full Ruby source so disable API.
+          # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core clone.
+          fa = if f.core_formula?
+            without_api(&audit_proc)
+          else
+            audit_proc.call
+          end
+
+          if fa.problems.any? || fa.new_formula_problems.any?
+            formula_count += 1
+            problem_count += fa.problems.size
+            problem_lines = format_problem_lines(fa.problems)
+            corrected_problem_count += options.fetch(:style_offenses, []).count(&:corrected?)
+            new_formula_problem_lines += format_problem_lines(fa.new_formula_problems)
+            if args.display_filename?
+              puts problem_lines.map { |s| "#{f.path}: #{s}" }
+            else
+              puts "#{f.full_name}:", problem_lines.map { |s| "  #{s}" }
+            end
+          end
+
+          formula_results.deep_merge!({ f.path => fa.problems + fa.new_formula_problems })
         end
       end
-
-      [f.path, fa.problems + fa.new_formula_problems]
     end
 
-    cask_results = if audit_casks.empty?
-      {}
-    else
+    cask_results = {}
+
+    if audit_casks.any?
+      require "cask/auditor"
 
       if args.display_failures_only?
         odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
       end
+    end
 
-      require "cask/auditor"
+    audit_casks.each do |cask|
+      path = cask.sourcefile_path
 
-      audit_casks.to_h do |cask|
-        odebug "Auditing Cask #{cask}"
-        errors = Cask::Auditor.audit(
-          cask,
-          # For switches, we add `|| nil` so that `nil` will be passed
-          # instead of `false` if they aren't set.
-          # This way, we can distinguish between "not set" and "set to false".
-          audit_online:          (args.online? || nil),
-          audit_strict:          (args.strict? || nil),
+      os_arch_combinations.each do |os, arch|
+        next if os == :linux
 
-          # No need for `|| nil` for `--[no-]signing`
-          # because boolean switches are already `nil` if not passed
-          audit_signing:         args.signing?,
-          audit_new_cask:        (args.new_cask? || nil),
-          audit_token_conflicts: (args.token_conflicts? || nil),
-          quarantine:            true,
-          any_named_args:        !no_named_args,
-          only:                  args.only,
-          except:                args.except,
-        )
-        [cask.sourcefile_path, errors]
+        SimulateSystem.with os: os, arch: arch do
+          odebug "Auditing Cask #{cask} on os #{os} and arch #{arch}"
+
+          cask = Cask::CaskLoader.load(path)
+
+          errors = Cask::Auditor.audit(
+            cask,
+            # For switches, we add `|| nil` so that `nil` will be passed
+            # instead of `false` if they aren't set.
+            # This way, we can distinguish between "not set" and "set to false".
+            audit_online:          (args.online? || nil),
+            audit_strict:          (args.strict? || nil),
+
+            # No need for `|| nil` for `--[no-]signing`
+            # because boolean switches are already `nil` if not passed
+            audit_signing:         args.signing?,
+            audit_new_cask:        (args.new_cask? || nil),
+            audit_token_conflicts: (args.token_conflicts? || nil),
+            quarantine:            true,
+            any_named_args:        !no_named_args,
+            only:                  args.only,
+            except:                args.except,
+          )
+
+          cask_results.deep_merge!({ cask.sourcefile_path => errors })
+        end
       end
     end
 

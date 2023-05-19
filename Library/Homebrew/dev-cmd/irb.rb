@@ -7,6 +7,7 @@ require "cli/parser"
 
 class String
   def f(*args)
+    require "formula"
     Formulary.factory(self, *args)
   end
 

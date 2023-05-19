@@ -4,13 +4,16 @@
 module Utils
   module Bottles
     class << self
-      undef tag
+      module MacOSOverride
+        sig { params(tag: T.nilable(T.any(Symbol, Tag))).returns(Tag) }
+        def tag(tag = nil)
+          return Tag.new(system: MacOS.version.to_sym, arch: Hardware::CPU.arch) if tag.nil?
 
-      def tag(symbol = nil)
-        return Utils::Bottles::Tag.from_symbol(symbol) if symbol.present?
-
-        Utils::Bottles::Tag.new(system: MacOS.version.to_sym, arch: Hardware::CPU.arch)
+          super
+        end
       end
+
+      prepend MacOSOverride
     end
 
     class Collector
