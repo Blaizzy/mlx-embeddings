@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "source_location"
+
 module Cask
   # Class corresponding to the `url` stanza.
   #
@@ -222,20 +224,25 @@ module Cask
       @dsl = dsl
     end
 
-    sig { returns(T.nilable(String)) }
-    def raw_interpolated_url
-      return @raw_interpolated_url if defined?(@raw_interpolated_url)
-
-      @raw_interpolated_url =
-        Pathname(@caller_location.path)
-        .each_line.drop(@caller_location.lineno - 1)
-        .first&.then { |line| line[/url\s+"([^"]+)"/, 1] }
+    sig { returns(Homebrew::SourceLocation) }
+    def location
+      Homebrew::SourceLocation.new(@caller_location.lineno, raw_url_line&.index("url"))
     end
-    private :raw_interpolated_url
+
+    sig { returns(T.nilable(String)) }
+    def raw_url_line
+      return @raw_url_line if defined?(@raw_url_line)
+
+      @raw_url_line = Pathname(@caller_location.path)
+                      .each_line
+                      .drop(@caller_location.lineno - 1)
+                      .first
+    end
+    private :raw_url_line
 
     sig { params(ignore_major_version: T::Boolean).returns(T::Boolean) }
     def unversioned?(ignore_major_version: false)
-      interpolated_url = raw_interpolated_url
+      interpolated_url = raw_url_line&.then { |line| line[/url\s+"([^"]+)"/, 1] }
 
       return false unless interpolated_url
 
