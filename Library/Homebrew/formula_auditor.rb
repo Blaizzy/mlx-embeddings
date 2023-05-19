@@ -41,12 +41,10 @@ module Homebrew
       return unless @style_offenses
 
       @style_offenses.each do |offense|
-        correction_status = "#{Tty.green}[Corrected]#{Tty.reset} " if offense.corrected?
-
         cop_name = "#{offense.cop_name}: " if @display_cop_names
-        message = "#{cop_name}#{correction_status}#{offense.message}"
+        message = "#{cop_name}#{offense.message}"
 
-        problem message, location: offense.location
+        problem message, location: offense.location, corrected: offense.corrected?
       end
     end
 
@@ -873,12 +871,12 @@ module Homebrew
 
     private
 
-    def problem(message, location: nil)
-      @problems << ({ message: message, location: location })
+    def problem(message, location: nil, corrected: false)
+      @problems << ({ message: message, location: location, corrected: corrected })
     end
 
-    def new_formula_problem(message, location: nil)
-      @new_formula_problems << ({ message: message, location: location })
+    def new_formula_problem(message, location: nil, corrected: false)
+      @new_formula_problems << ({ message: message, location: location, corrected: corrected })
     end
 
     def head_only?(formula)

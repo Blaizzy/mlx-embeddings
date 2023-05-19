@@ -84,7 +84,7 @@ module Cask
       # Only raise non-critical audits if the user specified `--strict`.
       return if strict_only && !@strict
 
-      errors << ({ message: message, location: location })
+      errors << ({ message: message, location: location, corrected: false })
     end
 
     def result

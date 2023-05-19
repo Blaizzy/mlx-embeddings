@@ -113,10 +113,6 @@ module Homebrew
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
 
-    formula_count = 0
-    problem_count = 0
-    corrected_problem_count = 0
-    new_formula_problem_count = 0
     new_formula = args.new_formula?
     strict = new_formula || args.strict?
     online = new_formula || args.online?
@@ -177,21 +173,13 @@ module Homebrew
     end
 
     # Run tap audits first
-    tap_problem_count = 0
-    tap_count = 0
-    Tap.each do |tap|
+    tap_problems = Tap.each_with_object({}) do |tap, problems|
       next if args.tap && tap != args.tap
 
       ta = TapAuditor.new(tap, strict: args.strict?)
       ta.audit
 
-      next if ta.problems.blank?
-
-      tap_count += 1
-      tap_problem_count += ta.problems.size
-      tap_problem_lines = format_problem_lines(ta.problems)
-
-      puts "#{tap.name}:", tap_problem_lines.map { |s| "  #{s}" }
+      problems[[tap.name, tap.path]] = ta.problems if ta.problems.any?
     end
 
     # Check style in a single batch run up front for performance
@@ -199,11 +187,8 @@ module Homebrew
     # load licenses
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
-    new_formula_problem_lines = T.let([], T::Array[String])
 
-    formula_results = {}
-
-    audit_formulae.sort.each do |f|
+    formula_problems = audit_formulae.sort.each_with_object({}) do |f, problems|
       path = f.path
 
       only = only_cops ? ["style"] : args.only
@@ -219,14 +204,13 @@ module Homebrew
         style_offenses:      style_offenses&.for_path(f.path),
       }.compact
 
-      os_arch_combinations.each do |os, arch|
+      errors = os_arch_combinations.flat_map do |os, arch|
         SimulateSystem.with os: os, arch: arch do
           odebug "Auditing Formula #{f} on os #{os} and arch #{arch}"
 
           Formulary.clear_cache
-          f = Formulary.factory(path)
 
-          audit_proc = proc { FormulaAuditor.new(f, **options).tap(&:audit) }
+          audit_proc = proc { FormulaAuditor.new(Formulary.factory(path), **options).tap(&:audit) }
 
           # Audit requires full Ruby source so disable API.
           # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core clone.
@@ -236,25 +220,12 @@ module Homebrew
             audit_proc.call
           end
 
-          if fa.problems.any? || fa.new_formula_problems.any?
-            formula_count += 1
-            problem_count += fa.problems.size
-            problem_lines = format_problem_lines(fa.problems)
-            corrected_problem_count += options.fetch(:style_offenses, []).count(&:corrected?)
-            new_formula_problem_lines += format_problem_lines(fa.new_formula_problems)
-            if args.display_filename?
-              puts problem_lines.map { |s| "#{f.path}: #{s}" }
-            else
-              puts "#{f.full_name}:", problem_lines.map { |s| "  #{s}" }
-            end
-          end
-
-          formula_results.deep_merge!({ f.path => fa.problems + fa.new_formula_problems })
+          fa.problems + fa.new_formula_problems
         end
-      end
-    end
+      end.uniq
 
-    cask_results = {}
+      problems[[f.full_name, path]] = errors if errors.any?
+    end
 
     if audit_casks.any?
       require "cask/auditor"
@@ -264,19 +235,17 @@ module Homebrew
       end
     end
 
-    audit_casks.each do |cask|
+    cask_problems = audit_casks.each_with_object({}) do |cask, problems|
       path = cask.sourcefile_path
 
-      os_arch_combinations.each do |os, arch|
-        next if os == :linux
+      errors = os_arch_combinations.flat_map do |os, arch|
+        next [] if os == :linux
 
         SimulateSystem.with os: os, arch: arch do
           odebug "Auditing Cask #{cask} on os #{os} and arch #{arch}"
 
-          cask = Cask::CaskLoader.load(path)
-
-          errors = Cask::Auditor.audit(
-            cask,
+          Cask::Auditor.audit(
+            Cask::CaskLoader.load(path),
             # For switches, we add `|| nil` so that `nil` will be passed
             # instead of `false` if they aren't set.
             # This way, we can distinguish between "not set" and "set to false".
@@ -292,24 +261,30 @@ module Homebrew
             any_named_args:        !no_named_args,
             only:                  args.only,
             except:                args.except,
-          )
-
-          cask_results.deep_merge!({ cask.sourcefile_path => errors })
+          ).to_a
         end
-      end
+      end.uniq
+
+      problems[[cask.full_name, path]] = errors if errors.any?
     end
 
-    failed_casks = cask_results.select { |_, problems| problems.present? }
+    print_problems(tap_problems, display_filename: args.display_filename?)
+    print_problems(formula_problems, display_filename: args.display_filename?)
+    print_problems(cask_problems, display_filename: args.display_filename?)
 
-    cask_count = failed_casks.count
+    tap_count = tap_problems.keys.count
+    formula_count = formula_problems.keys.count
+    cask_count = cask_problems.keys.count
 
-    cask_problem_count = failed_casks.sum { |_, result| result.count }
-    new_formula_problem_count += new_formula_problem_lines.count
-    total_problems_count = problem_count + new_formula_problem_count + cask_problem_count + tap_problem_count
+    corrected_problem_count = (formula_problems.values + cask_problems.values)
+                              .sum { |problems| problems.count { |problem| problem.fetch(:corrected) } }
+
+    tap_problem_count = tap_problems.sum { |_, problems| problems.count }
+    formula_problem_count = formula_problems.sum { |_, problems| problems.count }
+    cask_problem_count = cask_problems.sum { |_, problems| problems.count }
+    total_problems_count = formula_problem_count + cask_problem_count + tap_problem_count
 
     if total_problems_count.positive?
-      puts new_formula_problem_lines.map { |s| "  #{s}" }
-
       errors_summary = Utils.pluralize("problem", total_problems_count, include_count: true)
 
       error_sources = []
@@ -327,12 +302,12 @@ module Homebrew
         errors_summary += ", #{Utils.pluralize("problem", corrected_problem_count, include_count: true)} corrected"
       end
 
-      ofail errors_summary
+      ofail "#{errors_summary}."
     end
 
     return unless ENV["GITHUB_ACTIONS"]
 
-    annotations = formula_results.merge(cask_results).flat_map do |path, problems|
+    annotations = formula_problems.merge(cask_problems).flat_map do |(_, path), problems|
       problems.map do |problem|
         GitHub::Actions::Annotation.new(
           :error,
@@ -349,13 +324,26 @@ module Homebrew
     end
   end
 
-  def self.format_problem_lines(problems)
-    problems.uniq
-            .map { |message:, location:| format_problem(message, location) }
+  def self.print_problems(results, display_filename:)
+    results.each do |(name, path), problems|
+      problem_lines = format_problem_lines(problems)
+
+      if display_filename
+        problem_lines.each do |l|
+          puts "#{path}: #{l}"
+        end
+      else
+        puts name, problem_lines.map { |l| l.dup.prepend("  ") }
+      end
+    end
   end
 
-  def self.format_problem(message, location)
-    "* #{location&.to_s&.dup&.concat(": ")}#{message.chomp.gsub("\n", "\n    ")}"
+  def self.format_problem_lines(problems)
+    problems.map do |message:, location:, corrected:|
+      status = " #{Formatter.success("[corrected]")}" if corrected
+      location = "#{location.line&.to_s&.prepend("line ")}#{location.column&.to_s&.prepend(", col ")}: " if location
+      "* #{location}#{message.chomp.gsub("\n", "\n    ")}#{status}"
+    end
   end
 
   def self.without_api(&block)

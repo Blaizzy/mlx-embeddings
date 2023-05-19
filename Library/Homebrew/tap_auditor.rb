@@ -50,7 +50,7 @@ module Homebrew
 
     sig { params(message: String).void }
     def problem(message)
-      @problems << ({ message: message, location: nil })
+      @problems << ({ message: message, location: nil, corrected: false })
     end
 
     private
