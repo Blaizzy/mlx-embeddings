@@ -10,9 +10,16 @@ describe CurlDownloadStrategy do
   let(:version) { "1.2.3" }
   let(:specs) { { user: "download:123456" } }
   let(:artifact_domain) { nil }
+  let(:headers) do
+    {
+      "accept-ranges"  => "bytes",
+      "content-length" => "37182",
+    }
+  end
 
   before do
-    allow(strategy).to receive(:curl_headers).and_return({ responses: [{ headers: {} }] })
+    allow(strategy).to receive(:curl_headers).with(any_args)
+                                             .and_return({ responses: [{ headers: headers }] })
   end
 
   it "parses the opts and sets the corresponding args" do

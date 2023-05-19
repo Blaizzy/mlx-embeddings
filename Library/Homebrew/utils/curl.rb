@@ -174,21 +174,20 @@ module Utils
       destination.dirname.mkpath
 
       if try_partial
-        range_stdout = curl_output("--location", "--head", *args, **options).stdout
-        parsed_output = parse_curl_output(range_stdout)
-
-        headers = if parsed_output[:responses].present?
-          parsed_output[:responses].last[:headers]
-        else
-          {}
+        headers = begin
+          parsed_output = curl_headers(*args, **options, wanted_headers: ["accept-ranges"])
+          parsed_output.fetch(:responses).last&.fetch(:headers)
+        rescue ErrorDuringExecution
+          nil
         end
 
         # Any value for `accept-ranges` other than none indicates that the server supports partial requests.
         # Its absence indicates no support.
-        supports_partial = headers.key?("accept-ranges") && headers["accept-ranges"] != "none"
+        supports_partial = headers&.key?("accept-ranges") && headers["accept-ranges"] != "none"
 
         if supports_partial &&
            destination.exist? &&
+           headers&.key?("content-length") &&
            destination.size == headers["content-length"].to_i
           return # We've already downloaded all the bytes
         end
