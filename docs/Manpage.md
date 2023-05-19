@@ -228,6 +228,10 @@ an issue; just ignore this.
 Download a bottle (if available) or source packages for *`formula`*e
 and binaries for *`cask`*s. For files, also print SHA-256 checksums.
 
+* `--os`:
+  Download for the given operating system.(Pass `all` to download for all operating systems.)
+* `--arch`:
+  Download for the given CPU architecture.(Pass `all` to download for all architectures.)
 * `--bottle-tag`:
   Download a bottle for given tag.
 * `--HEAD`:
@@ -831,6 +835,10 @@ Display Homebrew's download cache. See also `HOMEBREW_CACHE`.
 
 If *`formula`* is provided, display the file or directory used to cache *`formula`*.
 
+* `--os`:
+  Show cache file for the given operating system.(Pass `all` to show cache files for all operating systems.)
+* `--arch`:
+  Show cache file for the given CPU architecture.(Pass `all` to show cache files for all architectures.)
 * `-s`, `--build-from-source`:
   Show the cache file used when building from source.
 * `--force-bottle`:
@@ -905,6 +913,10 @@ submitting a new formula or cask. If no *`formula`*|*`cask`* are provided, check
 locally available formulae and casks and skip style checks. Will exit with a
 non-zero status if any errors are found.
 
+* `--os`:
+  Audit the given operating system. (Pass `all` to audit all operating systems.)
+* `--arch`:
+  Audit the given CPU architecture. (Pass `all` to audit all architectures.)
 * `--strict`:
   Run additional, stricter style checks.
 * `--git`:

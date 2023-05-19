@@ -125,6 +125,7 @@ _brew___cache() {
     -*)
       __brewcomp "
       --HEAD
+      --arch
       --bottle-tag
       --build-from-source
       --cask
@@ -132,6 +133,7 @@ _brew___cache() {
       --force-bottle
       --formula
       --help
+      --os
       --quiet
       --verbose
       "
@@ -346,6 +348,7 @@ _brew_audit() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --arch
       --audit-debug
       --cask
       --debug
@@ -363,6 +366,7 @@ _brew_audit() {
       --online
       --only
       --only-cops
+      --os
       --quiet
       --signing
       --skip-style
@@ -968,6 +972,7 @@ _brew_fetch() {
     -*)
       __brewcomp "
       --HEAD
+      --arch
       --bottle-tag
       --build-bottle
       --build-from-source
@@ -979,6 +984,7 @@ _brew_fetch() {
       --formula
       --help
       --no-quarantine
+      --os
       --quarantine
       --quiet
       --retry

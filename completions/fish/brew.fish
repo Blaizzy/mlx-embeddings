@@ -192,6 +192,7 @@ end
 
 __fish_brew_complete_cmd '--cache' 'Display Homebrew\'s download cache'
 __fish_brew_complete_arg '--cache' -l HEAD -d 'Show the cache file used when building from HEAD'
+__fish_brew_complete_arg '--cache' -l arch -d 'Show cache file for the given CPU architecture.(Pass `all` to show cache files for all architectures.)'
 __fish_brew_complete_arg '--cache' -l bottle-tag -d 'Show the cache file used when pouring a bottle for the given tag'
 __fish_brew_complete_arg '--cache' -l build-from-source -d 'Show the cache file used when building from source'
 __fish_brew_complete_arg '--cache' -l cask -d 'Only show cache files for casks'
@@ -199,6 +200,7 @@ __fish_brew_complete_arg '--cache' -l debug -d 'Display any debugging informatio
 __fish_brew_complete_arg '--cache' -l force-bottle -d 'Show the cache file used when pouring a bottle'
 __fish_brew_complete_arg '--cache' -l formula -d 'Only show cache files for formulae'
 __fish_brew_complete_arg '--cache' -l help -d 'Show this message'
+__fish_brew_complete_arg '--cache' -l os -d 'Show cache file for the given operating system.(Pass `all` to show cache files for all operating systems.)'
 __fish_brew_complete_arg '--cache' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg '--cache' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg '--cache; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
@@ -317,6 +319,7 @@ __fish_brew_complete_arg 'analytics' -l verbose -d 'Make some output more verbos
 
 
 __fish_brew_complete_cmd 'audit' 'Check formula for Homebrew coding style violations'
+__fish_brew_complete_arg 'audit' -l arch -d 'Audit the given CPU architecture. (Pass `all` to audit all architectures.)'
 __fish_brew_complete_arg 'audit' -l audit-debug -d 'Enable debugging and profiling of audit methods'
 __fish_brew_complete_arg 'audit' -l cask -d 'Treat all named arguments as casks'
 __fish_brew_complete_arg 'audit' -l debug -d 'Display any debugging information'
@@ -334,6 +337,7 @@ __fish_brew_complete_arg 'audit' -l no-signing -d 'Audit for signed apps, which 
 __fish_brew_complete_arg 'audit' -l online -d 'Run additional, slower style checks that require a network connection'
 __fish_brew_complete_arg 'audit' -l only -d 'Specify a comma-separated method list to only run the methods named `audit_`method'
 __fish_brew_complete_arg 'audit' -l only-cops -d 'Specify a comma-separated cops list to check for violations of only the listed RuboCop cops'
+__fish_brew_complete_arg 'audit' -l os -d 'Audit the given operating system. (Pass `all` to audit all operating systems.)'
 __fish_brew_complete_arg 'audit' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'audit' -l signing -d 'Audit for signed apps, which are required on ARM'
 __fish_brew_complete_arg 'audit' -l skip-style -d 'Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately. Enabled by default unless a formula is specified by name'
@@ -699,6 +703,7 @@ __fish_brew_complete_arg 'extract' -a '(__fish_brew_suggest_taps_installed)'
 
 __fish_brew_complete_cmd 'fetch' 'Download a bottle (if available) or source packages for formulae and binaries for casks'
 __fish_brew_complete_arg 'fetch' -l HEAD -d 'Fetch HEAD version instead of stable version'
+__fish_brew_complete_arg 'fetch' -l arch -d 'Download for the given CPU architecture.(Pass `all` to download for all architectures.)'
 __fish_brew_complete_arg 'fetch' -l bottle-tag -d 'Download a bottle for given tag'
 __fish_brew_complete_arg 'fetch' -l build-bottle -d 'Download source packages (for eventual bottling) rather than a bottle'
 __fish_brew_complete_arg 'fetch' -l build-from-source -d 'Download source packages rather than a bottle'
@@ -710,6 +715,7 @@ __fish_brew_complete_arg 'fetch' -l force-bottle -d 'Download a bottle if it exi
 __fish_brew_complete_arg 'fetch' -l formula -d 'Treat all named arguments as formulae'
 __fish_brew_complete_arg 'fetch' -l help -d 'Show this message'
 __fish_brew_complete_arg 'fetch' -l no-quarantine -d 'Disable/enable quarantining of downloads (default: enabled)'
+__fish_brew_complete_arg 'fetch' -l os -d 'Download for the given operating system.(Pass `all` to download for all operating systems.)'
 __fish_brew_complete_arg 'fetch' -l quarantine -d 'Disable/enable quarantining of downloads (default: enabled)'
 __fish_brew_complete_arg 'fetch' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'fetch' -l retry -d 'Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches. Tries at most 5 times with exponential backoff'
