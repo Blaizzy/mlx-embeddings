@@ -3065,22 +3065,6 @@ class Cask::DSL::Version
   def underscores_to_hyphens(); end
 end
 
-class Caveats
-  def empty?(*args, &block); end
-
-  def to_s(*args, &block); end
-end
-
-class Checksum
-  def [](*args, &block); end
-
-  def empty?(*args, &block); end
-
-  def length(*args, &block); end
-
-  def to_s(*args, &block); end
-end
-
 class Class
   def any_instance(); end
 end
@@ -3845,8 +3829,6 @@ class Formula
   def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
 
   def on_ventura(or_condition=T.unsafe(nil), &block); end
-
-  def uses_from_macos_names(*args, &block); end
 end
 
 class Formula
@@ -4262,12 +4244,6 @@ class Homebrew::Livecheck::Strategy::Sparkle::Item
 end
 
 class Homebrew::Service
-  def bin(*args, &block); end
-
-  def etc(*args, &block); end
-
-  def libexec(*args, &block); end
-
   def on_arch_conditional(arm: T.unsafe(nil), intel: T.unsafe(nil)); end
 
   def on_arm(&block); end
@@ -4295,18 +4271,6 @@ class Homebrew::Service
   def on_system(linux, macos:, &block); end
 
   def on_ventura(or_condition=T.unsafe(nil), &block); end
-
-  def opt_bin(*args, &block); end
-
-  def opt_libexec(*args, &block); end
-
-  def opt_pkgshare(*args, &block); end
-
-  def opt_prefix(*args, &block); end
-
-  def opt_sbin(*args, &block); end
-
-  def var(*args, &block); end
 end
 
 module Homebrew
@@ -4665,12 +4629,6 @@ end
 
 class MacOSRunnerSpec
   def self.inherited(s); end
-end
-
-module MachOShim
-  def dylib_id(*args, &block); end
-
-  def rpaths(*args, &block); end
 end
 
 class Mechanize::HTTP
@@ -5376,10 +5334,6 @@ module OpenSSL
   def self.fips_mode(); end
 end
 
-class PATH
-  def each(*args, &block); end
-end
-
 module ParallelTests
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
@@ -5417,18 +5371,6 @@ ParseError = Racc::ParseError
 
 class Parser::Ruby26
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
-end
-
-class PkgVersion
-  def major(*args, &block); end
-
-  def major_minor(*args, &block); end
-
-  def major_minor_patch(*args, &block); end
-
-  def minor(*args, &block); end
-
-  def patch(*args, &block); end
 end
 
 class PourBottleCheck
@@ -8203,10 +8145,6 @@ end
 module UnpackStrategy
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-end
-
-class Utils::AST::FormulaAST
-  def process(*args, &block); end
 end
 
 module Utils::Analytics
