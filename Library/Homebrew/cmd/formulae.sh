@@ -13,9 +13,12 @@ homebrew-formulae() {
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
         -f "${HOMEBREW_CACHE}/api/formula_names.txt" ]]
   then
-    cat "${HOMEBREW_CACHE}/api/formula_names.txt"
-    echo
+    {
+      cat "${HOMEBREW_CACHE}/api/formula_names.txt"
+      echo
+      homebrew-items '*\.rb' '.*Casks(/.*|$)|.*/homebrew/homebrew-core/.*' 's|/Formula/|/|' '^homebrew/core'
+    } | sort -uf
   else
-    homebrew-items '*\.rb' 'Casks' 's|/Formula/|/|' '^homebrew/core'
+    homebrew-items '*\.rb' '.*Casks(/.*|$)' 's|/Formula/|/|' '^homebrew/core'
   fi
 }
