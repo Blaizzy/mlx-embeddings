@@ -159,7 +159,7 @@ module Homebrew
         end
       else
         cask = formula_or_cask
-        ref = cask.loaded_from_api? ? cask.full_token : cask.sourcefile_path
+        ref = cask.loaded_from_api? ? cask.full_name : cask.sourcefile_path
 
         os_arch_combinations.each do |os, arch|
           next if os == :linux
