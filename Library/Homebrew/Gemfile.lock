@@ -38,7 +38,7 @@ GEM
       uri_template (~> 0.7)
     method_source (1.0.0)
     minitest (5.18.0)
-    msgpack (1.7.0)
+    msgpack (1.7.1)
     mustache (1.1.1)
     parallel (1.23.0)
     parallel_tests (3.13.0)
