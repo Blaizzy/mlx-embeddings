@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "shellwords"
+require "source_location"
 
 module Homebrew
   # Helper module for running RuboCop.
@@ -311,7 +312,8 @@ module Homebrew
         @message = json["message"]
         @cop_name = json["cop_name"]
         @corrected = json["corrected"]
-        @location = LineLocation.new(json["location"])
+        location = json["location"]
+        @location = SourceLocation.new(location.fetch("line"), location["column"])
       end
 
       def severity_code
@@ -320,21 +322,6 @@ module Homebrew
 
       def corrected?
         @corrected
-      end
-    end
-
-    # Source location of a style offense.
-    class LineLocation
-      attr_reader :line, :column
-
-      def initialize(json)
-        @line = json["line"]
-        @column = json["column"]
-      end
-
-      sig { returns(String) }
-      def to_s
-        "#{line}: col #{column}"
       end
     end
   end

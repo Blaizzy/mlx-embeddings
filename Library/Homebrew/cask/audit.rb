@@ -5,6 +5,7 @@ require "cask/denylist"
 require "cask/download"
 require "digest"
 require "livecheck/livecheck"
+require "source_location"
 require "utils/curl"
 require "utils/git"
 require "utils/shared_audits"
@@ -79,7 +80,13 @@ module Cask
       !errors?
     end
 
-    sig { params(message: T.nilable(String), location: T.nilable(String), strict_only: T::Boolean).void }
+    sig {
+      params(
+        message:     T.nilable(String),
+        location:    T.nilable(Homebrew::SourceLocation),
+        strict_only: T::Boolean,
+      ).void
+    }
     def add_error(message, location: nil, strict_only: false)
       # Only raise non-critical audits if the user specified `--strict`.
       return if strict_only && !@strict
@@ -231,7 +238,9 @@ module Cask
       return unless cask.sha256
       return if cask.sha256 == :no_check
 
-      add_error "Use `sha256 :no_check` when URL is unversioned." if cask.url&.unversioned?
+      return unless cask.url&.unversioned?
+
+      add_error "Use `sha256 :no_check` when URL is unversioned."
     end
 
     sig { void }
@@ -296,11 +305,11 @@ module Cask
       when %r{sourceforge.net/(\S+)}
         return unless online?
 
-        add_error "Download is hosted on SourceForge, #{add_livecheck}"
+        add_error "Download is hosted on SourceForge, #{add_livecheck}", location: cask.url.location
       when %r{dl.devmate.com/(\S+)}
-        add_error "Download is hosted on DevMate, #{add_livecheck}"
+        add_error "Download is hosted on DevMate, #{add_livecheck}", location: cask.url.location
       when %r{rink.hockeyapp.net/(\S+)}
-        add_error "Download is hosted on HockeyApp, #{add_livecheck}"
+        add_error "Download is hosted on HockeyApp, #{add_livecheck}", location: cask.url.location
       end
     end
 
@@ -312,9 +321,11 @@ module Cask
 
       odebug "Auditing URL format"
       if bad_sourceforge_url?
-        add_error "SourceForge URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}"
+        add_error "SourceForge URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}",
+                  location: cask.url.location
       elsif bad_osdn_url?
-        add_error "OSDN URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}"
+        add_error "OSDN URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}",
+                  location: cask.url.location
       end
     end
 
@@ -352,7 +363,8 @@ module Cask
 
       add_error "Verified URL #{Formatter.url(url_from_verified)} does not match URL " \
                 "#{Formatter.url(strip_url_scheme(cask.url.to_s))}. " \
-                "See #{Formatter.url(VERIFIED_URL_REFERENCE_URL)}"
+                "See #{Formatter.url(VERIFIED_URL_REFERENCE_URL)}",
+                location: cask.url.location
     end
 
     sig { void }
@@ -434,10 +446,11 @@ module Cask
     def audit_download
       return if download.blank? || cask.url.blank?
 
-      odebug "Auditing download"
-      download.fetch
-    rescue => e
-      add_error "download not possible: #{e}"
+      begin
+        download.fetch
+      rescue => e
+        add_error "download not possible: #{e}", location: cask.url.location
+      end
     end
 
     sig { void }
@@ -447,10 +460,9 @@ module Cask
       return if cask.url.to_s.include? cask.version.csv.second
       return if cask.version.csv.third.present? && cask.url.to_s.include?(cask.version.csv.third)
 
-      add_error(
-        "Download does not require additional version components. Use `&:short_version` in the livecheck",
-        strict_only: true,
-      )
+      add_error "Download does not require additional version components. Use `&:short_version` in the livecheck",
+                location:    cask.url.location,
+                strict_only: true
     end
 
     sig { void }
@@ -483,7 +495,7 @@ module Cask
 
           next if result.success?
 
-          add_error(<<~EOS, strict_only: true)
+          add_error <<~EOS, location: cask.url.location, strict_only: true
             Signature verification failed:
             #{result.merged_output}
             macOS on ARM requires software to be signed.
@@ -580,7 +592,7 @@ module Cask
       tag = SharedAudits.github_tag_from_url(cask.url)
       tag ||= cask.version
       error = SharedAudits.github_release(user, repo, tag, cask: cask)
-      add_error error if error
+      add_error error, location: cask.url.location if error
     end
 
     sig { void }
@@ -595,7 +607,7 @@ module Cask
       tag = SharedAudits.gitlab_tag_from_url(cask.url)
       tag ||= cask.version
       error = SharedAudits.gitlab_release(user, repo, tag, cask: cask)
-      add_error error if error
+      add_error error, location: cask.url.location if error
     end
 
     sig { void }
@@ -606,12 +618,10 @@ module Cask
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
-      odebug "Auditing GitHub repo archived"
-
       metadata = SharedAudits.github_repo_data(user, repo)
       return if metadata.nil?
 
-      add_error "GitHub repo is archived" if metadata["archived"]
+      add_error "GitHub repo is archived", location: cask.url.location if metadata["archived"]
     end
 
     sig { void }
@@ -627,7 +637,7 @@ module Cask
       metadata = SharedAudits.gitlab_repo_data(user, repo)
       return if metadata.nil?
 
-      add_error "GitLab repo is archived" if metadata["archived"]
+      add_error "GitLab repo is archived", location: cask.url.location if metadata["archived"]
     end
 
     sig { void }
@@ -640,7 +650,7 @@ module Cask
       odebug "Auditing GitHub repo"
 
       error = SharedAudits.github(user, repo)
-      add_error error if error
+      add_error error, location: cask.url.location if error
     end
 
     sig { void }
@@ -653,7 +663,7 @@ module Cask
       odebug "Auditing GitLab repo"
 
       error = SharedAudits.gitlab(user, repo)
-      add_error error if error
+      add_error error, location: cask.url.location if error
     end
 
     sig { void }
@@ -666,7 +676,7 @@ module Cask
       odebug "Auditing Bitbucket repo"
 
       error = SharedAudits.bitbucket(user, repo)
-      add_error error if error
+      add_error error, location: cask.url.location if error
     end
 
     sig { void }
@@ -694,6 +704,7 @@ module Cask
 
       if cask.url && !cask.url.using
         validate_url_for_https_availability(cask.url, "binary URL", cask.token, cask.tap,
+                                            location: cask.url.location,
                                             user_agents: [cask.url.user_agent], referer: cask.url&.referer)
       end
 
@@ -714,14 +725,15 @@ module Cask
     #   params(url_to_check: T.any(String, URL), url_type: String, cask_token: String, tap: Tap,
     #          options: T.untyped).void
     # }
-    def validate_url_for_https_availability(url_to_check, url_type, cask_token, tap, **options)
+    def validate_url_for_https_availability(url_to_check, url_type, cask_token, tap, location: nil, **options)
       problem = curl_check_http_content(url_to_check.to_s, url_type, **options)
       exception = tap&.audit_exception(:secure_connection_audit_skiplist, cask_token, url_to_check.to_s)
 
       if problem
-        add_error problem unless exception
+        add_error problem, location: location unless exception
       elsif exception
-        add_error "#{url_to_check} is in the secure connection audit skiplist but does not need to be skipped"
+        add_error "#{url_to_check} is in the secure connection audit skiplist but does not need to be skipped",
+                  location: location
       end
     end
 
