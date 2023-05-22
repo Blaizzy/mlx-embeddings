@@ -47,8 +47,7 @@ class Keg
         each_linkage_for(file, :dynamically_linked_libraries) do |bad_name|
           # Don't fix absolute paths unless they are rooted in the build directory
           next if bad_name.start_with?("/") &&
-                  !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
-                  !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s)
+                  !rooted_in_build_directory?(bad_name)
 
           new_name = fixed_name(file, bad_name)
           change_install_name(bad_name, new_name, file) if new_name != bad_name
@@ -56,8 +55,7 @@ class Keg
 
         each_linkage_for(file, :rpaths) do |bad_name|
           # Strip duplicate rpaths and rpaths rooted in the build directory.
-          next if !bad_name.start_with?(HOMEBREW_TEMP.to_s) &&
-                  !bad_name.start_with?(HOMEBREW_TEMP.realpath.to_s) &&
+          next if !rooted_in_build_directory?(bad_name) &&
                   (file.rpaths.count(bad_name) == 1)
 
           delete_rpath(bad_name, file)
@@ -188,5 +186,15 @@ class Keg
     grep_bin = "egrep"
     grep_args = "--files-with-matches"
     [grep_bin, grep_args]
+  end
+
+  private
+
+  def rooted_in_build_directory?(filename)
+    # CMake normalises `/private/tmp` to `/tmp`.
+    # https://gitlab.kitware.com/cmake/cmake/-/issues/23251
+    return true if HOMEBREW_TEMP.to_s == "/private/tmp" && filename.start_with?("/tmp/")
+
+    filename.start_with?(HOMEBREW_TEMP.to_s) || filename.start_with?(HOMEBREW_TEMP.realpath.to_s)
   end
 end
