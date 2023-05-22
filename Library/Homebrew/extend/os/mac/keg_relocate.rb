@@ -193,7 +193,7 @@ class Keg
   def rooted_in_build_directory?(filename)
     # CMake normalises `/private/tmp` to `/tmp`.
     # https://gitlab.kitware.com/cmake/cmake/-/issues/23251
-    return true if HOMEBREW_TEMP.to_s == "/private/tmp" && filename.start_with?("/tmp")
+    return true if HOMEBREW_TEMP.to_s == "/private/tmp" && filename.start_with?("/tmp/")
 
     filename.start_with?(HOMEBREW_TEMP.to_s) || filename.start_with?(HOMEBREW_TEMP.realpath.to_s)
   end
