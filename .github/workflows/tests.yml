@@ -148,7 +148,7 @@ jobs:
         run: brew tap homebrew/core
 
       - name: Run brew readall on homebrew/core
-        run: brew readall --aliases homebrew/core
+        run: brew readall --os=all --arch=all --aliases homebrew/core
 
       - name: Run brew audit --skip-style on homebrew/core
         run: brew audit --skip-style --except=version --tap=homebrew/core
@@ -186,7 +186,7 @@ jobs:
           brew tap homebrew/cask-versions
 
       - name: Run brew readall on all casks
-        run: brew readall homebrew/cask homebrew/cask-drivers homebrew/cask-fonts homebrew/cask-versions
+        run: brew readall --os=all --arch=all homebrew/cask homebrew/cask-drivers homebrew/cask-fonts homebrew/cask-versions
 
       - name: Run brew audit --skip-style on casks
         run: |

@@ -66,19 +66,21 @@ module Readall
       true
     end
 
-    def valid_tap?(tap, options = {})
+    def valid_tap?(tap, aliases: false, no_simulate: false, os_arch_combinations: nil)
       success = true
 
-      if options[:aliases]
+      if aliases
         valid_aliases = valid_aliases?(tap.alias_dir, tap.formula_dir)
         success = false unless valid_aliases
       end
-      if options[:no_simulate]
+      if no_simulate
         success = false unless valid_formulae?(tap.formula_files)
         success = false unless valid_casks?(tap.cask_files)
       else
-        os_names = [*MacOSVersion::SYMBOLS.keys, :linux]
-        os_names.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
+        # TODO: Remove this default case once `--os` and `--arch` are passed explicitly to `brew readall` in CI.
+        os_arch_combinations ||= [*MacOSVersion::SYMBOLS.keys, :linux].product(OnSystem::ARCH_OPTIONS)
+
+        os_arch_combinations.each do |os, arch|
           bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
           next unless bottle_tag.valid_combination?
 
