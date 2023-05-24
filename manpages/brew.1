@@ -759,6 +759,14 @@ Note that older version symlinks will also be created so e\.g\. Ruby 3\.2\.1 wil
 Import all items from the specified \fItap\fR, or from all installed taps if none is provided\. This can be useful for debugging issues across all items when making significant changes to \fBformula\.rb\fR, testing the performance of loading all items or checking if any current formulae/casks have Ruby issues\.
 .
 .TP
+\fB\-\-os\fR
+Read using the given operating system\. (Pass \fBall\fR to simulate all operating systems\.)
+.
+.TP
+\fB\-\-arch\fR
+Read using the given CPU architecture\. (Pass \fBall\fR to simulate all architectures\.)
+.
+.TP
 \fB\-\-aliases\fR
 Verify any alias symlinks in each tap\.
 .
