@@ -1829,10 +1829,12 @@ _brew_readall() {
     -*)
       __brewcomp "
       --aliases
+      --arch
       --debug
       --eval-all
       --help
       --no-simulate
+      --os
       --quiet
       --syntax
       --verbose
