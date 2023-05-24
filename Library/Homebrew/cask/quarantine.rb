@@ -186,6 +186,7 @@ module Cask
           from,
           to,
         ],
+        sudo: !to.writable?,
       )
     end
   end
