@@ -165,7 +165,7 @@ do
   FILTERED_ENV+=("${VAR}=${!VAR}")
 done
 
-if [[ -n "${GITHUB_ACTIONS:-}" ]]
+if [[ -n "${CI:-}" ]]
 then
   for VAR in "${!GITHUB_@}"
   do
