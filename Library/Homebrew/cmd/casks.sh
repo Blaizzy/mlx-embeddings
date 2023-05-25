@@ -13,9 +13,12 @@ homebrew-casks() {
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
         -f "${HOMEBREW_CACHE}/api/cask_names.txt" ]]
   then
-    cat "${HOMEBREW_CACHE}/api/cask_names.txt"
-    echo
+    {
+      cat "${HOMEBREW_CACHE}/api/cask_names.txt"
+      echo
+      homebrew-items '*/Casks/*\.rb' '.*/homebrew/homebrew-cask/.*' 's|/Casks/|/|' '^homebrew/cask'
+    } | sort -uf
   else
-    homebrew-items '*/Casks/*\.rb' '' 's|/Casks/|/|' '^homebrew/cask'
+    homebrew-items '*/Casks/*\.rb' '^\b$' 's|/Casks/|/|' '^homebrew/cask'
   fi
 }
