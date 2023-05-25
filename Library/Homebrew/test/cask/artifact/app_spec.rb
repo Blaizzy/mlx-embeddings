@@ -303,10 +303,12 @@ describe Cask::Artifact::App, :cask do
   end
 
   describe "upgrade" do
+    before do
+      install_phase
+    end
+
     # Fix for https://github.com/Homebrew/homebrew-cask/issues/102721
     it "reuses the same directory" do
-      install_phase
-
       contents_path = target_path.join("Contents/Info.plist")
 
       expect(target_path).to exist
@@ -326,28 +328,62 @@ describe Cask::Artifact::App, :cask do
       expect(contents_path).to exist
     end
 
-    it "properly handles non-writable directories" do
-      install_phase
+    describe "when the system blocks modifying apps" do
+      it "does not delete files" do
+        target_contents_path = target_path.join("Contents")
 
-      source_contents_path = source_path.join("Contents")
-      target_contents_path = target_path.join("Contents")
+        expect(File).to receive(:write).with(target_path / ".homebrew-write-test",
+                                             instance_of(String)).and_raise(Errno::EACCES)
 
-      allow(app.target).to receive(:writable?).and_return false
-      allow(command).to receive(:run!).with(any_args).and_call_original
+        expect { app.uninstall_phase(command: command, force: force, successor: cask) }.to raise_error(SystemExit)
+        expect(target_contents_path).to exist
+      end
+    end
 
-      expect(command).to receive(:run!)
-        .with("/bin/cp", args: ["-pR", source_contents_path, target_path],
-                         sudo: true)
-        .and_call_original
-      expect(FileUtils).not_to receive(:move).with(source_contents_path, an_instance_of(Pathname))
+    describe "when the directory is owned by root" do
+      before do
+        allow(app.target).to receive(:writable?).and_return false
+        allow(app.target).to receive(:owned?).and_return false
+      end
 
-      app.uninstall_phase(command: command, force: force, successor: cask)
-      expect(target_contents_path).not_to exist
-      expect(target_path).to exist
-      expect(source_contents_path).to exist
+      it "reuses the same directory" do
+        source_contents_path = source_path.join("Contents")
+        target_contents_path = target_path.join("Contents")
 
-      app.install_phase(command: command, adopt: adopt, force: force, predecessor: cask)
-      expect(target_contents_path).to exist
+        allow(command).to receive(:run!).with(any_args).and_call_original
+
+        expect(command).to receive(:run!)
+          .with("/bin/cp", args: ["-pR", source_contents_path, target_path],
+                           sudo: true)
+          .and_call_original
+        expect(FileUtils).not_to receive(:move).with(source_contents_path, an_instance_of(Pathname))
+
+        app.uninstall_phase(command: command, force: force, successor: cask)
+        expect(target_contents_path).not_to exist
+        expect(target_path).to exist
+        expect(source_contents_path).to exist
+
+        app.install_phase(command: command, adopt: adopt, force: force, predecessor: cask)
+        expect(target_contents_path).to exist
+      end
+
+      describe "when the system blocks modifying apps" do
+        it "does not delete files" do
+          target_contents_path = target_path.join("Contents")
+
+          allow(command).to receive(:run!).with(any_args).and_call_original
+
+          expect(command).to receive(:run!)
+            .with("touch", args:         [target_path / ".homebrew-write-test"],
+                           print_stderr: false,
+                           sudo:         true)
+            .and_raise(ErrorDuringExecution.new([], status: 1,
+output: [[:stderr, "touch: #{target_path}/.homebrew-write-test: Operation not permitted\n"]], secrets: []))
+
+          expect { app.uninstall_phase(command: command, force: force, successor: cask) }.to raise_error(SystemExit)
+          expect(target_contents_path).to exist
+        end
+      end
     end
   end
 end

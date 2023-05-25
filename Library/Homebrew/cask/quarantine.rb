@@ -188,5 +188,66 @@ module Cask
         ],
       )
     end
+
+    # Ensures that Homebrew has permission to update apps on macOS Ventura.
+    # This may be granted either through the App Management toggle or the Full Disk Access toggle.
+    # The system will only show a prompt for App Management, so we ask the user to grant that.
+    sig { params(app: Pathname, command: T.class_of(SystemCommand)).void }
+    def self.ensure_app_management_permissions_granted(app:, command:)
+      return unless app.directory?
+
+      # To get macOS to prompt the user for permissions, we need to actually attempt to
+      # modify a file in the app.
+      test_file = app / ".homebrew-write-test"
+
+      # We can't use app.writable? here because that conflates several access checks,
+      # including both file ownership and whether system permissions are granted.
+      # Here we just want to check whether sudo would be needed.
+      looks_writable_without_sudo = if app.owned?
+        (app.lstat.mode & 0200) != 0
+      elsif app.grpowned?
+        (app.lstat.mode & 0020) != 0
+      else
+        (app.lstat.mode & 0002) != 0
+      end
+
+      if looks_writable_without_sudo
+        begin
+          File.write(test_file, "")
+          test_file.delete
+          return
+        rescue Errno::EACCES
+          # Using error handler below
+        end
+      else
+        begin
+          command.run!(
+            "touch",
+            args:         [
+              test_file,
+            ],
+            print_stderr: false,
+            sudo:         true,
+          )
+          command.run!(
+            "rm",
+            args:         [
+              test_file,
+            ],
+            print_stderr: false,
+            sudo:         true,
+          )
+          return
+        rescue ErrorDuringExecution => e
+          # We only want to handle "touch" errors here; propagate "sudo" errors up
+          raise e unless e.stderr.include?("touch: #{test_file}: Operation not permitted")
+        end
+      end
+
+      odie <<~EOF
+        Your terminal needs permission to update apps.
+        Go to Settings > Security and Privacy > App Management, or look for a notification saying your terminal was prevented from modifying apps.
+      EOF
+    end
   end
 end

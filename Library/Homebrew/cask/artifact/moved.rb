@@ -85,6 +85,7 @@ module Cask
         Utils.gain_permissions_mkpath(target.dirname, command: command) unless target.dirname.exist?
 
         if target.directory?
+          Quarantine.ensure_app_management_permissions_granted(app: target, command: command)
           if target.writable?
             source.children.each { |child| FileUtils.move(child, target/child.basename) }
           else
@@ -156,6 +157,7 @@ module Cask
         if target.directory? && matching_artifact?(successor)
           # If an app folder is deleted, macOS considers the app uninstalled and removes some data.
           # Remove only the contents to handle this case.
+          Quarantine.ensure_app_management_permissions_granted(app: target, command: command)
           target.children.each do |child|
             if target.writable? && !force
               child.rmtree
