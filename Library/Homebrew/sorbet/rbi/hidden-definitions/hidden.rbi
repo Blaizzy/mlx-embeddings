@@ -5203,7 +5203,6 @@ class Object
   HOMEBREW_VERSION = ::T.let(nil, ::T.untyped)
   HOMEBREW_WWW = ::T.let(nil, ::T.untyped)
   LINUXBREW_CORE_MIGRATION_LIST = ::T.let(nil, ::T.untyped)
-  MacOSVersionError = ::T.let(nil, ::T.untyped)
   OFFICIAL_CASK_TAPS = ::T.let(nil, ::T.untyped)
   OFFICIAL_CMD_TAPS = ::T.let(nil, ::T.untyped)
   OS_VERSION = ::T.let(nil, ::T.untyped)
