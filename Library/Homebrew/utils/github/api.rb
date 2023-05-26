@@ -135,11 +135,14 @@ module GitHub
     # but only if that password looks like a GitHub Personal Access Token.
     sig { returns(T.nilable(String)) }
     def self.keychain_username_password
-      github_credentials = Utils.popen_write("git", "credential-osxkeychain", "get") do |pipe|
-        pipe.write "protocol=https\nhost=github.com\n"
-      end
-      github_username = github_credentials[/username=(.+)/, 1]
-      github_password = github_credentials[/password=(.+)/, 1]
+      git_credential_out, _, result = system_command "git",
+                                                     args:         ["credential-osxkeychain", "get"],
+                                                     input:        ["protocol=https\n", "host=github.com\n"],
+                                                     print_stderr: false
+      return unless result.success?
+
+      github_username = git_credential_out[/username=(.+)/, 1]
+      github_password = git_credential_out[/password=(.+)/, 1]
       return unless github_username
 
       # Don't use passwords from the keychain unless they look like
@@ -148,12 +151,6 @@ module GitHub
       return unless GITHUB_PERSONAL_ACCESS_TOKEN_REGEX.match?(github_password)
 
       github_password
-    rescue Errno::EPIPE
-      # The above invocation via `Utils.popen` can fail, causing the pipe to be
-      # prematurely closed (before we can write to it) and thus resulting in a
-      # broken pipe error. The root cause is usually a missing or malfunctioning
-      # `git-credential-osxkeychain` helper.
-      nil
     end
 
     # odeprecated: Not really deprecated; change the order to prefer `github_cli_token` over
