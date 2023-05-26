@@ -329,13 +329,16 @@ describe Cask::Artifact::App, :cask do
     end
 
     describe "when the system blocks modifying apps" do
-      it "does not delete files" do
+      it "uninstalls and reinstalls the app" do
         target_contents_path = target_path.join("Contents")
 
         expect(File).to receive(:write).with(target_path / ".homebrew-write-test",
                                              instance_of(String)).and_raise(Errno::EACCES)
 
-        expect { app.uninstall_phase(command: command, force: force, successor: cask) }.to raise_error(SystemExit)
+        app.uninstall_phase(command: command, force: force, successor: cask)
+        expect(target_path).not_to exist
+
+        app.install_phase(command: command, adopt: adopt, force: force, predecessor: cask)
         expect(target_contents_path).to exist
       end
     end
@@ -368,7 +371,7 @@ describe Cask::Artifact::App, :cask do
       end
 
       describe "when the system blocks modifying apps" do
-        it "does not delete files" do
+        it "uninstalls and reinstalls the app" do
           target_contents_path = target_path.join("Contents")
 
           allow(command).to receive(:run!).with(any_args).and_call_original
@@ -380,7 +383,10 @@ describe Cask::Artifact::App, :cask do
             .and_raise(ErrorDuringExecution.new([], status: 1,
 output: [[:stderr, "touch: #{target_path}/.homebrew-write-test: Operation not permitted\n"]], secrets: []))
 
-          expect { app.uninstall_phase(command: command, force: force, successor: cask) }.to raise_error(SystemExit)
+          app.uninstall_phase(command: command, force: force, successor: cask)
+          expect(target_path).not_to exist
+
+          app.install_phase(command: command, adopt: adopt, force: force, predecessor: cask)
           expect(target_contents_path).to exist
         end
       end
