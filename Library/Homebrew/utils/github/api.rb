@@ -10,9 +10,9 @@ module GitHub
   def self.pat_blurb(scopes = ALL_SCOPES)
     <<~EOS
       Create a GitHub personal access token:
-      #{Formatter.url(
-        "https://github.com/settings/tokens/new?scopes=#{scopes.join(",")}&description=Homebrew",
-      )}
+        #{Formatter.url(
+          "https://github.com/settings/tokens/new?scopes=#{scopes.join(",")}&description=Homebrew",
+        )}
       #{Utils::Shell.set_variable_in_profile("HOMEBREW_GITHUB_API_TOKEN", "your_token_here")}
     EOS
   end
@@ -62,30 +62,36 @@ module GitHub
 
     # Error when authentication fails.
     class AuthenticationFailedError < Error
-      def initialize(github_message)
+      def initialize(credentials_type, github_message)
         @github_message = github_message
         message = +"GitHub API Error: #{github_message}\n"
-        message << if Homebrew::EnvConfig.github_api_token
+        message << case credentials_type
+        when :github_cli_token
           <<~EOS
-            HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
-              #{Formatter.url("https://github.com/settings/tokens")}
+            Your GitHub CLI login session may be invalid.
+            Refresh it with:
+              gh auth login --hostname github.com
           EOS
-        else
+        when :keychain_username_password
           <<~EOS
             The GitHub credentials in the macOS keychain may be invalid.
             Clear them with:
               printf "protocol=https\\nhost=github.com\\n" | git credential-osxkeychain erase
-            #{GitHub.pat_blurb}
+          EOS
+        when :env_token
+          <<~EOS
+            HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
+              #{Formatter.url("https://github.com/settings/tokens")}
           EOS
         end
         super message.freeze
       end
     end
 
-    # Error when the user has no GitHub API credentials set at all (macOS keychain or envvar).
+    # Error when the user has no GitHub API credentials set at all (macOS keychain, GitHub CLI or envvar).
     class MissingAuthenticationError < Error
       def initialize
-        message = +"No GitHub credentials found in macOS Keychain or environment.\n"
+        message = +"No GitHub credentials found in macOS Keychain, GitHub CLI or the environment.\n"
         message << GitHub.pat_blurb
         super message
       end
@@ -112,6 +118,19 @@ module GitHub
       JSON::ParserError,
     ].freeze
 
+    # Gets the token from the GitHub CLI for github.com.
+    sig { returns(T.nilable(String)) }
+    def self.github_cli_token
+      env = { "PATH" => PATH.new(Formula["gh"].opt_bin, ENV.fetch("PATH")) }
+      gh_out, _, result = system_command "gh",
+                                         args:         ["auth", "token", "--hostname", "github.com"],
+                                         env:          env,
+                                         print_stderr: false
+      return unless result.success?
+
+      gh_out.chomp
+    end
+
     # Gets the password field from `git-credential-osxkeychain` for github.com,
     # but only if that password looks like a GitHub Personal Access Token.
     sig { returns(T.nilable(String)) }
@@ -137,20 +156,30 @@ module GitHub
       nil
     end
 
+    # odeprecated: Not really deprecated; change the order to prefer `github_cli_token` over
+    # `keychain_username_password` during the next major/minor release.
     def self.credentials
-      @credentials ||= Homebrew::EnvConfig.github_api_token || keychain_username_password
+      @credentials ||= Homebrew::EnvConfig.github_api_token || keychain_username_password || github_cli_token
     end
 
     sig { returns(Symbol) }
     def self.credentials_type
-      if Homebrew::EnvConfig.github_api_token
+      if Homebrew::EnvConfig.github_api_token.present?
         :env_token
-      elsif keychain_username_password
+      elsif keychain_username_password.present?
         :keychain_username_password
+      elsif github_cli_token.present?
+        :github_cli_token
       else
         :none
       end
     end
+
+    CREDENTIAL_NAMES = {
+      env_token:                  "HOMEBREW_GITHUB_API_TOKEN",
+      github_cli_token:           "GitHub CLI login",
+      keychain_username_password: "macOS Keychain GitHub",
+    }.freeze
 
     # Given an API response from GitHub, warn the user if their credentials
     # have insufficient permissions.
@@ -165,13 +194,7 @@ module GitHub
       needed_scopes = needed_scopes.to_a.join(", ").presence || "none"
       credentials_scopes = "none" if credentials_scopes.blank?
 
-      what = case credentials_type
-      when :keychain_username_password
-        "macOS keychain GitHub"
-      when :env_token
-        "HOMEBREW_GITHUB_API_TOKEN"
-      end
-
+      what = CREDENTIAL_NAMES.fetch(credentials_type)
       @credentials_error_message ||= onoe <<~EOS
         Your #{what} credentials do not have sufficient scope!
         Scopes required: #{needed_scopes}
@@ -296,14 +319,14 @@ module GitHub
 
       case http_code
       when "401"
-        raise AuthenticationFailedError, message
+        raise AuthenticationFailedError.new(credentials_type, message)
       when "403"
         if meta.fetch("x-ratelimit-remaining", 1).to_i <= 0
           reset = meta.fetch("x-ratelimit-reset").to_i
           raise RateLimitExceededError.new(reset, message)
         end
 
-        raise AuthenticationFailedError, message
+        raise AuthenticationFailedError.new(credentials_type, message)
       when "404"
         raise MissingAuthenticationError if credentials_type == :none && scopes.present?
 
