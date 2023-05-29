@@ -11,13 +11,12 @@ describe "brew determine-test-runners" do
   let(:linux_runner) { "ubuntu-22.04" }
   # We need to make sure we write to a different path for each example.
   let(:github_output) { "#{TEST_TMPDIR}/github_output#{DetermineRunnerTestHelper.new.number}" }
-  let(:ephemeral_suffix) { "-12345-1" }
+  let(:ephemeral_suffix) { "-12345" }
   let(:runner_env) do
     {
       "HOMEBREW_LINUX_RUNNER"  => linux_runner,
       "HOMEBREW_MACOS_TIMEOUT" => "90",
       "GITHUB_RUN_ID"          => ephemeral_suffix.split("-").second,
-      "GITHUB_RUN_ATTEMPT"     => ephemeral_suffix.split("-").third,
     }.freeze
   end
   let(:all_runners) do
