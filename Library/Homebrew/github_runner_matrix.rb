@@ -112,11 +112,10 @@ class GitHubRunnerMatrix
     @runners << create_runner(:linux, :x86_64, linux_runner_spec)
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
-    github_run_attempt = ENV.fetch("GITHUB_RUN_ATTEMPT")
     timeout            = ENV.fetch("HOMEBREW_MACOS_TIMEOUT").to_i
     use_github_runner  = ENV.fetch("HOMEBREW_MACOS_BUILD_ON_GITHUB_RUNNER", "false") == "true"
 
-    ephemeral_suffix = +"-#{github_run_id}-#{github_run_attempt}"
+    ephemeral_suffix = +"-#{github_run_id}"
     ephemeral_suffix << "-deps" if @dependent_matrix
     ephemeral_suffix.freeze
 
