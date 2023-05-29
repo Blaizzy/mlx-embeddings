@@ -1853,6 +1853,8 @@ This sanitized build environment ignores unrequested dependencies, which makes s
   `list` Mac App Store dependencies.
 * `--whalebrew`:
   `list` Whalebrew dependencies.
+* `--vscode`:
+  `list` VSCode extensions.
 * `--describe`:
   `dump` adds a description comment above each line, unless the dependency does not have a description.
 * `--no-restart`:
