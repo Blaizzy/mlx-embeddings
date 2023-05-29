@@ -198,7 +198,7 @@ module Cask
 
       # To get macOS to prompt the user for permissions, we need to actually attempt to
       # modify a file in the app.
-      test_file = app / ".homebrew-write-test"
+      test_file = app/".homebrew-write-test"
 
       # We can't use app.writable? here because that conflates several access checks,
       # including both file ownership and whether system permissions are granted.
@@ -249,6 +249,7 @@ module Cask
         This may result in some configurations (like notification settings or location in the Dock/Launchpad) being lost.
         To fix this, go to Settings > Security and Privacy > App Management and turn on the switch for your terminal.
       EOF
+
       false
     end
   end
