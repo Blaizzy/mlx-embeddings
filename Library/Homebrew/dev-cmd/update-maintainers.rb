@@ -26,11 +26,15 @@ module Homebrew
 
     # We assume that only public members wish to be included in the README
     public_members = GitHub.public_member_usernames("Homebrew")
+    maintainers = GitHub.members_by_team("Homebrew", "maintainers")
+
+    HOMEBREW_MAINTAINER_JSON.write(maintainers.keys.to_json)
+    maintainer_json_relative_path = HOMEBREW_MAINTAINER_JSON.relative_path_from(HOMEBREW_REPOSITORY).to_s
 
     members = {
       plc:         GitHub.members_by_team("Homebrew", "plc"),
       tsc:         GitHub.members_by_team("Homebrew", "tsc"),
-      maintainers: GitHub.members_by_team("Homebrew", "maintainers"),
+      maintainers: maintainers,
     }
 
     sentences = {}
@@ -53,7 +57,7 @@ module Homebrew
     File.write(readme, content)
 
     diff = system_command "git", args: [
-      "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "README.md"
+      "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "README.md", maintainer_json_relative_path
     ]
     if diff.status.success?
       ofail "No changes to list of maintainers."
