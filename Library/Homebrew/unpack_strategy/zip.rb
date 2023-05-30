@@ -23,10 +23,12 @@ module UnpackStrategy
               .returns(SystemCommand::Result)
     }
     def extract_to_dir(unpack_dir, basename:, verbose:)
-      unzip = begin
-        Formula["unzip"]
-      rescue FormulaUnavailableError
-        nil
+      unzip = if which("unzip").blank?
+        begin
+          Formula["unzip"]
+        rescue FormulaUnavailableError
+          nil
+        end
       end
 
       with_env(TZ: "UTC") do
