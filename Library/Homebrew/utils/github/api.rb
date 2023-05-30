@@ -60,6 +60,11 @@ module GitHub
       end
     end
 
+    NO_CREDENTIALS_MESSAGE = <<~MESSAGE
+      No GitHub credentials found in macOS Keychain, GitHub CLI or the environment.
+      #{GitHub.pat_blurb}
+    MESSAGE
+
     # Error when authentication fails.
     class AuthenticationFailedError < Error
       def initialize(credentials_type, github_message)
@@ -83,6 +88,8 @@ module GitHub
             HOMEBREW_GITHUB_API_TOKEN may be invalid or expired; check:
               #{Formatter.url("https://github.com/settings/tokens")}
           EOS
+        when :none
+          NO_CREDENTIALS_MESSAGE
         end
         super message.freeze
       end
@@ -91,9 +98,7 @@ module GitHub
     # Error when the user has no GitHub API credentials set at all (macOS keychain, GitHub CLI or envvar).
     class MissingAuthenticationError < Error
       def initialize
-        message = +"No GitHub credentials found in macOS Keychain, GitHub CLI or the environment.\n"
-        message << GitHub.pat_blurb
-        super message
+        super NO_CREDENTIALS_MESSAGE
       end
     end
 
