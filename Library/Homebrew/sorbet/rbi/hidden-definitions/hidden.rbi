@@ -5177,6 +5177,7 @@ class Object
   HOMEBREW_MACOS_NEWEST_UNSUPPORTED = ::T.let(nil, ::T.untyped)
   HOMEBREW_MACOS_OLDEST_ALLOWED = ::T.let(nil, ::T.untyped)
   HOMEBREW_MACOS_OLDEST_SUPPORTED = ::T.let(nil, ::T.untyped)
+  HOMEBREW_MAINTAINER_JSON = ::T.let(nil, ::T.untyped)
   HOMEBREW_MAIN_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_PHYSICAL_PROCESSOR = ::T.let(nil, ::T.untyped)
