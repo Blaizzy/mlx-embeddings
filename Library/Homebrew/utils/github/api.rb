@@ -126,7 +126,8 @@ module GitHub
     # Gets the token from the GitHub CLI for github.com.
     sig { returns(T.nilable(String)) }
     def self.github_cli_token
-      env = { "PATH" => PATH.new(Formula["gh"].opt_bin, ENV.fetch("PATH")) }
+      # Avoid `Formula["gh"].opt_bin` so this method works even with `HOMEBREW_DISABLE_LOAD_FORMULA`.
+      env = { "PATH" => PATH.new(HOMEBREW_PREFIX/"opt/gh/bin", ENV.fetch("PATH")) }
       gh_out, _, result = system_command "gh",
                                          args:         ["auth", "token", "--hostname", "github.com"],
                                          env:          env,
