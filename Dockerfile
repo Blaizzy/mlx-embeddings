@@ -47,6 +47,7 @@ RUN apt-get update \
   && apt-get remove --purge -y software-properties-common \
   && apt-get autoremove --purge -y \
   && rm -rf /var/lib/apt/lists/* \
+  && sed -i -E '/^session optional\s+pam_umask\.so$/ s/$/ umask=0022/' /etc/pam.d/common-session \
   && localedef -i en_US -f UTF-8 en_US.UTF-8 \
   && useradd -m -s /bin/bash linuxbrew \
   && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
