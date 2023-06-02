@@ -629,6 +629,7 @@ module I18n::MissingTranslation::Base
   def keys; end
   def locale; end
   def message; end
+  def normalized_option(key); end
   def options; end
   def to_exception; end
   def to_s; end
