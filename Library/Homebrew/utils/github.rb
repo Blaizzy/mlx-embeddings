@@ -506,14 +506,16 @@ module GitHub
     nil
   end
 
+  def self.pull_request_title_regex(name, version = nil)
+    return /(^|\s)#{Regexp.quote(name)}(:|,|\s|$)/i.freeze if version.blank?
+
+    /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i.freeze
+  end
+
   def self.fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
-    if version.present?
-      query = "#{name} #{version} is:pr"
-      regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i
-    else
-      query = "#{name} is:pr"
-      regex = /(^|\s)#{Regexp.quote(name)}(:|,|\s|$)/i
-    end
+    regex = pull_request_title_regex(name, version)
+    query = "is:pr #{name} #{version}".strip
+
     issues_for_formula(query, tap_remote_repo: tap_remote_repo, state: state).select do |pr|
       pr["html_url"].include?("/pull/") && regex.match?(pr["title"])
     end
@@ -522,8 +524,42 @@ module GitHub
     []
   end
 
+  # WARNING: The GitHub API returns results in a slightly different form here compared to `fetch_pull_requests`.
+  def self.fetch_open_pull_requests(name, tap_remote_repo, version: nil)
+    return [] if tap_remote_repo.blank?
+
+    # Bust the cache every three minutes.
+    cache_expiry = 3 * 60
+    cache_epoch = Time.now - (Time.now.to_i % cache_expiry)
+    cache_key = "#{tap_remote_repo}_#{cache_epoch.to_i}"
+
+    @open_pull_requests ||= {}
+    @open_pull_requests[cache_key] ||= begin
+      owner, repo = tap_remote_repo.split("/")
+      endpoint = "repos/#{owner}/#{repo}/pulls"
+      query_parameters = ["state=open", "direction=desc"]
+      pull_requests = []
+
+      API.paginate_rest("#{API_URL}/#{endpoint}", additional_query_params: query_parameters.join("&")) do |page|
+        pull_requests.concat(page)
+      end
+
+      pull_requests
+    end
+
+    regex = pull_request_title_regex(name, version)
+    @open_pull_requests[cache_key].select { |pr| regex.match?(pr["title"]) }
+  end
+
   def self.check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, args:, version: nil)
-    pull_requests = fetch_pull_requests(name, tap_remote_repo, state: state, version: version).select do |pr|
+    # `fetch_open_pull_requests` is more reliable but *really* slow, so let's use it only in CI.
+    pull_requests = if state == "open" && ENV["CI"].present?
+      fetch_open_pull_requests(name, tap_remote_repo, version: version)
+    else
+      fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
+    end
+
+    pull_requests.select! do |pr|
       get_pull_request_changed_files(
         tap_remote_repo, pr["number"]
       ).any? { |f| f["filename"] == file }
