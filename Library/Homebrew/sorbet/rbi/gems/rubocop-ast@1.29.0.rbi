@@ -531,6 +531,7 @@ module RuboCop::AST::MethodDispatchNode
   def non_bare_access_modifier_declaration?(param0 = T.unsafe(nil)); end
   def receiver; end
   def safe_navigation?; end
+  def selector; end
   def self_receiver?; end
   def setter_method?; end
   def special_modifier?; end
