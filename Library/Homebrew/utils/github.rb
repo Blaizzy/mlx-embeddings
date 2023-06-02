@@ -524,7 +524,7 @@ module GitHub
     []
   end
 
-  # WARNING: This returns results in a slightly different form from `fetch_pull_requests`.
+  # WARNING: The GitHub API returns results in a slightly different form here compared to `fetch_pull_requests`.
   def self.fetch_open_pull_requests(name, tap_remote_repo, version: nil)
     return [] if tap_remote_repo.blank?
 
