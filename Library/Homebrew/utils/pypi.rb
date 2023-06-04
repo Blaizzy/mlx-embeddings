@@ -19,6 +19,7 @@ module PyPI
     sig { params(package_string: String, is_url: T::Boolean).void }
     def initialize(package_string, is_url: false)
       @pypi_info = nil
+      @from_pypi = true
 
       if is_url
         if package_string.start_with?(PYTHONHOSTED_URL_PREFIX)
