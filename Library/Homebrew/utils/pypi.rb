@@ -8,8 +8,10 @@ module PyPI
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
   private_constant :PYTHONHOSTED_URL_PREFIX
 
-  # PyPI Package
-  #
+
+  # Represents a Python package.
+  # This package can be a PyPI package (either by name/version or PyPI distribution URL),
+  # or it can be a non-PyPI URL.
   # @api private
   class Package
     attr_accessor :name, :extras, :version
@@ -49,6 +51,7 @@ module PyPI
           metadata = JSON.parse(pip_output)["install"].first["metadata"]
           @name = PyPI.normalize_python_package metadata["name"]
           @version = metadata["version"]
+          @from_pypi = false
         end
 
         return
@@ -100,6 +103,7 @@ module PyPI
 
     sig { returns(T::Boolean) }
     def valid_pypi_package?
+      return false unless @from_pypi
       info = pypi_info
       info.present? && info.is_a?(Array)
     end
