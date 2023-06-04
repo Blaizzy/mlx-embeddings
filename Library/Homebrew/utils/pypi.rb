@@ -30,6 +30,9 @@ module PyPI
           # The URL might be a source distribution hosted somewhere;
           # try and use `pip install -q --no-deps --dry-run --report ...` to get its
           # name and version.
+          # Note that this is different from the (similar) `pip install --report` we
+          # do below, in that it uses `--no-deps` because we only care about resolving
+          # this specific URL's project metadata.
           command =
             [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps",
              "--dry-run", "--ignore-installed", "--report", "/dev/stdout", package_string]
