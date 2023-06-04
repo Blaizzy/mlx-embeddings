@@ -19,13 +19,34 @@ module PyPI
       @pypi_info = nil
 
       if is_url
-        match = if package_string.start_with?(PYTHONHOSTED_URL_PREFIX)
-          File.basename(package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
-        end
-        raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
+        if package_string.start_with?(PYTHONHOSTED_URL_PREFIX)
+          match = File.basename(package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
 
-        @name = PyPI.normalize_python_package(match[1])
-        @version = match[2]
+          raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
+
+          @name = PyPI.normalize_python_package(match[1])
+          @version = match[2]
+        else
+          # The URL might be a source distribution hosted somewhere;
+          # try and use `pip install -q --no-deps --dry-run --report ...` to get its
+          # name and version.
+          command =
+            [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps", "--dry-run", "--ignore-installed", "--report",
+             "/dev/stdout", package_string]
+          pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
+          unless $CHILD_STATUS.success?
+            raise ArgumentError, <<~EOS
+              Unable to determine dependencies for "#{package_string}" because of a failure when running
+              `#{command.join(" ")}`.
+              Please update the resources for "#{formula.name}" manually.
+            EOS
+          end
+
+          metadata = JSON.parse(pip_output)["install"].first["metadata"]
+          @name = PyPI.normalize_python_package metadata["name"]
+          @version = metadata["version"]
+        end
+
         return
       end
 
