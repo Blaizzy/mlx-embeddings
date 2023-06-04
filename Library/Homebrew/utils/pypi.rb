@@ -31,8 +31,8 @@ module PyPI
           # try and use `pip install -q --no-deps --dry-run --report ...` to get its
           # name and version.
           command =
-            [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps", "--dry-run", "--ignore-installed", "--report",
-             "/dev/stdout", package_string]
+            [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps",
+             "--dry-run", "--ignore-installed", "--report", "/dev/stdout", package_string]
           pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
           unless $CHILD_STATUS.success?
             raise ArgumentError, <<~EOS
