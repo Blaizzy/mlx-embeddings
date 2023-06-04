@@ -27,6 +27,8 @@ module PyPI
           @name = PyPI.normalize_python_package(match[1])
           @version = match[2]
         else
+          ensure_formula_installed!("python")
+
           # The URL might be a source distribution hosted somewhere;
           # try and use `pip install -q --no-deps --dry-run --report ...` to get its
           # name and version.
@@ -64,7 +66,9 @@ module PyPI
       @extras = T.must(match[2]).split ","
     end
 
-    # Get name, URL, SHA-256 checksum, and latest version for a given PyPI package.
+    # Get name, URL, SHA-256 checksum, and latest version for a given package.
+    # This only works for packages from PyPI or from a PyPI URL; packages
+    # derived from non-PyPI URLs will produce `nil` here.
     sig { params(version: T.nilable(T.any(String, Version))).returns(T.nilable(T::Array[String])) }
     def pypi_info(version: nil)
       return @pypi_info if @pypi_info.present? && version.blank?
