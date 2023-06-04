@@ -41,7 +41,6 @@ module PyPI
             raise ArgumentError, <<~EOS
               Unable to determine dependencies for "#{package_string}" because of a failure when running
               `#{command.join(" ")}`.
-              Please update the resources for "#{formula.name}" manually.
             EOS
           end
 
