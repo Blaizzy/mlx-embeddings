@@ -217,7 +217,7 @@ module Cask
           File.write(test_file, "")
           test_file.delete
           return true
-        rescue Errno::EACCES
+        rescue Errno::EACCES, Errno::EPERM
           # Using error handler below
         end
       else
