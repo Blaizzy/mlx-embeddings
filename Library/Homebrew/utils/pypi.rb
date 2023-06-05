@@ -31,7 +31,7 @@ module PyPI
       @extras ||= basic_metadata[1]
     end
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     def version
       @version ||= basic_metadata[2]
     end
