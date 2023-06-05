@@ -23,17 +23,20 @@ module PyPI
 
     sig { returns(String) }
     def name
-      @name ||= basic_metadata[0]
+      basic_metadata if @name.blank?
+      @name
     end
 
     sig { returns(T::Array[T.nilable(String)]) }
     def extras
-      @extras ||= basic_metadata[1]
+      basic_metadata if @extras.blank?
+      @extras
     end
 
     sig { returns(T.nilable(String)) }
     def version
-      @version ||= basic_metadata[2]
+      basic_metadata if @version.blank?
+      @version
     end
 
     sig { params(new_version: String).void }
@@ -120,11 +123,13 @@ module PyPI
 
     # Returns [name, [extras], version] for this package.
     def basic_metadata
-      @basic_metadata ||= if @is_pypi_url
+      if @is_pypi_url
         match = File.basename(@package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
         raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
 
-        [PyPI.normalize_python_package(match[1]), [], match[2]]
+        @name = PyPI.normalize_python_package match[1]
+        @extras = []
+        @version = match[2]
       elsif @is_url
         ensure_formula_installed!("python")
 
@@ -146,7 +151,10 @@ module PyPI
         end
 
         metadata = JSON.parse(pip_output)["install"].first["metadata"]
-        [PyPI.normalize_python_package(metadata["name"]), [], metadata["version"]]
+
+        @name = PyPI.normalize_python_package metadata["name"]
+        @extras = []
+        @version = metadata["version"]
       else
         if @package_string.include? "=="
           name, version = @package_string.split("==")
@@ -158,11 +166,13 @@ module PyPI
         if (match = T.must(name).match(/^(.*?)\[(.+)\]$/))
           name = match[1]
           extras = T.must(match[2]).split ","
-
-          [PyPI.normalize_python_package(name), extras, version]
         else
-          [PyPI.normalize_python_package(name), [], version]
+          extras = []
         end
+
+        @name = PyPI.normalize_python_package name
+        @extras = extras
+        @version = version
       end
     end
   end
