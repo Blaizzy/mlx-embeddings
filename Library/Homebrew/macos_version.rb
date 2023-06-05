@@ -21,6 +21,7 @@ class MacOSVersion < Version
   # NOTE: When removing symbols here, ensure that they are added
   #       to `DEPRECATED_MACOS_VERSIONS` in `MacOSRequirement`.
   SYMBOLS = {
+    sonoma:      "14",
     ventura:     "13",
     monterey:    "12",
     big_sur:     "11",
