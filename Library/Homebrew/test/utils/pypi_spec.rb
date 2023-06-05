@@ -99,7 +99,7 @@ describe PyPI do
       it "fails for non-PYPI package URLs" do
         package = described_class.new(non_pypi_package_url, is_url: true)
 
-        expect {package.version = "1.2.3" }.to raise_error(ArgumentError)
+        expect { package.version = "1.2.3" }.to raise_error(ArgumentError)
       end
     end
 
