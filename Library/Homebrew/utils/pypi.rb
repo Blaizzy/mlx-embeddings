@@ -8,80 +8,59 @@ module PyPI
   PYTHONHOSTED_URL_PREFIX = "https://files.pythonhosted.org/packages/"
   private_constant :PYTHONHOSTED_URL_PREFIX
 
-
   # Represents a Python package.
   # This package can be a PyPI package (either by name/version or PyPI distribution URL),
   # or it can be a non-PyPI URL.
   # @api private
   class Package
-    attr_accessor :name, :extras, :version
-
     sig { params(package_string: String, is_url: T::Boolean).void }
     def initialize(package_string, is_url: false)
       @pypi_info = nil
-      @from_pypi = true
+      @package_string = package_string
+      @is_url = is_url
+      @is_pypi_url = package_string.start_with? PYTHONHOSTED_URL_PREFIX
+    end
 
-      if is_url
-        if package_string.start_with?(PYTHONHOSTED_URL_PREFIX)
-          match = File.basename(package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
+    sig { returns(String) }
+    def name
+      @name ||= basic_metadata[0]
+    end
 
-          raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
+    sig { returns(T::Array[T.nilable(String)]) }
+    def extras
+      @extras ||= basic_metadata[1]
+    end
 
-          @name = PyPI.normalize_python_package(match[1])
-          @version = match[2]
-        else
-          ensure_formula_installed!("python")
+    sig { returns(String) }
+    def version
+      @version ||= basic_metadata[2]
+    end
 
-          # The URL might be a source distribution hosted somewhere;
-          # try and use `pip install -q --no-deps --dry-run --report ...` to get its
-          # name and version.
-          # Note that this is different from the (similar) `pip install --report` we
-          # do below, in that it uses `--no-deps` because we only care about resolving
-          # this specific URL's project metadata.
-          command =
-            [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps",
-             "--dry-run", "--ignore-installed", "--report", "/dev/stdout", package_string]
-          pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
-          unless $CHILD_STATUS.success?
-            raise ArgumentError, <<~EOS
-              Unable to determine dependencies for "#{package_string}" because of a failure when running
-              `#{command.join(" ")}`.
-            EOS
-          end
+    sig { params(new_version: String).void }
+    def version=(new_version)
+      raise ArgumentError, "can't update version for non-PyPI packages" unless valid_pypi_package?
 
-          metadata = JSON.parse(pip_output)["install"].first["metadata"]
-          @name = PyPI.normalize_python_package metadata["name"]
-          @version = metadata["version"]
-          @from_pypi = false
-        end
+      @version = new_version
+    end
 
-        return
-      end
-
-      if package_string.include? "=="
-        @name, @version = package_string.split("==")
-      else
-        @name = package_string
-      end
-
-      return unless (match = T.must(@name).match(/^(.*?)\[(.+)\]$/))
-
-      @name = match[1]
-      @extras = T.must(match[2]).split ","
+    sig { returns(T::Boolean) }
+    def valid_pypi_package?
+      @is_pypi_url || !@is_url
     end
 
     # Get name, URL, SHA-256 checksum, and latest version for a given package.
     # This only works for packages from PyPI or from a PyPI URL; packages
     # derived from non-PyPI URLs will produce `nil` here.
-    sig { params(version: T.nilable(T.any(String, Version))).returns(T.nilable(T::Array[String])) }
-    def pypi_info(version: nil)
-      return @pypi_info if @pypi_info.present? && version.blank?
+    sig { params(new_version: T.nilable(T.any(String, Version))).returns(T.nilable(T::Array[String])) }
+    def pypi_info(new_version: nil)
+      return unless valid_pypi_package?
+      return @pypi_info if @pypi_info.present? && new_version.blank?
 
-      version ||= @version
-      metadata_url = if version.present?
-        "https://pypi.org/pypi/#{@name}/#{version}/json"
+      new_version ||= version
+      metadata_url = if new_version.present?
+        "https://pypi.org/pypi/#{name}/#{new_version}/json"
       else
-        "https://pypi.org/pypi/#{@name}/json"
+        "https://pypi.org/pypi/#{name}/json"
       end
       out, _, status = curl_output metadata_url, "--location", "--fail"
 
@@ -102,24 +81,22 @@ module PyPI
       ]
     end
 
-    sig { returns(T::Boolean) }
-    def valid_pypi_package?
-      return false unless @from_pypi
-      info = pypi_info
-      info.present? && info.is_a?(Array)
-    end
-
     sig { returns(String) }
     def to_s
-      out = @name
-      out += "[#{@extras.join(",")}]" if @extras.present?
-      out += "==#{@version}" if @version.present?
-      out
+      if valid_pypi_package?
+        out = name
+        out += "[#{extras.join(",")}]" if extras.present?
+        out += "==#{version}" if version.present?
+        out
+      else
+        @package_string
+      end
     end
 
     sig { params(other: Package).returns(T::Boolean) }
     def same_package?(other)
-      T.must(@name.tr("_", "-").casecmp(other.name.tr("_", "-"))).zero?
+      # These names are pre-normalized, so we can compare them directly.
+      name == other.name
     end
 
     # Compare only names so we can use .include? and .uniq on a Package array
@@ -131,12 +108,62 @@ module PyPI
 
     sig { returns(Integer) }
     def hash
-      @name.tr("_", "-").downcase.hash
+      name.hash
     end
 
     sig { params(other: Package).returns(T.nilable(Integer)) }
     def <=>(other)
-      @name <=> other.name
+      name <=> other.name
+    end
+
+    private
+
+    # Returns [name, [extras], version] for this package.
+    def basic_metadata
+      @basic_metadata ||= if @is_pypi_url
+        match = File.basename(@package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
+        raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
+
+        [PyPI.normalize_python_package(match[1]), [], match[2]]
+      elsif @is_url
+        ensure_formula_installed!("python")
+
+        # The URL might be a source distribution hosted somewhere;
+        # try and use `pip install -q --no-deps --dry-run --report ...` to get its
+        # name and version.
+        # Note that this is different from the (similar) `pip install --report` we
+        # do below, in that it uses `--no-deps` because we only care about resolving
+        # this specific URL's project metadata.
+        command =
+          [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps",
+           "--dry-run", "--ignore-installed", "--report", "/dev/stdout", @package_string]
+        pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
+        unless $CHILD_STATUS.success?
+          raise ArgumentError, <<~EOS
+            Unable to determine metadata for "#{@package_string}" because of a failure when running
+            `#{command.join(" ")}`.
+          EOS
+        end
+
+        metadata = JSON.parse(pip_output)["install"].first["metadata"]
+        [PyPI.normalize_python_package(metadata["name"]), [], metadata["version"]]
+      else
+        if @package_string.include? "=="
+          name, version = @package_string.split("==")
+        else
+          name = @package_string
+          version = nil
+        end
+
+        if (match = T.must(name).match(/^(.*?)\[(.+)\]$/))
+          name = match[1]
+          extras = T.must(match[2]).split ","
+
+          [PyPI.normalize_python_package(name), extras, version]
+        else
+          [PyPI.normalize_python_package(name), [], version]
+        end
+      end
     end
   end
 
@@ -146,7 +173,7 @@ module PyPI
 
     return unless package.valid_pypi_package?
 
-    _, url = package.pypi_info(version: version)
+    _, url = package.pypi_info(new_version: version)
     url
   rescue ArgumentError
     nil
@@ -191,29 +218,16 @@ module PyPI
     main_package = if package_name.present?
       Package.new(package_name)
     else
-      begin
-        Package.new(formula.stable.url, is_url: true)
-      rescue ArgumentError
-        nil
+      Package.new(formula.stable.url, is_url: true)
+    end
+
+    if version.present?
+      if main_package.valid_pypi_package?
+        main_package.version = version
+      else
+        odie "The main package is not a PyPI package. Please update its URL manually."
       end
     end
-
-    if main_package.blank?
-      return if ignore_non_pypi_packages
-
-      odie <<~EOS
-        Could not infer PyPI package name from URL:
-          #{Formatter.url(formula.stable.url)}
-      EOS
-    end
-
-    unless main_package.valid_pypi_package?
-      return if ignore_non_pypi_packages
-
-      odie "\"#{main_package}\" is not available on PyPI."
-    end
-
-    main_package.version = version if version.present?
 
     extra_packages = (extra_packages || []).map { |p| Package.new p }
     exclude_packages = (exclude_packages || []).map { |p| Package.new p }
