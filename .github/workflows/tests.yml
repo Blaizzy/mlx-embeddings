@@ -180,7 +180,7 @@ jobs:
 
       - name: Set up Homebrew all cask taps
         run: |
-          brew tap homebrew/cask
+          brew tap homebrew/cask && brew update-reset "$(brew --repo homebrew/cask)"
           brew tap homebrew/cask-drivers
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
