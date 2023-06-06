@@ -45,13 +45,13 @@ module DependenciesHelpers
         klass.prune if ignores.include?("recommended?") || dependent.build.without?(dep)
       elsif dep.optional?
         klass.prune if includes.exclude?("optional?") && !dependent.build.with?(dep)
-      elsif dep.satisfied?
-        klass.prune if ignores.include?("satisfied?")
       elsif dep.build? || dep.test?
         keep = false
         keep ||= dep.test? && includes.include?("test?") && dependent == root_dependent
         keep ||= dep.build? && includes.include?("build?")
         klass.prune unless keep
+      elsif dep.satisfied?
+        klass.prune if ignores.include?("satisfied?")
       end
 
       # If a tap isn't installed, we can't find the dependencies of one of
