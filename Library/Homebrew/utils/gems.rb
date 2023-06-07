@@ -134,13 +134,19 @@ module Homebrew
   end
 
   def install_bundler!
+    old_bundler_version = ENV.fetch("BUNDLER_VERSION", nil)
+
     setup_gem_environment!
+
+    ENV["BUNDLER_VERSION"] = HOMEBREW_BUNDLER_VERSION # Set so it correctly finds existing installs
     install_gem_setup_path!(
       "bundler",
       version:               HOMEBREW_BUNDLER_VERSION,
       executable:            "bundle",
       setup_gem_environment: false,
     )
+  ensure
+    ENV["BUNDLER_VERSION"] = old_bundler_version
   end
 
   def install_bundler_gems!(only_warn_on_failure: false, setup_path: true, groups: [])
