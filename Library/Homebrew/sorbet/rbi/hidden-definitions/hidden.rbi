@@ -3824,6 +3824,8 @@ class Formula
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
 
+  def on_sonoma(or_condition=T.unsafe(nil), &block); end
+
   def on_system(linux, macos:, &block); end
 
   def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
@@ -3853,6 +3855,8 @@ class Formula
   def self.on_monterey(or_condition=T.unsafe(nil), &block); end
 
   def self.on_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def self.on_sonoma(or_condition=T.unsafe(nil), &block); end
 
   def self.on_system(linux, macos:, &block); end
 
@@ -4267,6 +4271,8 @@ class Homebrew::Service
   def on_monterey(or_condition=T.unsafe(nil), &block); end
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_sonoma(or_condition=T.unsafe(nil), &block); end
 
   def on_system(linux, macos:, &block); end
 
@@ -5398,6 +5404,8 @@ class PourBottleCheck
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
 
+  def on_sonoma(or_condition=T.unsafe(nil), &block); end
+
   def on_system(linux, macos:, &block); end
 
   def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
@@ -5723,6 +5731,8 @@ class Resource
   def on_monterey(or_condition=T.unsafe(nil), &block); end
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_sonoma(or_condition=T.unsafe(nil), &block); end
 
   def on_system(linux, macos:, &block); end
 
@@ -6332,7 +6342,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_DEPENDS_ON_USES_FROM_MACOS = ::T.let(nil, ::T.untyped)
   SET_INCLUDE_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET_MAC_LINUX = ::T.let(nil, ::T.untyped)
-  SET_ON_ARM_ON_INTEL_ON_VENTURA_ETC = ::T.let(nil, ::T.untyped)
+  SET_ON_ARM_ON_INTEL_ON_SONOMA_ETC = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
@@ -6410,6 +6420,8 @@ class RuboCop::Cask::AST::Stanza
   def on_monterey?(); end
 
   def on_sierra?(); end
+
+  def on_sonoma?(); end
 
   def on_ventura?(); end
 
@@ -7913,6 +7925,8 @@ class SoftwareSpec
   def on_monterey(or_condition=T.unsafe(nil), &block); end
 
   def on_sierra(or_condition=T.unsafe(nil), &block); end
+
+  def on_sonoma(or_condition=T.unsafe(nil), &block); end
 
   def on_system(linux, macos:, &block); end
 
