@@ -91,7 +91,6 @@ jobs:
           brew tap homebrew/autoupdate
           brew tap homebrew/bundle
           brew tap homebrew/cask
-          brew tap homebrew/cask-drivers
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
           brew tap homebrew/command-not-found
@@ -118,7 +117,6 @@ jobs:
       - name: Run brew style on cask taps
         run: |
           brew style homebrew/cask \
-                     homebrew/cask-drivers \
                      homebrew/cask-fonts \
                      homebrew/cask-versions
 
@@ -181,17 +179,15 @@ jobs:
       - name: Set up Homebrew all cask taps
         run: |
           brew tap homebrew/cask && brew update-reset "$(brew --repo homebrew/cask)"
-          brew tap homebrew/cask-drivers
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
 
       - name: Run brew readall on all casks
-        run: brew readall --os=all --arch=all homebrew/cask homebrew/cask-drivers homebrew/cask-fonts homebrew/cask-versions
+        run: brew readall --os=all --arch=all homebrew/cask homebrew/cask-fonts homebrew/cask-versions
 
       - name: Run brew audit --skip-style on casks
         run: |
           brew audit --skip-style --except=version --tap=homebrew/cask
-          brew audit --skip-style --except=version --tap=homebrew/cask-drivers
           brew audit --skip-style --except=version --tap=homebrew/cask-fonts
           brew audit --skip-style --except=version --tap=homebrew/cask-versions
 
