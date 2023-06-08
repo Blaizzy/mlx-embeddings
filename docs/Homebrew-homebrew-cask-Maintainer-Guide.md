@@ -2,10 +2,9 @@
 
 This guide is intended to help maintainers effectively maintain the cask repositories. It is meant to be used in conjunction with the more generic [Maintainer Guidelines](Maintainer-Guidelines.md).
 
-This guide applies to all four of the cask repositories:
+This guide applies to all three of the cask repositories:
 
 - [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-cask): The main cask repository
-- [Homebrew/homebrew-cask-drivers](https://github.com/Homebrew/homebrew-cask-drivers): Casks of drivers
 - [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts): Casks of fonts
 - [Homebrew/homebrew-cask-versions](https://github.com/Homebrew/homebrew-cask-versions): Alternate versions of casks
 

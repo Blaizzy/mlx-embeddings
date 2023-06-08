@@ -21,7 +21,6 @@ We maintain separate taps for different types of binaries. Our nomenclature is:
 * **Vendorless**: A binary distributed via means other than an official website, like a forum posting.
 * **Walled**: When the download URL is both behind a login/registration form and from a host that differs from the homepage.
 * **Font**: Data file containing a set of glyphs, characters, or symbols, that changes typed text.
-* **Driver**: Software to make a hardware peripheral recognisable and usable by the system. If the software is useless without the peripheral, it’s considered a driver.
 
 ### Stable versions
 
@@ -59,10 +58,6 @@ We do not accept these casks since they involve a higher-than-normal security ri
 ### Fonts
 
 Font casks live in the [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) repository. See the fonts repo [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md) for details.
-
-### Drivers
-
-Driver casks live in the [Homebrew/homebrew-cask-drivers](https://github.com/Homebrew/homebrew-cask-drivers) repository. See the drivers repo [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-drivers/blob/master/CONTRIBUTING.md) for details.
 
 ## Apps that bundle malware
 
