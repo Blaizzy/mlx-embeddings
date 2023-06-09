@@ -349,7 +349,7 @@ module Homebrew
       # TODO: Remove this when OpenSSL migration is complete.
       ignore_openssl_conflict = if (github_event_path = ENV.fetch("GITHUB_EVENT_PATH", nil)).present?
         event_payload = JSON.parse(File.read(github_event_path))
-        head_info = event_payload.dig("pull_request", "head")
+        head_info = event_payload.dig("pull_request", "head").to_h # handle `nil`
 
         # We need to read the head ref from `GITHUB_EVENT_PATH` because
         # `git branch --show-current` returns `master` on PR branches.
