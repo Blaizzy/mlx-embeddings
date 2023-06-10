@@ -835,9 +835,11 @@ class GitDownloadStrategy < VCSDownloadStrategy
     # constructor calls `cache_tag` and sets the cache path.
     @only_path = meta[:only_path]
 
-    # "Cone" mode of sparse checkout requires patterns to be directories
-    @only_path = "/#{@only_path}" unless @only_path.start_with?("/")
-    @only_path = "#{@only_path}/" unless @only_path.end_with?("/")
+    if @only_path.present?
+      # "Cone" mode of sparse checkout requires patterns to be directories
+      @only_path = "/#{@only_path}" unless @only_path.start_with?("/")
+      @only_path = "#{@only_path}/" unless @only_path.end_with?("/")
+    end
 
     super
     @ref_type ||= :branch
