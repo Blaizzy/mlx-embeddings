@@ -1075,9 +1075,17 @@ class GitDownloadStrategy < VCSDownloadStrategy
     command! "git",
              args:  ["config", "core.sparseCheckout", "true"],
              chdir: cached_location
+    command! "git",
+             args:  ["config", "core.sparseCheckoutCone", "true"],
+             chdir: cached_location
 
     (git_dir/"info").mkpath
-    (git_dir/"info"/"sparse-checkout").atomic_write("#{@only_path}\n")
+
+    # "Cone" mode of sparse checkout requires patterns to be directories
+    path = @only_path
+    path = "/#{path}" unless path.start_with?("/")
+    path = "#{path}/" unless path.end_with?("/")
+    (git_dir/"info"/"sparse-checkout").atomic_write("#{path}\n")
   end
 end
 
