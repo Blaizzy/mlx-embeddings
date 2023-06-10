@@ -835,6 +835,12 @@ class GitDownloadStrategy < VCSDownloadStrategy
     # constructor calls `cache_tag` and sets the cache path.
     @only_path = meta[:only_path]
 
+    if @only_path.present?
+      # "Cone" mode of sparse checkout requires patterns to be directories
+      @only_path = "/#{@only_path}" unless @only_path.start_with?("/")
+      @only_path = "#{@only_path}/" unless @only_path.end_with?("/")
+    end
+
     super
     @ref_type ||= :branch
     @ref ||= "master"
@@ -1075,9 +1081,12 @@ class GitDownloadStrategy < VCSDownloadStrategy
     command! "git",
              args:  ["config", "core.sparseCheckout", "true"],
              chdir: cached_location
+    command! "git",
+             args:  ["config", "core.sparseCheckoutCone", "true"],
+             chdir: cached_location
 
     (git_dir/"info").mkpath
-    (git_dir/"info"/"sparse-checkout").atomic_write("#{@only_path}\n")
+    (git_dir/"info/sparse-checkout").atomic_write("#{@only_path}\n")
   end
 end
 
