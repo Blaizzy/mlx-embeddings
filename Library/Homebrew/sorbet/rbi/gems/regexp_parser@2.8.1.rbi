@@ -1213,6 +1213,7 @@ Regexp::Syntax::Token::UnicodeProperty::Derived_V2_4_0 = T.let(T.unsafe(nil), Ar
 Regexp::Syntax::Token::UnicodeProperty::Derived_V2_5_0 = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::UnicodeProperty::Emoji = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::UnicodeProperty::Emoji_V2_5_0 = T.let(T.unsafe(nil), Array)
+Regexp::Syntax::Token::UnicodeProperty::Emoji_V2_6_0 = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::UnicodeProperty::NonType = T.let(T.unsafe(nil), Symbol)
 Regexp::Syntax::Token::UnicodeProperty::POSIX = T.let(T.unsafe(nil), Array)
 Regexp::Syntax::Token::UnicodeProperty::Script = T.let(T.unsafe(nil), Array)
