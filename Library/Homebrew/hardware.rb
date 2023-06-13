@@ -214,6 +214,18 @@ module Hardware
       end
     end
     alias generic_oldest_cpu oldest_cpu
+
+    # Returns a _full_ rustflag to set target cpu, if necessary;
+    # Falls back to empty string
+    # This mirrors the logic of `oldest_cpu`,
+    # But only where it is version dependent.
+    # Rust already defaults to the oldest supported cpu for the target-triple
+    # Including apple-m1 since 1.71.
+    sig { params(_version: T.nilable(Version)).returns(String) } # FIXME: Version, String or Symbol?
+    def rustflags_target_cpu(_version = nil)
+      ""
+    end
+    alias generic_rustflags_target_cpu rustflags_target_cpu
   end
 end
 
