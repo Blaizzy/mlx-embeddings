@@ -1543,7 +1543,11 @@ class Formula
   # Standard parameters for cargo builds.
   sig { params(root: T.any(String, Pathname), path: String).returns(T::Array[T.any(String, Pathname)]) }
   def std_cargo_args(root: prefix, path: ".")
-    ["--locked", "--root", root, "--path", path]
+    ["--locked", "--root", root, "--path", path,
+     "--config", "target.x86_64-apple-darwin.rustflags=['-Ctarget-cpu=nehalem']",
+     "--config", "target.aarch64-apple-darwin.rustflags=['-Ctarget-cpu=apple-m1']",
+    # Default target-cpu is apple-m1 since Rust 1.71.0
+     ]
   end
 
   # Standard parameters for CMake builds.
