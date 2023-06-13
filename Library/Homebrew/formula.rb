@@ -1544,7 +1544,7 @@ class Formula
   sig { params(root: T.any(String, Pathname), path: String).returns(T::Array[T.any(String, Pathname)]) }
   def std_cargo_args(root: prefix, path: ".")
     ["--locked", "--root", root, "--path", path, "--config",
-     "build.rustflags=['#{Hardware.rustflags_target_cpu}']"]
+     "build.rustflags=[#{Hardware.rustflags_target_cpu}]"]
   end
 
   # Standard parameters for CMake builds.

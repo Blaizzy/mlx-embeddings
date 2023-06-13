@@ -35,7 +35,7 @@ module Hardware
       MacOS.version
     end
     if Hardware::CPU.intel? && version >= :mojave
-      "-Ctarget-cpu=nehalem"
+      "'-Ctarget-cpu=nehalem'"
     else
       generic_rustflags_target_cpu
     end
