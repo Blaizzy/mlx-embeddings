@@ -221,7 +221,7 @@ module Hardware
     # But only where it is version dependent.
     # Rust already defaults to the oldest supported cpu for the target-triple
     # Including apple-m1 since 1.71.
-    sig { params(_version: T.nilable(Version)).returns(String) } # FIXME: Version, String or Symbol?
+    sig { params(_version: T.nilable(Version)).returns(String) }
     def rustflags_target_cpu(_version = nil)
       ""
     end

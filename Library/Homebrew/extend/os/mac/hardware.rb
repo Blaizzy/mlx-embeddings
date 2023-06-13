@@ -27,7 +27,7 @@ module Hardware
 
   # Override
   # Mirrors version-dependent logic of oldest_cpu
-  sig { params(version: T.nilable(Version)).returns(String) } # FIXME: Version, String or Symbol?
+  sig { params(version: T.nilable(Version)).returns(String) }
   def self.rustflags_target_cpu(version = nil)
     version = if version
       MacOSVersion.new(version.to_s)
