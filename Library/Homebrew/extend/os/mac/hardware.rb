@@ -34,6 +34,7 @@ module Hardware
     else
       MacOS.version
     end
+
     if Hardware::CPU.intel? && version >= :mojave
       "'-Ctarget-cpu=nehalem'"
     else
