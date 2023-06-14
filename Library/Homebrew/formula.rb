@@ -1543,8 +1543,7 @@ class Formula
   # Standard parameters for cargo builds.
   sig { params(root: T.any(String, Pathname), path: String).returns(T::Array[T.any(String, Pathname)]) }
   def std_cargo_args(root: prefix, path: ".")
-    ["--locked", "--root", root, "--path", path, "--config",
-     "build.rustflags=[#{Hardware.rustflags_target_cpu}]"]
+    ["--locked", "--root", root, "--path", path]
   end
 
   # Standard parameters for CMake builds.
