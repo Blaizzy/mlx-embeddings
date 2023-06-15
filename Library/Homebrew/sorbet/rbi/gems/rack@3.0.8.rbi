@@ -938,11 +938,7 @@ class Rack::Request
 
   def delete_param(k); end
   def params; end
-  def query; end
   def update_param(k, v); end
-  def version_supplied; end
-  def version_supplied=(_arg0); end
-  def xhr?; end
 
   class << self
     def forwarded_priority; end
