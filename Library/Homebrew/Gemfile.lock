@@ -37,7 +37,7 @@ GEM
       regexp_parser (~> 2.0)
       uri_template (~> 0.7)
     method_source (1.0.0)
-    minitest (5.18.0)
+    minitest (5.18.1)
     msgpack (1.7.1)
     mustache (1.1.1)
     parallel (1.23.0)

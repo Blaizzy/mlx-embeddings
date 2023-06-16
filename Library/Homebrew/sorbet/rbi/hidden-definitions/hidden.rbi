@@ -8161,10 +8161,6 @@ module UnpackStrategy
   extend ::T::InterfaceWrapper::Helpers
 end
 
-module Utils::Analytics
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Version::Parser
   def initialize(*args, &blk); end
 end

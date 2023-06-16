@@ -233,6 +233,7 @@ class Minitest::Runnable
     def run_one_method(klass, method_name, reporter); end
     def runnable_methods; end
     def runnables; end
+    def test_order; end
     def with_info_handler(reporter, &block); end
   end
 end
@@ -303,7 +304,6 @@ class Minitest::Test < ::Minitest::Runnable
     def make_my_diffs_pretty!; end
     def parallelize_me!; end
     def runnable_methods; end
-    def test_order; end
   end
 end
 
