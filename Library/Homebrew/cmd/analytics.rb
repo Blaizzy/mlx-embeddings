@@ -30,13 +30,11 @@ module Homebrew
     case args.named.first
     when nil, "state"
       if Utils::Analytics.disabled?
-        puts "Analytics are disabled."
-      elsif Homebrew::EnvConfig.no_google_analytics?
-        puts "InfluxDB analytics are enabled."
-        puts "Google Analytics are disabled."
+        puts "InfluxDB analytics are disabled."
       else
-        puts "Analytics are enabled."
+        puts "InfluxDB analytics are enabled."
       end
+      puts "Google Analytics were destroyed."
     when "on"
       Utils::Analytics.enable!
     when "off"

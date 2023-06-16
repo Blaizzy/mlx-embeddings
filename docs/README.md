@@ -15,7 +15,7 @@
 - [Taps (third-party repositories)](Taps.md)
 - [Interesting Taps and Forks](Interesting-Taps-and-Forks.md)
 - [Tips and Tricks](Tips-N'-Tricks.md)
-- [Anonymous Aggregate User Behaviour Analytics](Analytics.md)
+- [Anonymous Analytics](Analytics.md)
 
 - [Querying `brew`](Querying-Brew.md)
 - [C++ Standard Libraries](C++-Standard-Libraries.md)

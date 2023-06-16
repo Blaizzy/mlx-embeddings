@@ -2048,9 +2048,6 @@ Note that environment variables must have a value set to be detected. For
 example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
-- `HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID`
-  <br>Additional Google Analytics tracking ID to emit user behaviour analytics to. For more information, see: <https://docs.brew.sh/Analytics>
-
 - `HOMEBREW_API_DOMAIN`
   <br>Use this URL as the download mirror for Homebrew JSON API. If metadata files at that URL are temporarily unavailable, the default API domain will be used as a fallback mirror.
 
@@ -2246,7 +2243,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   *Default:* The number of available CPU cores.
 
 - `HOMEBREW_NO_ANALYTICS`
-  <br>If set, do not send analytics. For more information, see: <https://docs.brew.sh/Analytics>
+  <br>If set, do not send analytics. Google Analytics were destroyed. For more information, see: <https://docs.brew.sh/Analytics>
 
 - `HOMEBREW_NO_AUTO_UPDATE`
   <br>If set, do not automatically update before running some commands, e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, run this less often by setting `HOMEBREW_AUTO_UPDATE_SECS` to a value higher than the default.
@@ -2267,9 +2264,6 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 
 - `HOMEBREW_NO_ENV_HINTS`
   <br>If set, do not print any hints about changing Homebrew's behaviour with environment variables.
-
-- `HOMEBREW_NO_GOOGLE_ANALYTICS`
-  <br>If set, do not send analytics to Google Analytics but allow sending to Homebrew's InfluxDB analytics server. For more information, see: <https://docs.brew.sh/Analytics>
 
 - `HOMEBREW_NO_GITHUB_API`
   <br>If set, do not use the GitHub API, e.g. for searches or fetching relevant issues after a failed install.
