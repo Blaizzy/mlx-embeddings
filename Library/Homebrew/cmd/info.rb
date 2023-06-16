@@ -42,6 +42,9 @@ module Homebrew
                           "The value for <category> must be `install`, `install-on-request` or `build-error`; " \
                           "`cask-install` or `os-version` may be specified if <formula> is not. " \
                           "The default is `install`."
+      switch "--github-packages-downloads",
+             description: "Scrape GitHub Packages download counts from HTML for a core formula.",
+             hidden:      true
       switch "--github",
              description: "Open the GitHub source page for <formula> and <cask> in a browser. " \
                           "To view the history locally: `brew log -p` <formula> or <cask>"

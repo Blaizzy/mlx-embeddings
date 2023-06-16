@@ -182,7 +182,7 @@ options: options)
         table_output(category, days, results, os_version: os_version, cask_install: cask_install)
       end
 
-      def get_analytics(json, args:)
+      def output_analytics(json, args:)
         full_analytics = args.analytics? || verbose?
 
         ohai "Analytics"
@@ -207,13 +207,58 @@ options: options)
         end
       end
 
+      # This method is undocumented because it is not intended for general use.
+      # It relies on screen scraping some GitHub HTML that's not available as an API.
+      # This seems very likely to break in the future.
+      # That said, it's the only way to get the data we want right now.
+      def output_github_packages_downloads(formula, args:)
+        return unless args.github_packages_downloads?
+        return unless formula.core_formula?
+
+        escaped_formula_name = GitHubPackages.image_formula_name(formula.name)
+        formula_url_suffix = "container/core%2F#{escaped_formula_name}/"
+        formula_url = "https://github.com/Homebrew/homebrew-core/pkgs/#{formula_url_suffix}"
+        output = Utils::Curl.curl_output("--fail", formula_url)
+        return unless output.success?
+
+        formula_version_urls = output.stdout
+                                     .scan(%r{/orgs/Homebrew/packages/#{formula_url_suffix}\d+\?tag=[^"]+})
+                                     .map do |url|
+          url.sub("/orgs/Homebrew/packages/", "/Homebrew/homebrew-core/pkgs/")
+        end
+        return if formula_version_urls.empty?
+
+        thirty_day_download_count = 0
+        formula_version_urls.each do |formula_version_url_suffix|
+          formula_version_url = "https://github.com#{formula_version_url_suffix}"
+          output = Utils::Curl.curl_output("--fail", formula_version_url)
+          next unless output.success?
+
+          last_thirty_days_match = output.stdout.match(
+            %r{<span class="[\s\-a-z]*">Last 30 days</span>\s*<span class="[\s\-a-z]*">([\d.M,]+)</span>}m,
+          )
+          next if last_thirty_days_match.blank?
+
+          last_thirty_days_downloads = last_thirty_days_match.captures.first.tr(",", "")
+          thirty_day_download_count += if (millions_match = last_thirty_days_downloads.match(/(\d+\.\d+)M/).presence)
+            millions_match.captures.first.to_i * 1_000_000
+          else
+            last_thirty_days_downloads.to_i
+          end
+        end
+
+        ohai "GitHub Packages Downloads"
+        puts "#{number_readable(thirty_day_download_count)} (30 days)"
+      end
+
       def formula_output(formula, args:)
         return if Homebrew::EnvConfig.no_analytics? || Homebrew::EnvConfig.no_github_api?
 
         json = Homebrew::API::Formula.fetch formula.name
         return if json.blank? || json["analytics"].blank?
 
-        get_analytics(json, args: args)
+        output_analytics(json, args: args)
+        output_github_packages_downloads(formula, args: args)
       rescue ArgumentError
         # Ignore failed API requests
         nil
@@ -225,7 +270,7 @@ options: options)
         json = Homebrew::API::Cask.fetch cask.token
         return if json.blank? || json["analytics"].blank?
 
-        get_analytics(json, args: args)
+        output_analytics(json, args: args)
       rescue ArgumentError
         # Ignore failed API requests
         nil
