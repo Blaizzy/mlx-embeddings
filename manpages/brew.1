@@ -2922,12 +2922,6 @@ Many Homebrew Cask commands accept one or more \fIcask\fR arguments\. These can 
 Note that environment variables must have a value set to be detected\. For example, run \fBexport HOMEBREW_NO_INSECURE_REDIRECT=1\fR rather than just \fBexport HOMEBREW_NO_INSECURE_REDIRECT\fR\.
 .
 .TP
-\fBHOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID\fR
-.
-.br
-Additional Google Analytics tracking ID to emit user behaviour analytics to\. For more information, see: \fIhttps://docs\.brew\.sh/Analytics\fR
-.
-.TP
 \fBHOMEBREW_API_DOMAIN\fR
 .
 .br
@@ -3294,7 +3288,7 @@ Use this value as the number of parallel jobs to run when building with \fBmake\
 \fBHOMEBREW_NO_ANALYTICS\fR
 .
 .br
-If set, do not send analytics\. For more information, see: \fIhttps://docs\.brew\.sh/Analytics\fR
+If set, do not send analytics\. Google Analytics were destroyed\. For more information, see: \fIhttps://docs\.brew\.sh/Analytics\fR
 .
 .TP
 \fBHOMEBREW_NO_AUTO_UPDATE\fR
@@ -3334,12 +3328,6 @@ If set, do not print \fBHOMEBREW_INSTALL_BADGE\fR on a successful build\.
 .
 .br
 If set, do not print any hints about changing Homebrew\'s behaviour with environment variables\.
-.
-.TP
-\fBHOMEBREW_NO_GOOGLE_ANALYTICS\fR
-.
-.br
-If set, do not send analytics to Google Analytics but allow sending to Homebrew\'s InfluxDB analytics server\. For more information, see: \fIhttps://docs\.brew\.sh/Analytics\fR
 .
 .TP
 \fBHOMEBREW_NO_GITHUB_API\fR
