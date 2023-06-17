@@ -41,8 +41,10 @@ module Hardware
       end
       alias generic_optimization_flags optimization_flags
 
+      # Only give values where it is an improvement over rust cpu defaults
+      # Rust already defaults to the oldest supported cpu for each target-triple
+      # Including apple-m1 since Rust 1.71 for aarch64-apple-darwin.
       def rust_optimisation_flags
-        # Only give values where it is an improvement over rust cpu defaults
         @rust_optimisation_flags ||= {
           native:  "-Ctarget-cpu=native",
           nehalem: "-Ctarget-cpu=nehalem",
@@ -224,11 +226,7 @@ module Hardware
     alias generic_oldest_cpu oldest_cpu
 
     # Returns a _full_ rustflag to set target cpu, if necessary;
-    # Falls back to empty string
-    # This mirrors the logic of `oldest_cpu`,
-    # But only where it is version dependent.
-    # Rust already defaults to the oldest supported cpu for the target-triple
-    # Including apple-m1 since 1.71.
+    # Defaults to empty string
     sig { returns(String) }
     def rustflags_target_cpu
       CPU.rust_optimisation_flags.fetch(oldest_cpu, "")
