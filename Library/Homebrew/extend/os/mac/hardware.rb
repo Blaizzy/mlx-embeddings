@@ -24,21 +24,4 @@ module Hardware
       generic_oldest_cpu
     end
   end
-
-  # Override
-  # Mirrors version-dependent logic of oldest_cpu
-  sig { params(version: T.nilable(Version)).returns(String) }
-  def self.rustflags_target_cpu(version = nil)
-    version = if version
-      MacOSVersion.new(version.to_s)
-    else
-      MacOS.version
-    end
-
-    if Hardware::CPU.intel? && version >= :mojave
-      "-Ctarget-cpu=nehalem"
-    else
-      generic_rustflags_target_cpu
-    end
-  end
 end
