@@ -32,7 +32,7 @@ module Homebrew
         self[:remaining] = remaining_args.freeze
       end
 
-      def freeze_named_args!(named_args, cask_options:)
+      def freeze_named_args!(named_args, cask_options:, without_api:)
         options = {}
         options[:force_bottle] = true if self[:force_bottle?]
         options[:override_spec] = :head if self[:HEAD?]
@@ -41,6 +41,7 @@ module Homebrew
           *named_args.freeze,
           parent:       self,
           cask_options: cask_options,
+          without_api:  without_api,
           **options,
         )
       end

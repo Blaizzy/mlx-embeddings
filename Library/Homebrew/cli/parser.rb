@@ -138,6 +138,7 @@ module Homebrew
         @named_args_type = nil
         @max_named_args = nil
         @min_named_args = nil
+        @named_args_without_api = false
         @description = nil
         @usage_banner = nil
         @hide_from_man_page = false
@@ -346,7 +347,7 @@ module Homebrew
           check_named_args(named_args)
         end
 
-        @args.freeze_named_args!(named_args, cask_options: @cask_options)
+        @args.freeze_named_args!(named_args, cask_options: @cask_options, without_api: @named_args_without_api)
         @args.freeze_remaining_args!(non_options.empty? ? remaining : [*remaining, "--", non_options])
         @args.freeze_processed_options!(@processed_options)
         @args.freeze
@@ -392,13 +393,14 @@ module Homebrew
 
       sig {
         params(
-          type:   T.any(NilClass, Symbol, T::Array[String], T::Array[Symbol]),
-          number: T.nilable(Integer),
-          min:    T.nilable(Integer),
-          max:    T.nilable(Integer),
+          type:        T.any(NilClass, Symbol, T::Array[String], T::Array[Symbol]),
+          number:      T.nilable(Integer),
+          min:         T.nilable(Integer),
+          max:         T.nilable(Integer),
+          without_api: T::Boolean,
         ).void
       }
-      def named_args(type = nil, number: nil, min: nil, max: nil)
+      def named_args(type = nil, number: nil, min: nil, max: nil, without_api: false)
         if number.present? && (min.present? || max.present?)
           raise ArgumentError, "Do not specify both `number` and `min` or `max`"
         end
@@ -417,6 +419,8 @@ module Homebrew
           @min_named_args = min
           @max_named_args = max
         end
+
+        @named_args_without_api = without_api
       end
 
       sig { void }

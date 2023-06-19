@@ -123,7 +123,7 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    audit_formulae, audit_casks = without_api do # audit requires full Ruby source
+    audit_formulae, audit_casks = with_no_api_env do # audit requires full Ruby source
       if args.tap
         Tap.fetch(args.tap).then do |tap|
           [
@@ -217,7 +217,7 @@ module Homebrew
           # Audit requires full Ruby source so disable API.
           # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core clone.
           fa = if f.core_formula?
-            without_api(&audit_proc)
+            with_no_api_env(&audit_proc)
           else
             audit_proc.call
           end
@@ -346,11 +346,5 @@ module Homebrew
       location = "#{location.line&.to_s&.prepend("line ")}#{location.column&.to_s&.prepend(", col ")}: " if location
       "* #{location}#{message.chomp.gsub("\n", "\n    ")}#{status}"
     end
-  end
-
-  def self.without_api(&block)
-    return yield if Homebrew::EnvConfig.no_install_from_api?
-
-    with_env(HOMEBREW_NO_INSTALL_FROM_API: "1", HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API: "1", &block)
   end
 end
