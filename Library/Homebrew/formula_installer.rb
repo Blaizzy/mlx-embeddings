@@ -1115,7 +1115,7 @@ on_request: installed_on_request?, options: options)
     # the formula from the tap.
     formula_path = begin
       keg_formula_path = formula.opt_prefix/".brew/#{formula.name}.rb"
-      tap_formula_path = formula.path
+      tap_formula_path = formula.specified_path
       keg_formula = Formulary.factory(keg_formula_path)
       tap_formula = Formulary.factory(tap_formula_path) if tap_formula_path.exist?
       other_version_installed = (keg_formula.pkg_version != tap_formula&.pkg_version)
