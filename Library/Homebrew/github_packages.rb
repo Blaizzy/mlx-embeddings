@@ -458,7 +458,7 @@ class GitHubPackages
   def write_tar_gz(local_file, blobs)
     tar_gz_sha256 = Digest::SHA256.file(local_file)
                                   .hexdigest
-    FileUtils.cp local_file, blobs/tar_gz_sha256
+    FileUtils.ln local_file, blobs/tar_gz_sha256
     tar_gz_sha256
   end
 
