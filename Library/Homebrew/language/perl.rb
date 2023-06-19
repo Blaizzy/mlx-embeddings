@@ -11,10 +11,13 @@ module Language
       module_function
 
       def detected_perl_shebang(formula = self)
-        perl_path = if formula.deps.map(&:name).include? "perl"
-          Formula["perl"].opt_bin/"perl"
-        elsif formula.uses_from_macos_names.include? "perl"
-          "/usr/bin/perl#{MacOS.preferred_perl_version}"
+        perl_deps = formula.declared_deps.select { |dep| dep.name == "perl" }
+        perl_path = if perl_deps.present?
+          if perl_deps.any? { |dep| !dep.uses_from_macos? || !dep.use_macos_install? }
+            Formula["perl"].opt_bin/"perl"
+          else
+            "/usr/bin/perl#{MacOS.preferred_perl_version}"
+          end
         else
           raise ShebangDetectionError.new("Perl", "formula does not depend on Perl")
         end

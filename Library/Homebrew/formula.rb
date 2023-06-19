@@ -533,6 +533,9 @@ class Formula
   # The {Dependency}s for the currently active {SoftwareSpec}.
   delegate deps: :active_spec
 
+  # The declared {Dependency}s for the currently active {SoftwareSpec} (i.e. including those provided by macOS)
+  delegate declared_deps: :active_spec
+
   # Dependencies provided by macOS for the currently active {SoftwareSpec}.
   delegate uses_from_macos_elements: :active_spec
 

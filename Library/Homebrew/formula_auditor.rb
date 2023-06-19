@@ -254,7 +254,7 @@ module Homebrew
       @specs.each do |spec|
         # Check for things we don't like to depend on.
         # We allow non-Homebrew installs whenever possible.
-        spec.deps.each do |dep|
+        spec.declared_deps.each do |dep|
           begin
             dep_f = dep.to_formula
           rescue TapFormulaUnavailableError
@@ -323,7 +323,7 @@ module Homebrew
           end
 
           # we want to allow uses_from_macos for aliases but not bare dependencies
-          if self.class.aliases.include?(dep.name) && spec.uses_from_macos_names.exclude?(dep.name)
+          if self.class.aliases.include?(dep.name) && !dep.uses_from_macos?
             problem "Dependency '#{dep.name}' is an alias; use the canonical name '#{dep.to_formula.full_name}'."
           end
 
