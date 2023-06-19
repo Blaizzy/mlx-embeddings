@@ -870,7 +870,6 @@ then
       livecheck
       pr-pull
       pr-upload
-      test
       update-python-resources
     )
 
