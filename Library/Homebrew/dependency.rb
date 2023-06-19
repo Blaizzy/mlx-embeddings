@@ -180,7 +180,12 @@ class Dependency
         option_names = deps.flat_map(&:option_names).uniq
         kwargs = {}
         kwargs[:bounds] = dep.bounds if dep.uses_from_macos?
-        dep.class.new(name, tags, dep.env_proc, option_names, **kwargs)
+        # TODO: simpify to just **kwargs when we require Ruby >= 2.7
+        if kwargs.empty?
+          dep.class.new(name, tags, dep.env_proc, option_names)
+        else
+          dep.class.new(name, tags, dep.env_proc, option_names, **kwargs)
+        end
       end
     end
 
@@ -208,10 +213,10 @@ class Dependency
     end
 
     def merge_temporality(deps)
-      # Means both build and runtime dependency.
-      return [] unless deps.all?(&:build?)
-
-      [:build]
+      new_tags = []
+      new_tags << :build if deps.all?(&:build?)
+      new_tags << :implicit if deps.all?(&:implicit?)
+      new_tags
     end
   end
 end

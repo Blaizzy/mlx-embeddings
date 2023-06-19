@@ -17,7 +17,7 @@ class DependencyCollector
     return if global_dep_tree[GCC]&.intersect?(related_formula_names)
     return unless formula_for(GCC)
 
-    Dependency.new(GCC)
+    Dependency.new(GCC, [:implicit])
   end
 
   sig { params(related_formula_names: T::Set[String]).returns(T.nilable(Dependency)) }
@@ -28,7 +28,7 @@ class DependencyCollector
     return if global_dep_tree[GLIBC]&.intersect?(related_formula_names)
     return unless formula_for(GLIBC)
 
-    Dependency.new(GLIBC)
+    Dependency.new(GLIBC, [:implicit])
   end
 
   private
