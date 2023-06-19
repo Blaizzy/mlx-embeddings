@@ -144,11 +144,7 @@ class DependencyCollector
   end
 
   def parse_string_spec(spec, tags)
-    if spec.match?(HOMEBREW_TAP_FORMULA_REGEX)
-      TapDependency.new(spec, tags)
-    else
-      Dependency.new(spec, tags)
-    end
+    Dependency.new(spec, tags)
   end
 
   def parse_symbol_spec(spec, tags)

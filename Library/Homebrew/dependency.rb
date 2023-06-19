@@ -11,18 +11,20 @@ class Dependency
   include Dependable
   extend Cachable
 
-  attr_reader :name, :env_proc, :option_names
+  attr_reader :name, :env_proc, :option_names, :tap
 
   DEFAULT_ENV_PROC = proc {}.freeze
   private_constant :DEFAULT_ENV_PROC
 
-  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name])
+  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name&.split("/")&.last])
     raise ArgumentError, "Dependency must have a name!" unless name
 
     @name = name
     @tags = tags
     @env_proc = env_proc
     @option_names = option_names
+
+    @tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2)) if name =~ HOMEBREW_TAP_FORMULA_REGEX
   end
 
   def to_s
@@ -46,6 +48,8 @@ class Dependency
 
   def installed?
     to_formula.latest_version_installed?
+  rescue FormulaUnavailableError
+    false
   end
 
   def satisfied?(inherited_options = [])
@@ -202,21 +206,5 @@ class Dependency
 
       [:build]
     end
-  end
-end
-
-# A dependency on another Homebrew formula in a specific tap.
-class TapDependency < Dependency
-  attr_reader :tap
-
-  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name.split("/").last])
-    @tap = Tap.fetch(name.rpartition("/").first)
-    super(name, tags, env_proc, option_names)
-  end
-
-  def installed?
-    super
-  rescue FormulaUnavailableError
-    false
   end
 end
