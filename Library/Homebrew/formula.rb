@@ -210,8 +210,9 @@ class Formula
     @full_name = full_name_with_optional_tap(name)
     @full_alias_name = full_name_with_optional_tap(@alias_name)
 
-    spec_eval :stable
-    spec_eval :head
+    self.class.spec_syms.each do |sym|
+      spec_eval sym
+    end
 
     @active_spec = determine_active_spec(spec)
     @active_spec_sym = if head?
@@ -2114,9 +2115,31 @@ class Formula
     Checksum.new(Digest::SHA256.file(path).hexdigest) if path.exist?
   end
 
+  def merge_spec_dependables(dependables)
+    # We have a hash of specs names (stable/head) to dependency lists.
+    # Merge all of the dependency lists together, removing any duplicates.
+    all_dependables = [].union(*dependables.values.map(&:to_a))
+
+    all_dependables.map do |dependable|
+      {
+        dependable: dependable,
+        # Now find the list of specs each dependency was a part of.
+        specs:      dependables.map { |spec, spec_deps| spec if spec_deps&.include?(dependable) }.compact,
+      }
+    end
+  end
+  private :merge_spec_dependables
+
   # @private
   def to_hash
-    dependencies = deps
+    # Create a hash of spec names (stable/head) to the list of dependencies under each
+    dependencies = self.class.spec_syms.to_h do |sym|
+      [sym, send(sym)&.declared_deps]
+    end
+    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
+    requirements = self.class.spec_syms.to_h do |sym|
+      [sym, send(sym)&.requirements]
+    end
 
     hsh = {
       "name"                     => name,
@@ -2141,25 +2164,13 @@ class Formula
       "keg_only"                 => keg_only?,
       "keg_only_reason"          => keg_only_reason&.to_hash,
       "options"                  => [],
-      "build_dependencies"       => dependencies.select(&:build?)
-                                                .map(&:name)
-                                                .uniq,
-      "dependencies"             => dependencies.reject(&:optional?)
-                                                .reject(&:recommended?)
-                                                .reject(&:build?)
-                                                .reject(&:test?)
-                                                .map(&:name)
-                                                .uniq,
-      "test_dependencies"        => dependencies.select(&:test?)
-                                                .map(&:name)
-                                                .uniq,
-      "recommended_dependencies" => dependencies.select(&:recommended?)
-                                                .map(&:name)
-                                                .uniq,
-      "optional_dependencies"    => dependencies.select(&:optional?)
-                                                .map(&:name)
-                                                .uniq,
-      "uses_from_macos"          => uses_from_macos_elements.uniq,
+      "build_dependencies"       => [],
+      "dependencies"             => [],
+      "test_dependencies"        => [],
+      "recommended_dependencies" => [],
+      "optional_dependencies"    => [],
+      "uses_from_macos"          => [],
+      "uses_from_macos_bounds"   => [],
       "requirements"             => [],
       "conflicts_with"           => conflicts.map(&:name),
       "conflicts_with_reasons"   => conflicts.map(&:reason),
@@ -2204,7 +2215,56 @@ class Formula
       { "option" => opt.flag, "description" => opt.description }
     end
 
-    hsh["requirements"] = requirements.map do |req|
+    dependencies.each do |spec_sym, spec_deps|
+      next if spec_deps.nil?
+
+      dep_hash = if spec_sym == :stable
+        hsh
+      else
+        next if spec_deps == dependencies[:stable]
+
+        hsh["#{spec_sym}_dependencies"] ||= {}
+      end
+
+      dep_hash["build_dependencies"] = spec_deps.select(&:build?)
+                                                .reject(&:uses_from_macos?)
+                                                .map(&:name)
+                                                .uniq
+      dep_hash["dependencies"] = spec_deps.reject(&:optional?)
+                                          .reject(&:recommended?)
+                                          .reject(&:build?)
+                                          .reject(&:test?)
+                                          .reject(&:uses_from_macos?)
+                                          .map(&:name)
+                                          .uniq
+      dep_hash["test_dependencies"] = spec_deps.select(&:test?)
+                                               .reject(&:uses_from_macos?)
+                                               .map(&:name)
+                                               .uniq
+      dep_hash["recommended_dependencies"] = spec_deps.select(&:recommended?)
+                                                      .reject(&:uses_from_macos?)
+                                                      .map(&:name)
+                                                      .uniq
+      dep_hash["optional_dependencies"] = spec_deps.select(&:optional?)
+                                                   .reject(&:uses_from_macos?)
+                                                   .map(&:name)
+                                                   .uniq
+
+      uses_from_macos_deps = spec_deps.select(&:uses_from_macos?).uniq
+      dep_hash["uses_from_macos"] = uses_from_macos_deps.map do |dep|
+        if dep.tags.length >= 2
+          { dep.name => dep.tags }
+        elsif dep.tags.present?
+          { dep.name => dep.tags.first }
+        else
+          dep.name
+        end
+      end
+      dep_hash["uses_from_macos_bounds"] = uses_from_macos_deps.map(&:bounds)
+    end
+
+    hsh["requirements"] = merge_spec_dependables(requirements).map do |data|
+      req = data[:dependable]
       req_name = req.name.dup
       req_name.prepend("maximum_") if req.try(:comparator) == "<="
       {
@@ -2213,6 +2273,7 @@ class Formula
         "download" => req.download,
         "version"  => req.try(:version) || req.try(:arch),
         "contexts" => req.tags,
+        "specs"    => data[:specs],
       }
     end
 
@@ -2912,10 +2973,17 @@ class Formula
     # <pre>version_scheme 1</pre>
     attr_rw :version_scheme
 
+    # @private
+    def spec_syms
+      [:stable, :head].freeze
+    end
+
     # A list of the {.stable} and {.head} {SoftwareSpec}s.
     # @private
     def specs
-      [stable, head].freeze
+      spec_syms.map do |sym|
+        send(sym)
+      end.freeze
     end
 
     # @!attribute [w] url
