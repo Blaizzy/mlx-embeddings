@@ -116,7 +116,8 @@ module Homebrew
     new_formula = args.new_formula?
     strict = new_formula || args.strict?
     online = new_formula || args.online?
-    skip_style = args.skip_style? || args.no_named? || args.tap
+    tap_audit = args.tap.present?
+    skip_style = args.skip_style? || args.no_named? || tap_audit
     no_named_args = T.let(false, T::Boolean)
 
     ENV.activate_extensions!
@@ -202,6 +203,7 @@ module Homebrew
         spdx_license_data:   spdx_license_data,
         spdx_exception_data: spdx_exception_data,
         style_offenses:      style_offenses&.for_path(f.path),
+        tap_audit:           tap_audit,
       }.compact
 
       errors = os_arch_combinations.flat_map do |os, arch|
