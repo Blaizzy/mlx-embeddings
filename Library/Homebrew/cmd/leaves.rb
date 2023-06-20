@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "formula"
+require "cask_dependent"
 require "cli/parser"
 
 module Homebrew
