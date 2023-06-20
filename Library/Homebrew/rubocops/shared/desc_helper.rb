@@ -74,9 +74,9 @@ module RuboCop
           desc_problem "Description shouldn't end with a full stop."
         end
 
-        # Check if the desc contains unicode characters in the So (emojis or other symbols) range.
+        # Check if the desc contains Unicode characters in the So (emojis or other symbols) range.
         if regex_match_group(desc, /\p{So}/)
-          desc_problem "Description shouldn't contain emojis or unicode characters in the So range."
+          desc_problem "Description shouldn't contain emojis or Unicode characters in the So range."
         end
 
         # Check if the desc length exceeds maximum length.

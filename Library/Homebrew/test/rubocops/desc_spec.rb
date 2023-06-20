@@ -139,7 +139,7 @@ describe RuboCop::Cop::FormulaAudit::Desc do
         class Foo < Formula
           url 'https://brew.sh/foo-1.0.tgz'
           desc 'Description with a 🍺 symbol'
-                                   ^ FormulaAudit/Desc: Description shouldn't contain emojis or unicode characters in the So range.
+                                   ^ FormulaAudit/Desc: Description shouldn't contain emojis or Unicode characters in the So range.
         end
       RUBY
 
