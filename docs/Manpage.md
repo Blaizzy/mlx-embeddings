@@ -387,7 +387,7 @@ is already installed but outdated.
 
 ### `leaves` [`--installed-on-request`] [`--installed-as-dependency`]
 
-List installed formulae that are not dependencies of another installed formula.
+List installed formulae that are not dependencies of another installed formula or cask.
 
 * `-r`, `--installed-on-request`:
   Only list leaves that were manually installed.

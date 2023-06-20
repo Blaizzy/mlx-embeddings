@@ -177,7 +177,7 @@ __brew_internal_commands() {
     'install:Install a formula or cask'
     'install-bundler-gems:Install Homebrew'\''s Bundler gems'
     'irb:Enter the interactive Homebrew Ruby shell'
-    'leaves:List installed formulae that are not dependencies of another installed formula'
+    'leaves:List installed formulae that are not dependencies of another installed formula or cask'
     'link:Symlink all of formula'\''s installed files into Homebrew'\''s prefix'
     'linkage:Check the library links from the given formula kegs'
     'list:List all installed formulae and casks'

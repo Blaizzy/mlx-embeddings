@@ -950,7 +950,7 @@ __fish_brew_complete_arg 'lc; and not __fish_seen_argument -l cask -l casks' -a 
 __fish_brew_complete_arg 'lc; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
 
-__fish_brew_complete_cmd 'leaves' 'List installed formulae that are not dependencies of another installed formula'
+__fish_brew_complete_cmd 'leaves' 'List installed formulae that are not dependencies of another installed formula or cask'
 __fish_brew_complete_arg 'leaves' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'leaves' -l help -d 'Show this message'
 __fish_brew_complete_arg 'leaves' -l installed-as-dependency -d 'Only list leaves that were installed as dependencies'
