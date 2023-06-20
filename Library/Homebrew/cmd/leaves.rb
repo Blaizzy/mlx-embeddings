@@ -11,7 +11,7 @@ module Homebrew
   def leaves_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        List installed formulae that are not dependencies of another installed formula and cask.
+        List installed formulae that are not dependencies of another installed formula or cask.
       EOS
       switch "-r", "--installed-on-request",
              description: "Only list leaves that were manually installed."
