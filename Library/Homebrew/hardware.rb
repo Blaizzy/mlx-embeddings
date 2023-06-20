@@ -229,7 +229,7 @@ module Hardware
         cpu
       end
       return if @target_cpu.blank?
-      
+
       "--codegen target-cpu=#{@target_cpu}"
     end
   end
