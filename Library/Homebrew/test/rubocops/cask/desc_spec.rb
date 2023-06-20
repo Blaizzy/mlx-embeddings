@@ -110,6 +110,13 @@ describe RuboCop::Cop::Cask::Desc, :config do
       end
     RUBY
 
+    expect_offense <<~RUBY
+      cask 'foo' do
+        desc 'Description with a 🍺 symbol'
+                                 ^ Description shouldn't contain emojis or unicode characters in the So range.
+      end
+    RUBY
+
     expect_no_offenses <<~RUBY
       cask 'foo' do
         desc 'MAC address changer'
