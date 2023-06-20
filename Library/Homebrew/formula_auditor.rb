@@ -35,6 +35,7 @@ module Homebrew
       @specs = %w[stable head].map { |s| formula.send(s) }.compact
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
+      @tap_audit = options[:tap_audit]
     end
 
     def audit_style
@@ -345,17 +346,17 @@ module Homebrew
       # TODO: remove this and check these there too.
       return if Homebrew::SimulateSystem.simulating_or_running_on_linux?
 
-      # Skip the versioned dependencies conflict audit on the OpenSSL migration branch.
+      # Skip the versioned dependencies conflict audit for OpenSSL on the OpenSSL migration staging branch.
       # TODO: Remove this when OpenSSL migration is complete.
-      ignore_openssl_conflict = if (github_event_path = ENV.fetch("GITHUB_EVENT_PATH", nil)).present?
+      ignore_openssl_conflict = if @tap_audit && (github_event_path = ENV.fetch("GITHUB_EVENT_PATH", nil)).present?
         event_payload = JSON.parse(File.read(github_event_path))
-        head_info = event_payload.dig("pull_request", "head").to_h # handle `nil`
+        base_info = event_payload.dig("pull_request", "base").to_h # handle `nil`
 
         # We need to read the head ref from `GITHUB_EVENT_PATH` because
         # `git branch --show-current` returns `master` on PR branches.
-        openssl_migration_branch = head_info["ref"] == "openssl-migration"
-        homebrew_owned_repo = head_info.dig("repo", "owner", "login") == "Homebrew"
-        homebrew_core_pr = head_info.dig("repo", "name") == "homebrew-core"
+        openssl_migration_branch = base_info["ref"] == "openssl-migration-staging"
+        homebrew_owned_repo = base_info.dig("repo", "owner", "login") == "Homebrew"
+        homebrew_core_pr = base_info.dig("repo", "name") == "homebrew-core"
 
         openssl_migration_branch && homebrew_owned_repo && homebrew_core_pr
       end
