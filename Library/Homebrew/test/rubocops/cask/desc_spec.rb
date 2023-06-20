@@ -113,7 +113,7 @@ describe RuboCop::Cop::Cask::Desc, :config do
     expect_offense <<~RUBY
       cask 'foo' do
         desc 'Description with a 🍺 symbol'
-                                 ^ Description shouldn't contain emojis or Unicode characters in the So range.
+                                 ^ Description shouldn't contain Unicode emojis or symbols.
       end
     RUBY
 
