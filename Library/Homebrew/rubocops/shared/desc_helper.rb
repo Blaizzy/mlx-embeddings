@@ -76,7 +76,7 @@ module RuboCop
 
         # Check if the desc contains Unicode characters in the So (emojis or other symbols) range.
         if regex_match_group(desc, /\p{So}/)
-          desc_problem "Description shouldn't contain emojis or Unicode characters in the So range."
+          desc_problem "Description shouldn't contain Unicode emojis or symbols."
         end
 
         # Check if the desc length exceeds maximum length.
