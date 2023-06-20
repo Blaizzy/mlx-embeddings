@@ -103,7 +103,7 @@ class Keg
 
   def each_linkage_for(file, linkage_type, &block)
     links = file.method(linkage_type)
-                .call
+                .call(resolve_variable_references: false)
                 .grep_v(/^@(loader_|executable_|r)path/)
     links.each(&block)
   end

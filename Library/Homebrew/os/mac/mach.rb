@@ -9,7 +9,7 @@ require "macho"
 module MachOShim
   extend Forwardable
 
-  delegate [:dylib_id, :rpaths] => :macho
+  delegate [:dylib_id] => :macho
 
   def macho
     @macho ||= MachO.open(to_s)
@@ -79,10 +79,32 @@ module MachOShim
     macho.write!
   end
 
-  def dynamically_linked_libraries(except: :none)
+  def dynamically_linked_libraries(except: :none, resolve_variable_references: true)
     lcs = macho.dylib_load_commands.reject { |lc| lc.type == except }
 
-    lcs.map(&:name).map(&:to_s).uniq
+    names = lcs.map(&:name).map(&:to_s).uniq
+
+    names.map! { |name| resolve_variable_name(name) } if resolve_variable_references
+
+    names
+  end
+
+  def rpaths(resolve_variable_references: true)
+    names = macho.rpaths.uniq
+
+    names.map! { |name| resolve_variable_name(name) } if resolve_variable_references
+
+    names
+  end
+
+  def resolve_variable_name(name)
+    if name.start_with? "@loader_path"
+      Pathname(name.sub("@loader_path", dirname)).cleanpath.to_s
+    elsif name.start_with?("@executable_path") && binary_executable?
+      Pathname(name.sub("@executable_path", dirname)).cleanpath.to_s
+    else
+      name
+    end
   end
 
   def archs
