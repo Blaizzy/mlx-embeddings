@@ -43,6 +43,7 @@ module Homebrew
     args = generate_cask_api_args.parse
 
     tap = Tap.default_cask_tap
+    raise TapUnavailableError, tap.name unless tap.installed?
 
     unless args.dry_run?
       directories = ["_data/cask", "api/cask", "api/cask-source", "cask"].freeze
@@ -50,22 +51,24 @@ module Homebrew
       FileUtils.mkdir_p directories
     end
 
-    Cask::Cask.generating_hash!
+    Homebrew.with_no_api_env do
+      Cask::Cask.generating_hash!
 
-    tap.cask_files.each do |path|
-      cask = Cask::CaskLoader.load(path)
-      name = cask.token
-      json = JSON.pretty_generate(cask.to_hash_with_variations)
+      tap.cask_files.each do |path|
+        cask = Cask::CaskLoader.load(path)
+        name = cask.token
+        json = JSON.pretty_generate(cask.to_hash_with_variations)
 
-      unless args.dry_run?
-        File.write("_data/cask/#{name}.json", "#{json}\n")
-        File.write("api/cask/#{name}.json", CASK_JSON_TEMPLATE)
-        File.write("api/cask-source/#{name}.rb", path.read)
-        File.write("cask/#{name}.html", html_template(name))
+        unless args.dry_run?
+          File.write("_data/cask/#{name}.json", "#{json}\n")
+          File.write("api/cask/#{name}.json", CASK_JSON_TEMPLATE)
+          File.write("api/cask-source/#{name}.rb", path.read)
+          File.write("cask/#{name}.html", html_template(name))
+        end
+      rescue
+        onoe "Error while generating data for cask '#{path.stem}'."
+        raise
       end
-    rescue
-      onoe "Error while generating data for cask '#{path.stem}'."
-      raise
     end
   end
 end

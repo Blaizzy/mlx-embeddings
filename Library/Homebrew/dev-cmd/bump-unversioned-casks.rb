@@ -25,7 +25,7 @@ module Homebrew
       flag   "--state-file=",
              description: "File for caching state."
 
-      named_args [:cask, :tap], min: 1
+      named_args [:cask, :tap], min: 1, without_api: true
     end
   end
 

@@ -25,7 +25,7 @@ module Homebrew
 
       conflicts "--dry-run", "--write-only"
 
-      named_args :formula, min: 1
+      named_args :formula, min: 1, without_api: true
     end
   end
 

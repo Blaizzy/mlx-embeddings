@@ -33,7 +33,7 @@ module Homebrew
       conflicts "--cask", "--formula"
       conflicts "--no-pull-requests", "--open-pr"
 
-      named_args [:formula, :cask]
+      named_args [:formula, :cask], without_api: true
     end
   end
 

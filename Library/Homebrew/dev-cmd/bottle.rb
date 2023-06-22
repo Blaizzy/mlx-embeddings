@@ -86,7 +86,7 @@ module Homebrew
 
       conflicts "--no-rebuild", "--keep-old"
 
-      named_args [:installed_formula, :file], min: 1
+      named_args [:installed_formula, :file], min: 1, without_api: true
     end
   end
 
@@ -311,6 +311,7 @@ module Homebrew
 
       tap = CoreTap.instance
     end
+    raise TapUnavailableError, tap.name unless tap.installed?
 
     return ofail "Formula has no stable version: #{formula.full_name}" unless formula.stable
 

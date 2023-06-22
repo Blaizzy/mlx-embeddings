@@ -52,7 +52,7 @@ module Homebrew
       conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--online"
 
-      named_args :cask, number: 1
+      named_args :cask, number: 1, without_api: true
     end
   end
 

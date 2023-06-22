@@ -85,7 +85,7 @@ module Homebrew
       conflicts "--no-audit", "--online"
       conflicts "--url", "--tag"
 
-      named_args :formula, max: 1
+      named_args :formula, max: 1, without_api: true
     end
   end
 

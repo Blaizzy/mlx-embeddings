@@ -98,7 +98,7 @@ module Homebrew
       conflicts "--formula", "--cask"
       conflicts "--installed", "--all"
 
-      named_args [:formula, :cask]
+      named_args [:formula, :cask], without_api: true
     end
   end
 
@@ -123,7 +123,7 @@ module Homebrew
     ENV.activate_extensions!
     ENV.setup_build_environment
 
-    audit_formulae, audit_casks = with_no_api_env do # audit requires full Ruby source
+    audit_formulae, audit_casks = Homebrew.with_no_api_env do # audit requires full Ruby source
       if args.tap
         Tap.fetch(args.tap).then do |tap|
           [
@@ -217,7 +217,7 @@ module Homebrew
           # Audit requires full Ruby source so disable API.
           # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core clone.
           fa = if f.core_formula?
-            with_no_api_env(&audit_proc)
+            Homebrew.with_no_api_env(&audit_proc)
           else
             audit_proc.call
           end
