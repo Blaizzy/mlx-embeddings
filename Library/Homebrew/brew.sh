@@ -276,17 +276,17 @@ auto-update() {
 
     if [[ -z "${HOMEBREW_AUTO_UPDATE_SECS}" ]]
     then
-      if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
+      if [[ -n "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
       then
-        # 24 hours
-        HOMEBREW_AUTO_UPDATE_SECS="86400"
+        # 5 minutes
+        HOMEBREW_AUTO_UPDATE_SECS="300"
       elif [[ -n "${HOMEBREW_DEV_CMD_RUN}" ]]
       then
         # 1 hour
         HOMEBREW_AUTO_UPDATE_SECS="3600"
       else
-        # 5 minutes
-        HOMEBREW_AUTO_UPDATE_SECS="300"
+        # 24 hours
+        HOMEBREW_AUTO_UPDATE_SECS="86400"
       fi
     fi
 
