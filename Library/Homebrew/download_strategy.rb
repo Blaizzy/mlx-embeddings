@@ -628,8 +628,10 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
 
   private
 
-  def resolved_basename
-    @resolved_basename.presence || super
+  def resolve_url_basename_time_file_size(url, timeout: nil)
+    return super if @resolved_basename.blank?
+
+    [url, @resolved_basename, nil, nil, false]
   end
 end
 
