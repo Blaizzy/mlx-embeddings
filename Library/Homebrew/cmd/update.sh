@@ -347,9 +347,15 @@ homebrew-update() {
       --verbose) HOMEBREW_VERBOSE=1 ;;
       --debug) HOMEBREW_DEBUG=1 ;;
       --quiet) HOMEBREW_QUIET=1 ;;
-      --merge) HOMEBREW_MERGE=1 ;;
+      --merge)
+        shift
+        HOMEBREW_MERGE=1
+        ;;
       --force) HOMEBREW_UPDATE_FORCE=1 ;;
-      --simulate-from-current-branch) HOMEBREW_SIMULATE_FROM_CURRENT_BRANCH=1 ;;
+      --simulate-from-current-branch)
+        shift
+        HOMEBREW_SIMULATE_FROM_CURRENT_BRANCH=1
+        ;;
       --auto-update) export HOMEBREW_UPDATE_AUTO=1 ;;
       --*) ;;
       -*)
