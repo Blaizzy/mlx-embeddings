@@ -87,13 +87,19 @@ class FormulaOrCaskUnavailableError < RuntimeError
     super()
 
     @name = name
+
+    # Store the state of these envs at the time the exception is thrown.
+    # This is so we do the fuzzy search for "did you mean" etc under that same mode,
+    # in case the list of formulae are different.
+    @without_api = Homebrew::EnvConfig.no_install_from_api?
+    @auto_without_api = Homebrew::EnvConfig.automatically_set_no_install_from_api?
   end
 
   sig { returns(String) }
   def did_you_mean
     require "formula"
 
-    similar_formula_names = Formula.fuzzy_search(name)
+    similar_formula_names = Homebrew.with_no_api_env_if_needed(@without_api) { Formula.fuzzy_search(name) }
     return "" if similar_formula_names.blank?
 
     "Did you mean #{similar_formula_names.to_sentence two_words_connector: " or ", last_word_connector: " or "}?"
@@ -101,7 +107,11 @@ class FormulaOrCaskUnavailableError < RuntimeError
 
   sig { returns(String) }
   def to_s
-    "No available formula or cask with the name \"#{name}\". #{did_you_mean}".strip
+    s = "No available formula or cask with the name \"#{name}\". #{did_you_mean}".strip
+    if @auto_without_api && !CoreTap.instance.installed?
+      s += "\nA full git tap clone is required to use this command on core packages."
+    end
+    s
   end
 end
 
