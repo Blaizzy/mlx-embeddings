@@ -268,6 +268,12 @@ module Formulary
         raise "Cannot build from source from abstract formula."
       end
 
+      @post_install_defined_boolean = json_formula["post_install_defined"]
+      @post_install_defined_boolean = true if @post_install_defined_boolean.nil? # Backwards compatibility
+      def post_install_defined?
+        self.class.instance_variable_get(:@post_install_defined_boolean)
+      end
+
       if (service_hash = json_formula["service"].presence)
         service_hash = Homebrew::Service.deserialize(service_hash)
         service do
