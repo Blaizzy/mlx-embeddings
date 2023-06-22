@@ -796,7 +796,8 @@ on_request: installed_on_request?, options: options)
       puts "You can run it manually using:"
       puts "  brew postinstall #{formula.full_name}"
     else
-      post_install
+      formula.install_etc_var
+      post_install if formula.post_install_defined?
     end
 
     keg.prepare_debug_symbols if debug_symbols?

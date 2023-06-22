@@ -1143,6 +1143,23 @@ class Formula
   def post_install; end
 
   # @private
+  sig { returns(T::Boolean) }
+  def post_install_defined?
+    method(:post_install).owner != Formula
+  end
+
+  # @private
+  sig { void }
+  def install_etc_var
+    etc_var_dirs = [bottle_prefix/"etc", bottle_prefix/"var"]
+    Find.find(*etc_var_dirs.select(&:directory?)) do |path|
+      path = Pathname.new(path)
+      path.extend(InstallRenamed)
+      path.cp_path_sub(bottle_prefix, HOMEBREW_PREFIX)
+    end
+  end
+
+  # @private
   sig { void }
   def run_post_install
     @prefix_returns_versioned_prefix = true
@@ -1163,13 +1180,6 @@ class Formula
       with_env(new_env) do
         ENV.clear_sensitive_environment!
         ENV.activate_extensions!
-
-        etc_var_dirs = [bottle_prefix/"etc", bottle_prefix/"var"]
-        Find.find(*etc_var_dirs.select(&:directory?)) do |path|
-          path = Pathname.new(path)
-          path.extend(InstallRenamed)
-          path.cp_path_sub(bottle_prefix, HOMEBREW_PREFIX)
-        end
 
         with_logging("post_install") do
           post_install
@@ -2174,6 +2184,7 @@ class Formula
       "disabled"                 => disabled?,
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
+      "post_install_defined"     => post_install_defined?,
       "service"                  => (service.serialize if service?),
       "tap_git_head"             => tap_git_head,
       "ruby_source_path"         => ruby_source_path,

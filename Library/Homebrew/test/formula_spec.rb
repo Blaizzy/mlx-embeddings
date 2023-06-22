@@ -13,6 +13,7 @@ describe Formula do
   alias_matcher :have_changed_alias, :be_alias_changed
 
   alias_matcher :have_option_defined, :be_option_defined
+  alias_matcher :have_post_install_defined, :be_post_install_defined
   alias_matcher :have_test_defined, :be_test_defined
   alias_matcher :pour_bottle, :be_pour_bottle
 
@@ -634,6 +635,23 @@ describe Formula do
     end
 
     expect(f.desc).to eq("a formula")
+  end
+
+  specify "#post_install_defined?" do
+    f1 = formula do
+      url "foo-1.0"
+
+      def post_install
+        # do nothing
+      end
+    end
+
+    f2 = formula do
+      url "foo-1.0"
+    end
+
+    expect(f1).to have_post_install_defined
+    expect(f2).not_to have_post_install_defined
   end
 
   specify "test fixtures" do
