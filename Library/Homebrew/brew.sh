@@ -862,6 +862,7 @@ fi
 AUTO_UPDATE_CASK_TAP_COMMANDS=(
   bump
   bump-cask-pr
+  bump-unversioned-casks
 )
 if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_CASK_TAP_COMMANDS[@]}"
 then
@@ -896,37 +897,6 @@ if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.sh" ]] ||
    [[ -f "${HOMEBREW_LIBRARY}/Homebrew/dev-cmd/${HOMEBREW_COMMAND}.rb" ]]
 then
   export HOMEBREW_DEVELOPER_COMMAND="1"
-
-  if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
-  then
-    NO_INSTALL_FROM_API_COMMANDS=(
-      bottle
-      bump-cask-pr
-      bump-formula-pr
-      bump-revision
-      bump-unversioned-casks
-      bump
-      cat
-      create
-      edit
-      extract
-      formula
-      generate-cask-api
-      generate-formula-api
-      livecheck
-      pr-pull
-      pr-upload
-      update-python-resources
-    )
-
-    if check-array-membership "${HOMEBREW_COMMAND}" "${NO_INSTALL_FROM_API_COMMANDS[@]}"
-    then
-      export HOMEBREW_NO_INSTALL_FROM_API=1
-      export HOMEBREW_AUTOMATICALLY_SET_NO_INSTALL_FROM_API=1
-    fi
-
-    unset NO_INSTALL_FROM_API_COMMANDS
-  fi
 fi
 
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]

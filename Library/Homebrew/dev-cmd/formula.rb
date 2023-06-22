@@ -14,7 +14,7 @@ module Homebrew
         Display the path where <formula> is located.
       EOS
 
-      named_args :formula, min: 1
+      named_args :formula, min: 1, without_api: true
     end
   end
 

@@ -88,7 +88,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Overwrite the destination formula if it already exists."
 
-      named_args [:formula, :tap], number: 2
+      named_args [:formula, :tap], number: 2, without_api: true
     end
   end
 
@@ -98,11 +98,11 @@ module Homebrew
     if (match = args.named.first.match(HOMEBREW_TAP_FORMULA_REGEX))
       name = match[3].downcase
       source_tap = Tap.fetch(match[1], match[2])
-      raise TapFormulaUnavailableError.new(source_tap, name) unless source_tap.installed?
     else
       name = args.named.first.downcase
       source_tap = CoreTap.instance
     end
+    raise TapFormulaUnavailableError.new(source_tap, name) unless source_tap.installed?
 
     destination_tap = Tap.fetch(args.named.second)
     unless Homebrew::EnvConfig.developer?

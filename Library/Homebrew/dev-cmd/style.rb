@@ -40,7 +40,7 @@ module Homebrew
       conflicts "--formula", "--cask"
       conflicts "--only-cops", "--except-cops"
 
-      named_args [:file, :tap, :formula, :cask]
+      named_args [:file, :tap, :formula, :cask], without_api: true
     end
   end
 

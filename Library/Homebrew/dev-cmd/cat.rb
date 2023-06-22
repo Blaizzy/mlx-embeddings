@@ -18,7 +18,7 @@ module Homebrew
 
       conflicts "--formula", "--cask"
 
-      named_args [:formula, :cask], min: 1
+      named_args [:formula, :cask], min: 1, without_api: true
     end
   end
 

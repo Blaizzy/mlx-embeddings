@@ -24,7 +24,7 @@ module Homebrew
 
       conflicts "--formula", "--cask"
 
-      named_args [:formula, :cask]
+      named_args [:formula, :cask], without_api: true
     end
   end
 
@@ -76,10 +76,9 @@ module Homebrew
       end.presence
     end
 
-    if Homebrew::EnvConfig.automatically_set_no_install_from_api? &&
-       !Homebrew::EnvConfig.no_env_hints?
+    if !Homebrew::EnvConfig.no_install_from_api? && !Homebrew::EnvConfig.no_env_hints?
       paths.each do |path|
-        next if !path.fnmatch?("**/homebrew-core/Formula/**/*.rb") && !path.fnmatch?("**/homebrew-cask/Casks/**/*.rb")
+        next if !path.fnmatch?("**/homebrew-core/Formula/*.rb") && !path.fnmatch?("**/homebrew-cask/Casks/*.rb")
 
         opoo <<~EOS
           Unless `HOMEBREW_NO_INSTALL_FROM_API` is set when running

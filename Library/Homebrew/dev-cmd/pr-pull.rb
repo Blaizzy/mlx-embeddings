@@ -414,6 +414,7 @@ module Homebrew
     workflows = args.workflows.presence || ["tests.yml"]
     artifact = args.artifact || "bottles"
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
+    raise TapUnavailableError, tap.name unless tap.installed?
 
     Utils::Git.set_name_email!(committer: args.committer.blank?)
     Utils::Git.setup_gpg!

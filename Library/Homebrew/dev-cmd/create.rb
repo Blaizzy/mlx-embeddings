@@ -188,19 +188,24 @@ module Homebrew
         EOS
       end
 
-      if Formula.aliases.include? fc.name
-        realname = Formulary.canonical_name(fc.name)
-        odie <<~EOS
-          The formula '#{realname}' is already aliased to '#{fc.name}'.
-          Please check that you are not creating a duplicate.
-          To force creation use `--force`.
-        EOS
+      Homebrew.with_no_api_env do
+        if Formula.aliases.include? fc.name
+          realname = Formulary.canonical_name(fc.name)
+          odie <<~EOS
+            The formula '#{realname}' is already aliased to '#{fc.name}'.
+            Please check that you are not creating a duplicate.
+            To force creation use `--force`.
+          EOS
+        end
       end
     end
 
     fc.generate!
 
-    PyPI.update_python_resources! Formula[fc.name], ignore_non_pypi_packages: true if args.python?
+    formula = Homebrew.with_no_api_env do
+      Formula[fc.name]
+    end
+    PyPI.update_python_resources! formula, ignore_non_pypi_packages: true if args.python?
 
     puts "Please run `brew audit --new #{fc.name}` before submitting, thanks."
     fc.path
