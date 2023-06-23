@@ -94,7 +94,7 @@ module Homebrew
     token = Cask::Utils.token_from(name)
 
     cask_tap = Tap.fetch(args.tap || "homebrew/cask")
-    raise TapUnavailableError, args.tap unless cask_tap.installed?
+    raise TapUnavailableError, cask_tap unless cask_tap.installed?
 
     cask_path = Cask::CaskLoader.path("#{cask_tap}/#{token}")
     cask_path.dirname.mkpath unless cask_path.dirname.exist?
@@ -151,7 +151,7 @@ module Homebrew
     fc.version = args.set_version
     fc.license = args.set_license
     fc.tap = Tap.fetch(args.tap || "homebrew/core")
-    raise TapUnavailableError, args.tap unless fc.tap.installed?
+    raise TapUnavailableError, fc.tap unless fc.tap.installed?
 
     fc.url = args.named.first
 
