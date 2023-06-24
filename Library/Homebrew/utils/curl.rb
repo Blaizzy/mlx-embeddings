@@ -242,17 +242,7 @@ module Utils
       return false if response[:headers].blank?
       return false unless [403, 503].include?(response[:status_code].to_i)
 
-      set_cookie_header = Array(response[:headers]["set-cookie"])
-      has_cloudflare_cookie_header = set_cookie_header.compact.any? do |cookie|
-        cookie.match?(/^(__cfduid|__cf_bm)=/i)
-      end
-
-      server_header = Array(response[:headers]["server"])
-      has_cloudflare_server = server_header.compact.any? do |server|
-        server.match?(/^cloudflare/i)
-      end
-
-      has_cloudflare_cookie_header && has_cloudflare_server
+      [*response[:headers]["server"]].any? { |server| server.match?(/^cloudflare/i) }
     end
 
     # Check if a URL is protected by Incapsula (e.g. corsair.com).
