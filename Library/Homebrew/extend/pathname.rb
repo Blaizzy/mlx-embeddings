@@ -271,7 +271,7 @@ class Pathname
   # @private
   sig { returns(T::Boolean) }
   def text_executable?
-    /^#!\s*\S+/.match?(open("r") { |f| f.read(1024) })
+    /\A#!\s*\S+/.match?(open("r") { |f| f.read(1024) })
   end
 
   sig { returns(String) }
