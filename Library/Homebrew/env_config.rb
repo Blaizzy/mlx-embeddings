@@ -99,7 +99,7 @@ module Homebrew
                      "`--language`, `--require-sha`, `--no-quarantine` and `--no-binaries` are supported. " \
                      "For example, you might add something like the following to your " \
                      "`~/.profile`, `~/.bash_profile`, or `~/.zshenv`:" \
-                     '\n\n    `export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=/Library/Fonts"`',
+                     "\n\n    `export HOMEBREW_CASK_OPTS=\"--appdir=~/Applications --fontdir=/Library/Fonts\"`",
       },
       HOMEBREW_CLEANUP_MAX_AGE_DAYS:             {
         description: "Cleanup all cached files older than this many days.",
