@@ -19,15 +19,6 @@ then
   exit 1
 fi
 
-# Fail fast with concise message when requesting unfiltered environment.
-# This is basically odisabled so can be removed at any major release afterwards
-# and definitely if this is still here in 2023.
-if [[ -n "${HOMEBREW_NO_ENV_FILTERING:-}" ]]
-then
-  echo "Error: HOMEBREW_NO_ENV_FILTERING was deprecated for over a year and has now been removed (because it breaks many things)!" >&2
-  exit 1
-fi
-
 quiet_cd() {
   cd "$@" &>/dev/null || return
 }
