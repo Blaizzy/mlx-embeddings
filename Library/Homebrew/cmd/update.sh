@@ -788,11 +788,13 @@ EOS
       then
         INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
       fi
+
       JSON_URLS=()
       if [[ -n "${HOMEBREW_API_DOMAIN}" && "${HOMEBREW_API_DOMAIN}" != "${HOMEBREW_API_DEFAULT_DOMAIN}" ]]
       then
         JSON_URLS=("${HOMEBREW_API_DOMAIN}/${formula_or_cask}.jws.json")
       fi
+
       JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.jws.json")
       for json_url in "${JSON_URLS[@]}"
       do
@@ -812,17 +814,20 @@ EOS
         curl_exit_code=$?
         [[ ${curl_exit_code} -eq 0 ]] && break
       done
+
+      if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" ]]
+      then
+        mv -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" \
+          "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.before.txt"
+      fi
+
       if [[ ${curl_exit_code} -eq 0 ]]
       then
         touch "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json"
+
         CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
         if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
         then
-          if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" ]]
-          then
-            mv -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" \
-              "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.before.txt"
-          fi
 
           if [[ "${formula_or_cask}" == "formula" ]]
           then
