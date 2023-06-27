@@ -346,20 +346,25 @@ module Homebrew
       # TODO: remove this and check these there too.
       return if Homebrew::SimulateSystem.simulating_or_running_on_linux?
 
-      # Skip the versioned dependencies conflict audit for OpenSSL on the OpenSSL migration staging branch.
-      # TODO: Remove this when OpenSSL migration is complete.
-      ignore_openssl_conflict = if @tap_audit && (github_event_path = ENV.fetch("GITHUB_EVENT_PATH", nil)).present?
-        event_payload = JSON.parse(File.read(github_event_path))
-        base_info = event_payload.dig("pull_request", "base").to_h # handle `nil`
+      # Skip the versioned dependencies conflict audit for *-staging branches.
+      # This will allow us to migrate dependents of formulae like Python or OpenSSL
+      # gradually over separate PRs which target a *-staging branch. See:
+      #   https://github.com/Homebrew/homebrew-core/pull/134260
+      ignore_formula_conflict, staging_formula =
+        if @tap_audit && (github_event_path = ENV.fetch("GITHUB_EVENT_PATH", nil)).present?
+          event_payload = JSON.parse(File.read(github_event_path))
+          base_info = event_payload.dig("pull_request", "base").to_h # handle `nil`
 
-        # We need to read the head ref from `GITHUB_EVENT_PATH` because
-        # `git branch --show-current` returns `master` on PR branches.
-        openssl_migration_branch = base_info["ref"] == "openssl-migration-staging"
-        homebrew_owned_repo = base_info.dig("repo", "owner", "login") == "Homebrew"
-        homebrew_core_pr = base_info.dig("repo", "name") == "homebrew-core"
+          # We need to read the head ref from `GITHUB_EVENT_PATH` because
+          # `git branch --show-current` returns `master` on PR branches.
+          staging_branch = base_info["ref"]&.end_with?("-staging")
+          homebrew_owned_repo = base_info.dig("repo", "owner", "login") == "Homebrew"
+          homebrew_core_pr = base_info.dig("repo", "name") == "homebrew-core"
+          # Support staging branches named `formula-staging` or `formula@version-staging`.
+          base_formula = base_info["ref"]&.split(/-|@/, 2)&.first
 
-        openssl_migration_branch && homebrew_owned_repo && homebrew_core_pr
-      end
+          [staging_branch && homebrew_owned_repo && homebrew_core_pr, base_formula]
+        end
 
       recursive_runtime_formulae = formula.runtime_formula_dependencies(undeclared: false)
       version_hash = {}
@@ -367,7 +372,7 @@ module Homebrew
       recursive_runtime_formulae.each do |f|
         name = f.name
         unversioned_name, = name.split("@")
-        next if unversioned_name == "openssl" && ignore_openssl_conflict
+        next if ignore_formula_conflict && unversioned_name == staging_formula
         # Allow use of the full versioned name (e.g. `python@3.99`) or an unversioned alias (`python`).
         next if formula.tap&.audit_exception :versioned_formula_dependent_conflicts_allowlist, name
         next if formula.tap&.audit_exception :versioned_formula_dependent_conflicts_allowlist, unversioned_name
