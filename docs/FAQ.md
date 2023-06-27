@@ -144,7 +144,7 @@ Yes! It’s easy! Just `brew edit <formula>`. You don’t have to submit modific
 
 Note that if you are editing a core formula or cask you must set `HOMEBREW_NO_INSTALL_FROM_API=1` before using `brew install` or `brew update` otherwise they will ignore your local changes and default to the API.
 
-To undo your changes, run `brew update-reset`. It will revert to the upstream state on all Homebrew's repositories.
+To undo all changes you have made to any of Homebrew's repositories, run `brew update-reset`. It will revert to the upstream state on all Homebrew's repositories.
 
 ## Can I make new formulae?
 
