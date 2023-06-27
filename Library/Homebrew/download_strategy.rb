@@ -389,7 +389,12 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     # Merge `:header` with `:headers`.
     if (header = meta.delete(:header))
       meta[:headers] ||= []
-      meta[:headers] << header
+
+      if header.is_a?(Array)
+        meta[:headers] += header
+      else
+        meta[:headers] << header
+      end
     end
 
     super

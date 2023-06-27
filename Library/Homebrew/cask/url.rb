@@ -32,7 +32,7 @@ module Cask
           trust_cert: T.nilable(T::Boolean),
           cookies:    T.nilable(T::Hash[String, String]),
           referer:    T.nilable(T.any(URI::Generic, String)),
-          header:     T.nilable(String),
+          header:     T.nilable(T.any(String, T::Array[String])),
           user_agent: T.nilable(T.any(Symbol, String)),
           data:       T.nilable(T::Hash[String, String]),
           only_path:  T.nilable(String),
