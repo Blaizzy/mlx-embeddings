@@ -144,6 +144,8 @@ Yes! It’s easy! Just `brew edit <formula>`. You don’t have to submit modific
 
 Note that if you are editing a core formula or cask you must set `HOMEBREW_NO_INSTALL_FROM_API=1` before using `brew install` or `brew update` otherwise they will ignore your local changes and default to the API.
 
+To undo your changes, run `brew update-reset`. It will revert to the upstream state on all Homebrew's repositories.
+
 ## Can I make new formulae?
 
 Yes! It’s easy! Just `brew create URL`. Homebrew will then open the formula in `EDITOR` so you can edit it, but it probably already installs; try it: `brew install <formula>`. If you encounter any issues, run the command with the `--debug` switch like so: `brew install --debug <formula>`, which drops you into a debugging shell.
