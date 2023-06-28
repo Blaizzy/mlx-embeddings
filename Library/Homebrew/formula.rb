@@ -1827,12 +1827,6 @@ class Formula
     CoreTap.instance.formula_names
   end
 
-  # an array of all core {Formula} files
-  # @private
-  def self.core_files
-    CoreTap.instance.formula_files
-  end
-
   # an array of all tap {Formula} names
   # @private
   def self.tap_names
@@ -1851,12 +1845,6 @@ class Formula
     @names ||= (core_names + tap_names.map { |name| name.split("/").last }).uniq.sort
   end
 
-  # an array of all {Formula} files
-  # @private
-  def self.files
-    @files ||= core_files + tap_files
-  end
-
   # an array of all {Formula} names, which the tap formulae have the fully-qualified name
   # @private
   def self.full_names
@@ -1872,11 +1860,11 @@ class Formula
       odeprecated "Formula#all without --all or HOMEBREW_EVAL_ALL"
     end
 
-    files.map do |file|
-      Formulary.factory(file)
+    (core_names + tap_files).map do |name_or_file|
+      Formulary.factory(name_or_file)
     rescue FormulaUnavailableError, FormulaUnreadableError => e
       # Don't let one broken formula break commands. But do complain.
-      onoe "Failed to import: #{file}"
+      onoe "Failed to import: #{name_or_file}"
       $stderr.puts e
 
       nil

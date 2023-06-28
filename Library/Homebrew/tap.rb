@@ -514,11 +514,17 @@ class Tap
   def self.formula_files_by_name(tap)
     cache_key = "formula_files_by_name_#{tap}"
     cache.fetch(cache_key) do |key|
-      cache[key] = tap.formula_files.each_with_object({}) do |file, hash|
-        # If there's more than one file with the same basename: intentionally
-        # ignore the later ones here.
-        hash[file.basename.to_s] ||= file
-      end
+      cache[key] = tap.formula_files_by_name
+    end
+  end
+
+  # @private
+  sig { returns(T::Hash[String, Pathname]) }
+  def formula_files_by_name
+    formula_files.each_with_object({}) do |file, hash|
+      # If there's more than one file with the same basename: intentionally
+      # ignore the later ones here.
+      hash[file.basename.to_s] ||= file
     end
   end
 
@@ -1012,11 +1018,40 @@ class CoreTap < Tap
   end
 
   # @private
+  sig { returns(T::Array[Pathname]) }
+  def formula_files
+    return super if Homebrew::EnvConfig.no_install_from_api? || installed?
+
+    raise TapUnavailableError, name
+  end
+
+  # @private
   sig { returns(T::Array[String]) }
   def formula_names
     return super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::API::Formula.all_formulae.keys
+  end
+
+  # @private
+  sig { returns(T::Hash[String, Pathname]) }
+  def formula_files_by_name
+    return super if Homebrew::EnvConfig.no_install_from_api?
+
+    formula_names.each_with_object({}) do |name, hash|
+      # If there's more than one file with the same basename: intentionally
+      # ignore the later ones here.
+      hash[name] ||= sharded_formula_path(name)
+    end
+  end
+
+  private
+
+  # @private
+  sig { params(name: String).returns(Pathname) }
+  def sharded_formula_path(name)
+    # TODO: add sharding logic.
+    formula_dir/"#{name}.rb"
   end
 end
 
