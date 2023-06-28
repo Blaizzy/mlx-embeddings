@@ -5134,6 +5134,10 @@ class Object
   include ::Minitest::Expectations
   include ::SystemCommand::Mixin
   include ::Utils::Curl
+  def __send(*arg); end
+
+  def __send!(*arg); end
+
   def deep_dup(); end
 
   def duplicable?(); end
@@ -5373,8 +5377,6 @@ class Parlour::Types::Type
   extend ::T::InterfaceWrapper::Helpers
 end
 
-ParseError = Racc::ParseError
-
 class Parser::Ruby26
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
 end
@@ -5601,21 +5603,6 @@ class Racc::CparseParams
 end
 
 class Racc::CparseParams
-end
-
-class Racc::Parser
-  Racc_Main_Parsing_Routine = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Id_C = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Revision = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Revision_C = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Revision_R = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Version = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Version_C = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Core_Version_R = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Revision = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Type = ::T.let(nil, ::T.untyped)
-  Racc_Runtime_Version = ::T.let(nil, ::T.untyped)
-  Racc_YY_Parse_Method = ::T.let(nil, ::T.untyped)
 end
 
 class Random
