@@ -3473,7 +3473,6 @@ class Struct
 end
 
 Struct::Group = Etc::Group
-Struct::HTMLElementDescription = Struct
 Struct::Passwd = Etc::Passwd
 Struct::Tms = Process::Tms
 
