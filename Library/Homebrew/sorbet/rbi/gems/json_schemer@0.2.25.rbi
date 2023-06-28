@@ -6,11 +6,11 @@
 
 module JSONSchemer
   class << self
-    def schema(schema, **options); end
+    def schema(schema, default_schema_class: T.unsafe(nil), **options); end
 
     private
 
-    def draft_class(schema); end
+    def draft_class(schema, default_schema_class); end
   end
 end
 
@@ -22,9 +22,6 @@ class JSONSchemer::CachedResolver
   def call(*args); end
 end
 
-JSONSchemer::DEFAULT_META_SCHEMA = T.let(T.unsafe(nil), String)
-JSONSchemer::DRAFT_CLASS_BY_META_SCHEMA = T.let(T.unsafe(nil), Hash)
-
 module JSONSchemer::Errors
   class << self
     def pretty(error); end
@@ -34,12 +31,13 @@ end
 JSONSchemer::FILE_URI_REF_RESOLVER = T.let(T.unsafe(nil), Proc)
 
 module JSONSchemer::Format
+  include ::JSONSchemer::Format::Hostname
+
   def iri_escape(data); end
   def parse_uri_scheme(data); end
   def valid_date_time?(data); end
   def valid_email?(data); end
-  def valid_hostname?(data); end
-  def valid_ip?(data, type); end
+  def valid_ip?(data, family); end
   def valid_json?(data); end
   def valid_json_pointer?(data); end
   def valid_relative_json_pointer?(data); end
@@ -51,19 +49,50 @@ end
 
 JSONSchemer::Format::DATE_TIME_OFFSET_REGEX = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Format::EMAIL_REGEX = T.let(T.unsafe(nil), Regexp)
-JSONSchemer::Format::HOSTNAME_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::HOUR_24_REGEX = T.let(T.unsafe(nil), Regexp)
+
+module JSONSchemer::Format::Hostname
+  def valid_hostname?(data); end
+end
+
+JSONSchemer::Format::Hostname::ARABIC_EXTENDED_DIGITS_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::Hostname::ARABIC_INDIC_DIGITS_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::Hostname::CONTEXT_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::Hostname::EXCEPTIONS_DISALLOWED = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::EXCEPTIONS_PVALID = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::GREEK_LOWER_NUMERAL_SIGN = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::HEBREW_PUNCTUATION = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::HOSTNAME_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::Hostname::JOINING_TYPE_D_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::JOINING_TYPE_L_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::JOINING_TYPE_R_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::JOINING_TYPE_T_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::KATAKANA_MIDDLE_DOT_CONTEXT_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::Hostname::KATAKANA_MIDDLE_DOT_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::Hostname::LABEL_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::LABEL_REGEX_STRING = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::LEADING_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::LETTER_DIGITS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::MARKS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::MIDDLE_DOT = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::VIRAMA_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::ZERO_WIDTH_NON_JOINER_JOINING_TYPE = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::Hostname::ZERO_WIDTH_VIRAMA = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::INVALID_QUERY_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::IP_REGEX = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Format::JSON_POINTER_REGEX = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Format::JSON_POINTER_REGEX_STRING = T.let(T.unsafe(nil), String)
-JSONSchemer::Format::LABEL_REGEX_STRING = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::LEAP_SECOND_REGEX = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Format::RELATIVE_JSON_POINTER_REGEX = T.let(T.unsafe(nil), Regexp)
 class JSONSchemer::InvalidFileURI < ::StandardError; end
 class JSONSchemer::InvalidRefResolution < ::StandardError; end
 class JSONSchemer::InvalidRegexpResolution < ::StandardError; end
 class JSONSchemer::InvalidSymbolKey < ::StandardError; end
+JSONSchemer::SCHEMA_CLASS_BY_META_SCHEMA = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Schema; end
 
 class JSONSchemer::Schema::Base
+  include ::JSONSchemer::Format::Hostname
   include ::JSONSchemer::Format
 
   def initialize(schema, format: T.unsafe(nil), insert_property_defaults: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil), formats: T.unsafe(nil), keywords: T.unsafe(nil), ref_resolver: T.unsafe(nil), regexp_resolver: T.unsafe(nil)); end
@@ -175,6 +204,7 @@ class JSONSchemer::Schema::Draft7 < ::JSONSchemer::Schema::Base
 end
 
 JSONSchemer::Schema::Draft7::SUPPORTED_FORMATS = T.let(T.unsafe(nil), Set)
+class JSONSchemer::UnknownFormat < ::StandardError; end
 class JSONSchemer::UnknownRef < ::StandardError; end
 class JSONSchemer::UnsupportedMetaSchema < ::StandardError; end
 JSONSchemer::VERSION = T.let(T.unsafe(nil), String)
