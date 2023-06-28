@@ -35,6 +35,9 @@
 **/vendor/bundle/ruby/*/plugins
 **/vendor/bundle/ruby/*/specifications
 
+# Ignore Bundler binary files
+**/vendor/bundle/ruby/*/gems/**/*.bundle
+
 # Ignore YARD files
 **/.yardoc
 
@@ -276,6 +279,7 @@
 **/vendor/bundle/ruby/*/gems/powerpack-*/
 **/vendor/bundle/ruby/*/gems/psych-*/
 **/vendor/bundle/ruby/*/gems/pry-*/
+**/vendor/bundle/ruby/*/gems/racc-*/
 **/vendor/bundle/ruby/*/gems/rainbow-*/
 **/vendor/bundle/ruby/*/gems/rbi-*/
 **/vendor/bundle/ruby/*/gems/rdiscount-*/
@@ -297,6 +301,7 @@
 **/vendor/bundle/ruby/*/gems/ruby-prof-*/
 **/vendor/bundle/ruby/*/gems/simplecov-*/
 **/vendor/bundle/ruby/*/gems/simplecov-html-*/
+**/vendor/bundle/ruby/*/gems/simpleidn-*/
 **/vendor/bundle/ruby/*/gems/sorbet-*/
 !**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/spoom-*/
@@ -305,6 +310,8 @@
 **/vendor/bundle/ruby/*/gems/tapioca-*/
 **/vendor/bundle/ruby/*/gems/thor-*/
 **/vendor/bundle/ruby/*/gems/tzinfo-*/
+**/vendor/bundle/ruby/*/gems/unf-*/
+**/vendor/bundle/ruby/*/gems/unf_ext-*/
 **/vendor/bundle/ruby/*/gems/unicode-display_width-*/
 **/vendor/bundle/ruby/*/gems/unparser-*/
 **/vendor/bundle/ruby/*/gems/uri_template-*/
