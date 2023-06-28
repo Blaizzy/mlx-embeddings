@@ -57,6 +57,8 @@ module Cask
 
         @uri = URI(uri)
 
+        header = Array(header) unless header.nil?
+
         specs = {}
         specs[:verified]   = @verified   = verified
         specs[:using]      = @using      = using
@@ -67,7 +69,7 @@ module Cask
         specs[:trust_cert] = @trust_cert = trust_cert
         specs[:cookies]    = @cookies    = cookies
         specs[:referer]    = @referer    = referer
-        specs[:header]     = @header     = header
+        specs[:headers]    = @header     = header
         specs[:user_agent] = @user_agent = user_agent || :default
         specs[:data]       = @data       = data
         specs[:only_path]  = @only_path  = only_path
