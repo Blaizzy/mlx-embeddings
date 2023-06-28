@@ -8138,10 +8138,6 @@ module URI
   def self.get_encoding(label); end
 end
 
-class URITemplate::RFC6570::Expression::PathParameters
-  PAIR_IF_EMPTY = ::T.let(nil, ::T.untyped)
-end
-
 class UnboundMethod
   include ::MethodSource::SourceLocation::UnboundMethodExtensions
   include ::MethodSource::MethodExtensions
