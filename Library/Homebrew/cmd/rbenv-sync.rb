@@ -29,22 +29,24 @@ module Homebrew
     rbenv_sync_running = dot_rbenv/".rbenv_sync_running"
     return if rbenv_sync_running.exist?
 
-    rbenv_versions = dot_rbenv/"versions"
-    rbenv_versions.mkpath
-    FileUtils.touch rbenv_sync_running
+    begin
+      rbenv_versions = dot_rbenv/"versions"
+      rbenv_versions.mkpath
+      FileUtils.touch rbenv_sync_running
 
-    rbenv_sync_args.parse
+      rbenv_sync_args.parse
 
-    HOMEBREW_CELLAR.glob("ruby{,@*}")
-                   .flat_map(&:children)
-                   .each { |path| link_rbenv_versions(path, rbenv_versions) }
+      HOMEBREW_CELLAR.glob("ruby{,@*}")
+                     .flat_map(&:children)
+                     .each { |path| link_rbenv_versions(path, rbenv_versions) }
 
-    rbenv_versions.children
-                  .select(&:symlink?)
-                  .reject(&:exist?)
-                  .each { |path| FileUtils.rm_f path }
-  ensure
-    rbenv_sync_running.unlink if rbenv_sync_running.exist?
+      rbenv_versions.children
+                    .select(&:symlink?)
+                    .reject(&:exist?)
+                    .each { |path| FileUtils.rm_f path }
+    ensure
+      rbenv_sync_running.unlink if rbenv_sync_running.exist?
+    end
   end
 
   sig { params(path: Pathname, rbenv_versions: Pathname).void }
