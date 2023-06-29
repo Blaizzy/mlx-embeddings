@@ -75,6 +75,7 @@ pr-publish
 pr-pull
 pr-upload
 prof
+pyenv-sync
 rbenv-sync
 readall
 reinstall
