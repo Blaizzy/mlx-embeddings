@@ -1807,6 +1807,22 @@ _brew_prof() {
   __brew_complete_commands
 }
 
+_brew_pyenv_sync() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
+}
+
 _brew_rbenv_sync() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2702,6 +2718,7 @@ _brew() {
     pr-pull) _brew_pr_pull ;;
     pr-upload) _brew_pr_upload ;;
     prof) _brew_prof ;;
+    pyenv-sync) _brew_pyenv_sync ;;
     rbenv-sync) _brew_rbenv_sync ;;
     readall) _brew_readall ;;
     reinstall) _brew_reinstall ;;

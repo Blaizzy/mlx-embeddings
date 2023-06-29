@@ -537,6 +537,13 @@ Upgrades the database for the `postgresql` formula.
 
 Rerun the post-install steps for *`formula`*.
 
+### `pyenv-sync`
+
+Create symlinks for Homebrew's installed Python versions in ~/.pyenv/versions.
+
+Note that older patch version symlinks will be created and linked to the minor
+version so e.g. Python 3.11.0 will also be symlinked to 3.11.3.
+
 ### `rbenv-sync`
 
 Create symlinks for Homebrew's installed Ruby versions in ~/.rbenv/versions.

@@ -1227,6 +1227,13 @@ __fish_brew_complete_arg 'prof' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'prof' -a '(__fish_brew_suggest_commands)'
 
 
+__fish_brew_complete_cmd 'pyenv-sync' 'Create symlinks for Homebrew\'s installed Python versions in ~/.pyenv/versions'
+__fish_brew_complete_arg 'pyenv-sync' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'pyenv-sync' -l help -d 'Show this message'
+__fish_brew_complete_arg 'pyenv-sync' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'pyenv-sync' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/.rbenv/versions'
 __fish_brew_complete_arg 'rbenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'rbenv-sync' -l help -d 'Show this message'
