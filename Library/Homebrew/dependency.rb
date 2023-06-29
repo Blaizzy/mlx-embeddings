@@ -79,6 +79,11 @@ class Dependency
     new(*Marshal.load(marshaled)) # rubocop:disable Security/MarshalLoad
   end
 
+  sig { params(formula: Formula).returns(T.self_type) }
+  def dup_with_formula_name(formula)
+    self.class.new(formula.full_name.to_s, tags, env_proc, option_names)
+  end
+
   class << self
     # Expand the dependencies of each dependent recursively, optionally yielding
     # `[dependent, dep]` pairs to allow callers to apply arbitrary filters to
@@ -112,7 +117,11 @@ class Dependency
         else
           next if @expand_stack.include? dep.name
 
-          expanded_deps.concat(expand(dep.to_formula, cache_key: cache_key, &block))
+          dep_formula = dep.to_formula
+          expanded_deps.concat(expand(dep_formula, cache_key: cache_key, &block))
+
+          # Fixes names for renamed/aliased formulae.
+          dep = dep.dup_with_formula_name(dep_formula)
           expanded_deps << dep
         end
       end

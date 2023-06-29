@@ -829,7 +829,9 @@ describe Formula do
 
       allow(tap_loader).to receive(:get_formula).and_raise(RuntimeError, "tried resolving tap formula")
       allow(Formulary).to receive(:loader_for).with("foo/bar/f1", from: nil).and_return(tap_loader)
-      stub_formula_loader(formula("f2") { url("f2-1.0") }, "baz/qux/f2")
+
+      f2_path = Tap.new("baz", "qux").path/"Formula/f2.rb"
+      stub_formula_loader(formula("f2", path: f2_path) { url("f2-1.0") }, "baz/qux/f2")
 
       f3 = formula "f3" do
         url "f3-1.0"
@@ -840,7 +842,9 @@ describe Formula do
 
       expect(f3.runtime_dependencies.map(&:name)).to eq(["baz/qux/f2"])
 
-      stub_formula_loader(formula("f1") { url("f1-1.0") }, "foo/bar/f1")
+      f1_path = Tap.new("foo", "bar").path/"Formula/f1.rb"
+      stub_formula_loader(formula("f1", path: f1_path) { url("f1-1.0") }, "foo/bar/f1")
+
       f3.build = BuildOptions.new(Options.create(["--with-f1"]), f3.options)
 
       expect(f3.runtime_dependencies.map(&:name)).to eq(["foo/bar/f1", "baz/qux/f2"])
