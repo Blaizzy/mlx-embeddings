@@ -237,7 +237,8 @@ module PyPI
       else
         return if ignore_non_pypi_packages
 
-        odie "The main package is not a PyPI package. Please update its URL manually."
+        odie "The main package is not a PyPI package, meaning that version-only updates cannot be \
+          performed. Please update its URL manually."
       end
     end
 
