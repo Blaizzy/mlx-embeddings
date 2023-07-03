@@ -86,6 +86,7 @@ module Superenv
     self["HOMEBREW_LIBRARY_PATHS"] = determine_library_paths
     self["HOMEBREW_DEPENDENCIES"] = determine_dependencies
     self["HOMEBREW_FORMULA_PREFIX"] = @formula.prefix unless @formula.nil?
+    self["OPENSSL_NO_VENDOR"] = "1"
 
     set_debug_symbols if debug_symbols
 
