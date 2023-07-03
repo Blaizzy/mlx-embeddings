@@ -236,6 +236,7 @@ module PyPI
         main_package.version = version
       else
         return if ignore_non_pypi_packages
+
         odie "The main package is not a PyPI package. Please update its URL manually."
       end
     end
