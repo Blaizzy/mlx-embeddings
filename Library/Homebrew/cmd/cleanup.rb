@@ -53,7 +53,7 @@ module Homebrew
       return
     end
 
-    cleanup.clean!
+    cleanup.clean!(quiet: args.quiet?, periodic: false)
 
     unless cleanup.disk_cleanup_size.zero?
       disk_space = disk_usage_readable(cleanup.disk_cleanup_size)
