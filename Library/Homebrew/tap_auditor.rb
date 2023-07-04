@@ -11,19 +11,21 @@ module Homebrew
 
     sig { params(tap: Tap, strict: T.nilable(T::Boolean)).void }
     def initialize(tap, strict:)
-      @name                      = tap.name
-      @path                      = tap.path
-      @cask_tokens               = tap.cask_tokens
-      @tap_audit_exceptions      = tap.audit_exceptions
-      @tap_style_exceptions      = tap.style_exceptions
-      @tap_pypi_formula_mappings = tap.pypi_formula_mappings
-      @problems                  = []
+      Homebrew.with_no_api_env do
+        @name                      = tap.name
+        @path                      = tap.path
+        @cask_tokens               = tap.cask_tokens
+        @tap_audit_exceptions      = tap.audit_exceptions
+        @tap_style_exceptions      = tap.style_exceptions
+        @tap_pypi_formula_mappings = tap.pypi_formula_mappings
+        @problems                  = []
 
-      @formula_aliases = tap.aliases.map do |formula_alias|
-        formula_alias.split("/").last
-      end
-      @formula_names = tap.formula_names.map do |formula_name|
-        formula_name.split("/").last
+        @formula_aliases = tap.aliases.map do |formula_alias|
+          formula_alias.split("/").last
+        end
+        @formula_names = tap.formula_names.map do |formula_name|
+          formula_name.split("/").last
+        end
       end
     end
 
