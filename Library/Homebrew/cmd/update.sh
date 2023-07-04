@@ -580,7 +580,8 @@ EOS
 
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
-    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" && -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
+    if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]] &&
+       [[ -z "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
        [[ ("${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_UPDATE_CORE_TAP}") ||
           ("${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" && -z "${HOMEBREW_UPDATE_CASK_TAP}") ]]
     then
