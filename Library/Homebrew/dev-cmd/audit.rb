@@ -174,8 +174,10 @@ module Homebrew
     end
 
     # Run tap audits first
+    named_arg_taps = [*audit_formulae, *audit_casks].map(&:tap).uniq if !args.tap && !no_named_args
     tap_problems = Tap.each_with_object({}) do |tap, problems|
       next if args.tap && tap != args.tap
+      next if named_arg_taps&.exclude?(tap)
 
       ta = TapAuditor.new(tap, strict: args.strict?)
       ta.audit
