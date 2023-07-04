@@ -191,6 +191,7 @@ module Homebrew
       str = "#{str} [test]" if dep.test?
       str = "#{str} [optional]" if dep.optional?
       str = "#{str} [recommended]" if dep.recommended?
+      str = "#{str} [implicit]" if dep.implicit?
     end
 
     str

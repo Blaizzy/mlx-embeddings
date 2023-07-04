@@ -156,6 +156,79 @@ module Formulary
       dep.keys.first
     end
 
+    requirements = {}
+    json_formula["requirements"].map do |req|
+      req_name = req["name"].to_sym
+      next if API_SUPPORTED_REQUIREMENTS.exclude?(req_name)
+
+      req_version = case req_name
+      when :arch
+        req["version"]&.to_sym
+      when :macos, :maximum_macos
+        MacOSVersion::SYMBOLS.key(req["version"])
+      else
+        req["version"]
+      end
+
+      req_tags = []
+      req_tags << req_version if req_version.present?
+      req_tags += req["contexts"].map do |tag|
+        case tag
+        when String
+          tag.to_sym
+        when Hash
+          tag.deep_transform_keys(&:to_sym)
+        else
+          tag
+        end
+      end
+
+      spec_hash = req_tags.empty? ? req_name : { req_name => req_tags }
+
+      specs = req["specs"]
+      specs ||= ["stable", "head"] # backwards compatibility
+      specs.each do |spec|
+        requirements[spec.to_sym] ||= []
+        requirements[spec.to_sym] << spec_hash
+      end
+    end
+
+    add_deps = lambda do |spec|
+      T.bind(self, SoftwareSpec)
+
+      dep_json = json_formula.fetch("#{spec}_dependencies", json_formula)
+
+      dep_json["dependencies"].each do |dep|
+        # Backwards compatibility check - uses_from_macos used to be a part of dependencies on Linux
+        next if !json_formula.key?("uses_from_macos_bounds") && uses_from_macos_names.include?(dep) &&
+                !Homebrew::SimulateSystem.simulating_or_running_on_macos?
+
+        depends_on dep
+      end
+
+      [:build, :test, :recommended, :optional].each do |type|
+        dep_json["#{type}_dependencies"].each do |dep|
+          # Backwards compatibility check - uses_from_macos used to be a part of dependencies on Linux
+          next if !json_formula.key?("uses_from_macos_bounds") && uses_from_macos_names.include?(dep) &&
+                  !Homebrew::SimulateSystem.simulating_or_running_on_macos?
+
+          depends_on dep => type
+        end
+      end
+
+      dep_json["uses_from_macos"].each_with_index do |dep, index|
+        bounds = dep_json.fetch("uses_from_macos_bounds", [])[index] || {}
+        bounds.deep_transform_keys!(&:to_sym)
+        bounds.deep_transform_values! { |val| val.is_a?(String) ? val.to_sym : val }
+
+        if dep.is_a?(Hash)
+          uses_from_macos dep.deep_transform_values(&:to_sym).merge(bounds)
+        else
+          uses_from_macos dep, bounds
+        end
+      end
+    end
+
     klass = Class.new(::Formula) do
       @loaded_from_api = true
 
@@ -171,11 +244,26 @@ module Formulary
           url urls_stable["url"], **url_spec
           version json_formula["versions"]["stable"]
           sha256 urls_stable["checksum"] if urls_stable["checksum"].present?
+
+          instance_exec(:stable, &add_deps)
+
+          requirements[:stable]&.each do |req|
+            depends_on req
+          end
         end
       end
 
       if (urls_head = json_formula["urls"]["head"].presence)
-        head urls_head["url"], branch: urls_head["branch"]
+        head do
+          url_spec = { branch: urls_head["branch"] }.compact
+          url urls_head["url"], **url_spec
+
+          instance_exec(:head, &add_deps)
+
+          requirements[:head]&.each do |req|
+            depends_on req
+          end
+        end
       end
 
       if (bottles_stable = json_formula["bottle"]["stable"].presence)
@@ -206,54 +294,6 @@ module Formulary
       if (disable_date = json_formula["disable_date"].presence)
         reason = Formulary.convert_to_deprecate_disable_reason_string_or_symbol json_formula["disable_reason"]
         disable! date: disable_date, because: reason
-      end
-
-      json_formula["dependencies"].each do |dep|
-        next if uses_from_macos_names.include?(dep) && !Homebrew::SimulateSystem.simulating_or_running_on_macos?
-
-        depends_on dep
-      end
-
-      [:build, :test, :recommended, :optional].each do |type|
-        json_formula["#{type}_dependencies"].each do |dep|
-          next if uses_from_macos_names.include?(dep) && !Homebrew::SimulateSystem.simulating_or_running_on_macos?
-
-          depends_on dep => type
-        end
-      end
-
-      json_formula["uses_from_macos"].each do |dep|
-        dep = dep.deep_transform_values(&:to_sym) if dep.is_a?(Hash)
-        uses_from_macos dep
-      end
-
-      json_formula["requirements"].each do |req|
-        req_name = req["name"].to_sym
-        next if API_SUPPORTED_REQUIREMENTS.exclude?(req_name)
-
-        req_version = case req_name
-        when :arch
-          req["version"]&.to_sym
-        when :macos, :maximum_macos
-          MacOSVersion::SYMBOLS.key(req["version"])
-        else
-          req["version"]
-        end
-
-        req_tags = []
-        req_tags << req_version if req_version.present?
-        req_tags += req["contexts"].map do |tag|
-          case tag
-          when String
-            tag.to_sym
-          when Hash
-            tag.deep_transform_keys(&:to_sym)
-          else
-            tag
-          end
-        end
-
-        depends_on req_name => req_tags
       end
 
       json_formula["conflicts_with"].each_with_index do |conflict, index|

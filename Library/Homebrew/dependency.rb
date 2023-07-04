@@ -11,18 +11,20 @@ class Dependency
   include Dependable
   extend Cachable
 
-  attr_reader :name, :env_proc, :option_names
+  attr_reader :name, :env_proc, :option_names, :tap
 
   DEFAULT_ENV_PROC = proc {}.freeze
   private_constant :DEFAULT_ENV_PROC
 
-  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name])
+  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name&.split("/")&.last])
     raise ArgumentError, "Dependency must have a name!" unless name
 
     @name = name
     @tags = tags
     @env_proc = env_proc
     @option_names = option_names
+
+    @tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2)) if name =~ HOMEBREW_TAP_FORMULA_REGEX
   end
 
   def to_s
@@ -46,6 +48,8 @@ class Dependency
 
   def installed?
     to_formula.latest_version_installed?
+  rescue FormulaUnavailableError
+    false
   end
 
   def satisfied?(inherited_options = [])
@@ -63,6 +67,11 @@ class Dependency
 
   def modify_build_environment
     env_proc&.call
+  end
+
+  sig { overridable.returns(T::Boolean) }
+  def uses_from_macos?
+    false
   end
 
   sig { returns(String) }
@@ -169,7 +178,14 @@ class Dependency
         dep  = deps.first
         tags = merge_tags(deps)
         option_names = deps.flat_map(&:option_names).uniq
-        dep.class.new(name, tags, dep.env_proc, option_names)
+        kwargs = {}
+        kwargs[:bounds] = dep.bounds if dep.uses_from_macos?
+        # TODO: simpify to just **kwargs when we require Ruby >= 2.7
+        if kwargs.empty?
+          dep.class.new(name, tags, dep.env_proc, option_names)
+        else
+          dep.class.new(name, tags, dep.env_proc, option_names, **kwargs)
+        end
       end
     end
 
@@ -197,26 +213,52 @@ class Dependency
     end
 
     def merge_temporality(deps)
-      # Means both build and runtime dependency.
-      return [] unless deps.all?(&:build?)
-
-      [:build]
+      new_tags = []
+      new_tags << :build if deps.all?(&:build?)
+      new_tags << :implicit if deps.all?(&:implicit?)
+      new_tags
     end
   end
 end
 
-# A dependency on another Homebrew formula in a specific tap.
-class TapDependency < Dependency
-  attr_reader :tap
+# A dependency that marked as "installed" on macOS
+class UsesFromMacOSDependency < Dependency
+  attr_reader :bounds
 
-  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name.split("/").last])
-    @tap = Tap.fetch(name.rpartition("/").first)
+  def initialize(name, tags = [], env_proc = DEFAULT_ENV_PROC, option_names = [name], bounds:)
     super(name, tags, env_proc, option_names)
+
+    @bounds = bounds
   end
 
   def installed?
-    super
-  rescue FormulaUnavailableError
+    use_macos_install? || super
+  end
+
+  sig { returns(T::Boolean) }
+  def use_macos_install?
+    # Check whether macOS is new enough for dependency to not be required.
+    if Homebrew::SimulateSystem.simulating_or_running_on_macos?
+      # Assume the oldest macOS version when simulating a generic macOS version
+      return true if Homebrew::SimulateSystem.current_os == :macos && !bounds.key?(:since)
+
+      if Homebrew::SimulateSystem.current_os != :macos
+        current_os = MacOSVersion.from_symbol(Homebrew::SimulateSystem.current_os)
+        since_os = MacOSVersion.from_symbol(bounds[:since]) if bounds.key?(:since)
+        return true if current_os >= since_os
+      end
+    end
+
     false
+  end
+
+  sig { override.returns(T::Boolean) }
+  def uses_from_macos?
+    true
+  end
+
+  sig { override.params(formula: Formula).returns(T.self_type) }
+  def dup_with_formula_name(formula)
+    self.class.new(formula.full_name.to_s, tags, env_proc, option_names, bounds: bounds)
   end
 end
