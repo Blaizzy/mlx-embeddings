@@ -214,6 +214,24 @@ module Hardware
       end
     end
     alias generic_oldest_cpu oldest_cpu
+
+    # Returns a Rust flag to set the target CPU if necessary.
+    # Defaults to nil.
+    sig { returns(T.nilable(String)) }
+    def rustflags_target_cpu
+      # Rust already defaults to the oldest supported cpu for each target-triplet
+      # so it's safe to ignore generic archs such as :armv6 here.
+      # Rust defaults to apple-m1 since Rust 1.71 for aarch64-apple-darwin.
+      @target_cpu ||= case (cpu = oldest_cpu)
+      when :core
+        :prescott
+      when :native, :ivybridge, :sandybridge, :nehalem, :core2
+        cpu
+      end
+      return if @target_cpu.blank?
+
+      "--codegen target-cpu=#{@target_cpu}"
+    end
   end
 end
 
