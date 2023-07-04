@@ -309,6 +309,8 @@ class Tap
 
     # Override user-set default template
     args << "--template="
+    # prevent fsmonitor from watching this repo
+    args << "--config" << "core.fsmonitor=false"
 
     begin
       safe_system "git", *args
