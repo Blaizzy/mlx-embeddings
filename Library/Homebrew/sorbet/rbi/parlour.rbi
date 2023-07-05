@@ -78,6 +78,9 @@ class Formula
   def deps(*args, **options, &block); end
 
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
+  def declared_deps(*args, **options, &block); end
+
+  sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
   def uses_from_macos_elements(*args, **options, &block); end
 
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
