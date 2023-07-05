@@ -2,9 +2,6 @@
 
 module Homebrew::EnvConfig
   sig { returns(T.nilable(String)) }
-  def self.additional_google_analytics_id; end
-
-  sig { returns(T.nilable(String)) }
   def self.all_proxy; end
 
   sig { returns(Integer) }
@@ -177,9 +174,6 @@ module Homebrew::EnvConfig
 
   sig { returns(T::Boolean) }
   def self.no_github_api?; end
-
-  sig { returns(T::Boolean) }
-  def self.no_google_analytics?; end
 
   sig { returns(T::Boolean) }
   def self.no_insecure_redirect?; end
