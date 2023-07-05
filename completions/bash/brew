@@ -2081,6 +2081,7 @@ _brew_tap() {
       --custom-remote
       --debug
       --eval-all
+      --force
       --force-auto-update
       --help
       --list-pinned

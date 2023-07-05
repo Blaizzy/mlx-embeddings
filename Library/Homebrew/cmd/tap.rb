@@ -46,6 +46,8 @@ module Homebrew
       switch "--eval-all",
              description: "Evaluate all the formulae, casks and aliases in the new tap to check validity. " \
                           "Implied if `HOMEBREW_EVAL_ALL` is set."
+      switch "--force",
+             description: "Force install core taps even under API mode."
 
       named_args :tap, max: 2
     end
@@ -69,7 +71,8 @@ module Homebrew
                     force_auto_update: args.force_auto_update?,
                     custom_remote:     args.custom_remote?,
                     quiet:             args.quiet?,
-                    verify:            args.eval_all? || Homebrew::EnvConfig.eval_all?
+                    verify:            args.eval_all? || Homebrew::EnvConfig.eval_all?,
+                    force:             args.force?
       rescue TapRemoteMismatchError, TapNoCustomRemoteError => e
         odie e
       rescue TapAlreadyTappedError
