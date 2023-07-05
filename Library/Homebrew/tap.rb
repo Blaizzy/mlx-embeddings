@@ -25,6 +25,8 @@ class Tap
   HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR = "style_exceptions"
   HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS = "pypi_formula_mappings.json"
 
+  TAP_MIGRATIONS_STALE_SECONDS = 86400 # 1 day
+
   HOMEBREW_TAP_JSON_FILES = %W[
     #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
     #{HOMEBREW_TAP_CASK_RENAMES_FILE}
@@ -714,7 +716,11 @@ class Tap
   # Hash with tap migrations.
   sig { returns(Hash) }
   def tap_migrations
-    @tap_migrations ||= if (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
+    @tap_migrations ||= if name == "homebrew/cask" && !Homebrew::EnvConfig.no_install_from_api?
+      migrations, = Homebrew::API.fetch_json_api_file "cask_tap_migrations.jws.json",
+                                                      stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
+      migrations
+    elsif (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
       JSON.parse(migration_file.read)
     else
       {}
@@ -958,9 +964,13 @@ class CoreTap < Tap
   # @private
   sig { returns(Hash) }
   def tap_migrations
-    @tap_migrations ||= begin
+    @tap_migrations ||= if Homebrew::EnvConfig.no_install_from_api?
       self.class.ensure_installed!
       super
+    else
+      migrations, = Homebrew::API.fetch_json_api_file "formula_tap_migrations.jws.json",
+                                                      stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
+      migrations
     end
   end
 

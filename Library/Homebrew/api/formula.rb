@@ -40,8 +40,7 @@ module Homebrew
 
         sig { returns(T::Boolean) }
         def download_and_cache_data!
-          json_formulae, updated = Homebrew::API.fetch_json_api_file "formula.jws.json",
-                                                                     target: HOMEBREW_CACHE_API/"formula.jws.json"
+          json_formulae, updated = Homebrew::API.fetch_json_api_file "formula.jws.json"
 
           cache["aliases"] = {}
           cache["renames"] = {}

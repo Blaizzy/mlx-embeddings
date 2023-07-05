@@ -43,8 +43,7 @@ module Homebrew
 
         sig { returns(T::Boolean) }
         def download_and_cache_data!
-          json_casks, updated = Homebrew::API.fetch_json_api_file "cask.jws.json",
-                                                                  target: HOMEBREW_CACHE_API/"cask.jws.json"
+          json_casks, updated = Homebrew::API.fetch_json_api_file "cask.jws.json"
 
           cache["renames"] = {}
           cache["casks"] = json_casks.to_h do |json_cask|

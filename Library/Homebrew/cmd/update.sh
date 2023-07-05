@@ -781,34 +781,37 @@ EOS
 
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
   then
-    mkdir -p "${HOMEBREW_CACHE}/api"
+    local api_cache="${HOMEBREW_CACHE}/api"
+    mkdir -p "${api_cache}"
 
-    for formula_or_cask in formula cask
+    for json in formula cask formula_tap_migrations cask_tap_migrations
     do
-      if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json" ]]
+      local filename="${json}.jws.json"
+      local cache_path="${api_cache}/${filename}"
+      if [[ -f "${cache_path}" ]]
       then
-        INITIAL_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
+        INITIAL_JSON_BYTESIZE="$(wc -c "${cache_path}")"
       fi
 
       JSON_URLS=()
       if [[ -n "${HOMEBREW_API_DOMAIN}" && "${HOMEBREW_API_DOMAIN}" != "${HOMEBREW_API_DEFAULT_DOMAIN}" ]]
       then
-        JSON_URLS=("${HOMEBREW_API_DOMAIN}/${formula_or_cask}.jws.json")
+        JSON_URLS=("${HOMEBREW_API_DOMAIN}/${filename}")
       fi
 
-      JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${formula_or_cask}.jws.json")
+      JSON_URLS+=("${HOMEBREW_API_DEFAULT_DOMAIN}/${filename}")
       for json_url in "${JSON_URLS[@]}"
       do
         time_cond=()
-        if [[ -s "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json" ]]
+        if [[ -s "${cache_path}" ]]
         then
-          time_cond=("--time-cond" "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json")
+          time_cond=("--time-cond" "${cache_path}")
         fi
         curl \
           "${CURL_DISABLE_CURLRC_ARGS[@]}" \
           --fail --compressed --silent \
           --speed-limit "${HOMEBREW_CURL_SPEED_LIMIT}" --speed-time "${HOMEBREW_CURL_SPEED_TIME}" \
-          --location --remote-time --output "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json" \
+          --location --remote-time --output "${cache_path}" \
           "${time_cond[@]}" \
           --user-agent "${HOMEBREW_USER_AGENT_CURL}" \
           "${json_url}"
@@ -816,23 +819,25 @@ EOS
         [[ ${curl_exit_code} -eq 0 ]] && break
       done
 
-      if [[ -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" ]]
+      if [[ "${json}" == "formula" ]] && [[ -f "${api_cache}/formula_names.txt" ]]
       then
-        mv -f "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.txt" \
-          "${HOMEBREW_CACHE}/api/${formula_or_cask}_names.before.txt"
+        mv -f "${api_cache}/formula_names.txt" "${api_cache}/formula_names.before.txt"
+      elif [[ "${json}" == "cask" ]] && [[ -f "${api_cache}/cask_names.txt" ]]
+      then
+        mv -f "${api_cache}/cask_names.txt" "${api_cache}/cask_names.before.txt"
       fi
 
       if [[ ${curl_exit_code} -eq 0 ]]
       then
-        touch "${HOMEBREW_CACHE}/api/${formula_or_cask}.jws.json"
+        touch "${cache_path}"
 
-        CURRENT_JSON_BYTESIZE="$(wc -c "${HOMEBREW_CACHE}"/api/"${formula_or_cask}".jws.json)"
+        CURRENT_JSON_BYTESIZE="$(wc -c "${cache_path}")"
         if [[ "${INITIAL_JSON_BYTESIZE}" != "${CURRENT_JSON_BYTESIZE}" ]]
         then
 
-          if [[ "${formula_or_cask}" == "formula" ]]
+          if [[ "${json}" == "formula" ]]
           then
-            rm -f "${HOMEBREW_CACHE}/api/formula_aliases.txt"
+            rm -f "${api_cache}/formula_aliases.txt"
           fi
           HOMEBREW_UPDATED="1"
         fi
@@ -840,9 +845,10 @@ EOS
         echo "Failed to download ${json_url}!" >>"${update_failed_file}"
       fi
 
-      # Not a typo, this is the file we used to download that we should cleanup.
-      rm -f "${HOMEBREW_CACHE}/api/${formula_or_cask}.json"
     done
+
+    # Not a typo, these are the files we used to download that no longer need so should cleanup.
+    rm -f "${HOMEBREW_CACHE}/api/formula.json" "${HOMEBREW_CACHE}/api/cask.json"
   fi
 
   if [[ -f "${update_failed_file}" ]]

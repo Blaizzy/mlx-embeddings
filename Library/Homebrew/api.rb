@@ -34,8 +34,11 @@ module Homebrew
       raise ArgumentError, "Invalid JSON file: #{Tty.underline}#{api_url}#{Tty.reset}"
     end
 
-    sig { params(endpoint: String, target: Pathname).returns([T.any(Array, Hash), T::Boolean]) }
-    def self.fetch_json_api_file(endpoint, target:)
+    sig {
+      params(endpoint: String, target: Pathname, stale_seconds: Integer).returns([T.any(Array, Hash), T::Boolean])
+    }
+    def self.fetch_json_api_file(endpoint, target: HOMEBREW_CACHE_API/endpoint,
+                                 stale_seconds: Homebrew::EnvConfig.api_auto_update_secs.to_i)
       retry_count = 0
       url = "#{Homebrew::EnvConfig.api_domain}/#{endpoint}"
       default_url = "#{HOMEBREW_API_DEFAULT_DOMAIN}/#{endpoint}"
@@ -59,7 +62,7 @@ module Homebrew
                       !target.empty? &&
                       (!Homebrew.auto_update_command? ||
                         Homebrew::EnvConfig.no_auto_update? ||
-                      ((Time.now - Homebrew::EnvConfig.api_auto_update_secs.to_i) < target.mtime))
+                      ((Time.now - stale_seconds) < target.mtime))
       skip_download ||= Homebrew.running_as_root_but_not_owned_by_root?
 
       json_data = begin
