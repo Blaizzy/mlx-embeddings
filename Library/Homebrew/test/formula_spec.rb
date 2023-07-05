@@ -156,7 +156,7 @@ describe Formula do
 
       allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
       allow(Formulary).to receive(:factory).with(f2.name).and_return(f2)
-      allow(f.tap).to receive(:versioned_formula_files).and_return([f2.path])
+      allow(f).to receive(:versioned_formulae_names).and_return([f2.name])
     end
 
     it "returns array with versioned formulae" do

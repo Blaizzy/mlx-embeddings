@@ -465,21 +465,19 @@ class Formula
   # Returns any `@`-versioned formulae names for any formula (including versioned formulae).
   sig { returns(T::Array[String]) }
   def versioned_formulae_names
-    versioned_paths = if tap
-      # Faster path, due to `tap.versioned_formula_files` caching.
+    versioned_names = if tap
       name_prefix = "#{name.gsub(/(@[\d.]+)?$/, "")}@"
-      tap.versioned_formula_files.select do |file|
-        file.basename.to_s.start_with?(name_prefix)
+      tap.formula_names.select do |name|
+        name.start_with?(name_prefix)
       end
-    else
+    elsif path.exist?
       Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb"))
+              .map { |path| path.basename(".rb").to_s }
+    end.sort
+
+    versioned_names.reject do |versioned_name|
+      versioned_name == name
     end
-
-    versioned_paths.map do |versioned_path|
-      next if versioned_path == path
-
-      versioned_path.basename(".rb").to_s
-    end.compact.sort
   end
 
   # Returns any `@`-versioned Formula objects for any Formula (including versioned formulae).
