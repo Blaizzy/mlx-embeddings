@@ -49,6 +49,8 @@ module Homebrew
       directories = ["_data/cask", "api/cask", "api/cask-source", "cask"].freeze
       FileUtils.rm_rf directories
       FileUtils.mkdir_p directories
+
+      File.write("api/cask_tap_migrations.json", JSON.dump(tap.tap_migrations))
     end
 
     Homebrew.with_no_api_env do
