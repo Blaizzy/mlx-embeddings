@@ -530,14 +530,6 @@ class Tap
     end
   end
 
-  # An array of all versioned {Formula} files of this {Tap}.
-  sig { returns(T::Array[Pathname]) }
-  def versioned_formula_files
-    @versioned_formula_files ||= formula_files.select do |file|
-      file.basename(".rb").to_s =~ /@[\d.]+$/
-    end
-  end
-
   # An array of all {Cask} files of this {Tap}.
   sig { returns(T::Array[Pathname]) }
   def cask_files
