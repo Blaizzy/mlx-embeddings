@@ -83,33 +83,21 @@ module Homebrew
       exec HOMEBREW_BREW_FILE, "update", *update_args
     end
 
-    if !Utils::Analytics.messages_displayed? &&
-       !Utils::Analytics.disabled? &&
-       !Utils::Analytics.no_message_output?
-
-      ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
-      # Use the shell's audible bell.
-      print "\a"
-
-      # Use an extra newline and bold to avoid this being missed.
-      ohai "Homebrew has enabled anonymous aggregate formula and cask analytics."
-      puts <<~EOS
-        #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
-          #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
-        No analytics have been recorded yet (nor will be during this `brew` run).
-
-      EOS
-
-      # Consider the messages possibly missed if not a TTY.
-      Utils::Analytics.messages_displayed! if $stdout.tty?
+    if ENV["HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID"].present?
+      opoo "HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID is now a no-op so can be unset."
+      puts "All Homebrew Google Analytics code and data was destroyed."
     end
 
-    if Settings.read("donationmessage") != "true" && !args.quiet?
-      ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
-      puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n\n"
+    if ENV["HOMEBREW_NO_GOOGLE_ANALYTICS"].present?
+      opoo "HOMEBREW_NO_GOOGLE_ANALYTICS is now a no-op so can be unset."
+      puts "All Homebrew Google Analytics code and data was destroyed."
+    end
 
-      # Consider the message possibly missed if not a TTY.
-      Settings.write "donationmessage", true if $stdout.tty?
+    unless args.quiet?
+      analytics_message
+      donation_message
+      install_from_api_message
+      untap_message
     end
 
     install_core_tap_if_necessary
@@ -338,6 +326,84 @@ module Homebrew
 
   def migrate_gcc_dependents_if_needed
     # do nothing
+  end
+
+  def analytics_message
+    if !Utils::Analytics.messages_displayed? &&
+       !Utils::Analytics.disabled? &&
+       !Utils::Analytics.no_message_output?
+
+      ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
+      # Use the shell's audible bell.
+      print "\a"
+
+      # Use an extra newline and bold to avoid this being missed.
+      ohai "Homebrew collects anonymous analytics."
+      puts <<~EOS
+        #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
+          #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
+        No analytics have been recorded yet (nor will be during this `brew` run).
+
+      EOS
+
+      # Consider the messages possibly missed if not a TTY.
+      Utils::Analytics.messages_displayed! if $stdout.tty?
+    elsif Utils::Analytics.disabled?
+      ohai "Homebrew's analytics have entirely moved to our InfluxDB instance in the EU."
+      puts "We gather less data than before and have destroyed all Google Analytics data:"
+      puts "  #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}"
+      puts "Please reconsider re-enabling analytics to help our volunteer maintainers with:"
+      puts "  brew analytics on"
+
+      # Consider the message possibly missed if not a TTY.
+      Settings.write "influxanalyticsmessage", true if $stdout.tty?
+    end
+  end
+
+  def donation_message
+    return if Settings.read("donationmessage") == "true"
+
+    ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
+    puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n\n"
+
+    # Consider the message possibly missed if not a TTY.
+    Settings.write "donationmessage", true if $stdout.tty?
+  end
+
+  def install_from_api_message
+    return if Settings.read("installfromapimessage") == "true"
+
+    auto_update_secs_set = Homebrew::EnvConfig.api_auto_update_secs.to_i.positive?
+    if !Homebrew::EnvConfig.no_auto_update? && !Homebrew::EnvConfig.no_install_from_api? && !auto_update_secs_set
+      return
+    end
+
+    ohai "You have set:"
+    puts "  HOMEBREW_NO_AUTO_UPDATE" if Homebrew::EnvConfig.no_auto_update?
+    puts "  HOMEBREW_API_AUTO_UPDATE_SECS" if auto_update_secs_set
+    if Homebrew::EnvConfig.no_install_from_api? && !Homebrew::EnvConfig.automatically_set_no_install_from_api?
+      puts "  HOMEBREW_NO_INSTALL_FROM_API"
+    end
+    puts "but we have dramatically sped up and fixed many bugs in the way we do Homebrew updates since."
+    puts "Please consider unsetting these and tweaking the values based on the new behaviour."
+    puts "\n\n"
+
+    # Consider the message possibly missed if not a TTY.
+    Settings.write "installfromapimessage", true if $stdout.tty?
+  end
+
+  def untap_message
+    return if Homebrew::EnvConfig.no_install_from_api?
+    return if Homebrew::EnvConfig.developer? || ENV["HOMEBREW_DEV_CMD_RUN"]
+
+    core_tap = CoreTap.instance
+    cask_tap = Tap.default_cask_tap
+    return if !core_tap.installed? && !cask_tap.installed?
+
+    puts "Installing from the API is now the default behaviour!"
+    puts "You can save space and time by running:"
+    puts "  brew untap #{core_tap.name}" if core_tap.installed?
+    puts "  brew untap #{cask_tap.name}" if cask_tap.installed?
   end
 end
 
