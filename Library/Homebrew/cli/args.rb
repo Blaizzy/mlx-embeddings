@@ -112,7 +112,7 @@ module Homebrew
           skip_invalid_combinations = true
 
           [
-            *MacOSVersions::SYMBOLS.keys,
+            *MacOSVersion::SYMBOLS.keys,
             :linux,
           ]
         else

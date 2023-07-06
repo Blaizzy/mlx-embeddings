@@ -140,28 +140,27 @@ end
 
 require "lazy_object"
 
+module MacOSVersionErrorCompat
+  def const_missing(name)
+    if name == :MacOSVersionError
+      odeprecated "MacOSVersionError", "MacOSVersion::Error"
+      return MacOSVersion::Error
+    end
+
+    super
+  end
+end
+
 # `LazyObject` does not work for exceptions when used in `rescue` statements.
 class Object
   class << self
-    module MacOSVersionErrorCompat
-      def const_missing(name)
-        if name == :MacOSVersionError
-          # odeprecated "MacOSVersionError", "MacOSVersion::Error"
-          return MacOSVersion::Error
-        end
-
-        super
-      end
-    end
-    private_constant :MacOSVersionErrorCompat
-
     prepend MacOSVersionErrorCompat
   end
 end
 
 module MacOSVersions
   SYMBOLS = LazyObject.new do # rubocop:disable Style/MutableConstant
-    # odeprecated "MacOSVersions::SYMBOLS", "MacOSVersion::SYMBOLS"
+    odeprecated "MacOSVersions::SYMBOLS", "MacOSVersion::SYMBOLS"
     MacOSVersion::SYMBOLS
   end
 end
@@ -170,7 +169,7 @@ module OS
   module Mac
     # TODO: Replace `::Version` with `Version` when this is removed.
     Version = LazyObject.new do # rubocop:disable Style/MutableConstant
-      # odeprecated "OS::Mac::Version", "MacOSVersion"
+      odeprecated "OS::Mac::Version", "MacOSVersion"
       MacOSVersion
     end
   end

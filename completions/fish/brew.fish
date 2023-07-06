@@ -193,7 +193,6 @@ end
 __fish_brew_complete_cmd '--cache' 'Display Homebrew\'s download cache'
 __fish_brew_complete_arg '--cache' -l HEAD -d 'Show the cache file used when building from HEAD'
 __fish_brew_complete_arg '--cache' -l arch -d 'Show cache file for the given CPU architecture.(Pass `all` to show cache files for all architectures.)'
-__fish_brew_complete_arg '--cache' -l bottle-tag -d 'Show the cache file used when pouring a bottle for the given tag'
 __fish_brew_complete_arg '--cache' -l build-from-source -d 'Show the cache file used when building from source'
 __fish_brew_complete_arg '--cache' -l cask -d 'Only show cache files for casks'
 __fish_brew_complete_arg '--cache' -l debug -d 'Display any debugging information'

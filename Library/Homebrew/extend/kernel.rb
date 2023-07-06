@@ -157,6 +157,7 @@ module Kernel
 
   def odisabled(method, replacement = nil, options = {})
     options = { disable: true, caller: caller }.merge(options)
+    # This odeprecated should stick around indefinitely.
     odeprecated(method, replacement, options)
   end
 
@@ -318,7 +319,7 @@ module Kernel
 
   # GZips the given paths, and returns the gzipped paths.
   def gzip(*paths)
-    odeprecated "Utils.gzip", "Utils::Gzip.compress"
+    odisabled "Utils.gzip", "Utils::Gzip.compress"
     Utils::Gzip.compress(*paths)
   end
 
@@ -503,13 +504,13 @@ module Kernel
 
   sig { returns(String) }
   def preferred_shell
-    odeprecated "preferred_shell"
+    odisabled "preferred_shell"
     Utils::Shell.preferred_path(default: "/bin/sh")
   end
 
   sig { returns(String) }
   def shell_profile
-    odeprecated "shell_profile"
+    odisabled "shell_profile"
     Utils::Shell.profile
   end
 

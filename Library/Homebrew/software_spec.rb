@@ -92,7 +92,7 @@ class SoftwareSpec
 
       raise "#{full_name}: version missing for \"#{r.name}\" resource!" if version.nil?
 
-      r.version(version.head? ? Version.create("HEAD") : version.dup)
+      r.version(version.head? ? Version.new("HEAD") : version.dup)
     end
     patches.each { |p| p.owner = self }
   end
@@ -203,17 +203,15 @@ class SoftwareSpec
   end
 
   # @deprecated
-  # rubocop:disable Style/TrivialAccessors
   def uses_from_macos_elements
     # TODO: remove all @uses_from_macos_elements when disabling or removing this method
-    # odeprecated "#uses_from_macos_elements", "#declared_deps"
+    odeprecated "#uses_from_macos_elements", "#declared_deps"
     @uses_from_macos_elements
   end
-  # rubocop:enable Style/TrivialAccessors
 
   # @deprecated
   def uses_from_macos_names
-    # odeprecated "#uses_from_macos_names", "#declared_deps"
+    odeprecated "#uses_from_macos_names", "#declared_deps"
     uses_from_macos_elements.flat_map { |e| e.is_a?(Hash) ? e.keys : e }
   end
 
@@ -282,7 +280,7 @@ end
 class HeadSoftwareSpec < SoftwareSpec
   def initialize(flags: [])
     super
-    @resource.version(Version.create("HEAD"))
+    @resource.version(Version.new("HEAD"))
   end
 
   def verify_download_integrity(_filename)

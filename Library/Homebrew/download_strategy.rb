@@ -737,7 +737,7 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
   # @api public
   sig { returns(Time) }
   def source_modified_time
-    time = if Version.create(T.must(Utils::Svn.version)) >= Version.create("1.9")
+    time = if Version.new(T.must(Utils::Svn.version)) >= Version.new("1.9")
       out, = silent_command("svn", args: ["info", "--show-item", "last-changed-date"], chdir: cached_location)
       out
     else

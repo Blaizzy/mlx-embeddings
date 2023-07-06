@@ -343,7 +343,7 @@ class Version
 
   sig { params(val: String).returns(Version) }
   def self.create(val)
-    # odeprecate "Version.create", "Version.new"
+    odeprecated "Version.create", "Version.new"
     new(val)
   end
 

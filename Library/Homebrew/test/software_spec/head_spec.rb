@@ -6,7 +6,7 @@ describe HeadSoftwareSpec do
   subject(:head_spec) { described_class.new }
 
   specify "#version" do
-    expect(head_spec.version).to eq(Version.create("HEAD"))
+    expect(head_spec.version).to eq(Version.new("HEAD"))
   end
 
   specify "#verify_download_integrity" do

@@ -159,10 +159,8 @@ module GitHub
       github_password
     end
 
-    # odeprecated: Not really deprecated; change the order to prefer `github_cli_token` over
-    # `keychain_username_password` during the next major/minor release.
     def self.credentials
-      @credentials ||= Homebrew::EnvConfig.github_api_token || keychain_username_password || github_cli_token
+      @credentials ||= Homebrew::EnvConfig.github_api_token || github_cli_token || keychain_username_password
     end
 
     sig { returns(Symbol) }

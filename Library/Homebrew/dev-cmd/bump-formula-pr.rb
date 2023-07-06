@@ -474,7 +474,7 @@ module Homebrew
     name, old_alias_version = versioned_alias.split("@")
     new_alias_regex = (old_alias_version.split(".").length == 1) ? /^\d+/ : /^\d+\.\d+/
     new_alias_version, = *new_formula_version.to_s.match(new_alias_regex)
-    return if Version.create(new_alias_version) <= Version.create(old_alias_version)
+    return if Version.new(new_alias_version) <= Version.new(old_alias_version)
 
     [versioned_alias, "#{name}@#{new_alias_version}"]
   end

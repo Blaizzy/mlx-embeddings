@@ -59,9 +59,6 @@ module Homebrew
              depends_on:  "--json",
              description: "Evaluate all available formulae and casks, whether installed or not, to print their " \
                           "JSON. Implied if `HOMEBREW_EVAL_ALL` is set."
-      switch "--all",
-             hidden:     true,
-             depends_on: "--json"
       switch "--variations",
              depends_on:  "--json",
              description: "Include the variations hash in each formula's JSON output."
@@ -103,10 +100,6 @@ module Homebrew
       print_analytics(args: args)
     elsif args.json
       all = args.eval_all?
-      if !all && args.all? && !Homebrew::EnvConfig.eval_all?
-        odisabled "brew info --all", "brew info --eval-all or HOMEBREW_EVAL_ALL"
-        all = true
-      end
 
       print_json(all, args: args)
     elsif args.github?

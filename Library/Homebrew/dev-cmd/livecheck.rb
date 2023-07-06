@@ -27,8 +27,6 @@ module Homebrew
              description: "Check formulae and casks within the given tap, specified as <user>`/`<repo>."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to check them."
-      switch "--all",
-             hidden: true
       switch "--installed",
              description: "Check formulae and casks that are currently installed."
       switch "--newer-only",
@@ -56,10 +54,6 @@ module Homebrew
     args = livecheck_args.parse
 
     all = args.eval_all?
-    if args.all?
-      odisabled "brew livecheck --all", "brew livecheck --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
-      all = true
-    end
 
     if args.debug? && args.verbose?
       puts args

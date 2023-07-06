@@ -521,10 +521,10 @@ describe Formula do
     end
 
     expect(f.homepage).to eq("https://brew.sh")
-    expect(f.version).to eq(Version.create("0.1"))
+    expect(f.version).to eq(Version.new("0.1"))
     expect(f).to be_stable
-    expect(f.stable.version).to eq(Version.create("0.1"))
-    expect(f.head.version).to eq(Version.create("HEAD"))
+    expect(f.stable.version).to eq(Version.new("0.1"))
+    expect(f.head.version).to eq(Version.new("HEAD"))
   end
 
   specify "#active_spec=" do
@@ -624,7 +624,7 @@ describe Formula do
 
     f.update_head_version
 
-    expect(f.head.version).to eq(Version.create("HEAD-5658946"))
+    expect(f.head.version).to eq(Version.new("HEAD-5658946"))
   end
 
   specify "#desc" do

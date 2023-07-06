@@ -27,7 +27,8 @@ module Homebrew
       switch "--force-bottle",
              description: "Show the cache file used when pouring a bottle."
       flag "--bottle-tag=",
-           description: "Show the cache file used when pouring a bottle for the given tag."
+           description: "Show the cache file used when pouring a bottle for the given tag.",
+           hidden:      true
       switch "--HEAD",
              description: "Show the cache file used when building from HEAD."
       switch "--formula", "--formulae",
@@ -96,7 +97,7 @@ module Homebrew
       arch:                       args.arch&.to_sym,
     )
       bottle_tag = if (bottle_tag = args.bottle_tag&.to_sym)
-        # TODO: odeprecate "--bottle-tag"
+        odeprecated "brew --cache --bottle-tag", "brew --cache --os --arch"
         Utils::Bottles::Tag.from_symbol(bottle_tag)
       else
         Utils::Bottles::Tag.new(system: os, arch: arch)
