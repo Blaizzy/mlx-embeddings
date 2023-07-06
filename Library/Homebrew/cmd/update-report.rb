@@ -373,7 +373,9 @@ module Homebrew
   def install_from_api_message
     return if Settings.read("installfromapimessage") == "true"
 
-    auto_update_secs_set = Homebrew::EnvConfig.api_auto_update_secs.to_i.positive?
+    api_auto_update_secs = Homebrew::EnvConfig.api_auto_update_secs.to_i
+    api_auto_update_secs_default = Homebrew::EnvConfig::ENVS.fetch(:HOMEBREW_API_AUTO_UPDATE_SECS).fetch(:default)
+    auto_update_secs_set = api_auto_update_secs.positive? && api_auto_update_secs != api_auto_update_secs_default
     if !Homebrew::EnvConfig.no_auto_update? && !Homebrew::EnvConfig.no_install_from_api? && !auto_update_secs_set
       return
     end
