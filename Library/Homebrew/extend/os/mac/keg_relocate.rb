@@ -45,25 +45,38 @@ class Keg
         change_dylib_id(dylib_id_for(file), file) if file.dylib?
 
         each_linkage_for(file, :dynamically_linked_libraries) do |bad_name|
-          # Don't fix absolute paths unless they are rooted in the build directory
-          next if bad_name.start_with?("/") &&
-                  !rooted_in_build_directory?(bad_name)
-
-          new_name = fixed_name(file, bad_name)
-          change_install_name(bad_name, new_name, file) if new_name != bad_name
+          # Don't fix absolute paths unless they are rooted in the build directory.
+          new_name = if bad_name.start_with?("/") && !rooted_in_build_directory?(bad_name)
+            bad_name
+          else
+            fixed_name(file, bad_name)
+          end
+          loader_name = loader_name_for(file, new_name)
+          change_install_name(bad_name, loader_name, file) if loader_name != bad_name
         end
 
         each_linkage_for(file, :rpaths) do |bad_name|
           # Strip duplicate rpaths and rpaths rooted in the build directory.
-          next if !rooted_in_build_directory?(bad_name) &&
-                  (file.rpaths.count(bad_name) == 1)
-
-          delete_rpath(bad_name, file)
+          if rooted_in_build_directory?(bad_name) || (file.rpaths.count(bad_name) > 1)
+            delete_rpath(bad_name, file)
+          else
+            loader_name = loader_name_for(file, bad_name)
+            change_rpath(bad_name, loader_name, file) if loader_name != bad_name
+          end
         end
       end
     end
 
     generic_fix_dynamic_linkage
+  end
+
+  def loader_name_for(file, target)
+    # Use @loader_path-relative install names for other Homebrew-installed binaries.
+    if ENV["HOMEBREW_RELOCATABLE_INSTALL_NAMES"] && target.start_with?(HOMEBREW_PREFIX)
+      "@loader_path/#{Pathname(target).relative_path_from(file.dirname)}"
+    else
+      target
+    end
   end
 
   # If file is a dylib or bundle itself, look for the dylib named by
