@@ -139,6 +139,11 @@ then
   export CI="1"
 fi
 
+if [[ -n "${GITHUB_ACTIONS:-}" && -n "${ImageOS:-}" && -n "${ImageVersion:-}" ]]
+then
+  export HOMEBREW_GITHUB_HOSTED_RUNNER=1
+fi
+
 # filter the user environment
 PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 

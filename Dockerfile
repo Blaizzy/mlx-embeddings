@@ -77,4 +77,5 @@ RUN mkdir -p \
   && brew cleanup \
   && { git -C .linuxbrew/Homebrew config --unset gc.auto; true; } \
   && { git -C .linuxbrew/Homebrew config --unset homebrew.devcmdrun; true; } \
-  && rm -rf .cache
+  && rm -rf .cache \
+  && touch .linuxbrew/.homebrewdocker
