@@ -248,7 +248,7 @@ module Cask
       opoo <<~EOF
         Your terminal does not have App Management permissions, so Homebrew will delete and reinstall the app.
         This may result in some configurations (like notification settings or location in the Dock/Launchpad) being lost.
-        To fix this, go to Settings > Privacy & Security > App Management and turn on the switch for your terminal.
+        To fix this, go to System Settings > Privacy & Security > App Management and add or enable your terminal.
       EOF
 
       false
