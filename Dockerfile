@@ -72,7 +72,7 @@ RUN mkdir -p \
   && ln -s ../Homebrew/bin/brew .linuxbrew/bin/brew \
   && git -C .linuxbrew/Homebrew remote set-url origin https://github.com/Homebrew/brew \
   && git -C .linuxbrew/Homebrew fetch origin \
-  && HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/core \
+  && HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_AUTO_UPDATE=1 brew tap --force homebrew/core \
   && brew install-bundler-gems \
   && brew cleanup \
   && { git -C .linuxbrew/Homebrew config --unset gc.auto; true; } \

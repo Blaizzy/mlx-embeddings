@@ -253,7 +253,9 @@ class Tap
   # @param quiet [Boolean] If set, suppress all output.
   # @param custom_remote [Boolean] If set, change the tap's remote if already installed.
   # @param verify [Boolean] If set, verify all the formula, casks and aliases in the tap are valid.
-  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false, verify: false)
+  # @param force [Boolean] If set, force core and cask taps to install even under API mode.
+  def install(quiet: false, clone_target: nil, force_auto_update: nil,
+              custom_remote: false, verify: false, force: false)
     require "descriptions"
     require "readall"
 
@@ -297,6 +299,10 @@ class Tap
       args << "-q" if quiet
       path.cd { safe_system "git", *args }
       return
+    elsif (core_tap? || name == "homebrew/cask") && !Homebrew::EnvConfig.no_install_from_api? && !force
+      # odeprecated: move to odie in the next minor release. This may break some CI so we should give notice.
+      opoo "Tapping #{name} is no longer typically necessary.\n" \
+           "Add #{Formatter.option("--force")} if you are sure you need one."
     end
 
     clear_cache
@@ -898,7 +904,8 @@ class CoreTap < Tap
   end
 
   # CoreTap never allows shallow clones (on request from GitHub).
-  def install(quiet: false, clone_target: nil, force_auto_update: nil, custom_remote: false, verify: false)
+  def install(quiet: false, clone_target: nil, force_auto_update: nil,
+              custom_remote: false, verify: false, force: false)
     remote = Homebrew::EnvConfig.core_git_remote # set by HOMEBREW_CORE_GIT_REMOTE
     requested_remote = clone_target || remote
 
@@ -909,7 +916,8 @@ class CoreTap < Tap
       $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} as the Homebrew/homebrew-core Git remote."
     end
 
-    super(quiet: quiet, clone_target: remote, force_auto_update: force_auto_update, custom_remote: custom_remote)
+    super(quiet: quiet, clone_target: remote, force_auto_update: force_auto_update,
+          custom_remote: custom_remote, force: force)
   end
 
   # @private
