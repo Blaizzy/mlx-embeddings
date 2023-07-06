@@ -26,6 +26,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Configure Git user
         if: github.event_name != 'pull_request'

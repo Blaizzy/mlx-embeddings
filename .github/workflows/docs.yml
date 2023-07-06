@@ -17,6 +17,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Install vale
         run: brew install vale
@@ -49,6 +53,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Checkout Homebrew/rubydoc.brew.sh
         uses: actions/checkout@main

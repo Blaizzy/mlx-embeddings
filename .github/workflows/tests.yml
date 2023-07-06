@@ -29,6 +29,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v3
@@ -65,12 +69,14 @@ jobs:
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-22.04
-    env:
-      HOMEBREW_NO_INSTALL_FROM_API: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: true
+          cask: true
+          test-bot: true
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v3
@@ -90,11 +96,9 @@ jobs:
           brew tap homebrew/aliases
           brew tap homebrew/autoupdate
           brew tap homebrew/bundle
-          brew tap homebrew/cask
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
           brew tap homebrew/command-not-found
-          brew tap homebrew/core
           brew tap homebrew/formula-analytics
           brew tap homebrew/portable-ruby
           brew tap homebrew/services
@@ -125,12 +129,14 @@ jobs:
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: ubuntu-22.04
-    env:
-      HOMEBREW_NO_INSTALL_FROM_API: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: true
+          cask: false
+          test-bot: false
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v3
@@ -141,9 +147,6 @@ jobs:
 
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems --groups=all
-
-      - name: Set up the homebrew/core tap
-        run: brew tap homebrew/core
 
       - name: Run brew readall on homebrew/core
         run: brew readall --os=all --arch=all --aliases homebrew/core
@@ -159,12 +162,14 @@ jobs:
     needs: syntax
     if: startsWith(github.repository, 'Homebrew/')
     runs-on: macos-13
-    env:
-      HOMEBREW_NO_INSTALL_FROM_API: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: true
+          test-bot: false
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v3
@@ -178,7 +183,6 @@ jobs:
 
       - name: Set up Homebrew all cask taps
         run: |
-          brew tap homebrew/cask && brew update-reset "$(brew --repo homebrew/cask)"
           brew tap homebrew/cask-fonts
           brew tap homebrew/cask-versions
 
@@ -202,6 +206,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Configure Git user
         uses: Homebrew/actions/git-user-config@master
@@ -224,6 +232,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Build Docker image
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
@@ -266,6 +278,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v3
@@ -309,8 +325,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
-        env:
-          HOMEBREW_NO_INSTALL_FROM_API: 1
+        with:
+          core: true
+          cask: false
+          test-bot: false
 
       - name: Cache Bundler RubyGems
         uses: actions/cache@v3
@@ -398,6 +416,10 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: true
+          cask: false
+          test-bot: true
 
       - run: brew test-bot --only-cleanup-before
 
