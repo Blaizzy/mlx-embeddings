@@ -376,16 +376,17 @@ module Homebrew
     api_auto_update_secs = Homebrew::EnvConfig.api_auto_update_secs.to_i
     api_auto_update_secs_default = Homebrew::EnvConfig::ENVS.fetch(:HOMEBREW_API_AUTO_UPDATE_SECS).fetch(:default)
     auto_update_secs_set = api_auto_update_secs.positive? && api_auto_update_secs != api_auto_update_secs_default
-    if !Homebrew::EnvConfig.no_auto_update? && !Homebrew::EnvConfig.no_install_from_api? && !auto_update_secs_set
-      return
-    end
+    no_auto_update_set = Homebrew::EnvConfig.no_auto_update? &&
+                         !ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] &&
+                         !ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
+    no_install_from_api_set = Homebrew::EnvConfig.no_install_from_api? &&
+                              !Homebrew::EnvConfig.automatically_set_no_install_from_api?
+    return if !no_auto_update_set && !no_install_from_api_set && !auto_update_secs_set
 
     ohai "You have set:"
-    puts "  HOMEBREW_NO_AUTO_UPDATE" if Homebrew::EnvConfig.no_auto_update?
+    puts "  HOMEBREW_NO_AUTO_UPDATE" if no_auto_update_set
     puts "  HOMEBREW_API_AUTO_UPDATE_SECS" if auto_update_secs_set
-    if Homebrew::EnvConfig.no_install_from_api? && !Homebrew::EnvConfig.automatically_set_no_install_from_api?
-      puts "  HOMEBREW_NO_INSTALL_FROM_API"
-    end
+    puts "  HOMEBREW_NO_INSTALL_FROM_API" if no_install_from_api_set
     puts "but we have dramatically sped up and fixed many bugs in the way we do Homebrew updates since."
     puts "Please consider unsetting these and tweaking the values based on the new behaviour."
     puts "\n\n"
@@ -397,6 +398,8 @@ module Homebrew
   def untap_message
     return if Homebrew::EnvConfig.no_install_from_api?
     return if Homebrew::EnvConfig.developer? || ENV["HOMEBREW_DEV_CMD_RUN"]
+    return if ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] || ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
+    return if (HOMEBREW_PREFIX/".homebrewdocker").exist?
 
     core_tap = CoreTap.instance
     cask_tap = Tap.default_cask_tap
