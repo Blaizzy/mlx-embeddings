@@ -208,7 +208,6 @@ describe SoftwareSpec do
         expect(spec.declared_deps).not_to be_empty
         expect(spec.declared_deps.first).to be_uses_from_macos
         expect(spec.declared_deps.first).to be_use_macos_install
-        expect(spec.uses_from_macos_elements.first).to eq("foo")
       end
 
       it "add a macOS dependency if the OS version doesn't meet requirements" do
@@ -219,7 +218,6 @@ describe SoftwareSpec do
         expect(spec.deps.first.name).to eq("foo")
         expect(spec.deps.first).to be_uses_from_macos
         expect(spec.deps.first).not_to be_use_macos_install
-        expect(spec.uses_from_macos_elements).to eq(["foo"])
       end
 
       it "works with tags" do

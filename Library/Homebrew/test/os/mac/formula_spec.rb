@@ -23,8 +23,6 @@ describe Formula do
       expect(f.class.head.declared_deps).not_to be_empty
       expect(f.class.stable.declared_deps.first.name).to eq("foo")
       expect(f.class.head.declared_deps.first.name).to eq("foo")
-      expect(f.class.stable.uses_from_macos_elements.first).to eq("foo")
-      expect(f.class.head.uses_from_macos_elements.first).to eq("foo")
     end
 
     it "adds a dependency to any spec if the OS version doesn't meet requirements" do
@@ -40,8 +38,6 @@ describe Formula do
       expect(f.class.head.deps.first.name).to eq("foo")
       expect(f.class.stable.declared_deps).not_to be_empty
       expect(f.class.head.declared_deps).not_to be_empty
-      expect(f.class.stable.uses_from_macos_elements).to eq(["foo"])
-      expect(f.class.head.uses_from_macos_elements).to eq(["foo"])
     end
   end
 
