@@ -346,7 +346,6 @@ describe Formulary do
         else
           expect(formula.deps.count).to eq 6
         end
-        expect(formula.uses_from_macos_elements).to eq ["uses_from_macos_dep"]
 
         expect(formula.requirements.count).to eq 1
         req = formula.requirements.first
