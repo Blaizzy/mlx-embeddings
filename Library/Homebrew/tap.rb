@@ -508,7 +508,13 @@ class Tap
   sig { returns(T::Array[Pathname]) }
   def formula_files
     @formula_files ||= if formula_dir.directory?
-      formula_dir.find.select(&method(:formula_file?))
+      if formula_dir == path
+        # We only want the top level here so we don't treat commands & casks as formulae.
+        # Sharding is only supported in Formula/ and HomebrewFormula/.
+        formula_dir.children
+      else
+        formula_dir.find
+      end.select(&method(:formula_file?))
     else
       []
     end
