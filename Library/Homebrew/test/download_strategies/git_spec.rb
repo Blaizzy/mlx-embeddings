@@ -51,7 +51,7 @@ describe GitDownloadStrategy do
 
   describe "#fetch_last_commit" do
     let(:url) { "file://#{remote_repo}" }
-    let(:version) { Version.create("HEAD") }
+    let(:version) { Version.new("HEAD") }
     let(:remote_repo) { HOMEBREW_PREFIX/"remote_repo" }
 
     before { remote_repo.mkpath }

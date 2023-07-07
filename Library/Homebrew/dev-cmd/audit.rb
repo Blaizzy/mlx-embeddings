@@ -44,15 +44,10 @@ module Homebrew
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to audit them. " \
                           "Implied if `HOMEBREW_EVAL_ALL` is set."
-      switch "--all",
-             hidden: true
       switch "--new", "--new-formula", "--new-cask",
              description: "Run various additional style checks to determine if a new formula or cask is eligible " \
                           "for Homebrew. This should be used when creating new formula and implies " \
                           "`--strict` and `--online`."
-      switch "--[no-]appcast",
-             description: "Audit the appcast.",
-             replacement: false
       switch "--[no-]signing",
              description: "Audit for signed apps, which are required on ARM"
       switch "--token-conflicts",
@@ -136,6 +131,7 @@ module Homebrew
         [Formula.installed, Cask::Caskroom.casks]
       elsif args.no_named?
         if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+          # This odisabled should probably stick around indefinitely.
           odisabled "brew audit",
                     "brew audit --eval-all or HOMEBREW_EVAL_ALL"
         end
@@ -143,8 +139,8 @@ module Homebrew
         [Formula.all, Cask::Cask.all]
       else
         if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
-          odeprecated "brew audit [path ...]",
-                      "brew audit [name ...]"
+          odisabled "brew audit [path ...]",
+                    "brew audit [name ...]"
         end
 
         args.named.to_formulae_and_casks
@@ -235,7 +231,7 @@ module Homebrew
       require "cask/auditor"
 
       if args.display_failures_only?
-        odeprecated "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
+        odisabled "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
       end
     end
 

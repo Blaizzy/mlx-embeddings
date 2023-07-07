@@ -20,8 +20,6 @@ module Homebrew
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to show their " \
                           "options."
-      switch "--all",
-             hidden: true
       flag   "--command=",
              description: "Show options for the specified <command>."
 
@@ -35,10 +33,6 @@ module Homebrew
     args = options_args.parse
 
     all = args.eval_all?
-    if args.all?
-      odisabled "brew info --all", "brew info --eval-all" if !all && !Homebrew::EnvConfig.eval_all?
-      all = true
-    end
 
     if all
       puts_options Formula.all.sort, args: args

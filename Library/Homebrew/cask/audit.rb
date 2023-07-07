@@ -266,13 +266,6 @@ module Cask
     end
 
     sig { void }
-    def audit_appcast
-      return unless cask.appcast
-
-      add_error "`appcast` should be replaced with a `livecheck`."
-    end
-
-    sig { void }
     def audit_latest_with_livecheck
       return unless cask.version.latest?
       return unless cask.livecheckable?

@@ -832,15 +832,6 @@ describe Cask::Audit, :cask do
       end
     end
 
-    describe "appcast" do
-      context "when the Cask has an appcast" do
-        let(:cask_token) { "with-appcast" }
-        let(:message) { "`appcast` should be replaced with a `livecheck`." }
-
-        it { is_expected.to error_with(message) }
-      end
-    end
-
     describe "denylist checks" do
       let(:only) { ["denylist"] }
 

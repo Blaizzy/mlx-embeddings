@@ -271,7 +271,7 @@ module Homebrew
             next
           end
 
-          if dep_f.oldname && dep.name.split("/").last == dep_f.oldname
+          if dep_f.oldnames.include?(dep.name.split("/").last)
             problem "Dependency '#{dep.name}' was renamed; use new name '#{dep_f.name}'."
           end
 
@@ -699,10 +699,10 @@ module Homebrew
       when %r{download\.gnome\.org/sources}, %r{ftp\.gnome\.org/pub/GNOME/sources}i
         version_prefix = stable.version.major_minor
         return if formula.tap&.audit_exception :gnome_devel_allowlist, formula.name, version_prefix
-        return if stable_url_version < Version.create("1.0")
+        return if stable_url_version < Version.new("1.0")
         # All minor versions are stable in the new GNOME version scheme (which starts at version 40.0)
         # https://discourse.gnome.org/t/new-gnome-versioning-scheme/4235
-        return if stable_url_version >= Version.create("40.0")
+        return if stable_url_version >= Version.new("40.0")
         return if stable_url_minor_version.even?
 
         problem "#{stable.version} is a development release"

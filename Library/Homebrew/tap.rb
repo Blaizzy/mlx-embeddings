@@ -508,12 +508,7 @@ class Tap
   sig { returns(T::Array[Pathname]) }
   def formula_files
     @formula_files ||= if formula_dir.directory?
-      # TODO: odeprecate the non-official/old logic with a new minor release somehow?
-      if official?
-        formula_dir.find
-      else
-        formula_dir.children
-      end.select(&method(:formula_file?))
+      formula_dir.find.select(&method(:formula_file?))
     else
       []
     end
@@ -542,12 +537,7 @@ class Tap
   sig { returns(T::Array[Pathname]) }
   def cask_files
     @cask_files ||= if cask_dir.directory?
-      # TODO: odeprecate the non-official/old logic with a new minor release somehow?
-      if official?
-        cask_dir.find
-      else
-        cask_dir.children
-      end.select(&method(:ruby_file?))
+      cask_dir.find.select(&method(:ruby_file?))
     else
       []
     end

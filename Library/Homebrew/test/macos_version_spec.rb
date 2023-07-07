@@ -27,10 +27,10 @@ describe MacOSVersion do
   end
 
   specify "comparison with Version" do
-    expect(version).to be > Version.create("10.3")
-    expect(version).to be == Version.create("10.14")
-    expect(version).to be === Version.create("10.14") # rubocop:disable Style/CaseEquality
-    expect(version).to be < Version.create("10.15")
+    expect(version).to be > Version.new("10.3")
+    expect(version).to be == Version.new("10.14")
+    expect(version).to be === Version.new("10.14") # rubocop:disable Style/CaseEquality
+    expect(version).to be < Version.new("10.15")
   end
 
   describe "after Big Sur" do

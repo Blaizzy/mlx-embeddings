@@ -13,10 +13,10 @@ class MacOSRequirement < Requirement
 
   # TODO: when Yosemite is removed here, keep these around as empty arrays so we
   # can keep the deprecation/disabling code the same.
-  DISABLED_MACOS_VERSIONS = [].freeze
-  DEPRECATED_MACOS_VERSIONS = [
+  DISABLED_MACOS_VERSIONS = [
     :yosemite,
   ].freeze
+  DEPRECATED_MACOS_VERSIONS = [].freeze
 
   def initialize(tags = [], comparator: ">=")
     @version = begin
@@ -27,9 +27,11 @@ class MacOSRequirement < Requirement
       end
     rescue MacOSVersion::Error => e
       if DISABLED_MACOS_VERSIONS.include?(e.version)
-        odisabled "depends_on :macos => :#{e.version}"
+        # This odisabled should stick around indefinitely.
+        odisabled "`depends_on macos: :#{e.version}`"
       elsif DEPRECATED_MACOS_VERSIONS.include?(e.version)
-        odeprecated "depends_on :macos => :#{e.version}"
+        # This odeprecated should stick around indefinitely.
+        odeprecated "`depends_on macos: :#{e.version}`"
       else
         raise
       end

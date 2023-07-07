@@ -39,7 +39,7 @@ module Homebrew
   def pr_publish
     args = pr_publish_args.parse
 
-    odeprecated "`brew pr-publish --no-autosquash`" if args.no_autosquash?
+    odisabled "`brew pr-publish --no-autosquash`" if args.no_autosquash?
 
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
     workflow = args.workflow || "publish-commit-bottles.yml"

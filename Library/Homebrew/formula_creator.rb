@@ -36,7 +36,7 @@ module Homebrew
       end
       update_path
       @version = if @version
-        Version.create(@version)
+        Version.new(@version)
       else
         Version.detect(url)
       end

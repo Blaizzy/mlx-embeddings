@@ -56,8 +56,9 @@ module Homebrew
       all = args.eval_all?
       if args.total?
         if !all && !Homebrew::EnvConfig.eval_all?
-          odisabled "brew unbottled --total", "brew unbottled --total --eval-all or HOMEBREW_EVAL_ALL"
+          raise UsageError, "`brew unbottled --total` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
         end
+
         all = true
       end
 
@@ -99,8 +100,9 @@ module Homebrew
       formulae = all_formulae = args.named.to_formulae
     elsif args.dependents?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-        odisabled "brew unbottled --dependents", "brew unbottled --all --dependents or HOMEBREW_EVAL_ALL"
+        raise UsageError, "`brew unbottled --dependents` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
       end
+
       formulae = all_formulae = Formula.all
 
       @sort = " (sorted by number of dependents)"

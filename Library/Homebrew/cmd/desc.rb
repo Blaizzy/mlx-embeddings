@@ -43,7 +43,7 @@ module Homebrew
     args = desc_args.parse
 
     if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-      odisabled "brew desc", "brew desc --eval-all or HOMEBREW_EVAL_ALL"
+      raise UsageError, "`brew desc` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
     end
 
     search_type = if args.search?

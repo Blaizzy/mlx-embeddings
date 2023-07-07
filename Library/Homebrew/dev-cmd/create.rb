@@ -101,7 +101,7 @@ module Homebrew
     raise Cask::CaskAlreadyCreatedError, token if cask_path.exist?
 
     version = if args.set_version
-      Version.create(args.set_version)
+      Version.new(args.set_version)
     else
       Version.detect(url.gsub(token, "").gsub(/x86(_64)?/, ""))
     end

@@ -54,8 +54,6 @@ module Homebrew
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to list " \
                           "their dependencies."
-      switch "--all",
-             hidden:      true
       switch "--for-each",
              description: "Switch into the mode used by the `--all` option, but only list dependencies " \
                           "for each provided <formula>, one formula per line. This is used for " \
@@ -80,13 +78,6 @@ module Homebrew
     args = deps_args.parse
 
     all = args.eval_all?
-    if args.all?
-      unless all
-        odisabled "brew deps --all",
-                  "brew deps --eval-all or HOMEBREW_EVAL_ALL"
-      end
-      all = true
-    end
 
     Formulary.enable_factory_cache!
 

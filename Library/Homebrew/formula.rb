@@ -500,7 +500,7 @@ class Formula
   # An old name for the formula.
   # @deprecated Use #{#oldnames} instead.
   def oldname
-    # odeprecated "Formula#oldname", "Formula#oldnames"
+    odeprecated "Formula#oldname", "Formula#oldnames"
     @oldname ||= oldnames.first
   end
 
@@ -1036,7 +1036,7 @@ class Formula
   # The generated launchd {.plist} file path.
   sig { returns(Pathname) }
   def plist_path
-    odeprecated "formula.plist_path", "formula.launchd_service_path"
+    odisabled "formula.plist_path", "formula.launchd_service_path"
     launchd_service_path
   end
 
@@ -1859,7 +1859,7 @@ class Formula
   def self.all
     # TODO: ideally avoid using ARGV by moving to e.g. CLI::Parser
     if ARGV.exclude?("--eval-all") && !Homebrew::EnvConfig.eval_all?
-      odeprecated "Formula#all without --all or HOMEBREW_EVAL_ALL"
+      odisabled "Formula#all without --eval-all or HOMEBREW_EVAL_ALL"
     end
 
     (core_names + tap_files).map do |name_or_file|
@@ -3265,7 +3265,7 @@ class Formula
     #
     # @deprecated Please use {Homebrew::Service.require_root} instead.
     def plist_options(options)
-      odeprecated "plist_options", "service.require_root"
+      odisabled "plist_options", "service.require_root"
       @plist_startup = options[:startup]
       @plist_manual = options[:manual]
     end
@@ -3550,7 +3550,7 @@ class Formula
 
     # Permit links to certain libraries that don't exist. Available on Linux only.
     def ignore_missing_libraries(*libs)
-      odeprecated "ignore_missing_libraries"
+      odisabled "ignore_missing_libraries"
       unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
         raise FormulaSpecificationError, "#{__method__} is available on Linux only"
       end

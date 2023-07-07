@@ -26,7 +26,7 @@ module Cask
     def self.all
       # TODO: ideally avoid using ARGV by moving to e.g. CLI::Parser
       if ARGV.exclude?("--eval-all") && !Homebrew::EnvConfig.eval_all?
-        odeprecated "Cask::Cask#all without --all or HOMEBREW_EVAL_ALL"
+        odisabled "Cask::Cask#all without --eval-all or HOMEBREW_EVAL_ALL"
       end
 
       Tap.flat_map(&:cask_files).map do |f|
