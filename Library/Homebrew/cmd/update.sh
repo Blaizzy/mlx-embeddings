@@ -613,6 +613,11 @@ EOS
     declare UPSTREAM_BRANCH"${TAP_VAR}"="${UPSTREAM_BRANCH_DIR}"
     declare PREFETCH_REVISION"${TAP_VAR}"="$(git rev-parse -q --verify refs/remotes/origin/"${UPSTREAM_BRANCH_DIR}")"
 
+    if [[ -n "${GITHUB_ACTIONS}" && -n "${HOMEBREW_UPDATE_SKIP_BREW}" && "${DIR}" == "${HOMEBREW_REPOSITORY}" ]]
+    then
+      continue
+    fi
+
     # Force a full update if we don't have any tags.
     if [[ "${DIR}" == "${HOMEBREW_REPOSITORY}" && -z "$(git tag --list)" ]]
     then
@@ -767,9 +772,10 @@ EOS
     if [[ -n "${HOMEBREW_SIMULATE_FROM_CURRENT_BRANCH}" ]]
     then
       simulate_from_current_branch "${DIR}" "${TAP_VAR}" "${UPSTREAM_BRANCH}" "${CURRENT_REVISION}"
-    elif [[ -z "${HOMEBREW_UPDATE_FORCE}" ]] &&
-         [[ "${PREFETCH_REVISION}" == "${POSTFETCH_REVISION}" ]] &&
-         [[ "${CURRENT_REVISION}" == "${POSTFETCH_REVISION}" ]]
+    elif [[ -z "${HOMEBREW_UPDATE_FORCE}" &&
+            "${PREFETCH_REVISION}" == "${POSTFETCH_REVISION}" &&
+            "${CURRENT_REVISION}" == "${POSTFETCH_REVISION}" ]] ||
+         [[ -n "${GITHUB_ACTIONS}" && -n "${HOMEBREW_UPDATE_SKIP_BREW}" && "${DIR}" == "${HOMEBREW_REPOSITORY}" ]]
     then
       export HOMEBREW_UPDATE_BEFORE"${TAP_VAR}"="${CURRENT_REVISION}"
       export HOMEBREW_UPDATE_AFTER"${TAP_VAR}"="${CURRENT_REVISION}"
