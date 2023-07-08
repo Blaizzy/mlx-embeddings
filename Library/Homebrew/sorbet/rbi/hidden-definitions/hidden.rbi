@@ -5246,6 +5246,7 @@ class Object
 end
 
 class Object
+  extend ::MacOSVersionErrorCompat
   def self.yaml_tag(url); end
 end
 
