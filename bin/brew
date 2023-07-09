@@ -40,7 +40,7 @@ do
 done
 unset cmd
 
-BREW_FILE_DIRECTORY="$(quiet_cd "${0%/*}/" && pwd -P)"
+BREW_FILE_DIRECTORY="$(quiet_cd "${0%/*}/" && pwd)"
 HOMEBREW_BREW_FILE="${BREW_FILE_DIRECTORY%/}/${0##*/}"
 HOMEBREW_PREFIX="${HOMEBREW_BREW_FILE%/*/*}"
 
