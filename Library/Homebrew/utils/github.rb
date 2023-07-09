@@ -56,10 +56,10 @@ module GitHub
     API.open_rest(url_to("repos", user, repo))
   end
 
-  def self.issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil)
+  def self.issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil, type: nil)
     return [] unless tap_remote_repo
 
-    search_issues(name, repo: tap_remote_repo, state: state, in: "title")
+    search_issues(name, repo: tap_remote_repo, state: state, type: type, in: "title")
   end
 
   def self.user
