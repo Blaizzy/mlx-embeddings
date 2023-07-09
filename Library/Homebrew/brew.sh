@@ -44,6 +44,26 @@ else
   HOMEBREW_DEFAULT_TEMP="/tmp"
 fi
 
+realpath() {
+  (cd "$1" &>/dev/null && pwd -P)
+}
+
+# Support systems where HOMEBREW_PREFIX is the default,
+# but a parent directory is a symlink.
+# Example: Fedora Silverblue symlinks /home -> var/home
+if [[ "${HOMEBREW_PREFIX}" != "${HOMEBREW_DEFAULT_PREFIX}" && "$(realpath "${HOMEBREW_DEFAULT_PREFIX}")" == "${HOMEBREW_PREFIX}" ]]
+then
+  HOMEBREW_PREFIX="${HOMEBREW_DEFAULT_PREFIX}"
+fi
+
+# Support systems where HOMEBREW_REPOSITORY is the default,
+# but a parent directory is a symlink.
+# Example: Fedora Silverblue symlinks /home -> var/home
+if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_DEFAULT_REPOSITORY}" && "$(realpath "${HOMEBREW_DEFAULT_REPOSITORY}")" == "${HOMEBREW_REPOSITORY}" ]]
+then
+  HOMEBREW_REPOSITORY="${HOMEBREW_DEFAULT_REPOSITORY}"
+fi
+
 # Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
 # for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
 # These variables are set by bin/brew
