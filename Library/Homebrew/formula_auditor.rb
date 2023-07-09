@@ -277,6 +277,7 @@ module Homebrew
 
           if @core_tap &&
              @new_formula &&
+             !dep.uses_from_macos? &&
              dep_f.keg_only? &&
              dep_f.keg_only_reason.provided_by_macos? &&
              dep_f.keg_only_reason.applicable? &&
