@@ -264,6 +264,7 @@ _brew___cache() {
   _arguments \
     '(--build-from-source --force-bottle --bottle-tag --cask)--HEAD[Show the cache file used when building from HEAD]' \
     '(--bottle-tag)--arch[Show cache file for the given CPU architecture.(Pass `all` to show cache files for all architectures.)]' \
+    '(--build-from-source --force-bottle --HEAD --cask --os --arch)--bottle-tag[Show the cache file used when pouring a bottle for the given tag]' \
     '(--force-bottle --bottle-tag --HEAD --cask)--build-from-source[Show the cache file used when building from source]' \
     '--debug[Display any debugging information]' \
     '(--build-from-source --bottle-tag --HEAD --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
