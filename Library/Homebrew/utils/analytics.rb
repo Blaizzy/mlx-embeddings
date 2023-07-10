@@ -12,9 +12,9 @@ module Utils
   # @api private
   module Analytics
     INFLUX_BUCKET = "analytics"
-    INFLUX_TOKEN = "sSE5_ENBUUhuh3vL3QDi6Rqo96DDZznBYoBT_TEdYnjj8IH2H_1PQD2qkAP0nnSwEIKvfQvW3Sb24GWYT35jqg=="
-    INFLUX_HOST = "https://europe-west1-1.gcp.cloud2.influxdata.com"
-    INFLUX_ORG = "9a707721bb47fc02"
+    INFLUX_TOKEN = "cSVYFCexszYqAy2h7PpURZuud3VuZzVXtajCtvoPbACseY_XD9LqqGHdKg5W9QAyxYWoHT6jnJHFJzlsy5X2Rg=="
+    INFLUX_HOST = "https://eu-central-1-1.aws.cloud2.influxdata.com"
+    INFLUX_ORG = "d81a3e6d582d485f"
 
     class << self
       extend T::Sig
