@@ -113,10 +113,12 @@ module Homebrew
       return [nil, references] if livecheck_formula.blank? && livecheck_cask.blank?
 
       # Load the referenced formula or cask
-      referenced_formula_or_cask = if livecheck_formula
-        Formulary.factory(livecheck_formula)
-      elsif livecheck_cask
-        Cask::CaskLoader.load(livecheck_cask)
+      referenced_formula_or_cask = Homebrew.with_no_api_env do
+        if livecheck_formula
+          Formulary.factory(livecheck_formula)
+        elsif livecheck_cask
+          Cask::CaskLoader.load(livecheck_cask)
+        end
       end
 
       # Error if a `livecheck` block references a formula/cask that was already
