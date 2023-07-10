@@ -31,6 +31,7 @@ class LinkageChecker
     @unwanted_system_dylibs = []
     @version_conflict_deps = []
     @files_missing_rpaths = []
+    @executable_path_dylibs = []
 
     check_dylibs(rebuild_cache: rebuild_cache)
   end
@@ -39,13 +40,14 @@ class LinkageChecker
     display_items "System libraries", @system_dylibs
     display_items "Homebrew libraries", @brewed_dylibs
     display_items "Indirect dependencies with linkage", @indirect_deps
-    display_items "Variable-referenced libraries", @variable_dylibs
+    display_items "@rpath-referenced libraries", @variable_dylibs
     display_items "Missing libraries", @broken_dylibs
     display_items "Broken dependencies", @broken_deps
     display_items "Undeclared dependencies with linkage", @undeclared_deps
     display_items "Dependencies with no linkage", @unnecessary_deps
     display_items "Unwanted system libraries", @unwanted_system_dylibs
     display_items "Files with missing rpath", @files_missing_rpaths
+    display_items "@executable_path references in libraries", @executable_path_dylibs
   end
 
   def display_reverse_output
@@ -72,6 +74,7 @@ class LinkageChecker
 
     display_items "Undeclared dependencies with linkage", @undeclared_deps, puts_output: puts_output
     display_items "Files with missing rpath", @files_missing_rpaths, puts_output: puts_output
+    display_items "@executable_path references in libraries", @executable_path_dylibs, puts_output: puts_output
   end
 
   sig { params(test: T::Boolean, strict: T::Boolean).returns(T::Boolean) }
@@ -81,7 +84,7 @@ class LinkageChecker
     issues = [@broken_deps, unexpected_broken_dylibs]
     if test
       issues += [@unwanted_system_dylibs, @version_conflict_deps, unexpected_present_dylibs]
-      issues += [@undeclared_deps, @files_missing_rpaths] if strict
+      issues += [@undeclared_deps, @files_missing_rpaths, @executable_path_dylibs] if strict
     end
     issues.any?(&:present?)
   end
@@ -176,8 +179,11 @@ class LinkageChecker
 
         checked_dylibs << dylib
 
-        if dylib.start_with? "@"
+        if dylib.start_with? "@rpath"
           @variable_dylibs << dylib
+          next
+        elsif dylib.start_with?("@executable_path") && !Pathname(file).binary_executable?
+          @executable_path_dylibs << dylib
           next
         end
 
