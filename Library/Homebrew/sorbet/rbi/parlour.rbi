@@ -244,9 +244,6 @@ end
 module MachOShim
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
   def dylib_id(*args, **options, &block); end
-
-  sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
-  def rpaths(*args, **options, &block); end
 end
 
 class PkgVersion
