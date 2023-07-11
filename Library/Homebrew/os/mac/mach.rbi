@@ -3,5 +3,5 @@
 module MachOShim
   include Kernel
 
-  def dirname; end
+  requires_ancestor { Pathname }
 end
