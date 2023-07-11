@@ -309,6 +309,10 @@ module Homebrew
 
           next unless @core_tap
 
+          if @strict && dep.name == "rustup-init" && !dep.test?
+            problem "Formulae should use `rust` instead of `rustup-init` to build"
+          end
+
           unless dep_f.tap.core_tap?
             problem <<~EOS
               Dependency '#{dep.name}' is not in homebrew/core. Formulae in homebrew/core
