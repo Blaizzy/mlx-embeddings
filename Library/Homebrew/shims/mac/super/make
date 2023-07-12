@@ -1,4 +1,12 @@
 #!/bin/bash
 
 export HOMEBREW_CCCFG="O${HOMEBREW_CCCFG}"
-exec xcrun "make" "$@"
+
+SHIM_FILE="${0##*/}"
+
+if xcrun --find "${SHIM_FILE}" &>/dev/null
+then
+  exec xcrun "${SHIM_FILE}" "$@"
+else
+  exec xcrun make "$@"
+fi
