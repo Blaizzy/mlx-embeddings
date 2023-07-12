@@ -1005,6 +1005,7 @@ class RSpec::Mocks::MethodDouble
   def define_proxy_method; end
   def expectations; end
   def message_expectation_class; end
+  def method_missing_block; end
   def method_name; end
   def method_stasher; end
   def object; end
