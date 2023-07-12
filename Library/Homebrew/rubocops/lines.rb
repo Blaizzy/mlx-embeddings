@@ -884,6 +884,50 @@ module RuboCop
           problem "Formulae should not depend on :tuntap" if depends_on? :tuntap
         end
       end
+
+      # This cop makes sure that formulae build with `rust` instead of `rustup-init`.
+      #
+      # @api private
+      class RustCheck < FormulaCop
+        extend AutoCorrector
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          return if body_node.nil?
+
+          # Enforce use of `rust` for rust dependency in core
+          return if formula_tap != "homebrew-core"
+
+          find_method_with_args(body_node, :depends_on, "rustup-init") do
+            problem "Formulae in homebrew/core should use 'depends_on \"rust\"' " \
+                    "instead of '#{@offensive_node.source}'." do |corrector|
+              corrector.replace(@offensive_node.source_range, "depends_on \"rust\"")
+            end
+          end
+
+          # TODO: Enforce order of dependency types so we don't need to check for
+          #       depends_on "rustup-init" => [:test, :build]
+          [:build, [:build, :test], [:test, :build]].each do |type|
+            find_method_with_args(body_node, :depends_on, "rustup-init" => type) do
+              problem "Formulae in homebrew/core should use 'depends_on \"rust\" => #{type}' " \
+                      "instead of '#{@offensive_node.source}'." do |corrector|
+                corrector.replace(@offensive_node.source_range, "depends_on \"rust\" => #{type}")
+              end
+            end
+          end
+
+          install_node = find_method_def(body_node, :install)
+          return if install_node.blank?
+
+          find_every_method_call_by_name(install_node, :system).each do |method|
+            param = parameters(method).first
+            next if param.blank?
+            # FIXME: Handle Pathname parameters (e.g. `system bin/"rustup-init"`).
+            next if regex_match_group(param, /rustup-init$/).blank?
+
+            problem "Formula in homebrew/core should not use `rustup-init` at build-time."
+          end
+        end
+      end
     end
   end
 end
