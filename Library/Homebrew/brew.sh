@@ -581,7 +581,7 @@ then
   fi
 else
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
-  [[ -n "${HOMEBREW_LINUX}" ]] && HOMEBREW_OS_VERSION="$(source /etc/os-release && echo $PRETTY__NAME)"
+  [[ -n "${HOMEBREW_LINUX}" ]] && HOMEBREW_OS_VERSION="$(source /etc/os-release && echo ${PRETTY_NAME})"
   : "${HOMEBREW_OS_VERSION:=$(uname -r)}"
   HOMEBREW_OS_USER_AGENT_VERSION="${HOMEBREW_OS_VERSION}"
 
