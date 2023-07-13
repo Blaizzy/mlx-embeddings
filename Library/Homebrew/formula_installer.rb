@@ -229,8 +229,8 @@ class FormulaInstaller
     rescue TapFormulaUnavailableError => e
       raise if e.tap.installed?
 
-      e.tap.install
-      retry
+      e.tap.ensure_installed!
+      retry if e.tap.installed? # It may have not installed if it's a core tap.
     end
   rescue FormulaUnavailableError => e
     e.dependent = formula.full_name

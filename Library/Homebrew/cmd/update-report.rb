@@ -600,7 +600,7 @@ class Reporter
         next unless (HOMEBREW_PREFIX/"Caskroom"/new_name).exist?
 
         new_tap = Tap.fetch(new_tap_name)
-        new_tap.install unless new_tap.installed?
+        new_tap.ensure_installed!
         ohai "#{name} has been moved to Homebrew.", <<~EOS
           To uninstall the cask, run:
             brew uninstall --cask --force #{name}
@@ -650,7 +650,7 @@ class Reporter
           EOS
         end
       else
-        new_tap.install unless new_tap.installed?
+        new_tap.ensure_installed!
         # update tap for each Tab
         tabs.each { |tab| tab.tap = new_tap }
         tabs.each(&:write)

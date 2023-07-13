@@ -626,7 +626,7 @@ module Formulary
           new_tap_user, new_tap_repo, = new_tap_name.split("/")
           new_tap_name = "#{new_tap_user}/#{new_tap_repo}"
           new_tap = Tap.fetch new_tap_name
-          new_tap.install unless new_tap.installed?
+          new_tap.ensure_installed!
           new_tapped_name = "#{new_tap_name}/#{name}"
           name, path = formula_name_path(new_tapped_name, warn: false)
           old_name = tapped_name
