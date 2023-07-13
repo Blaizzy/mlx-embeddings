@@ -531,7 +531,7 @@ module Homebrew
       end
 
       def check_casktap_integrity
-        default_cask_tap = Tap.default_cask_tap
+        default_cask_tap = CoreCaskTap.instance
         return unless default_cask_tap.installed?
 
         broken_tap(default_cask_tap) || examine_git_origin(default_cask_tap.git_repo, default_cask_tap.remote)
@@ -861,7 +861,7 @@ module Homebrew
         return if Homebrew::EnvConfig.no_install_from_api?
         return if Homebrew::Settings.read("devcmdrun") == "true"
 
-        cask_tap = Tap.fetch("homebrew", "cask")
+        cask_tap = CoreCaskTap.instance
         return unless cask_tap.installed?
 
         <<~EOS
@@ -921,7 +921,7 @@ module Homebrew
       end
 
       def check_cask_taps
-        default_cask_tap = Tap.default_cask_tap
+        default_cask_tap = CoreCaskTap.instance
         alt_taps = Tap.select { |t| t.cask_dir.exist? && t != default_cask_tap }
 
         error_tap_paths = []

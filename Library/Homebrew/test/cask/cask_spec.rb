@@ -24,7 +24,7 @@ describe Cask::Cask, :cask do
   end
 
   describe "load" do
-    let(:tap_path) { Tap.default_cask_tap.path }
+    let(:tap_path) { CoreCaskTap.instance.path }
     let(:file_dirname) { Pathname.new(__FILE__).dirname }
     let(:relative_tap_path) { tap_path.relative_path_from(file_dirname) }
 
