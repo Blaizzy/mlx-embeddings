@@ -375,6 +375,15 @@ module Superenv
       self["HOMEBREW_OPTIMIZATION_LEVEL"] = "O1"
     end
   end
+
+  sig { params(block: T.nilable(T.proc.void)).void }
+  def O3(&block)
+    if block
+      with_env(HOMEBREW_OPTIMIZATION_LEVEL: "O3", &block)
+    else
+      self["HOMEBREW_OPTIMIZATION_LEVEL"] = "O3"
+    end
+  end
   # rubocop: enable Naming/MethodName
 end
 
