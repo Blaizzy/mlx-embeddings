@@ -50,11 +50,11 @@ module Homebrew
       directories = ["_data/formula", "api/formula", "formula"]
       FileUtils.rm_rf directories + ["_data/formula_canonical.json"]
       FileUtils.mkdir_p directories
-
-      File.write("api/formula_tap_migrations.json", JSON.dump(tap.tap_migrations))
     end
 
     Homebrew.with_no_api_env do
+      File.write("api/formula_tap_migrations.json", JSON.dump(tap.tap_migrations)) unless args.dry_run?
+
       Formulary.enable_factory_cache!
       Formula.generating_hash!
 
