@@ -226,24 +226,11 @@ module RuboCop
       class PyoxidizerCheck < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
-
           # Disallow use of PyOxidizer as a dependency in core
           return if formula_tap != "homebrew-core"
+          return unless depends_on?("pyoxidizer")
 
-          find_method_with_args(body_node, :depends_on, "pyoxidizer") do
-            problem "Formulae in homebrew/core should not use '#{@offensive_node.source}'."
-          end
-
-          [
-            :build,
-            [:build],
-            [:build, :test],
-            [:test, :build],
-          ].each do |type|
-            find_method_with_args(body_node, :depends_on, "pyoxidizer" => type) do
-              problem "Formulae in homebrew/core should not use '#{@offensive_node.source}'."
-            end
-          end
+          problem "Formulae in homebrew/core should not use '#{@offensive_node.source}'."
         end
       end
 
