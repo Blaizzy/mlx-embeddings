@@ -13,17 +13,6 @@ case "${HOMEBREW_SYSTEM}" in
   Linux) HOMEBREW_LINUX="1" ;;
 esac
 
-# Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
-# for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
-# These variables are set by bin/brew
-# shellcheck disable=SC2154
-if [[ -d "${HOMEBREW_REPOSITORY}/Cellar" ]]
-then
-  HOMEBREW_CELLAR="${HOMEBREW_REPOSITORY}/Cellar"
-else
-  HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar"
-fi
-
 HOMEBREW_MACOS_ARM_DEFAULT_PREFIX="/opt/homebrew"
 HOMEBREW_MACOS_ARM_DEFAULT_REPOSITORY="${HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}"
 HOMEBREW_LINUX_DEFAULT_PREFIX="/home/linuxbrew/.linuxbrew"
@@ -53,6 +42,37 @@ else
   HOMEBREW_DEFAULT_CACHE="${CACHE_HOME}/Homebrew"
   HOMEBREW_DEFAULT_LOGS="${CACHE_HOME}/Homebrew/Logs"
   HOMEBREW_DEFAULT_TEMP="/tmp"
+fi
+
+realpath() {
+  (cd "$1" &>/dev/null && pwd -P)
+}
+
+# Support systems where HOMEBREW_PREFIX is the default,
+# but a parent directory is a symlink.
+# Example: Fedora Silverblue symlinks /home -> var/home
+if [[ "${HOMEBREW_PREFIX}" != "${HOMEBREW_DEFAULT_PREFIX}" && "$(realpath "${HOMEBREW_DEFAULT_PREFIX}")" == "${HOMEBREW_PREFIX}" ]]
+then
+  HOMEBREW_PREFIX="${HOMEBREW_DEFAULT_PREFIX}"
+fi
+
+# Support systems where HOMEBREW_REPOSITORY is the default,
+# but a parent directory is a symlink.
+# Example: Fedora Silverblue symlinks /home -> var/home
+if [[ "${HOMEBREW_REPOSITORY}" != "${HOMEBREW_DEFAULT_REPOSITORY}" && "$(realpath "${HOMEBREW_DEFAULT_REPOSITORY}")" == "${HOMEBREW_REPOSITORY}" ]]
+then
+  HOMEBREW_REPOSITORY="${HOMEBREW_DEFAULT_REPOSITORY}"
+fi
+
+# Where we store built products; a Cellar in HOMEBREW_PREFIX (often /usr/local
+# for bottles) unless there's already a Cellar in HOMEBREW_REPOSITORY.
+# These variables are set by bin/brew
+# shellcheck disable=SC2154
+if [[ -d "${HOMEBREW_REPOSITORY}/Cellar" ]]
+then
+  HOMEBREW_CELLAR="${HOMEBREW_REPOSITORY}/Cellar"
+else
+  HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar"
 fi
 
 HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
