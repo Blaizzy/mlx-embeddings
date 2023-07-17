@@ -90,7 +90,7 @@ module MachOShim
   end
 
   def rpaths(resolve_variable_references: true)
-    names = macho.rpaths.uniq
+    names = macho.rpaths
 
     names.map! { |name| resolve_variable_name(name) } if resolve_variable_references
 
