@@ -334,7 +334,7 @@ end
 class TapCoreRemoteMismatchError < TapRemoteMismatchError
   def message
     <<~EOS
-      Tap #{name} remote does mot match HOMEBREW_CORE_GIT_REMOTE.
+      Tap #{name} remote does not match HOMEBREW_CORE_GIT_REMOTE.
       #{expected_remote} != #{actual_remote}
       Please set HOMEBREW_CORE_GIT_REMOTE="#{actual_remote}" and run `brew update` instead.
     EOS
