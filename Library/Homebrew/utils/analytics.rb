@@ -109,7 +109,9 @@ options: options)
       end
 
       def messages_displayed?
-        config_true?(:analyticsmessage) && config_true?(:caskanalyticsmessage)
+        config_true?(:analyticsmessage) &&
+          config_true?(:caskanalyticsmessage) &&
+          config_true?(:influxanalyticsmessage)
       end
 
       def disabled?
@@ -130,6 +132,7 @@ options: options)
       def messages_displayed!
         Homebrew::Settings.write :analyticsmessage, true
         Homebrew::Settings.write :caskanalyticsmessage, true
+        Homebrew::Settings.write :influxanalyticsmessage, true
       end
 
       def enable!
