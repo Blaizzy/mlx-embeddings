@@ -52,6 +52,7 @@ class Tap
     repo = repo.sub(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX, "")
 
     return CoreTap.instance if ["Homebrew", "Linuxbrew"].include?(user) && ["core", "homebrew"].include?(repo)
+    return CoreCaskTap.instance if user == "Homebrew" && repo == "cask"
 
     cache_key = "#{user}/#{repo}".downcase
     cache.fetch(cache_key) { |key| cache[key] = Tap.new(user, repo) }
@@ -64,13 +65,17 @@ class Tap
     fetch(match[:user], match[:repo])
   end
 
-  sig { returns(T.attached_class) }
+  sig { returns(CoreCaskTap) }
   def self.default_cask_tap
-    @default_cask_tap ||= fetch("Homebrew", "cask")
+    odeprecated "Tap.default_cask_tap", "CoreCaskTap.instance"
+
+    CoreCaskTap.instance
   end
 
   sig { params(force: T::Boolean).returns(T::Boolean) }
   def self.install_default_cask_tap_if_necessary(force: false)
+    odeprecated "Tap.install_default_cask_tap_if_necessary", "CoreCaskTap.ensure_installed!"
+
     false
   end
 
@@ -122,6 +127,7 @@ class Tap
     @cask_dir = nil
     @command_dir = nil
     @formula_files = nil
+    @cask_files = nil
     @alias_dir = nil
     @alias_files = nil
     @aliases = nil
@@ -136,6 +142,13 @@ class Tap
     @config = nil
     @spell_checker = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
+  end
+
+  sig { void }
+  def ensure_installed!
+    return if installed?
+
+    install
   end
 
   # The remote path to this {Tap}.
@@ -245,6 +258,12 @@ class Tap
     false
   end
 
+  # @private
+  sig { returns(T::Boolean) }
+  def core_cask_tap?
+    false
+  end
+
   # Install this {Tap}.
   #
   # @param clone_target [String] If passed, it will be used as the clone remote.
@@ -299,7 +318,7 @@ class Tap
       args << "-q" if quiet
       path.cd { safe_system "git", *args }
       return
-    elsif (core_tap? || name == "homebrew/cask") && !Homebrew::EnvConfig.no_install_from_api? && !force
+    elsif (core_tap? || core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api? && !force
       # odeprecated: move to odie in the next minor release. This may break some CI so we should give notice.
       opoo "Tapping #{name} is no longer typically necessary.\n" \
            "Add #{Formatter.option("--force")} if you are sure you need one."
@@ -553,13 +572,18 @@ class Tap
   sig { params(tap: Tap).returns(T::Hash[String, Pathname]) }
   def self.cask_files_by_name(tap)
     cache_key = "cask_files_by_name_#{tap}"
-
     cache.fetch(cache_key) do |key|
-      cache[key] = tap.cask_files.each_with_object({}) do |file, hash|
-        # If there's more than one file with the same basename: intentionally
-        # ignore the later ones here.
-        hash[file.basename.to_s] ||= file
-      end
+      cache[key] = tap.cask_files_by_name
+    end
+  end
+
+  # @private
+  sig { returns(T::Hash[String, Pathname]) }
+  def cask_files_by_name
+    cask_files.each_with_object({}) do |file, hash|
+      # If there's more than one file with the same basename: intentionally
+      # ignore the later ones here.
+      hash[file.basename.to_s] ||= file
     end
   end
 
@@ -696,9 +720,7 @@ class Tap
   # Hash with tap cask renames.
   sig { returns(T::Hash[String, String]) }
   def cask_renames
-    @cask_renames ||= if name == "homebrew/cask" && !Homebrew::EnvConfig.no_install_from_api?
-      Homebrew::API::Cask.all_renames
-    elsif (rename_file = path/HOMEBREW_TAP_CASK_RENAMES_FILE).file?
+    @cask_renames ||= if (rename_file = path/HOMEBREW_TAP_CASK_RENAMES_FILE).file?
       JSON.parse(rename_file.read)
     else
       {}
@@ -718,11 +740,7 @@ class Tap
   # Hash with tap migrations.
   sig { returns(Hash) }
   def tap_migrations
-    @tap_migrations ||= if name == "homebrew/cask" && !Homebrew::EnvConfig.no_install_from_api?
-      migrations, = Homebrew::API.fetch_json_api_file "cask_tap_migrations.jws.json",
-                                                      stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
-      migrations
-    elsif (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
+    @tap_migrations ||= if (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
       JSON.parse(migration_file.read)
     else
       {}
@@ -749,9 +767,7 @@ class Tap
   # @private
   sig { returns(T::Boolean) }
   def should_report_analytics?
-    return !Homebrew::EnvConfig.no_install_from_api? && official? unless installed?
-
-    !private?
+    installed? && !private?
   end
 
   sig { params(other: T.nilable(T.any(String, Tap))).returns(T::Boolean) }
@@ -867,29 +883,51 @@ class Tap
   end
 end
 
+class AbstractCoreTap < Tap
+  extend T::Helpers
+
+  abstract!
+
+  sig { returns(T.attached_class) }
+  def self.instance
+    @instance ||= T.unsafe(self).new
+  end
+
+  sig { override.void }
+  def ensure_installed!
+    return unless Homebrew::EnvConfig.no_install_from_api?
+    return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
+
+    super
+  end
+
+  sig { void }
+  def self.ensure_installed!
+    instance.ensure_installed!
+  end
+
+  # @private
+  sig { override.returns(T::Boolean) }
+  def should_report_analytics?
+    return super if Homebrew::EnvConfig.no_install_from_api?
+
+    true
+  end
+end
+
 # A specialized {Tap} class for the core formulae.
-class CoreTap < Tap
+class CoreTap < AbstractCoreTap
   # @private
   sig { void }
   def initialize
     super "Homebrew", "core"
   end
 
-  sig { returns(CoreTap) }
-  def self.instance
-    @instance ||= new
-  end
-
-  sig { void }
-  def self.ensure_installed!
-    return if instance.installed?
-    return unless Homebrew::EnvConfig.no_install_from_api?
-    return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
-
-    # Tests override homebrew-core locations and we don't want to auto-tap in them.
+  sig { override.void }
+  def ensure_installed!
     return if ENV["HOMEBREW_TESTS"]
 
-    instance.install
+    super
   end
 
   sig { returns(String) }
@@ -1046,20 +1084,74 @@ class CoreTap < Tap
   def formula_files_by_name
     return super if Homebrew::EnvConfig.no_install_from_api?
 
-    formula_names.each_with_object({}) do |name, hash|
+    Homebrew::API::Formula.all_formulae.each_with_object({}) do |item, hash|
+      name, formula_hash = item
       # If there's more than one file with the same basename: intentionally
       # ignore the later ones here.
-      hash[name] ||= sharded_formula_path(name)
+      hash[name] ||= path/formula_hash["ruby_source_path"]
+    end
+  end
+end
+
+# A specialized {Tap} class for homebrew-cask.
+class CoreCaskTap < AbstractCoreTap
+  # @private
+  sig { void }
+  def initialize
+    super "Homebrew", "cask"
+  end
+
+  # @private
+  sig { override.returns(T::Boolean) }
+  def core_cask_tap?
+    true
+  end
+
+  sig { override.returns(T::Array[Pathname]) }
+  def cask_files
+    return super if Homebrew::EnvConfig.no_install_from_api? || installed?
+
+    raise TapUnavailableError, name
+  end
+
+  sig { override.returns(T::Array[String]) }
+  def cask_tokens
+    return super if Homebrew::EnvConfig.no_install_from_api?
+
+    Homebrew::API::Cask.all_casks.keys
+  end
+
+  # @private
+  sig { override.returns(T::Hash[String, Pathname]) }
+  def cask_files_by_name
+    return super if Homebrew::EnvConfig.no_install_from_api?
+
+    Homebrew::API::Cask.all_casks.each_with_object({}) do |item, hash|
+      name, cask_hash = item
+      # If there's more than one file with the same basename: intentionally
+      # ignore the later ones here.
+      hash[name] ||= path/cask_hash["ruby_source_path"]
     end
   end
 
-  private
+  sig { override.returns(T::Hash[String, String]) }
+  def cask_renames
+    @cask_renames ||= if Homebrew::EnvConfig.no_install_from_api?
+      super
+    else
+      Homebrew::API::Cask.all_renames
+    end
+  end
 
-  # @private
-  sig { params(name: String).returns(Pathname) }
-  def sharded_formula_path(name)
-    # TODO: add sharding logic.
-    formula_dir/"#{name}.rb"
+  sig { override.returns(Hash) }
+  def tap_migrations
+    @tap_migrations ||= if Homebrew::EnvConfig.no_install_from_api?
+      super
+    else
+      migrations, = Homebrew::API.fetch_json_api_file "cask_tap_migrations.jws.json",
+                                                      stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
+      migrations
+    end
   end
 end
 

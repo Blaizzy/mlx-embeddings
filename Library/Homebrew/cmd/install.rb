@@ -179,9 +179,7 @@ module Homebrew
       next unless name =~ HOMEBREW_TAP_FORMULA_REGEX
 
       tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
-      next if (tap.core_tap? || tap == "homebrew/cask") && !EnvConfig.no_install_from_api?
-
-      tap.install unless tap.installed?
+      tap.ensure_installed!
     end
 
     if args.ignore_dependencies?
@@ -197,7 +195,11 @@ module Homebrew
       formulae, casks = args.named.to_formulae_and_casks
                             .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
     rescue FormulaOrCaskUnavailableError, Cask::CaskUnavailableError
-      retry if Tap.install_default_cask_tap_if_necessary(force: args.cask?)
+      cask_tap = CoreCaskTap.instance
+      if !cask_tap.installed? && (args.cask? || Tap.untapped_official_taps.exclude?(cask_tap.name))
+        cask_tap.ensure_installed!
+        retry if cask_tap.installed?
+      end
 
       raise
     end

@@ -42,7 +42,7 @@ module Homebrew
   def generate_cask_api
     args = generate_cask_api_args.parse
 
-    tap = Tap.default_cask_tap
+    tap = CoreCaskTap.instance
     raise TapUnavailableError, tap.name unless tap.installed?
 
     unless args.dry_run?

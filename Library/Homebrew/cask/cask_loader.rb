@@ -438,7 +438,7 @@ module Cask
     end
 
     def self.default_path(token)
-      Tap.default_cask_tap.cask_dir/"#{token.to_s.downcase}.rb"
+      CoreCaskTap.instance.cask_dir/"#{token.to_s.downcase}.rb"
     end
 
     def self.tap_paths(token, warn: true)

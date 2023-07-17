@@ -149,7 +149,7 @@ module Homebrew
     updated_taps = []
     Tap.each do |tap|
       next if !tap.git? || tap.git_repo.origin_url.nil?
-      next if (tap.core_tap? || tap == "homebrew/cask") && !Homebrew::EnvConfig.no_install_from_api?
+      next if (tap.core_tap? || tap.core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api?
 
       if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
          Settings.read("linuxbrewmigrated") != "true"
@@ -193,7 +193,7 @@ module Homebrew
     unless Homebrew::EnvConfig.no_install_from_api?
       api_cache = Homebrew::API::HOMEBREW_CACHE_API
       core_tap = CoreTap.instance
-      cask_tap = Tap.fetch("homebrew/cask")
+      cask_tap = CoreCaskTap.instance
       [
         [:formula, core_tap, core_tap.formula_dir],
         [:cask,    cask_tap, cask_tap.cask_dir],
@@ -402,7 +402,7 @@ module Homebrew
     return if (HOMEBREW_PREFIX/".homebrewdocker").exist?
 
     core_tap = CoreTap.instance
-    cask_tap = Tap.default_cask_tap
+    cask_tap = CoreCaskTap.instance
     return if !core_tap.installed? && !cask_tap.installed?
 
     puts "Installing from the API is now the default behaviour!"
@@ -504,7 +504,7 @@ class Reporter
       new_name = tap.cask_renames[old_name]
       next unless new_name
 
-      new_full_name = if tap.name == "homebrew/cask"
+      new_full_name = if tap.core_cask_tap?
         new_name
       else
         "#{tap}/#{new_name}"
@@ -518,7 +518,7 @@ class Reporter
       old_name = tap.cask_renames.key(new_name)
       next unless old_name
 
-      old_full_name = if tap.name == "homebrew/cask"
+      old_full_name = if tap.core_cask_tap?
         old_name
       else
         "#{tap}/#{old_name}"
@@ -600,7 +600,7 @@ class Reporter
         next unless (HOMEBREW_PREFIX/"Caskroom"/new_name).exist?
 
         new_tap = Tap.fetch(new_tap_name)
-        new_tap.install unless new_tap.installed?
+        new_tap.ensure_installed!
         ohai "#{name} has been moved to Homebrew.", <<~EOS
           To uninstall the cask, run:
             brew uninstall --cask --force #{name}
@@ -650,7 +650,7 @@ class Reporter
           EOS
         end
       else
-        new_tap.install unless new_tap.installed?
+        new_tap.ensure_installed!
         # update tap for each Tab
         tabs.each { |tab| tab.tap = new_tap }
         tabs.each(&:write)

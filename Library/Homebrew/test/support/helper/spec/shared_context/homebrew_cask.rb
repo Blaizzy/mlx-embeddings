@@ -38,7 +38,7 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do # rubocop:disable RSpec/Co
     begin
       Cask::Config::DEFAULT_DIRS_PATHNAMES.each_value(&:mkpath)
 
-      Tap.default_cask_tap.tap do |tap|
+      CoreCaskTap.instance.tap do |tap|
         FileUtils.mkdir_p tap.path.dirname
         FileUtils.ln_sf TEST_FIXTURE_DIR.join("cask"), tap.path
       end
@@ -52,7 +52,7 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do # rubocop:disable RSpec/Co
     ensure
       FileUtils.rm_rf Cask::Config::DEFAULT_DIRS_PATHNAMES.values
       FileUtils.rm_rf [Cask::Config.new.binarydir, Cask::Caskroom.path, Cask::Cache.path]
-      Tap.default_cask_tap.path.unlink
+      CoreCaskTap.instance.path.unlink
       third_party_tap.path.unlink
       FileUtils.rm_rf third_party_tap.path.parent
     end

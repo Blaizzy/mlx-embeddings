@@ -119,7 +119,7 @@ describe Homebrew::Diagnostic::Checks do
     ENV.delete("HOMEBREW_DEVELOPER")
     ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
 
-    allow(CoreTap).to receive(:installed?).and_return(true)
+    expect_any_instance_of(CoreTap).to receive(:installed?).and_return(true)
 
     expect(checks.check_for_unnecessary_core_tap).to match("You have an unnecessary local Core tap")
   end
@@ -128,9 +128,7 @@ describe Homebrew::Diagnostic::Checks do
     ENV.delete("HOMEBREW_DEVELOPER")
     ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
 
-    cask_tap = Tap.new("homebrew", "cask")
-    allow(Tap).to receive(:fetch).with("homebrew", "cask").and_return(cask_tap)
-    allow(cask_tap).to receive(:installed?).and_return(true)
+    expect_any_instance_of(CoreCaskTap).to receive(:installed?).and_return(true)
 
     expect(checks.check_for_unnecessary_cask_tap).to match("unnecessary local Cask tap")
   end
