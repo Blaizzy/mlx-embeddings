@@ -60,7 +60,8 @@ class Keg
           if rooted_in_build_directory?(bad_name) || (file.rpaths.count(bad_name) > 1)
             delete_rpath(bad_name, file)
           else
-            loader_name = loader_name_for(file, bad_name)
+            new_name = opt_name_for(bad_name)
+            loader_name = loader_name_for(file, new_name)
             change_rpath(bad_name, loader_name, file) if loader_name != bad_name
           end
         end
@@ -202,6 +203,18 @@ class Keg
   end
 
   private
+
+  CELLAR_RX = %r{\A#{HOMEBREW_CELLAR}/(?<formula_name>[^/]+)/[^/]+}.freeze
+
+  # Replace HOMEBREW_CELLAR references with HOMEBREW_PREFIX/opt references
+  # if the Cellar reference is to a different keg.
+  def opt_name_for(filename)
+    return filename unless filename.start_with?(HOMEBREW_PREFIX.to_s)
+    return filename if filename.start_with?(path.to_s)
+    return filename if (matches = CELLAR_RX.match(filename)).blank?
+
+    filename.sub(CELLAR_RX, "#{HOMEBREW_PREFIX}/opt/#{matches[:formula_name]}")
+  end
 
   def rooted_in_build_directory?(filename)
     # CMake normalises `/private/tmp` to `/tmp`.
