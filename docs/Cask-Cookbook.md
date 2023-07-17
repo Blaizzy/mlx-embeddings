@@ -885,9 +885,9 @@ Since `pkg` installers can do arbitrary things, different techniques are needed 
   * `must_succeed:` - set to `false` if the script is allowed to fail
   * `sudo:` - set to `true` if the script needs *sudo*
 * [`pkgutil:`](#uninstall-pkgutil) (string, regexp or array of strings and regexps) - strings or regexps matching bundle IDs of packages to uninstall using `pkgutil`
-* [`delete:`](#uninstall-delete) (string or array) - single-quoted, absolute paths of files or directory trees to remove. Should only be used as a last resort; `pkgutil:` is strongly preferred.
-* **`rmdir:`** (string or array) - single-quoted, absolute paths of directories to remove if empty. Works recursively.
-* [`trash:`](#uninstall-trash) (string or array) - single-quoted, absolute paths of files or directory trees to move to Trash
+* [`delete:`](#uninstall-delete) (string or array) - double-quoted, absolute paths of files or directory trees to remove. Should only be used as a last resort; `pkgutil:` is strongly preferred.
+* **`rmdir:`** (string or array) - double-quoted, absolute paths of directories to remove if empty. Works recursively.
+* [`trash:`](#uninstall-trash) (string or array) - double-quoted, absolute paths of files or directory trees to move to Trash
 
 Each `uninstall` technique is applied according to the order above. The order in which `uninstall` keys appear in the cask file is ignored.
 
