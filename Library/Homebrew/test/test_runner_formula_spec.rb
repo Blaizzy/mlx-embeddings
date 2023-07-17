@@ -143,7 +143,7 @@ describe TestRunnerFormula do
       end
     end
 
-    context "when a formula does not require a specfic architecture" do
+    context "when a formula does not require a specific architecture" do
       it "returns false" do
         expect(described_class.new(testball).x86_64_only?).to be(false)
         expect(described_class.new(xcode_helper).x86_64_only?).to be(false)

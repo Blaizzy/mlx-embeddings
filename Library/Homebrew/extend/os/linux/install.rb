@@ -18,7 +18,7 @@ module Homebrew
     ].freeze
     private_constant :DYNAMIC_LINKERS
 
-    # We link GCC runtime libraries that are not specificaly used for Fortran,
+    # We link GCC runtime libraries that are not specifically used for Fortran,
     # which are linked by the GCC formula.  We only use the versioned shared libraries
     # as the other shared and static libraries are only used at build time where
     # GCC can find its own libraries.

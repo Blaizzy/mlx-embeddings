@@ -107,7 +107,7 @@ describe Caveats do
         allow(Utils::Service).to receive(:systemctl?).and_return(true)
       end
 
-      it "prints warning when no service deamon is found" do
+      it "prints warning when no service daemon is found" do
         f = formula do
           url "foo-1.0"
           service do

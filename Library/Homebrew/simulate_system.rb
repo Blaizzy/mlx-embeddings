@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Homebrew
-  # Helper module for simulating different system condfigurations.
+  # Helper module for simulating different system configurations.
   #
   # @api private
   class SimulateSystem
