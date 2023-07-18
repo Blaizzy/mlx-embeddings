@@ -127,9 +127,9 @@ module PyPI
         match = File.basename(@package_string).match(/^(.+)-([a-z\d.]+?)(?:.tar.gz|.zip)$/)
         raise ArgumentError, "Package should be a valid PyPI URL" if match.blank?
 
-        @name = PyPI.normalize_python_package match[1]
-        @extras = []
-        @version = match[2]
+        @name ||= PyPI.normalize_python_package match[1]
+        @extras ||= []
+        @version ||= match[2]
       elsif @is_url
         ensure_formula_installed!("python")
 
@@ -152,9 +152,9 @@ module PyPI
 
         metadata = JSON.parse(pip_output)["install"].first["metadata"]
 
-        @name = PyPI.normalize_python_package metadata["name"]
-        @extras = []
-        @version = metadata["version"]
+        @name ||= PyPI.normalize_python_package metadata["name"]
+        @extras ||= []
+        @version ||= metadata["version"]
       else
         if @package_string.include? "=="
           name, version = @package_string.split("==")
@@ -170,9 +170,9 @@ module PyPI
           extras = []
         end
 
-        @name = PyPI.normalize_python_package name
-        @extras = extras
-        @version = version
+        @name ||= PyPI.normalize_python_package name
+        @extras ||= extras
+        @version ||= version
       end
     end
   end
