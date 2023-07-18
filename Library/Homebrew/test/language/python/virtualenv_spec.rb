@@ -22,17 +22,19 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
   describe "#pip_install" do
     it "accepts a string" do
+      expect(formula).to receive(:std_pip_args).with(prefix:          false,
+                                                     build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
-              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "foo")
+        .with(dir/"bin/pip", "install", "--std-pip-args", "foo")
         .and_return(true)
       virtualenv.pip_install "foo"
     end
 
     it "accepts a multi-line strings" do
+      expect(formula).to receive(:std_pip_args).with(prefix:          false,
+                                                     build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
-              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "foo", "bar")
+        .with(dir/"bin/pip", "install", "--std-pip-args", "foo", "bar")
         .and_return(true)
 
       virtualenv.pip_install <<~EOS
@@ -42,14 +44,16 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
     end
 
     it "accepts an array" do
+      expect(formula).to receive(:std_pip_args).with(prefix:          false,
+                                                     build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
-              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "foo")
+        .with(dir/"bin/pip", "install", "--std-pip-args", "foo")
         .and_return(true)
 
+      expect(formula).to receive(:std_pip_args).with(prefix:          false,
+                                                     build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
-              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "bar")
+        .with(dir/"bin/pip", "install", "--std-pip-args", "bar")
         .and_return(true)
 
       virtualenv.pip_install ["foo", "bar"]
@@ -59,18 +63,20 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
       res = Resource.new("test")
 
       expect(res).to receive(:stage).and_yield
+      expect(formula).to receive(:std_pip_args).with(prefix:          false,
+                                                     build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
-              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", Pathname.pwd)
+        .with(dir/"bin/pip", "install", "--std-pip-args", Pathname.pwd)
         .and_return(true)
 
       virtualenv.pip_install res
     end
 
     it "works without build isolation" do
+      expect(formula).to receive(:std_pip_args).with(prefix:          false,
+                                                     build_isolation: false).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "-v", "--no-deps", "--no-binary", ":all:",
-              "--use-feature=no-binary-enable-wheel-cache", "--ignore-installed", "--no-build-isolation", "foo")
+        .with(dir/"bin/pip", "install", "--std-pip-args", "foo")
         .and_return(true)
       virtualenv.pip_install("foo", build_isolation: false)
     end
