@@ -688,8 +688,6 @@ using protocols other than HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
   Install or change a tap with a custom remote. Useful for mirrors.
 * `--repair`:
   Migrate tapped formulae from symlink-based to directory-based structure.
-* `--list-pinned`:
-  List all pinned taps.
 * `--eval-all`:
   Evaluate all the formulae, casks and aliases in the new tap to check validity. Implied if `HOMEBREW_EVAL_ALL` is set.
 * `--force`:
