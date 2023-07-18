@@ -919,6 +919,37 @@ then
   export HOMEBREW_DEVELOPER_COMMAND="1"
 fi
 
+if [[ -n "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_DEVELOPER_COMMAND}" ]]
+then
+  # Always run with Sorbet for Homebrew developers or Homebrew developer commands.
+  export HOMEBREW_SORBET_RUNTIME="1"
+fi
+
+# NO_SORBET_RUNTIME_COMMANDS are currently failing with Sorbet for homebrew/core.
+# TODO: fix this and remove this if block.
+if [[ -n "${HOMEBREW_SORBET_RUNTIME}" ]]
+then
+  NO_SORBET_RUNTIME_COMMANDS=(
+    generate-cask-api
+    generate-formula-api
+    release
+  )
+
+  if check-array-membership "${HOMEBREW_COMMAND}" "${NO_SORBET_RUNTIME_COMMANDS[@]}"
+  then
+    unset HOMEBREW_SORBET_RUNTIME
+  fi
+
+  unset NO_SORBET_RUNTIME_COMMANDS
+fi
+
+# Provide a (temporary, undocumented) way to disable Sorbet globally if needed
+# to avoid reverting the above.
+if [[ -n "${HOMEBREW_NO_SORBET_RUNTIME}" ]]
+then
+  unset HOMEBREW_SORBET_RUNTIME
+fi
+
 if [[ -n "${HOMEBREW_DEVELOPER_COMMAND}" && -z "${HOMEBREW_DEVELOPER}" ]]
 then
   if [[ -z "${HOMEBREW_DEV_CMD_RUN}" ]]
