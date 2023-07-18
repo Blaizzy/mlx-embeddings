@@ -53,7 +53,8 @@ module Homebrew
     end
 
     Homebrew.with_no_api_env do
-      File.write("api/formula_tap_migrations.json", JSON.dump(tap.tap_migrations)) unless args.dry_run?
+      tap_migrations_json = JSON.dump(tap.tap_migrations)
+      File.write("api/formula_tap_migrations.json", tap_migrations_json) unless args.dry_run?
 
       Formulary.enable_factory_cache!
       Formula.generating_hash!
@@ -62,11 +63,12 @@ module Homebrew
         formula = Formulary.factory(name)
         name = formula.name
         json = JSON.pretty_generate(formula.to_hash_with_variations)
+        html_template_name = html_template(name)
 
         unless args.dry_run?
           File.write("_data/formula/#{name.tr("+", "_")}.json", "#{json}\n")
           File.write("api/formula/#{name}.json", FORMULA_JSON_TEMPLATE)
-          File.write("formula/#{name}.html", html_template(name))
+          File.write("formula/#{name}.html", html_template_name)
         end
       rescue
         onoe "Error while generating data for formula '#{name}'."
