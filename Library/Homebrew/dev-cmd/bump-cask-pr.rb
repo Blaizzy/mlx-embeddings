@@ -61,7 +61,7 @@ module Homebrew
 
     # This will be run by `brew audit` or `brew style` later so run it first to
     # not start spamming during normal output.
-    Homebrew.install_bundler_gems! if args.no_audit? && args.no_style?
+    Homebrew.install_bundler_gems! if !args.no_audit? || !args.no_style?
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.
