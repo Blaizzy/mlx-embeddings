@@ -1125,7 +1125,7 @@ Artifacts also may be distributed via Git repositories. URLs that end in `.git` 
 | `tag:`             | string identifying the Git tag to download
 | `revision:`        | string identifying the Git revision to download
 | `branch:`          | string identifying the Git branch to download
-| `only_path:`       | path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can signficantly speed up downloads. If provided, artifact paths are relative to this path.
+| `only_path:`       | path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can significantly speed up downloads. If provided, artifact paths are relative to this path.
 
 #### SourceForge/OSDN URLs
 

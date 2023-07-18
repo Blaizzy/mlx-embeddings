@@ -991,7 +991,7 @@ Keep alive until the service exits with a non-zero return code:
 ```ruby
 service do
   run [opt_bin/"beanstalkd", "test"]
-  keep_alive succesful_exit: true
+  keep_alive successful_exit: true
 end
 ```
 

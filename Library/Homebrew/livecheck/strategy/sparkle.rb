@@ -92,7 +92,7 @@ module Homebrew
             pub_date = item.elements["pubDate"]&.text&.strip&.presence&.then do |date_string|
               Time.parse(date_string)
             rescue ArgumentError
-              # Omit unparseable strings (e.g. non-English dates)
+              # Omit unparsable strings (e.g. non-English dates)
               nil
             end
 
