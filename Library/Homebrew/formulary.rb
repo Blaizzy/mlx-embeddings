@@ -342,6 +342,7 @@ module Formulary
       def caveats
         self.class.instance_variable_get(:@caveats_string)
             &.gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+            &.gsub(HOMEBREW_CELLAR_PLACEHOLDER, HOMEBREW_CELLAR)
             &.gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
       end
 
