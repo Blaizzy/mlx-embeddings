@@ -922,11 +922,12 @@ module Homebrew
 
       def check_cask_taps
         default_cask_tap = CoreCaskTap.instance
-        alt_taps = Tap.select { |t| t.cask_dir.exist? && t != default_cask_tap }
+        taps = Tap.select { |t| t.cask_dir.exist? && t != default_cask_tap }
+        taps.prepend(default_cask_tap) if EnvConfig.no_install_from_api?
 
         error_tap_paths = []
 
-        add_info "Homebrew Cask Taps:", ([default_cask_tap, *alt_taps].map do |tap|
+        add_info "Homebrew Cask Taps:", (taps.map do |tap|
           if tap.path.blank?
             none_string
           else
@@ -941,8 +942,8 @@ module Homebrew
           end
         end)
 
-        taps = Utils.pluralize("tap", error_tap_paths.count)
-        "Unable to read from cask #{taps}: #{error_tap_paths.to_sentence}" if error_tap_paths.present?
+        taps_string = Utils.pluralize("tap", error_tap_paths.count)
+        "Unable to read from cask #{taps_string}: #{error_tap_paths.to_sentence}" if error_tap_paths.present?
       end
 
       def check_cask_load_path
