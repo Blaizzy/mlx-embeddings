@@ -52,7 +52,6 @@ module RuboCop
           ssh-copy-id
           swift
           tcl-tk
-          texinfo
           unifdef
           unzip
           whois
