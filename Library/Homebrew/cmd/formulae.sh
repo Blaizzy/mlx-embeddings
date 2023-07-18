@@ -8,6 +8,10 @@
 source "${HOMEBREW_LIBRARY}/Homebrew/items.sh"
 
 homebrew-formulae() {
+  local find_include_filter='*\.rb'
+  local sed_filter='s|/Formula/(.+/)?|/|'
+  local grep_filter='^homebrew/core'
+
   # HOMEBREW_CACHE is set by brew.sh
   # shellcheck disable=SC2154
   if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" &&
@@ -16,9 +20,9 @@ homebrew-formulae() {
     {
       cat "${HOMEBREW_CACHE}/api/formula_names.txt"
       echo
-      homebrew-items '*\.rb' '.*Casks(/.*|$)|.*/homebrew/homebrew-core/.*' 's|/Formula/|/|' '^homebrew/core'
+      homebrew-items "${find_include_filter}" '.*Casks(/.*|$)|.*/homebrew/homebrew-core/.*' "${sed_filter}" "${grep_filter}"
     } | sort -uf
   else
-    homebrew-items '*\.rb' '.*Casks(/.*|$)' 's|/Formula/|/|' '^homebrew/core'
+    homebrew-items "${find_include_filter}" '.*Casks(/.*|$)' "${sed_filter}" "${grep_filter}"
   fi
 }
