@@ -711,9 +711,9 @@ class Version
     T.must(version).to_str
   end
 
-  sig { params(options: Hash).returns(String) }
-  def to_json(**options)
-    version.to_json(**options)
+  sig { params(options: T.untyped).returns(String) }
+  def to_json(*options)
+    version.to_json(*options)
   end
 
   sig { params(method: T.any(Symbol, String), include_all: T::Boolean).returns(T::Boolean) }
