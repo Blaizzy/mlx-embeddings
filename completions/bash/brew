@@ -2084,7 +2084,6 @@ _brew_tap() {
       --force
       --force-auto-update
       --help
-      --list-pinned
       --no-force-auto-update
       --quiet
       --repair
