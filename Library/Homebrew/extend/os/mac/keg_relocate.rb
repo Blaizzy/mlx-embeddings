@@ -62,7 +62,15 @@ class Keg
           else
             new_name = opt_name_for(bad_name)
             loader_name = loader_name_for(file, new_name)
-            change_rpath(bad_name, loader_name, file) if loader_name != bad_name
+            next if loader_name == bad_name
+
+            if file.rpaths(resolve_variable_references: false).include?(loader_name)
+              # The wanted loader_name is already an rpath, so the existing bad_name is not needed.
+              # Attempting to change bad_name to an already existing rpath will produce an error.
+              delete_rpath(bad_name, file)
+            else
+              change_rpath(bad_name, loader_name, file)
+            end
           end
         end
       end
