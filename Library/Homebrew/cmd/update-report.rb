@@ -329,10 +329,16 @@ module Homebrew
   end
 
   def analytics_message
-    if !Utils::Analytics.messages_displayed? &&
-       !Utils::Analytics.disabled? &&
-       !Utils::Analytics.no_message_output?
+    return if Utils::Analytics.messages_displayed?
+    return if Utils::Analytics.no_message_output?
 
+    if Utils::Analytics.disabled? && !Utils::Analytics.influx_message_displayed?
+      ohai "Homebrew's analytics have entirely moved to our InfluxDB instance in the EU."
+      puts "We gather less data than before and have destroyed all Google Analytics data:"
+      puts "  #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}"
+      puts "Please reconsider re-enabling analytics to help our volunteer maintainers with:"
+      puts "  brew analytics on"
+    elsif !Utils::Analytics.disabled?
       ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
       # Use the shell's audible bell.
       print "\a"
@@ -345,19 +351,10 @@ module Homebrew
         No analytics have been recorded yet (nor will be during this `brew` run).
 
       EOS
-
-      # Consider the messages possibly missed if not a TTY.
-      Utils::Analytics.messages_displayed! if $stdout.tty?
-    elsif Utils::Analytics.disabled?
-      ohai "Homebrew's analytics have entirely moved to our InfluxDB instance in the EU."
-      puts "We gather less data than before and have destroyed all Google Analytics data:"
-      puts "  #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}"
-      puts "Please reconsider re-enabling analytics to help our volunteer maintainers with:"
-      puts "  brew analytics on"
-
-      # Consider the message possibly missed if not a TTY.
-      Settings.write "influxanalyticsmessage", true if $stdout.tty?
     end
+
+    # Consider the messages possibly missed if not a TTY.
+    Utils::Analytics.messages_displayed! if $stdout.tty?
   end
 
   def donation_message

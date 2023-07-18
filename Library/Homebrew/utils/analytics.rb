@@ -108,10 +108,14 @@ options: options)
         report_influx_event(:build_error, package_name: formula.name, tap_name: tap.name, options: options)
       end
 
+      def influx_message_displayed?
+        config_true?(:influxanalyticsmessage)
+      end
+
       def messages_displayed?
         config_true?(:analyticsmessage) &&
           config_true?(:caskanalyticsmessage) &&
-          config_true?(:influxanalyticsmessage)
+          influx_message_displayed?
       end
 
       def disabled?
