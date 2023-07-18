@@ -67,6 +67,12 @@ To install build tools, paste at a terminal prompt:
   sudo yum install procps-ng curl file git
   ```
 
+- **Arch Linux**
+
+  ```sh
+  sudo pacman -Syu base-devel procps-ng curl file git
+  ```
+
 ### ARM (unsupported)
 
 Homebrew can run on 32-bit ARM (Raspberry Pi and others) and 64-bit ARM (AArch64), but as they lack binary packages (bottles) they are unsupported. Pull requests are welcome to improve the experience on ARM platforms.
