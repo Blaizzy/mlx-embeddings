@@ -5174,6 +5174,7 @@ class Object
   HOMEBREW_CASK_APPDIR_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_CASK_TAP_CASK_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_CELLAR = ::T.let(nil, ::T.untyped)
+  HOMEBREW_CELLAR_PLACEHOLDER = ::T.let(nil, ::T.untyped)
   HOMEBREW_CORE_DEFAULT_GIT_REMOTE = ::T.let(nil, ::T.untyped)
   HOMEBREW_DATA_PATH = ::T.let(nil, ::T.untyped)
   HOMEBREW_DEFAULT_CACHE = ::T.let(nil, ::T.untyped)

@@ -633,6 +633,7 @@ module Homebrew
     sig { params(string: String).returns(String) }
     def self.replace_placeholders(string)
       string.gsub(HOMEBREW_PREFIX_PLACEHOLDER, HOMEBREW_PREFIX)
+            .gsub(HOMEBREW_CELLAR_PLACEHOLDER, HOMEBREW_CELLAR)
             .gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
     end
   end

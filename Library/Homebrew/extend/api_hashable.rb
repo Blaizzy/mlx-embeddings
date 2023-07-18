@@ -8,9 +8,11 @@ module APIHashable
 
     # Apply monkeypatches for API generation
     @old_homebrew_prefix = HOMEBREW_PREFIX
+    @old_homebrew_cellar = HOMEBREW_CELLAR
     @old_home = Dir.home
     Object.send(:remove_const, :HOMEBREW_PREFIX)
     Object.const_set(:HOMEBREW_PREFIX, Pathname.new(HOMEBREW_PREFIX_PLACEHOLDER))
+    Object.const_set(:HOMEBREW_CELLAR, Pathname.new(HOMEBREW_CELLAR_PLACEHOLDER))
     ENV["HOME"] = HOMEBREW_HOME_PLACEHOLDER
 
     @generating_hash = true
@@ -22,6 +24,8 @@ module APIHashable
     # Revert monkeypatches for API generation
     Object.send(:remove_const, :HOMEBREW_PREFIX)
     Object.const_set(:HOMEBREW_PREFIX, @old_homebrew_prefix)
+    Object.send(:remove_const, :HOMEBREW_CELLAR)
+    Object.const_set(:HOMEBREW_CELLAR, @old_homebrew_cellar)
     ENV["HOME"] = @old_home
 
     @generating_hash = false
