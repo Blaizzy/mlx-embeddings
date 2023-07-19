@@ -194,12 +194,12 @@ module Cask
     end
 
     sig { params(options: T.untyped).returns(String) }
-    def to_json(**options)
+    def to_json(*options)
       {
         default:  default,
         env:      env,
         explicit: explicit,
-      }.to_json(**options)
+      }.to_json(*options)
     end
   end
 end

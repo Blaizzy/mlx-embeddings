@@ -3,6 +3,7 @@
 
 require "cli/parser"
 require "cask/cask"
+require "formula"
 
 module Homebrew
   module_function
