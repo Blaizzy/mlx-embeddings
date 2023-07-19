@@ -91,6 +91,7 @@ class MessagePack::Factory
   def load(src, param = T.unsafe(nil)); end
   def pack(v, *rest); end
   def pool(size = T.unsafe(nil), **options); end
+  def register_type(type, klass, options = T.unsafe(nil)); end
   def registered_types(selector = T.unsafe(nil)); end
   def type_registered?(klass_or_type, selector = T.unsafe(nil)); end
   def unpack(src, param = T.unsafe(nil)); end
@@ -111,7 +112,10 @@ class MessagePack::Factory::Pool::MemberPool
   def with; end
 end
 
+class MessagePack::HeldBuffer < ::BasicObject; end
+
 class MessagePack::Packer
+  def register_type(type, klass, method_name = T.unsafe(nil), &block); end
   def registered_types; end
   def type_registered?(klass_or_type); end
 end
@@ -144,6 +148,7 @@ class MessagePack::UnexpectedTypeError < ::MessagePack::UnpackError
 end
 
 class MessagePack::Unpacker
+  def register_type(type, klass = T.unsafe(nil), method_name = T.unsafe(nil), &block); end
   def registered_types; end
   def type_registered?(klass_or_type); end
 end

@@ -4709,6 +4709,8 @@ class Mechanize::HTTP
 end
 
 class MessagePack::Packer
+  def register_type_internal(arg, arg1, arg2); end
+
   def reset(); end
 
   def write_bin(arg); end
