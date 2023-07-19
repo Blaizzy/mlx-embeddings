@@ -167,10 +167,10 @@ module GitHub
     def self.credentials_type
       if Homebrew::EnvConfig.github_api_token.present?
         :env_token
-      elsif keychain_username_password.present?
-        :keychain_username_password
       elsif github_cli_token.present?
         :github_cli_token
+      elsif keychain_username_password.present?
+        :keychain_username_password
       else
         :none
       end
