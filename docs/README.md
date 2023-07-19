@@ -54,6 +54,7 @@
 - [Diagram Guidelines](Diagram-Guidelines.md)
 - [Prose Style Guidelines](Prose-Style-Guidelines.md)
 - [Type Checking with Sorbet](Typechecking.md)
+- [Reproducible Builds](Reproducible-Builds.md)
 
 - [Ruby API Documentation](https://rubydoc.brew.sh) (e.g. for `Formula` etc.)
 
