@@ -74,7 +74,7 @@ Our macOS continuous integration infrastructure is hosted by [MacStadium's Orka]
 
 Secure password storage and syncing is provided by [1Password for Teams](https://1password.com/teams/).
 
-[![1Password](https://i.1password.com/akb/featured/1password-icon.svg)](https://1password.com)
+[<img src="https://i.1password.com/akb/featured/1password-icon.svg" alt="1Password" height="64">](https://1password.com)
 
 Flaky test detection and tracking is provided by [BuildPulse](https://buildpulse.io/).
 
