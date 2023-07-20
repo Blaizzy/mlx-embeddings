@@ -301,12 +301,7 @@ module Language
 
         def do_install(targets, build_isolation: true)
           targets = Array(targets)
-          args = [
-            "-v", "--no-deps", "--no-binary", ":all:",
-            "--use-feature=no-binary-enable-wheel-cache",
-            "--ignore-installed"
-          ]
-          args << "--no-build-isolation" unless build_isolation
+          args = @formula.std_pip_args(prefix: false, build_isolation: build_isolation)
           @formula.system @venv_root/"bin/pip", "install", *args, *targets
         end
       end

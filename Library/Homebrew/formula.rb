@@ -1622,6 +1622,19 @@ class Formula
     ["--prefix=#{prefix}", "--libdir=#{lib}", "--buildtype=release", "--wrap-mode=nofallback"]
   end
 
+  # Standard parameters for pip builds.
+  sig {
+    params(prefix:          T.any(String, Pathname, FalseClass),
+           build_isolation: T::Boolean).returns(T::Array[String])
+  }
+  def std_pip_args(prefix: self.prefix, build_isolation: false)
+    args = ["--verbose", "--no-deps", "--no-binary=:all:", "--ignore-installed",
+            "--use-feature=no-binary-enable-wheel-cache"]
+    args << "--prefix=#{prefix}" if prefix.present?
+    args << "--no-build-isolation" unless build_isolation
+    args
+  end
+
   # Shared library names according to platform conventions.
   #
   # Optionally specify a `version` to restrict the shared library to a specific
