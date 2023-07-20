@@ -57,7 +57,13 @@ class Keg
 
         each_linkage_for(file, :rpaths) do |bad_name|
           # Strip duplicate rpaths and rpaths rooted in the build directory.
-          if rooted_in_build_directory?(bad_name) || (file.rpaths.count(bad_name) > 1)
+          if rooted_in_build_directory?(bad_name) ||
+             (file.rpaths(resolve_variable_references: false).count(bad_name) > 1)
+            # TODO: Drop the `resolve_variable_references` argument above (defaults to `true`)
+            #       and fix `delete_rpath` so that it deletes the *last* LC_RPATH command
+            #       (instead of the first one) to avoid changing LC_RPATH command ordering.
+            # NOTE: `delete_rpath` will also need to be able to handle rpaths that are different
+            #       strings but resolve to the same location.
             delete_rpath(bad_name, file)
           else
             new_name = opt_name_for(bad_name)
