@@ -1079,7 +1079,7 @@ When a plain URL string is insufficient to fetch a file, additional information 
 | `using:`           | the symbol `:post` is the only legal value
 | `cookies:`         | hash of cookies to be set in the download request
 | `referer:`         | string holding the URL to set as referer in the download request
-| `header:`          | string holding the header to set for the download request
+| `header:`          | string or array of strings holding the header(s) to set for the download request
 | `user_agent:`      | string holding the user agent to set for the download request. Can also be set to the symbol `:fake`, which will use a generic browser-like user agent string. We prefer `:fake` when the server does not require a specific user agent.
 | `data:`            | hash of parameters to be set in the POST request
 
@@ -1087,7 +1087,7 @@ Example of using `cookies:`: [oracle-jdk-javadoc.rb](https://github.com/Homebrew
 
 Example of using `referer:`: [firealpaca.rb](https://github.com/Homebrew/homebrew-cask/blob/37f434b99f51259e642793d65b7490540b71dc21/Casks/firealpaca.rb#L5-L6)
 
-Example of using `header:`: [issue-325182724](https://github.com/Homebrew/brew/pull/6545#issue-325182724)
+Example of using `header:`: [issue-325182724](https://github.com/Homebrew/brew/pull/6545#issue-325182724) [issue-15590](https://github.com/Homebrew/brew/issues/15590)
 
 #### When URL and Homepage Domains Differ, Add `verified:`
 
