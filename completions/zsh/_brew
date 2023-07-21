@@ -527,7 +527,9 @@ _brew_bump_cask_pr() {
     '--sha256[Specify the SHA-256 checksum of the new download]' \
     '--url[Specify the URL for the new download]' \
     '--verbose[Make some output more verbose]' \
-    '--version[Specify the new version for the cask]' \
+    '(--version-arm --version-intel)--version[Specify the new version for the cask]' \
+    '(--version)--version-arm[Specify the new cask version for the ARM architecture]' \
+    '(--version)--version-intel[Specify the new cask version for the Intel architecture]' \
     '--write-only[Make the expected file modifications without taking any Git actions]' \
     - cask \
     '*::cask:__brew_casks'
