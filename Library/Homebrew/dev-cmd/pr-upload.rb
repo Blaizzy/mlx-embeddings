@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "cli/parser"
+require "formula"
 require "github_packages"
 require "github_releases"
 
