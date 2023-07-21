@@ -930,9 +930,6 @@ fi
 if [[ -n "${HOMEBREW_SORBET_RUNTIME}" ]]
 then
   NO_SORBET_RUNTIME_COMMANDS=(
-    generate-cask-api
-    generate-formula-api
-    release
   )
 
   if check-array-membership "${HOMEBREW_COMMAND}" "${NO_SORBET_RUNTIME_COMMANDS[@]}"
