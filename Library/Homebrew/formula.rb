@@ -2484,7 +2484,8 @@ class Formula
     super(paths, before, after, audit_result)
   rescue Utils::Inreplace::Error => e
     onoe e.to_s
-    raise BuildError.new(self, "inreplace", paths, {})
+    args = paths.is_a?(Array) ? paths : [paths]
+    raise BuildError.new(self, "inreplace", args, {})
   end
 
   protected
