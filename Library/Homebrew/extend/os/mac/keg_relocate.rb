@@ -56,28 +56,22 @@ class Keg
         end
 
         each_linkage_for(file, :rpaths) do |bad_name|
-          # Strip duplicate rpaths and rpaths rooted in the build directory.
-          if rooted_in_build_directory?(bad_name) ||
-             (file.rpaths(resolve_variable_references: false).count(bad_name) > 1)
-            # TODO: Drop the `resolve_variable_references` argument above (defaults to `true`)
-            #       and fix `delete_rpath` so that it deletes the *last* LC_RPATH command
-            #       (instead of the first one) to avoid changing LC_RPATH command ordering.
-            # NOTE: `delete_rpath` will also need to be able to handle rpaths that are different
-            #       strings but resolve to the same location.
-            delete_rpath(bad_name, file)
-          else
-            new_name = opt_name_for(bad_name)
-            loader_name = loader_name_for(file, new_name)
-            next if loader_name == bad_name
+          new_name = opt_name_for(bad_name)
+          loader_name = loader_name_for(file, new_name)
+          next if loader_name == bad_name
+          # TODO: Remove the line below on the next release of ruby-macho. See Homebrew/ruby-macho@e9eaa75.
+          next if file.rpaths(resolve_variable_references: false).include?(loader_name)
 
-            if file.rpaths(resolve_variable_references: false).include?(loader_name)
-              # The wanted loader_name is already an rpath, so the existing bad_name is not needed.
-              # Attempting to change bad_name to an already existing rpath will produce an error.
-              delete_rpath(bad_name, file)
-            else
-              change_rpath(bad_name, loader_name, file)
-            end
-          end
+          change_rpath(bad_name, loader_name, file)
+        end
+
+        # Strip duplicate rpaths and rpaths rooted in the build directory.
+        # We do this separately from the rpath relocation above to avoid
+        # failing to relocate an rpath whose variable duplicate we deleted.
+        each_linkage_for(file, :rpaths, resolve_variable_references: true) do |bad_name|
+          next if !rooted_in_build_directory?(bad_name) && file.rpaths.count(bad_name) == 1
+
+          delete_rpath(bad_name, file)
         end
       end
     end
@@ -116,11 +110,12 @@ class Keg
     end
   end
 
-  def each_linkage_for(file, linkage_type, &block)
-    links = file.method(linkage_type)
-                .call(resolve_variable_references: false)
-                .grep_v(/^@(loader_|executable_|r)path/)
-    links.each(&block)
+  VARIABLE_REFERENCE_RX = /^@(loader_|executable_|r)path/.freeze
+
+  def each_linkage_for(file, linkage_type, resolve_variable_references: false, &block)
+    file.public_send(linkage_type, resolve_variable_references: resolve_variable_references)
+        .grep_v(VARIABLE_REFERENCE_RX)
+        .each(&block)
   end
 
   def dylib_id_for(file)
