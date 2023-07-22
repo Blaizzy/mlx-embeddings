@@ -27,7 +27,7 @@ class StringInreplaceExtension
   #
   # @api public
   sig {
-    params(before: T.any(Regexp, String), after: T.nilable(String), audit_result: T::Boolean)
+    params(before: T.any(Pathname, Regexp, String), after: T.nilable(String), audit_result: T::Boolean)
       .returns(T.nilable(String))
   }
   def gsub!(before, after, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
