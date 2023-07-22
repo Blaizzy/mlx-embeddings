@@ -1566,7 +1566,7 @@ class Formula
   sig {
     params(
       install_prefix: T.any(String, Pathname),
-      install_libdir: String,
+      install_libdir: T.any(String, Pathname),
       find_framework: String,
     ).returns(T::Array[String])
   }
