@@ -432,7 +432,7 @@ module Homebrew
       odie "Not a GitHub pull request: #{arg}" unless pr
 
       git_repo = tap.git_repo
-      if !git_repo.default_origin_branch? || args.branch_okay? || args.clean?
+      if !git_repo.default_origin_branch? && !args.branch_okay? && !args.no_commit? && !args.no_cherry_pick?
         opoo "Current branch is #{git_repo.branch_name}: do you need to pull inside #{git_repo.origin_branch_name}?"
       end
 
