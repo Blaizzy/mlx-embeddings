@@ -41,12 +41,12 @@ module Utils
       params(
         paths:        T.any(T::Array[T.untyped], String, Pathname),
         before:       T.nilable(T.any(Regexp, String)),
-        after:        T.nilable(T.any(String, Symbol)),
+        after:        T.nilable(T.any(Pathname, String, Symbol)),
         audit_result: T::Boolean,
       ).void
     }
     def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
-      after = after.to_s if after.is_a? Symbol
+      after &&= after.to_s
 
       errors = {}
 

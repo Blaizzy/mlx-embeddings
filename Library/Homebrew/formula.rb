@@ -2472,6 +2472,14 @@ class Formula
   #
   # @see Utils::Inreplace.inreplace
   # @api public
+  sig {
+    params(
+      paths:        T.any(T::Array[T.untyped], String, Pathname),
+      before:       T.nilable(T.any(Regexp, String)),
+      after:        T.nilable(T.any(Pathname, String, Symbol)),
+      audit_result: T::Boolean,
+    ).void
+  }
   def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
     super(paths, before, after, audit_result)
   rescue Utils::Inreplace::Error => e
