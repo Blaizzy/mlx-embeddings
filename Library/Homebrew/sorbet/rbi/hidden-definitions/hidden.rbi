@@ -40,25 +40,7 @@ end
 class Array
   def abbrev(pattern=T.unsafe(nil)); end
 
-  def fifth(); end
-
-  def forty_two(); end
-
-  def fourth(); end
-
-  def from(position); end
-
-  def second(); end
-
-  def second_to_last(); end
-
   def shelljoin(); end
-
-  def third(); end
-
-  def third_to_last(); end
-
-  def to(position); end
 
   def to_default_s(); end
 
@@ -1725,8 +1707,6 @@ class Bundler::Thor::CoreExt::HashWithIndifferentAccess
   def replace(other_hash); end
 
   def reverse_merge(other); end
-
-  def reverse_merge!(other_hash); end
 
   def values_at(*indices); end
 end
@@ -4974,6 +4954,10 @@ class MacOSVersion::Error
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Marshal
+  extend ::ActiveSupport::MarshalWithAutoloading
+end
+
 class Mechanize::HTTP
 end
 
@@ -5055,11 +5039,6 @@ end
 class Messages
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Method
-  include ::MethodSource::SourceLocation::MethodExtensions
-  include ::MethodSource::MethodExtensions
 end
 
 class Migrator
@@ -5533,10 +5512,6 @@ class Object
   def __send(*arg); end
 
   def __send!(*arg); end
-
-  def deep_dup(); end
-
-  def duplicable?(); end
 
   def stub(name, val_or_callable, *block_args, **block_kwargs, &block); end
 
@@ -8660,17 +8635,15 @@ module Spoom
 end
 
 class String
-  def exclude?(string); end
+  def ends_with?(*arg); end
 
   def fast_xs(); end
-
-  def indent(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
-
-  def indent!(amount, indent_string=T.unsafe(nil), indent_empty_lines=T.unsafe(nil)); end
 
   def shellescape(); end
 
   def shellsplit(); end
+
+  def starts_with?(*arg); end
 
   def to_nfc(); end
 
@@ -8780,10 +8753,6 @@ module Tty
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module URI
-  include ::URI::RFC2396_REGEXP
-end
-
 class URI::FTP
   def buffer_open(buf, proxy, options); end
 end
@@ -8866,18 +8835,12 @@ module URI::Util
 end
 
 module URI
-  extend ::URI::Escape
   def self.get_encoding(label); end
 end
 
 class URL
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnboundMethod
-  include ::MethodSource::SourceLocation::UnboundMethodExtensions
-  include ::MethodSource::MethodExtensions
 end
 
 module UnicodeNormalize

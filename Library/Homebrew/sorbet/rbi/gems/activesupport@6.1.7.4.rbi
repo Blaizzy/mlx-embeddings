@@ -539,6 +539,12 @@ class ActiveSupport::Callbacks::Filters::Environment < ::Struct
   end
 end
 
+module ActiveSupport::CompareWithRange
+  def ===(value); end
+  def cover?(value); end
+  def include?(value); end
+end
+
 module ActiveSupport::Concern
   def append_features(base); end
   def class_methods(&class_methods_module_definition); end
@@ -1204,6 +1210,15 @@ class ActiveSupport::Duration::Scalar < ::Numeric
   def raise_type_error(other); end
 end
 
+module ActiveSupport::EachTimeWithZone
+  def each(&block); end
+  def step(n = T.unsafe(nil), &block); end
+
+  private
+
+  def ensure_iteration_allowed; end
+end
+
 class ActiveSupport::EnvironmentInquirer < ::ActiveSupport::StringInquirer
   def initialize(env); end
 
@@ -1330,6 +1345,73 @@ class ActiveSupport::Gzip::Stream < ::StringIO
   def initialize(*_arg0); end
 
   def close; end
+end
+
+class ActiveSupport::HashWithIndifferentAccess < ::Hash
+  def initialize(constructor = T.unsafe(nil)); end
+
+  def [](key); end
+  def []=(key, value); end
+  def assoc(key); end
+  def compact; end
+  def deep_stringify_keys; end
+  def deep_stringify_keys!; end
+  def deep_symbolize_keys; end
+  def default(*args); end
+  def delete(key); end
+  def dig(*args); end
+  def dup; end
+  def except(*keys); end
+  def extractable_options?; end
+  def fetch(key, *extras); end
+  def fetch_values(*indices, &block); end
+  def has_key?(key); end
+  def include?(key); end
+  def key?(key); end
+  def member?(key); end
+  def merge(*hashes, &block); end
+  def merge!(*other_hashes, &block); end
+  def nested_under_indifferent_access; end
+  def regular_update(*_arg0); end
+  def regular_writer(_arg0, _arg1); end
+  def reject(*args, &block); end
+  def replace(other_hash); end
+  def reverse_merge(other_hash); end
+  def reverse_merge!(other_hash); end
+  def select(*args, &block); end
+  def slice(*keys); end
+  def slice!(*keys); end
+  def store(key, value); end
+  def stringify_keys; end
+  def stringify_keys!; end
+  def symbolize_keys; end
+  def to_hash; end
+  def to_options; end
+  def to_options!; end
+  def transform_keys(*args, &block); end
+  def transform_keys!; end
+  def transform_values(*args, &block); end
+  def update(*other_hashes, &block); end
+  def values_at(*keys); end
+  def with_defaults(other_hash); end
+  def with_defaults!(other_hash); end
+  def with_indifferent_access; end
+  def without(*keys); end
+
+  private
+
+  def convert_key(key); end
+  def convert_value(value, conversion: T.unsafe(nil)); end
+  def set_defaults(target); end
+  def update_with_single_argument(other_hash, block); end
+
+  class << self
+    def [](*args); end
+  end
+end
+
+module ActiveSupport::IncludeTimeWithZone
+  def include?(value); end
 end
 
 module ActiveSupport::Inflector
@@ -2057,6 +2139,10 @@ class ActiveSupport::NumberHelper::RoundingHelper
   def significant; end
 end
 
+module ActiveSupport::NumericWithFormat
+  def to_s(format = T.unsafe(nil), options = T.unsafe(nil)); end
+end
+
 class ActiveSupport::OptionMerger
   def initialize(context, options); end
 
@@ -2106,6 +2192,14 @@ end
 class ActiveSupport::ProxyObject < ::BasicObject
   def raise(*args); end
 end
+
+module ActiveSupport::RangeWithFormat
+  def to_default_s(format = T.unsafe(nil)); end
+  def to_formatted_s(format = T.unsafe(nil)); end
+  def to_s(format = T.unsafe(nil)); end
+end
+
+ActiveSupport::RangeWithFormat::RANGE_FORMATS = T.let(T.unsafe(nil), Hash)
 
 class ActiveSupport::Reloader < ::ActiveSupport::ExecutionWrapper
   def initialize; end
@@ -2792,6 +2886,32 @@ ActiveSupport::VERSION::PRE = T.let(T.unsafe(nil), String)
 ActiveSupport::VERSION::STRING = T.let(T.unsafe(nil), String)
 ActiveSupport::VERSION::TINY = T.let(T.unsafe(nil), Integer)
 
+class ActiveSupport::XMLConverter
+  def initialize(xml, disallowed_types = T.unsafe(nil)); end
+
+  def to_h; end
+
+  private
+
+  def become_array?(value); end
+  def become_content?(value); end
+  def become_empty_string?(value); end
+  def become_hash?(value); end
+  def deep_to_h(value); end
+  def garbage?(value); end
+  def normalize_keys(params); end
+  def nothing?(value); end
+  def process_array(value); end
+  def process_content(value); end
+  def process_hash(value); end
+end
+
+ActiveSupport::XMLConverter::DISALLOWED_TYPES = T.let(T.unsafe(nil), Array)
+
+class ActiveSupport::XMLConverter::DisallowedType < ::StandardError
+  def initialize(type); end
+end
+
 module ActiveSupport::XmlMini
   extend ::ActiveSupport::XmlMini
 
@@ -2853,14 +2973,32 @@ class Array
 
   def as_json(options = T.unsafe(nil)); end
   def compact_blank!; end
+  def deep_dup; end
+  def excluding(*elements); end
+  def extract!; end
   def extract_options!; end
+  def fifth; end
+  def forty_two; end
+  def fourth; end
+  def from(position); end
+  def in_groups(number, fill_with = T.unsafe(nil)); end
+  def in_groups_of(number, fill_with = T.unsafe(nil)); end
+  def including(*elements); end
+  def inquiry; end
+  def second; end
+  def second_to_last; end
+  def split(value = T.unsafe(nil)); end
   def sum(init = T.unsafe(nil), &block); end
+  def third; end
+  def third_to_last; end
+  def to(position); end
   def to_formatted_s(format = T.unsafe(nil)); end
   def to_param; end
   def to_query(key); end
   def to_s(format = T.unsafe(nil)); end
   def to_sentence(options = T.unsafe(nil)); end
   def to_xml(options = T.unsafe(nil)); end
+  def without(*elements); end
 
   class << self
     def wrap(object); end
@@ -2869,6 +3007,7 @@ end
 
 class BigDecimal < ::Numeric
   include ::ActiveSupport::BigDecimalWithDefaultFormat
+  include ::ActiveSupport::NumericWithFormat
   extend ::BigDecimal::Deprecation
 
   def as_json(options = T.unsafe(nil)); end
@@ -2879,6 +3018,8 @@ BigDecimal::VERSION = T.let(T.unsafe(nil), String)
 
 class Class < ::Module
   def class_attribute(*attrs, instance_accessor: T.unsafe(nil), instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_predicate: T.unsafe(nil), default: T.unsafe(nil)); end
+  def descendants; end
+  def subclasses; end
 end
 
 class Date
@@ -2900,6 +3041,7 @@ class Date
   def at_midnight; end
   def at_noon; end
   def beginning_of_day; end
+  def blank?; end
   def change(options); end
   def compare_with_coercion(other); end
   def end_of_day; end
@@ -3026,7 +3168,11 @@ module DateAndTime::Zones
 end
 
 class DateTime < ::Date
+  include ::DateAndTime::Compatibility
+
   def <=>(other); end
+  def acts_like_date?; end
+  def acts_like_time?; end
   def advance(options); end
   def ago(seconds); end
   def as_json(options = T.unsafe(nil)); end
@@ -3043,6 +3189,7 @@ class DateTime < ::Date
   def beginning_of_day; end
   def beginning_of_hour; end
   def beginning_of_minute; end
+  def blank?; end
   def change(options); end
   def end_of_day; end
   def end_of_hour; end
@@ -3069,6 +3216,7 @@ class DateTime < ::Date
   def to_formatted_s(format = T.unsafe(nil)); end
   def to_i; end
   def to_s(format = T.unsafe(nil)); end
+  def to_time; end
   def usec; end
   def utc; end
   def utc?; end
@@ -3084,6 +3232,20 @@ class DateTime < ::Date
     def current; end
   end
 end
+
+module Digest::UUID
+  class << self
+    def uuid_from_hash(hash_class, uuid_namespace, name); end
+    def uuid_v3(uuid_namespace, name); end
+    def uuid_v4; end
+    def uuid_v5(uuid_namespace, name); end
+  end
+end
+
+Digest::UUID::DNS_NAMESPACE = T.let(T.unsafe(nil), String)
+Digest::UUID::OID_NAMESPACE = T.let(T.unsafe(nil), String)
+Digest::UUID::URL_NAMESPACE = T.let(T.unsafe(nil), String)
+Digest::UUID::X500_NAMESPACE = T.let(T.unsafe(nil), String)
 
 module ERB::Util
   private
@@ -3147,6 +3309,7 @@ class FalseClass
 end
 
 class Float < ::Numeric
+  include ::ActiveSupport::NumericWithFormat
   include ::JSON::Ext::Generator::GeneratorMethods::Float
   include ::MessagePack::CoreExt
 
@@ -3163,6 +3326,7 @@ class Hash
   def assert_valid_keys(*valid_keys); end
   def compact_blank; end
   def compact_blank!; end
+  def deep_dup; end
   def deep_merge(other_hash, &block); end
   def deep_merge!(other_hash, &block); end
   def deep_stringify_keys; end
@@ -3171,10 +3335,16 @@ class Hash
   def deep_symbolize_keys!; end
   def deep_transform_keys(&block); end
   def deep_transform_keys!(&block); end
+  def deep_transform_values(&block); end
+  def deep_transform_values!(&block); end
   def except(*keys); end
   def except!(*keys); end
   def extract!(*keys); end
   def extractable_options?; end
+  def nested_under_indifferent_access; end
+  def reverse_merge(other_hash); end
+  def reverse_merge!(other_hash); end
+  def reverse_update(other_hash); end
   def slice!(*keys); end
   def stringify_keys; end
   def stringify_keys!; end
@@ -3184,12 +3354,25 @@ class Hash
   def to_options!; end
   def to_param(namespace = T.unsafe(nil)); end
   def to_query(namespace = T.unsafe(nil)); end
+  def to_xml(options = T.unsafe(nil)); end
+  def with_defaults(other_hash); end
+  def with_defaults!(other_hash); end
+  def with_indifferent_access; end
 
   private
 
   def _deep_transform_keys_in_object(object, &block); end
   def _deep_transform_keys_in_object!(object, &block); end
+  def _deep_transform_values_in_object(object, &block); end
+  def _deep_transform_values_in_object!(object, &block); end
+
+  class << self
+    def from_trusted_xml(xml); end
+    def from_xml(xml, disallowed_types = T.unsafe(nil)); end
+  end
 end
+
+HashWithIndifferentAccess = ActiveSupport::HashWithIndifferentAccess
 
 class IO
   include ::Enumerable
@@ -3223,17 +3406,35 @@ class IPAddr
   def as_json(options = T.unsafe(nil)); end
 end
 
+class Integer < ::Numeric
+  include ::ActiveSupport::NumericWithFormat
+  include ::JSON::Ext::Generator::GeneratorMethods::Integer
+  include ::MessagePack::CoreExt
+
+  def month; end
+  def months; end
+  def multiple_of?(number); end
+  def ordinal; end
+  def ordinalize; end
+  def year; end
+  def years; end
+end
+
 module Kernel
   extend ::Forwardable
 
+  def class_eval(*args, &block); end
+
   private
 
+  def concern(topic, &module_definition); end
   def enable_warnings; end
   def silence_warnings; end
   def suppress(*exception_classes); end
   def with_warnings(flag); end
 
   class << self
+    def concern(topic, &module_definition); end
     def enable_warnings; end
     def silence_warnings; end
     def suppress(*exception_classes); end
@@ -3245,11 +3446,23 @@ class LoadError < ::ScriptError
   def is_missing?(location); end
 end
 
+class Method
+  include ::MethodSource::SourceLocation::MethodExtensions
+  include ::MethodSource::MethodExtensions
+
+  def duplicable?; end
+end
+
 class Module
+  include ::Module::Concerning
   include ::ActiveSupport::Dependencies::ModuleConstMissing
 
   def alias_attribute(new_name, old_name); end
   def anonymous?; end
+  def attr_internal(*attrs); end
+  def attr_internal_accessor(*attrs); end
+  def attr_internal_reader(*attrs); end
+  def attr_internal_writer(*attrs); end
   def cattr_accessor(*syms, instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil), &blk); end
   def cattr_reader(*syms, instance_reader: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil), location: T.unsafe(nil)); end
   def cattr_writer(*syms, instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil), location: T.unsafe(nil)); end
@@ -3268,6 +3481,27 @@ class Module
   def remove_possible_method(method); end
   def remove_possible_singleton_method(method); end
   def silence_redefinition_of_method(method); end
+  def thread_cattr_accessor(*syms, instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
+  def thread_cattr_reader(*syms, instance_reader: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
+  def thread_cattr_writer(*syms, instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
+  def thread_mattr_accessor(*syms, instance_reader: T.unsafe(nil), instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
+  def thread_mattr_reader(*syms, instance_reader: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
+  def thread_mattr_writer(*syms, instance_writer: T.unsafe(nil), instance_accessor: T.unsafe(nil), default: T.unsafe(nil)); end
+
+  private
+
+  def attr_internal_define(attr_name, type); end
+  def attr_internal_ivar_name(attr); end
+
+  class << self
+    def attr_internal_naming_format; end
+    def attr_internal_naming_format=(_arg0); end
+  end
+end
+
+module Module::Concerning
+  def concern(topic, &module_definition); end
+  def concerning(topic, prepend: T.unsafe(nil), &block); end
 end
 
 Module::DELEGATION_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
@@ -3348,19 +3582,24 @@ class Object < ::BasicObject
   include ::Kernel
   include ::JSON::Ext::Generator::GeneratorMethods::Object
   include ::PP::ObjectMixin
-  include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::Tryable
+  include ::ActiveSupport::Dependencies::Loadable
 
   def acts_like?(duck); end
   def as_json(options = T.unsafe(nil)); end
   def blank?; end
+  def deep_dup; end
+  def duplicable?; end
   def html_safe?; end
+  def in?(another_object); end
   def instance_values; end
   def instance_variable_names; end
   def presence; end
+  def presence_in(another_object); end
   def present?; end
   def to_param; end
   def to_query(key); end
+  def with_options(options, &block); end
 end
 
 class Pathname
@@ -3372,14 +3611,20 @@ class Process::Status
 end
 
 class Range
+  include ::ActiveSupport::RangeWithFormat
+  include ::ActiveSupport::CompareWithRange
+  include ::ActiveSupport::IncludeTimeWithZone
+  include ::ActiveSupport::EachTimeWithZone
   include ::Enumerable
 
   def as_json(options = T.unsafe(nil)); end
+  def overlaps?(other); end
   def sum(identity = T.unsafe(nil)); end
 end
 
 class Regexp
   def as_json(options = T.unsafe(nil)); end
+  def multiline?; end
 end
 
 Regexp::TOKEN_KEYS = T.let(T.unsafe(nil), Array)
@@ -3416,6 +3661,18 @@ class Regexp::Token < ::Struct
   end
 end
 
+module SecureRandom
+  extend ::Random::Formatter
+
+  class << self
+    def base36(n = T.unsafe(nil)); end
+    def base58(n = T.unsafe(nil)); end
+  end
+end
+
+SecureRandom::BASE36_ALPHABET = T.let(T.unsafe(nil), Array)
+SecureRandom::BASE58_ALPHABET = T.let(T.unsafe(nil), Array)
+
 class String
   include ::Comparable
   include ::JSON::Ext::Generator::GeneratorMethods::String
@@ -3433,11 +3690,16 @@ class String
   def dasherize; end
   def deconstantize; end
   def demodulize; end
+  def exclude?(string); end
   def first(limit = T.unsafe(nil)); end
   def foreign_key(separate_class_name_and_id_with_underscore = T.unsafe(nil)); end
   def from(position); end
   def html_safe; end
   def humanize(capitalize: T.unsafe(nil), keep_id_suffix: T.unsafe(nil)); end
+  def in_time_zone(zone = T.unsafe(nil)); end
+  def indent(amount, indent_string = T.unsafe(nil), indent_empty_lines = T.unsafe(nil)); end
+  def indent!(amount, indent_string = T.unsafe(nil), indent_empty_lines = T.unsafe(nil)); end
+  def inquiry; end
   def is_utf8?; end
   def last(limit = T.unsafe(nil)); end
   def mb_chars; end
@@ -3449,6 +3711,7 @@ class String
   def singularize(locale = T.unsafe(nil)); end
   def squish; end
   def squish!; end
+  def strip_heredoc; end
   def tableize; end
   def titlecase(keep_id_suffix: T.unsafe(nil)); end
   def titleize(keep_id_suffix: T.unsafe(nil)); end
@@ -3491,6 +3754,7 @@ class Time
   include ::Comparable
   include ::DateAndTime::Zones
   include ::DateAndTime::Calculations
+  include ::DateAndTime::Compatibility
 
   def +(other); end
   def -(other); end
@@ -3544,6 +3808,7 @@ class Time
   def since(seconds); end
   def to_formatted_s(format = T.unsafe(nil)); end
   def to_s(format = T.unsafe(nil)); end
+  def to_time; end
 
   class << self
     def ===(other); end
@@ -3575,9 +3840,25 @@ class TrueClass
   def to_param; end
 end
 
+module URI
+  include ::URI::RFC2396_REGEXP
+  extend ::URI::Escape
+
+  class << self
+    def parser; end
+  end
+end
+
 class URI::Generic
   include ::URI::RFC2396_REGEXP
   include ::URI
 
   def as_json(options = T.unsafe(nil)); end
+end
+
+class UnboundMethod
+  include ::MethodSource::SourceLocation::UnboundMethodExtensions
+  include ::MethodSource::MethodExtensions
+
+  def duplicable?; end
 end
