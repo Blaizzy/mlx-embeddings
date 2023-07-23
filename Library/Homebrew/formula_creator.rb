@@ -60,8 +60,7 @@ module Homebrew
       raise "#{path} already exists" if path.exist?
 
       if version.nil? || version.null?
-        opoo "Version cannot be determined from URL."
-        puts "You'll need to add an explicit 'version' to the formula."
+        odie "Version cannot be determined from URL. Explicity set the version with `--set-version` instead."
       elsif fetch?
         unless head?
           r = Resource.new
@@ -108,7 +107,7 @@ module Homebrew
           homepage "#{homepage}"
         <% unless head? %>
           url "#{url}"
-        <% unless version.nil? or version.detected_from_url? %>
+        <% unless version.detected_from_url? %>
           version "#{version}"
         <% end %>
           sha256 "#{sha256}"
