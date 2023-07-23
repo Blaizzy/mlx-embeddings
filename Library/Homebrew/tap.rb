@@ -419,6 +419,7 @@ class Tap
       end
       $stderr.ohai "#{name}: changed remote from #{remote} to #{requested_remote}" unless quiet
     end
+    return unless remote
 
     current_upstream_head = T.must(git_repo.origin_branch_name)
     return if requested_remote.blank? && git_repo.origin_has_branch?(current_upstream_head)
