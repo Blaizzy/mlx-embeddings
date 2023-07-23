@@ -2475,7 +2475,7 @@ class Formula
   sig {
     params(
       paths:        T.any(T::Array[T.untyped], String, Pathname),
-      before:       T.nilable(T.any(Regexp, String)),
+      before:       T.nilable(T.any(Pathname, Regexp, String)),
       after:        T.nilable(T.any(Pathname, String, Symbol)),
       audit_result: T::Boolean,
     ).void
