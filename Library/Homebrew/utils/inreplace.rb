@@ -47,6 +47,7 @@ module Utils
     }
     def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
       after &&= after.to_s
+      before = before.to_s if before.is_a?(Pathname)
 
       errors = {}
 
@@ -59,7 +60,7 @@ module Utils
         if before.nil? && after.nil?
           yield s
         else
-          s.gsub!(T.must(before), after, audit_result)
+          s.gsub!(T.must(before), T.must(after), audit_result)
         end
 
         errors[path] = s.errors unless s.errors.empty?

@@ -1,16 +1,20 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 # Used by the `inreplace` function (in `utils.rb`).
 #
 # @api private
 class StringInreplaceExtension
-  attr_accessor :errors, :inreplace_string
+  sig { returns(T::Array[String]) }
+  attr_accessor :errors
+
+  sig { returns(String) }
+  attr_accessor :inreplace_string
 
   sig { params(string: String).void }
   def initialize(string)
     @inreplace_string = string
-    @errors = []
+    @errors = T.let([], T::Array[String])
   end
 
   # Same as `String#sub!`, but warns if nothing was replaced.
@@ -27,7 +31,7 @@ class StringInreplaceExtension
   #
   # @api public
   sig {
-    params(before: T.any(Pathname, Regexp, String), after: T.nilable(String), audit_result: T::Boolean)
+    params(before: T.any(Regexp, String), after: String, audit_result: T::Boolean)
       .returns(T.nilable(String))
   }
   def gsub!(before, after, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
@@ -65,6 +69,6 @@ class StringInreplaceExtension
   # @api public
   sig { params(flag: String).returns(String) }
   def get_make_var(flag)
-    inreplace_string[/^#{Regexp.escape(flag)}[ \t]*[\\?+:!]?=[ \t]*((?:.*\\\n)*.*)$/, 1]
+    T.must(inreplace_string[/^#{Regexp.escape(flag)}[ \t]*[\\?+:!]?=[ \t]*((?:.*\\\n)*.*)$/, 1])
   end
 end
