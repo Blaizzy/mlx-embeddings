@@ -141,21 +141,6 @@ describe Cask::Installer, :cask do
       end.not_to raise_error
     end
 
-    # unlike the CLI, the internal interface throws exception on double-install
-    it "installer method raises an exception when already-installed Casks are attempted" do
-      transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
-
-      expect(transmission).not_to be_installed
-
-      installer = described_class.new(transmission)
-
-      installer.install
-
-      expect do
-        installer.install
-      end.to raise_error(Cask::CaskAlreadyInstalledError)
-    end
-
     it "allows already-installed Casks to be installed if force is provided" do
       transmission = Cask::CaskLoader.load(cask_path("local-transmission"))
 
@@ -313,7 +298,7 @@ describe Cask::Installer, :cask do
         caffeine = Cask::CaskLoader.load(path)
         expect(caffeine).to receive(:loaded_from_api?).twice.and_return(true)
         expect(caffeine).to receive(:caskfile_only?).twice.and_return(true)
-        expect(caffeine).to receive(:installed_caskfile).twice.and_return(invalid_path)
+        expect(caffeine).to receive(:installed_caskfile).once.and_return(invalid_path)
 
         described_class.new(caffeine).install
         expect(Cask::CaskLoader.load(path)).to be_installed

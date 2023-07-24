@@ -228,18 +228,34 @@ module Homebrew
 
       require "cask/installer"
 
-      casks.each do |cask|
-        Cask::Installer.new(cask,
-                            binaries:       args.binaries?,
-                            verbose:        args.verbose?,
-                            force:          args.force?,
-                            adopt:          args.adopt?,
-                            require_sha:    args.require_sha?,
-                            skip_cask_deps: args.skip_cask_deps?,
-                            quarantine:     args.quarantine?,
-                            quiet:          args.quiet?).install
-      rescue Cask::CaskAlreadyInstalledError => e
-        opoo e.message
+      installed_casks, new_casks = casks.partition(&:installed?)
+
+      new_casks.each do |cask|
+        Cask::Installer.new(
+          cask,
+          binaries:       args.binaries?,
+          verbose:        args.verbose?,
+          force:          args.force?,
+          adopt:          args.adopt?,
+          require_sha:    args.require_sha?,
+          skip_cask_deps: args.skip_cask_deps?,
+          quarantine:     args.quarantine?,
+          quiet:          args.quiet?,
+        ).install
+      end
+
+      if !Homebrew::EnvConfig.no_install_upgrade? && installed_casks.any?
+        Cask::Upgrade.upgrade_casks(
+          *installed_casks,
+          force:          args.force?,
+          dry_run:        args.dry_run?,
+          binaries:       args.binaries?,
+          quarantine:     args.quarantine?,
+          require_sha:    args.require_sha?,
+          skip_cask_deps: args.skip_cask_deps?,
+          verbose:        args.verbose?,
+          args:           args,
+        )
       end
     end
 
