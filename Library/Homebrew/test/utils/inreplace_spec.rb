@@ -57,7 +57,7 @@ describe Utils::Inreplace do
     it "substitutes pathname within file" do
       # For a specific instance of this, see https://github.com/Homebrew/homebrew-core/blob/a8b0b10/Formula/loki.rb#L48
       described_class.inreplace(file.path) do |s|
-        s.gsub!(Pathname("b"), "f")
+        s.gsub!(Pathname("b"), Pathname("f"))
       end
       expect(File.binread(file)).to eq <<~EOS
         a

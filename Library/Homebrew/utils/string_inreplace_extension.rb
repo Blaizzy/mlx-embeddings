@@ -31,12 +31,12 @@ class StringInreplaceExtension
   #
   # @api public
   sig {
-    params(before: T.any(Pathname, Regexp, String), after: String, audit_result: T::Boolean)
+    params(before: T.any(Pathname, Regexp, String), after: T.any(Pathname, String), audit_result: T::Boolean)
       .returns(T.nilable(String))
   }
   def gsub!(before, after, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
     before = before.to_s if before.is_a?(Pathname)
-    result = inreplace_string.gsub!(before, after)
+    result = inreplace_string.gsub!(before, after.to_s)
     errors << "expected replacement of #{before.inspect} with #{after.inspect}" if audit_result && result.nil?
     result
   end
