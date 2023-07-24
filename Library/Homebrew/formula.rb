@@ -708,6 +708,7 @@ class Formula
   #
   # No `make install` available?
   # <pre>bin.install "binary1"</pre>
+  sig { returns(Pathname) }
   def bin
     prefix/"bin"
   end
@@ -715,6 +716,7 @@ class Formula
   # The directory where the formula's documentation should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def doc
     share/"doc"/name
   end
@@ -725,6 +727,7 @@ class Formula
   #
   # No `make install` available?
   # <pre>include.install "example.h"</pre>
+  sig { returns(Pathname) }
   def include
     prefix/"include"
   end
@@ -732,6 +735,7 @@ class Formula
   # The directory where the formula's info files should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def info
     share/"info"
   end
@@ -742,6 +746,7 @@ class Formula
   #
   # No `make install` available?
   # <pre>lib.install "example.dylib"</pre>
+  sig { returns(Pathname) }
   def lib
     prefix/"lib"
   end
@@ -754,6 +759,7 @@ class Formula
   # <pre>libexec.install "foo.jar"
   # bin.write_jar_script libexec/"foo.jar", "foo"
   # </pre>
+  sig { returns(Pathname) }
   def libexec
     prefix/"libexec"
   end
@@ -763,6 +769,7 @@ class Formula
   # `brew link` for formulae that are not keg-only.
   # Often one of the more specific `man` functions should be used instead,
   # e.g. {#man1}.
+  sig { returns(Pathname) }
   def man
     share/"man"
   end
@@ -773,6 +780,7 @@ class Formula
   #
   # No `make install` available?
   # <pre>man1.install "example.1"</pre>
+  sig { returns(Pathname) }
   def man1
     man/"man1"
   end
@@ -780,6 +788,7 @@ class Formula
   # The directory where the formula's man2 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def man2
     man/"man2"
   end
@@ -790,6 +799,7 @@ class Formula
   #
   # No `make install` available?
   # <pre>man3.install "man.3"</pre>
+  sig { returns(Pathname) }
   def man3
     man/"man3"
   end
@@ -797,6 +807,7 @@ class Formula
   # The directory where the formula's man4 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def man4
     man/"man4"
   end
@@ -804,6 +815,7 @@ class Formula
   # The directory where the formula's man5 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def man5
     man/"man5"
   end
@@ -811,6 +823,7 @@ class Formula
   # The directory where the formula's man6 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def man6
     man/"man6"
   end
@@ -818,6 +831,7 @@ class Formula
   # The directory where the formula's man7 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def man7
     man/"man7"
   end
@@ -825,6 +839,7 @@ class Formula
   # The directory where the formula's man8 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def man8
     man/"man8"
   end
@@ -833,6 +848,7 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # Generally we try to migrate these to {#bin} instead.
+  sig { returns(Pathname) }
   def sbin
     prefix/"sbin"
   end
@@ -852,6 +868,7 @@ class Formula
   #
   # Install `./example_code/simple/ones` to `share/demos/examples`:
   # <pre>(share/"demos").install "example_code/simple/ones" => "examples"</pre>
+  sig { returns(Pathname) }
   def share
     prefix/"share"
   end
@@ -863,6 +880,7 @@ class Formula
   #
   # No `make install` available?
   # <pre>pkgshare.install "examples"</pre>
+  sig { returns(Pathname) }
   def pkgshare
     prefix/"share"/name
   end
@@ -872,6 +890,7 @@ class Formula
   #
   # To install an Emacs mode included with a software package:
   # <pre>elisp.install "contrib/emacs/example-mode.el"</pre>
+  sig { returns(Pathname) }
   def elisp
     prefix/"share/emacs/site-lisp"/name
   end
@@ -880,6 +899,7 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # This is not symlinked into `HOMEBREW_PREFIX`.
+  sig { returns(Pathname) }
   def frameworks
     prefix/"Frameworks"
   end
@@ -888,6 +908,7 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # This is not symlinked into `HOMEBREW_PREFIX`.
+  sig { returns(Pathname) }
   def kext_prefix
     prefix/"Library/Extensions"
   end
@@ -897,6 +918,7 @@ class Formula
   # but will write a new file named `*.default`.
   # This directory is not inside the `HOMEBREW_CELLAR` so it persists
   # across upgrades.
+  sig { returns(Pathname) }
   def etc
     (HOMEBREW_PREFIX/"etc").extend(InstallRenamed)
   end
@@ -905,6 +927,7 @@ class Formula
   # e.g. `$HOMEBREW_PREFIX/etc/openssl@1.1`
   # Anything using `pkgetc.install` will not overwrite other files on
   # e.g. upgrades but will write a new file named `*.default`.
+  sig { returns(Pathname) }
   def pkgetc
     (HOMEBREW_PREFIX/"etc"/name).extend(InstallRenamed)
   end
@@ -912,6 +935,7 @@ class Formula
   # The directory where the formula's variable files should be installed.
   # This directory is not inside the `HOMEBREW_CELLAR` so it persists
   # across upgrades.
+  sig { returns(Pathname) }
   def var
     HOMEBREW_PREFIX/"var"
   end
@@ -920,6 +944,7 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def zsh_function
     share/"zsh/site-functions"
   end
@@ -928,6 +953,7 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def fish_function
     share/"fish/vendor_functions.d"
   end
@@ -936,6 +962,7 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def bash_completion
     prefix/"etc/bash_completion.d"
   end
@@ -944,6 +971,7 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def zsh_completion
     share/"zsh/site-functions"
   end
@@ -952,6 +980,7 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  sig { returns(Pathname) }
   def fish_completion
     share/"fish/vendor_completions.d"
   end
@@ -960,12 +989,14 @@ class Formula
   # installation so, despite not being in `HOMEBREW_CELLAR`, they are installed
   # there after pouring a bottle.
   # @private
+  sig { returns(Pathname) }
   def bottle_prefix
     prefix/".bottle"
   end
 
   # The directory where the formula's installation or test logs will be written.
   # @private
+  sig { returns(Pathname) }
   def logs
     HOMEBREW_LOGS + name
   end
