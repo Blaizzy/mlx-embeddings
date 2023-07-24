@@ -77,7 +77,7 @@ describe Formulary do
     it "raises an error if ref is nil" do
       expect do
         described_class.factory(nil)
-      end.to raise_error(ArgumentError)
+      end.to raise_error(TypeError)
     end
 
     context "with sharded Formula directory" do

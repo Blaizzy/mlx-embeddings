@@ -729,9 +729,9 @@ module Formulary
   # * a local bottle reference
   sig {
     params(
-      ref:           T.nilable(T.any(Pathname, String)),
+      ref:           T.any(Pathname, String),
       spec:          Symbol,
-      alias_path:    Pathname,
+      alias_path:    T.nilable(Pathname),
       from:          Symbol,
       warn:          T::Boolean,
       force_bottle:  T::Boolean,
@@ -742,15 +742,13 @@ module Formulary
   def self.factory(
     ref,
     spec = :stable,
-    alias_path: T.unsafe(nil),
+    alias_path: nil,
     from: T.unsafe(nil),
     warn: T.unsafe(nil),
     force_bottle: T.unsafe(nil),
     flags: T.unsafe(nil),
     ignore_errors: T.unsafe(nil)
   )
-    raise ArgumentError, "Formulae must have a ref!" unless ref
-
     cache_key = "#{ref}-#{spec}-#{alias_path}-#{from}"
     return cache[:formulary_factory][cache_key] if factory_cached? && cache[:formulary_factory]&.key?(cache_key)
 
