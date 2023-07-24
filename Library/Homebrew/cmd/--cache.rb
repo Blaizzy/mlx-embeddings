@@ -110,7 +110,7 @@ module Homebrew
 
       puts bottle.cached_download
     elsif args.HEAD?
-      puts formula.head.cached_download
+      puts T.must(formula.head).cached_download
     else
       puts formula.cached_download
     end

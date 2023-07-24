@@ -223,7 +223,7 @@ module Homebrew
 
   def retrieve_and_display_info_and_open_pr(formula_or_cask, name, repositories, args:, ambiguous_cask: false)
     if formula_or_cask.is_a?(Formula)
-      current_version = formula_or_cask.stable.version
+      current_version = T.must(formula_or_cask.stable).version
       type = :formula
       version_name = "formula version"
     else
