@@ -140,7 +140,13 @@ If all maintainer feedback has been addressed and all tests are passing, bump it
 
 ## Can I edit formulae myself?
 
-Yes! It’s easy! If `brew tap` doesn't show `homebrew/core`, run `brew tap homebrew/core` first. Then just `brew edit <formula>`. You don’t have to submit modifications back to `homebrew/core`, just edit the formula to what you personally need and `brew install <formula>`. As a bonus, `brew update` will merge your changes with upstream so you can still keep the formula up-to-date **with** your personal modifications!
+Yes! It’s easy! If `brew tap` doesn't show `homebrew/core`, set yourself up to edit a local copy:
+
+1. Set `HOMEBREW_NO_INSTALL_FROM_API=1` in your shell environment,
+2. Run `brew tap homebrew/core` and wait for the clone to complete, then
+3. Run `brew edit <formula>` to open the formula in `EDITOR`.
+
+You don’t have to submit modifications back to `homebrew/core`, just edit the formula to what you personally need and `brew install <formula>`. As a bonus, `brew update` will merge your changes with upstream so you can still keep the formula up-to-date **with** your personal modifications!
 
 Note that if you are editing a core formula or cask you must set `HOMEBREW_NO_INSTALL_FROM_API=1` before using `brew install` or `brew update` otherwise they will ignore your local changes and default to the API.
 
@@ -148,7 +154,7 @@ To undo all changes you have made to any of Homebrew's repositories, run `brew u
 
 ## Can I make new formulae?
 
-Yes! It’s easy! Just `brew create URL`. Homebrew will then open the formula in `EDITOR` so you can edit it, but it probably already installs; try it: `brew install <formula>`. If you encounter any issues, run the command with the `--debug` switch like so: `brew install --debug <formula>`, which drops you into a debugging shell.
+Yes! It’s easy! If you already have a local copy of `homebrew/core` (see above), just use the [`brew create` command](Manpage.md#create-options-url). Homebrew will then open the formula in `EDITOR` so you can edit it, but it probably already installs; try it: `brew install <formula>`. If you encounter any issues, run the command with the `--debug` switch like so: `brew install --debug <formula>`, which drops you into a debugging shell.
 
 If you want your new formula to be part of `homebrew/core` or want to learn more about writing formulae, then please read the [Formula Cookbook](Formula-Cookbook.md).
 
