@@ -367,9 +367,9 @@ class Formula
 
   # Is this formula HEAD-only?
   # @private
-  sig { returns(T.nilable(T::Boolean)) }
+  sig { returns(T::Boolean) }
   def head_only?
-    head && !stable
+    !!head && !stable
   end
 
   delegate [ # rubocop:disable Layout/HashAlignment
@@ -437,6 +437,7 @@ class Formula
   # @see .loaded_from_api?
   delegate loaded_from_api?: :"self.class"
 
+  sig { void }
   def update_head_version
     return unless head?
     return unless head.downloader.is_a?(VCSDownloadStrategy)
@@ -502,12 +503,14 @@ class Formula
 
   # An old name for the formula.
   # @deprecated Use #{#oldnames} instead.
+  sig { returns(T.nilable(String)) }
   def oldname
     odeprecated "Formula#oldname", "Formula#oldnames"
     @oldname ||= oldnames.first
   end
 
   # Old names for the formula.
+  sig { returns(T::Array[String]) }
   def oldnames
     @oldnames ||= if tap
       tap.formula_renames
@@ -518,6 +521,7 @@ class Formula
   end
 
   # All aliases for the formula.
+  sig { returns(T::Array[String]) }
   def aliases
     @aliases ||= if tap
       tap.alias_reverse_table[full_name].to_a.map do |a|
@@ -1434,6 +1438,7 @@ class Formula
   end
 
   # @private
+  sig { returns(T::Array[String]) }
   def oldnames_to_migrate
     oldnames.select do |oldname|
       old_rack = HOMEBREW_CELLAR/oldname
@@ -1444,7 +1449,7 @@ class Formula
     end
   end
 
-  sig { returns(T.nilable(T::Boolean)) }
+  sig { returns(T::Boolean) }
   def migration_needed?
     !oldnames_to_migrate.empty? && !rack.exist?
   end
@@ -1492,7 +1497,7 @@ class Formula
   end
 
   def current_installed_alias_target
-    Formulary.factory(installed_alias_name) if installed_alias_path
+    Formulary.factory(T.must(installed_alias_name)) if installed_alias_path
   end
 
   # Has the target of the alias used to install this formula changed?
@@ -2014,9 +2019,9 @@ class Formula
 
   # True if this formula is provided by Homebrew itself
   # @private
-  sig { returns(T.nilable(T::Boolean)) }
+  sig { returns(T::Boolean) }
   def core_formula?
-    tap&.core_tap?
+    !!tap&.core_tap?
   end
 
   # True if this formula is provided by external Tap
