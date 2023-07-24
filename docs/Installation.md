@@ -36,7 +36,7 @@ export HOMEBREW_NO_INSTALL_FROM_API=1
 
 This will make Homebrew install formulae and casks from the `homebrew/core` and `homebrew/cask` taps using local checkouts of these repositories instead of Homebrew’s API.
 
-Note, this will take effect in supported configurations (i.e. using the default Homebrew prefix and, if on macOS, on a supported version).
+Note that this will automatically be set on unsupported configurations (i.e. not using the default Homebrew prefix or, if on macOS, on an unsupported version).
 
 ## Unattended installation
 

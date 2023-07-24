@@ -321,7 +321,7 @@ class Tap
     elsif (core_tap? || core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api? && !force
       # odeprecated: move to odie in the next minor release. This may break some CI so we should give notice.
       opoo "Tapping #{name} is no longer typically necessary.\n" \
-           "Add #{Formatter.option("--force")} if you are sure you need one."
+           "Add #{Formatter.option("--force")} if you are sure you need it done."
     end
 
     clear_cache
