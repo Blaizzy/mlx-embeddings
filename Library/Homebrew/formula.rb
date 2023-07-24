@@ -353,18 +353,21 @@ class Formula
 
   # Is the currently active {SoftwareSpec} a {#stable} build?
   # @private
+  sig { returns(T::Boolean) }
   def stable?
     active_spec == stable
   end
 
   # Is the currently active {SoftwareSpec} a {#head} build?
   # @private
+  sig { returns(T::Boolean) }
   def head?
     active_spec == head
   end
 
   # Is this formula HEAD-only?
   # @private
+  sig { returns(T.nilable(T::Boolean)) }
   def head_only?
     head && !stable
   end
@@ -573,12 +576,14 @@ class Formula
   # This is actually just a check for if the {#latest_installed_prefix} directory
   # exists and is not empty.
   # @private
+  sig { returns(T::Boolean) }
   def latest_version_installed?
     (dir = latest_installed_prefix).directory? && !dir.children.empty?
   end
 
   # If at least one version of {Formula} is installed.
   # @private
+  sig { returns(T::Boolean) }
   def any_version_installed?
     installed_prefixes.any? { |keg| (keg/Tab::FILENAME).file? }
   end
@@ -652,11 +657,13 @@ class Formula
   end
 
   # Is the formula linked?
+  sig { returns(T::Boolean) }
   def linked?
     linked_keg.symlink?
   end
 
   # Is the formula linked to `opt`?
+  sig { returns(T::Boolean) }
   def optlinked?
     opt_prefix.symlink?
   end
@@ -1251,6 +1258,7 @@ class Formula
   # Rarely, you don't want your library symlinked into the main prefix.
   # See `gettext.rb` for an example.
   # @see .keg_only
+  sig { returns(T::Boolean) }
   def keg_only?
     return false unless keg_only_reason
 
@@ -1436,6 +1444,7 @@ class Formula
     end
   end
 
+  sig { returns(T.nilable(T::Boolean)) }
   def migration_needed?
     !oldnames_to_migrate.empty? && !rack.exist?
   end
@@ -1477,6 +1486,7 @@ class Formula
     end
   end
 
+  sig { returns(T::Boolean) }
   def new_formula_available?
     installed_alias_target_changed? && !latest_formula.latest_version_installed?
   end
@@ -1487,6 +1497,7 @@ class Formula
 
   # Has the target of the alias used to install this formula changed?
   # Returns false if the formula wasn't installed with an alias.
+  sig { returns(T::Boolean) }
   def installed_alias_target_changed?
     target = current_installed_alias_target
     return false unless target
@@ -1495,12 +1506,14 @@ class Formula
   end
 
   # Is this formula the target of an alias used to install an old formula?
+  sig { returns(T::Boolean) }
   def supersedes_an_installed_formula?
     old_installed_formulae.any?
   end
 
   # Has the alias used to install the formula changed, or are different
   # formulae already installed with this alias?
+  sig { returns(T::Boolean) }
   def alias_changed?
     installed_alias_target_changed? || supersedes_an_installed_formula?
   end
@@ -1521,6 +1534,7 @@ class Formula
   end
 
   # @private
+  sig { params(fetch_head: T::Boolean).returns(T::Boolean) }
   def outdated?(fetch_head: false)
     !outdated_kegs(fetch_head: fetch_head).empty?
   rescue Migrator::MigrationNeededError
@@ -2000,12 +2014,14 @@ class Formula
 
   # True if this formula is provided by Homebrew itself
   # @private
+  sig { returns(T.nilable(T::Boolean)) }
   def core_formula?
     tap&.core_tap?
   end
 
   # True if this formula is provided by external Tap
   # @private
+  sig { returns(T::Boolean) }
   def tap?
     return false unless tap
 
@@ -2015,6 +2031,7 @@ class Formula
   # True if this formula can be installed on this platform
   # Redefined in extend/os.
   # @private
+  sig { returns(T::Boolean) }
   def valid_platform?
     requirements.none?(MacOSRequirement) && requirements.none?(LinuxRequirement)
   end
@@ -2967,6 +2984,7 @@ class Formula
     # Whether a livecheck specification is defined or not.
     # It returns true when a livecheck block is present in the {Formula} and
     # false otherwise, and is used by livecheck.
+    sig { returns(T::Boolean) }
     def livecheckable?
       @livecheckable == true
     end
@@ -2974,6 +2992,7 @@ class Formula
     # Whether a service specification is defined or not.
     # It returns true when a service block is present in the {Formula} and
     # false otherwise, and is used by service.
+    sig { returns(T::Boolean) }
     def service?
       @service_block.present?
     end
@@ -3533,8 +3552,8 @@ class Formula
 
     # Whether this {Formula} is deprecated (i.e. warns on installation).
     # Defaults to false.
-    # @return [Boolean]
     # @see .deprecate!
+    sig { returns(T::Boolean) }
     def deprecated?
       @deprecated == true
     end
@@ -3573,8 +3592,8 @@ class Formula
 
     # Whether this {Formula} is disabled (i.e. cannot be installed).
     # Defaults to false.
-    # @return [Boolean]
     # @see .disable!
+    sig { returns(T::Boolean) }
     def disabled?
       @disabled == true
     end
