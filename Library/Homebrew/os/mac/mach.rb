@@ -60,7 +60,15 @@ module MachOShim
   # TODO: See if the `#write!` call can be delayed until
   # we know we're not making any changes to the rpaths.
   def delete_rpath(rpath, **options)
-    macho.delete_rpath(rpath, options)
+    candidates = macho.command(:LC_RPATH).select do |r|
+      resolve_variable_name(r.path.to_s) == resolve_variable_name(rpath)
+    end
+
+    # TODO: Add `last: true` to `options` and replace `delete_command` with `delete_rpath`
+    #       when the PR linked below is merged and release for ruby-macho.
+    # https://github.com/Homebrew/ruby-macho/pull/555
+    command_to_delete = candidates.last # .path.to_s (when switching to `MachOFile#delete_rpath`)
+    macho.delete_command(command_to_delete, options)
     macho.write!
   end
 
