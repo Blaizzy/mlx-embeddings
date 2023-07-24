@@ -198,6 +198,10 @@ class Formula
   attr_accessor :force_bottle
 
   # @private
+  sig {
+    params(name: String, path: Pathname, spec: Symbol, alias_path: T.any(NilClass, Pathname, String),
+           tap: T.nilable(Tap), force_bottle: T::Boolean).void
+  }
   def initialize(name, path, spec, alias_path: nil, tap: nil, force_bottle: false)
     # Only allow instances of subclasses. The base class does not hold any spec information (URLs etc).
     raise "Do not call `Formula.new' directly without a subclass." unless self.class < Formula
