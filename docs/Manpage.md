@@ -2289,7 +2289,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>If set, do not install formulae and casks in homebrew/core and homebrew/cask taps using Homebrew's API and instead use (large, slow) local checkouts of these repositories.
 
 - `HOMEBREW_NO_INSTALL_UPGRADE`
-  <br>If set, `brew install` *`formula`* will not upgrade *`formula`* if it is installed but outdated.
+  <br>If set, `brew install` <formula/cask> will not upgrade <formula/cask> if it is installed but outdated.
 
 - `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
   <br>If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running `brew install` *`formula`* or `brew upgrade` *`formula`*.
