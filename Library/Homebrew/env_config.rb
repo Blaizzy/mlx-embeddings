@@ -315,7 +315,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_UPGRADE:               {
-        description: "If set, `brew install` <formula> will not upgrade <formula> if it is installed but " \
+        description: "If set, `brew install` <formula/cask> will not upgrade <formula/cask> if it is installed but " \
                      "outdated.",
         boolean:     true,
       },

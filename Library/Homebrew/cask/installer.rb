@@ -91,11 +91,6 @@ module Cask
       Migrator.migrate_if_needed(@cask)
 
       old_config = @cask.config
-      if @cask.installed? && !force? && !reinstall? && !upgrade?
-        return if quiet?
-
-        raise CaskAlreadyInstalledError, @cask
-      end
       predecessor = @cask if reinstall? && @cask.installed?
 
       check_conflicts

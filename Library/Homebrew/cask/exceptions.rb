@@ -132,21 +132,6 @@ module Cask
     end
   end
 
-  # Error when a cask is already installed.
-  #
-  # @api private
-  class CaskAlreadyInstalledError < AbstractCaskErrorWithToken
-    sig { returns(String) }
-    def to_s
-      <<~EOS
-        Cask '#{token}' is already installed.
-
-        To re-install #{token}, run:
-          #{Formatter.identifier("brew reinstall --cask #{token}")}
-      EOS
-    end
-  end
-
   # Error when there is a cyclic cask dependency.
   #
   # @api private
