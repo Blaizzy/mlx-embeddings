@@ -1,10 +1,10 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "bump_version_parser"
 require "cask"
 require "cask/download"
 require "cli/parser"
-require "extend/version-parser"
 require "utils/tar"
 
 module Homebrew
@@ -83,7 +83,7 @@ module Homebrew
     odie "This cask is not in a tap!" if cask.tap.blank?
     odie "This cask's tap is not a Git repository!" unless cask.tap.git?
 
-    new_version = VersionParser.new(
+    new_version = BumpVersionParser.new(
       general: args.version,
       intel:   args.version_intel,
       arm:     args.version_arm,
@@ -174,7 +174,7 @@ module Homebrew
     params(
       cask:              Cask::Cask,
       new_hash:          T.nilable(String),
-      new_version:       VersionParser,
+      new_version:       BumpVersionParser,
       replacement_pairs: T::Array[[T.any(Regexp, String), T.any(Regexp, String)]],
     ).returns(T::Array[[T.any(Regexp, String), T.any(Regexp, String)]])
   }
@@ -237,7 +237,7 @@ module Homebrew
     replacement_pairs
   end
 
-  sig { params(cask: Cask::Cask, args: Homebrew::CLI::Args, new_version: VersionParser).void }
+  sig { params(cask: Cask::Cask, args: CLI::Args, new_version: BumpVersionParser).void }
   def check_pull_requests(cask, args:, new_version:)
     tap_remote_repo = cask.tap.full_name || cask.tap.remote_repo
 
