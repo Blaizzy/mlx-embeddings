@@ -76,7 +76,7 @@ module PyPI
       end
 
       sdist = json["urls"].find { |url| url["packagetype"] == "sdist" }
-      return json["info"]["name"] if sdist.nil?
+      return if sdist.nil?
 
       @pypi_info = [
         PyPI.normalize_python_package(json["info"]["name"]), sdist["url"],
