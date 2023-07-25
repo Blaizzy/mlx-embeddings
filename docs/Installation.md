@@ -2,7 +2,9 @@
 
 Instructions for a supported install of Homebrew are on the [homepage](https://brew.sh).
 
-This script installs Homebrew to its default, supported, best prefix (`/usr/local` for macOS Intel, `/opt/homebrew` for Apple Silicon and `/home/linuxbrew/.linuxbrew` for Linux) so that [you don’t need *sudo* after Homebrew's initial installation](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you `brew install`. This prefix is required for most bottles (binary packages) to be used. It is a careful script; it can be run even if you have stuff installed in the preferred prefix already. It tells you exactly what it will do before it does it too. You have to confirm everything it will do before it starts.
+The script installs Homebrew to its default, supported, best prefix (`/opt/homebrew` for Apple Silicon, `/usr/local` for macOS Intel and `/home/linuxbrew/.linuxbrew` for Linux) so that [you don’t need *sudo* after Homebrew's initial installation](FAQ.md#why-does-homebrew-say-sudo-is-bad) when you `brew install`. This prefix is required for most bottles (binary packages) to be used. It is a careful script; it can be run even if you have stuff installed in the preferred prefix already. It tells you exactly what it will do before it does it too. You have to confirm everything it will do before it starts.
+
+The macOS `.pkg` installer also installs Homebrew to its default prefix (`/opt/homebrew` for Apple Silicon and `/usr/local` for macOS Intel) for the same reasons as above. It's available on [Homebrew/brew's latest GitHub release](https://github.com/Homebrew/brew/releases/latest).
 
 ## macOS Requirements
 
