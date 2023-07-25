@@ -12,19 +12,28 @@ jobs:
   build:
     if: github.repository_owner == 'Homebrew'
     runs-on: macos-13
+    permissions:
+      # To write assets to GitHub release
+      contents: write
     env:
       TEMPORARY_CERTIFICATE_FILE: 'homebrew_developer_id_installer_certificate.p12'
       TEMPORARY_KEYCHAIN_FILE: 'homebrew_installer_signing.keychain-db'
       MIN_MACOS_VERSION: '11.0'
+      PKG_APPLE_DEVELOPER_TEAM_ID: ${{ secrets.PKG_APPLE_DEVELOPER_TEAM_ID }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout to brew subdirectory
+        uses: actions/checkout@v3
         with:
           path: brew
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Get Homebrew version from Git
         id: print-version
         run: echo "version=$(git -C brew describe --tags --always)" >> "${GITHUB_OUTPUT}"
+
+      - name: Install Pandoc
+        run: brew install pandoc
 
       - name: Create and unlock temporary macOS keychain
         env:
@@ -38,12 +47,16 @@ jobs:
       - name: Create temporary certificate file
         env:
           PKG_APPLE_SIGNING_CERTIFICATE_BASE64: ${{ secrets.PKG_APPLE_SIGNING_CERTIFICATE_BASE64 }}
-        run: echo -n "${PKG_APPLE_SIGNING_CERTIFICATE_BASE64}" | base64 --decode --output="${RUNNER_TEMP}/${TEMPORARY_CERTIFICATE_FILE}"
+        run: echo -n "${PKG_APPLE_SIGNING_CERTIFICATE_BASE64}" |
+             base64 --decode --output="${RUNNER_TEMP}/${TEMPORARY_CERTIFICATE_FILE}"
 
       - name: Import certificate file into macOS keychain
         env:
           PKG_APPLE_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.PKG_APPLE_SIGNING_CERTIFICATE_PASSWORD }}
-        run: security import "${RUNNER_TEMP}/${TEMPORARY_CERTIFICATE_FILE}" -k "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}" -t cert -f pkcs12 -P "${PKG_APPLE_SIGNING_CERTIFICATE_PASSWORD}" -A
+        run: security import "${RUNNER_TEMP}/${TEMPORARY_CERTIFICATE_FILE}"
+                             -k "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}"
+                             -P "${PKG_APPLE_SIGNING_CERTIFICATE_PASSWORD}"
+                             -t cert -f pkcs12 -A
 
       - name: Clean up temporary certificate file
         if: ${{ always() }}
@@ -52,25 +65,57 @@ jobs:
       - name: Open macOS keychain
         run: security list-keychain -d user -s "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}"
 
-      - name: Build Homebrew installer package
-        env:
-          PKG_APPLE_DEVELOPER_TEAM_ID: ${{ secrets.PKG_APPLE_DEVELOPER_TEAM_ID }}
+      - name: Build Homebrew installer component package
         # Note: `Library/Homebrew/test/support/fixtures/` contains unsigned
         # binaries so it needs to be excluded from notarization.
-        run: pkgbuild --root brew --scripts brew/package/scripts --identifier "sh.brew.homebrew" --version ${{ steps.print-version.outputs.version }} --install-location "/tmp/brew" --filter .DS_Store --filter "(.*)/Library/Homebrew/test/support/fixtures/" --min-os-version "${MIN_MACOS_VERSION}" --sign "${PKG_APPLE_DEVELOPER_TEAM_ID}" Homebrew-${{ steps.print-version.outputs.version }}.pkg
+        run: pkgbuild --root brew
+                      --scripts brew/package/scripts
+                      --identifier "sh.brew.homebrew"
+                      --version ${{ steps.print-version.outputs.version }}
+                      --install-location "/opt/homebrew"
+                      --filter .DS_Store
+                      --filter "(.*)/Library/Homebrew/test/support/fixtures/"
+                      --min-os-version "${MIN_MACOS_VERSION}"
+                      --sign "${PKG_APPLE_DEVELOPER_TEAM_ID}" Homebrew.pkg
+
+      - name: Convert Homebrew license file to RTF
+        run: (printf "### " && cat brew/LICENSE.txt) |
+              pandoc --from markdown --standalone --output brew/package/resources/LICENSE.rtf
+
+      - name: Build Homebrew installer package
+        run: productbuild --resources brew/package/resources
+                          --distribution brew/package/Distribution.xml
+                          --package-path Homebrew.pkg Homebrew-${{ steps.print-version.outputs.version }}.pkg
+                          --sign "${PKG_APPLE_DEVELOPER_TEAM_ID}"
 
       - name: Notarize Homebrew installer package
         env:
-          PKG_APPLE_DEVELOPER_TEAM_ID: ${{ secrets.PKG_APPLE_DEVELOPER_TEAM_ID }}
           PKG_APPLE_ID_USERNAME: ${{ secrets.PKG_APPLE_ID_USERNAME }}
           PKG_APPLE_ID_APP_SPECIFIC_PASSWORD: ${{ secrets.PKG_APPLE_ID_APP_SPECIFIC_PASSWORD }}
-        run: xcrun notarytool submit Homebrew-${{ steps.print-version.outputs.version }}.pkg --team-id  "${PKG_APPLE_DEVELOPER_TEAM_ID}" --apple-id "${PKG_APPLE_ID_USERNAME}" --password "${PKG_APPLE_ID_APP_SPECIFIC_PASSWORD}" --wait
+        run: xcrun notarytool submit Homebrew-${{ steps.print-version.outputs.version }}.pkg
+                                    --team-id  "${PKG_APPLE_DEVELOPER_TEAM_ID}"
+                                    --apple-id "${PKG_APPLE_ID_USERNAME}"
+                                    --password "${PKG_APPLE_ID_APP_SPECIFIC_PASSWORD}"
+                                    --wait
 
       - name: Clean up temporary macOS keychain
         if: ${{ always() }}
-        run: test -f "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}" && security delete-keychain "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}"
+        run: |
+          if [[ -f "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}" ]]
+          then
+            security delete-keychain "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}"
+          fi
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload installer to GitHub Actions
+        uses: actions/upload-artifact@v3
         with:
           name: Homebrew ${{ steps.print-version.outputs.version }}
           path: Homebrew-${{ steps.print-version.outputs.version }}.pkg
+
+      - name: Upload installer to GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload --repo Homebrew/brew
+                               "${GITHUB_REF//refs\/tags\//}"
+                               Homebrew-${{ steps.print-version.outputs.version }}.pkg
