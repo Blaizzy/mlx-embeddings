@@ -325,7 +325,8 @@ class Formula
   # Can differ from {#alias_path}, which is the alias used to find the formula,
   # and is specified to this instance.
   def installed_alias_path
-    path = T.cast(build, Tab).source["path"] if build.is_a?(Tab)
+    build_tab = build
+    path = build_tab.source["path"] if build_tab.is_a?(Tab)
     return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases}o)
     return unless File.symlink?(path)
 
@@ -3544,20 +3545,22 @@ class Formula
       when :clt_installed
         lambda do |_|
           on_macos do
-            T.cast(self, PourBottleCheck).reason(+<<~EOS)
+            T.bind(self, PourBottleCheck)
+            reason(+<<~EOS)
               The bottle needs the Apple Command Line Tools to be installed.
                 You can install them, if desired, with:
                   xcode-select --install
             EOS
-            T.cast(self, PourBottleCheck).satisfy { MacOS::CLT.installed? }
+            satisfy { MacOS::CLT.installed? }
           end
         end
       when :default_prefix
         lambda do |_|
-          T.cast(self, PourBottleCheck).reason(+<<~EOS)
+          T.bind(self, PourBottleCheck)
+          reason(+<<~EOS)
             The bottle (and many others) needs to be installed into #{Homebrew::DEFAULT_PREFIX}.
           EOS
-          T.cast(self, PourBottleCheck).satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
+          satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
         end
       else
         raise ArgumentError, "Invalid preset `pour_bottle?` condition" if only_if.present?
