@@ -731,7 +731,7 @@ module Formulary
     params(
       ref:           T.any(Pathname, String),
       spec:          Symbol,
-      alias_path:    T.nilable(Pathname),
+      alias_path:    T.any(NilClass, Pathname, String),
       from:          Symbol,
       warn:          T::Boolean,
       force_bottle:  T::Boolean,
@@ -856,7 +856,7 @@ module Formulary
       end
     end
     f.build = tab
-    f.build.used_options = Tab.remap_deprecated_options(f.deprecated_options, tab.used_options).as_flags
+    T.cast(f.build, Tab).used_options = Tab.remap_deprecated_options(f.deprecated_options, tab.used_options).as_flags
     f.version.update_commit(keg.version.version.commit) if f.head? && keg.version.head?
     f
   end

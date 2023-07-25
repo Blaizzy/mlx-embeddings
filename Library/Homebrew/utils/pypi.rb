@@ -228,7 +228,7 @@ module PyPI
     main_package = if package_name.present?
       Package.new(package_name)
     else
-      Package.new(formula.stable.url, is_url: true)
+      Package.new(T.must(formula.stable).url, is_url: true)
     end
 
     if version.present?

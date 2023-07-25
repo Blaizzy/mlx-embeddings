@@ -72,39 +72,47 @@ class Formula
 
   # The name of this {Formula}.
   # e.g. `this-formula`
+  sig { returns(String) }
   attr_reader :name
 
   # The path to the alias that was used to identify this {Formula}.
   # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Aliases/another-name-for-this-formula`
+  sig { returns(T.any(NilClass, Pathname, String)) }
   attr_reader :alias_path
 
   # The name of the alias that was used to identify this {Formula}.
   # e.g. `another-name-for-this-formula`
+  sig { returns(T.nilable(String)) }
   attr_reader :alias_name
 
   # The fully-qualified name of this {Formula}.
   # For core formula it's the same as {#name}.
   # e.g. `homebrew/tap-name/this-formula`
+  sig { returns(String) }
   attr_reader :full_name
 
   # The fully-qualified alias referring to this {Formula}.
   # For core formula it's the same as {#alias_name}.
   # e.g. `homebrew/tap-name/another-name-for-this-formula`
+  sig { returns(T.nilable(String)) }
   attr_reader :full_alias_name
 
   # The full path to this {Formula}.
   # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Formula/this-formula.rb`
+  sig { returns(Pathname) }
   attr_reader :path
 
   # The {Tap} instance associated with this {Formula}.
   # If it's `nil`, then this formula is loaded from a path or URL.
   # @private
+  sig { returns(T.nilable(Tap)) }
   attr_reader :tap
 
   # The stable (and default) {SoftwareSpec} for this {Formula}.
   # This contains all the attributes (e.g. URL, checksum) that apply to the
   # stable version of this formula.
   # @private
+  sig { returns(T.nilable(SoftwareSpec)) }
   attr_reader :stable
 
   # The HEAD {SoftwareSpec} for this {Formula}.
@@ -114,6 +122,7 @@ class Formula
   # `nil` if there is no HEAD version.
   # @see #stable
   # @private
+  sig { returns(T.nilable(SoftwareSpec)) }
   attr_reader :head
 
   # The currently active {SoftwareSpec}.
@@ -127,60 +136,72 @@ class Formula
   # It's either :stable or :head
   # @see #active_spec
   # @private
+  sig { returns(Symbol) }
   attr_reader :active_spec_sym
 
   # most recent modified time for source files
   # @private
+  sig { returns(T.nilable(Time)) }
   attr_reader :source_modified_time
 
   # Used for creating new Homebrew versions of software without new upstream
   # versions.
   # @see .revision=
+  sig { returns(Integer) }
   attr_reader :revision
 
   # Used to change version schemes for packages.
   # @see .version_scheme=
+  sig { returns(Integer) }
   attr_reader :version_scheme
 
   # The current working directory during builds.
   # Will only be non-`nil` inside {#install}.
+  sig { returns(T.nilable(Pathname)) }
   attr_reader :buildpath
 
   # The current working directory during tests.
   # Will only be non-`nil` inside {.test}.
+  sig { returns(T.nilable(Pathname)) }
   attr_reader :testpath
 
   # When installing a bottle (binary package) from a local path this will be
   # set to the full path to the bottle tarball. If not, it will be `nil`.
   # @private
+  sig { returns(T.nilable(Pathname)) }
   attr_accessor :local_bottle_path
 
   # When performing a build, test, or other loggable action, indicates which
   # log file location to use.
   # @private
+  sig { returns(T.nilable(String)) }
   attr_reader :active_log_type
 
-  # The {BuildOptions} for this {Formula}. Lists the arguments passed and any
-  # {.option}s in the {Formula}. Note that these may differ at different times
-  # during the installation of a {Formula}. This is annoying but the result of
-  # state that we're trying to eliminate.
-  # @return [BuildOptions]
+  # The {BuildOptions} or {Tab} for this {Formula}. Lists the arguments passed
+  # and any {.option}s in the {Formula}. Note that these may differ at
+  # different times during the installation of a {Formula}. This is annoying
+  # but the result of state that we're trying to eliminate.
+  sig { returns(T.any(BuildOptions, Tab)) }
   attr_reader :build
 
   # Whether this formula should be considered outdated
   # if the target of the alias it was installed with has since changed.
   # Defaults to true.
-  # @return [Boolean]
+  sig { returns(T::Boolean) }
   attr_accessor :follow_installed_alias
 
   alias follow_installed_alias? follow_installed_alias
 
   # Whether or not to force the use of a bottle.
-  # @return [Boolean]
   # @private
+  sig { returns(T::Boolean) }
   attr_accessor :force_bottle
 
   # @private
+  sig {
+    params(name: String, path: Pathname, spec: Symbol, alias_path: T.any(NilClass, Pathname, String),
+           tap: T.nilable(Tap), force_bottle: T::Boolean).void
+  }
   def initialize(name, path, spec, alias_path: nil, tap: nil, force_bottle: false)
     # Only allow instances of subclasses. The base class does not hold any spec information (URLs etc).
     raise "Do not call `Formula.new' directly without a subclass." unless self.class < Formula
@@ -304,7 +325,8 @@ class Formula
   # Can differ from {#alias_path}, which is the alias used to find the formula,
   # and is specified to this instance.
   def installed_alias_path
-    path = build.source["path"] if build.is_a?(Tab)
+    build_tab = build
+    path = build_tab.source["path"] if build_tab.is_a?(Tab)
     return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases}o)
     return unless File.symlink?(path)
 
@@ -440,8 +462,10 @@ class Formula
   sig { void }
   def update_head_version
     return unless head?
-    return unless head.downloader.is_a?(VCSDownloadStrategy)
-    return unless head.downloader.cached_location.exist?
+
+    head_spec = T.must(head)
+    return unless head_spec.downloader.is_a?(VCSDownloadStrategy)
+    return unless head_spec.downloader.cached_location.exist?
 
     path = if ENV["HOMEBREW_ENV"]
       ENV.fetch("PATH")
@@ -450,7 +474,7 @@ class Formula
     end
 
     with_env(PATH: path) do
-      head.version.update_commit(head.downloader.last_commit)
+      head_spec.version.update_commit(head_spec.downloader.last_commit)
     end
   end
 
@@ -471,12 +495,14 @@ class Formula
   def versioned_formulae_names
     versioned_names = if tap
       name_prefix = "#{name.gsub(/(@[\d.]+)?$/, "")}@"
-      tap.formula_names.select do |name|
+      T.must(tap).formula_names.select do |name|
         name.start_with?(name_prefix)
       end
     elsif path.exist?
       Pathname.glob(path.to_s.gsub(/(@[\d.]+)?\.rb$/, "@*.rb"))
               .map { |path| path.basename(".rb").to_s }
+    else
+      raise "Either tap or path is required to list versioned formulae"
     end.sort
 
     versioned_names.reject do |versioned_name|
@@ -513,8 +539,8 @@ class Formula
   sig { returns(T::Array[String]) }
   def oldnames
     @oldnames ||= if tap
-      tap.formula_renames
-         .flat_map { |old_name, new_name| (new_name == name) ? old_name : [] }
+      T.must(tap).formula_renames
+       .flat_map { |old_name, new_name| (new_name == name) ? old_name : [] }
     else
       []
     end
@@ -524,7 +550,7 @@ class Formula
   sig { returns(T::Array[String]) }
   def aliases
     @aliases ||= if tap
-      tap.alias_reverse_table[full_name].to_a.map do |a|
+      T.must(tap).alias_reverse_table[full_name].to_a.map do |a|
         a.split("/").last
       end
     else
@@ -623,11 +649,11 @@ class Formula
     tab = Tab.for_keg(prefix(version))
 
     return true if tab.version_scheme < version_scheme
-    return true if stable && tab.stable_version && tab.stable_version < stable.version
+    return true if stable && tab.stable_version && tab.stable_version < T.must(stable).version
     return false unless fetch_head
     return false unless head&.downloader.is_a?(VCSDownloadStrategy)
 
-    downloader = head.downloader
+    downloader = T.must(head).downloader
 
     with_context quiet: true do
       downloader.commit_outdated?(version.version.commit)
@@ -639,7 +665,7 @@ class Formula
   def latest_installed_prefix
     if head && (head_version = latest_head_version) && !head_version_outdated?(head_version)
       latest_head_prefix
-    elsif stable && (stable_prefix = prefix(PkgVersion.new(stable.version, revision))).directory?
+    elsif stable && (stable_prefix = prefix(PkgVersion.new(T.must(stable).version, revision))).directory?
       stable_prefix
     else
       prefix
@@ -2030,7 +2056,7 @@ class Formula
   def tap?
     return false unless tap
 
-    !tap.core_tap?
+    !T.must(tap).core_tap?
   end
 
   # True if this formula can be installed on this platform
@@ -2170,7 +2196,7 @@ class Formula
   # @private
   sig { returns(T.nilable(String)) }
   def ruby_source_path
-    path.relative_path_from(tap.path).to_s if tap && path.exist?
+    path.relative_path_from(T.must(tap).path).to_s if tap && path.exist?
   end
 
   # @private
@@ -2259,11 +2285,12 @@ class Formula
     }
 
     if stable
+      stable_spec = T.must(stable)
       hsh["urls"]["stable"] = {
-        "url"      => stable.url,
-        "tag"      => stable.specs[:tag],
-        "revision" => stable.specs[:revision],
-        "checksum" => stable.checksum&.to_s,
+        "url"      => stable_spec.url,
+        "tag"      => stable_spec.specs[:tag],
+        "revision" => stable_spec.specs[:revision],
+        "checksum" => stable_spec.checksum&.to_s,
       }
 
       hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
@@ -2271,8 +2298,8 @@ class Formula
 
     if head
       hsh["urls"]["head"] = {
-        "url"    => head.url,
-        "branch" => head.specs[:branch],
+        "url"    => T.must(head).url,
+        "branch" => T.must(head).specs[:branch],
       }
     end
 
@@ -2410,7 +2437,7 @@ class Formula
 
   # Returns the bottle information for a formula
   def bottle_hash
-    bottle_spec = stable.bottle_specification
+    bottle_spec = T.must(stable).bottle_specification
     hash = {
       "rebuild"  => bottle_spec.rebuild,
       "root_url" => bottle_spec.root_url,
@@ -2853,7 +2880,7 @@ class Formula
     active_spec.stage(debug_symbols: debug_symbols) do |staging|
       @source_modified_time = active_spec.source_modified_time
       @buildpath = Pathname.pwd
-      env_home = buildpath/".brew_home"
+      env_home = T.must(buildpath)/".brew_home"
       mkdir_p env_home
 
       stage_env = {
@@ -3518,20 +3545,22 @@ class Formula
       when :clt_installed
         lambda do |_|
           on_macos do
-            T.cast(self, PourBottleCheck).reason(+<<~EOS)
+            T.bind(self, PourBottleCheck)
+            reason(+<<~EOS)
               The bottle needs the Apple Command Line Tools to be installed.
                 You can install them, if desired, with:
                   xcode-select --install
             EOS
-            T.cast(self, PourBottleCheck).satisfy { MacOS::CLT.installed? }
+            satisfy { MacOS::CLT.installed? }
           end
         end
       when :default_prefix
         lambda do |_|
-          T.cast(self, PourBottleCheck).reason(+<<~EOS)
+          T.bind(self, PourBottleCheck)
+          reason(+<<~EOS)
             The bottle (and many others) needs to be installed into #{Homebrew::DEFAULT_PREFIX}.
           EOS
-          T.cast(self, PourBottleCheck).satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
+          satisfy { HOMEBREW_PREFIX.to_s == Homebrew::DEFAULT_PREFIX }
         end
       else
         raise ArgumentError, "Invalid preset `pour_bottle?` condition" if only_if.present?

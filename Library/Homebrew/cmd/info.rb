@@ -246,7 +246,7 @@ module Homebrew
 
     path = case formula
     when Formula
-      formula.path.relative_path_from(formula.tap.path)
+      formula.path.relative_path_from(T.must(formula.tap).path)
     when Cask::Cask
       return "#{formula.tap.default_remote}/blob/HEAD/Casks/#{formula.token}.rb" if formula.sourcefile_path.blank?
 
