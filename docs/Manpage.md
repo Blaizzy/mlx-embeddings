@@ -1048,6 +1048,10 @@ supplied by the user.
   Don't try to fork the repository.
 * `--version`:
   Specify the new *`version`* for the cask.
+* `--version-arm`:
+  Specify the new cask *`version`* for the ARM architecture.
+* `--version-intel`:
+  Specify the new cask *`version`* for the Intel architecture.
 * `--message`:
   Prepend *`message`* to the default pull request message.
 * `--url`:

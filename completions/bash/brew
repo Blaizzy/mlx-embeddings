@@ -478,6 +478,8 @@ _brew_bump_cask_pr() {
       --url
       --verbose
       --version
+      --version-arm
+      --version-intel
       --write-only
       "
       return
