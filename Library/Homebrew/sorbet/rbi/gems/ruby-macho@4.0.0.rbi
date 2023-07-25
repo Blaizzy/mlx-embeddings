@@ -19,6 +19,10 @@ class MachO::CPUTypeError < ::MachO::MachOError
   def initialize(cputype); end
 end
 
+class MachO::CPUTypeMismatchError < ::MachO::NotAMachOError
+  def initialize(fat_cputype, fat_cpusubtype, macho_cputype, macho_cpusubtype); end
+end
+
 class MachO::CodeSigningError < ::MachO::MachOError; end
 class MachO::CompressedMachOError < ::MachO::MachOError; end
 class MachO::DecompressionError < ::MachO::MachOError; end
@@ -181,8 +185,6 @@ MachO::Headers::FAT_MAGIC = T.let(T.unsafe(nil), Integer)
 MachO::Headers::FAT_MAGIC_64 = T.let(T.unsafe(nil), Integer)
 
 class MachO::Headers::FatArch < ::MachO::MachOStructure
-  def initialize(cputype, cpusubtype, offset, size, align); end
-
   def align; end
   def cpusubtype; end
   def cputype; end
@@ -193,29 +195,20 @@ class MachO::Headers::FatArch < ::MachO::MachOStructure
 end
 
 class MachO::Headers::FatArch64 < ::MachO::Headers::FatArch
-  def initialize(cputype, cpusubtype, offset, size, align, reserved = T.unsafe(nil)); end
-
+  def offset; end
   def reserved; end
   def serialize; end
+  def size; end
   def to_h; end
 end
 
-MachO::Headers::FatArch64::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Headers::FatArch64::SIZEOF = T.let(T.unsafe(nil), Integer)
-MachO::Headers::FatArch::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Headers::FatArch::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::Headers::FatHeader < ::MachO::MachOStructure
-  def initialize(magic, nfat_arch); end
-
   def magic; end
   def nfat_arch; end
   def serialize; end
   def to_h; end
 end
 
-MachO::Headers::FatHeader::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Headers::FatHeader::SIZEOF = T.let(T.unsafe(nil), Integer)
 MachO::Headers::MH_BUNDLE = T.let(T.unsafe(nil), Integer)
 MachO::Headers::MH_CIGAM = T.let(T.unsafe(nil), Integer)
 MachO::Headers::MH_CIGAM_64 = T.let(T.unsafe(nil), Integer)
@@ -237,8 +230,6 @@ MachO::Headers::MH_OBJECT = T.let(T.unsafe(nil), Integer)
 MachO::Headers::MH_PRELOAD = T.let(T.unsafe(nil), Integer)
 
 class MachO::Headers::MachHeader < ::MachO::MachOStructure
-  def initialize(magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags); end
-
   def alignment; end
   def bundle?; end
   def core?; end
@@ -265,20 +256,11 @@ class MachO::Headers::MachHeader < ::MachO::MachOStructure
 end
 
 class MachO::Headers::MachHeader64 < ::MachO::Headers::MachHeader
-  def initialize(magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, reserved); end
-
   def reserved; end
   def to_h; end
 end
 
-MachO::Headers::MachHeader64::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Headers::MachHeader64::SIZEOF = T.let(T.unsafe(nil), Integer)
-MachO::Headers::MachHeader::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Headers::MachHeader::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::Headers::PrelinkedKernelHeader < ::MachO::MachOStructure
-  def initialize(signature, compress_type, adler32, uncompressed_size, compressed_size, prelink_version, reserved, platform_name, root_path); end
-
   def adler32; end
   def compress_type; end
   def compressed_size; end
@@ -293,9 +275,6 @@ class MachO::Headers::PrelinkedKernelHeader < ::MachO::MachOStructure
   def to_h; end
   def uncompressed_size; end
 end
-
-MachO::Headers::PrelinkedKernelHeader::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Headers::PrelinkedKernelHeader::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::JavaClassFileError < ::MachO::NotAMachOError
   def initialize; end
@@ -324,8 +303,6 @@ end
 module MachO::LoadCommands; end
 
 class MachO::LoadCommands::BuildVersionCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, platform, minos, sdk, ntools); end
-
   def minos; end
   def minos_string; end
   def platform; end
@@ -334,9 +311,6 @@ class MachO::LoadCommands::BuildVersionCommand < ::MachO::LoadCommands::LoadComm
   def to_h; end
   def tool_entries; end
 end
-
-MachO::LoadCommands::BuildVersionCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::BuildVersionCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::LoadCommands::BuildVersionCommand::ToolEntries
   def initialize(view, ntools); end
@@ -356,8 +330,6 @@ MachO::LoadCommands::CREATABLE_LOAD_COMMANDS = T.let(T.unsafe(nil), Array)
 MachO::LoadCommands::DYLIB_LOAD_COMMANDS = T.let(T.unsafe(nil), Array)
 
 class MachO::LoadCommands::DyldInfoCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, rebase_off, rebase_size, bind_off, bind_size, weak_bind_off, weak_bind_size, lazy_bind_off, lazy_bind_size, export_off, export_size); end
-
   def bind_off; end
   def bind_size; end
   def export_off; end
@@ -371,37 +343,24 @@ class MachO::LoadCommands::DyldInfoCommand < ::MachO::LoadCommands::LoadCommand
   def weak_bind_size; end
 end
 
-MachO::LoadCommands::DyldInfoCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::DyldInfoCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::DylibCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, name, timestamp, current_version, compatibility_version); end
-
   def compatibility_version; end
   def current_version; end
   def name; end
   def serialize(context); end
   def timestamp; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::DylibCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::DylibCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::DylinkerCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, name); end
-
   def name; end
   def serialize(context); end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::DylinkerCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::DylinkerCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::DysymtabCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, ilocalsym, nlocalsym, iextdefsym, nextdefsym, iundefsym, nundefsym, tocoff, ntoc, modtaboff, nmodtab, extrefsymoff, nextrefsyms, indirectsymoff, nindirectsyms, extreloff, nextrel, locreloff, nlocrel); end
-
   def extrefsymoff; end
   def extreloff; end
   def iextdefsym; end
@@ -423,12 +382,7 @@ class MachO::LoadCommands::DysymtabCommand < ::MachO::LoadCommands::LoadCommand
   def tocoff; end
 end
 
-MachO::LoadCommands::DysymtabCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::DysymtabCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::EncryptionInfoCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, cryptoff, cryptsize, cryptid); end
-
   def cryptid; end
   def cryptoff; end
   def cryptsize; end
@@ -436,95 +390,59 @@ class MachO::LoadCommands::EncryptionInfoCommand < ::MachO::LoadCommands::LoadCo
 end
 
 class MachO::LoadCommands::EncryptionInfoCommand64 < ::MachO::LoadCommands::EncryptionInfoCommand
-  def initialize(view, cmd, cmdsize, cryptoff, cryptsize, cryptid, pad); end
-
   def pad; end
   def to_h; end
 end
 
-MachO::LoadCommands::EncryptionInfoCommand64::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::EncryptionInfoCommand64::SIZEOF = T.let(T.unsafe(nil), Integer)
-MachO::LoadCommands::EncryptionInfoCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::EncryptionInfoCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::EntryPointCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, entryoff, stacksize); end
-
   def entryoff; end
   def stacksize; end
   def to_h; end
 end
 
-MachO::LoadCommands::EntryPointCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::EntryPointCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::FilesetEntryCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, vmaddr, fileoff, entry_id, reserved); end
-
   def entry_id; end
   def fileoff; end
   def reserved; end
+  def segment; end
   def to_h; end
+  def to_s; end
   def vmaddr; end
 end
 
-MachO::LoadCommands::FilesetEntryCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::FilesetEntryCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::FvmfileCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, name, header_addr); end
-
   def header_addr; end
   def name; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::FvmfileCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::FvmfileCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::FvmlibCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, name, minor_version, header_addr); end
-
   def header_addr; end
   def minor_version; end
   def name; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::FvmlibCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::FvmlibCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 class MachO::LoadCommands::IdentCommand < ::MachO::LoadCommands::LoadCommand; end
-MachO::LoadCommands::IdentCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::IdentCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 MachO::LoadCommands::LC_REQ_DYLD = T.let(T.unsafe(nil), Integer)
 MachO::LoadCommands::LC_STRUCTURES = T.let(T.unsafe(nil), Hash)
 MachO::LoadCommands::LOAD_COMMANDS = T.let(T.unsafe(nil), Hash)
 MachO::LoadCommands::LOAD_COMMAND_CONSTANTS = T.let(T.unsafe(nil), Hash)
 
 class MachO::LoadCommands::LinkeditDataCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, dataoff, datasize); end
-
   def dataoff; end
   def datasize; end
   def to_h; end
 end
 
-MachO::LoadCommands::LinkeditDataCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::LinkeditDataCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::LinkerOptionCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, count); end
-
   def count; end
   def to_h; end
 end
 
-MachO::LoadCommands::LinkerOptionCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::LinkerOptionCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::LoadCommand < ::MachO::MachOStructure
-  def initialize(view, cmd, cmdsize); end
-
   def cmd; end
   def cmdsize; end
   def offset; end
@@ -542,8 +460,6 @@ class MachO::LoadCommands::LoadCommand < ::MachO::MachOStructure
   end
 end
 
-MachO::LoadCommands::LoadCommand::FORMAT = T.let(T.unsafe(nil), String)
-
 class MachO::LoadCommands::LoadCommand::LCStr
   def initialize(lc, lc_str); end
 
@@ -551,8 +467,6 @@ class MachO::LoadCommands::LoadCommand::LCStr
   def to_i; end
   def to_s; end
 end
-
-MachO::LoadCommands::LoadCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::LoadCommands::LoadCommand::SerializationContext
   def initialize(endianness, alignment); end
@@ -566,42 +480,27 @@ class MachO::LoadCommands::LoadCommand::SerializationContext
 end
 
 class MachO::LoadCommands::NoteCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, data_owner, offset, size); end
-
   def data_owner; end
   def offset; end
   def size; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::NoteCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::NoteCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::PrebindCksumCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, cksum); end
-
   def cksum; end
   def to_h; end
 end
 
-MachO::LoadCommands::PrebindCksumCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::PrebindCksumCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::PreboundDylibCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, name, nmodules, linked_modules); end
-
   def linked_modules; end
   def name; end
   def nmodules; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::PreboundDylibCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::PreboundDylibCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::RoutinesCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6); end
-
   def init_address; end
   def init_module; end
   def reserved1; end
@@ -613,28 +512,28 @@ class MachO::LoadCommands::RoutinesCommand < ::MachO::LoadCommands::LoadCommand
   def to_h; end
 end
 
-class MachO::LoadCommands::RoutinesCommand64 < ::MachO::LoadCommands::RoutinesCommand; end
-MachO::LoadCommands::RoutinesCommand64::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::RoutinesCommand64::SIZEOF = T.let(T.unsafe(nil), Integer)
-MachO::LoadCommands::RoutinesCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::RoutinesCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
+class MachO::LoadCommands::RoutinesCommand64 < ::MachO::LoadCommands::RoutinesCommand
+  def init_address; end
+  def init_module; end
+  def reserved1; end
+  def reserved2; end
+  def reserved3; end
+  def reserved4; end
+  def reserved5; end
+  def reserved6; end
+end
 
 class MachO::LoadCommands::RpathCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, path); end
-
   def path; end
   def serialize(context); end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::RpathCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::RpathCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 MachO::LoadCommands::SEGMENT_FLAGS = T.let(T.unsafe(nil), Hash)
 MachO::LoadCommands::SEGMENT_NAMES = T.let(T.unsafe(nil), Hash)
 
 class MachO::LoadCommands::SegmentCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags); end
-
   def fileoff; end
   def filesize; end
   def flag?(flag); end
@@ -646,81 +545,55 @@ class MachO::LoadCommands::SegmentCommand < ::MachO::LoadCommands::LoadCommand
   def sections; end
   def segname; end
   def to_h; end
+  def to_s; end
   def vmaddr; end
   def vmsize; end
 end
 
-class MachO::LoadCommands::SegmentCommand64 < ::MachO::LoadCommands::SegmentCommand; end
-MachO::LoadCommands::SegmentCommand64::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SegmentCommand64::SIZEOF = T.let(T.unsafe(nil), Integer)
-MachO::LoadCommands::SegmentCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SegmentCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
+class MachO::LoadCommands::SegmentCommand64 < ::MachO::LoadCommands::SegmentCommand
+  def fileoff; end
+  def filesize; end
+  def vmaddr; end
+  def vmsize; end
+end
 
 class MachO::LoadCommands::SourceVersionCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, version); end
-
   def to_h; end
   def version; end
   def version_string; end
 end
 
-MachO::LoadCommands::SourceVersionCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SourceVersionCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::SubClientCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, sub_client); end
-
   def sub_client; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::SubClientCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SubClientCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::SubFrameworkCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, umbrella); end
-
   def to_h; end
+  def to_s; end
   def umbrella; end
 end
 
-MachO::LoadCommands::SubFrameworkCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SubFrameworkCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::SubLibraryCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, sub_library); end
-
   def sub_library; end
   def to_h; end
+  def to_s; end
 end
-
-MachO::LoadCommands::SubLibraryCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SubLibraryCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::LoadCommands::SubUmbrellaCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, sub_umbrella); end
-
   def sub_umbrella; end
   def to_h; end
+  def to_s; end
 end
 
-MachO::LoadCommands::SubUmbrellaCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SubUmbrellaCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::SymsegCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, offset, size); end
-
   def offset; end
   def size; end
   def to_h; end
 end
 
-MachO::LoadCommands::SymsegCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SymsegCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::SymtabCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, symoff, nsyms, stroff, strsize); end
-
   def nsyms; end
   def stroff; end
   def strsize; end
@@ -728,23 +601,14 @@ class MachO::LoadCommands::SymtabCommand < ::MachO::LoadCommands::LoadCommand
   def to_h; end
 end
 
-MachO::LoadCommands::SymtabCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::SymtabCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 class MachO::LoadCommands::ThreadCommand < ::MachO::LoadCommands::LoadCommand; end
-MachO::LoadCommands::ThreadCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::ThreadCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::LoadCommands::TwolevelHintsCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, htoffset, nhints); end
-
   def htoffset; end
   def nhints; end
   def table; end
   def to_h; end
 end
-
-MachO::LoadCommands::TwolevelHintsCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::TwolevelHintsCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::LoadCommands::TwolevelHintsCommand::TwolevelHintsTable
   def initialize(view, htoffset, nhints); end
@@ -761,28 +625,19 @@ class MachO::LoadCommands::TwolevelHintsCommand::TwolevelHintsTable::TwolevelHin
 end
 
 class MachO::LoadCommands::UUIDCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, uuid); end
-
   def to_h; end
+  def to_s; end
   def uuid; end
   def uuid_string; end
 end
 
-MachO::LoadCommands::UUIDCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::UUIDCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
-
 class MachO::LoadCommands::VersionMinCommand < ::MachO::LoadCommands::LoadCommand
-  def initialize(view, cmd, cmdsize, version, sdk); end
-
   def sdk; end
   def sdk_string; end
   def to_h; end
   def version; end
   def version_string; end
 end
-
-MachO::LoadCommands::VersionMinCommand::FORMAT = T.let(T.unsafe(nil), String)
-MachO::LoadCommands::VersionMinCommand::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 class MachO::MachOBinaryError < ::MachO::MachOError
   def initialize; end
@@ -868,21 +723,41 @@ class MachO::MachOFile
 end
 
 class MachO::MachOStructure
+  def initialize(*args); end
+
   def to_h; end
 
   class << self
     def bytesize; end
+    def format; end
+    def min_args; end
     def new_from_bin(endianness, bin); end
+
+    private
+
+    def def_class_reader(name, type, idx); end
+    def def_default_reader(name, idx, default); end
+    def def_mask_reader(name, idx, mask); end
+    def def_reader(name, idx); end
+    def def_to_s(name); end
+    def def_unpack_reader(name, idx, unpack); end
+    def field(name, type, **options); end
+    def inherited(subclass); end
   end
 end
 
-MachO::MachOStructure::FORMAT = T.let(T.unsafe(nil), String)
-MachO::MachOStructure::SIZEOF = T.let(T.unsafe(nil), Integer)
+module MachO::MachOStructure::Fields; end
+MachO::MachOStructure::Fields::BYTE_SIZE = T.let(T.unsafe(nil), Hash)
+MachO::MachOStructure::Fields::CLASSES_TO_INIT = T.let(T.unsafe(nil), Array)
+MachO::MachOStructure::Fields::FORMAT_CODE = T.let(T.unsafe(nil), Hash)
+MachO::MachOStructure::Fields::NO_ARG_REQUIRED = T.let(T.unsafe(nil), Array)
 
 class MachO::MachOView
-  def initialize(raw_data, endianness, offset); end
+  def initialize(macho_file, raw_data, endianness, offset); end
 
   def endianness; end
+  def inspect; end
+  def macho_file; end
   def offset; end
   def raw_data; end
   def to_h; end
@@ -925,8 +800,6 @@ MachO::Sections::SECTION_TYPES = T.let(T.unsafe(nil), Hash)
 MachO::Sections::SECTION_TYPE_MASK = T.let(T.unsafe(nil), Integer)
 
 class MachO::Sections::Section < ::MachO::MachOStructure
-  def initialize(sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2); end
-
   def addr; end
   def align; end
   def attribute?(attr_sym); end
@@ -950,16 +823,11 @@ class MachO::Sections::Section < ::MachO::MachOStructure
 end
 
 class MachO::Sections::Section64 < ::MachO::Sections::Section
-  def initialize(sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2, reserved3); end
-
+  def addr; end
   def reserved3; end
+  def size; end
   def to_h; end
 end
-
-MachO::Sections::Section64::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Sections::Section64::SIZEOF = T.let(T.unsafe(nil), Integer)
-MachO::Sections::Section::FORMAT = T.let(T.unsafe(nil), String)
-MachO::Sections::Section::SIZEOF = T.let(T.unsafe(nil), Integer)
 
 module MachO::Tools
   class << self
@@ -1001,3 +869,7 @@ module MachO::Utils
 end
 
 MachO::VERSION = T.let(T.unsafe(nil), String)
+
+class MachO::ZeroArchitectureError < ::MachO::NotAMachOError
+  def initialize; end
+end

@@ -4319,6 +4319,11 @@ module Homebrew::API
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+class Homebrew::BumpVersionParser
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Homebrew::BundleVersion
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
