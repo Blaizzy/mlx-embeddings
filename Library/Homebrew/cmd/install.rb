@@ -245,6 +245,8 @@ module Homebrew
       end
 
       if !Homebrew::EnvConfig.no_install_upgrade? && installed_casks.any?
+        require "cask/upgrade"
+
         Cask::Upgrade.upgrade_casks(
           *installed_casks,
           force:          args.force?,
