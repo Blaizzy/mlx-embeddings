@@ -20,17 +20,16 @@ jobs:
       TEMPORARY_KEYCHAIN_FILE: 'homebrew_installer_signing.keychain-db'
       MIN_MACOS_VERSION: '11.0'
       PKG_APPLE_DEVELOPER_TEAM_ID: ${{ secrets.PKG_APPLE_DEVELOPER_TEAM_ID }}
+      HOMEBREW_NO_ANALYTICS_THIS_RUN: 1
+      HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT: 1
     steps:
-      - name: Checkout to brew subdirectory
-        uses: actions/checkout@v3
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
         with:
-          path: brew
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Get Homebrew version from Git
-        id: print-version
-        run: echo "version=$(git -C brew describe --tags --always)" >> "${GITHUB_OUTPUT}"
+          core: false
+          cask: false
+          test-bot: false
 
       - name: Install Pandoc
         run: brew install pandoc
@@ -61,6 +60,20 @@ jobs:
       - name: Clean up temporary certificate file
         if: ${{ always() }}
         run: rm -f "${RUNNER_TEMP}/${TEMPORARY_CERTIFICATE_FILE}"
+
+      - name: Checkout another Homebrew to brew subdirectory
+        uses: actions/checkout@v3
+        with:
+          path: brew
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Get Homebrew version from Git
+        id: print-version
+        run: echo "version=$(git -C brew describe --tags --always)" >> "${GITHUB_OUTPUT}"
+
+      - name: Copy Homebrew API cache to brew subdirectory
+        run: cp -vR ~/Library/Caches/Homebrew/api brew/cache_api
 
       - name: Open macOS keychain
         run: security list-keychain -d user -s "${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}"
