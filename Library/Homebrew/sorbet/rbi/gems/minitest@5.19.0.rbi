@@ -214,6 +214,9 @@ class Minitest::Runnable
   def failures=(_arg0); end
   def marshal_dump; end
   def marshal_load(ary); end
+  def metadata; end
+  def metadata=(_arg0); end
+  def metadata?; end
   def name; end
   def name=(o); end
   def passed?; end
