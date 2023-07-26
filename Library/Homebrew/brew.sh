@@ -533,8 +533,6 @@ then
   # shellcheck disable=SC2086,SC2183
   printf -v HOMEBREW_MACOS_VERSION_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_VERSION//./ }
   # shellcheck disable=SC2248
-  printf -v HOMEBREW_MACOS_OLDEST_SUPPORTED_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_OLDEST_SUPPORTED//./ }
-  # shellcheck disable=SC2248
   printf -v HOMEBREW_MACOS_OLDEST_ALLOWED_NUMERIC "%02d%02d%02d" ${HOMEBREW_MACOS_OLDEST_ALLOWED//./ }
 
   # Don't include minor versions for Big Sur and later.
@@ -592,12 +590,6 @@ then
     # Used in ruby.sh.
     # shellcheck disable=SC2034
     HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH="1"
-  fi
-
-  # Don't support API at this time for older macOS versions.
-  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "${HOMEBREW_MACOS_OLDEST_SUPPORTED_NUMERIC}" ]]
-  then
-    export HOMEBREW_NO_INSTALL_FROM_API=1
   fi
 else
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
@@ -669,12 +661,6 @@ Your Git executable: $(unset git && type -p "${HOMEBREW_GIT}")"
     # shellcheck disable=SC2034
     HOMEBREW_LINUXBREW_CORE_MIGRATION=1
   fi
-fi
-
-# Generic OS or non-default prefix: API not supported.
-if [[ (-z "${HOMEBREW_MACOS}" && -z "${HOMEBREW_LINUX}") || "${HOMEBREW_PREFIX}" != "${HOMEBREW_DEFAULT_PREFIX}" ]]
-then
-  export HOMEBREW_NO_INSTALL_FROM_API=1
 fi
 
 setup_ca_certificates() {
