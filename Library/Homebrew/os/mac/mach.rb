@@ -64,11 +64,11 @@ module MachOShim
       resolve_variable_name(r.path.to_s) == resolve_variable_name(rpath)
     end
 
-    # TODO: Add `last: true` to `options` and replace `delete_command` with `delete_rpath`
-    #       when the PR linked below is merged and release for ruby-macho.
-    # https://github.com/Homebrew/ruby-macho/pull/555
-    command_to_delete = candidates.last # .path.to_s (when switching to `MachOFile#delete_rpath`)
-    macho.delete_command(command_to_delete, options)
+    # Delete the last instance to avoid changing the order in which rpaths are searched.
+    rpath_to_delete = candidates.last.path.to_s
+    options[:last] = true
+
+    macho.delete_rpath(rpath_to_delete, options)
     macho.write!
   end
 
