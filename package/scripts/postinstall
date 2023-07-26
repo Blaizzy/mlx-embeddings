@@ -3,7 +3,7 @@
 # $2 Location of the Homebrew installation we may need to move into place
 # $3 Target install location (unused)
 # $4 System root directory (unused)
-set -xeu
+set -eu
 
 # disable analytics while installing
 export HOMEBREW_NO_ANALYTICS_THIS_RUN=1
@@ -23,23 +23,26 @@ export PATH="/Library/Developer/CommandLineTools/usr/bin:/Applications/Xcode.app
 
 # reset Git repository
 cd "${homebrew_directory}"
+git config --global --add safe.directory "${homebrew_directory}"
 git reset --hard
-git checkout -f master
-git branch | grep -v '\*' | xargs -n 1 git branch -D
+git checkout --force master
+git branch | grep -v '\*' | xargs -n 1 git branch --delete --force
+git config --global --unset safe.directory
 
 # move to /usr/local if on x86_64
 if [[ $(uname -m) == "x86_64" ]]
 then
-  mv "${homebrew_directory}" "/usr/local/Homebrew"
+  mv -v "${homebrew_directory}" "/usr/local/Homebrew"
   # create symlink to /usr/local/bin/brew
-  ln -s "/usr/local/Homebrew/bin/brew" "/usr/local/bin/brew"
+  sudo mkdir -vp /usr/local/bin
+  ln -svf "../Homebrew/bin/brew" "/usr/local/bin/brew"
 
   homebrew_directory="/usr/local"
   cd "${homebrew_directory}"
 fi
 
 # create missing directories
-sudo mkdir -p Cellar Frameworks etc include lib opt sbin share var/homebrew/linked
+sudo mkdir -vp Cellar Frameworks etc include lib opt sbin share var/homebrew/linked
 
 # set permissions
 logged_in_user=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ { print $3 }')
@@ -50,3 +53,9 @@ then
 else
   chown -R "${logged_in_user}:${group}" .
 fi
+
+# move API cache to ~/Library/Caches/Homebrew
+user_api_cache_dir=~"${logged_in_user}"/Library/Caches/Homebrew/api
+mkdir -vp "${user_api_cache_dir}"
+mv -v "${homebrew_directory}/cache_api/"* "${user_api_cache_dir}"
+rm -vrf "${homebrew_directory}/cache_api"
