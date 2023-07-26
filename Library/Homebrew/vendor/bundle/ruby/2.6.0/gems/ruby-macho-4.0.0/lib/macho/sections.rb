@@ -89,61 +89,38 @@ module MachO
     # Represents a section of a segment for 32-bit architectures.
     class Section < MachOStructure
       # @return [String] the name of the section, including null pad bytes
-      attr_reader :sectname
+      field :sectname, :string, :padding => :null, :size => 16
 
       # @return [String] the name of the segment's section, including null
       #  pad bytes
-      attr_reader :segname
+      field :segname, :string, :padding => :null, :size => 16
 
       # @return [Integer] the memory address of the section
-      attr_reader :addr
+      field :addr, :uint32
 
       # @return [Integer] the size, in bytes, of the section
-      attr_reader :size
+      field :size, :uint32
 
       # @return [Integer] the file offset of the section
-      attr_reader :offset
+      field :offset, :uint32
 
       # @return [Integer] the section alignment (power of 2) of the section
-      attr_reader :align
+      field :align, :uint32
 
       # @return [Integer] the file offset of the section's relocation entries
-      attr_reader :reloff
+      field :reloff, :uint32
 
       # @return [Integer] the number of relocation entries
-      attr_reader :nreloc
+      field :nreloc, :uint32
 
       # @return [Integer] flags for type and attributes of the section
-      attr_reader :flags
+      field :flags, :uint32
 
       # @return [void] reserved (for offset or index)
-      attr_reader :reserved1
+      field :reserved1, :uint32
 
       # @return [void] reserved (for count or sizeof)
-      attr_reader :reserved2
-
-      # @see MachOStructure::FORMAT
-      FORMAT = "Z16Z16L=9"
-
-      # @see MachOStructure::SIZEOF
-      SIZEOF = 68
-
-      # @api private
-      def initialize(sectname, segname, addr, size, offset, align, reloff,
-                     nreloc, flags, reserved1, reserved2)
-        super()
-        @sectname = sectname
-        @segname = segname
-        @addr = addr
-        @size = size
-        @offset = offset
-        @align = align
-        @reloff = reloff
-        @nreloc = nreloc
-        @flags = flags
-        @reserved1 = reserved1
-        @reserved2 = reserved2
-      end
+      field :reserved2, :uint32
 
       # @return [String] the section's name
       def section_name
@@ -219,22 +196,14 @@ module MachO
 
     # Represents a section of a segment for 64-bit architectures.
     class Section64 < Section
+      # @return [Integer] the memory address of the section
+      field :addr, :uint64
+
+      # @return [Integer] the size, in bytes, of the section
+      field :size, :uint64
+
       # @return [void] reserved
-      attr_reader :reserved3
-
-      # @see MachOStructure::FORMAT
-      FORMAT = "Z16Z16Q=2L=8"
-
-      # @see MachOStructure::SIZEOF
-      SIZEOF = 80
-
-      # @api private
-      def initialize(sectname, segname, addr, size, offset, align, reloff,
-                     nreloc, flags, reserved1, reserved2, reserved3)
-        super(sectname, segname, addr, size, offset, align, reloff,
-          nreloc, flags, reserved1, reserved2)
-        @reserved3 = reserved3
-      end
+      field :reserved3, :uint32
 
       # @return [Hash] a hash representation of this {Section64}
       def to_h

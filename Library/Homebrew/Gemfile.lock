@@ -120,7 +120,7 @@ GEM
       rubocop-capybara (~> 2.17)
     rubocop-sorbet (0.7.0)
       rubocop (>= 0.90.0)
-    ruby-macho (3.0.0)
+    ruby-macho (4.0.0)
     ruby-prof (1.4.3)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)

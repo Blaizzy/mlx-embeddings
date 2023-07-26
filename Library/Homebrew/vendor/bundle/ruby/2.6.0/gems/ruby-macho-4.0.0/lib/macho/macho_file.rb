@@ -381,11 +381,9 @@ module MachO
     #  rpaths simultaneously.
     # @return [void]
     # @raise [RpathUnknownError] if no such old runtime path exists
-    # @raise [RpathExistsError] if the new runtime path already exists
     def change_rpath(old_path, new_path, options = {})
       old_lc = command(:LC_RPATH).find { |r| r.path.to_s == old_path }
       raise RpathUnknownError, old_path if old_lc.nil?
-      raise RpathExistsError, new_path if rpaths.include?(new_path)
 
       new_lc = LoadCommands::LoadCommand.create(:LC_RPATH, new_path)
 
@@ -420,15 +418,24 @@ module MachO
     # @param options [Hash]
     # @option options [Boolean] :uniq (false) if true, also delete
     #  duplicates of the requested path. If false, delete the first
-    #  instance (by offset) of the requested path.
+    #  instance (by offset) of the requested path, unless :last is true.
+    #  Incompatible with :last.
+    # @option options [Boolean] :last (false) if true, delete the last
+    # instance (by offset) of the requested path. Incompatible with :uniq.
     # @return void
     # @raise [RpathUnknownError] if no such runtime path exists
+    # @raise [ArgumentError] if both :uniq and :last are true
     def delete_rpath(path, options = {})
       uniq = options.fetch(:uniq, false)
-      search_method = uniq ? :select : :find
+      last = options.fetch(:last, false)
+      raise ArgumentError, "Cannot set both :uniq and :last to true" if uniq && last
+
+      search_method = uniq || last ? :select : :find
+      rpath_cmds = command(:LC_RPATH).public_send(search_method) { |r| r.path.to_s == path }
+      rpath_cmds = rpath_cmds.last if last
 
       # Cast rpath_cmds into an Array so we can handle the uniq and non-uniq cases the same way
-      rpath_cmds = Array(command(:LC_RPATH).method(search_method).call { |r| r.path.to_s == path })
+      rpath_cmds = Array(rpath_cmds)
       raise RpathUnknownError, path if rpath_cmds.empty?
 
       # delete the commands in reverse order, offset descending.
@@ -592,7 +599,7 @@ module MachO
           LoadCommands::LoadCommand
         end
 
-        view = MachOView.new(@raw_data, endianness, offset)
+        view = MachOView.new(self, @raw_data, endianness, offset)
         command = klass.new_from_bin(view)
 
         load_commands << command

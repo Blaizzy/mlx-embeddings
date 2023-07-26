@@ -2,6 +2,7 @@
 
 require "open3"
 
+require_relative "macho/utils"
 require_relative "macho/structure"
 require_relative "macho/view"
 require_relative "macho/headers"
@@ -10,13 +11,12 @@ require_relative "macho/sections"
 require_relative "macho/macho_file"
 require_relative "macho/fat_file"
 require_relative "macho/exceptions"
-require_relative "macho/utils"
 require_relative "macho/tools"
 
 # The primary namespace for ruby-macho.
 module MachO
   # release version
-  VERSION = "3.0.0"
+  VERSION = "4.0.0"
 
   # Opens the given filename as a MachOFile or FatFile, depending on its magic.
   # @param filename [String] the file being opened
