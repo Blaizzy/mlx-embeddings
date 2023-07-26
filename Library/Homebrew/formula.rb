@@ -1629,9 +1629,11 @@ class Formula
   end
 
   # Standard parameters for cargo builds.
-  sig { params(root: T.any(String, Pathname), path: String).returns(T::Array[T.any(String, Pathname)]) }
+  sig {
+    params(root: T.any(String, Pathname), path: T.any(String, Pathname)).returns(T::Array[String])
+  }
   def std_cargo_args(root: prefix, path: ".")
-    ["--locked", "--root", root, "--path", path]
+    ["--locked", "--root=#{root}", "--path=#{path}"]
   end
 
   # Standard parameters for CMake builds.
