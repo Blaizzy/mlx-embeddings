@@ -223,6 +223,7 @@ options: options)
         return unless formula.core_formula?
 
         escaped_formula_name = GitHubPackages.image_formula_name(formula.name)
+                                             .gsub("/", "%2F")
         formula_url_suffix = "container/core%2F#{escaped_formula_name}/"
         formula_url = "https://github.com/Homebrew/homebrew-core/pkgs/#{formula_url_suffix}"
         output = Utils::Curl.curl_output("--fail", formula_url)
