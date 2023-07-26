@@ -59,8 +59,6 @@ class Keg
           new_name = opt_name_for(bad_name)
           loader_name = loader_name_for(file, new_name)
           next if loader_name == bad_name
-          # TODO: Remove the line below on the next release of ruby-macho. See Homebrew/ruby-macho@e9eaa75.
-          next if file.rpaths(resolve_variable_references: false).include?(loader_name)
 
           change_rpath(bad_name, loader_name, file)
         end
