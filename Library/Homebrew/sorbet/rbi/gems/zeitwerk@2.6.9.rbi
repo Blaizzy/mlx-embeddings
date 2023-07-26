@@ -95,6 +95,7 @@ class Zeitwerk::Loader
   def __shadowed_file?(file); end
   def __shadowed_files; end
   def __to_unload; end
+  def cpath_expected_at(path); end
   def reload; end
   def setup; end
   def unload; end
