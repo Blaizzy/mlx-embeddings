@@ -5051,8 +5051,6 @@ class Migrator
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-MiniTest = Minitest
-
 module Minitest::Assertions
   def assert_mock(mock); end
 end
