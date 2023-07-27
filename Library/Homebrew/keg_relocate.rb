@@ -34,7 +34,7 @@ class Keg
       @replacement_map.fetch(key)
     end
 
-    sig { params(text: String).void }
+    sig { params(text: String).returns(T::Boolean) }
     def replace_text(text)
       replacements = @replacement_map.values.to_h
 
@@ -47,7 +47,7 @@ class Keg
         changed = text.gsub!(key, replacements[key])
         any_changed ||= changed
       end
-      any_changed
+      !any_changed.nil?
     end
 
     sig { params(path: T.any(String, Regexp)).returns(Regexp) }
