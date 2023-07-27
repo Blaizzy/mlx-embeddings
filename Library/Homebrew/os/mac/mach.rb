@@ -110,9 +110,20 @@ module MachOShim
       Pathname(name.sub("@loader_path", dirname)).cleanpath.to_s
     elsif name.start_with?("@executable_path") && binary_executable?
       Pathname(name.sub("@executable_path", dirname)).cleanpath.to_s
+    elsif name.start_with?("@rpath") && (target = resolve_rpath(name)).present?
+      target
     else
       name
     end
+  end
+
+  def resolve_rpath(name)
+    target = T.let(nil, T.nilable(String))
+    return unless rpaths(resolve_variable_references: true).find do |rpath|
+      File.exist?(target = File.join(rpath, name.delete_prefix("@rpath")))
+    end
+
+    target
   end
 
   def archs
