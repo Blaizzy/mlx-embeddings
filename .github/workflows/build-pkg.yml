@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/build-pkg.yml
-      - package/scripts
+      - package/
   release:
     types:
       - published
@@ -23,6 +23,9 @@ jobs:
       HOMEBREW_NO_ANALYTICS_THIS_RUN: 1
       HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT: 1
     steps:
+      - name: Remove existing API cache (to force update)
+        run: rm -rvf ~/Library/Caches/Homebrew/api
+
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -100,6 +103,40 @@ jobs:
                           --distribution brew/package/Distribution.xml
                           --package-path Homebrew.pkg Homebrew-${{ steps.print-version.outputs.version }}.pkg
                           --sign "${PKG_APPLE_DEVELOPER_TEAM_ID}"
+
+      - name: Remove existing Homebrew installations
+        run: |
+          sudo rm -rf brew /{usr/local,opt/homebrew}/{Cellar,Caskroom,Homebrew/Library/Taps}
+          brew cleanup --prune-prefix
+          sudo rm -rf /usr/local/{bin/brew,Homebrew} /opt/homebrew /home/linuxbrew
+
+      - name: Zero existing installer logs
+        run: echo | sudo tee /var/log/install.log
+
+      - name: Install Homebrew from installer package
+        run: sudo installer -verbose -pkg Homebrew-${{ steps.print-version.outputs.version }}.pkg -target /
+
+      - name: Output installer logs
+        if: ${{ always() }}
+        run: sudo cat /var/log/install.log
+
+      - run: brew config
+
+      - run: brew doctor
+
+      - name: Zero existing installer logs (again)
+        run: echo | sudo tee /var/log/install.log
+
+      - name: Reinstall Homebrew from installer package
+        run: sudo installer -verbose -pkg Homebrew-${{ steps.print-version.outputs.version }}.pkg -target /
+
+      - name: Output installer logs (again)
+        if: ${{ always() }}
+        run: sudo cat /var/log/install.log
+
+      - run: brew config
+
+      - run: brew doctor
 
       - name: Notarize Homebrew installer package
         env:
