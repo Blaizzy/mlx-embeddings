@@ -597,6 +597,7 @@ then
   # Don't support API at this time for older macOS versions.
   if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "${HOMEBREW_MACOS_OLDEST_SUPPORTED_NUMERIC}" ]]
   then
+    export HOMEBREW_INSTALL_FROM_API_UNSUPPORTED=1
     export HOMEBREW_NO_INSTALL_FROM_API=1
   fi
 else
@@ -674,6 +675,7 @@ fi
 # Generic OS or non-default prefix: API not supported.
 if [[ (-z "${HOMEBREW_MACOS}" && -z "${HOMEBREW_LINUX}") || "${HOMEBREW_PREFIX}" != "${HOMEBREW_DEFAULT_PREFIX}" ]]
 then
+  export HOMEBREW_INSTALL_FROM_API_UNSUPPORTED=1
   export HOMEBREW_NO_INSTALL_FROM_API=1
 fi
 

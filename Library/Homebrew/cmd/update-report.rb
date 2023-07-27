@@ -377,7 +377,8 @@ module Homebrew
                          !ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] &&
                          !ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
     no_install_from_api_set = Homebrew::EnvConfig.no_install_from_api? &&
-                              !Homebrew::EnvConfig.automatically_set_no_install_from_api?
+                              !Homebrew::EnvConfig.automatically_set_no_install_from_api? &&
+                              !Homebrew::EnvConfig.install_from_api_unsupported?
     return if !no_auto_update_set && !no_install_from_api_set && !auto_update_secs_set
 
     ohai "You have set:"
