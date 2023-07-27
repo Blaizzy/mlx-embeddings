@@ -89,18 +89,15 @@ module MachOShim
 
   def dynamically_linked_libraries(except: :none, resolve_variable_references: true)
     lcs = macho.dylib_load_commands.reject { |lc| lc.type == except }
-
     names = lcs.map(&:name).map(&:to_s).uniq
-
-    names.map! { |name| resolve_variable_name(name) } if resolve_variable_references
+    names.map!(&method(:resolve_variable_name)) if resolve_variable_references
 
     names
   end
 
   def rpaths(resolve_variable_references: true)
     names = macho.rpaths
-
-    names.map! { |name| resolve_variable_name(name) } if resolve_variable_references
+    names.map!(&method(:resolve_variable_name)) if resolve_variable_references
 
     names
   end
@@ -110,9 +107,20 @@ module MachOShim
       Pathname(name.sub("@loader_path", dirname)).cleanpath.to_s
     elsif name.start_with?("@executable_path") && binary_executable?
       Pathname(name.sub("@executable_path", dirname)).cleanpath.to_s
+    elsif name.start_with?("@rpath") && (target = resolve_rpath(name)).present?
+      target
     else
       name
     end
+  end
+
+  def resolve_rpath(name)
+    target = T.let(nil, T.nilable(String))
+    return unless rpaths(resolve_variable_references: true).find do |rpath|
+      File.exist?(target = File.join(rpath, name.delete_prefix("@rpath")))
+    end
+
+    target
   end
 
   def archs
