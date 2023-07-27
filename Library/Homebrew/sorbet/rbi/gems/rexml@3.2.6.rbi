@@ -33,7 +33,7 @@ class REXML::Attribute
   def inspect; end
   def namespace(arg = T.unsafe(nil)); end
   def node_type; end
-  def normalized=(_arg0); end
+  def normalized=(new_normalized); end
   def prefix; end
   def remove; end
   def to_s; end
@@ -276,12 +276,17 @@ class REXML::Entity < ::REXML::Child
   def name; end
   def ndata; end
   def normalized; end
+  def parent=(other); end
   def pubid; end
   def ref; end
   def to_s; end
   def unnormalized; end
   def value; end
   def write(out, indent = T.unsafe(nil)); end
+
+  private
+
+  def resolve_value; end
 
   class << self
     def matches?(string); end
@@ -362,6 +367,20 @@ class REXML::Instruction < ::REXML::Child
   def target=(_arg0); end
   def write(writer, indent = T.unsafe(nil), transitive = T.unsafe(nil), ie_hack = T.unsafe(nil)); end
 end
+
+module REXML::Namespace
+  include ::REXML::XMLTokens
+
+  def expanded_name; end
+  def fully_expanded_name; end
+  def has_name?(other, ns = T.unsafe(nil)); end
+  def name; end
+  def name=(name); end
+  def prefix; end
+  def prefix=(_arg0); end
+end
+
+REXML::Namespace::NAME_WITHOUT_NAMESPACE = T.let(T.unsafe(nil), Regexp)
 
 class REXML::NotationDecl < ::REXML::Child
   def initialize(name, middle, pub, sys); end
@@ -479,12 +498,13 @@ end
 class REXML::Parsers::XPathParser
   include ::REXML::XMLTokens
 
-  def abbreviate(path); end
-  def expand(path); end
+  def abbreviate(path_or_parsed); end
+  def expand(path_or_parsed); end
   def namespaces=(namespaces); end
   def parse(path); end
+  def preciate_to_string(parsed, &block); end
   def predicate(path); end
-  def predicate_to_string(path, &block); end
+  def predicate_to_path(parsed, &block); end
 
   private
 
@@ -506,6 +526,7 @@ class REXML::Parsers::XPathParser
   def UnionExpr(path, parsed); end
   def get_group(string); end
   def parse_args(string); end
+  def quote_literal(literal); end
 end
 
 REXML::Parsers::XPathParser::LOCAL_NAME_WILDCARD = T.let(T.unsafe(nil), Regexp)
