@@ -176,7 +176,7 @@ livecheck do
     json.map do |release|
       next if release["draft"] || release["prerelease"]
 
-      match = json["tag_name"]&.match(regex)
+      match = release["tag_name"]&.match(regex)
       next if match.blank?
 
       match[1]
