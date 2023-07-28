@@ -68,6 +68,7 @@ nodenv-sync
 options
 outdated
 pin
+post_install
 postgresql-upgrade-database
 postinstall
 pr-automerge

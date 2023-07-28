@@ -12,23 +12,24 @@ module Commands
   # If you are going to change anything in below hash,
   # be sure to also update appropriate case statement in brew.sh
   HOMEBREW_INTERNAL_COMMAND_ALIASES = {
-    "ls"          => "list",
-    "homepage"    => "home",
-    "-S"          => "search",
-    "up"          => "update",
-    "ln"          => "link",
-    "instal"      => "install", # gem does the same
-    "uninstal"    => "uninstall",
-    "rm"          => "uninstall",
-    "remove"      => "uninstall",
-    "abv"         => "info",
-    "dr"          => "doctor",
-    "--repo"      => "--repository",
-    "environment" => "--env",
-    "--config"    => "config",
-    "-v"          => "--version",
-    "lc"          => "livecheck",
-    "tc"          => "typecheck",
+    "ls"           => "list",
+    "homepage"     => "home",
+    "-S"           => "search",
+    "up"           => "update",
+    "ln"           => "link",
+    "instal"       => "install", # gem does the same
+    "uninstal"     => "uninstall",
+    "post_install" => "postinstall",
+    "rm"           => "uninstall",
+    "remove"       => "uninstall",
+    "abv"          => "info",
+    "dr"           => "doctor",
+    "--repo"       => "--repository",
+    "environment"  => "--env",
+    "--config"     => "config",
+    "-v"           => "--version",
+    "lc"           => "livecheck",
+    "tc"           => "typecheck",
   }.freeze
   # This pattern is used to split descriptions at full stops. We only consider a
   # dot as a full stop if it is either followed by a whitespace or at the end of

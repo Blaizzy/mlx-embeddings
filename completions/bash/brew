@@ -1651,6 +1651,23 @@ _brew_pin() {
   __brew_complete_installed_formulae
 }
 
+_brew_post_install() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
+  __brew_complete_installed_formulae
+}
+
 _brew_postgresql_upgrade_database() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2713,6 +2730,7 @@ _brew() {
     options) _brew_options ;;
     outdated) _brew_outdated ;;
     pin) _brew_pin ;;
+    post_install) _brew_post_install ;;
     postgresql-upgrade-database) _brew_postgresql_upgrade_database ;;
     postinstall) _brew_postinstall ;;
     pr-automerge) _brew_pr_automerge ;;

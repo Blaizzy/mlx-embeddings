@@ -1095,6 +1095,36 @@ on_request: installed_on_request?, options: options)
     @show_summary_heading = true
   end
 
+  sig { returns(Pathname) }
+  def post_install_formula_path
+    # Use the formula from the keg when any of the following is true:
+    # * We're installing from the JSON API
+    # * We're installing a local bottle file
+    # * The formula doesn't exist in the tap (or the tap isn't installed)
+    # * The formula in the tap has a different `pkg_version``.
+    #
+    # In all other cases, including if the formula from the keg is unreadable
+    # (third-party taps may `require` some of their own libraries) or if there
+    # is no formula present in the keg (as is the case with very old bottles),
+    # use the formula from the tap.
+    keg_formula_path = formula.opt_prefix/".brew/#{formula.name}.rb"
+    return keg_formula_path if formula.loaded_from_api?
+    return keg_formula_path if formula.local_bottle_path.present?
+
+    tap_formula_path = formula.specified_path
+    return keg_formula_path unless tap_formula_path.exist?
+
+    begin
+      keg_formula = Formulary.factory(keg_formula_path)
+      tap_formula = Formulary.factory(tap_formula_path)
+      return keg_formula_path if keg_formula.pkg_version != tap_formula.pkg_version
+
+      tap_formula_path
+    rescue FormulaUnavailableError, FormulaUnreadableError
+      tap_formula_path
+    end
+  end
+
   sig { void }
   def post_install
     args = [
@@ -1105,34 +1135,7 @@ on_request: installed_on_request?, options: options)
       HOMEBREW_LIBRARY_PATH/"postinstall.rb"
     ]
 
-    # Use the formula from the keg if:
-    # * Installing from a local bottle, or
-    # * The formula doesn't exist in the tap (or the tap isn't installed), or
-    # * The formula in the tap has a different pkg_version.
-    #
-    # In all other cases, including if the formula from the keg is unreadable
-    # (third-party taps may `require` some of their own libraries) or if there
-    # is no formula present in the keg (as is the case with old bottles), use
-    # the formula from the tap.
-    formula_path = begin
-      keg_formula_path = formula.opt_prefix/".brew/#{formula.name}.rb"
-      tap_formula_path = formula.specified_path
-      keg_formula = Formulary.factory(keg_formula_path)
-      tap_formula = Formulary.factory(tap_formula_path) if tap_formula_path.exist?
-      other_version_installed = (keg_formula.pkg_version != tap_formula&.pkg_version)
-
-      if formula.local_bottle_path.present? ||
-         !tap_formula_path.exist? ||
-         other_version_installed
-        keg_formula_path
-      else
-        tap_formula_path
-      end
-    rescue FormulaUnavailableError, FormulaUnreadableError
-      tap_formula_path
-    end
-
-    args << formula_path
+    args << post_install_formula_path
 
     Utils.safe_fork do
       if Sandbox.available?

@@ -826,6 +826,7 @@ case "${HOMEBREW_COMMAND}" in
   ln) HOMEBREW_COMMAND="link" ;;
   instal) HOMEBREW_COMMAND="install" ;; # gem does the same
   uninstal) HOMEBREW_COMMAND="uninstall" ;;
+  post_install) HOMEBREW_COMMAND="postinstall" ;;
   rm) HOMEBREW_COMMAND="uninstall" ;;
   remove) HOMEBREW_COMMAND="uninstall" ;;
   abv) HOMEBREW_COMMAND="info" ;;

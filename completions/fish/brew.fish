@@ -1134,6 +1134,14 @@ __fish_brew_complete_arg 'pin' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'pin' -a '(__fish_brew_suggest_formulae_installed)'
 
 
+__fish_brew_complete_cmd 'post_install' 'Rerun the post-install steps for formula'
+__fish_brew_complete_arg 'post_install' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'post_install' -l help -d 'Show this message'
+__fish_brew_complete_arg 'post_install' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'post_install' -l verbose -d 'Make some output more verbose'
+__fish_brew_complete_arg 'post_install' -a '(__fish_brew_suggest_formulae_installed)'
+
+
 __fish_brew_complete_cmd 'postgresql-upgrade-database' 'Upgrades the database for the `postgresql` formula'
 __fish_brew_complete_arg 'postgresql-upgrade-database' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'postgresql-upgrade-database' -l help -d 'Show this message'
