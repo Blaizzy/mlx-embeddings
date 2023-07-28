@@ -424,6 +424,7 @@ class GitHubPackages
     end
 
     index_json_sha256, index_json_size = write_image_index(manifests, blobs, formula_annotations_hash)
+    raise "Image index too large!" if index_json_size >= 4 * 1024 * 1024 # GitHub will error 500 if too large
 
     write_index_json(index_json_sha256, index_json_size, root,
                      "org.opencontainers.image.ref.name" => version_rebuild)
