@@ -28,6 +28,8 @@ module Homebrew
       if f.post_install_defined?
         fi = FormulaInstaller.new(f, **{ debug: args.debug?, quiet: args.quiet?, verbose: args.verbose? }.compact)
         fi.post_install
+      else
+        opoo "#{f}: no `post_install` method was defined in the formula!"
       end
     end
   end

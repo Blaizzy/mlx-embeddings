@@ -533,7 +533,7 @@ issuing the `brew upgrade` *`formula`* command. See also `unpin`.
 
 Upgrades the database for the `postgresql` formula.
 
-### `postinstall` *`installed_formula`* [...]
+### `postinstall`, `post_install` *`installed_formula`* [...]
 
 Rerun the post-install steps for *`formula`*.
 

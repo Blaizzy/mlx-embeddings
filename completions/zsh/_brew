@@ -22,6 +22,7 @@ __brew_list_aliases() {
     ln link
     instal install
     uninstal uninstall
+    post_install postinstall
     rm uninstall
     remove uninstall
     abv info
@@ -1395,6 +1396,17 @@ _brew_outdated() {
 
 # brew pin
 _brew_pin() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]' \
+    - installed_formula \
+    '*::installed_formula:__brew_installed_formulae'
+}
+
+# brew post_install
+_brew_post_install() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
