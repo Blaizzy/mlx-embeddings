@@ -1332,7 +1332,7 @@ Check for newer versions of formulae and/or casks from upstream.
 
 If no formula or cask argument is passed, the list of formulae and
 casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
-`~/.brew_livecheck_watchlist`.
+`~/.homebrew/livecheck_watchlist.txt`.
 
 * `--full-name`:
   Print formulae and casks with fully-qualified names.
@@ -2059,6 +2059,20 @@ Note that environment variables must have a value set to be detected. For
 example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 `export HOMEBREW_NO_INSECURE_REDIRECT`.
 
+`HOMEBREW_*` environment variables can also be set in Homebrew's environment
+files:
+
+* `/etc/homebrew/brew.env` (system-wide)
+
+* `$HOMEBREW_PREFIX/etc/homebrew/brew.env` (prefix-specific)
+
+* `$XDG_CONFIG_HOME/homebrew/brew.env` if `$XDG_CONFIG_HOME` is set or
+  `$HOME/.homebrew/brew.env` otherwise (user-specific)
+
+User-specific environment files take precedence over prefix-specific files and
+prefix-specific files take precedence over system-wide files (unless
+`HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY` is set, see below).
+
 - `HOMEBREW_API_DOMAIN`
   <br>Use this URL as the download mirror for Homebrew JSON API. If metadata files at that URL are temporarily unavailable, the default API domain will be used as a fallback mirror.
 
@@ -2243,7 +2257,7 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
 - `HOMEBREW_LIVECHECK_WATCHLIST`
   <br>Consult this file for the list of formulae to check by default when no formula argument is passed to `brew livecheck`.
 
-  *Default:* `$HOME/.brew_livecheck_watchlist`
+  *Default:* `$XDG_CONFIG_HOME/homebrew/livecheck_watchlist.txt` if `$XDG_CONFIG_HOME` is set or `$HOME/.homebrew/livecheck_watchlist.txt` otherwise.
 
 - `HOMEBREW_LOGS`
   <br>Use this directory to store log files.
@@ -2327,6 +2341,9 @@ example, run `export HOMEBREW_NO_INSECURE_REDIRECT=1` rather than just
   <br>Use this as the `svn`(1) binary.
 
   *Default:* A Homebrew-built Subversion (if installed), or the system-provided binary.
+
+- `HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY`
+  <br>If set in Homebrew's system-wide environment file (`/etc/homebrew/brew.env`), the system-wide environment file will be loaded last to override any prefix or user settings.
 
 - `HOMEBREW_TEMP`
   <br>Use this path as the temporary directory for building packages. Changing this may be needed if your system temporary directory and Homebrew prefix are on different volumes, as macOS has trouble moving symlinks across volumes when the target does not yet exist. This issue typically occurs when using FileVault or custom SSD configurations.

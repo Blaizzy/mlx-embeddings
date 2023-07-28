@@ -9,8 +9,6 @@ require "livecheck/strategy"
 module Homebrew
   module_function
 
-  WATCHLIST_PATH = File.expand_path(Homebrew::EnvConfig.livecheck_watchlist).freeze
-
   sig { returns(CLI::Parser) }
   def livecheck_args
     Homebrew::CLI::Parser.new do
@@ -19,7 +17,7 @@ module Homebrew
 
         If no formula or cask argument is passed, the list of formulae and
         casks to check is taken from `HOMEBREW_LIVECHECK_WATCHLIST` or
-        `~/.brew_livecheck_watchlist`.
+        `~/.homebrew/livecheck_watchlist.txt`.
       EOS
       switch "--full-name",
              description: "Print formulae and casks with fully-qualified names."
@@ -47,6 +45,22 @@ module Homebrew
       conflicts "--cask", "--formula"
 
       named_args [:formula, :cask], without_api: true
+    end
+  end
+
+  def watchlist_path
+    @watchlist_path ||= begin
+      watchlist = File.expand_path(Homebrew::EnvConfig.livecheck_watchlist)
+
+      unless File.exist?(watchlist)
+        previous_default_watchlist = File.expand_path("~/.brew_livecheck_watchlist")
+        if File.exist?(previous_default_watchlist)
+          odeprecated "~/.brew_livecheck_watchlist", "~/.homebrew/livecheck_watchlist.txt"
+          watchlist = previous_default_watchlist
+        end
+      end
+
+      watchlist
     end
   end
 
@@ -82,9 +96,9 @@ module Homebrew
         else
           args.named.to_formulae_and_casks
         end
-      elsif File.exist?(WATCHLIST_PATH)
+      elsif File.exist?(watchlist_path)
         begin
-          names = Pathname.new(WATCHLIST_PATH).read.lines
+          names = Pathname.new(watchlist_path).read.lines
                           .reject { |line| line.start_with?("#") || line.blank? }
                           .map(&:strip)
 
