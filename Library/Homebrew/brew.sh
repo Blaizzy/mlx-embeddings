@@ -313,11 +313,11 @@ auto-update() {
     repo_fetch_heads=("${HOMEBREW_REPOSITORY}/.git/FETCH_HEAD")
     # We might have done an auto-update recently, but not a core/cask clone auto-update.
     # So we check the core/cask clone FETCH_HEAD too.
-    if [[ -n "${HOMEBREW_UPDATE_CORE_TAP}" && -d "${HOMEBREW_CORE_REPOSITORY}/.git" ]]
+    if [[ -n "${HOMEBREW_AUTO_UPDATE_CORE_TAP}" && -d "${HOMEBREW_CORE_REPOSITORY}/.git" ]]
     then
       repo_fetch_heads+=("${HOMEBREW_CORE_REPOSITORY}/.git/FETCH_HEAD")
     fi
-    if [[ -n "${HOMEBREW_UPDATE_CASK_TAP}" && -d "${HOMEBREW_CASK_REPOSITORY}/.git" ]]
+    if [[ -n "${HOMEBREW_AUTO_UPDATE_CASK_TAP}" && -d "${HOMEBREW_CASK_REPOSITORY}/.git" ]]
     then
       repo_fetch_heads+=("${HOMEBREW_CASK_REPOSITORY}/.git/FETCH_HEAD")
     fi
@@ -365,8 +365,8 @@ auto-update() {
   unset AUTO_UPDATE_COMMANDS
   unset AUTO_UPDATE_CORE_TAP_COMMANDS
   unset AUTO_UPDATE_CASK_TAP_COMMANDS
-  unset HOMEBREW_UPDATE_CORE_TAP
-  unset HOMEBREW_UPDATE_CASK_TAP
+  unset HOMEBREW_AUTO_UPDATE_CORE_TAP
+  unset HOMEBREW_AUTO_UPDATE_CASK_TAP
 }
 
 #####
@@ -877,7 +877,9 @@ AUTO_UPDATE_CORE_TAP_COMMANDS=(
 if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_CORE_TAP_COMMANDS[@]}"
 then
   export HOMEBREW_AUTO_UPDATE_COMMAND="1"
-  export HOMEBREW_UPDATE_CORE_TAP="1"
+  export HOMEBREW_AUTO_UPDATE_CORE_TAP="1"
+else
+  unset HOMEBREW_AUTO_UPDATE_CORE_TAP
 fi
 
 # Check for commands that should auto-update the homebrew-cask tap.
@@ -889,7 +891,9 @@ AUTO_UPDATE_CASK_TAP_COMMANDS=(
 if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_CASK_TAP_COMMANDS[@]}"
 then
   export HOMEBREW_AUTO_UPDATE_COMMAND="1"
-  export HOMEBREW_UPDATE_CASK_TAP="1"
+  export HOMEBREW_AUTO_UPDATE_CASK_TAP="1"
+else
+  unset HOMEBREW_AUTO_UPDATE_CORE_TAP
 fi
 
 # Disable Ruby options we don't need.

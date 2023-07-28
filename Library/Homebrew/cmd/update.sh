@@ -581,9 +581,10 @@ EOS
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
     if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]] &&
-       [[ -z "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_DEV_CMD_RUN}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
-       [[ ("${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_UPDATE_CORE_TAP}") ||
-          ("${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" && -z "${HOMEBREW_UPDATE_CASK_TAP}") ]]
+       [[ -n "${HOMEBREW_UPDATE_AUTO}" || (-z "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_DEV_CMD_RUN}") ]] &&
+       [[ -n "${HOMEBREW_UPDATE_AUTO}" &&
+          (("${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_AUTO_UPDATE_CORE_TAP}") ||
+          ("${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" && -z "${HOMEBREW_AUTO_UPDATE_CASK_TAP}")) ]]
     then
       continue
     fi
@@ -743,9 +744,10 @@ EOS
   for DIR in "${HOMEBREW_REPOSITORY}" "${HOMEBREW_LIBRARY}"/Taps/*/*
   do
     if [[ -z "${HOMEBREW_NO_INSTALL_FROM_API}" ]] &&
-       [[ -z "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_DEV_CMD_RUN}" || -n "${HOMEBREW_UPDATE_AUTO}" ]] &&
-       [[ ("${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_UPDATE_CORE_TAP}") ||
-          ("${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" && -z "${HOMEBREW_UPDATE_CASK_TAP}") ]]
+       [[ -n "${HOMEBREW_UPDATE_AUTO}" || (-z "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_DEV_CMD_RUN}") ]] &&
+       [[ -n "${HOMEBREW_UPDATE_AUTO}" &&
+          (("${DIR}" == "${HOMEBREW_CORE_REPOSITORY}" && -z "${HOMEBREW_AUTO_UPDATE_CORE_TAP}") ||
+          ("${DIR}" == "${HOMEBREW_CASK_REPOSITORY}" && -z "${HOMEBREW_AUTO_UPDATE_CASK_TAP}")) ]]
     then
       continue
     fi
