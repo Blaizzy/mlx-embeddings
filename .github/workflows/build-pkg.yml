@@ -162,6 +162,9 @@ jobs:
           name: Homebrew ${{ steps.print-version.outputs.version }}
           path: Homebrew-${{ steps.print-version.outputs.version }}.pkg
 
+      - name: Install gh
+        run: brew install gh
+
       - name: Upload installer to GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         env:
