@@ -2648,13 +2648,19 @@ class Formula
     unless verbose?
       case cmd
       when "./configure"
-        pretty_args -= %w[--disable-dependency-tracking --disable-debug --disable-silent-rules]
+        pretty_args -= std_configure_args
+      when "cabal"
+        pretty_args -= std_cabal_v2_args
       when "cargo"
         pretty_args -= std_cargo_args
       when "cmake"
         pretty_args -= std_cmake_args
       when "go"
         pretty_args -= std_go_args
+      when "meson"
+        pretty_args -= std_meson_args
+      when %r{(^|/)(pip|python)(?:[23](?:\.\d{1,2})?)?$}
+        pretty_args -= std_pip_args
       end
     end
     pretty_args.each_index do |i|
