@@ -214,6 +214,7 @@ module Zeitwerk::Loader::Helpers
 
   def cdef?(parent, cname); end
   def cget(parent, cname); end
+  def cname_for(basename, abspath); end
   def cpath(parent, cname); end
   def crem(parent, cname); end
   def dir?(path); end
@@ -226,6 +227,7 @@ module Zeitwerk::Loader::Helpers
   def walk_up(abspath); end
 end
 
+module Zeitwerk::Loader::Helpers::CNAME_VALIDATOR; end
 Zeitwerk::Loader::MUTEX = T.let(T.unsafe(nil), Thread::Mutex)
 class Zeitwerk::NameError < ::NameError; end
 
