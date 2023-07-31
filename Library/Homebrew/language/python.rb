@@ -134,10 +134,12 @@ module Language
       #   or "python3.x")
       # @param formula [Formula] the active {Formula}
       # @return [Virtualenv] a {Virtualenv} instance
-      def virtualenv_create(venv_root, python = "python", formula = self, system_site_packages: true)
+      def virtualenv_create(venv_root, python = "python", formula = self, system_site_packages: true,
+                            without_pip: true)
+        # odeprecated "Language::Python::Virtualenv.virtualenv_create's without_pip" unless without_pip
         ENV.refurbish_args
         venv = Virtualenv.new formula, venv_root, python
-        venv.create(system_site_packages: system_site_packages)
+        venv.create(system_site_packages: system_site_packages, without_pip: without_pip)
 
         # Find any Python bindings provided by recursive dependencies
         formula_deps = formula.recursive_dependencies
@@ -180,7 +182,8 @@ module Language
       # formula preference for python or python@x.y, or to resolve an ambiguous
       # case where it's not clear whether python or python@x.y should be the
       # default guess.
-      def virtualenv_install_with_resources(using: nil, system_site_packages: true, link_manpages: false)
+      def virtualenv_install_with_resources(using: nil, system_site_packages: true, without_pip: true,
+                                            link_manpages: false)
         python = using
         if python.nil?
           wanted = python_names.select { |py| needs_python?(py) }
@@ -190,7 +193,8 @@ module Language
           python = wanted.first
           python = "python3" if python == "python"
         end
-        venv = virtualenv_create(libexec, python.delete("@"), system_site_packages: system_site_packages)
+        venv = virtualenv_create(libexec, python.delete("@"), system_site_packages: system_site_packages,
+                                                              without_pip:          without_pip)
         venv.pip_install resources
         venv.pip_install_and_link(buildpath, link_manpages: link_manpages)
         venv
@@ -221,11 +225,12 @@ module Language
         # Obtains a copy of the virtualenv library and creates a new virtualenv on disk.
         #
         # @return [void]
-        def create(system_site_packages: true)
+        def create(system_site_packages: true, without_pip: true)
           return if (@venv_root/"bin/python").exist?
 
           args = ["-m", "venv"]
           args << "--system-site-packages" if system_site_packages
+          args << "--without-pip" if without_pip
           @formula.system @python, *args, @venv_root
 
           # Robustify symlinks to survive python patch upgrades
@@ -250,6 +255,9 @@ module Language
             prefix_path.sub! %r{^#{HOMEBREW_CELLAR}/python#{version}/[^/]+}, Formula["python#{version}"].opt_prefix
             prefix_file.atomic_write prefix_path
           end
+
+          # Remove unnecessary activate scripts
+          (@venv_root/"bin").glob("[Aa]ctivate*").map(&:unlink)
         end
 
         # Installs packages represented by `targets` into the virtualenv.
@@ -302,7 +310,7 @@ module Language
         def do_install(targets, build_isolation: true)
           targets = Array(targets)
           args = @formula.std_pip_args(prefix: false, build_isolation: build_isolation)
-          @formula.system @venv_root/"bin/pip", "install", *args, *targets
+          @formula.system @python, "-m", "pip", "--python=#{@venv_root}/bin/python", "install", *args, *targets
         end
       end
     end

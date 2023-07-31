@@ -15,8 +15,13 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
 
   describe "#create" do
     it "creates a venv" do
-      expect(formula).to receive(:system).with("python", "-m", "venv", "--system-site-packages", dir)
+      expect(formula).to receive(:system).with("python", "-m", "venv", "--system-site-packages", "--without-pip", dir)
       virtualenv.create
+    end
+
+    it "creates a venv with pip" do
+      expect(formula).to receive(:system).with("python", "-m", "venv", "--system-site-packages", dir)
+      virtualenv.create(without_pip: false)
     end
   end
 
@@ -25,7 +30,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
       expect(formula).to receive(:std_pip_args).with(prefix:          false,
                                                      build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "--std-pip-args", "foo")
+        .with("python", "-m", "pip", "--python=#{dir}/bin/python", "install", "--std-pip-args", "foo")
         .and_return(true)
       virtualenv.pip_install "foo"
     end
@@ -34,7 +39,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
       expect(formula).to receive(:std_pip_args).with(prefix:          false,
                                                      build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "--std-pip-args", "foo", "bar")
+        .with("python", "-m", "pip", "--python=#{dir}/bin/python", "install", "--std-pip-args", "foo", "bar")
         .and_return(true)
 
       virtualenv.pip_install <<~EOS
@@ -47,13 +52,13 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
       expect(formula).to receive(:std_pip_args).with(prefix:          false,
                                                      build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "--std-pip-args", "foo")
+        .with("python", "-m", "pip", "--python=#{dir}/bin/python", "install", "--std-pip-args", "foo")
         .and_return(true)
 
       expect(formula).to receive(:std_pip_args).with(prefix:          false,
                                                      build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "--std-pip-args", "bar")
+        .with("python", "-m", "pip", "--python=#{dir}/bin/python", "install", "--std-pip-args", "bar")
         .and_return(true)
 
       virtualenv.pip_install ["foo", "bar"]
@@ -66,7 +71,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
       expect(formula).to receive(:std_pip_args).with(prefix:          false,
                                                      build_isolation: true).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "--std-pip-args", Pathname.pwd)
+        .with("python", "-m", "pip", "--python=#{dir}/bin/python", "install", "--std-pip-args", Pathname.pwd)
         .and_return(true)
 
       virtualenv.pip_install res
@@ -76,7 +81,7 @@ describe Language::Python::Virtualenv::Virtualenv, :needs_python do
       expect(formula).to receive(:std_pip_args).with(prefix:          false,
                                                      build_isolation: false).and_return(["--std-pip-args"])
       expect(formula).to receive(:system)
-        .with(dir/"bin/pip", "install", "--std-pip-args", "foo")
+        .with("python", "-m", "pip", "--python=#{dir}/bin/python", "install", "--std-pip-args", "foo")
         .and_return(true)
       virtualenv.pip_install("foo", build_isolation: false)
     end
