@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/build-pkg.yml
-      - package/
+      - package/**/*
   release:
     types:
       - published
