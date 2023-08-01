@@ -2556,7 +2556,7 @@ class Formula
   # @api public
   sig {
     params(
-      paths:        T.any(T::Enumerable[T.untyped], String, Pathname),
+      paths:        T.any(T::Enumerable[T.any(String, Pathname)], String, Pathname),
       before:       T.nilable(T.any(Pathname, Regexp, String)),
       after:        T.nilable(T.any(Pathname, String, Symbol)),
       audit_result: T::Boolean,

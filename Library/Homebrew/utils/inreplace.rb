@@ -39,7 +39,7 @@ module Utils
     # @api public
     sig {
       params(
-        paths:        T.any(T::Array[T.untyped], String, Pathname),
+        paths:        T.any(T::Array[T.any(String, Pathname)], String, Pathname),
         before:       T.nilable(T.any(Pathname, Regexp, String)),
         after:        T.nilable(T.any(Pathname, String, Symbol)),
         audit_result: T::Boolean,
