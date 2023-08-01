@@ -244,7 +244,7 @@ module Cask
 
       def initialize(token, from_json: nil)
         @token = token.sub(%r{^homebrew/(?:homebrew-)?cask/}i, "")
-        @path = CaskLoader.default_path(token)
+        @path = CaskLoader.default_path(@token)
         @from_json = from_json
       end
 
