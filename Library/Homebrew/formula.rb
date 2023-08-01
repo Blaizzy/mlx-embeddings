@@ -2556,7 +2556,7 @@ class Formula
   # @api public
   sig {
     params(
-      paths:        T.any(T::Array[T.untyped], String, Pathname),
+      paths:        T.any(T::Enumerable[T.untyped], String, Pathname),
       before:       T.nilable(T.any(Pathname, Regexp, String)),
       after:        T.nilable(T.any(Pathname, String, Symbol)),
       audit_result: T::Boolean,
@@ -2566,8 +2566,7 @@ class Formula
     super(paths, before, after, audit_result)
   rescue Utils::Inreplace::Error => e
     onoe e.to_s
-    args = paths.is_a?(Array) ? paths : [paths]
-    raise BuildError.new(self, "inreplace", args, {})
+    raise BuildError.new(self, "inreplace", Array(paths), {})
   end
 
   protected
