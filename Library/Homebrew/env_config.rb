@@ -241,8 +241,9 @@ module Homebrew
       HOMEBREW_LIVECHECK_WATCHLIST:              {
         description:  "Consult this file for the list of formulae to check by default when no formula argument " \
                       "is passed to `brew livecheck`.",
-        default_text: "`$HOME/.brew_livecheck_watchlist`",
-        default:      "~/.brew_livecheck_watchlist",
+        default_text: "`$XDG_CONFIG_HOME/homebrew/livecheck_watchlist.txt` if `$XDG_CONFIG_HOME` is set " \
+                      "or `$HOME/.homebrew/livecheck_watchlist.txt` otherwise.",
+        default:      "#{ENV.fetch("HOMEBREW_USER_CONFIG_HOME")}/livecheck_watchlist.txt",
       },
       HOMEBREW_LOGS:                             {
         description:  "Use this directory to store log files.",
@@ -361,6 +362,11 @@ module Homebrew
       HOMEBREW_SVN:                              {
         description:  "Use this as the `svn`(1) binary.",
         default_text: "A Homebrew-built Subversion (if installed), or the system-provided binary.",
+      },
+      HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY:        {
+        description: "If set in Homebrew's system-wide environment file (`/etc/homebrew/brew.env`), " \
+                     "the system-wide environment file will be loaded last to override any prefix or user settings.",
+        boolean:     true,
       },
       HOMEBREW_TEMP:                             {
         description:  "Use this path as the temporary directory for building packages. Changing " \

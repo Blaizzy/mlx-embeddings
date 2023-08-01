@@ -68,11 +68,60 @@ then
   then
     HOMEBREW_PREFIX="/usr/local"
   fi
+  unset USR_LOCAL_BREW_FILE_DIRECTORY USR_LOCAL_HOMEBREW_REPOSITORY
 fi
+
+unset BREW_FILE_DIRECTORY
 
 # If the location of HOMEBREW_LIBRARY changes
 # keg_relocate.rb, formula_cellar_checks.rb, and test/global_spec.rb need to change.
 HOMEBREW_LIBRARY="${HOMEBREW_REPOSITORY}/Library"
+
+# Load Homebrew's variable configuration files from disk.
+# First, load the system-wide configuration.
+if [[ -f "/etc/homebrew/brew.env" ]]
+then
+  unset SYSTEM_ENV_TAKES_PRIORITY
+  # only load HOMEBREW_*=* lines
+  SYSTEM_HOMEBREW_ENV="$(grep -E '^HOMEBREW_[A-Z_]+=.*$' "/etc/homebrew/brew.env")"
+  if [[ -n "${HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY-}" ]]
+  then
+    SYSTEM_ENV_TAKES_PRIORITY="1"
+  else
+    eval "${SYSTEM_HOMEBREW_ENV}"
+  fi
+fi
+
+# Next, load the prefix configuration
+if [[ -f "${HOMEBREW_PREFIX}/etc/homebrew/brew.env" ]]
+then
+  # only load HOMEBREW_*=* lines
+  PREFIX_HOMEBREW_ENV="$(grep -E '^HOMEBREW_[A-Z_]+=.*$' "${HOMEBREW_PREFIX}/etc/homebrew/brew.env")"
+  eval "${PREFIX_HOMEBREW_ENV}"
+  unset PREFIX_HOMEBREW_ENV
+fi
+
+# Finally, load the user configuration
+if [[ -n "${XDG_CONFIG_HOME-}" ]]
+then
+  HOMEBREW_USER_CONFIG_HOME="${XDG_CONFIG_HOME}/homebrew"
+else
+  HOMEBREW_USER_CONFIG_HOME="${HOME}/.homebrew"
+fi
+if [[ -f "${HOMEBREW_USER_CONFIG_HOME}/brew.env" ]]
+then
+  # only load HOMEBREW_*=* lines
+  USER_HOMEBREW_ENV="$(grep -E '^HOMEBREW_[A-Z_]+=.*$' "${HOMEBREW_USER_CONFIG_HOME}/brew.env")"
+  eval "${USER_HOMEBREW_ENV}"
+  unset USER_HOMEBREW_ENV
+fi
+
+# If the system configuration takes priority, load it last.
+if [[ -n "${SYSTEM_ENV_TAKES_PRIORITY-}" ]]
+then
+  eval "${SYSTEM_HOMEBREW_ENV}"
+fi
+unset SYSTEM_HOMEBREW_ENV
 
 # Copy and export all HOMEBREW_* variables previously mentioned in
 # manpage or used elsewhere by Homebrew.
@@ -121,6 +170,7 @@ export HOMEBREW_BREW_FILE
 export HOMEBREW_PREFIX
 export HOMEBREW_REPOSITORY
 export HOMEBREW_LIBRARY
+export HOMEBREW_USER_CONFIG_HOME
 
 # set from user environment
 # shellcheck disable=SC2154

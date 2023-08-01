@@ -1900,7 +1900,7 @@ Print the cached linkage values stored in \fBHOMEBREW_CACHE\fR, set by a previou
 Check for newer versions of formulae and/or casks from upstream\.
 .
 .P
-If no formula or cask argument is passed, the list of formulae and casks to check is taken from \fBHOMEBREW_LIVECHECK_WATCHLIST\fR or \fB~/\.brew_livecheck_watchlist\fR\.
+If no formula or cask argument is passed, the list of formulae and casks to check is taken from \fBHOMEBREW_LIVECHECK_WATCHLIST\fR or \fB~/\.homebrew/livecheck_watchlist\.txt\fR\.
 .
 .TP
 \fB\-\-full\-name\fR
@@ -2935,6 +2935,23 @@ Many Homebrew Cask commands accept one or more \fIcask\fR arguments\. These can 
 .SH "ENVIRONMENT"
 Note that environment variables must have a value set to be detected\. For example, run \fBexport HOMEBREW_NO_INSECURE_REDIRECT=1\fR rather than just \fBexport HOMEBREW_NO_INSECURE_REDIRECT\fR\.
 .
+.P
+\fBHOMEBREW_*\fR environment variables can also be set in Homebrew\'s environment files:
+.
+.IP "\(bu" 4
+\fB/etc/homebrew/brew\.env\fR (system\-wide)
+.
+.IP "\(bu" 4
+\fB$HOMEBREW_PREFIX/etc/homebrew/brew\.env\fR (prefix\-specific)
+.
+.IP "\(bu" 4
+\fB$XDG_CONFIG_HOME/homebrew/brew\.env\fR if \fB$XDG_CONFIG_HOME\fR is set or \fB$HOME/\.homebrew/brew\.env\fR otherwise (user\-specific)
+.
+.IP "" 0
+.
+.P
+User\-specific environment files take precedence over prefix\-specific files and prefix\-specific files take precedence over system\-wide files (unless \fBHOMEBREW_SYSTEM_ENV_TAKES_PRIORITY\fR is set, see below)\.
+.
 .TP
 \fBHOMEBREW_API_DOMAIN\fR
 .
@@ -3281,7 +3298,7 @@ Print this text before the installation summary of each successful build\.
 Consult this file for the list of formulae to check by default when no formula argument is passed to \fBbrew livecheck\fR\.
 .
 .IP
-\fIDefault:\fR \fB$HOME/\.brew_livecheck_watchlist\fR
+\fIDefault:\fR \fB$XDG_CONFIG_HOME/homebrew/livecheck_watchlist\.txt\fR if \fB$XDG_CONFIG_HOME\fR is set or \fB$HOME/\.homebrew/livecheck_watchlist\.txt\fR otherwise\.
 .
 .TP
 \fBHOMEBREW_LOGS\fR
@@ -3441,6 +3458,12 @@ Use this as the \fBsvn\fR(1) binary\.
 .
 .IP
 \fIDefault:\fR A Homebrew\-built Subversion (if installed), or the system\-provided binary\.
+.
+.TP
+\fBHOMEBREW_SYSTEM_ENV_TAKES_PRIORITY\fR
+.
+.br
+If set in Homebrew\'s system\-wide environment file (\fB/etc/homebrew/brew\.env\fR), the system\-wide environment file will be loaded last to override any prefix or user settings\.
 .
 .TP
 \fBHOMEBREW_TEMP\fR
