@@ -39,21 +39,22 @@ module Utils
     # @api public
     sig {
       params(
-        paths:        T.any(T::Array[T.untyped], String, Pathname),
+        paths:        T.any(T::Enumerable[T.any(String, Pathname)], String, Pathname),
         before:       T.nilable(T.any(Pathname, Regexp, String)),
         after:        T.nilable(T.any(Pathname, String, Symbol)),
         audit_result: T::Boolean,
       ).void
     }
     def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
+      paths = Array(paths)
       after &&= after.to_s
       before = before.to_s if before.is_a?(Pathname)
 
       errors = {}
 
-      errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.blank?
+      errors["`paths` (first) parameter"] = ["`paths` was empty"] if paths.all?(&:blank?)
 
-      Array(paths).each do |path|
+      paths.each do |path|
         str = File.binread(path)
         s = StringInreplaceExtension.new(str)
 
