@@ -779,7 +779,7 @@ module Formulary
       rack:         Pathname,
       # Automatically resolves the formula's spec if not specified.
       spec:         Symbol,
-      alias_path:   Pathname,
+      alias_path:   T.any(Pathname, String),
       force_bottle: T::Boolean,
       flags:        T::Array[String],
     ).returns(Formula)
@@ -819,7 +819,7 @@ module Formulary
       keg:          Keg,
       # Automatically resolves the formula's spec if not specified.
       spec:         Symbol,
-      alias_path:   Pathname,
+      alias_path:   T.any(Pathname, String),
       force_bottle: T::Boolean,
       flags:        T::Array[String],
     ).returns(Formula)
