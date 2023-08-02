@@ -304,9 +304,19 @@ class TapUnavailableError < RuntimeError
   def initialize(name)
     @name = name
 
-    super <<~EOS
-      No available tap #{name}.
-    EOS
+    message = "No available tap #{name}.\n"
+    if [CoreTap.instance.name, CoreCaskTap.instance.name].include?(name)
+      command = "brew tap --force #{name}"
+      message += <<~EOS
+        Run #{Formatter.identifier(command)} to tap #{name}!
+      EOS
+    else
+      command = "brew tap-new #{name}"
+      message += <<~EOS
+        Run #{Formatter.identifier(command)} to create a new #{name} tap!
+      EOS
+    end
+    super message.freeze
   end
 end
 

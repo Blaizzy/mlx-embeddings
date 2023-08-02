@@ -228,8 +228,9 @@ module Homebrew
       def to_paths(only: parent&.only_formula_or_cask, recurse_tap: false)
         @to_paths ||= {}
         @to_paths[only] ||= downcased_unique_named.flat_map do |name|
+          path = Pathname(name)
           if File.exist?(name)
-            Pathname(name)
+            path
           elsif name.count("/") == 1 && !name.start_with?("./", "/")
             tap = Tap.fetch(name)
 
@@ -248,10 +249,16 @@ module Homebrew
 
             paths = []
 
-            paths << formula_path if formula_path.exist?
-            paths << cask_path if cask_path.exist?
+            if formula_path.exist? ||
+               (!CoreTap.instance.installed? && Homebrew::API::Formula.all_formulae.key?(path.basename))
+              paths << formula_path
+            end
+            if cask_path.exist? ||
+               (!CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(path.basename))
+              paths << cask_path
+            end
 
-            paths.empty? ? Pathname(name) : paths
+            paths.empty? ? path : paths
           end
         end.uniq.freeze
       end

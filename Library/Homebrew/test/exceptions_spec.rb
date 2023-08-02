@@ -131,7 +131,7 @@ describe "Exception" do
   describe TapUnavailableError do
     subject { described_class.new("foo") }
 
-    its(:to_s) { is_expected.to eq("No available tap foo.\n") }
+    its(:to_s) { is_expected.to eq("No available tap foo.\nRun brew tap-new foo to create a new foo tap!\n") }
   end
 
   describe TapAlreadyTappedError do

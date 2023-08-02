@@ -164,7 +164,7 @@ __brew_internal_commands() {
     'dispatch-build-bottle:Build bottles for these formulae with GitHub Actions'
     'docs:Open Homebrew'\''s online documentation (https://docs.brew.sh) in a browser'
     'doctor:Check your system for potential problems'
-    'edit:Open a formula or cask in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the Homebrew repository for editing if no formula is provided'
+    'edit:Open a formula, cask or tap in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the Homebrew repository for editing if no argument is provided'
     'extract:Look through repository history to find the most recent version of formula and create a copy in tap'
     'fetch:Download a bottle (if available) or source packages for formulae and binaries for casks'
     'formula:Display the path where formula is located'
@@ -853,7 +853,9 @@ _brew_edit() {
     '*::formula:__brew_formulae' \
     - cask \
     '(--formula)--cask[Treat all named arguments as casks]' \
-    '*::cask:__brew_casks'
+    '*::cask:__brew_casks' \
+    - tap \
+    '*::tap:__brew_any_tap'
 }
 
 # brew environment

@@ -927,6 +927,7 @@ _brew_edit() {
   esac
   __brew_complete_formulae
   __brew_complete_casks
+  __brew_complete_tapped
 }
 
 _brew_environment() {
