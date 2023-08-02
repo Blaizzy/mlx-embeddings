@@ -29,8 +29,7 @@ module Repology
   end
 
   def self.single_package_query(name, repository:)
-    url = "https://repology.org/tools/project-by?repo=#{repository}&" \
-          "name_type=srcname&target_page=api_v1_project&name=#{name}"
+    url = "https://repology.org/api/v1/project/#{name}"
 
     output, errors, = curl_output("--location", "--silent", url.to_s, use_homebrew_curl: !curl_supports_tls13?)
 

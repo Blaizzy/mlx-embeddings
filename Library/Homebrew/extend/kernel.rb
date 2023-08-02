@@ -21,7 +21,7 @@ module Kernel
       Context.current.verbose?
     end
 
-    title = Tty.truncate(title) if $stdout.tty? && !verbose
+    title = Tty.truncate(title.to_s) if $stdout.tty? && !verbose
     Formatter.headline(title, color: :blue)
   end
 
@@ -50,7 +50,7 @@ module Kernel
       Context.current.verbose?
     end
 
-    title = Tty.truncate(title) if $stdout.tty? && !verbose && truncate == :auto
+    title = Tty.truncate(title.to_s) if $stdout.tty? && !verbose && truncate == :auto
     Formatter.headline(title, color: :green)
   end
 
