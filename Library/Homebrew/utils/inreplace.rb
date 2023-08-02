@@ -43,7 +43,7 @@ module Utils
         audit_result: T::Boolean,
       ).void
     }
-    def self.inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
+    def self.inreplace(paths, before = nil, after = nil, audit_result: true)
       paths = Array(paths)
       after &&= after.to_s
       before = before.to_s if before.is_a?(Pathname)

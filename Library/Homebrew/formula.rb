@@ -2562,7 +2562,7 @@ class Formula
     ).void
   }
   def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
-    Utils::Inreplace.inreplace(paths, before, after, audit_result)
+    Utils::Inreplace.inreplace(paths, before, after, audit_result: audit_result)
   rescue Utils::Inreplace::Error => e
     onoe e.to_s
     raise BuildError.new(self, "inreplace", Array(paths), {})
