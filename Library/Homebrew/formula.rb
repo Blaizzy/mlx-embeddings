@@ -59,7 +59,6 @@ require "extend/api_hashable"
 # end</pre>
 class Formula
   include FileUtils
-  include Utils::Inreplace
   include Utils::Shebang
   include Utils::Shell
   include Context
@@ -2563,7 +2562,7 @@ class Formula
     ).void
   }
   def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
-    super(paths, before, after, audit_result)
+    Utils::Inreplace.inreplace(paths, before, after, audit_result)
   rescue Utils::Inreplace::Error => e
     onoe e.to_s
     raise BuildError.new(self, "inreplace", Array(paths), {})

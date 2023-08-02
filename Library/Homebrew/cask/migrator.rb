@@ -6,8 +6,6 @@ require "utils/inreplace"
 
 module Cask
   class Migrator
-    extend ::Utils::Inreplace
-
     attr_reader :old_cask, :new_cask
 
     sig { params(old_cask: Cask, new_cask: Cask).void }
@@ -74,7 +72,7 @@ module Cask
     def self.replace_caskfile_token(path, old_token, new_token)
       case path.extname
       when ".rb"
-        inreplace path, /\A\s*cask\s+"#{Regexp.escape(old_token)}"/, "cask #{new_token.inspect}"
+        ::Utils::Inreplace.inreplace path, /\A\s*cask\s+"#{Regexp.escape(old_token)}"/, "cask #{new_token.inspect}"
       when ".json"
         json = JSON.parse(path.read)
         json["token"] = new_token
