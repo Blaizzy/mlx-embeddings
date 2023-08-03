@@ -18,6 +18,8 @@ module Utils
       end
     end
 
+    module_function
+
     # Sometimes we have to change a bit before we install. Mostly we
     # prefer a patch, but if you need the {Formula#prefix prefix} of
     # this formula in the patch you have to resort to `inreplace`,
@@ -43,7 +45,7 @@ module Utils
         audit_result: T::Boolean,
       ).void
     }
-    def self.inreplace(paths, before = nil, after = nil, audit_result: true)
+    def inreplace(paths, before = nil, after = nil, audit_result = true) # rubocop:disable Style/OptionalBooleanParameter
       paths = Array(paths)
       after &&= after.to_s
       before = before.to_s if before.is_a?(Pathname)
@@ -71,7 +73,7 @@ module Utils
     end
 
     # @api private
-    def self.inreplace_pairs(path, replacement_pairs, read_only_run: false, silent: false)
+    def inreplace_pairs(path, replacement_pairs, read_only_run: false, silent: false)
       str = File.binread(path)
       contents = StringInreplaceExtension.new(str)
       replacement_pairs.each do |old, new|
