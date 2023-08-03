@@ -110,8 +110,8 @@ class Zeitwerk::Loader
   def autoload_subdir(parent, cname, subdir); end
   def autoloaded_dirs; end
   def autoloads; end
+  def dirs_autoload_monitor; end
   def mutex; end
-  def mutex2; end
   def namespace_dirs; end
   def promote_namespace_from_implicit_to_explicit(dir:, file:, parent:, cname:); end
   def raise_if_conflicting_directory(dir); end
