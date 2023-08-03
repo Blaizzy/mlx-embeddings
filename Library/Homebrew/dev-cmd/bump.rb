@@ -403,13 +403,15 @@ module Homebrew
 
     # Conditionally format output based on type of formula_or_cask
     current_versions = if version_info.multiple_versions
-      "arm: #{current_version.arm} | intel: #{current_version.intel}"
+      "arm:   #{current_version.arm}
+                          intel: #{current_version.intel}"
     else
       current_version.general
     end
 
     new_versions = if version_info.multiple_versions && new_version.arm && new_version.intel
-      "arm: #{new_version.arm} | intel: #{new_version.intel}"
+      "arm:   #{new_version.arm}
+                          intel: #{new_version.intel}"
     else
       new_version.general
     end
