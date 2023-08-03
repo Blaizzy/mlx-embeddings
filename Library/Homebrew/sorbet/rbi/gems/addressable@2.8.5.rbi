@@ -138,6 +138,7 @@ class Addressable::URI
   def domain; end
   def dup; end
   def empty?; end
+  def encode_with(coder); end
   def eql?(uri); end
   def extname; end
   def fragment; end
@@ -149,6 +150,7 @@ class Addressable::URI
   def hostname; end
   def hostname=(new_hostname); end
   def inferred_port; end
+  def init_with(coder); end
   def inspect; end
   def ip_based?; end
   def join(uri); end
@@ -252,7 +254,7 @@ Addressable::URI::CharacterClasses::SUB_DELIMS = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::UNRESERVED = T.let(T.unsafe(nil), String)
 Addressable::URI::EMPTY_STR = T.let(T.unsafe(nil), String)
 class Addressable::URI::InvalidURIError < ::StandardError; end
-Addressable::URI::NONE = T.let(T.unsafe(nil), Object)
+module Addressable::URI::NONE; end
 Addressable::URI::NORMPATH = T.let(T.unsafe(nil), Regexp)
 module Addressable::URI::NormalizeCharacterClasses; end
 Addressable::URI::NormalizeCharacterClasses::FRAGMENT = T.let(T.unsafe(nil), Regexp)
@@ -268,8 +270,8 @@ Addressable::URI::RULE_2B_2C = T.let(T.unsafe(nil), Regexp)
 Addressable::URI::RULE_2D = T.let(T.unsafe(nil), Regexp)
 Addressable::URI::RULE_PREFIXED_PARENT = T.let(T.unsafe(nil), Regexp)
 Addressable::URI::SELF_REF = T.let(T.unsafe(nil), String)
-Addressable::URI::SEQUENCE_ENCODING_TABLE = T.let(T.unsafe(nil), Hash)
-Addressable::URI::SEQUENCE_UPCASED_PERCENT_ENCODING_TABLE = T.let(T.unsafe(nil), Hash)
+Addressable::URI::SEQUENCE_ENCODING_TABLE = T.let(T.unsafe(nil), Array)
+Addressable::URI::SEQUENCE_UPCASED_PERCENT_ENCODING_TABLE = T.let(T.unsafe(nil), Array)
 Addressable::URI::SLASH = T.let(T.unsafe(nil), String)
 Addressable::URI::URIREGEX = T.let(T.unsafe(nil), Regexp)
 module Addressable::VERSION; end
