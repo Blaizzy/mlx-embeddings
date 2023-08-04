@@ -10,7 +10,7 @@ class DevelopmentTools
     undef installed?, default_compiler, curl_handles_most_https_certificates?,
           subversion_handles_most_https_certificates?
 
-    sig { params(tool: String).returns(T.nilable(Pathname)) }
+    sig { params(tool: T.any(String, Symbol)).returns(T.nilable(Pathname)) }
     def locate(tool)
       (@locate ||= {}).fetch(tool) do |key|
         @locate[key] = if (located_tool = generic_locate(tool))
