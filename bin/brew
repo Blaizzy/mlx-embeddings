@@ -105,9 +105,30 @@ fi
 if [[ -n "${XDG_CONFIG_HOME-}" ]]
 then
   HOMEBREW_USER_CONFIG_HOME="${XDG_CONFIG_HOME}/homebrew"
-else
+elif [[ -n "${HOME-}" ]]
+then
   HOMEBREW_USER_CONFIG_HOME="${HOME}/.homebrew"
+elif [[ -n "${USER-}" ]]
+then
+  if [[ "${OSTYPE}" == "darwin"* ]]
+  then
+    HOMEBREW_USER_CONFIG_HOME="/Users/${USER}/.homebrew"
+  else
+    HOMEBREW_USER_CONFIG_HOME="/home/${USER}/.homebrew"
+  fi
+elif [[ -n "${LOGNAME-}" ]]
+then
+  if [[ "${OSTYPE}" == "darwin"* ]]
+  then
+    HOMEBREW_USER_CONFIG_HOME="/Users/${LOGNAME}/.homebrew"
+  else
+    HOMEBREW_USER_CONFIG_HOME="/home/${LOGNAME}/.homebrew"
+  fi
+else
+  echo "Error: \$HOME or \$USER or \$LOGNAME must be set to run brew." >&2
+  exit 1
 fi
+
 if [[ -f "${HOMEBREW_USER_CONFIG_HOME}/brew.env" ]]
 then
   # only load HOMEBREW_*=* lines
