@@ -29,7 +29,7 @@ module Homebrew
       conflicts "-1", "--max-count"
       conflicts "--formula", "--cask"
 
-      named_args [:formula, :cask], max: 1
+      named_args [:formula, :cask], max: 1, without_api: true
     end
   end
 

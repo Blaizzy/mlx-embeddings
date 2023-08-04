@@ -96,7 +96,7 @@ module Homebrew
     cask_tap = Tap.fetch(args.tap || "homebrew/cask")
     raise TapUnavailableError, cask_tap.name unless cask_tap.installed?
 
-    cask_path = Cask::CaskLoader.path("#{cask_tap}/#{token}")
+    cask_path = cask_tap.new_cask_path(token)
     cask_path.dirname.mkpath unless cask_path.dirname.exist?
     raise Cask::CaskAlreadyCreatedError, token if cask_path.exist?
 

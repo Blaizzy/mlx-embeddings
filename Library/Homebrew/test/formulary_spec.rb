@@ -6,7 +6,7 @@ require "utils/bottles"
 
 describe Formulary do
   let(:formula_name) { "testball_bottle" }
-  let(:formula_path) { CoreTap.new.formula_dir/"#{formula_name}.rb" }
+  let(:formula_path) { CoreTap.new.new_formula_path(formula_name) }
   let(:formula_content) do
     <<~RUBY
       class #{described_class.class_s(formula_name)} < Formula
@@ -84,7 +84,11 @@ describe Formulary do
       before { CoreTap.instance.clear_cache }
 
       let(:formula_name) { "testball_sharded" }
-      let(:formula_path) { CoreTap.new.formula_dir/formula_name[0]/"#{formula_name}.rb" }
+      let(:formula_path) do
+        core_tap = CoreTap.new
+        (core_tap.formula_dir/formula_name[0]).mkpath
+        core_tap.new_formula_path(formula_name)
+      end
 
       it "returns a Formula" do
         expect(described_class.factory(formula_name)).to be_a(Formula)

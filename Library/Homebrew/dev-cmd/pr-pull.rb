@@ -110,7 +110,7 @@ module Homebrew
   end
 
   def self.get_package(tap, subject_name, subject_path, content)
-    if subject_path.dirname == tap.cask_dir
+    if subject_path.to_s.start_with?("#{tap.cask_dir}/")
       cask = begin
         Cask::CaskLoader.load(content.dup)
       rescue Cask::CaskUnavailableError
@@ -130,7 +130,7 @@ module Homebrew
     subject_path = Pathname(subject_path)
     tap          = Tap.from_path(subject_path)
     subject_name = subject_path.basename.to_s.chomp(".rb")
-    is_cask      = subject_path.dirname == tap.cask_dir
+    is_cask      = subject_path.to_s.start_with?("#{tap.cask_dir}/")
     name         = is_cask ? "cask" : "formula"
 
     new_package = get_package(tap, subject_name, subject_path, new_contents)
@@ -241,8 +241,8 @@ module Homebrew
       files.each do |file|
         files_to_commits[file] ||= []
         files_to_commits[file] << commit
-        tap_file = tap.path/file
-        if (tap_file.dirname == tap.formula_dir || tap_file.dirname == tap.cask_dir) &&
+        tap_file = (tap.path/file).to_s
+        if (tap_file.start_with?("#{tap.formula_dir}/") || tap_file.start_with?("#{tap.cask_dir}/")) &&
            File.extname(file) == ".rb"
           next
         end

@@ -45,7 +45,7 @@ module Homebrew
     def update_path
       return if @name.nil? || @tap.nil?
 
-      @path = Formulary.path "#{@tap}/#{@name}"
+      @path = @tap.new_formula_path(@name)
     end
 
     def fetch?

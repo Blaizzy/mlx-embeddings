@@ -500,10 +500,20 @@ class Tap
     @potential_formula_dirs ||= [path/"Formula", path/"HomebrewFormula", path].freeze
   end
 
+  sig { params(name: String).returns(Pathname) }
+  def new_formula_path(name)
+    formula_dir/"#{name.downcase}.rb"
+  end
+
   # Path to the directory of all {Cask} files for this {Tap}.
   sig { returns(Pathname) }
   def cask_dir
     @cask_dir ||= path/"Casks"
+  end
+
+  sig { params(token: String).returns(Pathname) }
+  def new_cask_path(token)
+    cask_dir/"#{token.downcase}.rb"
   end
 
   def contents
@@ -555,7 +565,7 @@ class Tap
     formula_files.each_with_object({}) do |file, hash|
       # If there's more than one file with the same basename: intentionally
       # ignore the later ones here.
-      hash[file.basename.to_s] ||= file
+      hash[file.basename(".rb").to_s] ||= file
     end
   end
 
@@ -584,7 +594,7 @@ class Tap
     cask_files.each_with_object({}) do |file, hash|
       # If there's more than one file with the same basename: intentionally
       # ignore the later ones here.
-      hash[file.basename.to_s] ||= file
+      hash[file.basename(".rb").to_s] ||= file
     end
   end
 
@@ -984,6 +994,19 @@ class CoreTap < AbstractCoreTap
     end
   end
 
+  sig { params(name: String).returns(Pathname) }
+  def new_formula_path(name)
+    formula_subdir = if name.start_with?("lib")
+      "lib"
+    else
+      name[0].to_s
+    end
+
+    return super unless (formula_dir/formula_subdir).directory?
+
+    formula_dir/formula_subdir/"#{name.downcase}.rb"
+  end
+
   # @private
   sig { returns(Pathname) }
   def alias_dir
@@ -1106,6 +1129,15 @@ class CoreCaskTap < AbstractCoreTap
   sig { override.returns(T::Boolean) }
   def core_cask_tap?
     true
+  end
+
+  sig { params(token: String).returns(Pathname) }
+  def new_cask_path(token)
+    cask_subdir = token[0].to_s
+
+    return super unless (cask_dir/cask_subdir).directory?
+
+    cask_dir/cask_subdir/"#{token.downcase}.rb"
   end
 
   sig { override.returns(T::Array[Pathname]) }

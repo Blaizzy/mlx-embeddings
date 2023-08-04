@@ -429,7 +429,7 @@ describe Formula do
 
     example "alias paths with tab with non alias source path" do
       alias_path = (CoreTap.instance.alias_dir/"another_name")
-      source_path = (CoreTap.instance.formula_dir/"another_other_name")
+      source_path = CoreTap.instance.new_formula_path("another_other_name")
 
       f = formula alias_path: alias_path do
         url "foo-1.0"
@@ -940,7 +940,7 @@ describe Formula do
   end
 
   describe "#to_hash_with_variations", :needs_macos do
-    let(:formula_path) { CoreTap.new.formula_dir/"foo-variations.rb" }
+    let(:formula_path) { CoreTap.new.new_formula_path("foo-variations") }
     let(:formula_content) do
       <<~RUBY
         class FooVariations < Formula

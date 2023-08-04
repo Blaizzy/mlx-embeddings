@@ -1003,10 +1003,15 @@ module Formulary
     end.select(&:file?)
   end
 
+  sig { params(name: String, tap: Tap).returns(Pathname) }
   def self.find_formula_in_tap(name, tap)
-    filename = name.dup
-    filename << ".rb" unless filename.end_with?(".rb")
+    filename = if name.end_with?(".rb")
+      name
+    else
+      "#{name}.rb"
+    end
 
-    Tap.formula_files_by_name(tap).fetch(filename, tap.formula_dir/filename)
+    Tap.formula_files_by_name(tap)
+       .fetch(name, tap.formula_dir/filename)
   end
 end

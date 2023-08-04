@@ -227,40 +227,42 @@ module Homebrew
       sig { params(only: T.nilable(Symbol), recurse_tap: T::Boolean).returns(T::Array[Pathname]) }
       def to_paths(only: parent&.only_formula_or_cask, recurse_tap: false)
         @to_paths ||= {}
-        @to_paths[only] ||= downcased_unique_named.flat_map do |name|
-          path = Pathname(name)
-          if File.exist?(name)
-            path
-          elsif name.count("/") == 1 && !name.start_with?("./", "/")
-            tap = Tap.fetch(name)
+        @to_paths[only] ||= Homebrew.with_no_api_env_if_needed(@without_api) do
+          downcased_unique_named.flat_map do |name|
+            path = Pathname(name)
+            if File.exist?(name)
+              path
+            elsif name.count("/") == 1 && !name.start_with?("./", "/")
+              tap = Tap.fetch(name)
 
-            if recurse_tap
-              next tap.formula_files if only == :formula
-              next tap.cask_files if only == :cask
+              if recurse_tap
+                next tap.formula_files if only == :formula
+                next tap.cask_files if only == :cask
+              end
+
+              tap.path
+            else
+              next Formulary.path(name) if only == :formula
+              next Cask::CaskLoader.path(name) if only == :cask
+
+              formula_path = Formulary.path(name)
+              cask_path = Cask::CaskLoader.path(name)
+
+              paths = []
+
+              if formula_path.exist? ||
+                 (!CoreTap.instance.installed? && Homebrew::API::Formula.all_formulae.key?(path.basename))
+                paths << formula_path
+              end
+              if cask_path.exist? ||
+                 (!CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(path.basename))
+                paths << cask_path
+              end
+
+              paths.empty? ? path : paths
             end
-
-            tap.path
-          else
-            next Formulary.path(name) if only == :formula
-            next Cask::CaskLoader.path(name) if only == :cask
-
-            formula_path = Formulary.path(name)
-            cask_path = Cask::CaskLoader.path(name)
-
-            paths = []
-
-            if formula_path.exist? ||
-               (!CoreTap.instance.installed? && Homebrew::API::Formula.all_formulae.key?(path.basename))
-              paths << formula_path
-            end
-            if cask_path.exist? ||
-               (!CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(path.basename))
-              paths << cask_path
-            end
-
-            paths.empty? ? path : paths
-          end
-        end.uniq.freeze
+          end.uniq.freeze
+        end
       end
 
       sig { returns(T::Array[Keg]) }

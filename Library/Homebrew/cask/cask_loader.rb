@@ -439,7 +439,7 @@ module Cask
     end
 
     def self.default_path(token)
-      CoreCaskTap.instance.cask_dir/"#{token.to_s.downcase}.rb"
+      find_cask_in_tap(token.to_s.downcase, CoreCaskTap.instance)
     end
 
     def self.tap_paths(token, warn: true)
@@ -455,7 +455,8 @@ module Cask
     def self.find_cask_in_tap(token, tap)
       filename = "#{token}.rb"
 
-      Tap.cask_files_by_name(tap).fetch(filename, tap.cask_dir/filename)
+      Tap.cask_files_by_name(tap)
+         .fetch(token, tap.cask_dir/filename)
     end
   end
 end

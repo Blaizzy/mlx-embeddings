@@ -381,12 +381,15 @@ module Cask
     sig { void }
     def audit_token_conflicts
       return unless token_conflicts?
-      return unless core_formula_names.include?(cask.token)
 
-      add_error(
-        "possible duplicate, cask token conflicts with Homebrew core formula: #{Formatter.url(core_formula_url)}",
-        strict_only: true,
-      )
+      Homebrew.with_no_api_env do
+        return unless core_formula_names.include?(cask.token)
+
+        add_error(
+          "possible duplicate, cask token conflicts with Homebrew core formula: #{Formatter.url(core_formula_url)}",
+          strict_only: true,
+        )
+      end
     end
 
     sig { void }
@@ -846,7 +849,10 @@ module Cask
 
     sig { returns(String) }
     def core_formula_url
-      "#{core_tap.default_remote}/blob/HEAD/Formula/#{cask.token}.rb"
+      formula_path = Formulary.core_path(cask.token)
+                              .to_s
+                              .delete_prefix(core_tap.path.to_s)
+      "#{core_tap.default_remote}/blob/HEAD/Formula/#{formula_path}"
     end
   end
 end
