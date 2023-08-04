@@ -333,7 +333,7 @@ describe Homebrew::Cleanup do
         FileUtils.touch testball
         FileUtils.touch testball_resource
         (HOMEBREW_CELLAR/"testball"/"0.0.1").mkpath
-        FileUtils.touch(CoreTap.instance.formula_dir/"testball.rb")
+        FileUtils.touch(CoreTap.instance.new_formula_path("testball"))
       end
 
       it "cleans up file if outdated" do

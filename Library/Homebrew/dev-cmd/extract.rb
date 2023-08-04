@@ -114,7 +114,7 @@ module Homebrew
 
     repo = source_tap.path
     pattern = if source_tap.core_tap?
-      [repo/"Formula/#{name}.rb"]
+      [source_tap.new_formula_path(name), repo/"Formula/#{name}.rb"].uniq
     else
       # A formula can technically live in the root directory of a tap or in any of its subdirectories
       [repo/"#{name}.rb", repo/"**/#{name}.rb"]

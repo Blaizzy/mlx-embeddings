@@ -31,7 +31,7 @@ module Readall
           failed = true
         end
 
-        if (formula_dir/"#{f.basename}.rb").exist?
+        if formula_dir.glob("**/#{f.basename}.rb").any?(&:exist?)
           onoe "Formula duplicating alias: #{f}"
           failed = true
         end
