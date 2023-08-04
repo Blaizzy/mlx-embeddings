@@ -10,4 +10,9 @@ module Homebrew
       [].freeze
     end
   end
+
+  sig { params(gnu_tar_formula: Formula).returns(String) }
+  def self.gnu_tar(gnu_tar_formula)
+    "#{gnu_tar_formula.opt_bin}/gtar"
+  end
 end
