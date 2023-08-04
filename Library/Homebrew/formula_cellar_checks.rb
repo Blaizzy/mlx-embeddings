@@ -18,6 +18,8 @@ module FormulaCellarChecks
   def problem_if_output(output); end
 
   def check_env_path(bin)
+    return if Homebrew::EnvConfig.no_env_hints?
+
     # warn the user if stuff was installed outside of their PATH
     return unless bin.directory?
     return if bin.children.empty?

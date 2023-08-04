@@ -256,10 +256,12 @@ module Homebrew
       verbose: false
     )
       if Homebrew::EnvConfig.no_installed_dependents_check?
-        opoo <<~EOS
-          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK is set: not checking for outdated
-          dependents or dependents with broken linkage!
-        EOS
+        unless Homebrew::EnvConfig.no_env_hints?
+          opoo <<~EOS
+            HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK is set: not checking for outdated
+            dependents or dependents with broken linkage!
+          EOS
+        end
         return
       end
 
