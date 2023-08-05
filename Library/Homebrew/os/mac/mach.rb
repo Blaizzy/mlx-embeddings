@@ -97,17 +97,18 @@ module MachOShim
 
   def rpaths(resolve_variable_references: true)
     names = macho.rpaths
-    names.map!(&method(:resolve_variable_name)) if resolve_variable_references
+    # Don't recursively resolve rpaths to avoid infinite loops.
+    names.map! { |name| resolve_variable_name(name, resolve_rpaths: false) } if resolve_variable_references
 
     names
   end
 
-  def resolve_variable_name(name)
+  def resolve_variable_name(name, resolve_rpaths: true)
     if name.start_with? "@loader_path"
       Pathname(name.sub("@loader_path", dirname)).cleanpath.to_s
     elsif name.start_with?("@executable_path") && binary_executable?
       Pathname(name.sub("@executable_path", dirname)).cleanpath.to_s
-    elsif name.start_with?("@rpath") && (target = resolve_rpath(name)).present?
+    elsif resolve_rpaths && name.start_with?("@rpath") && (target = resolve_rpath(name)).present?
       target
     else
       name
