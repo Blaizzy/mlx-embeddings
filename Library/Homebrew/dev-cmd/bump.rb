@@ -79,10 +79,12 @@ module Homebrew
       end
     end
 
-    if formulae_and_casks.present?
-      handle_formula_and_casks(formulae_and_casks, args)
-    else
-      handle_api_response(args)
+    Homebrew.with_no_api_env do
+      if formulae_and_casks.present?
+        handle_formula_and_casks(formulae_and_casks, args)
+      else
+        handle_api_response(args)
+      end
     end
   end
 
