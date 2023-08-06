@@ -29,7 +29,7 @@ module Homebrew
       @apps ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::App) }
     end
 
-    sig { returns(T::Array[Cask::Artifact::Qlplugin]) }
+    sig { returns(T::Array[Cask::Artifact::KeyboardLayout]) }
     def keyboard_layouts
       @keyboard_layouts ||= @cask.artifacts.select { |a| a.is_a?(Cask::Artifact::KeyboardLayout) }
     end
