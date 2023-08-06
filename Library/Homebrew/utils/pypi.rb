@@ -228,7 +228,13 @@ module PyPI
     main_package = if package_name.present?
       Package.new(package_name)
     else
-      Package.new(T.must(formula.stable).url, is_url: true)
+      stable = T.must(formula.stable)
+      url = if stable.specs[:tag].present?
+        url = "git+#{stable.url}@#{stable.specs[:tag]}"
+      else
+        stable.url
+      end
+      Package.new(url, is_url: true)
     end
 
     if version.present?
