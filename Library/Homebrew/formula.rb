@@ -1707,7 +1707,7 @@ class Formula
   }
   def std_pip_args(prefix: self.prefix, build_isolation: false)
     args = ["--verbose", "--no-deps", "--no-binary=:all:", "--ignore-installed",
-            "--use-feature=no-binary-enable-wheel-cache"]
+            "--use-feature=no-binary-enable-wheel-cache", "--no-compile"]
     args << "--prefix=#{prefix}" if prefix
     args << "--no-build-isolation" unless build_isolation
     args
