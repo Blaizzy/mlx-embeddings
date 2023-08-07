@@ -80,7 +80,10 @@ class Keg
   def loader_name_for(file, target)
     # Use @loader_path-relative install names for other Homebrew-installed binaries.
     if ENV["HOMEBREW_RELOCATABLE_INSTALL_NAMES"] && target.start_with?(HOMEBREW_PREFIX)
-      "@loader_path/#{Pathname(target).relative_path_from(file.dirname)}"
+      dylib_suffix = find_dylib_suffix_from(target)
+      target_dir = Pathname.new(target.delete_suffix(dylib_suffix)).cleanpath
+
+      "@loader_path/#{target_dir.relative_path_from(file.dirname)/dylib_suffix}"
     else
       target
     end
