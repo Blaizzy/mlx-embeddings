@@ -612,24 +612,20 @@ For `url`/`regex` guidelines and additional `livecheck` block examples, refer to
 
 ### Unstable versions (`head`)
 
-Formulae can specify an alternate download for the upstream project’s development cutting-edge source (e.g. `master`/`main`/`trunk`) using [`head`](https://rubydoc.brew.sh/Formula#head-class_method), which can be activated by passing `--HEAD` when installing. Homebrew auto-detects most Git, SVN and Mercurial URLs. Specifying it is easy:
+Formulae can specify an alternate download for the upstream project’s development cutting-edge source (e.g. `master`/`main`/`trunk`) using [`head`](https://rubydoc.brew.sh/Formula#head-class_method), which can be activated by passing `--HEAD` when installing. Specifying it is done in the same manner as [`url`](https://rubydoc.brew.sh/Formula#url-class_method):
 
 ```ruby
 class Foo < Formula
-  head "https://github.com/mxcl/lastfm-cocoa.git"
+  head "https://github.com/some/package.git", branch: "main" # the default is "master"
 end
 ```
 
 You can also bundle the URL and any `head`-specific dependencies and resources in a `head do` block.
 
-To use a specific commit, tag, or branch from a repository, specify [`head`](https://rubydoc.brew.sh/Formula#head-class_method) with the `:tag` and `:revision`, `:revision`, or `:branch` option, like so:
-
 ```ruby
 class Foo < Formula
   head do
-    url "https://github.com/some/package.git", branch: "main" # the default is "master"
-                                         # or tag: "1_0_release", revision: "090930930295adslfknsdfsdaffnasd13"
-                                         # or revision: "090930930295adslfknsdfsdaffnasd13"
+    url "https://svn.code.sf.net/p/project/code/trunk"
     depends_on "pkg-config" => :build
   end
 end
@@ -637,14 +633,25 @@ end
 
 You can test whether the [`head`](https://rubydoc.brew.sh/Formula#head-class_method) is being built with `build.head?` in the `install` method.
 
-### Specifying the download strategy explicitly
+### URL download strategies
 
-To use one of Homebrew’s built-in download strategies, specify the `using:` flag on a [`url`](https://rubydoc.brew.sh/Formula#url-class_method) or [`head`](https://rubydoc.brew.sh/Formula#head-class_method). For example:
+When parsing a download URL, Homebrew auto-detects the resource type it points to, whether archive (e.g. tarball, zip) or version control repository (e.g. Git, SVN, Mercurial) and chooses an appropriate download strategy. Some strategies can be passed additional options to alter what's downloaded. For example, to use a specific commit, tag, or branch from a repository, specify [`url`](https://rubydoc.brew.sh/Formula#url-class_method) or [`head`](https://rubydoc.brew.sh/Formula#head-class_method) with the `:tag` and `:revision`, `:revision`, or `:branch` options, like so:
+
+```ruby
+class Foo < Formula
+  homepage "https://github.com/some/package"
+  url "https://github.com/some/package.git",
+      tag:      "v1.6.2",
+      revision: "344cd2ee3463abab4c16ac0f9529a846314932a2"
+end
+```
+
+If not inferable, specify which of Homebrew’s built-in download strategies to use with the `using:` option. For example:
 
 ```ruby
 class Nginx < Formula
   homepage "https://nginx.org/"
-  url "https://nginx.org/download/nginx-1.23.2.tar.gz"
+  url "https://nginx.org/download/nginx-1.23.2.tar.gz", using: :homebrew_curl
   sha256 "a80cc272d3d72aaee70aa8b517b4862a635c0256790434dbfc4d618a999b0b46"
   head "https://hg.nginx.org/nginx/", using: :hg
 ```
@@ -664,7 +671,7 @@ Homebrew offers anonymous download strategies.
 | `:post`          | `CurlPostDownloadStrategy`
 | `:svn`           | `SubversionDownloadStrategy`
 
-If you need more control over the way files are downloaded and staged, you can create a custom download strategy and specify it using the [`url`](https://rubydoc.brew.sh/Formula#url-class_method) method's `:using` option:
+If you need more control over the way files are downloaded and staged, you can create a custom download strategy and specify it with the `:using` option:
 
 ```ruby
 class MyDownloadStrategy < SomeHomebrewDownloadStrategy
