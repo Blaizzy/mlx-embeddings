@@ -441,6 +441,7 @@ _brew_bump() {
       --formula
       --full-name
       --help
+      --installed
       --limit
       --no-pull-requests
       --open-pr

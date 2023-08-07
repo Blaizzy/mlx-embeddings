@@ -495,6 +495,7 @@ _brew_bump() {
     '--debug[Display any debugging information]' \
     '--full-name[Print formulae/casks with fully-qualified names]' \
     '--help[Show this message]' \
+    '--installed[Check formulae and casks that are currently installed]' \
     '--limit[Limit number of package results returned]' \
     '(--open-pr)--no-pull-requests[Do not retrieve pull requests from GitHub]' \
     '(--no-pull-requests)--open-pr[Open a pull request for the new version if none have been opened yet]' \

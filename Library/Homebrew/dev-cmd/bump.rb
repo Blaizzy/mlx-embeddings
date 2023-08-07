@@ -35,6 +35,8 @@ module Homebrew
              description: "Check only formulae."
       switch "--cask", "--casks",
              description: "Check only casks."
+      switch "--installed",
+             description: "Check formulae and casks that are currently installed."
       switch "--open-pr",
              description: "Open a pull request for the new version if none have been opened yet."
       flag   "--limit=",
@@ -60,26 +62,33 @@ module Homebrew
       raise UsageError, "`--limit` must be used with either `--formula` or `--cask`."
     end
 
-    formulae_and_casks = if args.formula?
-      args.named.to_formulae
-    elsif args.cask?
-      args.named.to_casks
-    else
-      args.named.to_formulae_and_casks
-    end
-    formulae_and_casks = formulae_and_casks&.sort_by do |formula_or_cask|
-      formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
-    end
-
-    unless Utils::Curl.curl_supports_tls13?
-      begin
-        ensure_formula_installed!("curl", reason: "Repology queries") unless HOMEBREW_BREWED_CURL_PATH.exist?
-      rescue FormulaUnavailableError
-        opoo "A newer `curl` is required for Repology queries."
-      end
-    end
-
     Homebrew.with_no_api_env do
+      formulae_and_casks = if args.installed?
+        formulae = args.cask? ? [] : Formula.installed
+        casks = args.formula? ? [] : Cask::Caskroom.casks
+        formulae + casks
+      elsif args.named.present?
+        if args.formula?
+          args.named.to_formulae
+        elsif args.cask?
+          args.named.to_casks
+        else
+          args.named.to_formulae_and_casks
+        end
+      end
+
+      formulae_and_casks = formulae_and_casks&.sort_by do |formula_or_cask|
+        formula_or_cask.respond_to?(:token) ? formula_or_cask.token : formula_or_cask.name
+      end
+
+      unless Utils::Curl.curl_supports_tls13?
+        begin
+          ensure_formula_installed!("curl", reason: "Repology queries") unless HOMEBREW_BREWED_CURL_PATH.exist?
+        rescue FormulaUnavailableError
+          opoo "A newer `curl` is required for Repology queries."
+        end
+      end
+
       if formulae_and_casks.present?
         handle_formula_and_casks(formulae_and_casks, args)
       else
