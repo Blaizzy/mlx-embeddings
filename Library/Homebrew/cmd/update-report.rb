@@ -749,8 +749,10 @@ class ReporterHub
       report_all = false
     end
 
-    dump_new_formula_report
-    dump_new_cask_report
+    unless Homebrew::EnvConfig.no_update_report_new?
+      dump_new_formula_report
+      dump_new_cask_report
+    end
     dump_renamed_formula_report if report_all
     dump_renamed_cask_report if report_all
     dump_deleted_formula_report(report_all)

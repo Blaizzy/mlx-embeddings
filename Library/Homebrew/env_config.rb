@@ -327,6 +327,10 @@ module Homebrew
                      "from running `brew install` <formula> or `brew upgrade` <formula>.",
         boolean:     true,
       },
+      HOMEBREW_NO_UPDATE_REPORT_NEW:             {
+        description: "If set, `brew update` will not show the list of newly added formulae/casks.",
+        boolean:     true,
+      },
       HOMEBREW_PIP_INDEX_URL:                    {
         description:  "If set, `brew install <formula>` will use this URL to download PyPI package resources.",
         default_text: "`https://pypi.org/simple`.",

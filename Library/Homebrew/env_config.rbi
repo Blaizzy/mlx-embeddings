@@ -190,6 +190,9 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.no_installed_dependents_check?; end
 
+  sig { returns(T::Boolean) }
+  def self.no_update_report_new?; end
+
   sig { returns(T.nilable(String)) }
   def self.no_proxy; end
 
