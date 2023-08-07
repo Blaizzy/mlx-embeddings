@@ -2310,6 +2310,9 @@ prefix-specific files take precedence over system-wide files (unless
 - `HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
   <br>If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running `brew install` *`formula`* or `brew upgrade` *`formula`*.
 
+- `HOMEBREW_NO_UPDATE_REPORT_NEW`
+  <br>If set, `brew update` will not show the list of newly added formulae/casks.
+
 - `HOMEBREW_PIP_INDEX_URL`
   <br>If set, `brew install *`formula`*` will use this URL to download PyPI package resources.
 
