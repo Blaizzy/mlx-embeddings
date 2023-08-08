@@ -458,7 +458,7 @@ Make sure you modify `s`! This block ignores the returned value.
 
 [`inreplace`](https://rubydoc.brew.sh/Utils/Inreplace) should be used instead of patches when patching something that will never be accepted upstream, e.g. making the software’s build system respect Homebrew’s installation hierarchy. If it's something that affects both Homebrew and MacPorts (i.e. macOS specific) it should be turned into an upstream submitted patch instead.
 
-If you need to modify variables in a `Makefile`, rather than using [`inreplace`](https://rubydoc.brew.sh/Utils/Inreplace), pass them as arguments to `make`:
+If you need to modify variables in a `Makefile`, rather than using [`change_make_var!`](https://rubydoc.brew.sh/StringInreplaceExtension.html#change_make_var!-instance_method) within an [`inreplace`](https://rubydoc.brew.sh/Utils/Inreplace), try passing them as arguments to `make`:
 
 ```ruby
 system "make", "target", "VAR2=value1", "VAR2=value2", "VAR3=values can have spaces"
@@ -1038,9 +1038,26 @@ Firstly, the overall [environment in which Homebrew runs is filtered](https://gi
 
 The second level of filtering [removes sensitive environment variables](https://github.com/Homebrew/brew/pull/2524) (such as credentials like keys, passwords or tokens) to prevent malicious subprocesses from obtaining them. This has the effect of preventing any such variables from reaching a formula's Ruby code since they are filtered before it is called. The specific implementation is found in the [`ENV.clear_sensitive_environment!` method](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/extend/ENV.rb).
 
-You can set environment variables in a formula's `install` method using `ENV["VARIABLE_NAME"] = "VALUE"`. An example can be seen in the [`csound`](https://github.com/Homebrew/homebrew-core/blob/60e775b0ede2445f9a0d277fa86bb7e594cd6778/Formula/csound.rb#L94) formula. Environment variables can also be set temporarily using the `with_env` method; any variables defined in the call to that method will be restored to their original values at the end of the block. An example can be seen in the [`gh`](https://github.com/Homebrew/homebrew-core/blob/5cd44bc2d74eba8cbada8bb85f505c0ac847057b/Formula/gh.rb#L28) formula.
-
 In summary, any environment variables intended for use by a formula need to conform to these filtering rules in order to be available.
+
+#### Setting environment variables during installation
+
+You can set environment variables in a formula's `install` or `test` blocks using `ENV["VARIABLE_NAME"] = "VALUE"`. An example can be seen in the [`csound`](https://github.com/Homebrew/homebrew-core/blob/60e775b0ede2445f9a0d277fa86bb7e594cd6778/Formula/csound.rb#L94) formula.
+
+Environment variables can also be set temporarily using the `with_env` method; any variables defined in the call to that method will be restored to their original values at the end of the block. An example can be seen in the [`gh`](https://github.com/Homebrew/homebrew-core/blob/5cd44bc2d74eba8cbada8bb85f505c0ac847057b/Formula/gh.rb#L28) formula.
+
+There are also `ENV` helper methods available for many common environment variable setting and retrieval operations, such as:
+
+* `ENV.cxx11` - compile with C++11 features enabled
+* `ENV.deparallelize` - compile with only one job at a time; pass a block to have it only influence specific install steps
+* `ENV.O0`, `ENV.O1`, `ENV.O3` - set a specific compiler optimization level (*default:* macOS: `-Os`, Linux: `-O2`)
+* `ENV.runtime_cpu_detection` - account for formulae that detect CPU features at runtime
+* `ENV.append_to_cflags` - add a value to `CFLAGS` `CXXFLAGS` `OBJCFLAGS` `OBJCXXFLAGS` all at once
+* `ENV.prepend_create_path` - create and prepend a path to an existing list of paths
+* `ENV.remove` - remove a string from an environment variable value
+* `ENV.delete` - unset an environment variable
+
+The full list can be found in the [SharedEnvExtension](https://rubydoc.brew.sh/SharedEnvExtension.html) and [Superenv](https://rubydoc.brew.sh/Superenv.html) module documentation.
 
 ### Deprecating and disabling a formula
 
