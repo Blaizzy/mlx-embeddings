@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "cli/parser"
@@ -22,6 +22,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def commands
     args = commands_args.parse
 
