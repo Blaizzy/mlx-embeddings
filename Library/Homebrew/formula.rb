@@ -2559,11 +2559,11 @@ class Formula
       before:       T.nilable(T.any(Pathname, Regexp, String)),
       after:        T.nilable(T.any(Pathname, String, Symbol)),
       audit_result: T::Boolean,
-      blk:          T.nilable(T.proc.params(s: StringInreplaceExtension).void),
+      block:          T.nilable(T.proc.params(s: StringInreplaceExtension).void),
     ).void
   }
-  def inreplace(paths, before = nil, after = nil, audit_result = true, &blk) # rubocop:disable Style/OptionalBooleanParameter
-    Utils::Inreplace.inreplace(paths, before, after, audit_result: audit_result, &blk)
+  def inreplace(paths, before = nil, after = nil, audit_result = true, &block) # rubocop:disable Style/OptionalBooleanParameter
+    Utils::Inreplace.inreplace(paths, before, after, audit_result: audit_result, &block)
   rescue Utils::Inreplace::Error => e
     onoe e.to_s
     raise BuildError.new(self, "inreplace", Array(paths), {})
