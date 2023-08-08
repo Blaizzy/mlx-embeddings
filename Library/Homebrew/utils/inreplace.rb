@@ -41,7 +41,7 @@ module Utils
         before:       T.nilable(T.any(Pathname, Regexp, String)),
         after:        T.nilable(T.any(Pathname, String, Symbol)),
         audit_result: T::Boolean,
-        block:          T.nilable(T.proc.params(s: StringInreplaceExtension).void),
+        block:        T.nilable(T.proc.params(s: StringInreplaceExtension).void),
       ).void
     }
     def self.inreplace(paths, before = nil, after = nil, audit_result: true, &block)
