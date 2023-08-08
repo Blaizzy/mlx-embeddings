@@ -464,6 +464,26 @@ describe Formula do
 
       expect { f.inreplace([]) }.to raise_error(BuildError)
     end
+
+    specify "replaces text in file" do
+      file = Tempfile.new("test")
+      File.binwrite(file, <<~EOS)
+        ab
+        bc
+        cd
+      EOS
+      f = formula do
+        url "https://brew.sh/test-1.0.tbz"
+      end
+      f.inreplace(file.path) do |s|
+        s.gsub!("bc", "yz")
+      end
+      expect(File.binread(file)).to eq <<~EOS
+        ab
+        yz
+        cd
+      EOS
+    end
   end
 
   describe "::installed_with_alias_path" do
