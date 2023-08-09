@@ -723,7 +723,7 @@ module Cask
 
       expected_path = cask.tap.new_cask_path(cask.token)
 
-      return if cask.ruby_source_path.to_s.end_with?(expected_path)
+      return if cask.sourcefile_path.to_s.end_with?(expected_path)
 
       add_error "Cask should be located in '#{expected_path}'"
     end
