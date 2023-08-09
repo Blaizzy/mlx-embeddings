@@ -1134,9 +1134,6 @@ class CoreCaskTap < AbstractCoreTap
   sig { params(token: String).returns(Pathname) }
   def new_cask_path(token)
     cask_subdir = token[0].to_s
-
-    return super unless (cask_dir/cask_subdir).directory?
-
     cask_dir/cask_subdir/"#{token.downcase}.rb"
   end
 
