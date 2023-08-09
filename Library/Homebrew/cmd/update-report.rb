@@ -753,35 +753,39 @@ class ReporterHub
       dump_new_formula_report
       dump_new_cask_report
     end
-    dump_renamed_formula_report if report_all
-    dump_renamed_cask_report if report_all
+
+    if report_all
+      dump_renamed_formula_report
+      dump_renamed_cask_report
+    end
+
     dump_deleted_formula_report(report_all)
     dump_deleted_cask_report(report_all)
 
     outdated_formulae = []
     outdated_casks = []
 
-    if !auto_update && report_all
-      dump_modified_formula_report
-      dump_modified_cask_report
-    elsif !auto_update
-      outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
-      output_dump_formula_or_cask_report "Outdated Formulae", outdated_formulae
+    if report_all
+      if auto_update
+        if (changed_formulae = select_formula_or_cask(:M).count) && changed_formulae.positive?
+          ohai "Modified Formulae",
+               "Modified #{Utils.pluralize("formula", changed_formulae, plural: "e", include_count: true)}."
+        end
 
-      outdated_casks = Cask::Caskroom.casks.select(&:outdated?).map(&:token)
-      output_dump_formula_or_cask_report "Outdated Casks", outdated_casks
-    elsif report_all
-      if (changed_formulae = select_formula_or_cask(:M).count) && changed_formulae.positive?
-        ohai "Modified Formulae",
-             "Modified #{Utils.pluralize("formula", changed_formulae, plural: "e", include_count: true)}."
-      end
-
-      if (changed_casks = select_formula_or_cask(:MC).count) && changed_casks.positive?
-        ohai "Modified Casks", "Modified #{Utils.pluralize("cask", changed_casks, include_count: true)}."
+        if (changed_casks = select_formula_or_cask(:MC).count) && changed_casks.positive?
+          ohai "Modified Casks", "Modified #{Utils.pluralize("cask", changed_casks, include_count: true)}."
+        end
+      else
+        dump_modified_formula_report
+        dump_modified_cask_report
       end
     else
       outdated_formulae = Formula.installed.select(&:outdated?).map(&:name)
       outdated_casks = Cask::Caskroom.casks.select(&:outdated?).map(&:token)
+      unless auto_update
+        output_dump_formula_or_cask_report "Outdated Formulae", outdated_formulae
+        output_dump_formula_or_cask_report "Outdated Casks", outdated_casks
+      end
     end
 
     return if outdated_formulae.blank? && outdated_casks.blank?
@@ -866,7 +870,12 @@ class ReporterHub
       end
     end.compact
 
-    output_dump_formula_or_cask_report "Deleted Formulae", formulae
+    title = if report_all
+      "Deleted Formulae"
+    else
+      "Deleted Installed Formulae"
+    end
+    output_dump_formula_or_cask_report title, formulae
   end
 
   def dump_deleted_cask_report(report_all)
@@ -879,7 +888,12 @@ class ReporterHub
       end
     end.compact
 
-    output_dump_formula_or_cask_report "Deleted Casks", casks
+    title = if report_all
+      "Deleted Casks"
+    else
+      "Deleted Installed Casks"
+    end
+    output_dump_formula_or_cask_report title, casks
   end
 
   def dump_modified_formula_report
