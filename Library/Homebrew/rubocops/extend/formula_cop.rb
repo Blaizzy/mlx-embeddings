@@ -164,14 +164,37 @@ module RuboCop
         match_obj[1]
       end
 
+      # Returns the style exceptions directory from the file path.
+      def style_exceptions_dir
+        file_directory = File.dirname(@file_path)
+
+        # if we're in a sharded subdirectory, look below that.
+        directory_name = File.basename(file_directory)
+        formula_directory = if directory_name.length == 1 || directory_name == "lib"
+          File.dirname(file_directory)
+        else
+          file_directory
+        end
+
+        # if we're in a Formula or HomebrewFormula subdirectory, look below that.
+        formula_directory_names = ["Formula", "HomebrewFormula"].freeze
+        directory_name = File.basename(formula_directory)
+        tap_root_directory = if formula_directory_names.include?(directory_name)
+          File.dirname(formula_directory)
+        else
+          formula_directory
+        end
+
+        "#{tap_root_directory}/style_exceptions"
+      end
+
       # Returns whether the given formula exists in the given style exception list.
       # Defaults to the current formula being checked.
       def tap_style_exception?(list, formula = nil)
         if @tap_style_exceptions.nil? && !formula_tap.nil?
           @tap_style_exceptions = {}
 
-          style_exceptions_dir = "#{File.dirname(File.dirname(@file_path))}/style_exceptions/*.json"
-          Pathname.glob(style_exceptions_dir).each do |exception_file|
+          Pathname.glob("#{style_exceptions_dir}/*.json").each do |exception_file|
             list_name = exception_file.basename.to_s.chomp(".json").to_sym
             list_contents = begin
               JSON.parse exception_file.read
