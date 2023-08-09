@@ -721,8 +721,7 @@ module Cask
     def audit_cask_path
       return if cask.tap != "homebrew/cask"
 
-      cask_subdir = cask.token[0].downcase
-      expected_path = "Casks/#{cask_subdir}/#{cask.token}.rb"
+      expected_path = cask.tap.new_cask_path(cask.token)
 
       return if cask.ruby_source_path.to_s.end_with?(expected_path)
 
