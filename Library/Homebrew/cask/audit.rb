@@ -717,6 +717,17 @@ module Cask
                                           strict:        strict?)
     end
 
+    sig { void }
+    def audit_cask_path
+      return if cask.tap != "homebrew/cask"
+
+      expected_path = cask.tap.new_cask_path(cask.token)
+
+      return if cask.sourcefile_path.to_s.end_with?(expected_path)
+
+      add_error "Cask should be located in '#{expected_path}'"
+    end
+
     # sig {
     #   params(url_to_check: T.any(String, URL), url_type: String, cask_token: String, tap: Tap,
     #          options: T.untyped).void
