@@ -1579,6 +1579,8 @@ Run Homebrew's unit and integration tests.
   Enable debugging using byebug.
 * `--changed`:
   Only runs tests on files that were changed from the master branch.
+* `--fail-fast`:
+  Exit early on the first failing test.
 * `--only`:
   Run only *`test_script`*`_spec.rb`. Appending `:`*`line_number`* will start at a specific line.
 * `--seed`:
