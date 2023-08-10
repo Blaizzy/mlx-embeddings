@@ -41,7 +41,7 @@ describe Cask::Cask, :cask do
     end
 
     it "returns an instance of the Cask from a JSON file" do
-      c = Cask::CaskLoader.load("#{tap_path}/caffeine.json")
+      c = Cask::CaskLoader.load("#{TEST_FIXTURE_DIR}/cask/caffeine.json")
       expect(c).to be_a(described_class)
       expect(c.token).to eq("caffeine")
     end

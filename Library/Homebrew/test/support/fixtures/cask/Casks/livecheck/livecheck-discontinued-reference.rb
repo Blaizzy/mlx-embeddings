@@ -1,4 +1,4 @@
-cask "discontinued-reference" do
+cask "livecheck-discontinued-reference" do
   version "1.2.3"
   sha256 "8c62a2b791cf5f0da6066a0a4b6e85f62949cd60975da062df44adf887f4370b"
 
@@ -11,7 +11,7 @@ cask "discontinued-reference" do
   homepage "http://localhost/homebrew/test/cask/audit/livecheck/discontinued"
 
   livecheck do
-    cask "livecheck/discontinued"
+    cask "livecheck/livecheck-discontinued"
   end
 
   app "TestCask.app"

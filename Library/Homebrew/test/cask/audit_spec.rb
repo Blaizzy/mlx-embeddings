@@ -531,37 +531,37 @@ describe Cask::Audit, :cask do
       end
 
       context "when the Cask is discontinued" do
-        let(:cask_token) { "livecheck/discontinued" }
+        let(:cask_token) { "livecheck/livecheck-discontinued" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a discontinued Cask" do
-        let(:cask_token) { "livecheck/discontinued-reference" }
+        let(:cask_token) { "livecheck/livecheck-discontinued-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when version is :latest" do
-        let(:cask_token) { "livecheck/version-latest" }
+        let(:cask_token) { "livecheck/livecheck-version-latest" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a Cask where version is :latest" do
-        let(:cask_token) { "livecheck/version-latest-reference" }
+        let(:cask_token) { "livecheck/livecheck-version-latest-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when url is unversioned" do
-        let(:cask_token) { "livecheck/url-unversioned" }
+        let(:cask_token) { "livecheck/livecheck-url-unversioned" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a Cask with an unversioned url" do
-        let(:cask_token) { "livecheck/url-unversioned-reference" }
+        let(:cask_token) { "livecheck/livecheck-url-unversioned-reference" }
 
         it { is_expected.not_to error_with(message) }
       end

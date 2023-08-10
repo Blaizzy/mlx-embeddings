@@ -34,6 +34,7 @@ describe Cask::Upgrade, :cask do
 
     before do
       installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
+      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
@@ -227,6 +228,7 @@ describe Cask::Upgrade, :cask do
 
     before do
       installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
+      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
@@ -412,6 +414,7 @@ describe Cask::Upgrade, :cask do
 
     before do
       installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
+      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
@@ -468,6 +471,7 @@ describe Cask::Upgrade, :cask do
 
     before do
       installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
+      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
 
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
