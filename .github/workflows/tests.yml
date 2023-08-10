@@ -361,6 +361,10 @@ jobs:
         if: matrix.name == 'tests (online)'
         run: brew install subversion curl
 
+      - name: Install brew tests macOS dependencies
+        if: runner.os != 'Linux'
+        run: brew install subversion
+
         # brew tests doesn't like world writable directories
       - name: Cleanup permissions
         if: runner.os == 'Linux'
