@@ -516,6 +516,12 @@ class Tap
     cask_dir/"#{token.downcase}.rb"
   end
 
+  sig { params(token: String).returns(String) }
+  def relative_cask_path(token)
+    new_cask_path(token).to_s
+                        .delete_prefix("#{path}/")
+  end
+
   def contents
     contents = []
 
@@ -563,9 +569,10 @@ class Tap
   sig { returns(T::Hash[String, Pathname]) }
   def formula_files_by_name
     formula_files.each_with_object({}) do |file, hash|
-      # If there's more than one file with the same basename: intentionally
-      # ignore the later ones here.
-      hash[file.basename(".rb").to_s] ||= file
+      # If there's more than one file with the same basename: use the longer one to prioritise more specifc results.
+      basename = file.basename(".rb").to_s
+      existing_file = hash[basename]
+      hash[basename] = file if existing_file.nil? || existing_file.to_s.length < file.to_s.length
     end
   end
 
@@ -592,9 +599,10 @@ class Tap
   sig { returns(T::Hash[String, Pathname]) }
   def cask_files_by_name
     cask_files.each_with_object({}) do |file, hash|
-      # If there's more than one file with the same basename: intentionally
-      # ignore the later ones here.
-      hash[file.basename(".rb").to_s] ||= file
+      # If there's more than one file with the same basename: use the longer one to prioritise more specifc results.
+      basename = file.basename(".rb").to_s
+      existing_file = hash[basename]
+      hash[basename] = file if existing_file.nil? || existing_file.to_s.length < file.to_s.length
     end
   end
 
@@ -1110,9 +1118,10 @@ class CoreTap < AbstractCoreTap
 
     Homebrew::API::Formula.all_formulae.each_with_object({}) do |item, hash|
       name, formula_hash = item
-      # If there's more than one file with the same basename: intentionally
-      # ignore the later ones here.
-      hash[name] ||= path/formula_hash["ruby_source_path"]
+      # If there's more than one item with the same path: use the longer one to prioritise more specific results.
+      existing_path = hash[name]
+      new_path = path/formula_hash["ruby_source_path"]
+      hash[name] = new_path if existing_path.nil? || existing_path.to_s.length < new_path.to_s.length
     end
   end
 end
@@ -1158,9 +1167,10 @@ class CoreCaskTap < AbstractCoreTap
 
     Homebrew::API::Cask.all_casks.each_with_object({}) do |item, hash|
       name, cask_hash = item
-      # If there's more than one file with the same basename: intentionally
-      # ignore the later ones here.
-      hash[name] ||= path/cask_hash["ruby_source_path"]
+      # If there's more than one item with the same path: use the longer one to prioritise more specific results.
+      existing_path = hash[name]
+      new_path = path/cask_hash["ruby_source_path"]
+      hash[name] = new_path if existing_path.nil? || existing_path.to_s.length < new_path.to_s.length
     end
   end
 
