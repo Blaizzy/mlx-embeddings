@@ -2210,6 +2210,7 @@ _brew_tests() {
       --changed
       --coverage
       --debug
+      --fail-fast
       --generic
       --help
       --online

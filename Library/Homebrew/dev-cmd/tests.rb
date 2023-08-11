@@ -24,6 +24,8 @@ module Homebrew
              description: "Enable debugging using byebug."
       switch "--changed",
              description: "Only runs tests on files that were changed from the master branch."
+      switch "--fail-fast",
+             description: "Exit early on the first failing test."
       flag   "--only=",
              description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a " \
                           "specific line."
@@ -153,6 +155,7 @@ module Homebrew
         --color
         --require spec_helper
       ]
+      bundle_args << "--fail-fast" if args.fail_fast?
 
       # TODO: Refactor and move to extend/os
       # rubocop:disable Homebrew/MoveToExtendOS
