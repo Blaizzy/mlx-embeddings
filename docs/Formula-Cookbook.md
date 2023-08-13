@@ -7,17 +7,22 @@ A *formula* is a package definition written in Ruby. It can be created with `bre
 
 ## Homebrew terminology
 
-| term           | description                                                | example |
-| -------------- | ---------------------------------------------------------- | ------- |
-| **Formula**    | the package definition                                     | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/foo.rb`
-| **Keg**        | the installation prefix of a **Formula**                   | `/usr/local/Cellar/foo/0.1`
-| **Keg-only**   | a **Formula** is **Keg-only** if it is not linked into the Homebrew prefix | the [`openjdk`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/openjdk.rb) formula
-| **opt prefix** | a symlink to the active version of a **Keg**               | `/usr/local/opt/foo`
-| **Cellar**     | all **Kegs** are installed here                            | `/usr/local/Cellar`
-| **Tap**        | a Git repository of **Formulae** and/or commands           | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core`
-| **Bottle**     | pre-built **Keg** used instead of building from source     | `qt-4.8.4.catalina.bottle.tar.gz`
-| **Cask**       | an [extension of Homebrew](https://github.com/Homebrew/homebrew-cask) to install macOS native apps | `/Applications/MacDown.app/Contents/SharedSupport/bin/macdown`
-| **Brew Bundle**| an [extension of Homebrew](https://github.com/Homebrew/homebrew-bundle) to describe dependencies   | `brew 'myservice', restart_service: true`
+| term                 | description                                                               | example |
+| -------------------- | ------------------------------------------------------------------------- | ------- |
+| **formula**          | Homebrew package definition that builds from upstream sources             | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/foo.rb`
+| **cask**             | Homebrew package definition that installs macOS native applications       | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/bar.rb`
+| **prefix**           | path in which Homebrew is installed                                       | `/usr/local`
+| **keg**              | installation destination directory of a given **formula** version         | `/usr/local/Cellar/foo/0.1`
+| **rack**             | directory containing one or more versioned **kegs**                       | `/usr/local/Cellar/foo`
+| **keg-only**         | a **formula** is *keg-only* if it is not symlinked into Homebrew's prefix | the [`openjdk`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/openjdk.rb) formula
+| **opt prefix**       | a symlink to the active version of a **keg**                              | `/usr/local/opt/foo`
+| **Cellar**           | directory containing one or more named **racks**                          | `/usr/local/Cellar`
+| **Caskroom**         | directory containing one or more named **casks**                          | `/usr/local/Caskroom`
+| **external command** | `brew` subcommand defined outside of the Homebrew/brew GitHub repository  | [`brew alias`](https://github.com/Homebrew/homebrew-aliases)
+| **tap**              | directory (and usually Git repository) of **formulae**, **casks** and/or **external commands**       | `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core`
+| **bottle**           | pre-built **keg** poured into a **rack** of the **Cellar** instead of building from upstream sources | `qt--6.5.1.ventura.bottle.tar.gz`
+| **Brew Bundle**      | an [extension of Homebrew](https://github.com/Homebrew/homebrew-bundle) to describe dependencies     | `brew 'myservice', restart_service: true`
+| **Brew Services**    | an [extension of Homebrew](https://github.com/Homebrew/homebrew-services) to manage services         | `brew services start myservice`
 
 ## An introduction
 
