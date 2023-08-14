@@ -60,12 +60,12 @@ module MachOShim
   # TODO: See if the `#write!` call can be delayed until
   # we know we're not making any changes to the rpaths.
   def delete_rpath(rpath, **options)
-    candidates = macho.command(:LC_RPATH).select do |r|
-      resolve_variable_name(r.path.to_s) == resolve_variable_name(rpath)
+    candidates = rpaths(resolve_variable_references: false).select do |r|
+      resolve_variable_name(r) == resolve_variable_name(rpath)
     end
 
     # Delete the last instance to avoid changing the order in which rpaths are searched.
-    rpath_to_delete = candidates.last.path.to_s
+    rpath_to_delete = candidates.last
     options[:last] = true
 
     macho.delete_rpath(rpath_to_delete, options)
