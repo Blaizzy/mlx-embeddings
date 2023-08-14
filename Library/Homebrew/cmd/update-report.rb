@@ -566,6 +566,17 @@ class Reporter
       @report[:R] = renamed_formulae.to_a
     end
 
+    # If any formulae/casks are marked as added and deleted, remove them from
+    # the report as we've not detected things correctly.
+    if (added_and_deleted_formulae = (@report[:A] & @report[:D]).presence)
+      @report[:A] -= added_and_deleted_formulae
+      @report[:D] -= added_and_deleted_formulae
+    end
+    if (added_and_deleted_casks = (@report[:AC] & @report[:DC]).presence)
+      @report[:AC] -= added_and_deleted_casks
+      @report[:DC] -= added_and_deleted_casks
+    end
+
     @report
   end
 
