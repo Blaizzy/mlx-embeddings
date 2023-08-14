@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "system_config"
@@ -19,6 +19,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def config
     config_args.parse
 

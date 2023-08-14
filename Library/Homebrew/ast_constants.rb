@@ -1,9 +1,9 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "macos_version"
 
-FORMULA_COMPONENT_PRECEDENCE_LIST = [
+FORMULA_COMPONENT_PRECEDENCE_LIST = T.let([
   [{ name: :include,   type: :method_call }],
   [{ name: :desc,      type: :method_call }],
   [{ name: :homepage,  type: :method_call }],
@@ -49,4 +49,4 @@ FORMULA_COMPONENT_PRECEDENCE_LIST = [
   [{ name: :caveats, type: :method_definition }],
   [{ name: :plist_options, type: :method_call }, { name: :plist, type: :method_definition }],
   [{ name: :test, type: :block_call }],
-].freeze
+].freeze, T::Array[[{ name: Symbol, type: Symbol }]])

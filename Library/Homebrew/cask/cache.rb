@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Cask
@@ -8,7 +8,7 @@ module Cask
   module Cache
     sig { returns(Pathname) }
     def self.path
-      @path ||= HOMEBREW_CACHE/"Cask"
+      @path ||= T.let(HOMEBREW_CACHE/"Cask", T.nilable(Pathname))
     end
   end
 end

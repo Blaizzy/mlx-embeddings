@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "cleanup"
@@ -33,6 +33,7 @@ module Homebrew
     end
   end
 
+  sig { void }
   def cleanup
     args = cleanup_args.parse
 
