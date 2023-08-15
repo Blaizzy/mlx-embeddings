@@ -770,9 +770,9 @@ module Homebrew
       newest_committed_revision = T.let(nil, T.nilable(Integer))
       newest_committed_url = T.let(nil, T.nilable(String))
 
-      fv.rev_list("origin/HEAD") do |rev|
+      fv.rev_list("origin/HEAD") do |revision, path|
         begin
-          fv.formula_at_revision(rev) do |f|
+          fv.formula_at_revision(revision, path) do |f|
             stable = f.stable
             next if stable.blank?
 
