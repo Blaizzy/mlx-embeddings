@@ -1187,7 +1187,11 @@ on_request: installed_on_request?, options: options)
 
   sig { returns(T.nilable(Formula)) }
   def previously_fetched_formula
-    # We intentionally don't compare classes here.
+    # We intentionally don't compare classes here:
+    # from-API-JSON and from-source formula classes are not equal but we
+    # want to equate them to be the same thing here given mixing bottle and
+    # from-source installs of the same formula within the same operation
+    # doesn't make sense.
     self.class.fetched.find do |fetched_formula|
       fetched_formula.full_name == formula.full_name && fetched_formula.active_spec_sym == formula.active_spec_sym
     end
