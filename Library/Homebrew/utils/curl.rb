@@ -71,7 +71,16 @@ module Utils
       args = []
 
       # do not load .curlrc unless requested (must be the first argument)
-      args << "--disable" unless Homebrew::EnvConfig.curlrc?
+      curlrc = Homebrew::EnvConfig.curlrc
+      if curlrc&.start_with?("/")
+        # If the file exists, we still want to disable loading the default curlrc.
+        args << "--disable" << "--config" << curlrc
+      elsif curlrc
+        # This matches legacy behavior: `HOMEBREW_CURLRC` was a bool,
+        # omitting `--disable` when present.
+      else
+        args << "--disable"
+      end
 
       # echo any cookies received on a redirect
       args << "--cookie" << "/dev/null"

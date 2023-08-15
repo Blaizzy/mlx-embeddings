@@ -67,8 +67,8 @@ module Homebrew::EnvConfig
   sig { returns(T::Boolean) }
   def self.curl_verbose?; end
 
-  sig { returns(T::Boolean) }
-  def self.curlrc?; end
+  sig { returns(T.nilable(String)) }
+  def self.curlrc; end
 
   sig { returns(T::Boolean) }
   def self.debug?; end
