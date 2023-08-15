@@ -94,21 +94,28 @@ module Language
     module Shebang
       module_function
 
+      # A regex to match potential shebang permutations.
+      PYTHON_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)}.freeze
+
+      # The length of the longest shebang matching `SHEBANG_REGEX`.
+      PYTHON_SHEBANG_MAX_LENGTH = "#! /usr/bin/env pythonx.yyy ".length
+
       # @private
+      sig { params(python_path: T.any(String, Pathname)).returns(Utils::Shebang::RewriteInfo) }
       def python_shebang_rewrite_info(python_path)
         Utils::Shebang::RewriteInfo.new(
-          %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)},
-          28, # the length of "#! /usr/bin/env pythonx.yyy "
+          PYTHON_SHEBANG_REGEX,
+          PYTHON_SHEBANG_MAX_LENGTH,
           "#{python_path}\\1",
         )
       end
 
+      sig { params(formula: T.untyped, use_python_from_path: T::Boolean).returns(Utils::Shebang::RewriteInfo) }
       def detected_python_shebang(formula = self, use_python_from_path: false)
         python_path = if use_python_from_path
           "/usr/bin/env python3"
         else
           python_deps = formula.deps.map(&:name).grep(/^python(@.*)?$/)
-
           raise ShebangDetectionError.new("Python", "formula does not depend on Python") if python_deps.empty?
           if python_deps.length > 1
             raise ShebangDetectionError.new("Python", "formula has multiple Python dependencies")
