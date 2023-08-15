@@ -76,7 +76,7 @@ We're a package manager so we want to do things like resolve dependencies and se
 ### Static libraries
 
 In general, packages should not ship static libraries since these cannot be updated without a rebuild of the dependant software.
-If a package gets a lot of request to provide static libraries they may be provided by the package.
+If a package gets a lot of requests to provide static libraries, they may be provided by the package.
 Applications in homebrew/core linking against libraries should link against shared libraries not static versions.
 
 ### Stuff that requires vendored versions of Homebrew formulae
