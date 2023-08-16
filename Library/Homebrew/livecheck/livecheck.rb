@@ -397,7 +397,7 @@ module Homebrew
         end
       end
 
-      puts "No newer upstream versions." if newer_only && !has_a_newer_upstream_version && !debug && !json
+      puts "No newer upstream versions." if newer_only && !has_a_newer_upstream_version && !debug && !json && !quiet
 
       return unless json
 
