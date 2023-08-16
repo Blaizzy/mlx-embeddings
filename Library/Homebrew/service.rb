@@ -398,7 +398,7 @@ module Homebrew
       vars = @environment_variables.except(:PATH)
                                    .map { |k, v| "#{k}=\"#{v}\"" }
 
-      out = vars + command if command?
+      out = vars + T.must(command).map { |arg| Utils::Shell.sh_quote(arg) } if command?
       out.join(" ")
     end
 
