@@ -10,7 +10,7 @@ require "English"
 module Homebrew
   # Keep in sync with the `Gemfile.lock`'s BUNDLED WITH.
   # After updating this, run `brew vendor-gems --update=--bundler`.
-  HOMEBREW_BUNDLER_VERSION = "2.3.26"
+  HOMEBREW_BUNDLER_VERSION = "2.4.18"
 
   module_function
 
@@ -64,6 +64,8 @@ module Homebrew
   def setup_gem_environment!(setup_path: true)
     require "rubygems"
     raise "RubyGems too old!" if Gem::Version.new(Gem::VERSION) < Gem::Version.new("2.2.0")
+
+    ENV["BUNDLER_NO_OLD_RUBYGEMS_WARNING"] = "1"
 
     # Match where our bundler gems are.
     gem_home = "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/ruby/#{RbConfig::CONFIG["ruby_version"]}"

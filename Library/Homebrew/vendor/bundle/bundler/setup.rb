@@ -14,13 +14,17 @@ unless defined?(Gem)
     end
   end
 end
-kernel = (class << ::Kernel; self; end)
-[kernel, ::Kernel].each do |k|
-  if k.private_method_defined?(:gem_original_require)
-    private_require = k.private_method_defined?(:require)
-    k.send(:remove_method, :require)
-    k.send(:define_method, :require, k.instance_method(:gem_original_require))
-    k.send(:private, :require) if private_require
+if Gem.respond_to?(:discover_gems_on_require=)
+  Gem.discover_gems_on_require = false
+else
+  kernel = (class << ::Kernel; self; end)
+  [kernel, ::Kernel].each do |k|
+    if k.private_method_defined?(:gem_original_require)
+      private_require = k.private_method_defined?(:require)
+      k.send(:remove_method, :require)
+      k.send(:define_method, :require, k.instance_method(:gem_original_require))
+      k.send(:private, :require) if private_require
+    end
   end
 end
 $:.unshift File.expand_path("#{__dir__}/../#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/concurrent-ruby-1.2.2/lib/concurrent-ruby")
