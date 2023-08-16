@@ -593,6 +593,8 @@ then
   fi
 else
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
+  # Don't try to follow /etc/os-release
+  # shellcheck disable=SC1091
   [[ -n "${HOMEBREW_LINUX}" ]] && HOMEBREW_OS_VERSION="$(source /etc/os-release && echo "${PRETTY_NAME}")"
   : "${HOMEBREW_OS_VERSION:=$(uname -r)}"
   HOMEBREW_OS_USER_AGENT_VERSION="${HOMEBREW_OS_VERSION}"
