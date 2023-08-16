@@ -484,7 +484,8 @@ module Homebrew
       EOS
 
       # command needs to be first because it initializes all other values
-      cmd = command&.join(" ")
+      cmd = command&.map { |arg| Utils::Shell.sh_quote(arg) }
+                   &.join(" ")
 
       options = []
       options << "Type=#{(@launch_only_once == true) ? "oneshot" : "simple"}"
