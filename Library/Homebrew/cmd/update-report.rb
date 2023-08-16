@@ -97,10 +97,9 @@ module Homebrew
       analytics_message
       donation_message
       install_from_api_message
-      untap_message
     end
 
-    install_core_tap_if_necessary
+    tap_or_untap_core_taps_if_necessary
 
     updated = false
     new_tag = nil
@@ -300,16 +299,40 @@ module Homebrew
     Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "rev-parse", "--short", revision).chomp
   end
 
-  def install_core_tap_if_necessary
+  def tap_or_untap_core_taps_if_necessary
     return if ENV["HOMEBREW_UPDATE_TEST"]
-    return unless Homebrew::EnvConfig.no_install_from_api?
-    return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
-    return if CoreTap.instance.installed?
 
-    CoreTap.ensure_installed!
-    revision = CoreTap.instance.git_head
-    ENV["HOMEBREW_UPDATE_BEFORE_HOMEBREW_HOMEBREW_CORE"] = revision
-    ENV["HOMEBREW_UPDATE_AFTER_HOMEBREW_HOMEBREW_CORE"] = revision
+    if Homebrew::EnvConfig.no_install_from_api?
+      return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
+      return if CoreTap.instance.installed?
+
+      CoreTap.ensure_installed!
+      revision = CoreTap.instance.git_head
+      ENV["HOMEBREW_UPDATE_BEFORE_HOMEBREW_HOMEBREW_CORE"] = revision
+      ENV["HOMEBREW_UPDATE_AFTER_HOMEBREW_HOMEBREW_CORE"] = revision
+    else
+      return if Homebrew::EnvConfig.developer? || ENV["HOMEBREW_DEV_CMD_RUN"]
+      return if ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] || ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
+      return if (HOMEBREW_PREFIX/".homebrewdocker").exist?
+
+      tap_output_header_printed = T.let(false, T::Boolean)
+      [CoreTap.instance, CoreCaskTap.instance].each do |tap|
+        next unless tap.installed?
+
+        if tap.git_branch == "master" &&
+           (Date.parse(tap.git_repo.last_commit_date) <= Date.today.prev_month)
+          ohai "#{tap.name} is old and unneeded, untapping to save space..."
+          tap.uninstall
+        else
+          unless tap_output_header_printed
+            puts "Installing from the API is now the default behaviour!"
+            puts "You can save space and time by running:"
+            tap_output_header_printed = true
+          end
+          puts "  brew untap #{tap.name}"
+        end
+      end
+    end
   end
 
   def link_completions_manpages_and_docs(repository = HOMEBREW_REPOSITORY)
@@ -390,22 +413,6 @@ module Homebrew
 
     # Consider the message possibly missed if not a TTY.
     Settings.write "installfromapimessage", true if $stdout.tty?
-  end
-
-  def untap_message
-    return if Homebrew::EnvConfig.no_install_from_api?
-    return if Homebrew::EnvConfig.developer? || ENV["HOMEBREW_DEV_CMD_RUN"]
-    return if ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] || ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
-    return if (HOMEBREW_PREFIX/".homebrewdocker").exist?
-
-    core_tap = CoreTap.instance
-    cask_tap = CoreCaskTap.instance
-    return if !core_tap.installed? && !cask_tap.installed?
-
-    puts "Installing from the API is now the default behaviour!"
-    puts "You can save space and time by running:"
-    puts "  brew untap #{core_tap.name}" if core_tap.installed?
-    puts "  brew untap #{cask_tap.name}" if cask_tap.installed?
   end
 end
 
