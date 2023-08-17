@@ -157,11 +157,19 @@ class Bundler::CurrentRuby
 
   def jruby_31?(); end
 
+  def jruby_32?(); end
+
+  def jruby_33?(); end
+
   def jruby_3?(); end
 
   def maglev_30?(); end
 
   def maglev_31?(); end
+
+  def maglev_32?(); end
+
+  def maglev_33?(); end
 
   def maglev_3?(); end
 
@@ -169,11 +177,19 @@ class Bundler::CurrentRuby
 
   def mingw_31?(); end
 
+  def mingw_32?(); end
+
+  def mingw_33?(); end
+
   def mingw_3?(); end
 
   def mri_30?(); end
 
   def mri_31?(); end
+
+  def mri_32?(); end
+
+  def mri_33?(); end
 
   def mri_3?(); end
 
@@ -181,11 +197,19 @@ class Bundler::CurrentRuby
 
   def mswin64_31?(); end
 
+  def mswin64_32?(); end
+
+  def mswin64_33?(); end
+
   def mswin64_3?(); end
 
   def mswin_30?(); end
 
   def mswin_31?(); end
+
+  def mswin_32?(); end
+
+  def mswin_33?(); end
 
   def mswin_3?(); end
 
@@ -193,11 +217,19 @@ class Bundler::CurrentRuby
 
   def on_31?(); end
 
+  def on_32?(); end
+
+  def on_33?(); end
+
   def on_3?(); end
 
   def rbx_30?(); end
 
   def rbx_31?(); end
+
+  def rbx_32?(); end
+
+  def rbx_33?(); end
 
   def rbx_3?(); end
 
@@ -205,11 +237,19 @@ class Bundler::CurrentRuby
 
   def ruby_31?(); end
 
+  def ruby_32?(); end
+
+  def ruby_33?(); end
+
   def ruby_3?(); end
 
   def truffleruby_30?(); end
 
   def truffleruby_31?(); end
+
+  def truffleruby_32?(); end
+
+  def truffleruby_33?(); end
 
   def truffleruby_3?(); end
 
@@ -243,19 +283,33 @@ class Bundler::CurrentRuby
 
   def windows_31?(); end
 
+  def windows_32?(); end
+
+  def windows_33?(); end
+
   def windows_3?(); end
 
   def x64_mingw_30?(); end
 
   def x64_mingw_31?(); end
 
+  def x64_mingw_32?(); end
+
+  def x64_mingw_33?(); end
+
   def x64_mingw_3?(); end
 end
 
 class Bundler::Definition
+  def bundler_version_to_lock(); end
+
+  def current_locked_dependencies(); end
+
   def deleted_deps(); end
 
   def dependencies_for(groups); end
+
+  def filter_relevant(dependencies); end
 
   def locked_dependencies(); end
 
@@ -263,11 +317,15 @@ class Bundler::Definition
 
   def new_deps(); end
 
+  def no_resolve_needed?(); end
+
   def requested_dependencies(); end
+
+  def resolution_mode=(options); end
 
   def resolve_only_locally!(); end
 
-  def resolve_prefering_local!(); end
+  def setup_sources_for_resolve(); end
 end
 
 class Bundler::Definition
@@ -319,7 +377,6 @@ end
 class Bundler::EndpointSpecification
   include ::Bundler::MatchRemoteMetadata
   include ::Bundler::FetchMetadata
-  def identifier(); end
 end
 
 class Bundler::Env
@@ -516,6 +573,14 @@ module Bundler::FileUtils
   def self.cp_lr(src, dest, noop: T.unsafe(nil), verbose: T.unsafe(nil), dereference_root: T.unsafe(nil), remove_destination: T.unsafe(nil)); end
 
   def self.link_entry(src, dest, dereference_root=T.unsafe(nil), remove_destination=T.unsafe(nil)); end
+
+  def self.ln_sr(src, dest, target_directory: T.unsafe(nil), force: T.unsafe(nil), noop: T.unsafe(nil), verbose: T.unsafe(nil)); end
+end
+
+module Bundler::ForcePlatform
+end
+
+module Bundler::ForcePlatform
 end
 
 class Bundler::GemHelper
@@ -607,32 +672,25 @@ module Bundler::GemHelpers
 end
 
 class Bundler::GemVersionPromoter
-  def initialize(locked_specs=T.unsafe(nil), unlock_gems=T.unsafe(nil)); end
-
   def level(); end
 
   def level=(value); end
-
-  def locked_specs(); end
 
   def major?(); end
 
   def minor?(); end
 
-  def prerelease_specified(); end
+  def pre(); end
 
-  def prerelease_specified=(prerelease_specified); end
+  def pre=(pre); end
 
-  def reset(); end
+  def pre?(); end
 
-  def sort_versions(dep, spec_groups); end
+  def sort_versions(package, specs); end
 
   def strict(); end
 
   def strict=(strict); end
-
-  def unlock_gems(); end
-  DEBUG = ::T.let(nil, ::T.untyped)
 end
 
 class Bundler::GemVersionPromoter
@@ -695,6 +753,7 @@ class Bundler::Installer
 end
 
 class Bundler::LazySpecification
+  include ::Bundler::ForcePlatform
   def eql?(other); end
 
   def force_ruby_platform(); end
@@ -727,10 +786,6 @@ module Bundler::MatchRemoteMetadata
 end
 
 module Bundler::MatchRemoteMetadata
-end
-
-module Bundler::Molinillo::SpecificationProvider
-  def dependencies_equal?(dependencies, other_dependencies); end
 end
 
 class Bundler::PermissionError
@@ -892,18 +947,56 @@ class Bundler::ProcessLock
   def self.lock(bundle_path=T.unsafe(nil)); end
 end
 
+class Bundler::PubGrub::Incompatibility
+  def cause(); end
+
+  def conflict?(); end
+
+  def eql?(other); end
+
+  def external_incompatibilities(); end
+
+  def failure?(); end
+
+  def initialize(terms, cause:, custom_explanation: T.unsafe(nil)); end
+
+  def terms(); end
+end
+
+class Bundler::PubGrub::Incompatibility
+end
+
 class Bundler::RemoteSpecification
   include ::Bundler::MatchRemoteMetadata
   include ::Bundler::MatchMetadata
   include ::Bundler::FetchMetadata
-  def identifier(); end
 end
 
 class Bundler::Resolver
   include ::Bundler::GemHelpers
-  def results_for(dependency); end
+  def all_versions_for(package); end
+
+  def bundler_pinned_to_current_version?(); end
+
+  def default_bundler_source(); end
+
+  def find_names_to_relax(incompatibility); end
+
+  def incompatibilities_for(package, version); end
+
+  def no_versions_incompatibility_for(package, unsatisfied_term); end
+
+  def parse_dependency(package, dependency); end
+
+  def raise_not_found!(package); end
+
+  def setup_solver(); end
+
+  def solve_versions(root:, logger:); end
 
   def source_for(name); end
+
+  def versions_for(package, range=T.unsafe(nil)); end
 end
 
 class Bundler::Resolver::Base
@@ -911,26 +1004,109 @@ class Bundler::Resolver::Base
 
   def base_requirements(); end
 
-  def delete(spec); end
+  def delete(specs); end
 
-  def initialize(base, additional_base_requirements); end
+  def get_package(name); end
 
-  def unlock_deps(deps); end
+  def include_prereleases(names); end
+
+  def initialize(source_requirements, dependencies, base, platforms, options); end
+
+  def packages(); end
+
+  def requirements(); end
+
+  def source_requirements(); end
+
+  def unlock_names(names); end
 end
 
 class Bundler::Resolver::Base
 end
 
+class Bundler::Resolver::Candidate
+  include ::Comparable
+  def ==(other); end
+
+  def dependencies(); end
+
+  def eql?(other); end
+
+  def generic!(); end
+
+  def initialize(version, specs: T.unsafe(nil)); end
+
+  def platform_specific!(); end
+
+  def prerelease?(); end
+
+  def segments(); end
+
+  def sort_obj(); end
+
+  def to_specs(package); end
+
+  def version(); end
+end
+
+class Bundler::Resolver::Candidate
+end
+
+class Bundler::Resolver::Incompatibility
+  def extended_explanation(); end
+
+  def initialize(terms, cause:, custom_explanation: T.unsafe(nil), extended_explanation: T.unsafe(nil)); end
+end
+
+class Bundler::Resolver::Incompatibility
+end
+
+class Bundler::Resolver::Package
+  def ==(other); end
+
+  def consider_prereleases!(); end
+
+  def current_platform?(); end
+
+  def dependency(); end
+
+  def force_ruby_platform?(); end
+
+  def ignores_prereleases?(); end
+
+  def initialize(name, platforms, locked_specs:, unlock:, prerelease: T.unsafe(nil), dependency: T.unsafe(nil)); end
+
+  def locked_version(); end
+
+  def meta?(); end
+
+  def name(); end
+
+  def platforms(); end
+
+  def prerelease_specified?(); end
+
+  def root?(); end
+
+  def unlock?(); end
+end
+
+class Bundler::Resolver::Package
+end
+
+class Bundler::Resolver::Root
+  def initialize(name); end
+end
+
+class Bundler::Resolver::Root
+end
+
 class Bundler::Resolver::SpecGroup
-  def activated_platforms(); end
+  def dependencies(); end
 
-  def activated_platforms=(activated_platforms); end
+  def empty?(); end
 
-  def force_ruby_platform(); end
-
-  def force_ruby_platform=(force_ruby_platform); end
-
-  def sorted_activated_platforms(); end
+  def sorted_spec_names(); end
 end
 
 class Bundler::Retry
@@ -989,6 +1165,15 @@ class Bundler::RubygemsIntegration
   def stub_rubygems(specs); end
 
   def supports_bundler_trampolining?(); end
+end
+
+module Bundler::SafeMarshal
+  ALLOWED_CLASSES = ::T.let(nil, ::T.untyped)
+  ERROR = ::T.let(nil, ::T.untyped)
+  PROC = ::T.let(nil, ::T.untyped)
+end
+
+module Bundler::SafeMarshal
 end
 
 class Bundler::SelfManager
@@ -1070,6 +1255,13 @@ class Bundler::Settings
   def self.key_for(key); end
 end
 
+class Bundler::SolveFailure
+  def status_code(); end
+end
+
+class Bundler::SolveFailure
+end
+
 class Bundler::Source
   def add_dependency_names(names); end
 
@@ -1087,9 +1279,15 @@ class Bundler::Source
 end
 
 class Bundler::Source::Git
+  def current_branch(); end
+
   def glob(); end
 
   def local?(); end
+
+  def to_gemfile(); end
+
+  def uri_with_specifiers(specifiers); end
 end
 
 class Bundler::Source::Rubygems
@@ -1106,6 +1304,8 @@ class Bundler::Source::Rubygems
   def package_path(cache_path, spec); end
 
   def remote_names(); end
+
+  def to_gemfile(); end
 end
 
 class Bundler::Source::RubygemsAggregate
@@ -1177,9 +1377,9 @@ class Bundler::SpecSet
   include ::Bundler::TSort
   def -(other); end
 
-  def delete(spec); end
+  def delete(specs); end
 
-  def delete_by_name_and_version(name, version); end
+  def delete_by_name(name); end
 
   def incomplete_ruby_specs?(deps); end
 
@@ -2342,15 +2542,21 @@ class Bundler::UI::Shell
 
   def ask(msg); end
 
-  def confirm(msg, newline=T.unsafe(nil)); end
+  def confirm(msg=T.unsafe(nil), newline=T.unsafe(nil)); end
 
-  def debug(msg, newline=T.unsafe(nil)); end
+  def confirm?(); end
+
+  def debug(msg=T.unsafe(nil), newline=T.unsafe(nil)); end
 
   def debug?(); end
 
-  def error(msg, newline=T.unsafe(nil), color=T.unsafe(nil)); end
+  def error(msg=T.unsafe(nil), newline=T.unsafe(nil), color=T.unsafe(nil)); end
 
-  def info(msg, newline=T.unsafe(nil)); end
+  def error?(); end
+
+  def info(msg=T.unsafe(nil), newline=T.unsafe(nil)); end
+
+  def info?(); end
 
   def initialize(options=T.unsafe(nil)); end
 
@@ -2370,13 +2576,25 @@ class Bundler::UI::Shell
 
   def unprinted_warnings(); end
 
-  def warn(msg, newline=T.unsafe(nil), color=T.unsafe(nil)); end
+  def warn(msg=T.unsafe(nil), newline=T.unsafe(nil), color=T.unsafe(nil)); end
+
+  def warn?(); end
 
   def yes?(msg); end
   LEVELS = ::T.let(nil, ::T.untyped)
 end
 
 class Bundler::UI::Shell
+end
+
+class Bundler::UI::Silent
+  def confirm?(); end
+
+  def error?(); end
+
+  def info?(); end
+
+  def warn?(); end
 end
 
 module Bundler::URI
@@ -2398,6 +2616,7 @@ module Bundler::URI
   RFC3986_PARSER = ::T.let(nil, ::T.untyped)
   SCHEME = ::T.let(nil, ::T.untyped)
   TBLDECWWWCOMP_ = ::T.let(nil, ::T.untyped)
+  TBLENCURICOMP_ = ::T.let(nil, ::T.untyped)
   TBLENCWWWCOMP_ = ::T.let(nil, ::T.untyped)
   UNSAFE = ::T.let(nil, ::T.untyped)
   URI_REF = ::T.let(nil, ::T.untyped)
@@ -2468,6 +2687,10 @@ class Bundler::URI::Generic
   def component(); end
 
   def component_ary(); end
+
+  def decoded_password(); end
+
+  def decoded_user(); end
 
   def default_port(); end
 
@@ -2582,6 +2805,10 @@ class Bundler::URI::Generic
 end
 
 class Bundler::URI::HTTP
+  def authority(); end
+
+  def origin(); end
+
   def request_uri(); end
   COMPONENT = ::T.let(nil, ::T.untyped)
   DEFAULT_PORT = ::T.let(nil, ::T.untyped)
@@ -2784,10 +3011,30 @@ module Bundler::URI::Util
   def self.make_components_hash(klass, array_hash); end
 end
 
+class Bundler::URI::WS
+  def request_uri(); end
+  COMPONENT = ::T.let(nil, ::T.untyped)
+  DEFAULT_PORT = ::T.let(nil, ::T.untyped)
+end
+
+class Bundler::URI::WS
+end
+
+class Bundler::URI::WSS
+  DEFAULT_PORT = ::T.let(nil, ::T.untyped)
+end
+
+class Bundler::URI::WSS
+end
+
 module Bundler::URI
+  def self.decode_uri_component(str, enc=T.unsafe(nil)); end
+
   def self.decode_www_form(str, enc=T.unsafe(nil), separator: T.unsafe(nil), use__charset_: T.unsafe(nil), isindex: T.unsafe(nil)); end
 
   def self.decode_www_form_component(str, enc=T.unsafe(nil)); end
+
+  def self.encode_uri_component(str, enc=T.unsafe(nil)); end
 
   def self.encode_www_form(enum, enc=T.unsafe(nil)); end
 
@@ -2805,79 +3052,26 @@ module Bundler::URI
 
   def self.regexp(schemes=T.unsafe(nil)); end
 
+  def self.register_scheme(scheme, klass); end
+
   def self.scheme_list(); end
 
   def self.split(uri); end
 end
 
-module Bundler::VersionRanges
+module Bundler::URINormalizer
 end
 
-class Bundler::VersionRanges::NEq
-  def version(); end
-
-  def version=(_); end
-end
-
-class Bundler::VersionRanges::NEq
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
-class Bundler::VersionRanges::ReqR
-  def cover?(v); end
-
-  def empty?(); end
-
-  def left(); end
-
-  def left=(_); end
-
-  def right(); end
-
-  def right=(_); end
-
-  def single?(); end
-  INFINITY = ::T.let(nil, ::T.untyped)
-  UNIVERSAL = ::T.let(nil, ::T.untyped)
-  ZERO = ::T.let(nil, ::T.untyped)
-end
-
-class Bundler::VersionRanges::ReqR::Endpoint
-  def inclusive(); end
-
-  def inclusive=(_); end
-
-  def version(); end
-
-  def version=(_); end
-end
-
-class Bundler::VersionRanges::ReqR::Endpoint
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
-class Bundler::VersionRanges::ReqR
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
-module Bundler::VersionRanges
-  def self.empty?(ranges, neqs); end
-
-  def self.for(requirement); end
-
-  def self.for_many(requirements); end
+module Bundler::URINormalizer
+  def self.normalize_suffix(uri, trailing_slash: T.unsafe(nil)); end
 end
 
 module Bundler
   def self.configure_gem_home_and_path(path=T.unsafe(nil)); end
 
   def self.create_bundle_path(); end
+
+  def self.gem_version(); end
 
   def self.most_specific_locked_platform?(platform); end
 
@@ -2888,6 +3082,8 @@ module Bundler
   def self.preferred_gemfile_name(); end
 
   def self.reset_settings_and_root!(); end
+
+  def self.safe_load_marshal(data); end
 
   def self.self_manager(); end
 
@@ -3966,6 +4162,7 @@ module GC
 end
 
 class Gem::Dependency
+  include ::Bundler::ForcePlatform
   def force_ruby_platform(); end
 end
 
@@ -5359,6 +5556,8 @@ end
 class Net::HTTPAlreadyReported
 end
 
+Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
+
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
 class Net::HTTPEarlyHints
@@ -5370,7 +5569,13 @@ end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
 
-Net::HTTPInformationCode = Net::HTTPInformation
+class Net::HTTPInformation
+end
+
+Net::HTTPInformationCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPInformation
+end
 
 class Net::HTTPLoopDetected
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -5426,11 +5631,19 @@ Net::HTTPResponceReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
 
+Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
+
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+class Net::HTTPSuccess
+end
+
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
