@@ -10,30 +10,33 @@ RuboCop::Cop::IgnoredMethods = RuboCop::Cop::AllowedMethods
 RuboCop::Cop::IgnoredPattern = RuboCop::Cop::AllowedPattern
 module RuboCop::Cop::Sorbet; end
 
-class RuboCop::Cop::Sorbet::AllowIncompatibleOverride < ::RuboCop::Cop::Cop
-  def allow_incompatible?(param0); end
-  def allow_incompatible_override?(param0 = T.unsafe(nil)); end
-  def not_nil?(node); end
+class RuboCop::Cop::Sorbet::AllowIncompatibleOverride < ::RuboCop::Cop::Base
+  def on_block(node); end
+  def on_numblock(node); end
   def on_send(node); end
+  def override?(param0 = T.unsafe(nil)); end
   def sig?(param0); end
+  def sig_dot_override?(param0 = T.unsafe(nil)); end
 end
 
-class RuboCop::Cop::Sorbet::BindingConstantWithoutTypeAlias < ::RuboCop::Cop::Cop
-  def autocorrect(node); end
-  def binding_unaliased_type?(param0 = T.unsafe(nil)); end
-  def dynamic_type_creation_with_block?(param0 = T.unsafe(nil)); end
-  def generic_parameter_decl_block_call?(param0 = T.unsafe(nil)); end
-  def generic_parameter_decl_call?(param0 = T.unsafe(nil)); end
-  def method_needing_aliasing_on_t?(param0); end
-  def not_dynamic_type_creation_with_block?(node); end
-  def not_generic_parameter_decl?(node); end
-  def not_nil?(node); end
-  def not_t_let?(node); end
+RuboCop::Cop::Sorbet::AllowIncompatibleOverride::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::AllowIncompatibleOverride::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Sorbet::BindingConstantWithoutTypeAlias < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
   def on_casgn(node); end
-  def t_let?(param0 = T.unsafe(nil)); end
-  def using_deprecated_type_alias_syntax?(param0 = T.unsafe(nil)); end
-  def using_type_alias?(param0 = T.unsafe(nil)); end
+  def requires_type_alias?(param0 = T.unsafe(nil)); end
+  def type_alias_with_block?(param0 = T.unsafe(nil)); end
+  def type_alias_without_block(param0 = T.unsafe(nil)); end
+
+  private
+
+  def send_leaf(node); end
 end
+
+RuboCop::Cop::Sorbet::BindingConstantWithoutTypeAlias::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::BindingConstantWithoutTypeAlias::WITHOUT_BLOCK_MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Sorbet::CallbackConditionalsBinding < ::RuboCop::Cop::Cop
   def autocorrect(node); end
@@ -133,12 +136,11 @@ class RuboCop::Cop::Sorbet::FalseSigil < ::RuboCop::Cop::Sorbet::HasSigil
   def minimum_strictness; end
 end
 
-class RuboCop::Cop::Sorbet::ForbidExtendTSigHelpersInShims < ::RuboCop::Cop::Cop
+class RuboCop::Cop::Sorbet::ForbidExtendTSigHelpersInShims < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
 
-  def autocorrect(node); end
-  def extend_t_helpers?(param0 = T.unsafe(nil)); end
-  def extend_t_sig?(param0 = T.unsafe(nil)); end
+  def extend_t_sig_or_helpers?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 end
 
@@ -167,27 +169,32 @@ class RuboCop::Cop::Sorbet::ForbidRBIOutsideOfAllowedPaths < ::RuboCop::Cop::Cop
   def allowed_paths; end
 end
 
-class RuboCop::Cop::Sorbet::ForbidSuperclassConstLiteral < ::RuboCop::Cop::Cop
-  def not_lit_const_superclass?(param0 = T.unsafe(nil)); end
+class RuboCop::Cop::Sorbet::ForbidSuperclassConstLiteral < ::RuboCop::Cop::Base
+  def dynamic_superclass?(param0 = T.unsafe(nil)); end
   def on_class(node); end
 end
 
 RuboCop::Cop::Sorbet::ForbidSuperclassConstLiteral::MSG = T.let(T.unsafe(nil), String)
 
-class RuboCop::Cop::Sorbet::ForbidTUnsafe < ::RuboCop::Cop::Cop
+class RuboCop::Cop::Sorbet::ForbidTUnsafe < ::RuboCop::Cop::Base
   def on_send(node); end
   def t_unsafe?(param0 = T.unsafe(nil)); end
 end
 
-class RuboCop::Cop::Sorbet::ForbidTUntyped < ::RuboCop::Cop::Cop
+RuboCop::Cop::Sorbet::ForbidTUnsafe::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::ForbidTUnsafe::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Sorbet::ForbidTUntyped < ::RuboCop::Cop::Base
   def on_send(node); end
   def t_untyped?(param0 = T.unsafe(nil)); end
 end
 
-class RuboCop::Cop::Sorbet::ForbidUntypedStructProps < ::RuboCop::Cop::Cop
+RuboCop::Cop::Sorbet::ForbidTUntyped::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::ForbidTUntyped::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Sorbet::ForbidUntypedStructProps < ::RuboCop::Cop::Base
   def on_class(node); end
   def subclass_of_t_struct?(param0 = T.unsafe(nil)); end
-  def t_immutable_struct(param0 = T.unsafe(nil)); end
   def t_nilable_untyped(param0 = T.unsafe(nil)); end
   def t_struct(param0 = T.unsafe(nil)); end
   def t_untyped(param0 = T.unsafe(nil)); end
@@ -203,6 +210,17 @@ end
 class RuboCop::Cop::Sorbet::IgnoreSigil < ::RuboCop::Cop::Sorbet::HasSigil
   def minimum_strictness; end
 end
+
+class RuboCop::Cop::Sorbet::ImplicitConversionMethod < ::RuboCop::Cop::Base
+  def on_alias(node); end
+  def on_def(node); end
+  def on_defs(node); end
+  def on_send(node); end
+end
+
+RuboCop::Cop::Sorbet::ImplicitConversionMethod::IMPLICIT_CONVERSION_METHODS = T.let(T.unsafe(nil), Array)
+RuboCop::Cop::Sorbet::ImplicitConversionMethod::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::ImplicitConversionMethod::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Sorbet::KeywordArgumentOrdering < ::RuboCop::Cop::Sorbet::SignatureCop
   def on_signature(node); end
@@ -220,6 +238,22 @@ module RuboCop::Cop::Sorbet::MutableConstantSorbetAwareBehaviour
   end
 end
 
+class RuboCop::Cop::Sorbet::ObsoleteStrictMemoization < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::MatchRange
+  include ::RuboCop::Cop::Alignment
+  include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::Sorbet::TargetSorbetVersion
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::Sorbet::TargetSorbetVersion::ClassMethods
+
+  def legacy_memoization_pattern?(param0 = T.unsafe(nil)); end
+  def on_begin(node); end
+  def relevant_file?(file); end
+end
+
+RuboCop::Cop::Sorbet::ObsoleteStrictMemoization::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Sorbet::OneAncestorPerLine < ::RuboCop::Cop::Cop
   def abstract?(param0); end
   def autocorrect(node); end
@@ -236,8 +270,9 @@ end
 
 RuboCop::Cop::Sorbet::OneAncestorPerLine::MSG = T.let(T.unsafe(nil), String)
 
-class RuboCop::Cop::Sorbet::RedundantExtendTSig < ::RuboCop::Cop::Cop
-  def autocorrect(node); end
+class RuboCop::Cop::Sorbet::RedundantExtendTSig < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
   def extend_t_sig?(param0 = T.unsafe(nil)); end
   def on_send(node); end
 end
@@ -262,21 +297,22 @@ RuboCop::Cop::Sorbet::SignatureBuildOrder::ORDER = T.let(T.unsafe(nil), Hash)
 
 class RuboCop::Cop::Sorbet::SignatureCop < ::RuboCop::Cop::Cop
   def on_block(node); end
+  def on_numblock(node); end
   def on_signature(_); end
   def signature?(param0 = T.unsafe(nil)); end
   def with_runtime?(param0 = T.unsafe(nil)); end
   def without_runtime?(param0 = T.unsafe(nil)); end
 end
 
-class RuboCop::Cop::Sorbet::SingleLineRbiClassModuleDefinitions < ::RuboCop::Cop::Cop
-  def autocorrect(node); end
+class RuboCop::Cop::Sorbet::SingleLineRbiClassModuleDefinitions < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
+
   def on_class(node); end
   def on_module(node); end
 
-  protected
+  private
 
-  def convert_newlines(source); end
-  def process_node(node); end
+  def convert_newlines_to_semicolons(source); end
 end
 
 RuboCop::Cop::Sorbet::SingleLineRbiClassModuleDefinitions::MSG = T.let(T.unsafe(nil), String)
@@ -289,13 +325,30 @@ class RuboCop::Cop::Sorbet::StrongSigil < ::RuboCop::Cop::Sorbet::HasSigil
   def minimum_strictness; end
 end
 
+module RuboCop::Cop::Sorbet::TargetSorbetVersion
+  mixes_in_class_methods ::RuboCop::Cop::Sorbet::TargetSorbetVersion::ClassMethods
+
+  def enabled_for_sorbet_static_version?; end
+  def read_sorbet_static_version_from_bundler_lock_file; end
+  def target_sorbet_static_version_from_bundler_lock_file; end
+
+  class << self
+    def included(target); end
+  end
+end
+
+module RuboCop::Cop::Sorbet::TargetSorbetVersion::ClassMethods
+  def minimum_target_sorbet_static_version(version); end
+  def support_target_sorbet_static_version?(version); end
+end
+
 class RuboCop::Cop::Sorbet::TrueSigil < ::RuboCop::Cop::Sorbet::HasSigil
   def minimum_strictness; end
 end
 
-class RuboCop::Cop::Sorbet::TypeAliasName < ::RuboCop::Cop::Cop
-  def casgn_type_alias?(param0 = T.unsafe(nil)); end
+class RuboCop::Cop::Sorbet::TypeAliasName < ::RuboCop::Cop::Base
   def on_casgn(node); end
+  def underscored_type_alias?(param0 = T.unsafe(nil)); end
 end
 
 RuboCop::Cop::Sorbet::TypeAliasName::MSG = T.let(T.unsafe(nil), String)
@@ -310,12 +363,13 @@ class RuboCop::Cop::Sorbet::ValidSigil < ::RuboCop::Cop::Cop
   def check_strictness_level(sigil, strictness); end
   def check_strictness_not_empty(sigil, strictness); end
   def check_strictness_valid(sigil, strictness); end
+  def exact_strictness; end
   def extract_sigil(processed_source); end
   def extract_strictness(sigil); end
   def minimum_strictness; end
   def require_sigil_on_all_files?; end
   def suggested_strictness; end
-  def suggested_strictness_level(minimum_strictness, suggested_strictness); end
+  def suggested_strictness_level; end
 end
 
 RuboCop::Cop::Sorbet::ValidSigil::SIGIL_REGEX = T.let(T.unsafe(nil), Regexp)
