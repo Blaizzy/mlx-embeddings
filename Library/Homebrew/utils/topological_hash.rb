@@ -30,6 +30,7 @@ module Utils
         else
           formula_deps = cask_or_formula.deps
                                         .reject(&:build?)
+                                        .reject(&:test?)
                                         .map(&:to_formula)
           cask_deps = cask_or_formula.requirements
                                      .map(&:cask)
