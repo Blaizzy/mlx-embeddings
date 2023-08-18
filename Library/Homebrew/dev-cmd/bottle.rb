@@ -98,6 +98,8 @@ module Homebrew
       return merge(args: args)
     end
 
+    gnu_tar_formula_ensure_installed_if_needed!(only_json_tab: args.only_json_tab?)
+
     args.named.to_resolved_formulae(uniq: false).each do |formula|
       bottle_formula formula, args: args
     end
@@ -257,20 +259,30 @@ module Homebrew
     ].freeze
   end
 
+  sig { params(only_json_tab: T::Boolean).returns(T.nilable(Formula)) }
+  def self.gnu_tar_formula_ensure_installed_if_needed!(only_json_tab:)
+    gnu_tar_formula = begin
+      Formula["gnu-tar"]
+    rescue FormulaUnavailableError
+      nil
+    end
+    return if gnu_tar_formula.blank?
+
+    ensure_formula_installed!(gnu_tar_formula, reason: "bottling")
+
+    gnu_tar_formula
+  end
+
   sig { params(args: T.untyped, mtime: String).returns([String, T::Array[String]]) }
   def self.setup_tar_and_args!(args, mtime)
     # Without --only-json-tab bottles are never reproducible
     default_tar_args = ["tar", tar_args].freeze
     return default_tar_args unless args.only_json_tab?
 
-    # Use gnu-tar as it can be set up for reproducibility better than libarchive.
-    begin
-      gnu_tar_formula = Formula["gnu-tar"]
-    rescue FormulaUnavailableError
-      return default_tar_args
-    end
-
-    ensure_formula_installed!(gnu_tar_formula, reason: "bottling")
+    # Use gnu-tar as it can be set up for reproducibility better than libarchive
+    # and to be consistent between macOS and Linux.
+    gnu_tar_formula = gnu_tar_formula_ensure_installed_if_needed!(only_json_tab: args.only_json_tab?)
+    return default_tar_args if gnu_tar_formula.blank?
 
     [gnu_tar(gnu_tar_formula), reproducible_gnutar_args(mtime)].freeze
   end
