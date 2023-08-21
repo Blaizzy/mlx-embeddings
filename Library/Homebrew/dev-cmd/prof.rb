@@ -22,7 +22,7 @@ module Homebrew
   def prof
     args = prof_args.parse
 
-    Homebrew.install_bundler_gems!(groups: ["prof"])
+    Homebrew.install_bundler_gems!(groups: ["prof"], setup_path: false)
 
     brew_rb = (HOMEBREW_LIBRARY_PATH/"brew.rb").resolved_path
     FileUtils.mkdir_p "prof"
@@ -39,6 +39,8 @@ module Homebrew
     else
       raise UsageError, "`#{cmd}` is an unknown command!"
     end
+
+    Homebrew.setup_gem_environment!
 
     if args.stackprof?
       with_env HOMEBREW_STACKPROF: "1" do
