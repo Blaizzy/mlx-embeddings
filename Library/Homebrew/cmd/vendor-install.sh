@@ -111,6 +111,9 @@ fetch() {
   if [[ -z "${HOMEBREW_CURLRC}" ]]
   then
     curl_args[${#curl_args[*]}]="-q"
+  elif [[ "${HOMEBREW_CURLRC}" == /* ]]
+  then
+    curl_args+=("-q" "--config" "${HOMEBREW_CURLRC}")
   fi
 
   # Authorization is needed for GitHub Packages but harmless on GitHub Releases
