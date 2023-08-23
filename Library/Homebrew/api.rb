@@ -58,6 +58,9 @@ module Homebrew
       curl_args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
       curl_args << "--silent" if !$stdout.tty? || Context.current.quiet?
 
+      insecure_download = (ENV["HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD"].present? ||
+                           ENV["HOMEBREW_FORCE_BREWED_CA_CERTIFICATES"].present?) &&
+                          !(HOMEBREW_PREFIX/"etc/ca-certificates/cert.pem").exist?
       skip_download = target.exist? &&
                       !target.empty? &&
                       (!Homebrew.auto_update_command? ||
@@ -69,6 +72,12 @@ module Homebrew
         begin
           args = curl_args.dup
           args.prepend("--time-cond", target.to_s) if target.exist? && !target.empty?
+          if insecure_download
+            opoo "Using --insecure with curl to download #{endpoint} " \
+                 "because we need it to run `brew install ca-certificates`. " \
+                 "Checksums will still be verified."
+            args.append("--insecure")
+          end
           unless skip_download
             ohai "Downloading #{url}" if $stdout.tty? && !Context.current.quiet?
             # Disable retries here, we handle them ourselves below.
@@ -91,7 +100,8 @@ module Homebrew
           opoo "#{target.basename}: update failed, falling back to cached version."
         end
 
-        FileUtils.touch(target) unless skip_download
+        mtime = insecure_download ? Time.new(1970, 1, 1) : Time.now
+        FileUtils.touch(target, mtime: mtime) unless skip_download
         JSON.parse(target.read)
       rescue JSON::ParserError
         target.unlink
