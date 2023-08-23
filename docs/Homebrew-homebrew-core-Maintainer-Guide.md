@@ -95,8 +95,8 @@ The following checklist is intended to help maintainers decide on whether to mer
 
 - previously opened active PRs, as we would like to be fair to contributors who came first
 - patches/`inreplace` that have been applied to upstream and can be removed
-- comments in formula around `url`, as we do skip some versions (for example [`vim`](https://github.com/Homebrew/homebrew-core/blob/359dbb190bb3776c4d6a1f603a271dd8f186f077/Formula/vim.rb#L4) or [`v8`](https://github.com/Homebrew/homebrew-core/blob/359dbb190bb3776c4d6a1f603a271dd8f186f077/Formula/v8.rb#L4))
-- vendored resources that need updates (for example [`emscripten`](https://github.com/Homebrew/homebrew-core/commit/57126ac765c3ac5201ce53bcdebf7a0e19071eba))
+- comments in formula around `url`, as we do skip some versions (for example [`vim`](https://github.com/Homebrew/homebrew-core/blob/960639ce96ae5dd4a4b60b8887f44c1475dc60db/Formula/v/vim.rb#L4) or [`v8`](https://github.com/Homebrew/homebrew-core/blob/d14753288535e01178a3cd510ef2d64b03901c01/Formula/v/v8.rb#L4))
+- vendored resources that need updates (for example [`emscripten`](https://github.com/Homebrew/homebrew-core/blob/442f9cc511ce6dfe75b96b2c83749d90dde914d2/Formula/e/emscripten.rb#L49-L67))
 - vendored dependencies (for example [`certbot`](https://github.com/Homebrew/homebrew-core/pull/42966/files))
 - stable/announced release:
   - some teams use an odd minor release number for tests and even for stable releases

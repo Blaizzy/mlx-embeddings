@@ -17,7 +17,7 @@ def install
 end
 ```
 
-See the [`kustomize`](https://github.com/Homebrew/homebrew-core/blob/4c911aecde3c5a1c18df8e439a70c2f03b97297c/Formula/kustomize.rb#L32) formula for an example of using `time.iso8601` or the [`git-town`](https://github.com/Homebrew/homebrew-core/blob/4c911aecde3c5a1c18df8e439a70c2f03b97297c/Formula/git-town.rb#L24) formula for an example of using `time.strftime` with custom format specifiers.
+See the [`kustomize`](https://github.com/Homebrew/homebrew-core/blob/442f9cc511ce6dfe75b96b2c83749d90dde914d2/Formula/k/kustomize.rb#L32) formula for an example of using `time.iso8601` or the [`git-town`](https://github.com/Homebrew/homebrew-core/blob/442f9cc511ce6dfe75b96b2c83749d90dde914d2/Formula/g/git-town.rb#L25) formula for an example of using `time.strftime` with custom format specifiers.
 
 ## Reproducible gzip compression
 
@@ -39,7 +39,7 @@ def install
 end
 ```
 
-See the [`par` formula](https://github.com/Homebrew/homebrew-core/blob/09c6c09692561cfe49a04046fe2a769747d40494/Formula/par.rb#L30) for an example with a single file or the [`pari-elldata` formula](https://github.com/Homebrew/homebrew-core/blob/0d86ca42fa89759ba1ace07734778f09d18a5eb5/Formula/pari-elldata.rb#L28) for an example with multiple files.
+See the [`par` formula](https://github.com/Homebrew/homebrew-core/blob/442f9cc511ce6dfe75b96b2c83749d90dde914d2/Formula/p/par.rb#L30) for an example with a single file or the [`pari-elldata` formula](https://github.com/Homebrew/homebrew-core/blob/442f9cc511ce6dfe75b96b2c83749d90dde914d2/Formula/p/pari-elldata.rb#L28) for an example with multiple files.
 
 ## Relocatability
 
