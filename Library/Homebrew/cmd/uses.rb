@@ -129,7 +129,7 @@ module Homebrew
       deps = if recursive
         recursive_includes(Dependency, d, includes, ignores)
       else
-        reject_ignores(d.deps, ignores, includes)
+        select_includes(d.deps, ignores, includes)
       end
 
       used_formulae.all? do |ff|

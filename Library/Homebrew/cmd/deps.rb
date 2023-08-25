@@ -90,7 +90,8 @@ module Homebrew
                                 !args.include_build? &&
                                 !args.include_test? &&
                                 !args.include_optional? &&
-                                !args.skip_recommended?
+                                !args.skip_recommended? &&
+                                !args.missing?
 
     if args.tree? || args.graph?
       dependents = if args.named.present?
@@ -197,8 +198,8 @@ module Homebrew
       deps ||= recursive_includes(Dependency, dependency, includes, ignores)
       reqs   = recursive_includes(Requirement, dependency, includes, ignores)
     else
-      deps ||= reject_ignores(dependency.deps, ignores, includes)
-      reqs   = reject_ignores(dependency.requirements, ignores, includes)
+      deps ||= select_includes(dependency.deps, ignores, includes)
+      reqs   = select_includes(dependency.requirements, ignores, includes)
     end
 
     deps + reqs.to_a
@@ -269,8 +270,8 @@ module Homebrew
   def self.dependables(formula, args:)
     includes, ignores = args_includes_ignores(args)
     deps = @use_runtime_dependencies ? formula.runtime_dependencies : formula.deps
-    deps = reject_ignores(deps, ignores, includes)
-    reqs = reject_ignores(formula.requirements, ignores, includes) if args.include_requirements?
+    deps = select_includes(deps, ignores, includes)
+    reqs = select_includes(formula.requirements, ignores, includes) if args.include_requirements?
     reqs ||= []
     reqs + deps
   end
