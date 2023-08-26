@@ -1705,8 +1705,7 @@ class Formula
            build_isolation: T::Boolean).returns(T::Array[String])
   }
   def std_pip_args(prefix: self.prefix, build_isolation: false)
-    args = ["--verbose", "--no-deps", "--no-binary=:all:", "--ignore-installed",
-            "--use-feature=no-binary-enable-wheel-cache", "--no-compile"]
+    args = ["--verbose", "--no-deps", "--no-binary=:all:", "--ignore-installed", "--no-compile"]
     args << "--prefix=#{prefix}" if prefix
     args << "--no-build-isolation" unless build_isolation
     args
