@@ -12,6 +12,10 @@ module SharedAudits
 
   URL_TYPE_HOMEPAGE = "homepage URL"
 
+  GITHUB_IP_ALLOWLIST_ERROR = Regexp.new("Although you appear to have the correct authorization credentials, " \
+                                         "the `(.+)` organization has an IP allow list enabled, " \
+                                         "and your IP address is not permitted to access this resource").freeze
+
   module_function
 
   def github_repo_data(user, repo)
@@ -21,6 +25,8 @@ module SharedAudits
     @github_repo_data["#{user}/#{repo}"]
   rescue GitHub::API::HTTPNotFoundError
     nil
+  rescue GitHub::API::AuthenticationFailedError => e
+    raise unless e.message.match?(GITHUB_IP_ALLOWLIST_ERROR)
   end
 
   def github_release_data(user, repo, tag)
@@ -32,6 +38,8 @@ module SharedAudits
     @github_release_data[id]
   rescue GitHub::API::HTTPNotFoundError
     nil
+  rescue GitHub::API::AuthenticationFailedError => e
+    raise unless e.message.match?(GITHUB_IP_ALLOWLIST_ERROR)
   end
 
   def github_release(user, repo, tag, formula: nil, cask: nil)
