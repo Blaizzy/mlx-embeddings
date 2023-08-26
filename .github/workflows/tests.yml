@@ -363,7 +363,10 @@ jobs:
 
       - name: Install brew tests macOS dependencies
         if: runner.os != 'Linux'
-        run: brew install subversion
+        run: |
+          # Workaround GitHub Actions Python issues
+          brew unlink python && brew link --overwrite python
+          brew install subversion
 
         # brew tests doesn't like world writable directories
       - name: Cleanup permissions
