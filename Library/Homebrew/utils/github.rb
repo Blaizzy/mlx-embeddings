@@ -504,6 +504,8 @@ module GitHub
     response["license"]["spdx_id"]
   rescue API::HTTPNotFoundError
     nil
+  rescue API::AuthenticationFailedError => e
+    raise unless e.message.match?(API::GITHUB_IP_ALLOWLIST_ERROR)
   end
 
   def self.pull_request_title_regex(name, version = nil)
