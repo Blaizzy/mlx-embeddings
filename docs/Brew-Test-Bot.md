@@ -1,6 +1,6 @@
 ---
-logo: https://brew.sh/assets/img/brewtestbot.png
-image: https://brew.sh/assets/img/brewtestbot.png
+logo: /assets/img/brewtestbot.png
+image: /assets/img/brewtestbot.png
 ---
 
 # Brew Test Bot
