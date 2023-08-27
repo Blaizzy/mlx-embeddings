@@ -1,6 +1,6 @@
 ---
-logo: https://brew.sh/assets/img/linuxbrew.png
-image: https://brew.sh/assets/img/linuxbrew.png
+logo: /assets/img/linuxbrew.png
+image: /assets/img/linuxbrew.png
 redirect_from:
   - /linux
   - /Linux
