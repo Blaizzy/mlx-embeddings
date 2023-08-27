@@ -120,6 +120,18 @@ module Homebrew
         deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.all
       end
 
+      if args.missing?
+        deps.reject! do |dep|
+          case dep
+          when Formula
+            dep.any_version_installed?
+          when Cask::Cask
+            dep.installed?
+          end
+        end
+        ignores.delete(:satisfied?)
+      end
+
       select_used_dependents(dependents(deps), used_formulae, recursive, includes, ignores)
     end
   end
