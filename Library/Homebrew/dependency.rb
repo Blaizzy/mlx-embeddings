@@ -261,4 +261,9 @@ class UsesFromMacOSDependency < Dependency
   def dup_with_formula_name(formula)
     self.class.new(formula.full_name.to_s, tags, env_proc, option_names, bounds: bounds)
   end
+
+  sig { returns(String) }
+  def inspect
+    "#<#{self.class.name}: #{name.inspect} #{tags.inspect} #{bounds.inspect}>"
+  end
 end

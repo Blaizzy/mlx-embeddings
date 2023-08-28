@@ -65,6 +65,8 @@ class DependencyCollector
   def cache_key(spec)
     if spec.is_a?(Resource) && spec.download_strategy <= CurlDownloadStrategy
       File.extname(spec.url)
+    elsif spec.is_a?(UsesFromMacOSDependency)
+      "#{spec.name}-#{spec.bounds}"
     else
       spec
     end
