@@ -139,7 +139,10 @@ a bug report, you will be required to provide this information.
 
 Show dependencies for *`formula`*. Additional options specific to *`formula`*
 may be appended to the command. When given multiple formula arguments,
-show the intersection of dependencies for each formula.
+show the intersection of dependencies for each formula. By default, `deps`
+shows all required and recommended dependencies.
+
+Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
 
 * `-n`, `--topological`:
   Sort dependencies in topological order.
@@ -819,6 +822,8 @@ of *`formula`*. When given multiple formula arguments, show the intersection
 of formulae that use *`formula`*. By default, `uses` shows all formulae and casks that
 specify *`formula`* as a required or recommended dependency for their stable builds.
 
+Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
+
 * `--recursive`:
   Resolve more than one level of dependencies.
 * `--installed`:
@@ -828,13 +833,13 @@ specify *`formula`* as a required or recommended dependency for their stable bui
 * `--eval-all`:
   Evaluate all available formulae and casks, whether installed or not, to show their dependents.
 * `--include-build`:
-  Include all formulae that specify *`formula`* as `:build` type dependency.
+  Include formulae that specify *`formula`* as a `:build` dependency.
 * `--include-test`:
-  Include all formulae that specify *`formula`* as `:test` type dependency.
+  Include formulae that specify *`formula`* as a `:test` dependency.
 * `--include-optional`:
-  Include all formulae that specify *`formula`* as `:optional` type dependency.
+  Include formulae that specify *`formula`* as an `:optional` dependency.
 * `--skip-recommended`:
-  Skip all formulae that specify *`formula`* as `:recommended` type dependency.
+  Skip all formulae that specify *`formula`* as a `:recommended` dependency.
 * `--formula`:
   Include only formulae.
 * `--cask`:

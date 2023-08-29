@@ -15,7 +15,10 @@ module Homebrew
       description <<~EOS
         Show dependencies for <formula>. Additional options specific to <formula>
         may be appended to the command. When given multiple formula arguments,
-        show the intersection of dependencies for each formula.
+        show the intersection of dependencies for each formula. By default, `deps`
+        shows all required and recommended dependencies.
+
+        Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
       EOS
       switch "-n", "--topological",
              description: "Sort dependencies in topological order."
