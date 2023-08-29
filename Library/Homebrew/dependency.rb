@@ -231,6 +231,14 @@ class UsesFromMacOSDependency < Dependency
     @bounds = bounds
   end
 
+  def ==(other)
+    instance_of?(other.class) && name == other.name && tags == other.tags && bounds == other.bounds
+  end
+
+  def hash
+    [name, tags, bounds].hash
+  end
+
   def installed?
     use_macos_install? || super
   end
