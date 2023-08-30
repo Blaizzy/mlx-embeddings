@@ -2092,14 +2092,14 @@ _brew_uses() {
     '--debug[Display any debugging information]' \
     '--eval-all[Evaluate all available formulae and casks, whether installed or not, to show their dependents]' \
     '--help[Show this message]' \
-    '--include-build[Include all formulae that specify formula as `:build` type dependency]' \
-    '--include-optional[Include all formulae that specify formula as `:optional` type dependency]' \
-    '--include-test[Include all formulae that specify formula as `:test` type dependency]' \
+    '--include-build[Include formulae that specify formula as a `:build` dependency]' \
+    '--include-optional[Include formulae that specify formula as an `:optional` dependency]' \
+    '--include-test[Include formulae that specify formula as a `:test` dependency]' \
     '(--all --missing)--installed[Only list formulae and casks that are currently installed]' \
     '(--installed)--missing[Only list formulae and casks that are not currently installed]' \
     '--quiet[Make some output more quiet]' \
     '--recursive[Resolve more than one level of dependencies]' \
-    '--skip-recommended[Skip all formulae that specify formula as `:recommended` type dependency]' \
+    '--skip-recommended[Skip all formulae that specify formula as a `:recommended` dependency]' \
     '--verbose[Make some output more verbose]' \
     - formula \
     '(--cask)--formula[Include only formulae]' \

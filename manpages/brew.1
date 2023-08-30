@@ -155,7 +155,10 @@ Control whether Homebrew automatically links external tap shell completion files
 Show Homebrew and system configuration info useful for debugging\. If you file a bug report, you will be required to provide this information\.
 .
 .SS "\fBdeps\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
-Show dependencies for \fIformula\fR\. Additional options specific to \fIformula\fR may be appended to the command\. When given multiple formula arguments, show the intersection of dependencies for each formula\.
+Show dependencies for \fIformula\fR\. Additional options specific to \fIformula\fR may be appended to the command\. When given multiple formula arguments, show the intersection of dependencies for each formula\. By default, \fBdeps\fR shows all required and recommended dependencies\.
+.
+.P
+Note: \fB\-\-missing\fR and \fB\-\-skip\-recommended\fR have precedence over \fB\-\-include\-*\fR\.
 .
 .TP
 \fB\-n\fR, \fB\-\-topological\fR
@@ -1149,6 +1152,9 @@ Disable/enable quarantining of downloads (default: enabled)\.
 .SS "\fBuses\fR [\fIoptions\fR] \fIformula\fR [\.\.\.]"
 Show formulae and casks that specify \fIformula\fR as a dependency; that is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
 .
+.P
+Note: \fB\-\-missing\fR and \fB\-\-skip\-recommended\fR have precedence over \fB\-\-include\-*\fR\.
+.
 .TP
 \fB\-\-recursive\fR
 Resolve more than one level of dependencies\.
@@ -1167,19 +1173,19 @@ Evaluate all available formulae and casks, whether installed or not, to show the
 .
 .TP
 \fB\-\-include\-build\fR
-Include all formulae that specify \fIformula\fR as \fB:build\fR type dependency\.
+Include formulae that specify \fIformula\fR as a \fB:build\fR dependency\.
 .
 .TP
 \fB\-\-include\-test\fR
-Include all formulae that specify \fIformula\fR as \fB:test\fR type dependency\.
+Include formulae that specify \fIformula\fR as a \fB:test\fR dependency\.
 .
 .TP
 \fB\-\-include\-optional\fR
-Include all formulae that specify \fIformula\fR as \fB:optional\fR type dependency\.
+Include formulae that specify \fIformula\fR as an \fB:optional\fR dependency\.
 .
 .TP
 \fB\-\-skip\-recommended\fR
-Skip all formulae that specify \fIformula\fR as \fB:recommended\fR type dependency\.
+Skip all formulae that specify \fIformula\fR as a \fB:recommended\fR dependency\.
 .
 .TP
 \fB\-\-formula\fR

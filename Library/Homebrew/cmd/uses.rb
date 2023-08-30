@@ -22,6 +22,8 @@ module Homebrew
         of <formula>. When given multiple formula arguments, show the intersection
         of formulae that use <formula>. By default, `uses` shows all formulae and casks that
         specify <formula> as a required or recommended dependency for their stable builds.
+
+        Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
       EOS
       switch "--recursive",
              description: "Resolve more than one level of dependencies."
@@ -33,13 +35,13 @@ module Homebrew
              description: "Evaluate all available formulae and casks, whether installed or not, to show " \
                           "their dependents."
       switch "--include-build",
-             description: "Include all formulae that specify <formula> as `:build` type dependency."
+             description: "Include formulae that specify <formula> as a `:build` dependency."
       switch "--include-test",
-             description: "Include all formulae that specify <formula> as `:test` type dependency."
+             description: "Include formulae that specify <formula> as a `:test` dependency."
       switch "--include-optional",
-             description: "Include all formulae that specify <formula> as `:optional` type dependency."
+             description: "Include formulae that specify <formula> as an `:optional` dependency."
       switch "--skip-recommended",
-             description: "Skip all formulae that specify <formula> as `:recommended` type dependency."
+             description: "Skip all formulae that specify <formula> as a `:recommended` dependency."
       switch "--formula", "--formulae",
              description: "Include only formulae."
       switch "--cask", "--casks",
@@ -120,6 +122,18 @@ module Homebrew
         deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.all
       end
 
+      if args.missing?
+        deps.reject! do |dep|
+          case dep
+          when Formula
+            dep.any_version_installed?
+          when Cask::Cask
+            dep.installed?
+          end
+        end
+        ignores.delete(:satisfied?)
+      end
+
       select_used_dependents(dependents(deps), used_formulae, recursive, includes, ignores)
     end
   end
@@ -129,7 +143,7 @@ module Homebrew
       deps = if recursive
         recursive_includes(Dependency, d, includes, ignores)
       else
-        reject_ignores(d.deps, ignores, includes)
+        select_includes(d.deps, ignores, includes)
       end
 
       used_formulae.all? do |ff|
