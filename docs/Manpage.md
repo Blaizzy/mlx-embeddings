@@ -137,8 +137,7 @@ a bug report, you will be required to provide this information.
 
 ### `deps` [*`options`*] [*`formula`*|*`cask`* ...]
 
-Show dependencies for *`formula`*. Additional options specific to *`formula`*
-may be appended to the command. When given multiple formula arguments,
+Show dependencies for *`formula`*. When given multiple formula arguments,
 show the intersection of dependencies for each formula. By default, `deps`
 shows all required and recommended dependencies.
 
