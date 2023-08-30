@@ -311,6 +311,7 @@ module Cask
     sig { void }
     def audit_download_url_format
       return unless cask.url
+      return if block_url_offline?
 
       odebug "Auditing URL format"
       if bad_sourceforge_url?
