@@ -20,6 +20,7 @@ module GitHub
   API_URL = "https://api.github.com"
   API_MAX_PAGES = 50
   API_MAX_ITEMS = 5000
+  PAGINATE_RETRY_COUNT = 3
 
   CREATE_GIST_SCOPES = ["gist"].freeze
   CREATE_ISSUE_FORK_OR_PR_SCOPES = ["repo"].freeze
@@ -281,7 +282,17 @@ module GitHub
 
     def self.paginate_rest(url, additional_query_params: nil, per_page: 100)
       (1..API_MAX_PAGES).each do |page|
-        result = API.open_rest("#{url}?per_page=#{per_page}&page=#{page}&#{additional_query_params}")
+        retry_count = 1
+        result = begin
+          API.open_rest("#{url}?per_page=#{per_page}&page=#{page}&#{additional_query_params}")
+        rescue Error
+          if retry_count < PAGINATE_RETRY_COUNT
+            retry_count += 1
+            retry
+          end
+
+          raise
+        end
         break if result.blank?
 
         yield(result, page)
