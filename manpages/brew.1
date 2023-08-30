@@ -1686,15 +1686,15 @@ Treat all named arguments as casks\.
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
 .SS "\fBcontributions\fR [\-\-user=\fIemail|username\fR] [\fI\-\-repositories\fR\fB=\fR] [\fI\-\-csv\fR]"
-Contributions to Homebrew repos\.
+Contributions to Homebrew repositories\.
 .
 .TP
 \fB\-\-repositories\fR
-Specify a comma\-separated (no spaces) list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBautoupdate\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\. Omitting this flag, or specifying \fB\-\-repositories=all\fR, searches all repositories\. Use \fB\-\-repositories=primary\fR to search only the main repositories: brew,core,cask\.
+Specify a comma\-separated list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBautoupdate\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\. Omitting this flag, or specifying \fB\-\-repositories=primary\fR, searches only the main repositories: brew,core,cask\. Specifying \fB\-\-repositories=all\fR, searches all repositories\.
 .
 .TP
 \fB\-\-from\fR
-Date (ISO\-8601 format) to start searching contributions\.
+Date (ISO\-8601 format) to start searching contributions\. Omitting this flag searches the last year\.
 .
 .TP
 \fB\-\-to\fR
@@ -1702,7 +1702,7 @@ Date (ISO\-8601 format) to stop searching contributions\.
 .
 .TP
 \fB\-\-user\fR
-A GitHub username or email address of a specific person to find contribution data for\.
+Specify a comma\-separated list of GitHub usernames or email addresses to find contributions from\. Omitting this flag searches maintainers\.
 .
 .TP
 \fB\-\-csv\fR

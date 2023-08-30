@@ -1170,16 +1170,16 @@ Display the path to the file being used when invoking `brew` *`cmd`*.
 
 ### `contributions` [--user=*`email|username`*] [*`--repositories`*`=`] [*`--csv`*]
 
-Contributions to Homebrew repos.
+Contributions to Homebrew repositories.
 
 * `--repositories`:
-  Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-fonts` and `cask-versions`. Omitting this flag, or specifying `--repositories=all`, searches all repositories. Use `--repositories=primary` to search only the main repositories: brew,core,cask.
+  Specify a comma-separated list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-fonts` and `cask-versions`. Omitting this flag, or specifying `--repositories=primary`, searches only the main repositories: brew,core,cask. Specifying `--repositories=all`, searches all repositories. 
 * `--from`:
-  Date (ISO-8601 format) to start searching contributions.
+  Date (ISO-8601 format) to start searching contributions. Omitting this flag searches the last year.
 * `--to`:
   Date (ISO-8601 format) to stop searching contributions.
 * `--user`:
-  A GitHub username or email address of a specific person to find contribution data for.
+  Specify a comma-separated list of GitHub usernames or email addresses to find contributions from. Omitting this flag searches maintainers.
 * `--csv`:
   Print a CSV of contributions across repositories over the time period.
 
