@@ -32,7 +32,7 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.7"
+          ruby-version: "3.1"
           bundler-cache: true
           working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
 
@@ -40,9 +40,11 @@ jobs:
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: bundle exec rake lint
 
-      - name: Build docs site
+      - name: Check for broken links, then build docs site
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
-        run: bundle exec rake build
+        run: |
+          bundle exec rake test
+          bundle exec rake build
 
   rubydoc:
     if: github.repository == 'Homebrew/brew'
