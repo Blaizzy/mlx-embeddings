@@ -29,8 +29,13 @@ task test: :build do
       %r{Kickstarter-Supporters},
     ],
     ignore_urls: [
-      "http://formulae.brew.sh",
-      %r{https://github.com/Homebrew/brew/edit/gh-pages//},
-    ]
+      %r{https://formulae.brew.sh"},
+      %r{https://github.com/}
+    ],
+    cache: {
+      timeframe: {
+        external: "1h"
+      }
+    }
   ).run
 end
