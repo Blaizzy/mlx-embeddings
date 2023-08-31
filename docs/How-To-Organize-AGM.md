@@ -144,7 +144,8 @@ source of funding before seeking Homebrew funding.
 
 PLC, TSC, PL and maintainers can expect to have all reasonable, in-policy expenses covered while members will be considered on a case-by-case basis.
 
-See also the [Reimbursement Policy](Expense-and-Reimbursement-Policy.md#travel) for process and details on what is covered.
+Read the Expense and Reimbursement policy document in `Homebrew/homebrew-governance-private`.
+It contains the process and details on what is covered.
 It is important that all attendees expecting reimbursement stay in-policy.
 
 ## Ideas for future AGMs
