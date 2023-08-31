@@ -19,17 +19,17 @@ task test: :build do
     "./_site",
     parallel: { in_threads: 4 },
     favicon: true,
-    http_status_ignore: [0, 403],
+    ignore_status_codes: [0, 403],
     assume_extension: true,
     check_favicon: true,
     check_opengraph: true,
     check_html: true,
     check_img_http: true,
     enforce_https: true,
-    file_ignore: [
+    ignore_files: [
       %r{Kickstarter-Supporters},
     ],
-    url_ignore: [
+    ignore_urls: [
       "http://formulae.brew.sh",
       %r{https://github.com/Homebrew/brew/edit/gh-pages//},
     ]
