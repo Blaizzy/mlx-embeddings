@@ -40,11 +40,10 @@ jobs:
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: bundle exec rake lint
 
-      - name: Check for broken links, then build docs site
+      - name: Build the site and check for broken links
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: |
           bundle exec rake test
-          bundle exec rake build
 
   rubydoc:
     if: github.repository == 'Homebrew/brew'
