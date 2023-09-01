@@ -116,7 +116,6 @@ module Homebrew
               begin
                 formula.clear_cache if args.force?
 
-                # TODO: Deprecate `--bottle-tag`.
                 bottle_tag = if (bottle_tag = args.bottle_tag&.to_sym)
                   Utils::Bottles::Tag.from_symbol(bottle_tag)
                 else

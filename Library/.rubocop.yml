@@ -164,7 +164,6 @@ Naming/HeredocDelimiterNaming:
 Naming/InclusiveLanguage:
   CheckStrings: true
   FlaggedTerms:
-    # TODO: If possible, make this stricter.
     slave:
       AllowedRegex:
         - "gitslave" # Used in formula `gitslave`
@@ -392,12 +391,12 @@ Style/NumericLiterals:
   Exclude:
     - "**/Brewfile"
 
-# TODO: These are pre-existing violations and should be corrected
-#   to define methods so that call sites can be type-checked.
 Style/OpenStructUse:
   Exclude:
-    - "Homebrew/cli/args.rb"
     - "Taps/**/*.rb"
+    # TODO: This is a pre-existing violation and should be corrected
+    #   to define methods so that call sites can be type-checked.
+    - "Homebrew/cli/args.rb"
 
 # Rescuing `StandardError` is an understood default.
 Style/RescueStandardError:
