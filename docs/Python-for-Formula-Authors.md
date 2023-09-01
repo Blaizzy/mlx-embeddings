@@ -189,7 +189,7 @@ where `prefix` is the destination prefix (usually `libexec` or `prefix`).
 
 ### What is `--single-version-externally-managed`?
 
-`--single-version-externally-managed` ("SVEM") is a Setuptools-only [argument to `setup.py install`](https://setuptools.readthedocs.io/en/latest/setuptools.html?#install-run-easy-install-or-old-style-installation). The primary effect of SVEM is using Distutils to perform the install instead of Setuptools' `easy_install`.
+`--single-version-externally-managed` ("SVEM") is a [Setuptools](https://setuptools.readthedocs.io/en/latest/setuptools.html)-only argument to `setup.py install`. The primary effect of SVEM is using Distutils to perform the install instead of Setuptools' `easy_install`.
 
 `easy_install` does a few things that we need to avoid:
 
