@@ -4,7 +4,7 @@ This document explains how to successfully use Python in a Homebrew formula.
 
 Homebrew draws a distinction between Python **applications** and Python **libraries**. The difference is that users generally do not care that applications are written in Python; it is unusual that a user would expect to be able to `import foo` after installing an application. Examples of applications are [`ansible`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/a/ansible.rb) and [`jrnl`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/j/jrnl.rb).
 
-Python libraries exist to be imported by other Python modules; they are often dependencies of Python applications. They are usually no more than incidentally useful in a terminal. Examples of libraries are [`py2cairo`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/p/py2cairo.rb) and the bindings that are installed by [`protobuf`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/p/protobuf.rb).
+Python libraries exist to be imported by other Python modules; they are often dependencies of Python applications. They are usually no more than incidentally useful in a terminal. An example of a library is the bindings that are installed by [`protobuf`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/p/protobuf.rb).
 
 Bindings are a special case of libraries that allow Python code to interact with a library or application implemented in another language.
 
@@ -189,7 +189,7 @@ where `prefix` is the destination prefix (usually `libexec` or `prefix`).
 
 ### What is `--single-version-externally-managed`?
 
-`--single-version-externally-managed` ("SVEM") is a Setuptools-only [argument to `setup.py install`](https://setuptools.readthedocs.io/en/latest/setuptools.html?#install-run-easy-install-or-old-style-installation). The primary effect of SVEM is using Distutils to perform the install instead of Setuptools' `easy_install`.
+`--single-version-externally-managed` ("SVEM") is a [Setuptools](https://setuptools.readthedocs.io/en/latest/setuptools.html)-only argument to `setup.py install`. The primary effect of SVEM is using Distutils to perform the install instead of Setuptools' `easy_install`.
 
 `easy_install` does a few things that we need to avoid:
 
