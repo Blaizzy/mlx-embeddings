@@ -46,6 +46,8 @@ module Homebrew
     def audit_version
       if version.nil?
         problem "missing version"
+      elsif owner.is_a?(Formula) && !version.to_s.match?(GitHubPackages::VALID_OCI_TAG_REGEX)
+        problem "version #{version} does not match #{GitHubPackages::VALID_OCI_TAG_REGEX.source}"
       elsif !version.detected_from_url?
         version_text = version
         version_url = Version.detect(url, **specs)
