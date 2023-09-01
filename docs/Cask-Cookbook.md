@@ -1135,7 +1135,7 @@ We prefer URLs of this format:
 
     https://downloads.sourceforge.net/<project_name>/<filename>.<ext>
 
-Or, if it’s from [OSDN](https://osdn.net/), where `<subdomain>` is typically of the form `dl` or `<user>.dl`:
+Or, if it’s from OSDN, where `<subdomain>` is typically of the form `dl` or `<user>.dl`:
 
     http://<subdomain>.osdn.jp/<project_name>/<release_id>/<filename>.<ext>
 
