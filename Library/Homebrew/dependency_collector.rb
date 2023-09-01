@@ -126,6 +126,10 @@ class DependencyCollector
   sig { void }
   def init_global_dep_tree_if_needed!; end
 
+  sig {
+    params(spec: T.any(String, Resource, Symbol, Requirement, Dependency, Class),
+           tags: T::Array[Symbol]).returns(T.any(Dependency, Requirement, NilClass))
+  }
   def parse_spec(spec, tags)
     raise ArgumentError, "Implicit dependencies cannot be manually specified" if tags.include?(:implicit)
 
@@ -140,8 +144,6 @@ class DependencyCollector
       spec
     when Class
       parse_class_spec(spec, tags)
-    else
-      raise TypeError, "Unsupported type #{spec.class.name} for #{spec.inspect}"
     end
   end
 

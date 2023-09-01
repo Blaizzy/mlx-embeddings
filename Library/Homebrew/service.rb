@@ -80,75 +80,63 @@ module Homebrew
       end
 
       command ||= on_system_conditional(macos: macos, linux: linux)
-      case T.unsafe(command)
+      case command
       when nil
         @run
       when String, Pathname
         @run = [command]
       when Array
         @run = command
-      else
-        raise TypeError, "Service#run expects an Array"
       end
     end
 
     sig { params(path: T.nilable(T.any(String, Pathname))).returns(T.nilable(String)) }
     def working_dir(path = nil)
-      case T.unsafe(path)
+      case path
       when nil
         @working_dir
       when String, Pathname
         @working_dir = path.to_s
-      else
-        raise TypeError, "Service#working_dir expects a String"
       end
     end
 
     sig { params(path: T.nilable(T.any(String, Pathname))).returns(T.nilable(String)) }
     def root_dir(path = nil)
-      case T.unsafe(path)
+      case path
       when nil
         @root_dir
       when String, Pathname
         @root_dir = path.to_s
-      else
-        raise TypeError, "Service#root_dir expects a String or Pathname"
       end
     end
 
     sig { params(path: T.nilable(T.any(String, Pathname))).returns(T.nilable(String)) }
     def input_path(path = nil)
-      case T.unsafe(path)
+      case path
       when nil
         @input_path
       when String, Pathname
         @input_path = path.to_s
-      else
-        raise TypeError, "Service#input_path expects a String or Pathname"
       end
     end
 
     sig { params(path: T.nilable(T.any(String, Pathname))).returns(T.nilable(String)) }
     def log_path(path = nil)
-      case T.unsafe(path)
+      case path
       when nil
         @log_path
       when String, Pathname
         @log_path = path.to_s
-      else
-        raise TypeError, "Service#log_path expects a String"
       end
     end
 
     sig { params(path: T.nilable(T.any(String, Pathname))).returns(T.nilable(String)) }
     def error_log_path(path = nil)
-      case T.unsafe(path)
+      case path
       when nil
         @error_log_path
       when String, Pathname
         @error_log_path = path.to_s
-      else
-        raise TypeError, "Service#error_log_path expects a String"
       end
     end
 
@@ -157,7 +145,7 @@ module Homebrew
         .returns(T.nilable(T::Hash[Symbol, T.untyped]))
     }
     def keep_alive(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @keep_alive
       when true, false
@@ -169,20 +157,16 @@ module Homebrew
         end
 
         @keep_alive = value
-      else
-        raise TypeError, "Service#keep_alive expects a Boolean or Hash"
       end
     end
 
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def require_root(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @require_root
       when true, false
         @require_root = value
-      else
-        raise TypeError, "Service#require_root expects a Boolean"
       end
     end
 
@@ -195,19 +179,17 @@ module Homebrew
 
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def run_at_load(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @run_at_load
       when true, false
         @run_at_load = value
-      else
-        raise TypeError, "Service#run_at_load expects a Boolean"
       end
     end
 
     sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
     def sockets(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @sockets
       when String
@@ -216,8 +198,6 @@ module Homebrew
 
         type, host, port = match.captures
         @sockets = { host: host, port: port, type: type }
-      else
-        raise TypeError, "Service#sockets expects a String"
       end
     end
 
@@ -230,31 +210,27 @@ module Homebrew
 
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def launch_only_once(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @launch_only_once
       when true, false
         @launch_only_once = value
-      else
-        raise TypeError, "Service#launch_only_once expects a Boolean"
       end
     end
 
     sig { params(value: T.nilable(Integer)).returns(T.nilable(Integer)) }
     def restart_delay(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @restart_delay
       when Integer
         @restart_delay = value
-      else
-        raise TypeError, "Service#restart_delay expects an Integer"
       end
     end
 
     sig { params(value: T.nilable(Symbol)).returns(T.nilable(Symbol)) }
     def process_type(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @process_type
       when :background, :standard, :interactive, :adaptive
@@ -263,46 +239,38 @@ module Homebrew
         raise TypeError, "Service#process_type allows: " \
                          "'#{PROCESS_TYPE_BACKGROUND}'/'#{PROCESS_TYPE_STANDARD}'/" \
                          "'#{PROCESS_TYPE_INTERACTIVE}'/'#{PROCESS_TYPE_ADAPTIVE}'"
-      else
-        raise TypeError, "Service#process_type expects a Symbol"
       end
     end
 
     sig { params(value: T.nilable(Symbol)).returns(T.nilable(Symbol)) }
     def run_type(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @run_type
       when :immediate, :interval, :cron
         @run_type = value
       when Symbol
         raise TypeError, "Service#run_type allows: '#{RUN_TYPE_IMMEDIATE}'/'#{RUN_TYPE_INTERVAL}'/'#{RUN_TYPE_CRON}'"
-      else
-        raise TypeError, "Service#run_type expects a Symbol"
       end
     end
 
     sig { params(value: T.nilable(Integer)).returns(T.nilable(Integer)) }
     def interval(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @interval
       when Integer
         @interval = value
-      else
-        raise TypeError, "Service#interval expects an Integer"
       end
     end
 
     sig { params(value: T.nilable(String)).returns(T.nilable(Hash)) }
     def cron(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @cron
       when String
         @cron = parse_cron(T.must(value))
-      else
-        raise TypeError, "Service#cron expects a String"
       end
     end
 
@@ -354,23 +322,19 @@ module Homebrew
 
     sig { params(variables: T::Hash[Symbol, String]).returns(T.nilable(T::Hash[Symbol, String])) }
     def environment_variables(variables = {})
-      case T.unsafe(variables)
+      case variables
       when Hash
         @environment_variables = variables.transform_values(&:to_s)
-      else
-        raise TypeError, "Service#environment_variables expects a hash"
       end
     end
 
     sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
     def macos_legacy_timers(value = nil)
-      case T.unsafe(value)
+      case value
       when nil
         @macos_legacy_timers
       when true, false
         @macos_legacy_timers = value
-      else
-        raise TypeError, "Service#macos_legacy_timers expects a Boolean"
       end
     end
 
