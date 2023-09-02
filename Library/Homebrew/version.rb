@@ -24,8 +24,6 @@ class Version
 
     sig { params(val: String).returns(Token) }
     def self.create(val)
-      raise TypeError, "Token value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
-
       case val
       when /\A#{AlphaToken::PATTERN}\z/o   then AlphaToken
       when /\A#{BetaToken::PATTERN}\z/o    then BetaToken
@@ -492,8 +490,6 @@ class Version
 
   sig { params(val: T.any(PkgVersion, String, Version), detected_from_url: T::Boolean).void }
   def initialize(val, detected_from_url: false)
-    raise TypeError, "Version value must be a string; got a #{val.class} (#{val})" unless val.respond_to?(:to_str)
-
     version = val.to_str
     raise ArgumentError, "Version must not be empty" if version.blank?
 
