@@ -100,6 +100,15 @@ module Homebrew
       end
     end
 
+    def audit_resource_name_matches_pypi_package_name_in_url
+      return unless url.match?(%r{^https?://files\.pythonhosted\.org/packages/})
+
+      pypi_package_name = url.split("/").last.split(/-\d+\.\d+./).first.tr("_", "-")
+      return if name.casecmp(pypi_package_name).zero?
+
+      problem "resource name should be `#{pypi_package_name}` to closer match the PyPI package name"
+    end
+
     def audit_urls
       urls = [url] + mirrors
 
