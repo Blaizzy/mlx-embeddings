@@ -3,17 +3,16 @@
 Each cask is a Ruby block, beginning with a special header line. The cask definition itself is always enclosed in a `do … end` block. Example:
 
 ```ruby
-cask "alfred" do
-  version "2.7.1_387"
-  sha256 "a3738d0513d736918a6d71535ef3d85dd184af267c05698e49ac4c6b48f38e17"
+cask "anybar" do
+  version "0.2.3"
+  sha256 "c87dbc6aff5411676a471e84905d69c671b62b93b1210bd95c9d776d087de95c"
 
-  url "https://cachefly.alfredapp.com/Alfred_#{version}.zip"
-  name "Alfred"
-  desc "Application launcher and productivity software"
-  homepage "https://www.alfredapp.com/"
+  url "https://github.com/tonsky/AnyBar/releases/download/#{version}/AnyBar-#{version}.zip"
+  name "AnyBar"
+  desc "Menu bar status indicator"
+  homepage "https://github.com/tonsky/AnyBar"
 
-  app "Alfred 2.app"
-  app "Alfred 2.app/Contents/Preferences/Alfred Preferences.app"
+  app "AnyBar.app"
 end
 ```
 
@@ -27,74 +26,6 @@ Each cask contains a series of stanzas (or “fields”) which *declare* how the
 To make maintenance easier, the most-frequently-updated stanzas are usually placed at the top. But that’s a convention, not a rule.
 
 Exception: `do` blocks such as `postflight` may enclose a block of pure Ruby code. Lines within that block follow a procedural (order-dependent) paradigm.
-
-## Conditional Statements
-
-### Efficiency
-
-Conditional statements are permitted, but only if they are very efficient. Tests on the following values are known to be acceptable:
-
-| value                       | examples |
-| --------------------------- | -------- |
-| `MacOS.version`             | [bbedit.rb](https://github.com/Homebrew/homebrew-cask/blob/576798b72f3f6f02289e84a62c11a987da97bc6d/Casks/bbedit.rb#L2-L14), [powerphotos.rb](https://github.com/Homebrew/homebrew-cask/blob/fe5320b237d72e025549a0d6402aa34647ed990d/Casks/powerphotos.rb#L2-L18), [choosy.rb](https://github.com/Homebrew/homebrew-cask/blob/43224bc403345f3180e684d754789d928b7d0beb/Casks/choosy.rb#L2-L22)
-
-### Version Comparisons
-
-Tests against `MacOS.version` may use either one of [these symbolic names](#depends_on-macos) or version strings with numeric comparison operators:
-
-```ruby
-if MacOS.version <= :mojave        # symbolic name
-```
-
-```ruby
-if MacOS.version <= "10.14"        # version string for major release
-```
-
-Note that in the official Homebrew Cask taps only the symbolic names are allowed. The numeric comparison may only be used for third-party taps.
-
-### Always Fall Through to the Newest Case
-
-Conditionals should be constructed so that the default is the newest OS version. When using an `if` statement, test for older versions, and then let the `else` statement hold the latest and greatest. This makes it more likely that the cask will work without alteration when a new OS version is released. Example (from [calibre.rb](https://github.com/Homebrew/homebrew-cask/blob/da62b1769b7a34807f1335ab8ec16bf3184b3a7e/Casks/calibre.rb#L2-L11)):
-
-```ruby
-if MacOS.version <= :high_sierra
-  # ...
-elsif MacOS.version <= :mojave
-  # ...
-else
-  # ...
-end
-```
-
-### Switch Between Languages or Regions
-
-If a cask is available in multiple languages, you can use the [`language` stanza](#stanza-language) to switch between languages or regions based on the system locale.
-
-## Arbitrary Ruby Methods
-
-In the exceptional case that the cask DSL is insufficient, it is possible to define arbitrary Ruby variables and methods inside the cask by creating a `Utils` namespace. Example:
-
-```ruby
-cask "myapp" do
-  module Utils
-    def self.arbitrary_method
-      ...
-    end
-  end
-
-  name "MyApp"
-  version "1.0"
-  sha256 "a32565cdb1673f4071593d4cc9e1c26bc884218b62fef8abc450daa47ba8fa92"
-
-  url "https://#{Utils.arbitrary_method}"
-  homepage "https://www.example.com/"
-  ...
-end
-```
-
-This should be used sparingly: any method which is needed by two or more casks should instead be rolled into Homebrew/brew. Care must also be taken that such methods be very efficient.
-
-Variables and methods should not be defined outside the `Utils` namespace, as they may collide with Homebrew Cask internals.
 
 ## Header Line Details
 
@@ -227,7 +158,7 @@ Each cask must declare one or more *artifacts* (i.e. something to install).
 | `uninstall_preflight`                      | yes                           | Ruby block containing preflight uninstall operations (needed only in very rare cases).
 | `uninstall_postflight`                     | yes                           | Ruby block containing postflight uninstall operations.
 | [`language`](#stanza-language)             | required                      | Ruby block, called with language code parameters, containing other stanzas and/or a return value.
-| `container nested:`                        | no                            | Relative path to an inner container that must be extracted before moving on with the installation. This allows for support of `.dmg` inside `.tar`, `.zip` inside `.dmg`, etc.
+| `container nested:`                        | no                            | Relative path to an inner container that must be extracted before moving on with the installation. This allows for support of `.dmg` inside `.tar`, `.zip` inside `.dmg`, etc. (Example: [blocs.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/b/blocs.rb#L17-L19))
 | `container type:`                          | no                            | Symbol to override container-type autodetect. May be one of: `:air`, `:bz2`, `:cab`, `:dmg`, `:generic_unar`, `:gzip`, `:otf`, `:pkg`, `:rar`, `:seven_zip`, `:sit`, `:tar`, `:ttf`, `:xar`, `:zip`, `:naked`. (Example: [parse.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/p/parse.rb#L10))
 | `auto_updates`                             | no                            | `true`. Asserts that the cask artifacts auto-update. Use if `Check for Updates…` or similar is present in an app menu, but not if it only opens a webpage and does not do the download and installation for you.
 
@@ -417,22 +348,9 @@ depends_on formula: "unar"
 
 ##### Requiring an Exact macOS Release
 
-The value for `depends_on macos:` may be a symbol or an array of symbols, listing the exact compatible macOS releases.
+The value for `depends_on macos:` may be a symbol or an array of symbols, listing the exact compatible macOS releases. The available values for macOS releases are defined in the [MacOSVersion class](https://rubydoc.brew.sh/MacOSVersion.html).
 
-The available values for macOS releases are:
-
-| symbol             | corresponding release |
-| ------------------ | --------------------- |
-| `:el_capitan`      | `10.11`
-| `:sierra`          | `10.12`
-| `:high_sierra`     | `10.13`
-| `:mojave`          | `10.14`
-| `:catalina`        | `10.15`
-| `:big_sur`         | `11`
-| `:monterey`        | `12`
-| `:ventura`         | `13`
-
-Only major releases are covered (version numbers containing a single dot). The symbol form is used for readability. The following are all valid ways to enumerate the exact macOS release requirements for a cask:
+Only major releases are covered (10.x numbers containing a single dot or whole numbers since macOS 11). The symbol form is used for readability. The following are all valid ways to enumerate the exact macOS release requirements for a cask:
 
 ```ruby
 depends_on macos: :big_sur
@@ -479,7 +397,7 @@ depends_on arch: :arm64
 | ---------- | ----------- |
 | `formula:` | Homebrew formula
 | `cask:`    | cask token
-| `macos:`   | symbol, string, array, or comparison expression defining macOS release requirements
+| `macos:`   | symbol, array, or string comparison expression defining macOS release requirements
 | `arch:`    | symbol or array defining hardware requirements
 | `java:`    | *stub - not yet functional*
 
@@ -667,79 +585,7 @@ The `livecheck` stanza is used to automatically fetch the latest version of a ca
 
 Every `livecheck` block must contain a `url`, which can be either a string or a symbol pointing to other URLs in the cask (`:url` or `:homepage`).
 
-Additionally, a `livecheck` should specify which `strategy` should be used to extract the version:
-
-| `strategy`       | description |
-|----------------- | ----------- |
-| `:header_match`  | extract version from HTTP headers (e.g. `Location` or `Content-Disposition`)
-| `:page_match`    | extract version from page contents
-| `:sparkle`       | extract version from Sparkle appcast contents
-| `:extract_plist` | extract version from a `.plist` in the downloaded artifact
-
-Here is a basic example, extracting a simple version from a page:
-
-```ruby
-livecheck do
-  url "https://example.org/my-app/download"
-  strategy :page_match
-  regex(%r{href=.*?/MyApp-(\d+(?:\.\d+)*)\.zip}i)
-end
-```
-
-If the download URL is present on the homepage, we can use a symbol instead of a string:
-
-```ruby
-livecheck do
-  url :homepage
-  strategy :page_match
-  regex(%r{href=.*?/MyApp-(\d+(?:\.\d+)*)\.zip}i)
-end
-```
-
-The `:header_match` strategy will try to parse a version from the filename (in the `Content-Disposition` header) and the final URL (in the `Location` header). If that doesn't work, a `regex` can be specified, e.g.:
-
-```ruby
-strategy :header_match
-regex(/MyApp-(\d+(?:\.\d+)*)\.zip/i)
-```
-
-If the version depends on multiple header fields, a block can be specified, e.g.:
-
-```ruby
-strategy :header_match do |headers|
-  v = headers["content-disposition"][/MyApp-(\d+(?:\.\d+)*)\.zip/i, 1]
-  id = headers["location"][%r{/(\d+)/download$}i, 1]
-  next if v.blank? || id.blank?
-
-  "#{v},#{id}"
-end
-```
-
-Similarly, the `:page_match` strategy can also be used for more complex versions by specifying a block:
-
-```ruby
-strategy :page_match do |page|
-  match = page.match(%r{href=.*?/(\d+)/MyApp-(\d+(?:\.\d+)*)\.zip}i)
-  next if match.blank?
-
-  "#{match[2]},#{match[1]}"
-end
-```
-
-The `:sparkle` strategy takes a URL for an XML feed providing release information to an app that self-updates using the Sparkle framework. This URL can be found within the app bundle as the `SUFeedURL` property in `Contents/Info.plist` or by using the [`find-appcast`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/developer/bin/find-appcast) script. Run it with:
-
-```bash
-"$(brew --repository homebrew/cask)/developer/bin/find-appcast" '/path/to/application.app'
-```
-
-Both the `sparkle:version` and `sparkle:shortVersionString` attributes are checked by default; if only one is needed, specify `&:version` or `&:short_version`:
-
-```ruby
-url "https://manytricks.com/butler/appcast/"
-strategy :sparkle, &:short_version
-```
-
-If no means are available online for checking which version is current, as a last resort the `:extract_plist` strategy will have `brew livecheck` download the artifact and retrieve its version string from `Contents/Info.plist`.
+Refer to the [`brew livecheck` documentation](Brew-Livecheck.md) for how to write a `livecheck` block.
 
 ### Stanza: `name`
 
@@ -1076,18 +922,12 @@ When a plain URL string is insufficient to fetch a file, additional information 
 | key                | value       |
 | ------------------ | ----------- |
 | `verified:`        | string repeating the beginning of `url`, for [verification purposes](#when-url-and-homepage-domains-differ-add-verified)
-| `using:`           | the symbol `:post` is the only legal value
-| `cookies:`         | hash of cookies to be set in the download request
-| `referer:`         | string holding the URL to set as referer in the download request
-| `header:`          | string or array of strings holding the header(s) to set for the download request
+| `using:`           | the symbols `:post` and `:homebrew_curl` are the only legal values
+| `cookies:`         | hash of cookies to be set in the download request (Example: [oracle-jdk-javadoc.rb](https://github.com/Homebrew/homebrew-cask/blob/326c44e93aeb8d4dd73acea14a99ae215c75fdd6/Casks/o/oracle-jdk-javadoc.rb#L5-L8))
+| `referer:`         | string holding the URL to set as referer in the download request (Example: [firealpaca.rb](https://github.com/Homebrew/homebrew-cask/blob/c4b3f0742e044ae2a6e114eb6b90068763d0d12b/Casks/f/firealpaca.rb#L5-L6))
+| `header:`          | string or array of strings holding the header(s) to set for the download request (Example: [pull-6545](https://github.com/Homebrew/brew/pull/6545#issue-503302353), [issue-15590](https://github.com/Homebrew/brew/issues/15590#issue-1774825542))
 | `user_agent:`      | string holding the user agent to set for the download request. Can also be set to the symbol `:fake`, which will use a generic browser-like user agent string. We prefer `:fake` when the server does not require a specific user agent.
-| `data:`            | hash of parameters to be set in the POST request
-
-Example of using `cookies:`: [oracle-jdk-javadoc.rb](https://github.com/Homebrew/homebrew-cask/blob/326c44e93aeb8d4dd73acea14a99ae215c75fdd6/Casks/o/oracle-jdk-javadoc.rb#L5-L8)
-
-Example of using `referer:`: [firealpaca.rb](https://github.com/Homebrew/homebrew-cask/blob/c4b3f0742e044ae2a6e114eb6b90068763d0d12b/Casks/f/firealpaca.rb#L5-L6)
-
-Example of using `header:`: [issue-325182724](https://github.com/Homebrew/brew/pull/6545#issue-325182724) [issue-15590](https://github.com/Homebrew/brew/issues/15590)
+| `data:`            | hash of parameters to be set in the POST request (Example: [segger-jlink.rb](https://github.com/Homebrew/homebrew-cask/blob/38ac55614f146d68ae317594f0c119e9acbd7c9e/Casks/s/segger-jlink.rb#L6-L11))
 
 #### When URL and Homepage Domains Differ, Add `verified:`
 
@@ -1112,7 +952,7 @@ In rare cases, a distribution may not be available over ordinary HTTP/S. Subvers
 | key                | value       |
 | ------------------ | ----------- |
 | `using:`           | the symbol `:svn` is the only legal value
-| `revision:`        | string identifying the subversion revision to download
+| `revision:`        | string identifying the Subversion revision to download
 | `trust_cert:`      | set to `true` to automatically trust the certificate presented by the server (avoiding an interactive prompt)
 
 #### Git URLs
@@ -1125,7 +965,7 @@ Artifacts also may be distributed via Git repositories. URLs that end in `.git` 
 | `tag:`             | string identifying the Git tag to download
 | `revision:`        | string identifying the Git revision to download
 | `branch:`          | string identifying the Git branch to download
-| `only_path:`       | path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can significantly speed up downloads. If provided, artifact paths are relative to this path.
+| `only_path:`       | path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can significantly speed up downloads. If provided, artifact paths are relative to this path. (Example: [font-geo.rb](https://github.com/Homebrew/homebrew-cask-fonts/blob/bac691e1d7b5bd7372e7e0befae989a3ff7ad449/Casks/font-geo.rb#L5-L8))
 
 #### SourceForge/OSDN URLs
 
@@ -1178,7 +1018,7 @@ The block will be called immediately before downloading; its result value will b
 
 You can use the `url` stanza with either a direct argument or a block but not with both.
 
-Example of using the block syntax: [vlc-nightly.rb](https://github.com/Homebrew/homebrew-cask-versions/blob/2bf0f13dd49d263ebec0ca56e58ad8458633f789/Casks/vlc-nightly.rb#L5-L10)
+Example of using the block syntax: [vlc-nightly.rb](https://github.com/Homebrew/homebrew-cask-versions/blob/d3b9d0fdcf83f1f87c3ad64a852323a6e687c5f7/Casks/vlc-nightly.rb#L7-L12)
 
 ##### Mixing Additional URL Parameters With the Block Syntax
 
@@ -1190,28 +1030,28 @@ This is possible by returning a two-element array as a block result. The first e
 
 `version`, while related to the app’s own versioning, doesn’t have to follow it exactly. It is common to change it slightly so it can be [interpolated](https://en.wikipedia.org/wiki/String_interpolation#Ruby_/_Crystal) in other stanzas, usually in `url` to create a cask that only needs `version` and `sha256` changes when updated. This can be taken further, when needed, with [Ruby String methods](https://ruby-doc.org/core/String.html).
 
-For example, instead of
+For example, instead of:
 
 ```ruby
 version "1.2.3"
 url "https://example.com/file-version-123.dmg"
 ```
 
-we can use
+we can use:
 
 ```ruby
 version "1.2.3"
 url "https://example.com/file-version-#{version.delete('.')}.dmg"
 ```
 
-We can also leverage the power of regular expressions. So instead of
+We can also leverage the power of regular expressions. So instead of:
 
 ```ruby
 version "1.2.3build4"
 url "https://example.com/1.2.3/file-version-1.2.3build4.dmg"
 ```
 
-we can use
+we can use:
 
 ```ruby
 version "1.2.3build4"
@@ -1291,7 +1131,86 @@ Manual creation can be facilitated with:
 * An uninstaller tool such as [AppCleaner](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/a/appcleaner.rb).
 * Inspection of the usual paths, i.e. `/Library/{'Application Support',LaunchAgents,LaunchDaemons,Frameworks,Logs,Preferences,PrivilegedHelperTools}` and `~/Library/{'Application Support',Caches,Containers,LaunchAgents,Logs,Preferences,'Saved Application State'}`.
 
----
+## Conditional Statements
+
+### Handling different system configurations
+
+Casks can deliver specific versions of artifacts depending on the current system version or CPU architecture by using the [`on_<system>` syntax](Formula-Cookbook.md#handling-different-system-configurations), which replaces conditional statements using `MacOS.version` or `Hardware::CPU`. Each block can contain stanzas that set which version to download and customize installation/uninstallation and livecheck behaviour for each supported system. Example (from [calibre.rb](https://github.com/Homebrew/homebrew-cask/blob/482c34e950da8d649705f4aaea7b760dcb4b5402/Casks/c/calibre.rb#L2-L34)):
+
+```ruby
+on_high_sierra :or_older do
+  version "3.48.0"
+  sha256 "68829cd902b8e0b2b7d5cf7be132df37bcc274a1e5720b4605d2dd95f3a29168"
+
+  livecheck do
+    skip "Legacy version"
+  end
+end
+on_mojave do
+  # ...
+end
+on_catalina do
+  # ...
+end
+on_big_sur :or_newer do
+  version "6.25.0"
+  sha256 "a7ed19ae0526630ccb138b9afee6dc5169904180b02f7a3089e78d3e0022753b"
+
+  livecheck do
+    url "https://github.com/kovidgoyal/calibre"
+    strategy :github_latest
+  end
+end
+```
+
+To adjust the URL depending on the current CPU architecture, use the special `arch` stanza to define the unique components of the respective URLs for substitution in the `url`, and locate the unique `version` and `sha256` stanzas within `on_arm` an `on_intel` blocks. Example (from [inkscape.rb](https://github.com/Homebrew/homebrew-cask/blob/11f6966bf17628b98895d64a61a4fb0bc1bb31bf/Casks/i/inkscape.rb#L2-L13)):
+
+```ruby
+arch arm: "arm64", intel: "x86_64"
+
+on_arm do
+  version "1.3.0,42339"
+  sha256 "e37b5f8b8995a0ecc41ca7fcae90d79bcd652b7a25d2f6e52c4e2e79aef7fec1"
+end
+on_intel do
+  version "1.3.0,42338"
+  sha256 "e97de6804d8811dd2f1bc45d709d87fb6fe45963aae710c24a4ed655ecd8eb8a"
+end
+
+url "https://inkscape.org/gallery/item/#{version.csv.second}/Inkscape-#{version.csv.first}_#{arch}.dmg"
+```
+
+More complex URL adjustments can be done by calling `on_arch_conditional` directly. (Example: [paraview.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/p/paraview.rb#L2-L10))
+
+### Switch Between Languages or Regions
+
+If a cask is available in multiple languages, you can use the [`language` stanza](#stanza-language) to switch between languages or regions based on the system locale.
+
+## Arbitrary Ruby Methods
+
+In the exceptional case that the cask DSL is insufficient, it is possible to define arbitrary Ruby variables and methods inside the cask by creating a `Utils` namespace. Example:
+
+```ruby
+cask "myapp" do
+  module Utils
+    def self.arbitrary_method
+      ...
+    end
+  end
+
+  name "MyApp"
+  version "1.0"
+  sha256 "a32565cdb1673f4071593d4cc9e1c26bc884218b62fef8abc450daa47ba8fa92"
+
+  url "https://#{Utils.arbitrary_method}"
+  homepage "https://www.example.com/"
+  ...
+end
+```
+
+This should be used sparingly: any method which is needed by two or more casks should instead be rolled into Homebrew/brew. Care must also be taken that such methods be very efficient.
+
+Variables and methods should not be defined outside the `Utils` namespace, as they may collide with Homebrew Cask internals.
 
 ## Token reference
 
