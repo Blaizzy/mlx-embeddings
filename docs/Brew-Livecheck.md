@@ -114,7 +114,32 @@ If the upstream version format needs to be manipulated to match the formula/cask
 
 #### `PageMatch` `strategy` block
 
-In the example below, we're converting a date format like `2020-01-01` into `20200101`.
+Here is a basic example, extracting a simple version from a page:
+
+```ruby
+livecheck do
+  url "https://example.org/my-app/download"
+  regex(%r{href=.*?/MyApp-(\d+(?:\.\d+)*)\.zip}i)
+  strategy :page_match
+end
+```
+
+More complex versions can be handled by specifying a block.
+
+```ruby
+livecheck do
+  url "https://example.org/my-app/download"
+  regex(%r{href=.*?/(\d+)/MyApp-(\d+(?:\.\d+)*)\.zip}i)
+  strategy :page_match do |page, regex|
+    match = page.match(regex)
+    next if match.blank?
+
+    "#{match[2]},#{match[1]}"
+  end
+end
+```
+
+In the example below, we're scanning the contents of the homepage for a date format like `2020-01-01` and converting it into `20200101`.
 
 ```ruby
 livecheck do
@@ -126,7 +151,34 @@ livecheck do
 end
 ```
 
-The `PageMatch` `strategy` block style seen here also applies to any strategy that uses `PageMatch` internally.
+The `PageMatch` `strategy` block style seen here also applies to any site-specific strategy that uses `PageMatch` internally.
+
+#### `HeaderMatch` `strategy` block
+
+A `strategy` block for `HeaderMatch` will try to parse a version from the filename (in the `Content-Disposition` header) and the final URL (in the `Location` header). If that doesn't work, a `regex` can be specified.
+
+```ruby
+livecheck do
+  url "https://example.org/my-app/download/latest"
+  regex(/MyApp-(\d+(?:\.\d+)*)\.zip/i)
+  strategy :header_match
+end
+```
+
+If the version depends on multiple header fields, a block can be specified.
+
+```ruby
+livecheck do
+  url "https://example.org/my-app/download/latest"
+  strategy :header_match do |headers|
+    v = headers["content-disposition"][/MyApp-(\d+(?:\.\d+)*)\.zip/i, 1]
+    id = headers["location"][%r{/(\d+)/download$}i, 1]
+    next if v.blank? || id.blank?
+
+    "#{v},#{id}"
+  end
+end
+```
 
 #### `Git` `strategy` block
 
@@ -187,6 +239,17 @@ end
 
 You can find more information on the response JSON from this API endpoint in the related [GitHub REST API documentation](https://docs.github.com/en/rest/releases/releases?apiVersion=latest#list-releases).
 
+#### `ElectronBuilder` `strategy` block
+
+A `strategy` block for `ElectronBuilder` fetches content at a URL and parses it as an electron-builder appcast in YAML format. It's used for casks of macOS applications built using the Electron framework.
+
+```ruby
+livecheck do
+  url "https://example.org/my-app/latest-mac.yml"
+  strategy :electron_builder
+end
+```
+
 #### `Json` `strategy` block
 
 A `strategy` block for `Json` receives parsed JSON data and, if provided, a regex. For example, if we have an object containing an array of objects with a `version` string, we can select only the members that match the regex and isolate the relevant version text as follows:
@@ -204,9 +267,13 @@ end
 
 #### `Sparkle` `strategy` block
 
-A `strategy` block for `Sparkle` receives an `item` which has methods for the `short_version`, `version`, `url` and `title`.
+A `strategy` block for `Sparkle` receives an `item` which has methods for the `version`, `short_version`, `nice_version`, `url`, `channel` and `title`. It expects a URL for an XML feed providing release information to a macOS application that self-updates using the Sparkle framework. This URL can be found within the app bundle as the `SUFeedURL` property in `Contents/Info.plist` or by using the [`find-appcast`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/developer/bin/find-appcast) script. Run it with:
 
-The default pattern for the `Sparkle` strategy is `"#{item.short_version},#{item.version}"` if both are set. In the example below, the `url` also includes a download ID which is needed:
+```bash
+"$(brew --repository homebrew/cask)/developer/bin/find-appcast" '/path/to/application.app'
+```
+
+The default pattern for the `Sparkle` strategy is to generate `"#{item.short_version},#{item.version}"` from `sparkle:shortVersionString` and `sparkle:version` if both are set. In the example below, the `url` also includes a download ID which is needed:
 
 ```ruby
 livecheck do
@@ -214,6 +281,15 @@ livecheck do
   strategy :sparkle do |item|
     "#{item.short_version},#{item.version}:#{item.url[%r{/(\d+)/[^/]+\.zip}i, 1]}"
   end
+end
+```
+
+To use only one, specify `&:version`, `&:short_version` or `&:nice_version`:
+
+```ruby
+livecheck do
+  url "https://www.example.com/example.xml"
+  strategy :sparkle, &:short_version
 end
 ```
 
@@ -244,6 +320,28 @@ livecheck do
   strategy :yaml do |yaml, regex|
     yaml["versions"].select { |item| item["version"]&.match?(regex) }
                     .map { |item| item["version"][regex, 1] }
+  end
+end
+```
+
+#### `ExtractPlist` `strategy` block
+
+If no means are available online for checking which version of a macOS package is current, as a last resort the `:extract_plist` strategy will have `brew livecheck` download the artifact and retrieve its version string from contained `.plist` files.
+
+```ruby
+livecheck do
+  url :url
+  strategy :extract_plist
+end
+```
+
+A `strategy` block for `ExtractPlist` receives a hash containing keys for each found bundle identifier and `item`s with methods for each `version` and `short_version`.
+
+```ruby
+livecheck do
+  url :url
+  strategy :extract_plist do |items|
+    items["com.example.MyApp"].short_version
   end
 end
 ```
