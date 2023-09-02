@@ -35,7 +35,7 @@ module Homebrew
     all = args.eval_all?
 
     if all
-      puts_options Formula.all.sort, args: args
+      puts_options Formula.all(eval_all: args.eval_all?).sort, args: args
     elsif args.installed?
       puts_options Formula.installed.sort, args: args
     elsif args.command.present?

@@ -116,7 +116,7 @@ module Homebrew
       end
 
       if show_formulae_and_casks || args.formula?
-        deps += args.installed? ? Formula.installed : Formula.all
+        deps += args.installed? ? Formula.installed : Formula.all(eval_all: args.eval_all?)
       end
       if show_formulae_and_casks || args.cask?
         deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.all
