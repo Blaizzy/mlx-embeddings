@@ -24,6 +24,8 @@ module Cask
 
     sig { override.returns(T.nilable(::URL)) }
     def url
+      return if cask.url.nil?
+
       @url ||= ::URL.new(cask.url.to_s, cask.url.specs)
     end
 
