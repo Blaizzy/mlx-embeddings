@@ -103,11 +103,11 @@ module Homebrew
         raise UsageError, "`brew unbottled --dependents` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
       end
 
-      formulae = all_formulae = Formula.all
+      formulae = all_formulae = Formula.all(eval_all: args.eval_all?)
 
       @sort = " (sorted by number of dependents)"
     elsif all
-      formulae = all_formulae = Formula.all
+      formulae = all_formulae = Formula.all(eval_all: args.eval_all?)
     else
       formula_installs = {}
 
@@ -134,7 +134,7 @@ module Homebrew
       end.compact
       @sort = " (sorted by installs in the last 90 days; top 10,000 only)"
 
-      all_formulae = Formula.all
+      all_formulae = Formula.all(eval_all: args.eval_all?)
     end
 
     [formulae, all_formulae, formula_installs]
