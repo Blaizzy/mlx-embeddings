@@ -309,9 +309,6 @@ on_request: true)
       end
     end
 
-    # TODO: move dependencies to a separate class,
-    #       dependencies should also apply for `brew cask stage`,
-    #       override dependencies with `--force` or perhaps `--force-deps`
     def satisfy_cask_and_formula_dependencies
       return if installed_as_dependency?
 
