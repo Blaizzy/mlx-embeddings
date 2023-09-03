@@ -74,12 +74,20 @@ class AbstractDownloadStrategy
 
   # Disable any output during downloading.
   #
-  # TODO: Deprecate once we have an explicitly documented alternative.
-  #
   # @api public
   sig { void }
-  def shutup!
+  def quiet!
     @quiet = true
+  end
+
+  # Disable any output during downloading.
+  #
+  # @deprecated
+  # @api private
+  sig { void }
+  def shutup!
+    # odeprecated "AbstractDownloadStrategy#shutup!", "AbstractDownloadStrategy#quiet!"
+    quiet!
   end
 
   def quiet?
