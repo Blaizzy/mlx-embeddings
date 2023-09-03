@@ -48,15 +48,11 @@ module Homebrew
         odie "Need to download #{url} but cannot as root! Run `brew update` without `sudo` first then try again."
       end
 
-      # TODO: consider using more of Utils::Curl
-      curl_args = %W[
+      curl_args = Utils::Curl.curl_args + %W[
         --compressed
         --speed-limit #{ENV.fetch("HOMEBREW_CURL_SPEED_LIMIT")}
         --speed-time #{ENV.fetch("HOMEBREW_CURL_SPEED_TIME")}
       ]
-      curl_args << "--progress-bar" unless Context.current.verbose?
-      curl_args << "--verbose" if Homebrew::EnvConfig.curl_verbose?
-      curl_args << "--silent" if !$stdout.tty? || Context.current.quiet?
 
       insecure_download = (ENV["HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD"].present? ||
                            ENV["HOMEBREW_FORCE_BREWED_CA_CERTIFICATES"].present?) &&
