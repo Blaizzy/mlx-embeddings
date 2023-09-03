@@ -445,15 +445,8 @@ module Homebrew
 
     def audit_gcc_dependency
       return unless @core_tap
-      return if !@strict && !(@git && formula.tap.git?) # git log is required for non-strict audit
       return unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
       return unless linux_only_gcc_dep?(formula)
-
-      bad_gcc_dep = @strict || begin
-        fv = FormulaVersions.new(formula)
-        fv.formula_at_revision("origin/HEAD") { |prev_f| !linux_only_gcc_dep?(prev_f) }
-      end
-      return unless bad_gcc_dep
 
       problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC."
     end
