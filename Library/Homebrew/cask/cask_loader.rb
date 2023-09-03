@@ -277,7 +277,7 @@ module Cask
             sha256 json_cask[:sha256]
           end
 
-          url json_cask[:url], **json_cask.fetch(:url_specs, {})
+          url json_cask[:url], **json_cask.fetch(:url_specs, {}) if json_cask[:url].present?
           appcast json_cask[:appcast] if json_cask[:appcast].present?
           json_cask[:name].each do |cask_name|
             name cask_name
