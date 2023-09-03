@@ -271,6 +271,7 @@ module Homebrew
 
       already_broken_dependents = check_broken_dependents(installed_formulae)
 
+      # TODO: this should be refactored to use FormulaInstaller new logic
       outdated_dependents =
         installed_formulae.flat_map(&:runtime_installed_formula_dependents)
                           .uniq

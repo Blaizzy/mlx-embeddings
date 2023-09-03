@@ -96,6 +96,7 @@ class FormulaInstaller
     @requirement_messages = []
     @poured_bottle = false
     @start_time = nil
+    @bottle_tab_runtime_dependencies = {}
 
     # Take the original formula instance, which might have been swapped from an API instance to a source instance
     @formula = previously_fetched_formula if previously_fetched_formula
@@ -218,6 +219,7 @@ class FormulaInstaller
     end
 
     Tab.clear_cache
+
     verify_deps_exist unless ignore_deps?
     forbidden_license_check
 
@@ -518,6 +520,9 @@ on_request: installed_on_request?, options: options)
   def compute_dependencies(use_cache: true)
     @compute_dependencies = nil unless use_cache
     @compute_dependencies ||= begin
+      # Needs to be done before expand_dependencies
+      fetch_bottle_tab if pour_bottle?
+
       check_requirements(expand_requirements)
       expand_dependencies
     end
@@ -610,9 +615,11 @@ on_request: installed_on_request?, options: options)
       keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) &&
                           (formula.head? || !dependent.latest_version_installed?)
 
+      bottle_runtime_version = @bottle_tab_runtime_dependencies.dig(dep.name, "version")
+
       if dep.prune_from_option?(build) || ((dep.build? || dep.test?) && !keep_build_test)
         Dependency.prune
-      elsif dep.satisfied?(inherited_options[dep.name])
+      elsif dep.satisfied?(inherited_options[dep.name], minimum_version: bottle_runtime_version)
         Dependency.skip
       end
     end
@@ -1198,6 +1205,20 @@ on_request: installed_on_request?, options: options)
   end
 
   sig { void }
+  def fetch_bottle_tab
+    @fetch_bottle_tab ||= begin
+      formula.fetch_bottle_tab
+      @bottle_tab_runtime_dependencies = formula.bottle_tab_attributes
+                                                .fetch("runtime_dependencies", [])
+                                                .index_by { |dep| dep["full_name"] }
+                                                .freeze
+      true
+    rescue DownloadError
+      @fetch_bottle_tab = true
+    end
+  end
+
+  sig { void }
   def fetch
     return if previously_fetched_formula
 
@@ -1208,7 +1229,7 @@ on_request: installed_on_request?, options: options)
     oh1 "Fetching #{Formatter.identifier(formula.full_name)}".strip
 
     if pour_bottle?(output_warning: true)
-      formula.fetch_bottle_tab
+      fetch_bottle_tab
     else
       @formula = Homebrew::API::Formula.source_download(formula) if formula.loaded_from_api?
 
