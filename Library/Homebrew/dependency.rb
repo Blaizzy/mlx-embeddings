@@ -46,14 +46,23 @@ class Dependency
     formula
   end
 
-  def installed?
-    to_formula.latest_version_installed?
-  rescue FormulaUnavailableError
-    false
+  def installed?(minimum_version: nil)
+    formula = begin
+      to_formula
+    rescue FormulaUnavailableError
+      nil
+    end
+    return false unless formula
+
+    if minimum_version.present?
+      formula.any_version_installed? && (formula.any_installed_version.version >= minimum_version)
+    else
+      formula.latest_version_installed?
+    end
   end
 
-  def satisfied?(inherited_options = [])
-    installed? && missing_options(inherited_options).empty?
+  def satisfied?(inherited_options = [], minimum_version: nil)
+    installed?(minimum_version: minimum_version) && missing_options(inherited_options).empty?
   end
 
   def missing_options(inherited_options)
@@ -239,8 +248,8 @@ class UsesFromMacOSDependency < Dependency
     [name, tags, bounds].hash
   end
 
-  def installed?
-    use_macos_install? || super
+  def installed?(minimum_version: nil)
+    use_macos_install? || super(minimum_version: minimum_version)
   end
 
   sig { returns(T::Boolean) }
