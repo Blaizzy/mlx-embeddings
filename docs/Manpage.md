@@ -1300,12 +1300,14 @@ The generated files are written to the current directory.
 
 Generate Homebrew's manpages and shell completions.
 
-### `install-bundler-gems` [`--groups=`]
+### `install-bundler-gems` [`--groups=`] [`--add-groups=`]
 
 Install Homebrew's Bundler gems.
 
 * `--groups`:
-  Installs the specified comma-separated list of gem groups (default: last used).
+  Installs the specified comma-separated list of gem groups (default: last used). Replaces any previously installed groups.
+* `--add-groups`:
+  Installs the specified comma-separated list of gem groups, in addition to those already installed.
 
 ### `irb` [`--examples`] [`--pry`]
 

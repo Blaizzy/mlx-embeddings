@@ -1858,12 +1858,16 @@ Generate API data without writing it to files\.
 .SS "\fBgenerate\-man\-completions\fR"
 Generate Homebrew\'s manpages and shell completions\.
 .
-.SS "\fBinstall\-bundler\-gems\fR [\fB\-\-groups=\fR]"
+.SS "\fBinstall\-bundler\-gems\fR [\fB\-\-groups=\fR] [\fB\-\-add\-groups=\fR]"
 Install Homebrew\'s Bundler gems\.
 .
 .TP
 \fB\-\-groups\fR
-Installs the specified comma\-separated list of gem groups (default: last used)\.
+Installs the specified comma\-separated list of gem groups (default: last used)\. Replaces any previously installed groups\.
+.
+.TP
+\fB\-\-add\-groups\fR
+Installs the specified comma\-separated list of gem groups, in addition to those already installed\.
 .
 .SS "\fBirb\fR [\fB\-\-examples\fR] [\fB\-\-pry\fR]"
 Enter the interactive Homebrew Ruby shell\.
