@@ -46,3 +46,5 @@ module Kernel
   sig { params(arg0: NilClass).returns(NilClass) }
   def set_trace_func(arg0); end
 end
+
+class Gem::Security::Exception < Gem::Exception; end
