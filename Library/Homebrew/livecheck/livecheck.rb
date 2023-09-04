@@ -561,25 +561,24 @@ module Homebrew
       end
 
       host = uri.host
-      domain = uri.domain
       path = uri.path
       return url if host.nil? || path.nil?
 
-      domain = host = "github.com" if host == "github.s3.amazonaws.com"
+      host = "github.com" if host == "github.s3.amazonaws.com"
       path = path.delete_prefix("/").delete_suffix(".git")
       scheme = uri.scheme
 
-      if domain == "github.com"
+      if host == "github.com"
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.delete_prefix("downloads/").split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
-      elsif GITEA_INSTANCES.include?(domain)
+      elsif GITEA_INSTANCES.include?(host)
         return url if path.match? %r{/releases/latest/?$}
 
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
-      elsif GOGS_INSTANCES.include?(domain)
+      elsif GOGS_INSTANCES.include?(host)
         owner, repo = path.split("/")
         url = "#{scheme}://#{host}/#{owner}/#{repo}.git"
       # sourcehut
