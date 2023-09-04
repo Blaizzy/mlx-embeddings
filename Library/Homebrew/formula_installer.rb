@@ -1213,7 +1213,7 @@ on_request: installed_on_request?, options: options)
                                                 .index_by { |dep| dep["full_name"] }
                                                 .freeze
       true
-    rescue DownloadError
+    rescue DownloadError, ArgumentError
       @fetch_bottle_tab = true
     end
   end
