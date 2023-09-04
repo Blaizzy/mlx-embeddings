@@ -94,7 +94,7 @@ module Homebrew
     args = bottle_args.parse
 
     if args.merge?
-      Homebrew.install_bundler_gems!
+      Homebrew.install_bundler_gems!(groups: ["ast"])
       return merge(args: args)
     end
 

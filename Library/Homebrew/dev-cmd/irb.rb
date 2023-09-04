@@ -63,6 +63,7 @@ module Homebrew
     end
 
     if args.pry?
+      Homebrew.install_bundler_gems!(groups: ["pry"])
       require "pry"
     else
       require "irb"

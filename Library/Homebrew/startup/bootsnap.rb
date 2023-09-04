@@ -23,7 +23,7 @@ if homebrew_bootsnap_enabled
     require "bootsnap"
   rescue LoadError
     unless ENV["HOMEBREW_BOOTSNAP_RETRY"]
-      Homebrew.install_bundler_gems!(only_warn_on_failure: true)
+      Homebrew.install_bundler_gems!(groups: ["bootsnap"], only_warn_on_failure: true)
 
       ENV["HOMEBREW_BOOTSNAP_RETRY"] = "1"
       exec ENV.fetch("HOMEBREW_BREW_FILE"), *ARGV

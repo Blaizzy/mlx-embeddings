@@ -85,10 +85,6 @@ module Homebrew
                 key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
                 restore-keys: ${{ runner.os }}-rubygems-
 
-            - name: Install Homebrew Bundler RubyGems
-              if: steps.cache.outputs.cache-hit != 'true'
-              run: brew install-bundler-gems
-
             - run: brew test-bot --only-cleanup-before
 
             - run: brew test-bot --only-setup

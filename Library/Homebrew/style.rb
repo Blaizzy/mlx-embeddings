@@ -82,7 +82,7 @@ module Homebrew
     def self.run_rubocop(files, output_type,
                          fix: false, except_cops: nil, only_cops: nil, display_cop_names: false, reset_cache: false,
                          debug: false, verbose: false)
-      Homebrew.install_bundler_gems!
+      Homebrew.install_bundler_gems!(groups: ["style"])
 
       require "warnings"
 

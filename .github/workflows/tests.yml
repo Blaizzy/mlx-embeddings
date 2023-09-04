@@ -38,11 +38,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
+          key: ${{ runner.os }}-rubygems-syntax-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-syntax-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=style,typecheck
 
       - name: Install shellcheck and shfmt
         run: brew install shellcheck shfmt
@@ -82,11 +82,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
+          key: ${{ runner.os }}-rubygems-tap-syntax-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-tap-syntax-
 
       - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
+        run: brew install-bundler-gems --groups=style
 
       - name: Run brew style on homebrew-core
         run: brew style homebrew/core
@@ -138,16 +138,6 @@ jobs:
           cask: false
           test-bot: false
 
-      - name: Cache Bundler RubyGems
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
-
-      - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
-
       - name: Run brew readall on homebrew/core
         run: brew readall --os=all --arch=all --aliases homebrew/core
 
@@ -170,16 +160,6 @@ jobs:
           core: true
           cask: true
           test-bot: false
-
-      - name: Cache Bundler RubyGems
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
-
-      - name: Install Bundler RubyGems
-        run: brew install-bundler-gems --groups=all
 
       - name: Set up Homebrew all cask taps
         run: |
@@ -285,16 +265,6 @@ jobs:
           core: false
           cask: false
           test-bot: false
-
-      - name: Cache Bundler RubyGems
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
-
-      - name: Install Bundler RubyGems
-        run: brew install-bundler-gems
 
       - name: Run brew update-tests
         run: |

@@ -51,7 +51,7 @@ module Homebrew
           end
         end
       else
-        Homebrew.install_bundler_gems!
+        Homebrew.install_bundler_gems!(groups: ["ast"])
         require "utils/ast"
 
         formula_ast = Utils::AST::FormulaAST.new(formula.path.read)
