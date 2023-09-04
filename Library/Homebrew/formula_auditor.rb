@@ -124,7 +124,7 @@ module Homebrew
         end
       end
 
-      return if !formula.core_formula? && formula.path == formula.tap.new_formula_path(formula.name)
+      return if !formula.core_formula? || formula.path == formula.tap.new_formula_path(formula.name)
 
       problem <<~EOS
         Formula is in wrong path:
