@@ -65,7 +65,7 @@ jobs:
         run: rm -f "${RUNNER_TEMP}/${TEMPORARY_CERTIFICATE_FILE}"
 
       - name: Checkout another Homebrew to brew subdirectory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: brew
           fetch-depth: 0
