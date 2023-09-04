@@ -123,6 +123,14 @@ module Homebrew
           EOS
         end
       end
+
+      return if !formula.core_formula? && formula.path == formula.tap.new_formula_path(formula.name)
+
+      problem <<~EOS
+        Formula is in wrong path:
+          Expected: #{formula.tap.new_formula_path(formula.name)}
+            Actual: #{formula.path}
+      EOS
     end
 
     def self.aliases
