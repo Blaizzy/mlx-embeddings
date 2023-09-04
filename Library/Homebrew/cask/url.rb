@@ -148,7 +148,7 @@ module Cask
       params(
         uri:             T.nilable(T.any(URI::Generic, String)),
         verified:        T.nilable(String),
-        using:           T.nilable(Symbol),
+        using:           T.any(Class, Symbol, NilClass),
         tag:             T.nilable(String),
         branch:          T.nilable(String),
         revisions:       T.nilable(T::Array[String]),
