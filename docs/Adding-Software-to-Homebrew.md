@@ -83,6 +83,8 @@ cask "noisy" do
   homepage "https://github.com/jonshea/Noisy"
 
   app "Noisy.app"
+
+  zap trash: "~/Library/Preferences/com.rathertremendous.noisy.plist"
 end
 ```
 
@@ -92,17 +94,17 @@ You will also see how to adapt `version` to the download `url`. Use [our custom 
 
 ```ruby
 cask "airdisplay" do
-  version "3.4.2,26581"
+  version "3.4.2"
   sha256 "272d14f33b3a4a16e5e0e1ebb2d519db4e0e3da17f95f77c91455b354bee7ee7"
 
-  url "https://www.avatron.com/updates/software/airdisplay/ad#{version.before_comma.no_dots}.zip"
+  url "https://www.avatron.com/updates/software/airdisplay/ad#{version.no_dots}.zip"
   name "Air Display"
   desc "Utility for using a tablet as a second monitor"
   homepage "https://avatron.com/applications/air-display/"
 
   livecheck do
     url "https://www.avatron.com/updates/software/airdisplay/appcast.xml"
-    strategy :sparkle
+    strategy :sparkle, &:short_version
   end
 
   depends_on macos: ">= :mojave"
@@ -120,7 +122,7 @@ end
 
 The cask **token** is the mnemonic string people will use to interact with the cask via `brew install`, etc. The name of the cask **file** is simply the token with the extension `.rb` appended.
 
-The easiest way to generate a token for a cask is to run this command:
+The easiest way to generate a token for a cask is to run `generate_cask_token`:
 
 ```bash
 $(brew --repository homebrew/cask)/developer/bin/generate_cask_token "/full/path/to/new/software.app"
@@ -198,13 +200,13 @@ When a downloaded archive expands to a subfolder, the subfolder name must be inc
 
 Example:
 
-1. Texmaker is downloaded to the file `TexmakerMacosxLion.zip`.
-1. `TexmakerMacosxLion.zip` unzips to a folder called `TexmakerMacosxLion`.
-1. The folder `TexmakerMacosxLion` contains the application `texmaker.app`.
+1. Simple Floating Clock is downloaded to the file `sfc.zip`.
+1. `sfc.zip` unzips to a folder called `Simple Floating Clock`.
+1. The folder `Simple Floating Clock` contains the application `SimpleFloatingClock.app`.
 1. So, the `app` stanza should include the subfolder as a relative path:
 
    ```ruby
-   app "TexmakerMacosxLion/texmaker.app"
+   app "Simple Floating Clock/SimpleFloatingClock.app"
    ```
 
 ### Testing and auditing the cask
@@ -246,7 +248,7 @@ If your application and Homebrew Cask do not work well together, feel free to [f
 
 See the [Acceptable Casks documentation](Acceptable-Casks.md#finding-a-home-for-your-cask).
 
-Hop into your Tap and check to make sure your new cask is there:
+Hop into your tap and check to make sure your new cask is there:
 
 ```bash
 $ cd "$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
@@ -268,7 +270,7 @@ Switched to a new branch 'my-new-cask-branch'
 Stage your cask with:
 
 ```bash
-git add Casks/my-new-cask.rb
+git add Casks/m/my-new-cask.rb
 ```
 
 You can view the changes that are to be committed with:

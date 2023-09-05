@@ -27,7 +27,7 @@ This can be accomplished by adding a `livecheck` block to the formula/cask/resou
 
 * **Only use `strategy` when it's necessary**. For example, if livecheck is already using the `Git` strategy for a URL, it's not necessary to use `strategy :git`. However, if `Git` applies to a URL but we need to use `PageMatch`, it's necessary to specify `strategy :page_match`.
 
-* **Only use the `GithubLatest` and `GithubReleases` strategies when they are necessary and correct**. GitHub rate limits API requests, so we only use these strategies when `Git` isn't sufficient or appropriate. `GithubLatest` should only be used if the upstream repository has a "latest" release for a suitable version and either the formula/cask uses a release asset or the `Git` strategy can't correctly identify the latest release version. `GithubReleases` should only be used if the upstream repository uses releases and both the `Git` and `GithubLatest` strategies aren't suitable.
+* **Only use the `GithubLatest` and `GithubReleases` strategies when they are necessary and correct**. GitHub rate-limits API requests, so we only use these strategies when `Git` isn't sufficient or appropriate. `GithubLatest` should only be used if the upstream repository has a "latest" release for a suitable version and either the formula/cask uses a release asset or the `Git` strategy can't correctly identify the latest release version. `GithubReleases` should only be used if the upstream repository uses releases and both the `Git` and `GithubLatest` strategies aren't suitable.
 
 ### URL guidelines
 
