@@ -3,6 +3,8 @@
 require "utils/curl"
 
 describe "Utils::Curl" do
+  include Utils::Curl
+
   let(:details) do
     details = {
       normal:     {},

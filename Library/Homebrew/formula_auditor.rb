@@ -11,6 +11,7 @@ module Homebrew
   # @api private
   class FormulaAuditor
     include FormulaCellarChecks
+    include Utils::Curl
 
     attr_reader :formula, :text, :problems, :new_formula_problems
 
@@ -537,12 +538,14 @@ module Homebrew
         spec.using == :homebrew_curl
       end
 
-      if (http_content_problem = curl_check_http_content(homepage,
-                                                         SharedAudits::URL_TYPE_HOMEPAGE,
-                                                         user_agents:       [:browser, :default],
-                                                         check_content:     true,
-                                                         strict:            @strict,
-                                                         use_homebrew_curl: use_homebrew_curl))
+      if (http_content_problem = curl_check_http_content(
+        homepage,
+        SharedAudits::URL_TYPE_HOMEPAGE,
+        user_agents:       [:browser, :default],
+        check_content:     true,
+        strict:            @strict,
+        use_homebrew_curl: use_homebrew_curl,
+      ))
         problem http_content_problem
       end
     end

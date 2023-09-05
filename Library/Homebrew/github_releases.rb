@@ -9,7 +9,6 @@ require "json"
 # @api private
 class GitHubReleases
   include Context
-  include Utils::Curl
 
   URL_REGEX = %r{https://github\.com/([\w-]+)/([\w-]+)?/releases/download/(.+)}.freeze
 
