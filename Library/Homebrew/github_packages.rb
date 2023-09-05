@@ -20,6 +20,11 @@ class GitHubPackages
 
   URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
 
+  # Valid OCI tag characters
+  # https://github.com/opencontainers/distribution-spec/blob/main/spec.md#workflow-categories
+  VALID_OCI_TAG_REGEX = /^[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}$/.freeze
+  INVALID_OCI_TAG_CHARS_REGEX = /[^a-zA-Z0-9._-]/.freeze
+
   GZIP_BUFFER_SIZE = 64 * 1024
   private_constant :GZIP_BUFFER_SIZE
 
@@ -117,10 +122,11 @@ class GitHubPackages
   end
 
   def self.image_version_rebuild(version_rebuild)
-    # invalid docker tag characters
-    # TODO: consider changing the actual versions here and make an audit to
-    # avoid these weird characters being used
-    version_rebuild.gsub(/[+#~]/, ".")
+    return version_rebuild if version_rebuild.match?(VALID_OCI_TAG_REGEX)
+
+    # odeprecated "GitHub Packages versions that do not match #{VALID_OCI_TAG_REGEX.source}",
+    #             "declaring a new `version` without these characters"
+    version_rebuild.gsub(INVALID_OCI_TAG_CHARS_REGEX, ".")
   end
 
   private
