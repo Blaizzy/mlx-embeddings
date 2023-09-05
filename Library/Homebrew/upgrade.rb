@@ -22,6 +22,7 @@ module Homebrew
       installed_on_request: false,
       force_bottle: false,
       build_from_source_formulae: [],
+      dependents: false,
       interactive: false,
       keep_tmp: false,
       debug_symbols: false,
@@ -70,6 +71,20 @@ module Homebrew
           )
           unless dry_run
             fi.prelude
+
+            # Don't need to install this bottle if all the runtime dependencies
+            # are already satisfied.
+            next if dependents && fi.bottle_tab_runtime_dependencies.presence&.none? do |dependency, hash|
+              installed_version = begin
+                Formula[dependency].any_installed_version
+              rescue FormulaUnavailableError
+                nil
+              end
+              next true unless installed_version
+
+              Version.new(hash["version"]) > installed_version.version
+            end
+
             fi.fetch
           end
           fi
@@ -336,6 +351,7 @@ module Homebrew
           installed_on_request:       installed_on_request,
           force_bottle:               force_bottle,
           build_from_source_formulae: build_from_source_formulae,
+          dependents:                 true,
           interactive:                interactive,
           keep_tmp:                   keep_tmp,
           debug_symbols:              debug_symbols,
