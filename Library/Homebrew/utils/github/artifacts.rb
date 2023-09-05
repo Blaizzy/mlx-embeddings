@@ -40,10 +40,10 @@ class GitHubArtifactDownloadStrategy < AbstractFileDownloadStrategy
       puts "Already downloaded: #{cached_location}"
     else
       begin
-        curl "--location", "--create-dirs", "--output", temporary_path, url,
-             "--header", "Authorization: token #{@token}",
-             secrets: [@token],
-             timeout: timeout
+        Utils::Curl.curl "--location", "--create-dirs", "--output", temporary_path, url,
+                         "--header", "Authorization: token #{@token}",
+                         secrets: [@token],
+                         timeout: timeout
       rescue ErrorDuringExecution
         raise CurlDownloadStrategyError, url
       end
