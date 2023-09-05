@@ -6,6 +6,8 @@ module Homebrew
   #
   # @api private
   class ResourceAuditor
+    include Utils::Curl
+
     attr_reader :name, :version, :checksum, :url, :mirrors, :using, :specs, :owner, :spec_name, :problems
 
     def initialize(resource, spec_name, options = {})
@@ -123,7 +125,7 @@ module Homebrew
           raise HomebrewCurlDownloadStrategyError, url if
             strategy <= HomebrewCurlDownloadStrategy && !Formula["curl"].any_version_installed?
 
-          if (http_content_problem = Utils::Curl.curl_check_http_content(
+          if (http_content_problem = curl_check_http_content(
             url,
             "source URL",
             specs:             specs,
