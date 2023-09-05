@@ -239,7 +239,10 @@ class Requirement
         end
       end
 
-      cache[cache_key][cache_id dependent] = reqs.dup if cache_key.present?
+      if cache_key.present?
+        cache[cache_key] ||= {}
+        cache[cache_key][cache_id dependent] = reqs.dup
+      end
       reqs
     end
 
