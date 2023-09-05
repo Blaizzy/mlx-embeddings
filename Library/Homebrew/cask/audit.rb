@@ -734,7 +734,7 @@ module Cask
     #          options: T.untyped).void
     # }
     def validate_url_for_https_availability(url_to_check, url_type, cask_token, tap, location: nil, **options)
-      problem = curl_check_http_content(url_to_check.to_s, url_type, **options)
+      problem = ::Utils::Curl.curl_check_http_content(url_to_check.to_s, url_type, **options)
       exception = tap&.audit_exception(:secure_connection_audit_skiplist, cask_token, url_to_check.to_s)
 
       if problem
