@@ -728,7 +728,7 @@ module GitHub
   def self.last_commit(user, repo, ref, version)
     return if Homebrew::EnvConfig.no_github_api?
 
-    output, _, status = curl_output(
+    output, _, status = Utils::Curl.curl_output(
       "--silent", "--head", "--location",
       "--header", "Accept: application/vnd.github.sha",
       url_to("repos", user, repo, "commits", ref).to_s
@@ -746,7 +746,7 @@ module GitHub
   def self.multiple_short_commits_exist?(user, repo, commit)
     return if Homebrew::EnvConfig.no_github_api?
 
-    output, _, status = curl_output(
+    output, _, status = Utils::Curl.curl_output(
       "--silent", "--head", "--location",
       "--header", "Accept: application/vnd.github.sha",
       url_to("repos", user, repo, "commits", commit).to_s
