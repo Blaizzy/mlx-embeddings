@@ -1135,52 +1135,71 @@ Manual creation can be facilitated with:
 
 ### Handling different system configurations
 
-Casks can deliver specific versions of artifacts depending on the current system version or CPU architecture by using the [`on_<system>` syntax](Formula-Cookbook.md#handling-different-system-configurations), which replaces conditional statements using `MacOS.version` or `Hardware::CPU`. Each block can contain stanzas that set which version to download and customize installation/uninstallation and livecheck behaviour for each supported system. Example (from [calibre.rb](https://github.com/Homebrew/homebrew-cask/blob/482c34e950da8d649705f4aaea7b760dcb4b5402/Casks/c/calibre.rb#L2-L34)):
+Casks can deliver specific versions of artifacts depending on the current macOS release or CPU architecture by either tailoring the URL / SHA-256 hash / version, using the [`on_<system>` syntax](Formula-Cookbook.md#handling-different-system-configurations) (which replaces conditional statements using `MacOS.version` or `Hardware::CPU`), or both.
+
+If your cask's artifact is offered as separate downloads for Intel and Apple Silicon architectures, they'll presumably be downloadable at distinct URLs that differ only slightly. To adjust the URL depending on the current CPU architecture, supply a hash for each to the `arm:` and `intel:` parameters of `sha256`, and use the special `arch` stanza to define the unique components of the respective URLs for substitution in the `url`. Additional substitutions can be defined by calling `on_arch_conditional` directly. Example (from [libreoffice.rb](https://github.com/Homebrew/homebrew-cask/blob/a4164b8f5084fdaefb6e2e2f4f699270690b7845/Casks/l/libreoffice.rb#L1-L10)):
 
 ```ruby
-on_high_sierra :or_older do
-  version "3.48.0"
-  sha256 "68829cd902b8e0b2b7d5cf7be132df37bcc274a1e5720b4605d2dd95f3a29168"
+cask "libreoffice" do
+  arch arm: "aarch64", intel: "x86-64"
+  folder = on_arch_conditional arm: "aarch64", intel: "x86_64"
 
-  livecheck do
-    skip "Legacy version"
-  end
-end
-on_mojave do
-  # ...
-end
-on_catalina do
-  # ...
-end
-on_big_sur :or_newer do
-  version "6.25.0"
-  sha256 "a7ed19ae0526630ccb138b9afee6dc5169904180b02f7a3089e78d3e0022753b"
+  version "7.6.0"
+  sha256 arm:   "81eab945a33622fc156951e804024d23aa9a745c06743b4947215ed9303ad1c4",
+         intel: "ede541af151487f60eb518e310d20dad1a973f3dbe9ff78d782dd29b14ba2946"
 
-  livecheck do
-    url "https://github.com/kovidgoyal/calibre"
-    strategy :github_latest
-  end
-end
+  url "https://download.documentfoundation.org/libreoffice/stable/#{version}/mac/#{folder}/LibreOffice_#{version}_MacOS_#{arch}.dmg",
+      verified: "download.documentfoundation.org/libreoffice/stable/"
 ```
 
-To adjust the URL depending on the current CPU architecture, use the special `arch` stanza to define the unique components of the respective URLs for substitution in the `url`, and locate the unique `version` and `sha256` stanzas within `on_arm` an `on_intel` blocks. Example (from [inkscape.rb](https://github.com/Homebrew/homebrew-cask/blob/11f6966bf17628b98895d64a61a4fb0bc1bb31bf/Casks/i/inkscape.rb#L2-L13)):
+If the version number is different for each architecture, locate the unique `version` and (if checked) `sha256` stanzas within `on_arm` and `on_intel` blocks. Example (from [inkscape.rb](https://github.com/Homebrew/homebrew-cask/blob/11f6966bf17628b98895d64a61a4fb0bc1bb31bf/Casks/i/inkscape.rb#L1-L13)):
 
 ```ruby
-arch arm: "arm64", intel: "x86_64"
+cask "inkscape" do
+  arch arm: "arm64", intel: "x86_64"
 
-on_arm do
-  version "1.3.0,42339"
-  sha256 "e37b5f8b8995a0ecc41ca7fcae90d79bcd652b7a25d2f6e52c4e2e79aef7fec1"
-end
-on_intel do
-  version "1.3.0,42338"
-  sha256 "e97de6804d8811dd2f1bc45d709d87fb6fe45963aae710c24a4ed655ecd8eb8a"
-end
+  on_arm do
+    version "1.3.0,42339"
+    sha256 "e37b5f8b8995a0ecc41ca7fcae90d79bcd652b7a25d2f6e52c4e2e79aef7fec1"
+  end
+  on_intel do
+    version "1.3.0,42338"
+    sha256 "e97de6804d8811dd2f1bc45d709d87fb6fe45963aae710c24a4ed655ecd8eb8a"
+  end
 
-url "https://inkscape.org/gallery/item/#{version.csv.second}/Inkscape-#{version.csv.first}_#{arch}.dmg"
+  url "https://inkscape.org/gallery/item/#{version.csv.second}/Inkscape-#{version.csv.first}_#{arch}.dmg"
 ```
 
-More complex URL adjustments can be done by calling `on_arch_conditional` directly. (Example: [paraview.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/p/paraview.rb#L2-L10))
+To adjust the installed version depending on the current macOS release, use a series of `on_<system>` blocks that cover the range of supported releases. Each block can contain stanzas that set which version to download and customize installation/uninstallation and livecheck behaviour for one or more releases. Example (from [calibre.rb](https://github.com/Homebrew/homebrew-cask/blob/482c34e950da8d649705f4aaea7b760dcb4b5402/Casks/c/calibre.rb#L1-L34)):
+
+```ruby
+cask "calibre" do
+  on_high_sierra :or_older do
+    version "3.48.0"
+    sha256 "68829cd902b8e0b2b7d5cf7be132df37bcc274a1e5720b4605d2dd95f3a29168"
+
+    livecheck do
+      skip "Legacy version"
+    end
+  end
+  on_mojave do
+    # ...
+  end
+  on_catalina do
+    # ...
+  end
+  on_big_sur :or_newer do
+    version "6.25.0"
+    sha256 "a7ed19ae0526630ccb138b9afee6dc5169904180b02f7a3089e78d3e0022753b"
+
+    livecheck do
+      url "https://github.com/kovidgoyal/calibre"
+      strategy :github_latest
+    end
+  end
+```
+
+Such `on_<system>` blocks can be nested and contain other stanzas not listed here. Examples: [calhash.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/c/calhash.rb), [openzfs.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/o/openzfs.rb), [r.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/r/r.rb), [wireshark.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/w/wireshark.rb)
 
 ### Switch Between Languages or Regions
 
