@@ -685,7 +685,8 @@ on_request: installed_on_request?, options: options)
       # When fetching we don't need to recurse the dependency tree as it's already
       # been done for us in `compute_dependencies` and there's no requirement to
       # fetch in a particular order.
-      ignore_deps:                true,
+      # Note, this tree can vary when pouring bottles so we need ot check it then.
+      ignore_deps:                !pour_bottle?,
       installed_as_dependency:    true,
       include_test_formulae:      @include_test_formulae,
       build_from_source_formulae: @build_from_source_formulae,
