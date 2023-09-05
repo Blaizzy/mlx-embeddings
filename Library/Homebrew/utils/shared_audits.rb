@@ -2,14 +2,12 @@
 # frozen_string_literal: true
 
 require "utils/curl"
+require "utils/github/api"
 
 # Auditing functions for rules common to both casks and formulae.
 #
 # @api private
 module SharedAudits
-  include Utils::Curl
-  extend Utils::Curl
-
   URL_TYPE_HOMEPAGE = "homepage URL"
 
   module_function
@@ -60,7 +58,7 @@ module SharedAudits
   def gitlab_repo_data(user, repo)
     @gitlab_repo_data ||= {}
     @gitlab_repo_data["#{user}/#{repo}"] ||= begin
-      out, _, status = curl_output("https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
+      out, _, status = Utils::Curl.curl_output("https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
       JSON.parse(out) if status.success?
     end
   end
@@ -69,7 +67,7 @@ module SharedAudits
     id = "#{user}/#{repo}/#{tag}"
     @gitlab_release_data ||= {}
     @gitlab_release_data[id] ||= begin
-      out, _, status = curl_output(
+      out, _, status = Utils::Curl.curl_output(
         "https://gitlab.com/api/v4/projects/#{user}%2F#{repo}/releases/#{tag}", "--fail"
       )
       JSON.parse(out) if status.success?
@@ -126,7 +124,7 @@ module SharedAudits
 
   def bitbucket(user, repo)
     api_url = "https://api.bitbucket.org/2.0/repositories/#{user}/#{repo}"
-    out, _, status= curl_output("--request", "GET", api_url)
+    out, _, status = Utils::Curl.curl_output("--request", "GET", api_url)
     return unless status.success?
 
     metadata = JSON.parse(out)
@@ -138,10 +136,10 @@ module SharedAudits
 
     return "Bitbucket repository too new (<30 days old)" if Date.parse(metadata["created_on"]) >= (Date.today - 30)
 
-    forks_out, _, forks_status= curl_output("--request", "GET", "#{api_url}/forks")
+    forks_out, _, forks_status = Utils::Curl.curl_output("--request", "GET", "#{api_url}/forks")
     return unless forks_status.success?
 
-    watcher_out, _, watcher_status= curl_output("--request", "GET", "#{api_url}/watchers")
+    watcher_out, _, watcher_status = Utils::Curl.curl_output("--request", "GET", "#{api_url}/watchers")
     return unless watcher_status.success?
 
     forks_metadata = JSON.parse(forks_out)

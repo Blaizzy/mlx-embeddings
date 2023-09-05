@@ -6,6 +6,7 @@ require "extend/cachable"
 require "tab"
 require "utils/bottles"
 require "service"
+require "utils/curl"
 
 require "active_support/core_ext/hash/deep_transform_values"
 
@@ -591,7 +592,7 @@ module Formulary
       end
       HOMEBREW_CACHE_FORMULA.mkpath
       FileUtils.rm_f(path)
-      curl_download url, to: path
+      Utils::Curl.curl_download url, to: path
       super
     rescue MethodDeprecatedError => e
       if (match_data = url.match(%r{github.com/(?<user>[\w-]+)/(?<repo>[\w-]+)/}).presence)

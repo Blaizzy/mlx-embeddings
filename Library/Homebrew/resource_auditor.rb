@@ -123,10 +123,12 @@ module Homebrew
           raise HomebrewCurlDownloadStrategyError, url if
             strategy <= HomebrewCurlDownloadStrategy && !Formula["curl"].any_version_installed?
 
-          if (http_content_problem = curl_check_http_content(url,
-                                                             "source URL",
-                                                             specs:             specs,
-                                                             use_homebrew_curl: @use_homebrew_curl))
+          if (http_content_problem = Utils::Curl.curl_check_http_content(
+            url,
+            "source URL",
+            specs:             specs,
+            use_homebrew_curl: @use_homebrew_curl,
+          ))
             problem http_content_problem
           end
         elsif strategy <= GitDownloadStrategy

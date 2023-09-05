@@ -167,7 +167,7 @@ RSpec.configure do |config|
 
   config.before(:each, :needs_homebrew_curl) do
     ENV["HOMEBREW_CURL"] = HOMEBREW_BREWED_CURL_PATH
-    skip "A `curl` with TLS 1.3 support is required." unless curl_supports_tls13?
+    skip "A `curl` with TLS 1.3 support is required." unless Utils::Curl.curl_supports_tls13?
   rescue FormulaUnavailableError
     skip "No `curl` formula is available."
   end

@@ -609,6 +609,3 @@ module Utils
     end
   end
 end
-
-# FIXME: Include `Utils::Curl` explicitly everywhere it is used.
-include Utils::Curl # rubocop:disable Style/MixinUsage

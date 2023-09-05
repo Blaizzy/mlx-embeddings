@@ -4,6 +4,7 @@
 require "cask/cache"
 require "cask/cask"
 require "uri"
+require "utils/curl"
 
 module Cask
   # Loads a cask from various sources.
@@ -160,7 +161,7 @@ module Cask
 
         begin
           ohai "Downloading #{url}"
-          curl_download url, to: path
+          ::Utils::Curl.curl_download url, to: path
         rescue ErrorDuringExecution
           raise CaskUnavailableError.new(token, "Failed to download #{Formatter.url(url)}.")
         end
