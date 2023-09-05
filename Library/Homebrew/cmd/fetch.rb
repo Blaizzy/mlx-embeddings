@@ -166,8 +166,8 @@ module Homebrew
           SimulateSystem.with os: os, arch: arch do
             cask = Cask::CaskLoader.load(ref)
 
-            if cask.depends_on.macos&.satisfied? == false
-              opoo "#{cask.token}: #{cask.depends_on.macos.message(type: :cask)}"
+            if cask.url.nil?
+              opoo "Cask #{cask} is not supported on os #{os} and arch #{arch}"
               next
             end
 
