@@ -31,6 +31,7 @@ class FormulaInstaller
   extend Predicable
 
   attr_reader :formula
+  attr_reader :bottle_tab_runtime_dependencies
 
   attr_accessor :options, :link_keg
 
@@ -96,7 +97,7 @@ class FormulaInstaller
     @requirement_messages = []
     @poured_bottle = false
     @start_time = nil
-    @bottle_tab_runtime_dependencies = {}
+    @bottle_tab_runtime_dependencies = {}.freeze
 
     # Take the original formula instance, which might have been swapped from an API instance to a source instance
     @formula = previously_fetched_formula if previously_fetched_formula
