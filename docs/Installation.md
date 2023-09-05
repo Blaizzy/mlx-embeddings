@@ -84,7 +84,7 @@ Create a Homebrew installation wherever you extract the tarball. Whichever `brew
 
 ## Uninstallation
 
-Uninstallation is documented in the [FAQ](FAQ.md).
+Uninstallation is documented in the [FAQ](FAQ.md#how-do-i-uninstall-homebrew).
 
 <a data-proofer-ignore name="1"><sup>1</sup></a> For 32-bit or PPC support see [Tigerbrew](https://github.com/mistydemeo/tigerbrew).
 

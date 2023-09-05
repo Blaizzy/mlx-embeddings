@@ -22,7 +22,7 @@ If everything checks out, you're ready to get started on a new formula!
 
 1. Make sure you write a good test as part of your formula. Refer to the [Add a test to the formula](Formula-Cookbook.md#add-a-test-to-the-formula) section of the Cookbook for help with this.
 
-1. Try installing your formula using `brew install --build-from-source <formula>`, where \<formula> is the name of your formula. If any errors occur, correct your formula and attempt to install it again. The formula installation should finish without errors by the end of this step.
+1. Try installing your formula using `brew install --build-from-source <formula>`, where *\<formula>* is the name of your formula. If any errors occur, correct your formula and attempt to install it again. The formula installation should finish without errors by the end of this step.
 
 If you're stuck, ask for help on GitHub or the [Homebrew discussion forum](https://github.com/orgs/Homebrew/discussions). The maintainers are very happy to help but we also like to see that you've put effort into trying to find a solution first.
 
@@ -34,7 +34,7 @@ If you're stuck, ask for help on GitHub or the [Homebrew discussion forum](https
 
 ### Submitting the formula
 
-You're finally ready to submit your formula to the [homebrew-core](https://github.com/Homebrew/homebrew-core) repository. If you haven't done this before, you can refer to the [How to Open a Homebrew Pull Request](How-To-Open-a-Homebrew-Pull-Request.md) documentation for help. Maintainers will review the pull request and provide feedback about any areas that need to be addressed before the formula can be added to Homebrew.
+You're finally ready to submit your formula to the [homebrew-core](https://github.com/Homebrew/homebrew-core) repository. If you haven't done this before, you can refer to the [How to Open a Homebrew Pull Request](How-To-Open-a-Homebrew-Pull-Request.md#formulae-related-pull-request) documentation for help. Maintainers will review the pull request and provide feedback about any areas that need to be addressed before the formula can be added to Homebrew.
 
 If you've made it this far, congratulations on submitting a Homebrew formula! We appreciate the hard work you put into this and you can take satisfaction in knowing that your work may benefit other Homebrew users as well.
 
@@ -47,7 +47,7 @@ If you've made it this far, congratulations on submitting a Homebrew formula! We
 
 ### Writing the cask
 
-Making a new cask is easy. Follow the directions in [Getting Set Up To Contribute](https://github.com/Homebrew/homebrew-cask/blob/HEAD/CONTRIBUTING.md#getting-set-up-to-contribute) to begin.
+Making a new cask is easy. Follow the directions in [How to Open a Homebrew Pull Request](How-To-Open-a-Homebrew-Pull-Request.md#cask-related-pull-request) to begin.
 
 #### Examples
 
@@ -83,6 +83,8 @@ cask "noisy" do
   homepage "https://github.com/jonshea/Noisy"
 
   app "Noisy.app"
+
+  zap trash: "~/Library/Preferences/com.rathertremendous.noisy.plist"
 end
 ```
 
@@ -92,17 +94,17 @@ You will also see how to adapt `version` to the download `url`. Use [our custom 
 
 ```ruby
 cask "airdisplay" do
-  version "3.4.2,26581"
+  version "3.4.2"
   sha256 "272d14f33b3a4a16e5e0e1ebb2d519db4e0e3da17f95f77c91455b354bee7ee7"
 
-  url "https://www.avatron.com/updates/software/airdisplay/ad#{version.before_comma.no_dots}.zip"
+  url "https://www.avatron.com/updates/software/airdisplay/ad#{version.no_dots}.zip"
   name "Air Display"
   desc "Utility for using a tablet as a second monitor"
   homepage "https://avatron.com/applications/air-display/"
 
   livecheck do
     url "https://www.avatron.com/updates/software/airdisplay/appcast.xml"
-    strategy :sparkle
+    strategy :sparkle, &:short_version
   end
 
   depends_on macos: ">= :mojave"
@@ -120,7 +122,7 @@ end
 
 The cask **token** is the mnemonic string people will use to interact with the cask via `brew install`, etc. The name of the cask **file** is simply the token with the extension `.rb` appended.
 
-The easiest way to generate a token for a cask is to run this command:
+The easiest way to generate a token for a cask is to run `generate_cask_token`:
 
 ```bash
 $(brew --repository homebrew/cask)/developer/bin/generate_cask_token "/full/path/to/new/software.app"
@@ -142,7 +144,7 @@ Once you know the token, create your cask with the handy-dandy `brew create --ca
 brew create --cask download-url --set-name my-new-cask
 ```
 
-This will open `$EDITOR` with a template for your new cask, to be stored in the file `my-new-cask.rb`. Running the `create` command above will get you a template that looks like this:
+This will open `EDITOR` with a template for your new cask, to be stored in the file `my-new-cask.rb`. Running the `create` command above will get you a template that looks like this:
 
 ```ruby
 cask "my-new-cask" do
@@ -198,13 +200,13 @@ When a downloaded archive expands to a subfolder, the subfolder name must be inc
 
 Example:
 
-1. Texmaker is downloaded to the file `TexmakerMacosxLion.zip`.
-1. `TexmakerMacosxLion.zip` unzips to a folder called `TexmakerMacosxLion`.
-1. The folder `TexmakerMacosxLion` contains the application `texmaker.app`.
+1. Simple Floating Clock is downloaded to the file `sfc.zip`.
+1. `sfc.zip` unzips to a folder called `Simple Floating Clock`.
+1. The folder `Simple Floating Clock` contains the application `SimpleFloatingClock.app`.
 1. So, the `app` stanza should include the subfolder as a relative path:
 
    ```ruby
-   app "TexmakerMacosxLion/texmaker.app"
+   app "Simple Floating Clock/SimpleFloatingClock.app"
    ```
 
 ### Testing and auditing the cask
@@ -246,7 +248,7 @@ If your application and Homebrew Cask do not work well together, feel free to [f
 
 See the [Acceptable Casks documentation](Acceptable-Casks.md#finding-a-home-for-your-cask).
 
-Hop into your Tap and check to make sure your new cask is there:
+Hop into your tap and check to make sure your new cask is there:
 
 ```bash
 $ cd "$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
@@ -268,7 +270,7 @@ Switched to a new branch 'my-new-cask-branch'
 Stage your cask with:
 
 ```bash
-git add Casks/my-new-cask.rb
+git add Casks/m/my-new-cask.rb
 ```
 
 You can view the changes that are to be committed with:

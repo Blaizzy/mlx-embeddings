@@ -65,7 +65,31 @@ The beer emoji can also be replaced with other character(s):
 export HOMEBREW_INSTALL_BADGE="☕️ 🐸"
 ```
 
+## Migrate a Homebrew installation to a new location
+
+Run `brew bundle dump` and `brew bundle install` record an installation to and install from a `Brewfile`. See `brew bundle --help` for more details.
+
+## Appoint Homebrew Cask to manage a manually-installed app
+
+Run `brew install --cask` with the `--adopt` switch:
+
+```console
+$ brew install --cask --adopt textmate
+==> Downloading https://github.com/textmate/textmate/releases/download/v2.0.23/TextMate_2.0.23.tbz
+...
+==> Installing Cask textmate
+==> Adopting existing App at '/Applications/TextMate.app'
+==> Linking Binary 'mate' to '/opt/homebrew/bin/mate'
+🍺  textmate was successfully installed!
+```
+
 ## Editor plugins
+
+### Visual Studio Code
+
+- [Brewfile](https://marketplace.visualstudio.com/items?itemName=sharat.vscode-brewfile) adds Ruby syntax highlighting for [Homebrew Bundle](https://github.com/Homebrew/homebrew-bundle) `Brewfile`s.
+
+- [Brew Services](https://marketplace.visualstudio.com/items?itemName=beauallison.brew-services) is an extension for starting and stopping Homebrew services.
 
 ### Sublime Text
 

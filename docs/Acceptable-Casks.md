@@ -28,7 +28,7 @@ Stable versions live in the main repository at [Homebrew/homebrew-cask](https://
 
 #### But there is no Stable version!
 
-When software is only available as a beta, development, or unstable version, its cask can go in the main homebrew-cask repository. When stable versions become available, only those will be accepted as subsequent updates.
+When software is only available as a beta, development, or unstable version, its cask can go in the main `homebrew/cask` repository. When stable versions become available, only those will be accepted as subsequent updates.
 
 ### Beta, Unstable, Development, Nightly, or Legacy
 
@@ -57,7 +57,7 @@ We do not accept these casks since they involve a higher-than-normal security ri
 
 ### Fonts
 
-Font casks live in the [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) repository. See the homebrew-cask-fonts repository [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md) for details.
+Font casks live in the [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) repository. See the `homebrew/cask-fonts` repository [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md) for details.
 
 ## Apps that bundle malware
 
@@ -78,7 +78,7 @@ If a cask you depend on was removed due to these rules, fear not. Removal of a c
 Casks which do not reach a minimum notability threshold (see [Rejected Casks](#rejected-casks)) aren’t accepted in the main repositories because the increased maintenance burden doesn’t justify the poor usage numbers they will likely get. This notability check is performed automatically by the audit commands we provide, but its decisions aren’t set in stone. A cask which fails the notability check can be added if it is:
 
 1. A popular app that has its own website but the developers use GitHub for hosting the binaries. That repository won’t be notable but the app may be.
-2. Submitted by a maintainer or prolific contributor. A big part of the reasoning for the notability rule is unpopular software garners less attention and the cask gets abandoned, outdated, and broken. Someone with a proven investment in Hombrew Cask is less likely to let that happen for software they depend on.
+2. Submitted by a maintainer or prolific contributor. A big part of the reasoning for the notability rule is unpopular software garners less attention and the cask gets abandoned, outdated, and broken. Someone with a proven investment in Homebrew Cask is less likely to let that happen for software they depend on.
 3. A piece of software that was recently released to great fanfare—everyone is talking about it on Twitter and Hacker News and we’ve even gotten multiple premature submissions for it. That’d be a clear case of an app that will reach the threshold in no time so that’s a PR we won’t close immediately (but may wait to merge).
 
 Note that none of these exceptions is a guarantee for inclusion, but examples of situations where we may take a second look.
@@ -118,7 +118,7 @@ Common reasons to reject a cask entirely:
 * App installer is a `pkg` that requires [`allow_untrusted: true`](https://docs.brew.sh/Cask-Cookbook#pkg-allow_untrusted).
 * App fails with GateKeeper enabled on Homebrew supported macOS versions and platforms (e.g. unsigned apps fail on Macs with Apple silicon/ARM).
 
-Common reasons to reject a cask from the main homebrew-cask repository:
+Common reasons to reject a cask from the main `homebrew/cask` repository:
 
 * Cask was submitted to the wrong repository. When drafting a cask, consult [Finding a Home For Your Cask](#finding-a-home-for-your-cask) to see where it belongs.
 

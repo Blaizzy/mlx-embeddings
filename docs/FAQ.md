@@ -88,16 +88,6 @@ If available, bottled binaries will be used by default except under the followin
 
 We aim to bottle everything.
 
-## How do I get a formula from someone else’s pull request?
-
-```sh
-brew install hub
-brew update
-cd "$(brew --repository homebrew/core)"
-hub fetch github_username
-hub pr checkout pull_request_number
-```
-
 ## Why should I install Homebrew in the default location?
 
 Homebrew's pre-built binary packages (known as [bottles](Bottles.md)) of many formulae can only be used if you install in the default installation prefix, otherwise they have to be built from source. Building from source takes a long time, is prone to failure, and is not supported. The default prefix is:
@@ -157,6 +147,18 @@ To undo all changes you have made to any of Homebrew's repositories, run `brew u
 Yes! It’s easy! If you already have a local copy of `homebrew/core` (see above), just use the [`brew create` command](Manpage.md#create-options-url). Homebrew will then open the formula in `EDITOR` so you can edit it, but it probably already installs; try it: `brew install <formula>`. If you encounter any issues, run the command with the `--debug` switch like so: `brew install --debug <formula>`, which drops you into a debugging shell.
 
 If you want your new formula to be part of `homebrew/core` or want to learn more about writing formulae, then please read the [Formula Cookbook](Formula-Cookbook.md).
+
+## How do I get a formula from someone else’s pull request?
+
+Ensure you have a [local copy of `homebrew/core`](#can-i-edit-formulae-myself), then:
+
+```sh
+brew update
+brew install hub
+cd "$(brew --repository homebrew/core)"
+hub fetch github_username
+hub pr checkout pull_request_number
+```
 
 ## Why was a formula deleted or disabled?
 

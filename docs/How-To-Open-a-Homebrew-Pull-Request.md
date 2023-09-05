@@ -1,8 +1,8 @@
 # How to Open a Homebrew Pull Request
 
-The following commands are used by Homebrew contributors to set up a fork of Homebrew's Git repository on GitHub, create a new branch and create a GitHub pull request ("PR") of the changes in that branch.
+The following commands are used by Homebrew contributors to set up a fork of Homebrew's Git repository on GitHub, create a new branch and create a GitHub pull request ("PR") for the changes in that branch.
 
-The type of change you want to make influences which of Homebrew's main repositories you'll need to send your pull request to. If you want to submit a change to Homebrew's core code (the `brew` implementation), you should open a pull request on [Homebrew/brew](https://github.com/Homebrew/brew). If you want to submit a change for a formula, you should open a pull request on the [homebrew/core](https://github.com/Homebrew/homebrew-core) tap, while for casks you should open the pull request on the [homebrew/cask](https://github.com/Homebrew/homebrew-cask) tap or another [official tap](https://github.com/Homebrew), based on the formula type.
+The type of change you want to make influences which of Homebrew's main repositories you'll need to send your pull request to. If you want to submit a change to Homebrew's core code (the `brew` implementation), you should open a pull request on [Homebrew/brew](https://github.com/Homebrew/brew). If you want to submit a change for a formula, you should open a pull request on the [homebrew/core](https://github.com/Homebrew/homebrew-core) tap, while for casks you should open the pull request on the [homebrew/cask](https://github.com/Homebrew/homebrew-cask) tap or another [official tap](https://github.com/Homebrew), depending on the formula type.
 
 ## Submit a new version of an existing formula
 
@@ -14,7 +14,7 @@ The type of change you want to make influences which of Homebrew's main reposito
 
 ## Set up your own fork of the Homebrew repository
 
-### Core `brew` code related pull request
+### Core `brew` code pull request
 
 1. [Fork the Homebrew/brew repository on GitHub](https://github.com/Homebrew/brew/fork).
    * This creates a personal remote repository that you can push to. This is needed because only Homebrew maintainers have push access to the main repositories.
@@ -32,7 +32,7 @@ The type of change you want to make influences which of Homebrew's main reposito
 
    * `<YOUR_USERNAME>` is your GitHub username, not your local machine username.
 
-### Formulae related pull request
+### Formulae-related pull request
 
 1. [Fork the Homebrew/homebrew-core repository on GitHub](https://github.com/Homebrew/homebrew-core/fork).
    * This creates a personal remote repository that you can push to. This is needed because only Homebrew maintainers have push access to the main repositories.
@@ -56,7 +56,7 @@ The type of change you want to make influences which of Homebrew's main reposito
 
    * `<YOUR_USERNAME>` is your GitHub username, not your local machine username.
 
-### Cask related pull request
+### Cask-related pull request
 
 1. [Fork the Homebrew/homebrew-cask repository on GitHub](https://github.com/Homebrew/homebrew-cask/fork).
    * This creates a personal remote repository that you can push to. This is needed because only Homebrew maintainers have push access to the main repositories.
