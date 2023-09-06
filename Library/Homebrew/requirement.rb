@@ -240,6 +240,9 @@ class Requirement
       end
 
       if cache_key.present?
+        # Even though we setup the cache above
+        # 'dependent.recursive_dependencies.map(&:to_formula)'
+        # is invalidating the singleton cache
         cache[cache_key] ||= {}
         cache[cache_key][cache_id dependent] = reqs.dup
       end
