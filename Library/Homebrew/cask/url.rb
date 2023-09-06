@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "source_location"
+require "utils/curl"
 
 module Cask
   # Class corresponding to the `url` stanza.
@@ -104,7 +105,7 @@ module Cask
       sig { returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash])) }
       def call
         if @uri
-          result = curl_output("--fail", "--silent", "--location", @uri)
+          result = ::Utils::Curl.curl_output("--fail", "--silent", "--location", @uri)
           result.assert_success!
 
           page = result.stdout
