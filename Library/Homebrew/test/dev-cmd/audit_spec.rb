@@ -539,7 +539,7 @@ module Homebrew
 
         fa.audit_specs
         expect(fa.problems.first[:message])
-          .to match("resource name should be `FooSomething` to closer match the PyPI package name")
+          .to match("resource name should be `FooSomething` to match the PyPI package name")
       end
     end
 

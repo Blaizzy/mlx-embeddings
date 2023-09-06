@@ -106,7 +106,7 @@ module Homebrew
       pypi_package_name = url.split("/").last.split(/-\d+\.\d+./).first.tr("_", "-")
       return if name.casecmp(pypi_package_name).zero?
 
-      problem "resource name should be `#{pypi_package_name}` to closer match the PyPI package name"
+      problem "resource name should be `#{pypi_package_name}` to match the PyPI package name"
     end
 
     def audit_urls
