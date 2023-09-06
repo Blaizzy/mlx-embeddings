@@ -46,7 +46,9 @@ module Homebrew
     def audit_version
       if version.nil?
         problem "missing version"
-      elsif owner.is_a?(Formula) && owner.core_formula? && !version.to_s.match?(GitHubPackages::VALID_OCI_TAG_REGEX)
+      elsif owner.is_a?(Formula) && !version.to_s.match?(GitHubPackages::VALID_OCI_TAG_REGEX) &&
+            (owner.core_formula? ||
+            (owner.bottle_defined? && GitHubPackages::URL_REGEX.match?(owner.bottle_specification.root_url)))
         problem "version #{version} does not match #{GitHubPackages::VALID_OCI_TAG_REGEX.source}"
       elsif !version.detected_from_url?
         version_text = version
