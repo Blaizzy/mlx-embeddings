@@ -102,6 +102,7 @@ module Homebrew
 
     def audit_resource_name_matches_pypi_package_name_in_url
       return unless url.match?(%r{^https?://files\.pythonhosted\.org/packages/})
+      return if name == owner.name # Skip the top-level package name as we only care about `resource "foo"` blocks.
 
       pypi_package_name = url.split("/").last.split(/[-.]\d+?./).first.gsub(/[_.]/, "-")
       return if name.casecmp(pypi_package_name).zero?
