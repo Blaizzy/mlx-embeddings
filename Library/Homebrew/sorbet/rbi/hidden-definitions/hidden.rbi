@@ -5737,7 +5737,6 @@ end
 class Object
   include ::Minitest::Expectations
   include ::SystemCommand::Mixin
-  include ::Utils::Curl
   def __send(*arg); end
 
   def __send!(*arg); end
