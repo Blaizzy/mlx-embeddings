@@ -174,11 +174,11 @@ module Cask
       raise CaskQuarantinePropagationError.new(to, quarantiner.stderr)
     end
 
-    sig { params(from: Pathname, to: Pathname).void }
-    def self.copy_xattrs(from, to)
+    sig { params(from: Pathname, to: Pathname, command: T.class_of(SystemCommand)).void }
+    def self.copy_xattrs(from, to, command:)
       odebug "Copying xattrs from #{from} to #{to}"
 
-      system_command!(
+      command.run!(
         swift,
         args: [
           *swift_target_args,
