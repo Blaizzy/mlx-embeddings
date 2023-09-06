@@ -91,7 +91,7 @@ module Cask
             command.run!("/bin/cp", args: ["-pR", *source.children, target],
                                     sudo: true)
           end
-          Quarantine.copy_xattrs(source, target)
+          Quarantine.copy_xattrs(source, target, command: command)
           source.rmtree
         elsif target.dirname.writable?
           FileUtils.move(source, target)
