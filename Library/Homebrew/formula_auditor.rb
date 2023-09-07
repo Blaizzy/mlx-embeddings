@@ -497,6 +497,17 @@ module Homebrew
               "They must not be upgraded to version 7.11 or newer."
     end
 
+    TERRAFORM_RELICENSED_VERSION = "1.6"
+
+    def audit_terraform
+      return if formula.name != "terraform"
+      return unless @core_tap
+      return if formula.version < Version.new(TERRAFORM_RELICENSED_VERSION)
+
+      problem "Terraform was relicensed to a non-open-source license from version 1.6. " \
+              "It must not be upgraded to version 1.6 or newer."
+    end
+
     def audit_keg_only_reason
       return unless @core_tap
       return unless formula.keg_only?
