@@ -34,7 +34,7 @@ GEM
       regexp_parser (~> 2.0)
       simpleidn (~> 0.2)
     method_source (1.0.0)
-    minitest (5.19.0)
+    minitest (5.20.0)
     msgpack (1.7.2)
     mustache (1.1.1)
     parallel (1.23.0)

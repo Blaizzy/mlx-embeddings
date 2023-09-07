@@ -8,6 +8,8 @@ module Minitest
   class << self
     def __run(reporter, options); end
     def after_run(&block); end
+    def allow_fork; end
+    def allow_fork=(_arg0); end
     def autorun; end
     def backtrace_filter; end
     def backtrace_filter=(_arg0); end
