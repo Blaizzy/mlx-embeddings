@@ -166,7 +166,7 @@ module Homebrew
           SimulateSystem.with os: os, arch: arch do
             cask = Cask::CaskLoader.load(ref)
 
-            if cask.url.nil?
+            if cask.url.nil? || cask.sha256.nil?
               opoo "Cask #{cask} is not supported on os #{os} and arch #{arch}"
               next
             end

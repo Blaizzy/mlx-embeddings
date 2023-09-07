@@ -226,6 +226,7 @@ module Cask
     sig { void }
     def audit_sha256_no_check_if_latest
       return unless cask.sha256
+      return unless cask.version
 
       odebug "Auditing sha256 :no_check with version :latest"
       return unless cask.version.latest?
@@ -268,7 +269,7 @@ module Cask
 
     sig { void }
     def audit_latest_with_livecheck
-      return unless cask.version.latest?
+      return unless cask.version&.latest?
       return unless cask.livecheckable?
       return if cask.livecheck.skip?
 
@@ -277,7 +278,7 @@ module Cask
 
     sig { void }
     def audit_latest_with_auto_updates
-      return unless cask.version.latest?
+      return unless cask.version&.latest?
       return unless cask.auto_updates
 
       add_error "Casks with `version :latest` should not use `auto_updates`."
@@ -288,7 +289,8 @@ module Cask
     sig { params(livecheck_result: T.any(NilClass, T::Boolean, Symbol)).void }
     def audit_hosting_with_livecheck(livecheck_result: audit_livecheck_version)
       return if cask.discontinued?
-      return if cask.version.latest?
+      return if cask.version&.latest?
+      return unless cask.url
       return if block_url_offline?
       return if cask.livecheckable?
       return if livecheck_result == :auto_detected
@@ -328,6 +330,7 @@ module Cask
 
     sig { void }
     def audit_unnecessary_verified
+      return unless cask.url
       return if block_url_offline?
       return unless verified_present?
       return unless url_match_homepage?
@@ -340,6 +343,7 @@ module Cask
 
     sig { void }
     def audit_missing_verified
+      return unless cask.url
       return if block_url_offline?
       return if file_url?
       return if url_match_homepage?
@@ -352,6 +356,7 @@ module Cask
 
     sig { void }
     def audit_no_match
+      return unless cask.url
       return if block_url_offline?
       return unless verified_present?
       return if verified_matches_url?
@@ -453,6 +458,7 @@ module Cask
 
     sig { void }
     def audit_livecheck_unneeded_long_version
+      return if cask.version.nil? || cask.url.nil?
       return if cask.livecheck.strategy != :sparkle
       return unless cask.version.csv.second
       return if cask.url.to_s.include? cask.version.csv.second
@@ -506,6 +512,7 @@ module Cask
     sig { returns(T.any(NilClass, T::Boolean, Symbol)) }
     def audit_livecheck_version
       return unless online?
+      return unless cask.version
 
       referenced_cask, = Homebrew::Livecheck.resolve_livecheck_reference(cask)
 

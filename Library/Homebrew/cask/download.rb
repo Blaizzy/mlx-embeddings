@@ -36,6 +36,8 @@ module Cask
 
     sig { override.returns(T.nilable(Version)) }
     def version
+      return if cask.version.nil?
+
       @version ||= Version.new(cask.version)
     end
 

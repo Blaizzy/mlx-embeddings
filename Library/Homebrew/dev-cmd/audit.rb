@@ -242,17 +242,10 @@ module Homebrew
         next [] if os == :linux
 
         SimulateSystem.with os: os, arch: arch do
-          simulated_cask = Cask::CaskLoader.load(path)
-
-          if simulated_cask.url.nil?
-            opoo "Cask #{cask} is not supported on os #{os} and arch #{arch}"
-            next []
-          end
-
           odebug "Auditing Cask #{cask} on os #{os} and arch #{arch}"
 
           Cask::Auditor.audit(
-            simulated_cask,
+            Cask::CaskLoader.load(path),
             # For switches, we add `|| nil` so that `nil` will be passed
             # instead of `false` if they aren't set.
             # This way, we can distinguish between "not set" and "set to false".
