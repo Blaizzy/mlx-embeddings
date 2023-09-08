@@ -30,7 +30,7 @@ module Homebrew
       switch "--no-audit",
              description: "Don't run `brew audit` before opening the PR."
       switch "--online",
-             description: "Run `brew audit --online` before opening the PR."
+             hidden:      true
       switch "--no-style",
              description: "Don't run `brew style --fix` before opening the PR."
       switch "--no-browse",
@@ -67,6 +67,7 @@ module Homebrew
   def bump_cask_pr
     args = bump_cask_pr_args.parse
 
+    # odeprecated "brew bump-cask-pr --online" if args.online?
     # This will be run by `brew audit` or `brew style` later so run it first to
     # not start spamming during normal output.
     Homebrew.install_bundler_gems! if !args.no_audit? || !args.no_style?
@@ -268,21 +269,16 @@ module Homebrew
     if args.dry_run?
       if args.no_audit?
         ohai "Skipping `brew audit`"
-      elsif args.online?
-        ohai "brew audit --cask --online #{cask.full_name}"
       else
-        ohai "brew audit --cask #{cask.full_name}"
+        ohai "brew audit --cask --online #{cask.full_name}"
       end
       return
     end
     failed_audit = false
     if args.no_audit?
       ohai "Skipping `brew audit`"
-    elsif args.online?
-      system HOMEBREW_BREW_FILE, "audit", "--cask", "--online", cask.full_name
-      failed_audit = !$CHILD_STATUS.success?
     else
-      system HOMEBREW_BREW_FILE, "audit", "--cask", cask.full_name
+      system HOMEBREW_BREW_FILE, "audit", "--cask", "--online", cask.full_name
       failed_audit = !$CHILD_STATUS.success?
     end
     return unless failed_audit
