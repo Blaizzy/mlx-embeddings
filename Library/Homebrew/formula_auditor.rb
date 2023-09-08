@@ -497,15 +497,28 @@ module Homebrew
               "They must not be upgraded to version 7.11 or newer."
     end
 
-    TERRAFORM_RELICENSED_VERSION = "1.6"
+    # https://www.hashicorp.com/license-faq#products-covered-by-bsl
+    HASHICORP_RELICENSED_FORMULAE_VERSIONS = {
+      "terraform"         => "1.6",
+      "packer"            => "1.10",
+      "vault"             => "1.15",
+      "boundary"          => "0.14",
+      "consul"            => "1.17",
+      "nomad"             => "1.7",
+      "waypoint"          => "0.12",
+      "vagrant"           => "2.4",
+      "vagrant-compleion" => "2.4",
+    }.freeze
 
-    def audit_terraform
-      return if formula.name != "terraform"
+    def audit_hashicorp_formulae
+      return unless HASHICORP_RELICENSED_FORMULAE_VERSIONS.key? formula.name
       return unless @core_tap
-      return if formula.version < Version.new(TERRAFORM_RELICENSED_VERSION)
 
-      problem "Terraform was relicensed to a non-open-source license from version 1.6. " \
-              "It must not be upgraded to version 1.6 or newer."
+      relicensed_version = Version.new(HASHICORP_RELICENSED_FORMULAE_VERSIONS[formula.name])
+      return if formula.version < relicensed_version
+
+      problem "#{formula.name} was relicensed to a non-open-source license from version #{relicensed_version}. " \
+              "It must not be upgraded to version #{relicensed_version} or newer."
     end
 
     def audit_keg_only_reason
