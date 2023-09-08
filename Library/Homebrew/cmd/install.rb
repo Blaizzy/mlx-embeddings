@@ -37,7 +37,7 @@ module Homebrew
                           "non-migrated versions. When installing casks, overwrite existing files " \
                           "(binaries and symlinks are excluded, unless originally from the same cask)."
       switch "-v", "--verbose",
-             description: "Print the verification and postinstall steps."
+             description: "Print the verification and post-install steps."
       switch "-n", "--dry-run",
              description: "Show what would be installed, but do not actually install anything."
       [
@@ -49,9 +49,9 @@ module Homebrew
           hidden:      true,
         }],
         [:switch, "--ignore-dependencies", {
-          description: "An unsupported Homebrew development flag to skip installing any dependencies of any kind. " \
-                       "If the dependencies are not already present, the formula will have issues. If you're not " \
-                       "developing Homebrew, consider adjusting your PATH rather than using this flag.",
+          description: "An unsupported Homebrew development option to skip installing any dependencies of any " \
+                       "kind. If the dependencies are not already present, the formula will have issues. If you're " \
+                       "not developing Homebrew, consider adjusting your PATH rather than using this option.",
         }],
         [:switch, "--only-dependencies", {
           description: "Install the dependencies with specified options but do not install the " \
@@ -184,9 +184,9 @@ module Homebrew
 
     if args.ignore_dependencies?
       opoo <<~EOS
-        #{Tty.bold}`--ignore-dependencies` is an unsupported Homebrew developer flag!#{Tty.reset}
+        #{Tty.bold}`--ignore-dependencies` is an unsupported Homebrew developer option!#{Tty.reset}
         Adjust your PATH to put any preferred versions of applications earlier in the
-        PATH rather than using this unsupported flag!
+        PATH rather than using this unsupported option!
 
       EOS
     end

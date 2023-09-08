@@ -198,7 +198,7 @@ In the resulting dialog, click the *Open* button to have macOS permanently allow
 
 <img src="assets/img/docs/gatekeeper-unidentified-open.png" width="532" alt="Gatekeeper unidentified developer open prompt">
 
-Alternatively, you may provide the [`--no-quarantine` flag](https://github.com/Homebrew/homebrew-cask/blob/HEAD/USAGE.md#options) at install time to not add this feature to a specific app.
+Alternatively, you may provide the [`--no-quarantine` switch](https://github.com/Homebrew/homebrew-cask/blob/HEAD/USAGE.md#options) at install time to not add this feature to a specific app.
 
 ## Why aren’t some apps included during `brew upgrade`?
 
@@ -225,7 +225,7 @@ If you still want to force software to be upgraded via Homebrew Cask, you can re
 
     brew upgrade <cask>
 
-Or use the `--greedy` flag:
+Or use the `--greedy` switch:
 
     brew upgrade --greedy
 

@@ -1081,7 +1081,7 @@ Finally, there is `csv` which returns an array of comma-separated values. `csv`,
 
 #### `version :latest`
 
-The special value `:latest` is used when
+The special value `:latest` is used when:
 
 * `url` does not contain any version information and there is no way to retrieve
   the version using a `livecheck`, or

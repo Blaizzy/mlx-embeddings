@@ -300,7 +300,7 @@ module Homebrew
       },
       HOMEBREW_NO_INSECURE_REDIRECT:             {
         description: "If set, forbid redirects from secure HTTPS to insecure HTTP." \
-                     "\n\n    *Note:* While ensuring your downloads are fully secure, this is likely to cause " \
+                     "\n\n    *Note:* while ensuring your downloads are fully secure, this is likely to cause " \
                      "from-source SourceForge, some GNU & GNOME-hosted formulae to fail to download.",
         boolean:     true,
       },
@@ -361,7 +361,7 @@ module Homebrew
       },
       HOMEBREW_SSH_CONFIG_PATH:                  {
         description:  "If set, Homebrew will use the given config file instead of `~/.ssh/config` when fetching " \
-                      "`git` repos over `ssh`.",
+                      "Git repositories over SSH.",
         default_text: "`$HOME/.ssh/config`",
       },
       HOMEBREW_SVN:                              {

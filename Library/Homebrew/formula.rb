@@ -85,13 +85,13 @@ class Formula
   attr_reader :alias_name
 
   # The fully-qualified name of this {Formula}.
-  # For core formula it's the same as {#name}.
+  # For core formulae it's the same as {#name}.
   # e.g. `homebrew/tap-name/this-formula`
   sig { returns(String) }
   attr_reader :full_name
 
   # The fully-qualified alias referring to this {Formula}.
-  # For core formula it's the same as {#alias_name}.
+  # For core formulae it's the same as {#alias_name}.
   # e.g. `homebrew/tap-name/another-name-for-this-formula`
   sig { returns(T.nilable(String)) }
   attr_reader :full_alias_name
@@ -2428,7 +2428,7 @@ class Formula
     hash
   end
 
-  # Returns the bottle information for a formula
+  # Returns the bottle information for a formula.
   def bottle_hash
     bottle_spec = T.must(stable).bottle_specification
     hash = {

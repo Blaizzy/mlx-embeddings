@@ -35,7 +35,7 @@ module Homebrew
                           "non-migrated versions. When installing casks, overwrite existing files " \
                           "(binaries and symlinks are excluded, unless originally from the same cask)."
       switch "-v", "--verbose",
-             description: "Print the verification and postinstall steps."
+             description: "Print the verification and post-install steps."
       switch "-n", "--dry-run",
              description: "Show what would be upgraded, but do not actually upgrade anything."
       [

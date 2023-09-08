@@ -23,7 +23,7 @@ module Utils
     HTTP_RESPONSE_BODY_SEPARATOR = "\r\n\r\n"
 
     # This regex is used to isolate the parts of an HTTP status line, namely
-    # the status code and any following descriptive text (e.g., `Not Found`).
+    # the status code and any following descriptive text (e.g. `Not Found`).
     HTTP_STATUS_LINE_REGEX = %r{^HTTP/.* (?<code>\d+)(?: (?<text>[^\r\n]+))?}.freeze
 
     private_constant :ETAG_VALUE_REGEX, :HTTP_RESPONSE_BODY_SEPARATOR, :HTTP_STATUS_LINE_REGEX
@@ -112,7 +112,7 @@ module Utils
       args << "--connect-timeout" << connect_timeout.round(3) if connect_timeout.present?
       args << "--max-time" << max_time.round(3) if max_time.present?
 
-      # A non-positive integer (e.g., 0) or `nil` will omit this argument
+      # A non-positive integer (e.g. 0) or `nil` will omit this argument
       args << "--retry" << retries if retries&.positive?
 
       args << "--retry-max-time" << retry_max_time.round if retry_max_time.present?
