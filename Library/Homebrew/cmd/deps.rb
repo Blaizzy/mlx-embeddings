@@ -17,6 +17,11 @@ module Homebrew
         show the intersection of dependencies for each formula. By default, `deps`
         shows all required and recommended dependencies.
 
+        If any version of each formula argument is installed and no other options
+        are passed, this command displays their actual runtime dependencies (similar
+        to `brew linkage`), which may differ from the current versons' stated
+        dependencies if the installed versions are outdated.
+
         Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
       EOS
       switch "-n", "--topological",
