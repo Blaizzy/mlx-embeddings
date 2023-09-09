@@ -22,7 +22,7 @@ module Homebrew
         to `brew linkage`), which may differ from the current versons' stated
         dependencies if the installed versions are outdated.
 
-        Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
+        *Note:* `--missing` and `--skip-recommended` have precedence over `--include-*`.
       EOS
       switch "-n", "--topological",
              description: "Sort dependencies in topological order."

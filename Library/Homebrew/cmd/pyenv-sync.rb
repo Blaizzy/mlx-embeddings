@@ -11,7 +11,7 @@ module Homebrew
   def pyenv_sync_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Create symlinks for Homebrew's installed Python versions in ~/.pyenv/versions.
+        Create symlinks for Homebrew's installed Python versions in `~/.pyenv/versions`.
 
         Note that older patch version symlinks will be created and linked to the minor
         version so e.g. Python 3.11.0 will also be symlinked to 3.11.3.

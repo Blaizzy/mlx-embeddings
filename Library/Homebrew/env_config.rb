@@ -317,7 +317,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_NO_INSTALL_UPGRADE:               {
-        description: "If set, `brew install` <formula/cask> will not upgrade <formula/cask> if it is installed but " \
+        description: "If set, `brew install` <formula|cask> will not upgrade <formula|cask> if it is installed but " \
                      "outdated.",
         boolean:     true,
       },
@@ -333,7 +333,7 @@ module Homebrew
         boolean:     true,
       },
       HOMEBREW_PIP_INDEX_URL:                    {
-        description:  "If set, `brew install <formula>` will use this URL to download PyPI package resources.",
+        description:  "If set, `brew install` <formula> will use this URL to download PyPI package resources.",
         default_text: "`https://pypi.org/simple`.",
       },
       HOMEBREW_PRY:                              {
