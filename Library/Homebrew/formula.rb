@@ -97,7 +97,7 @@ class Formula
   attr_reader :full_alias_name
 
   # The full path to this {Formula}.
-  # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Formula/this-formula.rb`
+  # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Formula/t/this-formula.rb`
   sig { returns(Pathname) }
   attr_reader :path
 
@@ -527,7 +527,7 @@ class Formula
   delegate resource: :active_spec
 
   # An old name for the formula.
-  # @deprecated Use #{#oldnames} instead.
+  # @deprecated Use {#oldnames} instead.
   sig { returns(T.nilable(String)) }
   def oldname
     odeprecated "Formula#oldname", "Formula#oldnames"
@@ -672,7 +672,7 @@ class Formula
   end
 
   # The directory in the cellar that the formula is installed to.
-  # This directory points to {#opt_prefix} if it exists and if #{prefix} is not
+  # This directory points to {#opt_prefix} if it exists and if {#prefix} is not
   # called from within the same formula's {#install} or {#post_install} methods.
   # Otherwise, return the full path to the formula's versioned cellar.
   def prefix(version = pkg_version)
@@ -1718,8 +1718,7 @@ class Formula
   #
   # If `name` is specified as "*", match any shared library of any version.
   #
-  # <pre>
-  # shared_library("foo")      #=> foo.dylib
+  # <pre>shared_library("foo")      #=> foo.dylib
   # shared_library("foo", 1)   #=> foo.1.dylib
   # shared_library("foo", "*") #=> foo.2.dylib, foo.1.dylib, foo.dylib
   # shared_library("*")        #=> foo.dylib, bar.dylib
@@ -1741,8 +1740,7 @@ class Formula
   # Optionally specify a `source` or `target` depending on the location
   # of the file containing the RPATH command and where its target is located.
   #
-  # <pre>
-  # rpath #=> "@loader_path/../lib"
+  # <pre>rpath #=> "@loader_path/../lib"
   # rpath(target: frameworks) #=> "@loader_path/../Frameworks"
   # rpath(source: libexec/"bin") #=> "@loader_path/../../lib"
   # </pre>
@@ -1808,64 +1806,62 @@ class Formula
   # Generate shell completions for a formula for bash, zsh, and fish, using the formula's executable.
   #
   # @param commands [Pathname, String] the path to the executable and any passed subcommand(s)
-  # to use for generating the completion scripts.
+  #  to use for generating the completion scripts.
   # @param base_name [String] the base name of the generated completion script. Defaults to the formula name.
   # @param shells [Array<Symbol>] the shells to generate completion scripts for. Defaults to `[:bash, :zsh, :fish]`.
   # @param shell_parameter_format [String, Symbol] specify how `shells` should each be passed
-  # to the `executable`. Takes either a String representing a prefix, or one of [:flag, :arg, :none, :click].
-  # Defaults to plainly passing the shell.
+  #  to the `executable`. Takes either a String representing a prefix, or one of `[:flag, :arg, :none, :click]`.
+  #  Defaults to plainly passing the shell.
   #
   # @example Using default values for optional arguments
   #   generate_completions_from_executable(bin/"foo", "completions")
-  # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #   # translates to
+  #   (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #   (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
+  #   (fish_completion/"foo.fish").write Utils.safe_popen_read({ "SHELL" => "fish" }, bin/"foo",
+  #                                                            "completions", "fish")
   #
-  # (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
+  # @example Selecting shells and using a different `base_name`
+  #   generate_completions_from_executable(bin/"foo", "completions", shells: [:bash, :zsh], base_name: "bar")
   #
-  # (fish_completion/"foo.fish").write Utils.safe_popen_read({ "SHELL" => "fish" }, bin/"foo", "completions", "fish")
+  #   # translates to
+  #   (bash_completion/"bar").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
+  #   (zsh_completion/"_bar").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
   #
-  # @example Selecting shells and using a different base_name
-  #    generate_completions_from_executable(bin/"foo", "completions", shells: [:bash, :zsh], base_name: "bar")
-  # translates to
-  #
-  # (bash_completion/"bar").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "bash")
-  #
-  # (zsh_completion/"_bar").write Utils.safe_popen_read({ "SHELL" => "zsh" }, bin/"foo", "completions", "zsh")
-  #
-  # @example Using predefined shell_parameter_format :flag
+  # @example Using predefined `shell_parameter_format :flag`
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :flag, shells: [:bash])
-  # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--bash")
+  #   # translates to
+  #   (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions", "--bash")
   #
-  # @example Using predefined shell_parameter_format :arg
+  # @example Using predefined `shell_parameter_format :arg`
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :arg, shells: [:bash])
-  # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
-  #                                                     "completions", "--shell=bash")
+  #   # translates to
+  #   (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
+  #                                                       "completions", "--shell=bash")
   #
-  # @example Using predefined shell_parameter_format :none
+  # @example Using predefined `shell_parameter_format :none`
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: :none, shells: [:bash])
-  # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions")
+  #   # translates to
+  #   (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo", "completions")
   #
-  # @example Using predefined shell_parameter_format :click
+  # @example Using predefined `shell_parameter_format :click`
   #   generate_completions_from_executable(bin/"foo", shell_parameter_format: :click, shells: [:zsh])
-  # translates to
   #
-  # (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh", "_FOO_COMPLETE" => "zsh_source" },
-  #                                                     bin/"foo")
+  #   # translates to
+  #   (zsh_completion/"_foo").write Utils.safe_popen_read({ "SHELL" => "zsh", "_FOO_COMPLETE" => "zsh_source" },
+  #                                                       bin/"foo")
   #
-  # @example Using custom shell_parameter_format
+  # @example Using custom `shell_parameter_format`
   #   generate_completions_from_executable(bin/"foo", "completions", shell_parameter_format: "--selected-shell=",
   #                                        shells: [:bash])
-  # translates to
   #
-  # (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
-  #                                                     "completions", "--selected-shell=bash")
+  #   # translates to
+  #   (bash_completion/"foo").write Utils.safe_popen_read({ "SHELL" => "bash" }, bin/"foo",
+  #                                                       "completions", "--selected-shell=bash")
   sig {
     params(commands: T.any(Pathname, String), base_name: String, shells: T::Array[Symbol],
            shell_parameter_format: T.nilable(T.any(Symbol, String))).void
@@ -3451,7 +3447,7 @@ class Formula
     # explicitly use that compiler in a formula's {#install} block,
     # rather than implicitly finding a suitable compiler with `needs`.
     #
-    # @see #fails_with
+    # @see .fails_with
     def needs(*standards)
       specs.each { |spec| spec.needs(*standards) }
     end
