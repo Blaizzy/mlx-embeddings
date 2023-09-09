@@ -210,7 +210,7 @@ When a version scheme of a formula fails to recognise a new version as newer it 
 
 When you already have a lot of formulae installed, it's easy to miss a common dependency. You can double-check which libraries a binary links to with the `otool` command (perhaps you need to use `xcrun otool`):
 
-```sh
+```console
 $ otool -L /usr/local/bin/ldapvi
 /usr/local/bin/ldapvi:
     /usr/local/opt/openssl/lib/libssl.1.0.0.dylib (compatibility version 1.0.0, current version 1.0.0)

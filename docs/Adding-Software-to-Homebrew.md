@@ -250,19 +250,18 @@ See the [Acceptable Casks documentation](Acceptable-Casks.md#finding-a-home-for-
 
 Hop into your tap and check to make sure your new cask is there:
 
-```bash
+```console
 $ cd "$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
 $ git status
-# On branch master
-# Untracked files:
-#   (use "git add <file>..." to include in what will be committed)
-#
-#       Casks/my-new-cask.rb
+On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        Casks/m/my-new-cask.rb
 ```
 
 So far, so good. Now make a feature branch `my-new-cask-branch` that you’ll use in your pull request:
 
-```bash
+```console
 $ git checkout -b my-new-cask-branch
 Switched to a new branch 'my-new-cask-branch'
 ```

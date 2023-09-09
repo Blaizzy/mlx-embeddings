@@ -39,7 +39,7 @@ brew install --only-dependencies <formula>
 
 ## Use the interactive Homebrew shell
 
-```sh
+```console
 $ brew irb
 ==> Interactive Homebrew Shell
 Example commands available with: `brew irb --examples`
