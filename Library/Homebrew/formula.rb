@@ -31,8 +31,6 @@ require "utils/spdx"
 require "extend/on_system"
 require "api"
 require "extend/api_hashable"
-require "cli/parser"
-require "commands"
 
 # A formula provides instructions and metadata for Homebrew to install a piece
 # of software. Every Homebrew formula is a {Formula}.
