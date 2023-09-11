@@ -130,13 +130,13 @@ using this quick command:_
 
 ## Pre-planning
 
-### Finding a Meeting Venue
+### Finding a meeting venue
 
 In the past, PLC hosted the AGM at the
 [THON Hotel Brussels City Centre](https://www.thonhotels.com/conference/belgium/brussels/thon-hotel-brussels-city-centre/?Persons=20)
 and arranged for a room block checking in the day before FOSDEM and AGM weekend, generally on Friday, and checking out the day after, generally Tuesday when the AGM is Monday.
 
-### Who Qualifies For AGM Travel Assistance
+### Who qualifies for AGM travel assistance
 
 Travel assistance is available for AGM participants who are expected to attend the AGM in-person.
 Those who have employers able to cover all or a part of the costs of attending FOSDEM should exhaust that
