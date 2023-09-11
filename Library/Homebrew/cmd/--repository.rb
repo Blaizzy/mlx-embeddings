@@ -10,7 +10,7 @@ module Homebrew
   def __repository_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Display where Homebrew's git repository is located.
+        Display where Homebrew's Git repository is located.
 
         If <user>`/`<repo> are provided, display where tap <user>`/`<repo>'s directory is located.
       EOS

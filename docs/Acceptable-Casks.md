@@ -40,7 +40,7 @@ When an app exists in more than one language or has different regional editions,
 
 ### Trial and Freemium versions
 
-Before submitting a trial, make sure it can be made into a full working version without needing to be redownloaded. If an app provides a trial but the only way to buy the full version is via the Mac App Store, it does not belong in any of the official repos. Freemium versions are fine.
+Before submitting a trial, make sure it can be made into a full working version without needing to be redownloaded. If an app provides a trial but the only way to buy the full version is via the Mac App Store, it does not belong in any of the official repositories. Freemium versions are fine.
 
 ### Forks and apps with conflicting names
 
@@ -95,14 +95,14 @@ However, there is a difference between discoverability (finding new apps you did
 
 ## Rejected Casks
 
-Before submitting a cask to any of our repos, you must read our [documentation on acceptable casks](#finding-a-home-for-your-cask) and perform a (at least quick) search to see if there were any previous attempts to introduce it.
+Before submitting a cask to any of our repositories, you must read our [documentation on acceptable casks](#finding-a-home-for-your-cask) and perform a (at least quick) search to see if there were any previous attempts to introduce it.
 
 Common reasons to reject a cask entirely:
 
 * We have strong reasons to believe including the cask can put the whole project at risk. Happened only once so far, [with Popcorn Time](https://github.com/Homebrew/homebrew-cask/pull/3954).
 * Cask is unreasonably difficult to maintain. Examples have included [Audacity](https://github.com/Homebrew/homebrew-cask/pull/27517) and [older Java development casks](https://github.com/Homebrew/homebrew-cask/issues/57387).
 * App is a trial version, and the only way to acquire the full version is through the Mac App Store.
-  * Similarly (and trickier to spot), the app has moved to the Mac App Store but still provides old versions via direct download. We reject these in all official repos so users don’t get stuck using an old version, wrongly thinking they’re using the most up-to-date one (which, amongst other things, might be a security risk).
+  * Similarly (and trickier to spot), the app has moved to the Mac App Store but still provides old versions via direct download. We reject these in all official repositories so users don’t get stuck using an old version, wrongly thinking they’re using the most up-to-date one (which, amongst other things, might be a security risk).
 * App is both open-source and CLI-only (i.e. it only uses the `binary` artifact). In that case, and [in the spirit of deduplication](https://github.com/Homebrew/homebrew-cask/issues/15603), submit it first to [homebrew/core](https://github.com/Homebrew/homebrew-core) as a formula that builds from source. If it is rejected, you may then try again as a cask (link to the issue from your pull request so we can see the discussion and reasoning for rejection).
 * App is open-source and has a GUI but no compiled versions (or only old ones) are provided. It’s better to have them in [homebrew/core](https://github.com/Homebrew/homebrew-core) so users don’t get perpetually outdated versions. See [`gedit`](https://github.com/Homebrew/homebrew-cask/pull/23360) for example.
 * Cask has been rejected before due to an issue we cannot fix, and the new submission doesn’t fix that. An example would be the [first submission of `soapui`](https://github.com/Homebrew/homebrew-cask/pull/4939), whose installation problems were not fixed in the two [subsequent](https://github.com/Homebrew/homebrew-cask/pull/9969) [submissions](https://github.com/Homebrew/homebrew-cask/pull/10606).

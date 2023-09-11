@@ -8,4 +8,5 @@ scope: paragraph
 swap:
   "(?<!How to Open a Homebrew )Pull Request": pull request
   repo: repository
+  repos: repositories
   Rubocop: RuboCop

@@ -17,7 +17,7 @@ module Homebrew
         The command will fail if the previous major or minor release was made less than
         one month ago.
 
-        Requires write access to the Homebrew/brew repository.
+        *Note:* Requires write access to the Homebrew/brew repository.
       EOS
       switch "--major",
              description: "Create a major release."

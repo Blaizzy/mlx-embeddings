@@ -20,7 +20,7 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       usage_banner "`contributions` [--user=<email|username>] [<--repositories>`=`] [<--csv>]"
       description <<~EOS
-        Contributions to Homebrew repositories.
+        Summarise contributions to Homebrew repositories.
       EOS
 
       comma_array "--repositories",

@@ -23,7 +23,7 @@ module Homebrew
         of formulae that use <formula>. By default, `uses` shows all formulae and casks that
         specify <formula> as a required or recommended dependency for their stable builds.
 
-        Note: `--missing` and `--skip-recommended` have precedence over `--include-*`.
+        *Note:* `--missing` and `--skip-recommended` have precedence over `--include-*`.
       EOS
       switch "--recursive",
              description: "Resolve more than one level of dependencies."

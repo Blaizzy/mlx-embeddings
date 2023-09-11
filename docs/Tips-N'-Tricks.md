@@ -39,7 +39,7 @@ brew install --only-dependencies <formula>
 
 ## Use the interactive Homebrew shell
 
-```sh
+```console
 $ brew irb
 ==> Interactive Homebrew Shell
 Example commands available with: `brew irb --examples`
@@ -67,7 +67,7 @@ export HOMEBREW_INSTALL_BADGE="☕️ 🐸"
 
 ## Migrate a Homebrew installation to a new location
 
-Run `brew bundle dump` and `brew bundle install` record an installation to and install from a `Brewfile`. See `brew bundle --help` for more details.
+Running `brew bundle dump` will record an installation to a `Brewfile` and `brew bundle install` will install from a `Brewfile`. See `brew bundle --help` for more details.
 
 ## Appoint Homebrew Cask to manage a manually-installed app
 

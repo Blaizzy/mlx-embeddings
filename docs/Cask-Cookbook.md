@@ -19,7 +19,7 @@ end
 * Table of Contents
 {:toc}
 
-## The Cask Language Is Declarative
+## The cask language is declarative
 
 Each cask contains a series of stanzas (or “fields”) which *declare* how the software is to be obtained and installed. In a declarative language, the author does not need to worry about **order**. As long as all the needed fields are present, Homebrew Cask will figure out what needs to be done at install time.
 
@@ -27,7 +27,7 @@ To make maintenance easier, the most-frequently-updated stanzas are usually plac
 
 Exception: `do` blocks such as `postflight` may enclose a block of pure Ruby code. Lines within that block follow a procedural (order-dependent) paradigm.
 
-## Header Line Details
+## Header line details
 
 The first non-comment line in a cask follows the form:
 
@@ -101,7 +101,7 @@ Note that every stanza that has additional parameters (`:symbols` after a `,`) s
 
 ## Stanzas
 
-### Required Stanzas
+### Required stanzas
 
 Each of the following stanzas is required for every cask.
 
@@ -114,7 +114,7 @@ Each of the following stanzas is required for every cask.
 | [`desc`](#stanza-desc)       | no                            | One-line description of the cask. Shown when running `brew info`.
 | `homepage`                   | no                            | Application homepage; used for the `brew home` command.
 
-### At Least One Artifact Stanza Is Also Required
+### At least one artifact stanza is also required
 
 Each cask must declare one or more *artifacts* (i.e. something to install).
 
@@ -143,7 +143,7 @@ Each cask must declare one or more *artifacts* (i.e. something to install).
 | `artifact`                       | yes                           | Relative path to an arbitrary path that should be moved on installation. Must provide an absolute path as a `target`. (Example: [free-gpgmail.rb](https://github.com/Homebrew/homebrew-cask/blob/b3c438d608d9702380edf10d5495e0727cf17108/Casks/f/free-gpgmail.rb#L44)) This is only for unusual cases; the `app` stanza is strongly preferred when moving `.app` bundles.
 | `stage_only`                     | no                            | `true`. Asserts that the cask contains no activatable artifacts.
 
-### Optional Stanzas
+### Optional stanzas
 
 | name                                       | multiple occurrences allowed? | value |
 | ------------------------------------------ | :---------------------------: | ----- |
@@ -178,7 +178,7 @@ by default moves the source to:
 /Applications/Alfred 2.app
 ```
 
-#### Renaming the Target
+#### Renaming the target
 
 You can rename the target which appears in your `/Applications` directory by adding a `target:` key to `app`. Example (from [scala-ide.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/s/scala-ide.rb#L24)):
 
@@ -186,7 +186,7 @@ You can rename the target which appears in your `/Applications` directory by add
 app "eclipse.app", target: "Scala IDE.app"
 ```
 
-#### *target* May Contain an Absolute Path
+#### *target* may contain an absolute path
 
 If `target:` has a leading slash, it is interpreted as an absolute path. The containing directory for the absolute path will be created if it does not already exist. Example (from [sapmachine-jdk.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/s/sapmachine-jdk.rb#L21)):
 
@@ -194,11 +194,11 @@ If `target:` has a leading slash, it is interpreted as an absolute path. The con
 artifact "sapmachine-jdk-#{version}.jdk", target: "/Library/Java/JavaVirtualMachines/sapmachine-jdk-#{version}.jdk"
 ```
 
-#### *target* Works on Most Artifact Types
+#### *target* works on most artifact types
 
 The `target:` key works similarly for most cask artifacts, such as `app`, `binary`, `colorpicker`, `dictionary`, `font`, `input_method`, `internet_plugin`, `keyboard_layout`, `prefpane`, `qlplugin`, `mdimporter`, `screen_saver`, `service`, `suite`, `audio_unit_plugin`, `vst_plugin`, `vst3_plugin`, and `artifact`.
 
-#### *target* Should Only Be Used in Select Cases
+#### *target* should only be used in select cases
 
 Don’t use `target:` for aesthetic reasons, like removing version numbers (`app "Slack #{version}.app", target: "Slack.app"`). Use it when it makes sense functionally and document your reason clearly in the cask, using one of the templates: [for clarity](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/i/imagemin.rb#L10); [for consistency](https://github.com/Homebrew/homebrew-cask/blob/8be96e3658ff7ab66ca40723c3018fc5e35e3735/Casks/x-moto.rb#L16); [to prevent conflicts](https://github.com/Homebrew/homebrew-cask/blob/4472df441468e2aa657005550e2b951c2ef817f4/Casks/t/telegram-desktop.rb#L20); [due to developer suggestion](https://github.com/Homebrew/homebrew-cask/blob/ff3e9c4a6623af44b8a071027e8dcf3f4edfc6d9/Casks/kivy.rb#L12).
 
@@ -243,7 +243,7 @@ Sometimes there are particularities with the installation of a piece of software
 
 To avoid flooding users with too many messages (thus desensitising them to the important ones), `caveats` should be used sparingly and exclusively for installation-related matters. If you’re not sure a `caveat` you find pertinent is installation-related or not, ask a maintainer. As a general rule, if your case isn’t already covered in our comprehensive [`caveats Mini-DSL`](#caveats-mini-dsl), it’s unlikely to be accepted.
 
-#### `caveats` as a String
+#### `caveats` as a string
 
 When `caveats` is a string, it is evaluated at compile time. The following methods are available for interpolation if `caveats` is placed in its customary position at the end of the cask:
 
@@ -261,11 +261,11 @@ Example:
 caveats "Using #{token} may be hazardous to your health."
 ```
 
-#### `caveats` as a Block
+#### `caveats` as a block
 
 When `caveats` is a Ruby block, evaluation is deferred until install time. Within a block you may refer to the `@cask` instance variable, and invoke [any method available on `@cask`](https://rubydoc.brew.sh/Cask/Cask).
 
-#### `caveats` Mini-DSL
+#### `caveats` mini-DSL
 
 There is a mini-DSL available within `caveats` blocks.
 
@@ -346,7 +346,7 @@ depends_on formula: "unar"
 
 #### `depends_on` *macos*
 
-##### Requiring an Exact macOS Release
+##### Requiring an exact macOS release
 
 The value for `depends_on macos:` may be a symbol or an array of symbols, listing the exact compatible macOS releases. The available values for macOS releases are defined in the [MacOSVersion class](https://rubydoc.brew.sh/MacOSVersion.html).
 
@@ -360,7 +360,7 @@ depends_on macos: [
 ]
 ```
 
-##### Setting a Minimum macOS Release
+##### Setting a minimum macOS release
 
 `depends_on macos:` can also accept a string starting with a comparison operator such as `>=`, followed by an macOS release in the form above. The following is a valid expression meaning “at least macOS Big Sur (11.0)”:
 
@@ -391,7 +391,7 @@ depends_on arch: [:x86_64]          # same meaning as above
 depends_on arch: :arm64
 ```
 
-#### `depends_on` Parameters
+#### `depends_on` parameters
 
 | key        | description |
 | ---------- | ----------- |
@@ -469,11 +469,11 @@ depends_on arch: :arm64
 
 The stanzas `preflight`, `postflight`, `uninstall_preflight`, and `uninstall_postflight` define operations to be run before or after installation or uninstallation.
 
-#### Evaluation of Blocks is Always Deferred
+#### Evaluation of blocks is always deferred
 
 The Ruby blocks defined by these stanzas are not evaluated until install time or uninstall time. Within a block you may refer to the `@cask` instance variable, and invoke [any method available on `@cask`](https://rubydoc.brew.sh/Cask/Cask).
 
-#### `*flight` Mini-DSL
+#### `*flight` mini-DSL
 
 There is a mini-DSL available within these blocks.
 
@@ -676,7 +676,7 @@ The `sha256` value is usually calculated by the `shasum` command:
 shasum --algorithm 256 <file>
 ```
 
-#### Special Value `:no_check`
+#### Special value `:no_check`
 
 The special value `sha256 :no_check` is used to turn off SHA checking whenever checksumming is impractical due to the upstream configuration.
 
@@ -700,11 +700,11 @@ The value of `suite` is never an `.app` bundle, but a plain directory.
 
 > If you cannot design a working `uninstall` stanza, please submit your cask anyway. The maintainers can help you write an `uninstall` stanza, just ask!
 
-#### `uninstall pkgutil:` Is The Easiest and Most Useful
+#### `uninstall pkgutil:` is the easiest and most useful
 
 The easiest and most useful `uninstall` directive is [`pkgutil:`](#uninstall-pkgutil). It should cover most use cases.
 
-#### `uninstall` Is Required for Casks That Install using `pkg` or `installer manual:`
+#### `uninstall` is required for casks that install using `pkg` or `installer manual:`
 
 For most casks, uninstall actions are determined automatically, and an explicit `uninstall` stanza is not needed. However, a cask which uses the `pkg` or `installer manual:` stanzas will **not** know how to uninstall correctly unless an `uninstall` stanza is given.
 
@@ -712,11 +712,11 @@ So, while the [cask DSL](#required-stanzas) does not enforce the requirement, it
 
 The `uninstall` stanza is available for non-`pkg` casks, and is useful for a few corner cases. However, the documentation below concerns the typical case of using `uninstall` to define procedures for a `pkg`.
 
-#### There Are Multiple Uninstall Techniques
+#### There are multiple uninstall techniques
 
 Since `pkg` installers can do arbitrary things, different techniques are needed to uninstall in each case. You may need to specify one, or several, of the following key/value pairs as arguments to `uninstall`.
 
-#### Summary of Keys
+#### Summary of keys
 
 * **`early_script:`** (string or hash) - like [`script:`](#uninstall-script), but runs early (for special cases, best avoided)
 * [`launchctl:`](#uninstall-launchctl) (string or array) - IDs of `launchd` jobs to remove
@@ -757,7 +757,7 @@ IDs for the most recently installed packages can be listed using [`list_recent_p
 "$(brew --repository homebrew/cask)/developer/bin/list_pkg_ids_by_regexp" <regular-expression>
 ```
 
-#### List Files Associated With a Package ID
+#### List files associated with a package ID
 
 Once you know the ID for an installed package (see above), you can list all files on your system associated with that package ID using the macOS `pkgutil` command:
 
@@ -879,7 +879,7 @@ To remove user-specific files, use the [`zap` stanza](#stanza-zap).
 
 `trash:` arguments follow the same rules listed above for `delete:`.
 
-#### Working With a `.pkg` File Manually
+#### Working with a `.pkg` file manually
 
 Advanced users may wish to work with a `.pkg` file manually, without having the package installed.
 
@@ -911,11 +911,11 @@ A fully manual method for finding bundle IDs in a package file follows:
 
 ### Stanza: `url`
 
-#### HTTPS URLs are Preferred
+#### HTTPS URLs are preferred
 
 If available, an HTTPS URL is preferred. A plain HTTP URL should only be used in the absence of a secure alternative.
 
-#### Additional `url` Parameters
+#### Additional `url` parameters
 
 When a plain URL string is insufficient to fetch a file, additional information may be provided to the `curl`-based downloader, in the form of key/value pairs appended to `url`:
 
@@ -929,7 +929,7 @@ When a plain URL string is insufficient to fetch a file, additional information 
 | `user_agent:`      | string holding the user agent to set for the download request. Can also be set to the symbol `:fake`, which will use a generic browser-like user agent string. We prefer `:fake` when the server does not require a specific user agent.
 | `data:`            | hash of parameters to be set in the POST request (Example: [segger-jlink.rb](https://github.com/Homebrew/homebrew-cask/blob/38ac55614f146d68ae317594f0c119e9acbd7c9e/Casks/s/segger-jlink.rb#L6-L11))
 
-#### When URL and Homepage Domains Differ, Add `verified:`
+#### When URL and homepage domains differ, add `verified:`
 
 When the domains of `url` and `homepage` differ, the discrepancy should be documented with the `verified:` parameter, repeating the smallest possible portion of the URL that uniquely identifies the app or vendor, excluding the protocol. (Example: [shotcut.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/s/shotcut.rb#L5-L6))
 
@@ -937,7 +937,7 @@ This must be added so a user auditing the cask knows the URL was verified by the
 
 The parameter doesn’t mean you should trust the source blindly, but we only approve casks in which users can easily verify its authenticity with basic means, such as checking the official homepage or public repository. Occasionally, slightly more elaborate techniques may be used, such as inspecting a [`livecheck`](#stanza-livecheck) URL we established as official. Cases where such quick verifications aren’t possible (e.g. when the download URL is behind a registration wall) are [treated in a stricter manner](https://docs.brew.sh/Acceptable-Casks#unofficial-vendorless-and-walled-builds).
 
-#### Difficulty Finding a URL
+#### Difficulty finding a URL
 
 Web browsers may obscure the direct `url` download location for a variety of reasons. Homebrew Cask supplies a [`list_url_attributes_on_file`](https://github.com/Homebrew/homebrew-cask/blob/HEAD/developer/bin/list_url_attributes_on_file) script which can read extended file attributes to extract the actual source URL of most files downloaded by a browser on macOS. The script usually emits multiple candidate URLs; you may have to test each of them:
 
@@ -983,13 +983,13 @@ If these formats are not available, and the application is macOS-exclusive (othe
 
     https://sourceforge.net/projects/<project_name>/files/latest/download
 
-#### Some Providers Block Command-line Downloads
+#### Some providers block command-line downloads
 
 Some hosting providers actively block command-line HTTP clients. Such URLs cannot be used in casks.
 
 Other providers may use URLs that change periodically, or even on each visit (example: FossHub). While some cases [could be circumvented](#using-a-block-to-defer-code-execution), they tend to occur when the vendor is actively trying to prevent automated downloads, so we prefer to not add those casks to the main repository.
 
-#### Using a Block to Defer Code Execution
+#### Using a block to defer code execution
 
 Some casks—notably nightlies—have versioned download URLs but are updated so often that they become impractical to keep current with the usual process. For those, we want to dynamically determine `url`.
 
@@ -999,7 +999,7 @@ In theory, one can write arbitrary Ruby code right in the cask definition to fet
 
 However, this typically involves an HTTP round trip to a landing site, which may take a long time. Because of the way Homebrew Cask loads and parses casks, it is not acceptable that such expensive operations be performed directly in the body of a cask definition.
 
-##### Writing the Block
+##### Writing the block
 
 Similar to the `preflight`, `postflight`, `uninstall_preflight`, and `uninstall_postflight` blocks, the `url` stanza offers an optional *block syntax*:
 
@@ -1020,7 +1020,7 @@ You can use the `url` stanza with either a direct argument or a block but not wi
 
 Example of using the block syntax: [vlc-nightly.rb](https://github.com/Homebrew/homebrew-cask-versions/blob/d3b9d0fdcf83f1f87c3ad64a852323a6e687c5f7/Casks/vlc-nightly.rb#L7-L12)
 
-##### Mixing Additional URL Parameters With the Block Syntax
+##### Mixing additional URL parameters with the block syntax
 
 In rare cases, you might need to set URL parameters like `cookies` or `referer` while also using the block syntax.
 
@@ -1058,7 +1058,7 @@ version "1.2.3build4"
 url "https://example.com/#{version.sub(%r{build\d+}, '')}/file-version-#{version}.dmg"
 ```
 
-#### `version` Methods
+#### `version` methods
 
 The examples above can become hard to read, however. Since many of these changes are common, we provide a number of helpers to clearly interpret otherwise obtuse cases:
 
@@ -1081,7 +1081,7 @@ Finally, there is `csv` which returns an array of comma-separated values. `csv`,
 
 #### `version :latest`
 
-The special value `:latest` is used when
+The special value `:latest` is used when:
 
 * `url` does not contain any version information and there is no way to retrieve
   the version using a `livecheck`, or
@@ -1091,7 +1091,7 @@ The special value `:latest` is used when
 
 ### Stanza: `zap`
 
-#### `zap` Purpose
+#### `zap` purpose
 
 The `zap` stanza describes a more complete uninstallation of files associated with a cask. The `zap` procedures will never be performed by default, but only if the user uses `--zap` on `uninstall`:
 
@@ -1114,13 +1114,13 @@ Appending `--force` to the command will allow you to perform these actions even 
 brew uninstall --zap --force firefox
 ```
 
-#### `zap` Syntax
+#### `zap` syntax
 
 The form of the `zap` stanza follows the [`uninstall` stanza](#stanza-uninstall). All the same directives are available. The `trash:` key is preferred over `delete:`.
 
 Example: [dropbox.rb](https://github.com/Homebrew/homebrew-cask/blob/974a55ade77bb4edc8bbb80ef72eec83ae0e76c0/Casks/d/dropbox.rb#L30-L68)
 
-#### `zap` Creation
+#### `zap` creation
 
 The simplest method is to use [@nrlquaker's CreateZap](https://github.com/nrlquaker/homebrew-createzap), which can automatically generate the stanza. In a few instances it may fail to pick up anything and manual creation may be required.
 
@@ -1131,7 +1131,7 @@ Manual creation can be facilitated with:
 * An uninstaller tool such as [AppCleaner](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/a/appcleaner.rb).
 * Inspection of the usual paths, i.e. `/Library/{'Application Support',LaunchAgents,LaunchDaemons,Frameworks,Logs,Preferences,PrivilegedHelperTools}` and `~/Library/{'Application Support',Caches,Containers,LaunchAgents,Logs,Preferences,'Saved Application State'}`.
 
-## Conditional Statements
+## Conditional statements
 
 ### Handling different system configurations
 
@@ -1201,11 +1201,11 @@ cask "calibre" do
 
 Such `on_<system>` blocks can be nested and contain other stanzas not listed here. Examples: [calhash.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/c/calhash.rb), [openzfs.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/o/openzfs.rb), [r.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/r/r.rb), [wireshark.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/w/wireshark.rb)
 
-### Switch Between Languages or Regions
+### Switch between languages or regions
 
 If a cask is available in multiple languages, you can use the [`language` stanza](#stanza-language) to switch between languages or regions based on the system locale.
 
-## Arbitrary Ruby Methods
+## Arbitrary Ruby methods
 
 In the exceptional case that the cask DSL is insufficient, it is possible to define arbitrary Ruby variables and methods inside the cask by creating a `Utils` namespace. Example:
 
@@ -1254,9 +1254,9 @@ Software vendors are often inconsistent with their naming. By enforcing strict n
 
 Details of software names and brands will inevitably be lost in the conversion to a minimal token. To capture the vendor’s full name for a distribution, use the [`name`](#stanza-name) within a cask. `name` accepts an unrestricted UTF-8 string.
 
-### Finding the Simplified Name of the Vendor’s Distribution
+### Finding the simplified name of the vendor’s distribution
 
-#### Simplified Names of Apps
+#### Simplified names of apps
 
 * Start with the exact name of the application bundle as it appears on disk, such as `Google Chrome.app`.
 
@@ -1303,17 +1303,17 @@ Details of software names and brands will inevitably be lost in the conversion t
 
 * As a last resort, translate the name of the app bundle into English.
 
-#### Simplified Names of `pkg`-based Installers
+#### Simplified names of `pkg`-based installers
 
 * The Simplified Name of a `pkg` may be more tricky to determine than that of an App. If a `pkg` installs an App, then use that App name with the rules above. If not, just create the best name you can, based on the vendor’s web page.
 
-#### Simplified Names of non-App Software
+#### Simplified names of non-App software
 
 * Currently, rules for generating a token are not well-defined for Preference Panes, QuickLook plugins, and several other types of software installable by Homebrew Cask. Just create the best name you can, based on the filename on disk or the vendor’s web page. Watch out for duplicates.
 
   Non-app tokens should become more standardized in the future.
 
-### Converting the Simplified Name To a Token
+### Converting the simplified name to a token
 
 The token is the primary identifier for a package in this project. It’s the unique string users refer to when operating on the cask.
 
@@ -1331,15 +1331,15 @@ To convert the App’s Simplified Name (above) to a token:
 * Collapse a series of multiple hyphens into one hyphen.
 * Delete a leading or trailing hyphen.
 
-### Cask Filenames
+### Cask filenames
 
 Casks are stored in a Ruby file named after the token, with the file extension `.rb`.
 
-### Cask Headers
+### Cask headers
 
 The token is also given in the header line for each cask.
 
-### Cask Token Examples
+### Cask token examples
 
 These illustrate most of the rules for generating a token:
 
@@ -1351,22 +1351,22 @@ App Name on Disk       | Simplified App Name | Cask Token       | Filename
 `LPK25 Editor.app`     | LPK25 Editor        | lpk25-editor     | `lpk25-editor.rb`
 `Sublime Text 2.app`   | Sublime Text        | sublime-text     | `sublime-text.rb`
 
-#### Tap-Specific Cask Token Examples
+#### Tap-specific cask token examples
 
 Cask taps have naming conventions specific to each tap.
 
 * [Homebrew/cask-versions](https://github.com/Homebrew/homebrew-cask-versions/blob/HEAD/CONTRIBUTING.md#naming-versions-casks)
 * [Homebrew/cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md#naming-font-casks)
 
-### Special Affixes
+### Special affixes
 
 A few situations require a prefix or suffix to be added to the token.
 
-#### Token Overlap
+#### Token overlap
 
 When the token for a new cask would otherwise conflict with the token of an already existing cask, the nature of that overlap dictates the token, potentially for both casks. See [Forks and Apps with Conflicting Names](Acceptable-Casks.md#forks-and-apps-with-conflicting-names) for information on how to proceed.
 
-#### Potentially Misleading Name
+#### Potentially misleading name
 
 If the token for a piece of unofficial software that interacts with a popular service would make it look official and the vendor is not authorised to use the name, [a prefix must be added](Acceptable-Casks.md#forks-and-apps-with-conflicting-names) for disambiguation.
 

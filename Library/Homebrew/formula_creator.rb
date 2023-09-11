@@ -60,7 +60,7 @@ module Homebrew
       raise "#{path} already exists" if path.exist?
 
       if version.nil? || version.null?
-        odie "Version cannot be determined from URL. Explicity set the version with `--set-version` instead."
+        odie "Version cannot be determined from URL. Explicitly set the version with `--set-version` instead."
       elsif fetch?
         unless head?
           r = Resource.new

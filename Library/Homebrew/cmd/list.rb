@@ -14,7 +14,6 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         List all installed formulae and casks.
-
         If <formula> is provided, summarise the paths within its current keg.
         If <cask> is provided, list its artifacts.
       EOS

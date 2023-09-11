@@ -10,8 +10,8 @@ module Homebrew
       description <<~EOS
         Display Homebrew's install path. *Default:*
 
-          - macOS Intel: `#{HOMEBREW_DEFAULT_PREFIX}`
           - macOS ARM: `#{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}`
+          - macOS Intel: `#{HOMEBREW_DEFAULT_PREFIX}`
           - Linux: `#{HOMEBREW_LINUX_DEFAULT_PREFIX}`
 
         If <formula> is provided, display the location where <formula> is or would be installed.

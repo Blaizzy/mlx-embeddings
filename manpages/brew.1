@@ -158,7 +158,10 @@ Show Homebrew and system configuration info useful for debugging\. If you file a
 Show dependencies for \fIformula\fR\. When given multiple formula arguments, show the intersection of dependencies for each formula\. By default, \fBdeps\fR shows all required and recommended dependencies\.
 .
 .P
-Note: \fB\-\-missing\fR and \fB\-\-skip\-recommended\fR have precedence over \fB\-\-include\-*\fR\.
+If any version of each formula argument is installed and no other options are passed, this command displays their actual runtime dependencies (similar to \fBbrew linkage\fR), which may differ from the current versons\' stated dependencies if the installed versions are outdated\.
+.
+.P
+\fINote:\fR \fB\-\-missing\fR and \fB\-\-skip\-recommended\fR have precedence over \fB\-\-include\-*\fR\.
 .
 .TP
 \fB\-n\fR, \fB\-\-topological\fR
@@ -275,10 +278,13 @@ Control Homebrew\'s developer mode\. When developer mode is enabled, \fBbrew upd
     Turn Homebrew\'s developer mode on or off respectively\.
 .
 .SS "\fBdocs\fR"
-Open Homebrew\'s online documentation (https://docs\.brew\.sh) in a browser\.
+Open Homebrew\'s online documentation at \fIhttps://docs\.brew\.sh\fR in a browser\.
 .
 .SS "\fBdoctor\fR, \fBdr\fR [\fB\-\-list\-checks\fR] [\fB\-\-audit\-debug\fR] [\fIdiagnostic_check\fR \.\.\.]"
-Check your system for potential problems\. Will exit with a non\-zero status if any potential problems are found\. Please note that these warnings are just used to help the Homebrew maintainers with debugging if you file an issue\. If everything you use Homebrew for is working fine: please don\'t worry or file an issue; just ignore this\.
+Check your system for potential problems\. Will exit with a non\-zero status if any potential problems are found\.
+.
+.P
+Please note that these warnings are just used to help the Homebrew maintainers with debugging if you file an issue\. If everything you use Homebrew for is working fine: please don\'t worry or file an issue; just ignore this\.
 .
 .TP
 \fB\-\-list\-checks\fR
@@ -377,10 +383,7 @@ Treat all named arguments as formulae\.
 Treat all named arguments as casks\.
 .
 .SS "\fBinfo\fR, \fBabv\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
-Display brief statistics for your Homebrew installation\.
-.
-.P
-If a \fIformula\fR or \fIcask\fR is provided, show summary of information about it\.
+Display brief statistics for your Homebrew installation\. If a \fIformula\fR or \fIcask\fR is provided, show summary of information about it\.
 .
 .TP
 \fB\-\-analytics\fR
@@ -448,7 +451,7 @@ Install formulae without checking for previously installed keg\-only or non\-mig
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Print the verification and postinstall steps\.
+Print the verification and post\-install steps\.
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
@@ -460,7 +463,7 @@ Treat all named arguments as formulae\.
 .
 .TP
 \fB\-\-ignore\-dependencies\fR
-An unsupported Homebrew development flag to skip installing any dependencies of any kind\. If the dependencies are not already present, the formula will have issues\. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this flag\.
+An unsupported Homebrew development option to skip installing any dependencies of any kind\. If the dependencies are not already present, the formula will have issues\. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this option\.
 .
 .TP
 \fB\-\-only\-dependencies\fR
@@ -566,7 +569,7 @@ Only list leaves that were manually installed\.
 Only list leaves that were installed as dependencies\.
 .
 .SS "\fBlink\fR, \fBln\fR [\fIoptions\fR] \fIinstalled_formula\fR [\.\.\.]"
-Symlink all of \fIformula\fR\'s installed files into Homebrew\'s prefix\. This is done automatically when you install formulae but can be useful for DIY installations\.
+Symlink all of \fIformula\fR\'s installed files into Homebrew\'s prefix\. This is done automatically when you install formulae but can be useful for manual installations\.
 .
 .TP
 \fB\-\-overwrite\fR
@@ -585,10 +588,7 @@ Allow keg\-only formulae to be linked\.
 Link the HEAD version of the formula if it is installed\.
 .
 .SS "\fBlist\fR, \fBls\fR [\fIoptions\fR] [\fIinstalled_formula\fR|\fIinstalled_cask\fR \.\.\.]"
-List all installed formulae and casks\.
-.
-.P
-If \fIformula\fR is provided, summarise the paths within its current keg\. If \fIcask\fR is provided, list its artifacts\.
+List all installed formulae and casks\. If \fIformula\fR is provided, summarise the paths within its current keg\. If \fIcask\fR is provided, list its artifacts\.
 .
 .TP
 \fB\-\-formula\fR
@@ -688,7 +688,7 @@ Check the given \fIformula\fR kegs for missing dependencies\. If no \fIformula\f
 Act as if none of the specified \fIhidden\fR are installed\. \fIhidden\fR should be a comma\-separated list of formulae\.
 .
 .SS "\fBnodenv\-sync\fR"
-Create symlinks for Homebrew\'s installed NodeJS versions in ~/\.nodenv/versions\.
+Create symlinks for Homebrew\'s installed NodeJS versions in \fB~/\.nodenv/versions\fR\.
 .
 .P
 Note that older version symlinks will also be created so e\.g\. NodeJS 19\.1\.0 will also be symlinked to 19\.0\.0\.
@@ -758,13 +758,13 @@ Pin the specified \fIformula\fR, preventing them from being upgraded when issuin
 Rerun the post\-install steps for \fIformula\fR\.
 .
 .SS "\fBpyenv\-sync\fR"
-Create symlinks for Homebrew\'s installed Python versions in ~/\.pyenv/versions\.
+Create symlinks for Homebrew\'s installed Python versions in \fB~/\.pyenv/versions\fR\.
 .
 .P
 Note that older patch version symlinks will be created and linked to the minor version so e\.g\. Python 3\.11\.0 will also be symlinked to 3\.11\.3\.
 .
 .SS "\fBrbenv\-sync\fR"
-Create symlinks for Homebrew\'s installed Ruby versions in ~/\.rbenv/versions\.
+Create symlinks for Homebrew\'s installed Ruby versions in \fB~/\.rbenv/versions\fR\.
 .
 .P
 Note that older version symlinks will also be created so e\.g\. Ruby 3\.2\.1 will also be symlinked to 3\.2\.0\.
@@ -786,7 +786,7 @@ Verify any alias symlinks in each tap\.
 .
 .TP
 \fB\-\-syntax\fR
-Syntax\-check all of Homebrew\'s Ruby files (if no \fB<tap>\fR is passed)\.
+Syntax\-check all of Homebrew\'s Ruby files (if no \fItap\fR is passed)\.
 .
 .TP
 \fB\-\-eval\-all\fR
@@ -815,7 +815,7 @@ Install without checking for previously installed keg\-only or non\-migrated ver
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Print the verification and postinstall steps\.
+Print the verification and post\-install steps\.
 .
 .TP
 \fB\-\-formula\fR
@@ -950,10 +950,7 @@ The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOS
 The shell can be specified explicitly with a supported shell name parameter\. Unknown shells will output POSIX exports\.
 .
 .SS "\fBtap\fR [\fIoptions\fR] [\fIuser\fR\fB/\fR\fIrepo\fR] [\fIURL\fR]"
-Tap a formula repository\.
-.
-.P
-If no arguments are provided, list all installed taps\.
+Tap a formula repository\. If no arguments are provided, list all installed taps\.
 .
 .P
 With \fIURL\fR unspecified, tap a formula repository from GitHub using HTTPS\. Since so many taps are hosted on GitHub, this command is a shortcut for \fBbrew tap\fR \fIuser\fR\fB/\fR\fIrepo\fR \fBhttps://github\.com/\fR\fIuser\fR\fB/homebrew\-\fR\fIrepo\fR\.
@@ -982,10 +979,7 @@ Evaluate all the formulae, casks and aliases in the new tap to check validity\. 
 Force install core taps even under API mode\.
 .
 .SS "\fBtap\-info\fR [\fB\-\-installed\fR] [\fB\-\-json\fR] [\fItap\fR \.\.\.]"
-Show detailed information about one or more \fItap\fRs\.
-.
-.P
-If no \fItap\fR names are provided, display brief statistics for all installed taps\.
+Show detailed information about one or more \fItap\fRs\. If no \fItap\fR names are provided, display brief statistics for all installed taps\.
 .
 .TP
 \fB\-\-installed\fR
@@ -1075,7 +1069,7 @@ Install formulae without checking for previously installed keg\-only or non\-mig
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Print the verification and postinstall steps\.
+Print the verification and post\-install steps\.
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
@@ -1153,7 +1147,7 @@ Disable/enable quarantining of downloads (default: enabled)\.
 Show formulae and casks that specify \fIformula\fR as a dependency; that is, show dependents of \fIformula\fR\. When given multiple formula arguments, show the intersection of formulae that use \fIformula\fR\. By default, \fBuses\fR shows all formulae and casks that specify \fIformula\fR as a required or recommended dependency for their stable builds\.
 .
 .P
-Note: \fB\-\-missing\fR and \fB\-\-skip\-recommended\fR have precedence over \fB\-\-include\-*\fR\.
+\fINote:\fR \fB\-\-missing\fR and \fB\-\-skip\-recommended\fR have precedence over \fB\-\-include\-*\fR\.
 .
 .TP
 \fB\-\-recursive\fR
@@ -1263,10 +1257,10 @@ Generate plain output even when piped\.
 Display Homebrew\'s install path\. \fIDefault:\fR
 .
 .IP "\(bu" 4
-macOS Intel: \fB/usr/local\fR
+macOS ARM: \fB/opt/homebrew\fR
 .
 .IP "\(bu" 4
-macOS ARM: \fB/opt/homebrew\fR
+macOS Intel: \fB/usr/local\fR
 .
 .IP "\(bu" 4
 Linux: \fB/home/linuxbrew/\.linuxbrew\fR
@@ -1285,7 +1279,7 @@ List files in Homebrew\'s prefix not installed by Homebrew\.
 Outputs nothing and returns a failing status code if \fIformula\fR is not installed\.
 .
 .SS "\fB\-\-repository\fR, \fB\-\-repo\fR [\fItap\fR \.\.\.]"
-Display where Homebrew\'s git repository is located\.
+Display where Homebrew\'s Git repository is located\.
 .
 .P
 If \fIuser\fR\fB/\fR\fIrepo\fR are provided, display where tap \fIuser\fR\fB/\fR\fIrepo\fR\'s directory is located\.
@@ -1686,7 +1680,7 @@ Treat all named arguments as casks\.
 Display the path to the file being used when invoking \fBbrew\fR \fIcmd\fR\.
 .
 .SS "\fBcontributions\fR [\-\-user=\fIemail|username\fR] [\fI\-\-repositories\fR\fB=\fR] [\fI\-\-csv\fR]"
-Contributions to Homebrew repositories\.
+Summarise contributions to Homebrew repositories\.
 .
 .TP
 \fB\-\-repositories\fR
@@ -1852,20 +1846,14 @@ Overwrite the destination formula if it already exists\.
 Display the path where \fIformula\fR is located\.
 .
 .SS "\fBgenerate\-cask\-api\fR [\fB\-\-dry\-run\fR]"
-Generates Cask API data files for formulae\.brew\.sh\.
-.
-.P
-The generated files are written to the current directory\.
+Generate \fBhomebrew/cask\fR API data files for \fIhttps://formulae\.brew\.sh\fR\. The generated files are written to the current directory\.
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
 Generate API data without writing it to files\.
 .
 .SS "\fBgenerate\-formula\-api\fR [\fB\-\-dry\-run\fR]"
-Generates Formula API data files for formulae\.brew\.sh\.
-.
-.P
-The generated files are written to the current directory\.
+Generate \fBhomebrew/core\fR API data files for \fIhttps://formulae\.brew\.sh\fR\. The generated files are written to the current directory\.
 .
 .TP
 \fB\-n\fR, \fB\-\-dry\-run\fR
@@ -1912,10 +1900,7 @@ For every library that a keg references, print its dylib path followed by the bi
 Print the cached linkage values stored in \fBHOMEBREW_CACHE\fR, set by a previous \fBbrew linkage\fR run\.
 .
 .SS "\fBlivecheck\fR, \fBlc\fR [\fIoptions\fR] [\fIformula\fR|\fIcask\fR \.\.\.]"
-Check for newer versions of formulae and/or casks from upstream\.
-.
-.P
-If no formula or cask argument is passed, the list of formulae and casks to check is taken from \fBHOMEBREW_LIVECHECK_WATCHLIST\fR or \fB~/\.homebrew/livecheck_watchlist\.txt\fR\.
+Check for newer versions of formulae and/or casks from upstream\. If no formula or cask argument is passed, the list of formulae and casks to check is taken from \fBHOMEBREW_LIVECHECK_WATCHLIST\fR or \fB~/\.homebrew/livecheck_watchlist\.txt\fR\.
 .
 .TP
 \fB\-\-full\-name\fR
@@ -2155,7 +2140,7 @@ Create a new draft Homebrew/brew release with the appropriate version number and
 By default, \fBbrew release\fR will bump the patch version number\. Pass \fB\-\-major\fR or \fB\-\-minor\fR to bump the major or minor version numbers, respectively\. The command will fail if the previous major or minor release was made less than one month ago\.
 .
 .P
-Requires write access to the Homebrew/brew repository\.
+\fINote:\fR Requires write access to the Homebrew/brew repository\.
 .
 .TP
 \fB\-\-major\fR
@@ -2443,7 +2428,7 @@ Update the specified list of vendored gems to the latest version\.
 Do not generate a new commit upon completion\.
 .
 .SH "GLOBAL CASK OPTIONS"
-These options are applicable to the \fBinstall\fR, \fBreinstall\fR, and \fBupgrade\fR subcommands with the \fB\-\-cask\fR flag\.
+These options are applicable to the \fBinstall\fR, \fBreinstall\fR, and \fBupgrade\fR subcommands with the \fB\-\-cask\fR switch\.
 .
 .TP
 \fB\-\-appdir\fR
@@ -3395,7 +3380,7 @@ If set, do not use the GitHub API, e\.g\. for searches or fetching relevant issu
 If set, forbid redirects from secure HTTPS to insecure HTTP\.
 .
 .IP
-\fINote:\fR While ensuring your downloads are fully secure, this is likely to cause from\-source SourceForge, some GNU & GNOME\-hosted formulae to fail to download\.
+\fINote:\fR while ensuring your downloads are fully secure, this is likely to cause from\-source SourceForge, some GNU & GNOME\-hosted formulae to fail to download\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALL_CLEANUP\fR
@@ -3413,7 +3398,7 @@ If set, do not install formulae and casks in homebrew/core and homebrew/cask tap
 \fBHOMEBREW_NO_INSTALL_UPGRADE\fR
 .
 .br
-If set, \fBbrew install\fR <formula/cask> will not upgrade <formula/cask> if it is installed but outdated\.
+If set, \fBbrew install\fR \fIformula|cask\fR will not upgrade \fIformula|cask\fR if it is installed but outdated\.
 .
 .TP
 \fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fR
@@ -3431,7 +3416,7 @@ If set, \fBbrew update\fR will not show the list of newly added formulae/casks\.
 \fBHOMEBREW_PIP_INDEX_URL\fR
 .
 .br
-If set, \fBbrew install <formula>\fR will use this URL to download PyPI package resources\.
+If set, \fBbrew install\fR \fIformula\fR will use this URL to download PyPI package resources\.
 .
 .IP
 \fIDefault:\fR \fBhttps://pypi\.org/simple\fR\.
@@ -3470,7 +3455,7 @@ If set, enable runtime typechecking using Sorbet\. Set by default for HOMEBREW_D
 \fBHOMEBREW_SSH_CONFIG_PATH\fR
 .
 .br
-If set, Homebrew will use the given config file instead of \fB~/\.ssh/config\fR when fetching \fBgit\fR repos over \fBssh\fR\.
+If set, Homebrew will use the given config file instead of \fB~/\.ssh/config\fR when fetching Git repositories over SSH\.
 .
 .IP
 \fIDefault:\fR \fB$HOME/\.ssh/config\fR

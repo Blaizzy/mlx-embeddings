@@ -35,7 +35,7 @@ module Homebrew
              description: "Install without checking for previously installed keg-only or " \
                           "non-migrated versions."
       switch "-v", "--verbose",
-             description: "Print the verification and postinstall steps."
+             description: "Print the verification and post-install steps."
       [
         [:switch, "--formula", "--formulae", { description: "Treat all named arguments as formulae." }],
         [:switch, "-s", "--build-from-source", {

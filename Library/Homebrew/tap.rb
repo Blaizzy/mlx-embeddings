@@ -187,14 +187,14 @@ class Tap
     git_repo.git_repo?
   end
 
-  # git branch for this {Tap}.
+  # Git branch for this {Tap}.
   def git_branch
     raise TapUnavailableError, name unless installed?
 
     git_repo.branch_name
   end
 
-  # git HEAD for this {Tap}.
+  # Git HEAD for this {Tap}.
   def git_head
     raise TapUnavailableError, name unless installed?
 

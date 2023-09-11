@@ -12,7 +12,6 @@ module Homebrew
       usage_banner "`tap` [<options>] [<user>`/`<repo>] [<URL>]"
       description <<~EOS
         Tap a formula repository.
-
         If no arguments are provided, list all installed taps.
 
         With <URL> unspecified, tap a formula repository from GitHub using HTTPS.

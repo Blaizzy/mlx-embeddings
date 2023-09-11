@@ -250,7 +250,7 @@ __fish_brew_complete_arg '--prefix' -l verbose -d 'Make some output more verbose
 __fish_brew_complete_arg '--prefix' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd '--repo' 'Display where Homebrew\'s git repository is located'
+__fish_brew_complete_cmd '--repo' 'Display where Homebrew\'s Git repository is located'
 __fish_brew_complete_arg '--repo' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg '--repo' -l help -d 'Show this message'
 __fish_brew_complete_arg '--repo' -l quiet -d 'Make some output more quiet'
@@ -258,7 +258,7 @@ __fish_brew_complete_arg '--repo' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg '--repo' -a '(__fish_brew_suggest_taps_installed)'
 
 
-__fish_brew_complete_cmd '--repository' 'Display where Homebrew\'s git repository is located'
+__fish_brew_complete_cmd '--repository' 'Display where Homebrew\'s Git repository is located'
 __fish_brew_complete_arg '--repository' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg '--repository' -l help -d 'Show this message'
 __fish_brew_complete_arg '--repository' -l quiet -d 'Make some output more quiet'
@@ -528,7 +528,7 @@ __fish_brew_complete_arg 'config' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'config' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'contributions' 'Contributions to Homebrew repositories'
+__fish_brew_complete_cmd 'contributions' 'Summarise contributions to Homebrew repositories'
 __fish_brew_complete_arg 'contributions' -l csv -d 'Print a CSV of contributions across repositories over the time period'
 __fish_brew_complete_arg 'contributions' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'contributions' -l from -d 'Date (ISO-8601 format) to start searching contributions. Omitting this flag searches the last year'
@@ -644,7 +644,7 @@ __fish_brew_complete_arg 'dispatch-build-bottle' -l workflow -d 'Dispatch specif
 __fish_brew_complete_arg 'dispatch-build-bottle' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'docs' 'Open Homebrew\'s online documentation (https://docs.brew.sh) in a browser'
+__fish_brew_complete_cmd 'docs' 'Open Homebrew\'s online documentation at https://docs.brew.sh in a browser'
 __fish_brew_complete_arg 'docs' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'docs' -l help -d 'Show this message'
 __fish_brew_complete_arg 'docs' -l quiet -d 'Make some output more quiet'
@@ -736,7 +736,7 @@ __fish_brew_complete_arg 'formula' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'formula' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'generate-cask-api' 'Generates Cask API data files for formulae.brew.sh'
+__fish_brew_complete_cmd 'generate-cask-api' 'Generate `homebrew/cask` API data files for https://formulae.brew.sh'
 __fish_brew_complete_arg 'generate-cask-api' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-cask-api' -l dry-run -d 'Generate API data without writing it to files'
 __fish_brew_complete_arg 'generate-cask-api' -l help -d 'Show this message'
@@ -744,7 +744,7 @@ __fish_brew_complete_arg 'generate-cask-api' -l quiet -d 'Make some output more 
 __fish_brew_complete_arg 'generate-cask-api' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'generate-formula-api' 'Generates Formula API data files for formulae.brew.sh'
+__fish_brew_complete_cmd 'generate-formula-api' 'Generate `homebrew/core` API data files for https://formulae.brew.sh'
 __fish_brew_complete_arg 'generate-formula-api' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'generate-formula-api' -l dry-run -d 'Generate API data without writing it to files'
 __fish_brew_complete_arg 'generate-formula-api' -l help -d 'Show this message'
@@ -835,7 +835,7 @@ __fish_brew_complete_arg 'instal' -l force-bottle -d 'Install from a bottle if i
 __fish_brew_complete_arg 'instal' -l formula -d 'Treat all named arguments as formulae'
 __fish_brew_complete_arg 'instal' -l git -d 'Create a Git repository, useful for creating patches to the software'
 __fish_brew_complete_arg 'instal' -l help -d 'Show this message'
-__fish_brew_complete_arg 'instal' -l ignore-dependencies -d 'An unsupported Homebrew development flag to skip installing any dependencies of any kind. If the dependencies are not already present, the formula will have issues. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this flag'
+__fish_brew_complete_arg 'instal' -l ignore-dependencies -d 'An unsupported Homebrew development option to skip installing any dependencies of any kind. If the dependencies are not already present, the formula will have issues. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this option'
 __fish_brew_complete_arg 'instal' -l include-test -d 'Install testing dependencies required to run `brew test` formula'
 __fish_brew_complete_arg 'instal' -l input-methoddir -d 'Target location for Input Methods (default: `~/Library/Input Methods`)'
 __fish_brew_complete_arg 'instal' -l interactive -d 'Download and patch formula, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package'
@@ -857,7 +857,7 @@ __fish_brew_complete_arg 'instal' -l screen-saverdir -d 'Target location for Scr
 __fish_brew_complete_arg 'instal' -l servicedir -d 'Target location for Services (default: `~/Library/Services`)'
 __fish_brew_complete_arg 'instal' -l skip-cask-deps -d 'Skip installing cask dependencies'
 __fish_brew_complete_arg 'instal' -l skip-post-install -d 'Install but skip any post-install steps'
-__fish_brew_complete_arg 'instal' -l verbose -d 'Print the verification and postinstall steps'
+__fish_brew_complete_arg 'instal' -l verbose -d 'Print the verification and post-install steps'
 __fish_brew_complete_arg 'instal' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'instal' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
 __fish_brew_complete_arg 'instal' -l zap -d 'For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*'
@@ -889,7 +889,7 @@ __fish_brew_complete_arg 'install' -l force-bottle -d 'Install from a bottle if 
 __fish_brew_complete_arg 'install' -l formula -d 'Treat all named arguments as formulae'
 __fish_brew_complete_arg 'install' -l git -d 'Create a Git repository, useful for creating patches to the software'
 __fish_brew_complete_arg 'install' -l help -d 'Show this message'
-__fish_brew_complete_arg 'install' -l ignore-dependencies -d 'An unsupported Homebrew development flag to skip installing any dependencies of any kind. If the dependencies are not already present, the formula will have issues. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this flag'
+__fish_brew_complete_arg 'install' -l ignore-dependencies -d 'An unsupported Homebrew development option to skip installing any dependencies of any kind. If the dependencies are not already present, the formula will have issues. If you\'re not developing Homebrew, consider adjusting your PATH rather than using this option'
 __fish_brew_complete_arg 'install' -l include-test -d 'Install testing dependencies required to run `brew test` formula'
 __fish_brew_complete_arg 'install' -l input-methoddir -d 'Target location for Input Methods (default: `~/Library/Input Methods`)'
 __fish_brew_complete_arg 'install' -l interactive -d 'Download and patch formula, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package'
@@ -911,7 +911,7 @@ __fish_brew_complete_arg 'install' -l screen-saverdir -d 'Target location for Sc
 __fish_brew_complete_arg 'install' -l servicedir -d 'Target location for Services (default: `~/Library/Services`)'
 __fish_brew_complete_arg 'install' -l skip-cask-deps -d 'Skip installing cask dependencies'
 __fish_brew_complete_arg 'install' -l skip-post-install -d 'Install but skip any post-install steps'
-__fish_brew_complete_arg 'install' -l verbose -d 'Print the verification and postinstall steps'
+__fish_brew_complete_arg 'install' -l verbose -d 'Print the verification and post-install steps'
 __fish_brew_complete_arg 'install' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'install' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
 __fish_brew_complete_arg 'install' -l zap -d 'For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*'
@@ -1093,7 +1093,7 @@ __fish_brew_complete_arg 'missing' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'missing' -a '(__fish_brew_suggest_formulae_all)'
 
 
-__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in ~/.nodenv/versions'
+__fish_brew_complete_cmd 'nodenv-sync' 'Create symlinks for Homebrew\'s installed NodeJS versions in `~/.nodenv/versions`'
 __fish_brew_complete_arg 'nodenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'nodenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'nodenv-sync' -l quiet -d 'Make some output more quiet'
@@ -1239,14 +1239,14 @@ __fish_brew_complete_arg 'prof' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'prof' -a '(__fish_brew_suggest_commands)'
 
 
-__fish_brew_complete_cmd 'pyenv-sync' 'Create symlinks for Homebrew\'s installed Python versions in ~/.pyenv/versions'
+__fish_brew_complete_cmd 'pyenv-sync' 'Create symlinks for Homebrew\'s installed Python versions in `~/.pyenv/versions`'
 __fish_brew_complete_arg 'pyenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'pyenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'pyenv-sync' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'pyenv-sync' -l verbose -d 'Make some output more verbose'
 
 
-__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in ~/.rbenv/versions'
+__fish_brew_complete_cmd 'rbenv-sync' 'Create symlinks for Homebrew\'s installed Ruby versions in `~/.rbenv/versions`'
 __fish_brew_complete_arg 'rbenv-sync' -l debug -d 'Display any debugging information'
 __fish_brew_complete_arg 'rbenv-sync' -l help -d 'Show this message'
 __fish_brew_complete_arg 'rbenv-sync' -l quiet -d 'Make some output more quiet'
@@ -1262,7 +1262,7 @@ __fish_brew_complete_arg 'readall' -l help -d 'Show this message'
 __fish_brew_complete_arg 'readall' -l no-simulate -d 'Don\'t simulate other system configurations when checking formulae and casks'
 __fish_brew_complete_arg 'readall' -l os -d 'Read using the given operating system. (Pass `all` to simulate all operating systems.)'
 __fish_brew_complete_arg 'readall' -l quiet -d 'Make some output more quiet'
-__fish_brew_complete_arg 'readall' -l syntax -d 'Syntax-check all of Homebrew\'s Ruby files (if no `tap` is passed)'
+__fish_brew_complete_arg 'readall' -l syntax -d 'Syntax-check all of Homebrew\'s Ruby files (if no tap is passed)'
 __fish_brew_complete_arg 'readall' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'readall' -a '(__fish_brew_suggest_taps_installed)'
 
@@ -1302,7 +1302,7 @@ __fish_brew_complete_arg 'reinstall' -l require-sha -d 'Require all casks to hav
 __fish_brew_complete_arg 'reinstall' -l screen-saverdir -d 'Target location for Screen Savers (default: `~/Library/Screen Savers`)'
 __fish_brew_complete_arg 'reinstall' -l servicedir -d 'Target location for Services (default: `~/Library/Services`)'
 __fish_brew_complete_arg 'reinstall' -l skip-cask-deps -d 'Skip installing cask dependencies'
-__fish_brew_complete_arg 'reinstall' -l verbose -d 'Print the verification and postinstall steps'
+__fish_brew_complete_arg 'reinstall' -l verbose -d 'Print the verification and post-install steps'
 __fish_brew_complete_arg 'reinstall' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'reinstall' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
 __fish_brew_complete_arg 'reinstall' -l zap -d 'For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*'
@@ -1687,7 +1687,7 @@ __fish_brew_complete_arg 'upgrade' -l require-sha -d 'Require all casks to have 
 __fish_brew_complete_arg 'upgrade' -l screen-saverdir -d 'Target location for Screen Savers (default: `~/Library/Screen Savers`)'
 __fish_brew_complete_arg 'upgrade' -l servicedir -d 'Target location for Services (default: `~/Library/Services`)'
 __fish_brew_complete_arg 'upgrade' -l skip-cask-deps -d 'Skip installing cask dependencies'
-__fish_brew_complete_arg 'upgrade' -l verbose -d 'Print the verification and postinstall steps'
+__fish_brew_complete_arg 'upgrade' -l verbose -d 'Print the verification and post-install steps'
 __fish_brew_complete_arg 'upgrade' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'upgrade' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
 __fish_brew_complete_arg 'upgrade; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_outdated)'

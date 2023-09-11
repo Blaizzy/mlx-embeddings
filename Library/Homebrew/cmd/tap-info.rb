@@ -11,7 +11,6 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Show detailed information about one or more <tap>s.
-
         If no <tap> names are provided, display brief statistics for all installed taps.
       EOS
       switch "--installed",

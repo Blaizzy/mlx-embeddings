@@ -11,8 +11,7 @@ module Homebrew
   def generate_formula_api_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Generates Formula API data files for formulae.brew.sh.
-
+        Generate `homebrew/core` API data files for <#{HOMEBREW_API_WWW}>.
         The generated files are written to the current directory.
       EOS
 

@@ -230,7 +230,7 @@ class Dependency
   end
 end
 
-# A dependency that marked as "installed" on macOS
+# A dependency that's marked as "installed" on macOS
 class UsesFromMacOSDependency < Dependency
   attr_reader :bounds
 

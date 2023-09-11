@@ -12,8 +12,7 @@ module Homebrew
   def generate_cask_api_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
-        Generates Cask API data files for formulae.brew.sh.
-
+        Generate `homebrew/cask` API data files for <#{HOMEBREW_API_WWW}>.
         The generated files are written to the current directory.
       EOS
 
