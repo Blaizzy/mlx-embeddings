@@ -1046,8 +1046,6 @@ supplied by the user.
   When passed with `--write-only`, generate a new commit after writing changes to the cask file.
 * `--no-audit`:
   Don't run `brew audit` before opening the PR.
-* `--online`:
-  Run `brew audit --online` before opening the PR.
 * `--no-style`:
   Don't run `brew style --fix` before opening the PR.
 * `--no-browse`:

@@ -407,7 +407,6 @@ __fish_brew_complete_arg 'bump-cask-pr' -l no-audit -d 'Don\'t run `brew audit` 
 __fish_brew_complete_arg 'bump-cask-pr' -l no-browse -d 'Print the pull request URL instead of opening in a browser'
 __fish_brew_complete_arg 'bump-cask-pr' -l no-fork -d 'Don\'t try to fork the repository'
 __fish_brew_complete_arg 'bump-cask-pr' -l no-style -d 'Don\'t run `brew style --fix` before opening the PR'
-__fish_brew_complete_arg 'bump-cask-pr' -l online -d 'Run `brew audit --online` before opening the PR'
 __fish_brew_complete_arg 'bump-cask-pr' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'bump-cask-pr' -l sha256 -d 'Specify the SHA-256 checksum of the new download'
 __fish_brew_complete_arg 'bump-cask-pr' -l url -d 'Specify the URL for the new download'
