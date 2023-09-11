@@ -21,20 +21,29 @@ class Keg
   def relocate_dynamic_linkage(relocation)
     mach_o_files.each do |file|
       file.ensure_writable do
+        modified = T.let(false, T::Boolean)
+        needs_codesigning = T.let(false, T::Boolean)
+
         if file.dylib?
           id = relocated_name_for(file.dylib_id, relocation)
-          change_dylib_id(id, file)
+          modified = change_dylib_id(id, file)
+          needs_codesigning ||= modified
         end
 
         each_linkage_for(file, :dynamically_linked_libraries) do |old_name|
           new_name = relocated_name_for(old_name, relocation)
-          change_install_name(old_name, new_name, file) if new_name
+          modified = change_install_name(old_name, new_name, file) if new_name
+          needs_codesigning ||= modified
         end
 
         each_linkage_for(file, :rpaths) do |old_name|
           new_name = relocated_name_for(old_name, relocation)
-          change_rpath(old_name, new_name, file) if new_name
+          modified = change_rpath(old_name, new_name, file) if new_name
+          needs_codesigning ||= modified
         end
+
+        # codesign the file if needed
+        codesign_patched_binary(file) if needs_codesigning
       end
     end
   end
@@ -42,7 +51,11 @@ class Keg
   def fix_dynamic_linkage
     mach_o_files.each do |file|
       file.ensure_writable do
-        change_dylib_id(dylib_id_for(file), file) if file.dylib?
+        modified = T.let(false, T::Boolean)
+        needs_codesigning = T.let(false, T::Boolean)
+
+        modified = change_dylib_id(dylib_id_for(file), file) if file.dylib?
+        needs_codesigning ||= modified
 
         each_linkage_for(file, :dynamically_linked_libraries) do |bad_name|
           # Don't fix absolute paths unless they are rooted in the build directory.
@@ -52,7 +65,8 @@ class Keg
             fixed_name(file, bad_name)
           end
           loader_name = loader_name_for(file, new_name)
-          change_install_name(bad_name, loader_name, file) if loader_name != bad_name
+          modified = change_install_name(bad_name, loader_name, file) if loader_name != bad_name
+          needs_codesigning ||= modified
         end
 
         each_linkage_for(file, :rpaths) do |bad_name|
@@ -60,7 +74,8 @@ class Keg
           loader_name = loader_name_for(file, new_name)
           next if loader_name == bad_name
 
-          change_rpath(bad_name, loader_name, file)
+          modified = change_rpath(bad_name, loader_name, file)
+          needs_codesigning ||= modified
         end
 
         # Strip duplicate rpaths and rpaths rooted in the build directory.
@@ -69,8 +84,12 @@ class Keg
         each_linkage_for(file, :rpaths, resolve_variable_references: true) do |bad_name|
           next if !rooted_in_build_directory?(bad_name) && file.rpaths.count(bad_name) == 1
 
-          delete_rpath(bad_name, file)
+          modified = delete_rpath(bad_name, file)
+          needs_codesigning ||= modified
         end
+
+        # codesign the file if needed
+        codesign_patched_binary(file) if needs_codesigning
       end
     end
 
