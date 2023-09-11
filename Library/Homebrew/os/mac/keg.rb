@@ -36,7 +36,6 @@ class Keg
     raise
   end
 
-  sig { params(old: Pathname, new: Pathname, file: MachOShim).returns(T::Boolean) }
   def change_rpath(old, new, file)
     return false if old == new
 
