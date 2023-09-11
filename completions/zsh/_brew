@@ -524,7 +524,6 @@ _brew_bump_cask_pr() {
     '--no-browse[Print the pull request URL instead of opening in a browser]' \
     '--no-fork[Don'\''t try to fork the repository]' \
     '--no-style[Don'\''t run `brew style --fix` before opening the PR]' \
-    '(--no-audit)--online[Run `brew audit --online` before opening the PR]' \
     '--quiet[Make some output more quiet]' \
     '--sha256[Specify the SHA-256 checksum of the new download]' \
     '--url[Specify the URL for the new download]' \

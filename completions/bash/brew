@@ -473,7 +473,6 @@ _brew_bump_cask_pr() {
       --no-browse
       --no-fork
       --no-style
-      --online
       --quiet
       --sha256
       --url
