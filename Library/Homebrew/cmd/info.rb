@@ -25,7 +25,6 @@ module Homebrew
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Display brief statistics for your Homebrew installation.
-
         If a <formula> or <cask> is provided, show summary of information about it.
       EOS
       switch "--analytics",
