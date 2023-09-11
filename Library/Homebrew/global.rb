@@ -46,8 +46,8 @@ HOMEBREW_USER_AGENT_CURL = ENV.fetch("HOMEBREW_USER_AGENT_CURL").freeze
 HOMEBREW_USER_AGENT_RUBY =
   "#{ENV.fetch("HOMEBREW_USER_AGENT")} ruby/#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
 HOMEBREW_USER_AGENT_FAKE_SAFARI =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 " \
-  "(KHTML, like Gecko) Version/10.0.3 Safari/602.4.8"
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_1) AppleWebKit/605.1.15 " \
+  "(KHTML, like Gecko) Version/16.5 Safari/605.1.15"
 HOMEBREW_GITHUB_PACKAGES_AUTH = ENV.fetch("HOMEBREW_GITHUB_PACKAGES_AUTH").freeze
 
 HOMEBREW_DEFAULT_PREFIX = ENV.fetch("HOMEBREW_GENERIC_DEFAULT_PREFIX").freeze

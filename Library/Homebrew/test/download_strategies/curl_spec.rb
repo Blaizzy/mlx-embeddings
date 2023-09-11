@@ -75,7 +75,7 @@ describe CurlDownloadStrategy do
             /curl/,
             hash_including(args: array_including_cons(
               "--user-agent",
-              a_string_matching(/Mozilla.*Mac OS X 10.*AppleWebKit/),
+              a_string_matching(/Mozilla.*Mac OS X 13.*AppleWebKit/),
             )),
           )
           .at_least(:once)
