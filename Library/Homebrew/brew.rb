@@ -141,7 +141,7 @@ rescue UsageError => e
   Homebrew::Help.help cmd, remaining_args: args.remaining, usage_error: e.message
 rescue SystemExit => e
   onoe "Kernel.exit" if args.debug? && !e.success?
-  $stderr.puts e.backtrace if args.debug?
+  $stderr.puts Utils::Backtrace.clean(e) if args.debug?
   raise
 rescue Interrupt
   $stderr.puts # seemingly a newline is typical
@@ -175,7 +175,7 @@ rescue RuntimeError, SystemCallError => e
   raise if e.message.empty?
 
   onoe e
-  $stderr.puts e.backtrace if args.debug?
+  $stderr.puts Utils::Backtrace.clean(e) if args.debug?
 
   exit 1
 rescue MethodDeprecatedError => e
@@ -184,7 +184,7 @@ rescue MethodDeprecatedError => e
     $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/homebrew-core):"
     $stderr.puts "  #{Formatter.url(e.issues_url)}"
   end
-  $stderr.puts e.backtrace if args.debug?
+  $stderr.puts Utils::Backtrace.clean(e) if args.debug?
   exit 1
 rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e
@@ -196,7 +196,7 @@ rescue Exception => e # rubocop:disable Lint/RescueException
       $stderr.puts "  #{Formatter.url(OS::ISSUES_URL)}"
     end
   end
-  $stderr.puts e.backtrace
+  $stderr.puts Utils::Backtrace.clean(e)
   exit 1
 else
   exit 1 if Homebrew.failed?

@@ -38,7 +38,7 @@ module Repology
     data = JSON.parse(output)
     { name => data }
   rescue => e
-    error_output = [errors, "#{e.class}: #{e}", e.backtrace].compact
+    error_output = [errors, "#{e.class}: #{e}", Utils::Backtrace.clean(e)].compact
     if Homebrew::EnvConfig.developer?
       $stderr.puts(*error_output)
     else

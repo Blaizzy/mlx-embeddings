@@ -391,7 +391,7 @@ module Homebrew
           name += " (cask)" if ambiguous_casks.include?(formula_or_cask)
 
           onoe "#{Tty.blue}#{name}#{Tty.reset}: #{e}"
-          $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
+          $stderr.puts Utils::Backtrace.clean(e) if debug && !e.is_a?(Livecheck::Error)
           print_resources_info(resource_version_info, verbose: verbose) if check_for_resources
           nil
         end
@@ -1016,7 +1016,7 @@ module Homebrew
           status_hash(resource, "error", [e.to_s], verbose: verbose)
         elsif !quiet
           onoe "#{Tty.blue}#{resource.name}#{Tty.reset}: #{e}"
-          $stderr.puts e.backtrace if debug && !e.is_a?(Livecheck::Error)
+          $stderr.puts Utils::Backtrace.clean(e) if debug && !e.is_a?(Livecheck::Error)
           nil
         end
       end
