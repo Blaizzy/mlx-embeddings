@@ -5754,6 +5754,7 @@ class Object
   FORMULA_COMPONENT_PRECEDENCE_LIST = ::T.let(nil, ::T.untyped)
   GZIP_BUFFER_SIZE = ::T.let(nil, ::T.untyped)
   HOMEBREW_API_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
+  HOMEBREW_API_WWW = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLES_EXTNAME_REGEX = ::T.let(nil, ::T.untyped)
   HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ::T.let(nil, ::T.untyped)
   HOMEBREW_BREWED_CURL_PATH = ::T.let(nil, ::T.untyped)
