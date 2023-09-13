@@ -106,6 +106,17 @@ module Homebrew
       end
     end
 
+    def audit_resource_name_matches_pypi_package_name_in_url
+      return unless url.match?(%r{^https?://files\.pythonhosted\.org/packages/})
+      return if name == owner.name # Skip the top-level package name as we only care about `resource "foo"` blocks.
+
+      url =~ %r{/(?<package_name>[^/]+)-}
+      pypi_package_name = Regexp.last_match(:package_name).to_s.gsub(/[_.]/, "-")
+      return if name.casecmp(pypi_package_name).zero?
+
+      problem "resource name should be `#{pypi_package_name}` to match the PyPI package name"
+    end
+
     def audit_urls
       urls = [url] + mirrors
 
