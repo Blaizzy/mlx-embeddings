@@ -436,6 +436,8 @@ module Homebrew
       Current #{version_label}  #{current_versions}
       Latest livecheck version: #{new_versions}
       Latest Repology version:  #{repology_latest}
+    EOS
+    puts <<~EOS unless args.no_pull_requests?
       Open pull requests:       #{open_pull_requests || "none"}
       Closed pull requests:     #{closed_pull_requests || "none"}
     EOS
