@@ -59,7 +59,9 @@ module SharedAudits
     @gitlab_repo_data ||= {}
     @gitlab_repo_data["#{user}/#{repo}"] ||= begin
       out, _, status = Utils::Curl.curl_output("https://gitlab.com/api/v4/projects/#{user}%2F#{repo}")
-      JSON.parse(out) if status.success?
+      json = JSON.parse(out) if status.success?
+      json = nil if json&.dig("message")&.include?("404 Project Not Found")
+      json
     end
   end
 
