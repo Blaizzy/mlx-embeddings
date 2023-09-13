@@ -105,7 +105,7 @@ module Homebrew
       return if name == owner.name # Skip the top-level package name as we only care about `resource "foo"` blocks.
 
       url =~ %r{/(?<package_name>[^/]+)-}
-      pypi_package_name = Regexp.last_match(:package_name).gsub(/[_.]/, "-")
+      pypi_package_name = Regexp.last_match(:package_name).to_s.gsub(/[_.]/, "-")
       return if name.casecmp(pypi_package_name).zero?
 
       problem "resource name should be `#{pypi_package_name}` to match the PyPI package name"
