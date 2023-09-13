@@ -2629,7 +2629,7 @@ class Formula
   #
   # # If there is a "make install" available, please use it!
   # system "make", "install"</pre>
-  sig { params(cmd: T.any(String, Pathname), args: T.any(String, Pathname, Integer)).void }
+  sig { params(cmd: T.any(String, Pathname), args: T.any(String, Integer, Pathname, Symbol)).void }
   def system(cmd, *args)
     verbose_using_dots = Homebrew::EnvConfig.verbose_using_dots?
 
@@ -2794,7 +2794,7 @@ class Formula
   end
 
   # Runs `xcodebuild` without Homebrew's compiler environment variables set.
-  sig { params(args: T.any(String, Pathname)).void }
+  sig { params(args: T.any(String, Integer, Pathname, Symbol)).void }
   def xcodebuild(*args)
     removed = ENV.remove_cc_etc
 

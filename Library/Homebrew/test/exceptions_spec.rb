@@ -141,11 +141,11 @@ describe "Exception" do
   end
 
   describe BuildError do
-    subject { described_class.new(formula, "badprg", %w[arg1 arg2], {}) }
+    subject { described_class.new(formula, "badprg", ["arg1", 2, Pathname.new("arg3"), :arg4], {}) }
 
     let(:formula) { instance_double(Formula, name: "foo") }
 
-    its(:to_s) { is_expected.to eq("Failed executing: badprg arg1 arg2") }
+    its(:to_s) { is_expected.to eq("Failed executing: badprg arg1 2 arg3 arg4") }
   end
 
   describe OperationInProgressError do
