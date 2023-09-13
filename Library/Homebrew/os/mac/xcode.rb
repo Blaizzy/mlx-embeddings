@@ -95,21 +95,17 @@ module OS
       # directory or nil if Xcode.app is not installed.
       sig { returns(T.nilable(Pathname)) }
       def self.prefix
-        return @prefix if defined?(@prefix)
+        @prefix ||= begin
+          dir = MacOS.active_developer_dir
 
-        @prefix = T.let(@prefix, T.nilable(Pathname))
-        @prefix ||=
-          begin
-            dir = MacOS.active_developer_dir
-
-            if dir.empty? || dir == CLT::PKG_PATH || !File.directory?(dir)
-              path = bundle_path
-              path/"Contents/Developer" if path
-            else
-              # Use cleanpath to avoid pathological trailing slash
-              Pathname.new(dir).cleanpath
-            end
+          if dir.empty? || dir == CLT::PKG_PATH || !File.directory?(dir)
+            path = bundle_path
+            path/"Contents/Developer" if path
+          else
+            # Use cleanpath to avoid pathological trailing slash
+            Pathname.new(dir).cleanpath
           end
+        end
       end
 
       sig { returns(Pathname) }
