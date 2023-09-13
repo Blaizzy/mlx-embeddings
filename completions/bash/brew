@@ -1287,6 +1287,7 @@ _brew_install_bundler_gems() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --add-groups
       --debug
       --groups
       --help

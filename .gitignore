@@ -26,6 +26,7 @@
 # Ignore Bundler files
 **/.bundle/bin
 **/.bundle/cache
+**/vendor/bundle/ruby/.homebrew_gem_groups
 **/vendor/bundle/ruby/*/bundler.lock
 **/vendor/bundle/ruby/*/bin
 **/vendor/bundle/ruby/*/build_info/
