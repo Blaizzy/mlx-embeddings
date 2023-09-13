@@ -126,10 +126,7 @@ module Homebrew
       use_full_name = args.full_name? || ambiguous_names.include?(formula_or_cask)
       name = Livecheck.package_or_resource_name(formula_or_cask, full_name: use_full_name)
       repository = if formula_or_cask.is_a?(Formula)
-        if formula_or_cask.head_only?
-          puts "Formula is HEAD-only."
-          next
-        end
+        next if skip_ineligible_formulae(formula_or_cask)
 
         Repology::HOMEBREW_CORE
       else
@@ -201,6 +198,8 @@ module Homebrew
         end
 
         puts if i.positive?
+        next if formula_or_cask.is_a?(Formula) && skip_ineligible_formulae(formula_or_cask)
+
         retrieve_and_display_info_and_open_pr(
           formula_or_cask,
           name,
@@ -210,6 +209,17 @@ module Homebrew
         )
       end
     end
+  end
+
+  sig {
+    params(formula: Formula).returns(T::Boolean)
+  }
+  def skip_ineligible_formulae(formula)
+    return false if !formula.disabled? && !formula.head_only?
+
+    ohai formula.name
+    puts "Formula is #{formula.disabled? ? "disabled" : "HEAD-only"}.\n"
+    true
   end
 
   sig {
