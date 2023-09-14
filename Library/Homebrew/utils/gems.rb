@@ -201,10 +201,15 @@ module Homebrew
 
     install_bundler!
 
-    require "settings"
+    valid_user_gem_groups = user_gem_groups & valid_gem_groups
+    if RUBY_PLATFORM.end_with?("-darwin23")
+      raise "Sorbet is not currently supported under system Ruby on macOS Sonoma." if groups.include?("sorbet")
+
+      valid_user_gem_groups.delete("sorbet")
+    end
 
     # Combine the passed groups with the ones stored in settings
-    groups |= (user_gem_groups & valid_gem_groups)
+    groups |= valid_user_gem_groups
     groups.sort!
 
     ENV["BUNDLE_GEMFILE"] = gemfile
