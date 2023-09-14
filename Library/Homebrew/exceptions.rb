@@ -479,7 +479,7 @@ class BuildError < RuntimeError
     params(
       formula: T.nilable(Formula),
       cmd:     T.any(String, Pathname),
-      args:    T::Array[T.any(String, Pathname, Integer)],
+      args:    T::Array[T.any(String, Integer, Pathname, Symbol)],
       env:     T::Hash[String, T.untyped],
     ).void
   }
