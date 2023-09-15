@@ -2579,7 +2579,8 @@ class Formula
   # Returns a list of Dependency objects that are declared in the formula.
   # @private
   def declared_runtime_dependencies
-    recursive_dependencies do |_, dependency|
+    cache_key = "Formula#declared_runtime_dependencies" unless build.any_args_or_options?
+    Dependency.expand(self, cache_key: cache_key) do |_, dependency|
       Dependency.prune if dependency.build?
       next if dependency.required?
 
