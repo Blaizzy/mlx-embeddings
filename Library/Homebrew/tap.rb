@@ -644,6 +644,17 @@ class Tap
     @formula_names ||= formula_files.map(&method(:formula_file_to_name))
   end
 
+  # A hash of all {Formula} name prefixes to versioned {Formula} in this {Tap}.
+  # @private
+  sig { returns(T::Hash[String, T::Array[String]]) }
+  def prefix_to_versioned_formulae_names
+    @prefix_to_versioned_formulae_names ||= formula_names
+                                            .select { |name| name.include?("@") }
+                                            .group_by { |name| name.gsub(/(@[\d.]+)?$/, "") }
+                                            .transform_values(&:sort)
+                                            .freeze
+  end
+
   # An array of all {Cask} tokens of this {Tap}.
   sig { returns(T::Array[String]) }
   def cask_tokens
