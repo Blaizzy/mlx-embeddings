@@ -6,6 +6,7 @@ require "cask/download"
 require "digest"
 require "livecheck/livecheck"
 require "source_location"
+require "system_command"
 require "utils/curl"
 require "utils/git"
 require "utils/shared_audits"
@@ -540,7 +541,33 @@ module Cask
       false
     end
 
-    def audit_livecheck_min_os
+    sig { void }
+    def audit_min_os
+      return unless online?
+
+      odebug "Auditing minimum OS version"
+
+      sparkle_min_os = livecheck_min_os
+      plist_min_os = cask_plist_min_os
+      odebug "Minimum OS version: Plist #{plist_min_os} | Sparkle #{sparkle_min_os.inspect}"
+      min_os_string = [sparkle_min_os, plist_min_os].compact.max
+
+      return if min_os_string.nil? || min_os_string <= HOMEBREW_MACOS_OLDEST_ALLOWED
+
+      cask_min_os = cask.depends_on.macos&.version
+      return if cask_min_os == min_os_string
+
+      min_os_symbol = if cask_min_os.present?
+        cask_min_os.to_sym.inspect
+      else
+        "no minimum OS version"
+      end
+      add_error "Upstream defined #{min_os_string.to_sym.inspect} as the minimum OS version " \
+                "and the cask defined #{min_os_symbol}",
+                strict_only: true
+    end
+
+    def livecheck_min_os
       return unless online?
       return unless cask.livecheckable?
       return if cask.livecheck.strategy != :sparkle
@@ -566,24 +593,48 @@ module Cask
       return if min_os.blank?
 
       begin
-        min_os_string = MacOSVersion.new(min_os).strip_patch
+        MacOSVersion.new(min_os).strip_patch
       rescue MacOSVersion::Error
-        return
+        nil
+      end
+    end
+
+    def cask_plist_min_os
+      return unless online?
+
+      artifacts = cask.artifacts.select do |k|
+        k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::App) || k.is_a?(Artifact::Binary)
       end
 
-      return if min_os_string <= HOMEBREW_MACOS_OLDEST_ALLOWED
+      return if artifacts.empty?
 
-      cask_min_os = cask.depends_on.macos&.version
+      downloaded_path = download.fetch
+      primary_container = UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
 
-      return if cask_min_os == min_os_string
+      return if primary_container.nil?
 
-      min_os_symbol = if cask_min_os.present?
-        cask_min_os.to_sym.inspect
-      else
-        "no minimum OS version"
+      plist_min_os = T.let(nil, T.untyped)
+
+      Dir.mktmpdir do |tmpdir|
+        tmpdir = Pathname(tmpdir)
+        primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
+
+        artifacts.each do |artifact|
+          artifact_path = artifact.is_a?(Artifact::Pkg) ? artifact.path : artifact.source
+          path = tmpdir/artifact_path.relative_path_from(cask.staged_path)
+          plist_path = "#{path}/Contents/Info.plist"
+          next unless File.exist?(plist_path)
+
+          plist = system_command!("plutil", args: ["-convert", "xml1", "-o", "-", plist_path]).plist
+          plist_min_os = plist["LSMinimumSystemVersion"].presence
+          break if plist_min_os
+        end
       end
-      add_error "Upstream defined #{min_os_string.to_sym.inspect} as the minimum OS version " \
-                "and the cask defined #{min_os_symbol}"
+      begin
+        MacOSVersion.new(plist_min_os).strip_patch
+      rescue MacOSVersion::Error
+        nil
+      end
     end
 
     sig { void }
