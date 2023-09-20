@@ -111,10 +111,7 @@ module Homebrew
         when :all
           skip_invalid_combinations = true
 
-          [
-            *MacOSVersion::SYMBOLS.keys,
-            :linux,
-          ]
+          OnSystem::ALL_OS_OPTIONS
         else
           [os_sym]
         end
