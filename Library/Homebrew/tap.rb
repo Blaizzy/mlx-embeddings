@@ -342,7 +342,7 @@ class Tap
     begin
       safe_system "git", *args
 
-      if verify && !Readall.valid_tap?(self, aliases: true) && !Homebrew::EnvConfig.developer?
+      if verify && !Homebrew::EnvConfig.developer? && !Readall.valid_tap?(self, aliases: true)
         raise "Cannot tap #{name}: invalid syntax in tap!"
       end
     rescue Interrupt, RuntimeError

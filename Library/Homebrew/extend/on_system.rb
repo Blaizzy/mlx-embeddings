@@ -6,6 +6,8 @@ require "simulate_system"
 module OnSystem
   ARCH_OPTIONS = [:intel, :arm].freeze
   BASE_OS_OPTIONS = [:macos, :linux].freeze
+  ALL_OS_OPTIONS = [*MacOSVersion::SYMBOLS.keys, :linux].freeze
+  ALL_OS_ARCH_COMBINATIONS = ALL_OS_OPTIONS.product(ARCH_OPTIONS).freeze
 
   sig { params(arch: Symbol).returns(T::Boolean) }
   def self.arch_condition_met?(arch)

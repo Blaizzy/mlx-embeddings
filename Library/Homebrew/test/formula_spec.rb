@@ -1027,14 +1027,9 @@ describe Formula do
     end
 
     before do
-      # Use a more limited symbols list to shorten the variations hash
-      symbols = {
-        monterey: "12",
-        big_sur:  "11",
-        catalina: "10.15",
-        mojave:   "10.14",
-      }
-      stub_const("MacOSVersion::SYMBOLS", symbols)
+      # Use a more limited os list to shorten the variations hash
+      os_list = [:monterey, :big_sur, :catalina, :mojave, :linux]
+      stub_const("OnSystem::ALL_OS_ARCH_COMBINATIONS", os_list.product(OnSystem::ARCH_OPTIONS))
 
       # For consistency, always run on Monterey and ARM
       allow(MacOS).to receive(:version).and_return(MacOSVersion.new("12"))

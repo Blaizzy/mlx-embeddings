@@ -2398,11 +2398,9 @@ class Formula
 
     variations = {}
 
-    os_versions = [*MacOSVersion::SYMBOLS.keys, :linux]
-
     if path.exist? && (self.class.on_system_blocks_exist? || @on_system_blocks_exist)
       formula_contents = path.read
-      os_versions.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
+      OnSystem::ALL_OS_ARCH_COMBINATIONS.each do |os, arch|
         bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
         next unless bottle_tag.valid_combination?
 

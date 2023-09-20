@@ -38,8 +38,6 @@ module Homebrew
   def readall
     args = readall_args.parse
 
-    odeprecated "--no-simulate", "nothing (i.e. not passing `--os` or `--arch`)" if args.no_simulate?
-
     if args.syntax? && args.no_named?
       scan_files = "#{HOMEBREW_LIBRARY_PATH}/**/*.rb"
       ruby_files = Dir.glob(scan_files).grep_v(%r{/(vendor)/})
@@ -51,8 +49,8 @@ module Homebrew
       aliases:     args.aliases?,
       no_simulate: args.no_simulate?,
     }
-    # TODO: Always pass this once `--os` and `--arch` are passed explicitly to `brew readall` in CI.
     options[:os_arch_combinations] = args.os_arch_combinations if args.os || args.arch
+
     taps = if args.no_named?
       if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
         raise UsageError, "`brew readall` needs a tap or `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
@@ -62,6 +60,7 @@ module Homebrew
     else
       args.named.to_installed_taps
     end
+
     taps.each do |tap|
       Homebrew.failed = true unless Readall.valid_tap?(tap, options)
     end
