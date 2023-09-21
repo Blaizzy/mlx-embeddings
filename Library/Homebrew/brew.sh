@@ -506,11 +506,11 @@ esac
 # and also update references in docs/Installation.md,
 # https://github.com/Homebrew/install/blob/HEAD/install.sh and
 # MacOSVersion::SYMBOLS
-HOMEBREW_MACOS_NEWEST_UNSUPPORTED="14"
+HOMEBREW_MACOS_NEWEST_UNSUPPORTED="15"
 # TODO: bump version when new macOS is released and also update
 # references in docs/Installation.md and
 # https://github.com/Homebrew/install/blob/HEAD/install.sh
-HOMEBREW_MACOS_OLDEST_SUPPORTED="11"
+HOMEBREW_MACOS_OLDEST_SUPPORTED="12"
 HOMEBREW_MACOS_OLDEST_ALLOWED="10.11"
 
 if [[ -n "${HOMEBREW_MACOS}" ]]
