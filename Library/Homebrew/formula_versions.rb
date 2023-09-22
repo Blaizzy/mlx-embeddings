@@ -57,7 +57,7 @@ class FormulaVersions
   rescue *IGNORED_EXCEPTIONS => e
     # We rescue these so that we can skip bad versions and
     # continue walking the history
-    odebug "#{e} in #{name} at revision #{revision}", e.backtrace
+    odebug "#{e} in #{name} at revision #{revision}", Utils::Backtrace.clean(e)
   rescue FormulaUnavailableError
     nil
   ensure

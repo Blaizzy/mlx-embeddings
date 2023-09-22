@@ -62,7 +62,7 @@ module Cask
 
       self
     rescue => e
-      odebug e, e.backtrace
+      odebug e, ::Utils::Backtrace.clean(e)
       add_error "exception while auditing #{cask}: #{e.message}"
       self
     end
