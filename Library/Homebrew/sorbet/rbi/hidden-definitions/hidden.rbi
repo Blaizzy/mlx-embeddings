@@ -9235,6 +9235,11 @@ module Utils::Autoremove
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Utils::Backtrace
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Utils::Bottles
   extend ::T::Private::Methods::SingletonMethodHooks
 end
