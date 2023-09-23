@@ -187,17 +187,26 @@ module Homebrew
       end
     end
 
-    sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
+    SOCKET_STRING_REGEX = %r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i.freeze
+
+    sig {
+      params(value: T.nilable(T.any(String, T::Hash[String, String])))
+        .returns(T.nilable(T::Hash[String, T::Hash[Symbol, String]]))
+    }
     def sockets(value = nil)
-      case value
-      when nil
-        @sockets
+      return @sockets if value.nil?
+
+      @sockets = case value
       when String
-        match = T.must(value).match(%r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i)
+        { "Listeners" => value }
+      when Hash
+        value
+      end.transform_values do |socket_string|
+        match = socket_string.match(SOCKET_STRING_REGEX)
         raise TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>" if match.blank?
 
         type, host, port = match.captures
-        @sockets = { host: host, port: port, type: type }
+        { host: host, port: port, type: type }
       end
     end
 
@@ -410,12 +419,14 @@ module Homebrew
 
       if @sockets.present?
         base[:Sockets] = {}
-        base[:Sockets][:Listeners] = {
-          SockNodeName:    @sockets[:host],
-          SockServiceName: @sockets[:port],
-          SockProtocol:    @sockets[:type].upcase,
-          SockFamily:      "IPv4v6",
-        }
+        @sockets.each do |name, info|
+          base[:Sockets][name] = {
+            SockNodeName:    info[:host],
+            SockServiceName: info[:port],
+            SockProtocol:    info[:type].upcase,
+            SockFamily:      "IPv4v6",
+          }
+        end
       end
 
       if @cron.present? && @run_type == RUN_TYPE_CRON
@@ -511,7 +522,11 @@ module Homebrew
           .join(" ")
       end
 
-      sockets_string = "#{@sockets[:type]}://#{@sockets[:host]}:#{@sockets[:port]}" if @sockets.present?
+      sockets_hash = if @sockets.present?
+        @sockets.transform_values do |info|
+          "#{info[:type]}://#{info[:host]}:#{info[:port]}"
+        end
+      end
 
       {
         name:                  name_params.presence,
@@ -531,7 +546,7 @@ module Homebrew
         restart_delay:         @restart_delay,
         process_type:          @process_type,
         macos_legacy_timers:   @macos_legacy_timers,
-        sockets:               sockets_string,
+        sockets:               sockets_hash,
       }.compact
     end
 

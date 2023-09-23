@@ -990,7 +990,7 @@ describe Homebrew::Service do
         run_type:              :immediate,
         working_dir:           "/$HOME",
         cron:                  "0 0 * * 0",
-        sockets:               "tcp://0.0.0.0:80",
+        sockets:               { "Listeners" => "tcp://0.0.0.0:80" },
       }
     end
 
