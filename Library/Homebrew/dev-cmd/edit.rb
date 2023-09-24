@@ -52,18 +52,13 @@ module Homebrew
     else
       edit_api_message_displayed = T.let(false, T::Boolean)
       args.named.to_paths.select do |path|
-        core_formula_path = path.fnmatch?("**/homebrew-core/Formula/**.rb", File::FNM_DOTMATCH)
-        core_cask_path = path.fnmatch?("**/homebrew-cask/Casks/**.rb", File::FNM_DOTMATCH)
-        core_formula_tap = path == CoreTap.instance.path
-        core_cask_tap = path == CoreCaskTap.instance.path
-
         if path.exist?
-          if (core_formula_path || core_cask_path || core_formula_tap || core_cask_tap) &&
+          if (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
              !edit_api_message_displayed &&
              !Homebrew::EnvConfig.no_install_from_api? &&
              !Homebrew::EnvConfig.no_env_hints?
             opoo <<~EOS
-              `brew install` ignores locally edited #{(core_cask_path || core_cask_tap) ? "casks" : "formulae"} if
+              `brew install` ignores locally edited #{(path.core_cask_path? || path.core_cask_tap?) ? "casks" : "formulae"} if
               `HOMEBREW_NO_INSTALL_FROM_API` is not set.
             EOS
             edit_api_message_displayed = true
@@ -74,11 +69,11 @@ module Homebrew
         name = path.basename(".rb").to_s
 
         if (tap_match = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + /$/.source).match(path.to_s))
-          raise TapUnavailableError, CoreTap.instance.name if core_formula_tap
-          raise TapUnavailableError, CoreCaskTap.instance.name if core_cask_tap
+          raise TapUnavailableError, CoreTap.instance.name if path.core_formula_tap?
+          raise TapUnavailableError, CoreCaskTap.instance.name if path.core_cask_tap?
 
           raise TapUnavailableError, "#{tap_match[:user]}/#{tap_match[:repo]}"
-        elsif args.cask? || core_cask_path
+        elsif args.cask? || path.core_cask_path?
           if !CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(name)
             command = "brew tap --force #{CoreCaskTap.instance.name}"
             action = "tap #{CoreCaskTap.instance.name}"
@@ -86,7 +81,9 @@ module Homebrew
             command = "brew create --cask --set-name #{name} $URL"
             action = "create a new cask"
           end
-        elsif core_formula_path && !CoreTap.instance.installed? && Homebrew::API::Formula.all_formulae.key?(name)
+        elsif path.core_formula_path? &&
+              !CoreTap.instance.installed? &&
+              Homebrew::API::Formula.all_formulae.key?(name)
           command = "brew tap --force #{CoreTap.instance.name}"
           action = "tap #{CoreTap.instance.name}"
         else

@@ -488,6 +488,26 @@ class Pathname
                  .encode(Encoding::UTF_8, invalid: :replace)
                  .split("\n")
   end
+
+  sig { returns(T::Boolean) }
+  def core_formula_path?
+    fnmatch?("**/homebrew-core/Formula/**.rb", File::FNM_DOTMATCH)
+  end
+
+  sig { returns(T::Boolean) }
+  def core_cask_path?
+    fnmatch?("**/homebrew-cask/Casks/**.rb", File::FNM_DOTMATCH)
+  end
+
+  sig { returns(T::Boolean) }
+  def core_formula_tap?
+    self == CoreTap.instance.path
+  end
+
+  sig { returns(T::Boolean) }
+  def core_cask_tap?
+    self == CoreCaskTap.instance.path
+  end
 end
 
 require "extend/os/pathname"
