@@ -50,19 +50,22 @@ module Homebrew
         [HOMEBREW_REPOSITORY]
       end
     else
-      edit_api_message_displayed = T.let(false, T::Boolean)
-      args.named.to_paths.select do |path|
+      expanded_paths = args.named.to_paths
+      expanded_paths.each do |path|
+        if path.exist? &&
+            (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
+            !Homebrew::EnvConfig.no_install_from_api? &&
+            !Homebrew::EnvConfig.no_env_hints?
+          opoo <<~EOS
+            `brew install` ignores locally edited #{(path.core_cask_path? || path.core_cask_tap?) ? "casks" : "formulae"} if
+            `HOMEBREW_NO_INSTALL_FROM_API` is not set.
+          EOS
+          break
+        end
+      end
+
+      expanded_paths.select do |path|
         if path.exist?
-          if (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
-             !edit_api_message_displayed &&
-             !Homebrew::EnvConfig.no_install_from_api? &&
-             !Homebrew::EnvConfig.no_env_hints?
-            opoo <<~EOS
-              `brew install` ignores locally edited #{(path.core_cask_path? || path.core_cask_tap?) ? "casks" : "formulae"} if
-              `HOMEBREW_NO_INSTALL_FROM_API` is not set.
-            EOS
-            edit_api_message_displayed = true
-          end
           next path
         end
 
