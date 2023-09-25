@@ -54,7 +54,7 @@ module Homebrew
     end
   end
 
-  sig { void }
+  sig { params(path: Pathname, cask: T::Boolean).void }
   def fail_with_message(path, cask)
     name = path.basename(".rb").to_s
 
