@@ -26,6 +26,7 @@ module RuboCop
       #   end
       #
       class RedundantExtendTSig < RuboCop::Cop::Base
+        include RangeHelp
         extend AutoCorrector
 
         MSG = "Do not redundantly `extend T::Sig` when it is already included in all modules."
@@ -40,7 +41,7 @@ module RuboCop
           return unless extend_t_sig?(node)
 
           add_offense(node) do |corrector|
-            corrector.remove(node)
+            corrector.remove(range_by_whole_lines(node.source_range, include_final_newline: true))
           end
         end
       end
