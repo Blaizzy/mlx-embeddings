@@ -7,7 +7,7 @@ require "cli/parser"
 module Homebrew
   module_function
 
-  module Refinements
+  module EditPathnameRefinements
     refine Pathname do
       sig { returns(T::Boolean) }
       def core_formula_path?
@@ -31,7 +31,7 @@ module Homebrew
     end
   end
 
-  using Refinements
+  using EditPathnameRefinements
 
   sig { returns(CLI::Parser) }
   def edit_args
