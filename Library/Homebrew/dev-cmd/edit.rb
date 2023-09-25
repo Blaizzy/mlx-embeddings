@@ -121,7 +121,7 @@ module Homebrew
            !Homebrew::EnvConfig.no_env_hints?
           opoo <<~EOS
             `brew install` ignores locally edited #{(path.core_cask_path? || path.core_cask_tap?) ? "casks" : "formulae"} if
-            `HOMEBREW_NO_INSTALL_FROM_API` is not set.
+            HOMEBREW_NO_INSTALL_FROM_API is not set.
           EOS
           break
         end
