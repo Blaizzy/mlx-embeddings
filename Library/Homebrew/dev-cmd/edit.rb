@@ -7,6 +7,32 @@ require "cli/parser"
 module Homebrew
   module_function
 
+  module Refinements
+    refine Pathname do
+      sig { returns(T::Boolean) }
+      def core_formula_path?
+        fnmatch?("**/homebrew-core/Formula/**.rb", File::FNM_DOTMATCH)
+      end
+
+      sig { returns(T::Boolean) }
+      def core_cask_path?
+        fnmatch?("**/homebrew-cask/Casks/**.rb", File::FNM_DOTMATCH)
+      end
+
+      sig { returns(T::Boolean) }
+      def core_formula_tap?
+        self == CoreTap.instance.path
+      end
+
+      sig { returns(T::Boolean) }
+      def core_cask_tap?
+        self == CoreCaskTap.instance.path
+      end
+    end
+  end
+
+  using Refinements
+
   sig { returns(CLI::Parser) }
   def edit_args
     Homebrew::CLI::Parser.new do
