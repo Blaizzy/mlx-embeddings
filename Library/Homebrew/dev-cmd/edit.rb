@@ -29,6 +29,40 @@ module Homebrew
   end
 
   sig { void }
+  def fail(path, cask)
+    name = path.basename(".rb").to_s
+
+    if (tap_match = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + /$/.source).match(path.to_s))
+      raise TapUnavailableError, CoreTap.instance.name if path.core_formula_tap?
+      raise TapUnavailableError, CoreCaskTap.instance.name if path.core_cask_tap?
+
+      raise TapUnavailableError, "#{tap_match[:user]}/#{tap_match[:repo]}"
+    elsif cask || path.core_cask_path?
+      if !CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(name)
+        command = "brew tap --force #{CoreCaskTap.instance.name}"
+        action = "tap #{CoreCaskTap.instance.name}"
+      else
+        command = "brew create --cask --set-name #{name} $URL"
+        action = "create a new cask"
+      end
+    elsif path.core_formula_path? &&
+          !CoreTap.instance.installed? &&
+          Homebrew::API::Formula.all_formulae.key?(name)
+      command = "brew tap --force #{CoreTap.instance.name}"
+      action = "tap #{CoreTap.instance.name}"
+    else
+      command = "brew create --set-name #{name} $URL"
+      action = "create a new formula"
+    end
+
+    message = <<~EOS
+      #{name} doesn't exist on disk.
+      Run #{Formatter.identifier(command)} to #{action}!
+    EOS
+    raise UsageError, message
+  end
+
+  sig { void }
   def edit
     args = edit_args.parse
 
@@ -64,42 +98,11 @@ module Homebrew
         end
       end
 
-      expanded_paths.select do |path|
-        if path.exist?
-          next path
+      expanded_paths.each do |path|
+        if not path.exist?
+          fail(path, args.cask?)
         end
-
-        name = path.basename(".rb").to_s
-
-        if (tap_match = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + /$/.source).match(path.to_s))
-          raise TapUnavailableError, CoreTap.instance.name if path.core_formula_tap?
-          raise TapUnavailableError, CoreCaskTap.instance.name if path.core_cask_tap?
-
-          raise TapUnavailableError, "#{tap_match[:user]}/#{tap_match[:repo]}"
-        elsif args.cask? || path.core_cask_path?
-          if !CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(name)
-            command = "brew tap --force #{CoreCaskTap.instance.name}"
-            action = "tap #{CoreCaskTap.instance.name}"
-          else
-            command = "brew create --cask --set-name #{name} $URL"
-            action = "create a new cask"
-          end
-        elsif path.core_formula_path? &&
-              !CoreTap.instance.installed? &&
-              Homebrew::API::Formula.all_formulae.key?(name)
-          command = "brew tap --force #{CoreTap.instance.name}"
-          action = "tap #{CoreTap.instance.name}"
-        else
-          command = "brew create --set-name #{name} $URL"
-          action = "create a new formula"
-        end
-
-        message = <<~EOS
-          #{name} doesn't exist on disk.
-          Run #{Formatter.identifier(command)} to #{action}!
-        EOS
-        raise UsageError, message
-      end.presence
+      end
     end
 
     if args.print_path?
