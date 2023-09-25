@@ -63,8 +63,8 @@ module Homebrew
              !Homebrew::EnvConfig.no_install_from_api? &&
              !Homebrew::EnvConfig.no_env_hints?
             opoo <<~EOS
-              Unless `HOMEBREW_NO_INSTALL_FROM_API` is set when running `brew install`,
-              it will ignore any locally edited #{(core_cask_path || core_cask_tap) ? "casks" : "formulae"}.
+              `brew install` ignores locally edited #{(core_cask_path || core_cask_tap) ? "casks" : "formulae"} if
+              `HOMEBREW_NO_INSTALL_FROM_API` is not set.
             EOS
             edit_api_message_displayed = true
           end
