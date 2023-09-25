@@ -86,10 +86,13 @@ module Homebrew
     else
       expanded_paths = args.named.to_paths
       expanded_paths.each do |path|
-        if path.exist? &&
-            (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
-            !Homebrew::EnvConfig.no_install_from_api? &&
-            !Homebrew::EnvConfig.no_env_hints?
+        fail(path, args.cask?) unless path.exist?
+      end
+
+      expanded_paths.each do |path|
+        if (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
+           !Homebrew::EnvConfig.no_install_from_api? &&
+           !Homebrew::EnvConfig.no_env_hints?
           opoo <<~EOS
             `brew install` ignores locally edited #{(path.core_cask_path? || path.core_cask_tap?) ? "casks" : "formulae"} if
             `HOMEBREW_NO_INSTALL_FROM_API` is not set.
@@ -97,12 +100,7 @@ module Homebrew
           break
         end
       end
-
-      expanded_paths.each do |path|
-        if not path.exist?
-          fail(path, args.cask?)
-        end
-      end
+      expanded_paths
     end
 
     if args.print_path?
