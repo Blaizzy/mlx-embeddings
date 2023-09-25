@@ -29,7 +29,7 @@ module Homebrew
   end
 
   sig { void }
-  def fail(path, cask)
+  def fail_with_message(path, cask)
     name = path.basename(".rb").to_s
 
     if (tap_match = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + /$/.source).match(path.to_s))
@@ -86,7 +86,7 @@ module Homebrew
     else
       expanded_paths = args.named.to_paths
       expanded_paths.each do |path|
-        fail(path, args.cask?) unless path.exist?
+        fail_with_message(path, args.cask?) unless path.exist?
       end
 
       expanded_paths.each do |path|
