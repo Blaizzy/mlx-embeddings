@@ -118,7 +118,7 @@ GEM
     rubocop-rspec (2.20.0)
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
-    rubocop-sorbet (0.7.3)
+    rubocop-sorbet (0.7.4)
       rubocop (>= 0.90.0)
     ruby-macho (4.0.0)
     ruby-prof (1.4.3)
