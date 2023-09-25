@@ -81,11 +81,10 @@ module Homebrew
       action = "create a new formula"
     end
 
-    message = <<~EOS
+    raise UsageError, <<~EOS
       #{name} doesn't exist on disk.
       Run #{Formatter.identifier(command)} to #{action}!
     EOS
-    raise UsageError, message
   end
 
   sig { void }
