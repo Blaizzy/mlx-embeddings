@@ -32,7 +32,7 @@ module Homebrew
   def fail_with_message(path, cask)
     name = path.basename(".rb").to_s
 
-    if (tap_match = Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + /$/.source).match(path.to_s))
+    if (tap_match = Regexp.new("#{HOMEBREW_TAP_DIR_REGEX.source}$").match(path.to_s))
       raise TapUnavailableError, CoreTap.instance.name if path.core_formula_tap?
       raise TapUnavailableError, CoreCaskTap.instance.name if path.core_cask_tap?
 
