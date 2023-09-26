@@ -114,17 +114,15 @@ module Homebrew
         fail_with_message(path, args.cask?) unless path.exist?
       end
 
-      expanded_paths.each do |path|
-        if (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
+      if expanded_paths.any? do |path|
+           (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
            !Homebrew::EnvConfig.no_install_from_api? &&
            !Homebrew::EnvConfig.no_env_hints?
-          path_type = (path.core_cask_path? || path.core_cask_tap?) ? "casks" : "formulae"
-          opoo <<~EOS
-            `brew install` ignores locally edited #{path_type} if
-            HOMEBREW_NO_INSTALL_FROM_API is not set.
-          EOS
-          break
-        end
+         end
+        opoo <<~EOS
+          `brew install` ignores locally edited casks and formulae if
+          HOMEBREW_NO_INSTALL_FROM_API is not set.
+        EOS
       end
       expanded_paths
     end
