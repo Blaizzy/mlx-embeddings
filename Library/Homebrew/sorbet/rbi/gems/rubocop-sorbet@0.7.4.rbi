@@ -38,6 +38,22 @@ end
 RuboCop::Cop::Sorbet::BindingConstantWithoutTypeAlias::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Sorbet::BindingConstantWithoutTypeAlias::WITHOUT_BLOCK_MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Sorbet::BuggyObsoleteStrictMemoization < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::MatchRange
+  include ::RuboCop::Cop::Alignment
+  include ::RuboCop::Cop::LineLengthHelp
+  include ::RuboCop::Cop::Sorbet::TargetSorbetVersion
+  extend ::RuboCop::Cop::AutoCorrector
+  extend ::RuboCop::Cop::Sorbet::TargetSorbetVersion::ClassMethods
+
+  def buggy_legacy_memoization_pattern?(param0 = T.unsafe(nil)); end
+  def on_begin(node); end
+  def relevant_file?(file); end
+end
+
+RuboCop::Cop::Sorbet::BuggyObsoleteStrictMemoization::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Sorbet::CallbackConditionalsBinding < ::RuboCop::Cop::Cop
   def autocorrect(node); end
   def on_send(node); end
@@ -176,6 +192,57 @@ end
 
 RuboCop::Cop::Sorbet::ForbidSuperclassConstLiteral::MSG = T.let(T.unsafe(nil), String)
 
+class RuboCop::Cop::Sorbet::ForbidTStruct < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::Alignment
+  include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::CommentsHelp
+  extend ::RuboCop::Cop::AutoCorrector
+
+  def on_class(node); end
+  def on_send(node); end
+  def t_props?(param0 = T.unsafe(nil)); end
+  def t_struct?(param0 = T.unsafe(nil)); end
+
+  private
+
+  def initialize_method(indent, props); end
+  def previous_line_blank?(node); end
+end
+
+RuboCop::Cop::Sorbet::ForbidTStruct::MSG_PROPS = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::ForbidTStruct::MSG_STRUCT = T.let(T.unsafe(nil), String)
+
+class RuboCop::Cop::Sorbet::ForbidTStruct::Property
+  def initialize(node, kind, name, type, default:, factory:); end
+
+  def attr_accessor; end
+  def attr_sig; end
+  def default; end
+  def factory; end
+  def initialize_assign; end
+  def initialize_param; end
+  def initialize_sig_param; end
+  def kind; end
+  def name; end
+  def node; end
+  def type; end
+end
+
+RuboCop::Cop::Sorbet::ForbidTStruct::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+class RuboCop::Cop::Sorbet::ForbidTStruct::TStructWalker
+  include ::RuboCop::AST::Traversal
+  extend ::RuboCop::AST::NodePattern::Macros
+
+  def initialize; end
+
+  def extend_t_sig?(param0 = T.unsafe(nil)); end
+  def has_extend_t_sig; end
+  def on_send(node); end
+  def props; end
+  def t_struct_prop?(param0 = T.unsafe(nil)); end
+end
+
 class RuboCop::Cop::Sorbet::ForbidTUnsafe < ::RuboCop::Cop::Base
   def on_send(node); end
   def t_unsafe?(param0 = T.unsafe(nil)); end
@@ -271,6 +338,7 @@ end
 RuboCop::Cop::Sorbet::OneAncestorPerLine::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Sorbet::RedundantExtendTSig < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
   def extend_t_sig?(param0 = T.unsafe(nil)); end
@@ -330,6 +398,7 @@ module RuboCop::Cop::Sorbet::TargetSorbetVersion
 
   def enabled_for_sorbet_static_version?; end
   def read_sorbet_static_version_from_bundler_lock_file; end
+  def sorbet_enabled?; end
   def target_sorbet_static_version_from_bundler_lock_file; end
 
   class << self
@@ -339,7 +408,7 @@ end
 
 module RuboCop::Cop::Sorbet::TargetSorbetVersion::ClassMethods
   def minimum_target_sorbet_static_version(version); end
-  def support_target_sorbet_static_version?(version); end
+  def supports_target_sorbet_static_version?(version); end
 end
 
 class RuboCop::Cop::Sorbet::TrueSigil < ::RuboCop::Cop::Sorbet::HasSigil

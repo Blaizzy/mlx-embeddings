@@ -11,21 +11,25 @@ module RuboCop
         end
 
         module ClassMethods
-          # The version of the Sorbet static type checker required by this cop
+          # Sets the version of the Sorbet static type checker required by this cop
           def minimum_target_sorbet_static_version(version)
             @minimum_target_sorbet_static_version = Gem::Version.new(version)
           end
 
-          def support_target_sorbet_static_version?(version)
+          def supports_target_sorbet_static_version?(version)
             @minimum_target_sorbet_static_version <= Gem::Version.new(version)
           end
+        end
+
+        def sorbet_enabled?
+          !target_sorbet_static_version_from_bundler_lock_file.nil?
         end
 
         def enabled_for_sorbet_static_version?
           sorbet_static_version = target_sorbet_static_version_from_bundler_lock_file
           return false unless sorbet_static_version
 
-          self.class.support_target_sorbet_static_version?(sorbet_static_version)
+          self.class.supports_target_sorbet_static_version?(sorbet_static_version)
         end
 
         def target_sorbet_static_version_from_bundler_lock_file

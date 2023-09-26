@@ -7114,6 +7114,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
   SET_SIG_HELPERS = ::T.let(nil, ::T.untyped)
   SET_STRUCT_IMMUTABLESTRUCT = ::T.let(nil, ::T.untyped)
+  SET_STRUCT_IMMUTABLESTRUCT_INEXACTSTRUCT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)

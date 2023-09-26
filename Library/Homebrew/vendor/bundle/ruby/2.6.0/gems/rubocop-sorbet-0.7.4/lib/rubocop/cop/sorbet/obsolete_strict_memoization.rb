@@ -54,7 +54,7 @@ module RuboCop
             $(ivasgn $_ivar                                           # First line: @_ivar = ...
               (send                                                   # T.let(_ivar, T.nilable(_ivar_type))
                 $(const {nil? cbase} :T) :let
-                {(ivar _ivar) nil}
+                (ivar _ivar)
                 (send (const {nil? cbase} :T) :nilable $_ivar_type))) # T.nilable(_ivar_type)
             $(or-asgn (ivasgn _ivar) $_initialization_expr))          # Second line: @_ivar ||= _initialization_expr
         PATTERN

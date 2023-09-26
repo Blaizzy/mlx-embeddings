@@ -97,6 +97,13 @@ Sorbet/ForbidSuperclassConstLiteral:
   Exclude:
   - db/migrate/*.rb
 
+Sorbet/ForbidTStruct:
+  Description: 'Forbid usage of T::Struct.'
+  Enabled: false
+  VersionAdded: <<next>>
+  VersionChanged: <<next>>
+  Safe: false
+
 Sorbet/ForbidTUnsafe:
   Description: 'Forbid usage of T.unsafe.'
   Enabled: false
@@ -170,6 +177,23 @@ Sorbet/ObsoleteStrictMemoization:
   VersionAdded: '0.7.1'
   Safe: true
   SafeAutoCorrect: true
+
+Sorbet/BuggyObsoleteStrictMemoization:
+  Description: >-
+    Checks for the a mistaken variant of the "obsolete memoization pattern" that used to be required
+    for older Sorbet versions in `#typed: strict` files. The mistaken variant would overwrite the ivar with `nil`
+    on every call, causing the memoized value to be discarded and recomputed on every call.
+    
+    This cop will correct it to read from the ivar instead of `nil`, which will memoize it correctly.
+    
+    The result of this correction will be the "obsolete memoization pattern", which can further be corrected by
+    the `Sorbet/ObsoleteStrictMemoization` cop.
+    
+    See `Sorbet/ObsoleteStrictMemoization` for more details.
+  Enabled: true
+  VersionAdded: '0.7.3'
+  Safe: true
+  SafeAutoCorrect: false
 
 Sorbet/OneAncestorPerLine:
   Description: 'Enforces one ancestor per call to requires_ancestor'
