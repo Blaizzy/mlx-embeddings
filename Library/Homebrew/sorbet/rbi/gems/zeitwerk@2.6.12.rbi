@@ -110,6 +110,8 @@ class Zeitwerk::Loader
   def autoload_subdir(parent, cname, subdir); end
   def autoloaded_dirs; end
   def autoloads; end
+  def define_autoload(parent, cname, abspath); end
+  def define_autoloads_for_dir(dir, parent); end
   def dirs_autoload_monitor; end
   def mutex; end
   def namespace_dirs; end
@@ -117,8 +119,6 @@ class Zeitwerk::Loader
   def raise_if_conflicting_directory(dir); end
   def register_explicit_namespace(cpath); end
   def run_on_unload_callbacks(cpath, value, abspath); end
-  def set_autoload(parent, cname, abspath); end
-  def set_autoloads_in_dir(dir, parent); end
   def shadowed_file?(file); end
   def shadowed_files; end
   def to_unload; end
@@ -138,13 +138,16 @@ end
 
 module Zeitwerk::Loader::Callbacks
   include ::Zeitwerk::RealModName
+  extend ::Zeitwerk::Internal
 
-  def on_dir_autoloaded(dir); end
-  def on_file_autoloaded(file); end
+  def __on_dir_autoloaded(dir); end
+  def __on_file_autoloaded(file); end
   def on_namespace_loaded(namespace); end
 
   private
 
+  def on_dir_autoloaded(dir); end
+  def on_file_autoloaded(file); end
   def run_on_load_callbacks(cpath, value, abspath); end
 end
 
