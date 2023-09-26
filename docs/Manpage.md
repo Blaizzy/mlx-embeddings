@@ -2080,6 +2080,9 @@ User-specific environment files take precedence over prefix-specific files and
 prefix-specific files take precedence over system-wide files (unless
 `HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY` is set, see below).
 
+Note that these files do not support shell variable expansion e.g. `$HOME` or
+command execution e.g. `$(cat file)`.
+
 - `HOMEBREW_API_DOMAIN`
   <br>Use this URL as the download mirror for Homebrew JSON API. If metadata files at that URL are temporarily unavailable, the default API domain will be used as a fallback mirror.
 
