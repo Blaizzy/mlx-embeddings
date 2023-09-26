@@ -2956,6 +2956,9 @@ Note that environment variables must have a value set to be detected\. For examp
 .P
 User\-specific environment files take precedence over prefix\-specific files and prefix\-specific files take precedence over system\-wide files (unless \fBHOMEBREW_SYSTEM_ENV_TAKES_PRIORITY\fR is set, see below)\.
 .
+.P
+Note that these files do not support shell variable expansion e\.g\. \fB$HOME\fR or command execution e\.g\. \fB$(cat file)\fR\.
+.
 .TP
 \fBHOMEBREW_API_DOMAIN\fR
 .
