@@ -147,7 +147,7 @@ module Homebrew
     uses_hash = {}
 
     all_formulae.each do |f|
-      deps = f.recursive_dependencies do |_, dep|
+      deps = Dependency.expand(f, cache_key: "unbottled") do |_, dep|
         Dependency.prune if dep.optional?
       end.map(&:to_formula)
       deps_hash[f.name] = deps
