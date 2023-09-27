@@ -28,7 +28,7 @@ module Homebrew
     )
 
     def self.regenerate_man_pages(quiet:)
-      Homebrew.install_bundler_gems!
+      Homebrew.install_bundler_gems!(groups: ["man"])
 
       markup = build_man_page(quiet: quiet)
       convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md")

@@ -88,7 +88,8 @@ module Homebrew
   def tests
     args = tests_args.parse
 
-    Homebrew.install_bundler_gems!(groups: ["prof"])
+    # Given we might be testing various commands, we probably want everything (except sorbet-static)
+    Homebrew.install_bundler_gems!(groups: Homebrew.valid_gem_groups - ["sorbet"])
 
     require "byebug" if args.byebug?
 

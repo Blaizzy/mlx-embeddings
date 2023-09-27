@@ -125,9 +125,7 @@ module Homebrew
 
       check_bottled_formulae!(bottles_hash)
 
-      # This will be run by `brew bottle` and `brew audit` later so run it first
-      # to not start spamming during normal output.
-      Homebrew.install_bundler_gems!
+      Homebrew.install_bundler_gems!(groups: ["pr_upload", "style"])
 
       safe_system HOMEBREW_BREW_FILE, *bottle_args
 

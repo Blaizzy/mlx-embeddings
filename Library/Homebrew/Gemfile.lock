@@ -193,7 +193,6 @@ DEPENDENCIES
   addressable
   bootsnap
   byebug
-  concurrent-ruby
   did_you_mean
   json_schemer
   minitest
@@ -217,6 +216,7 @@ DEPENDENCIES
   rubocop-sorbet
   ruby-macho
   ruby-prof (= 1.4.3)
+  ruby-progressbar
   simplecov
   simplecov-cobertura
   sorbet-runtime
