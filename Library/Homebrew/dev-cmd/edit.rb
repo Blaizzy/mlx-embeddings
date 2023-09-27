@@ -7,32 +7,6 @@ require "cli/parser"
 module Homebrew
   module_function
 
-  module EditPathnameRefinements
-    refine Pathname do
-      sig { returns(T::Boolean) }
-      def core_formula_path?
-        fnmatch?("**/homebrew-core/Formula/**.rb", File::FNM_DOTMATCH)
-      end
-
-      sig { returns(T::Boolean) }
-      def core_cask_path?
-        fnmatch?("**/homebrew-cask/Casks/**.rb", File::FNM_DOTMATCH)
-      end
-
-      sig { returns(T::Boolean) }
-      def core_formula_tap?
-        self == CoreTap.instance.path
-      end
-
-      sig { returns(T::Boolean) }
-      def core_cask_tap?
-        self == CoreCaskTap.instance.path
-      end
-    end
-  end
-
-  using EditPathnameRefinements
-
   sig { returns(CLI::Parser) }
   def edit_args
     Homebrew::CLI::Parser.new do
@@ -54,16 +28,36 @@ module Homebrew
     end
   end
 
+  sig { returns(T::Boolean) }
+  def core_formula_path?(path)
+    path.fnmatch?("**/homebrew-core/Formula/**.rb", File::FNM_DOTMATCH)
+  end
+
+  sig { returns(T::Boolean) }
+  def core_cask_path?(path)
+    path.fnmatch?("**/homebrew-cask/Casks/**.rb", File::FNM_DOTMATCH)
+  end
+
+  sig { returns(T::Boolean) }
+  def core_formula_tap?(path)
+    path == CoreTap.instance.path
+  end
+
+  sig { returns(T::Boolean) }
+  def core_cask_tap?(path)
+    path == CoreCaskTap.instance.path
+  end
+
   sig { params(path: Pathname, cask: T::Boolean).returns(T.noreturn) }
   def raise_with_message!(path, cask)
     name = path.basename(".rb").to_s
 
     if (tap_match = Regexp.new("#{HOMEBREW_TAP_DIR_REGEX.source}$").match(path.to_s))
-      raise TapUnavailableError, CoreTap.instance.name if path.core_formula_tap?
-      raise TapUnavailableError, CoreCaskTap.instance.name if path.core_cask_tap?
+      raise TapUnavailableError, CoreTap.instance.name if core_formula_tap?(path)
+      raise TapUnavailableError, CoreCaskTap.instance.name if core_cask_tap?(path)
 
       raise TapUnavailableError, "#{tap_match[:user]}/#{tap_match[:repo]}"
-    elsif cask || path.core_cask_path?
+    elsif cask || core_cask_path?(path)
       if !CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(name)
         command = "brew tap --force #{CoreCaskTap.instance.name}"
         action = "tap #{CoreCaskTap.instance.name}"
@@ -71,7 +65,7 @@ module Homebrew
         command = "brew create --cask --set-name #{name} $URL"
         action = "create a new cask"
       end
-    elsif path.core_formula_path? &&
+    elsif core_formula_path?(path) &&
           !CoreTap.instance.installed? &&
           Homebrew::API::Formula.all_formulae.key?(name)
       command = "brew tap --force #{CoreTap.instance.name}"
@@ -115,7 +109,7 @@ module Homebrew
       end
 
       if expanded_paths.any? do |path|
-           (path.core_formula_path? || path.core_cask_path? || path.core_formula_tap? || path.core_cask_tap?) &&
+           (core_formula_path?(path) || core_cask_path?(path) || core_formula_tap?(path) || core_cask_tap?(path)) &&
            !Homebrew::EnvConfig.no_install_from_api? &&
            !Homebrew::EnvConfig.no_env_hints?
          end
