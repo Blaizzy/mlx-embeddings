@@ -122,7 +122,7 @@ module Homebrew
       if args.tap
         Tap.fetch(args.tap).then do |tap|
           [
-            tap.formula_names.map { |name| Formula[name] },
+            tap.formula_files.map { |path| Formulary.factory(path) },
             tap.cask_files.map { |path| Cask::CaskLoader.load(path) },
           ]
         end
