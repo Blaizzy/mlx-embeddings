@@ -944,7 +944,7 @@ Search for \fItext\fR in the given database\.
 Print export statements\. When run in a shell, this installation of Homebrew will be added to your \fBPATH\fR, \fBMANPATH\fR, and \fBINFOPATH\fR\.
 .
 .P
-The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. To help guarantee idempotence, this command produces no output when Homebrew\'s \fBbin\fR and \fBsbin\fR directories are first and second respectively in your \fBPATH\fR\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.profile\fR, \fB~/\.bash_profile\fR, or \fB~/\.zprofile\fR) with: \fBeval "$(brew shellenv)"\fR
+The variables \fBHOMEBREW_PREFIX\fR, \fBHOMEBREW_CELLAR\fR and \fBHOMEBREW_REPOSITORY\fR are also exported to avoid querying them multiple times\. To help guarantee idempotence, this command produces no output when Homebrew\'s \fBbin\fR and \fBsbin\fR directories are first and second respectively in your \fBPATH\fR\. Consider adding evaluation of this command\'s output to your dotfiles (e\.g\. \fB~/\.bash_profile\fR or \fB~/\.zprofile\fR on macOS and \fB~/\.bashrc\fR or \fB~/\.zshrc\fR on Linux) with: \fBeval "$(brew shellenv)"\fR
 .
 .P
 The shell can be specified explicitly with a supported shell name parameter\. Unknown shells will output POSIX exports\.
@@ -2740,6 +2740,10 @@ Run \fIsubcommand\fR on all services\.
 .TP
 \fB\-\-json\fR
 Output as JSON\.
+.
+.TP
+\fB\-\-no\-wait\fR
+Don\'t wait for \fBstop\fR to finish stopping the service\.
 .
 .SS "\fBtest\-bot\fR [\fIoptions\fR] [\fIformula\fR]"
 Tests the full lifecycle of a Homebrew change to a tap (Git repository)\. For example, for a GitHub Actions pull request that changes a formula \fBbrew test\-bot\fR will ensure the system is cleaned and set up to test the formula, install the formula, run various tests and checks on it, bottle (package) the binaries and test formulae that depend on it to ensure they aren\'t broken by these changes\.
