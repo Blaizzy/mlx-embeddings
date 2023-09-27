@@ -185,7 +185,12 @@ module Homebrew
       def env?(env)
         return if env.blank?
 
-        Homebrew::EnvConfig.try(:"#{env}?")
+        method_name = :"#{env}?"
+        if Homebrew::EnvConfig.respond_to?(method_name)
+          Homebrew::EnvConfig.public_send(method_name)
+        else
+          ENV.fetch("HOMEBREW_#{env.upcase}", nil)
+        end
       end
 
       def description(text = nil)
