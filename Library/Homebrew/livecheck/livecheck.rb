@@ -7,7 +7,6 @@ require "livecheck/livecheck_version"
 require "livecheck/skip_conditions"
 require "livecheck/strategy"
 require "addressable"
-require "ruby-progressbar"
 require "uri"
 
 module Homebrew
@@ -208,6 +207,7 @@ module Homebrew
           stderr.puts Formatter.headline("Running checks", color: :blue)
         end
 
+        require "ruby-progressbar"
         progress = ProgressBar.create(
           total:          formulae_and_casks_total,
           progress_mark:  "#",
