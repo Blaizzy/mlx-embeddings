@@ -190,15 +190,15 @@ module Homebrew
     SOCKET_STRING_REGEX = %r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i.freeze
 
     sig {
-      params(value: T.nilable(T.any(String, T::Hash[String, String])))
-        .returns(T.nilable(T::Hash[String, T::Hash[Symbol, String]]))
+      params(value: T.nilable(T.any(String, T::Hash[Symbol, String])))
+        .returns(T.nilable(T::Hash[Symbol, T::Hash[Symbol, String]]))
     }
     def sockets(value = nil)
       return @sockets if value.nil?
 
       @sockets = case value
       when String
-        { "Listeners" => value }
+        { listeners: value }
       when Hash
         value
       end.transform_values do |socket_string|
@@ -580,8 +580,6 @@ module Homebrew
           raise ArgumentError, "Unexpected run command: #{api_hash["run"]}"
         end
 
-      hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")
-
       if api_hash.key?("environment_variables")
         hash[:environment_variables] = api_hash["environment_variables"].to_h do |key, value|
           [key.to_sym, replace_placeholders(value)]
@@ -600,10 +598,20 @@ module Homebrew
         hash[key.to_sym] = replace_placeholders(value)
       end
 
-      %w[interval cron launch_only_once require_root restart_delay macos_legacy_timers sockets].each do |key|
+      %w[interval cron launch_only_once require_root restart_delay macos_legacy_timers].each do |key|
         next if (value = api_hash[key]).nil?
 
         hash[key.to_sym] = value
+      end
+
+      %w[sockets keep_alive].each do |key|
+        next unless (value = api_hash[key])
+
+        hash[key.to_sym] = if value.is_a?(Hash)
+          value.transform_keys(&:to_sym)
+        else
+          value
+        end
       end
 
       hash

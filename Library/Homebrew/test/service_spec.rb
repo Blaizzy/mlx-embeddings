@@ -281,7 +281,7 @@ describe Homebrew::Service do
         \t<true/>
         \t<key>Sockets</key>
         \t<dict>
-        \t\t<key>Listeners</key>
+        \t\t<key>listeners</key>
         \t\t<dict>
         \t\t\t<key>SockFamily</key>
         \t\t\t<string>IPv4v6</string>
@@ -299,7 +299,7 @@ describe Homebrew::Service do
 
       [
         stub_formula_with_service_sockets("tcp://127.0.0.1:80"),
-        stub_formula_with_service_sockets({ "Listeners" => "tcp://127.0.0.1:80" }),
+        stub_formula_with_service_sockets({ listeners: "tcp://127.0.0.1:80" }),
       ].each do |f|
         plist = f.service.to_plist
         expect(plist).to eq(plist_expect)
@@ -310,7 +310,7 @@ describe Homebrew::Service do
       f = stub_formula do
         service do
           run [opt_bin/"beanstalkd", "test"]
-          sockets "Socket" => "tcp://0.0.0.0:80", "SocketTLS" => "tcp://0.0.0.0:443"
+          sockets socket: "tcp://0.0.0.0:80", socket_tls: "tcp://0.0.0.0:443"
         end
       end
 
@@ -339,7 +339,7 @@ describe Homebrew::Service do
         \t<true/>
         \t<key>Sockets</key>
         \t<dict>
-        \t\t<key>Socket</key>
+        \t\t<key>socket</key>
         \t\t<dict>
         \t\t\t<key>SockFamily</key>
         \t\t\t<string>IPv4v6</string>
@@ -350,7 +350,7 @@ describe Homebrew::Service do
         \t\t\t<key>SockServiceName</key>
         \t\t\t<string>80</string>
         \t\t</dict>
-        \t\t<key>SocketTLS</key>
+        \t\t<key>socket_tls</key>
         \t\t<dict>
         \t\t\t<key>SockFamily</key>
         \t\t\t<string>IPv4v6</string>
@@ -1049,7 +1049,7 @@ describe Homebrew::Service do
         run_type:              :immediate,
         working_dir:           "/$HOME",
         cron:                  "0 0 * * 0",
-        sockets:               { "Listeners" => "tcp://0.0.0.0:80" },
+        sockets:               { listeners: "tcp://0.0.0.0:80" },
       }
     end
 

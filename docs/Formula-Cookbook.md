@@ -1052,7 +1052,7 @@ The `sockets` method accepts a formatted socket definition as `<type>://<host>:<
 
 Please note that sockets will be accessible on IPv4 and IPv6 addresses by default.
 
-If you only need one socket and you don't care about the name (the default is `Listeners`):
+If you only need one socket and you don't care about the name (the default is `listeners`):
 
 ```rb
 service do
@@ -1066,7 +1066,7 @@ If you need multiple sockets and/or you want to specify the name:
 ```rb
 service do
   run [opt_bin/"beanstalkd", "test"]
-  sockets "Socket" => "tcp://0.0.0.0:80", "SocketTLS" => "tcp://0.0.0.0:443"
+  sockets http: "tcp://0.0.0.0:80", https: "tcp://0.0.0.0:443"
 end
 ```
 
