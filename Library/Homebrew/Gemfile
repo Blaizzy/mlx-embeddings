@@ -30,7 +30,7 @@ end
 group :man, optional: true do
   gem "ronn", require: false
 end
-group :pr_publish, optional: true do
+group :pr_upload, optional: true do
   gem "json_schemer", require: false
 end
 group :prof, optional: true do
