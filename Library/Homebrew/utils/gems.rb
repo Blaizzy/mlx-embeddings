@@ -300,7 +300,7 @@ module Homebrew
       end
 
       bundle_installed = if bundle_install_required
-        if system bundle, "install"
+        if system bundle, "install", out: :err
           true
         else
           message = <<~EOS
@@ -313,7 +313,7 @@ module Homebrew
           end
           false
         end
-      elsif system bundle, "clean" # even if we have nothing to install, we may have removed gems
+      elsif system bundle, "clean", out: :err # even if we have nothing to install, we may have removed gems
         true
       else
         message = <<~EOS
