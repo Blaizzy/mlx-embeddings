@@ -28,22 +28,22 @@ module Homebrew
     end
   end
 
-  sig { returns(T::Boolean) }
+  sig { params(path: Pathname).returns(T::Boolean) }
   def core_formula_path?(path)
     path.fnmatch?("**/homebrew-core/Formula/**.rb", File::FNM_DOTMATCH)
   end
 
-  sig { returns(T::Boolean) }
+  sig { params(path: Pathname).returns(T::Boolean) }
   def core_cask_path?(path)
     path.fnmatch?("**/homebrew-cask/Casks/**.rb", File::FNM_DOTMATCH)
   end
 
-  sig { returns(T::Boolean) }
+  sig { params(path: Pathname).returns(T::Boolean) }
   def core_formula_tap?(path)
     path == CoreTap.instance.path
   end
 
-  sig { returns(T::Boolean) }
+  sig { params(path: Pathname).returns(T::Boolean) }
   def core_cask_tap?(path)
     path == CoreCaskTap.instance.path
   end
@@ -105,7 +105,7 @@ module Homebrew
     else
       expanded_paths = args.named.to_paths
       expanded_paths.each do |path|
-        raise_with_message(path, args.cask?) unless path.exist?
+        raise_with_message!(path, args.cask?) unless path.exist?
       end
 
       if expanded_paths.any? do |path|
