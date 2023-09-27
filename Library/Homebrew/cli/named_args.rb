@@ -230,7 +230,7 @@ module Homebrew
         @to_paths[only] ||= Homebrew.with_no_api_env_if_needed(@without_api) do
           downcased_unique_named.flat_map do |name|
             path = Pathname(name)
-            if File.exist?(name)
+            if only.nil? && File.exist?(name)
               path
             elsif name.count("/") == 1 && !name.start_with?("./", "/")
               tap = Tap.fetch(name)
