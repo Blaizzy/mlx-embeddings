@@ -24,6 +24,8 @@ AllCops:
     - "Homebrew/bin/*"
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"
+  SuggestExtensions:
+    rubocop-minitest: false
 
 Cask/Desc:
   Description: "Ensure that the desc stanza conforms to various content and style checks."
