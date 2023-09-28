@@ -209,10 +209,7 @@ module Utils
 
       sig { returns(T::Boolean) }
       def macos?
-        to_macos_version
-        true
-      rescue MacOSVersion::Error
-        false
+        MacOSVersion::SYMBOLS.key?(system)
       end
 
       sig { returns(T::Boolean) }
