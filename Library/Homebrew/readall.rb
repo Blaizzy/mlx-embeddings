@@ -58,6 +58,7 @@ module Readall
         readall_formula_class = Formulary.load_formula(formula_name, file, formula_contents, readall_namespace,
                                                        flags: [], ignore_errors: false)
         readall_formula = readall_formula_class.new(formula_name, file, :stable, tap: tap)
+        readall_formula.to_hash
         cache[:valid_formulae][file] = if readall_formula.on_system_blocks_exist?
           [bottle_tag, *cache[:valid_formulae][file]]
         else
