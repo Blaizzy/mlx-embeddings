@@ -767,6 +767,15 @@ class Tap
     end
   end
 
+  # Hash with tap formula old names. Reverse of {#formula_renames}.
+  sig { returns(T::Hash[String, T::Array[String]]) }
+  def formula_oldnames
+    @formula_oldnames ||= formula_renames.each_with_object({}) do |(old_name, new_name), hash|
+      hash[new_name] ||= []
+      hash[new_name] << old_name
+    end
+  end
+
   # Hash with tap migrations.
   sig { returns(Hash) }
   def tap_migrations
