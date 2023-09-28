@@ -3,7 +3,7 @@
 
 module Readall
   class << self
-    def valid_casks?(casks, os_name: nil, arch: Hardware::CPU.type)
+    def valid_casks?(tap, os_name: nil, arch: Hardware::CPU.type)
       return true if os_name == :linux
 
       current_macos_version = if os_name.is_a?(Symbol)
@@ -13,7 +13,7 @@ module Readall
       end
 
       success = T.let(true, T::Boolean)
-      casks.each do |file|
+      tap.cask_files.each do |file|
         cask = Cask::CaskLoader.load(file)
 
         # Fine to have missing URLs for unsupported macOS

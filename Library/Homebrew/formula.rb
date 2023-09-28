@@ -2397,7 +2397,7 @@ class Formula
 
     variations = {}
 
-    if path.exist? && (self.class.on_system_blocks_exist? || @on_system_blocks_exist)
+    if path.exist? && on_system_blocks_exist?
       formula_contents = path.read
       OnSystem::ALL_OS_ARCH_COMBINATIONS.each do |os, arch|
         bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
@@ -2449,6 +2449,11 @@ class Formula
       }
     end
     hash
+  end
+
+  # @private
+  def on_system_blocks_exist?
+    self.class.on_system_blocks_exist? || @on_system_blocks_exist
   end
 
   # @private
