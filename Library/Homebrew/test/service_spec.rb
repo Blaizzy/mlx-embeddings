@@ -14,15 +14,6 @@ describe Homebrew::Service do
     end
   end
 
-  def stub_formula_with_service_sockets(sockets_var)
-    stub_formula do
-      service do
-        run opt_bin/"beanstalkd"
-        sockets sockets_var
-      end
-    end
-  end
-
   describe "#std_service_path_env" do
     it "returns valid std_service_path_env" do
       f = stub_formula do
@@ -111,33 +102,43 @@ describe Homebrew::Service do
   end
 
   describe "#sockets" do
-    let(:sockets_type_error_message) { "Service#sockets a formatted socket definition as <type>://<host>:<port>" }
-
     it "throws for missing type" do
-      [
-        stub_formula_with_service_sockets("127.0.0.1:80"),
-        stub_formula_with_service_sockets({ "Socket" => "127.0.0.1:80" }),
-      ].each do |f|
-        expect { f.service.manual_command }.to raise_error TypeError, sockets_type_error_message
+      f = stub_formula do
+        service do
+          run opt_bin/"beanstalkd"
+          sockets "127.0.0.1:80"
+        end
       end
+
+      expect do
+        f.service.manual_command
+      end.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
 
     it "throws for missing host" do
-      [
-        stub_formula_with_service_sockets("tcp://:80"),
-        stub_formula_with_service_sockets({ "Socket" => "tcp://:80" }),
-      ].each do |f|
-        expect { f.service.manual_command }.to raise_error TypeError, sockets_type_error_message
+      f = stub_formula do
+        service do
+          run opt_bin/"beanstalkd"
+          sockets "tcp://:80"
+        end
       end
+
+      expect do
+        f.service.manual_command
+      end.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
 
     it "throws for missing port" do
-      [
-        stub_formula_with_service_sockets("tcp://127.0.0.1"),
-        stub_formula_with_service_sockets({ "Socket" => "tcp://127.0.0.1" }),
-      ].each do |f|
-        expect { f.service.manual_command }.to raise_error TypeError, sockets_type_error_message
+      f = stub_formula do
+        service do
+          run opt_bin/"beanstalkd"
+          sockets "tcp://127.0.0.1"
+        end
       end
+
+      expect do
+        f.service.manual_command
+      end.to raise_error TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>"
     end
   end
 
@@ -258,59 +259,10 @@ describe Homebrew::Service do
     end
 
     it "returns valid plist with socket" do
-      plist_expect = <<~EOS
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-        \t<key>Label</key>
-        \t<string>homebrew.mxcl.formula_name</string>
-        \t<key>LimitLoadToSessionType</key>
-        \t<array>
-        \t\t<string>Aqua</string>
-        \t\t<string>Background</string>
-        \t\t<string>LoginWindow</string>
-        \t\t<string>StandardIO</string>
-        \t\t<string>System</string>
-        \t</array>
-        \t<key>ProgramArguments</key>
-        \t<array>
-        \t\t<string>#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd</string>
-        \t</array>
-        \t<key>RunAtLoad</key>
-        \t<true/>
-        \t<key>Sockets</key>
-        \t<dict>
-        \t\t<key>listeners</key>
-        \t\t<dict>
-        \t\t\t<key>SockFamily</key>
-        \t\t\t<string>IPv4v6</string>
-        \t\t\t<key>SockNodeName</key>
-        \t\t\t<string>127.0.0.1</string>
-        \t\t\t<key>SockProtocol</key>
-        \t\t\t<string>TCP</string>
-        \t\t\t<key>SockServiceName</key>
-        \t\t\t<string>80</string>
-        \t\t</dict>
-        \t</dict>
-        </dict>
-        </plist>
-      EOS
-
-      [
-        stub_formula_with_service_sockets("tcp://127.0.0.1:80"),
-        stub_formula_with_service_sockets({ listeners: "tcp://127.0.0.1:80" }),
-      ].each do |f|
-        plist = f.service.to_plist
-        expect(plist).to eq(plist_expect)
-      end
-    end
-
-    it "returns valid plist with multiple sockets" do
       f = stub_formula do
         service do
           run [opt_bin/"beanstalkd", "test"]
-          sockets socket: "tcp://0.0.0.0:80", socket_tls: "tcp://0.0.0.0:443"
+          sockets "tcp://127.0.0.1:80"
         end
       end
 
@@ -339,27 +291,16 @@ describe Homebrew::Service do
         \t<true/>
         \t<key>Sockets</key>
         \t<dict>
-        \t\t<key>socket</key>
+        \t\t<key>Listeners</key>
         \t\t<dict>
         \t\t\t<key>SockFamily</key>
         \t\t\t<string>IPv4v6</string>
         \t\t\t<key>SockNodeName</key>
-        \t\t\t<string>0.0.0.0</string>
+        \t\t\t<string>127.0.0.1</string>
         \t\t\t<key>SockProtocol</key>
         \t\t\t<string>TCP</string>
         \t\t\t<key>SockServiceName</key>
         \t\t\t<string>80</string>
-        \t\t</dict>
-        \t\t<key>socket_tls</key>
-        \t\t<dict>
-        \t\t\t<key>SockFamily</key>
-        \t\t\t<string>IPv4v6</string>
-        \t\t\t<key>SockNodeName</key>
-        \t\t\t<string>0.0.0.0</string>
-        \t\t\t<key>SockProtocol</key>
-        \t\t\t<string>TCP</string>
-        \t\t\t<key>SockServiceName</key>
-        \t\t\t<string>443</string>
         \t\t</dict>
         \t</dict>
         </dict>
@@ -1049,7 +990,7 @@ describe Homebrew::Service do
         run_type:              :immediate,
         working_dir:           "/$HOME",
         cron:                  "0 0 * * 0",
-        sockets:               { listeners: "tcp://0.0.0.0:80" },
+        sockets:               "tcp://0.0.0.0:80",
       }
     end
 
