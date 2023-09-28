@@ -187,26 +187,17 @@ module Homebrew
       end
     end
 
-    SOCKET_STRING_REGEX = %r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i.freeze
-
-    sig {
-      params(value: T.nilable(T.any(String, T::Hash[Symbol, String])))
-        .returns(T.nilable(T::Hash[Symbol, T::Hash[Symbol, String]]))
-    }
+    sig { params(value: T.nilable(String)).returns(T.nilable(T::Hash[Symbol, String])) }
     def sockets(value = nil)
-      return @sockets if value.nil?
-
-      @sockets = case value
+      case value
+      when nil
+        @sockets
       when String
-        { listeners: value }
-      when Hash
-        value
-      end.transform_values do |socket_string|
-        match = socket_string.match(SOCKET_STRING_REGEX)
+        match = T.must(value).match(%r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i)
         raise TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>" if match.blank?
 
         type, host, port = match.captures
-        { host: host, port: port, type: type }
+        @sockets = { host: host, port: port, type: type }
       end
     end
 
@@ -419,14 +410,12 @@ module Homebrew
 
       if @sockets.present?
         base[:Sockets] = {}
-        @sockets.each do |name, info|
-          base[:Sockets][name] = {
-            SockNodeName:    info[:host],
-            SockServiceName: info[:port],
-            SockProtocol:    info[:type].upcase,
-            SockFamily:      "IPv4v6",
-          }
-        end
+        base[:Sockets][:Listeners] = {
+          SockNodeName:    @sockets[:host],
+          SockServiceName: @sockets[:port],
+          SockProtocol:    @sockets[:type].upcase,
+          SockFamily:      "IPv4v6",
+        }
       end
 
       if @cron.present? && @run_type == RUN_TYPE_CRON
@@ -522,11 +511,7 @@ module Homebrew
           .join(" ")
       end
 
-      sockets_hash = if @sockets.present?
-        @sockets.transform_values do |info|
-          "#{info[:type]}://#{info[:host]}:#{info[:port]}"
-        end
-      end
+      sockets_string = "#{@sockets[:type]}://#{@sockets[:host]}:#{@sockets[:port]}" if @sockets.present?
 
       {
         name:                  name_params.presence,
@@ -546,7 +531,7 @@ module Homebrew
         restart_delay:         @restart_delay,
         process_type:          @process_type,
         macos_legacy_timers:   @macos_legacy_timers,
-        sockets:               sockets_hash,
+        sockets:               sockets_string,
       }.compact
     end
 
@@ -580,6 +565,8 @@ module Homebrew
           raise ArgumentError, "Unexpected run command: #{api_hash["run"]}"
         end
 
+      hash[:keep_alive] = api_hash["keep_alive"].transform_keys(&:to_sym) if api_hash.key?("keep_alive")
+
       if api_hash.key?("environment_variables")
         hash[:environment_variables] = api_hash["environment_variables"].to_h do |key, value|
           [key.to_sym, replace_placeholders(value)]
@@ -598,20 +585,10 @@ module Homebrew
         hash[key.to_sym] = replace_placeholders(value)
       end
 
-      %w[interval cron launch_only_once require_root restart_delay macos_legacy_timers].each do |key|
+      %w[interval cron launch_only_once require_root restart_delay macos_legacy_timers sockets].each do |key|
         next if (value = api_hash[key]).nil?
 
         hash[key.to_sym] = value
-      end
-
-      %w[sockets keep_alive].each do |key|
-        next unless (value = api_hash[key])
-
-        hash[key.to_sym] = if value.is_a?(Hash)
-          value.transform_keys(&:to_sym)
-        else
-          value
-        end
       end
 
       hash
