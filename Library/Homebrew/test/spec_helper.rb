@@ -196,6 +196,7 @@ RSpec.configure do |config|
     Tab.clear_cache
     Dependency.clear_cache
     Requirement.clear_cache
+    Readall.clear_cache if defined?(Readall)
     FormulaInstaller.clear_attempted
     FormulaInstaller.clear_installed
     FormulaInstaller.clear_fetched
@@ -251,6 +252,7 @@ RSpec.configure do |config|
       Tab.clear_cache
       Dependency.clear_cache
       Requirement.clear_cache
+      Readall.clear_cache if defined?(Readall)
 
       FileUtils.rm_rf [
         *TEST_DIRECTORIES,
