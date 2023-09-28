@@ -5623,6 +5623,8 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
+Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
+
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -5637,13 +5639,9 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-class Net::HTTPSuccess
-end
+Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPSuccess
-end
+Net::HTTPSuccessCode = Net::HTTPSuccess
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -7049,6 +7047,14 @@ module RuboCop::AST::CollectionNode
 
   def extract_options!(*args, &block); end
 
+  def fifth(*args, &block); end
+
+  def forty_two(*args, &block); end
+
+  def fourth(*args, &block); end
+
+  def from(*args, &block); end
+
   def including(*args, &block); end
 
   def index_by(*args, &block); end
@@ -7060,6 +7066,16 @@ module RuboCop::AST::CollectionNode
   def pick(*args, &block); end
 
   def pluck(*args, &block); end
+
+  def second(*args, &block); end
+
+  def second_to_last(*args, &block); end
+
+  def third(*args, &block); end
+
+  def third_to_last(*args, &block); end
+
+  def to(*args, &block); end
 
   def to_default_s(*args, &block); end
 
