@@ -333,7 +333,13 @@ module Cask
               # for artifacts with blocks that can't be loaded from the API
               send(key) {} # empty on purpose
             else
-              send(key, *artifact[key])
+              args = artifact[key]
+              kwargs = if args.last.is_a?(Hash)
+                args.pop
+              else
+                {}
+              end
+              send(key, *args, **kwargs)
             end
           end
 

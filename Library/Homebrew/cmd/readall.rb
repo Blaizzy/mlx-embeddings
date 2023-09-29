@@ -62,7 +62,7 @@ module Homebrew
     end
 
     taps.each do |tap|
-      Homebrew.failed = true unless Readall.valid_tap?(tap, options)
+      Homebrew.failed = true unless Readall.valid_tap?(tap, **options)
     end
   end
 end

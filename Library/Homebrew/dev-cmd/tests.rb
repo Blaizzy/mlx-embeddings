@@ -208,8 +208,8 @@ module Homebrew
       HOMEBREW_CACHE
       HOMEBREW_LOGS
       HOMEBREW_TEMP
-      HOMEBREW_USE_RUBY_FROM_PATH
     ]
+    allowed_test_env << "HOMEBREW_USE_RUBY_FROM_PATH" if Homebrew::EnvConfig.developer?
     Homebrew::EnvConfig::ENVS.keys.map(&:to_s).each do |env|
       next if allowed_test_env.include?(env)
 

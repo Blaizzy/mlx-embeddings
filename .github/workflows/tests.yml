@@ -294,6 +294,12 @@ jobs:
           - name: tests (macOS 13)
             test-flags: --coverage
             runs-on: macos-13
+          - name: tests (Ubuntu 22.04; Ruby 3.1)
+            runs-on: ubuntu-22.04
+            ruby: '3.1'
+          - name: tests (macOS 13; Ruby 3.1)
+            runs-on: macos-13
+            ruby: '3.1'
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -307,8 +313,23 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.set-up-homebrew.outputs.gems-path }}
-          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
-          restore-keys: ${{ runner.os }}-rubygems-
+          key: ${{ runner.os }}-rubygems${{ matrix.ruby }}-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems${{ matrix.ruby }}-
+
+      - name: Setup Ruby
+        if: matrix.ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Setup Ruby environment
+        if: matrix.ruby
+        run: |
+          echo "HOMEBREW_USE_RUBY_FROM_PATH=1" >> "${GITHUB_ENV}"
+          echo "HOMEBREW_BOOTSNAP=" >> "${GITHUB_ENV}" # Unsupported, for now
+          rm -rf "${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew/vendor/portable-ruby"
+
+      - run: brew config
 
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems --groups=all
@@ -320,8 +341,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: tests
-          key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec-
+          key: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec${{ matrix.ruby }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.test-flags }}-parallel_runtime_rspec${{ matrix.ruby }}-
 
       - name: Install brew tests dependencies
         if: matrix.name != 'tests (generic OS)'

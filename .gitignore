@@ -37,6 +37,10 @@
 **/vendor/bundle/ruby/*/plugins
 **/vendor/bundle/ruby/*/specifications
 
+# Ignore Ruby gems for versions other than we explicitly vendor
+**/vendor/bundle/ruby/*/
+!**/vendor/bundle/ruby/2.6.0/
+
 # Ignore Bundler binary files
 **/vendor/bundle/ruby/*/gems/**/*.bundle
 
