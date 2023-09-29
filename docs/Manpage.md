@@ -1854,7 +1854,7 @@ This sanitized build environment ignores unrequested dependencies, which makes s
 * `--no-upgrade`:
   `install` won't run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
 * `-f`, `--force`:
-  `dump` overwrites an existing `Brewfile`. `cleanup` actually performs its cleanup operations.
+  `install` runs with `--force`/`--overwrite`. `dump` overwrites an existing `Brewfile`. `cleanup` actually performs its cleanup operations.
 * `--cleanup`:
   `install` performs cleanup operation, same as running `cleanup --force`. This is enabled by default if HOMEBREW_BUNDLE_INSTALL_CLEANUP is set.
 * `--no-lock`:
