@@ -217,6 +217,9 @@ module Homebrew::EnvConfig
   sig { returns(T.nilable(String)) }
   def self.sudo_askpass; end
 
+  sig { returns(T::Boolean) }
+  def self.sudo_through_sudo_user?; end
+
   sig { returns(T.nilable(String)) }
   def self.svn; end
 

@@ -3483,6 +3483,12 @@ Use this as the \fBsvn\fR(1) binary\.
 If set in Homebrew\'s system\-wide environment file (\fB/etc/homebrew/brew\.env\fR), the system\-wide environment file will be loaded last to override any prefix or user settings\.
 .
 .TP
+\fBHOMEBREW_SUDO_THROUGH_SUDO_USER\fR
+.
+.br
+If set, Homebrew will use the \fBSUDO_USER\fR environment variable to define the user to \fBsudo\fR(8) through when running \fBsudo\fR(8)\.
+.
+.TP
 \fBHOMEBREW_TEMP\fR
 .
 .br

@@ -373,6 +373,11 @@ module Homebrew
                      "the system-wide environment file will be loaded last to override any prefix or user settings.",
         boolean:     true,
       },
+      HOMEBREW_SUDO_THROUGH_SUDO_USER:           {
+        description: "If set, Homebrew will use the `SUDO_USER` environment variable to define the user to " \
+                     "`sudo`(8) through when running `sudo`(8).",
+        boolean:     true,
+      },
       HOMEBREW_TEMP:                             {
         description:  "Use this path as the temporary directory for building packages. Changing " \
                       "this may be needed if your system temporary directory and Homebrew prefix are on " \
