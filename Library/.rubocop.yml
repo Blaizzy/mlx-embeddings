@@ -296,6 +296,7 @@ Sorbet/StrictSigil:
 Sorbet/TrueSigil:
   Enabled: true
   Exclude:
+    - "Homebrew/standalone/init.rb" # loaded before sorbet-runtime
     - "Taps/**/*"
     - "/**/{Formula,Casks}/**/*.rb"
     - "**/{Formula,Casks}/**/*.rb"

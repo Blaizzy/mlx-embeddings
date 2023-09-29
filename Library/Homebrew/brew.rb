@@ -15,14 +15,6 @@ end
 
 std_trap = trap("INT") { exit! 130 } # no backtrace thanks
 
-# check ruby version before requiring any modules.
-REQUIRED_RUBY_X, REQUIRED_RUBY_Y, = ENV.fetch("HOMEBREW_REQUIRED_RUBY_VERSION").split(".").map(&:to_i)
-RUBY_X, RUBY_Y, = RUBY_VERSION.split(".").map(&:to_i)
-if RUBY_X < REQUIRED_RUBY_X || (RUBY_X == REQUIRED_RUBY_X && RUBY_Y < REQUIRED_RUBY_Y)
-  raise "Homebrew must be run under Ruby #{REQUIRED_RUBY_X}.#{REQUIRED_RUBY_Y}! " \
-        "You're running #{RUBY_VERSION}."
-end
-
 require_relative "global"
 
 begin
