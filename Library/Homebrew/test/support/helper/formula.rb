@@ -15,8 +15,7 @@ module Test
         allow(Formulary).to receive(:loader_for).and_call_original if call_original
 
         loader = double(get_formula: formula)
-        allow(Formulary).to receive(:loader_for).with(ref, from: :keg, warn: false).and_return(loader)
-        allow(Formulary).to receive(:loader_for).with(ref, {}).and_return(loader)
+        allow(Formulary).to receive(:loader_for).with(ref, any_args).and_return(loader)
       end
     end
   end

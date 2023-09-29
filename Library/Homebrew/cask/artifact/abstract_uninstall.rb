@@ -28,12 +28,12 @@ module Cask
       ].freeze
 
       def self.from_args(cask, **directives)
-        new(cask, directives)
+        new(cask, **directives)
       end
 
       attr_reader :directives
 
-      def initialize(cask, directives)
+      def initialize(cask, **directives)
         directives.assert_valid_keys(*ORDERED_DIRECTIVES)
 
         super(cask, **directives)

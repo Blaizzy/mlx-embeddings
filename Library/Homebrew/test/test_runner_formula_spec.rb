@@ -296,12 +296,12 @@ describe TestRunnerFormula do
 
     context "when a formula has no dependents" do
       it "returns an empty array" do
-        expect(described_class.new(testball).dependents(current_system)).to eq([])
-        expect(described_class.new(xcode_helper).dependents(current_system)).to eq([])
-        expect(described_class.new(linux_kernel_requirer).dependents(current_system)).to eq([])
-        expect(described_class.new(old_non_portable_software).dependents(current_system)).to eq([])
-        expect(described_class.new(fancy_new_software).dependents(current_system)).to eq([])
-        expect(described_class.new(needs_modern_compiler).dependents(current_system)).to eq([])
+        expect(described_class.new(testball).dependents(**current_system)).to eq([])
+        expect(described_class.new(xcode_helper).dependents(**current_system)).to eq([])
+        expect(described_class.new(linux_kernel_requirer).dependents(**current_system)).to eq([])
+        expect(described_class.new(old_non_portable_software).dependents(**current_system)).to eq([])
+        expect(described_class.new(fancy_new_software).dependents(**current_system)).to eq([])
+        expect(described_class.new(needs_modern_compiler).dependents(**current_system)).to eq([])
       end
     end
 
@@ -313,11 +313,11 @@ describe TestRunnerFormula do
         allow(Formula).to receive(:all).and_return([testball_user, recursive_testball_dependent])
 
         expect(
-          described_class.new(testball, eval_all: true).dependents(current_system).map(&:name),
+          described_class.new(testball, eval_all: true).dependents(**current_system).map(&:name),
         ).to eq(["testball_user"])
 
         expect(
-          described_class.new(testball_user, eval_all: true).dependents(current_system).map(&:name),
+          described_class.new(testball_user, eval_all: true).dependents(**current_system).map(&:name),
         ).to eq(["recursive_testball_dependent"])
       end
 
