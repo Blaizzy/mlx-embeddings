@@ -2622,7 +2622,7 @@ Read the \fBBrewfile\fR from this location\. Use \fB\-\-file=\-\fR to pipe to st
 .
 .TP
 \fB\-\-global\fR
-Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
+Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR or the \fBHOMEBREW_BUNDLE_FILE_GLOBAL\fR environment variable, if set\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
@@ -2638,7 +2638,7 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 .
 .TP
 \fB\-\-cleanup\fR
-\fBinstall\fR performs cleanup operation, same as running \fBcleanup \-\-force\fR\.
+\fBinstall\fR performs cleanup operation, same as running \fBcleanup \-\-force\fR\. This is enabled by default if HOMEBREW_BUNDLE_INSTALL_CLEANUP is set\.
 .
 .TP
 \fB\-\-no\-lock\fR
@@ -2674,7 +2674,7 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 .
 .TP
 \fB\-\-describe\fR
-\fBdump\fR adds a description comment above each line, unless the dependency does not have a description\.
+\fBdump\fR adds a description comment above each line, unless the dependency does not have a description\. This is enabled by default if HOMEBREW_BUNDLE_DUMP_DESCRIBE is set\.
 .
 .TP
 \fB\-\-no\-restart\fR
@@ -2688,14 +2688,14 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR\.
 Print instructions for setting up the command\-not\-found hook for your shell\. If the output is not to a tty, print the appropriate handler script for your shell\.
 .
 .SS "\fBservices\fR [\fIsubcommand\fR]"
-Manage background services with macOS\' \fBlaunchctl\fR(1) daemon manager\.
+Manage background services with macOS\' \fBlaunchctl\fR(1) daemon manager or Linux\'s \fBsystemctl\fR(1) service manager\.
 .
 .P
-If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boot)\. Otherwise, operate on \fB~/Library/LaunchAgents\fR (started at login)\.
+If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR/\fB/usr/lib/systemd/system\fR (started at boot)\. Otherwise, operate on \fB~/Library/LaunchAgents\fR/\fB~/\.config/systemd/user\fR (started at login)\.
 .
 .P
-[\fBsudo\fR] \fBbrew services\fR [\fBlist\fR] (\fB\-\-json\fR)
-    List information about all managed services for the current user (or root)\.
+[\fBsudo\fR] \fBbrew services\fR [\fBlist\fR] (\fB\-\-json\fR) (\fB\-\-debug\fR)
+    List information about all managed services for the current user (or root)\. Provides more output from Homebrew and \fBlaunchctl\fR(1) or \fBsystemctl\fR(1) if run with \fB\-\-debug\fR\.
 .
 .P
 [\fBsudo\fR] \fBbrew services info\fR (\fIformula\fR|\fB\-\-all\fR|\fB\-\-json\fR)
@@ -2728,6 +2728,10 @@ If \fBsudo\fR is passed, operate on \fB/Library/LaunchDaemons\fR (started at boo
 .TP
 \fB\-\-file\fR
 Use the service file from this location to \fBstart\fR the service\.
+.
+.TP
+\fB\-\-sudo\-service\-user\fR
+When run as root on macOS, run the service(s) as this user\.
 .
 .TP
 \fB\-\-all\fR
