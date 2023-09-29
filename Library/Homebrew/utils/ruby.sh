@@ -16,7 +16,7 @@ test_ruby() {
 }
 
 can_use_ruby_from_path() {
-  if [[ -n "${HOMEBREW_DEVELOPER}" && -n "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
+  if [[ -n "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_TESTS}" ]] && [[ -n "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
   then
     return 0
   fi

@@ -177,13 +177,16 @@ module Homebrew
   def user_gem_groups
     @user_gem_groups ||= if GEM_GROUPS_FILE.exist?
       GEM_GROUPS_FILE.readlines(chomp: true)
-    else
-      # Backwards compatibility. This else block can be replaced by `[]` by the end of 2023.
+    elsif RUBY_VERSION < "2.7"
+      # Backwards compatibility. This elsif block removed by the end of 2023.
+      # We will not support this in Ruby >=2.7.
       require "settings"
       groups = Homebrew::Settings.read(:gemgroups)&.split(";") || []
       write_user_gem_groups(groups)
       Homebrew::Settings.delete(:gemgroups)
       groups
+    else
+      []
     end
   end
 
@@ -194,8 +197,9 @@ module Homebrew
   def forget_user_gem_groups!
     if GEM_GROUPS_FILE.exist?
       GEM_GROUPS_FILE.truncate(0)
-    else
+    elsif RUBY_VERSION < "2.7"
       # Backwards compatibility. This else block can be removed by the end of 2023.
+      # We will not support this in Ruby >=2.7.
       require "settings"
       Homebrew::Settings.delete(:gemgroups)
     end

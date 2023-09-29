@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 # The default case (no envs), should always be a restrictive bound on the lowest supported minor version.
 # This is the branch that Dependabot will use.
-if ENV.fetch("HOMEBREW_DEVELOPER", "").empty? || ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty?
+if ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty?
   ruby "~> 2.6.0"
 else
   ruby ">= 2.6.0"
