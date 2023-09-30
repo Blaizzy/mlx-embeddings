@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "ipaddr"
 require "extend/on_system"
 
 module Homebrew
@@ -187,7 +188,7 @@ module Homebrew
       end
     end
 
-    SOCKET_STRING_REGEX = %r{([a-z]+)://([a-z0-9.]+):([0-9]+)}i.freeze
+    SOCKET_STRING_REGEX = %r{^([a-z]+)://(.+):([0-9]+)$}i.freeze
 
     sig {
       params(value: T.nilable(T.any(String, T::Hash[Symbol, String])))
@@ -206,6 +207,13 @@ module Homebrew
         raise TypeError, "Service#sockets a formatted socket definition as <type>://<host>:<port>" if match.blank?
 
         type, host, port = match.captures
+
+        begin
+          IPAddr.new(host)
+        rescue IPAddr::InvalidAddressError
+          raise TypeError, "Service#sockets expects a valid ipv4 or ipv6 host address"
+        end
+
         { host: host, port: port, type: type }
       end
     end
@@ -424,7 +432,6 @@ module Homebrew
             SockNodeName:    info[:host],
             SockServiceName: info[:port],
             SockProtocol:    info[:type].upcase,
-            SockFamily:      "IPv4v6",
           }
         end
       end
@@ -522,10 +529,19 @@ module Homebrew
           .join(" ")
       end
 
-      sockets_hash = if @sockets.present?
-        @sockets.transform_values do |info|
-          "#{info[:type]}://#{info[:host]}:#{info[:port]}"
-        end
+      sockets_var = if @sockets.present?
+        @sockets.transform_values { |info| "#{info[:type]}://#{info[:host]}:#{info[:port]}" }
+                .then do |sockets_hash|
+                  # TODO: Remove this code when all users are running on versions of Homebrew
+                  # that can process sockets hashes (this commit or later).
+                  if sockets_hash.size == 1 && sockets_hash.key?(:listeners)
+                    # When original #sockets argument was a string: `sockets "tcp://127.0.0.1:80"`
+                    sockets_hash.fetch(:listeners)
+                  else
+                    # When original #sockets argument was a hash: `sockets http: "tcp://0.0.0.0:80"`
+                    sockets_hash
+                  end
+                end
       end
 
       {
@@ -546,7 +562,7 @@ module Homebrew
         restart_delay:         @restart_delay,
         process_type:          @process_type,
         macos_legacy_timers:   @macos_legacy_timers,
-        sockets:               sockets_hash,
+        sockets:               sockets_var,
       }.compact
     end
 

@@ -116,7 +116,7 @@ describe Homebrew::Service do
     it "throws for missing type" do
       [
         stub_formula_with_service_sockets("127.0.0.1:80"),
-        stub_formula_with_service_sockets({ "Socket" => "127.0.0.1:80" }),
+        stub_formula_with_service_sockets({ socket: "127.0.0.1:80" }),
       ].each do |f|
         expect { f.service.manual_command }.to raise_error TypeError, sockets_type_error_message
       end
@@ -125,7 +125,7 @@ describe Homebrew::Service do
     it "throws for missing host" do
       [
         stub_formula_with_service_sockets("tcp://:80"),
-        stub_formula_with_service_sockets({ "Socket" => "tcp://:80" }),
+        stub_formula_with_service_sockets({ socket: "tcp://:80" }),
       ].each do |f|
         expect { f.service.manual_command }.to raise_error TypeError, sockets_type_error_message
       end
@@ -134,9 +134,20 @@ describe Homebrew::Service do
     it "throws for missing port" do
       [
         stub_formula_with_service_sockets("tcp://127.0.0.1"),
-        stub_formula_with_service_sockets({ "Socket" => "tcp://127.0.0.1" }),
+        stub_formula_with_service_sockets({ socket: "tcp://127.0.0.1" }),
       ].each do |f|
         expect { f.service.manual_command }.to raise_error TypeError, sockets_type_error_message
+      end
+    end
+
+    it "throws for invalid host" do
+      [
+        stub_formula_with_service_sockets("tcp://300.0.0.1:80"),
+        stub_formula_with_service_sockets({ socket: "tcp://300.0.0.1:80" }),
+      ].each do |f|
+        expect do
+          f.service.manual_command
+        end.to raise_error TypeError, "Service#sockets expects a valid ipv4 or ipv6 host address"
       end
     end
   end
@@ -283,8 +294,6 @@ describe Homebrew::Service do
         \t<dict>
         \t\t<key>listeners</key>
         \t\t<dict>
-        \t\t\t<key>SockFamily</key>
-        \t\t\t<string>IPv4v6</string>
         \t\t\t<key>SockNodeName</key>
         \t\t\t<string>127.0.0.1</string>
         \t\t\t<key>SockProtocol</key>
@@ -341,8 +350,6 @@ describe Homebrew::Service do
         \t<dict>
         \t\t<key>socket</key>
         \t\t<dict>
-        \t\t\t<key>SockFamily</key>
-        \t\t\t<string>IPv4v6</string>
         \t\t\t<key>SockNodeName</key>
         \t\t\t<string>0.0.0.0</string>
         \t\t\t<key>SockProtocol</key>
@@ -352,8 +359,6 @@ describe Homebrew::Service do
         \t\t</dict>
         \t\t<key>socket_tls</key>
         \t\t<dict>
-        \t\t\t<key>SockFamily</key>
-        \t\t\t<string>IPv4v6</string>
         \t\t\t<key>SockNodeName</key>
         \t\t\t<string>0.0.0.0</string>
         \t\t\t<key>SockProtocol</key>
@@ -1049,7 +1054,7 @@ describe Homebrew::Service do
         run_type:              :immediate,
         working_dir:           "/$HOME",
         cron:                  "0 0 * * 0",
-        sockets:               { listeners: "tcp://0.0.0.0:80" },
+        sockets:               "tcp://0.0.0.0:80",
       }
     end
 
