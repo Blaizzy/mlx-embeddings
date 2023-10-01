@@ -32,9 +32,9 @@ homebrew-shellenv() {
       echo "set -gx HOMEBREW_PREFIX \"${HOMEBREW_PREFIX}\";"
       echo "set -gx HOMEBREW_CELLAR \"${HOMEBREW_CELLAR}\";"
       echo "set -gx HOMEBREW_REPOSITORY \"${HOMEBREW_REPOSITORY}\";"
-      echo "set -q PATH; or set PATH ''; set -gx PATH \"${HOMEBREW_PREFIX}/bin\" \"${HOMEBREW_PREFIX}/sbin\" \$PATH;"
-      echo "set -q MANPATH; or set MANPATH ''; set -gx MANPATH \"${HOMEBREW_PREFIX}/share/man\" \$MANPATH;"
-      echo "set -q INFOPATH; or set INFOPATH ''; set -gx INFOPATH \"${HOMEBREW_PREFIX}/share/info\" \$INFOPATH;"
+      echo "! set -q PATH; and set PATH ''; set -gx PATH \"${HOMEBREW_PREFIX}/bin\" \"${HOMEBREW_PREFIX}/sbin\" \$PATH;"
+      echo "! set -q MANPATH; and set MANPATH ''; set -gx MANPATH \"${HOMEBREW_PREFIX}/share/man\" \$MANPATH;"
+      echo "! set -q INFOPATH; and set INFOPATH ''; set -gx INFOPATH \"${HOMEBREW_PREFIX}/share/info\" \$INFOPATH;"
       ;;
     csh | -csh | tcsh | -tcsh)
       echo "setenv HOMEBREW_PREFIX ${HOMEBREW_PREFIX};"
