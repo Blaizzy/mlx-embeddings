@@ -352,7 +352,7 @@ module Homebrew
 
           You should create these directories and change their ownership to your user.
             sudo mkdir -p #{not_exist_dirs.join(" ")}
-            sudo chown -R $(whoami) #{not_exist_dirs.join(" ")}
+            sudo chown -R #{current_user} #{not_exist_dirs.join(" ")}
         EOS
       end
 
@@ -367,7 +367,7 @@ module Homebrew
           #{not_writable_dirs.join("\n")}
 
           You should change the ownership of these directories to your user.
-            sudo chown -R $(whoami) #{not_writable_dirs.join(" ")}
+            sudo chown -R #{current_user} #{not_writable_dirs.join(" ")}
 
           And make sure that your user has write permission.
             chmod u+w #{not_writable_dirs.join(" ")}
@@ -916,7 +916,7 @@ module Homebrew
         <<~EOS
           The staging path #{user_tilde(path.to_s)} is not writable by the current user.
           To fix, run:
-            sudo chown -R $(whoami):staff #{user_tilde(path.to_s)}
+            sudo chown -R #{current_user} #{user_tilde(path.to_s)}
         EOS
       end
 
@@ -1026,6 +1026,10 @@ module Homebrew
 
       def cask_checks
         all.grep(/^check_cask_/)
+      end
+
+      def current_user
+        ENV.fetch("USER", "$(whoami)")
       end
     end
   end

@@ -411,7 +411,7 @@ EOS
 ${HOMEBREW_REPOSITORY} is not writable. You should change the
 ownership and permissions of ${HOMEBREW_REPOSITORY} back to your
 user account:
-  sudo chown -R \$(whoami) ${HOMEBREW_REPOSITORY}
+  sudo chown -R ${USER-\$(whoami)} ${HOMEBREW_REPOSITORY}
 EOS
   fi
 
