@@ -2362,6 +2362,9 @@ command execution e.g. `$(cat file)`.
 - `HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY`
   <br>If set in Homebrew's system-wide environment file (`/etc/homebrew/brew.env`), the system-wide environment file will be loaded last to override any prefix or user settings.
 
+- `HOMEBREW_SUDO_THROUGH_SUDO_USER`
+  <br>If set, Homebrew will use the `SUDO_USER` environment variable to define the user to `sudo`(8) through when running `sudo`(8).
+
 - `HOMEBREW_TEMP`
   <br>Use this path as the temporary directory for building packages. Changing this may be needed if your system temporary directory and Homebrew prefix are on different volumes, as macOS has trouble moving symlinks across volumes when the target does not yet exist. This issue typically occurs when using FileVault or custom SSD configurations.
 

@@ -27,7 +27,7 @@ module Cask
       full_paths = remove_nonexistent(paths)
       return if full_paths.empty?
 
-      ohai "Changing ownership of paths required by #{@cask}; your password may be necessary."
+      ohai "Changing ownership of paths required by #{@cask} with sudo; the password may be necessary."
       @command.run!("/usr/sbin/chown", args: ["-R", "--", "#{user}:#{group}", *full_paths],
                                        sudo: true)
     end
