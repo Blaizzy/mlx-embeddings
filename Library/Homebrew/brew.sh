@@ -502,14 +502,16 @@ case "$*" in
     ;;
 esac
 
-# TODO: bump version when new macOS is released or announced
-# and also update references in docs/Installation.md,
-# https://github.com/Homebrew/install/blob/HEAD/install.sh and
-# MacOSVersion::SYMBOLS
+# TODO: bump version when new macOS is released or announced and update references in:
+# - docs/Installation.md
+# - https://github.com/Homebrew/install/blob/HEAD/install.sh
+# and, if needed:
+# - MacOSVersion::SYMBOLS
 HOMEBREW_MACOS_NEWEST_UNSUPPORTED="15"
-# TODO: bump version when new macOS is released and also update
-# references in docs/Installation.md and
-# https://github.com/Homebrew/install/blob/HEAD/install.sh
+# TODO: bump version when new macOS is released and update references in:
+# - docs/Installation.md
+# - MIN_MACOS_VERSION in .github/workflows/build-pkg.yml
+# - https://github.com/Homebrew/install/blob/HEAD/install.sh
 HOMEBREW_MACOS_OLDEST_SUPPORTED="12"
 HOMEBREW_MACOS_OLDEST_ALLOWED="10.11"
 
