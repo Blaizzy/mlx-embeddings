@@ -221,6 +221,10 @@ module Homebrew
         to_formulae_to_casks(only: only, method: :resolve)
       end
 
+      LOCAL_PATH_REGEX = %r{^/|[.]|/$}.freeze
+      TAP_NAME_REGEX = %r{^[^./]+/[^./]+$}.freeze
+      private_constant :LOCAL_PATH_REGEX, :TAP_NAME_REGEX
+
       # Keep existing paths and try to convert others to tap, formula or cask paths.
       # If a cask and formula with the same name exist, includes both their paths
       # unless `only` is specified.
@@ -230,9 +234,9 @@ module Homebrew
         @to_paths[only] ||= Homebrew.with_no_api_env_if_needed(@without_api) do
           downcased_unique_named.flat_map do |name|
             path = Pathname(name).expand_path
-            if only.nil? && File.exist?(name)
+            if only.nil? && name.match?(LOCAL_PATH_REGEX) && path.exist?
               path
-            elsif name.count("/") == 1 && !name.start_with?("./", "/")
+            elsif name.match?(TAP_NAME_REGEX)
               tap = Tap.fetch(name)
 
               if recurse_tap
