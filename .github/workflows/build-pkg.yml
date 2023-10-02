@@ -18,7 +18,8 @@ jobs:
     env:
       TEMPORARY_CERTIFICATE_FILE: 'homebrew_developer_id_installer_certificate.p12'
       TEMPORARY_KEYCHAIN_FILE: 'homebrew_installer_signing.keychain-db'
-      MIN_MACOS_VERSION: '11.0'
+      # Set to the latest supported version of macOS
+      MIN_MACOS_VERSION: '12.0'
       PKG_APPLE_DEVELOPER_TEAM_ID: ${{ secrets.PKG_APPLE_DEVELOPER_TEAM_ID }}
       HOMEBREW_NO_ANALYTICS_THIS_RUN: 1
       HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT: 1
@@ -38,13 +39,12 @@ jobs:
         run: brew install pandoc
 
       - name: Create and unlock temporary macOS keychain
-        env:
-          PKG_KEYCHAIN_PASSWORD: ${{ secrets.PKG_KEYCHAIN_PASSWORD }}
         run: |
+          TEMPORARY_KEYCHAIN_PASSWORD="$(openssl rand -base64 20)"
           TEMPORARY_KEYCHAIN_PATH="${RUNNER_TEMP}/${TEMPORARY_KEYCHAIN_FILE}"
-          security create-keychain -p "${PKG_KEYCHAIN_PASSWORD}" "${TEMPORARY_KEYCHAIN_PATH}"
+          security create-keychain -p "${TEMPORARY_KEYCHAIN_PASSWORD}" "${TEMPORARY_KEYCHAIN_PATH}"
           security set-keychain-settings -l -u -t 21600 "${TEMPORARY_KEYCHAIN_PATH}"
-          security unlock-keychain -p "${PKG_KEYCHAIN_PASSWORD}" "${TEMPORARY_KEYCHAIN_PATH}"
+          security unlock-keychain -p "${TEMPORARY_KEYCHAIN_PASSWORD}" "${TEMPORARY_KEYCHAIN_PATH}"
 
       - name: Create temporary certificate file
         env:
@@ -140,11 +140,11 @@ jobs:
 
       - name: Notarize Homebrew installer package
         env:
-          PKG_APPLE_ID_USERNAME: ${{ secrets.PKG_APPLE_ID_USERNAME }}
+          PKG_APPLE_ID_EMAIL: ${{ secrets.PKG_APPLE_ID_EMAIL }}
           PKG_APPLE_ID_APP_SPECIFIC_PASSWORD: ${{ secrets.PKG_APPLE_ID_APP_SPECIFIC_PASSWORD }}
         run: xcrun notarytool submit Homebrew-${{ steps.print-version.outputs.version }}.pkg
                                     --team-id  "${PKG_APPLE_DEVELOPER_TEAM_ID}"
-                                    --apple-id "${PKG_APPLE_ID_USERNAME}"
+                                    --apple-id "${PKG_APPLE_ID_EMAIL}"
                                     --password "${PKG_APPLE_ID_APP_SPECIFIC_PASSWORD}"
                                     --wait
 
