@@ -107,12 +107,12 @@ Each of the following stanzas is required for every cask.
 
 | name                         | multiple occurrences allowed? | value |
 | ---------------------------- | :---------------------------: | ----- |
-| [`version`](#stanza-version) | no                            | Application version.
-| [`sha256`](#stanza-sha256)   | no                            | SHA-256 checksum of the file downloaded from `url`, calculated by the command `shasum -a 256 <file>`. Can be suppressed by using the special value `:no_check`.
-| [`url`](#stanza-url)         | no                            | URL to the `.dmg`/`.zip`/`.tgz`/`.tbz2` file that contains the application. A [comment](#when-url-and-homepage-domains-differ-add-verified) should be added if the domains in the `url` and `homepage` stanzas differ. Block syntax should be used for URLs that change on every visit.
-| [`name`](#stanza-name)       | yes                           | String providing the full and proper name defined by the vendor.
-| [`desc`](#stanza-desc)       | no                            | One-line description of the cask. Shown when running `brew info`.
-| `homepage`                   | no                            | Application homepage; used for the `brew home` command.
+| [`version`](#stanza-version) | no                            | Application version. |
+| [`sha256`](#stanza-sha256)   | no                            | SHA-256 checksum of the file downloaded from `url`, calculated by the command `shasum -a 256 <file>`. Can be suppressed by using the special value `:no_check`. |
+| [`url`](#stanza-url)         | no                            | URL to the `.dmg`/`.zip`/`.tgz`/`.tbz2` file that contains the application. A [comment](#when-url-and-homepage-domains-differ-add-verified) should be added if the domains in the `url` and `homepage` stanzas differ. Block syntax should be used for URLs that change on every visit. |
+| [`name`](#stanza-name)       | yes                           | String providing the full and proper name defined by the vendor. |
+| [`desc`](#stanza-desc)       | no                            | One-line description of the cask. Shown when running `brew info`. |
+| `homepage`                   | no                            | Application homepage; used for the `brew home` command. |
 
 ### At least one artifact stanza is also required
 
@@ -120,47 +120,47 @@ Each cask must declare one or more *artifacts* (i.e. something to install).
 
 | name                             | multiple occurrences allowed? | value |
 | -------------------------------- | :---------------------------: | ----- |
-| [`app`](#stanza-app)             | yes                           | Relative path to an `.app` that should be moved into the `/Applications` folder on installation.
-| [`suite`](#stanza-suite)         | yes                           | Relative path to a containing directory that should be moved into the `/Applications` folder on installation.
-| [`pkg`](#stanza-pkg)             | yes                           | Relative path to a `.pkg` file containing the distribution.
-| [`installer`](#stanza-installer) | yes                           | Describes an executable which must be run to complete the installation.
-| [`binary`](#stanza-binary)       | yes                           | Relative path to a Binary that should be linked into the `$(brew --prefix)/bin` folder on installation.
-| `manpage`                        | yes                           | Relative path to a Man Page that should be linked into the respective man page folder on installation, e.g. `/usr/local/share/man/man3` for `my_app.3`.
-| `colorpicker`                    | yes                           | Relative path to a ColorPicker plugin that should be moved into the `~/Library/ColorPickers` folder on installation.
-| `dictionary`                     | yes                           | Relative path to a Dictionary that should be moved into the `~/Library/Dictionaries` folder on installation.
-| `font`                           | yes                           | Relative path to a Font that should be moved into the `~/Library/Fonts` folder on installation.
-| `input_method`                   | yes                           | Relative path to an Input Method that should be moved into the `~/Library/Input Methods` folder on installation.
-| `internet_plugin`                | yes                           | Relative path to an Internet Plugin that should be moved into the `~/Library/Internet Plug-Ins` folder on installation.
-| `keyboard_layout`                | yes                           | Relative path to a Keyboard Layout that should be moved into the `/Library/Keyboard Layouts` folder on installation.
-| `prefpane`                       | yes                           | Relative path to a Preference Pane that should be moved into the `~/Library/PreferencePanes` folder on installation.
-| `qlplugin`                       | yes                           | Relative path to a QuickLook Plugin that should be moved into the `~/Library/QuickLook` folder on installation.
-| `mdimporter`                     | yes                           | Relative path to a Spotlight Metadata Importer that should be moved into the `~/Library/Spotlight` folder on installation.
-| `screen_saver`                   | yes                           | Relative path to a Screen Saver that should be moved into the `~/Library/Screen Savers` folder on installation.
-| `service`                        | yes                           | Relative path to a Service that should be moved into the `~/Library/Services` folder on installation.
-| `audio_unit_plugin`              | yes                           | Relative path to an Audio Unit Plugin that should be moved into the `~/Library/Audio/Components` folder on installation.
-| `vst_plugin`                     | yes                           | Relative path to a VST Plugin that should be moved into the `~/Library/Audio/VST` folder on installation.
-| `vst3_plugin`                    | yes                           | Relative path to a VST3 Plugin that should be moved into the `~/Library/Audio/VST3` folder on installation.
-| `artifact`                       | yes                           | Relative path to an arbitrary path that should be moved on installation. Must provide an absolute path as a `target`. (Example: [free-gpgmail.rb](https://github.com/Homebrew/homebrew-cask/blob/b3c438d608d9702380edf10d5495e0727cf17108/Casks/f/free-gpgmail.rb#L44)) This is only for unusual cases; the `app` stanza is strongly preferred when moving `.app` bundles.
-| `stage_only`                     | no                            | `true`. Asserts that the cask contains no activatable artifacts.
+| [`app`](#stanza-app)             | yes                           | Relative path to an `.app` that should be moved into the `/Applications` folder on installation. |
+| [`suite`](#stanza-suite)         | yes                           | Relative path to a containing directory that should be moved into the `/Applications` folder on installation. |
+| [`pkg`](#stanza-pkg)             | yes                           | Relative path to a `.pkg` file containing the distribution. |
+| [`installer`](#stanza-installer) | yes                           | Describes an executable which must be run to complete the installation. |
+| [`binary`](#stanza-binary)       | yes                           | Relative path to a Binary that should be linked into the `$(brew --prefix)/bin` folder on installation. |
+| `manpage`                        | yes                           | Relative path to a Man Page that should be linked into the respective man page folder on installation, e.g. `/usr/local/share/man/man3` for `my_app.3`. |
+| `colorpicker`                    | yes                           | Relative path to a ColorPicker plugin that should be moved into the `~/Library/ColorPickers` folder on installation. |
+| `dictionary`                     | yes                           | Relative path to a Dictionary that should be moved into the `~/Library/Dictionaries` folder on installation. |
+| `font`                           | yes                           | Relative path to a Font that should be moved into the `~/Library/Fonts` folder on installation. |
+| `input_method`                   | yes                           | Relative path to an Input Method that should be moved into the `~/Library/Input Methods` folder on installation. |
+| `internet_plugin`                | yes                           | Relative path to an Internet Plugin that should be moved into the `~/Library/Internet Plug-Ins` folder on installation. |
+| `keyboard_layout`                | yes                           | Relative path to a Keyboard Layout that should be moved into the `/Library/Keyboard Layouts` folder on installation. |
+| `prefpane`                       | yes                           | Relative path to a Preference Pane that should be moved into the `~/Library/PreferencePanes` folder on installation. |
+| `qlplugin`                       | yes                           | Relative path to a QuickLook Plugin that should be moved into the `~/Library/QuickLook` folder on installation. |
+| `mdimporter`                     | yes                           | Relative path to a Spotlight Metadata Importer that should be moved into the `~/Library/Spotlight` folder on installation. |
+| `screen_saver`                   | yes                           | Relative path to a Screen Saver that should be moved into the `~/Library/Screen Savers` folder on installation. |
+| `service`                        | yes                           | Relative path to a Service that should be moved into the `~/Library/Services` folder on installation. |
+| `audio_unit_plugin`              | yes                           | Relative path to an Audio Unit Plugin that should be moved into the `~/Library/Audio/Components` folder on installation. |
+| `vst_plugin`                     | yes                           | Relative path to a VST Plugin that should be moved into the `~/Library/Audio/VST` folder on installation. |
+| `vst3_plugin`                    | yes                           | Relative path to a VST3 Plugin that should be moved into the `~/Library/Audio/VST3` folder on installation. |
+| `artifact`                       | yes                           | Relative path to an arbitrary path that should be moved on installation. Must provide an absolute path as a `target`. (Example: [free-gpgmail.rb](https://github.com/Homebrew/homebrew-cask/blob/b3c438d608d9702380edf10d5495e0727cf17108/Casks/f/free-gpgmail.rb#L44)) This is only for unusual cases; the `app` stanza is strongly preferred when moving `.app` bundles. |
+| `stage_only`                     | no                            | `true`. Asserts that the cask contains no activatable artifacts. |
 
 ### Optional stanzas
 
 | name                                       | multiple occurrences allowed? | value |
 | ------------------------------------------ | :---------------------------: | ----- |
-| [`uninstall`](#stanza-uninstall)           | yes                           | Procedures to uninstall a cask. Optional unless the `pkg` stanza is used.
-| [`zap`](#stanza-zap)                       | yes                           | Additional procedures for a more complete uninstall, including user files and shared resources.
-| [`depends_on`](#stanza-depends_on)         | yes                           | List of dependencies and requirements for this cask.
-| [`conflicts_with`](#stanza-conflicts_with) | yes                           | List of conflicts with this cask (*not yet functional*).
-| [`caveats`](#stanza-caveats)               | yes                           | String or Ruby block providing the user with cask-specific information at install time.
-| [`livecheck`](#stanza-livecheck)           | no                            | Ruby block describing how to find updates for this cask. Supersedes `appcast`.
-| `preflight`                                | yes                           | Ruby block containing preflight install operations (needed only in very rare cases).
-| [`postflight`](#stanza-flight)             | yes                           | Ruby block containing postflight install operations.
-| `uninstall_preflight`                      | yes                           | Ruby block containing preflight uninstall operations (needed only in very rare cases).
-| `uninstall_postflight`                     | yes                           | Ruby block containing postflight uninstall operations.
-| [`language`](#stanza-language)             | required                      | Ruby block, called with language code parameters, containing other stanzas and/or a return value.
-| `container nested:`                        | no                            | Relative path to an inner container that must be extracted before moving on with the installation. This allows for support of `.dmg` inside `.tar`, `.zip` inside `.dmg`, etc. (Example: [blocs.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/b/blocs.rb#L17-L19))
-| `container type:`                          | no                            | Symbol to override container-type autodetect. May be one of: `:air`, `:bz2`, `:cab`, `:dmg`, `:generic_unar`, `:gzip`, `:otf`, `:pkg`, `:rar`, `:seven_zip`, `:sit`, `:tar`, `:ttf`, `:xar`, `:zip`, `:naked`. (Example: [parse.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/p/parse.rb#L10))
-| `auto_updates`                             | no                            | `true`. Asserts that the cask artifacts auto-update. Use if `Check for Updates…` or similar is present in an app menu, but not if it only opens a webpage and does not do the download and installation for you.
+| [`uninstall`](#stanza-uninstall)           | yes                           | Procedures to uninstall a cask. Optional unless the `pkg` stanza is used. |
+| [`zap`](#stanza-zap)                       | yes                           | Additional procedures for a more complete uninstall, including user files and shared resources. |
+| [`depends_on`](#stanza-depends_on)         | yes                           | List of dependencies and requirements for this cask. |
+| [`conflicts_with`](#stanza-conflicts_with) | yes                           | List of conflicts with this cask (*not yet functional*). |
+| [`caveats`](#stanza-caveats)               | yes                           | String or Ruby block providing the user with cask-specific information at install time. |
+| [`livecheck`](#stanza-livecheck)           | no                            | Ruby block describing how to find updates for this cask. Supersedes `appcast`. |
+| `preflight`                                | yes                           | Ruby block containing preflight install operations (needed only in very rare cases). |
+| [`postflight`](#stanza-flight)             | yes                           | Ruby block containing postflight install operations. |
+| `uninstall_preflight`                      | yes                           | Ruby block containing preflight uninstall operations (needed only in very rare cases). |
+| `uninstall_postflight`                     | yes                           | Ruby block containing postflight uninstall operations. |
+| [`language`](#stanza-language)             | required                      | Ruby block, called with language code parameters, containing other stanzas and/or a return value. |
+| `container nested:`                        | no                            | Relative path to an inner container that must be extracted before moving on with the installation. This allows for support of `.dmg` inside `.tar`, `.zip` inside `.dmg`, etc. (Example: [blocs.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/b/blocs.rb#L17-L19)) |
+| `container type:`                          | no                            | Symbol to override container-type autodetect. May be one of: `:air`, `:bz2`, `:cab`, `:dmg`, `:generic_unar`, `:gzip`, `:otf`, `:pkg`, `:rar`, `:seven_zip`, `:sit`, `:tar`, `:ttf`, `:xar`, `:zip`, `:naked`. (Example: [parse.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/p/parse.rb#L10)) |
+| `auto_updates`                             | no                            | `true`. Asserts that the cask artifacts auto-update. Use if `Check for Updates…` or similar is present in an app menu, but not if it only opens a webpage and does not do the download and installation for you. |
 
 ## Stanza descriptions
 
@@ -249,11 +249,11 @@ When `caveats` is a string, it is evaluated at compile time. The following metho
 
 | method             | description |
 | ------------------ | ----------- |
-| `token`            | the cask token
-| `version`          | the cask version
-| `homepage`         | the cask homepage
-| `caskroom_path`    | the containing directory for this cask: `$(brew --caskroom)/<token>` (only available with block form)
-| `staged_path`      | the staged location for this cask, including version number: `$(brew --caskroom)/<token>/<version>` (only available with block form)
+| `token`            | the cask token |
+| `version`          | the cask version |
+| `homepage`         | the cask homepage |
+| `caskroom_path`    | the containing directory for this cask: `$(brew --caskroom)/<token>` (only available with block form) |
+| `staged_path`      | the staged location for this cask, including version number: `$(brew --caskroom)/<token>/<version>` (only available with block form) |
 
 Example:
 
@@ -273,18 +273,18 @@ The following methods may be called to generate standard warning messages:
 
 | method                             | description |
 | ---------------------------------- | ----------- |
-| `path_environment_variable "path"` | Users should make sure `path` is in their `PATH` environment variable.
-| `zsh_path_helper "path"`           | `zsh` users must take additional steps to make sure `path` is in their `PATH` environment variable.
-| `depends_on_java "version"`        | Users should make sure they have the specified version of Java installed. `version` can be exact (e.g. `6`), a minimum (e.g. `7+`), or omitted (when any version works).
-| `requires_rosetta`                 | The cask requires Rosetta 2 for it to run on Apple Silicon.
-| `logout`                           | Users should log out and log back in to complete installation.
-| `reboot`                           | Users should reboot to complete installation.
-| `files_in_usr_local`               | The cask installs files to `/usr/local`, which may confuse Homebrew.
-| `discontinued`                     | All software development has been officially discontinued upstream.
-| `kext`                             | Users may need to enable their kexts in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → General* in earlier macOS versions).
-| `unsigned_accessibility`           | Users will need to re-enable the app on each update in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → Privacy* in earlier macOS versions) as it is unsigned.
-| `license "web_page"`               | Users may find the software's usage license at `web_page`.
-| `free_license "web_page"`          | Users may obtain an official license to use the software at `web_page`.
+| `path_environment_variable "path"` | Users should make sure `path` is in their `PATH` environment variable. |
+| `zsh_path_helper "path"`           | `zsh` users must take additional steps to make sure `path` is in their `PATH` environment variable. |
+| `depends_on_java "version"`        | Users should make sure they have the specified version of Java installed. `version` can be exact (e.g. `6`), a minimum (e.g. `7+`), or omitted (when any version works). |
+| `requires_rosetta`                 | The cask requires Rosetta 2 for it to run on Apple Silicon. |
+| `logout`                           | Users should log out and log back in to complete installation. |
+| `reboot`                           | Users should reboot to complete installation. |
+| `files_in_usr_local`               | The cask installs files to `/usr/local`, which may confuse Homebrew. |
+| `discontinued`                     | All software development has been officially discontinued upstream. |
+| `kext`                             | Users may need to enable their kexts in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → General* in earlier macOS versions). |
+| `unsigned_accessibility`           | Users will need to re-enable the app on each update in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → Privacy* in earlier macOS versions) as it is unsigned. |
+| `license "web_page"`               | Users may find the software's usage license at `web_page`. |
+| `free_license "web_page"`          | Users may obtain an official license to use the software at `web_page`. |
 
 Example:
 
@@ -378,9 +378,9 @@ The available symbols for hardware are:
 
 | symbol     | meaning        |
 | ---------- | -------------- |
-| `:x86_64`  | 64-bit Intel
-| `:intel`   | 64-bit Intel
-| `:arm64`   | Apple Silicon
+| `:x86_64`  | 64-bit Intel |
+| `:intel`   | 64-bit Intel |
+| `:arm64`   | Apple Silicon |
 
 The following are all valid expressions:
 
@@ -395,11 +395,11 @@ depends_on arch: :arm64
 
 | key        | description |
 | ---------- | ----------- |
-| `formula:` | Homebrew formula
-| `cask:`    | cask token
-| `macos:`   | symbol, array, or string comparison expression defining macOS release requirements
-| `arch:`    | symbol or array defining hardware requirements
-| `java:`    | *stub - not yet functional*
+| `formula:` | Homebrew formula |
+| `cask:`    | cask token |
+| `macos:`   | symbol, array, or string comparison expression defining macOS release requirements |
+| `arch:`    | symbol or array defining hardware requirements |
+| `java:`    | *stub - not yet functional* |
 
 ### Stanza: `desc`
 
@@ -481,8 +481,8 @@ The following methods may be called to perform standard tasks:
 
 | method                                    | availability                                     | description |
 | ----------------------------------------- | ------------------------------------------------ | ----------- |
-| `set_ownership(paths)`                    | `preflight`, `postflight`, `uninstall_preflight` | Set user and group ownership of `paths`. (Example: [docker-toolbox.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/d/docker-toolbox.rb#L42))
-| `set_permissions(paths, permissions_str)` | `preflight`, `postflight`, `uninstall_preflight` | Set permissions in `paths` to `permissions_str`. (Example: [ngrok.rb](https://github.com/Homebrew/homebrew-cask/blob/41d91ff669d85343175202adf568e2328486205f/Casks/n/ngrok.rb#L30))
+| `set_ownership(paths)`                    | `preflight`, `postflight`, `uninstall_preflight` | Set user and group ownership of `paths`. (Example: [docker-toolbox.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/d/docker-toolbox.rb#L42)) |
+| `set_permissions(paths, permissions_str)` | `preflight`, `postflight`, `uninstall_preflight` | Set permissions in `paths` to `permissions_str`. (Example: [ngrok.rb](https://github.com/Homebrew/homebrew-cask/blob/41d91ff669d85343175202adf568e2328486205f/Casks/n/ngrok.rb#L30)) |
 
 `set_ownership(paths)` defaults user ownership to the current user and group ownership to `staff`. These can be changed by passing in extra options: `set_ownership(paths, user: "user", group: "group")`. (Example: [hummingbird.rb](https://github.com/Homebrew/homebrew-cask/blob/aa461148bbb5119af26b82cccf5003e2b4e50d95/Casks/h/hummingbird.rb#L24))
 
@@ -506,11 +506,11 @@ installer manual: "RubyMotion Installer.app"
 
 | key             | value |
 | --------------- | ----- |
-| `executable:`   | path to an install script to be run
-| `args:`         | array of arguments to the install script
-| `input:`        | array of lines of input to be sent to `stdin` of the script
-| `must_succeed:` | set to `false` if the script is allowed to fail
-| `sudo:`         | set to `true` if the script needs *sudo*
+| `executable:`   | path to an install script to be run |
+| `args:`         | array of arguments to the install script |
+| `input:`        | array of lines of input to be sent to `stdin` of the script |
+| `must_succeed:` | set to `false` if the script is allowed to fail |
+| `sudo:`         | set to `true` if the script needs *sudo* |
 
 The path may be absolute, or relative to the cask. Example (from [miniforge.rb](https://github.com/Homebrew/homebrew-cask/blob/864f623e2cd17dbde5987a7b3923fdb0b4ac9ee5/Casks/m/miniforge.rb#L23-L26)):
 
@@ -921,13 +921,13 @@ When a plain URL string is insufficient to fetch a file, additional information 
 
 | key                | value       |
 | ------------------ | ----------- |
-| `verified:`        | string repeating the beginning of `url`, for [verification purposes](#when-url-and-homepage-domains-differ-add-verified)
-| `using:`           | the symbols `:post` and `:homebrew_curl` are the only legal values
-| `cookies:`         | hash of cookies to be set in the download request (Example: [oracle-jdk-javadoc.rb](https://github.com/Homebrew/homebrew-cask/blob/326c44e93aeb8d4dd73acea14a99ae215c75fdd6/Casks/o/oracle-jdk-javadoc.rb#L5-L8))
-| `referer:`         | string holding the URL to set as referer in the download request (Example: [firealpaca.rb](https://github.com/Homebrew/homebrew-cask/blob/c4b3f0742e044ae2a6e114eb6b90068763d0d12b/Casks/f/firealpaca.rb#L5-L6))
-| `header:`          | string or array of strings holding the header(s) to set for the download request (Example: [pull-6545](https://github.com/Homebrew/brew/pull/6545#issue-503302353), [issue-15590](https://github.com/Homebrew/brew/issues/15590#issue-1774825542))
-| `user_agent:`      | string holding the user agent to set for the download request. Can also be set to the symbol `:fake`, which will use a generic browser-like user agent string. We prefer `:fake` when the server does not require a specific user agent.
-| `data:`            | hash of parameters to be set in the POST request (Example: [segger-jlink.rb](https://github.com/Homebrew/homebrew-cask/blob/38ac55614f146d68ae317594f0c119e9acbd7c9e/Casks/s/segger-jlink.rb#L6-L11))
+| `verified:`        | string repeating the beginning of `url`, for [verification purposes](#when-url-and-homepage-domains-differ-add-verified) |
+| `using:`           | the symbols `:post` and `:homebrew_curl` are the only legal values |
+| `cookies:`         | hash of cookies to be set in the download request (Example: [oracle-jdk-javadoc.rb](https://github.com/Homebrew/homebrew-cask/blob/326c44e93aeb8d4dd73acea14a99ae215c75fdd6/Casks/o/oracle-jdk-javadoc.rb#L5-L8)) |
+| `referer:`         | string holding the URL to set as referer in the download request (Example: [firealpaca.rb](https://github.com/Homebrew/homebrew-cask/blob/c4b3f0742e044ae2a6e114eb6b90068763d0d12b/Casks/f/firealpaca.rb#L5-L6)) |
+| `header:`          | string or array of strings holding the header(s) to set for the download request (Example: [pull-6545](https://github.com/Homebrew/brew/pull/6545#issue-503302353), [issue-15590](https://github.com/Homebrew/brew/issues/15590#issue-1774825542)) |
+| `user_agent:`      | string holding the user agent to set for the download request. Can also be set to the symbol `:fake`, which will use a generic browser-like user agent string. We prefer `:fake` when the server does not require a specific user agent. |
+| `data:`            | hash of parameters to be set in the POST request (Example: [segger-jlink.rb](https://github.com/Homebrew/homebrew-cask/blob/38ac55614f146d68ae317594f0c119e9acbd7c9e/Casks/s/segger-jlink.rb#L6-L11)) |
 
 #### When URL and homepage domains differ, add `verified:`
 
@@ -951,9 +951,9 @@ In rare cases, a distribution may not be available over ordinary HTTP/S. Subvers
 
 | key                | value       |
 | ------------------ | ----------- |
-| `using:`           | the symbol `:svn` is the only legal value
-| `revision:`        | string identifying the Subversion revision to download
-| `trust_cert:`      | set to `true` to automatically trust the certificate presented by the server (avoiding an interactive prompt)
+| `using:`           | the symbol `:svn` is the only legal value |
+| `revision:`        | string identifying the Subversion revision to download |
+| `trust_cert:`      | set to `true` to automatically trust the certificate presented by the server (avoiding an interactive prompt) |
 
 #### Git URLs
 
@@ -961,11 +961,11 @@ Artifacts also may be distributed via Git repositories. URLs that end in `.git` 
 
 | key                | value       |
 | ------------------ | ----------- |
-| `using:`           | the symbol `:git` is the only legal value
-| `tag:`             | string identifying the Git tag to download
-| `revision:`        | string identifying the Git revision to download
-| `branch:`          | string identifying the Git branch to download
-| `only_path:`       | path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can significantly speed up downloads. If provided, artifact paths are relative to this path. (Example: [font-geo.rb](https://github.com/Homebrew/homebrew-cask-fonts/blob/bac691e1d7b5bd7372e7e0befae989a3ff7ad449/Casks/font-geo.rb#L5-L8))
+| `using:`           | the symbol `:git` is the only legal value |
+| `tag:`             | string identifying the Git tag to download |
+| `revision:`        | string identifying the Git revision to download |
+| `branch:`          | string identifying the Git branch to download |
+| `only_path:`       | path within the repository to limit the checkout to. If only a single directory of a large repository is required, using this option can significantly speed up downloads. If provided, artifact paths are relative to this path. (Example: [font-geo.rb](https://github.com/Homebrew/homebrew-cask-fonts/blob/bac691e1d7b5bd7372e7e0befae989a3ff7ad449/Casks/font-geo.rb#L5-L8)) |
 
 #### SourceForge/OSDN URLs
 
@@ -1064,16 +1064,16 @@ The examples above can become hard to read, however. Since many of these changes
 
 | method                   | input              | output             |
 | ------------------------ | ------------------ | ------------------ |
-| `major`                  | `1.2.3-a45,ccdd88` | `1`
-| `minor`                  | `1.2.3-a45,ccdd88` | `2`
-| `patch`                  | `1.2.3-a45,ccdd88` | `3-a45`
-| `major_minor`            | `1.2.3-a45,ccdd88` | `1.2`
-| `major_minor_patch`      | `1.2.3-a45,ccdd88` | `1.2.3-a45`
-| `minor_patch`            | `1.2.3-a45,ccdd88` | `2.3-a45`
-| `before_comma`           | `1.2.3-a45,ccdd88` | `1.2.3-a45`
-| `after_comma`            | `1.2.3-a45,ccdd88` | `ccdd88`
-| `dots_to_hyphens`        | `1.2.3-a45,ccdd88` | `1-2-3-a45,ccdd88`
-| `no_dots`                | `1.2.3-a45,ccdd88` | `123-a45,ccdd88`
+| `major`                  | `1.2.3-a45,ccdd88` | `1` |
+| `minor`                  | `1.2.3-a45,ccdd88` | `2` |
+| `patch`                  | `1.2.3-a45,ccdd88` | `3-a45` |
+| `major_minor`            | `1.2.3-a45,ccdd88` | `1.2` |
+| `major_minor_patch`      | `1.2.3-a45,ccdd88` | `1.2.3-a45` |
+| `minor_patch`            | `1.2.3-a45,ccdd88` | `2.3-a45` |
+| `before_comma`           | `1.2.3-a45,ccdd88` | `1.2.3-a45` |
+| `after_comma`            | `1.2.3-a45,ccdd88` | `ccdd88` |
+| `dots_to_hyphens`        | `1.2.3-a45,ccdd88` | `1-2-3-a45,ccdd88` |
+| `no_dots`                | `1.2.3-a45,ccdd88` | `123-a45,ccdd88` |
 
 Similar to `dots_to_hyphens`, we provide methods for all logical permutations of `{dots,hyphens,underscores}_to_{dots,hyphens,underscores}`. The same applies to `no_dots` in the form of `no_{dots,hyphens,underscores}`, with an extra `no_dividers` that applies all these at once.
 
@@ -1343,13 +1343,13 @@ The token is also given in the header line for each cask.
 
 These illustrate most of the rules for generating a token:
 
-App Name on Disk       | Simplified App Name | Cask Token       | Filename
------------------------|---------------------|------------------|----------------------
-`Audio Hijack Pro.app` | Audio Hijack Pro    | audio-hijack-pro | `audio-hijack-pro.rb`
-`VLC.app`              | VLC                 | vlc              | `vlc.rb`
-`BetterTouchTool.app`  | BetterTouchTool     | bettertouchtool  | `bettertouchtool.rb`
-`LPK25 Editor.app`     | LPK25 Editor        | lpk25-editor     | `lpk25-editor.rb`
-`Sublime Text 2.app`   | Sublime Text        | sublime-text     | `sublime-text.rb`
+| App Name on Disk       | Simplified App Name | Cask Token       | Filename |
+|------------------------|---------------------|------------------|----------------------|
+| `Audio Hijack Pro.app` | Audio Hijack Pro    | audio-hijack-pro | `audio-hijack-pro.rb` |
+| `VLC.app`              | VLC                 | vlc              | `vlc.rb` |
+| `BetterTouchTool.app`  | BetterTouchTool     | bettertouchtool  | `bettertouchtool.rb` |
+| `LPK25 Editor.app`     | LPK25 Editor        | lpk25-editor     | `lpk25-editor.rb` |
+| `Sublime Text 2.app`   | Sublime Text        | sublime-text     | `sublime-text.rb` |
 
 #### Tap-specific cask token examples
 
