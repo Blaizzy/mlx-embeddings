@@ -24,6 +24,17 @@ describe RuboCop::Cop::FormulaAudit::Text do
       RUBY
     end
 
+    it "reports an offense if 'revision 0' is present" do
+      expect_offense(<<~RUBY)
+        class Foo < Formula
+          url "https://brew.sh/foo-1.0.tgz"
+          homepage "https://brew.sh"
+          revision 0
+          ^^^^^^^^^^ FormulaAudit/Text: "revision 0" is unnecessary
+        end
+      RUBY
+    end
+
     it "reports an offense if both openssl and libressl are dependencies" do
       expect_offense(<<~RUBY)
         class Foo < Formula
