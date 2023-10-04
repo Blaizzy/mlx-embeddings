@@ -376,8 +376,9 @@ class Version
 
   VERSION_PARSERS = [
     # date-based versioning
+    # e.g. 2023-09-28.tar.gz
     # e.g. ltopers-v2017-04-14.tar.gz
-    StemParser.new(/-v?(\d{4}-\d{2}-\d{2})/),
+    StemParser.new(/[._-]?v?(\d{4}-\d{2}-\d{2})/),
 
     # GitHub tarballs
     # e.g. https://github.com/foo/bar/tarball/v1.2.3
