@@ -6,7 +6,7 @@ on:
     tags-ignore:
       - '**'
     paths:
-      - .github/workflows/installer-package.yml
+      - .github/workflows/pkg-installer.yml
       - package/**/*
   release:
     types:
