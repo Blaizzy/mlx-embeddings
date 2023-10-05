@@ -126,14 +126,25 @@ jobs:
           path: Homebrew-${{ steps.homebrew-version.outputs.version }}.pkg
   test:
     needs: build
+    name: "test (${{matrix.name}})"
     runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          # Intel (free)
-          - runner: macos-latest
-          # Apple Silicon (paid)
-          - runner: macos-latest-xlarge
+          # Intel
+          - runner: macos-12
+            name: macos-12-x86_64
+          - runner: macos-13
+            name: macos-13-x86_64
+          # Apple Silicon
+          - runner: macos-13-xlarge
+            name: macos-13-arm64
+          # TODO: add when available
+          # - runner: macos-14
+          #   name: macos-14-x86_64
+          # - runner: macos-14-xlarge
+          #   name: macos-14-arm64
     steps:
       - name: Download installer from GitHub Actions
         uses: actions/download-artifact@v3
