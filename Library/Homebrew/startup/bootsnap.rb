@@ -5,15 +5,9 @@
 # rubocop:disable Rails
 homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? && !ENV["HOMEBREW_BOOTSNAP"].nil?
 
-# portable ruby doesn't play nice with bootsnap
-
-homebrew_bootsnap_enabled &&= !RUBY_PATH.to_s.include?("/vendor/portable-ruby/")
-
+# we need some development tools to build bootsnap native code
 homebrew_bootsnap_enabled &&= if ENV["HOMEBREW_MACOS_VERSION"]
-  # Apple Silicon doesn't play nice with bootsnap
-  ENV["HOMEBREW_PROCESSOR"] == "Intel" &&
-    # we need some development tools to build bootsnap native code
-    (File.directory?("/Applications/Xcode.app") || File.directory?("/Library/Developer/CommandLineTools"))
+  File.directory?("/Applications/Xcode.app") || File.directory?("/Library/Developer/CommandLineTools")
 else
   File.executable?("/usr/bin/clang") || File.executable?("/usr/bin/gcc")
 end
