@@ -54,9 +54,8 @@ module Homebrew
         --speed-time #{ENV.fetch("HOMEBREW_CURL_SPEED_TIME")}
       ]
 
-      insecure_download = (ENV["HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD"].present? ||
-                           ENV["HOMEBREW_FORCE_BREWED_CA_CERTIFICATES"].present?) &&
-                          !(HOMEBREW_PREFIX/"etc/ca-certificates/cert.pem").exist?
+      insecure_download = DevelopmentTools.ca_file_substitution_required? ||
+                          DevelopmentTools.curl_substitution_required?
       skip_download = target.exist? &&
                       !target.empty? &&
                       (!Homebrew.auto_update_command? ||
@@ -69,9 +68,7 @@ module Homebrew
           args = curl_args.dup
           args.prepend("--time-cond", target.to_s) if target.exist? && !target.empty?
           if insecure_download
-            opoo "Using --insecure with curl to download #{endpoint} " \
-                 "because we need it to run `brew install ca-certificates`. " \
-                 "Checksums will still be verified."
+            opoo DevelopmentTools.insecure_download_warning(endpoint)
             args.append("--insecure")
           end
           unless skip_download
