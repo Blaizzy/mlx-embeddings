@@ -48,6 +48,10 @@ module RuboCop
             problem "\"Formula.factory(name)\" is deprecated in favor of \"Formula[name]\""
           end
 
+          find_method_with_args(body_node, :revision, 0) do
+            problem "\"revision 0\" is unnecessary"
+          end
+
           find_method_with_args(body_node, :system, "xcodebuild") do
             problem %q(use "xcodebuild *args" instead of "system 'xcodebuild', *args")
           end
