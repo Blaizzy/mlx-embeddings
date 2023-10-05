@@ -56,7 +56,8 @@ class Resource < Downloadable
     return if !owner.respond_to?(:full_name) || owner.full_name != "ca-certificates"
     return if Homebrew::EnvConfig.no_insecure_redirect?
 
-    @insecure = !specs[:bottle] && !DevelopmentTools.ca_file_handles_most_https_certificates?
+    @insecure = !specs[:bottle] && (DevelopmentTools.ca_file_substitution_required? ||
+                                    DevelopmentTools.curl_substitution_required?)
     return if @url.nil?
 
     specs = if @insecure
