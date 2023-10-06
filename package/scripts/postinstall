@@ -14,7 +14,7 @@ export HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT=1
 homebrew_directory="${2:-/opt/homebrew}"
 if [[ ! -d "${homebrew_directory:?}" ]]
 then
-  echo "no directory at ${homebrew_directory}!" >&2
+  echo "No directory at ${homebrew_directory}!" >&2
   exit 1
 fi
 
@@ -79,18 +79,29 @@ fi
 # create missing directories
 mkdir -vp Cellar Frameworks etc include lib opt sbin share var/homebrew/linked
 
+# optionally define an install user at /var/tmp/.homebrew_pkg_user.plist
+homebrew_pkg_user_plist="/var/tmp/.homebrew_pkg_user.plist"
+if [[ -f "${homebrew_pkg_user_plist}" ]] && [[ -n $(defaults read "${homebrew_pkg_user_plist}" HOMEBREW_PKG_USER) ]]
+then
+  homebrew_pkg_user=$(defaults read /var/tmp/.homebrew_pkg_user HOMEBREW_PKG_USER)
+# otherwise, get valid logged in user
+else
+  homebrew_pkg_user=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ { print $3 }')
+fi
+
 # set permissions
-logged_in_user=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ { print $3 }')
-group=$(id -gn "${logged_in_user}")
 if [[ "${homebrew_directory}" == "/usr/local/Homebrew" ]]
 then
-  chown -R "${logged_in_user}:${group}" Cellar Frameworks Homebrew bin etc include lib sbin share var/homebrew/linked
+  chown -R "${homebrew_pkg_user}:admin" Cellar Frameworks Homebrew bin etc include lib sbin share var
 else
-  chown -R "${logged_in_user}:${group}" .
+  chown -R "${homebrew_pkg_user}:admin" .
 fi
 
 # move API cache to ~/Library/Caches/Homebrew
-user_api_cache_dir=~"${logged_in_user}"/Library/Caches/Homebrew/api
+user_home_dir=$(dscl . read /Users/"${homebrew_pkg_user}" NFSHomeDirectory | awk '{ print $2 }')
+user_cache_dir="${user_home_dir}/Library/Caches/Homebrew"
+user_api_cache_dir="${user_cache_dir}/api"
 mkdir -vp "${user_api_cache_dir}"
 mv -v "${homebrew_directory}/cache_api/"* "${user_api_cache_dir}"
+chown -R "${homebrew_pkg_user}:staff" "${user_cache_dir}"
 rm -vrf "${homebrew_directory}/cache_api"
