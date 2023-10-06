@@ -132,7 +132,7 @@ jobs:
 
       - name: Open a pull request
         if: steps.update.outputs.pull_request == 'true'
-        run: hub pull-request --no-edit
+        run: gh pr create --fill
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_PUBLIC_REPO_TOKEN }}
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
