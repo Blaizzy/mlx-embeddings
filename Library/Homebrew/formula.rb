@@ -2351,12 +2351,17 @@ class Formula
     hsh["requirements"] = merge_spec_dependables(requirements).map do |data|
       req = data[:dependable]
       req_name = req.name.dup
-      req_name.prepend("maximum_") if req.try(:comparator) == "<="
+      req_name.prepend("maximum_") if req.respond_to?(:comparator) && req.comparator == "<="
+      req_version = if req.respond_to?(:version)
+        req.version
+      elsif req.respond_to?(:arch)
+        req.arch
+      end
       {
         "name"     => req_name,
         "cask"     => req.cask,
         "download" => req.download,
-        "version"  => req.try(:version) || req.try(:arch),
+        "version"  => req_version,
         "contexts" => req.tags,
         "specs"    => data[:specs],
       }
