@@ -141,14 +141,6 @@ module Homebrew
               env:
                 BRANCH: ${{ github.event.pull_request.head.ref }}
               run: git push --delete origin $BRANCH
-
-            - name: Close pr
-              if: github.event.pull_request.head.repo.fork == false
-              env:
-                GITHUB_TOKEN: ${{ github.token }}
-                PULL_REQUEST: ${{ github.event.pull_request.number }}
-                REPO: ${{ github.repository }}
-              run: gh pr close $PULL_REQUEST --repo $REPO
     YAML
 
     (tap.path/".github/workflows").mkpath
