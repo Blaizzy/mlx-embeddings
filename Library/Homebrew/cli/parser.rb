@@ -515,8 +515,8 @@ module Homebrew
         end
       end
 
-      def disable_switch(*names)
-        names.each do |name|
+      def disable_switch(*args)
+        args.each do |name|
           @args["#{option_to_name(name)}?"] = if name.start_with?("--[no-]")
             nil
           else
@@ -614,6 +614,7 @@ module Homebrew
         @processed_options.reject! { |existing| existing.second == option.long.first } if option.long.first.present?
         @processed_options << [option.short.first, option.long.first, option.arg, option.desc.first, hidden]
 
+        args.pop # last argument is the description
         if type == :switch
           disable_switch(*args)
         else
