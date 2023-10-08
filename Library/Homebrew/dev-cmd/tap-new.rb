@@ -112,6 +112,9 @@ module Homebrew
         pr-pull:
           if: contains(github.event.pull_request.labels.*.name, '#{label}')
           runs-on: ubuntu-22.04
+          permissions:
+            contents: write
+            pull-requests: write
           steps:
             - name: Set up Homebrew
               uses: Homebrew/actions/setup-homebrew@master
@@ -138,6 +141,14 @@ module Homebrew
               env:
                 BRANCH: ${{ github.event.pull_request.head.ref }}
               run: git push --delete origin $BRANCH
+
+            - name: Close pr
+              if: github.event.pull_request.head.repo.fork == false
+              env:
+                GITHUB_TOKEN: ${{ github.token }}
+                PULL_REQUEST: ${{ github.event.pull_request.number }}
+                REPO: ${{ github.repository }}
+              run: gh pr close $PULL_REQUEST --repo $REPO
     YAML
 
     (tap.path/".github/workflows").mkpath
