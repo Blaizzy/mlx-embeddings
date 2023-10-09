@@ -39,8 +39,8 @@ module Kernel
 
     return if !debug && !always_display
 
-    puts Formatter.headline(title, color: :magenta)
-    puts sput unless sput.empty?
+    $stderr.puts Formatter.headline(title, color: :magenta)
+    $stderr.puts sput unless sput.empty?
   end
 
   def oh1_title(title, truncate: :auto)
