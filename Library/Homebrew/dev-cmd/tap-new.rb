@@ -112,6 +112,9 @@ module Homebrew
         pr-pull:
           if: contains(github.event.pull_request.labels.*.name, '#{label}')
           runs-on: ubuntu-22.04
+          permissions:
+            contents: write
+            pull-requests: write
           steps:
             - name: Set up Homebrew
               uses: Homebrew/actions/setup-homebrew@master
