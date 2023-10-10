@@ -105,7 +105,7 @@ $ brew install --cask --adopt textmate
 
 - [pcmpl-homebrew](https://github.com/hiddenlotus/pcmpl-homebrew) provides completion for emacs shell-mode and eshell-mode.
 
-## Terminal.app: Enable the "Open man Page" contextual menu item
+## macOS Terminal.app: Enable the "Open man Page" contextual menu item
 
 In the macOS Terminal, you can right-click on a command name (like `ls` or `tar`) and pop open its manpage in a new window by selecting "Open man Page".
 
@@ -113,12 +113,11 @@ Terminal needs an extra hint on where to find manpages installed by Homebrew bec
 
 ```sh
 sudo mkdir -p /usr/local/etc/man.d
-sudo nano /usr/local/etc/man.d/homebrew.man.conf
+echo "MANPATH /opt/homebrew/share/man" | sudo tee -a /usr/local/etc/man.d/homebrew.man.conf
 ```
 
-Add the following to the new file `homebrew.man.conf`:
+If you're using Homebrew on macOS Intel, you should also fix permissions afterwards with:
 
 ```sh
-### Homebrew
-MANPATH /opt/homebrew/share/man
+sudo chown -R "${USER}" /usr/local/etc
 ```
