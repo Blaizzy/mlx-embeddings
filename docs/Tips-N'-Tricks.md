@@ -122,4 +122,3 @@ Add the following to the new file `homebrew.man.conf`:
 ### Homebrew
 MANPATH /opt/homebrew/share/man
 ```
-
