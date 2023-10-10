@@ -166,7 +166,7 @@ describe SystemCommand do
       include_examples("it returns '1 2 3 4 5 6'")
     end
 
-    context "with print_stdout" do
+    context "with `print_stdout: true`" do
       before do
         options.merge!(print_stdout: true)
       end
@@ -180,7 +180,38 @@ describe SystemCommand do
       include_examples("it returns '1 2 3 4 5 6'")
     end
 
-    context "without print_stderr" do
+    context "with `print_stdout: :debug`" do
+      before do
+        options.merge!(print_stdout: :debug)
+      end
+
+      it "echoes only STDERR output" do
+        expect { described_class.run(command, **options) }
+          .to output("2\n4\n6\n").to_stderr
+          .and not_to_output.to_stdout
+      end
+
+      context "when `debug?` is true" do
+        let(:options) do
+          { args: [
+            "-c",
+            "for i in $(seq 1 2 5); do echo $i; sleep 1; echo $(($i + 1)) >&2; done",
+          ] }
+        end
+
+        it "echoes the command and all output to STDERR when `debug?` is true" do
+          with_context debug: true do
+            expect { described_class.run(command, **options) }
+              .to output(/\A.*#{Regexp.escape(command)}.*\n1\n2\n3\n4\n5\n6\n\Z/).to_stderr
+              .and not_to_output.to_stdout
+          end
+        end
+      end
+
+      include_examples("it returns '1 2 3 4 5 6'")
+    end
+
+    context "with `print_stderr: false`" do
       before do
         options.merge!(print_stderr: false)
       end
@@ -188,13 +219,13 @@ describe SystemCommand do
       it "echoes nothing" do
         expect do
           described_class.run(command, **options)
-        end.to output("").to_stdout
+        end.not_to output.to_stdout
       end
 
       include_examples("it returns '1 2 3 4 5 6'")
     end
 
-    context "with print_stdout but without print_stderr" do
+    context "with `print_stdout: true` and `print_stderr: false`" do
       before do
         options.merge!(print_stdout: true, print_stderr: false)
       end

@@ -244,9 +244,13 @@ class SystemCommand
     write_input_to(raw_stdin)
     raw_stdin.close_write
 
+    thread_context = Context.current
     thread_ready_queue = Queue.new
     thread_done_queue = Queue.new
     line_thread = Thread.new do
+      # Ensure the new thread inherits the current context.
+      Context.current = thread_context
+
       Thread.handle_interrupt(ProcessTerminatedInterrupt => :never) do
         thread_ready_queue << true
         each_line_from [raw_stdout, raw_stderr], &block
