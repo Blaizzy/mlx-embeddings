@@ -111,12 +111,15 @@ In the macOS Terminal, you can right-click on a command name (like `ls` or `tar`
 
 Terminal needs an extra hint on where to find manpages installed by Homebrew because it doesn't load normal dotfiles like `~/.bash_profile` or `~/.zshrc`.
 
-```console
-$ sudo mkdir -p /usr/local/etc/man.d
-$ sudo nano /usr/local/etc/man.d/homebrew.man.conf
+```sh
+sudo mkdir -p /usr/local/etc/man.d
+sudo nano /usr/local/etc/man.d/homebrew.man.conf
 ```
+
 Add the following to the new file `homebrew.man.conf`:
-```
+
+```sh
 ### Homebrew
 MANPATH /opt/homebrew/share/man
 ```
+
