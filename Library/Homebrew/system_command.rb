@@ -47,10 +47,20 @@ class SystemCommand
     each_output_line do |type, line|
       case type
       when :stdout
-        $stdout << redact_secrets(line, @secrets) if print_stdout?
+        case @print_stdout
+        when true
+          $stdout << redact_secrets(line, @secrets)
+        when :debug
+          $stderr << redact_secrets(line, @secrets) if debug?
+        end
         @output << [:stdout, line]
       when :stderr
-        $stderr << redact_secrets(line, @secrets) if print_stderr?
+        case @print_stderr
+        when true
+          $stderr << redact_secrets(line, @secrets)
+        when :debug
+          $stderr << redact_secrets(line, @secrets) if debug?
+        end
         @output << [:stderr, line]
       end
     end
@@ -69,8 +79,8 @@ class SystemCommand
       env:          T::Hash[String, String],
       input:        T.any(String, T::Array[String]),
       must_succeed: T::Boolean,
-      print_stdout: T::Boolean,
-      print_stderr: T::Boolean,
+      print_stdout: T.any(T::Boolean, Symbol),
+      print_stderr: T.any(T::Boolean, Symbol),
       debug:        T.nilable(T::Boolean),
       verbose:      T.nilable(T::Boolean),
       secrets:      T.any(String, T::Array[String]),
@@ -98,7 +108,14 @@ class SystemCommand
     @executable = executable
     @args = args
 
-    raise ArgumentError, "sudo_as_root cannot be set if sudo is false" if !sudo && sudo_as_root
+    raise ArgumentError, "`sudo_as_root` cannot be set if sudo is false" if !sudo && sudo_as_root
+
+    if print_stdout.is_a?(Symbol) && print_stdout != :debug
+      raise ArgumentError, "`print_stdout` is not a valid symbol"
+    end
+    if print_stderr.is_a?(Symbol) && print_stderr != :debug
+      raise ArgumentError, "`print_stderr` is not a valid symbol"
+    end
 
     @sudo = sudo
     @sudo_as_root = sudo_as_root
@@ -128,7 +145,7 @@ class SystemCommand
 
   attr_reader :executable, :args, :input, :chdir, :env
 
-  attr_predicate :sudo?, :sudo_as_root?, :print_stdout?, :print_stderr?, :must_succeed?
+  attr_predicate :sudo?, :sudo_as_root?, :must_succeed?
 
   sig { returns(T::Boolean) }
   def debug?
