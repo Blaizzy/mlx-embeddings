@@ -195,7 +195,7 @@ describe SystemCommand do
         let(:options) do
           { args: [
             "-c",
-            "for i in $(seq 1 2 5); do echo $i; sleep 1; echo $(($i + 1)) >&2; done",
+            "for i in $(seq 1 2 5); do echo $i; sleep 0.1; echo $(($i + 1)) >&2; sleep 0.1; done",
           ] }
         end
 
