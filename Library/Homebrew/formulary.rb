@@ -241,7 +241,11 @@ module Formulary
 
       if (urls_stable = json_formula["urls"]["stable"].presence)
         stable do
-          url_spec = { tag: urls_stable["tag"], revision: urls_stable["revision"] }.compact
+          url_spec = {
+            tag:      urls_stable["tag"],
+            revision: urls_stable["revision"],
+            using:    urls_stable["using"]&.to_sym,
+          }.compact
           url urls_stable["url"], **url_spec
           version json_formula["versions"]["stable"]
           sha256 urls_stable["checksum"] if urls_stable["checksum"].present?
@@ -256,7 +260,10 @@ module Formulary
 
       if (urls_head = json_formula["urls"]["head"].presence)
         head do
-          url_spec = { branch: urls_head["branch"] }.compact
+          url_spec = {
+            branch: urls_head["branch"],
+            using:  urls_head["using"]&.to_sym,
+          }.compact
           url urls_head["url"], **url_spec
 
           instance_exec(:head, &add_deps)

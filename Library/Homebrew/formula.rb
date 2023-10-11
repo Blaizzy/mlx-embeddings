@@ -2281,6 +2281,7 @@ class Formula
         "url"      => stable_spec.url,
         "tag"      => stable_spec.specs[:tag],
         "revision" => stable_spec.specs[:revision],
+        "using"    => (stable_spec.using if stable_spec.using.is_a?(Symbol)),
         "checksum" => stable_spec.checksum&.to_s,
       }
 
@@ -2291,6 +2292,7 @@ class Formula
       hsh["urls"]["head"] = {
         "url"    => T.must(head).url,
         "branch" => T.must(head).specs[:branch],
+        "using"  => (T.must(head).using if T.must(head).using.is_a?(Symbol)),
       }
     end
 
