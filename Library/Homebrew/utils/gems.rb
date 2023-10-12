@@ -235,9 +235,9 @@ module Homebrew
 
     valid_user_gem_groups = user_gem_groups & valid_gem_groups
     if RUBY_PLATFORM.end_with?("-darwin23")
-      raise "Sorbet is not currently supported under system Ruby on macOS Sonoma." if groups.include?("sorbet")
+      raise "Sorbet is not currently supported under system Ruby on macOS Sonoma." if groups.include?("typecheck")
 
-      valid_user_gem_groups.delete("sorbet")
+      valid_user_gem_groups.delete("typecheck")
     end
 
     # Combine the passed groups with the ones stored in settings
