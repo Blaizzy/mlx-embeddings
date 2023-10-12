@@ -149,6 +149,8 @@ module Formulary
 
     class_name = class_s(name)
     json_formula = Homebrew::API::Formula.all_formulae[name]
+    raise FormulaUnavailableError, name if json_formula.nil?
+
     json_formula = Homebrew::API.merge_variations(json_formula)
 
     uses_from_macos_names = json_formula["uses_from_macos"].map do |dep|
@@ -963,6 +965,10 @@ module Formulary
     end
 
     if CoreTap.instance.formula_renames.key?(ref)
+      unless Homebrew::EnvConfig.no_install_from_api?
+        return FormulaAPILoader.new(CoreTap.instance.formula_renames[ref])
+      end
+
       return TapLoader.new("#{CoreTap.instance}/#{ref}", from: from, warn: warn)
     end
 
