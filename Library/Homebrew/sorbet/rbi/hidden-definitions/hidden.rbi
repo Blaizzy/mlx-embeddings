@@ -140,11 +140,6 @@ class BuildEnvironment
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class BuildError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Bundler::APIResponseInvalidDependenciesError
   def status_code(); end
 end
@@ -3343,12 +3338,6 @@ class Cleaner
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class CompilerSelector::Compiler
-  def self.[](*arg); end
-
-  def self.members(); end
-end
-
 class CompilerSelector
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -3377,11 +3366,6 @@ end
 module CopHelper
   extend ::RSpec::Core::SharedContext
   extend ::RSpec::Its
-end
-
-class CxxStdlib
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Date
@@ -3587,11 +3571,6 @@ end
 
 class Dir
   def self.exists?(arg); end
-end
-
-module DiskUsageExtension
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Downloadable
@@ -3927,11 +3906,6 @@ end
 class Errno::ESHLIBVERS
 end
 
-class ErrorDuringExecution
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Etc::Group
   def gid(); end
 
@@ -4111,30 +4085,10 @@ module FormulaCellarChecks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module FormulaClassUnavailableErrorModule
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class FormulaConflict
   def self.[](*arg); end
 
   def self.members(); end
-end
-
-class FormulaConflictError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class FormulaOrCaskUnavailableError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module FormulaUnreadableErrorModule
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Forwardable
@@ -4487,11 +4441,6 @@ class GitHubRunner
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
   def self.inherited(s); end
-end
-
-class GitRepository
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Hardware::CPU
@@ -5093,15 +5042,13 @@ module Kernel
 end
 
 module Kernel
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
   def self.at_exit(); end
 
   def self.fork(); end
 
-  def self.hpricot_slate_method_added(name); end
-
   def self.load(*arg); end
+
+  def self.method_added(name); end
 end
 
 class KeyError
@@ -5264,11 +5211,6 @@ class MessagePack::Unpacker
 end
 
 class Messages
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Migrator
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -5623,8 +5565,6 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -5639,9 +5579,13 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
+class Net::HTTPSuccess
+end
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -5687,11 +5631,6 @@ module OS::Linux::Glibc
 end
 
 module OS::Linux::Kernel
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module OS::Linux
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -5847,11 +5786,6 @@ end
 class Object
   extend ::MacOSVersionErrorCompat
   def self.yaml_tag(url); end
-end
-
-module ObserverPathnameExtension
-  extend ::T::Private::Methods::SingletonMethodHooks
-  extend ::T::Private::Methods::MethodHooks
 end
 
 module OnSystem::MacOSAndLinux
@@ -6099,11 +6033,6 @@ end
 
 class Parser::Ruby26
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
-end
-
-class Pathname
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Predicable
@@ -8944,11 +8873,6 @@ class SystemCommand
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Tab
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Tap
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -9224,11 +9148,6 @@ module UnpackStrategy
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class UsageError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class User
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -9244,20 +9163,12 @@ module Utils::AST
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-module Utils::Analytics
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Utils::Autoremove
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Utils::Backtrace
   extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Utils::Bottles
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
