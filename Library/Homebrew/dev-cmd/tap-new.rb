@@ -114,7 +114,7 @@ module Homebrew
           runs-on: ubuntu-22.04
           permissions:
             contents: write
-            packages: #{args.github_packages ? "write" : "none"}
+            packages: #{args.github_packages? ? "write" : "none"}
             pull-requests: write
           steps:
             - name: Set up Homebrew
