@@ -287,12 +287,6 @@ class SystemCommand
   def sudo_as_root?; end
 
   sig { returns(T::Boolean) }
-  def print_stdout?; end
-
-  sig { returns(T::Boolean) }
-  def print_stderr?; end
-
-  sig { returns(T::Boolean) }
   def must_succeed?; end
 end
 
