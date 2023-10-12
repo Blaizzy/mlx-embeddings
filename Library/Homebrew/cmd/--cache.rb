@@ -17,10 +17,10 @@ module Homebrew
         If <formula> is provided, display the file or directory used to cache <formula>.
       EOS
       flag   "--os=",
-             description: "Show cache file for the given operating system." \
+             description: "Show cache file for the given operating system. " \
                           "(Pass `all` to show cache files for all operating systems.)"
       flag   "--arch=",
-             description: "Show cache file for the given CPU architecture." \
+             description: "Show cache file for the given CPU architecture. " \
                           "(Pass `all` to show cache files for all architectures.)"
       switch "-s", "--build-from-source",
              description: "Show the cache file used when building from source."

@@ -213,7 +213,7 @@ Show text\-based graph description in DOT format\.
 .
 .TP
 \fB\-\-annotate\fR
-Mark any build, test, optional, or recommended dependencies as such in the output\.
+Mark any build, test, implicit, optional, or recommended dependencies as such in the output\.
 .
 .TP
 \fB\-\-installed\fR
@@ -229,7 +229,11 @@ Evaluate all available formulae and casks, whether installed or not, to list the
 .
 .TP
 \fB\-\-for\-each\fR
-Switch into the mode used by the \fB\-\-all\fR option, but only list dependencies for each provided \fIformula\fR, one formula per line\. This is used for debugging the \fB\-\-installed\fR/\fB\-\-all\fR display mode\.
+Switch into the mode used by the \fB\-\-eval\-all\fR option, but only list dependencies for each provided \fIformula\fR, one formula per line\. This is used for debugging the \fB\-\-installed\fR/\fB\-\-eval\-all\fR display mode\.
+.
+.TP
+\fB\-\-HEAD\fR
+Show dependencies for HEAD version instead of stable version\.
 .
 .TP
 \fB\-\-formula\fR
@@ -299,11 +303,11 @@ Download a bottle (if available) or source packages for \fIformula\fRe and binar
 .
 .TP
 \fB\-\-os\fR
-Download for the given operating system\.(Pass \fBall\fR to download for all operating systems\.)
+Download for the given operating system\. (Pass \fBall\fR to download for all operating systems\.)
 .
 .TP
 \fB\-\-arch\fR
-Download for the given CPU architecture\.(Pass \fBall\fR to download for all architectures\.)
+Download for the given CPU architecture\. (Pass \fBall\fR to download for all architectures\.)
 .
 .TP
 \fB\-\-bottle\-tag\fR
@@ -1197,11 +1201,11 @@ If \fIformula\fR is provided, display the file or directory used to cache \fIfor
 .
 .TP
 \fB\-\-os\fR
-Show cache file for the given operating system\.(Pass \fBall\fR to show cache files for all operating systems\.)
+Show cache file for the given operating system\. (Pass \fBall\fR to show cache files for all operating systems\.)
 .
 .TP
 \fB\-\-arch\fR
-Show cache file for the given CPU architecture\.(Pass \fBall\fR to show cache files for all architectures\.)
+Show cache file for the given CPU architecture\. (Pass \fBall\fR to show cache files for all architectures\.)
 .
 .TP
 \fB\-s\fR, \fB\-\-build\-from\-source\fR
@@ -2239,7 +2243,7 @@ Test formulae even if they are unlinked\.
 .
 .TP
 \fB\-\-HEAD\fR
-Test the head version of a formula\.
+Test the HEAD version of a formula\.
 .
 .TP
 \fB\-\-keep\-tmp\fR

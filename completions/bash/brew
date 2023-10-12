@@ -737,6 +737,7 @@ _brew_deps() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --HEAD
       --annotate
       --cask
       --debug
