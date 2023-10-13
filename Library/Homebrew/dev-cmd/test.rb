@@ -22,7 +22,7 @@ module Homebrew
       switch "-f", "--force",
              description: "Test formulae even if they are unlinked."
       switch "--HEAD",
-             description: "Test the head version of a formula."
+             description: "Test the HEAD version of a formula."
       switch "--keep-tmp",
              description: "Retain the temporary files created for the test."
       switch "--retry",

@@ -51,7 +51,7 @@ module Homebrew
              depends_on:  "--graph",
              description: "Show text-based graph description in DOT format."
       switch "--annotate",
-             description: "Mark any build, test, optional, or recommended dependencies as " \
+             description: "Mark any build, test, implicit, optional, or recommended dependencies as " \
                           "such in the output."
       switch "--installed",
              description: "List dependencies for formulae that are currently installed. If <formula> is " \
@@ -62,9 +62,11 @@ module Homebrew
              description: "Evaluate all available formulae and casks, whether installed or not, to list " \
                           "their dependencies."
       switch "--for-each",
-             description: "Switch into the mode used by the `--all` option, but only list dependencies " \
+             description: "Switch into the mode used by the `--eval-all` option, but only list dependencies " \
                           "for each provided <formula>, one formula per line. This is used for " \
-                          "debugging the `--installed`/`--all` display mode."
+                          "debugging the `--installed`/`--eval-all` display mode."
+      switch "--HEAD",
+             description: "Show dependencies for HEAD version instead of stable version."
       switch "--formula", "--formulae",
              description: "Treat all named arguments as formulae."
       switch "--cask", "--casks",
@@ -73,7 +75,6 @@ module Homebrew
       conflicts "--tree", "--graph"
       conflicts "--installed", "--missing"
       conflicts "--installed", "--eval-all"
-      conflicts "--installed", "--all"
       conflicts "--formula", "--cask"
       formula_options
 
@@ -94,6 +95,7 @@ module Homebrew
     @use_runtime_dependencies = installed && recursive &&
                                 !args.tree? &&
                                 !args.graph? &&
+                                !args.HEAD? &&
                                 !args.include_build? &&
                                 !args.include_test? &&
                                 !args.include_optional? &&
@@ -153,6 +155,7 @@ module Homebrew
     end
 
     dependents = dependents(args.named.to_formulae_and_casks)
+    check_head_spec(dependents) if args.HEAD?
 
     all_deps = deps_for_dependents(dependents, recursive: recursive, args: args, &(args.union? ? :| : :&))
     condense_requirements(all_deps, args: args)
@@ -217,7 +220,14 @@ module Homebrew
     dependents.map { |d| deps_for_dependent(d, recursive: recursive, args: args) }.reduce(&block)
   end
 
+  def self.check_head_spec(dependents)
+    headless = dependents.select { |d| d.is_a?(Formula) && d.active_spec_sym != :head }
+                         .to_sentence two_words_connector: " or ", last_word_connector: " or "
+    opoo "No head spec for #{headless}, using stable spec instead" unless headless.empty?
+  end
+
   def self.puts_deps(dependents, args:, recursive: false)
+    check_head_spec(dependents) if args.HEAD?
     dependents.each do |dependent|
       deps = deps_for_dependent(dependent, recursive: recursive, args: args)
       condense_requirements(deps, args: args)
@@ -268,6 +278,7 @@ module Homebrew
   end
 
   def self.puts_deps_tree(dependents, args:, recursive: false)
+    check_head_spec(dependents) if args.HEAD?
     dependents.each do |d|
       puts d.full_name
       recursive_deps_tree(d, dep_stack: [], prefix: "", recursive: recursive, args: args)

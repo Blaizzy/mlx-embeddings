@@ -264,13 +264,13 @@ __brew_diagnostic_checks() {
 _brew___cache() {
   _arguments \
     '(--build-from-source --force-bottle --bottle-tag --cask)--HEAD[Show the cache file used when building from HEAD]' \
-    '(--bottle-tag)--arch[Show cache file for the given CPU architecture.(Pass `all` to show cache files for all architectures.)]' \
+    '(--bottle-tag)--arch[Show cache file for the given CPU architecture. (Pass `all` to show cache files for all architectures.)]' \
     '(--build-from-source --force-bottle --HEAD --cask --os --arch)--bottle-tag[Show the cache file used when pouring a bottle for the given tag]' \
     '(--force-bottle --bottle-tag --HEAD --cask)--build-from-source[Show the cache file used when building from source]' \
     '--debug[Display any debugging information]' \
     '(--build-from-source --bottle-tag --HEAD --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
     '--help[Show this message]' \
-    '(--bottle-tag)--os[Show cache file for the given operating system.(Pass `all` to show cache files for all operating systems.)]' \
+    '(--bottle-tag)--os[Show cache file for the given operating system. (Pass `all` to show cache files for all operating systems.)]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     - formula \
@@ -715,12 +715,13 @@ _brew_create() {
 # brew deps
 _brew_deps() {
   _arguments \
-    '--annotate[Mark any build, test, optional, or recommended dependencies as such in the output]' \
+    '--HEAD[Show dependencies for HEAD version instead of stable version]' \
+    '--annotate[Mark any build, test, implicit, optional, or recommended dependencies as such in the output]' \
     '--debug[Display any debugging information]' \
     '--direct[Show only the direct dependencies declared in the formula]' \
     '--dot[Show text-based graph description in DOT format]' \
     '(--installed)--eval-all[Evaluate all available formulae and casks, whether installed or not, to list their dependencies]' \
-    '--for-each[Switch into the mode used by the `--all` option, but only list dependencies for each provided formula, one formula per line. This is used for debugging the `--installed`/`--all` display mode]' \
+    '--for-each[Switch into the mode used by the `--eval-all` option, but only list dependencies for each provided formula, one formula per line. This is used for debugging the `--installed`/`--eval-all` display mode]' \
     '--full-name[List dependencies by their full name]' \
     '(--tree)--graph[Show dependencies as a directed graph]' \
     '--help[Show this message]' \
@@ -728,7 +729,7 @@ _brew_deps() {
     '--include-optional[Include `:optional` dependencies for formula]' \
     '--include-requirements[Include requirements in addition to dependencies for formula]' \
     '--include-test[Include `:test` dependencies for formula (non-recursive)]' \
-    '(--missing --eval-all --all)--installed[List dependencies for formulae that are currently installed. If formula is specified, list only its dependencies that are currently installed]' \
+    '(--missing --eval-all)--installed[List dependencies for formulae that are currently installed. If formula is specified, list only its dependencies that are currently installed]' \
     '(--installed)--missing[Show only missing dependencies]' \
     '--quiet[Make some output more quiet]' \
     '--skip-recommended[Skip `:recommended` dependencies for formula]' \
@@ -890,7 +891,7 @@ _brew_extract() {
 _brew_fetch() {
   _arguments \
     '(--cask)--HEAD[Fetch HEAD version instead of stable version]' \
-    '(--bottle-tag)--arch[Download for the given CPU architecture.(Pass `all` to download for all architectures.)]' \
+    '(--bottle-tag)--arch[Download for the given CPU architecture. (Pass `all` to download for all architectures.)]' \
     '(--build-from-source --build-bottle --force-bottle --cask --os --arch)--bottle-tag[Download a bottle for given tag]' \
     '(--build-from-source --force-bottle --bottle-tag --cask)--build-bottle[Download source packages (for eventual bottling) rather than a bottle]' \
     '(--build-bottle --force-bottle --bottle-tag)--build-from-source[Download source packages rather than a bottle]' \
@@ -900,7 +901,7 @@ _brew_fetch() {
     '(--build-from-source --build-bottle --bottle-tag --cask)--force-bottle[Download a bottle if it exists for the current or newest version of macOS, even if it would not be used during installation]' \
     '--help[Show this message]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
-    '(--bottle-tag)--os[Download for the given operating system.(Pass `all` to download for all operating systems.)]' \
+    '(--bottle-tag)--os[Download for the given operating system. (Pass `all` to download for all operating systems.)]' \
     '--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quiet[Make some output more quiet]' \
     '--retry[Retry if downloading fails or re-download if the checksum of a previously cached version no longer matches. Tries at most 5 times with exponential backoff]' \
@@ -1796,7 +1797,7 @@ _brew_tc() {
 # brew test
 _brew_test() {
   _arguments \
-    '--HEAD[Test the head version of a formula]' \
+    '--HEAD[Test the HEAD version of a formula]' \
     '--debug[Display any debugging information]' \
     '--force[Test formulae even if they are unlinked]' \
     '--help[Show this message]' \
