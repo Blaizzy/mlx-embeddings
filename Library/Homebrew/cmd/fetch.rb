@@ -129,7 +129,12 @@ module Homebrew
                   next
                 end
 
-                formula.fetch_bottle_tab
+                begin
+                  bottle.fetch_tab
+                rescue DownloadError
+                  retry if retry_fetch?(bottle, args: args)
+                  raise
+                end
                 fetch_formula(bottle, args: args)
               rescue Interrupt
                 raise
