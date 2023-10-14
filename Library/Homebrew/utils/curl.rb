@@ -298,9 +298,10 @@ module Utils
       end
 
       details = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
+      attempts = 0
       user_agents.each do |user_agent|
-        details =
-          curl_http_content_headers_and_checksum(
+        loop do
+          details = curl_http_content_headers_and_checksum(
             url,
             specs:             specs,
             hash_needed:       hash_needed,
@@ -308,6 +309,14 @@ module Utils
             user_agent:        user_agent,
             referer:           referer,
           )
+
+          # Retry on network issues
+          break if details[:exit_status] != 52 && details[:exit_status] != 56
+
+          attempts += 1
+          break if attempts >= Homebrew::EnvConfig.curl_retries.to_i
+        end
+
         break if http_status_ok?(details[:status_code])
       end
 
@@ -453,6 +462,7 @@ module Utils
       {
         url:            url,
         final_url:      final_url,
+        exit_status:    status.exitstatus,
         status_code:    status_code,
         headers:        headers,
         etag:           etag,

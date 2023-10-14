@@ -149,7 +149,13 @@ module Homebrew
             problem http_content_problem
           end
         elsif strategy <= GitDownloadStrategy
-          problem "The URL #{url} is not a valid git URL" unless Utils::Git.remote_exists? url
+          attempts = 0
+          remote_exists = T.let(false, T::Boolean)
+          while !remote_exists && attempts < Homebrew::EnvConfig.curl_retries.to_i
+            remote_exists = Utils::Git.remote_exists?(url)
+            attempts += 1
+          end
+          problem "The URL #{url} is not a valid git URL" unless remote_exists
         elsif strategy <= SubversionDownloadStrategy
           next unless DevelopmentTools.subversion_handles_most_https_certificates?
           next unless Utils::Svn.available?
