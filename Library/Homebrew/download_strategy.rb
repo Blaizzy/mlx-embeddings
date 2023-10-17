@@ -1282,21 +1282,46 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
 
   sig { params(timeout: T.nilable(Time)).void }
   def clone_repo(timeout: nil)
-    command! "hg", args: ["clone", @url, cached_location], timeout: timeout&.remaining
+    clone_args = %w[clone]
+
+    case @ref_type
+    when :branch
+      clone_args << "--branch" << @ref
+    when :revision, :tag
+      clone_args << "--rev" << @ref
+    end
+
+    clone_args << @url << cached_location.to_s
+    command! "hg", args: clone_args, timeout: timeout&.remaining
   end
 
   sig { params(timeout: T.nilable(Time)).void }
   def update(timeout: nil)
-    command! "hg", args: ["--cwd", cached_location, "pull", "--update"], timeout: timeout&.remaining
+    pull_args = %w[pull]
 
-    update_args = if @ref_type && @ref
-      ohai "Checking out #{@ref_type} #{@ref}"
-      [@ref]
-    else
-      ["--clean"]
+    case @ref_type
+    when :branch
+      pull_args << "--branch" << @ref
+    when :revision, :tag
+      pull_args << "--rev" << @ref
     end
 
-    command! "hg", args: ["--cwd", cached_location, "update", *update_args], timeout: timeout&.remaining
+    command! "hg", args: ["--cwd", cached_location, *pull_args], timeout: timeout&.remaining
+
+    update_args = %w[update --clean]
+    update_args << if @ref_type && @ref
+      ohai "Checking out #{@ref_type} #{@ref}"
+      @ref
+    else
+      "default"
+    end
+
+    command! "hg", args: ["--cwd", cached_location, *update_args], timeout: timeout&.remaining
+  end
+
+  def current_revision
+    out, = silent_command("hg", args: ["--cwd", cached_location, "identify", "--id"])
+    out.strip
   end
 end
 
