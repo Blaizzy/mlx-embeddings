@@ -258,8 +258,10 @@ module Homebrew
   end
 
   def output_lost_bottles
-    # $ git log --patch -G\^\ \+sha256.\*\ sonoma: --since=@\{\'1\ week\ ago\'\}
-    git_log = %w[git log --patch]
+    ohai ":#{@bottle_tag} lost bottles"
+
+    # $ git log --patch -G'^ +sha256.* sonoma:' --since=@{'1 week ago'}
+    git_log = %w[git log --patch --no-ext-diff]
     git_log << "-G^ +sha256.* #{@bottle_tag}:"
     git_log << "--since=@{'1 week ago'}"
 
@@ -276,15 +278,17 @@ module Homebrew
           case line
           when /^commit [0-9a-f]{40}$/
             # Example match: `commit 7289b409b96a752540befef1a56b8a818baf1db7`
-            if commit && lost_bottles.positive? && processed_formulae.exclude?(formula)
+            if commit && formula && lost_bottles.positive? && processed_formulae.exclude?(formula)
               puts "#{commit}: bottle lost for #{formula}"
             end
             processed_formulae << formula
             commit = line.split.last
-            lost_bottles = 0
+            formula = nil
           when %r{^diff --git a/Formula/}
             # Example match: `diff --git a/Formula/a/aws-cdk.rb b/Formula/a/aws-cdk.rb`
             formula = line.split("/").last.chomp(".rb\n")
+            formula = CoreTap.instance.formula_renames.fetch(formula, formula)
+            lost_bottles = 0
           when bottle_tag_sha_regex
             # Example match: `-    sha256 cellar: :any_skip_relocation, sonoma: "f0a4..."`
             next if processed_formulae.include?(formula)
@@ -301,7 +305,7 @@ module Homebrew
       end
     end
 
-    return if !commit || !lost_bottles.positive? || processed_formulae.include?(formula)
+    return if !commit || !formula || !lost_bottles.positive? || processed_formulae.include?(formula)
 
     puts "#{commit}: bottle lost for #{formula}"
   end
