@@ -150,6 +150,10 @@ module Homebrew
       all_formulae = Formula.all(eval_all: args.eval_all?)
     end
 
+    # Remove deprecated formulae as we do not care if they are unbottled
+    formulae = Array(formulae).reject(&:deprecated?) if formulae.present?
+    all_formulae = Array(all_formulae).reject(&:deprecated?) if all_formulae.present?
+
     [formulae, all_formulae, formula_installs]
   end
 
