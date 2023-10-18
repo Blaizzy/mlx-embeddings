@@ -138,8 +138,8 @@ module Homebrew
     end
 
     # Remove deprecated formulae as we do not care if they are unbottled
-    formulae = formulae&.select {|formula| !(formula.deprecated?)}
-    all_formulae = all_formulae&.select {|formula| !(formula.deprecated?)}
+    formulae = Array(formulae).reject(&:deprecated?) if formulae.present?
+    all_formulae = Array(all_formulae).reject(&:deprecated?) if all_formulae.present?
 
     [formulae, all_formulae, formula_installs]
   end
