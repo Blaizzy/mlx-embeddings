@@ -362,7 +362,7 @@ class FormulaInstaller
     return if @compute_dependencies.blank?
 
     compute_dependencies(use_cache: false) if @compute_dependencies.any? do |dep, options|
-      next false if dep.tags != [:build, :test]
+      next false unless dep.implicit?
 
       fetch_dependencies
       install_dependency(dep, options)
