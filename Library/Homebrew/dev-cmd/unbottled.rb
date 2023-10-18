@@ -260,12 +260,14 @@ module Homebrew
   def output_lost_bottles
     ohai ":#{@bottle_tag} lost bottles"
 
-    # $ git log --patch -G'^ +sha256.* sonoma:' --since=@{'1 week ago'}
+    bottle_tag_regex_fragment = " +sha256.* #{@bottle_tag}: "
+
+    # $ git log --patch --no-ext-diff -G'^ +sha256.* sonoma:' --since=@{'1 week ago'}
     git_log = %w[git log --patch --no-ext-diff]
-    git_log << "-G^ +sha256.* #{@bottle_tag}:"
+    git_log << "-G^#{bottle_tag_regex_fragment}"
     git_log << "--since=@{'1 week ago'}"
 
-    bottle_tag_sha_regex = /^[+-] +sha256.* #{@bottle_tag}: /
+    bottle_tag_sha_regex = /^[+-]#{bottle_tag_regex_fragment}/
 
     processed_formulae = Set.new
     commit = T.let(nil, T.nilable(String))
