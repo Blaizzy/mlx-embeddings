@@ -21,11 +21,13 @@ module Homebrew
              description: "Skip getting analytics data and sort by number of dependents instead."
       switch "--total",
              description: "Print the number of unbottled and total formulae."
+      switch "--lost",
+             description: "Print the `homebrew/core` commits where bottles were lost in the last week."
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to check them. " \
                           "Implied if `HOMEBREW_EVAL_ALL` is set."
 
-      conflicts "--dependents", "--total"
+      conflicts "--dependents", "--total", "--lost"
 
       named_args :formula
     end
@@ -41,6 +43,17 @@ module Homebrew
       Utils::Bottles::Tag.from_symbol(tag.to_sym)
     else
       Utils::Bottles.tag
+    end
+
+    if args.lost?
+      if args.named.present?
+        raise UsageError, "`brew unbottled --lost` cannot be used with formula arguments!"
+      elsif !CoreTap.instance.installed?
+        raise UsageError, "`brew unbottled --lost` requires `homebrew/core` to be tapped locally!"
+      else
+        output_lost_bottles
+        return
+      end
     end
 
     os = @bottle_tag.system
@@ -242,5 +255,60 @@ module Homebrew
     return if any_named_args
 
     puts "No unbottled dependencies found!"
+  end
+
+  def output_lost_bottles
+    ohai ":#{@bottle_tag} lost bottles"
+
+    bottle_tag_regex_fragment = " +sha256.* #{@bottle_tag}: "
+
+    # $ git log --patch --no-ext-diff -G'^ +sha256.* sonoma:' --since=@{'1 week ago'}
+    git_log = %w[git log --patch --no-ext-diff]
+    git_log << "-G^#{bottle_tag_regex_fragment}"
+    git_log << "--since=@{'1 week ago'}"
+
+    bottle_tag_sha_regex = /^[+-]#{bottle_tag_regex_fragment}/
+
+    processed_formulae = Set.new
+    commit = T.let(nil, T.nilable(String))
+    formula = T.let(nil, T.nilable(String))
+    lost_bottles = 0
+
+    CoreTap.instance.path.cd do
+      Utils.safe_popen_read(*git_log) do |io|
+        io.each_line do |line|
+          case line
+          when /^commit [0-9a-f]{40}$/
+            # Example match: `commit 7289b409b96a752540befef1a56b8a818baf1db7`
+            if commit && formula && lost_bottles.positive? && processed_formulae.exclude?(formula)
+              puts "#{commit}: bottle lost for #{formula}"
+            end
+            processed_formulae << formula
+            commit = line.split.last
+            formula = nil
+          when %r{^diff --git a/Formula/}
+            # Example match: `diff --git a/Formula/a/aws-cdk.rb b/Formula/a/aws-cdk.rb`
+            formula = line.split("/").last.chomp(".rb\n")
+            formula = CoreTap.instance.formula_renames.fetch(formula, formula)
+            lost_bottles = 0
+          when bottle_tag_sha_regex
+            # Example match: `-    sha256 cellar: :any_skip_relocation, sonoma: "f0a4..."`
+            next if processed_formulae.include?(formula)
+
+            case line.chr
+            when "+" then lost_bottles -= 1
+            when "-" then lost_bottles += 1
+            end
+          when /^[+] +sha256.* all: /
+            # Example match: `+    sha256 cellar: :any_skip_relocation, all: "9e35..."`
+            lost_bottles -= 1
+          end
+        end
+      end
+    end
+
+    return if !commit || !formula || !lost_bottles.positive? || processed_formulae.include?(formula)
+
+    puts "#{commit}: bottle lost for #{formula}"
   end
 end

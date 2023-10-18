@@ -1500,6 +1500,7 @@ __fish_brew_complete_arg 'unbottled' -l debug -d 'Display any debugging informat
 __fish_brew_complete_arg 'unbottled' -l dependents -d 'Skip getting analytics data and sort by number of dependents instead'
 __fish_brew_complete_arg 'unbottled' -l eval-all -d 'Evaluate all available formulae and casks, whether installed or not, to check them. Implied if `HOMEBREW_EVAL_ALL` is set'
 __fish_brew_complete_arg 'unbottled' -l help -d 'Show this message'
+__fish_brew_complete_arg 'unbottled' -l lost -d 'Print the `homebrew/core` commits where bottles were lost in the last week'
 __fish_brew_complete_arg 'unbottled' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'unbottled' -l tag -d 'Use the specified bottle tag (e.g. `big_sur`) instead of the current OS'
 __fish_brew_complete_arg 'unbottled' -l total -d 'Print the number of unbottled and total formulae'

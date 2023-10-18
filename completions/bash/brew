@@ -2258,6 +2258,7 @@ _brew_unbottled() {
       --dependents
       --eval-all
       --help
+      --lost
       --quiet
       --tag
       --total

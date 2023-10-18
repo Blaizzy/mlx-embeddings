@@ -1626,6 +1626,8 @@ Show the unbottled dependents of formulae.
   Skip getting analytics data and sort by number of dependents instead.
 * `--total`:
   Print the number of unbottled and total formulae.
+* `--lost`:
+  Print the `homebrew/core` commits where bottles were lost in the last week.
 * `--eval-all`:
   Evaluate all available formulae and casks, whether installed or not, to check them. Implied if `HOMEBREW_EVAL_ALL` is set.
 
