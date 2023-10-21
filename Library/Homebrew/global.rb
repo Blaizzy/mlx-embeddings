@@ -47,7 +47,9 @@ HOMEBREW_USER_AGENT_CURL = ENV.fetch("HOMEBREW_USER_AGENT_CURL").freeze
 HOMEBREW_USER_AGENT_RUBY =
   "#{ENV.fetch("HOMEBREW_USER_AGENT")} ruby/#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
 HOMEBREW_USER_AGENT_FAKE_SAFARI =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 " \
+  # Don't update this beyond 10.15.7 until Safari actually updates their
+  # user agent to be beyond 10.15.7 (not the case as-of macOS 14)
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 " \
   "(KHTML, like Gecko) Version/17.0 Safari/605.1.15"
 HOMEBREW_GITHUB_PACKAGES_AUTH = ENV.fetch("HOMEBREW_GITHUB_PACKAGES_AUTH").freeze
 
