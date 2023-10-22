@@ -217,7 +217,7 @@ module RuboCop
             problem "Use /archive/ URLs for GitHub tarballs (url is #{url})."
           end
 
-          archive_ref_tags_gh_pattern = %r{https://.*github.*/archive(?!/refs/tags)/.*\.tar\.gz$}
+          archive_ref_tags_gh_pattern = %r{https://.*github.*/archive/(?![a-fA-F0-9]{40})(?!refs/tags/).*\.tar\.gz$}
           audit_urls(urls, archive_ref_tags_gh_pattern) do |_, url|
             next if url.end_with?(".git")
 
