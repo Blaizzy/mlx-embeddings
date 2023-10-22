@@ -140,7 +140,8 @@ module Homebrew
               warn_if_cask_conflicts(name, "formula") if only != :formula
               return formula
             rescue FormulaUnreadableError, FormulaClassUnavailableError,
-                   TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
+                   TapFormulaUnreadableError, TapFormulaClassUnavailableError,
+                   FormulaSpecificationError => e
               # Need to rescue before `FormulaUnavailableError` (superclass of this)
               # The formula was found, but there's a problem with its implementation
               unreadable_error ||= e
