@@ -653,7 +653,7 @@ module Homebrew
 
           begin
             Formulary.factory(arg, spec, flags: argv.select { |a| a.start_with?("--") })
-          rescue FormulaUnavailableError
+          rescue FormulaUnavailableError, FormulaSpecificationError
             nil
           end
         end.compact.uniq(&:name)
