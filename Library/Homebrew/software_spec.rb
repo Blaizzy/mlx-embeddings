@@ -535,6 +535,12 @@ class BottleSpecification
     end
   end
 
+  def ==(other)
+    self.class == other.class && rebuild == other.rebuild && collector == other.collector &&
+      root_url == other.root_url && root_url_specs == other.root_url_specs && tap == other.tap
+  end
+  alias eql? ==
+
   sig { params(tag: Utils::Bottles::Tag).returns(T.any(Symbol, String)) }
   def tag_to_cellar(tag = Utils::Bottles.tag)
     spec = collector.specification_for(tag)
