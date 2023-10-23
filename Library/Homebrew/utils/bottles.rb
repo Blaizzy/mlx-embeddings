@@ -260,6 +260,11 @@ module Utils
         @checksum = checksum
         @cellar = cellar
       end
+
+      def ==(other)
+        self.class == other.class && tag == other.tag && checksum == other.checksum && cellar == other.cellar
+      end
+      alias eql? ==
     end
 
     # Collector for bottle specifications.
@@ -273,6 +278,11 @@ module Utils
       def tags
         @tag_specs.keys
       end
+
+      def ==(other)
+        self.class == other.class && @tag_specs == other.instance_variable_get(:@tag_specs)
+      end
+      alias eql? ==
 
       sig { params(tag: Utils::Bottles::Tag, checksum: Checksum, cellar: T.any(Symbol, String)).void }
       def add(tag, checksum:, cellar:)
