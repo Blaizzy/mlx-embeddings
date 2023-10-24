@@ -2031,6 +2031,8 @@ Database update for `brew which-formula`
   Update database entries with outdated formula versions.
 * `--install-missing`:
   Install and update formulae that are missing from the database and don't have bottles.
+* `--eval-all`:
+  Evaluate all installed taps, rather than just the core tap.
 * `--max-downloads`:
   Specify a maximum number of formulae to download and update.
 
