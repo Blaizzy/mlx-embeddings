@@ -157,7 +157,7 @@ module SharedAudits
 
   def github_tag_from_url(url)
     url = url.to_s
-    tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/([^/]+)\.(tar\.gz|zip)$})
+    tag = url.match(%r{^https://github\.com/[\w-]+/[\w-]+/archive/refs/tags/([^/]+)\.(tar\.gz|zip)$})
              .to_a
              .second
     tag ||= url.match(%r{^https://github\.com/[\w-]+/[\w-]+/releases/download/([^/]+)/})
