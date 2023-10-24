@@ -116,22 +116,6 @@ module Homebrew
     branch_name = "bump-#{cask.token}"
     commit_message = nil
 
-    if new_version.present?
-      # For simplicity, our naming defers to the arm version if we multiple architectures are specified
-      branch_version = new_version.arm || new_version.general
-      if branch_version.is_a?(Cask::DSL::Version)
-        commit_version = if branch_version.before_comma == cask.version.before_comma
-          branch_version
-        else
-          branch_version.before_comma
-        end
-        branch_name = "bump-#{cask.token}-#{branch_version.tr(",:", "-")}"
-        commit_message ||= "#{cask.token} #{commit_version}"
-      end
-      replacement_pairs = replace_version_and_checksum(cask, new_hash, new_version, replacement_pairs)
-    end
-    # Now that we have all replacement pairs, we will replace them further down
-
     old_contents = File.read(cask.sourcefile_path)
 
     if new_base_url
@@ -147,6 +131,22 @@ module Homebrew
         new_base_url.to_s,
       ]
     end
+
+    if new_version.present?
+      # For simplicity, our naming defers to the arm version if we multiple architectures are specified
+      branch_version = new_version.arm || new_version.general
+      if branch_version.is_a?(Cask::DSL::Version)
+        commit_version = if branch_version.before_comma == cask.version.before_comma
+          branch_version
+        else
+          branch_version.before_comma
+        end
+        branch_name = "bump-#{cask.token}-#{branch_version.tr(",:", "-")}"
+        commit_message ||= "#{cask.token} #{commit_version}"
+      end
+      replacement_pairs = replace_version_and_checksum(cask, new_hash, new_version, replacement_pairs)
+    end
+    # Now that we have all replacement pairs, we will replace them further down
 
     commit_message ||= "#{cask.token}: update checksum" if new_hash
 
