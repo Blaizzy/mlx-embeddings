@@ -7047,7 +7047,6 @@ class RuboCop::AST::NodePattern::Parser
 end
 
 module RuboCop::AST::NodePattern::Sets
-  SET_ALL_ANY_CLASS_OF_ETC = ::T.let(nil, ::T.untyped)
   SET_ARM_INTEL = ::T.let(nil, ::T.untyped)
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
   SET_BUILD_RECOMMENDED_TEST_OPTIONAL = ::T.let(nil, ::T.untyped)
@@ -7057,9 +7056,6 @@ module RuboCop::AST::NodePattern::Sets
   SET_ON_ARM_ON_INTEL_ON_SONOMA_ETC = ::T.let(nil, ::T.untyped)
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
-  SET_SIG_HELPERS = ::T.let(nil, ::T.untyped)
-  SET_STRUCT_IMMUTABLESTRUCT = ::T.let(nil, ::T.untyped)
-  SET_STRUCT_IMMUTABLESTRUCT_INEXACTSTRUCT = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)
