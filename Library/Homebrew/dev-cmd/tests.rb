@@ -208,6 +208,7 @@ module Homebrew
       HOMEBREW_CACHE
       HOMEBREW_LOGS
       HOMEBREW_TEMP
+      HOMEBREW_RUBY3
     ]
     allowed_test_env << "HOMEBREW_USE_RUBY_FROM_PATH" if Homebrew::EnvConfig.developer?
     Homebrew::EnvConfig::ENVS.keys.map(&:to_s).each do |env|
