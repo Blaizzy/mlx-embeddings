@@ -6,7 +6,7 @@ module Homebrew
     undef use_system_ruby?
 
     def use_system_ruby?
-      return false if Homebrew::EnvConfig.force_vendor_ruby?
+      return false if Homebrew::EnvConfig.force_vendor_ruby? || ENV["HOMEBREW_RUBY3"]
 
       ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"].present?
     end

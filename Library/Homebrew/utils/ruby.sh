@@ -70,7 +70,7 @@ find_ruby() {
 # HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH are set by brew.sh
 # shellcheck disable=SC2154
 need_vendored_ruby() {
-  if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]
+  if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" || -n "${HOMEBREW_RUBY3}" ]]
   then
     return 0
   elif [[ -n "${HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH}" ]] && ! can_use_ruby_from_path
@@ -118,7 +118,12 @@ If there's no Homebrew Portable Ruby available for your processor:
   vendor_ruby_root="${vendor_dir}/portable-ruby/current"
   vendor_ruby_path="${vendor_ruby_root}/bin/ruby"
   vendor_ruby_terminfo="${vendor_ruby_root}/share/terminfo"
-  vendor_ruby_latest_version="$(cat "${vendor_dir}/portable-ruby-version")"
+  if [[ -n "${HOMEBREW_RUBY3}" ]]
+  then
+    vendor_ruby_latest_version="$(cat "${vendor_dir}/portable-ruby-version")"
+  else
+    vendor_ruby_latest_version="2.6.10_1" # EOL - phasing out
+  fi
   vendor_ruby_current_version="$(readlink "${vendor_ruby_root}")"
 
   unset HOMEBREW_RUBY_PATH
