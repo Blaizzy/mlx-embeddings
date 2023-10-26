@@ -544,6 +544,7 @@ module Cask
     sig { void }
     def audit_min_os
       return unless online?
+      return unless strict?
 
       odebug "Auditing minimum OS version"
 
@@ -630,6 +631,7 @@ module Cask
           break if plist_min_os
         end
       end
+
       begin
         MacOSVersion.new(plist_min_os).strip_patch
       rescue MacOSVersion::Error
