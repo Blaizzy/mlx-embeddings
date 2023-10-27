@@ -29,7 +29,10 @@ require_relative "../utils/gems"
 Homebrew.setup_gem_environment!(setup_path: false)
 
 # Install gems for Rubies we don't vendor for.
-Homebrew.install_bundler_gems! if unsupported_ruby
+if unsupported_ruby && !ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"]
+  Homebrew.install_bundler_gems!
+  ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"] = "1"
+end
 
 $LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
 require_relative "../vendor/bundle/bundler/setup"
