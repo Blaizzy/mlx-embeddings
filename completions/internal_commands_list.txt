@@ -86,6 +86,7 @@ rm
 rubocop
 ruby
 search
+setup-ruby
 sh
 shellenv
 style

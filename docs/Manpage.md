@@ -663,6 +663,10 @@ is flanked by slashes, it is interpreted as a regular expression.
 * `--ubuntu`:
   Search for *`text`* in the given database.
 
+### `setup-ruby`
+
+Installs and configures Homebrew's Ruby.
+
 ### `shellenv [bash|csh|fish|pwsh|sh|tcsh|zsh]`
 
 Print export statements. When run in a shell, this installation of Homebrew will be added to your `PATH`, `MANPATH`, and `INFOPATH`.
