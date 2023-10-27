@@ -33,6 +33,8 @@ module Homebrew
   def self.bump_unversioned_casks
     args = bump_unversioned_casks_args.parse
 
+    Homebrew.install_bundler_gems!(groups: ["bump_unversioned_casks"])
+
     state_file = if args.state_file.present?
       Pathname(args.state_file).expand_path
     else

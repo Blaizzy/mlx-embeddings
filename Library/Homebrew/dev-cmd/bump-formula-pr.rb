@@ -117,7 +117,7 @@ module Homebrew
 
     # This will be run by `brew audit` later so run it first to not start
     # spamming during normal output.
-    Homebrew.install_bundler_gems!(groups: ["style"]) unless args.no_audit?
+    Homebrew.install_bundler_gems!(groups: ["audit", "style"]) unless args.no_audit?
 
     tap_remote_repo = formula.tap.full_name || formula.tap.remote_repo
     remote = "origin"

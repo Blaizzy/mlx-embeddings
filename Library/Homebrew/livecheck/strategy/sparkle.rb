@@ -62,6 +62,7 @@ module Homebrew
         # @return [Item, nil]
         sig { params(content: String).returns(T::Array[Item]) }
         def self.items_from_content(content)
+          require "rexml/document"
           xml = Xml.parse_xml(content)
           return [] if xml.blank?
 
