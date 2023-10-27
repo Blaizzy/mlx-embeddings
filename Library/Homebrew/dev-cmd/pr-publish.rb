@@ -74,7 +74,7 @@ module Homebrew
       end
 
       ohai "Dispatching #{tap} pull request ##{issue}"
-      GitHub.workflow_dispatch_event(user, repo, workflow, ref, inputs)
+      GitHub.workflow_dispatch_event(user, repo, workflow, ref, **inputs)
     end
   end
 end
