@@ -88,7 +88,7 @@ module Homebrew
       inputs[:upload] = args.upload?
 
       ohai "Dispatching #{tap} bottling request of formula \"#{formula.name}\" for #{runners.join(", ")}"
-      GitHub.workflow_dispatch_event(user, repo, workflow, ref, inputs)
+      GitHub.workflow_dispatch_event(user, repo, workflow, ref, **inputs)
     end
   end
 end
