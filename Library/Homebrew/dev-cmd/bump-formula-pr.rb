@@ -410,7 +410,7 @@ module Homebrew
 
   def fetch_resource_and_forced_version(formula, new_version, url, **specs)
     resource = Resource.new
-    resource.url(url, specs)
+    resource.url(url, **specs)
     resource.owner = Resource.new(formula.name)
     forced_version = new_version && new_version != resource.version.to_s
     resource.version(new_version) if forced_version
