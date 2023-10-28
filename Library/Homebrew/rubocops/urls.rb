@@ -217,11 +217,11 @@ module RuboCop
             problem "Use /archive/ URLs for GitHub tarballs (url is #{url})."
           end
 
-          archive_ref_tags_gh_pattern = %r{https://.*github.*/archive/(?![a-fA-F0-9]{40})(?!refs/tags/).*\.tar\.gz$}
-          audit_urls(urls, archive_ref_tags_gh_pattern) do |_, url|
+          archive_refs_gh_pattern = %r{https://.*github.+/archive/(?![a-fA-F0-9]{40})(?!refs/(tags|heads)/)(.*)\.tar\.gz$}
+          audit_urls(urls, archive_refs_gh_pattern) do |match, url|
             next if url.end_with?(".git")
 
-            problem "Use /archive/refs/tags URLs for GitHub tarballs (url is #{url})."
+            problem "Use refs/tags/#{match[2]} or refs/heads/#{match[2]} for GitHub references (url is #{url})."
           end
 
           # Don't use GitHub .zip files
