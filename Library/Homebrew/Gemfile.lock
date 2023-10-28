@@ -201,6 +201,7 @@ DEPENDENCIES
   patchelf
   plist
   pry
+  rexml
   ronn
   rspec
   rspec-github

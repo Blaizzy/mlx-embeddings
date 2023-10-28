@@ -70,7 +70,10 @@ module Homebrew
     # odeprecated "brew bump-cask-pr --online" if args.online?
     # This will be run by `brew audit` or `brew style` later so run it first to
     # not start spamming during normal output.
-    Homebrew.install_bundler_gems!(groups: ["style"]) if !args.no_audit? || !args.no_style?
+    gem_groups = []
+    gem_groups << "style" if !args.no_audit? || !args.no_style?
+    gem_groups << "audit" unless args.no_audit?
+    Homebrew.install_bundler_gems!(groups: gem_groups) unless gem_groups.empty?
 
     # As this command is simplifying user-run commands then let's just use a
     # user path, too.

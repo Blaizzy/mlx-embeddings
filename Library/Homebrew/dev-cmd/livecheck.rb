@@ -66,7 +66,7 @@ module Homebrew
   def livecheck
     args = livecheck_args.parse
 
-    Homebrew.install_bundler_gems!(groups: ["livecheck"]) if args.json?
+    Homebrew.install_bundler_gems!(groups: ["livecheck"])
 
     all = args.eval_all?
 
