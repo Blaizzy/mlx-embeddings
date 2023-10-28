@@ -155,10 +155,10 @@ module Kernel
     end
   end
 
-  def odisabled(method, replacement = nil, options = {})
+  def odisabled(method, replacement = nil, **options)
     options = { disable: true, caller: caller }.merge(options)
     # This odeprecated should stick around indefinitely.
-    odeprecated(method, replacement, options)
+    odeprecated(method, replacement, **options)
   end
 
   def pretty_installed(formula)
