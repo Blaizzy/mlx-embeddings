@@ -291,7 +291,7 @@ class SystemCommand
 
     pending_interrupt = T.let(false, T::Boolean)
 
-    until pending_interrupt
+    until pending_interrupt || sources.empty?
       readable_sources = T.let([], T::Array[IO])
       begin
         Thread.handle_interrupt(ProcessTerminatedInterrupt => :on_blocking) do
@@ -302,7 +302,7 @@ class SystemCommand
         pending_interrupt = true
       end
 
-      break if readable_sources.none? do |source|
+      readable_sources.each do |source|
         loop do
           line = source.readline_nonblock || ""
           yield(sources.fetch(source), line)
@@ -310,9 +310,8 @@ class SystemCommand
       rescue EOFError
         source.close_read
         sources.delete(source)
-        sources.any?
       rescue IO::WaitReadable
-        true
+        # We've got all the data that was ready, but the other end of the stream isn't finished yet
       end
     end
 
