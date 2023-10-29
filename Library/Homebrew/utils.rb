@@ -43,8 +43,9 @@ module Homebrew
 
   def self.system(cmd, *args, **options)
     if verbose?
-      puts "#{cmd} #{args * " "}".gsub(RUBY_PATH, "ruby")
-                                 .gsub($LOAD_PATH.join(File::PATH_SEPARATOR).to_s, "$LOAD_PATH")
+      out = (options[:out] == :err) ? $stderr : $stdout
+      out.puts "#{cmd} #{args * " "}".gsub(RUBY_PATH, "ruby")
+                                     .gsub($LOAD_PATH.join(File::PATH_SEPARATOR).to_s, "$LOAD_PATH")
     end
     _system(cmd, *args, **options)
   end
