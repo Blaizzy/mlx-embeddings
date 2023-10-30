@@ -3,9 +3,7 @@
 
 # Disable Rails cops, as we haven't required active_support yet.
 # rubocop:disable Rails
-homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? &&
-                            !ENV["HOMEBREW_BOOTSNAP"].nil? &&
-                            ENV["HOMEBREW_RUBY3"].nil?
+homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? && !ENV["HOMEBREW_BOOTSNAP"].nil?
 
 # we need some development tools to build bootsnap native code
 homebrew_bootsnap_enabled &&= if ENV["HOMEBREW_MACOS_VERSION"]
