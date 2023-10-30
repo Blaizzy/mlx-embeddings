@@ -186,7 +186,7 @@ Here is a rough outline of how to use a staging branch:
 
 1. Open a _draft_ PR that merges the staging branch into the `master` branch. This allows you to keep track of the work done so far. You may wish to apply the [`no long build conflict`](https://github.com/Homebrew/homebrew-core/labels/no%20long%20build%20conflict) label to this PR to avoid conflicting changes from being merged to the `master` branch.
 
-1. Open PRs targetting the staging branch that update the affected formulae. Each PR should touch as few formulae as possible. The typical PR that targets the staging branch will update only one formula at a time. Staging branch PRs can be merged using the same process as PRs that target the `master` branch. Ideally, these PRs should be opened in [topological order](https://en.wikipedia.org/wiki/Topological_sorting) according to the dependency graph, but we don't currently have good tooling for generating a topological sort. (Help wanted.)
+1. Open PRs targeting the staging branch that update the affected formulae. Each PR should touch as few formulae as possible. The typical PR that targets the staging branch will update only one formula at a time. Staging branch PRs can be merged using the same process as PRs that target the `master` branch. Ideally, these PRs should be opened in [topological order](https://en.wikipedia.org/wiki/Topological_sorting) according to the dependency graph, but we don't currently have good tooling for generating a topological sort. (Help wanted.)
 
 1. Label PRs that target the staging branch with the [`staging-branch-pr`](https://github.com/Homebrew/homebrew-core/labels/staging-branch-pr) label for ease of tracking and review. (TODO: Add some automation for this to homebrew-core.)
 
