@@ -191,7 +191,16 @@ module Homebrew
   end
 
   def write_user_gem_groups(groups)
-    GEM_GROUPS_FILE.write(groups.join("\n"))
+    # Write the file atomically, in case we're working parallel
+    require "tempfile"
+    tmpfile = Tempfile.new([GEM_GROUPS_FILE.basename.to_s, "~"], GEM_GROUPS_FILE.dirname)
+    begin
+      tmpfile.write(groups.join("\n"))
+      tmpfile.close
+      File.rename(tmpfile.path.to_s, GEM_GROUPS_FILE)
+    ensure
+      tmpfile.unlink
+    end
   end
 
   def forget_user_gem_groups!
