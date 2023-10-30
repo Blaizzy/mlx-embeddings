@@ -25,14 +25,12 @@ end
 
 module Bootsnap::CompileCache
   class << self
-    def permission_error(path); end
     def setup(cache_dir:, iseq:, yaml:, json:, readonly: T.unsafe(nil)); end
     def supported?; end
   end
 end
 
 class Bootsnap::CompileCache::Error < ::StandardError; end
-class Bootsnap::CompileCache::PermissionError < ::Bootsnap::CompileCache::Error; end
 Bootsnap::CompileCache::UNCOMPILABLE = T.let(T.unsafe(nil), BasicObject)
 
 module Bootsnap::ExplicitRequire
@@ -100,12 +98,14 @@ module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
   def []=(*args, &block); end
   def append(*entries); end
   def clear(*args, &block); end
+  def clone; end
   def collect!(*args, &block); end
   def compact!(*args, &block); end
   def concat(entries); end
   def delete(*args, &block); end
   def delete_at(*args, &block); end
   def delete_if(*args, &block); end
+  def dup; end
   def fill(*args, &block); end
   def flatten!(*args, &block); end
   def insert(*args, &block); end

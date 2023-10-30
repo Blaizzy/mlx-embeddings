@@ -125,6 +125,10 @@ module Bootsnap::LoadPathCache
   DLEXT2 = ::T.let(nil, ::T.untyped)
 end
 
+class Bootsnap::LoadPathCache::Cache
+  TRUFFLERUBY_LIB_DIR_PREFIX = ::T.let(nil, ::T.untyped)
+end
+
 class BottleSpecification
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -5565,6 +5569,8 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
+Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
+
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -5579,13 +5585,9 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-class Net::HTTPSuccess
-end
+Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
 
-Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
-
-class Net::HTTPSuccess
-end
+Net::HTTPSuccessCode = Net::HTTPSuccess
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
