@@ -152,6 +152,7 @@ done
 # We don't want to take the user's value for, e.g., `HOMEBREW_PATH` here!
 USED_BY_HOMEBREW_VARS=(
   CODESPACES
+  COLORTERM
   DBUS_SESSION_BUS_ADDRESS
   PATH
   SSH_TTY

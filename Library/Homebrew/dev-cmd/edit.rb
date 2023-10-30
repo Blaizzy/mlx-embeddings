@@ -85,6 +85,8 @@ module Homebrew
   def edit
     args = edit_args.parse
 
+    ENV["COLORTERM"] = ENV.fetch("HOMEBREW_COLORTERM", nil)
+
     unless (HOMEBREW_REPOSITORY/".git").directory?
       odie <<~EOS
         Changes will be lost!
