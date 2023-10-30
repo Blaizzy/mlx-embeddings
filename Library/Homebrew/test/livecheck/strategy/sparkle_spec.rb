@@ -29,32 +29,42 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   let(:item_hashes) do
     {
       v123: {
-        title:         "Version 1.2.3",
-        pub_date:      "Fri, 01 Jan 2021 01:23:45 +0000",
-        url:           "https://www.example.com/example/example-1.2.3.tar.gz",
-        short_version: "1.2.3",
-        version:       "123",
+        title:                  "Version 1.2.3",
+        release_notes_link:     "https://www.example.com/example/1.2.3.html",
+        pub_date:               "Fri, 01 Jan 2021 01:23:45 +0000",
+        url:                    "https://www.example.com/example/example-1.2.3.tar.gz",
+        short_version:          "1.2.3",
+        version:                "123",
+        minimum_system_version: "10.10",
       },
       v122: {
-        title:         "Version 1.2.2",
-        pub_date:      "Not a parseable date string",
-        url:           "https://www.example.com/example/example-1.2.2.tar.gz",
-        short_version: "1.2.2",
-        version:       "122",
+        title:                  "Version 1.2.2",
+        release_notes_link:     "https://www.example.com/example/1.2.2.html",
+        pub_date:               "Not a parseable date string",
+        link:                   "https://www.example.com/example/example-1.2.2.tar.gz",
+        short_version:          "1.2.2",
+        version:                "122",
+        minimum_system_version: "10.10",
       },
       v121: {
-        title:         "Version 1.2.1",
-        pub_date:      "Thu, 31 Dec 2020 01:23:45 +0000",
-        url:           "https://www.example.com/example/example-1.2.1.tar.gz",
-        short_version: "1.2.1",
-        version:       "121",
+        title:                  "Version 1.2.1",
+        release_notes_link:     "https://www.example.com/example/1.2.1.html",
+        pub_date:               "Thu, 31 Dec 2020 01:23:45 +0000",
+        os:                     "osx",
+        url:                    "https://www.example.com/example/example-1.2.1.tar.gz",
+        short_version:          "1.2.1",
+        version:                "121",
+        minimum_system_version: "10.10",
       },
       v120: {
-        title:         "Version 1.2.0",
-        pub_date:      "Wed, 30 Dec 2020 01:23:45 +0000",
-        url:           "https://www.example.com/example/example-1.2.0.tar.gz",
-        short_version: "1.2.0",
-        version:       "120",
+        title:                  "Version 1.2.0",
+        release_notes_link:     "https://www.example.com/example/1.2.0.html",
+        pub_date:               "Wed, 30 Dec 2020 01:23:45 +0000",
+        os:                     "macos",
+        url:                    "https://www.example.com/example/example-1.2.0.tar.gz",
+        short_version:          "1.2.0",
+        version:                "120",
+        minimum_system_version: "10.10",
       },
     }
   end
@@ -63,8 +73,8 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     v123_item = <<~EOS
       <item>
         <title>#{item_hashes[:v123][:title]}</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v123][:short_version]}.html</sparkle:releaseNotesLink>
+        <sparkle:minimumSystemVersion>#{item_hashes[:v123][:minimum_system_version]}</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>#{item_hashes[:v123][:release_notes_link]}</sparkle:releaseNotesLink>
         <pubDate>#{item_hashes[:v123][:pub_date]}</pubDate>
         <enclosure url="#{item_hashes[:v123][:url]}" sparkle:shortVersionString="#{item_hashes[:v123][:short_version]}" sparkle:version="#{item_hashes[:v123][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
       </item>
@@ -73,32 +83,32 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     v122_item = <<~EOS
       <item>
         <title>#{item_hashes[:v122][:title]}</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v122][:short_version]}.html</sparkle:releaseNotesLink>
+        <link>#{item_hashes[:v122][:link]}</link>
+        <sparkle:minimumSystemVersion>#{item_hashes[:v122][:minimum_system_version]}</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>#{item_hashes[:v122][:release_notes_link]}</sparkle:releaseNotesLink>
         <pubDate>#{item_hashes[:v122][:pub_date]}</pubDate>
         <sparkle:version>#{item_hashes[:v122][:version]}</sparkle:version>
         <sparkle:shortVersionString>#{item_hashes[:v122][:short_version]}</sparkle:shortVersionString>
-        <link>#{item_hashes[:v122][:url]}</link>
       </item>
     EOS
 
     v121_item_with_osx_os = <<~EOS
       <item>
         <title>#{item_hashes[:v121][:title]}</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v121][:short_version]}.html</sparkle:releaseNotesLink>
+        <sparkle:minimumSystemVersion>#{item_hashes[:v121][:minimum_system_version]}</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>#{item_hashes[:v121][:release_notes_link]}</sparkle:releaseNotesLink>
         <pubDate>#{item_hashes[:v121][:pub_date]}</pubDate>
-        <enclosure os="osx" url="#{item_hashes[:v121][:url]}" sparkle:shortVersionString="#{item_hashes[:v121][:short_version]}" sparkle:version="#{item_hashes[:v121][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+        <enclosure os="#{item_hashes[:v121][:os]}" url="#{item_hashes[:v121][:url]}" sparkle:shortVersionString="#{item_hashes[:v121][:short_version]}" sparkle:version="#{item_hashes[:v121][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
       </item>
     EOS
 
     v120_item_with_macos_os = <<~EOS
       <item>
         <title>#{item_hashes[:v120][:title]}</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v120][:short_version]}.html</sparkle:releaseNotesLink>
+        <sparkle:minimumSystemVersion>#{item_hashes[:v120][:minimum_system_version]}</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>#{item_hashes[:v120][:release_notes_link]}</sparkle:releaseNotesLink>
         <pubDate>#{item_hashes[:v120][:pub_date]}</pubDate>
-        <enclosure os="macos" url="#{item_hashes[:v120][:url]}" sparkle:shortVersionString="#{item_hashes[:v120][:short_version]}" sparkle:version="#{item_hashes[:v120][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
+        <enclosure os="#{item_hashes[:v120][:os]}" url="#{item_hashes[:v120][:url]}" sparkle:shortVersionString="#{item_hashes[:v120][:short_version]}" sparkle:version="#{item_hashes[:v120][:version]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
       </item>
     EOS
 
@@ -131,8 +141,8 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     no_versions_item = create_appcast_xml <<~EOS
       <item>
         <title>Version</title>
-        <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-        <sparkle:releaseNotesLink>https://www.example.com/example/#{item_hashes[:v123][:short_version]}.html</sparkle:releaseNotesLink>
+        <sparkle:minimumSystemVersion>#{item_hashes[:v123][:minimum_system_version]}</sparkle:minimumSystemVersion>
+        <sparkle:releaseNotesLink>#{item_hashes[:v123][:release_notes_link]}</sparkle:releaseNotesLink>
         <pubDate>#{item_hashes[:v123][:pub_date]}</pubDate>
         <enclosure url="#{item_hashes[:v123][:url]}" length="12345678" type="application/octet-stream" sparkle:dsaSignature="ABCDEF+GHIJKLMNOPQRSTUVWXYZab/cdefghijklmnopqrst/uvwxyz1234567==" />
       </item>
@@ -157,34 +167,53 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   let(:items) do
     {
       v123: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-        title:          item_hashes[:v123][:title],
-        pub_date:       Time.parse(item_hashes[:v123][:pub_date]),
-        url:            item_hashes[:v123][:url],
-        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v123][:short_version],
-                                                    item_hashes[:v123][:version]),
+        title:                  item_hashes[:v123][:title],
+        release_notes_link:     item_hashes[:v123][:release_notes_link],
+        pub_date:               Time.parse(item_hashes[:v123][:pub_date]),
+        url:                    item_hashes[:v123][:url],
+        bundle_version:         Homebrew::BundleVersion.new(
+          item_hashes[:v123][:short_version],
+          item_hashes[:v123][:version],
+        ),
+        minimum_system_version: item_hashes[:v123][:minimum_system_version],
       ),
       v122: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-        title:          item_hashes[:v122][:title],
+        title:                  item_hashes[:v122][:title],
+        link:                   item_hashes[:v122][:link],
+        release_notes_link:     item_hashes[:v122][:release_notes_link],
         # `#items_from_content` falls back to a default `pub_date` when
         # one isn't provided or can't be successfully parsed.
-        pub_date:       Time.new(0),
-        url:            item_hashes[:v122][:url],
-        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v122][:short_version],
-                                                    item_hashes[:v122][:version]),
+        pub_date:               Time.new(0),
+        url:                    item_hashes[:v122][:link],
+        bundle_version:         Homebrew::BundleVersion.new(
+          item_hashes[:v122][:short_version],
+          item_hashes[:v122][:version],
+        ),
+        minimum_system_version: item_hashes[:v122][:minimum_system_version],
       ),
       v121: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-        title:          item_hashes[:v121][:title],
-        pub_date:       Time.parse(item_hashes[:v121][:pub_date]),
-        url:            item_hashes[:v121][:url],
-        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v121][:short_version],
-                                                    item_hashes[:v121][:version]),
+        title:                  item_hashes[:v121][:title],
+        release_notes_link:     item_hashes[:v121][:release_notes_link],
+        pub_date:               Time.parse(item_hashes[:v121][:pub_date]),
+        os:                     item_hashes[:v121][:os],
+        url:                    item_hashes[:v121][:url],
+        bundle_version:         Homebrew::BundleVersion.new(
+          item_hashes[:v121][:short_version],
+          item_hashes[:v121][:version],
+        ),
+        minimum_system_version: item_hashes[:v121][:minimum_system_version],
       ),
       v120: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
-        title:          item_hashes[:v120][:title],
-        pub_date:       Time.parse(item_hashes[:v120][:pub_date]),
-        url:            item_hashes[:v120][:url],
-        bundle_version: Homebrew::BundleVersion.new(item_hashes[:v120][:short_version],
-                                                    item_hashes[:v120][:version]),
+        title:                  item_hashes[:v120][:title],
+        release_notes_link:     item_hashes[:v120][:release_notes_link],
+        pub_date:               Time.parse(item_hashes[:v120][:pub_date]),
+        os:                     item_hashes[:v120][:os],
+        url:                    item_hashes[:v120][:url],
+        bundle_version:         Homebrew::BundleVersion.new(
+          item_hashes[:v120][:short_version],
+          item_hashes[:v120][:version],
+        ),
+        minimum_system_version: item_hashes[:v120][:minimum_system_version],
       ),
     }
   end

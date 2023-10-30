@@ -35,13 +35,21 @@ module Homebrew
           # @api public
           :title,
           # @api public
+          :link,
+          # @api public
           :channel,
-          # @api private
+          # @api public
+          :release_notes_link,
+          # @api public
           :pub_date,
+          # @api public
+          :os,
           # @api public
           :url,
           # @api private
           :bundle_version,
+          # @api public
+          :minimum_system_version,
           keyword_init: true,
         ) do
           extend Forwardable
@@ -84,12 +92,14 @@ module Homebrew
               os = enclosure["os"]
             end
 
-            channel = item.elements["channel"]&.text
-            url ||= item.elements["link"]&.text
+            title = item.elements["title"]&.text&.strip
+            link = item.elements["link"]&.text&.strip
+            url ||= link
+            channel = item.elements["channel"]&.text&.strip
+            release_notes_link = item.elements["releaseNotesLink"]&.text&.strip
             short_version ||= item.elements["shortVersionString"]&.text&.strip
             version ||= item.elements["version"]&.text&.strip
 
-            title = item.elements["title"]&.text&.strip
             pub_date = item.elements["pubDate"]&.text&.strip&.presence&.then do |date_string|
               Time.parse(date_string)
             rescue ArgumentError
@@ -117,11 +127,15 @@ module Homebrew
             end
 
             data = {
-              title:          title,
-              channel:        channel,
-              pub_date:       pub_date,
-              url:            url,
-              bundle_version: bundle_version,
+              title:                  title,
+              link:                   link,
+              channel:                channel,
+              release_notes_link:     release_notes_link,
+              pub_date:               pub_date,
+              os:                     os,
+              url:                    url,
+              bundle_version:         bundle_version,
+              minimum_system_version: minimum_system_version,
             }.compact
             next if data.empty?
 
