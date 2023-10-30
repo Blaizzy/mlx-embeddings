@@ -326,7 +326,6 @@ jobs:
         if: matrix.ruby
         run: |
           echo "HOMEBREW_USE_RUBY_FROM_PATH=1" >> "${GITHUB_ENV}"
-          echo "HOMEBREW_BOOTSNAP=" >> "${GITHUB_ENV}" # Unsupported, for now
           rm -rf "${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew/vendor/portable-ruby"
 
       - run: brew config
