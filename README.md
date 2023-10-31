@@ -30,8 +30,8 @@ Please consider a regular donation through [GitHub Sponsors](https://github.com/
 ## Community
 
 - [Homebrew/discussions (forum)](https://github.com/orgs/Homebrew/discussions)
-- [@MacHomebrew (Twitter)](https://twitter.com/MacHomebrew)
 - [@homebrew@fosstodon.org (Mastodon)](https://fosstodon.org/@homebrew)
+- [@MacHomebrew (𝕏 (formerly known as Twitter))](https://twitter.com/MacHomebrew)
 
 ## Contributing
 
