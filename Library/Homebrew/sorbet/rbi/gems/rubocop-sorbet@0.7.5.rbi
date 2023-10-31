@@ -61,8 +61,9 @@ end
 
 RuboCop::Cop::Sorbet::CallbackConditionalsBinding::CALLBACKS = T.let(T.unsafe(nil), Array)
 
-class RuboCop::Cop::Sorbet::CheckedTrueInSignature < ::RuboCop::Cop::Sorbet::SignatureCop
+class RuboCop::Cop::Sorbet::CheckedTrueInSignature < ::RuboCop::Cop::Cop
   include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::Sorbet::SignatureHelp
 
   def offending_node(param0); end
   def on_signature(node); end
@@ -75,16 +76,21 @@ class RuboCop::Cop::Sorbet::ConstantsFromStrings < ::RuboCop::Cop::Cop
   def on_send(node); end
 end
 
-class RuboCop::Cop::Sorbet::EmptyLineAfterSig < ::RuboCop::Cop::Sorbet::SignatureCop
+class RuboCop::Cop::Sorbet::EmptyLineAfterSig < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
+  include ::RuboCop::Cop::Sorbet::SignatureHelp
+  extend ::RuboCop::Cop::AutoCorrector
 
-  def autocorrect(node); end
-  def on_signature(node); end
+  def on_signature(sig); end
+  def sig_or_signable_method_definition?(param0 = T.unsafe(nil)); end
 
   private
 
-  def next_method(node); end
+  def lines_between(node1, node2, buffer: T.unsafe(nil)); end
+  def next_sibling(node); end
 end
+
+RuboCop::Cop::Sorbet::EmptyLineAfterSig::MSG = T.let(T.unsafe(nil), String)
 
 class RuboCop::Cop::Sorbet::EnforceSigilOrder < ::RuboCop::Cop::Sorbet::ValidSigil
   include ::RuboCop::Cop::RangeHelp
@@ -104,7 +110,9 @@ RuboCop::Cop::Sorbet::EnforceSigilOrder::INDENT_REGEX = T.let(T.unsafe(nil), Reg
 RuboCop::Cop::Sorbet::EnforceSigilOrder::MAGIC_REGEX = T.let(T.unsafe(nil), Regexp)
 RuboCop::Cop::Sorbet::EnforceSigilOrder::PREFERRED_ORDER = T.let(T.unsafe(nil), Hash)
 
-class RuboCop::Cop::Sorbet::EnforceSignatures < ::RuboCop::Cop::Sorbet::SignatureCop
+class RuboCop::Cop::Sorbet::EnforceSignatures < ::RuboCop::Cop::Cop
+  include ::RuboCop::Cop::Sorbet::SignatureHelp
+
   def initialize(config = T.unsafe(nil), options = T.unsafe(nil)); end
 
   def accessor?(param0 = T.unsafe(nil)); end
@@ -163,17 +171,20 @@ end
 RuboCop::Cop::Sorbet::ForbidExtendTSigHelpersInShims::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Sorbet::ForbidExtendTSigHelpersInShims::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-class RuboCop::Cop::Sorbet::ForbidIncludeConstLiteral < ::RuboCop::Cop::Cop
-  def initialize(*_arg0); end
+class RuboCop::Cop::Sorbet::ForbidIncludeConstLiteral < ::RuboCop::Cop::Base
+  extend ::RuboCop::Cop::AutoCorrector
 
-  def autocorrect(node); end
-  def not_lit_const_include?(param0 = T.unsafe(nil)); end
+  def dynamic_inclusion?(param0 = T.unsafe(nil)); end
   def on_send(node); end
-  def used_names; end
-  def used_names=(_arg0); end
+
+  private
+
+  def neither_const_nor_self?(node); end
+  def within_onymous_module?(node); end
 end
 
 RuboCop::Cop::Sorbet::ForbidIncludeConstLiteral::MSG = T.let(T.unsafe(nil), String)
+RuboCop::Cop::Sorbet::ForbidIncludeConstLiteral::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 class RuboCop::Cop::Sorbet::ForbidRBIOutsideOfAllowedPaths < ::RuboCop::Cop::Cop
   include ::RuboCop::Cop::RangeHelp
@@ -224,6 +235,7 @@ class RuboCop::Cop::Sorbet::ForbidTStruct::Property
   def initialize_sig_param; end
   def kind; end
   def name; end
+  def nilable?; end
   def node; end
   def type; end
 end
@@ -289,7 +301,9 @@ RuboCop::Cop::Sorbet::ImplicitConversionMethod::IMPLICIT_CONVERSION_METHODS = T.
 RuboCop::Cop::Sorbet::ImplicitConversionMethod::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Sorbet::ImplicitConversionMethod::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-class RuboCop::Cop::Sorbet::KeywordArgumentOrdering < ::RuboCop::Cop::Sorbet::SignatureCop
+class RuboCop::Cop::Sorbet::KeywordArgumentOrdering < ::RuboCop::Cop::Cop
+  include ::RuboCop::Cop::Sorbet::SignatureHelp
+
   def on_signature(node); end
 
   private
@@ -348,7 +362,9 @@ end
 RuboCop::Cop::Sorbet::RedundantExtendTSig::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Sorbet::RedundantExtendTSig::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-class RuboCop::Cop::Sorbet::SignatureBuildOrder < ::RuboCop::Cop::Sorbet::SignatureCop
+class RuboCop::Cop::Sorbet::SignatureBuildOrder < ::RuboCop::Cop::Cop
+  include ::RuboCop::Cop::Sorbet::SignatureHelp
+
   def autocorrect(node); end
   def on_signature(node); end
   def root_call(param0); end
@@ -363,10 +379,12 @@ end
 class RuboCop::Cop::Sorbet::SignatureBuildOrder::ModernBuilder < ::RuboCop::AST::Builder; end
 RuboCop::Cop::Sorbet::SignatureBuildOrder::ORDER = T.let(T.unsafe(nil), Hash)
 
-class RuboCop::Cop::Sorbet::SignatureCop < ::RuboCop::Cop::Cop
+module RuboCop::Cop::Sorbet::SignatureHelp
+  extend ::RuboCop::AST::NodePattern::Macros
+
   def on_block(node); end
   def on_numblock(node); end
-  def on_signature(_); end
+  def on_signature(_node); end
   def signature?(param0 = T.unsafe(nil)); end
   def with_runtime?(param0 = T.unsafe(nil)); end
   def without_runtime?(param0 = T.unsafe(nil)); end
