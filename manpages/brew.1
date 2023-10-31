@@ -2541,7 +2541,7 @@ This script will run \fBbrew update\fR in the background once every 24 hours (by
 .
 .P
 \fBbrew autoupdate start\fR [\fI\fBinterval\fR\fR] [\fI\fBoptions\fR\fR]
-    Start autoupdating either once every \fBinterval\fR hours or once every 24 hours\. Please note the interval has to be passed in seconds, so 12 hours would be \fBbrew autoupdate start 43200\fR\. Pass \fB\-\-upgrade\fR or \fB\-\-cleanup\fR to automatically run \fBbrew upgrade\fR and/or \fBbrew cleanup\fR respectively\. Pass \fB\-\-enable\-notification\fR to send a notification when the autoupdate process has finished successfully\.
+    Start autoupdating either once every \fBinterval\fR hours or once every 24 hours\. Please note the interval has to be passed in seconds, so 12 hours would be \fBbrew autoupdate start 43200\fR\. If you want to start the autoupdate immediately and on system boot, pass \fB\-\-immediate\fR\. Pass \fB\-\-upgrade\fR or \fB\-\-cleanup\fR to automatically run \fBbrew upgrade\fR and/or \fBbrew cleanup\fR respectively\. Pass \fB\-\-enable\-notification\fR to send a notification when the autoupdate process has finished successfully\.
 .
 .P
 \fBbrew autoupdate stop\fR
@@ -2577,7 +2577,7 @@ Send a notification when the autoupdate process has finished successfully, if \f
 .
 .TP
 \fB\-\-immediate\fR
-Starts the autoupdate command immediately, instead of waiting for one interval (24 hours by default) to pass first\. Must be passed with \fBstart\fR\.
+Starts the autoupdate command immediately and on system boot, instead of waiting for one interval (24 hours by default) to pass first\. Must be passed with \fBstart\fR\.
 .
 .SS "\fBbundle\fR [\fIsubcommand\fR]"
 Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew\.
