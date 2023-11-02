@@ -16,8 +16,8 @@ class Object < ::BasicObject
   include ::Kernel
   include ::JSON::Ext::Generator::GeneratorMethods::Object
   include ::PP::ObjectMixin
-  include ::ActiveSupport::Dependencies::Loadable
   include ::ActiveSupport::Tryable
+  include ::ActiveSupport::Dependencies::Loadable
 end
 
 ParseError = Racc::ParseError
