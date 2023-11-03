@@ -321,6 +321,7 @@ module Cask
         "appcast"              => appcast,
         "version"              => version,
         "installed"            => installed_version,
+        "installed_time"       => install_time&.to_i,
         "outdated"             => outdated?,
         "sha256"               => sha256,
         "artifacts"            => artifacts_list,
