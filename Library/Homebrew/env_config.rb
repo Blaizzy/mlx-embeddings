@@ -223,7 +223,7 @@ module Homebrew
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
                      "GitHub will allow you a greater number of API requests. For more information, see: " \
-                     "<https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting>" \
+                     "<https://docs.github.com/en/rest/overview/rate-limits-for-the-rest-api>" \
                      "\n\n    *Note:* Homebrew doesn't require permissions for any of the scopes, but some " \
                      "developer commands may require additional permissions.",
       },
