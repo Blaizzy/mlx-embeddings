@@ -475,21 +475,8 @@ module Cask
       return if !signing? || download.blank? || cask.url.blank?
 
       odebug "Auditing signing"
-      artifacts = cask.artifacts.select do |k|
-        k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::App) || k.is_a?(Artifact::Binary)
-      end
 
-      return if artifacts.empty?
-
-      downloaded_path = download.fetch
-      primary_container = UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
-
-      return if primary_container.nil?
-
-      Dir.mktmpdir do |tmpdir|
-        tmpdir = Pathname(tmpdir)
-        primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
-
+      extract_artifacts do |artifacts, tmpdir|
         artifacts.each do |artifact|
           artifact_path = artifact.is_a?(Artifact::Pkg) ? artifact.path : artifact.source
           path = tmpdir/artifact_path.relative_path_from(cask.staged_path)
@@ -508,6 +495,38 @@ module Cask
           EOS
         end
       end
+    end
+
+    sig { void }
+    def extract_artifacts
+      return unless online?
+
+      artifacts = cask.artifacts.select do |artifact|
+        artifact.is_a?(Artifact::Pkg) || artifact.is_a?(Artifact::App) || artifact.is_a?(Artifact::Binary)
+      end
+
+      if @artifacts_extracted && @tmpdir
+        yield artifacts, @tmpdir if block_given?
+        return
+      end
+
+      return if artifacts.empty?
+
+      @tmpdir ||= Pathname(Dir.mktmpdir)
+
+      ohai "Downloading and extracting artifacts"
+
+      downloaded_path = download.fetch
+
+      primary_container = UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
+      return if primary_container.nil?
+
+      # Extract the container to the temporary directory.
+      primary_container.extract_nestedly(to: @tmpdir, basename: downloaded_path.basename, verbose: false)
+      @artifacts_extracted = true # Set the flag to indicate that extraction has occurred.
+
+      # Yield the artifacts and temp directory to the block if provided.
+      yield artifacts, @tmpdir if block_given?
     end
 
     sig { returns(T.any(NilClass, T::Boolean, Symbol)) }
@@ -548,26 +567,31 @@ module Cask
 
       odebug "Auditing minimum OS version"
 
-      sparkle_min_os = livecheck_min_os
       plist_min_os = cask_plist_min_os
-      odebug "Minimum OS version: Plist #{plist_min_os} | Sparkle #{sparkle_min_os.inspect}"
-      min_os_string = [sparkle_min_os, plist_min_os].compact.max
+      sparkle_min_os = livecheck_min_os
 
-      return if min_os_string.nil? || min_os_string <= HOMEBREW_MACOS_OLDEST_ALLOWED
+      debug_messages = []
+      debug_messages << "Plist #{plist_min_os}" if plist_min_os
+      debug_messages << "Sparkle #{sparkle_min_os}" if sparkle_min_os
+      odebug "Minimum OS version: #{debug_messages.join(" | ")}" unless debug_messages.empty?
+      min_os = [sparkle_min_os, plist_min_os].compact.max
+
+      return if min_os.nil? || min_os <= HOMEBREW_MACOS_OLDEST_ALLOWED
 
       cask_min_os = cask.depends_on.macos&.version
-      return if cask_min_os == min_os_string
+      return if cask_min_os == min_os
 
       min_os_symbol = if cask_min_os.present?
         cask_min_os.to_sym.inspect
       else
         "no minimum OS version"
       end
-      add_error "Upstream defined #{min_os_string.to_sym.inspect} as the minimum OS version " \
+      add_error "Upstream defined #{min_os.to_sym.inspect} as the minimum OS version " \
                 "and the cask defined #{min_os_symbol}",
                 strict_only: true
     end
 
+    sig { returns(T.nilable(MacOSVersion)) }
     def livecheck_min_os
       return unless online?
       return unless cask.livecheckable?
@@ -600,26 +624,14 @@ module Cask
       end
     end
 
+    sig { returns(T.nilable(MacOSVersion)) }
     def cask_plist_min_os
       return unless online?
 
-      artifacts = cask.artifacts.select do |k|
-        k.is_a?(Artifact::Pkg) || k.is_a?(Artifact::App) || k.is_a?(Artifact::Binary)
-      end
-
-      return if artifacts.empty?
-
-      downloaded_path = download.fetch
-      primary_container = UnpackStrategy.detect(downloaded_path, type: @cask.container&.type, merge_xattrs: true)
-
-      return if primary_container.nil?
-
       plist_min_os = T.let(nil, T.untyped)
+      @staged_path ||= cask.staged_path
 
-      Dir.mktmpdir do |tmpdir|
-        tmpdir = Pathname(tmpdir)
-        primary_container.extract_nestedly(to: tmpdir, basename: downloaded_path.basename, verbose: false)
-
+      extract_artifacts do |artifacts, tmpdir|
         artifacts.each do |artifact|
           artifact_path = artifact.is_a?(Artifact::Pkg) ? artifact.path : artifact.source
           path = tmpdir/artifact_path.relative_path_from(cask.staged_path)
