@@ -427,12 +427,14 @@ class Tap
     args = %w[fetch]
     args << "--quiet" if quiet
     args << "origin"
+    args << "+refs/heads/*:refs/remotes/origin/*"
     safe_system "git", "-C", path, *args
     git_repo.set_head_origin_auto
 
     new_upstream_head = T.must(git_repo.origin_branch_name)
     return if new_upstream_head == current_upstream_head
 
+    safe_system "git", "-C", path, "config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*"
     git_repo.rename_branch old: current_upstream_head, new: new_upstream_head
     git_repo.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
 
