@@ -27,7 +27,7 @@ then
 fi
 
 quiet_cd() {
-  cd "$@" &>/dev/null || return
+  CDPATH='' cd -- "$@" &>/dev/null || return
 }
 
 symlink_target_directory() {
