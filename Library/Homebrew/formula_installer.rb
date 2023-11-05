@@ -175,7 +175,7 @@ class FormulaInstaller
 
     unless bottle.compatible_locations?
       if output_warning
-        prefix = Pathname(bottle.cellar).parent
+        prefix = Pathname(bottle.cellar.to_s).parent
         opoo <<~EOS
           Building #{formula.full_name} from source as the bottle needs:
           - HOMEBREW_CELLAR: #{bottle.cellar} (yours is #{HOMEBREW_CELLAR})
