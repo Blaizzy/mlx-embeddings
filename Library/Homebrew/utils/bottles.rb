@@ -68,9 +68,9 @@ module Utils
         else
           bottle_json_path = Pathname(bottle_file.sub(/\.(\d+\.)?tar\.gz$/, ".json"))
           if bottle_json_path.exist? &&
-              (bottle_json_path_contents = bottle_json_path.read.presence) &&
-              (bottle_json = JSON.parse(bottle_json_path_contents).presence) &&
-              bottle_json.is_a?(Hash)
+             (bottle_json_path_contents = bottle_json_path.read.presence) &&
+             (bottle_json = JSON.parse(bottle_json_path_contents).presence) &&
+             bottle_json.is_a?(Hash)
             bottle_json.keys.first.presence
           end
         end
