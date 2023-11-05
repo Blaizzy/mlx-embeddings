@@ -59,6 +59,8 @@ class Requirements < SimpleDelegator
         __getobj__.delete(req)
       end
     end
+    # see https://sorbet.org/docs/faq#how-can-i-fix-type-errors-that-arise-from-super
+    T.bind(self, T.untyped)
     super
     self
   end

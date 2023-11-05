@@ -17,7 +17,8 @@ module Language
       # fed to `npm install` only symlinks are created linking back to that
       # directory, consequently breaking that assumption. We require a tarball
       # because npm install creates a "real" installation when fed a tarball.
-      if (package = Pathname("package.json")) && package.exist?
+      package = Pathname("package.json")
+      if package.exist?
         begin
           pkg_json = JSON.parse(package.read)
         rescue JSON::ParserError

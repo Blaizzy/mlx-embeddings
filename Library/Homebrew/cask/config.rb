@@ -78,6 +78,8 @@ module Cask
         key = k.to_sym
 
         if DEFAULT_DIRS.key?(key)
+          raise TypeError, "Invalid path for default dir #{k}: #{v.inspect}" if v.is_a?(Array)
+
           [key, Pathname(v).expand_path]
         else
           [key, v]

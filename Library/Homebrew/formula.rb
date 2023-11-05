@@ -343,7 +343,7 @@ class Formula
 
   # The path that was specified to find this formula.
   def specified_path
-    default_specified_path = Pathname(alias_path) if alias_path.present?
+    default_specified_path = Pathname(T.must(alias_path)) if alias_path.present?
     default_specified_path ||= @unresolved_path
 
     return default_specified_path if default_specified_path.presence&.exist?

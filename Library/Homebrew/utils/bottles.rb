@@ -65,12 +65,14 @@ module Utils
           receipt_file = file_from_bottle(bottle_file, receipt_file_path)
           tap = Tab.from_file_content(receipt_file, "#{bottle_file}/#{receipt_file_path}").tap
           "#{tap}/#{name}" if tap.present? && !tap.core_tap?
-        elsif (bottle_json_path = Pathname(bottle_file.sub(/\.(\d+\.)?tar\.gz$/, ".json"))) &&
-              bottle_json_path.exist? &&
+        else
+          bottle_json_path = Pathname(bottle_file.sub(/\.(\d+\.)?tar\.gz$/, ".json"))
+          if bottle_json_path.exist? &&
               (bottle_json_path_contents = bottle_json_path.read.presence) &&
               (bottle_json = JSON.parse(bottle_json_path_contents).presence) &&
               bottle_json.is_a?(Hash)
-          bottle_json.keys.first.presence
+            bottle_json.keys.first.presence
+          end
         end
         full_name ||= name
 

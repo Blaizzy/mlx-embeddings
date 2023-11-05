@@ -42,7 +42,7 @@ class MacOSVersion < Version
   def initialize(version)
     raise MacOSVersion::Error, version unless /\A1\d+(?:\.\d+){0,2}\Z/.match?(version)
 
-    super(version)
+    super(T.must(version))
 
     @comparison_cache = {}
   end

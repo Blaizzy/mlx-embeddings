@@ -541,11 +541,11 @@ class BottleSpecification
   end
   alias eql? ==
 
-  sig { params(tag: Utils::Bottles::Tag).returns(T.any(Symbol, String)) }
+  sig { params(tag: Utils::Bottles::Tag).returns(String) }
   def tag_to_cellar(tag = Utils::Bottles.tag)
     spec = collector.specification_for(tag)
     if spec.present?
-      spec.cellar
+      spec.cellar.to_s
     else
       tag.default_cellar
     end
