@@ -541,11 +541,11 @@ class BottleSpecification
   end
   alias eql? ==
 
-  sig { params(tag: Utils::Bottles::Tag).returns(String) }
+  sig { params(tag: Utils::Bottles::Tag).returns(T.any(Symbol, String)) }
   def tag_to_cellar(tag = Utils::Bottles.tag)
     spec = collector.specification_for(tag)
     if spec.present?
-      spec.cellar.to_s
+      spec.cellar
     else
       tag.default_cellar
     end
@@ -557,7 +557,7 @@ class BottleSpecification
 
     return true if RELOCATABLE_CELLARS.include?(cellar)
 
-    prefix = Pathname(cellar).parent.to_s
+    prefix = Pathname(cellar.to_s).parent.to_s
 
     cellar_relocatable = cellar.size >= HOMEBREW_CELLAR.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"].present?
     prefix_relocatable = prefix.size >= HOMEBREW_PREFIX.to_s.size && ENV["HOMEBREW_RELOCATE_BUILD_PREFIX"].present?
