@@ -318,7 +318,11 @@ module Homebrew
 
           next unless @core_tap
 
-          unless dep_f.tap.core_tap?
+          if dep_f.tap.nil?
+            problem <<~EOS
+              Dependency '#{dep.name}' does not exist in any tap.
+            EOS
+          elsif !dep_f.tap.core_tap?
             problem <<~EOS
               Dependency '#{dep.name}' is not in homebrew/core. Formulae in homebrew/core
               should not have dependencies in external taps.
