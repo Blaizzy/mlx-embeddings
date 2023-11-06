@@ -279,7 +279,7 @@ module Homebrew
   def retrieve_pull_requests(formula_or_cask, name, state:, version: nil)
     tap_remote_repo = formula_or_cask.tap&.remote_repo || formula_or_cask.tap&.full_name
     pull_requests = GitHub.fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
-    if pull_requests.try(:any?)
+    if pull_requests&.any?
       pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
     end
 

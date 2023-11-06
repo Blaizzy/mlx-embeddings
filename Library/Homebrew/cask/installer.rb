@@ -300,12 +300,12 @@ on_request: true)
 
     def missing_cask_and_formula_dependencies
       cask_and_formula_dependencies.reject do |cask_or_formula|
-        installed = if cask_or_formula.respond_to?(:any_version_installed?)
-          cask_or_formula.any_version_installed?
-        else
-          cask_or_formula.try(:installed?)
+        case cask_or_formula
+        when Formula
+          cask_or_formula.any_version_installed? && cask_or_formula.optlinked?
+        when Cask
+          cask_or_formula.installed?
         end
-        installed && (cask_or_formula.respond_to?(:optlinked?) ? cask_or_formula.optlinked? : true)
       end
     end
 
