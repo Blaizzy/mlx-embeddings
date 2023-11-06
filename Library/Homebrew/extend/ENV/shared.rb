@@ -348,7 +348,7 @@ module SharedEnvExtension
     COMPILER_SYMBOL_MAP.fetch(value) do |other|
       case other
       when GNU_GCC_REGEXP
-        other
+        other.to_sym
       else
         raise "Invalid value for #{source}: #{other}"
       end
