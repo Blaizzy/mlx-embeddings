@@ -10,7 +10,7 @@ end
 module Homebrew
   # Parlour type signature generator helper class for Homebrew.
   module Parlour
-    ROOT_DIR = T.let(Pathname(__dir__).parent.realpath.freeze, Pathname).freeze
+    ROOT_DIR = T.let(Pathname(T.must(__dir__)).parent.realpath.freeze, Pathname).freeze
 
     sig { returns(T::Array[Parser::AST::Node]) }
     def self.ast_list

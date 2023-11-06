@@ -320,7 +320,7 @@ module Homebrew
         next unless tap.installed?
 
         if tap.git_branch == "master" &&
-           (Date.parse(tap.git_repo.last_commit_date) <= Date.today.prev_month)
+           (Date.parse(T.must(tap.git_repo.last_commit_date)) <= Date.today.prev_month)
           ohai "#{tap.name} is old and unneeded, untapping to save space..."
           tap.uninstall
         else

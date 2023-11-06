@@ -177,7 +177,7 @@ module Homebrew
   sig {
     params(
       cask:              Cask::Cask,
-      new_hash:          T.nilable(String),
+      new_hash:          T.any(NilClass, String, Symbol),
       new_version:       BumpVersionParser,
       replacement_pairs: T::Array[[T.any(Regexp, String), T.any(Regexp, String)]],
     ).returns(T::Array[[T.any(Regexp, String), T.any(Regexp, String)]])
@@ -234,7 +234,7 @@ module Homebrew
           end
         elsif new_hash
           opoo "Cask contains multiple hashes; only updating hash for current arch." if cask.on_system_blocks_exist?
-          replacement_pairs << [old_hash.to_s, new_hash]
+          replacement_pairs << [old_hash.to_s, new_hash.to_s]
         end
       end
     end

@@ -23,6 +23,8 @@ class LazyObject < Delegator
 
   # Forward to the inner object to make lazy objects type-checkable.
   def is_a?(klass)
+    # see https://sorbet.org/docs/faq#how-can-i-fix-type-errors-that-arise-from-super
+    T.bind(self, T.untyped)
     __getobj__.is_a?(klass) || super
   end
 end

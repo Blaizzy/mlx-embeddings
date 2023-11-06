@@ -126,7 +126,7 @@ class Pathname
     #   https://bugs.ruby-lang.org/issues/7707
     # In that case, use the system "mv" command.
     if src.symlink?
-      raise unless Kernel.system "mv", src, dst
+      raise unless Kernel.system "mv", src.to_s, dst
     else
       FileUtils.mv src, dst
     end

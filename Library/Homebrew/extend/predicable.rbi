@@ -1,5 +1,6 @@
 # typed: strict
 
 module Predicable
-  requires_ancestor { Class }
+  include Kernel
+  requires_ancestor { Module }
 end

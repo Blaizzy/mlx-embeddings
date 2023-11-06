@@ -236,7 +236,7 @@ module Cask
     def raw_url_line
       return @raw_url_line if defined?(@raw_url_line)
 
-      @raw_url_line = Pathname(@caller_location.path)
+      @raw_url_line = Pathname(T.must(@caller_location.path))
                       .each_line
                       .drop(@caller_location.lineno - 1)
                       .first
