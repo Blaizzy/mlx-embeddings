@@ -205,6 +205,7 @@ module Homebrew
       end
 
       def check_ruby_version
+        return unless ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]
         return if RUBY_VERSION == HOMEBREW_REQUIRED_RUBY_VERSION
         return if Homebrew::EnvConfig.developer? && OS::Mac.version.prerelease?
 

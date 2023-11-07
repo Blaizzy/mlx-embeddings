@@ -10,9 +10,16 @@ test_ruby() {
     return 1
   fi
 
+  if [[ -n "${HOMEBREW_RUBY3}" ]]
+  then
+    required_ruby_version="3.1.0"
+  else
+    required_ruby_version="${HOMEBREW_REQUIRED_RUBY_VERSION}"
+  fi
+
   "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt \
     "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby_check_version_script.rb" \
-    "${HOMEBREW_REQUIRED_RUBY_VERSION}" 2>/dev/null
+    "${required_ruby_version}" 2>/dev/null
 }
 
 can_use_ruby_from_path() {
@@ -70,7 +77,7 @@ find_ruby() {
 # HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH are set by brew.sh
 # shellcheck disable=SC2154
 need_vendored_ruby() {
-  if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" || -n "${HOMEBREW_RUBY3}" ]]
+  if [[ -n "${HOMEBREW_FORCE_VENDOR_RUBY}" ]]
   then
     return 0
   elif [[ -n "${HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH}" ]] && ! can_use_ruby_from_path
