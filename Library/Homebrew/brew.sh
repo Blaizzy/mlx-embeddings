@@ -586,7 +586,7 @@ then
 
   # Set a variable when the macOS system Ruby is new enough to avoid spawning
   # a Ruby process unnecessarily.
-  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "120601" ]]
+  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "120601" || -n "${HOMEBREW_RUBY3}" ]]
   then
     unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
   else
