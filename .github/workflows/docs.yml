@@ -60,7 +60,7 @@ jobs:
           test-bot: false
 
       - name: Checkout Homebrew/rubydoc.brew.sh
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
         with:
           repository: Homebrew/rubydoc.brew.sh
           path: rubydoc
@@ -68,7 +68,7 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.7"
+          ruby-version: "3.1"
           bundler-cache: true
 
       - name: Process rubydoc comments
