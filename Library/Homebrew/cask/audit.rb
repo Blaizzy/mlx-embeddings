@@ -597,6 +597,12 @@ module Cask
       return unless cask.livecheckable?
       return if cask.livecheck.strategy != :sparkle
 
+      # `Sparkle` strategy blocks that use the `items` argument (instead of
+      # `item`) contain arbitrary logic that ignores/overrides the strategy's
+      # sorting, so we can't identify which item would be first/newest here.
+      return if cask.livecheck.strategy_block.present? &&
+                cask.livecheck.strategy_block.parameters[0] == [:opt, :items]
+
       out, _, status = curl_output("--fail", "--silent", "--location", cask.livecheck.url)
       return unless status.success?
 
