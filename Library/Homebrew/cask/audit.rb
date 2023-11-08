@@ -574,7 +574,7 @@ module Cask
       debug_messages << "Plist #{plist_min_os}" if plist_min_os
       debug_messages << "Sparkle #{sparkle_min_os}" if sparkle_min_os
       odebug "Minimum OS version: #{debug_messages.join(" | ")}" unless debug_messages.empty?
-      min_os = [sparkle_min_os, plist_min_os].compact.max
+      min_os = [plist_min_os, sparkle_min_os].compact.max
 
       return if min_os.nil? || min_os <= HOMEBREW_MACOS_OLDEST_ALLOWED
 
