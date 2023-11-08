@@ -34,7 +34,7 @@ class DescriptionCacheStore < CacheStore
     return unless eval_all
     return unless database.empty?
 
-    Formula.all.each { |f| update!(f.full_name, f.desc) }
+    Formula.all(eval_all: eval_all).each { |f| update!(f.full_name, f.desc) }
   end
 
   # Use an update report to update the {DescriptionCacheStore}.
