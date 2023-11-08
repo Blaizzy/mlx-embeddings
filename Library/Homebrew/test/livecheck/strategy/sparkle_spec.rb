@@ -28,6 +28,17 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
   # `Sparkle::Item` objects.
   let(:item_hashes) do
     {
+      # The 1.2.4 version is only used in tests as the basis for an item that
+      # should be excluded (after modifications).
+      v124: {
+        title:                  "Version 1.2.4",
+        release_notes_link:     "https://www.example.com/example/1.2.4.html",
+        pub_date:               "Fri, 02 Jan 2021 01:23:45 +0000",
+        url:                    "https://www.example.com/example/example-1.2.4.tar.gz",
+        short_version:          "1.2.4",
+        version:                "124",
+        minimum_system_version: "10.10",
+      },
       v123: {
         title:                  "Version 1.2.3",
         release_notes_link:     "https://www.example.com/example/1.2.3.html",
@@ -128,6 +139,16 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
       </item>
     EOS
 
+    # Set the first item in a copy of `appcast` to a bad `minimumSystemVersion`
+    # value, to test `MacOSVersion::Error` handling.
+    bad_macos_version = appcast.sub(
+      v123_item,
+      v123_item.sub(
+        /(<sparkle:minimumSystemVersion>)[^<]+?</m,
+        '\1Not a macOS version<',
+      ),
+    )
+
     # Set the first item in a copy of `appcast` to the "beta" channel, to test
     # filtering items by channel using a `strategy` block.
     beta_channel_item = appcast.sub(
@@ -155,6 +176,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
     {
       appcast:             appcast,
       omitted_items:       omitted_items,
+      bad_macos_version:   bad_macos_version,
       beta_channel_item:   beta_channel_item,
       no_versions_item:    no_versions_item,
       no_items:            no_items,
@@ -166,6 +188,17 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
 
   let(:items) do
     {
+      v124: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
+        title:                  item_hashes[:v124][:title],
+        release_notes_link:     item_hashes[:v124][:release_notes_link],
+        pub_date:               Time.parse(item_hashes[:v124][:pub_date]),
+        url:                    item_hashes[:v124][:url],
+        bundle_version:         Homebrew::BundleVersion.new(
+          item_hashes[:v124][:short_version],
+          item_hashes[:v124][:version],
+        ),
+        minimum_system_version: MacOSVersion.new(item_hashes[:v124][:minimum_system_version]),
+      ),
       v123: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
         title:                  item_hashes[:v123][:title],
         release_notes_link:     item_hashes[:v123][:release_notes_link],
@@ -175,7 +208,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           item_hashes[:v123][:short_version],
           item_hashes[:v123][:version],
         ),
-        minimum_system_version: item_hashes[:v123][:minimum_system_version],
+        minimum_system_version: MacOSVersion.new(item_hashes[:v123][:minimum_system_version]),
       ),
       v122: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
         title:                  item_hashes[:v122][:title],
@@ -189,7 +222,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           item_hashes[:v122][:short_version],
           item_hashes[:v122][:version],
         ),
-        minimum_system_version: item_hashes[:v122][:minimum_system_version],
+        minimum_system_version: MacOSVersion.new(item_hashes[:v122][:minimum_system_version]),
       ),
       v121: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
         title:                  item_hashes[:v121][:title],
@@ -201,7 +234,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           item_hashes[:v121][:short_version],
           item_hashes[:v121][:version],
         ),
-        minimum_system_version: item_hashes[:v121][:minimum_system_version],
+        minimum_system_version: MacOSVersion.new(item_hashes[:v121][:minimum_system_version]),
       ),
       v120: Homebrew::Livecheck::Strategy::Sparkle::Item.new(
         title:                  item_hashes[:v120][:title],
@@ -213,7 +246,7 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
           item_hashes[:v120][:short_version],
           item_hashes[:v120][:version],
         ),
-        minimum_system_version: item_hashes[:v120][:minimum_system_version],
+        minimum_system_version: MacOSVersion.new(item_hashes[:v120][:minimum_system_version]),
       ),
     }
   end
@@ -233,6 +266,15 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
         items[:v122],
       ],
     }
+
+    bad_macos_version_item = items[:v123].clone
+    bad_macos_version_item.minimum_system_version = nil
+    item_arrays[:bad_macos_version] = [
+      bad_macos_version_item,
+      items[:v122],
+      items[:v121],
+      items[:v120],
+    ]
 
     beta_channel_item = items[:v123].clone
     beta_channel_item.channel = "beta"
@@ -278,8 +320,37 @@ describe Homebrew::Livecheck::Strategy::Sparkle do
       expect(items_from_appcast[0].short_version).to eq(item_hashes[:v123][:short_version])
       expect(items_from_appcast[0].version).to eq(item_hashes[:v123][:version])
 
+      expect(sparkle.items_from_content(xml[:bad_macos_version])).to eq(item_arrays[:bad_macos_version])
       expect(sparkle.items_from_content(xml[:beta_channel_item])).to eq(item_arrays[:beta_channel_item])
       expect(sparkle.items_from_content(xml[:no_versions_item])).to eq(item_arrays[:no_versions_item])
+    end
+  end
+
+  describe "::filter_items" do
+    let(:items_non_mac_os) do
+      item = items[:v124].clone
+      item.os = "not-osx-or-macos"
+      item_arrays[:appcast] + [item]
+    end
+
+    let(:items_prerelease_minimum_system_version) do
+      item = items[:v124].clone
+      item.minimum_system_version = MacOSVersion.new("100")
+      item_arrays[:appcast] + [item]
+    end
+
+    it "removes items with a non-mac OS" do
+      expect(sparkle.filter_items(items_non_mac_os)).to eq(item_arrays[:appcast])
+    end
+
+    it "removes items with a prerelease minimumSystemVersion" do
+      expect(sparkle.filter_items(items_prerelease_minimum_system_version)).to eq(item_arrays[:appcast])
+    end
+  end
+
+  describe "::sort_items" do
+    it "returns a sorted array of items" do
+      expect(sparkle.sort_items(item_arrays[:appcast])).to eq(item_arrays[:appcast_sorted])
     end
   end
 
