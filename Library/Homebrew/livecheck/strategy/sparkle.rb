@@ -86,19 +86,19 @@ module Homebrew
             enclosure = item.elements["enclosure"]
 
             if enclosure
-              url = enclosure["url"]
-              short_version = enclosure["shortVersionString"]
-              version = enclosure["version"]
-              os = enclosure["os"]
+              url = enclosure["url"].presence
+              short_version = enclosure["shortVersionString"].presence
+              version = enclosure["version"].presence
+              os = enclosure["os"].presence
             end
 
-            title = item.elements["title"]&.text&.strip
-            link = item.elements["link"]&.text&.strip
+            title = item.elements["title"]&.text&.strip&.presence
+            link = item.elements["link"]&.text&.strip&.presence
             url ||= link
-            channel = item.elements["channel"]&.text&.strip
-            release_notes_link = item.elements["releaseNotesLink"]&.text&.strip
-            short_version ||= item.elements["shortVersionString"]&.text&.strip
-            version ||= item.elements["version"]&.text&.strip
+            channel = item.elements["channel"]&.text&.strip&.presence
+            release_notes_link = item.elements["releaseNotesLink"]&.text&.strip&.presence
+            short_version ||= item.elements["shortVersionString"]&.text&.strip&.presence
+            version ||= item.elements["version"]&.text&.strip&.presence
 
             pub_date = item.elements["pubDate"]&.text&.strip&.presence&.then do |date_string|
               Time.parse(date_string)
