@@ -191,16 +191,25 @@ module Homebrew
   end
 
   def write_user_gem_groups(groups)
+    return if @user_gem_groups == groups && GEM_GROUPS_FILE.exist?
+
     # Write the file atomically, in case we're working parallel
     require "tempfile"
     tmpfile = Tempfile.new([GEM_GROUPS_FILE.basename.to_s, "~"], GEM_GROUPS_FILE.dirname)
+    path = tmpfile.path
+    return if path.nil?
+
+    require "fileutils"
     begin
+      FileUtils.chmod("+r", path)
       tmpfile.write(groups.join("\n"))
       tmpfile.close
-      File.rename(tmpfile.path.to_s, GEM_GROUPS_FILE)
+      File.rename(path, GEM_GROUPS_FILE)
     ensure
       tmpfile.unlink
     end
+
+    @user_gem_groups = groups
   end
 
   def forget_user_gem_groups!
@@ -212,6 +221,7 @@ module Homebrew
       require "settings"
       Homebrew::Settings.delete(:gemgroups)
     end
+    @user_gem_groups = []
   end
 
   def user_vendor_version
