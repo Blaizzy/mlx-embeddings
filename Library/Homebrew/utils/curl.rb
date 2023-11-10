@@ -456,7 +456,7 @@ module Utils
           end
         end
         file_contents = File.read(T.must(file.path), **open_args)
-        file_hash = Digest::SHA2.hexdigest(file_contents) if hash_needed
+        file_hash = Digest::SHA256.hexdigest(file_contents) if hash_needed
       end
 
       {
