@@ -616,11 +616,14 @@ on_request: installed_on_request?, options: options)
       keep_build_test ||= dep.build? && !install_bottle_for?(dependent, build) &&
                           (formula.head? || !dependent.latest_version_installed?)
 
-      bottle_runtime_version = @bottle_tab_runtime_dependencies.dig(dep.name, "version")
+      bottle_runtime_version = @bottle_tab_runtime_dependencies.dig(dep.name, "version").presence
+      bottle_runtime_version = Version.new(bottle_runtime_version) if bottle_runtime_version
+      bottle_runtime_revision = @bottle_tab_runtime_dependencies.dig(dep.name, "revision")
 
       if dep.prune_from_option?(build) || ((dep.build? || dep.test?) && !keep_build_test)
         Dependency.prune
-      elsif dep.satisfied?(inherited_options[dep.name], minimum_version: bottle_runtime_version)
+      elsif dep.satisfied?(inherited_options[dep.name], minimum_version:  bottle_runtime_version,
+                                                        minimum_revision: bottle_runtime_revision)
         Dependency.skip
       end
     end
