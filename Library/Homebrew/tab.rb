@@ -226,6 +226,8 @@ class Tab
       {
         "full_name"         => f.full_name,
         "version"           => f.version.to_s,
+        "revision"          => f.revision,
+        "pkg_version"       => f.pkg_version.to_s,
         "declared_directly" => formula.deps.include?(dep),
       }
     end
