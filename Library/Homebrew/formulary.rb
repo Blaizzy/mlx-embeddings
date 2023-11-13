@@ -613,43 +613,6 @@ module Formulary
 
   # Loads tapped formulae.
   class TapLoader < FormulaLoader
-    def initialize(tapped_name, from:, warn:)
-      name, path, tap = formula_name_path(tapped_name, warn: warn)
-      super name, path, tap: tap
-    end
-
-    def formula_name_path(tapped_name, warn:)
-      user, repo, name = tapped_name.split("/", 3).map(&:downcase)
-      tap = Tap.fetch user, repo
-      path = find_formula_from_name(name, tap)
-
-      unless path.file?
-        if (possible_alias = tap.alias_dir/name).file?
-          path = possible_alias.resolved_path
-          name = path.basename(".rb").to_s
-        elsif (new_name = tap.formula_renames[name].presence) &&
-              (new_path = find_formula_from_name(new_name, tap)).file?
-          old_name = name
-          path = new_path
-          name = new_name
-          new_name = tap.core_tap? ? name : "#{tap}/#{name}"
-        elsif (new_tap_name = tap.tap_migrations[name].presence)
-          new_tap_user, new_tap_repo, = new_tap_name.split("/")
-          new_tap_name = "#{new_tap_user}/#{new_tap_repo}"
-          new_tap = Tap.fetch new_tap_name
-          new_tap.ensure_installed!
-          new_tapped_name = "#{new_tap_name}/#{name}"
-          name, path = formula_name_path(new_tapped_name, warn: false)
-          old_name = tapped_name
-          new_name = new_tap.core_tap? ? name : new_tapped_name
-        end
-
-        opoo "Formula #{old_name} was renamed to #{new_name}." if warn && old_name && new_name
-      end
-
-      [name, path, tap]
-    end
-
     def get_formula(spec, alias_path: nil, force_bottle: false, flags: [], ignore_errors: false)
       super
     rescue FormulaUnreadableError => e
@@ -928,6 +891,49 @@ module Formulary
     loader_for(ref).path
   end
 
+  def self.tap_formula_name_path(tapped_name, warn:)
+    user, repo, name = tapped_name.split("/", 3).map(&:downcase)
+    tap = Tap.fetch user, repo
+    path = Formulary.find_formula_in_tap(name, tap)
+
+    unless path.file?
+      if (possible_alias = tap.alias_dir/name).file?
+        path = possible_alias.resolved_path
+        name = path.basename(".rb").to_s
+      elsif (new_name = tap.formula_renames[name].presence) &&
+            (new_path = Formulary.find_formula_in_tap(new_name, tap)).file?
+        old_name = name
+        path = new_path
+        name = new_name
+        new_name = tap.core_tap? ? name : "#{tap}/#{name}"
+      elsif (new_tap_name = tap.tap_migrations[name].presence)
+        new_tap_user, new_tap_repo, = new_tap_name.split("/")
+        new_tap_name = "#{new_tap_user}/#{new_tap_repo}"
+        new_tap = Tap.fetch new_tap_name
+        new_tap.ensure_installed!
+        new_tapped_name = "#{new_tap_name}/#{name}"
+        name, path = Formulary.tap_formula_name_path(new_tapped_name, warn: false)
+        old_name = tapped_name
+        new_name = new_tap.core_tap? ? name : new_tapped_name
+      end
+
+      opoo "Formula #{old_name} was renamed to #{new_name}." if warn && old_name && new_name
+    end
+
+    [name, path, tap]
+  end
+
+  def self.tap_loader_for(tapped_name, warn:)
+    name, path, tap = Formulary.tap_formula_name_path(tapped_name, warn: warn)
+
+    if name.exclude?("/") && !Homebrew::EnvConfig.no_install_from_api? &&
+       Homebrew::API::Formula.all_formulae.key?(name)
+      FormulaAPILoader.new(name)
+    else
+      TapLoader.new(name, path, tap: tap)
+    end
+  end
+
   def self.loader_for(ref, from: nil, warn: true)
     case ref
     when HOMEBREW_BOTTLES_EXTNAME_REGEX
@@ -941,7 +947,7 @@ module Formulary
         return AliasAPILoader.new(name) if Homebrew::API::Formula.all_aliases.key?(name)
       end
 
-      return TapLoader.new(ref, from: from, warn: warn)
+      return Formulary.tap_loader_for(ref, warn: warn)
     end
 
     pathname_ref = Pathname.new(ref)
@@ -976,7 +982,7 @@ module Formulary
         return FormulaAPILoader.new(CoreTap.instance.formula_renames[ref])
       end
 
-      return TapLoader.new("#{CoreTap.instance}/#{ref}", from: from, warn: warn)
+      return Formulary.tap_loader_for("#{CoreTap.instance}/#{ref}", warn: warn)
     end
 
     possible_taps = Tap.select { |tap| tap.formula_renames.key?(ref) }
@@ -986,7 +992,7 @@ module Formulary
       raise TapFormulaWithOldnameAmbiguityError.new(ref, possible_tap_newname_formulae)
     end
 
-    return TapLoader.new("#{possible_taps.first}/#{ref}", from: from, warn: warn) unless possible_taps.empty?
+    return Formulary.tap_loader_for("#{possible_taps.first}/#{ref}", warn: warn) unless possible_taps.empty?
 
     possible_keg_formula = Pathname.new("#{HOMEBREW_PREFIX}/opt/#{ref}/.brew/#{ref}.rb")
     return FormulaLoader.new(ref, possible_keg_formula) if possible_keg_formula.file?
