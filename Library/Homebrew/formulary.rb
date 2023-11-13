@@ -667,8 +667,8 @@ module Formulary
 
   # Load formulae from the API.
   class FormulaAPILoader < FormulaLoader
-    def initialize(name)
-      super name, Formulary.core_path(name)
+    def initialize(name, tap: CoreTap.instance)
+      super name, Formulary.core_path(name), tap: tap
     end
 
     def klass(flags:, ignore_errors:)
@@ -926,9 +926,9 @@ module Formulary
   def self.tap_loader_for(tapped_name, warn:)
     name, path, tap = Formulary.tap_formula_name_path(tapped_name, warn: warn)
 
-    if name.exclude?("/") && !Homebrew::EnvConfig.no_install_from_api? &&
+    if Tap.from_path(path).core_tap? && !Homebrew::EnvConfig.no_install_from_api? &&
        Homebrew::API::Formula.all_formulae.key?(name)
-      FormulaAPILoader.new(name)
+      FormulaAPILoader.new(name, tap: tap)
     else
       TapLoader.new(name, path, tap: tap)
     end

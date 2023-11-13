@@ -186,6 +186,48 @@ describe Formulary do
       end
     end
 
+    context "when migrating from a Tap" do
+      let(:tap) { Tap.new("homebrew", "foo") }
+      let(:another_tap) { Tap.new("homebrew", "bar") }
+      let(:tap_migrations_path) { tap.path/"tap_migrations.json" }
+      let(:another_tap_formula_path) { another_tap.path/"Formula/#{formula_name}.rb" }
+
+      before do
+        tap.path.mkpath
+        another_tap_formula_path.dirname.mkpath
+        another_tap_formula_path.write formula_content
+      end
+
+      after do
+        FileUtils.rm_rf tap.path
+        FileUtils.rm_rf another_tap.path
+      end
+
+      it "returns a Formula that has gone through a tap migration into homebrew/core" do
+        tap_migrations_path.write <<~EOS
+          {
+            "#{formula_name}": "homebrew/core"
+          }
+        EOS
+        formula = described_class.factory("#{tap}/#{formula_name}")
+        expect(formula).to be_a(Formula)
+        expect(formula.tap).to eq(tap)
+        expect(formula.path).to eq(formula_path)
+      end
+
+      it "returns a Formula that has gone through a tap migration into another tap" do
+        tap_migrations_path.write <<~EOS
+          {
+            "#{formula_name}": "#{another_tap}"
+          }
+        EOS
+        formula = described_class.factory("#{tap}/#{formula_name}")
+        expect(formula).to be_a(Formula)
+        expect(formula.tap).to eq(tap)
+        expect(formula.path).to eq(another_tap_formula_path)
+      end
+    end
+
     context "when loading from Tap" do
       let(:tap) { Tap.new("homebrew", "foo") }
       let(:another_tap) { Tap.new("homebrew", "bar") }
