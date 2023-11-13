@@ -912,7 +912,7 @@ module Formulary
         new_tap = Tap.fetch new_tap_name
         new_tap.ensure_installed!
         new_tapped_name = "#{new_tap_name}/#{name}"
-        name, path = Formulary.tap_formula_name_path(new_tapped_name, warn: false)
+        name, path, tap = Formulary.tap_formula_name_path(new_tapped_name, warn: false)
         old_name = tapped_name
         new_name = new_tap.core_tap? ? name : new_tapped_name
       end
@@ -926,7 +926,7 @@ module Formulary
   def self.tap_loader_for(tapped_name, warn:)
     name, path, tap = Formulary.tap_formula_name_path(tapped_name, warn: warn)
 
-    if name.exclude?("/") && !Homebrew::EnvConfig.no_install_from_api? &&
+    if tap.core_tap? && !Homebrew::EnvConfig.no_install_from_api? &&
        Homebrew::API::Formula.all_formulae.key?(name)
       FormulaAPILoader.new(name)
     else
