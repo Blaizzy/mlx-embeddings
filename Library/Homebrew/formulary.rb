@@ -912,10 +912,9 @@ module Formulary
         new_tap = Tap.fetch new_tap_name
         new_tap.ensure_installed!
         new_tapped_name = "#{new_tap_name}/#{name}"
-        name, path = Formulary.tap_formula_name_path(new_tapped_name, warn: false)
+        name, path, tap = Formulary.tap_formula_name_path(new_tapped_name, warn: false)
         old_name = tapped_name
         new_name = new_tap.core_tap? ? name : new_tapped_name
-        tap = new_tap
       end
 
       opoo "Formula #{old_name} was renamed to #{new_name}." if warn && old_name && new_name
