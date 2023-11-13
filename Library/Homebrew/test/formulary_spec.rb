@@ -211,7 +211,7 @@ describe Formulary do
         EOS
         formula = described_class.factory("#{tap}/#{formula_name}")
         expect(formula).to be_a(Formula)
-        expect(formula.tap).to eq(tap)
+        expect(formula.tap).to eq(CoreTap.instance)
         expect(formula.path).to eq(formula_path)
       end
 
@@ -223,7 +223,7 @@ describe Formulary do
         EOS
         formula = described_class.factory("#{tap}/#{formula_name}")
         expect(formula).to be_a(Formula)
-        expect(formula.tap).to eq(tap)
+        expect(formula.tap).to eq(another_tap)
         expect(formula.path).to eq(another_tap_formula_path)
       end
     end

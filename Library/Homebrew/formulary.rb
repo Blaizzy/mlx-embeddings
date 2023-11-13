@@ -915,6 +915,7 @@ module Formulary
         name, path = Formulary.tap_formula_name_path(new_tapped_name, warn: false)
         old_name = tapped_name
         new_name = new_tap.core_tap? ? name : new_tapped_name
+        tap = new_tap
       end
 
       opoo "Formula #{old_name} was renamed to #{new_name}." if warn && old_name && new_name
@@ -926,9 +927,9 @@ module Formulary
   def self.tap_loader_for(tapped_name, warn:)
     name, path, tap = Formulary.tap_formula_name_path(tapped_name, warn: warn)
 
-    if Tap.from_path(path).core_tap? && !Homebrew::EnvConfig.no_install_from_api? &&
+    if tap.core_tap? && !Homebrew::EnvConfig.no_install_from_api? &&
        Homebrew::API::Formula.all_formulae.key?(name)
-      FormulaAPILoader.new(name, tap: tap)
+      FormulaAPILoader.new(name)
     else
       TapLoader.new(name, path, tap: tap)
     end
