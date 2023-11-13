@@ -667,8 +667,8 @@ module Formulary
 
   # Load formulae from the API.
   class FormulaAPILoader < FormulaLoader
-    def initialize(name, tap: CoreTap.instance)
-      super name, Formulary.core_path(name), tap: tap
+    def initialize(name)
+      super name, Formulary.core_path(name)
     end
 
     def klass(flags:, ignore_errors:)
