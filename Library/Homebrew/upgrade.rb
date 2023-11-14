@@ -82,6 +82,8 @@ module Homebrew
               end
               next false if dependency_formula.nil?
 
+              next true if dependency_formula.latest_version_installed?
+
               installed_version = dependency_formula.any_installed_version
               next false unless installed_version
 
