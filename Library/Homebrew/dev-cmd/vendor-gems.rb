@@ -59,12 +59,16 @@ module Homebrew
           mechanize
         ].each do |gem|
           ohai "gem install #{gem}"
-          safe_system "gem", "install", "mechanize", "--install-dir", "vendor",
+          safe_system "gem", "install", gem, "--install-dir", "vendor",
                       "--no-document", "--no-wrappers", "--ignore-dependencies", "--force"
           (HOMEBREW_LIBRARY_PATH/"vendor/gems").cd do
-            if (source = Pathname.glob("#{gem}-*/").first)
-              FileUtils.ln_sf source, gem
-            end
+            source = Pathname.glob("#{gem}-*/").first
+            next if source.blank?
+
+            # We cannot use `#ln_sf` here because that has unintended consequences when
+            # the symlink we want to create exists and points to an existing directory.
+            FileUtils.rm_f gem
+            FileUtils.ln_s source, gem
           end
         end
       end
