@@ -1818,6 +1818,8 @@ process has finished successfully.
   Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed and found. Must be passed with `start`. Note: notifications are enabled by default on macOS Catalina and newer.
 * `--immediate`:
   Starts the autoupdate command immediately and on system boot, instead of waiting for one interval (24 hours by default) to pass first. Must be passed with `start`.
+* `--sudo`:
+  If a Cask requires sudo, autoupdate will open a GUI to ask for the password. Requires https://formulae.brew.sh/formula/pinentry-mac to be installed.
 
 ### `bundle` [*`subcommand`*]
 

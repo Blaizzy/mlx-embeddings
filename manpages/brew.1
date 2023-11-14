@@ -2579,6 +2579,10 @@ Send a notification when the autoupdate process has finished successfully, if \f
 \fB\-\-immediate\fR
 Starts the autoupdate command immediately and on system boot, instead of waiting for one interval (24 hours by default) to pass first\. Must be passed with \fBstart\fR\.
 .
+.TP
+\fB\-\-sudo\fR
+If a Cask requires sudo, autoupdate will open a GUI to ask for the password\. Requires https://formulae\.brew\.sh/formula/pinentry\-mac to be installed\.
+.
 .SS "\fBbundle\fR [\fIsubcommand\fR]"
 Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew\.
 .
