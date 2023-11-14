@@ -55,24 +55,24 @@ class Dependency
     end
     return false unless formula
 
-    if minimum_version.present?
-      installed_version = formula.any_installed_version
-      return false unless installed_version
+    return true if formula.latest_version_installed?
 
-      # Tabs prior to 4.1.18 did not have revision or pkg_version fields.
-      # As a result, we have to be more conversative when we do not have
-      # a minimum revision from the tab and assume that if the formula has a
-      # the same version and a non-zero revision that it needs upgraded.
-      if minimum_revision.present?
-        minimum_pkg_version = PkgVersion.new(minimum_version, minimum_revision)
-        installed_version >= minimum_pkg_version
-      elsif installed_version.version == minimum_version
-        formula.revision.zero?
-      else
-        installed_version.version > minimum_version
-      end
+    return false if minimum_version.blank?
+
+    installed_version = formula.any_installed_version
+    return false unless installed_version
+
+    # Tabs prior to 4.1.18 did not have revision or pkg_version fields.
+    # As a result, we have to be more conversative when we do not have
+    # a minimum revision from the tab and assume that if the formula has a
+    # the same version and a non-zero revision that it needs upgraded.
+    if minimum_revision.present?
+      minimum_pkg_version = PkgVersion.new(minimum_version, minimum_revision)
+      installed_version >= minimum_pkg_version
+    elsif installed_version.version == minimum_version
+      formula.revision.zero?
     else
-      formula.latest_version_installed?
+      installed_version.version > minimum_version
     end
   end
 
