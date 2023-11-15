@@ -1646,7 +1646,7 @@ class Formula
     ).returns(T::Array[String])
   }
   def std_cmake_args(install_prefix: prefix, install_libdir: "lib", find_framework: "LAST")
-    args = %W[
+    %W[
       -DCMAKE_INSTALL_PREFIX=#{install_prefix}
       -DCMAKE_INSTALL_LIBDIR=#{install_libdir}
       -DCMAKE_BUILD_TYPE=Release
@@ -1655,16 +1655,8 @@ class Formula
       -Wno-dev
       -DBUILD_TESTING=OFF
     ]
-
-    # Avoid false positives for clock_gettime support on 10.11.
-    # CMake cache entries for other weak symbols may be added here as needed.
-    args << "-DHAVE_CLOCK_GETTIME:INTERNAL=0" if MacOS.version == "10.11" && MacOS::Xcode.version >= "8.0"
-
-    # Ensure CMake is using the same SDK we are using.
-    args << "-DCMAKE_OSX_SYSROOT=#{MacOS.sdk_for_formula(self).path}" if MacOS.sdk_root_needed?
-
-    args
   end
+  alias generic_std_cmake_args std_cmake_args
 
   # Standard parameters for Go builds.
   sig {
