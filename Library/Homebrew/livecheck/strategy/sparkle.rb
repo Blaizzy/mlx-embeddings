@@ -21,6 +21,9 @@ module Homebrew
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
+        # Common `os` values used in appcasts to refer to macOS.
+        APPCAST_MACOS_STRINGS = ["macos", "osx"].freeze
+
         # Whether the strategy can be applied to the provided URL.
         #
         # @param url [String] the URL to match against
@@ -152,7 +155,7 @@ module Homebrew
         def self.filter_items(items)
           items.select do |item|
             # Omit items with an explicit `os` value that isn't macOS
-            next false if item.os && !((item.os == "osx") || (item.os == "macos"))
+            next false if item.os && APPCAST_MACOS_STRINGS.none?(item.os)
 
             # Omit items for prerelease macOS versions
             next false if item.minimum_system_version&.strip_patch&.prerelease?
