@@ -320,7 +320,7 @@ module Utils
         break if http_status_ok?(details[:status_code])
       end
 
-      return return_value_for_empty_http_status_code(url_type, url) unless details[:status_code]
+      return "The #{url_type} #{url} is not reachable" unless details[:status_code]
 
       unless http_status_ok?(details[:status_code])
         return if details[:responses].any? do |response|
@@ -481,11 +481,6 @@ module Utils
       (100..299).cover?(status.to_i)
     end
 
-    def return_value_for_empty_http_status_code(url_type, url)
-      "The #{url_type} #{url} is not reachable"
-    end
-    alias generic_return_value_for_empty_http_status_code return_value_for_empty_http_status_code
-
     # Separates the output text from `curl` into an array of HTTP responses and
     # the final response body (i.e. content). Response hashes contain the
     # `:status_code`, `:status_text`, and `:headers`.
@@ -619,5 +614,3 @@ module Utils
     end
   end
 end
-
-require "extend/os/utils/curl"
