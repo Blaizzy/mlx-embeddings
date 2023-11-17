@@ -31,7 +31,7 @@ describe GitHubRunnerMatrix do
   describe "#active_runner_specs_hash" do
     it "returns an object that responds to `#to_json`" do
       expect(
-        described_class.new([], ["deleted"], dependent_matrix: false)
+        described_class.new([], ["deleted"], all_supported: false, dependent_matrix: false)
                        .active_runner_specs_hash
                        .respond_to?(:to_json),
       ).to be(true)
@@ -40,7 +40,7 @@ describe GitHubRunnerMatrix do
 
   describe "#generate_runners!" do
     it "is idempotent" do
-      matrix = described_class.new([], [], dependent_matrix: false)
+      matrix = described_class.new([], [], all_supported: false, dependent_matrix: false)
       runners = matrix.runners.dup
       matrix.send(:generate_runners!)
 
@@ -50,13 +50,20 @@ describe GitHubRunnerMatrix do
 
   context "when there are no testing formulae and no deleted formulae" do
     it "activates no test runners" do
-      expect(described_class.new([], [], dependent_matrix: false).runners.any?(&:active))
+      expect(described_class.new([], [], all_supported: false, dependent_matrix: false).runners.any?(&:active))
         .to be(false)
     end
 
     it "activates no dependent runners" do
-      expect(described_class.new([], [], dependent_matrix: true).runners.any?(&:active))
+      expect(described_class.new([], [], all_supported: false, dependent_matrix: true).runners.any?(&:active))
         .to be(false)
+    end
+  end
+
+  context "when passed `--all-supported`" do
+    it "activates all runners" do
+      expect(described_class.new([], [], all_supported: true, dependent_matrix: false).runners.all?(&:active))
+        .to be(true)
     end
   end
 
@@ -64,14 +71,18 @@ describe GitHubRunnerMatrix do
     context "when it is a matrix for the `tests` job" do
       context "when testing formulae have no requirements" do
         it "activates all runners" do
-          expect(described_class.new([testball], [], dependent_matrix: false).runners.all?(&:active))
+          expect(described_class.new([testball], [], all_supported: false, dependent_matrix: false)
+                                .runners
+                                .all?(&:active))
             .to be(true)
         end
       end
 
       context "when testing formulae require Linux" do
         it "activates only the Linux runner" do
-          runner_matrix = described_class.new([testball_depender_linux], [], dependent_matrix: false)
+          runner_matrix = described_class.new([testball_depender_linux], [],
+                                              all_supported:    false,
+                                              dependent_matrix: false)
 
           expect(runner_matrix.runners.all?(&:active)).to be(false)
           expect(runner_matrix.runners.any?(&:active)).to be(true)
@@ -81,7 +92,9 @@ describe GitHubRunnerMatrix do
 
       context "when testing formulae require macOS" do
         it "activates only the macOS runners" do
-          runner_matrix = described_class.new([testball_depender_macos], [], dependent_matrix: false)
+          runner_matrix = described_class.new([testball_depender_macos], [],
+                                              all_supported:    false,
+                                              dependent_matrix: false)
 
           expect(runner_matrix.runners.all?(&:active)).to be(false)
           expect(runner_matrix.runners.any?(&:active)).to be(true)
@@ -91,7 +104,9 @@ describe GitHubRunnerMatrix do
 
       context "when testing formulae require Intel" do
         it "activates only the Intel runners" do
-          runner_matrix = described_class.new([testball_depender_intel], [], dependent_matrix: false)
+          runner_matrix = described_class.new([testball_depender_intel], [],
+                                              all_supported:    false,
+                                              dependent_matrix: false)
 
           expect(runner_matrix.runners.all?(&:active)).to be(false)
           expect(runner_matrix.runners.any?(&:active)).to be(true)
@@ -101,7 +116,9 @@ describe GitHubRunnerMatrix do
 
       context "when testing formulae require ARM" do
         it "activates only the ARM runners" do
-          runner_matrix = described_class.new([testball_depender_arm], [], dependent_matrix: false)
+          runner_matrix = described_class.new([testball_depender_arm], [],
+                                              all_supported:    false,
+                                              dependent_matrix: false)
 
           expect(runner_matrix.runners.all?(&:active)).to be(false)
           expect(runner_matrix.runners.any?(&:active)).to be(true)
@@ -112,7 +129,9 @@ describe GitHubRunnerMatrix do
       context "when testing formulae require a macOS version" do
         it "activates the Linux runner and suitable macOS runners" do
           _, v = newest_supported_macos
-          runner_matrix = described_class.new([testball_depender_newest], [], dependent_matrix: false)
+          runner_matrix = described_class.new([testball_depender_newest], [],
+                                              all_supported:    false,
+                                              dependent_matrix: false)
 
           expect(runner_matrix.runners.all?(&:active)).to be(false)
           expect(runner_matrix.runners.any?(&:active)).to be(true)
@@ -127,7 +146,9 @@ describe GitHubRunnerMatrix do
           allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
           allow(Formula).to receive(:all).and_return([testball].map(&:formula))
 
-          expect(described_class.new([testball], [], dependent_matrix: true).runners.any?(&:active))
+          expect(described_class.new([testball], [], all_supported: false, dependent_matrix: true)
+                                .runners
+                                .any?(&:active))
             .to be(false)
         end
       end
@@ -138,7 +159,9 @@ describe GitHubRunnerMatrix do
             allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
             allow(Formula).to receive(:all).and_return([testball, testball_depender].map(&:formula))
 
-            expect(described_class.new([testball], [], dependent_matrix: true).runners.all?(&:active))
+            expect(described_class.new([testball], [], all_supported: false, dependent_matrix: true)
+                                  .runners
+                                  .all?(&:active))
               .to be(true)
           end
         end
@@ -148,7 +171,7 @@ describe GitHubRunnerMatrix do
             allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
             allow(Formula).to receive(:all).and_return([testball, testball_depender_linux].map(&:formula))
 
-            runner_matrix = described_class.new([testball], [], dependent_matrix: true)
+            runner_matrix = described_class.new([testball], [], all_supported: false, dependent_matrix: true)
             expect(runner_matrix.runners.all?(&:active)).to be(false)
             expect(runner_matrix.runners.any?(&:active)).to be(true)
             expect(get_runner_names(runner_matrix)).to eq(get_runner_names(runner_matrix, :linux?))
@@ -160,7 +183,7 @@ describe GitHubRunnerMatrix do
             allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
             allow(Formula).to receive(:all).and_return([testball, testball_depender_macos].map(&:formula))
 
-            runner_matrix = described_class.new([testball], [], dependent_matrix: true)
+            runner_matrix = described_class.new([testball], [], all_supported: false, dependent_matrix: true)
             expect(runner_matrix.runners.all?(&:active)).to be(false)
             expect(runner_matrix.runners.any?(&:active)).to be(true)
             expect(get_runner_names(runner_matrix)).to eq(get_runner_names(runner_matrix, :macos?))
@@ -172,7 +195,7 @@ describe GitHubRunnerMatrix do
             allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
             allow(Formula).to receive(:all).and_return([testball, testball_depender_intel].map(&:formula))
 
-            runner_matrix = described_class.new([testball], [], dependent_matrix: true)
+            runner_matrix = described_class.new([testball], [], all_supported: false, dependent_matrix: true)
             expect(runner_matrix.runners.all?(&:active)).to be(false)
             expect(runner_matrix.runners.any?(&:active)).to be(true)
             expect(get_runner_names(runner_matrix)).to eq(get_runner_names(runner_matrix, :x86_64?))
@@ -184,7 +207,7 @@ describe GitHubRunnerMatrix do
             allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
             allow(Formula).to receive(:all).and_return([testball, testball_depender_arm].map(&:formula))
 
-            runner_matrix = described_class.new([testball], [], dependent_matrix: true)
+            runner_matrix = described_class.new([testball], [], all_supported: false, dependent_matrix: true)
             expect(runner_matrix.runners.all?(&:active)).to be(false)
             expect(runner_matrix.runners.any?(&:active)).to be(true)
             expect(get_runner_names(runner_matrix)).to eq(get_runner_names(runner_matrix, :arm64?))
@@ -197,7 +220,9 @@ describe GitHubRunnerMatrix do
   context "when there are deleted formulae" do
     context "when it is a matrix for the `tests` job" do
       it "activates all runners" do
-        expect(described_class.new([], ["deleted"], dependent_matrix: false).runners.all?(&:active))
+        expect(described_class.new([], ["deleted"], all_supported: false, dependent_matrix: false)
+                              .runners
+                              .all?(&:active))
           .to be(true)
       end
     end
@@ -205,7 +230,9 @@ describe GitHubRunnerMatrix do
     context "when it is a matrix for the `test_deps` job" do
       context "when there are no testing formulae" do
         it "activates no runners" do
-          expect(described_class.new([], ["deleted"], dependent_matrix: true).runners.any?(&:active))
+          expect(described_class.new([], ["deleted"], all_supported: false, dependent_matrix: true)
+                                .runners
+                                .any?(&:active))
             .to be(false)
         end
       end
@@ -213,7 +240,9 @@ describe GitHubRunnerMatrix do
       context "when there are testing formulae with no dependents" do
         it "activates no runners" do
           testing_formulae = [testball]
-          runner_matrix = described_class.new(testing_formulae, ["deleted"], dependent_matrix: true)
+          runner_matrix = described_class.new(testing_formulae, ["deleted"],
+                                              all_supported:    false,
+                                              dependent_matrix: true)
 
           allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
           allow(Formula).to receive(:all).and_return(testing_formulae.map(&:formula))
@@ -229,7 +258,9 @@ describe GitHubRunnerMatrix do
             allow(Formula).to receive(:all).and_return([testball, testball_depender].map(&:formula))
 
             testing_formulae = [testball]
-            expect(described_class.new(testing_formulae, ["deleted"], dependent_matrix: true).runners.all?(&:active))
+            expect(described_class.new(testing_formulae, ["deleted"], all_supported: false, dependent_matrix: true)
+                                  .runners
+                                  .all?(&:active))
               .to be(true)
           end
         end
@@ -240,8 +271,7 @@ describe GitHubRunnerMatrix do
               allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
               allow(Formula).to receive(:all).and_return([testball, testball_depender_linux].map(&:formula))
 
-              testing_formulae = [testball]
-              matrix = described_class.new(testing_formulae, ["deleted"], dependent_matrix: true)
+              matrix = described_class.new([testball], ["deleted"], all_supported: false, dependent_matrix: true)
               expect(get_runner_names(matrix)).to eq(["Linux"])
             end
           end
@@ -251,8 +281,7 @@ describe GitHubRunnerMatrix do
               allow(Homebrew::EnvConfig).to receive(:eval_all?).and_return(true)
               allow(Formula).to receive(:all).and_return([testball, testball_depender_macos].map(&:formula))
 
-              testing_formulae = [testball]
-              matrix = described_class.new(testing_formulae, ["deleted"], dependent_matrix: true)
+              matrix = described_class.new([testball], ["deleted"], all_supported: false, dependent_matrix: true)
               expect(get_runner_names(matrix)).to eq(get_runner_names(matrix, :macos?))
             end
           end
