@@ -7,9 +7,6 @@ require "github_runner"
 class GitHubRunnerMatrix
   # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
   # rubocop:disable Style/MutableConstant
-  MaybeStringArray = T.type_alias { T.nilable(T::Array[String]) }
-  private_constant :MaybeStringArray
-
   RunnerSpec = T.type_alias { T.any(LinuxRunnerSpec, MacOSRunnerSpec) }
   private_constant :RunnerSpec
 
@@ -38,13 +35,19 @@ class GitHubRunnerMatrix
   sig {
     params(
       testing_formulae: T::Array[TestRunnerFormula],
-      deleted_formulae: MaybeStringArray,
+      deleted_formulae: T::Array[String],
+      all_supported:    T::Boolean,
       dependent_matrix: T::Boolean,
     ).void
   }
-  def initialize(testing_formulae, deleted_formulae, dependent_matrix:)
+  def initialize(testing_formulae, deleted_formulae, all_supported:, dependent_matrix:)
+    if all_supported && (testing_formulae.present? || deleted_formulae.present? || dependent_matrix)
+      raise ArgumentError, "all_supported is mutually exclusive to other arguments"
+    end
+
     @testing_formulae = T.let(testing_formulae, T::Array[TestRunnerFormula])
-    @deleted_formulae = T.let(deleted_formulae, MaybeStringArray)
+    @deleted_formulae = T.let(deleted_formulae, T::Array[String])
+    @all_supported = T.let(all_supported, T::Boolean)
     @dependent_matrix = T.let(dependent_matrix, T::Boolean)
 
     @runners = T.let([], T::Array[GitHubRunner])
@@ -103,13 +106,16 @@ class GitHubRunnerMatrix
   end
 
   NEWEST_GITHUB_ACTIONS_MACOS_RUNNER = :ventura
+  OLDEST_GITHUB_ACTIONS_MACOS_RUNNER = :big_sur
   GITHUB_ACTIONS_RUNNER_TIMEOUT = 360
 
   sig { void }
   def generate_runners!
     return if @runners.present?
 
-    @runners << create_runner(:linux, :x86_64, linux_runner_spec)
+    if !@all_supported || ENV.key?("HOMEBREW_LINUX_RUNNER")
+      @runners << create_runner(:linux, :x86_64, linux_runner_spec)
+    end
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
     timeout            = ENV.fetch("HOMEBREW_MACOS_TIMEOUT").to_i
@@ -132,6 +138,7 @@ class GitHubRunnerMatrix
       # Use GitHub Actions macOS Runner for testing dependents if compatible with timeout.
       runner, runner_timeout = if (@dependent_matrix || use_github_runner) &&
                                   macos_version <= NEWEST_GITHUB_ACTIONS_MACOS_RUNNER &&
+                                  macos_version >= OLDEST_GITHUB_ACTIONS_MACOS_RUNNER &&
                                   runner_timeout <= GITHUB_ACTIONS_RUNNER_TIMEOUT
         ["macos-#{version}", GITHUB_ACTIONS_RUNNER_TIMEOUT]
       else
@@ -149,6 +156,7 @@ class GitHubRunnerMatrix
       next if macos_version < :big_sur
 
       runner = +"#{version}-arm64"
+      runner_timeout = timeout
 
       # Use bare metal runner when testing dependents on ARM64 Monterey.
       use_ephemeral = macos_version >= (@dependent_matrix ? :ventura : :monterey)
@@ -174,9 +182,7 @@ class GitHubRunnerMatrix
   def active_runner?(runner)
     if @dependent_matrix
       formulae_have_untested_dependents?(runner)
-    else
-      return true if @deleted_formulae.present?
-
+    elsif !@all_supported && @deleted_formulae.empty?
       compatible_formulae = @testing_formulae.dup
 
       platform = runner.platform
@@ -191,6 +197,8 @@ class GitHubRunnerMatrix
       end
 
       compatible_formulae.present?
+    else
+      true
     end
   end
 

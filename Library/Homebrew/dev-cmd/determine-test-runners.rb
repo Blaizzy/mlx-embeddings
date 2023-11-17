@@ -10,17 +10,23 @@ module Homebrew
   def self.determine_test_runners_args
     Homebrew::CLI::Parser.new do
       usage_banner <<~EOS
-        `determine-test-runners` <testing-formulae> [<deleted-formulae>]
+        `determine-test-runners` {<testing-formulae> [<deleted-formulae>]|--all-supported}
 
-        Determines the runners used to test formulae or their dependents.
+        Determines the runners used to test formulae or their dependents. For internal use in Homebrew taps.
       EOS
+      switch "--all-supported",
+             description: "Instead of selecting runners based on the chosen formula, return all supported runners."
       switch "--eval-all",
              description: "Evaluate all available formulae, whether installed or not, to determine testing " \
-                          "dependents."
+                          "dependents.",
+             env:         :eval_all
       switch "--dependents",
-             description: "Determine runners for testing dependents. Requires `--eval-all` or `HOMEBREW_EVAL_ALL`."
+             description: "Determine runners for testing dependents. Requires `--eval-all` or `HOMEBREW_EVAL_ALL`.",
+             depends_on:  "--eval-all"
 
-      named_args min: 1, max: 2
+      named_args max: 2
+
+      conflicts "--all-supported", "--dependents"
 
       hide_from_man_page!
     end
@@ -30,16 +36,19 @@ module Homebrew
   def self.determine_test_runners
     args = determine_test_runners_args.parse
 
-    eval_all = args.eval_all? || Homebrew::EnvConfig.eval_all?
+    if args.no_named? && !args.all_supported?
+      raise Homebrew::CLI::MinNamedArgumentsError, 1
+    elsif args.all_supported? && !args.no_named?
+      raise UsageError, "`--all-supported` is mutually exclusive to other arguments."
+    end
 
-    odie "`--dependents` requires `--eval-all` or `HOMEBREW_EVAL_ALL`!" if args.dependents? && !eval_all
-
-    testing_formulae = args.named.first.split(",")
-    testing_formulae.map! { |name| TestRunnerFormula.new(Formulary.factory(name), eval_all: eval_all) }
+    testing_formulae = args.named.first&.split(",").to_a
+    testing_formulae.map! { |name| TestRunnerFormula.new(Formulary.factory(name), eval_all: args.eval_all?) }
                     .freeze
-    deleted_formulae = args.named.second&.split(",").freeze
-
-    runner_matrix = GitHubRunnerMatrix.new(testing_formulae, deleted_formulae, dependent_matrix: args.dependents?)
+    deleted_formulae = args.named.second&.split(",").to_a.freeze
+    runner_matrix = GitHubRunnerMatrix.new(testing_formulae, deleted_formulae,
+                                           all_supported:    args.all_supported?,
+                                           dependent_matrix: args.dependents?)
     runners = runner_matrix.active_runner_specs_hash
 
     ohai "Runners", JSON.pretty_generate(runners)

@@ -14,21 +14,34 @@ env:
   HOMEBREW_DEVELOPER: 1
   HOMEBREW_NO_AUTO_UPDATE: 1
 jobs:
+  determine-runners:
+    runs-on: ubuntu-22.04
+    outputs:
+      runners: ${{ steps.determine-runners.outputs.runners }}
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: false
+          test-bot: false
+
+      - name: Determine runners to use for this job
+        id: determine-runners
+        env:
+          HOMEBREW_MACOS_TIMEOUT: 30
+        run: brew determine-test-runners --all-supported
+
   tests:
+    needs: determine-runners
     strategy:
       matrix:
-        include:
-          - runner: "13-arm64-${{ github.run_id }}"
-          - runner: "13-${{ github.run_id }}"
-          - runner: "12-arm64-${{ github.run_id }}"
-          - runner: "12-${{ github.run_id }}"
-          - runner: "11-arm64"
-            cleanup: true
-          - runner: "11-${{ github.run_id }}"
+        include: ${{ fromJson(needs.determine-runners.outputs.runners) }}
       fail-fast: false
+    name: ${{ matrix.name }}
     runs-on: ${{ matrix.runner }}
-    env:
-      PATH: "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    timeout-minutes: ${{ matrix.timeout }}
     defaults:
       run:
         working-directory: /tmp
