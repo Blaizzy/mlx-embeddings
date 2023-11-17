@@ -30,7 +30,7 @@ Homebrew.setup_gem_environment!(setup_path: false)
 
 # Install gems for Rubies we don't vendor for.
 if unsupported_ruby && !ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"]
-  Homebrew.install_bundler_gems!
+  Homebrew.install_bundler_gems!(setup_path: false)
   ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"] = "1"
 end
 
