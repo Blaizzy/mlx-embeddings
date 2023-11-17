@@ -54,6 +54,11 @@ module Homebrew
       ohai "bundle pristine"
       safe_system "bundle", "pristine"
 
+      # Workaround Bundler 2.4.21 issue where platforms may be removed.
+      # Although we don't use 2.4.21, Dependabot does as it currently ignores your lockfile version.
+      # https://github.com/rubygems/rubygems/issues/7169
+      safe_system "bundle", "lock", "--add-platform", "aarch64-linux", "arm-linux"
+
       if args.non_bundler_gems?
         %w[
           mechanize
