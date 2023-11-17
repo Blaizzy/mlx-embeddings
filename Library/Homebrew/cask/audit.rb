@@ -574,7 +574,7 @@ module Cask
       debug_messages << "Plist #{plist_min_os}" if plist_min_os
       debug_messages << "Sparkle #{sparkle_min_os}" if sparkle_min_os
       odebug "Minimum OS version: #{debug_messages.join(" | ")}" unless debug_messages.empty?
-      min_os = [sparkle_min_os, plist_min_os].compact.max
+      min_os = [plist_min_os, sparkle_min_os].compact.max
 
       return if min_os.nil? || min_os <= HOMEBREW_MACOS_OLDEST_ALLOWED
 
@@ -597,31 +597,31 @@ module Cask
       return unless cask.livecheckable?
       return if cask.livecheck.strategy != :sparkle
 
-      out, _, status = curl_output("--fail", "--silent", "--location", cask.livecheck.url)
-      return unless status.success?
+      # `Sparkle` strategy blocks that use the `items` argument (instead of
+      # `item`) contain arbitrary logic that ignores/overrides the strategy's
+      # sorting, so we can't identify which item would be first/newest here.
+      return if cask.livecheck.strategy_block.present? &&
+                cask.livecheck.strategy_block.parameters[0] == [:opt, :items]
 
-      require "rexml/document"
-
-      xml = begin
-        REXML::Document.new(out)
-      rescue REXML::ParseException
-        nil
-      end
-
-      return if xml.blank?
-
-      item = xml.elements["//rss//channel//item"]
-      return if item.blank?
-
-      min_os = item.elements["sparkle:minimumSystemVersion"]&.text
-      min_os = "11" if min_os == "10.16"
-      return if min_os.blank?
+      content = Homebrew::Livecheck::Strategy.page_content(cask.livecheck.url)[:content]
+      return if content.blank?
 
       begin
-        MacOSVersion.new(min_os).strip_patch
-      rescue MacOSVersion::Error
-        nil
+        items = Homebrew::Livecheck::Strategy::Sparkle.sort_items(
+          Homebrew::Livecheck::Strategy::Sparkle.filter_items(
+            Homebrew::Livecheck::Strategy::Sparkle.items_from_content(content),
+          ),
+        )
+      rescue
+        return
       end
+      return if items.blank?
+
+      min_os = items[0]&.minimum_system_version&.strip_patch
+      # Big Sur is sometimes identified as 10.16, so we override it to the
+      # expected macOS version (11).
+      min_os = MacOSVersion.new("11") if min_os == "10.16"
+      min_os
     end
 
     sig { returns(T.nilable(MacOSVersion)) }

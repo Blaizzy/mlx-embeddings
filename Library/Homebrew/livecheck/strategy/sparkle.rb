@@ -21,6 +21,9 @@ module Homebrew
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{^https?://}i.freeze
 
+        # Common `os` values used in appcasts to refer to macOS.
+        APPCAST_MACOS_STRINGS = ["macos", "osx"].freeze
+
         # Whether the strategy can be applied to the provided URL.
         #
         # @param url [String] the URL to match against
@@ -86,19 +89,29 @@ module Homebrew
             enclosure = item.elements["enclosure"]
 
             if enclosure
-              url = enclosure["url"]
-              short_version = enclosure["shortVersionString"]
-              version = enclosure["version"]
-              os = enclosure["os"]
+              url = enclosure["url"].presence
+              short_version = enclosure["shortVersionString"].presence
+              version = enclosure["version"].presence
+              os = enclosure["os"].presence
             end
 
-            title = item.elements["title"]&.text&.strip
-            link = item.elements["link"]&.text&.strip
+            title = item.elements["title"]&.text&.strip&.presence
+            link = item.elements["link"]&.text&.strip&.presence
             url ||= link
-            channel = item.elements["channel"]&.text&.strip
-            release_notes_link = item.elements["releaseNotesLink"]&.text&.strip
-            short_version ||= item.elements["shortVersionString"]&.text&.strip
-            version ||= item.elements["version"]&.text&.strip
+            channel = item.elements["channel"]&.text&.strip&.presence
+            release_notes_link = item.elements["releaseNotesLink"]&.text&.strip&.presence
+            short_version ||= item.elements["shortVersionString"]&.text&.strip&.presence
+            version ||= item.elements["version"]&.text&.strip&.presence
+
+            minimum_system_version_text =
+              item.elements["minimumSystemVersion"]&.text&.strip&.gsub(/\A\D+|\D+\z/, "")&.presence
+            if minimum_system_version_text.present?
+              minimum_system_version = begin
+                MacOSVersion.new(minimum_system_version_text)
+              rescue MacOSVersion::Error
+                nil
+              end
+            end
 
             pub_date = item.elements["pubDate"]&.text&.strip&.presence&.then do |date_string|
               Time.parse(date_string)
@@ -113,18 +126,6 @@ module Homebrew
             end
 
             bundle_version = BundleVersion.new(short_version, version) if short_version || version
-
-            next if os && !((os == "osx") || (os == "macos"))
-
-            if (minimum_system_version = item.elements["minimumSystemVersion"]&.text&.gsub(/\A\D+|\D+\z/, ""))
-              macos_minimum_system_version = begin
-                MacOSVersion.new(minimum_system_version).strip_patch
-              rescue MacOSVersion::Error
-                nil
-              end
-
-              next if macos_minimum_system_version&.prerelease?
-            end
 
             data = {
               title:                  title,
@@ -146,6 +147,33 @@ module Homebrew
           end.compact
         end
 
+        # Filters out items that aren't suitable for Homebrew.
+        #
+        # @param items [Array] appcast items
+        # @return [Array]
+        sig { params(items: T::Array[Item]).returns(T::Array[Item]) }
+        def self.filter_items(items)
+          items.select do |item|
+            # Omit items with an explicit `os` value that isn't macOS
+            next false if item.os && APPCAST_MACOS_STRINGS.none?(item.os)
+
+            # Omit items for prerelease macOS versions
+            next false if item.minimum_system_version&.strip_patch&.prerelease?
+
+            true
+          end.compact
+        end
+
+        # Sorts items from newest to oldest.
+        #
+        # @param items [Array] appcast items
+        # @return [Array]
+        sig { params(items: T::Array[Item]).returns(T::Array[Item]) }
+        def self.sort_items(items)
+          items.sort_by { |item| [item.pub_date, item.bundle_version] }
+               .reverse
+        end
+
         # Uses `#items_from_content` to identify versions from the Sparkle
         # appcast content or, if a block is provided, passes the content to
         # the block to handle matching.
@@ -161,7 +189,7 @@ module Homebrew
           ).returns(T::Array[String])
         }
         def self.versions_from_content(content, regex = nil, &block)
-          items = items_from_content(content).sort_by { |item| [item.pub_date, item.bundle_version] }.reverse
+          items = sort_items(filter_items(items_from_content(content)))
           return [] if items.blank?
 
           item = items.first
