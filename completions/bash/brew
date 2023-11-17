@@ -799,6 +799,7 @@ _brew_determine_test_runners() {
   case "${cur}" in
     -*)
       __brewcomp "
+      --all-supported
       --debug
       --dependents
       --eval-all
