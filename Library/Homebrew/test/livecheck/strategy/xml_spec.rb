@@ -79,6 +79,24 @@ describe Homebrew::Livecheck::Strategy::Xml do
     EOS
   end
 
+  let(:parent_child_text) { { parent: "1.2.3", child: "4.5.6" } }
+  let(:content_parent_child) do
+    # This XML deliberately includes unnecessary whitespace, to ensure that
+    # Xml#element_text properly strips the retrieved text.
+    <<~EOS
+      <?xml version="1.0" encoding="utf-8"?>
+      <elements>
+        <parent>
+          #{parent_child_text[:parent]}
+          <child> #{parent_child_text[:child]} </child>
+        </parent>
+        <blank-parent>
+          <blank-child></blank-child>
+        </blank-parent>
+      </elements>
+    EOS
+  end
+
   let(:content_matches) { ["1.1.2", "1.1.1", "1.1.0", "1.0.3", "1.0.2", "1.0.1", "1.0.0"] }
   let(:content_simple_matches) { ["1.2.3"] }
 
@@ -120,6 +138,29 @@ describe Homebrew::Livecheck::Strategy::Xml do
 
     it "returns an REXML::Document when given XML content with an undefined namespace" do
       expect(xml.parse_xml(content_undefined_namespace)).to be_an_instance_of(REXML::Document)
+    end
+  end
+
+  describe "::element_text" do
+    let(:parent_child_doc) { xml.parse_xml(content_parent_child) }
+    let(:parent) { parent_child_doc.get_elements("/elements/parent").first }
+    let(:blank_parent) { parent_child_doc.get_elements("/elements/blank-parent").first }
+
+    it "returns the element text if child_name is not provided" do
+      expect(xml.element_text(parent)).to eq(parent_child_text[:parent])
+    end
+
+    it "returns the child element text if child_name is provided" do
+      expect(xml.element_text(parent, "child")).to eq(parent_child_text[:child])
+    end
+
+    it "returns `nil` if the provided child element does not exist" do
+      expect(xml.element_text(parent, "nonexistent")).to be_nil
+    end
+
+    it "returns `nil` if the retrieved text is blank" do
+      expect(xml.element_text(blank_parent)).to be_nil
+      expect(xml.element_text(blank_parent, "blank-child")).to be_nil
     end
   end
 
