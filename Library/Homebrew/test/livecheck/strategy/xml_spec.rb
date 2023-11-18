@@ -183,11 +183,11 @@ describe Homebrew::Livecheck::Strategy::Xml do
 
       # Returning an array of strings from block
       expect(xml.versions_from_content(content_version_text, regex) do |xml, regex|
-        xml.get_elements("versions//version").map { |item| item.text[regex, 1] }
+        xml.get_elements("/versions/version").map { |item| item.text[regex, 1] }
       end).to eq(content_matches)
 
       expect(xml.versions_from_content(content_version_attr, regex) do |xml, regex|
-        xml.get_elements("items//item").map do |item|
+        xml.get_elements("/items/item").map do |item|
           version = item["version"]
           next if version.blank?
 
@@ -214,7 +214,7 @@ describe Homebrew::Livecheck::Strategy::Xml do
   describe "::find_versions?" do
     it "finds versions in provided_content using a block" do
       expect(xml.find_versions(url: http_url, regex: regex, provided_content: content_version_text) do |xml, regex|
-        xml.get_elements("versions//version").map { |item| item.text[regex, 1] }
+        xml.get_elements("/versions/version").map { |item| item.text[regex, 1] }
       end).to eq(find_versions_cached_return_hash)
 
       # NOTE: A regex should be provided using the `#regex` method in a
@@ -223,7 +223,7 @@ describe Homebrew::Livecheck::Strategy::Xml do
       # regex isn't provided.
       expect(xml.find_versions(url: http_url, provided_content: content_version_text) do |xml|
         regex = /^v?(\d+(?:\.\d+)+)$/i.freeze
-        xml.get_elements("versions//version").map { |item| item.text[regex, 1] }
+        xml.get_elements("/versions/version").map { |item| item.text[regex, 1] }
       end).to eq(find_versions_cached_return_hash.merge({ regex: nil }))
     end
 
