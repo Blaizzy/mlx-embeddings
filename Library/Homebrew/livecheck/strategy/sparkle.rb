@@ -95,16 +95,16 @@ module Homebrew
               os = enclosure["os"].presence
             end
 
-            title = item.elements["title"]&.text&.strip&.presence
-            link = item.elements["link"]&.text&.strip&.presence
+            title = Xml.element_text(item, "title")
+            link = Xml.element_text(item, "link")
             url ||= link
-            channel = item.elements["channel"]&.text&.strip&.presence
-            release_notes_link = item.elements["releaseNotesLink"]&.text&.strip&.presence
-            short_version ||= item.elements["shortVersionString"]&.text&.strip&.presence
-            version ||= item.elements["version"]&.text&.strip&.presence
+            channel = Xml.element_text(item, "channel")
+            release_notes_link = Xml.element_text(item, "releaseNotesLink")
+            short_version ||= Xml.element_text(item, "shortVersionString")
+            version ||= Xml.element_text(item, "version")
 
             minimum_system_version_text =
-              item.elements["minimumSystemVersion"]&.text&.strip&.gsub(/\A\D+|\D+\z/, "")&.presence
+              Xml.element_text(item, "minimumSystemVersion")&.gsub(/\A\D+|\D+\z/, "")
             if minimum_system_version_text.present?
               minimum_system_version = begin
                 MacOSVersion.new(minimum_system_version_text)
@@ -113,7 +113,7 @@ module Homebrew
               end
             end
 
-            pub_date = item.elements["pubDate"]&.text&.strip&.presence&.then do |date_string|
+            pub_date = Xml.element_text(item, "pubDate")&.then do |date_string|
               Time.parse(date_string)
             rescue ArgumentError
               # Omit unparsable strings (e.g. non-English dates)

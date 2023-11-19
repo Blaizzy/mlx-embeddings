@@ -72,6 +72,30 @@ module Homebrew
           end
         end
 
+        # Retrieves the stripped inner text of an `REXML` element. Returns
+        # `nil` if the optional child element doesn't exist or the text is
+        # blank.
+        # @param element [REXML::Element] an `REXML` element to retrieve text
+        #   from, either directly or from a child element
+        # @param child_path [String, nil] the XPath of a child element to
+        #   retrieve text from
+        # @return [String, nil]
+        sig {
+          params(
+            element:    REXML::Element,
+            child_path: T.nilable(String),
+          ).returns(T.nilable(String))
+        }
+        def self.element_text(element, child_path = nil)
+          element = element.get_elements(child_path).first if child_path.present?
+          return if element.nil?
+
+          text = element.text
+          return if text.blank?
+
+          text.strip
+        end
+
         # Parses XML text and identifies versions using a `strategy` block.
         # If a regex is provided, it will be passed as the second argument to
         # the  `strategy` block (after the parsed XML data).
