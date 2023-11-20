@@ -10,7 +10,7 @@ test_ruby() {
     return 1
   fi
 
-  if [[ -n "${HOMEBREW_RUBY3}" ]]
+  if [[ -n "${HOMEBREW_RUBY3}" && -z "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
   then
     required_ruby_version="3.1.0"
   else

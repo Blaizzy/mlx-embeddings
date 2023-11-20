@@ -294,12 +294,12 @@ jobs:
           - name: tests (macOS 13)
             test-flags: --coverage
             runs-on: macos-13
-          - name: tests (Ubuntu 22.04; Ruby 3.1)
+          - name: tests (Ubuntu 22.04; Ruby 2.6)
             runs-on: ubuntu-22.04
-            ruby: '3.1'
-          - name: tests (macOS 13; Ruby 3.1)
+            ruby: '2.6'
+          - name: tests (macOS 13; Ruby 2.6)
             runs-on: macos-13
-            ruby: '3.1'
+            ruby: '2.6'
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -321,6 +321,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler: none
 
       - name: Setup Ruby environment
         if: matrix.ruby

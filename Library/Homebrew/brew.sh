@@ -945,6 +945,11 @@ then
   export HOMEBREW_SORBET_RUNTIME="1"
 fi
 
+if [[ -n "${HOMEBREW_DEVELOPER}" ]]
+then
+  export HOMEBREW_RUBY3="1"
+fi
+
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]
 then
   HOMEBREW_BASH_COMMAND="${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh"
