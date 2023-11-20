@@ -22,6 +22,7 @@ module JSONSchemer
   end
 end
 
+JSONSchemer::CATCHALL = T.let(T.unsafe(nil), String)
 JSONSchemer::CLASSIC_ERROR_TYPES = T.let(T.unsafe(nil), Hash)
 class JSONSchemer::CachedRefResolver < ::JSONSchemer::CachedResolver; end
 
@@ -31,8 +32,15 @@ class JSONSchemer::CachedResolver
   def call(*args); end
 end
 
+module JSONSchemer::ContentEncoding; end
+JSONSchemer::ContentEncoding::BASE64 = T.let(T.unsafe(nil), Proc)
+module JSONSchemer::ContentMediaType; end
+JSONSchemer::ContentMediaType::JSON = T.let(T.unsafe(nil), Proc)
 module JSONSchemer::Draft201909; end
 JSONSchemer::Draft201909::BASE_URI = T.let(T.unsafe(nil), URI::HTTPS)
+JSONSchemer::Draft201909::CONTENT_ENCODINGS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft201909::CONTENT_MEDIA_TYPES = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft201909::FORMATS = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft201909::Meta; end
 JSONSchemer::Draft201909::Meta::APPLICATOR = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft201909::Meta::CONTENT = T.let(T.unsafe(nil), Hash)
@@ -88,6 +96,9 @@ JSONSchemer::Draft201909::Vocab::META_DATA = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft201909::Vocab::VALIDATION = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft202012; end
 JSONSchemer::Draft202012::BASE_URI = T.let(T.unsafe(nil), URI::HTTPS)
+JSONSchemer::Draft202012::CONTENT_ENCODINGS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft202012::CONTENT_MEDIA_TYPES = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft202012::FORMATS = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft202012::Meta; end
 JSONSchemer::Draft202012::Meta::APPLICATOR = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft202012::Meta::CONTENT = T.let(T.unsafe(nil), Hash)
@@ -204,10 +215,12 @@ JSONSchemer::Draft202012::Vocab::CORE = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft202012::Vocab::Content; end
 
 class JSONSchemer::Draft202012::Vocab::Content::ContentEncoding < ::JSONSchemer::Keyword
+  def parse; end
   def validate(instance, instance_location, keyword_location, _context); end
 end
 
 class JSONSchemer::Draft202012::Vocab::Content::ContentMediaType < ::JSONSchemer::Keyword
+  def parse; end
   def validate(instance, instance_location, keyword_location, context); end
 end
 
@@ -268,40 +281,28 @@ class JSONSchemer::Draft202012::Vocab::Core::Vocabulary < ::JSONSchemer::Keyword
   def parse; end
 end
 
+class JSONSchemer::Draft202012::Vocab::Core::XError < ::JSONSchemer::Keyword
+  def message(error_key); end
+end
+
 JSONSchemer::Draft202012::Vocab::FORMAT_ANNOTATION = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft202012::Vocab::FORMAT_ASSERTION = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft202012::Vocab::FormatAnnotation; end
 
 class JSONSchemer::Draft202012::Vocab::FormatAnnotation::Format < ::JSONSchemer::Keyword
-  extend ::JSONSchemer::Format::Duration
-  extend ::JSONSchemer::Format::Email
-  extend ::JSONSchemer::Format::Hostname
-  extend ::JSONSchemer::Format::JSONPointer
-  extend ::JSONSchemer::Format::URITemplate
-  extend ::JSONSchemer::Format
-
   def error(formatted_instance_location:, **_arg1); end
   def parse; end
   def validate(instance, instance_location, keyword_location, _context); end
 end
 
-JSONSchemer::Draft202012::Vocab::FormatAnnotation::Format::DEFAULT_FORMAT = T.let(T.unsafe(nil), Proc)
 module JSONSchemer::Draft202012::Vocab::FormatAssertion; end
 
 class JSONSchemer::Draft202012::Vocab::FormatAssertion::Format < ::JSONSchemer::Keyword
-  extend ::JSONSchemer::Format::Duration
-  extend ::JSONSchemer::Format::Email
-  extend ::JSONSchemer::Format::Hostname
-  extend ::JSONSchemer::Format::JSONPointer
-  extend ::JSONSchemer::Format::URITemplate
-  extend ::JSONSchemer::Format
-
   def error(formatted_instance_location:, **_arg1); end
   def parse; end
   def validate(instance, instance_location, keyword_location, _context); end
 end
 
-JSONSchemer::Draft202012::Vocab::FormatAssertion::Format::DEFAULT_FORMAT = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Draft202012::Vocab::META_DATA = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft202012::Vocab::MetaData; end
 
@@ -448,6 +449,9 @@ end
 
 module JSONSchemer::Draft4; end
 JSONSchemer::Draft4::BASE_URI = T.let(T.unsafe(nil), URI::HTTP)
+JSONSchemer::Draft4::CONTENT_ENCODINGS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft4::CONTENT_MEDIA_TYPES = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft4::FORMATS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft4::SCHEMA = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft4::Vocab; end
 JSONSchemer::Draft4::Vocab::ALL = T.let(T.unsafe(nil), Hash)
@@ -471,11 +475,17 @@ end
 
 module JSONSchemer::Draft6; end
 JSONSchemer::Draft6::BASE_URI = T.let(T.unsafe(nil), URI::HTTP)
+JSONSchemer::Draft6::CONTENT_ENCODINGS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft6::CONTENT_MEDIA_TYPES = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft6::FORMATS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft6::SCHEMA = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft6::Vocab; end
 JSONSchemer::Draft6::Vocab::ALL = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft7; end
 JSONSchemer::Draft7::BASE_URI = T.let(T.unsafe(nil), URI::HTTP)
+JSONSchemer::Draft7::CONTENT_ENCODINGS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft7::CONTENT_MEDIA_TYPES = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Draft7::FORMATS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Draft7::SCHEMA = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::Draft7::Vocab; end
 JSONSchemer::Draft7::Vocab::ALL = T.let(T.unsafe(nil), Hash)
@@ -487,12 +497,12 @@ class JSONSchemer::Draft7::Vocab::Validation::AdditionalItems < ::JSONSchemer::K
   def validate(instance, instance_location, keyword_location, context); end
 end
 
-class JSONSchemer::Draft7::Vocab::Validation::ContentEncoding < ::JSONSchemer::Keyword
+class JSONSchemer::Draft7::Vocab::Validation::ContentEncoding < ::JSONSchemer::Draft202012::Vocab::Content::ContentEncoding
   def error(formatted_instance_location:, **_arg1); end
   def validate(instance, instance_location, keyword_location, _context); end
 end
 
-class JSONSchemer::Draft7::Vocab::Validation::ContentMediaType < ::JSONSchemer::Keyword
+class JSONSchemer::Draft7::Vocab::Validation::ContentMediaType < ::JSONSchemer::Draft202012::Vocab::Content::ContentMediaType
   def error(formatted_instance_location:, **_arg1); end
   def validate(instance, instance_location, keyword_location, context); end
 end
@@ -522,31 +532,31 @@ end
 JSONSchemer::FILE_URI_REF_RESOLVER = T.let(T.unsafe(nil), Proc)
 
 module JSONSchemer::Format
-  include ::JSONSchemer::Format::Duration
-  include ::JSONSchemer::Format::Email
-  include ::JSONSchemer::Format::Hostname
-  include ::JSONSchemer::Format::JSONPointer
-  include ::JSONSchemer::Format::URITemplate
-
-  def iri_escape(data); end
-  def parse_uri_scheme(data); end
-  def valid_date_time?(data); end
-  def valid_ip?(data, family); end
-  def valid_regex?(data); end
-  def valid_spec_format?(data, format); end
-  def valid_uri?(data); end
-  def valid_uri_reference?(data); end
-  def valid_uuid?(data); end
+  extend ::JSONSchemer::Format::Duration
+  extend ::JSONSchemer::Format::Email
+  extend ::JSONSchemer::Format::Hostname
+  extend ::JSONSchemer::Format::JSONPointer
+  extend ::JSONSchemer::Format::URITemplate
 
   class << self
-    def decode_content_encoding(data, content_encoding); end
-    def parse_content_media_type(data, content_media_type); end
+    def iri_escape(data); end
+    def parse_uri_scheme(data); end
     def percent_encode(data, regexp); end
+    def valid_date_time?(data); end
+    def valid_ip?(data, family); end
+    def valid_regex?(data); end
+    def valid_uri?(data); end
+    def valid_uri_reference?(data); end
+    def valid_uuid?(data); end
   end
 end
 
 JSONSchemer::Format::ASCII_8BIT_TO_PERCENT_ENCODED = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Format::DATE = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::DATE_TIME = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::DATE_TIME_OFFSET_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::DATE_TIME_SEPARATOR_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::DURATION = T.let(T.unsafe(nil), Proc)
 
 module JSONSchemer::Format::Duration
   def valid_duration?(data); end
@@ -563,6 +573,7 @@ JSONSchemer::Format::Duration::DUR_SECOND = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Duration::DUR_TIME = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Duration::DUR_WEEK = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Duration::DUR_YEAR = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::EMAIL = T.let(T.unsafe(nil), Proc)
 
 module JSONSchemer::Format::Email
   def valid_email?(data); end
@@ -580,6 +591,7 @@ JSONSchemer::Format::Email::QUOTED_STRING = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Email::Q_CONTENT_SMTP = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Email::Q_TEXT_SMTP = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Email::UTF8_NON_ASCII = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::HOSTNAME = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::HOUR_24_REGEX = T.let(T.unsafe(nil), Regexp)
 
 module JSONSchemer::Format::Hostname
@@ -609,9 +621,15 @@ JSONSchemer::Format::Hostname::MIDDLE_DOT = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Hostname::VIRAMA_CHARACTER_CLASS = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Hostname::ZERO_WIDTH_NON_JOINER_JOINING_TYPE = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::Hostname::ZERO_WIDTH_VIRAMA = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::IDN_EMAIL = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::IDN_HOSTNAME = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::INVALID_QUERY_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::IPV4 = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::IPV6 = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::IP_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::IRI = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::IRI_ESCAPE_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::IRI_REFERENCE = T.let(T.unsafe(nil), Proc)
 
 module JSONSchemer::Format::JSONPointer
   def valid_json_pointer?(data); end
@@ -621,8 +639,13 @@ end
 JSONSchemer::Format::JSONPointer::JSON_POINTER_REGEX = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Format::JSONPointer::JSON_POINTER_REGEX_STRING = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::JSONPointer::RELATIVE_JSON_POINTER_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::Format::JSON_POINTER = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::LEAP_SECOND_REGEX = T.let(T.unsafe(nil), Regexp)
 JSONSchemer::Format::NIL_UUID = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::REGEX = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::RELATIVE_JSON_POINTER = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::TIME = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::URI = T.let(T.unsafe(nil), Proc)
 
 module JSONSchemer::Format::URITemplate
   def valid_uri_template?(data); end
@@ -642,7 +665,13 @@ JSONSchemer::Format::URITemplate::VARCHAR = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::URITemplate::VARIABLE_LIST = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::URITemplate::VARNAME = T.let(T.unsafe(nil), String)
 JSONSchemer::Format::URITemplate::VARSPEC = T.let(T.unsafe(nil), String)
+JSONSchemer::Format::URI_REFERENCE = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::URI_TEMPLATE = T.let(T.unsafe(nil), Proc)
+JSONSchemer::Format::UUID = T.let(T.unsafe(nil), Proc)
 JSONSchemer::Format::UUID_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::I18N_ERRORS_SCOPE = T.let(T.unsafe(nil), String)
+JSONSchemer::I18N_SCOPE = T.let(T.unsafe(nil), String)
+JSONSchemer::I18N_SEPARATOR = T.let(T.unsafe(nil), String)
 class JSONSchemer::InvalidEcmaRegexp < ::StandardError; end
 class JSONSchemer::InvalidFileURI < ::StandardError; end
 class JSONSchemer::InvalidRefPointer < ::StandardError; end
@@ -655,6 +684,7 @@ class JSONSchemer::Keyword
   def initialize(value, parent, keyword, schema = T.unsafe(nil)); end
 
   def absolute_keyword_location; end
+  def error_key; end
   def parent; end
   def parsed; end
   def root; end
@@ -696,6 +726,7 @@ JSONSchemer::OpenAPI30::BASE_URI = T.let(T.unsafe(nil), URI::Generic)
 module JSONSchemer::OpenAPI30::Document; end
 JSONSchemer::OpenAPI30::Document::SCHEMA = T.let(T.unsafe(nil), Hash)
 JSONSchemer::OpenAPI30::Document::SCHEMAS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::OpenAPI30::FORMATS = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::OpenAPI30::Meta; end
 JSONSchemer::OpenAPI30::Meta::SCHEMAS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::OpenAPI30::SCHEMA = T.let(T.unsafe(nil), Hash)
@@ -722,6 +753,7 @@ JSONSchemer::OpenAPI31::Document::OTHER_DIALECTS = T.let(T.unsafe(nil), Array)
 JSONSchemer::OpenAPI31::Document::SCHEMA = T.let(T.unsafe(nil), Hash)
 JSONSchemer::OpenAPI31::Document::SCHEMAS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::OpenAPI31::Document::SCHEMA_BASE = T.let(T.unsafe(nil), Hash)
+JSONSchemer::OpenAPI31::FORMATS = T.let(T.unsafe(nil), Hash)
 module JSONSchemer::OpenAPI31::Meta; end
 JSONSchemer::OpenAPI31::Meta::BASE = T.let(T.unsafe(nil), Hash)
 JSONSchemer::OpenAPI31::Meta::SCHEMAS = T.let(T.unsafe(nil), Hash)
@@ -741,13 +773,15 @@ class JSONSchemer::OpenAPI31::Vocab::Base::AnyOf < ::JSONSchemer::Draft202012::V
 end
 
 class JSONSchemer::OpenAPI31::Vocab::Base::Discriminator < ::JSONSchemer::Keyword
-  include ::JSONSchemer::Format::JSONPointer
-
   def error(formatted_instance_location:, **_arg1); end
+  def mapping; end
   def skip_ref_once; end
   def skip_ref_once=(_arg0); end
+  def subschemas_by_property_value; end
   def validate(instance, instance_location, keyword_location, context); end
 end
+
+JSONSchemer::OpenAPI31::Vocab::Base::Discriminator::FIXED_FIELD_REGEX = T.let(T.unsafe(nil), Regexp)
 
 class JSONSchemer::OpenAPI31::Vocab::Base::OneOf < ::JSONSchemer::Draft202012::Vocab::Applicator::OneOf
   def validate(*_arg0); end
@@ -756,6 +790,7 @@ end
 module JSONSchemer::Output
   def keyword; end
   def schema; end
+  def x_error; end
 
   private
 
@@ -779,6 +814,8 @@ class JSONSchemer::Result < ::Struct
   def details=(_); end
   def error; end
   def flag; end
+  def i18n!; end
+  def i18n?; end
   def ignore_nested; end
   def ignore_nested=(_); end
   def insert_property_defaults(context); end
@@ -813,9 +850,8 @@ end
 
 class JSONSchemer::Schema
   include ::JSONSchemer::Output
-  include ::JSONSchemer::Format::JSONPointer
 
-  def initialize(value, parent = T.unsafe(nil), root = T.unsafe(nil), keyword = T.unsafe(nil), base_uri: T.unsafe(nil), meta_schema: T.unsafe(nil), vocabulary: T.unsafe(nil), format: T.unsafe(nil), formats: T.unsafe(nil), keywords: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil), insert_property_defaults: T.unsafe(nil), property_default_resolver: T.unsafe(nil), ref_resolver: T.unsafe(nil), regexp_resolver: T.unsafe(nil), output_format: T.unsafe(nil), resolve_enumerators: T.unsafe(nil), access_mode: T.unsafe(nil)); end
+  def initialize(value, parent = T.unsafe(nil), root = T.unsafe(nil), keyword = T.unsafe(nil), base_uri: T.unsafe(nil), meta_schema: T.unsafe(nil), vocabulary: T.unsafe(nil), format: T.unsafe(nil), formats: T.unsafe(nil), content_encodings: T.unsafe(nil), content_media_types: T.unsafe(nil), keywords: T.unsafe(nil), before_property_validation: T.unsafe(nil), after_property_validation: T.unsafe(nil), insert_property_defaults: T.unsafe(nil), property_default_resolver: T.unsafe(nil), ref_resolver: T.unsafe(nil), regexp_resolver: T.unsafe(nil), output_format: T.unsafe(nil), resolve_enumerators: T.unsafe(nil), access_mode: T.unsafe(nil)); end
 
   def absolute_keyword_location; end
   def after_property_validation; end
@@ -823,9 +859,15 @@ class JSONSchemer::Schema
   def base_uri=(_arg0); end
   def before_property_validation; end
   def bundle; end
+  def content_encodings; end
+  def content_media_types; end
   def custom_keywords; end
   def defs_keyword; end
   def error(formatted_instance_location:, **options); end
+  def error_key; end
+  def fetch_content_encoding(content_encoding, *args, &block); end
+  def fetch_content_media_type(content_media_type, *args, &block); end
+  def fetch_format(format, *args, &block); end
   def format; end
   def formats; end
   def id_keyword; end
@@ -887,6 +929,8 @@ end
 JSONSchemer::Schema::DEFAULT_AFTER_PROPERTY_VALIDATION = T.let(T.unsafe(nil), Array)
 JSONSchemer::Schema::DEFAULT_BASE_URI = T.let(T.unsafe(nil), URI::Generic)
 JSONSchemer::Schema::DEFAULT_BEFORE_PROPERTY_VALIDATION = T.let(T.unsafe(nil), Array)
+JSONSchemer::Schema::DEFAULT_CONTENT_ENCODINGS = T.let(T.unsafe(nil), Hash)
+JSONSchemer::Schema::DEFAULT_CONTENT_MEDIA_TYPES = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Schema::DEFAULT_FORMATS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Schema::DEFAULT_KEYWORDS = T.let(T.unsafe(nil), Hash)
 JSONSchemer::Schema::DEFAULT_PROPERTY_DEFAULT_RESOLVER = T.let(T.unsafe(nil), Proc)
@@ -913,3 +957,4 @@ JSONSchemer::VERSION = T.let(T.unsafe(nil), String)
 JSONSchemer::VOCABULARIES = T.let(T.unsafe(nil), Hash)
 JSONSchemer::VOCABULARY_ORDER = T.let(T.unsafe(nil), Hash)
 JSONSchemer::WINDOWS_URI_PATH_REGEX = T.let(T.unsafe(nil), Regexp)
+JSONSchemer::X_ERROR_REGEX = T.let(T.unsafe(nil), Regexp)
