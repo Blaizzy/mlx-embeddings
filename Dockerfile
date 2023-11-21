@@ -55,7 +55,8 @@ RUN apt-get update \
 
 USER linuxbrew
 COPY --chown=linuxbrew:linuxbrew . /home/linuxbrew/.linuxbrew/Homebrew
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}" \
+  HOMEBREW_RUBY3=1
 WORKDIR /home/linuxbrew
 
 RUN mkdir -p \
