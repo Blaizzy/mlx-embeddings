@@ -35,6 +35,7 @@ describe Homebrew::Diagnostic::Checks do
     allow(OS::Mac).to receive(:version).and_return(macos_version)
     allow(OS::Mac).to receive(:full_version).and_return(macos_version)
     stub_const("RUBY_VERSION", "1.8.6")
+    ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"] = "1"
 
     expect(checks.check_ruby_version)
       .to match "Ruby version 1.8.6 is unsupported on macOS 10.12"
