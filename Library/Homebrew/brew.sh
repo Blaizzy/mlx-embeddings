@@ -502,6 +502,11 @@ case "$*" in
     ;;
 esac
 
+if [[ -n "${HOMEBREW_DEVELOPER}" ]]
+then
+  export HOMEBREW_RUBY3="1"
+fi
+
 # TODO: bump version when new macOS is released or announced and update references in:
 # - docs/Installation.md
 # - https://github.com/Homebrew/install/blob/HEAD/install.sh
@@ -943,11 +948,6 @@ if [[ -n "${HOMEBREW_DEVELOPER}" || -n "${HOMEBREW_DEV_CMD_RUN}" ]]
 then
   # Always run with Sorbet for Homebrew developers or when a Homebrew developer command has been run.
   export HOMEBREW_SORBET_RUNTIME="1"
-fi
-
-if [[ -n "${HOMEBREW_DEVELOPER}" ]]
-then
-  export HOMEBREW_RUBY3="1"
 fi
 
 if [[ -f "${HOMEBREW_LIBRARY}/Homebrew/cmd/${HOMEBREW_COMMAND}.sh" ]]
