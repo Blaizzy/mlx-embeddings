@@ -49,7 +49,7 @@ module Homebrew
       @head || args.HEAD?
     end
 
-    def generate!
+    def write_formula!
       path = @tap.new_formula_path(@name)
       raise "#{path} already exists" if path.exist?
 

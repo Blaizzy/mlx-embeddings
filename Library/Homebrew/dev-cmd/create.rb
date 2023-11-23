@@ -200,7 +200,7 @@ module Homebrew
       end
     end
 
-    path = fc.generate!
+    path = fc.write_formula!
 
     formula = Homebrew.with_no_api_env do
       Formula[fc.name]
