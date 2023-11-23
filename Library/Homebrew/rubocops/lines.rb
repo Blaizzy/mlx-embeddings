@@ -441,6 +441,21 @@ module RuboCop
         end
       end
 
+      # This cop makes sure the `MacOS` module is not used in Linux-facing formula code
+      #
+      # @api private
+      class MacOSOnLinux < FormulaCop
+        include OnSystemConditionalsHelper
+
+        ON_MACOS_BLOCKS = [:macos, *MACOS_VERSION_OPTIONS].map { |os| :"on_#{os}" }.freeze
+
+        def audit_formula(_node, _class_node, _parent_class_node, body_node)
+          audit_macos_references(body_node,
+                                 allowed_methods: OnSystemConditionals::NO_ON_SYSTEM_METHOD_NAMES,
+                                 allowed_blocks:  OnSystemConditionals::NO_ON_SYSTEM_BLOCK_NAMES + ON_MACOS_BLOCKS)
+        end
+      end
+
       # This cop makes sure that the `generate_completions_from_executable` DSL is used.
       #
       # @api private
