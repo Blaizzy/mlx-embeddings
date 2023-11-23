@@ -50,7 +50,8 @@ module Homebrew
     end
 
     def write_formula!
-      raise "name should not be empty" if @name.to_s == ''
+      raise "name should not be empty" if @name.to_s == ""
+
       path = @tap.new_formula_path(@name)
       raise "#{path} already exists" if path.exist?
 
