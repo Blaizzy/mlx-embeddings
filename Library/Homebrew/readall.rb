@@ -11,6 +11,10 @@ module Readall
   class << self
     include Cachable
 
+    # TODO: remove this once the `MacOS` module is undefined on Linux
+    MACOS_MODULE_REGEX = /\b(MacOS|OS::Mac)(\.|::)\b/.freeze
+    private_constant :MACOS_MODULE_REGEX
+
     private :cache
 
     def valid_ruby_syntax?(ruby_files)
@@ -59,7 +63,9 @@ module Readall
                                                        flags: [], ignore_errors: false)
         readall_formula = readall_formula_class.new(formula_name, file, :stable, tap: tap)
         readall_formula.to_hash
-        cache[:valid_formulae][file] = if readall_formula.on_system_blocks_exist?
+        # TODO: Remove check for MACOS_MODULE_REGEX once the `MacOS` module is undefined on Linux
+        cache[:valid_formulae][file] = if readall_formula.on_system_blocks_exist? ||
+                                          formula_contents.match?(MACOS_MODULE_REGEX)
           [bottle_tag, *cache[:valid_formulae][file]]
         else
           true
