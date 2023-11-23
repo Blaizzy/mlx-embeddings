@@ -200,7 +200,7 @@ module Homebrew
       end
     end
 
-    fc.generate!
+    path = fc.write_formula!
 
     formula = Homebrew.with_no_api_env do
       Formula[fc.name]
@@ -208,7 +208,7 @@ module Homebrew
     PyPI.update_python_resources! formula, ignore_non_pypi_packages: true if args.python?
 
     puts "Please run `brew audit --new #{fc.name}` before submitting, thanks."
-    fc.path
+    path
   end
 
   def __gets

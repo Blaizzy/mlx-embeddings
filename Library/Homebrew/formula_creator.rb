@@ -10,7 +10,7 @@ module Homebrew
   # @api private
   class FormulaCreator
     attr_reader :args, :url, :sha256, :desc, :homepage
-    attr_accessor :name, :version, :tap, :path, :mode, :license
+    attr_accessor :name, :version, :tap, :mode, :license
 
     def initialize(args)
       @args = args
@@ -34,18 +34,11 @@ module Homebrew
           @name = path.basename.to_s[/(.*?)[-_.]?#{Regexp.escape(path.version.to_s)}/, 1]
         end
       end
-      update_path
       @version = if @version
         Version.new(@version)
       else
         Version.detect(url)
       end
-    end
-
-    def update_path
-      return if @name.nil? || @tap.nil?
-
-      @path = @tap.new_formula_path(@name)
     end
 
     def fetch?
@@ -56,7 +49,11 @@ module Homebrew
       @head || args.HEAD?
     end
 
-    def generate!
+    def write_formula!
+      raise ArgumentError, "name is blank!" if @name.blank?
+      raise ArgumentError, "tap is blank!" if @tap.blank?
+
+      path = @tap.new_formula_path(@name)
       raise "#{path} already exists" if path.exist?
 
       if version.nil? || version.null?
@@ -86,6 +83,7 @@ module Homebrew
 
       path.dirname.mkpath
       path.write ERB.new(template, trim_mode: ">").result(binding)
+      path
     end
 
     sig { returns(String) }
