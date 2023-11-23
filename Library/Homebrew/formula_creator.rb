@@ -50,7 +50,8 @@ module Homebrew
     end
 
     def write_formula!
-      raise "name should not be empty" if @name.to_s == ""
+      raise ArgumentError, "name is blank!" if @name.blank?
+      raise ArgumentError, "tap is blank!" if @tap.blank?
 
       path = @tap.new_formula_path(@name)
       raise "#{path} already exists" if path.exist?
