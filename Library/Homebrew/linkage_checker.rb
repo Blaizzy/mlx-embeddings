@@ -196,9 +196,8 @@ class LinkageChecker
 
           if (dep = dylib_to_dep(dylib))
             @broken_deps[dep] |= [dylib]
-          elsif MacOS.version >= :big_sur && dylib_found_via_dlopen(dylib)
+          elsif system_libraries_exist_in_cache? && dylib_found_via_dlopen(dylib)
             # If we cannot associate the dylib with a dependency, then it may be a system library.
-            # In macOS Big Sur and later, system libraries do not exist on-disk and instead exist in a cache.
             # If dlopen finds the dylib, then the linkage is not broken.
             @system_dylibs << dylib
           elsif !system_framework?(dylib)
@@ -226,6 +225,11 @@ class LinkageChecker
     store&.update!(keg_files_dylibs: keg_files_dylibs)
   end
   alias generic_check_dylibs check_dylibs
+
+  def system_libraries_exist_in_cache?
+    false
+  end
+  alias generic_system_libraries_exist_in_cache? system_libraries_exist_in_cache?
 
   def dylib_found_via_dlopen(dylib)
     Fiddle.dlopen(dylib).close

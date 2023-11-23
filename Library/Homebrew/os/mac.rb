@@ -7,6 +7,9 @@ require "os/mac/xcode"
 require "os/mac/sdk"
 require "os/mac/keg"
 
+# TODO: remove this once the `MacOS` module is undefined on Linux
+require "simulate_system"
+
 module OS
   # Helper module for querying system information on macOS.
   module Mac
@@ -21,6 +24,7 @@ module OS
     # using the standard Ruby Comparable methods.
     sig { returns(MacOSVersion) }
     def self.version
+      # odeprecated "`MacOS.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       @version ||= full_version.strip_patch
     end
 
@@ -28,6 +32,7 @@ module OS
     # using the standard Ruby Comparable methods.
     sig { returns(MacOSVersion) }
     def self.full_version
+      # odeprecated "`MacOS.full_version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       @full_version ||= if ENV["HOMEBREW_FAKE_EL_CAPITAN"] # for Portable Ruby building
         MacOSVersion.new("10.11.6")
       else
@@ -60,6 +65,7 @@ module OS
     end
 
     def self.languages
+      # odeprecated "`MacOS.languages` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       return @languages if @languages
 
       os_langs = Utils.popen_read("defaults", "read", "-g", "AppleLanguages")
@@ -73,6 +79,7 @@ module OS
     end
 
     def self.language
+      # odeprecated "`MacOS.language` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       languages.first
     end
 
@@ -83,6 +90,7 @@ module OS
 
     sig { returns(T::Boolean) }
     def self.sdk_root_needed?
+      # odeprecated "`MacOS.sdk_root_needed?` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       if MacOS::CLT.installed?
         # If there's no CLT SDK, return false
         return false unless MacOS::CLT.provides_sdk?
@@ -131,11 +139,13 @@ module OS
 
     # Returns the path to an SDK or nil, following the rules set by {sdk}.
     def self.sdk_path(version = nil)
+      # odeprecated "`MacOS.sdk_path` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       s = sdk(version)
       s&.path
     end
 
     def self.sdk_path_if_needed(version = nil)
+      # odeprecated "`MacOS.sdk_path_if_needed` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       # Prefer CLT SDK when both Xcode and the CLT are installed.
       # Expected results:
       # 1. On Xcode-only systems, return the Xcode SDK.

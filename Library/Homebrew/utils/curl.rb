@@ -320,12 +320,7 @@ module Utils
         break if http_status_ok?(details[:status_code])
       end
 
-      unless details[:status_code]
-        # Hack around https://github.com/Homebrew/brew/issues/3199
-        return if MacOS.version == :el_capitan
-
-        return "The #{url_type} #{url} is not reachable"
-      end
+      return "The #{url_type} #{url} is not reachable" unless details[:status_code]
 
       unless http_status_ok?(details[:status_code])
         return if details[:responses].any? do |response|
