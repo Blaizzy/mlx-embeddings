@@ -30,6 +30,7 @@ module Homebrew
           glide_home
           java_cache
           npm_cache
+          pip_cache
           gclient_cache
         ].include?(pathname.basename.to_s)
       end
