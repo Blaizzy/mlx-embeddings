@@ -502,7 +502,7 @@ case "$*" in
     ;;
 esac
 
-if [[ -n "${HOMEBREW_DEVELOPER}" ]]
+if [[ -n "${HOMEBREW_DEVELOPER}" || "$1" == "test-bot" ]]
 then
   export HOMEBREW_RUBY3="1"
 fi
