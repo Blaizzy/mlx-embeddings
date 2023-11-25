@@ -734,13 +734,13 @@ class Tap
       "installed"     => installed?,
       "official"      => official?,
       "formula_names" => formula_names,
-      "formula_files" => formula_files.map(&:to_s),
       "cask_tokens"   => cask_tokens,
-      "cask_files"    => cask_files.map(&:to_s),
-      "command_files" => command_files.map(&:to_s),
     }
 
     if installed?
+      hash["formula_files"] = formula_files.map(&:to_s)
+      hash["cask_files"] = cask_files.map(&:to_s)
+      hash["command_files"] = command_files.map(&:to_s)
       hash["remote"] = remote
       hash["custom_remote"] = custom_remote?
       hash["private"] = private?
