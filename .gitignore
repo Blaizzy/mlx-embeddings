@@ -70,7 +70,6 @@
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/except.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/keys.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/slice.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/blank.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/deep_dup.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/duplicable.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/string/exclude.rb
@@ -78,8 +77,6 @@
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/string/indent.rb
 
 # Ignore partially included gems where we don't need all files
-**/vendor/bundle/ruby/*/gems/concurrent-ruby-*/lib/*/*.jar
-**/vendor/bundle/ruby/*/gems/i18n-*/lib/i18n/tests*
 **/vendor/gems/mechanize-*/.*
 **/vendor/gems/mechanize-*/*.md
 **/vendor/gems/mechanize-*/*.rdoc
@@ -102,12 +99,14 @@
 **/vendor/bundle/ruby/*/gems/coderay-*/
 **/vendor/bundle/ruby/*/gems/colorize-*/
 **/vendor/bundle/ruby/*/gems/commander-*/
+**/vendor/bundle/ruby/*/gems/concurrent-ruby-*/
 **/vendor/bundle/ruby/*/gems/diff-lcs-*/
 **/vendor/bundle/ruby/*/gems/docile-*/
 **/vendor/bundle/ruby/*/gems/ecma-re-validator-*/
 **/vendor/bundle/ruby/*/gems/hana-*/
 **/vendor/bundle/ruby/*/gems/highline-*/
 **/vendor/bundle/ruby/*/gems/hpricot-*/
+**/vendor/bundle/ruby/*/gems/i18n-*/
 **/vendor/bundle/ruby/*/gems/jaro_winkler-*/
 **/vendor/bundle/ruby/*/gems/json-*/
 **/vendor/bundle/ruby/*/gems/json_schemer-*/
