@@ -313,8 +313,12 @@ options: options)
       sig { returns(T::Hash[Symbol, String]) }
       def default_fields_influx
         @default_fields_influx ||= begin
-          version = HOMEBREW_VERSION.match(/^[\d.]+/)[0]
-          version = "#{version}-dev" if HOMEBREW_VERSION.include?("-")
+          version = if (match_data = HOMEBREW_VERSION.match(/^[\d.]+/))
+            suffix = "-dev" if HOMEBREW_VERSION.include?("-")
+            match_data[0] + suffix.to_s
+          else
+            ">=4.1.22"
+          end
 
           # Only include OS versions with an actual name.
           os_name_and_version = if (os_version = OS_VERSION.presence) && os_version.downcase.match?(/^[a-z]/)
