@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 class Object
@@ -12,15 +12,13 @@ class Object
   # to
   #
   #   address.blank?
-  #
-  # @return [true, false]
+  sig { returns(T::Boolean) }
   def blank?
     respond_to?(:empty?) ? !!T.unsafe(self).empty? : false
   end
 
   # An object is present if it's not blank.
-  #
-  # @return [true, false]
+  sig { returns(T::Boolean) }
   def present?
     !blank?
   end
@@ -39,8 +37,7 @@ class Object
   # becomes
   #
   #   region = params[:state].presence || params[:country].presence || 'US'
-  #
-  # @return [Object]
+  sig { returns(T.nilable(T.self_type)) }
   def presence
     self if present?
   end
@@ -50,12 +47,12 @@ class NilClass
   # +nil+ is blank:
   #
   #   nil.blank? # => true
-  #
-  # @return [true]
+  sig { returns(TrueClass) }
   def blank?
     true
   end
 
+  sig { returns(FalseClass) }
   def present? # :nodoc:
     false
   end
@@ -65,12 +62,12 @@ class FalseClass
   # +false+ is blank:
   #
   #   false.blank? # => true
-  #
-  # @return [true]
+  sig { returns(TrueClass) }
   def blank?
     true
   end
 
+  sig { returns(FalseClass) }
   def present? # :nodoc:
     false
   end
@@ -80,12 +77,12 @@ class TrueClass
   # +true+ is not blank:
   #
   #   true.blank? # => false
-  #
-  # @return [false]
+  sig { returns(FalseClass) }
   def blank?
     false
   end
 
+  sig { returns(TrueClass) }
   def present? # :nodoc:
     true
   end
@@ -100,6 +97,7 @@ class Array
   # @return [true, false]
   alias_method :blank?, :empty?
 
+  sig { returns(T::Boolean) }
   def present? # :nodoc:
     !empty?
   end
@@ -114,6 +112,7 @@ class Hash
   # @return [true, false]
   alias_method :blank?, :empty?
 
+  sig { returns(T::Boolean) }
   def present? # :nodoc:
     !empty?
   end
@@ -126,6 +125,7 @@ class Symbol
   #   :symbol.blank? # => false
   alias_method :blank?, :empty?
 
+  sig { returns(T::Boolean) }
   def present? # :nodoc:
     !empty?
   end
@@ -144,8 +144,7 @@ class String
   # Unicode whitespace is supported:
   #
   #   "\u00a0".blank? # => true
-  #
-  # @return [true, false]
+  sig { returns(T::Boolean) }
   def blank?
     # The regexp that matches blank strings is expensive. For the case of empty
     # strings we can speed up this method (~3.5x) with an empty? call. The
@@ -158,6 +157,7 @@ class String
       end
   end
 
+  sig { returns(T::Boolean) }
   def present? # :nodoc:
     !blank?
   end
@@ -168,12 +168,12 @@ class Numeric # :nodoc:
   #
   #   1.blank? # => false
   #   0.blank? # => false
-  #
-  # @return [false]
+  sig { returns(FalseClass) }
   def blank?
     false
   end
 
+  sig { returns(TrueClass) }
   def present?
     true
   end
@@ -183,12 +183,12 @@ class Time # :nodoc:
   # No Time is blank:
   #
   #   Time.now.blank? # => false
-  #
-  # @return [false]
+  sig { returns(FalseClass) }
   def blank?
     false
   end
 
+  sig { returns(TrueClass) }
   def present?
     true
   end

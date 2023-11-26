@@ -12,7 +12,6 @@ require "set"
 
 # Only require "core_ext" here to ensure we're only requiring the minimum of
 # what we need.
-require "extend/blank"
 require "active_support/core_ext/array/access"
 require "active_support/core_ext/enumerable"
 require "active_support/core_ext/file/atomic"
@@ -75,6 +74,7 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.freeze
 
 require "extend/module"
+require "extend/blank"
 require "env_config"
 require "macos_version"
 require "os"
