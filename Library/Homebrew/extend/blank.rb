@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "concurrent/map"
-
 class Object
   # An object is blank if it's false, empty, or a whitespace string.
   # For example, +nil+, '', '   ', [], {}, and +false+ are all blank.
@@ -135,9 +133,6 @@ end
 
 class String
   BLANK_RE = /\A[[:space:]]*\z/
-  ENCODED_BLANKS = Concurrent::Map.new do |h, enc|
-    h[enc] = Regexp.new(BLANK_RE.source.encode(enc), BLANK_RE.options | Regexp::FIXEDENCODING)
-  end
 
   # A string is blank if it's empty or contains whitespaces only:
   #
@@ -159,7 +154,7 @@ class String
       begin
         BLANK_RE.match?(self)
       rescue Encoding::CompatibilityError
-        ENCODED_BLANKS[self.encoding].match?(self)
+        Regexp.new(BLANK_RE.source.encode(self.encoding), BLANK_RE.options | Regexp::FIXEDENCODING).match?(self)
       end
   end
 
