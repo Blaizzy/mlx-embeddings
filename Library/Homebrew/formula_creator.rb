@@ -12,7 +12,9 @@ module Homebrew
     attr_reader :url, :sha256, :desc, :homepage
     attr_accessor :name, :version, :tap, :mode, :license
 
-    def initialize(fetch=true, head=false)
+    def initialize(name, version, fetch=true, head=false)
+      @name = name
+      @version = version
       @fetch = fetch
       @head = head
     end

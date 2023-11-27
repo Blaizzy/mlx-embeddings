@@ -140,15 +140,12 @@ module Homebrew
   end
 
   def create_formula(args:)
-    fc = FormulaCreator.new(!args.no_fetch?, args.HEAD?)
-    fc.name = if args.set_name.blank?
+    fc = FormulaCreator.new(args.set_name, args.set_version, !args.no_fetch?, args.HEAD?)
+    if fc.name.blank?
       stem = Pathname.new(args.named.first).stem.rpartition("=").last
       print "Formula name [#{stem}]: "
-      __gets || stem
-    else
-      args.set_name
+      fc.name = __gets || stem
     end
-    fc.version = args.set_version
     fc.license = args.set_license
     fc.tap = Tap.fetch(args.tap || "homebrew/core")
     raise TapUnavailableError, fc.tap.name unless fc.tap.installed?
