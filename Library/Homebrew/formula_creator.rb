@@ -9,12 +9,12 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    attr_reader :args, :url, :sha256, :desc, :homepage
+    attr_reader :url, :sha256, :desc, :homepage
     attr_accessor :name, :version, :tap, :mode, :license
 
-    def initialize(args, fetch=true)
-      @args = args
+    def initialize(fetch=true, head=false)
       @fetch = fetch
+      @head = head
     end
 
     def url=(url)
@@ -42,10 +42,6 @@ module Homebrew
       end
     end
 
-    def head?
-      @head || args.HEAD?
-    end
-
     def write_formula!
       raise ArgumentError, "name is blank!" if @name.blank?
       raise ArgumentError, "tap is blank!" if @tap.blank?
@@ -56,7 +52,7 @@ module Homebrew
       if version.nil? || version.null?
         odie "Version cannot be determined from URL. Explicitly set the version with `--set-version` instead."
       elsif @fetch
-        unless head?
+        unless @head
           r = Resource.new
           r.url(url)
           r.version(version)
@@ -100,7 +96,7 @@ module Homebrew
         <% end %>
           desc "#{desc}"
           homepage "#{homepage}"
-        <% unless head? %>
+        <% unless @head %>
           url "#{url}"
         <% unless version.detected_from_url? %>
           version "#{version}"
@@ -108,7 +104,7 @@ module Homebrew
           sha256 "#{sha256}"
         <% end %>
           license "#{license}"
-        <% if head? %>
+        <% if @head %>
           head "#{url}"
         <% end %>
 
