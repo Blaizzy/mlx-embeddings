@@ -12,8 +12,9 @@ module Homebrew
     attr_reader :args, :url, :sha256, :desc, :homepage
     attr_accessor :name, :version, :tap, :mode, :license
 
-    def initialize(args)
+    def initialize(args, fetch=true)
       @args = args
+      @fetch = fetch
     end
 
     def url=(url)
@@ -41,10 +42,6 @@ module Homebrew
       end
     end
 
-    def fetch?
-      !args.no_fetch?
-    end
-
     def head?
       @head || args.HEAD?
     end
@@ -58,7 +55,7 @@ module Homebrew
 
       if version.nil? || version.null?
         odie "Version cannot be determined from URL. Explicitly set the version with `--set-version` instead."
-      elsif fetch?
+      elsif @fetch
         unless head?
           r = Resource.new
           r.url(url)
