@@ -14,7 +14,7 @@ module Homebrew
 
     def initialize(name, version, fetch=true, head=false)
       @name = name
-      @version = version
+      @version = Version.new(version) if version
       @fetch = fetch
       @head = head
     end
@@ -37,11 +37,7 @@ module Homebrew
           @name = path.basename.to_s[/(.*?)[-_.]?#{Regexp.escape(path.version.to_s)}/, 1]
         end
       end
-      @version = if @version
-        Version.new(@version)
-      else
-        Version.detect(url)
-      end
+      @version = Version.detect(url) if @version.nil?
     end
 
     def write_formula!
