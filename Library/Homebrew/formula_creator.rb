@@ -12,6 +12,7 @@ module Homebrew
     attr_reader :url, :tap, :sha256, :desc, :homepage
     attr_accessor :name
 
+    sig { params(name: T.nilable(String), version: T.nilable(String), tap: T.nilable(String), mode: T.nilable(Symbol),  license: T.nilable(String), fetch: T::Boolean, head: T::Boolean).void }
     def initialize(name, version, tap:, mode:, license:, fetch: true, head: false)
       @name = name
       @version = Version.new(version) if version
