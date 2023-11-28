@@ -271,9 +271,9 @@ class JSONSchemer::Draft202012::Vocab::Core::Schema < ::JSONSchemer::Keyword
 end
 
 class JSONSchemer::Draft202012::Vocab::Core::UnknownKeyword < ::JSONSchemer::Keyword
-  def fetch_unknown!(token); end
+  def fetch(token); end
   def parse; end
-  def unknown_schema!; end
+  def parsed_schema; end
   def validate(instance, instance_location, keyword_location, _context); end
 end
 
@@ -685,8 +685,10 @@ class JSONSchemer::Keyword
 
   def absolute_keyword_location; end
   def error_key; end
+  def fetch(key); end
   def parent; end
   def parsed; end
+  def parsed_schema; end
   def root; end
   def schema_pointer; end
   def validate(_instance, _instance_location, _keyword_location, _context); end
@@ -865,6 +867,7 @@ class JSONSchemer::Schema
   def defs_keyword; end
   def error(formatted_instance_location:, **options); end
   def error_key; end
+  def fetch(key); end
   def fetch_content_encoding(content_encoding, *args, &block); end
   def fetch_content_media_type(content_media_type, *args, &block); end
   def fetch_format(format, *args, &block); end
