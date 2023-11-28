@@ -143,6 +143,7 @@ module Homebrew
     fc = FormulaCreator.new(
       args.set_name,
       args.set_version,
+      tap:     args.tap,
       license: args.set_license,
       fetch:   !args.no_fetch?,
       head:    args.HEAD?,
@@ -152,7 +153,6 @@ module Homebrew
       print "Formula name [#{stem}]: "
       fc.name = __gets || stem
     end
-    fc.tap = Tap.fetch(args.tap || "homebrew/core")
     raise TapUnavailableError, fc.tap.name unless fc.tap.installed?
 
     fc.url = args.named.first

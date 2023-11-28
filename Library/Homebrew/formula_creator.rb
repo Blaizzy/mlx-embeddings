@@ -12,9 +12,10 @@ module Homebrew
     attr_reader :url, :sha256, :desc, :homepage
     attr_accessor :name, :tap, :mode
 
-    def initialize(name, version, license:, fetch: true, head: false)
+    def initialize(name, version, tap:, license:, fetch: true, head: false)
       @name = name
       @version = Version.new(version) if version
+      @tap = Tap.fetch(tap || "homebrew/core")
       @license = license
       @fetch = fetch
       @head = head
