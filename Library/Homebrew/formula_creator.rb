@@ -9,8 +9,8 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    attr_reader :url, :sha256, :desc, :homepage
-    attr_accessor :name, :tap
+    attr_reader :url, :tap, :sha256, :desc, :homepage
+    attr_accessor :name
 
     def initialize(name, version, tap:, mode:, license:, fetch: true, head: false)
       @name = name
