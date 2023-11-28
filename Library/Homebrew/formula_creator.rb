@@ -10,7 +10,7 @@ module Homebrew
   # @api private
   class FormulaCreator
     attr_reader :url, :sha256, :desc, :homepage
-    attr_accessor :name, :version, :tap, :mode, :license
+    attr_accessor :name, :tap, :mode, :license
 
     def initialize(name, version, fetch: true, head: false)
       @name = name
@@ -47,13 +47,13 @@ module Homebrew
       path = @tap.new_formula_path(@name)
       raise "#{path} already exists" if path.exist?
 
-      if version.nil? || version.null?
+      if @version.nil? || @version.null?
         odie "Version cannot be determined from URL. Explicitly set the version with `--set-version` instead."
       elsif @fetch
         unless @head
           r = Resource.new
           r.url(url)
-          r.version(version)
+          r.version(@version)
           r.owner = self
           @sha256 = r.fetch.sha256 if r.download_strategy == CurlDownloadStrategy
         end
@@ -96,8 +96,8 @@ module Homebrew
           homepage "#{homepage}"
         <% unless @head %>
           url "#{url}"
-        <% unless version.detected_from_url? %>
-          version "#{version}"
+        <% unless @version.detected_from_url? %>
+          version "#{@version}"
         <% end %>
           sha256 "#{sha256}"
         <% end %>
@@ -185,7 +185,7 @@ module Homebrew
         <% elsif mode == :ruby %>
             ENV["GEM_HOME"] = libexec
             system "gem", "build", "\#{name}.gemspec"
-            system "gem", "install", "\#{name}-\#{version}.gem"
+            system "gem", "install", "\#{name}-\#{@version}.gem"
             bin.install libexec/"bin/\#{name}"
             bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV["GEM_HOME"])
         <% elsif mode == :rust %>
