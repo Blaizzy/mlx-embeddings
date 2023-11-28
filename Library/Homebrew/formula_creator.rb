@@ -10,11 +10,12 @@ module Homebrew
   # @api private
   class FormulaCreator
     attr_reader :url, :sha256, :desc, :homepage
-    attr_accessor :name, :tap, :mode, :license
+    attr_accessor :name, :tap, :mode
 
-    def initialize(name, version, fetch: true, head: false)
+    def initialize(name, version, license:, fetch: true, head: false)
       @name = name
       @version = Version.new(version) if version
+      @license = license
       @fetch = fetch
       @head = head
     end
@@ -101,7 +102,7 @@ module Homebrew
         <% end %>
           sha256 "#{sha256}"
         <% end %>
-          license "#{license}"
+          license "#{@license}"
         <% if @head %>
           head "#{url}"
         <% end %>
