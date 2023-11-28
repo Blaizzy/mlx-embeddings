@@ -140,7 +140,13 @@ module Homebrew
   end
 
   def create_formula(args:)
-    fc = FormulaCreator.new(args.set_name, args.set_version, license: args.set_license, fetch: !args.no_fetch?, head: args.HEAD?)
+    fc = FormulaCreator.new(
+      args.set_name,
+      args.set_version,
+      license: args.set_license,
+      fetch:   !args.no_fetch?,
+      head:    args.HEAD?,
+    )
     if fc.name.blank?
       stem = Pathname.new(args.named.first).stem.rpartition("=").last
       print "Formula name [#{stem}]: "
