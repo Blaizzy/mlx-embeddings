@@ -43,7 +43,7 @@ module Utils
         # and a literal \ can be included via \\
         "set -gx #{key} \"#{sh_quote(value)}\""
       when :rc
-        "#{key}=(#{rc_quote(value)})"
+        "#{key}=(#{sh_quote(value)})"
       when :csh, :tcsh
         "setenv #{key} #{csh_quote(value)};"
       end
@@ -86,7 +86,7 @@ module Utils
       when :bash, :ksh, :mksh, :sh, :zsh, nil
         "echo 'export PATH=\"#{sh_quote(path)}:$PATH\"' >> #{profile}"
       when :rc
-        "echo 'path=(#{rc_quote(path)} $path)' >> #{profile}"
+        "echo 'path=(#{sh_quote(path)} $path)' >> #{profile}"
       when :csh, :tcsh
         "echo 'setenv PATH #{csh_quote(path)}:$PATH' >> #{profile}"
       when :fish
@@ -131,20 +131,6 @@ module Utils
       str = str.dup
       # anything that isn't a known safe character is padded
       str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
-      str.gsub!(/\n/, "'\n'")
-      str
-    end
-
-    sig { params(str: String).returns(String) }
-    def rc_quote(str)
-      # ruby's implementation of shell_escape
-      str = str.to_s
-      return "''" if str.empty?
-
-      str = str.dup
-      # anything that isn't a known safe character is padded
-      str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
-      str.gsub!(/'/, "''")
       str.gsub!(/\n/, "'\n'")
       str
     end
