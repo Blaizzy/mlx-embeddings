@@ -133,12 +133,7 @@ If there's no Homebrew Portable Ruby available for your processor:
   vendor_ruby_root="${vendor_dir}/portable-ruby/current"
   vendor_ruby_path="${vendor_ruby_root}/bin/ruby"
   vendor_ruby_terminfo="${vendor_ruby_root}/share/terminfo"
-  if [[ -n "${HOMEBREW_RUBY3}" ]]
-  then
-    vendor_ruby_latest_version="$(cat "${vendor_dir}/portable-ruby-version")"
-  else
-    vendor_ruby_latest_version="2.6.10_1" # EOL - phasing out
-  fi
+  vendor_ruby_latest_version="$(cat "${vendor_dir}/portable-ruby-version")"
   vendor_ruby_current_version="$(readlink "${vendor_ruby_root}")"
 
   unset HOMEBREW_RUBY_PATH

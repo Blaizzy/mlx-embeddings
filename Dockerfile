@@ -56,8 +56,7 @@ RUN apt-get update \
 USER linuxbrew
 COPY --chown=linuxbrew:linuxbrew . /home/linuxbrew/.linuxbrew/Homebrew
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}" \
-  XDG_CACHE_HOME=/home/linuxbrew/.cache \
-  HOMEBREW_RUBY3=1
+  XDG_CACHE_HOME=/home/linuxbrew/.cache
 WORKDIR /home/linuxbrew
 
 RUN mkdir -p \

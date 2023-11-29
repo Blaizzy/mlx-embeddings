@@ -466,11 +466,7 @@ module Homebrew
 
     def cleanup_portable_ruby
       vendor_dir = HOMEBREW_LIBRARY/"Homebrew/vendor"
-      portable_ruby_latest_version = if ENV["HOMEBREW_RUBY3"]
-        (vendor_dir/"portable-ruby-version").read.chomp
-      else
-        "2.6.10_1"
-      end
+      portable_ruby_latest_version = (vendor_dir/"portable-ruby-version").read.chomp
 
       portable_rubies_to_remove = []
       Pathname.glob(vendor_dir/"portable-ruby/*.*").select(&:directory?).each do |path|
