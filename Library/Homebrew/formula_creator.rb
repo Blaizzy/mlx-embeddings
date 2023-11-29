@@ -12,13 +12,14 @@ module Homebrew
     attr_accessor :name
 
     sig {
-      params(name: T.nilable(String), version: T.nilable(String), tap: T.nilable(String), mode: T.nilable(Symbol),
-             license: T.nilable(String), fetch: T::Boolean, head: T::Boolean).void
+      params(name: T.nilable(String), version: T.nilable(String), tap: T.nilable(String), url: String,
+             mode: T.nilable(Symbol), license: T.nilable(String), fetch: T::Boolean, head: T::Boolean).void
     }
-    def initialize(name, version, tap:, mode:, license:, fetch: true, head: false)
+    def initialize(name, version, tap:, url:, mode:, license:, fetch: true, head: false)
       @name = name
       @version = Version.new(version) if version
       @tap = Tap.fetch(tap || "homebrew/core")
+      @url = url
       @mode = mode
       @license = license
       @fetch = fetch
@@ -30,11 +31,10 @@ module Homebrew
       raise TapUnavailableError, @tap.name unless @tap.installed?
     end
 
-    def url=(url)
-      @url = url
-      path = Pathname.new(url)
+    def parse_url
+      path = Pathname.new(@url)
       if @name.nil?
-        case url
+        case @url
         when %r{github\.com/(\S+)/(\S+)\.git}
           @user = Regexp.last_match(1)
           @name = Regexp.last_match(2)
@@ -48,7 +48,7 @@ module Homebrew
           @name = path.basename.to_s[/(.*?)[-_.]?#{Regexp.escape(path.version.to_s)}/, 1]
         end
       end
-      @version = Version.detect(url) if @version.nil?
+      @version = Version.detect(@url) if @version.nil?
     end
 
     def write_formula!

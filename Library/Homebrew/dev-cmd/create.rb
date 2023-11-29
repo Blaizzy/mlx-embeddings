@@ -166,6 +166,7 @@ module Homebrew
       args.set_name,
       args.set_version,
       tap:     args.tap,
+      url:     args.named.first,
       mode:    mode,
       license: args.set_license,
       fetch:   !args.no_fetch?,
@@ -177,7 +178,7 @@ module Homebrew
       fc.name = __gets || stem
     end
 
-    fc.url = args.named.first
+    fc.parse_url
 
     fc.verify
 
