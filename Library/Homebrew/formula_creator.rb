@@ -15,7 +15,7 @@ module Homebrew
       params(name: T.nilable(String), version: T.nilable(String), tap: T.nilable(String), url: String,
              mode: T.nilable(Symbol), license: T.nilable(String), fetch: T::Boolean, head: T::Boolean).void
     }
-    def initialize(name, version, tap:, url:, mode:, license:, fetch: true, head: false)
+    def initialize(name, version, tap:, url:, mode:, license:, fetch:, head:)
       @name = name
       @version = Version.new(version) if version
       @tap = Tap.fetch(tap || "homebrew/core")
