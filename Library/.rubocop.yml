@@ -232,6 +232,9 @@ Rails/Presence:
   Enabled: true
 Rails/Present:
   Enabled: true
+  Exclude:
+    # `present?` is defined as `!blank?` wihin this file
+    - "Homebrew/extend/blank.rb"
 Rails/RelativeDateConstant:
   Enabled: true
 Rails/SafeNavigation:

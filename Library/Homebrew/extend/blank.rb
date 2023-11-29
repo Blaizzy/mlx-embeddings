@@ -1,6 +1,5 @@
+# typed: strict
 # frozen_string_literal: true
-
-require "concurrent/map"
 
 class Object
   # An object is blank if it's false, empty, or a whitespace string.
@@ -13,15 +12,13 @@ class Object
   # to
   #
   #   address.blank?
-  #
-  # @return [true, false]
+  sig { returns(T::Boolean) }
   def blank?
-    respond_to?(:empty?) ? !!empty? : !self
+    respond_to?(:empty?) ? !!T.unsafe(self).empty? : false
   end
 
   # An object is present if it's not blank.
-  #
-  # @return [true, false]
+  sig { returns(T::Boolean) }
   def present?
     !blank?
   end
@@ -40,8 +37,7 @@ class Object
   # becomes
   #
   #   region = params[:state].presence || params[:country].presence || 'US'
-  #
-  # @return [Object]
+  sig { returns(T.nilable(T.self_type)) }
   def presence
     self if present?
   end
@@ -51,10 +47,14 @@ class NilClass
   # +nil+ is blank:
   #
   #   nil.blank? # => true
-  #
-  # @return [true]
+  sig { returns(TrueClass) }
   def blank?
     true
+  end
+
+  sig { returns(FalseClass) }
+  def present? # :nodoc:
+    false
   end
 end
 
@@ -62,10 +62,14 @@ class FalseClass
   # +false+ is blank:
   #
   #   false.blank? # => true
-  #
-  # @return [true]
+  sig { returns(TrueClass) }
   def blank?
     true
+  end
+
+  sig { returns(FalseClass) }
+  def present? # :nodoc:
+    false
   end
 end
 
@@ -73,10 +77,14 @@ class TrueClass
   # +true+ is not blank:
   #
   #   true.blank? # => false
-  #
-  # @return [false]
+  sig { returns(FalseClass) }
   def blank?
     false
+  end
+
+  sig { returns(TrueClass) }
+  def present? # :nodoc:
+    true
   end
 end
 
@@ -87,7 +95,12 @@ class Array
   #   [1,2,3].blank? # => false
   #
   # @return [true, false]
-  alias_method :blank?, :empty?
+  alias blank? empty?
+
+  sig { returns(T::Boolean) }
+  def present? # :nodoc:
+    !empty?
+  end
 end
 
 class Hash
@@ -97,14 +110,35 @@ class Hash
   #   { key: 'value' }.blank?  # => false
   #
   # @return [true, false]
-  alias_method :blank?, :empty?
+  alias blank? empty?
+
+  sig { returns(T::Boolean) }
+  def present? # :nodoc:
+    !empty?
+  end
+end
+
+class Symbol
+  # A Symbol is blank if it's empty:
+  #
+  #   :''.blank?     # => true
+  #   :symbol.blank? # => false
+  alias blank? empty?
+
+  sig { returns(T::Boolean) }
+  def present? # :nodoc:
+    !empty?
+  end
 end
 
 class String
-  BLANK_RE = /\A[[:space:]]*\z/
-  ENCODED_BLANKS = Concurrent::Map.new do |h, enc|
+  BLANK_RE = /\A[[:space:]]*\z/.freeze
+  # This is a cache that is intentionally mutable
+  # rubocop:disable Style/MutableConstant
+  ENCODED_BLANKS_ = T.let(Hash.new do |h, enc|
     h[enc] = Regexp.new(BLANK_RE.source.encode(enc), BLANK_RE.options | Regexp::FIXEDENCODING)
-  end
+  end, T::Hash[Encoding, Regexp])
+  # rubocop:enable Style/MutableConstant
 
   # A string is blank if it's empty or contains whitespaces only:
   #
@@ -116,8 +150,7 @@ class String
   # Unicode whitespace is supported:
   #
   #   "\u00a0".blank? # => true
-  #
-  # @return [true, false]
+  sig { returns(T::Boolean) }
   def blank?
     # The regexp that matches blank strings is expensive. For the case of empty
     # strings we can speed up this method (~3.5x) with an empty? call. The
@@ -126,30 +159,43 @@ class String
       begin
         BLANK_RE.match?(self)
       rescue Encoding::CompatibilityError
-        ENCODED_BLANKS[self.encoding].match?(self)
+        T.must(ENCODED_BLANKS_[encoding]).match?(self)
       end
+  end
+
+  sig { returns(T::Boolean) }
+  def present? # :nodoc:
+    !blank?
   end
 end
 
-class Numeric #:nodoc:
+class Numeric # :nodoc:
   # No number is blank:
   #
   #   1.blank? # => false
   #   0.blank? # => false
-  #
-  # @return [false]
+  sig { returns(FalseClass) }
   def blank?
     false
   end
+
+  sig { returns(TrueClass) }
+  def present?
+    true
+  end
 end
 
-class Time #:nodoc:
+class Time # :nodoc:
   # No Time is blank:
   #
   #   Time.now.blank? # => false
-  #
-  # @return [false]
+  sig { returns(FalseClass) }
   def blank?
     false
+  end
+
+  sig { returns(TrueClass) }
+  def present?
+    true
   end
 end

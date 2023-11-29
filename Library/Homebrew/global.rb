@@ -18,7 +18,6 @@ require "active_support/core_ext/file/atomic"
 require "active_support/core_ext/hash/deep_merge"
 require "active_support/core_ext/hash/except"
 require "active_support/core_ext/hash/keys"
-require "active_support/core_ext/object/blank"
 require "active_support/core_ext/string/exclude"
 require "active_support/core_ext/string/filters"
 require "active_support/core_ext/string/indent"
@@ -75,6 +74,7 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.freeze
 
 require "extend/module"
+require "extend/blank"
 require "env_config"
 require "macos_version"
 require "os"
