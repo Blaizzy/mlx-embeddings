@@ -9,7 +9,7 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    attr_reader :url, :tap
+    attr_reader :tap
     attr_accessor :name
 
     sig {
@@ -59,7 +59,7 @@ module Homebrew
       elsif @fetch
         unless @head
           r = Resource.new
-          r.url(url)
+          r.url(@url)
           r.version(@version)
           r.owner = self
           @sha256 = r.fetch.sha256 if r.download_strategy == CurlDownloadStrategy
@@ -102,7 +102,7 @@ module Homebrew
           desc "#{@desc}"
           homepage "#{@homepage}"
         <% unless @head %>
-          url "#{url}"
+          url "#{@url}"
         <% unless @version.detected_from_url? %>
           version "#{@version}"
         <% end %>
@@ -110,7 +110,7 @@ module Homebrew
         <% end %>
           license "#{@license}"
         <% if @head %>
-          head "#{url}"
+          head "#{@url}"
         <% end %>
 
         <% if @mode == :cmake %>
