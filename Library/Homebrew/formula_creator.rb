@@ -9,7 +9,7 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    attr_reader :url, :tap, :sha256, :desc, :homepage
+    attr_reader :url, :tap
     attr_accessor :name
 
     sig {
@@ -99,14 +99,14 @@ module Homebrew
           include Language::Python::Virtualenv
 
         <% end %>
-          desc "#{desc}"
-          homepage "#{homepage}"
+          desc "#{@desc}"
+          homepage "#{@homepage}"
         <% unless @head %>
           url "#{url}"
         <% unless @version.detected_from_url? %>
           version "#{@version}"
         <% end %>
-          sha256 "#{sha256}"
+          sha256 "#{@sha256}"
         <% end %>
           license "#{@license}"
         <% if @head %>
