@@ -13,7 +13,7 @@ module Utils
       shell_name = File.basename(path)
       # handle possible version suffix like `zsh-5.2`
       shell_name.sub!(/-.*\z/m, "")
-      shell_name.to_sym if %w[bash csh fish ksh mksh sh tcsh zsh].include?(shell_name)
+      shell_name.to_sym if %w[bash csh fish ksh mksh rc sh tcsh zsh].include?(shell_name)
     end
 
     sig { params(default: String).returns(String) }
@@ -42,6 +42,8 @@ module Utils
         # a single quote can be included in a single-quoted string via \'
         # and a literal \ can be included via \\
         "set -gx #{key} \"#{sh_quote(value)}\""
+      when :rc
+        "#{key}=(#{rc_quote(value)})"
       when :csh, :tcsh
         "setenv #{key} #{csh_quote(value)};"
       end
@@ -54,6 +56,9 @@ module Utils
       when :bash
         bash_profile = "#{Dir.home}/.bash_profile"
         return bash_profile if File.exist? bash_profile
+      when :rc
+        rc_profile = "#{Dir.home}/.rcrc"
+        return rc_profile if File.exist? rc_profile
       when :zsh
         return "#{ENV["ZDOTDIR"]}/.zshrc" if ENV["ZDOTDIR"].present?
       end
@@ -66,6 +71,8 @@ module Utils
       case preferred
       when :bash, :ksh, :sh, :zsh, nil
         "echo 'export #{variable}=#{sh_quote(value)}' >> #{profile}"
+      when :rc
+        "echo '#{variable}=(#{sh_quote(value)})' >> #{profile}"
       when :csh, :tcsh
         "echo 'setenv #{variable} #{csh_quote(value)}' >> #{profile}"
       when :fish
@@ -78,6 +85,8 @@ module Utils
       case preferred
       when :bash, :ksh, :mksh, :sh, :zsh, nil
         "echo 'export PATH=\"#{sh_quote(path)}:$PATH\"' >> #{profile}"
+      when :rc
+        "echo 'path=(#{rc_quote(path)} $path)' >> #{profile}"
       when :csh, :tcsh
         "echo 'setenv PATH #{csh_quote(path)}:$PATH' >> #{profile}"
       when :fish
@@ -91,6 +100,7 @@ module Utils
       fish: "~/.config/fish/config.fish",
       ksh:  "~/.kshrc",
       mksh: "~/.kshrc",
+      rc:   "~/.rcrc",
       sh:   "~/.profile",
       tcsh: "~/.tcshrc",
       zsh:  "~/.zshrc",
@@ -121,6 +131,20 @@ module Utils
       str = str.dup
       # anything that isn't a known safe character is padded
       str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
+      str.gsub!(/\n/, "'\n'")
+      str
+    end
+
+    sig { params(str: String).returns(String) }
+    def rc_quote(str)
+      # ruby's implementation of shell_escape
+      str = str.to_s
+      return "''" if str.empty?
+
+      str = str.dup
+      # anything that isn't a known safe character is padded
+      str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
+      str.gsub!(/'/, "''")
       str.gsub!(/\n/, "'\n'")
       str
     end
