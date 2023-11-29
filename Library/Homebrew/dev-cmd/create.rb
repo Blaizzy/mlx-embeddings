@@ -176,9 +176,10 @@ module Homebrew
       print "Formula name [#{stem}]: "
       fc.name = __gets || stem
     end
-    raise TapUnavailableError, fc.tap.name unless fc.tap.installed?
 
     fc.url = args.named.first
+
+    fc.verify
 
     # Check for disallowed formula, or names that shadow aliases,
     # unless --force is specified.

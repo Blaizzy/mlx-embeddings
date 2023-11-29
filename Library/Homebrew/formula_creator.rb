@@ -9,7 +9,6 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    attr_reader :tap
     attr_accessor :name
 
     sig {
@@ -24,6 +23,11 @@ module Homebrew
       @license = license
       @fetch = fetch
       @head = head
+    end
+
+    sig { void }
+    def verify
+      raise TapUnavailableError, @tap.name unless @tap.installed?
     end
 
     def url=(url)
