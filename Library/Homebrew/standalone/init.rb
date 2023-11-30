@@ -4,9 +4,9 @@
 # This file is included before any other files. It intentionally has typing disabled and has minimal use of `require`.
 
 required_ruby_major, required_ruby_minor, = ENV.fetch("HOMEBREW_REQUIRED_RUBY_VERSION", "").split(".").map(&:to_i)
-unsupported_ruby = if required_ruby_minor.nil?
-  # We're probably only running rubocop etc so just assume supported
-  false
+gems_vendored = if required_ruby_minor.nil?
+  # We're likely here if running RuboCop etc, so just assume we don't need to install gems as we likely already have
+  true
 else
   ruby_major, ruby_minor, = RUBY_VERSION.split(".").map(&:to_i)
   if ruby_major < required_ruby_major || (ruby_major == required_ruby_major && ruby_minor < required_ruby_minor)
@@ -14,7 +14,9 @@ else
           "You're running #{RUBY_VERSION}."
   end
 
-  ruby_major != required_ruby_major || ruby_minor != required_ruby_minor
+  # This list should match .gitignore
+  vendored_versions = ["2.6", "3.1"].freeze
+  vendored_versions.include?("#{ruby_major}.#{ruby_minor}")
 end.freeze
 
 # We trust base Ruby to provide what we need.
@@ -29,7 +31,7 @@ require_relative "../utils/gems"
 Homebrew.setup_gem_environment!(setup_path: false)
 
 # Install gems for Rubies we don't vendor for.
-if unsupported_ruby && !ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"]
+if !gems_vendored && !ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"]
   Homebrew.install_bundler_gems!(setup_path: false)
   ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"] = "1"
 end
