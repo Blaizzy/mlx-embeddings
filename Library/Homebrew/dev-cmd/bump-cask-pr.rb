@@ -139,11 +139,7 @@ module Homebrew
       # For simplicity, our naming defers to the arm version if we multiple architectures are specified
       branch_version = new_version.arm || new_version.general
       if branch_version.is_a?(Cask::DSL::Version)
-        commit_version = if branch_version.before_comma == cask.version.before_comma
-          branch_version
-        else
-          branch_version.before_comma
-        end
+        commit_version = shortened_version(branch_version, cask: cask)
         branch_name = "bump-#{cask.token}-#{branch_version.tr(",:", "-")}"
         commit_message ||= "#{cask.token} #{commit_version}"
       end
@@ -172,6 +168,15 @@ module Homebrew
       tap:             cask.tap,
     }
     GitHub.create_bump_pr(pr_info, args: args)
+  end
+
+  sig { params(version: Cask::DSL::Version, cask: Cask::Cask).returns(Cask::DSL::Version) }
+  def shortened_version(version, cask:)
+    if version.before_comma == cask.version.before_comma
+      version
+    else
+      version.before_comma
+    end
   end
 
   sig {
@@ -257,7 +262,7 @@ module Homebrew
         cask.token,
         tap_remote_repo,
         state:   "closed",
-        version: version,
+        version: shortened_version(version, cask: cask),
         file:    cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
         args:    args,
       )
