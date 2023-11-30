@@ -16,11 +16,6 @@ class AbstractDownloadStrategy
   include ::FileUtils::StreamUtils_
 end
 
-class AbstractDownloadStrategy
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class ActiveSupport::Deprecation
   def self.deprecation_warning(*args, &block); end
 
@@ -129,17 +124,7 @@ class Bootsnap::LoadPathCache::Cache
   TRUFFLERUBY_LIB_DIR_PREFIX = ::T.let(nil, ::T.untyped)
 end
 
-class BottleSpecification
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module BuildEnvironment::DSL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class BuildEnvironment
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -3147,11 +3132,6 @@ module Cachable
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Cask::AbstractCaskErrorWithToken
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Cask::Artifact::AbstractArtifact
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
@@ -3169,23 +3149,11 @@ end
 class Cask::CaskLoader::AbstractContentLoader
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Cask::CaskLoader::ILoader
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::CaskQuarantineError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::CaskUnspecifiedError
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -3252,11 +3220,6 @@ class Cask::Config
   def vst_plugindir=(path); end
 end
 
-class Cask::Config
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Cask::DSL::Caveats
   def depends_on_java(*args); end
 
@@ -3308,22 +3271,12 @@ module Cask::Denylist
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Cask::MultipleCaskErrors
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Cask::Quarantine
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Cask::Staged
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::Upgrade
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -3335,16 +3288,6 @@ end
 
 class Class
   def any_instance(); end
-end
-
-class Cleaner
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class CompilerSelector
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Concurrent::RubyThreadPoolExecutor
@@ -3394,25 +3337,6 @@ end
 
 class Dependencies
   extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Dependency
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class DependencyCollector
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class DeprecatedOption
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class DevelopmentTools
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
@@ -3580,8 +3504,6 @@ end
 class Downloadable
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class ELFTools::Structs::ELF32_PhdrBe
@@ -3713,11 +3635,6 @@ end
 class ERB::Compiler::Scanner
   DEFAULT_ETAGS = ::T.let(nil, ::T.untyped)
   DEFAULT_STAGS = ::T.let(nil, ::T.untyped)
-end
-
-class EmbeddedPatch
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Encoding
@@ -4016,11 +3933,6 @@ class ExitCalledError
 end
 
 class ExitCalledError
-end
-
-class ExternalPatch
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Fiber
@@ -4421,11 +4333,6 @@ module GitHub::API
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class GitHub::Actions::Annotation
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module GitHub::Actions
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -4436,19 +4343,11 @@ module GitHub
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class GitHubPackages
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class GitHubRunner
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
   def self.inherited(s); end
 end
 
 class Hardware::CPU
-  extend ::T::Private::Methods::SingletonMethodHooks
   def self.lm?(); end
 end
 
@@ -4474,16 +4373,6 @@ module Homebrew::API
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Homebrew::BumpVersionParser
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::BundleVersion
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Homebrew::Completions::Variables
   def self.[](*arg); end
 
@@ -4505,107 +4394,12 @@ module Homebrew::Fetch
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Homebrew::FormulaCreator
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Homebrew::FreePort
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Homebrew::Livecheck::LivecheckVersion
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Homebrew::Livecheck::SkipConditions
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Apache
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Bitbucket
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Cpan
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::ElectronBuilder
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Git
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::GithubLatest
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::GithubReleases
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Gnome
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Gnu
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Hackage
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::HeaderMatch
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Json
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Launchpad
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Npm
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::PageMatch
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Pypi
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Sourceforge
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -4622,26 +4416,6 @@ class Homebrew::Livecheck::Strategy::Sparkle::Item
   def self.[](*arg); end
 
   def self.members(); end
-end
-
-class Homebrew::Livecheck::Strategy::Sparkle
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Xml
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Xorg
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::Livecheck::Strategy::Yaml
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Homebrew::Livecheck::Strategy
@@ -4684,25 +4458,6 @@ class Homebrew::Service
   def on_system(linux, macos:, &block); end
 
   def on_ventura(or_condition=T.unsafe(nil), &block); end
-end
-
-class Homebrew::Service
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::SimulateSystem
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::SourceLocation
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Homebrew::TapAuditor
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Homebrew
@@ -5006,31 +4761,6 @@ class JSON::Ext::Parser
   def initialize(*arg); end
 end
 
-class Keg::ConflictError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Keg::DirectoryNotWritableError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Keg::Relocation
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Keg
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class KegOnlyReason
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Kernel
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
   include ::ActiveSupport::ForkTracker::CoreExt
@@ -5090,19 +4820,7 @@ module Language::Python::Virtualenv
 end
 
 class LinuxRunnerSpec
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
   def self.inherited(s); end
-end
-
-class Livecheck
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Locale
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Logger
@@ -5122,14 +4840,7 @@ module Logger::Period
 end
 
 class MacOSRunnerSpec
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
   def self.inherited(s); end
-end
-
-class MacOSVersion::Error
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Marshal
@@ -5212,11 +4923,6 @@ class MessagePack::Unpacker
   def feed_reference(arg); end
 
   def freeze?(); end
-end
-
-class Messages
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Minitest::Assertions
@@ -5411,11 +5117,6 @@ end
 
 class Mktemp
   include ::FileUtils::StreamUtils_
-end
-
-class Mktemp
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class MockExpectationError
@@ -5644,16 +5345,9 @@ end
 class OS::Mac::BaseSDKLocator
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module OS::Mac::CLT
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class OS::Mac::SDK
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -5786,7 +5480,11 @@ class Object
 end
 
 class Object
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
   extend ::MacOSVersionErrorCompat
+  def self.hpricot_slate_method_added(name); end
+
   def self.yaml_tag(url); end
 end
 
@@ -5900,49 +5598,17 @@ module OpenSSL
   def self.fips_mode(); end
 end
 
-class Option
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Options
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class PATH
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module ParallelTests
   WINDOWS = ::T.let(nil, ::T.untyped)
-end
-
-class Parlour::ConflictResolver
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::Conversion::Converter
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::Debugging::Tree
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Parlour::Debugging
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::Generator
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -5954,60 +5620,13 @@ module Parlour::Mixin::Searchable
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Parlour::Options
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::ParseError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Parlour::Plugin
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::RbiGenerator::Parameter
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::RbiGenerator::StructProp
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::RbsGenerator::Block
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::RbsGenerator::MethodSignature
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::RbsGenerator::Parameter
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Parlour::TypeLoader
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::TypeParser::NodePath
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::TypeParser
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -6016,21 +5635,12 @@ class Parlour::TypedObject
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Parlour::Types::Proc::Parameter
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parlour::Types::Type
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Parser::Ruby26
@@ -6089,11 +5699,6 @@ module Psych
   def self.remove_type(type_tag); end
 end
 
-class PyPI::Package
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module PyPI
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -6103,18 +5708,6 @@ class RBI::ASTVisitor
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::File
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::Formatter
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class RBI::Index
@@ -6129,55 +5722,16 @@ module RBI::Indexable
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class RBI::Loc
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class RBI::Node
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::ParseError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::Parser
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::Rewriters::Merge::Conflict
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::Rewriters::Merge
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::Rewriters::RemoveKnownDefinitions::Operation
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class RBI::UnexpectedParserError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class RBI::Visitor
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class REXML::XPathParser
@@ -6317,11 +5871,6 @@ module Readline
   def self.completion_quote_character(); end
 end
 
-class Requirement
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Requirements
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -6430,11 +5979,6 @@ class Resource::Partial
   def self.[](*arg); end
 
   def self.members(); end
-end
-
-class ResourceStageContext
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Ripper
@@ -7039,11 +6583,6 @@ class RuboCop::AST::Node
   def val_node(param0=T.unsafe(nil)); end
 end
 
-class RuboCop::AST::Node
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class RuboCop::AST::NodePattern::Parser
   Racc_debug_parser = ::T.let(nil, ::T.untyped)
 end
@@ -7061,11 +6600,6 @@ module RuboCop::AST::NodePattern::Sets
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_4 = ::T.let(nil, ::T.untyped)
-end
-
-class RuboCop::Cask::AST::CaskHeader
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class RuboCop::Cask::AST::Stanza
@@ -7178,11 +6712,6 @@ class RuboCop::Cask::AST::Stanza
   def vst_plugin?(); end
 
   def zap?(); end
-end
-
-class RuboCop::Cask::AST::StanzaBlock
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module RuboCop::Cop::Cask::CaskHelp
@@ -7344,8 +6873,6 @@ end
 class RuboCop::Cop::FormulaCop
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module RuboCop::Cop::HelperFunctions
@@ -8397,11 +7924,6 @@ class RubyVM
   def self.resolve_feature_path(arg); end
 end
 
-class Sandbox
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 ScanError = StringScanner::Error
 
 class Set
@@ -8634,11 +8156,6 @@ module Socket::Constants
   TCP_NOPUSH = ::T.let(nil, ::T.untyped)
 end
 
-class Spoom::Cli::Bump
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Spoom::Cli::Helper
   HIGHLIGHT_COLOR = ::T.let(nil, ::T.untyped)
 end
@@ -8658,16 +8175,9 @@ class Spoom::Coverage::D3::Base
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Spoom::Coverage::D3
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::Coverage::Snapshot
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -8676,8 +8186,6 @@ class Spoom::Coverage::Template
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Spoom::Coverage
@@ -8685,57 +8193,7 @@ module Spoom::Coverage
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spoom::FileTree::Node
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::FileTree
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Spoom::Git
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Client
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Diagnostic
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::DocumentSymbol
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Error::Diagnostics
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Hover
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Location
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Message
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::Position
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -8748,42 +8206,10 @@ module Spoom::LSP::PrintableSymbol
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Spoom::LSP::Range
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::ResponseError
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::LSP::SignatureHelp
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Spoom::Printer
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::Sorbet::Config
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::Sorbet::Errors::Error
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::Sorbet::Errors::Parser
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Spoom::Sorbet::Errors
@@ -8802,11 +8228,6 @@ module Spoom::Sorbet::Sigils
 end
 
 module Spoom::Sorbet
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Spoom::Timeline
-  extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
@@ -8835,11 +8256,6 @@ class String
   def to_nfkd(); end
 end
 
-class StringInreplaceExtension
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class StringScanner
   def bol?(); end
 
@@ -8859,26 +8275,6 @@ end
 
 class Symbol
   def to_msgpack_ext(); end
-end
-
-class SystemCommand::Result
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class SystemCommand
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Tap
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class TapConfig
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module Tapioca
@@ -9014,108 +8410,13 @@ module URI
   def self.get_encoding(label); end
 end
 
-class URL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module UnicodeNormalize
 end
 
 module UnicodeNormalize
-end
-
-class UnpackStrategy::Air
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Bzip2
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Cab
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Directory
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module UnpackStrategy::Dmg::Bom
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Dmg
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Fossil
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::GenericUnar
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Gzip
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Lha
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Lzip
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Lzma
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::P7Zip
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Pax
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Rar
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Tar
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Uncompressed
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Xar
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Xz
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -9129,16 +8430,6 @@ module UnpackStrategy::Zip::MacOSZipExtension
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class UnpackStrategy::Zip
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Zstd
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module UnpackStrategy
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
@@ -9147,11 +8438,6 @@ module UnpackStrategy
 end
 
 class User
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Utils::AST::FormulaAST
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -9195,11 +8481,6 @@ module Utils::Service
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Utils::Shebang::RewriteInfo
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Utils::Shebang
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -9211,11 +8492,6 @@ module Utils::Shell
 end
 
 module Utils::Svn
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Utils::TopologicalHash
-  extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
@@ -9231,20 +8507,11 @@ end
 class Version::Parser
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Version::Token
   extend ::T::Private::Abstract::Hooks
   extend ::T::InterfaceWrapper::Helpers
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Version
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class WeakRef
@@ -9256,37 +8523,7 @@ module YARDSorbet::Directives
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class YARDSorbet::Handlers::AbstractDSLHandler
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class YARDSorbet::Handlers::EnumsHandler
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class YARDSorbet::Handlers::IncludeHandler
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class YARDSorbet::Handlers::MixesInClassMethodsHandler
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class YARDSorbet::Handlers::SigHandler
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module YARDSorbet::Handlers::StructClassHandler
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class YARDSorbet::Handlers::StructPropHandler
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
