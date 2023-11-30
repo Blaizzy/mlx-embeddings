@@ -208,10 +208,10 @@ module Homebrew
           replacement_pairs << [/"#{old_hash}"/, ":no_check"] if old_hash != :no_check
         elsif old_hash == :no_check && new_hash != :no_check
           replacement_pairs << [":no_check", "\"#{new_hash}\""] if new_hash.is_a?(String)
+        elsif new_hash && !cask.on_system_blocks_exist? && cask.languages.empty?
+          replacement_pairs << [old_hash.to_s, new_hash.to_s]
         elsif old_hash != :no_check
-          if new_hash && cask.languages.present?
-            opoo "Multiple checksum replacements required; ignoring specified `--sha256` argument."
-          end
+          opoo "Multiple checksum replacements required; ignoring specified `--sha256` argument." if new_hash
           languages = if cask.languages.empty?
             [nil]
           else
@@ -232,9 +232,6 @@ module Homebrew
                                     download.sha256]
             end
           end
-        elsif new_hash
-          opoo "Cask contains multiple hashes; only updating hash for current arch." if cask.on_system_blocks_exist?
-          replacement_pairs << [old_hash.to_s, new_hash.to_s]
         end
       end
     end
