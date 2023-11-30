@@ -20,37 +20,19 @@ then
      # use a x86_64 Portable Ruby.
      [[ "${HOMEBREW_PHYSICAL_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
   then
-    if [[ -n "${HOMEBREW_RUBY3}" ]]
-    then
-      ruby_FILENAME="portable-ruby-3.1.4.el_capitan.bottle.tar.gz"
-      ruby_SHA="02180ca8b8295422ae84921bcf034b7ee8ce5575488bd5e6a37a192e53cd5d34"
-    else
-      ruby_FILENAME="portable-ruby-2.6.10_1.el_capitan.bottle.tar.gz"
-      ruby_SHA="61029cec31c68a1fae1fa90fa876adf43d0becff777da793f9b5c5577f00567a"
-    fi
+    ruby_FILENAME="portable-ruby-3.1.4.el_capitan.bottle.tar.gz"
+    ruby_SHA="02180ca8b8295422ae84921bcf034b7ee8ce5575488bd5e6a37a192e53cd5d34"
   elif [[ "${HOMEBREW_PHYSICAL_PROCESSOR}" == "arm64" ]]
   then
-    if [[ -n "${HOMEBREW_RUBY3}" ]]
-    then
-      ruby_FILENAME="portable-ruby-3.1.4.arm64_big_sur.bottle.tar.gz"
-      ruby_SHA="d783cbeb6e6ef0d71c0b442317b54554370decd6fac66bf2d4938c07a63f67be"
-    else
-      ruby_FILENAME="portable-ruby-2.6.10_1.arm64_big_sur.bottle.tar.gz"
-      ruby_SHA="905b0c3896164ae8067a22fff2fd0b80b16d3c8bb72441403eedf69da71ec717"
-    fi
+    ruby_FILENAME="portable-ruby-3.1.4.arm64_big_sur.bottle.tar.gz"
+    ruby_SHA="d783cbeb6e6ef0d71c0b442317b54554370decd6fac66bf2d4938c07a63f67be"
   fi
 elif [[ -n "${HOMEBREW_LINUX}" ]]
 then
   case "${HOMEBREW_PROCESSOR}" in
     x86_64)
-      if [[ -n "${HOMEBREW_RUBY3}" ]]
-      then
-        ruby_FILENAME="portable-ruby-3.1.4.x86_64_linux.bottle.tar.gz"
-        ruby_SHA="f7be167f7ac4f296b9f4c5874ceeea4aafd9999c3c7f2b0378cae7dd273e2322"
-      else
-        ruby_FILENAME="portable-ruby-2.6.10_1.x86_64_linux.bottle.tar.gz"
-        ruby_SHA="68923daf3e139482b977c3deba63a3b54ea37bb5f716482948878819ef911bad"
-      fi
+      ruby_FILENAME="portable-ruby-3.1.4.x86_64_linux.bottle.tar.gz"
+      ruby_SHA="f7be167f7ac4f296b9f4c5874ceeea4aafd9999c3c7f2b0378cae7dd273e2322"
       ;;
     *) ;;
   esac
@@ -71,13 +53,8 @@ then
   fi
   ruby_URLs+=(
     "https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}"
+    "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.1.4/${ruby_FILENAME}"
   )
-  if [[ -n "${HOMEBREW_RUBY3}" ]]
-  then
-    ruby_URLs+=("https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.1.4/${ruby_FILENAME}")
-  else
-    ruby_URLs+=("https://github.com/Homebrew/homebrew-portable-ruby/releases/download/2.6.10_1/${ruby_FILENAME}")
-  fi
   ruby_URL="${ruby_URLs[0]}"
 fi
 
@@ -323,12 +300,7 @@ homebrew-vendor-install() {
   VENDOR_FILENAME="${!filename_var}"
   VENDOR_SHA="${!sha_var}"
   VENDOR_URL="${!url_var}"
-  if [[ -z "${HOMEBREW_RUBY3}" && "${VENDOR_NAME}" == "ruby" ]]
-  then
-    VENDOR_VERSION="2.6.10_1" # EOL - phasing out
-  else
-    VENDOR_VERSION="$(cat "${VENDOR_DIR}/portable-${VENDOR_NAME}-version")"
-  fi
+  VENDOR_VERSION="$(cat "${VENDOR_DIR}/portable-${VENDOR_NAME}-version")"
 
   if [[ -z "${VENDOR_URL}" || -z "${VENDOR_SHA}" ]]
   then

@@ -502,10 +502,8 @@ case "$*" in
     ;;
 esac
 
-if [[ -n "${HOMEBREW_DEVELOPER}" || "$1" == "test-bot" ]]
-then
-  export HOMEBREW_RUBY3="1"
-fi
+# TODO: remove this after we want Dependabot to point to 3.1 minimum and system macOS Ruby code is gone
+export HOMEBREW_RUBY3="1"
 
 # TODO: bump version when new macOS is released or announced and update references in:
 # - docs/Installation.md
@@ -589,16 +587,8 @@ then
     fi
   fi
 
-  # Set a variable when the macOS system Ruby is new enough to avoid spawning
-  # a Ruby process unnecessarily.
-  if [[ "${HOMEBREW_MACOS_VERSION_NUMERIC}" -lt "120601" || -n "${HOMEBREW_RUBY3}" ]]
-  then
-    unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
-  else
-    # Used in ruby.sh.
-    # shellcheck disable=SC2034
-    HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH="1"
-  fi
+  # System Ruby usage is deprecated. TODO: clean this up once 2.6 is fully ditched.
+  unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 else
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
   # Don't try to follow /etc/os-release
