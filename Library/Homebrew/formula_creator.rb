@@ -9,18 +9,32 @@ module Homebrew
   #
   # @api private
   class FormulaCreator
-    attr_reader :args, :url, :sha256, :desc, :homepage
-    attr_accessor :name, :version, :tap, :mode, :license
+    attr_accessor :name
 
-    def initialize(args)
-      @args = args
+    sig {
+      params(name: T.nilable(String), version: T.nilable(String), tap: T.nilable(String), url: String,
+             mode: T.nilable(Symbol), license: T.nilable(String), fetch: T::Boolean, head: T::Boolean).void
+    }
+    def initialize(name, version, tap:, url:, mode:, license:, fetch:, head:)
+      @name = name
+      @version = Version.new(version) if version
+      @tap = Tap.fetch(tap || "homebrew/core")
+      @url = url
+      @mode = mode
+      @license = license
+      @fetch = fetch
+      @head = head
     end
 
-    def url=(url)
-      @url = url
-      path = Pathname.new(url)
+    sig { void }
+    def verify
+      raise TapUnavailableError, @tap.name unless @tap.installed?
+    end
+
+    def parse_url
+      path = Pathname.new(@url)
       if @name.nil?
-        case url
+        case @url
         when %r{github\.com/(\S+)/(\S+)\.git}
           @user = Regexp.last_match(1)
           @name = Regexp.last_match(2)
@@ -34,19 +48,7 @@ module Homebrew
           @name = path.basename.to_s[/(.*?)[-_.]?#{Regexp.escape(path.version.to_s)}/, 1]
         end
       end
-      @version = if @version
-        Version.new(@version)
-      else
-        Version.detect(url)
-      end
-    end
-
-    def fetch?
-      !args.no_fetch?
-    end
-
-    def head?
-      @head || args.HEAD?
+      @version = Version.detect(@url) if @version.nil?
     end
 
     def write_formula!
@@ -56,13 +58,13 @@ module Homebrew
       path = @tap.new_formula_path(@name)
       raise "#{path} already exists" if path.exist?
 
-      if version.nil? || version.null?
+      if @version.nil? || @version.null?
         odie "Version cannot be determined from URL. Explicitly set the version with `--set-version` instead."
-      elsif fetch?
-        unless head?
+      elsif @fetch
+        unless @head
           r = Resource.new
-          r.url(url)
-          r.version(version)
+          r.url(@url)
+          r.version(@version)
           r.owner = self
           @sha256 = r.fetch.sha256 if r.download_strategy == CurlDownloadStrategy
         end
@@ -92,53 +94,53 @@ module Homebrew
         # Documentation: https://docs.brew.sh/Formula-Cookbook
         #                https://rubydoc.brew.sh/Formula
         # PLEASE REMOVE ALL GENERATED COMMENTS BEFORE SUBMITTING YOUR PULL REQUEST!
-        <% if mode == :node %>
+        <% if @mode == :node %>
         require "language/node"
 
         <% end %>
         class #{Formulary.class_s(name)} < Formula
-        <% if mode == :python %>
+        <% if @mode == :python %>
           include Language::Python::Virtualenv
 
         <% end %>
-          desc "#{desc}"
-          homepage "#{homepage}"
-        <% unless head? %>
-          url "#{url}"
-        <% unless version.detected_from_url? %>
-          version "#{version}"
+          desc "#{@desc}"
+          homepage "#{@homepage}"
+        <% unless @head %>
+          url "#{@url}"
+        <% unless @version.detected_from_url? %>
+          version "#{@version}"
         <% end %>
-          sha256 "#{sha256}"
+          sha256 "#{@sha256}"
         <% end %>
-          license "#{license}"
-        <% if head? %>
-          head "#{url}"
+          license "#{@license}"
+        <% if @head %>
+          head "#{@url}"
         <% end %>
 
-        <% if mode == :cmake %>
+        <% if @mode == :cmake %>
           depends_on "cmake" => :build
-        <% elsif mode == :crystal %>
+        <% elsif @mode == :crystal %>
           depends_on "crystal" => :build
-        <% elsif mode == :go %>
+        <% elsif @mode == :go %>
           depends_on "go" => :build
-        <% elsif mode == :meson %>
+        <% elsif @mode == :meson %>
           depends_on "meson" => :build
           depends_on "ninja" => :build
-        <% elsif mode == :node %>
+        <% elsif @mode == :node %>
           depends_on "node"
-        <% elsif mode == :perl %>
+        <% elsif @mode == :perl %>
           uses_from_macos "perl"
-        <% elsif mode == :python %>
+        <% elsif @mode == :python %>
           depends_on "python"
-        <% elsif mode == :ruby %>
+        <% elsif @mode == :ruby %>
           uses_from_macos "ruby"
-        <% elsif mode == :rust %>
+        <% elsif @mode == :rust %>
           depends_on "rust" => :build
-        <% elsif mode.nil? %>
+        <% elsif @mode.nil? %>
           # depends_on "cmake" => :build
         <% end %>
 
-        <% if mode == :perl %>
+        <% if @mode == :perl %>
           # Additional dependency
           # resource "" do
           #   url ""
@@ -148,28 +150,28 @@ module Homebrew
         <% end %>
           def install
             # ENV.deparallelize  # if your formula fails when building in parallel
-        <% if mode == :cmake %>
+        <% if @mode == :cmake %>
             system "cmake", "-S", ".", "-B", "build", *std_cmake_args
             system "cmake", "--build", "build"
             system "cmake", "--install", "build"
-        <% elsif mode == :autotools %>
+        <% elsif @mode == :autotools %>
             # Remove unrecognized options if warned by configure
             # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
             system "./configure", *std_configure_args, "--disable-silent-rules"
             system "make", "install" # if this fails, try separate make/make install steps
-        <% elsif mode == :crystal %>
+        <% elsif @mode == :crystal %>
             system "shards", "build", "--release"
             bin.install "bin/#{name}"
-        <% elsif mode == :go %>
+        <% elsif @mode == :go %>
             system "go", "build", *std_go_args(ldflags: "-s -w")
-        <% elsif mode == :meson %>
+        <% elsif @mode == :meson %>
             system "meson", "setup", "build", *std_meson_args
             system "meson", "compile", "-C", "build", "--verbose"
             system "meson", "install", "-C", "build"
-        <% elsif mode == :node %>
+        <% elsif @mode == :node %>
             system "npm", "install", *Language::Node.std_npm_install_args(libexec)
             bin.install_symlink Dir["\#{libexec}/bin/*"]
-        <% elsif mode == :perl %>
+        <% elsif @mode == :perl %>
             ENV.prepend_create_path "PERL5LIB", libexec/"lib/perl5"
             ENV.prepend_path "PERL5LIB", libexec/"lib"
 
@@ -189,15 +191,15 @@ module Homebrew
 
             bin.install name
             bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
-        <% elsif mode == :python %>
+        <% elsif @mode == :python %>
             virtualenv_install_with_resources
-        <% elsif mode == :ruby %>
+        <% elsif @mode == :ruby %>
             ENV["GEM_HOME"] = libexec
             system "gem", "build", "\#{name}.gemspec"
-            system "gem", "install", "\#{name}-\#{version}.gem"
+            system "gem", "install", "\#{name}-\#{@version}.gem"
             bin.install libexec/"bin/\#{name}"
             bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV["GEM_HOME"])
-        <% elsif mode == :rust %>
+        <% elsif @mode == :rust %>
             system "cargo", "install", *std_cargo_args
         <% else %>
             # Remove unrecognized options if warned by configure

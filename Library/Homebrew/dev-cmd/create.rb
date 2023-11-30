@@ -140,22 +140,7 @@ module Homebrew
   end
 
   def create_formula(args:)
-    fc = FormulaCreator.new(args)
-    fc.name = if args.set_name.blank?
-      stem = Pathname.new(args.named.first).stem.rpartition("=").last
-      print "Formula name [#{stem}]: "
-      __gets || stem
-    else
-      args.set_name
-    end
-    fc.version = args.set_version
-    fc.license = args.set_license
-    fc.tap = Tap.fetch(args.tap || "homebrew/core")
-    raise TapUnavailableError, fc.tap.name unless fc.tap.installed?
-
-    fc.url = args.named.first
-
-    fc.mode = if args.autotools?
+    mode = if args.autotools?
       :autotools
     elsif args.cmake?
       :cmake
@@ -176,6 +161,26 @@ module Homebrew
     elsif args.rust?
       :rust
     end
+
+    fc = FormulaCreator.new(
+      args.set_name,
+      args.set_version,
+      tap:     args.tap,
+      url:     args.named.first,
+      mode:    mode,
+      license: args.set_license,
+      fetch:   !args.no_fetch?,
+      head:    args.HEAD?,
+    )
+    if fc.name.blank?
+      stem = Pathname.new(args.named.first).stem.rpartition("=").last
+      print "Formula name [#{stem}]: "
+      fc.name = __gets || stem
+    end
+
+    fc.parse_url
+
+    fc.verify
 
     # Check for disallowed formula, or names that shadow aliases,
     # unless --force is specified.
