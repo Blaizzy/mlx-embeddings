@@ -31,24 +31,36 @@ module Homebrew
       raise TapUnavailableError, @tap.name unless @tap.installed?
     end
 
-    def parse_url
-      path = Pathname.new(@url)
-      if @name.nil?
-        case @url
-        when %r{github\.com/(\S+)/(\S+)\.git}
-          @user = Regexp.last_match(1)
-          @name = Regexp.last_match(2)
-          @head = true
-          @github = true
-        when %r{github\.com/(\S+)/(\S+)/(archive|releases)/}
-          @user = Regexp.last_match(1)
-          @name = Regexp.last_match(2)
-          @github = true
-        else
-          @name = path.basename.to_s[/(.*?)[-_.]?#{Regexp.escape(path.version.to_s)}/, 1]
-        end
+    def self.name_from_url(url)
+      stem = Pathname.new(url).stem
+      # special cases first
+      if stem.start_with? "index.cgi"
+        # gitweb URLs e.g. http://www.codesrc.com/gitweb/index.cgi?p=libzipper.git;a=summary
+        stem.rpartition("=").last
+      elsif url =~ %r{github\.com/\S+/(\S+)/(archive|releases)/}
+        # e.g. https://github.com/stella-emu/stella/releases/download/6.7/stella-6.7-src.tar.xz
+        Regexp.last_match(1)
+      else
+        # e.g. http://digit-labs.org/files/tools/synscan/releases/synscan-5.02.tar.gz
+        pathver = Version.parse(stem).to_s
+        stem.sub(/[-_.]?#{Regexp.escape(pathver)}$/, "")
       end
+    end
+
+    def parse_url
+      @name = FormulaCreator.name_from_url(@url) if @name.blank?
+      odebug "name_from_url: #{@name}"
       @version = Version.detect(@url) if @version.nil?
+
+      case @url
+      when %r{github\.com/(\S+)/(\S+)\.git}
+        @user = Regexp.last_match(1)
+        @head = true
+        @github = true
+      when %r{github\.com/(\S+)/(\S+)/(archive|releases)/}
+        @user = Regexp.last_match(1)
+        @github = true
+      end
     end
 
     def write_formula!
