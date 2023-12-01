@@ -109,6 +109,8 @@ module Hardware
           :arm_firestorm_icestorm
         when 0xda33d83d             # ARMv8.5-A (Blizzard, Avalanche)
           :arm_blizzard_avalanche
+        when 0x8765edea             # ARMv8.6-A (Everest, Sawtooth)
+          :arm_everest_sawtooth
         else
           :dunno
         end
