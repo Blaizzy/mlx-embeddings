@@ -28,6 +28,7 @@ describe Hardware::CPU do
         :amd_k12,
         :arm,
         :arm_blizzard_avalanche,
+        :arm_everest_sawtooth,
         :arm_firestorm_icestorm,
         :arm_hurricane_zephyr,
         :arm_lightning_thunder,
