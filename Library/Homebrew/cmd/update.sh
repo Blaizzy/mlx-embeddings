@@ -893,7 +893,10 @@ EOS
      [[ ! -f "${HOMEBREW_CACHE}/all_commands_list.txt" ]] ||
      [[ -n "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_UPDATE_AUTO}" ]]
   then
-    brew update-report "$@"
+    (
+      unset HOMEBREW_RUBY3
+      brew update-report "$@"
+    )
     return $?
   elif [[ -z "${HOMEBREW_UPDATE_AUTO}" && -z "${HOMEBREW_QUIET}" ]]
   then
