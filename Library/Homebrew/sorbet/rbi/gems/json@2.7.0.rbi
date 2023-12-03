@@ -11,7 +11,7 @@ end
 module JSON
   private
 
-  def dump(obj, anIO = T.unsafe(nil), limit = T.unsafe(nil)); end
+  def dump(obj, anIO = T.unsafe(nil), limit = T.unsafe(nil), strict: T.unsafe(nil)); end
   def fast_generate(obj, opts = T.unsafe(nil)); end
   def fast_unparse(obj, opts = T.unsafe(nil)); end
   def generate(obj, opts = T.unsafe(nil)); end
@@ -33,7 +33,7 @@ module JSON
     def create_id=(new_value); end
     def create_pretty_state; end
     def deep_const_get(path); end
-    def dump(obj, anIO = T.unsafe(nil), limit = T.unsafe(nil)); end
+    def dump(obj, anIO = T.unsafe(nil), limit = T.unsafe(nil), strict: T.unsafe(nil)); end
     def dump_default_options; end
     def dump_default_options=(_arg0); end
     def fast_generate(obj, opts = T.unsafe(nil)); end
@@ -86,6 +86,7 @@ class JSON::JSONError < ::StandardError
   end
 end
 
+JSON::NOT_SET = T.let(T.unsafe(nil), Object)
 JSON::Parser = JSON::Ext::Parser
 JSON::State = JSON::Ext::Generator::State
 JSON::UnparserError = JSON::GeneratorError
