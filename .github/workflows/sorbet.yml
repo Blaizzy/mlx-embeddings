@@ -47,17 +47,20 @@ jobs:
         id: update
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
         run: |
-          git fetch origin
-
-          BRANCH="sorbet-files-update"
-          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
-
-          if git ls-remote --exit-code --heads origin "${BRANCH}"
+          if [[ "${GITHUB_EVENT_NAME}" != "pull_request" ]]
           then
-            git checkout "${BRANCH}"
-            git checkout "Library/Homebrew/sorbet"
-          else
-            git checkout --no-track -B "${BRANCH}" origin/master
+            git fetch origin
+
+            BRANCH="sorbet-files-update"
+            echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+
+            if git ls-remote --exit-code --heads origin "${BRANCH}"
+            then
+              git checkout "${BRANCH}"
+              git checkout "Library/Homebrew/sorbet"
+            else
+              git checkout --no-track -B "${BRANCH}" origin/master
+            fi
           fi
 
           brew typecheck --update --suggest-typed
