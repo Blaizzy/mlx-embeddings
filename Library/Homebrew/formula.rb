@@ -3550,7 +3550,7 @@ class Formula
     # <pre>deprecate! date: "2020-08-27", because: :unmaintained</pre>
     # <pre>deprecate! date: "2020-08-27", because: "has been replaced by foo"</pre>
     # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
-    # @see DeprecateDisable::DEPRECATE_DISABLE_REASONS
+    # @see DeprecateDisable::FORMULA_DEPRECATE_DISABLE_REASONS
     def deprecate!(date:, because:)
       @deprecation_date = Date.parse(date)
       return if @deprecation_date > Date.today
@@ -3585,7 +3585,7 @@ class Formula
     # <pre>disable! date: "2020-08-27", because: :does_not_build</pre>
     # <pre>disable! date: "2020-08-27", because: "has been replaced by foo"</pre>
     # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
-    # @see DeprecateDisable::DEPRECATE_DISABLE_REASONS
+    # @see DeprecateDisable::FORMULA_DEPRECATE_DISABLE_REASONS
     def disable!(date:, because:)
       @disable_date = Date.parse(date)
 

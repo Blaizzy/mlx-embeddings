@@ -412,7 +412,7 @@ module Homebrew
       return if formula.disabled?
 
       return if formula.deprecated? &&
-                formula.deprecation_reason != DeprecateDisable::DEPRECATE_DISABLE_REASONS[:versioned_formula]
+                formula.deprecation_reason != DeprecateDisable::FORMULA_DEPRECATE_DISABLE_REASONS[:versioned_formula]
 
       problem <<~EOS
         #{formula.full_name} contains conflicting version recursive dependencies:

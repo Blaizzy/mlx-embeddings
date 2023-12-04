@@ -464,7 +464,7 @@ module Formulary
 
   def self.convert_to_deprecate_disable_reason_string_or_symbol(string)
     require "deprecate_disable"
-    return string unless DeprecateDisable::DEPRECATE_DISABLE_REASONS.keys.map(&:to_s).include?(string)
+    return string unless DeprecateDisable::FORMULARY_DEPRECATE_DISABLE_REASONS.keys.map(&:to_s).include?(string)
 
     string.to_sym
   end

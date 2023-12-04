@@ -84,6 +84,14 @@ module Cask
       :url,
       :version,
       :appdir,
+      :deprecate!,
+      :deprecated?,
+      :deprecation_date,
+      :deprecation_reason,
+      :disable!,
+      :disabled?,
+      :disable_date,
+      :disable_reason,
       :discontinued?,
       :livecheck,
       :livecheckable?,
@@ -96,9 +104,9 @@ module Cask
     extend Predicable
     include OnSystem::MacOSOnly
 
-    attr_reader :cask, :token
+    attr_reader :cask, :token, :deprecation_date, :deprecation_reason, :disable_date, :disable_reason
 
-    attr_predicate :on_system_blocks_exist?
+    attr_predicate :on_system_blocks_exist?, :disabled?, :livecheckable?
 
     def initialize(cask)
       @cask = cask
@@ -316,7 +324,13 @@ module Cask
     end
 
     def discontinued?
+      # odeprecated "`discontinued?`", "`deprecated?` or `disabled?`"
       @caveats&.discontinued? == true
+    end
+
+    # TODO: replace with with attr_predicate once discontinued? is disabled
+    def deprecated?
+      @deprecated == true || @caveats&.discontinued? == true
     end
 
     # @api public
@@ -337,8 +351,27 @@ module Cask
       @livecheck.instance_eval(&block)
     end
 
-    def livecheckable?
-      @livecheckable == true
+    # @api public
+    def deprecate!(date:, because:)
+      @deprecation_date = Date.parse(date)
+      return if @deprecation_date > Date.today
+
+      @deprecation_reason = because
+      @deprecated = true
+    end
+
+    # @api public
+    def disable!(date:, because:)
+      @disable_date = Date.parse(date)
+
+      if @disable_date > Date.today
+        @deprecation_reason = because
+        @deprecated = true
+        return
+      end
+
+      @disable_reason = because
+      @disabled = true
     end
 
     ORDINARY_ARTIFACT_CLASSES.each do |klass|
