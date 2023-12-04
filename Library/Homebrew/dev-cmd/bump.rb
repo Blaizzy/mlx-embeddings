@@ -58,6 +58,8 @@ module Homebrew
   def bump
     args = bump_args.parse
 
+    Homebrew.install_bundler_gems!(groups: ["livecheck"])
+
     if args.limit.present? && !args.formula? && !args.cask?
       raise UsageError, "`--limit` must be used with either `--formula` or `--cask`."
     end
