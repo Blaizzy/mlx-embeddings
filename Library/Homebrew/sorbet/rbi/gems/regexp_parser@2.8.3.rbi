@@ -1061,7 +1061,7 @@ class Regexp::Syntax::Base
   end
 end
 
-Regexp::Syntax::CURRENT = Regexp::Syntax::V2_6_3
+Regexp::Syntax::CURRENT = Regexp::Syntax::V3_1_0
 
 class Regexp::Syntax::InvalidVersionNameError < ::Regexp::Syntax::SyntaxError
   def initialize(name); end
@@ -1303,6 +1303,7 @@ class Regexp::Token < ::Struct
   class << self
     def [](*_arg0); end
     def inspect; end
+    def keyword_init?; end
     def members; end
     def new(*_arg0); end
   end
