@@ -35,23 +35,39 @@ module DeprecateDisable
     **SHARED_DEPRECATE_DISABLE_REASONS,
   }.freeze
 
-  def deprecate_disable_info(formula_or_cask)
-    if formula_or_cask.deprecated?
-      type = :deprecated
-      reason = formula_or_cask.deprecation_reason
+  def type(formula_or_cask)
+    return :deprecated if formula_or_cask.deprecated?
+    return :disabled if formula_or_cask.disabled?
+  end
+
+  def message(formula_or_cask)
+    return if type(formula_or_cask).blank?
+
+    reason = if formula_or_cask.deprecated?
+      formula_or_cask.deprecation_reason
     elsif formula_or_cask.disabled?
-      type = :disabled
-      reason = formula_or_cask.disable_reason
-    else
-      return
+      formula_or_cask.disable_reason
     end
 
     reason = if formula_or_cask.is_a?(Formula) && FORMULA_DEPRECATE_DISABLE_REASONS.key?(reason)
       FORMULA_DEPRECATE_DISABLE_REASONS[reason]
     elsif formula_or_cask.is_a?(Cask::Cask) && CASK_DEPRECATE_DISABLE_REASONS.key?(reason)
       CASK_DEPRECATE_DISABLE_REASONS[reason]
+    else
+      reason
     end
 
-    [type, reason]
+    return "#{type(formula_or_cask)} because it #{reason}!" if reason.present?
+
+    "#{type(formula_or_cask)}!"
+  end
+
+  def to_reason_string_or_symbol(string, type:)
+    if (type == :formula && FORMULA_DEPRECATE_DISABLE_REASONS.key?(string.to_sym)) ||
+       (type == :cask && CASK_DEPRECATE_DISABLE_REASONS.key?(string.to_sym))
+      return string.to_sym
+    end
+
+    string
   end
 end

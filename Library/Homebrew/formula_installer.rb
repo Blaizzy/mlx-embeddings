@@ -200,21 +200,14 @@ class FormulaInstaller
 
   sig { void }
   def prelude
-    type, reason = DeprecateDisable.deprecate_disable_info formula
-    if type.present?
-      case type
-      when :deprecated
-        if reason.present?
-          opoo "#{formula.full_name} has been deprecated because it #{reason}!"
-        else
-          opoo "#{formula.full_name} has been deprecated!"
-        end
-      when :disabled
-        if reason.present?
-          raise CannotInstallFormulaError, "#{formula.full_name} has been disabled because it #{reason}!"
-        end
+    deprecate_disable_type = DeprecateDisable.type(formula)
+    if deprecate_disable_type.present?
+      message = "#{formula.full_name} has been #{DeprecateDisable.message(formula)}"
 
-        raise CannotInstallFormulaError, "#{formula.full_name} has been disabled!"
+      if deprecate_disable_type == :deprecated
+        opoo message
+      elsif deprecate_disable_type == :disabled
+        raise CannotInstallFormulaError, message
       end
     end
 

@@ -93,6 +93,7 @@ module Cask
       old_config = @cask.config
       predecessor = @cask if reinstall? && @cask.installed?
 
+      check_deprecate_disable
       check_conflicts
 
       print caveats
@@ -122,6 +123,17 @@ on_request: true)
     rescue
       restore_backup
       raise
+    end
+
+    def check_deprecate_disable
+      deprecate_disable_type = DeprecateDisable.type(@cask)
+      return if deprecate_disable_type.blank?
+
+      if deprecate_disable_type == :deprecated
+        opoo "#{@cask.token} has been #{DeprecateDisable.message(@cask)}"
+      elsif deprecate_disable_type == :disabled
+        raise CaskCannotBeInstalledError.new(@cask, DeprecateDisable.message(@cask))
+      end
     end
 
     def check_conflicts

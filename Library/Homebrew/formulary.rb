@@ -7,6 +7,7 @@ require "tab"
 require "utils/bottles"
 require "service"
 require "utils/curl"
+require "deprecate_disable"
 
 require "active_support/core_ext/hash/deep_transform_values"
 
@@ -301,12 +302,12 @@ module Formulary
       end
 
       if (deprecation_date = json_formula["deprecation_date"].presence)
-        reason = Formulary.convert_to_deprecate_disable_reason_string_or_symbol json_formula["deprecation_reason"]
+        reason = DeprecateDisable.to_reason_string_or_symbol json_formula["deprecation_reason"], type: :formula
         deprecate! date: deprecation_date, because: reason
       end
 
       if (disable_date = json_formula["disable_date"].presence)
-        reason = Formulary.convert_to_deprecate_disable_reason_string_or_symbol json_formula["disable_reason"]
+        reason = DeprecateDisable.to_reason_string_or_symbol json_formula["disable_reason"], type: :formula
         disable! date: disable_date, because: reason
       end
 
@@ -460,13 +461,6 @@ module Formulary
     return string[1..].to_sym if string.start_with?(":")
 
     string
-  end
-
-  def self.convert_to_deprecate_disable_reason_string_or_symbol(string)
-    require "deprecate_disable"
-    return string unless DeprecateDisable::FORMULARY_DEPRECATE_DISABLE_REASONS.keys.map(&:to_s).include?(string)
-
-    string.to_sym
   end
 
   # A {FormulaLoader} returns instances of formulae.
