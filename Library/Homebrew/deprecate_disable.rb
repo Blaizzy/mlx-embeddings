@@ -63,8 +63,8 @@ module DeprecateDisable
   end
 
   def to_reason_string_or_symbol(string, type:)
-    if (type == :formula && FORMULA_DEPRECATE_DISABLE_REASONS.key?(string.to_sym)) ||
-       (type == :cask && CASK_DEPRECATE_DISABLE_REASONS.key?(string.to_sym))
+    if (type == :formula && FORMULA_DEPRECATE_DISABLE_REASONS.key?(string&.to_sym)) ||
+       (type == :cask && CASK_DEPRECATE_DISABLE_REASONS.key?(string&.to_sym))
       return string.to_sym
     end
 
