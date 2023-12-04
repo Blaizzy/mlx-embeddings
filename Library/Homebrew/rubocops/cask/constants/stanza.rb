@@ -19,6 +19,7 @@ module RuboCop
         [:language],
         [:url, :appcast, :name, :desc, :homepage],
         [:livecheck],
+        [:deprecate!, :disable!],
         [
           :auto_updates,
           :conflicts_with,
