@@ -9461,10 +9461,6 @@ end
 class Refinement
 end
 
-class Regexp::Token
-  def self.keyword_init?(); end
-end
-
 module Reline
   DEFAULT_DIALOG_CONTEXT = ::T.let(nil, ::T.untyped)
   DEFAULT_DIALOG_PROC_AUTOCOMPLETE = ::T.let(nil, ::T.untyped)
