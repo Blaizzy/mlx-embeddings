@@ -3336,6 +3336,8 @@ end
 
 class Class
   def any_instance(); end
+
+  def json_creatable?(); end
 end
 
 class Complex
@@ -5732,6 +5734,22 @@ end
 
 class JSON::Ext::Parser
   def initialize(*arg); end
+end
+
+JSON::Parser = JSON::Ext::Parser
+
+JSON::State = JSON::Ext::Generator::State
+
+JSON::UnparserError = JSON::GeneratorError
+
+module JSON
+  def self.create_fast_state(); end
+
+  def self.create_pretty_state(); end
+
+  def self.load_file(filespec, opts=T.unsafe(nil)); end
+
+  def self.load_file!(filespec, opts=T.unsafe(nil)); end
 end
 
 class JSONSchemer::Result
