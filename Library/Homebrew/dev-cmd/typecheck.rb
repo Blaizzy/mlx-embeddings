@@ -47,7 +47,7 @@ module Homebrew
       if update
         excluded_gems = [
           "did_you_mean", # RBI file is already provided by Sorbet
-          "webrobots", # RBI file is bugged
+          "json", # RBI file is already provided by Sorbet
           "sorbet-static-and-runtime", # Unnecessary RBI - remove this entry with Tapioca 0.8
         ]
         typed_overrides = [

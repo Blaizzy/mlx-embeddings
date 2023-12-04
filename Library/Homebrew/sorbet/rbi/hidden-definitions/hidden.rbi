@@ -3336,6 +3336,8 @@ end
 
 class Class
   def any_instance(); end
+
+  def json_creatable?(); end
 end
 
 class Complex
@@ -5712,6 +5714,18 @@ class JSON::Ext::Generator::State
   def escape_slash=(escape_slash); end
 
   def escape_slash?(); end
+
+  def script_safe(); end
+
+  def script_safe=(script_safe); end
+
+  def script_safe?(); end
+
+  def strict(); end
+
+  def strict=(strict); end
+
+  def strict?(); end
 end
 
 class JSON::Ext::Generator::State
@@ -5720,6 +5734,22 @@ end
 
 class JSON::Ext::Parser
   def initialize(*arg); end
+end
+
+JSON::Parser = JSON::Ext::Parser
+
+JSON::State = JSON::Ext::Generator::State
+
+JSON::UnparserError = JSON::GeneratorError
+
+module JSON
+  def self.create_fast_state(); end
+
+  def self.create_pretty_state(); end
+
+  def self.load_file(filespec, opts=T.unsafe(nil)); end
+
+  def self.load_file!(filespec, opts=T.unsafe(nil)); end
 end
 
 class JSONSchemer::Result
@@ -6353,7 +6383,13 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+class Net::HTTPSuccess
+end
+
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -9438,12 +9474,6 @@ module Reline
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
-class Reline::ANSI
-  CAPNAME_KEY_BINDINGS = ::T.let(nil, ::T.untyped)
-  END_BRACKETED_PASTE = ::T.let(nil, ::T.untyped)
-  START_BRACKETED_PASTE = ::T.let(nil, ::T.untyped)
-end
-
 class Reline::Config
   KEYSEQ_PATTERN = ::T.let(nil, ::T.untyped)
   VARIABLE_NAMES = ::T.let(nil, ::T.untyped)
@@ -9454,7 +9484,7 @@ class Reline::Core
   ATTR_READER_NAMES = ::T.let(nil, ::T.untyped)
 end
 
-Reline::IOGate = Reline::ANSI
+Reline::IOGate = Reline::GeneralIO
 
 Reline::Key = Struct::Key
 

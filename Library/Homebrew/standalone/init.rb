@@ -40,4 +40,9 @@ $LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s unless $LOAD_PATH.include?(HOMEBREW_L
 require_relative "../vendor/bundle/bundler/setup"
 $LOAD_PATH.unshift "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/" \
                    "bundler-#{Homebrew::HOMEBREW_BUNDLER_VERSION}/lib"
+if ruby_major == 2 && ruby_minor == 6
+  # TEMP: Ruby 3 transition
+  $LOAD_PATH.unshift "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/" \
+                     "did_you_mean-1.6.3/lib"
+end
 $LOAD_PATH.uniq!
