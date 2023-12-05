@@ -271,6 +271,14 @@ end
 RuboCop::Cop::Sorbet::ForbidTUntyped::MSG = T.let(T.unsafe(nil), String)
 RuboCop::Cop::Sorbet::ForbidTUntyped::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+class RuboCop::Cop::Sorbet::ForbidTypeAliasedShapes < ::RuboCop::Cop::Base
+  def on_block(node); end
+  def on_numblock(node); end
+  def shape_type_alias?(param0 = T.unsafe(nil)); end
+end
+
+RuboCop::Cop::Sorbet::ForbidTypeAliasedShapes::MSG = T.let(T.unsafe(nil), String)
+
 class RuboCop::Cop::Sorbet::ForbidUntypedStructProps < ::RuboCop::Cop::Base
   def on_class(node); end
   def subclass_of_t_struct?(param0 = T.unsafe(nil)); end
