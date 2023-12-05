@@ -1,6 +1,9 @@
 # When bumping, run `brew vendor-gems --update=--ruby`
 # When bumping to a new major/minor version, also update the bounds in the Gemfile
-export HOMEBREW_REQUIRED_RUBY_VERSION=2.6.10
+export HOMEBREW_REQUIRED_RUBY_VERSION=3.1
+
+# TODO: remove this after we want Dependabot to point to 3.1 minimum
+export HOMEBREW_RUBY3="1"
 
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
@@ -10,24 +13,9 @@ test_ruby() {
     return 1
   fi
 
-  supported_ruby_versions=()
-  if [[ -n "${HOMEBREW_RUBY3}" && -z "${HOMEBREW_USE_RUBY_FROM_PATH}" ]]
-  then
-    supported_ruby_versions+=("3.1.0")
-  fi
-  supported_ruby_versions+=("${HOMEBREW_REQUIRED_RUBY_VERSION}")
-
-  for ruby_version in "${supported_ruby_versions[@]}"
-  do
-    if "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt \
-       "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby_check_version_script.rb" \
-       "${ruby_version}" 2>/dev/null
-    then
-      return 0
-    fi
-  done
-
-  return 1
+  "$1" --enable-frozen-string-literal --disable=gems,did_you_mean,rubyopt \
+    "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby_check_version_script.rb" \
+    "${HOMEBREW_REQUIRED_RUBY_VERSION}" 2>/dev/null
 }
 
 can_use_ruby_from_path() {

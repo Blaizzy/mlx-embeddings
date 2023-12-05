@@ -504,9 +504,6 @@ case "$*" in
     ;;
 esac
 
-# TODO: remove this after we want Dependabot to point to 3.1 minimum and system macOS Ruby code is gone
-export HOMEBREW_RUBY3="1"
-
 # TODO: bump version when new macOS is released or announced and update references in:
 # - docs/Installation.md
 # - https://github.com/Homebrew/install/blob/HEAD/install.sh
