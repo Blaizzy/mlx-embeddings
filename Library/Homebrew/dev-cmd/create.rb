@@ -172,13 +172,12 @@ module Homebrew
       fetch:   !args.no_fetch?,
       head:    args.HEAD?,
     )
-    if fc.name.blank?
-      stem = Pathname.new(args.named.first).stem.rpartition("=").last
-      print "Formula name [#{stem}]: "
-      fc.name = __gets || stem
-    end
-
     fc.parse_url
+    # ask for confirmation if name wasn't passed explicitly
+    if args.set_name.blank?
+      print "Formula name [#{fc.name}]: "
+      fc.name = __gets || fc.name
+    end
 
     fc.verify
 
