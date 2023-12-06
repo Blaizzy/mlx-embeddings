@@ -44,8 +44,8 @@ url_get() {
   fi
 
   while [[ ${#} -gt 0 ]]; do
-    echo -n "$(eval echo -n "\${_${1}}")"
-    [[ ${#} -gt 1 ]] && echo -n ${IFS}
+    echo -n \""$(eval echo -n "\${_${1}}")"\"
+    [[ ${#} -gt 1 ]] && echo -n "${IFS:- }"
     shift
   done
 }

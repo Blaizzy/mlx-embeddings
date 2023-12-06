@@ -629,7 +629,12 @@ EOS
     # the refspec ensures that the default upstream branch gets updated
     (
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
-      UPSTREAM_REPOSITORY_URL_PARSED=( $(url_get "${UPSTREAM_REPOSITORY_URL}" user pass host path) )
+      eval UPSTREAM_REPOSITORY_URL_PARSED=( $(url_get "${UPSTREAM_REPOSITORY_URL}" user pass host path) )
+      if [[ ${#UPSTREAM_REPOSITORY_URL_PARSED[@]} -ne 4 ]]; then
+        echo "Failed to parse repository URL=${UPSTREAM_REPOSITORY_URL} \!" >&2
+        exit
+      fi
+
 
       # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
       # can be supersede by local repository URL
