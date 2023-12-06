@@ -332,7 +332,7 @@ __fish_brew_complete_arg 'audit' -l formula -d 'Treat all named arguments as for
 __fish_brew_complete_arg 'audit' -l git -d 'Run additional, slower style checks that navigate the Git repository'
 __fish_brew_complete_arg 'audit' -l help -d 'Show this message'
 __fish_brew_complete_arg 'audit' -l installed -d 'Only check formulae and casks that are currently installed'
-__fish_brew_complete_arg 'audit' -l new -d 'Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formula and implies `--strict` and `--online`'
+__fish_brew_complete_arg 'audit' -l new -d 'Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formulae or casks and implies `--strict` and `--online`'
 __fish_brew_complete_arg 'audit' -l no-signing -d 'Audit for signed apps, which are required on ARM'
 __fish_brew_complete_arg 'audit' -l online -d 'Run additional, slower style checks that require a network connection'
 __fish_brew_complete_arg 'audit' -l only -d 'Specify a comma-separated method list to only run the methods named `audit_`method'
