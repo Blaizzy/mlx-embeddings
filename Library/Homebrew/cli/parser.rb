@@ -160,11 +160,12 @@ module Homebrew
         return if global_switch
 
         description = option_description(description, *names, hidden: hidden)
-        if replacement.nil?
-          process_option(*names, description, type: :switch, hidden: hidden)
-        else
-          description += " (disabled#{"; replaced by #{replacement}" if replacement.present?})"
+        process_option(*names, description, type: :switch, hidden: hidden) unless disable
+
+        if replacement || disable
+          description += " (#{disable ? "disabled" : "deprecated"}#{"; replaced by #{replacement}" if replacement})"
         end
+
         @parser.public_send(method, *names, *wrap_option_desc(description)) do |value|
           # This odeprecated should stick around indefinitely.
           odeprecated "the `#{names.first}` switch", replacement, disable: disable if !replacement.nil? || disable

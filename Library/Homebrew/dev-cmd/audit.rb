@@ -44,10 +44,22 @@ module Homebrew
       switch "--eval-all",
              description: "Evaluate all available formulae and casks, whether installed or not, to audit them. " \
                           "Implied if `HOMEBREW_EVAL_ALL` is set."
-      switch "--new", "--new-formula", "--new-cask",
+      switch "--new",
              description: "Run various additional style checks to determine if a new formula or cask is eligible " \
-                          "for Homebrew. This should be used when creating new formula and implies " \
+                          "for Homebrew. This should be used when creating new formulae or casks and implies " \
                           "`--strict` and `--online`."
+      switch "--new-formula",
+             # odeprecated: uncomment `replacement` to enable the `odeprecated` handling in `CLI::Parser`
+             # replacement: "--new",
+             # odeprecated: remove `args.new_formula?` calls once this is `true`
+             disable: false,
+             hidden:  true
+      switch "--new-cask",
+             # odeprecated: uncomment `replacement` to enable the `odeprecated` handling in `CLI::Parser`
+             # replacement: "--new",
+             # odeprecated: remove `args.new_cask?` calls once this is `true`
+             disable: false,
+             hidden:  true
       switch "--[no-]signing",
              description: "Audit for signed apps, which are required on ARM"
       switch "--token-conflicts",
@@ -101,6 +113,9 @@ module Homebrew
   def self.audit
     args = audit_args.parse
 
+    new_cask = args.new? || args.new_cask?
+    new_formula = args.new? || args.new_formula?
+
     Formulary.enable_factory_cache!
 
     os_arch_combinations = args.os_arch_combinations
@@ -108,7 +123,6 @@ module Homebrew
     Homebrew.auditing = true
     inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
 
-    new_formula = args.new_formula?
     strict = new_formula || args.strict?
     online = new_formula || args.online?
     tap_audit = args.tap.present?
@@ -165,7 +179,7 @@ module Homebrew
 
     if only_cops
       style_options[:only_cops] = only_cops
-    elsif args.new_formula?
+    elsif new_formula || new_cask
       nil
     elsif except_cops
       style_options[:except_cops] = except_cops
@@ -261,7 +275,7 @@ module Homebrew
             # No need for `|| nil` for `--[no-]signing`
             # because boolean switches are already `nil` if not passed
             audit_signing:         args.signing?,
-            audit_new_cask:        (args.new_cask? || nil),
+            audit_new_cask:        (new_cask || nil),
             audit_token_conflicts: (args.token_conflicts? || nil),
             quarantine:            true,
             any_named_args:        !no_named_args,
