@@ -24,7 +24,7 @@ Note that unlike formulae, casks do not consider the `sha256` stanza to be a mea
 
 ## Merging
 
-In general, using GitHub's "Squash and Merge" button is the best way to merge a PR. This can be used when the PR modifies only one cask, regardless of the number of commits or whether the commit message format is correct. When merging using this method, the commit message can be modified if needed. Usually, version bump commit messages follow the form `Update CASK from OLD_VERSION to NEW_VERSION`.
+In general, using GitHub's "Merge" button is the best way to merge a PR. This can be used when the PR modifies only one cask, regardless of the number of commits or whether the commit message format is correct. When merging using this method, the commit message can be modified if needed. Usually, version bump commit messages follow the form `Update CASK from OLD_VERSION to NEW_VERSION`.
 
 If the PR modifies multiple casks, use the "Rebase and Merge" button to merge the PR. This will use the commit messages from the PR, so make sure that they are appropriate before merging. If needed, checkout the PR, squash/reword the commits and force-push back to the PR branch to ensure the proper commit format.
 

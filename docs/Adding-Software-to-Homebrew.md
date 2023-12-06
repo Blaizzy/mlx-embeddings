@@ -1,6 +1,6 @@
 # Adding Software To Homebrew
 
-Is your favorite software missing from Homebrew? Then you're the perfect person to resolve this problem.
+Is your favourite software missing from Homebrew? Then you're the perfect person to resolve this problem.
 
 If you want to add software that is either closed source or a GUI-only program, you will want to follow the guide for [Casks](#casks). Otherwise follow the guide for [Formulae](#formulae) (see also: [Homebrew Terminology](Formula-Cookbook.md#homebrew-terminology)).
 
