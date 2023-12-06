@@ -18,6 +18,7 @@
 # HOMEBREW_USER_AGENT_CURL are set by brew.sh
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
+source "${HOMEBREW_LIBRARY}/Homebrew/utils/url.sh"
 
 # Replaces the function in Library/Homebrew/brew.sh to cache the Curl/Git executable to
 # provide speedup when using Curl/Git repeatedly (as update.sh does).
@@ -511,15 +512,6 @@ EOS
     CURL_DISABLE_CURLRC_ARGS=()
   fi
 
-  # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-  # shellcheck disable=SC2153
-  #if [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
-  #then
-  #  CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
-  #else
-  #  CURL_GITHUB_API_ARGS=()
-  #fi
-
   # only allow one instance of brew update
   lock update
 
@@ -637,22 +629,14 @@ EOS
     # the refspec ensures that the default upstream branch gets updated
     (
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
-      UPSTREAM_REPOSITORY_TOPARSE="${UPSTREAM_REPOSITORY_URL#*://}"
-      UPSTREAM_REPOSITORY_L1="${UPSTREAM_REPOSITORY_TOPARSE%%/*}"
-      UPSTREAM_REPOSITORY_DOMAIN="${UPSTREAM_REPOSITORY_L1#*@}"
-      [[ "${UPSTREAM_REPOSITORY_L1}" == "${UPSTREAM_REPOSITORY_DOMAIN}" ]] \
-        && UPSTREAM_REPOSITORY_USERPASS="" \
-        || UPSTREAM_REPOSITORY_USERPASS="${UPSTREAM_REPOSITORY_L1%@*}"
-      [[ -z "${UPSTREAM_REPOSITORY_USERPASS%:*}" ]] || [[ "${UPSTREAM_REPOSITORY_USERPASS%:*}" == "git" ]] \
-        && UPSTREAM_REPOSITORY_TOKEN="" \
-        || UPSTREAM_REPOSITORY_TOKEN="${UPSTREAM_REPOSITORY_USERPASS#*:}"
+      UPSTREAM_REPOSITORY_URL_PARSED=( $(url_get "${UPSTREAM_REPOSITORY_URL}" user pass host path) )
 
       # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-      # UPSTREAM_REPOSITORY_TOKEN is optionally defined in the git configuration and will try to supersede
+      # can be supersede by local repository URL
       # shellcheck disable=SC2153
-      if [[ -n "${UPSTREAM_REPOSITORY_TOKEN}" ]]
+      if [[ -n "${UPSTREAM_REPOSITORY_URL_PARSED[1]}" ]]
       then
-        CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${UPSTREAM_REPOSITORY_TOKEN}")
+        CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${UPSTREAM_REPOSITORY_URL_PARSED[1]}")
       elif [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
       then
         CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
@@ -663,11 +647,9 @@ EOS
       # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_AUTO aren't modified here so ignore subshell warning.
       # shellcheck disable=SC2030
       if [[ "${UPSTREAM_REPOSITORY_URL}" == "https://github.com/"* ]] \
-      || [[ "${UPSTREAM_REPOSITORY_DOMAIN%:*}" == "github.com" ]]
+      || [[ "${UPSTREAM_REPOSITORY_URL_PARSED[2]}" == "github.com" ]]
       then
-        #UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
-        UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_TOPARSE#*/}"
-        UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
+        UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL_PARSED[3]%.git}"
 
         if [[ "${DIR}" == "${HOMEBREW_REPOSITORY}" && -n "${HOMEBREW_UPDATE_TO_TAG}" ]]
         then
