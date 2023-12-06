@@ -12,7 +12,6 @@ require_relative "global"
 require "build_options"
 require "keg"
 require "extend/ENV"
-require "debrew"
 require "fcntl"
 require "socket"
 require "cmd/install"
@@ -126,7 +125,10 @@ class Build
     }
 
     with_env(new_env) do
-      formula.extend(Debrew::Formula) if args.debug?
+      if args.debug?
+        require "debrew"
+        formula.extend(Debrew::Formula)
+      end
 
       formula.update_head_version
 
