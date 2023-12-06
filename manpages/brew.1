@@ -758,6 +758,9 @@ Also include outdated casks including those with \fBauto_updates true\fR\.
 .SS "\fBpin\fR \fIinstalled_formula\fR [\.\.\.]"
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
 .
+.P
+Note: Other packages which depend on newer versions of a pinned formula might not install or run correctly\.
+.
 .SS "\fBpostinstall\fR, \fBpost_install\fR \fIinstalled_formula\fR [\.\.\.]"
 Rerun the post\-install steps for \fIformula\fR\.
 .
@@ -1101,10 +1104,6 @@ Install from a bottle if it exists for the current or newest version of macOS, e
 .TP
 \fB\-\-fetch\-HEAD\fR
 Fetch the upstream repository to detect if the HEAD installation of the formula is outdated\. Otherwise, the repository\'s HEAD will only be checked for updates when a new stable or development version has been released\.
-.
-.TP
-\fB\-\-ignore\-pinned\fR
-Set a successful exit status even if pinned formulae are not upgraded\.
 .
 .TP
 \fB\-\-keep\-tmp\fR

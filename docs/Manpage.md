@@ -541,6 +541,9 @@ information is displayed in interactive shells, and suppressed otherwise.
 Pin the specified *`formula`*, preventing them from being upgraded when
 issuing the `brew upgrade` *`formula`* command. See also `unpin`.
 
+Note: Other packages which depend on newer versions of a pinned formula
+might not install or run correctly.
+
 ### `postinstall`, `post_install` *`installed_formula`* [...]
 
 Rerun the post-install steps for *`formula`*.
@@ -797,8 +800,6 @@ upgraded formulae or, every 30 days, for all formulae.
   Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation.
 * `--fetch-HEAD`:
   Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository's HEAD will only be checked for updates when a new stable or development version has been released.
-* `--ignore-pinned`:
-  Set a successful exit status even if pinned formulae are not upgraded.
 * `--keep-tmp`:
   Retain the temporary files created during installation.
 * `--debug-symbols`:

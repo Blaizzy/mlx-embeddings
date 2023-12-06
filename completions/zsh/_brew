@@ -2060,7 +2060,6 @@ _brew_upgrade() {
     '(--formula)--greedy-auto-updates[Also include casks with `auto_updates true`]' \
     '(--formula)--greedy-latest[Also include casks with `version :latest`]' \
     '--help[Show this message]' \
-    '(--cask)--ignore-pinned[Set a successful exit status even if pinned formulae are not upgraded]' \
     '(--formula)--input-methoddir[Target location for Input Methods (default: `~/Library/Input Methods`)]' \
     '(--cask)--interactive[Download and patch formula, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package]' \
     '(--formula)--internet-plugindir[Target location for Internet Plugins (default: `~/Library/Internet Plug-Ins`)]' \
