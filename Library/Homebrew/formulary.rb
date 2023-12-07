@@ -291,6 +291,10 @@ module Formulary
         end
       end
 
+      if (pour_bottle_only_if = json_formula["pour_bottle_only_if"])
+        pour_bottle? only_if: pour_bottle_only_if.to_sym
+      end
+
       if (keg_only_reason = json_formula["keg_only_reason"].presence)
         reason = Formulary.convert_to_string_or_symbol keg_only_reason["reason"]
         keg_only reason, keg_only_reason["explanation"]
