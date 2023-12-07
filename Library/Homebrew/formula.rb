@@ -2235,6 +2235,7 @@ class Formula
       "revision"                 => revision,
       "version_scheme"           => version_scheme,
       "bottle"                   => {},
+      "pour_bottle_only_if"      => self.class.pour_bottle_only_if&.to_s,
       "keg_only"                 => keg_only?,
       "keg_only_reason"          => keg_only_reason&.to_hash,
       "options"                  => [],
@@ -3538,6 +3539,7 @@ class Formula
     # <pre>pour_bottle? only_if: :clt_installed</pre>
     def pour_bottle?(only_if: nil, &block)
       @pour_bottle_check = PourBottleCheck.new(self)
+      @pour_bottle_only_if = only_if
 
       if only_if.present? && block.present?
         raise ArgumentError, "Do not pass both a preset condition and a block to `pour_bottle?`"
@@ -3570,6 +3572,9 @@ class Formula
 
       @pour_bottle_check.instance_eval(&block)
     end
+
+    # @private
+    attr_reader :pour_bottle_only_if
 
     # Deprecates a {Formula} (on the given date) so a warning is
     # shown on each installation. If the date has not yet passed the formula
