@@ -637,7 +637,7 @@ EOS
 
 
       # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-      # can be supersede by local repository URL
+      # can be superseded a token from the local repository URL
       # shellcheck disable=SC2153
       if [[ -n "${UPSTREAM_REPOSITORY_URL_PARSED[1]}" ]]
       then
