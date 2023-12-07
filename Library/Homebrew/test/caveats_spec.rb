@@ -284,6 +284,7 @@ describe Caveats do
         let(:caveats) { described_class.new(f).caveats }
 
         it "adds the correct amount of new lines to the output" do
+          expect(Utils::Service).to receive(:launchctl?).at_least(:once).and_return(true)
           expect(caveats).to include("something else")
           expect(caveats).to include("keg-only")
           expect(caveats).to include("if you don't want/need a background service")
