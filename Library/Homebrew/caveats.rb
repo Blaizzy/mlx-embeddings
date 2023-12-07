@@ -159,26 +159,18 @@ class Caveats
 
     s = []
 
-    command = if formula.service.command?
-      formula.service.manual_command
-    else
-      formula.plist_manual
-    end
-
     return <<~EOS if !Utils::Service.launchctl? && formula.plist
       #{Formatter.warning("Warning:")} #{formula.name} provides a launchd plist which can only be used on macOS!
-      You can manually execute the service instead with:
-        #{command}
     EOS
 
     # Brew services only works with these two tools
     return <<~EOS if !Utils::Service.systemctl? && !Utils::Service.launchctl? && formula.service.command?
       #{Formatter.warning("Warning:")} #{formula.name} provides a service which can only be used on macOS or systemd!
       You can manually execute the service instead with:
-        #{command}
+        #{formula.service.manual_command}
     EOS
 
-    startup = formula.service.requires_root? || formula.plist_startup
+    startup = formula.service.requires_root?
     if Utils::Service.running?(formula)
       s << "To restart #{formula.full_name} after an upgrade:"
       s << "  #{startup ? "sudo " : ""}brew services restart #{formula.full_name}"
@@ -190,9 +182,9 @@ class Caveats
       s << "  brew services start #{formula.full_name}"
     end
 
-    if formula.plist_manual || formula.service.command?
+    if formula.service.command?
       s << "Or, if you don't want/need a background service you can just run:"
-      s << "  #{command}"
+      s << "  #{formula.service.manual_command}"
     end
 
     # pbpaste is the system clipboard tool on macOS and fails with `tmux` by default

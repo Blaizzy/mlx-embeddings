@@ -24,12 +24,11 @@ module RuboCop
 
           return if body_node.nil?
 
-          if !find_node_method_by_name(body_node, :plist_options) &&
-             find_method_def(body_node, :plist)
-            problem "Please set plist_options when using a formula-defined plist."
+          if find_method_def(body_node, :plist)
+            problem "`def plist` is deprecated. Please use services instead: https://docs.brew.sh/Formula-Cookbook#service-files"
           end
 
-          if (depends_on?("openssl") || depends_on?("openssl@1.1")) && depends_on?("libressl")
+          if (depends_on?("openssl") || depends_on?("openssl@3")) && depends_on?("libressl")
             problem "Formulae should not depend on both OpenSSL and LibreSSL (even optionally)."
           end
 

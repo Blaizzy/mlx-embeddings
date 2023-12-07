@@ -530,7 +530,7 @@ class Formula
   # @deprecated Use {#oldnames} instead.
   sig { returns(T.nilable(String)) }
   def oldname
-    odeprecated "Formula#oldname", "Formula#oldnames"
+    odisabled "Formula#oldname", "Formula#oldnames"
     @oldname ||= oldnames.first
   end
 
@@ -567,9 +567,11 @@ class Formula
   delegate declared_deps: :active_spec
 
   # Dependencies provided by macOS for the currently active {SoftwareSpec}.
+  # @deprecated
   delegate uses_from_macos_elements: :active_spec
 
   # Dependency names provided by macOS for the currently active {SoftwareSpec}.
+  # @deprecated
   delegate uses_from_macos_names: :active_spec
 
   # The {Requirement}s for the currently active {SoftwareSpec}.
@@ -1084,6 +1086,7 @@ class Formula
   #
   # @deprecated Please use {Homebrew::Service} instead.
   def plist
+    # odeprecated: consider removing entirely in 4.3.0
     nil
   end
 
@@ -1097,13 +1100,6 @@ class Formula
   sig { returns(String) }
   def service_name
     service.service_name
-  end
-
-  # The generated launchd {.plist} file path.
-  sig { returns(Pathname) }
-  def plist_path
-    odisabled "formula.plist_path", "formula.launchd_service_path"
-    launchd_service_path
   end
 
   # The generated launchd {.service} file path.
@@ -1128,12 +1124,6 @@ class Formula
   def service
     @service ||= Homebrew::Service.new(self, &self.class.service)
   end
-
-  # @private
-  delegate plist_manual: :"self.class"
-
-  # @private
-  delegate plist_startup: :"self.class"
 
   # A stable path for this formula, when installed. Contains the formula name
   # but no version number. Only the active version will be linked here if
@@ -1933,7 +1923,9 @@ class Formula
   # this should only be used when users specify `--all` to a command
   # @private
   def self.all(eval_all: false)
-    odisabled "Formula#all without --eval-all or HOMEBREW_EVAL_ALL" if !eval_all && !Homebrew::EnvConfig.eval_all?
+    if !eval_all && !Homebrew::EnvConfig.eval_all?
+      raise ArgumentError, "Formula#all without --eval-all or HOMEBREW_EVAL_ALL"
+    end
 
     (core_names + tap_files).map do |name_or_file|
       Formulary.factory(name_or_file)
@@ -2928,7 +2920,6 @@ class Formula
         @conflicts = []
         @skip_clean_paths = Set.new
         @link_overwrite_paths = Set.new
-        @allowed_missing_libraries = Set.new
         @loaded_from_api = false
       end
     end
@@ -2950,7 +2941,6 @@ class Formula
       @conflicts.freeze
       @skip_clean_paths.freeze
       @link_overwrite_paths.freeze
-      @allowed_missing_libraries.freeze
       super
     end
 
@@ -3032,14 +3022,6 @@ class Formula
       @service_block.present?
     end
 
-    # The `:startup` attribute set by {.plist_options}.
-    # @private
-    attr_reader :plist_startup
-
-    # The `:manual` attribute set by {.plist_options}.
-    # @private
-    attr_reader :plist_manual
-
     # @private
     attr_reader :conflicts
 
@@ -3048,9 +3030,6 @@ class Formula
 
     # @private
     attr_reader :link_overwrite_paths
-
-    # @private
-    attr_reader :allowed_missing_libraries
 
     # If `pour_bottle?` returns `false` the user-visible reason to display for
     # why they cannot use the bottle.
@@ -3360,24 +3339,6 @@ class Formula
       specs.each { |spec| spec.patch(strip, src, &block) }
     end
 
-    # Defines launchd plist handling.
-    #
-    # Does your plist need to be loaded at startup?
-    # <pre>plist_options startup: true</pre>
-    #
-    # Or only when necessary or desired by the user?
-    # <pre>plist_options manual: "foo"</pre>
-    #
-    # Or perhaps you'd like to give the user a choice? Ooh fancy.
-    # <pre>plist_options startup: true, manual: "foo start"</pre>
-    #
-    # @deprecated Please use {Homebrew::Service.require_root} instead.
-    def plist_options(options)
-      odisabled "plist_options", "service.require_root"
-      @plist_startup = options[:startup]
-      @plist_manual = options[:manual]
-    end
-
     # One or more formulae that conflict with this one and why.
     # <pre>conflicts_with "imagemagick", because: "both install `convert` binaries"</pre>
     def conflicts_with(*names)
@@ -3660,21 +3621,6 @@ class Formula
     def link_overwrite(*paths)
       paths.flatten!
       link_overwrite_paths.merge(paths)
-    end
-
-    # Permit links to certain libraries that don't exist. Available on Linux only.
-    def ignore_missing_libraries(*libs)
-      odisabled "ignore_missing_libraries"
-      unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
-        raise FormulaSpecificationError, "#{__method__} is available on Linux only"
-      end
-
-      libraries = libs.flatten
-      if libraries.any? { |x| !x.is_a?(String) && !x.is_a?(Regexp) }
-        raise FormulaSpecificationError, "#{__method__} can handle Strings and Regular Expressions only"
-      end
-
-      allowed_missing_libraries.merge(libraries)
     end
   end
 end

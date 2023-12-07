@@ -255,7 +255,7 @@ module Homebrew
           next
         end
 
-        formula&.head&.downloader&.shutup!
+        formula&.head&.downloader&.quiet!
 
         # Use the `stable` version for comparison except for installed
         # head-only formulae. A formula with `stable` and `head` that's

@@ -204,14 +204,16 @@ class SoftwareSpec
 
   # @deprecated
   def uses_from_macos_elements
-    # TODO: remove all @uses_from_macos_elements when disabling or removing this method
-    odeprecated "#uses_from_macos_elements", "#declared_deps"
+    # TODO: remove all @uses_from_macos_elements when removing this method
+    # Also remember to remove the delegate from formula.rb
+    odisabled "#uses_from_macos_elements", "#declared_deps"
     @uses_from_macos_elements
   end
 
   # @deprecated
   def uses_from_macos_names
-    odeprecated "#uses_from_macos_names", "#declared_deps"
+    # TODO: Remember to remove the delegate from formula.rb
+    odisabled "#uses_from_macos_names", "#declared_deps"
     uses_from_macos_elements.flat_map { |e| e.is_a?(Hash) ? e.keys : e }
   end
 

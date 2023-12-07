@@ -67,7 +67,8 @@ module Homebrew
   def bump_cask_pr
     args = bump_cask_pr_args.parse
 
-    # odeprecated "brew bump-cask-pr --online" if args.online?
+    odeprecated "brew bump-cask-pr --online" if args.online?
+
     # This will be run by `brew audit` or `brew style` later so run it first to
     # not start spamming during normal output.
     gem_groups = []

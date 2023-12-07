@@ -317,12 +317,6 @@ module Kernel
     end
   end
 
-  # GZips the given paths, and returns the gzipped paths.
-  def gzip(*paths)
-    odisabled "Utils.gzip", "Utils::Gzip.compress"
-    Utils::Gzip.compress(*paths)
-  end
-
   def ignore_interrupts(_opt = nil)
     # rubocop:disable Style/GlobalVars
     $ignore_interrupts_nesting_level = 0 unless defined?($ignore_interrupts_nesting_level)
@@ -500,18 +494,6 @@ module Kernel
     ensure
       ENV.update(old_values)
     end
-  end
-
-  sig { returns(String) }
-  def preferred_shell
-    odisabled "preferred_shell"
-    Utils::Shell.preferred_path(default: "/bin/sh")
-  end
-
-  sig { returns(String) }
-  def shell_profile
-    odisabled "shell_profile"
-    Utils::Shell.profile
   end
 
   def tap_and_name_comparison

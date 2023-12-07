@@ -211,7 +211,7 @@ module Cask
     # @api public
     def appcast(*args, **kwargs)
       set_unique_stanza(:appcast, args.empty? && kwargs.empty?) do
-        odeprecated "the `appcast` stanza", "the `livecheck` stanza"
+        odisabled "the `appcast` stanza", "the `livecheck` stanza"
         true
       end
     end

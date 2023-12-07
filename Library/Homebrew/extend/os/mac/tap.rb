@@ -3,7 +3,7 @@
 
 class Tap
   def self.install_default_cask_tap_if_necessary(force: false)
-    odeprecated "Tap.install_default_cask_tap_if_necessary", "CoreCaskTap.ensure_installed!"
+    odisabled "Tap.install_default_cask_tap_if_necessary", "CoreCaskTap.ensure_installed!"
 
     cask_tap = CoreCaskTap.instance
     return false if cask_tap.installed?

@@ -34,7 +34,9 @@ module Homebrew
                           "preferred format."
       switch "--no-autosquash",
              description: "Skip automatically reformatting and rewording commits in the pull request to our " \
-                          "preferred format."
+                          "preferred format.",
+             disable:     true, # odisabled: remove this switch with 4.3.0
+             hidden:      true
       switch "--branch-okay",
              description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
       switch "--resolve",
@@ -405,8 +407,6 @@ module Homebrew
 
   def self.pr_pull
     args = pr_pull_args.parse
-
-    odeprecated "`brew pr-pull --no-autosquash`" if args.no_autosquash?
 
     # Needed when extracting the CI artifact.
     ensure_executable!("unzip", reason: "extracting CI artifacts")

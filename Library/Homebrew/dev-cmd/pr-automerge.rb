@@ -32,7 +32,9 @@ module Homebrew
                           "in the pull request to the preferred format."
       switch "--no-autosquash",
              description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits " \
-                          "in the pull request to the preferred format."
+                          "in the pull request to the preferred format.",
+             disable:     true, # odisabled: remove this switch with 4.3.0
+             hidden:      true
       switch "--ignore-failures",
              description: "Include pull requests that have failing status checks."
 
@@ -42,8 +44,6 @@ module Homebrew
 
   def pr_automerge
     args = pr_automerge_args.parse
-
-    odeprecated "`brew pr-publish --no-autosquash`" if args.no_autosquash?
 
     without_labels = args.without_labels || [
       "do not merge",
