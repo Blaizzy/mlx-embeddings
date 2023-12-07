@@ -25,6 +25,7 @@ module Utils
     sig { returns(T.nilable(Pathname)) }
     def self.launchctl
       return @launchctl if defined? @launchctl
+      return if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
       @launchctl = which("launchctl")
     end
@@ -33,6 +34,7 @@ module Utils
     sig { returns(T.nilable(Pathname)) }
     def self.systemctl
       return @systemctl if defined? @systemctl
+      return if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
       @systemctl = which("systemctl")
     end
