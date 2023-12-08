@@ -3,7 +3,7 @@
 #:
 #:  Install Homebrew's portable Ruby.
 
-# HOMEBREW_CURLRC, HOMEBREW_LIBRARY, HOMEBREW_STDERR is from the user environment
+# HOMEBREW_CURLRC, HOMEBREW_LIBRARY is from the user environment
 # HOMEBREW_CACHE, HOMEBREW_CURL, HOMEBREW_LINUX, HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION, HOMEBREW_MACOS,
 # HOMEBREW_MACOS_VERSION_NUMERIC and HOMEBREW_PROCESSOR are set by brew.sh
 # shellcheck disable=SC2154
@@ -82,16 +82,6 @@ check_linux_glibc_version() {
     fi
   else
     odie "Failed to detect system Glibc version."
-  fi
-}
-
-# Execute the specified command, and suppress stderr unless HOMEBREW_STDERR is set.
-quiet_stderr() {
-  if [[ -z "${HOMEBREW_STDERR}" ]]
-  then
-    command "$@" 2>/dev/null
-  else
-    command "$@"
   fi
 }
 
@@ -243,7 +233,7 @@ install() {
   tar "${tar_args}" "${CACHED_LOCATION}"
   safe_cd "${VENDOR_DIR}/portable-${VENDOR_NAME}"
 
-  if quiet_stderr "./${VENDOR_VERSION}/bin/${VENDOR_NAME}" --version >/dev/null
+  if "./${VENDOR_VERSION}/bin/${VENDOR_NAME}" --version >/dev/null
   then
     ln -sfn "${VENDOR_VERSION}" current
     if [[ -d "${VENDOR_VERSION}.reinstall" ]]
