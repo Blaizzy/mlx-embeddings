@@ -41,7 +41,7 @@ class Dependency
   end
 
   def to_formula
-    formula = Formulary.factory(name)
+    formula = Formulary.factory(name, warn: false)
     formula.build = BuildOptions.new(options, formula.options)
     formula
   end
