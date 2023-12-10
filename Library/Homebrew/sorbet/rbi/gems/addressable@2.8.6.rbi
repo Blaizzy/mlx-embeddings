@@ -11,7 +11,7 @@ module Addressable::IDNA
     def _deprecated_unicode_normalize_kc(value); end
     def to_ascii(input); end
     def to_unicode(input); end
-    def unicode_normalize_kc(*args, &block); end
+    def unicode_normalize_kc(*args, **_arg1, &block); end
 
     private
 
@@ -249,9 +249,20 @@ Addressable::URI::CharacterClasses::PATH = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::PCHAR = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::QUERY = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::RESERVED = T.let(T.unsafe(nil), String)
+Addressable::URI::CharacterClasses::RESERVED_AND_UNRESERVED = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::SCHEME = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::SUB_DELIMS = T.let(T.unsafe(nil), String)
 Addressable::URI::CharacterClasses::UNRESERVED = T.let(T.unsafe(nil), String)
+module Addressable::URI::CharacterClassesRegexps; end
+Addressable::URI::CharacterClassesRegexps::AUTHORITY = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::FRAGMENT = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::HOST = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::PATH = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::QUERY = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::RESERVED = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::RESERVED_AND_UNRESERVED = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::SCHEME = T.let(T.unsafe(nil), Regexp)
+Addressable::URI::CharacterClassesRegexps::UNRESERVED = T.let(T.unsafe(nil), Regexp)
 Addressable::URI::EMPTY_STR = T.let(T.unsafe(nil), String)
 class Addressable::URI::InvalidURIError < ::StandardError; end
 module Addressable::URI::NONE; end
