@@ -40,7 +40,6 @@
 # Ignore Ruby gems for versions other than we explicitly vendor.
 # Keep this in sync with the list in standalone/init.rb.
 **/vendor/bundle/ruby/*/
-!**/vendor/bundle/ruby/2.6.0/
 !**/vendor/bundle/ruby/3.1.0/
 
 # Ignore Bundler binary files
