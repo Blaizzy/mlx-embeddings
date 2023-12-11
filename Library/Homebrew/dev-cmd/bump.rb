@@ -124,12 +124,11 @@ module Homebrew
 
     formulae_and_casks.each_with_index do |formula_or_cask, i|
       puts if i.positive?
+      next if skip_ineligible_formulae(formula_or_cask)
 
       use_full_name = args.full_name? || ambiguous_names.include?(formula_or_cask)
       name = Livecheck.package_or_resource_name(formula_or_cask, full_name: use_full_name)
       repository = if formula_or_cask.is_a?(Formula)
-        next if skip_ineligible_formulae(formula_or_cask)
-
         Repology::HOMEBREW_CORE
       else
         Repology::HOMEBREW_CASK
@@ -200,7 +199,7 @@ module Homebrew
         end
 
         puts if i.positive?
-        next if formula_or_cask.is_a?(Formula) && skip_ineligible_formulae(formula_or_cask)
+        next if skip_ineligible_formulae(formula_or_cask)
 
         retrieve_and_display_info_and_open_pr(
           formula_or_cask,
@@ -214,13 +213,22 @@ module Homebrew
   end
 
   sig {
-    params(formula: Formula).returns(T::Boolean)
+    params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Boolean)
   }
-  def skip_ineligible_formulae(formula)
-    return false if !formula.disabled? && !formula.head_only?
+  def skip_ineligible_formulae(formula_or_cask)
+    if formula_or_cask.is_a?(Formula)
+      return false if !formula_or_cask.disabled? && !formula_or_cask.head_only?
 
-    ohai formula.name
-    puts "Formula is #{formula.disabled? ? "disabled" : "HEAD-only"}.\n"
+      name = formula_or_cask.name
+      text = "Formula is #{formula_or_cask.disabled? ? "disabled" : "HEAD-only"}.\n"
+    else
+      return false unless formula_or_cask.disabled?
+
+      name = formula_or_cask.token
+      text = "Cask is disabled.\n"
+    end
+    ohai name
+    puts text
     true
   end
 
@@ -326,6 +334,8 @@ module Homebrew
         new_version_value = if (livecheck_latest.is_a?(Version) && livecheck_latest >= current_version_value) ||
                                current_version_value == "latest"
           livecheck_latest
+        elsif livecheck_latest.is_a?(String) && livecheck_latest.start_with?("skipped")
+          "skipped"
         elsif repology_latest.is_a?(Version) &&
               repology_latest > current_version_value &&
               !loaded_formula_or_cask.livecheckable? &&
@@ -429,8 +439,9 @@ module Homebrew
       "arm:   #{current_version.arm}
                           intel: #{current_version.intel}"
     else
-      current_version.general
+      current_version.general.to_s
     end
+    current_versions << " (deprecated)" if formula_or_cask.deprecated?
 
     new_versions = if version_info.multiple_versions && new_version.arm && new_version.intel
       "arm:   #{new_version.arm}
