@@ -86,7 +86,7 @@ class AbstractDownloadStrategy
   # @api private
   sig { void }
   def shutup!
-    # odeprecated "AbstractDownloadStrategy#shutup!", "AbstractDownloadStrategy#quiet!"
+    odeprecated "AbstractDownloadStrategy#shutup!", "AbstractDownloadStrategy#quiet!"
     quiet!
   end
 

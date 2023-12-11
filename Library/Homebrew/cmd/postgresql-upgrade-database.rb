@@ -24,8 +24,8 @@ module Homebrew
   def postgresql_upgrade_database
     postgresql_upgrade_database_args.parse
 
-    odeprecated "brew postgresql_upgrade_database",
-                "using new, versioned e.g. `var/postgres@14` datadir and `pg_upgrade`"
+    odisabled "brew postgresql_upgrade_database",
+              "using new, versioned e.g. `var/postgres@14` datadir and `pg_upgrade`"
 
     name = "postgresql"
     pg = Formula[name]

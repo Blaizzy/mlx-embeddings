@@ -67,14 +67,14 @@ class Tap
 
   sig { returns(CoreCaskTap) }
   def self.default_cask_tap
-    odeprecated "Tap.default_cask_tap", "CoreCaskTap.instance"
+    odisabled "Tap.default_cask_tap", "CoreCaskTap.instance"
 
     CoreCaskTap.instance
   end
 
   sig { params(force: T::Boolean).returns(T::Boolean) }
   def self.install_default_cask_tap_if_necessary(force: false)
-    odeprecated "Tap.install_default_cask_tap_if_necessary", "CoreCaskTap.ensure_installed!"
+    odisabled "Tap.install_default_cask_tap_if_necessary", "CoreCaskTap.ensure_installed!"
 
     false
   end
@@ -319,8 +319,7 @@ class Tap
       path.cd { safe_system "git", *args }
       return
     elsif (core_tap? || core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api? && !force
-      # odeprecated: move to odie in the next minor release. This may break some CI so we should give notice.
-      opoo "Tapping #{name} is no longer typically necessary.\n" \
+      odie "Tapping #{name} is no longer typically necessary.\n" \
            "Add #{Formatter.option("--force")} if you are sure you need it done."
     end
 

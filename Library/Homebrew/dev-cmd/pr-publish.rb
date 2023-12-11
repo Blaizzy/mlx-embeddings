@@ -17,9 +17,6 @@ module Homebrew
       switch "--autosquash",
              description: "If supported on the target tap, automatically reformat and reword commits " \
                           "to our preferred format."
-      switch "--no-autosquash",
-             description: "Skip automatically reformatting and rewording commits in the pull request " \
-                          "to the preferred format, even if supported on the target tap."
       switch "--large-runner",
              description: "Run the upload job on a large runner."
       flag   "--branch=",
@@ -38,8 +35,6 @@ module Homebrew
 
   def pr_publish
     args = pr_publish_args.parse
-
-    odisabled "`brew pr-publish --no-autosquash`" if args.no_autosquash?
 
     tap = Tap.fetch(args.tap || CoreTap.instance.name)
     workflow = args.workflow || "publish-commit-bottles.yml"

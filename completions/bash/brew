@@ -1714,7 +1714,6 @@ _brew_pr_automerge() {
       --debug
       --help
       --ignore-failures
-      --no-autosquash
       --publish
       --quiet
       --tap
@@ -1741,7 +1740,6 @@ _brew_pr_publish() {
       --help
       --large-runner
       --message
-      --no-autosquash
       --quiet
       --tap
       --verbose
@@ -1769,7 +1767,6 @@ _brew_pr_pull() {
       --ignore-missing-artifacts
       --keep-old
       --message
-      --no-autosquash
       --no-cherry-pick
       --no-commit
       --no-upload

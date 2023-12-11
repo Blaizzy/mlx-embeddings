@@ -1384,8 +1384,6 @@ Find pull requests that can be automatically merged using `brew pr-publish`.
   Run `brew pr-publish` on matching pull requests.
 * `--autosquash`:
   Instruct `brew pr-publish` to automatically reformat and reword commits in the pull request to the preferred format.
-* `--no-autosquash`:
-  Instruct `brew pr-publish` to skip automatically reformatting and rewording commits in the pull request to the preferred format.
 * `--ignore-failures`:
   Include pull requests that have failing status checks.
 
@@ -1396,8 +1394,6 @@ Requires write access to the repository.
 
 * `--autosquash`:
   If supported on the target tap, automatically reformat and reword commits to our preferred format.
-* `--no-autosquash`:
-  Skip automatically reformatting and rewording commits in the pull request to the preferred format, even if supported on the target tap.
 * `--large-runner`:
   Run the upload job on a large runner.
 * `--branch`:
@@ -1429,8 +1425,6 @@ Requires write access to the repository.
   If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL.
 * `--autosquash`:
   Automatically reformat and reword commits in the pull request to our preferred format.
-* `--no-autosquash`:
-  Skip automatically reformatting and rewording commits in the pull request to our preferred format.
 * `--branch-okay`:
   Do not warn if pulling to a branch besides the repository default (useful for testing).
 * `--resolve`:

@@ -19,8 +19,6 @@ class LinkageChecker
 
     @system_dylibs    = Set.new
     @broken_dylibs    = Set.new
-    @unexpected_broken_dylibs = nil
-    @unexpected_present_dylibs = nil
     @variable_dylibs  = Set.new
     @brewed_dylibs    = Hash.new { |h, k| h[k] = Set.new }
     @reverse_links    = Hash.new { |h, k| h[k] = Set.new }
@@ -65,8 +63,7 @@ class LinkageChecker
   end
 
   def display_test_output(puts_output: true, strict: false)
-    display_items "Missing libraries", broken_dylibs_with_expectations, puts_output: puts_output
-    display_items "Unused missing linkage information", unexpected_present_dylibs, puts_output: puts_output
+    display_items "Missing libraries", @broken_dylibs, puts_output: puts_output
     display_items "Broken dependencies", @broken_deps, puts_output: puts_output
     display_items "Unwanted system libraries", @unwanted_system_dylibs, puts_output: puts_output
     display_items "Conflicting libraries", @version_conflict_deps, puts_output: puts_output
@@ -81,52 +78,12 @@ class LinkageChecker
   def broken_library_linkage?(test: false, strict: false)
     raise ArgumentError, "Strict linkage checking requires test mode to be enabled." if strict && !test
 
-    issues = [@broken_deps, unexpected_broken_dylibs]
+    issues = [@broken_deps, @broken_dylibs]
     if test
-      issues += [@unwanted_system_dylibs, @version_conflict_deps, unexpected_present_dylibs]
+      issues += [@unwanted_system_dylibs, @version_conflict_deps]
       issues += [@undeclared_deps, @files_missing_rpaths, @executable_path_dylibs] if strict
     end
     issues.any?(&:present?)
-  end
-
-  def unexpected_broken_dylibs
-    return @unexpected_broken_dylibs if @unexpected_broken_dylibs
-
-    @unexpected_broken_dylibs = @broken_dylibs.reject do |broken_lib|
-      @formula.class.allowed_missing_libraries.any? do |allowed_missing_lib|
-        case allowed_missing_lib
-        when Regexp
-          allowed_missing_lib.match? broken_lib
-        when String
-          broken_lib.include? allowed_missing_lib
-        end
-      end
-    end
-  end
-
-  def unexpected_present_dylibs
-    @unexpected_present_dylibs ||= @formula.class.allowed_missing_libraries.reject do |allowed_missing_lib|
-      @broken_dylibs.any? do |broken_lib|
-        case allowed_missing_lib
-        when Regexp
-          allowed_missing_lib.match? broken_lib
-        when String
-          broken_lib.include? allowed_missing_lib
-        end
-      end
-    end
-  end
-
-  def broken_dylibs_with_expectations
-    output = {}
-    @broken_dylibs.each do |broken_lib|
-      output[broken_lib] = if unexpected_broken_dylibs.include? broken_lib
-        ["unexpected"]
-      else
-        ["expected"]
-      end
-    end
-    output
   end
 
   private

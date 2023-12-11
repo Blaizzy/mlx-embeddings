@@ -12,7 +12,7 @@ module Cask
       include Staged
 
       def suppress_move_to_applications(_options = {})
-        odeprecated "Cask::DSL#suppress_move_to_applications"
+        odisabled "Cask::DSL#suppress_move_to_applications"
       end
     end
   end

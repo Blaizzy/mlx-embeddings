@@ -124,8 +124,8 @@ class GitHubPackages
   def self.image_version_rebuild(version_rebuild)
     return version_rebuild if version_rebuild.match?(VALID_OCI_TAG_REGEX)
 
-    # odeprecated "GitHub Packages versions that do not match #{VALID_OCI_TAG_REGEX.source}",
-    #             "declaring a new `version` without these characters"
+    odeprecated "GitHub Packages versions that do not match #{VALID_OCI_TAG_REGEX.source}",
+                "declaring a new `version` without these characters"
     version_rebuild.gsub(INVALID_OCI_TAG_CHARS_REGEX, ".")
   end
 

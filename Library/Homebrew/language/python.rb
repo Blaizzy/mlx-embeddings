@@ -143,7 +143,15 @@ module Language
       # @return [Virtualenv] a {Virtualenv} instance
       def virtualenv_create(venv_root, python = "python", formula = self, system_site_packages: true,
                             without_pip: true)
-        # odeprecated "Language::Python::Virtualenv.virtualenv_create's without_pip" unless without_pip
+        # Limit deprecation to 3.12+ for now (or if we can't determine the version).
+        # Some used this argument for setuptools, which we no longer bundle since 3.12.
+        unless without_pip
+          python_version = Language::Python.major_minor_version(python)
+          if python_version.nil? || python_version.null? || python_version >= "3.12"
+            raise ArgumentError, "virtualenv_create's without_pip is deprecated starting with Python 3.12"
+          end
+        end
+
         ENV.refurbish_args
         venv = Virtualenv.new formula, venv_root, python
         venv.create(system_site_packages: system_site_packages, without_pip: without_pip)

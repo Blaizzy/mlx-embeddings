@@ -49,7 +49,7 @@ module Cask
         .returns(Pathname)
     }
     def fetch(quiet: nil, verify_download_integrity: true, timeout: nil)
-      downloader.shutup! if quiet
+      downloader.quiet! if quiet
 
       begin
         super(verify_download_integrity: false, timeout: timeout)

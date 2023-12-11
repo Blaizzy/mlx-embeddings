@@ -49,17 +49,15 @@ module Homebrew
                           "for Homebrew. This should be used when creating new formulae or casks and implies " \
                           "`--strict` and `--online`."
       switch "--new-formula",
-             # odeprecated: uncomment `replacement` to enable the `odeprecated` handling in `CLI::Parser`
-             # replacement: "--new",
-             # odeprecated: remove `args.new_formula?` calls once this is `true`
-             disable: false,
-             hidden:  true
+             replacement: "--new",
+             # odeprecated: change this to true on disable and remove `args.new_formula?` calls
+             disable:     false,
+             hidden:      true
       switch "--new-cask",
-             # odeprecated: uncomment `replacement` to enable the `odeprecated` handling in `CLI::Parser`
-             # replacement: "--new",
-             # odeprecated: remove `args.new_cask?` calls once this is `true`
-             disable: false,
-             hidden:  true
+             replacement: "--new",
+             # odeprecated: change this to true on disable and remove `args.new_formula?` calls
+             disable:     false,
+             hidden:      true
       switch "--[no-]signing",
              description: "Audit for signed apps, which are required on ARM"
       switch "--token-conflicts",
@@ -74,9 +72,6 @@ module Homebrew
       switch "--display-filename",
              description: "Prefix every line of output with the file or formula name being audited, to " \
                           "make output easy to grep."
-      switch "--display-failures-only",
-             description: "Only display casks that fail the audit. This is the default for formulae and casks.",
-             hidden:      true
       switch "--skip-style",
              description: "Skip running non-RuboCop style checks. Useful if you plan on running " \
                           "`brew style` separately. Enabled by default unless a formula is specified by name."
@@ -153,6 +148,8 @@ module Homebrew
         [Formula.all(eval_all: args.eval_all?), Cask::Cask.all]
       else
         if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
+          # This odisabled should probably stick around indefinitely,
+          # until at least we have a way to exclude error on these in the CLI parser.
           odisabled "brew audit [path ...]",
                     "brew audit [name ...]"
         end
@@ -247,13 +244,7 @@ module Homebrew
       problems[[f.full_name, path]] = errors if errors.any?
     end
 
-    if audit_casks.any?
-      require "cask/auditor"
-
-      if args.display_failures_only?
-        odisabled "`brew audit <cask> --display-failures-only`", "`brew audit <cask>` without the argument"
-      end
-    end
+    require "cask/auditor" if audit_casks.any?
 
     cask_problems = audit_casks.each_with_object({}) do |cask, problems|
       path = cask.sourcefile_path

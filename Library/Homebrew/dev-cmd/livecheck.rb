@@ -54,7 +54,7 @@ module Homebrew
       unless File.exist?(watchlist)
         previous_default_watchlist = File.expand_path("~/.brew_livecheck_watchlist")
         if File.exist?(previous_default_watchlist)
-          odeprecated "~/.brew_livecheck_watchlist", "~/.homebrew/livecheck_watchlist.txt"
+          odisabled "~/.brew_livecheck_watchlist", "~/.homebrew/livecheck_watchlist.txt"
           watchlist = previous_default_watchlist
         end
       end
