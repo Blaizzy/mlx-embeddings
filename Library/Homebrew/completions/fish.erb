@@ -228,6 +228,7 @@ __fish_brew_complete_arg 'bundle;
         and not __fish_brew_opt --file --global
     ' -l global  -d "Use \$HOME/.Brewfile"
 
+__fish_brew_complete_sub_cmd 'bundle' 'install' "Install and upgrade (by default) all dependencies from the Brewfile."
 __fish_brew_complete_sub_cmd 'bundle' 'dump'    "Write all installed casks/formulae/taps into a Brewfile"
 __fish_brew_complete_sub_cmd 'bundle' 'cleanup' "Uninstall all dependencies not listed in a Brewfile"
 __fish_brew_complete_sub_cmd 'bundle' 'check'   "Check if all dependencies are installed in a Brewfile"
