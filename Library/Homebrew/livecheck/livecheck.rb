@@ -322,9 +322,9 @@ module Homebrew
                                                                                  verbose:   verbose)
           if check_for_resources
             unless verbose
-              resource_version_info.map! do |r|
-                r.delete(:meta)
-                r
+              resource_version_info.map! do |info|
+                info.delete(:meta)
+                info
               end
             end
             latest_info[:resources] = resource_version_info
@@ -375,9 +375,9 @@ module Homebrew
           progress&.increment
           info.delete(:meta) unless verbose
           if check_for_resources && !verbose
-            resource_version_info.map! do |r|
-              r.delete(:meta)
-              r
+            resource_version_info.map! do |info|
+              info.delete(:meta)
+              info
             end
           end
           next info
