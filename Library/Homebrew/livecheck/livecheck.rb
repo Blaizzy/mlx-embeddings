@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "livecheck/constants"
@@ -18,18 +18,18 @@ module Homebrew
   module Livecheck
     module_function
 
-    GITEA_INSTANCES = %w[
+    GITEA_INSTANCES = T.let(%w[
       codeberg.org
       gitea.com
       opendev.org
       tildegit.org
-    ].freeze
+    ].freeze, T::Array[String])
 
-    GOGS_INSTANCES = %w[
+    GOGS_INSTANCES = T.let(%w[
       lolg.it
-    ].freeze
+    ].freeze, T::Array[String])
 
-    STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = [
+    STRATEGY_SYMBOLS_TO_SKIP_PREPROCESS_URL = T.let([
       :extract_plist,
       :github_latest,
       :header_match,
@@ -38,9 +38,9 @@ module Homebrew
       :sparkle,
       :xml,
       :yaml,
-    ].freeze
+    ].freeze, T::Array[Symbol])
 
-    UNSTABLE_VERSION_KEYWORDS = %w[
+    UNSTABLE_VERSION_KEYWORDS = T.let(%w[
       alpha
       beta
       bpo
@@ -49,21 +49,21 @@ module Homebrew
       prerelease
       preview
       rc
-    ].freeze
+    ].freeze, T::Array[String])
 
     sig { returns(T::Hash[Class, String]) }
     def livecheck_strategy_names
-      return @livecheck_strategy_names if defined?(@livecheck_strategy_names)
+      return T.must(@livecheck_strategy_names) if defined?(@livecheck_strategy_names)
 
       # Cache demodulized strategy names, to avoid repeating this work
-      @livecheck_strategy_names = {}
+      @livecheck_strategy_names = T.let({}, T.nilable(T::Hash[Class, String]))
       Strategy.constants.sort.each do |const_symbol|
         constant = Strategy.const_get(const_symbol)
         next unless constant.is_a?(Class)
 
-        @livecheck_strategy_names[constant] = Utils.demodulize(T.must(constant.name))
+        T.must(@livecheck_strategy_names)[constant] = Utils.demodulize(T.must(constant.name))
       end
-      @livecheck_strategy_names.freeze
+      T.must(@livecheck_strategy_names).freeze
     end
 
     # Uses `formulae_and_casks_to_check` to identify taps in use other than
@@ -83,7 +83,7 @@ module Homebrew
 
       other_taps.each_value do |tap|
         tap_strategy_path = "#{tap.path}/livecheck/strategy"
-        Dir["#{tap_strategy_path}/*.rb"].sort.each(&method(:require)) if Dir.exist?(tap_strategy_path)
+        Dir["#{tap_strategy_path}/*.rb"].sort.each { require(_1) } if Dir.exist?(tap_strategy_path)
       end
     end
 
@@ -456,7 +456,7 @@ module Homebrew
         messages:            T.nilable(T::Array[String]),
         full_name:           T::Boolean,
         verbose:             T::Boolean,
-      ).returns(Hash)
+      ).returns(T::Hash[Symbol, T.untyped])
     }
     def status_hash(package_or_resource, status_str, messages = nil, full_name: false, verbose: false)
       formula = package_or_resource if package_or_resource.is_a?(Formula)
@@ -483,7 +483,7 @@ module Homebrew
     end
 
     # Formats and prints the livecheck result for a formula/cask/resource.
-    sig { params(info: Hash, verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
+    sig { params(info: T::Hash[Symbol, T.untyped], verbose: T::Boolean, ambiguous_cask: T::Boolean).void }
     def print_latest_version(info, verbose: false, ambiguous_cask: false)
       package_or_resource_s = info[:resource].present? ? "  " : ""
       package_or_resource_s += "#{Tty.blue}#{info[:formula] || info[:cask] || info[:resource]}#{Tty.reset}"
@@ -506,7 +506,7 @@ module Homebrew
     end
 
     # Prints the livecheck result for the resources of a given Formula.
-    sig { params(info: T::Array[Hash], verbose: T::Boolean).void }
+    sig { params(info: T::Array[T::Hash[Symbol, T.untyped]], verbose: T::Boolean).void }
     def print_resources_info(info, verbose: false)
       info.each do |r_info|
         if r_info[:status] && r_info[:messages]
@@ -643,7 +643,7 @@ module Homebrew
         full_name:                  T::Boolean,
         verbose:                    T::Boolean,
         debug:                      T::Boolean,
-      ).returns(T.nilable(Hash))
+      ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
     }
     def latest_version(
       formula_or_cask,
@@ -844,6 +844,7 @@ module Homebrew
       end
       nil
     end
+
     # Identifies the latest version of a resource and returns a Hash containing the
     # version information. Returns nil if a latest version couldn't be found.
     sig {
@@ -854,7 +855,7 @@ module Homebrew
         debug:          T::Boolean,
         quiet:          T::Boolean,
         verbose:        T::Boolean,
-      ).returns(Hash)
+      ).returns(T::Hash[Symbol, T.untyped])
     }
     def resource_version(
       resource,
