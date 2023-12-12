@@ -33,9 +33,6 @@ module Homebrew
 
     ENV["BUNDLE_WITH"] = Homebrew.valid_gem_groups.join(":")
 
-    # System Ruby does not pick up the correct SDK by default.
-    ENV["SDKROOT"] = MacOS.sdk_path if ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]
-
     ohai "cd #{HOMEBREW_LIBRARY_PATH}"
     HOMEBREW_LIBRARY_PATH.cd do
       if args.update

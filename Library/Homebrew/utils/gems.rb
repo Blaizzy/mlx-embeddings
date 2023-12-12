@@ -177,14 +177,6 @@ module Homebrew
   def user_gem_groups
     @user_gem_groups ||= if GEM_GROUPS_FILE.exist?
       GEM_GROUPS_FILE.readlines(chomp: true)
-    elsif RUBY_VERSION < "2.7"
-      # Backwards compatibility. This elsif block removed by the end of 2023.
-      # We will not support this in Ruby >=2.7.
-      require "settings"
-      groups = Homebrew::Settings.read(:gemgroups)&.split(";") || []
-      write_user_gem_groups(groups)
-      Homebrew::Settings.delete(:gemgroups)
-      groups
     else
       []
     end
@@ -213,14 +205,7 @@ module Homebrew
   end
 
   def forget_user_gem_groups!
-    if GEM_GROUPS_FILE.exist?
-      GEM_GROUPS_FILE.truncate(0)
-    elsif RUBY_VERSION < "2.7"
-      # Backwards compatibility. This else block can be removed by the end of 2023.
-      # We will not support this in Ruby >=2.7.
-      require "settings"
-      Homebrew::Settings.delete(:gemgroups)
-    end
+    GEM_GROUPS_FILE.truncate(0) if GEM_GROUPS_FILE.exist?
     @user_gem_groups = []
   end
 
@@ -239,7 +224,6 @@ module Homebrew
     old_bundle_gemfile = ENV.fetch("BUNDLE_GEMFILE", nil)
     old_bundle_with = ENV.fetch("BUNDLE_WITH", nil)
     old_bundle_frozen = ENV.fetch("BUNDLE_FROZEN", nil)
-    old_sdkroot = ENV.fetch("SDKROOT", nil)
 
     invalid_groups = groups - valid_gem_groups
     raise ArgumentError, "Invalid gem groups: #{invalid_groups.join(", ")}" unless invalid_groups.empty?
@@ -266,13 +250,6 @@ module Homebrew
     ENV["BUNDLE_GEMFILE"] = gemfile
     ENV["BUNDLE_WITH"] = groups.join(" ")
     ENV["BUNDLE_FROZEN"] = "true"
-
-    # System Ruby does not pick up the correct SDK by default.
-    if ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"]
-      macos_major = ENV.fetch("HOMEBREW_MACOS_VERSION").partition(".").first
-      sdkroot = "/Library/Developer/CommandLineTools/SDKs/MacOSX#{macos_major}.sdk"
-      ENV["SDKROOT"] = sdkroot if Dir.exist?(sdkroot)
-    end
 
     if @bundle_installed_groups != groups
       bundle = File.join(find_in_path("bundle"), "bundle")
@@ -367,6 +344,5 @@ module Homebrew
       ENV["BUNDLE_WITH"] = old_bundle_with
       ENV["BUNDLE_FROZEN"] = old_bundle_frozen
     end
-    ENV["SDKROOT"] = old_sdkroot
   end
 end
