@@ -68,7 +68,6 @@
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/file/atomic.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/deep_merge.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/deep_transform_values.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/except.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/keys.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/slice.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/deep_dup.rb
