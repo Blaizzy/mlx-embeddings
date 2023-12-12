@@ -1743,10 +1743,12 @@ __fish_brew_complete_arg 'bundle;
         and not __fish_brew_opt --file --global
     ' -l global  -d "Use \$HOME/.Brewfile"
 
+__fish_brew_complete_sub_cmd 'bundle' 'install' "Install and upgrade (by default) all dependencies from the Brewfile."
 __fish_brew_complete_sub_cmd 'bundle' 'dump'    "Write all installed casks/formulae/taps into a Brewfile"
 __fish_brew_complete_sub_cmd 'bundle' 'cleanup' "Uninstall all dependencies not listed in a Brewfile"
 __fish_brew_complete_sub_cmd 'bundle' 'check'   "Check if all dependencies are installed in a Brewfile"
 __fish_brew_complete_sub_cmd 'bundle' 'exec'    "Run an external command in an isolated build environment"
+__fish_brew_complete_sub_cmd 'bundle' 'list'    "List all dependencies present in the Brewfile."
 
 # --force is available only for the dump/cleanup subcommands
 __fish_brew_complete_sub_arg 'bundle' 'dump cleanup' -l force -d "Uninstall dependencies or overwrite an existing Brewfile"
