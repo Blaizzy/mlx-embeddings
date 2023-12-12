@@ -585,9 +585,6 @@ then
       HOMEBREW_FORCE_BREWED_GIT="1"
     fi
   fi
-
-  # System Ruby usage is deprecated. TODO: clean this up once 2.6 is fully ditched.
-  unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 else
   HOMEBREW_PRODUCT="${HOMEBREW_SYSTEM}brew"
   # Don't try to follow /etc/os-release
@@ -651,7 +648,6 @@ Your Git executable: $(unset git && type -p "${HOMEBREW_GIT}")"
   fi
 
   HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION="2.13"
-  unset HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 
   HOMEBREW_CORE_REPOSITORY_ORIGIN="$("${HOMEBREW_GIT}" -C "${HOMEBREW_CORE_REPOSITORY}" remote get-url origin 2>/dev/null)"
   if [[ "${HOMEBREW_CORE_REPOSITORY_ORIGIN}" =~ (/linuxbrew|Linuxbrew/homebrew)-core(\.git)?$ ]]
@@ -742,7 +738,6 @@ export HOMEBREW_USER_AGENT
 export HOMEBREW_USER_AGENT_CURL
 export HOMEBREW_API_DEFAULT_DOMAIN
 export HOMEBREW_BOTTLE_DEFAULT_DOMAIN
-export HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH
 export HOMEBREW_CURL_SPEED_LIMIT
 export HOMEBREW_CURL_SPEED_TIME
 

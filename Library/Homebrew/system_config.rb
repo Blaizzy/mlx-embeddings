@@ -93,18 +93,8 @@ module SystemConfig
     end
 
     sig { returns(String) }
-    def describe_homebrew_ruby_version
-      case RUBY_VERSION
-      when /^1\.[89]/, /^2\.0/
-        "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
-      else
-        RUBY_VERSION
-      end
-    end
-
-    sig { returns(String) }
     def describe_homebrew_ruby
-      "#{describe_homebrew_ruby_version} => #{RUBY_PATH}"
+      "#{RUBY_VERSION} => #{RUBY_PATH}"
     end
 
     sig { returns(T.nilable(String)) }

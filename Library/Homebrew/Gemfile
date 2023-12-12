@@ -81,8 +81,3 @@ gem "plist"
 gem "ruby-macho"
 gem "sorbet-runtime"
 gem "warning"
-
-# TODO: remove when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
-install_if -> { RUBY_VERSION < "2.7" } do
-  gem "did_you_mean"
-end

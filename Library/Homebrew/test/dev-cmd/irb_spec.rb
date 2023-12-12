@@ -30,7 +30,7 @@ describe "brew irb" do
       # TODO: newer Ruby only supports history saving in interactive sessions
       # and not if you feed in data from a file or stdin like we are doing here.
       # The test will need to be adjusted for this to work.
-      expect(history_file).to exist if RUBY_VERSION < "2.7"
+      # expect(history_file).to exist
     end
   end
 end

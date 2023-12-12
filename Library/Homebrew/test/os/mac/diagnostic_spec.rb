@@ -30,17 +30,6 @@ describe Homebrew::Diagnostic::Checks do
       .to match("Xcode alone is not sufficient on El Capitan")
   end
 
-  specify "#check_ruby_version" do
-    macos_version = MacOSVersion.new("10.12")
-    allow(OS::Mac).to receive(:version).and_return(macos_version)
-    allow(OS::Mac).to receive(:full_version).and_return(macos_version)
-    stub_const("RUBY_VERSION", "1.8.6")
-    ENV["HOMEBREW_MACOS_SYSTEM_RUBY_NEW_ENOUGH"] = "1"
-
-    expect(checks.check_ruby_version)
-      .to match "Ruby version 1.8.6 is unsupported on macOS 10.12"
-  end
-
   describe "#check_if_supported_sdk_available" do
     let(:macos_version) { MacOSVersion.new("11") }
 
