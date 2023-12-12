@@ -5,8 +5,6 @@ require "cli/parser"
 require "utils/github"
 require "manpages"
 
-require "active_support/core_ext/hash/slice"
-
 module Homebrew
   module_function
 
@@ -39,7 +37,7 @@ module Homebrew
 
     sentences = {}
     members.each do |group, hash|
-      hash.slice!(*public_members)
+      hash.replace(hash.slice(*public_members))
       hash.each { |login, name| hash[login] = "[#{name}](https://github.com/#{login})" }
       sentences[group] = hash.values.sort.to_sentence
     end
