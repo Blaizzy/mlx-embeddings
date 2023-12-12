@@ -321,7 +321,12 @@ module Homebrew
           latest_info = status_hash(formula_or_cask, "error", [no_versions_msg], full_name: use_full_name,
                                                                                  verbose:   verbose)
           if check_for_resources
-            resource_version_info.map! { |r| r.except!(:meta) } unless verbose
+            unless verbose
+              resource_version_info.map! do |r|
+                r.delete(:meta)
+                r
+              end
+            end
             latest_info[:resources] = resource_version_info
           end
 
@@ -368,8 +373,13 @@ module Homebrew
 
         if json
           progress&.increment
-          info.except!(:meta) unless verbose
-          resource_version_info.map! { |r| r.except!(:meta) } if check_for_resources && !verbose
+          info.delete(:meta) unless verbose
+          if check_for_resources && !verbose
+            resource_version_info.map! do |r|
+              r.delete(:meta)
+              r
+            end
+          end
           next info
         end
         puts if debug
