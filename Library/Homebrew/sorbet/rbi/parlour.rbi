@@ -111,12 +111,6 @@ class Formula
   def compiler_failures(*args, **options, &block); end
 
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
-  def plist_manual(*args, **options, &block); end
-
-  sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
-  def plist_startup(*args, **options, &block); end
-
-  sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
   def pour_bottle_check_unsatisfied_reason(*args, **options, &block); end
 
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
