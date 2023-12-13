@@ -777,6 +777,50 @@ module Homebrew
       end
     end
 
+    def audit_stable_version
+      return unless @git
+      return unless formula.tap # skip formula not from core or any taps
+      return unless formula.tap.git? # git log is required
+      return if formula.stable.blank?
+
+      current_version = formula.stable.version
+      current_version_scheme = formula.version_scheme
+      current_revision = formula.revision
+
+      previous_version = T.let(nil, T.nilable(Version))
+      previous_version_scheme = T.let(nil, T.nilable(Integer))
+      previous_revision = T.let(nil, T.nilable(Integer))
+
+      newest_committed_version = T.let(nil, T.nilable(Version))
+
+      fv = FormulaVersions.new(formula)
+      fv.rev_list("origin/HEAD") do |revision, path|
+        begin
+          fv.formula_at_revision(revision, path) do |f|
+            stable = f.stable
+            next if stable.blank?
+
+            previous_version = stable.version
+            previous_version_scheme = f.version_scheme
+            previous_revision = f.revision
+
+            newest_committed_version ||= previous_version
+          end
+        rescue MacOSVersion::Error
+          break
+        end
+
+        break if previous_version && current_version != previous_version
+        break if previous_revision && current_revision != previous_revision
+      end
+
+      if !newest_committed_version.nil? &&
+         current_version < newest_committed_version &&
+         current_version_scheme == previous_version_scheme
+        problem "stable version should not decrease (from #{newest_committed_version} to #{current_version})"
+      end
+    end
+
     def audit_revision_and_version_scheme
       new_formula_problem("New formulae should not define a revision.") if @new_formula && !formula.revision.zero?
 
@@ -784,8 +828,6 @@ module Homebrew
       return unless formula.tap # skip formula not from core or any taps
       return unless formula.tap.git? # git log is required
       return if formula.stable.blank?
-
-      fv = FormulaVersions.new(formula)
 
       current_version = formula.stable.version
       current_checksum = formula.stable.checksum
@@ -802,6 +844,7 @@ module Homebrew
       newest_committed_revision = T.let(nil, T.nilable(Integer))
       newest_committed_url = T.let(nil, T.nilable(String))
 
+      fv = FormulaVersions.new(formula)
       fv.rev_list("origin/HEAD") do |revision, path|
         begin
           fv.formula_at_revision(revision, path) do |f|
@@ -835,12 +878,6 @@ module Homebrew
           "please create an issue upstream to rule out malicious " \
           "circumstances and to find out why the file changed.",
         )
-      end
-
-      if !newest_committed_version.nil? &&
-         current_version < newest_committed_version &&
-         current_version_scheme == previous_version_scheme
-        problem "stable version should not decrease (from #{newest_committed_version} to #{current_version})"
       end
 
       unless previous_version_scheme.nil?
