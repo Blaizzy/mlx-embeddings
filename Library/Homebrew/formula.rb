@@ -1950,6 +1950,13 @@ class Formula
     end
   end
 
+  # An array of all currently installed formula names.
+  # @private
+  sig { returns(T::Array[String]) }
+  def self.installed_formula_names
+    racks.map(&:basename).map(&:to_s)
+  end
+
   # An array of all installed {Formula}
   # @private
   def self.installed
