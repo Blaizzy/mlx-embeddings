@@ -73,8 +73,8 @@ module Homebrew
       other_taps = {}
       formulae_and_casks_to_check.each do |formula_or_cask|
         next if formula_or_cask.tap.blank?
-        next if formula_or_cask.tap.name == CoreTap.instance.name
-        next if formula_or_cask.tap.name == "homebrew/cask"
+        next if formula_or_cask.tap.core_tap?
+        next if formula_or_cask.tap.core_cask_tap?
         next if other_taps[formula_or_cask.tap.name]
 
         other_taps[formula_or_cask.tap.name] = formula_or_cask.tap
