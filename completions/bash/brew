@@ -2562,7 +2562,6 @@ _brew_upgrade() {
       --greedy-auto-updates
       --greedy-latest
       --help
-      --ignore-pinned
       --input-methoddir
       --interactive
       --internet-plugindir

@@ -337,7 +337,7 @@ module Homebrew
 
       if pinned_dependents.present?
         plural = Utils.pluralize("dependent", pinned_dependents.count)
-        ohai "Not upgrading #{pinned_dependents.count} pinned #{plural}:"
+        opoo "Not upgrading #{pinned_dependents.count} pinned #{plural}:"
         puts(pinned_dependents.map do |f|
           "#{f.full_specified_name} #{f.pkg_version}"
         end.join(", "))

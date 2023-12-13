@@ -62,6 +62,7 @@ module Homebrew
         }],
         [:switch, "--ignore-pinned", {
           description: "Set a successful exit status even if pinned formulae are not upgraded.",
+          hidden:      true,
         }],
         [:switch, "--keep-tmp", {
           description: "Retain the temporary files created during installation.",
@@ -125,6 +126,9 @@ module Homebrew
   sig { void }
   def upgrade
     args = upgrade_args.parse
+
+    # Deprecated since this is now the default behavior.
+    odeprecated "`brew upgrade --ignore-pinned`" if args.ignore_pinned?
 
     formulae, casks = args.named.to_resolved_formulae_to_casks
     # If one or more formulae are specified, but no casks were
@@ -191,8 +195,11 @@ module Homebrew
       end
     end
 
-    if !pinned.empty? && !args.ignore_pinned?
-      ofail "Not upgrading #{pinned.count} pinned #{Utils.pluralize("package", pinned.count)}:"
+    if pinned.any?
+      Kernel.public_send(
+        formulae.any? ? :ofail : :opoo, # only fail when pinned formulae are named explicitly
+        "Not upgrading #{pinned.count} pinned #{Utils.pluralize("package", pinned.count)}:",
+      )
       puts pinned.map { |f| "#{f.full_specified_name} #{f.pkg_version}" } * ", "
     end
 
