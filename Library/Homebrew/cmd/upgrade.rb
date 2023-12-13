@@ -128,7 +128,7 @@ module Homebrew
     args = upgrade_args.parse
 
     # Deprecated since this is now the default behavior.
-    # odeprecated "`brew upgrade --ignore-pinned`" if args.ignore_pinned?
+    odeprecated "`brew upgrade --ignore-pinned`" if args.ignore_pinned?
 
     formulae, casks = args.named.to_resolved_formulae_to_casks
     # If one or more formulae are specified, but no casks were
