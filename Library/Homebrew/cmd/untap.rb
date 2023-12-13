@@ -40,7 +40,9 @@ module Homebrew
             next
           end
 
-          formula if formula.any_version_installed?
+          # Can't use Formula#any_version_installed? because it doesn't consider
+          # taps correctly.
+          formula if formula.installed_kegs.any? { |keg| keg.tab.tap == tap }
         end.compact
 
         installed_cask_tokens = T.let(nil, T.nilable(T::Set[String]))
