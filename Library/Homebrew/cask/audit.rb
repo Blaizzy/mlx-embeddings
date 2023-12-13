@@ -793,7 +793,7 @@ module Cask
 
     sig { void }
     def audit_cask_path
-      return if cask.tap != "homebrew/cask"
+      return unless cask.tap.core_cask_tap?
 
       expected_path = cask.tap.new_cask_path(cask.token)
 
