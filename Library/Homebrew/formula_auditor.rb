@@ -37,6 +37,8 @@ module Homebrew
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
       @tap_audit = options[:tap_audit]
+      @previous_committed = {}
+      @newest_committed = {}
     end
 
     def audit_style
@@ -785,39 +787,13 @@ module Homebrew
 
       current_version = formula.stable.version
       current_version_scheme = formula.version_scheme
-      current_revision = formula.revision
 
-      previous_version = T.let(nil, T.nilable(Version))
-      previous_version_scheme = T.let(nil, T.nilable(Integer))
-      previous_revision = T.let(nil, T.nilable(Integer))
+      previous_committed, newest_committed = committed_version_info
 
-      newest_committed_version = T.let(nil, T.nilable(Version))
-
-      fv = FormulaVersions.new(formula)
-      fv.rev_list("origin/HEAD") do |revision, path|
-        begin
-          fv.formula_at_revision(revision, path) do |f|
-            stable = f.stable
-            next if stable.blank?
-
-            previous_version = stable.version
-            previous_version_scheme = f.version_scheme
-            previous_revision = f.revision
-
-            newest_committed_version ||= previous_version
-          end
-        rescue MacOSVersion::Error
-          break
-        end
-
-        break if previous_version && current_version != previous_version
-        break if previous_revision && current_revision != previous_revision
-      end
-
-      if !newest_committed_version.nil? &&
-         current_version < newest_committed_version &&
-         current_version_scheme == previous_version_scheme
-        problem "stable version should not decrease (from #{newest_committed_version} to #{current_version})"
+      if !newest_committed[:version].nil? &&
+         current_version < newest_committed[:version] &&
+         current_version_scheme == previous_committed[:version_scheme]
+        problem "stable version should not decrease (from #{newest_committed[:version]} to #{current_version})"
       end
     end
 
@@ -835,44 +811,12 @@ module Homebrew
       current_revision = formula.revision
       current_url = formula.stable.url
 
-      previous_version = T.let(nil, T.nilable(Version))
-      previous_version_scheme = T.let(nil, T.nilable(Integer))
-      previous_revision = T.let(nil, T.nilable(Integer))
+      previous_committed, newest_committed = committed_version_info
 
-      newest_committed_version = T.let(nil, T.nilable(Version))
-      newest_committed_checksum = T.let(nil, T.nilable(String))
-      newest_committed_revision = T.let(nil, T.nilable(Integer))
-      newest_committed_url = T.let(nil, T.nilable(String))
-
-      fv = FormulaVersions.new(formula)
-      fv.rev_list("origin/HEAD") do |revision, path|
-        begin
-          fv.formula_at_revision(revision, path) do |f|
-            stable = f.stable
-            next if stable.blank?
-
-            previous_version = stable.version
-            previous_checksum = stable.checksum
-            previous_version_scheme = f.version_scheme
-            previous_revision = f.revision
-
-            newest_committed_version ||= previous_version
-            newest_committed_checksum ||= previous_checksum
-            newest_committed_revision ||= previous_revision
-            newest_committed_url ||= stable.url
-          end
-        rescue MacOSVersion::Error
-          break
-        end
-
-        break if previous_version && current_version != previous_version
-        break if previous_revision && current_revision != previous_revision
-      end
-
-      if current_version == newest_committed_version &&
-         current_url == newest_committed_url &&
-         current_checksum != newest_committed_checksum &&
-         current_checksum.present? && newest_committed_checksum.present?
+      if current_version == newest_committed[:version] &&
+         current_url == newest_committed[:url] &&
+         current_checksum != newest_committed[:checksum] &&
+         current_checksum.present? && newest_committed[:checksum].present?
         problem(
           "stable sha256 changed without the url/version also changing; " \
           "please create an issue upstream to rule out malicious " \
@@ -880,27 +824,27 @@ module Homebrew
         )
       end
 
-      unless previous_version_scheme.nil?
-        if current_version_scheme < previous_version_scheme
-          problem "version_scheme should not decrease (from #{previous_version_scheme} " \
+      unless previous_committed[:version_scheme].nil?
+        if current_version_scheme < previous_committed[:version_scheme]
+          problem "version_scheme should not decrease (from #{previous_committed[:version_scheme]} " \
                   "to #{current_version_scheme})"
-        elsif current_version_scheme > (previous_version_scheme + 1)
+        elsif current_version_scheme > (previous_committed[:version_scheme] + 1)
           problem "version_schemes should only increment by 1"
         end
       end
 
-      if (previous_version != newest_committed_version ||
-         current_version != newest_committed_version) &&
+      if (previous_committed[:version] != newest_committed[:version] ||
+         current_version != newest_committed[:version]) &&
          !current_revision.zero? &&
-         current_revision == newest_committed_revision &&
-         current_revision == previous_revision
+         current_revision == newest_committed[:revision] &&
+         current_revision == previous_committed[:revision]
         problem "'revision #{current_revision}' should be removed"
-      elsif current_version == previous_version &&
-            !previous_revision.nil? &&
-            current_revision < previous_revision
-        problem "revision should not decrease (from #{previous_revision} to #{current_revision})"
-      elsif newest_committed_revision &&
-            current_revision > (newest_committed_revision + 1)
+      elsif current_version == previous_committed[:version] &&
+            !previous_committed[:revision].nil? &&
+            current_revision < previous_committed[:revision]
+        problem "revision should not decrease (from #{previous_committed[:revision]} to #{current_revision})"
+      elsif newest_committed[:revision] &&
+            current_revision > (newest_committed[:revision] + 1)
         problem "revisions should only increment by 1"
       end
     end
@@ -1007,6 +951,47 @@ module Homebrew
       end
 
       true
+    end
+
+    def committed_version_info
+      return [] unless @git
+      return [] unless formula.tap # skip formula not from core or any taps
+      return [] unless formula.tap.git? # git log is required
+      return [] if formula.stable.blank?
+      return [@previous_committed, @newest_committed] if @previous_committed.present? || @newest_committed.present?
+
+      current_version = formula.stable.version
+      current_revision = formula.revision
+
+      fv = FormulaVersions.new(formula)
+      fv.rev_list("origin/HEAD") do |revision, path|
+        begin
+          fv.formula_at_revision(revision, path) do |f|
+            stable = f.stable
+            next if stable.blank?
+
+            @previous_committed[:version] = stable.version
+            @previous_committed[:checksum] = stable.checksum
+            @previous_committed[:version_scheme] = f.version_scheme
+            @previous_committed[:revision] = f.revision
+
+            @newest_committed[:version] ||= @previous_committed[:version]
+            @newest_committed[:checksum] ||= @previous_committed[:checksum]
+            @newest_committed[:revision] ||= @previous_committed[:revision]
+            @newest_committed[:url] ||= stable.url
+          end
+        rescue MacOSVersion::Error
+          break
+        end
+
+        break if @previous_committed[:version] && current_version != @previous_committed[:version]
+        break if @previous_committed[:revision] && current_revision != @previous_committed[:revision]
+      end
+
+      @previous_committed.compact!
+      @newest_committed.compact!
+
+      [@previous_committed, @newest_committed]
     end
   end
 end
