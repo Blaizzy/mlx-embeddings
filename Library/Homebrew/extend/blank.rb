@@ -133,12 +133,9 @@ end
 
 class String
   BLANK_RE = /\A[[:space:]]*\z/.freeze
-  # This is a cache that is intentionally mutable
-  # rubocop:disable Style/MutableConstant
   ENCODED_BLANKS_ = T.let(Hash.new do |h, enc|
     h[enc] = Regexp.new(BLANK_RE.source.encode(enc), BLANK_RE.options | Regexp::FIXEDENCODING)
   end, T::Hash[Encoding, Regexp])
-  # rubocop:enable Style/MutableConstant
 
   # A string is blank if it's empty or contains whitespaces only:
   #

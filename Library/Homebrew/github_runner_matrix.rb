@@ -5,8 +5,6 @@ require "test_runner_formula"
 require "github_runner"
 
 class GitHubRunnerMatrix
-  # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
-  # rubocop:disable Style/MutableConstant
   RunnerSpec = T.type_alias { T.any(LinuxRunnerSpec, MacOSRunnerSpec) }
   private_constant :RunnerSpec
 
@@ -27,7 +25,6 @@ class GitHubRunnerMatrix
 
   RunnerSpecHash = T.type_alias { T.any(LinuxRunnerSpecHash, MacOSRunnerSpecHash) }
   private_constant :RunnerSpecHash
-  # rubocop:enable Style/MutableConstant
 
   sig { returns(T::Array[GitHubRunner]) }
   attr_reader :runners

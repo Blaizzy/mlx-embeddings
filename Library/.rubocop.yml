@@ -12,7 +12,7 @@ inherit_mode:
     - Exclude
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.1
   ActiveSupportExtensionsEnabled: true
   NewCops: enable
   Include:
@@ -386,9 +386,10 @@ Style/InvertibleUnlessCondition:
     # Don't require non-standard `exclude?` (for now at least) - it's not available in every file
     # :include?:
 
-# would rather freeze too much than too little
+# TODO: Enable this cop again once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
+# From the RuboCop docs: "NOTE: Regexp and Range literals are frozen objects since Ruby 3.0."
 Style/MutableConstant:
-  EnforcedStyle: strict
+  Enabled: false
 
 # Zero-prefixed octal literals are widely used and understood.
 Style/NumericLiteralPrefix:
@@ -469,3 +470,21 @@ Style/UnlessLogicalOperators:
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
+
+# TODO: Enable these cops once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
+Lint/RedundantDirGlobSort:
+  Enabled: false
+Naming/BlockForwarding:
+  Enabled: false
+Performance/BindCall:
+  Enabled: false
+Performance/MapCompact:
+  Enabled: false
+Style/ArgumentsForwarding:
+  Enabled: false
+Style/ArrayIntersect:
+  Enabled: false
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either
+Style/RedundantFreeze:
+  Enabled: false
