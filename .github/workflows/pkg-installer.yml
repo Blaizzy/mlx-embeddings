@@ -147,7 +147,7 @@ jobs:
           #   name: macos-14-arm64
     steps:
       - name: Download installer from GitHub Actions
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: "${{ needs.build.outputs.installer_path }}"
 
@@ -193,7 +193,7 @@ jobs:
       contents: write
     steps:
       - name: Download installer from GitHub Actions
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: "${{ needs.build.outputs.installer_path }}"
 
