@@ -11,11 +11,11 @@ describe Version do
 
   describe Version::Token do
     specify "#inspect" do
-      expect(described_class.new("foo").inspect).to eq('#<Version::Token "foo">')
+      expect(described_class.create("foo").inspect).to eq('#<Version::StringToken "foo">')
     end
 
     specify "#to_s" do
-      expect(described_class.new("foo").to_s).to eq("foo")
+      expect(described_class.create("foo").to_s).to eq("foo")
     end
 
     it "can be compared against nil" do
@@ -42,7 +42,7 @@ describe Version do
 
     describe "#to_str" do
       it "implicitly converts token to string" do
-        expect(String.try_convert(described_class.new("foo"))).not_to be_nil
+        expect(String.try_convert(described_class.create("foo"))).not_to be_nil
       end
     end
   end

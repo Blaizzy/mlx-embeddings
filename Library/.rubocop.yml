@@ -253,8 +253,8 @@ RSpec/DescribeClass:
   Enabled: false
 RSpec/FilePath:
   Enabled: false
-# RSpec/SpecFilePathFormat:
-#   Enabled: false
+RSpec/SpecFilePathFormat:
+  Enabled: false
 RSpec/StubbedMock:
   Enabled: false
 RSpec/SubjectStub:
@@ -384,7 +384,7 @@ Style/InvertibleUnlessCondition:
     # Unset this (prefer `unless a.zero?` over `if a.nonzero?`)
     :zero?:
     # Don't require non-standard `exclude?` (for now at least) - it's not available in every file
-    # :include?:
+    :include?:
 
 # TODO: Enable this cop again once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
 # From the RuboCop docs: "NOTE: Regexp and Range literals are frozen objects since Ruby 3.0."
@@ -442,8 +442,8 @@ Style/StringMethods:
   Enabled: true
 
 # Treating this the same as Style/MethodCallWithArgsParentheses
-# Style/SuperWithArgsParentheses:
-#   Enabled: false
+Style/SuperWithArgsParentheses:
+  Enabled: false
 
 # An array of symbols is more readable than a symbol array
 # and also allows for easier grepping.

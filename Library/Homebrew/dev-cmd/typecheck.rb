@@ -46,14 +46,9 @@ module Homebrew
     HOMEBREW_LIBRARY_PATH.cd do
       if update
         excluded_gems = [
-          "did_you_mean", # RBI file is already provided by Sorbet
           "json", # RBI file is already provided by Sorbet
-          "sorbet-static-and-runtime", # Unnecessary RBI - remove this entry with Tapioca 0.8
         ]
-        typed_overrides = [
-          "msgpack:false", # Investigate removing this with Tapioca 0.8
-        ]
-        tapioca_args = ["--exclude", *excluded_gems, "--typed-overrides", *typed_overrides]
+        tapioca_args = ["--exclude", *excluded_gems, "--pre", "sorbet/tapioca/prerequire.rb"]
         tapioca_args << "--all" if args.update_all?
 
         ohai "Updating homegrown RBI files..."
@@ -63,13 +58,23 @@ module Homebrew
         ohai "Updating Tapioca RBI files..."
         safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
         safe_system "bundle", "exec", "parlour"
+
         safe_system({ "RUBYLIB" => "#{HOMEBREW_LIBRARY_PATH}/sorbet/hidden_definitions_hacks" },
                     "bundle", "exec", "srb", "rbi", "hidden-definitions")
-        safe_system "bundle", "exec", "tapioca", "todo"
+        # HACK: we'll phase out hidden-definitions soon
+        tmp_file = "sorbet/rbi/hidden-definitions/hidden.rbi.tmp"
+        orig_file = "sorbet/rbi/hidden-definitions/hidden.rbi"
+        File.open(tmp_file, "w") do |out_file|
+          File.foreach(orig_file) do |line|
+            out_file.puts line unless line.include?("def self.new(*args, **arg, &blk); end")
+          end
+        end
+        File.rename(tmp_file, orig_file)
 
         if args.suggest_typed?
           ohai "Bumping Sorbet `typed` sigils..."
-          safe_system "bundle", "exec", "spoom", "bump"
+          # --sorbet needed because of https://github.com/Shopify/spoom/issues/488
+          safe_system "bundle", "exec", "spoom", "bump", "--dry", "--sorbet", "#{Gem.bin_path("sorbet", "srb")} tc"
         end
 
         return

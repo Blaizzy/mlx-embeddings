@@ -7,9 +7,6 @@ dependency_require_map = {
   "ruby-macho"    => "macho",
 }.freeze
 
-# Don't start coverage tracking automatically
-ENV["SIMPLECOV_NO_DEFAULTS"] = "1"
-
 # Freeze lockfile
 Bundler.settings.set_command_option(:frozen, "1")
 

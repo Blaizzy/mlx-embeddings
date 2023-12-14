@@ -9,7 +9,6 @@ describe "RuboCop" do
         allowlist = %w[
           HOMEBREW_TESTS
           HOMEBREW_USE_RUBY_FROM_PATH
-          HOMEBREW_RUBY3
         ]
         ENV.delete(key) if key.start_with?("HOMEBREW_") && allowlist.exclude?(key)
       end

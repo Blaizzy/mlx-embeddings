@@ -2,9 +2,6 @@
 # When bumping to a new major/minor version, also update the bounds in the Gemfile
 export HOMEBREW_REQUIRED_RUBY_VERSION=3.1
 
-# TODO: remove this after we want Dependabot to point to 3.1 minimum
-export HOMEBREW_RUBY3="1"
-
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
 test_ruby() {

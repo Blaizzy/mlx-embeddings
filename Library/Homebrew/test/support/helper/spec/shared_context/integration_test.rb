@@ -81,7 +81,6 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
       "HOMEBREW_TEST_TMPDIR"        => TEST_TMPDIR,
       "HOMEBREW_DEV_CMD_RUN"        => "true",
       "HOMEBREW_USE_RUBY_FROM_PATH" => ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", nil),
-      "HOMEBREW_RUBY3"              => ENV.fetch("HOMEBREW_RUBY3", nil),
       "GEM_HOME"                    => nil,
     )
 
@@ -121,7 +120,6 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
   def brew_sh(*args)
     env = {
       "HOMEBREW_USE_RUBY_FROM_PATH" => ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", nil),
-      "HOMEBREW_RUBY3"              => ENV.fetch("HOMEBREW_RUBY3", nil),
     }
     Bundler.with_unbundled_env do
       stdout, stderr, status = Open3.capture3(env, "#{ENV.fetch("HOMEBREW_PREFIX")}/bin/brew", *args)
