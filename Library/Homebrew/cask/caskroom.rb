@@ -25,7 +25,7 @@ module Cask
     # Return all tokens for installed casks.
     sig { returns(T::Array[String]) }
     def self.tokens
-      paths.map(&:basename).map(&:to_s)
+      paths.map { |path| path.basename.to_s }
     end
 
     sig { returns(T::Boolean) }

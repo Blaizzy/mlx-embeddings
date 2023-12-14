@@ -118,7 +118,7 @@ module Utils
       # anything that isn't a known safe character is padded
       str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
       # newlines have to be specially quoted in csh
-      str.gsub!(/\n/, "'\\\n'")
+      str.gsub!("\n", "'\\\n'")
       str
     end
 
@@ -131,7 +131,7 @@ module Utils
       str = str.dup
       # anything that isn't a known safe character is padded
       str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
-      str.gsub!(/\n/, "'\n'")
+      str.gsub!("\n", "'\n'")
       str
     end
   end

@@ -253,6 +253,8 @@ RSpec/DescribeClass:
   Enabled: false
 RSpec/FilePath:
   Enabled: false
+# RSpec/SpecFilePathFormat:
+#   Enabled: false
 RSpec/StubbedMock:
   Enabled: false
 RSpec/SubjectStub:
@@ -381,6 +383,8 @@ Style/InvertibleUnlessCondition:
     :==: :!=
     # Unset this (prefer `unless a.zero?` over `if a.nonzero?`)
     :zero?:
+    # Don't require non-standard `exclude?` (for now at least) - it's not available in every file
+    # :include?:
 
 # would rather freeze too much than too little
 Style/MutableConstant:
@@ -435,6 +439,10 @@ Style/StringLiteralsInInterpolation:
 # Use consistent method names.
 Style/StringMethods:
   Enabled: true
+
+# Treating this the same as Style/MethodCallWithArgsParentheses
+# Style/SuperWithArgsParentheses:
+#   Enabled: false
 
 # An array of symbols is more readable than a symbol array
 # and also allows for easier grepping.

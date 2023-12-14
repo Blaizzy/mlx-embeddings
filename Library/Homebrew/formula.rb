@@ -1954,7 +1954,7 @@ class Formula
   # @private
   sig { returns(T::Array[String]) }
   def self.installed_formula_names
-    racks.map(&:basename).map(&:to_s)
+    racks.map { |rack| rack.basename.to_s }
   end
 
   # An array of all installed {Formula}

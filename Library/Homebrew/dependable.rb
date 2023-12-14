@@ -46,7 +46,7 @@ module Dependable
   end
 
   def prune_from_option?(build)
-    return if !optional? && !recommended?
+    return false if !optional? && !recommended?
 
     build.without?(self)
   end

@@ -97,8 +97,11 @@ module Homebrew
       end
 
       def only_formula_or_cask
-        return :formula if formula? && !cask?
-        return :cask if cask? && !formula?
+        if formula? && !cask?
+          :formula
+        elsif cask? && !formula?
+          :cask
+        end
       end
 
       sig { returns(T::Array[[Symbol, Symbol]]) }
@@ -149,7 +152,7 @@ module Homebrew
         @cli_args = []
         @processed_options.each do |short, long|
           option = long || short
-          switch = "#{option_to_name(option)}?".to_sym
+          switch = :"#{option_to_name(option)}?"
           flag = option_to_name(option).to_sym
           if @table[switch] == true || @table[flag] == true
             @cli_args << option

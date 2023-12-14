@@ -41,12 +41,12 @@ class Locale
     scanner = StringScanner.new(string)
 
     if (language = scanner.scan(LANGUAGE_REGEX))
-      sep = scanner.scan(/-/)
+      sep = scanner.scan("-")
       return if (sep && scanner.eos?) || (sep.nil? && !scanner.eos?)
     end
 
     if (script = scanner.scan(SCRIPT_REGEX))
-      sep = scanner.scan(/-/)
+      sep = scanner.scan("-")
       return if (sep && scanner.eos?) || (sep.nil? && !scanner.eos?)
     end
 

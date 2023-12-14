@@ -1020,7 +1020,6 @@ module Homebrew
         end
         resource_version_info[:meta][:regex] = regex.inspect if regex.present?
         resource_version_info[:meta][:cached] = true if strategy_data[:cached] == true
-
       rescue => e
         Homebrew.failed = true
         if json

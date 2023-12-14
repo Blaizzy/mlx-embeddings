@@ -155,7 +155,7 @@ module RuboCop
 
         def build_with_dependency_name(node)
           match_nodes = build_with_dependency_node(node)
-          match_nodes = match_nodes.to_a.delete_if(&:nil?)
+          match_nodes = match_nodes.to_a.compact
           match_nodes.map { |n| string_content(n) } unless match_nodes.empty?
         end
 

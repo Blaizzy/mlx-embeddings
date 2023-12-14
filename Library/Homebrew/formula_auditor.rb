@@ -875,7 +875,7 @@ module Homebrew
       [formula.bin, formula.sbin].each do |dir|
         next unless dir.exist?
 
-        bin_names += dir.children.map(&:basename).map(&:to_s)
+        bin_names += dir.children.map { |child| child.basename.to_s }
       end
       shell_commands = ["system", "shell_output", "pipe_output"]
       bin_names.each do |name|

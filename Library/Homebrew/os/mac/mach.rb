@@ -89,7 +89,7 @@ module MachOShim
 
   def dynamically_linked_libraries(except: :none, resolve_variable_references: true)
     lcs = macho.dylib_load_commands.reject { |lc| lc.type == except }
-    names = lcs.map(&:name).map(&:to_s).uniq
+    names = lcs.map { |lc| lc.name.to_s }.uniq
     names.map!(&method(:resolve_variable_name)) if resolve_variable_references
 
     names

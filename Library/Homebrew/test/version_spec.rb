@@ -29,9 +29,9 @@ describe Version do
     end
 
     it "can be compared against strings" do
-      expect(described_class.create("2")).to be == "2"
-      expect(described_class.create("p194")).to be == "p194"
-      expect(described_class.create("1")).to be == 1
+      expect(described_class.create("2")).to eq "2"
+      expect(described_class.create("p194")).to eq "p194"
+      expect(described_class.create("1")).to eq 1
     end
 
     specify "comparison returns nil for non-token" do
@@ -133,12 +133,12 @@ describe Version do
     end
 
     it "is equal to itself" do
-      expect(null_version).to be == described_class::NULL_TOKEN
+      expect(null_version).to eq described_class::NULL_TOKEN
     end
   end
 
   specify "comparison" do
-    expect(described_class.new("0.1")).to be == described_class.new("0.1.0")
+    expect(described_class.new("0.1")).to eq described_class.new("0.1.0")
     expect(described_class.new("0.1")).to be < described_class.new("0.2")
     expect(described_class.new("1.2.3")).to be > described_class.new("1.2.2")
     expect(described_class.new("1.2.4")).to be < described_class.new("1.2.4.1")
@@ -174,15 +174,15 @@ describe Version do
     expect(described_class.new("HEAD-abcdef")).to be > described_class.new("1.2.3")
     expect(described_class.new("1.2.3")).to be < described_class.new("HEAD")
     expect(described_class.new("1.2.3")).to be < described_class.new("HEAD-fedcba")
-    expect(described_class.new("HEAD-abcdef")).to be == described_class.new("HEAD-fedcba")
-    expect(described_class.new("HEAD")).to be == described_class.new("HEAD-fedcba")
+    expect(described_class.new("HEAD-abcdef")).to eq described_class.new("HEAD-fedcba")
+    expect(described_class.new("HEAD")).to eq described_class.new("HEAD-fedcba")
   end
 
   specify "comparing alpha versions" do
     expect(described_class.new("1.2.3alpha")).to be < described_class.new("1.2.3")
     expect(described_class.new("1.2.3")).to be < described_class.new("1.2.3a")
-    expect(described_class.new("1.2.3alpha4")).to be == described_class.new("1.2.3a4")
-    expect(described_class.new("1.2.3alpha4")).to be == described_class.new("1.2.3A4")
+    expect(described_class.new("1.2.3alpha4")).to eq described_class.new("1.2.3a4")
+    expect(described_class.new("1.2.3alpha4")).to eq described_class.new("1.2.3A4")
     expect(described_class.new("1.2.3alpha4")).to be > described_class.new("1.2.3alpha3")
     expect(described_class.new("1.2.3alpha4")).to be < described_class.new("1.2.3alpha5")
     expect(described_class.new("1.2.3alpha4")).to be < described_class.new("1.2.3alpha10")
@@ -194,8 +194,8 @@ describe Version do
   end
 
   specify "comparing beta versions" do
-    expect(described_class.new("1.2.3beta2")).to be == described_class.new("1.2.3b2")
-    expect(described_class.new("1.2.3beta2")).to be == described_class.new("1.2.3B2")
+    expect(described_class.new("1.2.3beta2")).to eq described_class.new("1.2.3b2")
+    expect(described_class.new("1.2.3beta2")).to eq described_class.new("1.2.3B2")
     expect(described_class.new("1.2.3beta2")).to be > described_class.new("1.2.3beta1")
     expect(described_class.new("1.2.3beta2")).to be < described_class.new("1.2.3beta3")
     expect(described_class.new("1.2.3beta2")).to be < described_class.new("1.2.3beta10")
@@ -207,7 +207,7 @@ describe Version do
   end
 
   specify "comparing pre versions" do
-    expect(described_class.new("1.2.3pre9")).to be == described_class.new("1.2.3PRE9")
+    expect(described_class.new("1.2.3pre9")).to eq described_class.new("1.2.3PRE9")
     expect(described_class.new("1.2.3pre9")).to be > described_class.new("1.2.3pre8")
     expect(described_class.new("1.2.3pre8")).to be < described_class.new("1.2.3pre9")
     expect(described_class.new("1.2.3pre9")).to be < described_class.new("1.2.3pre10")
@@ -222,7 +222,7 @@ describe Version do
   end
 
   specify "comparing RC versions" do
-    expect(described_class.new("1.2.3rc3")).to be == described_class.new("1.2.3RC3")
+    expect(described_class.new("1.2.3rc3")).to eq described_class.new("1.2.3RC3")
     expect(described_class.new("1.2.3rc3")).to be > described_class.new("1.2.3rc2")
     expect(described_class.new("1.2.3rc3")).to be < described_class.new("1.2.3rc4")
     expect(described_class.new("1.2.3rc3")).to be < described_class.new("1.2.3rc10")
@@ -234,7 +234,7 @@ describe Version do
   end
 
   specify "comparing patch-level versions" do
-    expect(described_class.new("1.2.3-p34")).to be == described_class.new("1.2.3-P34")
+    expect(described_class.new("1.2.3-p34")).to eq described_class.new("1.2.3-P34")
     expect(described_class.new("1.2.3-p34")).to be > described_class.new("1.2.3-p33")
     expect(described_class.new("1.2.3-p34")).to be < described_class.new("1.2.3-p35")
     expect(described_class.new("1.2.3-p34")).to be > described_class.new("1.2.3-p9")
@@ -272,13 +272,13 @@ describe Version do
   end
 
   it "can be compared against strings" do
-    expect(described_class.new("2.1.0-p194")).to be == "2.1.0-p194"
-    expect(described_class.new("1")).to be == 1
+    expect(described_class.new("2.1.0-p194")).to eq "2.1.0-p194"
+    expect(described_class.new("1")).to eq 1
   end
 
   it "can be compared against tokens" do
     expect(described_class.new("2.1.0-p194")).to be > Version::Token.create("2")
-    expect(described_class.new("1")).to be == Version::Token.create("1")
+    expect(described_class.new("1")).to eq Version::Token.create("1")
   end
 
   it "can be compared against Version::NULL_TOKEN" do
@@ -373,29 +373,29 @@ describe Version do
 
   describe "#major" do
     it "returns major version token" do
-      expect(described_class.new("1").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3alpha").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3alpha4").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3beta4").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3pre4").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3rc4").major).to be == Version::Token.create("1")
-      expect(described_class.new("1.2.3-p4").major).to be == Version::Token.create("1")
+      expect(described_class.new("1").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3alpha").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3alpha4").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3beta4").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3pre4").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3rc4").major).to eq Version::Token.create("1")
+      expect(described_class.new("1.2.3-p4").major).to eq Version::Token.create("1")
     end
   end
 
   describe "#minor" do
     it "returns minor version token" do
       expect(described_class.new("1").minor).to be_nil
-      expect(described_class.new("1.2").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3alpha").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3alpha4").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3beta4").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3pre4").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3rc4").minor).to be == Version::Token.create("2")
-      expect(described_class.new("1.2.3-p4").minor).to be == Version::Token.create("2")
+      expect(described_class.new("1.2").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3alpha").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3alpha4").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3beta4").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3pre4").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3rc4").minor).to eq Version::Token.create("2")
+      expect(described_class.new("1.2.3-p4").minor).to eq Version::Token.create("2")
     end
   end
 
@@ -403,41 +403,41 @@ describe Version do
     it "returns patch version token" do
       expect(described_class.new("1").patch).to be_nil
       expect(described_class.new("1.2").patch).to be_nil
-      expect(described_class.new("1.2.3").patch).to be == Version::Token.create("3")
-      expect(described_class.new("1.2.3alpha").patch).to be == Version::Token.create("3")
-      expect(described_class.new("1.2.3alpha4").patch).to be == Version::Token.create("3")
-      expect(described_class.new("1.2.3beta4").patch).to be == Version::Token.create("3")
-      expect(described_class.new("1.2.3pre4").patch).to be == Version::Token.create("3")
-      expect(described_class.new("1.2.3rc4").patch).to be == Version::Token.create("3")
-      expect(described_class.new("1.2.3-p4").patch).to be == Version::Token.create("3")
+      expect(described_class.new("1.2.3").patch).to eq Version::Token.create("3")
+      expect(described_class.new("1.2.3alpha").patch).to eq Version::Token.create("3")
+      expect(described_class.new("1.2.3alpha4").patch).to eq Version::Token.create("3")
+      expect(described_class.new("1.2.3beta4").patch).to eq Version::Token.create("3")
+      expect(described_class.new("1.2.3pre4").patch).to eq Version::Token.create("3")
+      expect(described_class.new("1.2.3rc4").patch).to eq Version::Token.create("3")
+      expect(described_class.new("1.2.3-p4").patch).to eq Version::Token.create("3")
     end
   end
 
   describe "#major_minor" do
     it "returns major.minor version" do
-      expect(described_class.new("1").major_minor).to be == described_class.new("1")
-      expect(described_class.new("1.2").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3alpha").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3alpha4").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3beta4").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3pre4").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3rc4").major_minor).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3-p4").major_minor).to be == described_class.new("1.2")
+      expect(described_class.new("1").major_minor).to eq described_class.new("1")
+      expect(described_class.new("1.2").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3alpha").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3alpha4").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3beta4").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3pre4").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3rc4").major_minor).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3-p4").major_minor).to eq described_class.new("1.2")
     end
   end
 
   describe "#major_minor_patch" do
     it "returns major.minor.patch version" do
-      expect(described_class.new("1").major_minor_patch).to be == described_class.new("1")
-      expect(described_class.new("1.2").major_minor_patch).to be == described_class.new("1.2")
-      expect(described_class.new("1.2.3").major_minor_patch).to be == described_class.new("1.2.3")
-      expect(described_class.new("1.2.3alpha").major_minor_patch).to be == described_class.new("1.2.3")
-      expect(described_class.new("1.2.3alpha4").major_minor_patch).to be == described_class.new("1.2.3")
-      expect(described_class.new("1.2.3beta4").major_minor_patch).to be == described_class.new("1.2.3")
-      expect(described_class.new("1.2.3pre4").major_minor_patch).to be == described_class.new("1.2.3")
-      expect(described_class.new("1.2.3rc4").major_minor_patch).to be == described_class.new("1.2.3")
-      expect(described_class.new("1.2.3-p4").major_minor_patch).to be == described_class.new("1.2.3")
+      expect(described_class.new("1").major_minor_patch).to eq described_class.new("1")
+      expect(described_class.new("1.2").major_minor_patch).to eq described_class.new("1.2")
+      expect(described_class.new("1.2.3").major_minor_patch).to eq described_class.new("1.2.3")
+      expect(described_class.new("1.2.3alpha").major_minor_patch).to eq described_class.new("1.2.3")
+      expect(described_class.new("1.2.3alpha4").major_minor_patch).to eq described_class.new("1.2.3")
+      expect(described_class.new("1.2.3beta4").major_minor_patch).to eq described_class.new("1.2.3")
+      expect(described_class.new("1.2.3pre4").major_minor_patch).to eq described_class.new("1.2.3")
+      expect(described_class.new("1.2.3rc4").major_minor_patch).to eq described_class.new("1.2.3")
+      expect(described_class.new("1.2.3-p4").major_minor_patch).to eq described_class.new("1.2.3")
     end
   end
 

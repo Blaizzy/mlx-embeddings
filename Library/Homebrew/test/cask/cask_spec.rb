@@ -107,8 +107,8 @@ describe Cask::Cask, :cask do
         expectations.each do |installed_version, expected_output|
           context "when version #{installed_version.inspect} is installed and the tap version is #{tap_version}" do
             it {
-              allow(cask).to receive(:installed_version).and_return(installed_version)
-              allow(cask).to receive(:version).and_return(Cask::DSL::Version.new(tap_version))
+              allow(cask).to receive_messages(installed_version: installed_version,
+                                              version:           Cask::DSL::Version.new(tap_version))
               expect(cask).to receive(:outdated_version).and_call_original
               expect(subject).to eq expected_output
             }
@@ -139,9 +139,9 @@ describe Cask::Cask, :cask do
             subject { cask.outdated_version(greedy: greedy) }
 
             it {
-              allow(cask).to receive(:installed_version).and_return(installed_version)
-              allow(cask).to receive(:version).and_return(Cask::DSL::Version.new(tap_version))
-              allow(cask).to receive(:outdated_download_sha?).and_return(outdated_sha)
+              allow(cask).to receive_messages(installed_version:      installed_version,
+                                              version:                Cask::DSL::Version.new(tap_version),
+                                              outdated_download_sha?: outdated_sha)
               expect(cask).to receive(:outdated_version).and_call_original
               expect(subject).to eq expected_output
             }

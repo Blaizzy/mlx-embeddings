@@ -471,8 +471,7 @@ describe Cask::Audit, :cask do
       let(:unpack_double) { instance_double(UnpackStrategy::Zip) }
 
       before do
-        allow(audit).to receive(:download).and_return(download_double)
-        allow(audit).to receive(:signing?).and_return(true)
+        allow(audit).to receive_messages(download: download_double, signing?: true)
         allow(audit).to receive(:check_https_availability)
       end
 

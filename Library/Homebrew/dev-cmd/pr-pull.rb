@@ -313,7 +313,7 @@ module Homebrew
   end
 
   def self.formulae_need_bottles?(tap, original_commit, labels, args:)
-    return if args.dry_run?
+    return false if args.dry_run?
 
     return false if labels.include?("CI-syntax-only") || labels.include?("CI-no-bottles")
 

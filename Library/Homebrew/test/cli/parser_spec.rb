@@ -235,16 +235,14 @@ describe Homebrew::CLI::Parser do
     end
 
     it "prioritizes cli arguments over env vars when they conflict" do
-      allow(Homebrew::EnvConfig).to receive(:switch_a?).and_return(true)
-      allow(Homebrew::EnvConfig).to receive(:switch_b?).and_return(false)
+      allow(Homebrew::EnvConfig).to receive_messages(switch_a?: true, switch_b?: false)
       args = parser.parse(["--switch-b"])
       expect(args.switch_a?).to be false
       expect(args).to be_switch_b
     end
 
     it "raises an exception on constraint violation when both are env vars" do
-      allow(Homebrew::EnvConfig).to receive(:switch_a?).and_return(true)
-      allow(Homebrew::EnvConfig).to receive(:switch_b?).and_return(true)
+      allow(Homebrew::EnvConfig).to receive_messages(switch_a?: true, switch_b?: true)
       expect { parser.parse([]) }.to raise_error(Homebrew::CLI::OptionConflictError)
     end
   end

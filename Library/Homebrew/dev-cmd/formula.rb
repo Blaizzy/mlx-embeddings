@@ -24,8 +24,7 @@ module Homebrew
     formula_paths = args.named.to_paths(only: :formula).select(&:exist?)
     if formula_paths.blank? && args.named
                                    .to_paths(only: :cask)
-                                   .select(&:exist?)
-                                   .present?
+                                   .any?(&:exist?)
       odie "Found casks but did not find formulae!"
     end
     formula_paths.each(&method(:puts))

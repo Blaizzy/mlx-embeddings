@@ -28,7 +28,7 @@ module Cask
       end
 
       def self.dirmethod
-        @dirmethod ||= "#{dsl_key}dir".to_sym
+        @dirmethod ||= :"#{dsl_key}dir"
       end
 
       sig { abstract.returns(String) }

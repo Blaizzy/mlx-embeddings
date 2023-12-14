@@ -462,8 +462,8 @@ module Homebrew
 
     def depends_on(one, two)
       if one.any_installed_keg
-         &.runtime_dependencies
-         &.any? { |dependency| dependency["full_name"] == two.full_name }
+            &.runtime_dependencies
+            &.any? { |dependency| dependency["full_name"] == two.full_name }
         1
       else
         one <=> two

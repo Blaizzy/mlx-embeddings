@@ -190,7 +190,7 @@ module Utils
         elsif macos? && [:x86_64, :intel].include?(arch)
           system
         else
-          "#{standardized_arch}_#{system}".to_sym
+          :"#{standardized_arch}_#{system}"
         end
       end
 

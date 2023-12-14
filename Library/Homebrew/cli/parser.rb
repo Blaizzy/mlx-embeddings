@@ -178,12 +178,12 @@ module Homebrew
           set_constraints(name, depends_on: depends_on)
         end
 
-        env_value = env?(env)
+        env_value = value_for_env(env)
         set_switch(*names, value: env_value, from: :env) unless env_value.nil?
       end
       alias switch_option switch
 
-      def env?(env)
+      def value_for_env(env)
         return if env.blank?
 
         method_name = :"#{env}?"
@@ -193,6 +193,7 @@ module Homebrew
           ENV.fetch("HOMEBREW_#{env.upcase}", nil)
         end
       end
+      private :value_for_env
 
       def description(text = nil)
         return @description if text.blank?
@@ -527,7 +528,7 @@ module Homebrew
       end
 
       def option_passed?(name)
-        @args[name.to_sym] || @args["#{name}?".to_sym]
+        @args[name.to_sym] || @args[:"#{name}?"]
       end
 
       def wrap_option_desc(desc)

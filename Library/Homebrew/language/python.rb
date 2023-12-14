@@ -46,8 +46,8 @@ module Language
     end
 
     def self.reads_brewed_pth_files?(python)
-      return unless homebrew_site_packages(python).directory?
-      return unless homebrew_site_packages(python).writable_real?
+      return false unless homebrew_site_packages(python).directory?
+      return false unless homebrew_site_packages(python).writable_real?
 
       probe_file = homebrew_site_packages(python)/"homebrew-pth-probe.pth"
       begin

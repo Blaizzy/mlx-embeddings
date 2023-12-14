@@ -345,8 +345,7 @@ describe Cask::Artifact::App, :cask do
 
     describe "when the directory is owned by root" do
       before do
-        allow(app.target).to receive(:writable?).and_return false
-        allow(app.target).to receive(:owned?).and_return false
+        allow(app.target).to receive_messages(writable?: false, owned?: false)
       end
 
       it "reuses the same directory" do
