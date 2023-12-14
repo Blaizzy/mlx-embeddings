@@ -59,20 +59,22 @@ module RuboCop
         end
       end
 
-      # Returns nil if does not depend on dependency_name.
+      # Returns if the formula depends on dependency_name.
       #
       # @param dependency_name dependency's name
       def depends_on?(dependency_name, *types)
-        return if @body.nil?
+        return false if @body.nil?
 
         types = [:any] if types.empty?
         dependency_nodes = find_every_method_call_by_name(@body, :depends_on)
         idx = dependency_nodes.index do |n|
           types.any? { |type| depends_on_name_type?(n, dependency_name, type) }
         end
-        return if idx.nil?
+        return false if idx.nil?
 
         @offensive_node = dependency_nodes[idx]
+
+        true
       end
 
       # Returns true if given dependency name and dependency type exist in given dependency method call node.

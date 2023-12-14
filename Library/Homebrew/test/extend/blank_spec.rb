@@ -13,7 +13,7 @@ describe Object do
   let(:empty_false) do
     Class.new(described_class) do
       def empty?
-        nil
+        false
       end
     end
   end

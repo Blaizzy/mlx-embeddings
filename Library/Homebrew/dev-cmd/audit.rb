@@ -260,14 +260,14 @@ module Homebrew
             # For switches, we add `|| nil` so that `nil` will be passed
             # instead of `false` if they aren't set.
             # This way, we can distinguish between "not set" and "set to false".
-            audit_online:          (args.online? || nil),
-            audit_strict:          (args.strict? || nil),
+            audit_online:          args.online? || nil,
+            audit_strict:          args.strict? || nil,
 
             # No need for `|| nil` for `--[no-]signing`
             # because boolean switches are already `nil` if not passed
             audit_signing:         args.signing?,
-            audit_new_cask:        (new_cask || nil),
-            audit_token_conflicts: (args.token_conflicts? || nil),
+            audit_new_cask:        new_cask || nil,
+            audit_token_conflicts: args.token_conflicts? || nil,
             quarantine:            true,
             any_named_args:        !no_named_args,
             only:                  args.only,

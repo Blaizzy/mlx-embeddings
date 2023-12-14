@@ -243,8 +243,7 @@ describe Tab do
       stub_const("HOMEBREW_VERSION", "1.1.7")
 
       # don't try to load gcc/glibc
-      allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-      allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+      allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
       f = formula do
         url "foo-1.0"

@@ -161,8 +161,7 @@ describe Formulary do
         allow(described_class).to receive(:loader_for).and_call_original
 
         # don't try to load/fetch gcc/glibc
-        allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-        allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+        allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
       end
 
       let(:installed_formula) { described_class.factory(formula_path) }
@@ -375,8 +374,7 @@ describe Formulary do
         allow(described_class).to receive(:loader_for).and_return(described_class::FormulaAPILoader.new(formula_name))
 
         # don't try to load/fetch gcc/glibc
-        allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-        allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+        allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
       end
 
       it "returns a Formula when given a name" do

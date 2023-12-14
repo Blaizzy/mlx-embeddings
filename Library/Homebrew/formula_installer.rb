@@ -30,8 +30,7 @@ class FormulaInstaller
   include FormulaCellarChecks
   extend Predicable
 
-  attr_reader :formula
-  attr_reader :bottle_tab_runtime_dependencies
+  attr_reader :formula, :bottle_tab_runtime_dependencies
 
   attr_accessor :options, :link_keg
 
@@ -530,7 +529,7 @@ on_request: installed_on_request?, options: options)
   end
 
   def unbottled_dependencies(deps)
-    deps.map(&:first).map(&:to_formula).reject do |dep_f|
+    deps.map { |(dep, _options)| dep.to_formula }.reject do |dep_f|
       next false unless dep_f.pour_bottle?
 
       dep_f.bottled?
@@ -1184,7 +1183,7 @@ on_request: installed_on_request?, options: options)
     return if ignore_deps?
 
     # Don't output dependencies if we're explicitly installing them.
-    deps = compute_dependencies.reject do |dep, _options|
+    deps = compute_dependencies.reject do |(dep, _options)|
       self.class.fetched.include?(dep.to_formula)
     end
 
@@ -1194,7 +1193,7 @@ on_request: installed_on_request?, options: options)
         "#{deps.map(&:first).map(&Formatter.method(:identifier)).to_sentence}",
         truncate: false
 
-    deps.each { |dep, _options| fetch_dependency(dep) }
+    deps.each { |(dep, _options)| fetch_dependency(dep) }
   end
 
   sig { returns(T.nilable(Formula)) }
@@ -1369,7 +1368,7 @@ on_request: installed_on_request?, options: options)
     return if forbidden_licenses.blank?
     return if ignore_deps?
 
-    compute_dependencies.each do |dep, _|
+    compute_dependencies.each do |(dep, _options)|
       dep_f = dep.to_formula
       next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
 

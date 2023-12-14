@@ -64,8 +64,8 @@ module Homebrew
 
     contribution_types = [:author, :committer, :coauthorship, :review]
 
-    users = args.user.presence || GitHub.members_by_team("Homebrew", "maintainers")
-    users.each do |username, _|
+    users = args.user.presence || GitHub.members_by_team("Homebrew", "maintainers").keys
+    users.each do |username|
       # TODO: Using the GitHub username to scan the `git log` undercounts some
       # contributions as people might not always have configured their Git
       # committer details to match the ones on GitHub.

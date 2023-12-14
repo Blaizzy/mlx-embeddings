@@ -305,12 +305,12 @@ module Homebrew
         end
       end
 
-      def print_dry_run_dependencies(formula, dependencies, &block)
+      def print_dry_run_dependencies(formula, dependencies)
         return if dependencies.empty?
 
         ohai "Would install #{Utils.pluralize("dependenc", dependencies.count, plural: "ies", singular: "y",
                                             include_count: true)} for #{formula.name}:"
-        formula_names = dependencies.map(&:first).map(&:to_formula).map(&block)
+        formula_names = dependencies.map { |(dep, _options)| yield dep.to_formula }
         puts formula_names.join(" ")
       end
 

@@ -116,7 +116,7 @@ module Homebrew
 
       @put_filenames ||= []
 
-      return if @put_filenames.include?(filename)
+      return false if @put_filenames.include?(filename)
 
       puts Formatter.error(filename.to_s)
       @put_filenames << filename

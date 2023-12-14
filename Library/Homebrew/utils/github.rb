@@ -744,7 +744,7 @@ module GitHub
   end
 
   def self.multiple_short_commits_exist?(user, repo, commit)
-    return if Homebrew::EnvConfig.no_github_api?
+    return false if Homebrew::EnvConfig.no_github_api?
 
     output, _, status = Utils::Curl.curl_output(
       "--silent", "--head", "--location",

@@ -52,7 +52,7 @@ module SharedAudits
       return "#{tag} is not a GitHub pre-release but '#{name}' is in the GitHub prerelease allowlist."
     end
 
-    return "#{tag} is a GitHub draft." if release["draft"]
+    "#{tag} is a GitHub draft." if release["draft"]
   end
 
   def gitlab_repo_data(user, repo)

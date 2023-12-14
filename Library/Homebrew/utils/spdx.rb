@@ -196,7 +196,7 @@ module SPDX
 
     name, version, = license_version_info license
 
-    forbidden_licenses.each do |_, license_info|
+    forbidden_licenses.each_value do |license_info|
       forbidden_name, forbidden_version, forbidden_or_later = *license_info
       next if forbidden_name != name
 

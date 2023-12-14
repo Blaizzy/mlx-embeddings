@@ -293,8 +293,7 @@ describe GitHubRunnerMatrix do
   def get_runner_names(runner_matrix, predicate = :active)
     runner_matrix.runners
                  .select(&predicate)
-                 .map(&:spec)
-                 .map(&:name)
+                 .map { |runner| runner.spec.name }
   end
 
   def setup_test_runner_formula(name, dependencies = [], **kwargs)

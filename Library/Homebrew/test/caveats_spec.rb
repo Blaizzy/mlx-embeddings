@@ -103,8 +103,7 @@ describe Caveats do
 
     context "when service block is defined" do
       before do
-        allow(Utils::Service).to receive(:launchctl?).and_return(true)
-        allow(Utils::Service).to receive(:systemctl?).and_return(true)
+        allow(Utils::Service).to receive_messages(launchctl?: true, systemctl?: true)
       end
 
       it "prints warning when no service daemon is found" do
@@ -304,13 +303,11 @@ describe Caveats do
 
       before do
         # don't try to load/fetch gcc/glibc
-        allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-        allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+        allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
         allow_any_instance_of(Pathname).to receive(:children).and_return([Pathname.new("child")])
         allow_any_instance_of(Object).to receive(:which).with(any_args).and_return(Pathname.new("shell"))
-        allow(Utils::Shell).to receive(:preferred).and_return(nil)
-        allow(Utils::Shell).to receive(:parent).and_return(nil)
+        allow(Utils::Shell).to receive_messages(preferred: nil, parent: nil)
       end
 
       it "gives dir where Bash completions have been installed" do

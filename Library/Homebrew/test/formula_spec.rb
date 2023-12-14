@@ -151,8 +151,7 @@ describe Formula do
 
     before do
       # don't try to load/fetch gcc/glibc
-      allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-      allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+      allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
       allow(Formulary).to receive(:load_formula_from_path).with(f2.name, f2.path).and_return(f2)
       allow(Formulary).to receive(:factory).with(f2.name).and_return(f2)
@@ -798,8 +797,7 @@ describe Formula do
 
   specify "dependencies" do
     # don't try to load/fetch gcc/glibc
-    allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-    allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+    allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
     f1 = formula "f1" do
       url "f1-1.0"
@@ -844,8 +842,7 @@ describe Formula do
       tap_loader = double
 
       # don't try to load/fetch gcc/glibc
-      allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-      allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+      allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
       allow(tap_loader).to receive(:get_formula).and_raise(RuntimeError, "tried resolving tap formula")
       allow(Formulary).to receive(:loader_for).with("foo/bar/f1", from: nil).and_return(tap_loader)
@@ -901,8 +898,7 @@ describe Formula do
 
   specify "requirements" do
     # don't try to load/fetch gcc/glibc
-    allow(DevelopmentTools).to receive(:needs_libc_formula?).and_return(false)
-    allow(DevelopmentTools).to receive(:needs_compiler_formula?).and_return(false)
+    allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
     f1 = formula "f1" do
       url "f1-1"

@@ -67,8 +67,11 @@ module OnSystem
     base.define_method(:on_arch_conditional) do |arm: nil, intel: nil|
       @on_system_blocks_exist = true
 
-      return arm if OnSystem.arch_condition_met? :arm
-      return intel if OnSystem.arch_condition_met? :intel
+      if OnSystem.arch_condition_met? :arm
+        arm
+      elsif OnSystem.arch_condition_met? :intel
+        intel
+      end
     end
   end
 
@@ -110,8 +113,11 @@ module OnSystem
     base.define_method(:on_system_conditional) do |macos: nil, linux: nil|
       @on_system_blocks_exist = true
 
-      return macos if OnSystem.os_condition_met?(:macos) && macos.present?
-      return linux if OnSystem.os_condition_met?(:linux) && linux.present?
+      if OnSystem.os_condition_met?(:macos) && macos.present?
+        macos
+      elsif OnSystem.os_condition_met?(:linux) && linux.present?
+        linux
+      end
     end
   end
 
