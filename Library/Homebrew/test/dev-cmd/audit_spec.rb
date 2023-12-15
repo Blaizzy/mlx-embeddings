@@ -57,6 +57,14 @@ module Homebrew
   end
 
   describe FormulaAuditor do
+    let(:dir) { mktmpdir }
+    let(:foo_version) { Count.increment }
+    let(:formula_subpath) { "Formula/foo#{foo_version}.rb" }
+    let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
+    let(:origin_formula_path) { origin_tap_path/formula_subpath }
+    let(:tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-bar" }
+    let(:formula_path) { tap_path/formula_subpath }
+
     def formula_auditor(name, text, options = {})
       path = Pathname.new "#{dir}/#{name}.rb"
       path.open("w") do |f|
@@ -75,7 +83,28 @@ module Homebrew
       described_class.new(formula, options)
     end
 
-    let(:dir) { mktmpdir }
+    def formula_gsub(before, after = "")
+      text = formula_path.read
+      text.gsub! before, after
+      formula_path.unlink
+      formula_path.write text
+    end
+
+    def formula_gsub_origin_commit(before, after = "")
+      text = origin_formula_path.read
+      text.gsub!(before, after)
+      origin_formula_path.unlink
+      origin_formula_path.write text
+
+      origin_tap_path.cd do
+        system "git", "commit", "-am", "commit"
+      end
+
+      tap_path.cd do
+        system "git", "fetch"
+        system "git", "reset", "--hard", "origin/HEAD"
+      end
+    end
 
     describe "#problems" do
       it "is empty by default" do
@@ -873,19 +902,71 @@ module Homebrew
       end
     end
 
+    describe "#audit_stable_version" do
+      subject do
+        fa = described_class.new(Formulary.factory(formula_path), git: true)
+        fa.audit_stable_version
+        fa.problems.first&.fetch(:message)
+      end
+
+      before do
+        origin_formula_path.dirname.mkpath
+        origin_formula_path.write <<~RUBY
+          class Foo#{foo_version} < Formula
+            url "https://brew.sh/foo-1.0.tar.gz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            revision 2
+            version_scheme 1
+          end
+        RUBY
+
+        origin_tap_path.mkpath
+        origin_tap_path.cd do
+          system "git", "init"
+          system "git", "add", "--all"
+          system "git", "commit", "-m", "init"
+        end
+
+        tap_path.mkpath
+        tap_path.cd do
+          system "git", "clone", origin_tap_path, "."
+        end
+      end
+
+      describe "versions" do
+        context "when uncommitted should not decrease" do
+          before { formula_gsub "foo-1.0.tar.gz", "foo-0.9.tar.gz" }
+
+          it { is_expected.to match("stable version should not decrease (from 1.0 to 0.9)") }
+        end
+
+        context "when committed can decrease" do
+          before do
+            formula_gsub_origin_commit "revision 2"
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-0.9.tar.gz"
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        describe "can decrease with version_scheme increased" do
+          before do
+            formula_gsub "revision 2"
+            formula_gsub "foo-1.0.tar.gz", "foo-0.9.tar.gz"
+            formula_gsub "version_scheme 1", "version_scheme 2"
+          end
+
+          it { is_expected.to be_nil }
+        end
+      end
+    end
+
     describe "#audit_revision_and_version_scheme" do
       subject do
         fa = described_class.new(Formulary.factory(formula_path), git: true)
         fa.audit_revision_and_version_scheme
         fa.problems.first&.fetch(:message)
       end
-
-      let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
-      let(:foo_version) { Count.increment }
-      let(:formula_subpath) { "Formula/foo#{foo_version}.rb" }
-      let(:origin_formula_path) { origin_tap_path/formula_subpath }
-      let(:tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-bar" }
-      let(:formula_path) { tap_path/formula_subpath }
 
       before do
         origin_formula_path.dirname.mkpath
@@ -925,29 +1006,6 @@ module Homebrew
           expect(fa.new_formula_problems).to include(
             a_hash_including(message: a_string_matching(/should not define a revision/)),
           )
-        end
-      end
-
-      def formula_gsub(before, after = "")
-        text = formula_path.read
-        text.gsub! before, after
-        formula_path.unlink
-        formula_path.write text
-      end
-
-      def formula_gsub_origin_commit(before, after = "")
-        text = origin_formula_path.read
-        text.gsub!(before, after)
-        origin_formula_path.unlink
-        origin_formula_path.write text
-
-        origin_tap_path.cd do
-          system "git", "commit", "-am", "commit"
-        end
-
-        tap_path.cd do
-          system "git", "fetch"
-          system "git", "reset", "--hard", "origin/HEAD"
         end
       end
 
@@ -1111,33 +1169,6 @@ module Homebrew
           end
 
           it { is_expected.to match("version_schemes should only increment by 1") }
-        end
-      end
-
-      describe "versions" do
-        context "when uncommitted should not decrease" do
-          before { formula_gsub "foo-1.0.tar.gz", "foo-0.9.tar.gz" }
-
-          it { is_expected.to match("stable version should not decrease (from 1.0 to 0.9)") }
-        end
-
-        context "when committed can decrease" do
-          before do
-            formula_gsub_origin_commit "revision 2"
-            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-0.9.tar.gz"
-          end
-
-          it { is_expected.to be_nil }
-        end
-
-        describe "can decrease with version_scheme increased" do
-          before do
-            formula_gsub "revision 2"
-            formula_gsub "foo-1.0.tar.gz", "foo-0.9.tar.gz"
-            formula_gsub "version_scheme 1", "version_scheme 2"
-          end
-
-          it { is_expected.to be_nil }
         end
       end
     end
