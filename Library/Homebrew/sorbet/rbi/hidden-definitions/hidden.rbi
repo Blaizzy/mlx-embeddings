@@ -8109,12 +8109,6 @@ module Reline
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
-class Reline::ANSI
-  CAPNAME_KEY_BINDINGS = ::T.let(nil, ::T.untyped)
-  END_BRACKETED_PASTE = ::T.let(nil, ::T.untyped)
-  START_BRACKETED_PASTE = ::T.let(nil, ::T.untyped)
-end
-
 class Reline::Config
   KEYSEQ_PATTERN = ::T.let(nil, ::T.untyped)
   VARIABLE_NAMES = ::T.let(nil, ::T.untyped)
@@ -8125,7 +8119,7 @@ class Reline::Core
   ATTR_READER_NAMES = ::T.let(nil, ::T.untyped)
 end
 
-Reline::IOGate = Reline::ANSI
+Reline::IOGate = Reline::GeneralIO
 
 Reline::Key = Struct::Key
 

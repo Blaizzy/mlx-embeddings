@@ -22,25 +22,28 @@ class Rack::RubyProf
   # source://ruby-prof//lib/ruby-prof/rack.rb#6
   def initialize(app, options = T.unsafe(nil)); end
 
-  # source://ruby-prof//lib/ruby-prof/rack.rb#23
+  # source://ruby-prof//lib/ruby-prof/rack.rb#22
   def call(env); end
 
   private
 
   # @return [Boolean]
   #
-  # source://ruby-prof//lib/ruby-prof/rack.rb#52
+  # source://ruby-prof//lib/ruby-prof/rack.rb#56
   def paths_match?(path, paths); end
 
-  # source://ruby-prof//lib/ruby-prof/rack.rb#74
-  def print(data, path); end
+  # source://ruby-prof//lib/ruby-prof/rack.rb#84
+  def print(profile, path); end
 
-  # source://ruby-prof//lib/ruby-prof/rack.rb#56
+  # source://ruby-prof//lib/ruby-prof/rack.rb#77
+  def print_options; end
+
+  # source://ruby-prof//lib/ruby-prof/rack.rb#60
   def profiling_options; end
 
   # @return [Boolean]
   #
-  # source://ruby-prof//lib/ruby-prof/rack.rb#46
+  # source://ruby-prof//lib/ruby-prof/rack.rb#50
   def should_profile?(path); end
 end
 
@@ -49,6 +52,36 @@ end
 # source://ruby-prof//lib/ruby-prof/version.rb#1
 module RubyProf
   class << self
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#32
+    def _deprecated_exclude_threads; end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#37
+    def _deprecated_exclude_threads=(value); end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#14
+    def _deprecated_measure_mode; end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#27
+    def _deprecated_measure_mode=(value); end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#49
+    def _deprecated_pause; end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#78
+    def _deprecated_profile(options = T.unsafe(nil), &block); end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#64
+    def _deprecated_resume; end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#55
+    def _deprecated_running?; end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#42
+    def _deprecated_start; end
+
+    # source://ruby-prof//lib/ruby-prof/compatibility.rb#70
+    def _deprecated_stop; end
+
     # @raise [RuntimeError]
     #
     # source://ruby-prof//lib/ruby-prof/compatibility.rb#96
@@ -60,14 +93,10 @@ module RubyProf
     def ensure_running!; end
 
     # Returns the threads that ruby-prof should exclude from profiling
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#32
-    def exclude_threads; end
+    def exclude_threads(*args, **_arg1, &block); end
 
     # Specifies which threads ruby-prof should exclude from profiling
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#37
-    def exclude_threads=(value); end
+    def exclude_threads=(*args, **_arg1, &block); end
 
     # Checks if the user specified the clock mode via
     # the RUBY_PROF_MEASURE_MODE environment variable
@@ -84,9 +113,7 @@ module RubyProf
     # * RubyProf::PROCESS_TIME
     # * RubyProf::ALLOCATIONS
     # * RubyProf::MEMORY
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#14
-    def measure_mode; end
+    def measure_mode(*args, **_arg1, &block); end
 
     # call-seq:
     # measure_mode=value -> void
@@ -97,44 +124,30 @@ module RubyProf
     # * RubyProf::PROCESS_TIME - Process time measures the time used by a process between any two moments. It is unaffected by other processes concurrently running on the system. Remember with process time that calls to methods like sleep will not be included in profiling results. On Windows, process time is measured using GetProcessTimes and on other platforms by clock_gettime.
     # * RubyProf::ALLOCATIONS - Object allocations measures show how many objects each method in a program allocates. Measurements are done via Ruby's GC.stat api.
     # * RubyProf::MEMORY - Memory measures how much memory each method in a program uses. Measurements are done via Ruby's TracePoint api.
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#27
-    def measure_mode=(value); end
+    def measure_mode=(*args, **_arg1, &block); end
 
     # Pauses profiling
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#49
-    def pause; end
+    def pause(*args, **_arg1, &block); end
 
     # Profiles a block
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#78
-    def profile(options = T.unsafe(nil), &block); end
+    def profile(*args, **_arg1, &block); end
 
     # Resume profiling
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#64
-    def resume; end
+    def resume(*args, **_arg1, &block); end
 
     # Is a profile running?
     #
     # @return [Boolean]
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#55
-    def running?; end
+    def running?(*args, **_arg1, &block); end
 
     # Starts profiling
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#42
-    def start; end
+    def start(*args, **_arg1, &block); end
 
     # source://ruby-prof//lib/ruby-prof/compatibility.rb#85
     def start_script(script); end
 
     # Stops profiling
-    #
-    # source://ruby-prof//lib/ruby-prof/compatibility.rb#70
-    def stop; end
+    def stop(*args, **_arg1, &block); end
   end
 end
 
@@ -185,7 +198,7 @@ class RubyProf::AbstractPrinter
   # options - Hash of print options. Note that each printer can
   # define its own set of options.
   #
-  #   :min_percent - Number 0 to 100 that specifes the minimum
+  #   :min_percent - Number 0 to 100 that specifies the minimum
   #                  %self (the methods self time divided by the
   #                  overall total time) that a method must take
   #                  for it to be printed out in the report.
@@ -236,8 +249,6 @@ class RubyProf::AbstractPrinter
     def needs_dir?; end
   end
 end
-
-class RubyProf::AggregateCallTree < ::RubyProf::CallTree; end
 
 class RubyProf::Allocation
   def _dump_data; end
@@ -385,6 +396,8 @@ end
 #
 # source://ruby-prof//lib/ruby-prof/call_tree.rb#8
 class RubyProf::CallTree
+  def initialize(_arg0); end
+
   # Compares two CallTree instances. The comparison is based on the CallTree#parent, CallTree#target,
   # and total time.
   #
@@ -393,6 +406,7 @@ class RubyProf::CallTree
 
   def _dump_data; end
   def _load_data(_arg0); end
+  def add_child(_arg0); end
 
   # The number of times the parent method called the target method
   #
@@ -442,46 +456,43 @@ end
 #
 # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#11
 class RubyProf::CallTreePrinter < ::RubyProf::AbstractPrinter
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#103
-  def base_name; end
-
   # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#12
   def calltree_name(method_info); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#78
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#76
   def convert(value); end
 
   # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#28
   def determine_event_specification_and_value_scale; end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#82
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#80
   def file(method); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#113
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#107
   def file_name_for_thread(thread); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#121
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#115
   def file_path_for_thread(thread); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#95
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#93
   def path; end
 
   # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#54
   def print(options = T.unsafe(nil)); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#125
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#119
   def print_headers(output, thread); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#131
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#125
   def print_method(output, method); end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#86
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#84
   def print_thread(thread); end
 
   # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#69
   def print_threads; end
 
-  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#107
+  # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#101
   def remove_subsidiary_files_from_previous_profile_runs; end
 
   # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#61
@@ -490,7 +501,7 @@ class RubyProf::CallTreePrinter < ::RubyProf::AbstractPrinter
   class << self
     # @return [Boolean]
     #
-    # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#99
+    # source://ruby-prof//lib/ruby-prof/printers/call_tree_printer.rb#97
     def needs_dir?; end
   end
 end
@@ -680,7 +691,7 @@ class RubyProf::GraphHtmlPrinter < ::RubyProf::AbstractPrinter
   include ::ERB::Util
 
   # Creates a link to a method.  Note that we do not create
-  # links to methods which are under the min_perecent
+  # links to methods which are under the min_percent
   # specified by the user, since they will not be
   # printed out.
   #
@@ -755,6 +766,8 @@ class RubyProf::Measure::WallTime; end
 #
 # source://ruby-prof//lib/ruby-prof/measurement.rb#4
 class RubyProf::Measurement
+  def initialize(_arg0, _arg1, _arg2, _arg3); end
+
   def _dump_data; end
   def _load_data(_arg0); end
   def called; end
@@ -766,13 +779,21 @@ class RubyProf::Measurement
   # source://ruby-prof//lib/ruby-prof/measurement.rb#13
   def inspect; end
 
+  def merge!(_arg0); end
   def self_time; end
+  def self_time=(_arg0); end
 
   # source://ruby-prof//lib/ruby-prof/measurement.rb#9
   def to_s; end
 
   def total_time; end
+  def total_time=(_arg0); end
   def wait_time; end
+  def wait_time=(_arg0); end
+
+  private
+
+  def initialize_copy(_arg0); end
 end
 
 # The MethodInfo class is used to track information about each method that is profiled.
@@ -782,10 +803,13 @@ end
 class RubyProf::MethodInfo
   include ::Comparable
 
-  # :enddoc:
-  #
-  # source://ruby-prof//lib/ruby-prof/method_info.rb#56
+  def initialize(_arg0, _arg1); end
+
+  # source://ruby-prof//lib/ruby-prof/method_info.rb#63
   def <=>(other); end
+
+  # source://ruby-prof//lib/ruby-prof/method_info.rb#59
+  def ==(other); end
 
   def _dump_data; end
   def _load_data(_arg0); end
@@ -802,6 +826,11 @@ class RubyProf::MethodInfo
   # source://ruby-prof//lib/ruby-prof/method_info.rb#51
   def children_time; end
 
+  # @return [Boolean]
+  #
+  # source://ruby-prof//lib/ruby-prof/method_info.rb#55
+  def eql?(other); end
+
   # Returns the full name of a class. The interpretation of method names is:
   #
   # * MyObject#test - An method defined in a class
@@ -812,6 +841,7 @@ class RubyProf::MethodInfo
   # source://ruby-prof//lib/ruby-prof/method_info.rb#15
   def full_name; end
 
+  def hash; end
   def klass_flags; end
   def klass_name; end
   def line; end
@@ -826,7 +856,7 @@ class RubyProf::MethodInfo
 
   def source_file; end
 
-  # source://ruby-prof//lib/ruby-prof/method_info.rb#74
+  # source://ruby-prof//lib/ruby-prof/method_info.rb#81
   def to_s; end
 
   # The total time this method took - includes self time + wait time + child time
@@ -839,6 +869,12 @@ class RubyProf::MethodInfo
   # source://ruby-prof//lib/ruby-prof/method_info.rb#46
   def wait_time; end
 end
+
+RubyProf::MethodInfo::CLASS_SINGLETON = T.let(T.unsafe(nil), Integer)
+RubyProf::MethodInfo::MODULE_INCLUDEE = T.let(T.unsafe(nil), Integer)
+RubyProf::MethodInfo::MODULE_SINGLETON = T.let(T.unsafe(nil), Integer)
+RubyProf::MethodInfo::OBJECT_SINGLETON = T.let(T.unsafe(nil), Integer)
+RubyProf::MethodInfo::OTHER_SINGLETON = T.let(T.unsafe(nil), Integer)
 
 # Helper class to simplify printing profiles of several types from
 # one profiling run. Currently prints a flat profile, a callgrind
@@ -931,29 +967,46 @@ class RubyProf::Profile
 
   def _dump_data; end
   def _load_data(_arg0); end
+  def add_thread(_arg0); end
 
   # Hides methods that, when represented as a call graph, have
   # extremely large in and out degrees and make navigation impossible.
   #
-  # source://ruby-prof//lib/ruby-prof/profile.rb#23
+  # source://ruby-prof//lib/ruby-prof/profile.rb#22
   def exclude_common_methods!; end
 
   def exclude_method!(_arg0, _arg1); end
 
-  # source://ruby-prof//lib/ruby-prof/profile.rb#27
-  def exclude_methods!(mod, *method_or_methods); end
+  # source://ruby-prof//lib/ruby-prof/profile.rb#26
+  def exclude_methods!(mod, *method_names); end
 
-  # source://ruby-prof//lib/ruby-prof/profile.rb#33
-  def exclude_singleton_methods!(mod, *method_or_methods); end
+  # source://ruby-prof//lib/ruby-prof/profile.rb#32
+  def exclude_singleton_methods!(mod, *method_names); end
 
   def measure_mode; end
 
-  # source://ruby-prof//lib/ruby-prof/profile.rb#8
+  # source://ruby-prof//lib/ruby-prof/profile.rb#7
   def measure_mode_string; end
+
+  # call-seq:
+  # merge! -> self
+  #
+  # Merges RubyProf threads whose root call_trees reference the same target method. This is useful
+  # when profiling code that uses a main thread/fiber to distribute work to multiple workers.
+  # If there are tens or hundreds of workers, viewing results per worker thread/fiber can be
+  # overwhelming. Using +merge!+ will combine the worker times together into one result.
+  #
+  # Note the reported time will be much greater than the actual wall time. For example, if there
+  # are 10 workers that each run for 5 seconds, merged results will show one thread that
+  # ran for 50 seconds.
+  #
+  # source://ruby-prof//lib/ruby-prof/profile.rb#48
+  def merge!; end
 
   def pause; end
   def paused?; end
   def profile; end
+  def remove_thread(_arg0); end
   def resume; end
   def running?; end
   def start; end
@@ -968,11 +1021,14 @@ end
 
 # source://ruby-prof//lib/ruby-prof/thread.rb#2
 class RubyProf::Thread
+  def initialize(_arg0, _arg1, _arg2); end
+
   def _dump_data; end
   def _load_data(_arg0); end
   def call_tree; end
   def fiber_id; end
   def id; end
+  def merge!(_arg0); end
   def methods; end
 
   # Returns the total time this thread was executed.
