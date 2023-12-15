@@ -51,12 +51,12 @@ module Homebrew
       rc
     ].freeze, T::Array[String])
 
-    sig { returns(T::Hash[Class, String]) }
+    sig { returns(T::Hash[T::Class[T.anything], String]) }
     def livecheck_strategy_names
       return T.must(@livecheck_strategy_names) if defined?(@livecheck_strategy_names)
 
       # Cache demodulized strategy names, to avoid repeating this work
-      @livecheck_strategy_names = T.let({}, T.nilable(T::Hash[Class, String]))
+      @livecheck_strategy_names = T.let({}, T.nilable(T::Hash[T::Class[T.anything], String]))
       Strategy.constants.sort.each do |const_symbol|
         constant = Strategy.const_get(const_symbol)
         next unless constant.is_a?(Class)

@@ -4,10 +4,10 @@ source "https://rubygems.org"
 
 # The default case (no envs), should always be a restrictive bound on the lowest supported minor version.
 # This is the branch that Dependabot will use.
-if ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty? && ENV.fetch("HOMEBREW_RUBY3", "").empty?
-  ruby "~> 2.6.0"
+if ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty?
+  ruby "~> 3.1.0"
 else
-  ruby ">= 2.6.0"
+  ruby ">= 3.1.0"
 end
 
 # disallowed gems (should not be used)
@@ -74,7 +74,7 @@ group :audit, :bump_unversioned_casks, :livecheck, optional: true do
 end
 
 # vendored gems (no group)
-gem "activesupport"
+gem "activesupport", "<7" # we're actively working to remove this: https://github.com/Homebrew/brew/issues/16190
 gem "addressable"
 gem "patchelf"
 gem "plist"

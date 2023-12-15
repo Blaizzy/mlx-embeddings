@@ -54,7 +54,7 @@ jobs:
       - name: Check RuboCop filepaths
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew
         run: |
-          public_apis=$(git grep -l "@api public" | wc -l | tr -d ' ')
+          public_apis=$(git grep -l "@api public" -- :^sorbet/ :^vendor/ | wc -l | tr -d ' ')
           rubocop_docs=$(yq '.Style/Documentation.Include' .rubocop.yml | wc -l | tr -d ' ')
           if [[ public_apis -ne rubocop_docs ]]
           then
