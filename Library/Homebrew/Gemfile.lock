@@ -214,7 +214,7 @@ DEPENDENCIES
   rubocop-rspec
   rubocop-sorbet
   ruby-macho
-  ruby-prof (= 1.6.3)
+  ruby-prof
   ruby-progressbar
   simplecov
   simplecov-cobertura

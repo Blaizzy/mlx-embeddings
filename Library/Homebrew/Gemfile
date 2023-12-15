@@ -34,9 +34,7 @@ group :pr_upload, optional: true do
   gem "json_schemer", require: false
 end
 group :prof, optional: true do
-  # NOTE: ruby-prof v1.4.3 is the last version that supports Ruby 2.6.x
-  # TODO: remove explicit version when HOMEBREW_REQUIRED_RUBY_VERSION >= 2.7
-  gem "ruby-prof", "1.6.3", require: false
+  gem "ruby-prof", require: false
   gem "stackprof", require: false
 end
 group :pry, optional: true do
