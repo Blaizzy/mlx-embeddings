@@ -785,8 +785,14 @@ module Cask
 
       return unless cask.homepage
 
+      user_agents = if cask.tap&.audit_exception(:simple_user_agent_for_homepage, cask.token)
+        ["curl"]
+      else
+        [:browser, :default]
+      end
+
       validate_url_for_https_availability(cask.homepage, SharedAudits::URL_TYPE_HOMEPAGE, cask.token, cask.tap,
-                                          user_agents:   [:browser, :default],
+                                          user_agents:   user_agents,
                                           check_content: true,
                                           strict:        strict?)
     end
