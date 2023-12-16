@@ -10,10 +10,13 @@ class PATH
 
   delegate each: :@paths
 
+  # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
+  # rubocop:disable Style/MutableConstant
   Element = T.type_alias { T.nilable(T.any(Pathname, String, PATH)) }
   private_constant :Element
   Elements = T.type_alias { T.any(Element, T::Array[Element]) }
   private_constant :Elements
+  # rubocop:enable Style/MutableConstant
 
   sig { params(paths: Elements).void }
   def initialize(*paths)

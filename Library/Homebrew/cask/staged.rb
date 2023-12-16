@@ -8,7 +8,10 @@ module Cask
   #
   # @api private
   module Staged
+    # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
+    # rubocop:disable Style/MutableConstant
     Paths = T.type_alias { T.any(String, Pathname, T::Array[T.any(String, Pathname)]) }
+    # rubocop:enable Style/MutableConstant
 
     sig { params(paths: Paths, permissions_str: String).void }
     def set_permissions(paths, permissions_str)

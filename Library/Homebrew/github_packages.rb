@@ -12,8 +12,8 @@ class GitHubPackages
   include Context
 
   URL_DOMAIN = "ghcr.io"
-  URL_PREFIX = "https://#{URL_DOMAIN}/v2/"
-  DOCKER_PREFIX = "docker://#{URL_DOMAIN}/"
+  URL_PREFIX = "https://#{URL_DOMAIN}/v2/".freeze
+  DOCKER_PREFIX = "docker://#{URL_DOMAIN}/".freeze
   public_constant :URL_DOMAIN
   private_constant :URL_PREFIX
   private_constant :DOCKER_PREFIX
