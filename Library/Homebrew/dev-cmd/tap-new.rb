@@ -96,7 +96,7 @@ module Homebrew
 
             - name: Upload bottles as artifact
               if: always() && github.event_name == 'pull_request'
-              uses: actions/upload-artifact@main
+              uses: actions/upload-artifact@v3
               with:
                 name: bottles
                 path: '*.bottle.*'
