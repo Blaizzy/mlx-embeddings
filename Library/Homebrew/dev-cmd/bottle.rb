@@ -12,7 +12,7 @@ require "erb"
 require "utils/gzip"
 require "api"
 
-BOTTLE_ERB = <<-EOS
+BOTTLE_ERB = <<-EOS.freeze
   bottle do
     <% if [HOMEBREW_BOTTLE_DEFAULT_DOMAIN.to_s,
            "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles"].exclude?(root_url) %>

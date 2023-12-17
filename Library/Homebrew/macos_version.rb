@@ -159,7 +159,7 @@ class Object
 end
 
 module MacOSVersions
-  SYMBOLS = LazyObject.new do
+  SYMBOLS = LazyObject.new do # rubocop:disable Style/MutableConstant
     odisabled "MacOSVersions::SYMBOLS", "MacOSVersion::SYMBOLS"
     MacOSVersion::SYMBOLS
   end
@@ -168,7 +168,7 @@ end
 module OS
   module Mac
     # TODO: Replace `::Version` with `Version` when this is removed.
-    Version = LazyObject.new do
+    Version = LazyObject.new do # rubocop:disable Style/MutableConstant
       odisabled "OS::Mac::Version", "MacOSVersion"
       MacOSVersion
     end

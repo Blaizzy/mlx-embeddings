@@ -386,10 +386,9 @@ Style/InvertibleUnlessCondition:
     # Don't require non-standard `exclude?` (for now at least) - it's not available in every file
     :include?:
 
-# TODO: Enable this cop again once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
-# From the RuboCop docs: "NOTE: Regexp and Range literals are frozen objects since Ruby 3.0."
 Style/MutableConstant:
-  Enabled: false
+  # would rather freeze too much than too little
+  EnforcedStyle: strict
 
 # Zero-prefixed octal literals are widely used and understood.
 Style/NumericLiteralPrefix:
