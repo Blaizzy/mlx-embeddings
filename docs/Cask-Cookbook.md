@@ -113,6 +113,9 @@ Each of the following stanzas is required for every cask.
 | [`name`](#stanza-name)       | yes                           | String providing the full and proper name defined by the vendor. |
 | [`desc`](#stanza-desc)       | no                            | One-line description of the cask. Shown when running `brew info`. |
 | `homepage`                   | no                            | Application homepage; used for the `brew home` command. |
+| [`livecheck`](#stanza-livecheck)           | no                            | Ruby block describing how to find updates for this cask. Supersedes `appcast`. |
+| [`depends_on`](#stanza-depends_on)         | yes                           | List of dependencies and requirements for this cask. |
+| [`zap`](#stanza-zap)                       | yes                           | Additional procedures for a more complete uninstall, including user files and shared resources. |
 
 ### At least one artifact stanza is also required
 
@@ -148,11 +151,8 @@ Each cask must declare one or more *artifacts* (i.e. something to install).
 | name                                       | multiple occurrences allowed? | value |
 | ------------------------------------------ | :---------------------------: | ----- |
 | [`uninstall`](#stanza-uninstall)           | yes                           | Procedures to uninstall a cask. Optional unless the `pkg` stanza is used. |
-| [`zap`](#stanza-zap)                       | yes                           | Additional procedures for a more complete uninstall, including user files and shared resources. |
-| [`depends_on`](#stanza-depends_on)         | yes                           | List of dependencies and requirements for this cask. |
 | [`conflicts_with`](#stanza-conflicts_with) | yes                           | List of conflicts with this cask (*not yet functional*). |
 | [`caveats`](#stanza-caveats)               | yes                           | String or Ruby block providing the user with cask-specific information at install time. |
-| [`livecheck`](#stanza-livecheck)           | no                            | Ruby block describing how to find updates for this cask. Supersedes `appcast`. |
 | `preflight`                                | yes                           | Ruby block containing preflight install operations (needed only in very rare cases). |
 | [`postflight`](#stanza-flight)             | yes                           | Ruby block containing postflight install operations. |
 | `uninstall_preflight`                      | yes                           | Ruby block containing preflight uninstall operations (needed only in very rare cases). |
@@ -1130,6 +1130,12 @@ Manual creation can be facilitated with:
 * `sudo find / -iname "*<search item>*"`
 * An uninstaller tool such as [AppCleaner](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/a/appcleaner.rb).
 * Inspection of the usual paths, i.e. `/Library/{'Application Support',LaunchAgents,LaunchDaemons,Frameworks,Logs,Preferences,PrivilegedHelperTools}` and `~/Library/{'Application Support',Caches,Containers,LaunchAgents,Logs,Preferences,'Saved Application State'}`.
+
+If no additional files are discovered, instead of a zap stanza, include the following comment:
+
+```ruby
+# No zap stanza required
+```
 
 ## Conditional statements
 
