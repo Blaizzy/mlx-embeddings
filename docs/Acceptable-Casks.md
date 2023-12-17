@@ -99,7 +99,7 @@ Before submitting a cask to any of our repositories, you must read our [document
 
 Common reasons to reject a cask entirely:
 
-* App fails with GateKeeper enabled on Homebrew supported macOS versions and platforms (e.g. unsigned apps fail on Macs with Apple silicon/ARM).
+* App fails with GateKeeper enabled on Homebrew supported macOS versions and platforms (e.g. unsigned apps fail on Macs with Apple Silicon/ARM).
 * App is too obscure. Examples:
   * An app from a code repository that is not notable enough (under 30 forks, 30 watchers, 75 stars).
   * [Electronic Identification (eID) software](https://github.com/Homebrew/homebrew-cask/issues/59021).
