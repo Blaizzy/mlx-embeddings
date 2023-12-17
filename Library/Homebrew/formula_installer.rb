@@ -204,9 +204,10 @@ class FormulaInstaller
     if deprecate_disable_type.present?
       message = "#{formula.full_name} has been #{DeprecateDisable.message(formula)}"
 
-      if deprecate_disable_type == :deprecated
+      case deprecate_disable_type
+      when :deprecated
         opoo message
-      elsif deprecate_disable_type == :disabled
+      when :disabled
         raise CannotInstallFormulaError, message
       end
     end

@@ -127,11 +127,12 @@ on_request: true)
 
     def check_deprecate_disable
       deprecate_disable_type = DeprecateDisable.type(@cask)
-      return if deprecate_disable_type.blank?
+      return if deprecate_disable_type.nil?
 
-      if deprecate_disable_type == :deprecated
+      case deprecate_disable_type
+      when :deprecated
         opoo "#{@cask.token} has been #{DeprecateDisable.message(@cask)}"
-      elsif deprecate_disable_type == :disabled
+      when :disabled
         raise CaskCannotBeInstalledError.new(@cask, DeprecateDisable.message(@cask))
       end
     end

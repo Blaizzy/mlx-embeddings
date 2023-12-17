@@ -7,11 +7,6 @@
 module DeprecateDisable
   module_function
 
-  SHARED_DEPRECATE_DISABLE_REASONS = {
-    repo_archived: "has an archived upstream repository",
-    repo_removed:  "has a removed upstream repository",
-  }.freeze
-
   FORMULA_DEPRECATE_DISABLE_REASONS = {
     does_not_build:      "does not build",
     no_license:          "has no license",
@@ -25,19 +20,16 @@ module DeprecateDisable
                          "a different checksum than the current one. " \
                          "Upstream's repository might have been compromised. " \
                          "We can re-package this once upstream has confirmed that they retagged their release",
-    **SHARED_DEPRECATE_DISABLE_REASONS,
   }.freeze
 
   CASK_DEPRECATE_DISABLE_REASONS = {
-    discontinued:      "is discontinued upstream",
-    unsigned_artifact: "has an unsigned binary which prevents it from running on Apple Silicon devices " \
-                       "under standard macOS security policy",
-    **SHARED_DEPRECATE_DISABLE_REASONS,
+    discontinued: "is discontinued upstream",
   }.freeze
 
   def type(formula_or_cask)
     return :deprecated if formula_or_cask.deprecated?
-    return :disabled if formula_or_cask.disabled?
+
+    :disabled if formula_or_cask.disabled?
   end
 
   def message(formula_or_cask)
