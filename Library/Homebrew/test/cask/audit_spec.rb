@@ -529,14 +529,26 @@ describe Cask::Audit, :cask do
         it { is_expected.not_to error_with(message) }
       end
 
-      context "when the Cask is discontinued" do
-        let(:cask_token) { "livecheck/livecheck-discontinued" }
+      context "when the Cask is deprecated" do
+        let(:cask_token) { "livecheck/livecheck-deprecated" }
 
         it { is_expected.not_to error_with(message) }
       end
 
-      context "when the Cask has a livecheck block referencing a discontinued Cask" do
-        let(:cask_token) { "livecheck/livecheck-discontinued-reference" }
+      context "when the Cask has a livecheck block referencing a deprecated Cask" do
+        let(:cask_token) { "livecheck/livecheck-deprecated-reference" }
+
+        it { is_expected.not_to error_with(message) }
+      end
+
+      context "when the Cask is disabled" do
+        let(:cask_token) { "livecheck/livecheck-disabled" }
+
+        it { is_expected.not_to error_with(message) }
+      end
+
+      context "when the Cask has a livecheck block referencing a disabled Cask" do
+        let(:cask_token) { "livecheck/livecheck-disabled-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
