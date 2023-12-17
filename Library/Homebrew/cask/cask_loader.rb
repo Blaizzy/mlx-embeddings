@@ -293,7 +293,7 @@ module Cask
 
           if (disable_date = json_cask[:disable_date].presence)
             reason = DeprecateDisable.to_reason_string_or_symbol json_cask[:disable_reason], type: :cask
-            deprecate! date: disable_date, because: reason
+            disable! date: disable_date, because: reason
           end
 
           auto_updates json_cask[:auto_updates] unless json_cask[:auto_updates].nil?
