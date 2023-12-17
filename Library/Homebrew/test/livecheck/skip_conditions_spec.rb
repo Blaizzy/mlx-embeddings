@@ -247,7 +247,7 @@ describe Homebrew::Livecheck::SkipConditions do
       cask:    {
         discontinued:      {
           cask:   "test_discontinued",
-          status: "deprecated",
+          status: "discontinued",
           meta:   {
             livecheckable: false,
           },
@@ -478,7 +478,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when a cask without a livecheckable is discontinued" do
       it "errors" do
         expect { skip_conditions.referenced_skip_information(casks[:discontinued], original_name) }
-          .to raise_error(RuntimeError, "Referenced cask (test_discontinued) is skipped as deprecated")
+          .to raise_error(RuntimeError, "Referenced cask (test_discontinued) is skipped as discontinued")
       end
     end
 
@@ -601,7 +601,7 @@ describe Homebrew::Livecheck::SkipConditions do
     context "when the cask is discontinued without a livecheckable" do
       it "prints skip information" do
         expect { skip_conditions.print_skip_information(status_hashes[:cask][:discontinued]) }
-          .to output("test_discontinued: deprecated\n").to_stdout
+          .to output("test_discontinued: discontinued\n").to_stdout
           .and not_to_output.to_stderr
       end
     end
