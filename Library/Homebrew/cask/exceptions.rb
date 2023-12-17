@@ -54,6 +54,23 @@ module Cask
     end
   end
 
+  # Error when a cask cannot be installed.
+  #
+  # @api private
+  class CaskCannotBeInstalledError < AbstractCaskErrorWithToken
+    attr_reader :message
+
+    def initialize(token, message)
+      super(token)
+      @message = message
+    end
+
+    sig { returns(String) }
+    def to_s
+      "Cask '#{token}' has been #{message}"
+    end
+  end
+
   # Error when a cask conflicts with another cask.
   #
   # @api private

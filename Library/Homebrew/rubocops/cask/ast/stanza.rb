@@ -74,9 +74,9 @@ module RuboCop
 
         Constants::STANZA_ORDER.each do |stanza_name|
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
-            def #{stanza_name}?               # def url?
-              stanza_name == :#{stanza_name}  #   stanza_name == :url
-            end                               # end
+            def #{stanza_name.to_s.chomp("!")}?               # def url?
+              stanza_name == :#{stanza_name}                  #   stanza_name == :url
+            end                                               # end
           RUBY
         end
       end

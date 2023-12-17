@@ -119,10 +119,24 @@ module Homebrew
           verbose:       T::Boolean,
         ).returns(Hash)
       }
-      def cask_discontinued(cask, livecheckable, full_name: false, verbose: false)
-        return {} if !cask.discontinued? || livecheckable
+      def cask_deprecated(cask, livecheckable, full_name: false, verbose: false)
+        return {} if !cask.deprecated? || livecheckable
 
-        Livecheck.status_hash(cask, "discontinued", full_name: full_name, verbose: verbose)
+        Livecheck.status_hash(cask, "deprecated", full_name: full_name, verbose: verbose)
+      end
+
+      sig {
+        params(
+          cask:          Cask::Cask,
+          livecheckable: T::Boolean,
+          full_name:     T::Boolean,
+          verbose:       T::Boolean,
+        ).returns(Hash)
+      }
+      def cask_disabled(cask, livecheckable, full_name: false, verbose: false)
+        return {} if !cask.disabled? || livecheckable
+
+        Livecheck.status_hash(cask, "disabled", full_name: full_name, verbose: verbose)
       end
 
       sig {
@@ -165,7 +179,8 @@ module Homebrew
       # Skip conditions for casks.
       CASK_CHECKS = [
         :package_or_resource_skip,
-        :cask_discontinued,
+        :cask_deprecated,
+        :cask_disabled,
         :cask_version_latest,
         :cask_url_unversioned,
       ].freeze

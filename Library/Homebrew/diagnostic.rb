@@ -642,6 +642,18 @@ module Homebrew
         EOS
       end
 
+      def check_cask_deprecated_disabled
+        deprecated_or_disabled = Cask::Caskroom.casks.select(&:deprecated?)
+        deprecated_or_disabled += Cask::Caskroom.casks.select(&:disabled?)
+        return if deprecated_or_disabled.empty?
+
+        <<~EOS
+          Some installed casks are deprecated or disabled.
+          You should find replacements for the following casks:
+            #{deprecated_or_disabled.sort_by(&:token).uniq * "\n  "}
+        EOS
+      end
+
       sig { returns(T.nilable(String)) }
       def check_git_status
         return unless Utils::Git.available?
