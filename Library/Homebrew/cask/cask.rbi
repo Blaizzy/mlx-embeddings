@@ -20,6 +20,8 @@ module Cask
 
     def desc; end
 
+    def discontinued?; end
+
     def deprecated?; end
 
     def deprecation_date; end

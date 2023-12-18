@@ -92,7 +92,7 @@ module Cask
       :disabled?,
       :disable_date,
       :disable_reason,
-      :discontinued?,
+      :discontinued?, # TODO: remove once discontinued? is removed (4.5.0)
       :livecheck,
       :livecheckable?,
       :on_system_blocks_exist?,
@@ -106,7 +106,7 @@ module Cask
 
     attr_reader :cask, :token, :deprecation_date, :deprecation_reason, :disable_date, :disable_reason
 
-    attr_predicate :on_system_blocks_exist?, :disabled?, :livecheckable?
+    attr_predicate :on_system_blocks_exist?, :deprecated?, :disabled?, :livecheckable?
 
     def initialize(cask)
       @cask = cask
@@ -326,11 +326,6 @@ module Cask
     def discontinued?
       # odeprecated "`discontinued?`", "`deprecated?` or `disabled?`"
       @caveats&.discontinued? == true
-    end
-
-    # TODO: replace with with attr_predicate once discontinued? is disabled
-    def deprecated?
-      @deprecated == true || @caveats&.discontinued? == true
     end
 
     # @api public
