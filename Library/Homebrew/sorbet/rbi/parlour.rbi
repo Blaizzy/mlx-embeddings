@@ -364,6 +364,9 @@ module Cask
     def on_system_blocks_exist?; end
 
     sig { returns(T::Boolean) }
+    def deprecated?; end
+
+    sig { returns(T::Boolean) }
     def disabled?; end
 
     sig { returns(T::Boolean) }
