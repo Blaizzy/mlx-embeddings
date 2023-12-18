@@ -265,7 +265,7 @@ brew uninstall my-new-cask
 If everything looks good, you’ll also want to make sure your cask passes audit with:
 
 ```bash
-brew audit --new-cask my-new-cask
+brew audit --new --cask my-new-cask
 ```
 
 You should also check stylistic details with `brew style`:
