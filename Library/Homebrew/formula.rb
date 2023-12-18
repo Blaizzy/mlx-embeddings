@@ -295,7 +295,7 @@ class Formula
 
     spec.owner = self
     add_global_deps_to_spec(spec)
-    instance_variable_set("@#{name}", spec)
+    instance_variable_set(:"@#{name}", spec)
   end
 
   sig { params(spec: SoftwareSpec).void }

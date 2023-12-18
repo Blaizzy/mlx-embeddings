@@ -127,20 +127,20 @@ module Cask
     end
 
     def set_unique_stanza(stanza, should_return)
-      return instance_variable_get("@#{stanza}") if should_return
+      return instance_variable_get(:"@#{stanza}") if should_return
 
       unless @cask.allow_reassignment
-        if instance_variable_defined?("@#{stanza}") && !@called_in_on_system_block
+        if instance_variable_defined?(:"@#{stanza}") && !@called_in_on_system_block
           raise CaskInvalidError.new(cask, "'#{stanza}' stanza may only appear once.")
         end
 
-        if instance_variable_defined?("@#{stanza}_set_in_block") && @called_in_on_system_block
+        if instance_variable_defined?(:"@#{stanza}_set_in_block") && @called_in_on_system_block
           raise CaskInvalidError.new(cask, "'#{stanza}' stanza may only be overridden once.")
         end
       end
 
-      instance_variable_set("@#{stanza}_set_in_block", true) if @called_in_on_system_block
-      instance_variable_set("@#{stanza}", yield)
+      instance_variable_set(:"@#{stanza}_set_in_block", true) if @called_in_on_system_block
+      instance_variable_set(:"@#{stanza}", yield)
     rescue CaskInvalidError
       raise
     rescue => e

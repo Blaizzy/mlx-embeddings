@@ -69,7 +69,7 @@ class Locale
     }.each do |key, value|
       next if value.nil?
 
-      regex = self.class.const_get("#{key.upcase}_REGEX")
+      regex = self.class.const_get(:"#{key.upcase}_REGEX")
       raise ParserError, "'#{value}' does not match #{regex}" unless value&.match?(regex)
 
       instance_variable_set(:"@#{key}", value)

@@ -234,7 +234,7 @@ class Tab
   end
 
   def initialize(attributes = {})
-    attributes.each { |key, value| instance_variable_set("@#{key}", value) }
+    attributes.each { |key, value| instance_variable_set(:"@#{key}", value) }
   end
 
   def any_args_or_options?

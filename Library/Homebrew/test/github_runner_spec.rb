@@ -11,7 +11,7 @@ describe GitHubRunner do
 
   it "has immutable attributes" do
     [:platform, :arch, :spec, :macos_version].each do |attribute|
-      expect(runner.respond_to?("#{attribute}=")).to be(false)
+      expect(runner.respond_to?(:"#{attribute}=")).to be(false)
     end
   end
 

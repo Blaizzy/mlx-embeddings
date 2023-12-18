@@ -89,7 +89,7 @@ begin
     exit Homebrew.failed? ? 1 : 0
   elsif Commands.external_cmd_path(cmd)
     %w[CACHE LIBRARY_PATH].each do |env|
-      ENV["HOMEBREW_#{env}"] = Object.const_get("HOMEBREW_#{env}").to_s
+      ENV["HOMEBREW_#{env}"] = Object.const_get(:"HOMEBREW_#{env}").to_s
     end
     exec "brew-#{cmd}", *ARGV
   else
