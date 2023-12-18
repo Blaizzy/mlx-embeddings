@@ -55,6 +55,9 @@ Having a common order for stanzas makes casks easier to update and parse. Below 
 
     livecheck
 
+    deprecate!
+    disable!
+
     auto_updates
     conflicts_with
     depends_on
@@ -153,6 +156,8 @@ Each cask must declare one or more *artifacts* (i.e. something to install).
 | [`uninstall`](#stanza-uninstall)           | yes                           | Procedures to uninstall a cask. Optional unless the `pkg` stanza is used. |
 | [`conflicts_with`](#stanza-conflicts_with) | yes                           | List of conflicts with this cask (*not yet functional*). |
 | [`caveats`](#stanza-caveats)               | yes                           | String or Ruby block providing the user with cask-specific information at install time. |
+| [`deprecate!`](#stanza-deprecate--disable) | no                            | Date as a String in `YYYY-MM-DD` format and a String or Symbol providing a reason. |
+| [`disable!`](#stanza-deprecate--disable)   | no                            | Date as a String in `YYYY-MM-DD` format and a String or Symbol providing a reason. |
 | `preflight`                                | yes                           | Ruby block containing preflight install operations (needed only in very rare cases). |
 | [`postflight`](#stanza-flight)             | yes                           | Ruby block containing postflight install operations. |
 | `uninstall_preflight`                      | yes                           | Ruby block containing preflight uninstall operations (needed only in very rare cases). |
@@ -280,7 +285,6 @@ The following methods may be called to generate standard warning messages:
 | `logout`                           | Users should log out and log back in to complete installation. |
 | `reboot`                           | Users should reboot to complete installation. |
 | `files_in_usr_local`               | The cask installs files to `/usr/local`, which may confuse Homebrew. |
-| `discontinued`                     | All software development has been officially discontinued upstream. |
 | `kext`                             | Users may need to enable their kexts in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → General* in earlier macOS versions). |
 | `unsigned_accessibility`           | Users will need to re-enable the app on each update in *System Settings → Privacy & Security* (or *System Preferences → Security & Privacy → Privacy* in earlier macOS versions) as it is unsigned. |
 | `license "web_page"`               | Users may find the software's usage license at `web_page`. |
@@ -293,6 +297,43 @@ caveats do
   path_environment_variable "/usr/texbin"
 end
 ```
+
+### Stanza: `deprecate!` / `disable!`
+
+`deprecate!` and `disable!` are used to declare that a cask is no longer functional or supported.
+Casks that contain a `deprecate!` stanza can still be installed, but will print a warning message when they are installed or upgraded.
+Casks that contain a `disable!` stanza cannot be installed or upgraded and will print an error message.
+
+The syntax for both stanzas is the same:
+
+```ruby
+deprecate! date: "YYYY-MM-DD", because: "is ..."
+disable! date: "YYYY-MM-DD", because: "is ..."
+
+# Or with a preset reason (see the `because:` argument section below)
+deprecate! date: "YYYY-MM-DD", because: :discontinued
+disable! date: "YYYY-MM-DD", because: :discontinued
+```
+
+#### `date:` argument
+
+The `date:` argument controls when the deprecation or disabling will take effect.
+Casks that have a `deprecate!` stanza with a date in the future will not be treated as being deprecated until that date.
+Casks that have a `disable!` stanza with a date in the future will be automatically deprecated until that date, at which point they will be disabled.
+
+#### `because:` argument
+
+The `because:` argument accepts a reason for the cask being deprecated or disabled.
+The info message will be `<cask> is deprecated because it <reason>!`, so format the reason to fit that sentence.
+For example, `because: "is broken"` will result in `<cask> is deprecated because it is broken!`.
+
+The `because:` argument can also accept a symbol that corresponds to a preset reason, for example:
+
+```ruby
+deprecate! date: "YYYY-MM-DD", because: :discontinued
+```
+
+A complete list of allowable symbols can be found in the [`DeprecateDisable` module](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/deprecate_disable.rb).
 
 ### Stanza: `conflicts_with`
 

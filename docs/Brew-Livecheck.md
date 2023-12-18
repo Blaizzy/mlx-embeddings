@@ -348,7 +348,7 @@ end
 
 ### `skip`
 
-Livecheck automatically skips some formulae/casks for a number of reasons (deprecated, disabled, discontinued, etc.). However, on rare occasions we need to use a `livecheck` block to do a manual skip. The `skip` method takes a string containing a very brief reason for skipping.
+Livecheck automatically skips some formulae/casks for a number of reasons (deprecated, disabled, etc.). However, on rare occasions we need to use a `livecheck` block to do a manual skip. The `skip` method takes a string containing a very brief reason for skipping.
 
 ```ruby
 livecheck do
