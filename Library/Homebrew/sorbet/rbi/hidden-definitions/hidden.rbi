@@ -8993,9 +8993,13 @@ class RuboCop::Cask::AST::Stanza
 
   def depends_on?(); end
 
+  def deprecate?(); end
+
   def desc?(); end
 
   def dictionary?(); end
+
+  def disable?(); end
 
   def font?(); end
 
