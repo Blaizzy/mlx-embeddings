@@ -1009,65 +1009,6 @@ module Homebrew
         end
       end
 
-      describe "checksums" do
-        describe "should not change with the same version" do
-          before do
-            formula_gsub(
-              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
-              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
-            )
-          end
-
-          it { is_expected.to match("stable sha256 changed without the url/version also changing") }
-        end
-
-        describe "should not change with the same version when not the first commit" do
-          before do
-            formula_gsub_origin_commit(
-              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
-              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
-            )
-            formula_gsub_origin_commit "revision 2"
-            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
-            formula_gsub(
-              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
-              'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
-            )
-          end
-
-          it { is_expected.to match("stable sha256 changed without the url/version also changing") }
-        end
-
-        describe "can change with the different version" do
-          before do
-            formula_gsub_origin_commit(
-              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
-              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
-            )
-            formula_gsub "foo-1.0.tar.gz", "foo-1.1.tar.gz"
-            formula_gsub_origin_commit(
-              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
-              'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
-            )
-          end
-
-          it { is_expected.to be_nil }
-        end
-
-        describe "can be removed when switching schemes" do
-          before do
-            formula_gsub_origin_commit(
-              'url "https://brew.sh/foo-1.0.tar.gz"',
-              'url "https://foo.com/brew/bar.git", tag: "1.0", revision: "f5e00e485e7aa4c5baa20355b27e3b84a6912790"',
-            )
-            formula_gsub_origin_commit('sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
-                                       "")
-          end
-
-          it { is_expected.to be_nil }
-        end
-      end
-
       describe "revisions" do
         describe "should not be removed when first committed above 0" do
           it { is_expected.to be_nil }
@@ -1169,6 +1110,97 @@ module Homebrew
           end
 
           it { is_expected.to match("version_schemes should only increment by 1") }
+        end
+      end
+    end
+
+    describe "#audit_unconfirmed_checksum_change" do
+      subject do
+        fa = described_class.new(Formulary.factory(formula_path), git: true)
+        fa.audit_unconfirmed_checksum_change
+        fa.problems.first&.fetch(:message)
+      end
+
+      before do
+        origin_formula_path.dirname.mkpath
+        origin_formula_path.write <<~RUBY
+          class Foo#{foo_version} < Formula
+            url "https://brew.sh/foo-1.0.tar.gz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            revision 2
+            version_scheme 1
+          end
+        RUBY
+
+        origin_tap_path.mkpath
+        origin_tap_path.cd do
+          system "git", "init"
+          system "git", "add", "--all"
+          system "git", "commit", "-m", "init"
+        end
+
+        tap_path.mkpath
+        tap_path.cd do
+          system "git", "clone", origin_tap_path, "."
+        end
+      end
+
+      describe "checksums" do
+        describe "should not change with the same version" do
+          before do
+            formula_gsub(
+              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+            )
+          end
+
+          it { is_expected.to match("stable sha256 changed without the url/version also changing") }
+        end
+
+        describe "should not change with the same version when not the first commit" do
+          before do
+            formula_gsub_origin_commit(
+              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+            )
+            formula_gsub_origin_commit "revision 2"
+            formula_gsub_origin_commit "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub(
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+              'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
+            )
+          end
+
+          it { is_expected.to match("stable sha256 changed without the url/version also changing") }
+        end
+
+        describe "can change with the different version" do
+          before do
+            formula_gsub_origin_commit(
+              'sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+            )
+            formula_gsub "foo-1.0.tar.gz", "foo-1.1.tar.gz"
+            formula_gsub_origin_commit(
+              'sha256 "3622d2a53236ed9ca62de0616a7e80fd477a9a3f862ba09d503da188f53ca523"',
+              'sha256 "e048c5e6144f5932d8672c2fade81d9073d5b3ca1517b84df006de3d25414fc1"',
+            )
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        describe "can be removed when switching schemes" do
+          before do
+            formula_gsub_origin_commit(
+              'url "https://brew.sh/foo-1.0.tar.gz"',
+              'url "https://foo.com/brew/bar.git", tag: "1.0", revision: "f5e00e485e7aa4c5baa20355b27e3b84a6912790"',
+            )
+            formula_gsub_origin_commit('sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"',
+                                       "")
+          end
+
+          it { is_expected.to be_nil }
         end
       end
     end
