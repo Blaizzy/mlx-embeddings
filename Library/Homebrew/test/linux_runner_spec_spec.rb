@@ -16,7 +16,7 @@ describe LinuxRunnerSpec do
 
   it "has immutable attributes" do
     [:name, :runner, :container, :workdir, :timeout, :cleanup].each do |attribute|
-      expect(spec.respond_to?("#{attribute}=")).to be(false)
+      expect(spec.respond_to?(:"#{attribute}=")).to be(false)
     end
   end
 

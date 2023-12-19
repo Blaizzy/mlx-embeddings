@@ -72,7 +72,7 @@ module Cask
 
         args = directives[directive_sym]
 
-        send("uninstall_#{directive_sym}", *(args.is_a?(Hash) ? [args] : args), **options)
+        send(:"uninstall_#{directive_sym}", *(args.is_a?(Hash) ? [args] : args), **options)
       end
 
       def stanza

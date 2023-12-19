@@ -18,7 +18,7 @@ module OnSystem
 
   sig { params(os_name: Symbol, or_condition: T.nilable(Symbol)).returns(T::Boolean) }
   def self.os_condition_met?(os_name, or_condition = nil)
-    return Homebrew::SimulateSystem.send("simulating_or_running_on_#{os_name}?") if BASE_OS_OPTIONS.include?(os_name)
+    return Homebrew::SimulateSystem.send(:"simulating_or_running_on_#{os_name}?") if BASE_OS_OPTIONS.include?(os_name)
 
     raise ArgumentError, "Invalid OS condition: #{os_name.inspect}" unless MacOSVersion::SYMBOLS.key?(os_name)
 
@@ -51,7 +51,7 @@ module OnSystem
   sig { params(base: Class).void }
   def self.setup_arch_methods(base)
     ARCH_OPTIONS.each do |arch|
-      base.define_method("on_#{arch}") do |&block|
+      base.define_method(:"on_#{arch}") do |&block|
         @on_system_blocks_exist = true
 
         return unless OnSystem.arch_condition_met? OnSystem.condition_from_method_name(T.must(__method__))
@@ -78,7 +78,7 @@ module OnSystem
   sig { params(base: Class).void }
   def self.setup_base_os_methods(base)
     BASE_OS_OPTIONS.each do |base_os|
-      base.define_method("on_#{base_os}") do |&block|
+      base.define_method(:"on_#{base_os}") do |&block|
         @on_system_blocks_exist = true
 
         return unless OnSystem.os_condition_met? OnSystem.condition_from_method_name(T.must(__method__))
@@ -124,7 +124,7 @@ module OnSystem
   sig { params(base: Class).void }
   def self.setup_macos_methods(base)
     MacOSVersion::SYMBOLS.each_key do |os_name|
-      base.define_method("on_#{os_name}") do |or_condition = nil, &block|
+      base.define_method(:"on_#{os_name}") do |or_condition = nil, &block|
         @on_system_blocks_exist = true
 
         os_condition = OnSystem.condition_from_method_name T.must(__method__)
