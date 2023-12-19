@@ -276,15 +276,25 @@ module PyPI
       end
     end
 
-    ensure_formula_installed!("python")
+    python_deps = formula.deps
+                         .map(&:to_formula)
+                         .select { |f| f.name.start_with?("python@") }
+                         .sort_by(&:version)
+                         .reverse
+    python_name = if python_deps.empty?
+      "python"
+    else
+      (python_deps.find(&:any_version_installed?) || python_deps.first).name
+    end
+    ensure_formula_installed!(python_name)
 
     # Resolve the dependency tree of all input packages
     ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
-    found_packages = pip_report(input_packages)
+    found_packages = pip_report(input_packages, python_name: python_name)
     # Resolve the dependency tree of excluded packages to prune the above
     exclude_packages.delete_if { |package| found_packages.exclude? package }
     ohai "Retrieving PyPI dependencies for excluded \"#{exclude_packages.join(" ")}\"..." if !print_only && !silent
-    exclude_packages = pip_report(exclude_packages) + [Package.new(main_package.name)]
+    exclude_packages = pip_report(exclude_packages, python_name: python_name) + [Package.new(main_package.name)]
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
@@ -348,10 +358,10 @@ module PyPI
     name.gsub(/[-_.]+/, "-").downcase
   end
 
-  def self.pip_report(packages)
+  def self.pip_report(packages, python_name: "python")
     return [] if packages.blank?
 
-    command = [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--dry-run",
+    command = [Formula[python_name].libexec/"bin/python", "-m", "pip", "install", "-q", "--dry-run",
                "--ignore-installed", "--report=/dev/stdout", *packages.map(&:to_s)]
     pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
     unless $CHILD_STATUS.success?
