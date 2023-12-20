@@ -806,23 +806,10 @@ module Homebrew
       return if formula.stable.blank?
 
       current_version = formula.stable.version
-      current_checksum = formula.stable.checksum
       current_version_scheme = formula.version_scheme
       current_revision = formula.revision
-      current_url = formula.stable.url
 
       previous_committed, newest_committed = committed_version_info
-
-      if current_version == newest_committed[:version] &&
-         current_url == newest_committed[:url] &&
-         current_checksum != newest_committed[:checksum] &&
-         current_checksum.present? && newest_committed[:checksum].present?
-        problem(
-          "stable sha256 changed without the url/version also changing; " \
-          "please create an issue upstream to rule out malicious " \
-          "circumstances and to find out why the file changed.",
-        )
-      end
 
       unless previous_committed[:version_scheme].nil?
         if current_version_scheme < previous_committed[:version_scheme]
@@ -846,6 +833,30 @@ module Homebrew
       elsif newest_committed[:revision] &&
             current_revision > (newest_committed[:revision] + 1)
         problem "revisions should only increment by 1"
+      end
+    end
+
+    def audit_unconfirmed_checksum_change
+      return unless @git
+      return unless formula.tap # skip formula not from core or any taps
+      return unless formula.tap.git? # git log is required
+      return if formula.stable.blank?
+
+      current_version = formula.stable.version
+      current_checksum = formula.stable.checksum
+      current_url = formula.stable.url
+
+      _, newest_committed = committed_version_info
+
+      if current_version == newest_committed[:version] &&
+         current_url == newest_committed[:url] &&
+         current_checksum != newest_committed[:checksum] &&
+         current_checksum.present? && newest_committed[:checksum].present?
+        problem(
+          "stable sha256 changed without the url/version also changing; " \
+          "please create an issue upstream to rule out malicious " \
+          "circumstances and to find out why the file changed.",
+        )
       end
     end
 
