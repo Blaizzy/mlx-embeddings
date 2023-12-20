@@ -191,9 +191,7 @@ class SystemCommand
                      "-E", *env_args,
                      "--", "/usr/bin/sudo"]
     end
-    if sudo_as_root?
-      user_flags += ["-u", "root"]
-    end
+    user_flags += sudo_as_root? ? ["-u", "root"] : []
     ["/usr/bin/sudo", *user_flags, *askpass_flags, "-E", *env_args, "--"]
   end
 
