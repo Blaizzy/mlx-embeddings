@@ -279,8 +279,13 @@ module Cask
           # misapplied "kill" by root could bring down the system. The fact that we
           # learned the pid from AppleScript is already some degree of protection,
           # though indirect.
+          # TODO: check the user that owns the PID and don't try to kill those from other users.
           odebug "Unix ids are #{pids.inspect} for processes with bundle identifier #{bundle_id}"
-          Process.kill(signal, *pids)
+          begin
+            Process.kill(signal, *pids)
+          rescue Errno::EPERM => e
+            opoo "Failed to kill #{bundle_id} PIDs #{pids.join(", ")} with signal #{signal}: #{e}"
+          end
           sleep 3
         end
       end
