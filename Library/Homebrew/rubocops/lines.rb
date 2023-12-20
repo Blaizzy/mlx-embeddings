@@ -375,9 +375,17 @@ module RuboCop
             string_content(parameters(dep).first).start_with? "python@"
           end
 
-          return if python_formula_node.blank?
+          python_version = if python_formula_node.blank?
+            other_python_nodes = find_every_method_call_by_name(body_node, :depends_on).select do |dep|
+              parameters(dep).first.instance_of?(RuboCop::AST::HashNode) &&
+                string_content(parameters(dep).first.keys.first).start_with?("python@")
+            end
+            return if other_python_nodes.size != 1
 
-          python_version = string_content(parameters(python_formula_node).first).split("@").last
+            string_content(parameters(other_python_nodes.first).first.keys.first).split("@").last
+          else
+            string_content(parameters(python_formula_node).first).split("@").last
+          end
 
           find_strings(body_node).each do |str|
             content = string_content(str)
