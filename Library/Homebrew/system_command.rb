@@ -183,15 +183,15 @@ class SystemCommand
   def sudo_prefix
     askpass_flags = ENV.key?("SUDO_ASKPASS") ? ["-A"] : []
     user_flags = []
-    if sudo_as_root?
-      user_flags += ["-u", "root"]
-    elsif Homebrew::EnvConfig.sudo_through_sudo_user?
+    if Homebrew::EnvConfig.sudo_through_sudo_user?
       raise ArgumentError, "HOMEBREW_SUDO_THROUGH_SUDO_USER set but SUDO_USER unset!" if homebrew_sudo_user.blank?
 
       user_flags += ["--prompt", "Password for %p:", "-u", homebrew_sudo_user,
                      *askpass_flags,
                      "-E", *env_args,
                      "--", "/usr/bin/sudo"]
+    elsif sudo_as_root?
+      user_flags += ["-u", "root"]
     end
     ["/usr/bin/sudo", *user_flags, *askpass_flags, "-E", *env_args, "--"]
   end
