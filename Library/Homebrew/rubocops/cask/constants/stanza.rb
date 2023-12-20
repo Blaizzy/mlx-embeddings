@@ -65,6 +65,20 @@ module RuboCop
         end.freeze
 
       STANZA_ORDER = STANZA_GROUPS.flatten.freeze
+
+      UNINSTALL_METHODS_ORDER = [
+        :early_script,
+        :launchctl,
+        :quit,
+        :signal,
+        :login_item,
+        :kext,
+        :script,
+        :pkgutil,
+        :delete,
+        :trash,
+        :rmdir,
+      ].freeze
     end
   end
 end
