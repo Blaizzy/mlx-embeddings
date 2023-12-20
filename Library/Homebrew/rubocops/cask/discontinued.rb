@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-# TODO: Remove this when we remove `caveats { discontinued }` (likely for Homebrew 4.5.0)
 module RuboCop
   module Cop
     module Cask
