@@ -109,7 +109,8 @@ Common reasons to reject a cask entirely:
   * Similarly (and trickier to spot), the app has moved to the Mac App Store but still provides old versions via direct download. We reject these in all official repositories so users don’t get stuck using an old version, wrongly thinking they’re using the most up-to-date one (which, amongst other things, might be a security risk).
 * App is unmaintained, i.e. no releases in the last year, or [explicitly discontinued](https://github.com/Homebrew/homebrew-cask/pull/22699).
 * App has no information on its homepage (example: a GitHub repository without a README).
-* Cask has a download URL that is both behind a login/registration form and from a host that differs from the homepage, meaning users can’t easily verify its authenticity.
+* Cask has no public presence so `brew install` would be the only way to install the software, meaning users can’t easily verify its authenticity.
+  * Or if the Cask has a download URL that is both behind a login/registration form and from a host that differs from the homepage.
 * Cask is unreasonably difficult to maintain. Examples have included [Audacity](https://github.com/Homebrew/homebrew-cask/pull/27517) and [older Java development casks](https://github.com/Homebrew/homebrew-cask/issues/57387).
 * Cask has been rejected before due to an issue we cannot fix, and the new submission doesn’t fix that. An example would be the [first submission of `soapui`](https://github.com/Homebrew/homebrew-cask/pull/4939), whose installation problems were not fixed in the two [subsequent](https://github.com/Homebrew/homebrew-cask/pull/9969) [submissions](https://github.com/Homebrew/homebrew-cask/pull/10606).
 * Cask is a duplicate. These submissions mostly occur when the [token reference](https://docs.brew.sh/Cask-Cookbook#token-reference) was not followed.
