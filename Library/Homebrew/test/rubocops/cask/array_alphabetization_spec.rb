@@ -56,4 +56,17 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
       end
     CASK
   end
+
+  it "ignores zap trash paths that have interpolation" do
+    expect_no_offenses(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        zap trash: [
+          "~/Library/Application Support/Foo",
+          "~/Library/Application Support/Bar\#{version.major}",
+        ]
+      end
+    CASK
+  end
 end
