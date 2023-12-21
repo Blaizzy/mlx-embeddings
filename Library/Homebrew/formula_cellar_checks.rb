@@ -324,6 +324,14 @@ module FormulaCellarChecks
       cpuid_instruction?(file, objdump)
     end
 
+    hardlinks = Set.new
+    return if formula.lib.directory? && formula.lib.find.any? do |pn|
+      next false if pn.symlink? || pn.directory? || pn.extname != ".a"
+      next false unless hardlinks.add? [pn.stat.dev, pn.stat.ino]
+
+      cpuid_instruction?(pn, objdump)
+    end
+
     "No `cpuid` instruction detected. #{formula} should not use `ENV.runtime_cpu_detection`."
   end
 
