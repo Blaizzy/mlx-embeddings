@@ -19,7 +19,7 @@ module RuboCop
               end
 
               array.each_descendant(:str).each_cons(2) do |first, second|
-                next if first.source < second.source
+                next if first.source.downcase < second.source.downcase
 
                 add_offense(second, message: "The `zap trash` paths should be in alphabetical order") do |corrector|
                   corrector.insert_before(first.source_range, second.source)
