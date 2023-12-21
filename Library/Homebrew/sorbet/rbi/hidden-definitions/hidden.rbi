@@ -9099,6 +9099,10 @@ class RuboCop::Cop::Cask::Desc
   include ::RuboCop::Cop::CommentsHelp
 end
 
+class RuboCop::Cop::Cask::Discontinued
+  include ::RuboCop::Cop::CommentsHelp
+end
+
 class RuboCop::Cop::Cask::HomepageUrlTrailingSlash
   include ::RuboCop::Cop::CommentsHelp
 end
