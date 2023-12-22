@@ -14,6 +14,8 @@ module RuboCop
           return if node.method_name != :zap
 
           node.each_descendant(:pair).each do |pair|
+            next if pair.children.select(&:sym_type?).map(&:value) != [:trash]
+
             pair.each_descendant(:array).each do |array|
               if array.children.length == 1
                 add_offense(array, message: SINGLE_MSG) do |corrector|

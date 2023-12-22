@@ -77,4 +77,17 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
       end
     CASK
   end
+
+  it "ignores `zap` methods other than `trash`" do
+    expect_no_offenses(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        zap delete: [
+          "~/Library/Application Support/Foo",
+          "~/Library/Application Support/Bar",
+        ]
+      end
+    CASK
+  end
 end
