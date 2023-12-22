@@ -29,6 +29,11 @@ module SystemConfig
       @clt ||= MacOS::CLT.version if MacOS::CLT.installed?
     end
 
+    def core_tap_config(out = $stdout)
+      dump_tap_config(CoreTap.instance, out)
+      dump_tap_config(CoreCaskTap.instance, out)
+    end
+
     def dump_verbose_config(out = $stdout)
       dump_generic_verbose_config(out)
       out.puts "macOS: #{MacOS.full_version}-#{kernel}"
