@@ -207,7 +207,10 @@ module Homebrew
       end
     when :v2
       formulae, casks = if all
-        [Formula.all(eval_all: args.eval_all?).sort, Cask::Cask.all.sort_by(&:full_name)]
+        [
+          Formula.all(eval_all: args.eval_all?).sort,
+          Cask::Cask.all(eval_all: args.eval_all?).sort_by(&:full_name),
+        ]
       elsif args.installed?
         [Formula.installed.sort, Cask::Caskroom.casks.sort_by(&:full_name)]
       else
