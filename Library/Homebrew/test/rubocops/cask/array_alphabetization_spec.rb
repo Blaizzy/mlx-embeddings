@@ -28,12 +28,11 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         url "https://example.com/foo.zip"
 
         zap trash: [
+                   ^ The `zap trash` paths should be in alphabetical order
           "/Library/Application Support/Foo",
           "/Library/Application Support/Baz",
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ The `zap trash` paths should be in alphabetical order
           "~/Library/Application Support/Foo",
           "~/.dotfiles/thing",
-          ^^^^^^^^^^^^^^^^^^^ The `zap trash` paths should be in alphabetical order
           "~/Library/Application Support/Bar",
         ]
       end
@@ -54,14 +53,26 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
     CASK
   end
 
-  it "ignores zap trash paths that have interpolation" do
-    expect_no_offenses(<<~CASK)
+  it "autocorrects alphabetization in zap trash paths with interpolation" do
+    expect_offense(<<~CASK)
       cask "foo" do
         url "https://example.com/foo.zip"
 
         zap trash: [
+                   ^ The `zap trash` paths should be in alphabetical order
           "~/Library/Application Support/Foo",
           "~/Library/Application Support/Bar\#{version.major}",
+        ]
+      end
+    CASK
+
+    expect_correction(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        zap trash: [
+          "~/Library/Application Support/Bar\#{version.major}",
+          "~/Library/Application Support/Foo",
         ]
       end
     CASK

@@ -7,26 +7,28 @@ module RuboCop
       class ArrayAlphabetization < Base
         extend AutoCorrector
 
+        SINGLE_MSG = "Remove the `[]` around a single `zap trash` path".freeze
+        NON_ALPHABETICAL_MSG = "The `zap trash` paths should be in alphabetical order".freeze
+
         def on_send(node)
           return if node.method_name != :zap
 
           node.each_descendant(:pair).each do |pair|
             pair.each_descendant(:array).each do |array|
               if array.children.length == 1
-                add_offense(array, message: "Remove the `[]` around a single `zap trash` path") do |corrector|
+                add_offense(array, message: SINGLE_MSG) do |corrector|
                   corrector.replace(array.source_range, array.children.first.source)
                 end
               end
 
-              array.children.reject(&:dstr_type?).each_cons(2) do |first, second|
-                next if first.source.downcase < second.source.downcase
+              next if array.children.length <= 1
 
-                add_offense(second, message: "The `zap trash` paths should be in alphabetical order") do |corrector|
-                  corrector.insert_before(first.source_range, second.source)
-                  corrector.insert_before(second.source_range, first.source)
-                  # Using `corrector.replace` here trips the clobbering detection.
-                  corrector.remove(first.source_range)
-                  corrector.remove(second.source_range)
+              sorted_array = array.children.sort_by { |child| child.source.downcase }
+              next if sorted_array.map(&:source) == array.children.map(&:source)
+
+              add_offense(array, message: NON_ALPHABETICAL_MSG) do |corrector|
+                array.children.each_with_index do |child, index|
+                  corrector.replace(child.source_range, sorted_array[index].source)
                 end
               end
             end
