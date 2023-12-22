@@ -145,7 +145,10 @@ module Homebrew
                     "brew audit --eval-all or HOMEBREW_EVAL_ALL"
         end
         no_named_args = true
-        [Formula.all(eval_all: args.eval_all?), Cask::Cask.all]
+        [
+          Formula.all(eval_all: args.eval_all?),
+          Cask::Cask.all(eval_all: args.eval_all?),
+        ]
       else
         if args.named.any? { |named_arg| named_arg.end_with?(".rb") }
           # This odisabled should probably stick around indefinitely,

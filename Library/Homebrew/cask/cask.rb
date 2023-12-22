@@ -24,14 +24,16 @@ module Cask
     attr_predicate :loaded_from_api?
 
     # @api private
-    def self.all
-      # TODO: replace this ARGV and ENV logic with an argument, like how we do with formulae
-      if ARGV.exclude?("--eval-all") && !Homebrew::EnvConfig.eval_all?
+    def self.all(eval_all: false)
+      if !eval_all && !Homebrew::EnvConfig.eval_all?
         raise ArgumentError, "Cask::Cask#all cannot be used without --eval-all or HOMEBREW_EVAL_ALL"
       end
 
-      Tap.flat_map(&:cask_files).map do |f|
-        CaskLoader::FromTapPathLoader.new(f).load(config: nil)
+      # Load core casks from tokens so they load from the API when the core cask is not tapped.
+      tokens_and_files = CoreCaskTap.instance.cask_tokens
+      tokens_and_files += Tap.reject(&:core_cask_tap?).flat_map(&:cask_files)
+      tokens_and_files.map do |token_or_file|
+        CaskLoader.load(token_or_file)
       rescue CaskUnreadableError => e
         opoo e.message
 

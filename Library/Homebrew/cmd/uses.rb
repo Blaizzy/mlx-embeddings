@@ -119,7 +119,7 @@ module Homebrew
         deps += args.installed? ? Formula.installed : Formula.all(eval_all: args.eval_all?)
       end
       if show_formulae_and_casks || args.cask?
-        deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.all
+        deps += args.installed? ? Cask::Caskroom.casks : Cask::Cask.all(eval_all: args.eval_all?)
       end
 
       if args.missing?
