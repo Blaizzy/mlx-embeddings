@@ -11,9 +11,11 @@ module Hardware
     end
     if CPU.arch == :arm64
       :arm_vortex_tempest
-    # This cannot use a newer CPU e.g. ivybridge because Rosetta 2 does not
+    # This cannot use a newer CPU e.g. haswell because Rosetta 2 does not
     # support AVX instructions in bottles:
     #   https://github.com/Homebrew/homebrew-core/issues/67713
+    elsif version >= :ventura
+      :westmere
     elsif version >= :mojave
       :nehalem
     else
