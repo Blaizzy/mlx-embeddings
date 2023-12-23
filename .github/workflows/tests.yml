@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   syntax:
-    if: github.repository == 'Homebrew/brew'
+    if: github.repository_owner == 'Homebrew'
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
@@ -47,6 +47,13 @@ jobs:
       - name: Install shellcheck and shfmt
         run: brew install shellcheck shfmt
 
+      - name: Cache style cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Homebrew/style
+          key: syntax-style-cache-${{ github.sha }}
+          restore-keys: syntax-style-cache-
+
       - run: brew style
 
       - run: brew typecheck
@@ -67,7 +74,7 @@ jobs:
   tap-syntax:
     name: tap syntax
     needs: syntax
-    if: startsWith(github.repository, 'Homebrew/')
+    if: github.repository_owner == 'Homebrew'
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
@@ -87,6 +94,13 @@ jobs:
 
       - name: Install Bundler RubyGems
         run: brew install-bundler-gems --groups=style
+
+      - name: Cache style cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Homebrew/style
+          key: tap-syntax-style-cache-${{ github.sha }}
+          restore-keys: tap-syntax-style-cache-
 
       - name: Run brew style on homebrew-core
         run: brew style homebrew/core
@@ -127,7 +141,7 @@ jobs:
   formula-audit:
     name: formula audit
     needs: syntax
-    if: startsWith(github.repository, 'Homebrew/')
+    if: github.repository_owner == 'Homebrew'
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Homebrew
@@ -150,7 +164,7 @@ jobs:
   cask-audit:
     name: cask audit
     needs: syntax
-    if: startsWith(github.repository, 'Homebrew/')
+    if: github.repository_owner == 'Homebrew'
     runs-on: macos-13
     steps:
       - name: Set up Homebrew
@@ -383,7 +397,7 @@ jobs:
   test-default-formula:
     name: ${{ matrix.name }}
     needs: syntax
-    if: startsWith(github.repository, 'Homebrew/')
+    if: github.repository_owner == 'Homebrew'
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
