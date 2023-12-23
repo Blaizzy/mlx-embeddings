@@ -192,22 +192,32 @@ module OS
         # if return is used in the middle, which we do many times in here.
         return if !MacOS::Xcode.installed? && !MacOS::CLT.installed?
 
-        %W[
-          #{prefix}/usr/bin/xcodebuild
-          #{which("xcodebuild")}
-        ].uniq.each do |xcodebuild_path|
-          next unless File.executable? xcodebuild_path
+        if MacOS::Xcode.installed?
+          # Fast path that will probably almost always work unless `xcode-select -p` is misconfigured
+          version_plist = T.must(prefix).parent/"version.plist"
+          if version_plist.file?
+            data = Plist.parse_xml(version_plist, marshal: false)
+            version = data["CFBundleShortVersionString"] if data
+            return version if version
+          end
 
-          xcodebuild_output = Utils.popen_read(xcodebuild_path, "-version")
-          next unless $CHILD_STATUS.success?
+          %W[
+            #{prefix}/usr/bin/xcodebuild
+            #{which("xcodebuild")}
+          ].uniq.each do |xcodebuild_path|
+            next unless File.executable? xcodebuild_path
 
-          xcode_version = xcodebuild_output[/Xcode (\d+(\.\d+)*)/, 1]
-          return xcode_version if xcode_version
+            xcodebuild_output = Utils.popen_read(xcodebuild_path, "-version")
+            next unless $CHILD_STATUS.success?
 
-          # Xcode 2.x's xcodebuild has a different version string
-          case xcodebuild_output[/DevToolsCore-(\d+\.\d)/, 1]
-          when "798.0" then return "2.5"
-          when "515.0" then return "2.0"
+            xcode_version = xcodebuild_output[/Xcode (\d+(\.\d+)*)/, 1]
+            return xcode_version if xcode_version
+
+            # Xcode 2.x's xcodebuild has a different version string
+            case xcodebuild_output[/DevToolsCore-(\d+\.\d)/, 1]
+            when "798.0" then return "2.5"
+            when "515.0" then return "2.0"
+            end
           end
         end
 
