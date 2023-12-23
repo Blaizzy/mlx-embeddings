@@ -29,10 +29,11 @@ module Hardware
           native:             arch_flag("native"),
           ivybridge:          "-march=ivybridge",
           sandybridge:        "-march=sandybridge",
+          westmere:           "-march=westmere",
           nehalem:            "-march=nehalem",
           core2:              "-march=core2",
           core:               "-march=prescott",
-          arm_vortex_tempest: "",
+          arm_vortex_tempest: "", # TODO: -mcpu=apple-m1 when we've patched all our GCCs to support it
           armv6:              "-march=armv6",
           armv8:              "-march=armv8-a",
           ppc64:              "-mcpu=powerpc64",
@@ -225,7 +226,7 @@ module Hardware
       @target_cpu ||= case (cpu = oldest_cpu)
       when :core
         :prescott
-      when :native, :ivybridge, :sandybridge, :nehalem, :core2
+      when :native, :ivybridge, :sandybridge, :westmere, :nehalem, :core2
         cpu
       end
       return if @target_cpu.blank?
