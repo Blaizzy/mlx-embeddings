@@ -40,7 +40,7 @@ GEM
     mustache (1.1.1)
     netrc (0.11.0)
     parallel (1.24.0)
-    parallel_tests (4.3.0)
+    parallel_tests (4.4.0)
       parallel
     parlour (8.1.0)
       commander (~> 4.5)
@@ -181,7 +181,6 @@ GEM
     zeitwerk (2.6.12)
 
 PLATFORMS
-  aarch64-linux
   arm-linux
   arm64-darwin
   x86_64-darwin
