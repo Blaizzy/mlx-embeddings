@@ -943,7 +943,7 @@ module Cask
       formula_path = Formulary.core_path(cask.token)
                               .to_s
                               .delete_prefix(core_tap.path.to_s)
-      "#{core_tap.default_remote}/blob/HEAD/Formula/#{formula_path}"
+      "#{core_tap.default_remote}/blob/HEAD#{formula_path}"
     end
   end
 end
