@@ -9,7 +9,6 @@
 # Distributed under the MIT License
 #
 
-require 'base64'
 require 'cgi'
 require 'stringio'
 

@@ -246,10 +246,10 @@ module Plist
     end
   end
 
-  require 'base64'
   class PData < PTag
     def to_ruby
-      data = Base64.decode64(text.gsub(/\s+/, '')) unless text.nil?
+      # unpack("m")[0] is equivalent to Base64.decode64
+      data = text.gsub(/\s+/, '').unpack("m")[0] unless text.nil?
       begin
         return Marshal.load(data) if options[:marshal]
       rescue Exception

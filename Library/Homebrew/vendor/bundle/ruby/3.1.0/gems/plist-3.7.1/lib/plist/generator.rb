@@ -124,11 +124,9 @@ module Plist
 
       def data_tag(data, level)
         # note that apple plists are wrapped at a different length then
-        # what ruby's base64 wraps by default.
-        # I used #encode64 instead of #b64encode (which allows a length arg)
-        # because b64encode is b0rked and ignores the length arg.
+        # what ruby's pack wraps by default.
         tag('data', nil, level) do
-          Base64.encode64(data)
+          [data].pack("m") # equivalent to Base64.encode64(data)
                 .gsub(/\s+/, '')
                 .scan(/.{1,68}/o)
                 .collect { |line| indent(line, level) }
