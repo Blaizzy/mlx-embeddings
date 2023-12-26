@@ -2720,13 +2720,19 @@ RuboCop::Cop::Performance::StartWith::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Ar
 class RuboCop::Cop::Performance::StringIdentifierArgument < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#51
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#56
   def on_send(node); end
 
   private
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#71
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#93
   def argument_replacement(node, value); end
+
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#83
+  def register_offense(argument, argument_value); end
+
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#69
+  def string_arguments(node); end
 end
 
 # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#32
@@ -2735,12 +2741,18 @@ RuboCop::Cop::Performance::StringIdentifierArgument::COMMAND_METHODS = T.let(T.u
 # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#30
 RuboCop::Cop::Performance::StringIdentifierArgument::MSG = T.let(T.unsafe(nil), String)
 
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#38
+RuboCop::Cop::Performance::StringIdentifierArgument::MULTIPLE_ARGUMENTS_METHODS = T.let(T.unsafe(nil), Array)
+
 # NOTE: `attr` method is not included in this list as it can cause false positives in Nokogiri API.
 # And `attr` may not be used because `Style/Attr` registers an offense.
 # https://github.com/rubocop/rubocop-performance/issues/278
 #
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#40
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#46
 RuboCop::Cop::Performance::StringIdentifierArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
+
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#37
+RuboCop::Cop::Performance::StringIdentifierArgument::TWO_ARGUMENTS_METHOD = T.let(T.unsafe(nil), Symbol)
 
 # Identifies unnecessary use of a regex where `String#include?` would suffice.
 #
