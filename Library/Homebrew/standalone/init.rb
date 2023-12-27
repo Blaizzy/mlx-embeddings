@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # This file is included before any other files. It intentionally has typing disabled and has minimal use of `require`.
@@ -9,6 +9,8 @@ gems_vendored = if required_ruby_minor.nil?
   true
 else
   ruby_major, ruby_minor, = RUBY_VERSION.split(".").map(&:to_i)
+  raise "Could not parse Ruby requirements" if !ruby_major || !ruby_minor || !required_ruby_major
+
   if ruby_major < required_ruby_major || (ruby_major == required_ruby_major && ruby_minor < required_ruby_minor)
     raise "Homebrew must be run under Ruby #{required_ruby_major}.#{required_ruby_minor}! " \
           "You're running #{RUBY_VERSION}."
@@ -25,7 +27,8 @@ require "rbconfig"
 $LOAD_PATH.reject! { |path| path.start_with?(RbConfig::CONFIG["sitedir"]) }
 
 require "pathname"
-HOMEBREW_LIBRARY_PATH = Pathname(__dir__).parent.realpath.freeze
+dir = __dir__ || raise("__dir__ is not defined")
+HOMEBREW_LIBRARY_PATH = Pathname(dir).parent.realpath.freeze
 
 require_relative "../utils/gems"
 Homebrew.setup_gem_environment!(setup_path: false)
