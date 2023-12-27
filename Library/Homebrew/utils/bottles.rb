@@ -51,7 +51,7 @@ module Utils
 
       def receipt_path(bottle_file)
         bottle_file_list(bottle_file).find do |line|
-          line =~ %r{.+/.+/INSTALL_RECEIPT.json}
+          %r{.+/.+/INSTALL_RECEIPT.json}.match?(line)
         end
       end
 

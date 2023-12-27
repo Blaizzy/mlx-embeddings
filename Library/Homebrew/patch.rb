@@ -78,7 +78,7 @@ class DATAPatch < EmbeddedPatch
     path.open("rb") do |f|
       loop do
         line = f.gets
-        break if line.nil? || line =~ /^__END__$/
+        break if line.nil? || /^__END__$/.match?(line)
       end
       while (line = f.gets)
         data << line

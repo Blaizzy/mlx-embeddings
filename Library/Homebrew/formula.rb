@@ -1328,7 +1328,7 @@ class Formula
     self.class.link_overwrite_paths.any? do |p|
       p == to_check ||
         to_check.start_with?("#{p.chomp("/")}/") ||
-        to_check =~ /^#{Regexp.escape(p).gsub('\*', ".*?")}$/
+        /^#{Regexp.escape(p).gsub('\*', ".*?")}$/.match?(to_check)
     end
   end
 

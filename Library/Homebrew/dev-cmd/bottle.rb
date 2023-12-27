@@ -294,7 +294,7 @@ module Homebrew
 
     # Ignore matches to go keg, because all go binaries are statically linked.
     any_go_deps = formula.deps.any? do |dep|
-      dep.name =~ Version.formula_optionally_versioned_regex(:go)
+      dep.name&.match?(Version.formula_optionally_versioned_regex(:go))
     end
     if any_go_deps
       go_regex = Version.formula_optionally_versioned_regex(:go, full: false)

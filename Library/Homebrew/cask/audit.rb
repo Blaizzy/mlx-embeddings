@@ -843,7 +843,7 @@ module Cask
     def bad_url_format?(regex, valid_formats_array)
       return false unless cask.url.to_s.match?(regex)
 
-      valid_formats_array.none? { |format| cask.url.to_s =~ format }
+      valid_formats_array.none? { |format| cask.url.to_s&.match?(format) }
     end
 
     sig { returns(T::Boolean) }

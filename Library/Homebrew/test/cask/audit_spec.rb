@@ -5,7 +5,7 @@ require "cask/audit"
 describe Cask::Audit, :cask do
   def include_msg?(problems, msg)
     if msg.is_a?(Regexp)
-      Array(problems).any? { |problem| problem[:message] =~ msg }
+      Array(problems).any? { |problem| problem[:message]&.match?(msg) }
     else
       Array(problems).any? { |problem| problem[:message] == msg }
     end
