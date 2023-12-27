@@ -208,25 +208,11 @@ Rails:
     - "Homebrew/rubocops/**/*"
 
 # These relate to ActiveSupport and not other parts of Rails.
-Rails/ActiveSupportAliases:
-  Enabled: true
 Rails/Blank:
   Enabled: true
 Rails/CompactBlank:
   Enabled: true
-Rails/Delegate:
-  Enabled: false # TODO
-Rails/DelegateAllowBlank:
-  Enabled: true
-Rails/DurationArithmetic:
-  Enabled: true
-Rails/ExpandedDateRange:
-  Enabled: true
-Rails/Inquiry:
-  Enabled: true
 Rails/NegateInclude:
-  Enabled: true
-Rails/PluralizationGrammar:
   Enabled: true
 Rails/Presence:
   Enabled: true
@@ -235,15 +221,7 @@ Rails/Present:
   Exclude:
     # `present?` is defined as `!blank?` wihin this file
     - "Homebrew/extend/blank.rb"
-Rails/RelativeDateConstant:
-  Enabled: true
-Rails/SafeNavigation:
-  Enabled: true
 Rails/SafeNavigationWithBlank:
-  Enabled: true
-Rails/StripHeredoc:
-  Enabled: true
-Rails/ToFormattedS:
   Enabled: true
 
 # Intentionally disabled as it doesn't fit with our code style.
