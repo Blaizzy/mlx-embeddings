@@ -335,7 +335,7 @@ module Utils
         # Strategy:
         # If the `:homepage` 404s, it's a GitHub link, and we have a token then
         # check the API (which does use tokens) for the repository
-        repo_details = url.match?(%r{https?://github\.com/(?<user>[^/]+)/(?<repo>[^/]+)/?.*})
+        repo_details = url.match(%r{https?://github\.com/(?<user>[^/]+)/(?<repo>[^/]+)/?.*})
         check_github_api = url_type == SharedAudits::URL_TYPE_HOMEPAGE &&
                            details[:status_code] == "404" &&
                            repo_details &&

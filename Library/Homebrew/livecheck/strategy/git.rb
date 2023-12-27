@@ -66,7 +66,7 @@ module Homebrew
 
           # Isolate tag strings and filter by regex
           tags = stdout.gsub(%r{^.*\trefs/tags/|\^{}$}, "").split("\n").uniq.sort
-          tags.select! { |t| t&.match?(regex) } if regex
+          tags.select! { |t| regex.match?(t) } if regex
           tags_data[:tags] = tags
 
           tags_data
