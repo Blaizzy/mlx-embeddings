@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "formula_installer"
 require "unpack_strategy"
 require "utils/topological_hash"
@@ -17,7 +18,7 @@ module Cask
   #
   # @api private
   class Installer
-    extend Predicable
+    extend Attrable
 
     def initialize(cask, command: SystemCommand, force: false, adopt: false,
                    skip_cask_deps: false, binaries: true, verbose: false,

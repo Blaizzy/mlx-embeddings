@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "locale"
 require "lazy_object"
 require "livecheck"
@@ -101,7 +102,7 @@ module Cask
       *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
     ]).freeze
 
-    extend Predicable
+    extend Attrable
     include OnSystem::MacOSOnly
 
     attr_reader :cask, :token, :deprecation_date, :deprecation_reason, :disable_date, :disable_reason

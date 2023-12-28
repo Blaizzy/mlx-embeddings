@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "cask/denylist"
 require "cask/download"
 require "digest"
@@ -17,7 +18,7 @@ module Cask
   # @api private
   class Audit
     include ::Utils::Curl
-    extend Predicable
+    extend Attrable
 
     attr_reader :cask, :download
 

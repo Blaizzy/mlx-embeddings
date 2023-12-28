@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "active_support/core_ext/object/deep_dup"
 
 module Cask
@@ -13,7 +14,7 @@ module Cask
       abstract!
 
       include Comparable
-      extend Predicable
+      extend Attrable
 
       def self.english_name
         @english_name ||= T.must(name).sub(/^.*:/, "").gsub(/(.)([A-Z])/, '\1 \2')

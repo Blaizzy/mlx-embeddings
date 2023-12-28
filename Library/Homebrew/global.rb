@@ -135,7 +135,6 @@ require "context"
 require "extend/array"
 require "git_repository"
 require "extend/pathname"
-require "extend/predicable"
 require "cli/args"
 
 require "PATH"

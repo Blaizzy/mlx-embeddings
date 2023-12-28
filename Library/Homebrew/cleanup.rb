@@ -3,6 +3,7 @@
 
 require "utils/bottles"
 
+require "attrable"
 require "formula"
 require "cask/cask_loader"
 require "set"
@@ -176,7 +177,7 @@ module Homebrew
       end
     end
 
-    extend Predicable
+    extend Attrable
 
     PERIODIC_CLEAN_FILE = (HOMEBREW_CACHE/".cleaned").freeze
 

@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "resource"
 require "download_strategy"
 require "checksum"
@@ -506,6 +507,7 @@ class Bottle
 end
 
 class BottleSpecification
+  extend Attrable
   RELOCATABLE_CELLARS = [:any, :any_skip_relocation].freeze
 
   attr_rw :rebuild
