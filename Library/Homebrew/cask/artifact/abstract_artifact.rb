@@ -20,7 +20,7 @@ module Cask
       end
 
       def self.english_article
-        @english_article ||= (english_name =~ /^[aeiou]/i) ? "an" : "a"
+        @english_article ||= /^[aeiou]/i.match?(english_name) ? "an" : "a"
       end
 
       def self.dsl_key

@@ -172,7 +172,7 @@ class Sandbox
       logs = Utils.popen_read("syslog", *syslog_args)
 
       # These messages are confusing and non-fatal, so don't report them.
-      logs = logs.lines.reject { |l| l.match(/^.*Python\(\d+\) deny file-write.*pyc$/) }.join
+      logs = logs.lines.grep_v(/^.*Python\(\d+\) deny file-write.*pyc$/).join
 
       unless logs.empty?
         if @logfile

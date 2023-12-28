@@ -328,7 +328,7 @@ class Keg
     Utils.popen_read("strings", "-t", "x", "-", file.to_s) do |io|
       until io.eof?
         str = io.readline.chomp
-        next if ignores.any? { |i| i =~ str }
+        next if ignores.any? { |i| str.match?(i) }
         next unless str.match? path_regex
 
         offset, match = str.split(" ", 2)

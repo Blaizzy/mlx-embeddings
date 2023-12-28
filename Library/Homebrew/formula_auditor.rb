@@ -76,7 +76,7 @@ module Homebrew
             !@versioned_formula &&
             (versioned_formulae = formula.versioned_formulae - [formula]) &&
             versioned_formulae.present?
-        versioned_aliases, unversioned_aliases = formula.aliases.partition { |a| a =~ /.@\d/ }
+        versioned_aliases, unversioned_aliases = formula.aliases.partition { |a| /.@\d/.match?(a) }
         _, last_alias_version = versioned_formulae.map(&:name).last.split("@")
 
         alias_name_major = "#{formula.name}@#{formula.version.major}"
@@ -715,7 +715,7 @@ module Homebrew
       return unless stable.url
 
       version = stable.version
-      problem "Stable: version (#{version}) is set to a string without a digit" if version.to_s !~ /\d/
+      problem "Stable: version (#{version}) is set to a string without a digit" unless /\d/.match?(version.to_s)
 
       stable_version_string = version.to_s
       if stable_version_string.start_with?("HEAD")
