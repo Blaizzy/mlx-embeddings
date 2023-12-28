@@ -167,9 +167,9 @@ module Homebrew
             system "cmake", "--build", "build"
             system "cmake", "--install", "build"
         <% elsif @mode == :autotools %>
-            # Remove unrecognized options if warned by configure
+            # Remove unrecognized options if they cause configure to fail
             # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
-            system "./configure", *std_configure_args, "--disable-silent-rules"
+            system "./configure", "--disable-silent-rules", *std_configure_args
             system "make", "install" # if this fails, try separate make/make install steps
         <% elsif @mode == :crystal %>
             system "shards", "build", "--release"
@@ -214,9 +214,9 @@ module Homebrew
         <% elsif @mode == :rust %>
             system "cargo", "install", *std_cargo_args
         <% else %>
-            # Remove unrecognized options if warned by configure
+            # Remove unrecognized options if they cause configure to fail
             # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
-            system "./configure", *std_configure_args, "--disable-silent-rules"
+            system "./configure", "--disable-silent-rules", *std_configure_args
             # system "cmake", "-S", ".", "-B", "build", *std_cmake_args
         <% end %>
           end
