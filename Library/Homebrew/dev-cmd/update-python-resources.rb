@@ -45,6 +45,7 @@ module Homebrew
                                     exclude_packages:         args.exclude_packages,
                                     print_only:               args.print_only?,
                                     silent:                   args.silent?,
+                                    verbose:                  args.verbose?,
                                     ignore_non_pypi_packages: args.ignore_non_pypi_packages?
     end
   end
