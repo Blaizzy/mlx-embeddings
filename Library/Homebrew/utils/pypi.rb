@@ -199,11 +199,12 @@ module PyPI
       exclude_packages:         T.nilable(T::Array[String]),
       print_only:               T.nilable(T::Boolean),
       silent:                   T.nilable(T::Boolean),
+      verbose:                  T.nilable(T::Boolean),
       ignore_non_pypi_packages: T.nilable(T::Boolean),
     ).returns(T.nilable(T::Boolean))
   }
   def self.update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil,
-                                    exclude_packages: nil, print_only: false, silent: false,
+                                    exclude_packages: nil, print_only: false, silent: false, verbose: false,
                                     ignore_non_pypi_packages: false)
 
     auto_update_list = formula.tap&.pypi_formula_mappings
@@ -289,21 +290,23 @@ module PyPI
     ensure_formula_installed!(python_name)
 
     # Resolve the dependency tree of all input packages
-    ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if !print_only && !silent
-    found_packages = pip_report(input_packages, python_name: python_name)
+    show_info = !print_only && !silent
+    ohai "Retrieving PyPI dependencies for \"#{input_packages.join(" ")}\"..." if show_info
+    found_packages = pip_report(input_packages, python_name: python_name, print_stderr: verbose && show_info)
     # Resolve the dependency tree of excluded packages to prune the above
     exclude_packages.delete_if { |package| found_packages.exclude? package }
-    ohai "Retrieving PyPI dependencies for excluded \"#{exclude_packages.join(" ")}\"..." if !print_only && !silent
-    exclude_packages = pip_report(exclude_packages, python_name: python_name) + [Package.new(main_package.name)]
+    ohai "Retrieving PyPI dependencies for excluded \"#{exclude_packages.join(" ")}\"..." if show_info
+    exclude_packages = pip_report(exclude_packages, python_name: python_name, print_stderr: verbose && show_info)
+    exclude_packages += [Package.new(main_package.name)]
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
       if exclude_packages.include? package
-        ohai "Excluding \"#{package}\"" if !print_only && !silent
+        ohai "Excluding \"#{package}\"" if show_info
         next
       end
 
-      ohai "Getting PyPI info for \"#{package}\"" if !print_only && !silent
+      ohai "Getting PyPI info for \"#{package}\"" if show_info
       name, url, checksum = package.pypi_info
       # Fail if unable to find name, url or checksum for any resource
       if name.blank?
@@ -358,12 +361,16 @@ module PyPI
     name.gsub(/[-_.]+/, "-").downcase
   end
 
-  def self.pip_report(packages, python_name: "python")
+  def self.pip_report(packages, python_name: "python", print_stderr: false)
     return [] if packages.blank?
 
-    command = [Formula[python_name].libexec/"bin/python", "-m", "pip", "install", "-q", "--dry-run",
-               "--ignore-installed", "--report=/dev/stdout", *packages.map(&:to_s)]
-    pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
+    command = [
+      Formula[python_name].libexec/"bin/python", "-m", "pip", "install", "-q", "--disable-pip-version-check",
+      "--dry-run", "--ignore-installed", "--report=/dev/stdout", *packages.map(&:to_s)
+    ]
+    options = {}
+    options[:err] = :err if print_stderr
+    pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command, **options)
     unless $CHILD_STATUS.success?
       odie <<~EOS
         Unable to determine dependencies for "#{packages.join(" ")}" because of a failure when running
