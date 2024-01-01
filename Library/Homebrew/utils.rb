@@ -168,4 +168,17 @@ module Utils
     word.downcase!
     word
   end
+
+  SAFE_FILENAME_REGEX = /[[:cntrl:]#{Regexp.escape("#{File::SEPARATOR}#{File::ALT_SEPARATOR}")}]/o
+  private_constant :SAFE_FILENAME_REGEX
+
+  sig { params(basename: String).returns(T::Boolean) }
+  def self.safe_filename?(basename)
+    !SAFE_FILENAME_REGEX.match?(basename)
+  end
+
+  sig { params(basename: String).returns(String) }
+  def self.safe_filename(basename)
+    basename.gsub(SAFE_FILENAME_REGEX, "")
+  end
 end

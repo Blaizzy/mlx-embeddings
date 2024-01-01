@@ -307,13 +307,15 @@ class Formula
   end
 
   def validate_attributes!
-    raise FormulaValidationError.new(full_name, :name, name) if name.blank? || name.match?(/\s/)
+    if name.blank? || name.match?(/\s/) || !Utils.safe_filename?(name)
+      raise FormulaValidationError.new(full_name, :name, name)
+    end
 
     url = active_spec.url
     raise FormulaValidationError.new(full_name, :url, url) if url.blank? || url.match?(/\s/)
 
     val = version.respond_to?(:to_str) ? version.to_str : version
-    return if val.present? && !val.match?(/\s/)
+    return if val.present? && !val.match?(/\s/) && Utils.safe_filename?(val)
 
     raise FormulaValidationError.new(full_name, :version, val)
   end
