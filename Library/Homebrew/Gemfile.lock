@@ -65,7 +65,7 @@ GEM
     rbi (0.1.6)
       prism (>= 0.18.0, < 0.20)
       sorbet-runtime (>= 0.5.9204)
-    rdiscount (2.2.7.2)
+    rdiscount (2.2.7.3)
     regexp_parser (2.8.3)
     rexml (3.2.6)
     ronn (0.7.3)
