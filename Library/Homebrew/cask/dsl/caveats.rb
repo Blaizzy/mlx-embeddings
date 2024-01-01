@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
+
 module Cask
   class DSL
     # Class corresponding to the `caveats` stanza.
@@ -15,7 +17,7 @@ module Cask
     #
     # @api private
     class Caveats < Base
-      extend Predicable
+      extend Attrable
 
       attr_predicate :discontinued?
 

@@ -1,13 +1,12 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "open3"
 require "plist"
 require "shellwords"
 
 require "extend/io"
-require "extend/predicable"
-
 require "extend/time"
 
 # Class for running sub-processes and capturing their output and exit status.
@@ -28,7 +27,7 @@ class SystemCommand
   end
 
   include Context
-  extend Predicable
+  extend Attrable
 
   def self.run(executable, **options)
     new(executable, **options).run!

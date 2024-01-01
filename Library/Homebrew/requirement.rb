@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "dependable"
 require "dependency"
 require "dependencies"
@@ -163,6 +164,7 @@ class Requirement
 
   class << self
     include BuildEnvironment::DSL
+    extend Attrable
 
     attr_reader :env_proc, :build
 

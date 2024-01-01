@@ -1,6 +1,5 @@
 # typed: strict
 
-module Predicable
-  include Kernel
+module Attrable
   requires_ancestor { Module }
 end

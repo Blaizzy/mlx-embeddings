@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "cache_store"
 require "did_you_mean"
 require "formula_support"
@@ -66,7 +67,7 @@ class Formula
   include Homebrew::Livecheck::Constants
   extend Forwardable
   extend Cachable
-  extend Predicable
+  extend Attrable
   extend APIHashable
 
   # The name of this {Formula}.
@@ -2916,7 +2917,7 @@ class Formula
 
   # The methods below define the formula DSL.
   class << self
-    extend Predicable
+    extend Attrable
 
     include BuildEnvironment::DSL
     include OnSystem::MacOSAndLinux

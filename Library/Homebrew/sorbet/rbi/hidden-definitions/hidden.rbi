@@ -7219,7 +7219,7 @@ class Parlour::Types::Type
   extend ::T::InterfaceWrapper::Helpers
 end
 
-module Predicable
+module Attrable
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end

@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "attrable"
 require "cask/cask_loader"
 require "cask/config"
 require "cask/dsl"
@@ -14,7 +15,7 @@ module Cask
   # @api private
   class Cask
     extend Forwardable
-    extend Predicable
+    extend Attrable
     extend APIHashable
     include Metadata
 

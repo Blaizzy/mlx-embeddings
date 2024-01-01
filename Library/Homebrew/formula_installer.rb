@@ -28,7 +28,7 @@ require "service"
 # @api private
 class FormulaInstaller
   include FormulaCellarChecks
-  extend Predicable
+  extend Attrable
 
   attr_reader :formula, :bottle_tab_runtime_dependencies
 
