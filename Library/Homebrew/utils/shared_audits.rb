@@ -12,6 +12,16 @@ module SharedAudits
 
   module_function
 
+  def eol_data(product, cycle)
+    @eol_data ||= {}
+    @eol_data["#{product}/#{cycle}"] ||= begin
+      out, _, status = Utils::Curl.curl_output("--location", "https://endoflife.date/api/#{product}/#{cycle}.json")
+      json = JSON.parse(out) if status.success?
+      json = nil if json&.dig("message")&.include?("Product not found")
+      json
+    end
+  end
+
   def github_repo_data(user, repo)
     @github_repo_data ||= {}
     @github_repo_data["#{user}/#{repo}"] ||= GitHub.repository(user, repo)
