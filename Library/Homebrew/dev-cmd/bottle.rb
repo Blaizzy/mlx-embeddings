@@ -365,9 +365,9 @@ module Homebrew
       end || 0
     end
 
-    filename = Bottle::Filename.create(formula, bottle_tag.to_sym, rebuild)
+    filename = Bottle::Filename.create(formula, bottle_tag, rebuild)
     local_filename = filename.to_s
-    bottle_path = Pathname.pwd/filename
+    bottle_path = Pathname.pwd/local_filename
 
     tab = nil
     keg = nil
@@ -690,8 +690,8 @@ module Homebrew
       bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
         filename = Bottle::Filename.new(
           formula_name,
-          bottle_hash["formula"]["pkg_version"],
-          tag,
+          PkgVersion.parse(bottle_hash["formula"]["pkg_version"]),
+          Utils::Bottles::Tag.from_symbol(tag.to_sym),
           bottle_hash["bottle"]["rebuild"],
         )
 
@@ -700,8 +700,8 @@ module Homebrew
 
           all_filename = Bottle::Filename.new(
             formula_name,
-            bottle_hash["formula"]["pkg_version"],
-            "all",
+            PkgVersion.parse(bottle_hash["formula"]["pkg_version"]),
+            Utils::Bottles::Tag.from_symbol(:all),
             bottle_hash["bottle"]["rebuild"],
           )
 

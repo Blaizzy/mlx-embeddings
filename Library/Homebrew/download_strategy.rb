@@ -197,7 +197,7 @@ class VCSDownloadStrategy < AbstractDownloadStrategy
     super
     @ref_type, @ref = extract_ref(meta)
     @revision = meta[:revision]
-    @cached_location = @cache/"#{name}--#{cache_tag}"
+    @cached_location = @cache/Utils.safe_filename("#{name}--#{cache_tag}")
   end
 
   # Download and cache the repository at {#cached_location}.
@@ -296,7 +296,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
     return @symlink_location if defined?(@symlink_location)
 
     ext = Pathname(parse_basename(url)).extname
-    @symlink_location = @cache/"#{name}--#{version}#{ext}"
+    @symlink_location = @cache/Utils.safe_filename("#{name}--#{version}#{ext}")
   end
 
   # Path for storing the completed download.
@@ -312,7 +312,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
     @cached_location = if downloads.count == 1
       downloads.first
     else
-      HOMEBREW_CACHE/"downloads/#{url_sha256}--#{resolved_basename}"
+      HOMEBREW_CACHE/"downloads/#{url_sha256}--#{Utils.safe_filename(resolved_basename)}"
     end
   end
 
