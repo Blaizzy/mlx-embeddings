@@ -9,7 +9,7 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         url "https://example.com/foo.zip"
 
         zap trash: ["~/Library/Application Support/Foo"]
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Remove the `[]` around a single `zap trash` path
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid single-element arrays by removing the []
       end
     CASK
 
@@ -28,7 +28,7 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         url "https://example.com/foo.zip"
 
         zap trash: [
-                   ^ The `zap trash` paths should be in alphabetical order
+                   ^ The array elements should be ordered alphabetically
           "/Library/Application Support/Foo",
           "/Library/Application Support/Baz",
           "~/Library/Application Support/Foo",
@@ -59,7 +59,7 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         url "https://example.com/foo.zip"
 
         zap trash: [
-                   ^ The `zap trash` paths should be in alphabetical order
+                   ^ The array elements should be ordered alphabetically
           "~/Library/Application Support/Foo",
           "~/Library/Application Support/Bar\#{version.major}",
         ]
@@ -86,6 +86,39 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         zap delete: [
           "~/Library/Application Support/Foo",
           "~/Library/Application Support/Bar",
+        ]
+      end
+    CASK
+  end
+
+  it "autocorrects alphabetization in `uninstall` methods" do
+    expect_offense(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        uninstall pkgutil: [
+                           ^ The array elements should be ordered alphabetically
+          "something",
+          "other",
+        ],
+        script: [
+          "ordered",
+          "differently",
+        ]
+      end
+    CASK
+
+    expect_correction(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        uninstall pkgutil: [
+          "other",
+          "something",
+        ],
+        script: [
+          "ordered",
+          "differently",
         ]
       end
     CASK
