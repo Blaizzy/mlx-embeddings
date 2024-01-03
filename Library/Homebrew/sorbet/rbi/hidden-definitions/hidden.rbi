@@ -9076,6 +9076,7 @@ module RuboCop::AST::NodePattern::Sets
   SET_ON_INTEL_ON_ARM = ::T.let(nil, ::T.untyped)
   SET_OR_NEWER_OR_OLDER = ::T.let(nil, ::T.untyped)
   SET_SYSTEM_SHELL_OUTPUT_PIPE_OUTPUT = ::T.let(nil, ::T.untyped)
+  SET_TEXT_EXACT_TEXT = ::T.let(nil, ::T.untyped)
   SET_WITH_WITHOUT = ::T.let(nil, ::T.untyped)
   SET____ETC_5 = ::T.let(nil, ::T.untyped)
 end
