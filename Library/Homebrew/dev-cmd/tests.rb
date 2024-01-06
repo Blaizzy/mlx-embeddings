@@ -29,6 +29,8 @@ module Homebrew
       flag   "--only=",
              description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a " \
                           "specific line."
+      flag   "--profile=",
+             description: "Run the test suite serially to find the <n> slowest tests."
       flag   "--seed=",
              description: "Randomise tests with the specified <value> instead of a random seed."
 
@@ -122,6 +124,8 @@ module Homebrew
         end
       end
 
+      parallel = false if args.profile
+
       parallel_rspec_log_name = "parallel_runtime_rspec"
       parallel_rspec_log_name = "#{parallel_rspec_log_name}.generic" if args.generic?
       parallel_rspec_log_name = "#{parallel_rspec_log_name}.online" if args.online?
@@ -157,6 +161,7 @@ module Homebrew
         --require spec_helper
       ]
       bundle_args << "--fail-fast" if args.fail_fast?
+      bundle_args << "--profile" << args.profile if args.profile
 
       # TODO: Refactor and move to extend/os
       # rubocop:disable Homebrew/MoveToExtendOS
