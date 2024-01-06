@@ -770,21 +770,9 @@ module Cask
     end
 
     sig { void }
-    def audit_https_availability
-      return unless download
-
-      if cask.url && !cask.url.using
-        validate_url_for_https_availability(cask.url, "binary URL", cask.token, cask.tap,
-                                            location: cask.url.location,
-                                            user_agents: [cask.url.user_agent], referer: cask.url&.referer)
-      end
-
-      if cask.livecheckable? && !cask.livecheck.url.is_a?(Symbol)
-        validate_url_for_https_availability(cask.livecheck.url, "livecheck URL", cask.token, cask.tap,
-                                            check_content: true)
-      end
-
-      return unless cask.homepage
+    def audit_homepage_https_availability
+      return unless online?
+      return unless (homepage = cask.homepage)
 
       user_agents = if cask.tap&.audit_exception(:simple_user_agent_for_homepage, cask.token)
         ["curl"]
@@ -792,10 +780,38 @@ module Cask
         [:browser, :default]
       end
 
-      validate_url_for_https_availability(cask.homepage, SharedAudits::URL_TYPE_HOMEPAGE, cask.token, cask.tap,
-                                          user_agents:   user_agents,
-                                          check_content: true,
-                                          strict:        strict?)
+      validate_url_for_https_availability(
+        homepage, SharedAudits::URL_TYPE_HOMEPAGE,
+        user_agents:   user_agents,
+        check_content: true,
+        strict:        strict?
+      )
+    end
+
+    sig { void }
+    def audit_url_https_availability
+      return unless online?
+      return unless (url = cask.url)
+      return if url.using
+
+      validate_url_for_https_availability(
+        url, "binary URL",
+        location:    cask.url.location,
+        user_agents: [cask.url.user_agent],
+        referer:     cask.url&.referer
+      )
+    end
+
+    sig { void }
+    def audit_livecheck_https_availability
+      return unless online?
+      return unless cask.livecheckable?
+      return if cask.livecheck.url.is_a?(Symbol)
+
+      validate_url_for_https_availability(
+        cask.livecheck.url, "livecheck URL",
+        check_content: true
+      )
     end
 
     sig { void }
@@ -809,13 +825,17 @@ module Cask
       add_error "Cask should be located in '#{expected_path}'"
     end
 
-    # sig {
-    #   params(url_to_check: T.any(String, URL), url_type: String, cask_token: String, tap: Tap,
-    #          options: T.untyped).void
-    # }
-    def validate_url_for_https_availability(url_to_check, url_type, cask_token, tap, location: nil, **options)
+    sig {
+      params(
+        url_to_check: T.any(String, URL),
+        url_type:     String,
+        location:     T.nilable(Homebrew::SourceLocation),
+        options:      T.untyped,
+      ).void
+    }
+    def validate_url_for_https_availability(url_to_check, url_type, location: nil, **options)
       problem = curl_check_http_content(url_to_check.to_s, url_type, **options)
-      exception = tap&.audit_exception(:secure_connection_audit_skiplist, cask_token, url_to_check.to_s)
+      exception = cask.tap&.audit_exception(:secure_connection_audit_skiplist, cask.token, url_to_check.to_s)
 
       if problem
         add_error problem, location: location unless exception
