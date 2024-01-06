@@ -476,7 +476,7 @@ describe Cask::Upgrade, :cask do
       allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
 
-    it "will not end the upgrade process" do
+    it "does not end the upgrade process" do
       bad_checksum = Cask::CaskLoader.load("bad-checksum")
       bad_checksum_path = bad_checksum.config.appdir.join("Caffeine.app")
 

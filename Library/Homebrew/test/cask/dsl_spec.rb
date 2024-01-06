@@ -34,7 +34,7 @@ describe Cask::DSL, :cask do
       end.to output(expected).to_stderr
     end
 
-    it "will simply warn, not throw an exception" do
+    it "simply warns, instead of throwing an exception" do
       expect do
         attempt_unknown_method
       end.not_to raise_error

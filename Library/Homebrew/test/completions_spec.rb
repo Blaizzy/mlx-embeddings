@@ -220,7 +220,7 @@ describe Homebrew::Completions do
         expect(described_class.command_options("help")).to eq({})
       end
 
-      it "will override global options with local descriptions" do
+      it "overrides global options with local descriptions" do
         options = described_class.command_options("upgrade")
         expect(options["--verbose"]).to eq "Print the verification and post-install steps."
       end
