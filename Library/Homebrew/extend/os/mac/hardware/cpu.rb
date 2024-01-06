@@ -116,6 +116,8 @@ module Hardware
         when 0x72015832             # ARMv8.6-A (M3 Max, Palma)
           :arm_palma
         else
+          # When adding new ARM CPU families, please also update
+          # test/hardware/cpu_spec.rb to include the new families.
           :dunno
         end
       end
