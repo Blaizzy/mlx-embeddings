@@ -806,10 +806,11 @@ module Cask
     def audit_livecheck_https_availability
       return unless online?
       return unless cask.livecheckable?
-      return if cask.livecheck.url.is_a?(Symbol)
+      return unless (url = cask.livecheck.url)
+      return if url.is_a?(Symbol)
 
       validate_url_for_https_availability(
-        cask.livecheck.url, "livecheck URL",
+        url, "livecheck URL",
         check_content: true
       )
     end
