@@ -647,7 +647,6 @@ EOS
           CURL_GITHUB_API_ARGS=()
         fi
 
-
         if [[ "${DIR}" == "${HOMEBREW_REPOSITORY}" && -n "${HOMEBREW_UPDATE_TO_TAG}" ]]
         then
           # Only try to `git fetch` when the upstream tags have changed
