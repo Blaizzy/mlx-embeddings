@@ -18,7 +18,6 @@
 # HOMEBREW_USER_AGENT_CURL are set by brew.sh
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
-source "${HOMEBREW_LIBRARY}/Homebrew/utils/url.sh"
 
 # Replaces the function in Library/Homebrew/brew.sh to cache the Curl/Git executable to
 # provide speedup when using Curl/Git repeatedly (as update.sh does).
@@ -629,32 +628,25 @@ EOS
     # the refspec ensures that the default upstream branch gets updated
     (
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
-      eval UPSTREAM_REPOSITORY_URL_PARSED=( $(url_get "${UPSTREAM_REPOSITORY_URL}" user pass host path) )
-      if [[ ${#UPSTREAM_REPOSITORY_URL_PARSED[@]} -ne 4 ]]; then
-        echo "Failed to parse repository URL=${UPSTREAM_REPOSITORY_URL} \!" >&2
-        exit
-      fi
-
-
-      # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-      # can be superseded a token from the local repository URL
-      # shellcheck disable=SC2153
-      if [[ -n "${UPSTREAM_REPOSITORY_URL_PARSED[1]}" ]]
-      then
-        CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${UPSTREAM_REPOSITORY_URL_PARSED[1]}")
-      elif [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
-      then
-        CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
-      else
-        CURL_GITHUB_API_ARGS=()
-      fi
 
       # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_AUTO aren't modified here so ignore subshell warning.
       # shellcheck disable=SC2030
-      if [[ "${UPSTREAM_REPOSITORY_URL}" == "https://github.com/"* ]] \
-      || [[ "${UPSTREAM_REPOSITORY_URL_PARSED[2]}" == "github.com" ]]
+      if [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]] \
       then
-        UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL_PARSED[3]%.git}"
+        UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
+        # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
+        # can be superseded a token from the local repository URL
+        # shellcheck disable=SC2153
+        if [[ -n "${BASH_REMATCH[4]}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[4]}")
+        elif [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
+        else
+          CURL_GITHUB_API_ARGS=()
+        fi
+
 
         if [[ "${DIR}" == "${HOMEBREW_REPOSITORY}" && -n "${HOMEBREW_UPDATE_TO_TAG}" ]]
         then
