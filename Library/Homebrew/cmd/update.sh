@@ -631,7 +631,7 @@ EOS
 
       # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_AUTO aren't modified here so ignore subshell warning.
       # shellcheck disable=SC2030
-      if [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]] \
+      if [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]; \
       then
         UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
         # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
