@@ -248,10 +248,10 @@ describe Utils::AST::FormulaAST do
 
   describe "#add_bottle_block" do
     let(:bottle_output) do
-      <<~RUBY.chomp.indent(2)
-        bottle do
-          sha256 "f7b1fc772c79c20fddf621ccc791090bc1085fcef4da6cca03399424c66e06ca" => :sierra
-        end
+      <<-RUBY
+  bottle do
+    sha256 "f7b1fc772c79c20fddf621ccc791090bc1085fcef4da6cca03399424c66e06ca" => :sierra
+  end
       RUBY
     end
 
