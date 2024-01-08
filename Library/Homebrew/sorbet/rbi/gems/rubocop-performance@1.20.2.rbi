@@ -2708,50 +2708,63 @@ RuboCop::Cop::Performance::StartWith::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Ar
 #   send('do_something')
 #   attr_accessor 'do_something'
 #   instance_variable_get('@ivar')
-#   const_get("string_#{interpolation}")
+#   respond_to?("string_#{interpolation}")
 #
 #   # good
 #   send(:do_something)
 #   attr_accessor :do_something
 #   instance_variable_get(:@ivar)
-#   const_get(:"string_#{interpolation}")
+#   respond_to?(:"string_#{interpolation}")
 #
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#27
+#   # good - these methods don't support namespaced symbols
+#   const_get("#{module_path}::Base")
+#   const_source_location("#{module_path}::Base")
+#   const_defined?("#{module_path}::Base")
+#
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#33
 class RuboCop::Cop::Performance::StringIdentifierArgument < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#56
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#64
   def on_send(node); end
 
   private
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#93
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#105
   def argument_replacement(node, value); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#83
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#95
   def register_offense(argument, argument_value); end
 
-  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#69
+  # @return [Boolean]
+  #
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#89
+  def string_argument_compatible?(argument, node); end
+
+  # source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#77
   def string_arguments(node); end
 end
 
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#32
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#38
 RuboCop::Cop::Performance::StringIdentifierArgument::COMMAND_METHODS = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#30
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#43
+RuboCop::Cop::Performance::StringIdentifierArgument::INTERPOLATION_IGNORE_METHODS = T.let(T.unsafe(nil), Array)
+
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#36
 RuboCop::Cop::Performance::StringIdentifierArgument::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#38
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#46
 RuboCop::Cop::Performance::StringIdentifierArgument::MULTIPLE_ARGUMENTS_METHODS = T.let(T.unsafe(nil), Array)
 
 # NOTE: `attr` method is not included in this list as it can cause false positives in Nokogiri API.
 # And `attr` may not be used because `Style/Attr` registers an offense.
 # https://github.com/rubocop/rubocop-performance/issues/278
 #
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#46
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#54
 RuboCop::Cop::Performance::StringIdentifierArgument::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#37
+# source://rubocop-performance//lib/rubocop/cop/performance/string_identifier_argument.rb#45
 RuboCop::Cop::Performance::StringIdentifierArgument::TWO_ARGUMENTS_METHOD = T.let(T.unsafe(nil), Symbol)
 
 # Identifies unnecessary use of a regex where `String#include?` would suffice.
