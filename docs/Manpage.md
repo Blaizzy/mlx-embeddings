@@ -1591,6 +1591,8 @@ Run Homebrew's unit and integration tests.
   Exit early on the first failing test.
 * `--only`:
   Run only *`test_script`*`_spec.rb`. Appending `:`*`line_number`* will start at a specific line.
+* `--profile`:
+  Run the test suite serially to find the *`n`* slowest tests.
 * `--seed`:
   Randomise tests with the specified *`value`* instead of a random seed.
 
