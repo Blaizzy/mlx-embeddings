@@ -634,13 +634,13 @@ module RubyProf::ExcludeCommonMethods
     # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#8
     def apply!(profile); end
 
-    # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#185
+    # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#191
     def exclude_enumerable(profile, mod, *method_or_methods); end
 
-    # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#190
+    # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#196
     def exclude_methods(profile, mod, *method_or_methods); end
 
-    # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#194
+    # source://ruby-prof//lib/ruby-prof/exclude_common_methods.rb#200
     def exclude_singleton_methods(profile, mod, *method_or_methods); end
   end
 end
@@ -856,7 +856,7 @@ class RubyProf::MethodInfo
 
   def source_file; end
 
-  # source://ruby-prof//lib/ruby-prof/method_info.rb#81
+  # source://ruby-prof//lib/ruby-prof/method_info.rb#83
   def to_s; end
 
   # The total time this method took - includes self time + wait time + child time
