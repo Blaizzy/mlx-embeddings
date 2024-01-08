@@ -163,11 +163,7 @@ describe Requirement do
     let(:klass) { self.class.const_get(const) }
 
     before do
-      self.class.const_set(const, Class.new(described_class))
-    end
-
-    after do
-      self.class.send(:remove_const, const)
+      stub_const const.to_s, Class.new(described_class)
     end
 
     its(:name) { is_expected.to eq("foo") }
