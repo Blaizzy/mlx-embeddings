@@ -128,7 +128,7 @@ GEM
     rubocop-sorbet (0.7.6)
       rubocop (>= 0.90.0)
     ruby-macho (4.0.0)
-    ruby-prof (1.6.3)
+    ruby-prof (1.7.0)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -181,8 +181,6 @@ GEM
     zeitwerk (2.6.12)
 
 PLATFORMS
-  aarch64-linux
-  arm-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux
