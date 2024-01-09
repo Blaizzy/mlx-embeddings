@@ -9,7 +9,7 @@ then
 fi
 
 __brewcomp_words_include() {
-  local element idx 
+  local element idx
   for (( idx = 1; idx < COMP_CWORD; idx++ ))
   do
     element=${COMP_WORDS[idx]}
@@ -75,7 +75,7 @@ __brew_complete_outdated_formulae() {
 __brew_complete_outdated_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_casks
-  outdated_casks="$(brew outdated --cask --quiet)"
+  outdated_casks="$(brew outdated --cask --quiet 2>/dev/null)"
   while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${outdated_casks}" -- "${cur}")
 }
 
