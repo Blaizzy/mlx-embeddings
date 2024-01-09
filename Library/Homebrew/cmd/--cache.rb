@@ -64,7 +64,6 @@ module Homebrew
 
         os_arch_combinations.each do |os, arch|
           SimulateSystem.with os: os, arch: arch do
-            Formulary.clear_cache
             formula = Formulary.factory(ref)
             print_formula_cache(formula, os: os, arch: arch, args: args)
           end
