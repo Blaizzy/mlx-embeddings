@@ -258,7 +258,7 @@ module PyPI
     extra_packages = (extra_packages || []).map { |p| Package.new p }
     exclude_packages = (exclude_packages || []).map { |p| Package.new p }
     exclude_packages += %w[argparse pip wsgiref].map { |p| Package.new p }
-    if python_deps.first && python_deps.first.version < Version.new("3.12")
+    if (newest_python = python_deps.first) && newest_python.version < Version.new("3.12")
       exclude_packages.append(Package.new("setuptools"))
     end
     # remove packages from the exclude list if we've explicitly requested them as an extra package
