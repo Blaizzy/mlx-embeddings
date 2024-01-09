@@ -249,9 +249,18 @@ module PyPI
       end
     end
 
+    python_deps = formula.deps
+                         .select { |d| d.name.match?(/^python(@.+)?$/) }
+                         .map(&:to_formula)
+                         .sort_by(&:version)
+                         .reverse
+
     extra_packages = (extra_packages || []).map { |p| Package.new p }
     exclude_packages = (exclude_packages || []).map { |p| Package.new p }
-    exclude_packages += %w[argparse pip setuptools wsgiref].map { |p| Package.new p }
+    exclude_packages += %w[argparse pip wsgiref].map { |p| Package.new p }
+    if (newest_python = python_deps.first) && newest_python.version < Version.new("3.12")
+      exclude_packages.append(Package.new("setuptools"))
+    end
     # remove packages from the exclude list if we've explicitly requested them as an extra package
     exclude_packages.delete_if { |package| extra_packages.include?(package) }
 
@@ -277,11 +286,6 @@ module PyPI
       end
     end
 
-    python_deps = formula.deps
-                         .map(&:to_formula)
-                         .select { |f| f.name.start_with?("python@") }
-                         .sort_by(&:version)
-                         .reverse
     python_name = if python_deps.empty?
       "python"
     else
