@@ -23,14 +23,14 @@ module Homebrew
 
   sig { void }
   def rbenv_sync
-    dot_rbenv = Pathname(Dir.home)/".rbenv"
+    rbenv_root = Pathname(ENV.fetch("HOMEBREW_RBENV_ROOT", Pathname(Dir.home)/".rbenv"))
 
     # Don't run multiple times at once.
-    rbenv_sync_running = dot_rbenv/".rbenv_sync_running"
+    rbenv_sync_running = rbenv_root/".rbenv_sync_running"
     return if rbenv_sync_running.exist?
 
     begin
-      rbenv_versions = dot_rbenv/"versions"
+      rbenv_versions = rbenv_root/"versions"
       rbenv_versions.mkpath
       FileUtils.touch rbenv_sync_running
 
