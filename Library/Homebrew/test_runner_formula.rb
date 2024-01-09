@@ -97,8 +97,6 @@ class TestRunnerFormula
       end
 
       with_env(HOMEBREW_EVAL_ALL: eval_all_env) do
-        Formulary.clear_cache
-
         os = macos_version || platform
         arch = SIMULATE_SYSTEM_SYMBOLS.fetch(arch)
 

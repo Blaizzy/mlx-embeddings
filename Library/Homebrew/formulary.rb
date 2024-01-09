@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "digest/md5"
+require "digest/sha2"
 require "extend/cachable"
 require "tab"
 require "utils/bottles"
@@ -32,24 +32,28 @@ module Formulary
     !@factory_cache.nil?
   end
 
+  def self.platform_cache
+    cache["#{Homebrew::SimulateSystem.current_os}_#{Homebrew::SimulateSystem.current_arch}"] ||= {}
+  end
+
   def self.formula_class_defined_from_path?(path)
-    cache.key?(:path) && cache[:path].key?(path)
+    platform_cache.key?(:path) && platform_cache[:path].key?(path)
   end
 
   def self.formula_class_defined_from_api?(name)
-    cache.key?(:api) && cache[:api].key?(name)
+    platform_cache.key?(:api) && platform_cache[:api].key?(name)
   end
 
   def self.formula_class_get_from_path(path)
-    cache[:path].fetch(path)
+    platform_cache[:path].fetch(path)
   end
 
   def self.formula_class_get_from_api(name)
-    cache[:api].fetch(name)
+    platform_cache[:api].fetch(name)
   end
 
   def self.clear_cache
-    cache.each do |type, cached_objects|
+    platform_cache.each do |type, cached_objects|
       next if type == :formulary_factory
 
       cached_objects.each_value do |klass|
@@ -126,21 +130,28 @@ module Formulary
     end
   end
 
+  sig { params(identifier: String).returns(String) }
+  def self.namespace_key(identifier)
+    Digest::SHA2.hexdigest(
+      "#{Homebrew::SimulateSystem.current_os}_#{Homebrew::SimulateSystem.current_arch}:#{identifier}",
+    )
+  end
+
   sig {
     params(name: String, path: Pathname, flags: T::Array[String], ignore_errors: T::Boolean)
       .returns(T.class_of(Formula))
   }
   def self.load_formula_from_path(name, path, flags:, ignore_errors:)
     contents = path.open("r") { |f| ensure_utf8_encoding(f).read }
-    namespace = "FormulaNamespace#{Digest::MD5.hexdigest(path.to_s)}"
+    namespace = "FormulaNamespace#{namespace_key(path.to_s)}"
     klass = load_formula(name, path, contents, namespace, flags: flags, ignore_errors: ignore_errors)
-    cache[:path] ||= {}
-    cache[:path][path] = klass
+    platform_cache[:path] ||= {}
+    platform_cache[:path][path] = klass
   end
 
   sig { params(name: String, flags: T::Array[String]).returns(T.class_of(Formula)) }
   def self.load_formula_from_api(name, flags:)
-    namespace = :"FormulaNamespaceAPI#{Digest::MD5.hexdigest(name)}"
+    namespace = :"FormulaNamespaceAPI#{namespace_key(name)}"
 
     mod = Module.new
     remove_const(namespace) if const_defined?(namespace)
@@ -396,8 +407,8 @@ module Formulary
     klass = T.cast(klass, T.class_of(Formula))
     mod.const_set(class_name, klass)
 
-    cache[:api] ||= {}
-    cache[:api][name] = klass
+    platform_cache[:api] ||= {}
+    platform_cache[:api][name] = klass
   end
 
   sig { params(name: String, spec: Symbol, force_bottle: T::Boolean, flags: T::Array[String]).returns(Formula) }
@@ -721,7 +732,9 @@ module Formulary
     ignore_errors: T.unsafe(nil)
   )
     cache_key = "#{ref}-#{spec}-#{alias_path}-#{from}"
-    return cache[:formulary_factory][cache_key] if factory_cached? && cache[:formulary_factory]&.key?(cache_key)
+    if factory_cached? && platform_cache[:formulary_factory]&.key?(cache_key)
+      return platform_cache[:formulary_factory][cache_key]
+    end
 
     loader_options = { from: from, warn: warn }.compact
     formula_options = { alias_path:    alias_path,
@@ -732,8 +745,8 @@ module Formulary
               .get_formula(spec, **formula_options)
 
     if factory_cached?
-      cache[:formulary_factory] ||= {}
-      cache[:formulary_factory][cache_key] ||= formula
+      platform_cache[:formulary_factory] ||= {}
+      platform_cache[:formulary_factory][cache_key] ||= formula
     end
 
     formula

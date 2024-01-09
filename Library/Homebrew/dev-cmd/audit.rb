@@ -205,8 +205,6 @@ module Homebrew
     spdx_license_data = SPDX.license_data
     spdx_exception_data = SPDX.exception_data
 
-    clear_formulary_cache = [args.os, args.arch].any?
-
     formula_problems = audit_formulae.sort.each_with_object({}) do |f, problems|
       path = f.path
 
@@ -227,8 +225,6 @@ module Homebrew
       errors = os_arch_combinations.flat_map do |os, arch|
         SimulateSystem.with os: os, arch: arch do
           odebug "Auditing Formula #{f} on os #{os} and arch #{arch}"
-
-          Formulary.clear_cache if clear_formulary_cache
 
           audit_proc = proc { FormulaAuditor.new(Formulary.factory(path), **options).tap(&:audit) }
 
