@@ -511,11 +511,11 @@ describe "brew bottle" do
         bottle.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
 
         expect(homebrew.bottle_output(bottle, nil)).to eq(
-          <<~RUBY.indent(2),
-            bottle do
-              root_url "https://example.com"
-              sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
-            end
+          <<-RUBY,
+  bottle do
+    root_url "https://example.com"
+    sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+  end
           RUBY
         )
       end
@@ -526,12 +526,12 @@ describe "brew bottle" do
         bottle.sha256(catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e")
 
         expect(homebrew.bottle_output(bottle, "ExampleStrategy")).to eq(
-          <<~RUBY.indent(2),
-            bottle do
-              root_url "https://example.com",
-                using: ExampleStrategy
-              sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
-            end
+          <<-RUBY,
+  bottle do
+    root_url "https://example.com",
+      using: ExampleStrategy
+    sha256 catalina: "109c0cb581a7b5d84da36d84b221fb9dd0f8a927b3044d82611791c9907e202e"
+  end
           RUBY
         )
       end

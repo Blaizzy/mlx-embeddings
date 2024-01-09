@@ -177,7 +177,7 @@ RSpec.shared_context "integration test" do # rubocop:disable RSpec/ContextWordin
     Formulary.core_path(name).tap do |formula_path|
       formula_path.write <<~RUBY
         class #{Formulary.class_s(name)} < Formula
-        #{content.indent(2)}
+        #{content.gsub(/^(?!$)/, "  ")}
         end
       RUBY
     end

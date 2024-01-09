@@ -35,7 +35,7 @@ module Utils
         value if (node.is_a?(SendNode) || node.is_a?(BlockNode)) && node.method_name == name
       end
       text ||= "#{name} #{value.inspect}"
-      text = text.indent(indent) if indent && !text.match?(/\A\n* +/)
+      text = text.gsub(/^(?!$)/, " " * indent) if indent && !text.match?(/\A\n* +/)
       text
     end
 
