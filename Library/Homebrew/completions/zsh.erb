@@ -98,7 +98,7 @@ __brew_installed_casks() {
 
   local -a list
   local expl
-  list=( $(brew list --cask) )
+  list=( $(brew list --cask 2>/dev/null) )
   _wanted list expl 'installed casks' compadd -a list
 }
 
@@ -106,7 +106,7 @@ __brew_outdated_casks() {
   [[ -prefix '-' ]] && return 0
 
   local -a casks
-  casks=($(brew outdated --cask))
+  casks=($(brew outdated --cask 2>/dev/null))
   _describe -t casks 'outdated casks' casks
 }
 
