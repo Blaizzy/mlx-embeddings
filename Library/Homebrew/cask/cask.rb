@@ -349,7 +349,7 @@ module Cask
 
     def to_hash_with_variations
       if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
-        return api_to_local_hash(Homebrew::API::Cask.all_casks[token])
+        return api_to_local_hash(Homebrew::API::Cask.all_casks[token].dup)
       end
 
       hash = to_h
