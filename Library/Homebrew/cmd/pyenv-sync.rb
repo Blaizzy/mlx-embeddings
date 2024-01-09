@@ -23,14 +23,14 @@ module Homebrew
 
   sig { void }
   def pyenv_sync
-    dot_pyenv = Pathname(Dir.home)/".pyenv"
+    pyenv_root = Pathname(ENV.fetch("HOMEBREW_PYENV_ROOT", Pathname(Dir.home)/".pyenv"))
 
     # Don't run multiple times at once.
-    pyenv_sync_running = dot_pyenv/".pyenv_sync_running"
+    pyenv_sync_running = pyenv_root/".pyenv_sync_running"
     return if pyenv_sync_running.exist?
 
     begin
-      pyenv_versions = dot_pyenv/"versions"
+      pyenv_versions = pyenv_root/"versions"
       pyenv_versions.mkpath
       FileUtils.touch pyenv_sync_running
 

@@ -23,14 +23,14 @@ module Homebrew
 
   sig { void }
   def nodenv_sync
-    dot_nodenv = Pathname(Dir.home)/".nodenv"
+    nodenv_root = Pathname(ENV.fetch("HOMEBREW_NODENV_ROOT", Pathname(Dir.home)/".nodenv"))
 
     # Don't run multiple times at once.
-    nodenv_sync_running = dot_nodenv/".nodenv_sync_running"
+    nodenv_sync_running = nodenv_root/".nodenv_sync_running"
     return if nodenv_sync_running.exist?
 
     begin
-      nodenv_versions = dot_nodenv/"versions"
+      nodenv_versions = nodenv_root/"versions"
       nodenv_versions.mkpath
       FileUtils.touch nodenv_sync_running
 
