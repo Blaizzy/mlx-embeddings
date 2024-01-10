@@ -631,18 +631,25 @@ EOS
 
       # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_AUTO aren't modified here so ignore subshell warning.
       # shellcheck disable=SC2030
-      if [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]
+      if [[ "${UPSTREAM_REPOSITORY_URL}" = "https://github.com/"* ]] ||
+         [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]
       then
-        UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
-        # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-        # can be superseded a token from the local repository URL
-        # shellcheck disable=SC2153
-        if [[ -n "${BASH_REMATCH[4]}" ]]
+        if [[ -n "${BASH_REMATCH[5]}" ]]
         then
-          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[4]}")
-        elif [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
+          UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
+        else
+          UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
+          UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
+        fi
+        # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
+        # Global token HOMEBREW_GITHUB_API_TOKEN supersedes local defined one
+        # shellcheck disable=SC2153
+        if [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
         then
           CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
+        elif [[ -n "${BASH_REMATCH[4]}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[4]}")
         else
           CURL_GITHUB_API_ARGS=()
         fi
