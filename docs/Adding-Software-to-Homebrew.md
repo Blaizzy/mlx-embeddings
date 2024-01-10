@@ -251,6 +251,7 @@ Give it a shot with:
 
 ```bash
 export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_INSTALL_FROM_API=1
 brew install my-new-cask
 ```
 
@@ -386,8 +387,9 @@ cd "$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
 git checkout master
 ```
 
-If earlier you set the variable `HOMEBREW_NO_AUTO_UPDATE` then clean it up with:
+If earlier you set the variable `HOMEBREW_NO_AUTO_UPDATE` and `HOMEBREW_NO_INSTALL_FROM_API` then clean it up with:
 
 ```bash
 unset HOMEBREW_NO_AUTO_UPDATE
+unset HOMEBREW_NO_INSTALL_FROM_API
 ```
