@@ -47,13 +47,13 @@ module Homebrew
 
           cache["renames"] = {}
           cache["casks"] = json_casks.to_h do |json_cask|
-            token = json_cask.delete("token")
+            token = json_cask["token"]
 
             json_cask.fetch("old_tokens", []).each do |old_token|
               cache["renames"][old_token] = token
             end
 
-            [token, json_cask]
+            [token, json_cask.except("token")]
           end
 
           updated

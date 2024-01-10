@@ -232,7 +232,7 @@ module Formulary
       end
 
       dep_json["uses_from_macos"]&.each_with_index do |dep, index|
-        bounds = dep_json.fetch("uses_from_macos_bounds", [])[index] || {}
+        bounds = dep_json.fetch("uses_from_macos_bounds", [])[index].dup || {}
         bounds.deep_transform_keys!(&:to_sym)
         bounds.deep_transform_values! { |val| val.is_a?(String) ? val.to_sym : val }
 

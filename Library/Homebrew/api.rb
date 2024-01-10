@@ -30,7 +30,7 @@ module Homebrew
       end
       raise ArgumentError, "No file found at #{Tty.underline}#{api_url}#{Tty.reset}" unless output.success?
 
-      cache[endpoint] = JSON.parse(output.stdout)
+      cache[endpoint] = JSON.parse(output.stdout, freeze: true)
     rescue JSON::ParserError
       raise ArgumentError, "Invalid JSON file: #{Tty.underline}#{api_url}#{Tty.reset}"
     end
@@ -96,7 +96,7 @@ module Homebrew
 
         mtime = insecure_download ? Time.new(1970, 1, 1) : Time.now
         FileUtils.touch(target, mtime: mtime) unless skip_download
-        JSON.parse(target.read)
+        JSON.parse(target.read, freeze: true)
       rescue JSON::ParserError
         target.unlink
         retry_count += 1
@@ -170,7 +170,7 @@ module Homebrew
         return false, "signature mismatch"
       end
 
-      [true, JSON.parse(json_data["payload"])]
+      [true, JSON.parse(json_data["payload"], freeze: true)]
     end
 
     sig { params(path: Pathname).returns(T.nilable(Tap)) }
