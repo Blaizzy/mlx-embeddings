@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 class Array
-
   # Equal to <tt>self[1]</tt>.
   #
   #   %w( a b c d e ).second # => "b"

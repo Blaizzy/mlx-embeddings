@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "sorbet-runtime"
+require "extend/module"
 
 # Disable runtime checking unless enabled.
 # In the future we should consider not doing this monkey patch,
