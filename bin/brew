@@ -12,10 +12,20 @@ fi
 
 set +o posix # as we are using bash now
 
-# Fail fast with concise message when cwd does not exist
+# Fail fast with concise messages when PWD has issues
+if [[ -z "${PWD-}" ]]
+then
+  echo "Error: \$PWD must be set to run brew." >&2
+  exit 1
+fi
 if ! [[ -d "${PWD}" ]]
 then
-  echo "Error: The current working directory doesn't exist, cannot proceed." >&2
+  echo "Error: The current working directory must exist to run brew." >&2
+  exit 1
+fi
+if ! [[ -r "${PWD}" ]]
+then
+  echo "Error: The current working directory must be readable to run brew." >&2
   exit 1
 fi
 
