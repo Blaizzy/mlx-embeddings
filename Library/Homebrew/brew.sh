@@ -419,9 +419,13 @@ fi
 
 # Many Pathname operations use getwd when they shouldn't, and then throw
 # odd exceptions. Reduce our support burden by showing a user-friendly error.
-if [[ ! -d "$(pwd)" ]]
+if ! [[ -d "$(pwd)" ]]
 then
-  odie "The current working directory doesn't exist, cannot proceed."
+  odie "The current working directory must exist to run brew."
+fi
+if ! [[ -r "$(pwd)" ]]
+then
+  odie "The current working directory must be readable to run brew."
 fi
 
 #####
