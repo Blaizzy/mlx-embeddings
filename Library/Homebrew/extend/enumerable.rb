@@ -1,3 +1,4 @@
+# typed: strict
 # frozen_string_literal: true
 
 module Enumerable
@@ -9,21 +10,20 @@ module Enumerable
   #
   #   people.index_by { |person| "#{person.first_name} #{person.last_name}" }
   #   # => { "Chade- Fowlersburg-e" => <Person ...>, "David Heinemeier Hansson" => <Person ...>, ...}
-  def index_by
-    if block_given?
+  def index_by(&block)
+    if block
       result = {}
       each { |elem| result[yield(elem)] = elem }
       result
     else
-      to_enum(:index_by) { size if respond_to?(:size) }
+      T.unsafe(self).to_enum(:index_by) { T.unsafe(self).size if respond_to?(:size) }
     end
   end
 
   # The negative of the <tt>Enumerable#include?</tt>. Returns +true+ if the
   # collection does not include the object.
-  def exclude?(object)
-    !include?(object)
-  end
+  sig { params(object: T.untyped).returns(T::Boolean) }
+  def exclude?(object) = !include?(object)
 
   # Returns a new +Array+ without the blank items.
   # Uses Object#blank? for determining if an item is blank.
@@ -38,14 +38,11 @@ module Enumerable
   #
   #   { a: "", b: 1, c: nil, d: [], e: false, f: true }.compact_blank
   #   # => { b: 1, f: true }
-  def compact_blank
-    reject(&:blank?)
-  end
+  sig { returns(T.self_type) }
+  def compact_blank = T.unsafe(self).reject(&:blank?)
 end
 
 class Hash
   # Hash#reject has its own definition, so this needs one too.
-  def compact_blank # :nodoc:
-    reject { |_k, v| v.blank? }
-  end
+  def compact_blank = reject { T.unsafe(_2).blank? }
 end
