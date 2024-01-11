@@ -636,15 +636,16 @@ EOS
 
       if [[ "${UPSTREAM_REPOSITORY_URL}" = "https://github.com/"* ]]
       then
-          UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
-          UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
+        UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
+        UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
       elif [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]
       then
-          UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
-          UPSTREAM_REPOSITORY_TOKEN="${BASH_REMATCH[4]:-${BASH_REMATCH[2]}}"
+        UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
+        UPSTREAM_REPOSITORY_TOKEN="${BASH_REMATCH[4]:-${BASH_REMATCH[2]}}"
       fi
 
-      if [[ -n "${UPSTREAM_REPOSITORY}" ]]; then
+      if [[ -n "${UPSTREAM_REPOSITORY}" ]]
+      then
         # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
         # Global token HOMEBREW_GITHUB_API_TOKEN supersedes local defined one
         # shellcheck disable=SC2153
