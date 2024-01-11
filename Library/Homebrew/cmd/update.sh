@@ -650,6 +650,9 @@ EOS
         elif [[ -n "${BASH_REMATCH[4]}" ]]
         then
           CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[4]}")
+        elif [[ -n "${BASH_REMATCH[2]}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[2]}")
         else
           CURL_GITHUB_API_ARGS=()
         fi
