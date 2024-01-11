@@ -6,4 +6,7 @@ class Array
 
   sig { returns(T.nilable(Elem)) }
   def third; end
+
+  sig { returns(T.nilable(Elem)) }
+  def fourth; end
 end
