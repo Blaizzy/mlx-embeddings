@@ -25,7 +25,7 @@ then
 fi
 if ! [[ -r "${PWD}" ]]
 then
-  echo "Error: The current working directory must be readable to run brew." >&2
+  echo "Error: The current working directory must be readable to ${USER} to run brew." >&2
   exit 1
 fi
 
