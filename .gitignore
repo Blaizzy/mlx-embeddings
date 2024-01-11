@@ -70,7 +70,6 @@
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/keys.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/deep_dup.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/duplicable.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/string/exclude.rb
 
 # Ignore partially included gems where we don't need all files
 **/vendor/gems/mechanize-*/.*
