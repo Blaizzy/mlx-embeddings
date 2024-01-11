@@ -12,7 +12,7 @@ module Homebrew
   # After updating this, run `brew vendor-gems --update=--bundler`.
   HOMEBREW_BUNDLER_VERSION = "2.4.18"
 
-  # Bump this whenever a committed vendored gem is later added to gitignore.
+  # Bump this whenever a committed vendored gem is later added to or exclusion removed from gitignore.
   # This will trigger it to reinstall properly if `brew install-bundler-gems` needs it.
   VENDOR_VERSION = 5
   private_constant :VENDOR_VERSION
