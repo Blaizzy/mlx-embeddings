@@ -628,31 +628,32 @@ EOS
     # the refspec ensures that the default upstream branch gets updated
     (
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
+      unset UPSTREAM_REPOSITORY
+      unset UPSTREAM_REPOSITORY_TOKEN
 
       # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_AUTO aren't modified here so ignore subshell warning.
       # shellcheck disable=SC2030
-      if [[ "${UPSTREAM_REPOSITORY_URL}" = "https://github.com/"* ]] ||
-         [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]
+
+      if [[ "${UPSTREAM_REPOSITORY_URL}" = "https://github.com/"* ]]
       then
-        if [[ -n "${BASH_REMATCH[5]}" ]]
-        then
-          UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
-        else
           UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
           UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
-        fi
+      elif [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]
+      then
+          UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
+          UPSTREAM_REPOSITORY_TOKEN="${BASH_REMATCH[4]:-${BASH_REMATCH[2]}}"
+      fi
+
+      if [[ -n "${UPSTREAM_REPOSITORY}" ]]; then
         # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
         # Global token HOMEBREW_GITHUB_API_TOKEN supersedes local defined one
         # shellcheck disable=SC2153
         if [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
         then
           CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
-        elif [[ -n "${BASH_REMATCH[4]}" ]]
+        elif [[ -n "${UPSTREAM_REPOSITORY_TOKEN}" ]]
         then
-          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[4]}")
-        elif [[ -n "${BASH_REMATCH[2]}" ]]
-        then
-          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${BASH_REMATCH[2]}")
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${UPSTREAM_REPOSITORY_TOKEN}")
         else
           CURL_GITHUB_API_ARGS=()
         fi
