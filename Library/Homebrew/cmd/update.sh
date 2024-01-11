@@ -645,15 +645,15 @@ EOS
 
       if [[ -n "${UPSTREAM_REPOSITORY}" ]]
       then
+        # UPSTREAM_REPOSITORY_TOKEN is parsed (if exists) from UPSTREAM_REPOSITORY_URL
         # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-        # Global token HOMEBREW_GITHUB_API_TOKEN supersedes local defined one
         # shellcheck disable=SC2153
-        if [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
-        then
-          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
-        elif [[ -n "${UPSTREAM_REPOSITORY_TOKEN}" ]]
+        if [[ -n "${UPSTREAM_REPOSITORY_TOKEN}" ]]
         then
           CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${UPSTREAM_REPOSITORY_TOKEN}")
+        elif [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
         else
           CURL_GITHUB_API_ARGS=()
         fi
