@@ -4,6 +4,7 @@
 require "context"
 require "resource"
 require "metafiles"
+require "extend/file/atomic"
 
 module DiskUsageExtension
   sig { returns(Integer) }

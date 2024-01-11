@@ -1,3 +1,4 @@
+# typed: strict
 # frozen_string_literal: true
 
 require "fileutils"
@@ -18,7 +19,14 @@ class File
   #   File.atomic_write('/data/something.important', '/data/tmp') do |file|
   #     file.write('hello')
   #   end
-  def self.atomic_write(file_name, temp_dir = dirname(file_name))
+  sig {
+    params(
+      file_name: T.any(Pathname, String),
+      temp_dir:  String,
+      _block:    T.proc.params(arg0: Tempfile).void,
+    ).void
+  }
+  def self.atomic_write(file_name, temp_dir = dirname(file_name), &_block)
     require "tempfile" unless defined?(Tempfile)
 
     Tempfile.open(".#{basename(file_name)}", temp_dir) do |temp_file|
@@ -38,32 +46,35 @@ class File
       if old_stat
         # Set correct permissions on new file
         begin
-          chown(old_stat.uid, old_stat.gid, temp_file.path)
+          chown(old_stat.uid, old_stat.gid, T.must(temp_file.path))
           # This operation will affect filesystem ACL's
-          chmod(old_stat.mode, temp_file.path)
+          chmod(old_stat.mode, T.must(temp_file.path))
         rescue Errno::EPERM, Errno::EACCES
           # Changing file ownership failed, moving on.
         end
       end
 
       # Overwrite original file with temp file
-      rename(temp_file.path, file_name)
+      rename(T.must(temp_file.path), file_name)
       return_val
     end
   end
 
   # Private utility method.
-  def self.probe_stat_in(dir) #:nodoc:
+  sig { params(dir: String).returns(T.nilable(File::Stat)) }
+  private_class_method def self.probe_stat_in(dir) # :nodoc:
     basename = [
       ".permissions_check",
       Thread.current.object_id,
       Process.pid,
-      rand(1000000)
+      rand(1_000_000),
     ].join(".")
 
     file_name = join(dir, basename)
     FileUtils.touch(file_name)
     stat(file_name)
+  rescue Errno::ENOENT
+    file_name = nil
   ensure
     FileUtils.rm_f(file_name) if file_name
   end

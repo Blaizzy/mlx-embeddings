@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "active_support/core_ext/array/access"
+require "extend/array"
 require "rubocops/shared/helper_functions"
 require "shellwords"
 
