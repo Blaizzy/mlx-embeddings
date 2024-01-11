@@ -425,7 +425,7 @@ then
 fi
 if ! [[ -r "$(pwd)" ]]
 then
-  odie "The current working directory must be readable to run brew."
+  odie "The current working directory must be readable to ${USER} to run brew."
 fi
 
 #####
