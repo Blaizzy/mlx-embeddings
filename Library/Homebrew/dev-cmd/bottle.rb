@@ -11,6 +11,7 @@ require "utils/inreplace"
 require "erb"
 require "utils/gzip"
 require "api"
+require "extend/hash/deep_merge"
 
 BOTTLE_ERB = <<-EOS.freeze
   bottle do

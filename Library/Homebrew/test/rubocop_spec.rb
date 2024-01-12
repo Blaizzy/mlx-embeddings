@@ -17,7 +17,7 @@ describe "RuboCop" do
     end
 
     it "loads all Formula cops without errors" do
-      stdout, stderr, status = Open3.capture3(RUBY_PATH, "-W0", "-S", "rubocop", TEST_FIXTURE_DIR/"testball.rb")
+      stdout, stderr, status = Open3.capture3(RUBY_PATH, "-W0", "-S", "rubocop", "-d", TEST_FIXTURE_DIR/"testball.rb")
       expect(stderr).to be_empty
       expect(stdout).to include("no offenses detected")
       expect(status).to be_a_success

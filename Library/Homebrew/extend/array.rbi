@@ -9,4 +9,7 @@ class Array
 
   sig { returns(T.nilable(Elem)) }
   def fourth; end
+
+  sig { returns(T.nilable(Elem)) }
+  def fifth; end
 end

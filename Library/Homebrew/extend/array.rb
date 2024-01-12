@@ -17,6 +17,11 @@ class Array
   #   %w( a b c d e ).fourth # => "d"
   def fourth = self[3]
 
+  # Equal to <tt>self[4]</tt>.
+  #
+  #   %w( a b c d e ).fifth # => "e"
+  def fifth = self[4]
+
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
