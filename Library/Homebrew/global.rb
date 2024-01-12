@@ -10,6 +10,11 @@ require "json/add/exception"
 require "forwardable"
 require "set"
 
+require "extend/array"
+require "extend/blank"
+require "extend/enumerable"
+require "extend/string"
+
 HOMEBREW_API_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_API_DEFAULT_DOMAIN").freeze
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_BOTTLE_DEFAULT_DOMAIN").freeze
 HOMEBREW_BREW_DEFAULT_GIT_REMOTE = ENV.fetch("HOMEBREW_BREW_DEFAULT_GIT_REMOTE").freeze
@@ -61,10 +66,6 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})]
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/
 
-require "extend/array"
-require "extend/blank"
-require "extend/enumerable"
-require "extend/string"
 require "env_config"
 require "macos_version"
 require "os"

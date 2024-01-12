@@ -53,11 +53,6 @@
 !**/vendor/bundle/ruby/*/gems/*/lib
 !**/vendor/bundle/ruby/*/gems/addressable-*/data
 !**/vendor/bundle/ruby/*/gems/public_suffix-*/data
-!**/vendor/bundle/ruby/*/gems/rubocop-performance-*/config
-!**/vendor/bundle/ruby/*/gems/rubocop-rails-*/config
-!**/vendor/bundle/ruby/*/gems/rubocop-rspec-*/config
-!**/vendor/bundle/ruby/*/gems/rubocop-sorbet-*/config
-!**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 
 # Ignore partially included gems where we don't need all files
 **/vendor/gems/mechanize-*/.*
@@ -138,6 +133,7 @@
 **/vendor/bundle/ruby/*/gems/simplecov_json_formatter-*/
 **/vendor/bundle/ruby/*/gems/simpleidn-*/
 **/vendor/bundle/ruby/*/gems/sorbet-*/
+!**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/spoom-*/
 **/vendor/bundle/ruby/*/gems/stackprof-*/
 **/vendor/bundle/ruby/*/gems/strscan-*/

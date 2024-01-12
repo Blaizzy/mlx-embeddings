@@ -14,7 +14,9 @@ class Object
   #   object.instance_variable_defined?(:@a) # => false
   #   dup.instance_variable_defined?(:@a)    # => true
   sig { returns(T.self_type) }
-  def deep_dup = duplicable? ? dup : self
+  def deep_dup
+    duplicable? ? dup : self
+  end
 end
 
 class Array
@@ -27,7 +29,9 @@ class Array
   #   array[1][2] # => nil
   #   dup[1][2]   # => 4
   sig { returns(T.self_type) }
-  def deep_dup = T.unsafe(self).map(&:deep_dup)
+  def deep_dup
+    T.unsafe(self).map(&:deep_dup)
+  end
 end
 
 class Hash
