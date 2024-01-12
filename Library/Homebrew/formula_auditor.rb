@@ -797,7 +797,7 @@ module Homebrew
       end
     end
 
-    def audit_revision_and_version_scheme
+    def audit_revision
       new_formula_problem("New formulae should not define a revision.") if @new_formula && !formula.revision.zero?
 
       return unless @git
@@ -806,19 +806,9 @@ module Homebrew
       return if formula.stable.blank?
 
       current_version = formula.stable.version
-      current_version_scheme = formula.version_scheme
       current_revision = formula.revision
 
       previous_committed, newest_committed = committed_version_info
-
-      unless previous_committed[:version_scheme].nil?
-        if current_version_scheme < previous_committed[:version_scheme]
-          problem "version_scheme should not decrease (from #{previous_committed[:version_scheme]} " \
-                  "to #{current_version_scheme})"
-        elsif current_version_scheme > (previous_committed[:version_scheme] + 1)
-          problem "version_schemes should only increment by 1"
-        end
-      end
 
       if (previous_committed[:version] != newest_committed[:version] ||
          current_version != newest_committed[:version]) &&
@@ -833,6 +823,26 @@ module Homebrew
       elsif newest_committed[:revision] &&
             current_revision > (newest_committed[:revision] + 1)
         problem "revisions should only increment by 1"
+      end
+    end
+
+    def audit_version_scheme
+      return unless @git
+      return unless formula.tap # skip formula not from core or any taps
+      return unless formula.tap.git? # git log is required
+      return if formula.stable.blank?
+
+      current_version_scheme = formula.version_scheme
+
+      previous_committed, = committed_version_info
+
+      return if previous_committed[:version_scheme].nil?
+
+      if current_version_scheme < previous_committed[:version_scheme]
+        problem "version_scheme should not decrease (from #{previous_committed[:version_scheme]} " \
+                "to #{current_version_scheme})"
+      elsif current_version_scheme > (previous_committed[:version_scheme] + 1)
+        problem "version_schemes should only increment by 1"
       end
     end
 
