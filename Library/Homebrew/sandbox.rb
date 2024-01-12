@@ -74,6 +74,7 @@ class Sandbox
   # Xcode projects expect access to certain cache/archive dirs.
   def allow_write_xcode
     allow_write_path "#{Dir.home(ENV.fetch("USER"))}/Library/Developer"
+    allow_write_path "#{Dir.home(ENV.fetch("USER"))}/Library/Caches/org.swift.swiftpm"
   end
 
   def allow_write_log(formula)
