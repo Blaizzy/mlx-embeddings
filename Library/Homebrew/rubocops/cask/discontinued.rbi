@@ -10,7 +10,7 @@ module RuboCop
             block:     T.nilable(T.proc.params(node: RuboCop::AST::SendNode).void),
           ).returns(T::Boolean)
         }
-        def caveats_constains_only_discontinued?(base_node, &block); end
+        def caveats_contains_only_discontinued?(base_node, &block); end
 
         sig {
           params(

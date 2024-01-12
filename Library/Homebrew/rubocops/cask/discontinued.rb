@@ -14,7 +14,7 @@ module RuboCop
         def on_cask_stanza_block(stanza_block)
           stanza_block.stanzas.select(&:caveats?).each do |stanza|
             find_discontinued_method_call(stanza.stanza_node) do |node|
-              if caveats_constains_only_discontinued?(node.parent)
+              if caveats_contains_only_discontinued?(node.parent)
                 add_offense(node.parent, message: MESSAGE) do |corrector|
                   corrector.replace(node.parent.source_range,
                                     "deprecate! date: \"#{Date.today}\", because: :discontinued")
@@ -26,7 +26,7 @@ module RuboCop
           end
         end
 
-        def_node_matcher :caveats_constains_only_discontinued?, <<~EOS
+        def_node_matcher :caveats_contains_only_discontinued?, <<~EOS
           (block
             (send nil? :caveats)
             (args)
