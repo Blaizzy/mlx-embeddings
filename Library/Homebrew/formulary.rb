@@ -9,7 +9,7 @@ require "service"
 require "utils/curl"
 require "deprecate_disable"
 
-require "active_support/core_ext/hash/deep_transform_values"
+require "extend/hash/deep_transform_values"
 
 # The {Formulary} is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.

@@ -63,7 +63,6 @@
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/*/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/deep_transform_values.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/keys.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/deep_dup.rb
 !**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/duplicable.rb

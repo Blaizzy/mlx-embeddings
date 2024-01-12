@@ -92,7 +92,7 @@ class Tab
     end
 
     if attributes["source"]["spec"].nil?
-      version = PkgVersion.parse path.to_s.split("/")[-2]
+      version = PkgVersion.parse(File.basename(File.dirname(path)))
       attributes["source"]["spec"] = if version.head?
         "head"
       else
