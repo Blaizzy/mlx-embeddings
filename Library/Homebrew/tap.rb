@@ -570,7 +570,7 @@ class Tap
   sig { returns(T::Hash[String, Pathname]) }
   def formula_files_by_name
     formula_files.each_with_object({}) do |file, hash|
-      # If there's more than one file with the same basename: use the longer one to prioritise more specifc results.
+      # If there's more than one file with the same basename: use the longer one to prioritise more specific results.
       basename = file.basename(".rb").to_s
       existing_file = hash[basename]
       hash[basename] = file if existing_file.nil? || existing_file.to_s.length < file.to_s.length
@@ -600,7 +600,7 @@ class Tap
   sig { returns(T::Hash[String, Pathname]) }
   def cask_files_by_name
     cask_files.each_with_object({}) do |file, hash|
-      # If there's more than one file with the same basename: use the longer one to prioritise more specifc results.
+      # If there's more than one file with the same basename: use the longer one to prioritise more specific results.
       basename = file.basename(".rb").to_s
       existing_file = hash[basename]
       hash[basename] = file if existing_file.nil? || existing_file.to_s.length < file.to_s.length

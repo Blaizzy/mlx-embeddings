@@ -19,7 +19,7 @@ module Homebrew
 
         If any version of each formula argument is installed and no other options
         are passed, this command displays their actual runtime dependencies (similar
-        to `brew linkage`), which may differ from the current versons' stated
+        to `brew linkage`), which may differ from the current versions' stated
         dependencies if the installed versions are outdated.
 
         *Note:* `--missing` and `--skip-recommended` have precedence over `--include-*`.
