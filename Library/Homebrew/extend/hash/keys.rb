@@ -102,7 +102,8 @@ class Hash
   def _deep_transform_keys_in_object!(object, &block)
     case object
     when Hash
-      object.each_key do |key|
+      # We can't use `each_key` here because we're updating the hash in-place
+      object.keys.each do |key| # rubocop:disable Style/HashEachMethods
         value = object.delete(key)
         object[yield(key)] = _deep_transform_keys_in_object!(value, &block)
       end
