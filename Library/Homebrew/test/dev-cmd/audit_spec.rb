@@ -961,10 +961,10 @@ module Homebrew
       end
     end
 
-    describe "#audit_revision_and_version_scheme" do
+    describe "#audit_revision" do
       subject do
         fa = described_class.new(Formulary.factory(formula_path), git: true)
-        fa.audit_revision_and_version_scheme
+        fa.audit_revision
         fa.problems.first&.fetch(:message)
       end
 
@@ -1001,7 +1001,7 @@ module Homebrew
             end
           RUBY
 
-          fa.audit_revision_and_version_scheme
+          fa.audit_revision
 
           expect(fa.new_formula_problems).to include(
             a_hash_including(message: a_string_matching(/should not define a revision/)),
@@ -1081,6 +1081,38 @@ module Homebrew
           end
 
           it { is_expected.to be_nil }
+        end
+      end
+    end
+
+    describe "#audit_version_scheme" do
+      subject do
+        fa = described_class.new(Formulary.factory(formula_path), git: true)
+        fa.audit_version_scheme
+        fa.problems.first&.fetch(:message)
+      end
+
+      before do
+        origin_formula_path.dirname.mkpath
+        origin_formula_path.write <<~RUBY
+          class Foo#{foo_version} < Formula
+            url "https://brew.sh/foo-1.0.tar.gz"
+            sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+            revision 2
+            version_scheme 1
+          end
+        RUBY
+
+        origin_tap_path.mkpath
+        origin_tap_path.cd do
+          system "git", "init"
+          system "git", "add", "--all"
+          system "git", "commit", "-m", "init"
+        end
+
+        tap_path.mkpath
+        tap_path.cd do
+          system "git", "clone", origin_tap_path, "."
         end
       end
 
