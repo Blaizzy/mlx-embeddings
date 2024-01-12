@@ -25,9 +25,7 @@ class Object
   # False for method objects;
   # true otherwise.
   sig { returns(T::Boolean) }
-  def duplicable?
-    true
-  end
+  def duplicable? = true
 end
 
 class Method
@@ -36,9 +34,7 @@ class Method
   #   method(:puts).duplicable? # => false
   #   method(:puts).dup         # => TypeError: allocator undefined for Method
   sig { returns(FalseClass) }
-  def duplicable?
-    false
-  end
+  def duplicable? = false
 end
 
 class UnboundMethod
@@ -47,9 +43,7 @@ class UnboundMethod
   #   method(:puts).unbind.duplicable? # => false
   #   method(:puts).unbind.dup         # => TypeError: allocator undefined for UnboundMethod
   sig { returns(FalseClass) }
-  def duplicable?
-    false
-  end
+  def duplicable? = false
 end
 
 require "singleton"
@@ -59,7 +53,5 @@ module Singleton
   #
   #   Class.new.include(Singleton).instance.dup # TypeError (can't dup instance of singleton
   sig { returns(FalseClass) }
-  def duplicable?
-    false
-  end
+  def duplicable? = false
 end
