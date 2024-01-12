@@ -6,6 +6,7 @@ require "timeout"
 require "utils/user"
 require "cask/artifact/abstract_artifact"
 require "cask/pkg"
+require "extend/hash/keys"
 
 module Cask
   module Artifact

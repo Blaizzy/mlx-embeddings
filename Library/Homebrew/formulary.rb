@@ -8,8 +8,8 @@ require "utils/bottles"
 require "service"
 require "utils/curl"
 require "deprecate_disable"
-
 require "extend/hash/deep_transform_values"
+require "extend/hash/keys"
 
 # The {Formulary} is responsible for creating instances of {Formula}.
 # It is not meant to be used directly from formulae.

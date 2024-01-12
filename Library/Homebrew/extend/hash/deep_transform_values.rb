@@ -20,6 +20,7 @@ class Hash
   private
 
   # Support methods for deep transforming nested hashes and arrays.
+  sig { params(object: T.anything, block: T.proc.params(v: T.untyped).returns(T.untyped)).returns(T.untyped) }
   def _deep_transform_values_in_object(object, &block)
     case object
     when Hash
@@ -31,6 +32,7 @@ class Hash
     end
   end
 
+  sig { params(object: T.anything, block: T.proc.params(v: T.untyped).returns(T.untyped)).returns(T.untyped) }
   def _deep_transform_values_in_object!(object, &block)
     case object
     when Hash
