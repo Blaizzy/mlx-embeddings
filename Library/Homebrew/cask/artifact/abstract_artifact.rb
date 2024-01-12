@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "attrable"
-require "active_support/core_ext/object/deep_dup"
+require "extend/object/deep_dup"
 
 module Cask
   module Artifact

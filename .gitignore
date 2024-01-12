@@ -57,14 +57,7 @@
 !**/vendor/bundle/ruby/*/gems/rubocop-rails-*/config
 !**/vendor/bundle/ruby/*/gems/rubocop-rspec-*/config
 !**/vendor/bundle/ruby/*/gems/rubocop-sorbet-*/config
-
-# Ignore activesupport, except the ones we need.
-**/vendor/bundle/ruby/*/gems/activesupport-*/lib/**/*
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/*/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/deep_dup.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/duplicable.rb
+!**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 
 # Ignore partially included gems where we don't need all files
 **/vendor/gems/mechanize-*/.*
@@ -82,6 +75,7 @@
 **/vendor/gems/mechanize-*/test/
 
 # Ignore dependencies we don't wish to vendor
+**/vendor/bundle/ruby/*/gems/activesupport-*/
 **/vendor/bundle/ruby/*/gems/ast-*/
 **/vendor/bundle/ruby/*/gems/bootsnap-*/
 **/vendor/bundle/ruby/*/gems/bundler-*/
@@ -144,7 +138,6 @@
 **/vendor/bundle/ruby/*/gems/simplecov_json_formatter-*/
 **/vendor/bundle/ruby/*/gems/simpleidn-*/
 **/vendor/bundle/ruby/*/gems/sorbet-*/
-!**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/spoom-*/
 **/vendor/bundle/ruby/*/gems/stackprof-*/
 **/vendor/bundle/ruby/*/gems/strscan-*/
