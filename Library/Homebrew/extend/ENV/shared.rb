@@ -271,7 +271,6 @@ module SharedEnvExtension
     set_cpu_flags(flags)
   end
 
-  # @private
   sig { returns(Symbol) }
   def effective_arch
     if @build_bottle && @bottle_arch
