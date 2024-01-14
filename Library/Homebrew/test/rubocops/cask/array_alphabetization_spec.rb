@@ -123,4 +123,46 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
       end
     CASK
   end
+
+  it "ignores `uninstall` methods with commands" do
+    expect_no_offenses(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        uninstall script: {
+          args: ["--mode=something", "--another-mode"],
+          executable: "thing",
+        }
+      end
+    CASK
+  end
+
+  focus it "moves comments when autocorrecting" do
+    expect_offense(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        zap trash: [
+                   ^ The array elements should be ordered alphabetically
+          # overall comment, shouldn't move
+          "~/Library/Application Support/Foo",
+          "~/Library/Application Support/Bar",
+          "~/Library/Application Support/Baz", # in-line comment
+        ]
+      end
+    CASK
+
+    expect_correction(<<~CASK)
+      cask "foo" do
+        url "https://example.com/foo.zip"
+
+        zap trash: [
+          # overall comment, shouldn't move
+          "~/Library/Application Support/Bar",
+          "~/Library/Application Support/Baz", # in-line comment
+          "~/Library/Application Support/Foo",
+        ]
+      end
+    CASK
+  end
 end
