@@ -12,10 +12,10 @@ cask "with-installable" do
             login_item: "Fancy",
             delete:     [
               "#{TEST_TMPDIR}/absolute_path",
-              "~/path_with_tilde",
               "#{TEST_TMPDIR}/glob_path*",
-              "impermissible/relative/path",
               "/another/impermissible/../relative/path",
+              "impermissible/relative/path",
+              "~/path_with_tilde",
             ],
             rmdir:      "#{TEST_TMPDIR}/empty_directory_path"
 end
