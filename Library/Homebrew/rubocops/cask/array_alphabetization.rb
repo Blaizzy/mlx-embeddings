@@ -11,7 +11,7 @@ module RuboCop
           return unless [:zap, :uninstall].include?(name = node.method_name)
 
           node.each_descendant(:pair).each do |pair|
-            symbols = pair.children.select { |child| child.sym_type? }.map(&:value)
+            symbols = pair.children.select(&:sym_type?).map(&:value)
             # For `zap`s, we only care about `trash` arrays.
             next if name == :zap && !symbols.include?(:trash)
             # Don't order `uninstall` arrays that contain commands.
