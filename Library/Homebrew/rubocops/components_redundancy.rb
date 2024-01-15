@@ -8,16 +8,19 @@ module RuboCop
     module FormulaAudit
       # This cop checks if redundant components are present and for other component errors.
       #
-      # - `url|checksum|mirror` should be inside `stable` block
+      # - `url|checksum|mirror|version` should be inside `stable` block
       # - `head` and `head do` should not be simultaneously present
       # - `bottle :unneeded`/`:disable` and `bottle do` should not be simultaneously present
       # - `stable do` should not be present without a `head` spec
+      # - `stable do` should not be present with only `url|checksum|mirror|version`
+      # - `head do` should not be present with only `url`
       #
       # @api private
       class ComponentsRedundancy < FormulaCop
         HEAD_MSG = "`head` and `head do` should not be simultaneously present"
         BOTTLE_MSG = "`bottle :modifier` and `bottle do` should not be simultaneously present"
         STABLE_MSG = "`stable do` should not be present without a `head` spec"
+        STABLE_BLOCK_METHODS = [:url, :sha256, :mirror, :version].freeze
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           return if body_node.nil?
@@ -37,8 +40,23 @@ module RuboCop
 
           stable_block = find_block(body_node, :stable)
           if stable_block
-            [:url, :sha256, :mirror].each do |method_name|
+            STABLE_BLOCK_METHODS.each do |method_name|
               problem "`#{method_name}` should be put inside `stable` block" if method_called?(body_node, method_name)
+            end
+
+            unless stable_block.body.nil?
+              child_nodes = stable_block.body.begin_type? ? stable_block.body.child_nodes : [stable_block.body]
+              if child_nodes.all? { |n| n.send_type? && STABLE_BLOCK_METHODS.include?(n.method_name) }
+                problem "`stable do` should not be present with only #{STABLE_BLOCK_METHODS.join("/")}"
+              end
+            end
+          end
+
+          head_block = find_block(body_node, :head)
+          if head_block && !head_block.body.nil?
+            child_nodes = head_block.body.begin_type? ? head_block.body.child_nodes : [head_block.body]
+            if child_nodes.all? { |n| n.send_type? && n.method_name == :url }
+              problem "`head do` should not be present with only `url`"
             end
           end
 
