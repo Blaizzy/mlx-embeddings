@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 module SharedEnvExtension
-  # @private
   def effective_arch
     if @build_bottle && @bottle_arch
       @bottle_arch.to_sym
