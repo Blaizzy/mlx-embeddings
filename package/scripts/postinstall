@@ -92,7 +92,7 @@ fi
 # set permissions
 if [[ "${homebrew_directory}" == "/usr/local/Homebrew" ]]
 then
-  chown -R "${homebrew_pkg_user}:admin" Cellar Frameworks Homebrew bin etc include lib sbin share var
+  chown -R "${homebrew_pkg_user}:admin" Cellar Frameworks Homebrew bin etc include lib sbin share opt var
 else
   chown -R "${homebrew_pkg_user}:admin" .
 fi
