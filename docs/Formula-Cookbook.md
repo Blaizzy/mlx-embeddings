@@ -139,8 +139,6 @@ We generally try not to duplicate system libraries and complicated tools in core
 
 Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be built using Homebrew’s shipped equivalent and our Brew Test Bot's post-install `audit` will warn if it detects you haven't done this.
 
-Homebrew’s OpenSSL is [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) to avoid conflicting with the system so sometimes formulae need to have environment variables set or special configuration flags passed to locate our OpenSSL. You can see this mechanism in the [`bind`](https://github.com/Homebrew/homebrew-core/blob/fbcea827ca81a8b136f4e7d8761ea55d093f5d02/Formula/b/bind.rb#L50) formula. Usually this is unnecessary because Homebrew sets up our [build environment](https://github.com/Homebrew/brew/blob/HEAD/Library/Homebrew/extend/ENV/super.rb) to favour finding [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) formulae first.
-
 **Important:** `$(brew --prefix)/bin` is NOT in the `PATH` during formula installation. If you have dependencies at build time, you must specify them and `brew` will add them to the `PATH` or create a [`Requirement`](https://rubydoc.brew.sh/Requirement).
 
 ### Specifying other formulae as dependencies
