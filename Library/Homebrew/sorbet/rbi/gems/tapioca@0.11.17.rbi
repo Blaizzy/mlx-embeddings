@@ -1970,11 +1970,11 @@ class Tapioca::Gem::Pipeline
 
   private
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#439
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#440
   sig { params(name: ::String).void }
   def add_to_alias_namespace(name); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#444
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#445
   sig { params(name: ::String).returns(T::Boolean) }
   def alias_namespaced?(name); end
 
@@ -2008,7 +2008,7 @@ class Tapioca::Gem::Pipeline
   sig { params(constant: T::Class[T.anything]).returns(T.nilable(::String)) }
   def compile_superclass(constant); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#420
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#421
   sig { params(constant: ::Module, strict: T::Boolean).returns(T::Boolean) }
   def defined_in_gem?(constant, strict: T.unsafe(nil)); end
 
@@ -2018,11 +2018,11 @@ class Tapioca::Gem::Pipeline
 
   # Helpers
   #
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#463
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#464
   sig { params(constant: T.all(::Module, ::T::Generic)).returns(::String) }
   def generic_name_of(constant); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#432
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#433
   sig { params(constant: ::Module).returns(T::Set[::String]) }
   def get_file_candidates(constant); end
 
@@ -2030,7 +2030,7 @@ class Tapioca::Gem::Pipeline
   sig { params(gem: ::Tapioca::Gemfile::GemSpec).returns(T::Set[::String]) }
   def load_bootstrap_symbols(gem); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#479
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#480
   sig { params(constant: ::Module, class_name: T.nilable(::String)).returns(T.nilable(::String)) }
   def name_of_proxy_target(constant, class_name); end
 
@@ -2052,11 +2052,11 @@ class Tapioca::Gem::Pipeline
   sig { params(event: ::Tapioca::Gem::SymbolFound).void }
   def on_symbol(event); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#451
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#452
   sig { params(name: ::String).void }
   def seen!(name); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#456
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#457
   sig { params(name: ::String).returns(T::Boolean) }
   def seen?(name); end
 
@@ -2068,15 +2068,15 @@ class Tapioca::Gem::Pipeline
   sig { params(name: ::String, constant: T.anything).returns(T::Boolean) }
   def skip_constant?(name, constant); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#407
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#408
   sig { params(name: ::String, constant: ::Module).returns(T::Boolean) }
   def skip_foreign_constant?(name, constant); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#412
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#413
   sig { params(name: ::String, constant: ::Module).returns(T::Boolean) }
   def skip_module?(name, constant); end
 
-  # source://tapioca//lib/tapioca/gem/pipeline.rb#399
+  # source://tapioca//lib/tapioca/gem/pipeline.rb#400
   sig { params(name: ::String, constant: ::BasicObject).returns(T::Boolean) }
   def skip_object?(name, constant); end
 
@@ -2996,6 +2996,10 @@ module Tapioca::Runtime::Reflection
   # source://tapioca//lib/tapioca/runtime/reflection.rb#244
   sig { params(parent: ::Module, name: ::String).returns(T.nilable(::Module)) }
   def child_module_for_parent_with_name(parent, name); end
+
+  # source://tapioca//lib/tapioca/runtime/reflection.rb#260
+  sig { params(name: ::String).returns(T::Boolean) }
+  def has_aliased_namespace?(name); end
 
   # source://tapioca//lib/tapioca/runtime/reflection.rb#255
   sig { params(method: ::UnboundMethod).returns(T::Boolean) }
