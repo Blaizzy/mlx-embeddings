@@ -157,7 +157,7 @@ GEM
     stackprof (0.2.26)
     syntax_tree (6.2.0)
       prettier_print (>= 1.2.0)
-    tapioca (0.11.16)
+    tapioca (0.11.17)
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
