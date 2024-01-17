@@ -590,6 +590,33 @@ module Homebrew
       new_formula_problem "New formulae in homebrew/core should not have a `bottle do` block"
     end
 
+    def audit_eol
+      return unless @online
+
+      return if formula.deprecated? || formula.disabled?
+
+      name = if formula.versioned_formula?
+        formula.name.split("@").first
+      else
+        formula.name
+      end
+
+      return if formula.tap&.audit_exception :eol_date_blocklist, name
+
+      metadata = SharedAudits.eol_data(name, formula.version.major)
+      metadata ||= SharedAudits.eol_data(name, formula.version.major_minor)
+
+      return if metadata.blank? || metadata["eol"] == false
+
+      see_url = "see #{Formatter.url("https://endoflife.date/#{name}")}"
+      if metadata["eol"] == true
+        problem "Product is EOL, #{see_url}"
+        return
+      end
+
+      problem "Product is EOL since #{metadata["eol"]}, #{see_url}" if Date.parse(metadata["eol"]) <= Date.today
+    end
+
     def audit_github_repository_archived
       return if formula.deprecated? || formula.disabled?
 
