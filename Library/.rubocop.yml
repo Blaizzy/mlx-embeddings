@@ -202,8 +202,10 @@ Performance/MethodObjectAsBlock:
 Rails:
   # Selectively enable what we want.
   Enabled: false
-  # Do not use ActiveSupport in RuboCops.
   Exclude:
+    # This file is loaded before any extra methods are defined.
+    - "Homebrew/standalone/init.rb"
+    # Do not use ActiveSupport in RuboCops.
     - "Homebrew/rubocops/**/*"
 
 # These relate to ActiveSupport and not other parts of Rails.
