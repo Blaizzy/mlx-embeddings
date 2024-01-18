@@ -89,6 +89,10 @@ module Hardware
         sysctl_bool("hw.optional.arm64")
       end
 
+      def virtualized?
+        sysctl_bool("kern.hv_vmm_present")
+      end
+
       private
 
       def arm_family
