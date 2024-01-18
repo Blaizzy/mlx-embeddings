@@ -39,7 +39,13 @@ if !gems_vendored && !ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"]
   ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"] = "1"
 end
 
-$LOAD_PATH.push HOMEBREW_LIBRARY_PATH.to_s unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
+unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
+  # Insert the path after any existing Homebrew paths (e.g. those inserted by tests and parent processes)
+  last_homebrew_path_idx = $LOAD_PATH.rindex do |path|
+    path.start_with?(HOMEBREW_LIBRARY_PATH.to_s) && !path.include?("vendor/portable-ruby")
+  end || -1
+  $LOAD_PATH.insert(last_homebrew_path_idx + 1, HOMEBREW_LIBRARY_PATH.to_s)
+end
 require_relative "../vendor/bundle/bundler/setup"
 $LOAD_PATH.unshift "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/" \
                    "bundler-#{Homebrew::HOMEBREW_BUNDLER_VERSION}/lib"
