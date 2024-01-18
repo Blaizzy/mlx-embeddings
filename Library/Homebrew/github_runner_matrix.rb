@@ -158,8 +158,7 @@ class GitHubRunnerMatrix
       runner = +"#{version}-arm64"
       runner_timeout = timeout
 
-      # Use bare metal runner when testing dependents on ARM64 Monterey.
-      use_ephemeral = macos_version >= (@dependent_matrix ? :ventura : :monterey)
+      use_ephemeral = macos_version >= :monterey
       runner << ephemeral_suffix if use_ephemeral
 
       runner.freeze
