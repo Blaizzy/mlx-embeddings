@@ -26,16 +26,39 @@ module RuboCop
 
               next if array.children.length <= 1
 
-              sorted_array = array.children.sort_by { |child| child.source.downcase }
-              next if sorted_array.map(&:source) == array.children.map(&:source)
+              comments = find_inline_comments(array.source)
+              array_with_comments = array.children.dup
+              array.children.map(&:source).each_with_index do |child, index|
+                comment = comments.find { |c| c.include?(child) }
+                next unless comment
+
+                p comment.strip
+                # Add the comment to the main array.
+                array_with_comments[index] = comment.strip
+              end
+
+              sorted_array = array_with_comments.sort_by { |child| child.to_s.downcase }
+              next if sorted_array == array_with_comments
 
               add_offense(array, message: "The array elements should be ordered alphabetically") do |corrector|
                 array.children.each_with_index do |child, index|
-                  corrector.replace(child.source_range, sorted_array[index].source)
+                  p sorted_array[index]
+                  corrector.replace(child.source_range, sorted_array[index])
                 end
               end
             end
           end
+        end
+
+        def find_inline_comments(source)
+          comments = []
+          source.each_line do |line|
+            # Comments are naively detected by looking for lines that include a `#` surrounded by spaces.
+            comments << line if line.include?(" # ")
+          end
+
+          # Remove lines that are only comments, we don't want to move those.
+          comments.reject { |comment| comment.strip.start_with?("# ") }
         end
       end
     end
