@@ -294,10 +294,12 @@ homebrew-vendor-install() {
               VENDOR_PHYSICAL_PROCESSOR="${option}"
               VENDOR_PROCESSOR="${option}"
             fi
+          else
+            odie "This command does not take multiple vendor targets!"
           fi
-          odie "This command does not take multiple vendor targets!"
+        else
+          VENDOR_NAME="${option}"
         fi
-        VENDOR_NAME="${option}"
         ;;
     esac
   done
