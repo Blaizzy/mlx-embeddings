@@ -12,51 +12,53 @@ source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
 VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 
 # Built from https://github.com/Homebrew/homebrew-portable-ruby.
-if [[ -n "${HOMEBREW_MACOS}" ]]
-then
-  if [[ "${HOMEBREW_PHYSICAL_PROCESSOR}" == "x86_64" ]] ||
-     # Handle the case where /usr/local/bin/brew is run under arm64.
-     # It's a x86_64 installation there (we refuse to install arm64 binaries) so
-     # use a x86_64 Portable Ruby.
-     [[ "${HOMEBREW_PHYSICAL_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
+set_ruby_variables() {
+  if [[ -n "${HOMEBREW_MACOS}" ]]
   then
-    ruby_FILENAME="portable-ruby-3.1.4.el_capitan.bottle.tar.gz"
-    ruby_SHA="02180ca8b8295422ae84921bcf034b7ee8ce5575488bd5e6a37a192e53cd5d34"
-  elif [[ "${HOMEBREW_PHYSICAL_PROCESSOR}" == "arm64" ]]
+    if [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "x86_64" ]] ||
+       # Handle the case where /usr/local/bin/brew is run under arm64.
+       # It's a x86_64 installation there (we refuse to install arm64 binaries) so
+       # use a x86_64 Portable Ruby.
+       [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
+    then
+      ruby_FILENAME="portable-ruby-3.1.4.el_capitan.bottle.tar.gz"
+      ruby_SHA="02180ca8b8295422ae84921bcf034b7ee8ce5575488bd5e6a37a192e53cd5d34"
+    elif [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" ]]
+    then
+      ruby_FILENAME="portable-ruby-3.1.4.arm64_big_sur.bottle.tar.gz"
+      ruby_SHA="d783cbeb6e6ef0d71c0b442317b54554370decd6fac66bf2d4938c07a63f67be"
+    fi
+  elif [[ -n "${HOMEBREW_LINUX}" ]]
   then
-    ruby_FILENAME="portable-ruby-3.1.4.arm64_big_sur.bottle.tar.gz"
-    ruby_SHA="d783cbeb6e6ef0d71c0b442317b54554370decd6fac66bf2d4938c07a63f67be"
+    case "${VENDOR_PROCESSOR}" in
+      x86_64)
+        ruby_FILENAME="portable-ruby-3.1.4.x86_64_linux.bottle.tar.gz"
+        ruby_SHA="f7be167f7ac4f296b9f4c5874ceeea4aafd9999c3c7f2b0378cae7dd273e2322"
+        ;;
+      *) ;;
+    esac
   fi
-elif [[ -n "${HOMEBREW_LINUX}" ]]
-then
-  case "${HOMEBREW_PROCESSOR}" in
-    x86_64)
-      ruby_FILENAME="portable-ruby-3.1.4.x86_64_linux.bottle.tar.gz"
-      ruby_SHA="f7be167f7ac4f296b9f4c5874ceeea4aafd9999c3c7f2b0378cae7dd273e2322"
-      ;;
-    *) ;;
-  esac
-fi
 
-# Dynamic variables can't be detected by shellcheck
-# shellcheck disable=SC2034
-if [[ -n "${ruby_SHA}" && -n "${ruby_FILENAME}" ]]
-then
-  ruby_URLs=()
-  if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" ]]
+  # Dynamic variables can't be detected by shellcheck
+  # shellcheck disable=SC2034
+  if [[ -n "${ruby_SHA}" && -n "${ruby_FILENAME}" ]]
   then
-    ruby_URLs+=("${HOMEBREW_ARTIFACT_DOMAIN}/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}")
+    ruby_URLs=()
+    if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" ]]
+    then
+      ruby_URLs+=("${HOMEBREW_ARTIFACT_DOMAIN}/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}")
+    fi
+    if [[ -n "${HOMEBREW_BOTTLE_DOMAIN}" ]]
+    then
+      ruby_URLs+=("${HOMEBREW_BOTTLE_DOMAIN}/bottles-portable-ruby/${ruby_FILENAME}")
+    fi
+    ruby_URLs+=(
+      "https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}"
+      "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.1.4/${ruby_FILENAME}"
+    )
+    ruby_URL="${ruby_URLs[0]}"
   fi
-  if [[ -n "${HOMEBREW_BOTTLE_DOMAIN}" ]]
-  then
-    ruby_URLs+=("${HOMEBREW_BOTTLE_DOMAIN}/bottles-portable-ruby/${ruby_FILENAME}")
-  fi
-  ruby_URLs+=(
-    "https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}"
-    "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.1.4/${ruby_FILENAME}"
-  )
-  ruby_URL="${ruby_URLs[0]}"
-fi
+}
 
 check_linux_glibc_version() {
   if [[ -z "${HOMEBREW_LINUX}" || -z "${HOMEBREW_LINUX_MINIMUM_GLIBC_VERSION}" ]]
@@ -231,6 +233,13 @@ install() {
   safe_cd "${VENDOR_DIR}"
   [[ -n "${HOMEBREW_QUIET}" ]] || ohai "Pouring ${VENDOR_FILENAME}" >&2
   tar "${tar_args}" "${CACHED_LOCATION}"
+
+  if [[ "${VENDOR_PROCESSOR}" != "${HOMEBREW_PROCESSOR}" ]] ||
+     [[ "${VENDOR_PHYSICAL_PROCESSOR}" != "${HOMEBREW_PHYSICAL_PROCESSOR}" ]]
+  then
+    return 0
+  fi
+
   safe_cd "${VENDOR_DIR}/portable-${VENDOR_NAME}"
 
   if "./${VENDOR_VERSION}/bin/${VENDOR_NAME}" --version >/dev/null
@@ -274,7 +283,20 @@ homebrew-vendor-install() {
         [[ "${option}" == *d* ]] && HOMEBREW_DEBUG=1
         ;;
       *)
-        [[ -n "${VENDOR_NAME}" ]] && odie "This command does not take multiple vendor targets!"
+        if [[ -n "${VENDOR_NAME}" ]]
+        then
+          if [[ -n "${HOMEBREW_DEVELOPER}" ]]
+          then
+            if [[ -n "${PROCESSOR_TARGET}" ]]
+            then
+              odie "This command does not more than vendor and processor targets!"
+            else
+              VENDOR_PHYSICAL_PROCESSOR="${option}"
+              VENDOR_PROCESSOR="${option}"
+            fi
+          fi
+          odie "This command does not take multiple vendor targets!"
+        fi
         VENDOR_NAME="${option}"
         ;;
     esac
@@ -282,6 +304,18 @@ homebrew-vendor-install() {
 
   [[ -z "${VENDOR_NAME}" ]] && odie "This command requires a vendor target!"
   [[ -n "${HOMEBREW_DEBUG}" ]] && set -x
+
+  if [[ -z "${VENDOR_PHYSICAL_PROCESSOR}" ]]
+  then
+    VENDOR_PHYSICAL_PROCESSOR="${HOMEBREW_PHYSICAL_PROCESSOR}"
+  fi
+
+  if [[ -z "${VENDOR_PROCESSOR}" ]]
+  then
+    VENDOR_PROCESSOR="${HOMEBREW_PROCESSOR}"
+  fi
+
+  set_ruby_variables
   check_linux_glibc_version
 
   filename_var="${VENDOR_NAME}_FILENAME"
