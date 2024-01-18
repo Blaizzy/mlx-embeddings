@@ -374,7 +374,7 @@ module Cask
       define_method(klass.dsl_key) do |*args, **kwargs|
         T.bind(self, DSL)
         if [*artifacts.map(&:class), klass].include?(Artifact::StageOnly) &&
-           (artifacts.map(&:class) & ACTIVATABLE_ARTIFACT_CLASSES).any?
+           artifacts.map(&:class).intersect?(ACTIVATABLE_ARTIFACT_CLASSES)
           raise CaskInvalidError.new(cask, "'stage_only' must be the only activatable artifact.")
         end
 

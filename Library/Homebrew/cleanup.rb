@@ -232,7 +232,7 @@ module Homebrew
       return false if no_cleanup_formula.blank?
 
       @skip_clean_formulae ||= no_cleanup_formula.split(",")
-      @skip_clean_formulae.include?(formula.name) || (@skip_clean_formulae & formula.aliases).present?
+      @skip_clean_formulae.include?(formula.name) || @skip_clean_formulae.intersect?(formula.aliases)
     end
 
     def self.periodic_clean_due?

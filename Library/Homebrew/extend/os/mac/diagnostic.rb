@@ -96,7 +96,7 @@ module Homebrew
 
         gnubin = %W[#{findutils.opt_libexec}/gnubin #{findutils.libexec}/gnubin]
         default_names = Tab.for_name("findutils").with? "default-names"
-        return if !default_names && (paths & gnubin).empty?
+        return if !default_names && !paths.intersect?(gnubin)
 
         <<~EOS
           Putting non-prefixed findutils in your path can cause python builds to fail.

@@ -457,8 +457,6 @@ Performance/MapCompact:
   Enabled: false
 Style/ArgumentsForwarding:
   Enabled: false
-Style/ArrayIntersect:
-  Enabled: false
 Style/HashSyntax:
   EnforcedShorthandSyntax: either
 Style/RedundantFreeze:
