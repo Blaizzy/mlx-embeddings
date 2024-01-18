@@ -25,7 +25,7 @@ module Homebrew
           (?<package_name>.+)- # The package name followed by a hyphen
           .*? # The version string
           (?<suffix>\.tar\.[a-z0-9]+|\.[a-z0-9]+)$ # Filename extension
-        /ix.freeze
+        /ix
 
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
@@ -33,7 +33,7 @@ module Homebrew
           /packages
           (?:/[^/]+)+ # The hexadecimal paths before the filename
           /#{FILENAME_REGEX.source.strip} # The filename
-        }ix.freeze
+        }ix
 
         # Whether the strategy can be applied to the provided URL.
         #

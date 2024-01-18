@@ -153,7 +153,7 @@ module RuboCop
       class LivecheckRegexExtension < FormulaCop
         extend AutoCorrector
 
-        TAR_PATTERN = /\\?\.t(ar|(g|l|x)z$|[bz2]{2,4}$)(\\?\.((g|l|x)z)|[bz2]{2,4}|Z)?$/i.freeze
+        TAR_PATTERN = /\\?\.t(ar|(g|l|x)z$|[bz2]{2,4}$)(\\?\.((g|l|x)z)|[bz2]{2,4}|Z)?$/i
 
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)

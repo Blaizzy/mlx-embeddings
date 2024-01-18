@@ -81,7 +81,7 @@ module Homebrew
         (?:ar(?:\.(?:bz2|gz|lz|lzma|lzo|xz|Z|zst))?|
         b2|bz2?|z2|az|gz|lz|lzma|xz|Z|aZ|zst)
         $
-      /ix.freeze
+      /ix
 
       # An error message to use when a `strategy` block returns a value of
       # an inappropriate type.

@@ -19,7 +19,7 @@ module Homebrew
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{^https?://}i.freeze
+        URL_MATCH_REGEX = %r{^https?://}i
 
         # Common `os` values used in appcasts to refer to macOS.
         APPCAST_MACOS_STRINGS = ["macos", "osx"].freeze

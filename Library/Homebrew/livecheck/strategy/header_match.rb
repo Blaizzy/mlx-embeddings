@@ -19,7 +19,7 @@ module Homebrew
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{^https?://}i.freeze
+        URL_MATCH_REGEX = %r{^https?://}i
 
         # The header fields to check when a `strategy` block isn't provided.
         DEFAULT_HEADERS_TO_CHECK = ["content-disposition", "location"].freeze

@@ -19,17 +19,17 @@ module Homebrew
       class Hackage
         # A `Regexp` used in determining if the strategy applies to the URL and
         # also as part of extracting the package name from the URL basename.
-        PACKAGE_NAME_REGEX = /(?<package_name>.+?)-\d+/i.freeze
+        PACKAGE_NAME_REGEX = /(?<package_name>.+?)-\d+/i
 
         # A `Regexp` used to extract the package name from the URL basename.
-        FILENAME_REGEX = /^#{PACKAGE_NAME_REGEX.source.strip}/i.freeze
+        FILENAME_REGEX = /^#{PACKAGE_NAME_REGEX.source.strip}/i
 
         # A `Regexp` used in determining if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
           ^https?://(?:downloads|hackage)\.haskell\.org
           (?:/[^/]+)+ # Path before the filename
           #{PACKAGE_NAME_REGEX.source.strip}
-        }ix.freeze
+        }ix
 
         # Whether the strategy can be applied to the provided URL.
         #

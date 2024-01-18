@@ -27,7 +27,7 @@ module Homebrew
           (?<prefix>[^/]+) # Filename text before the version
           -v?\d+(?:\.\d+)* # The numeric version
           (?<suffix>[^/]+) # Filename text after the version
-        }ix.freeze
+        }ix
 
         # Whether the strategy can be applied to the provided URL.
         #

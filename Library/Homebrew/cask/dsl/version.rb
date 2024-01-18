@@ -13,11 +13,11 @@ module Cask
         "_" => :underscores,
       }.freeze
 
-      DIVIDER_REGEX = /(#{DIVIDERS.keys.map { |v| Regexp.quote(v) }.join("|")})/.freeze
+      DIVIDER_REGEX = /(#{DIVIDERS.keys.map { |v| Regexp.quote(v) }.join("|")})/
 
-      MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:.([^.,:]+)(?:.([^.,:]+))?)?/.freeze
+      MAJOR_MINOR_PATCH_REGEX = /^([^.,:]+)(?:.([^.,:]+)(?:.([^.,:]+))?)?/
 
-      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_+ ]/.freeze
+      INVALID_CHARACTERS = /[^0-9a-zA-Z.,:\-_+ ]/
 
       class << self
         private

@@ -49,8 +49,8 @@ class Version
 
   # @api private
   class StemParser < RegexParser
-    SOURCEFORGE_DOWNLOAD_REGEX = %r{(?:sourceforge\.net|sf\.net)/.*/download$}.freeze
-    NO_FILE_EXTENSION_REGEX = /\.[^a-zA-Z]+$/.freeze
+    SOURCEFORGE_DOWNLOAD_REGEX = %r{(?:sourceforge\.net|sf\.net)/.*/download$}
+    NO_FILE_EXTENSION_REGEX = /\.[^a-zA-Z]+$/
 
     sig { override.params(spec: Pathname).returns(String) }
     def self.process_spec(spec)

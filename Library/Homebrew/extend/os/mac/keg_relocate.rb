@@ -130,7 +130,7 @@ class Keg
     end
   end
 
-  VARIABLE_REFERENCE_RX = /^@(loader_|executable_|r)path/.freeze
+  VARIABLE_REFERENCE_RX = /^@(loader_|executable_|r)path/
 
   def each_linkage_for(file, linkage_type, resolve_variable_references: false, &block)
     file.public_send(linkage_type, resolve_variable_references: resolve_variable_references)
@@ -159,7 +159,7 @@ class Keg
 
   # Matches framework references like `XXX.framework/Versions/YYY/XXX` and
   # `XXX.framework/XXX`, both with or without a slash-delimited prefix.
-  FRAMEWORK_RX = %r{(?:^|/)(([^/]+)\.framework/(?:Versions/[^/]+/)?\2)$}.freeze
+  FRAMEWORK_RX = %r{(?:^|/)(([^/]+)\.framework/(?:Versions/[^/]+/)?\2)$}
 
   def find_dylib_suffix_from(bad_name)
     if (framework = bad_name.match(FRAMEWORK_RX))
@@ -233,7 +233,7 @@ class Keg
 
   private
 
-  CELLAR_RX = %r{\A#{HOMEBREW_CELLAR}/(?<formula_name>[^/]+)/[^/]+}.freeze
+  CELLAR_RX = %r{\A#{HOMEBREW_CELLAR}/(?<formula_name>[^/]+)/[^/]+}
 
   # Replace HOMEBREW_CELLAR references with HOMEBREW_PREFIX/opt references
   # if the Cellar reference is to a different keg.

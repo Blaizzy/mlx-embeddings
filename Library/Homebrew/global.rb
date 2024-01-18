@@ -65,10 +65,10 @@ HOMEBREW_MACOS_OLDEST_SUPPORTED = ENV.fetch("HOMEBREW_MACOS_OLDEST_SUPPORTED").f
 HOMEBREW_MACOS_OLDEST_ALLOWED = ENV.fetch("HOMEBREW_MACOS_OLDEST_ALLOWED").freeze
 
 HOMEBREW_PULL_API_REGEX =
-  %r{https://api\.github\.com/repos/([\w-]+)/([\w-]+)?/pulls/(\d+)}.freeze
+  %r{https://api\.github\.com/repos/([\w-]+)/([\w-]+)?/pulls/(\d+)}
 HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
-  %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})].freeze
-HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/.freeze
+  %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})]
+HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/
 
 require "extend/module"
 require "extend/blank"

@@ -132,7 +132,7 @@ class Symbol
 end
 
 class String
-  BLANK_RE = /\A[[:space:]]*\z/.freeze
+  BLANK_RE = /\A[[:space:]]*\z/
   # This is a cache that is intentionally mutable
   # rubocop:disable Style/MutableConstant
   ENCODED_BLANKS_ = T.let(Hash.new do |h, enc|

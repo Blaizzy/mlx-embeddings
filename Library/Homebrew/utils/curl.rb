@@ -15,7 +15,7 @@ module Utils
     # This regex is used to extract the part of an ETag within quotation marks,
     # ignoring any leading weak validator indicator (`W/`). This simplifies
     # ETag comparison in `#curl_check_http_content`.
-    ETAG_VALUE_REGEX = %r{^(?:[wW]/)?"((?:[^"]|\\")*)"}.freeze
+    ETAG_VALUE_REGEX = %r{^(?:[wW]/)?"((?:[^"]|\\")*)"}
 
     # HTTP responses and body content are typically separated by a double
     # `CRLF` (whereas HTTP header lines are separated by a single `CRLF`).
@@ -24,7 +24,7 @@ module Utils
 
     # This regex is used to isolate the parts of an HTTP status line, namely
     # the status code and any following descriptive text (e.g. `Not Found`).
-    HTTP_STATUS_LINE_REGEX = %r{^HTTP/.* (?<code>\d+)(?: (?<text>[^\r\n]+))?}.freeze
+    HTTP_STATUS_LINE_REGEX = %r{^HTTP/.* (?<code>\d+)(?: (?<text>[^\r\n]+))?}
 
     private_constant :ETAG_VALUE_REGEX, :HTTP_RESPONSE_BODY_SEPARATOR, :HTTP_STATUS_LINE_REGEX
 
