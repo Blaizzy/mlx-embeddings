@@ -5,7 +5,6 @@
 
 class AbstractCoreTap
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class AbstractDownloadStrategy
@@ -3209,7 +3208,6 @@ end
 
 class Cask::Artifact::AbstractArtifact
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Cask::Cache
@@ -3219,12 +3217,10 @@ end
 
 class Cask::CaskLoader::AbstractContentLoader
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Cask::CaskLoader::ILoader
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -3718,7 +3714,6 @@ end
 
 class Downloadable
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class ELFTools::LazyArray
@@ -6324,6 +6319,8 @@ class Net::HTTP
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
+Net::HTTP::ProxyMod = Net::HTTP::ProxyDelta
+
 class Net::HTTPAlreadyReported
   HAS_BODY = ::T.let(nil, ::T.untyped)
 end
@@ -6501,7 +6498,6 @@ end
 
 class OS::Mac::BaseSDKLocator
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module OS::Mac::CLT
@@ -7300,7 +7296,6 @@ end
 class Parlour::Conversion::Converter
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Parlour::Debugging
@@ -7310,7 +7305,6 @@ end
 
 module Parlour::Mixin::Searchable
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -7318,7 +7312,6 @@ end
 class Parlour::Plugin
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Parlour::TypeLoader
@@ -7329,13 +7322,11 @@ end
 class Parlour::TypedObject
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class Parlour::Types::Type
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class Proc
@@ -7423,7 +7414,6 @@ end
 module RBI::Indexable
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -7431,13 +7421,11 @@ end
 class RBI::Node
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class RBI::Visitor
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class RDoc::Alias
@@ -9362,7 +9350,6 @@ end
 
 class RuboCop::Cop::FormulaCop
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module RuboCop::Cop::HelperFunctions
@@ -9825,7 +9812,6 @@ end
 class Spoom::Coverage::D3::Base
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Spoom::Coverage::D3
@@ -9835,7 +9821,6 @@ end
 class Spoom::Coverage::Template
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Spoom::Coverage
@@ -9845,13 +9830,11 @@ end
 class Spoom::Deadcode::Error
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class Spoom::Deadcode::Plugins::Base
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Spoom::Deadcode
@@ -9861,13 +9844,11 @@ end
 class Spoom::FileTree::Visitor
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 module Spoom::LSP::PrintableSymbol
   extend ::T::Helpers
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -9977,10 +9958,6 @@ end
 
 class Test::Helper::OutputAsTTY::Output
   RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
-end
-
-class Thread
-  def native_thread_id(); end
 end
 
 class Thread::Backtrace
@@ -10182,7 +10159,6 @@ end
 
 module UnpackStrategy
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -10256,12 +10232,10 @@ end
 
 class Version::Parser
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class Version::Token
   extend ::T::Private::Abstract::Hooks
-  extend ::T::InterfaceWrapper::Helpers
 end
 
 class WeakRef
