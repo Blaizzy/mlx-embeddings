@@ -289,7 +289,7 @@ homebrew-vendor-install() {
           then
             if [[ -n "${PROCESSOR_TARGET}" ]]
             then
-              odie "This command does not more than vendor and processor targets!"
+              odie "This command does not take more than vendor and processor targets!"
             else
               VENDOR_PHYSICAL_PROCESSOR="${option}"
               VENDOR_PROCESSOR="${option}"
