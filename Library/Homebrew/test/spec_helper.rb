@@ -217,7 +217,7 @@ RSpec.configure do |config|
     @__stdin = $stdin.clone
 
     begin
-      if (example.metadata.keys & [:focus, :byebug]).empty? && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
+      if !example.metadata.keys.intersect?([:focus, :byebug]) && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
       else
