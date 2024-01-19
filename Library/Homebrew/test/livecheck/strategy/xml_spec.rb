@@ -222,7 +222,7 @@ describe Homebrew::Livecheck::Strategy::Xml do
       # block here simply to ensure this method works as expected when a
       # regex isn't provided.
       expect(xml.find_versions(url: http_url, provided_content: content_version_text) do |xml|
-        regex = /^v?(\d+(?:\.\d+)+)$/i.freeze
+        regex = /^v?(\d+(?:\.\d+)+)$/i
         xml.get_elements("/versions/version").map { |item| item.text[regex, 1] }
       end).to eq(find_versions_cached_return_hash.merge({ regex: nil }))
     end

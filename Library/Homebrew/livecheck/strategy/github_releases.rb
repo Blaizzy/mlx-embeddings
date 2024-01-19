@@ -41,11 +41,11 @@ module Homebrew
           ^https?://github\.com
           /(?:downloads/)?(?<username>[^/]+) # The GitHub username
           /(?<repository>[^/]+)              # The GitHub repository name
-        }ix.freeze
+        }ix
 
         # The default regex used to identify a version from a tag when a regex
         # isn't provided.
-        DEFAULT_REGEX = /v?(\d+(?:\.\d+)+)/i.freeze
+        DEFAULT_REGEX = /v?(\d+(?:\.\d+)+)/i
 
         # Keys in the release JSON that could contain the version.
         # The tag name is checked first, to better align with the {Git}

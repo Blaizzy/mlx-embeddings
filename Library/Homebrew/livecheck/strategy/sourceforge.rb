@@ -39,7 +39,7 @@ module Homebrew
           (?:/projects?/(?<project_name>[^/]+)/
           |/p/(?<project_name>[^/]+)/
           |(?::/cvsroot)?/(?<project_name>[^/]+))
-        }ix.freeze
+        }ix
 
         # Whether the strategy can be applied to the provided URL.
         #

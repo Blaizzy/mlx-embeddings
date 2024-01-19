@@ -18,7 +18,7 @@ require "active_support/core_ext/hash/deep_transform_values"
 module Formulary
   extend Cachable
 
-  URL_START_REGEX = %r{(https?|ftp|file)://}.freeze
+  URL_START_REGEX = %r{(https?|ftp|file)://}
 
   # :codesign and custom requirement classes are not supported
   API_SUPPORTED_REQUIREMENTS = [:arch, :linux, :macos, :maximum_macos, :xcode].freeze

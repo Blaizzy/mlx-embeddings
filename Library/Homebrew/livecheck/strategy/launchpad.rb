@@ -27,11 +27,11 @@ module Homebrew
         URL_MATCH_REGEX = %r{
           ^https?://(?:[^/]+?\.)*launchpad\.net
           /(?<project_name>[^/]+) # The Launchpad project name
-        }ix.freeze
+        }ix
 
         # The default regex used to identify the latest version when a regex
         # isn't provided.
-        DEFAULT_REGEX = %r{class="[^"]*version[^"]*"[^>]*>\s*Latest version is (.+)\s*</}.freeze
+        DEFAULT_REGEX = %r{class="[^"]*version[^"]*"[^>]*>\s*Latest version is (.+)\s*</}
 
         # Whether the strategy can be applied to the provided URL.
         #

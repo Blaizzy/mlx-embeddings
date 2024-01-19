@@ -32,7 +32,7 @@ module Homebrew
           ^https?://download\.gnome\.org
           /sources
           /(?<package_name>[^/]+)/ # The GNOME package name
-        }ix.freeze
+        }ix
 
         # Whether the strategy can be applied to the provided URL.
         #

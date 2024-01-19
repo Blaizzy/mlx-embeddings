@@ -30,7 +30,7 @@ module Homebrew
 
         # The default regex used to naively identify versions from tags when a
         # regex isn't provided.
-        DEFAULT_REGEX = /\D*(.+)/.freeze
+        DEFAULT_REGEX = /\D*(.+)/
 
         # Whether the strategy can be applied to the provided URL.
         #

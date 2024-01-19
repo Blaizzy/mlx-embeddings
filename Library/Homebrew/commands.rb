@@ -35,7 +35,7 @@ module Commands
   # dot as a full stop if it is either followed by a whitespace or at the end of
   # the description. In this way we can prevent cutting off a sentence in the
   # middle due to dots in URLs or paths.
-  DESCRIPTION_SPLITTING_PATTERN = /\.(?>\s|$)/.freeze
+  DESCRIPTION_SPLITTING_PATTERN = /\.(?>\s|$)/
 
   def self.valid_internal_cmd?(cmd)
     require?(HOMEBREW_CMD_PATH/cmd)

@@ -18,12 +18,12 @@ class GitHubPackages
   private_constant :URL_PREFIX
   private_constant :DOCKER_PREFIX
 
-  URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}.freeze
+  URL_REGEX = %r{(?:#{Regexp.escape(URL_PREFIX)}|#{Regexp.escape(DOCKER_PREFIX)})([\w-]+)/([\w-]+)}
 
   # Valid OCI tag characters
   # https://github.com/opencontainers/distribution-spec/blob/main/spec.md#workflow-categories
-  VALID_OCI_TAG_REGEX = /^[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}$/.freeze
-  INVALID_OCI_TAG_CHARS_REGEX = /[^a-zA-Z0-9._-]/.freeze
+  VALID_OCI_TAG_REGEX = /^[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}$/
+  INVALID_OCI_TAG_CHARS_REGEX = /[^a-zA-Z0-9._-]/
 
   GZIP_BUFFER_SIZE = 64 * 1024
   private_constant :GZIP_BUFFER_SIZE

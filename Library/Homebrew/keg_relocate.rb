@@ -12,7 +12,7 @@ class Keg
   NULL_BYTE_STRING = "\\x00"
 
   class Relocation
-    RELOCATABLE_PATH_REGEX_PREFIX = /(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))/.freeze
+    RELOCATABLE_PATH_REGEX_PREFIX = /(?:(?<=-F|-I|-L|-isystem)|(?<![a-zA-Z0-9]))/
 
     def initialize
       @replacement_map = {}
@@ -83,7 +83,7 @@ class Keg
     []
   end
 
-  JAVA_REGEX = %r{#{HOMEBREW_PREFIX}/opt/openjdk(@\d+(\.\d+)*)?/libexec(/openjdk\.jdk/Contents/Home)?}.freeze
+  JAVA_REGEX = %r{#{HOMEBREW_PREFIX}/opt/openjdk(@\d+(\.\d+)*)?/libexec(/openjdk\.jdk/Contents/Home)?}
 
   def prepare_relocation_to_placeholders
     relocation = Relocation.new

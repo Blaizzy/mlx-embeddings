@@ -95,7 +95,7 @@ module Language
       module_function
 
       # A regex to match potential shebang permutations.
-      PYTHON_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)}.freeze
+      PYTHON_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)}
 
       # The length of the longest shebang matching `SHEBANG_REGEX`.
       PYTHON_SHEBANG_MAX_LENGTH = "#! /usr/bin/env pythonx.yyy ".length

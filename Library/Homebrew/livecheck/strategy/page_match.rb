@@ -24,7 +24,7 @@ module Homebrew
         PRIORITY = 0
 
         # The `Regexp` used to determine if the strategy applies to the URL.
-        URL_MATCH_REGEX = %r{^https?://}i.freeze
+        URL_MATCH_REGEX = %r{^https?://}i
 
         # Whether the strategy can be applied to the provided URL.
         # {PageMatch} will technically match any HTTP URL but is only

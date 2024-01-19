@@ -188,7 +188,7 @@ module Homebrew
       end
     end
 
-    SOCKET_STRING_REGEX = %r{^([a-z]+)://(.+):([0-9]+)$}i.freeze
+    SOCKET_STRING_REGEX = %r{^([a-z]+)://(.+):([0-9]+)$}i
 
     sig {
       params(value: T.nilable(T.any(String, T::Hash[Symbol, String])))

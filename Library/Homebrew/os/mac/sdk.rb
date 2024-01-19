@@ -8,7 +8,7 @@ module OS
     # @api private
     class SDK
       # 11.x SDKs are explicitly excluded - we want the MacOSX11.sdk symlink instead.
-      VERSIONED_SDK_REGEX = /MacOSX(10\.\d+|\d+)\.sdk$/.freeze
+      VERSIONED_SDK_REGEX = /MacOSX(10\.\d+|\d+)\.sdk$/
 
       sig { returns(MacOSVersion) }
       attr_reader :version

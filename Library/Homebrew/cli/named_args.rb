@@ -222,8 +222,8 @@ module Homebrew
         to_formulae_to_casks(only: only, method: :resolve)
       end
 
-      LOCAL_PATH_REGEX = %r{^/|[.]|/$}.freeze
-      TAP_NAME_REGEX = %r{^[^./]+/[^./]+$}.freeze
+      LOCAL_PATH_REGEX = %r{^/|[.]|/$}
+      TAP_NAME_REGEX = %r{^[^./]+/[^./]+$}
       private_constant :LOCAL_PATH_REGEX, :TAP_NAME_REGEX
 
       # Keep existing paths and try to convert others to tap, formula or cask paths.

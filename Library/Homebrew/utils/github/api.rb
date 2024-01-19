@@ -26,7 +26,7 @@ module GitHub
   CREATE_ISSUE_FORK_OR_PR_SCOPES = ["repo"].freeze
   CREATE_WORKFLOW_SCOPES = ["workflow"].freeze
   ALL_SCOPES = (CREATE_GIST_SCOPES + CREATE_ISSUE_FORK_OR_PR_SCOPES + CREATE_WORKFLOW_SCOPES).freeze
-  GITHUB_PERSONAL_ACCESS_TOKEN_REGEX = /^(?:[a-f0-9]{40}|gh[po]_\w{36,251})$/.freeze
+  GITHUB_PERSONAL_ACCESS_TOKEN_REGEX = /^(?:[a-f0-9]{40}|gh[po]_\w{36,251})$/
 
   # Helper functions to access the GitHub API.
   #

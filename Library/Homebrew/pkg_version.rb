@@ -10,7 +10,7 @@ class PkgVersion
   include Comparable
   extend Forwardable
 
-  REGEX = /\A(.+?)(?:_(\d+))?\z/.freeze
+  REGEX = /\A(.+?)(?:_(\d+))?\z/
   private_constant :REGEX
 
   attr_reader :version, :revision

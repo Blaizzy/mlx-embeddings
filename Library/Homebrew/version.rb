@@ -139,7 +139,7 @@ class Version
 
   # A token string.
   class StringToken < Token
-    PATTERN = /[a-z]+/i.freeze
+    PATTERN = /[a-z]+/i
 
     sig { override.returns(String) }
     attr_reader :value
@@ -164,7 +164,7 @@ class Version
 
   # A token consisting of only numbers.
   class NumericToken < Token
-    PATTERN = /[0-9]+/i.freeze
+    PATTERN = /[0-9]+/i
 
     sig { override.returns(Integer) }
     attr_reader :value
@@ -204,7 +204,7 @@ class Version
 
   # A token representing the part of a version designating it as an alpha release.
   class AlphaToken < CompositeToken
-    PATTERN = /alpha[0-9]*|a[0-9]+/i.freeze
+    PATTERN = /alpha[0-9]*|a[0-9]+/i
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
@@ -223,7 +223,7 @@ class Version
 
   # A token representing the part of a version designating it as a beta release.
   class BetaToken < CompositeToken
-    PATTERN = /beta[0-9]*|b[0-9]+/i.freeze
+    PATTERN = /beta[0-9]*|b[0-9]+/i
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
@@ -244,7 +244,7 @@ class Version
 
   # A token representing the part of a version designating it as a pre-release.
   class PreToken < CompositeToken
-    PATTERN = /pre[0-9]*/i.freeze
+    PATTERN = /pre[0-9]*/i
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
@@ -265,7 +265,7 @@ class Version
 
   # A token representing the part of a version designating it as a release candidate.
   class RCToken < CompositeToken
-    PATTERN = /rc[0-9]*/i.freeze
+    PATTERN = /rc[0-9]*/i
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
@@ -286,7 +286,7 @@ class Version
 
   # A token representing the part of a version designating it as a patch release.
   class PatchToken < CompositeToken
-    PATTERN = /p[0-9]*/i.freeze
+    PATTERN = /p[0-9]*/i
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
@@ -305,7 +305,7 @@ class Version
 
   # A token representing the part of a version designating it as a post release.
   class PostToken < CompositeToken
-    PATTERN = /.post[0-9]+/i.freeze
+    PATTERN = /.post[0-9]+/i
 
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
@@ -503,7 +503,7 @@ class Version
     @detected_from_url
   end
 
-  HEAD_VERSION_REGEX = /\AHEAD(?:-(?<commit>.*))?\Z/.freeze
+  HEAD_VERSION_REGEX = /\AHEAD(?:-(?<commit>.*))?\Z/
   private_constant :HEAD_VERSION_REGEX
 
   # Check if this is a HEAD version.

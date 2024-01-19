@@ -130,7 +130,7 @@ describe Homebrew::Livecheck::Strategy::Json do
       # block here simply to ensure this method works as expected when a
       # regex isn't provided.
       expect(json.find_versions(url: http_url, provided_content: content) do |json|
-        regex = /^v?(\d+(?:\.\d+)+)$/i.freeze
+        regex = /^v?(\d+(?:\.\d+)+)$/i
         json["versions"].select { |item| item["version"]&.match?(regex) }
                         .map { |item| item["version"][regex, 1] }
       end).to eq(find_versions_cached_return_hash.merge({ regex: nil }))

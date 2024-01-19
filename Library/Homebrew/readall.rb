@@ -12,7 +12,7 @@ module Readall
     include Cachable
 
     # TODO: remove this once the `MacOS` module is undefined on Linux
-    MACOS_MODULE_REGEX = /\b(MacOS|OS::Mac)(\.|::)\b/.freeze
+    MACOS_MODULE_REGEX = /\b(MacOS|OS::Mac)(\.|::)\b/
     private_constant :MACOS_MODULE_REGEX
 
     private :cache

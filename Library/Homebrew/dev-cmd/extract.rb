@@ -69,7 +69,7 @@ ensure
 end
 
 module Homebrew
-  BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m.freeze
+  BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m
 
   sig { returns(CLI::Parser) }
   def self.extract_args

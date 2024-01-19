@@ -461,5 +461,3 @@ Style/ArgumentsForwarding:
   Enabled: false
 Style/HashSyntax:
   EnforcedShorthandSyntax: either
-Style/RedundantFreeze:
-  Enabled: false

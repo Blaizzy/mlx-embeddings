@@ -11,7 +11,7 @@ module Language
       module_function
 
       # A regex to match potential shebang permutations.
-      PERL_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?perl( |$)}.freeze
+      PERL_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?perl( |$)}
 
       # The length of the longest shebang matching `SHEBANG_REGEX`.
       PERL_SHEBANG_MAX_LENGTH = "#! /usr/bin/env perl ".length

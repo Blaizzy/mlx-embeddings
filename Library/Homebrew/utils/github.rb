@@ -509,9 +509,9 @@ module GitHub
   end
 
   def self.pull_request_title_regex(name, version = nil)
-    return /(^|\s)#{Regexp.quote(name)}(:|,|\s|$)/i.freeze if version.blank?
+    return /(^|\s)#{Regexp.quote(name)}(:|,|\s|$)/i if version.blank?
 
-    /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i.freeze
+    /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i
   end
 
   def self.fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
