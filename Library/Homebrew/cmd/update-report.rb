@@ -393,22 +393,14 @@ module Homebrew
   def install_from_api_message
     return if Settings.read("installfromapimessage") == "true"
 
-    api_auto_update_secs = Homebrew::EnvConfig.api_auto_update_secs.to_i
-    api_auto_update_secs_default = Homebrew::EnvConfig::ENVS.fetch(:HOMEBREW_API_AUTO_UPDATE_SECS).fetch(:default)
-    auto_update_secs_set = api_auto_update_secs.positive? && api_auto_update_secs != api_auto_update_secs_default
-    no_auto_update_set = Homebrew::EnvConfig.no_auto_update? &&
-                         !ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] &&
-                         !ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
     no_install_from_api_set = Homebrew::EnvConfig.no_install_from_api? &&
                               !Homebrew::EnvConfig.automatically_set_no_install_from_api?
-    return if !no_auto_update_set && !no_install_from_api_set && !auto_update_secs_set
+    return unless no_install_from_api_set
 
-    ohai "You have set:"
-    puts "  HOMEBREW_NO_AUTO_UPDATE" if no_auto_update_set
-    puts "  HOMEBREW_API_AUTO_UPDATE_SECS" if auto_update_secs_set
-    puts "  HOMEBREW_NO_INSTALL_FROM_API" if no_install_from_api_set
-    puts "but we have dramatically sped up and fixed many bugs in the way we do Homebrew updates since."
-    puts "Please consider unsetting these and tweaking the values based on the new behaviour."
+    ohai "You have HOMEBREW_NO_INSTALL_FROM_API set"
+    puts "Homebrew >=4.1.0 is dramatically faster and less error-prone when installing"
+    puts "from the JSON API. Please consider unsetting HOMEBREW_NO_INSTALL_FROM_API."
+    puts "This message will only be printed once."
     puts "\n\n"
 
     # Consider the message possibly missed if not a TTY.
