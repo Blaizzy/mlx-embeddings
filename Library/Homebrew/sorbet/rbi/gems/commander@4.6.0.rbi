@@ -1233,7 +1233,6 @@ Commander::VERSION = T.let(T.unsafe(nil), String)
 
 # source://commander//lib/commander/core_ext/object.rb#3
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
   include ::Kernel
   include ::PP::ObjectMixin
 

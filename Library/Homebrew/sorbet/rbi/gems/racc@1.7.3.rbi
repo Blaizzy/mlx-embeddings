@@ -6,7 +6,6 @@
 
 # source://racc//lib/racc/compat.rb#14
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
   include ::Kernel
   include ::PP::ObjectMixin
 end

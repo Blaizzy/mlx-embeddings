@@ -22,7 +22,6 @@ end
 
 # source://pry//lib/pry/core_extensions.rb#24
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
   include ::Kernel
   include ::PP::ObjectMixin
 
@@ -969,8 +968,6 @@ Pry::BINDING_METHOD_IMPL = T.let(T.unsafe(nil), Array)
 # source://pry//lib/pry/basic_object.rb#4
 class Pry::BasicObject < ::BasicObject
   include ::Kernel
-  include ::ActiveSupport::ForkTracker::CoreExt
-  include ::ActiveSupport::ForkTracker::CoreExtPrivate
 end
 
 # source://pry//lib/pry/basic_object.rb#6

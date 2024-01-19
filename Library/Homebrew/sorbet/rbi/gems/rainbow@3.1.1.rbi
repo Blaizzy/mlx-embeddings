@@ -5,7 +5,6 @@
 # Please instead update this file by running `bin/tapioca gem rainbow`.
 
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
   include ::Kernel
   include ::PP::ObjectMixin
 

@@ -3802,7 +3802,6 @@ end
 #
 # source://highline//lib/highline/import.rb#30
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
   include ::Kernel
   include ::PP::ObjectMixin
 

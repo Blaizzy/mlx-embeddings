@@ -25,8 +25,6 @@ end
 #
 # source://byebug//lib/byebug/attacher.rb#34
 module Kernel
-  include ::ActiveSupport::ForkTracker::CoreExt
-
   # source://byebug//lib/byebug/attacher.rb#35
   def byebug; end
 
