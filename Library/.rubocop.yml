@@ -51,6 +51,11 @@ FormulaAuditStrict:
 Homebrew:
   Enabled: true
 
+Homebrew/Blank:
+  Exclude:
+    # Core extensions are not available here:
+    - "Homebrew/rubocops/**/*"
+
 # only used internally
 Homebrew/MoveToExtendOS:
   Enabled: false
@@ -210,19 +215,10 @@ Rails:
     - "Homebrew/rubocops/**/*"
 
 # These relate to ActiveSupport and not other parts of Rails.
-Rails/Blank:
-  Enabled: true
 Rails/CompactBlank:
-  Enabled: true
-Rails/NegateInclude:
   Enabled: true
 Rails/Presence:
   Enabled: true
-Rails/Present:
-  Enabled: true
-  Exclude:
-    # `present?` is defined as `!blank?` wihin this file
-    - "Homebrew/extend/blank.rb"
 Rails/SafeNavigationWithBlank:
   Enabled: true
 
@@ -355,6 +351,15 @@ Style/HashAsLastArrayItem:
     - "/**/Formula/**/*.rb"
     - "**/Formula/**/*.rb"
 
+Style/InverseMethods:
+  Exclude:
+    # Core extensions are not available here:
+    - "Homebrew/standalone/init.rb"
+    - "Homebrew/rubocops/**/*"
+  InverseMethods:
+    :blank?: :present?
+    :exclude?: :include?
+
 Style/InvertibleUnlessCondition:
   Enabled: true
   InverseMethods:
@@ -364,6 +369,7 @@ Style/InvertibleUnlessCondition:
     :zero?:
     # Don't require non-standard `exclude?` (for now at least) - it's not available in every file
     :include?:
+    :blank?: :present?
 
 Style/MutableConstant:
   # would rather freeze too much than too little

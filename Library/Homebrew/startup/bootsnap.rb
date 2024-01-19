@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # Disable Rails cops, as we haven't required active_support yet.
-# rubocop:disable Rails
+# rubocop:disable Rails, Homebrew/Blank
 homebrew_bootsnap_enabled = ENV["HOMEBREW_NO_BOOTSNAP"].nil? && !ENV["HOMEBREW_BOOTSNAP"].nil?
 
 # we need some development tools to build bootsnap native code
@@ -49,4 +49,4 @@ if homebrew_bootsnap_enabled
     $stderr.puts "Error: HOMEBREW_BOOTSNAP could not `require \"bootsnap\"`!\n\n"
   end
 end
-# rubocop:enable Rails
+# rubocop:enable Rails, Homebrew/Blank
