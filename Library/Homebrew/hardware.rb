@@ -156,6 +156,10 @@ module Hardware
         [1].pack("I") == [1].pack("N")
       end
 
+      def virtualized?
+        false
+      end
+
       def features
         []
       end
