@@ -36,7 +36,7 @@ module Homebrew
           ^https?://
           (?:(?:[^/]+?\.)*gnu\.org/(?:gnu|software)/(?<project_name>[^/]+)/
           |(?<project_name>[^/]+)\.gnu\.org/?$)
-        }ix.freeze, Regexp)
+        }ix, Regexp)
 
         # Whether the strategy can be applied to the provided URL.
         #
