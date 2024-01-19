@@ -47,7 +47,7 @@
 
 ### 3.1. Amendments to these bylaws
 
-1. These bylaws must only amended by a special resolution at a general meeting of the members.
+1. These bylaws must only be amended by a special resolution at a general meeting of the members.
 
 2. Any member may propose an amendment via pull request on GitHub against this document. Proposed amendments may be merged for consideration in aggregate with other amendments once more than half of the PLC has approved the pull request.
 
