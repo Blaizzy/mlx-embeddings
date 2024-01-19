@@ -761,8 +761,8 @@ Since `pkg` installers can do arbitrary things, different techniques are needed 
 
 * **`early_script:`** (string or hash) - like [`script:`](#uninstall-script), but runs early (for special cases, best avoided)
 * [`launchctl:`](#uninstall-launchctl) (string or array) - IDs of `launchd` jobs to remove
-* [`quit:`](#uninstall-quit) (string or array) - bundle IDs of running applications to quit
-* [`signal:`](#uninstall-signal) (array of arrays) - signal numbers and bundle IDs of running applications to send a Unix signal to (for when `quit:` does not work)
+* [`quit:`](#uninstall-quit) (string or array) - bundle IDs of running applications to quit (does not run when uninstall is initiated by `brew upgrade` or `brew reinstall`)
+* [`signal:`](#uninstall-signal) (array of arrays) - signal numbers and bundle IDs of running applications to send a Unix signal to - for when `quit:` does not work (does not run when uninstall is initiated by `brew upgrade` or `brew reinstall`)
 * [`login_item:`](#uninstall-login_item) (string or array) - names of login items to remove
 * [`kext:`](#uninstall-kext) (string or array) - bundle IDs of kexts to unload from the system
 * [`script:`](#uninstall-script) (string or hash) - relative path to an uninstall script to be run via sudo; use hash if args are needed
