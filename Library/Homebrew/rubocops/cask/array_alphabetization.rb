@@ -40,9 +40,9 @@ module RuboCop
         def sort_array(source)
           # Combine each comment with the line below it so that they remain connected to the line they comment
           combined_source = source.each_with_index.map do |line, index|
-            if line.strip.start_with?('#') && index < source.length - 1
+            if line.strip.start_with?("#") && index < source.length - 1
               "#{line}\n#{source[index + 1]}"
-            elsif source[index - 1]&.strip&.start_with?('#')
+            elsif source[index - 1]&.strip&.start_with?("#")
               nil
             else
               line
@@ -51,12 +51,12 @@ module RuboCop
 
           # Separate the lines into those that should be sorted and those that should not
           # ie. skip the opening and closing brackets of the array
-          to_sort, to_keep = combined_source.partition { |line| !line.include?('[') && !line.include?(']') }
+          to_sort, to_keep = combined_source.partition { |line| !line.include?("[") && !line.include?("]") }
 
           # Sort the lines that should be sorted
           to_sort.sort! do |a, b|
-            a_non_comment = a.split("\n").reject { |line| line.strip.start_with?('#') }.first
-            b_non_comment = b.split("\n").reject { |line| line.strip.start_with?('#') }.first
+            a_non_comment = a.split("\n").reject { |line| line.strip.start_with?("#") }.first
+            b_non_comment = b.split("\n").reject { |line| line.strip.start_with?("#") }.first
             a_non_comment.downcase <=> b_non_comment.downcase
           end
 
