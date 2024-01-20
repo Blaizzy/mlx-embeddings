@@ -137,14 +137,14 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
     CASK
   end
 
-  focus it "moves comments when autocorrecting" do
+  it "moves comments when autocorrecting" do
     expect_offense(<<~CASK)
       cask "foo" do
         url "https://example.com/foo.zip"
 
         zap trash: [
                    ^ The array elements should be ordered alphabetically
-          # overall comment, shouldn't move
+          # comment related to foo
           "~/Library/Application Support/Foo",
           "~/Library/Application Support/Bar",
           "~/Library/Application Support/Baz", # in-line comment
@@ -157,9 +157,9 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         url "https://example.com/foo.zip"
 
         zap trash: [
-          # overall comment, shouldn't move
           "~/Library/Application Support/Bar",
           "~/Library/Application Support/Baz", # in-line comment
+          # comment related to foo
           "~/Library/Application Support/Foo",
         ]
       end

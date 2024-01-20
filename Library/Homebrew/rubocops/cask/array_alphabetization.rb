@@ -26,39 +26,42 @@ module RuboCop
 
               next if array.children.length <= 1
 
-              comments = find_inline_comments(array.source)
-              array_with_comments = array.children.dup
-              array.children.map(&:source).each_with_index do |child, index|
-                comment = comments.find { |c| c.include?(child) }
-                next unless comment
+              sorted_array = sort_array(array.source.split("\n")).join("\n")
 
-                p comment.strip
-                # Add the comment to the main array.
-                array_with_comments[index] = comment.strip
-              end
-
-              sorted_array = array_with_comments.sort_by { |child| child.to_s.downcase }
-              next if sorted_array == array_with_comments
+              next if array.source == sorted_array
 
               add_offense(array, message: "The array elements should be ordered alphabetically") do |corrector|
-                array.children.each_with_index do |child, index|
-                  p sorted_array[index]
-                  corrector.replace(child.source_range, sorted_array[index])
-                end
+                corrector.replace(array.source_range, sorted_array)
               end
             end
           end
         end
 
-        def find_inline_comments(source)
-          comments = []
-          source.each_line do |line|
-            # Comments are naively detected by looking for lines that include a `#` surrounded by spaces.
-            comments << line if line.include?(" # ")
+        def sort_array(source)
+          # Combine each comment with the line below it so that they remain connected to the line they comment
+          combined_source = source.each_with_index.map do |line, index|
+            if line.strip.start_with?('#') && index < source.length - 1
+              "#{line}\n#{source[index + 1]}"
+            elsif source[index - 1]&.strip&.start_with?('#')
+              nil
+            else
+              line
+            end
+          end.compact
+
+          # Separate the lines into those that should be sorted and those that should not
+          # ie. skip the opening and closing brackets of the array
+          to_sort, to_keep = combined_source.partition { |line| !line.include?('[') && !line.include?(']') }
+
+          # Sort the lines that should be sorted
+          to_sort.sort! do |a, b|
+            a_non_comment = a.split("\n").reject { |line| line.strip.start_with?('#') }.first
+            b_non_comment = b.split("\n").reject { |line| line.strip.start_with?('#') }.first
+            a_non_comment.downcase <=> b_non_comment.downcase
           end
 
-          # Remove lines that are only comments, we don't want to move those.
-          comments.reject { |comment| comment.strip.start_with?("# ") }
+          # Merge the sorted lines and the unsorted lines, preserving the original positions of the unsorted lines
+          combined_source.map { |line| to_keep.include?(line) ? line : to_sort.shift }
         end
       end
     end
