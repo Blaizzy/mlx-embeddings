@@ -15,7 +15,7 @@ module RuboCop
             # For `zap`s, we only care about `trash` arrays.
             next if name == :zap && !symbols.include?(:trash)
             # Don't order `uninstall` arrays that contain commands.
-            next if name == :uninstall && (symbols & [:signal, :script, :early_script, :args, :input]).any?
+            next if name == :uninstall && symbols.intersect?([:signal, :script, :early_script, :args, :input])
 
             pair.each_descendant(:array).each do |array|
               if array.children.length == 1
