@@ -55,6 +55,7 @@ Homebrew/Blank:
   Exclude:
     # Core extensions are not available here:
     - "Homebrew/rubocops/**/*"
+    - "Homebrew/startup/bootsnap.rb"
 
 # only used internally
 Homebrew/MoveToExtendOS:
