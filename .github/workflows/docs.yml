@@ -40,6 +40,10 @@ jobs:
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: bundle exec rake lint
 
+      - name: Check code blocks conform to our Ruby style guide
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
+        run: brew style -- *.md
+
       - name: Build the site and check for broken links
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
         run: |
