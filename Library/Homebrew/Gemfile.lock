@@ -113,6 +113,8 @@ GEM
       rubocop (~> 1.41)
     rubocop-factory_bot (2.25.1)
       rubocop (~> 1.41)
+    rubocop-md (1.2.2)
+      rubocop (>= 1.0)
     rubocop-performance (1.20.2)
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.30.0, < 2.0)
@@ -209,6 +211,7 @@ DEPENDENCIES
   rspec_junit_formatter
   rubocop
   rubocop-ast
+  rubocop-md
   rubocop-performance
   rubocop-rails
   rubocop-rspec
