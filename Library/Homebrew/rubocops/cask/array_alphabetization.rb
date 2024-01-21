@@ -38,15 +38,10 @@ module RuboCop
         end
 
         def sort_array(source)
-          # Combine each comment with the line below it so that they remain connected to the line they comment
+          # Combine each comment with the line(s) below so that they remain in the same relative location
           combined_source = source.each_with_index.map do |line, index|
-            if line.strip.start_with?("#") && index < source.length - 1
-              "#{line}\n#{source[index + 1]}"
-            elsif source[index - 1]&.strip&.start_with?("#")
-              nil
-            else
-              line
-            end
+            next if line.strip.start_with?("#")
+            next recursively_find_comments(source, index, line)
           end.compact
 
           # Separate the lines into those that should be sorted and those that should not
@@ -62,6 +57,14 @@ module RuboCop
 
           # Merge the sorted lines and the unsorted lines, preserving the original positions of the unsorted lines
           combined_source.map { |line| to_keep.include?(line) ? line : to_sort.shift }
+        end
+
+        def recursively_find_comments(source, index, line)
+          if source[index - 1].strip.start_with?("#")
+            return recursively_find_comments(source, index - 1, "#{source[index - 1]}\n#{line}")
+          end
+
+          line
         end
       end
     end

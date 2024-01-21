@@ -146,6 +146,9 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
                    ^ The array elements should be ordered alphabetically
           # comment related to foo
           "~/Library/Application Support/Foo",
+          # a really long comment related to Zoo
+          # and the Zoo comment continues
+          "~/Library/Application Support/Zoo",
           "~/Library/Application Support/Bar",
           "~/Library/Application Support/Baz", # in-line comment
         ]
@@ -161,6 +164,9 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
           "~/Library/Application Support/Baz", # in-line comment
           # comment related to foo
           "~/Library/Application Support/Foo",
+          # a really long comment related to Zoo
+          # and the Zoo comment continues
+          "~/Library/Application Support/Zoo",
         ]
       end
     CASK
