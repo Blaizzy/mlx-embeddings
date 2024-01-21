@@ -22,7 +22,7 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
     CASK
   end
 
-  it "reports an offense when the `zap trash` paths are not in alphabetical order" do
+  it "reports an offense when the `zap` stanza paths are not in alphabetical order" do
     expect_offense(<<~CASK)
       cask "foo" do
         url "https://example.com/foo.zip"
@@ -34,6 +34,11 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
           "~/Library/Application Support/Foo",
           "~/.dotfiles/thing",
           "~/Library/Application Support/Bar",
+        ],
+        rmdir: [
+               ^ The array elements should be ordered alphabetically
+          "/Applications/foo/nested/blah",
+          "/Applications/foo/",
         ]
       end
     CASK
@@ -48,6 +53,10 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
           "~/.dotfiles/thing",
           "~/Library/Application Support/Bar",
           "~/Library/Application Support/Foo",
+        ],
+        rmdir: [
+          "/Applications/foo/",
+          "/Applications/foo/nested/blah",
         ]
       end
     CASK
@@ -73,19 +82,6 @@ describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
         zap trash: [
           "~/Library/Application Support/Bar\#{version.major}",
           "~/Library/Application Support/Foo",
-        ]
-      end
-    CASK
-  end
-
-  it "ignores `zap` methods other than `trash`" do
-    expect_no_offenses(<<~CASK)
-      cask "foo" do
-        url "https://example.com/foo.zip"
-
-        zap delete: [
-          "~/Library/Application Support/Foo",
-          "~/Library/Application Support/Bar",
         ]
       end
     CASK

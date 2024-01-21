@@ -8,14 +8,11 @@ module RuboCop
         extend AutoCorrector
 
         def on_send(node)
-          return unless [:zap, :uninstall].include?(name = node.method_name)
+          return unless [:zap, :uninstall].include?(node.method_name)
 
           node.each_descendant(:pair).each do |pair|
             symbols = pair.children.select(&:sym_type?).map(&:value)
-            # For `zap`s, we only care about `trash` arrays.
-            next if name == :zap && !symbols.include?(:trash)
-            # Don't order `uninstall` arrays that contain commands.
-            next if name == :uninstall && symbols.intersect?([:signal, :script, :early_script, :args, :input])
+            next if symbols.intersect?([:signal, :script, :early_script, :args, :input])
 
             pair.each_descendant(:array).each do |array|
               if array.children.length == 1
