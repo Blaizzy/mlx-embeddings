@@ -41,6 +41,7 @@ module RuboCop
           # Combine each comment with the line(s) below so that they remain in the same relative location
           combined_source = source.each_with_index.map do |line, index|
             next if line.strip.start_with?("#")
+
             next recursively_find_comments(source, index, line)
           end.compact
 
