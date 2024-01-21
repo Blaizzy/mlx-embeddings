@@ -228,6 +228,20 @@ shared_examples "#uninstall_phase or #zap_phase" do
       end.to output(/Application 'my.fancy.package.app' quit successfully\./).to_stdout
     end
 
+    it "does not attempt to quit when upgrading or reinstalling" do
+      next if artifact_dsl_key == :zap
+
+      allow(User.current).to receive(:gui?).and_return true
+
+      expect(subject).not_to receive(:running?)
+      expect(subject).not_to receive(:quit)
+
+      expect do
+        subject.public_send(:"#{artifact_dsl_key}_phase", upgrade: true, command: fake_system_command)
+        subject.public_send(:"#{artifact_dsl_key}_phase", reinstall: true, command: fake_system_command)
+      end
+    end
+
     it "tries to quit the application for 10 seconds" do
       allow(User.current).to receive(:gui?).and_return true
 
@@ -260,6 +274,20 @@ shared_examples "#uninstall_phase or #zap_phase" do
       end
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
+    end
+
+    it "does not send signal when upgrading or reinstalling" do
+      next if artifact_dsl_key == :zap
+
+      allow(subject).to receive(:running_processes).with(bundle_id)
+                                                   .and_return(unix_pids.map { |pid| [pid, 0, bundle_id] })
+
+      signals.each do |_signal|
+        expect(Process).not_to receive(:kill)
+      end
+
+      subject.public_send(:"#{artifact_dsl_key}_phase", upgrade: true, command: fake_system_command)
+      subject.public_send(:"#{artifact_dsl_key}_phase", reinstall: true, command: fake_system_command)
     end
   end
 

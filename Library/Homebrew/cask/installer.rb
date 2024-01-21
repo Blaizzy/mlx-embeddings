@@ -472,6 +472,8 @@ on_request: true)
             skip:      clear,
             force:     force?,
             successor: successor,
+            upgrade:   upgrade?,
+            reinstall: reinstall?,
           )
         end
 

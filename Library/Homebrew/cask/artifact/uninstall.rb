@@ -3,17 +3,26 @@
 
 require "cask/artifact/abstract_uninstall"
 
+UPGRADE_REINSTALL_SKIP_DIRECTIVES = [:quit, :signal].freeze
+
 module Cask
   module Artifact
     # Artifact corresponding to the `uninstall` stanza.
     #
     # @api private
     class Uninstall < AbstractUninstall
-      def uninstall_phase(**options)
-        ORDERED_DIRECTIVES.reject { |directive_sym| directive_sym == :rmdir }
-                          .each do |directive_sym|
-                            dispatch_uninstall_directive(directive_sym, **options)
-                          end
+      def uninstall_phase(upgrade: false, reinstall: false, **options)
+        filtered_directives = ORDERED_DIRECTIVES.filter do |directive_sym|
+          next false if directive_sym == :rmdir
+
+          next false if (upgrade || reinstall) && UPGRADE_REINSTALL_SKIP_DIRECTIVES.include?(directive_sym)
+
+          true
+        end
+
+        filtered_directives.each do |directive_sym|
+          dispatch_uninstall_directive(directive_sym, **options)
+        end
       end
 
       def post_uninstall_phase(**options)
