@@ -288,10 +288,11 @@ module Homebrew
   }
   def retrieve_pull_requests(formula_or_cask, name, state:, version: nil)
     tap_remote_repo = formula_or_cask.tap&.remote_repo || formula_or_cask.tap&.full_name
-    begin
-      pull_requests = GitHub.fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
+    pull_requests = begin
+      GitHub.fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
     rescue GitHub::API::ValidationFailedError => e
       odebug "Error fetching pull requests for #{formula_or_cask} #{name}: #{e}"
+      nil
     end
 
     if pull_requests&.any?
