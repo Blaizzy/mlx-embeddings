@@ -242,7 +242,7 @@ Example:
 1. So, the `app` stanza should include the subfolder as a relative path:
 
    ```ruby
-   app "Simple Floating Clock/SimpleFloatingClock.app"
+app "Simple Floating Clock/SimpleFloatingClock.app"
    ```
 
 ### Testing and auditing the cask

@@ -168,8 +168,8 @@ A `Hash` (e.g. `=>`) adds information to a dependency. Given a string or symbol,
 * `:recommended` (not allowed in `Homebrew/homebrew-core`) generates an implicit `without-foo` option, meaning that the dependency is enabled by default and the user must pass `--without-foo` to disable this dependency. The default description can be overridden using the [`option`](https://rubydoc.brew.sh/Formula#option-class_method) syntax (in this case, the [`option` declaration](#adding-optional-steps) must precede the dependency):
 
   ```ruby
-  option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
-  depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
+option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
+depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
   ```
 
 * `"<option-name>"` (not allowed in `Homebrew/homebrew-core`) requires a dependency to have been built with the specified option.
@@ -856,25 +856,25 @@ Several other utilities for Ruby's [`Pathname`](https://rubydoc.brew.sh/Pathname
 * To perform several operations within a directory, enclose them within a  [`cd <path> do`](https://rubydoc.brew.sh/Pathname#cd-instance_method) block:
 
   ```ruby
-  cd "src" do
-    system "./configure",  "--disable-debug", "--prefix=#{prefix}"
-    system "make", "install"
-  end
+cd "src" do
+  system "./configure", "--disable-debug", "--prefix=#{prefix}"
+  system "make", "install"
+end
   ```
 
 * To surface one or more binaries buried in `libexec` or a macOS `.app` package, use [`write_exec_script`](https://rubydoc.brew.sh/Pathname#write_exec_script-instance_method) or [`write_jar_script`](https://rubydoc.brew.sh/Pathname#write_jar_script-instance_method):
 
   ```ruby
-  bin.write_exec_script (libexec/"bin").children
-  bin.write_exec_script prefix/"Package.app/Contents/MacOS/package"
-  bin.write_jar_script libexec/jar_file, "jarfile", java_version: "11"
+bin.write_exec_script (libexec/"bin").children
+bin.write_exec_script prefix/"Package.app/Contents/MacOS/package"
+bin.write_jar_script libexec/jar_file, "jarfile", java_version: "11"
   ```
 
 * For binaries that require setting one or more environment variables to function properly, use [`write_env_script`](https://rubydoc.brew.sh/Pathname#write_env_script-instance_method) or [`env_script_all_files`](https://rubydoc.brew.sh/Pathname#env_script_all_files-instance_method):
 
   ```ruby
-  (bin/"package").write_env_script libexec/"package", PACKAGE_ROOT: libexec
-  bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
+(bin/"package").write_env_script libexec/"package", PACKAGE_ROOT: libexec
+bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
   ```
 
 ### Rewriting a script shebang
@@ -895,8 +895,8 @@ class Yourformula < Formula
   option "with-ham", "Description of the option"
   option "without-spam", "Another description"
 
-  depends_on "foo" => :optional  # automatically adds a with-foo option
-  depends_on "bar" => :recommended  # automatically adds a without-bar option
+  depends_on "foo" => :optional # automatically adds a with-foo option
+  depends_on "bar" => :recommended # automatically adds a without-bar option
   # ...
 end
 ```
@@ -943,10 +943,10 @@ There are two ways to add `launchd` plists and `systemd` services to a formula, 
 1. If the package already provides a service file the formula can reference it by name:
 
    ```ruby
-   service do
-     name macos: "custom.launchd.name",
-          linux: "custom.systemd.name"
-   end
+service do
+  name macos: "custom.launchd.name",
+       linux: "custom.systemd.name"
+end
    ```
 
    To find the file we append `.plist` to the `launchd` service name and `.service` to the `systemd` service name internally.
@@ -955,20 +955,20 @@ There are two ways to add `launchd` plists and `systemd` services to a formula, 
 
    ```ruby
    # 1. An individual command
-   service do
-     run opt_bin/"script"
-   end
+service do
+  run opt_bin/"script"
+end
 
    # 2. A command with arguments
-   service do
-     run [opt_bin/"script", "--config", etc/"dir/config.yml"]
-   end
+service do
+  run [opt_bin/"script", "--config", etc/"dir/config.yml"]
+end
 
    # 3. OS specific commands (If you omit one, the service file won't get generated for that OS.)
-   service do
-     run macos: [opt_bin/"macos_script", "standalone"],
-         linux: var/"special_linux_script"
-   end
+service do
+  run macos: [opt_bin/"macos_script", "standalone"],
+      linux: var/"special_linux_script"
+end
    ```
 
 #### Service block methods
@@ -1159,7 +1159,7 @@ If a project's makefile will not run in parallel, try to deparallelize by adding
 
 ```ruby
 ENV.deparallelize
-system "make"  # separate compilation and installation steps
+system "make" # separate compilation and installation steps
 system "make", "install"
 ```
 

@@ -846,12 +846,12 @@ An example, with commonly used signals in ascending order of severity:
 
 ```ruby
 uninstall signal: [
-            ["TERM", "fr.madrau.switchresx.daemon"],
-            ["QUIT", "fr.madrau.switchresx.daemon"],
-            ["INT",  "fr.madrau.switchresx.daemon"],
-            ["HUP",  "fr.madrau.switchresx.daemon"],
-            ["KILL", "fr.madrau.switchresx.daemon"],
-          ]
+  ["TERM", "fr.madrau.switchresx.daemon"],
+  ["QUIT", "fr.madrau.switchresx.daemon"],
+  ["INT",  "fr.madrau.switchresx.daemon"],
+  ["HUP",  "fr.madrau.switchresx.daemon"],
+  ["KILL", "fr.madrau.switchresx.daemon"],
+]
 ```
 
 Note that when multiple running processes match the given bundle ID, all matching processes will be signaled.
