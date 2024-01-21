@@ -460,6 +460,10 @@ module Homebrew
       Latest livecheck version: #{new_versions}
       Latest Repology version:  #{repology_latest}
     EOS
+    puts <<~EOS if synced_with_other_formulae?(formula_or_cask)
+      Version syncing:          #{title_name} version should be kept in sync with
+                                #{synced_with(T.cast(formula_or_cask, Formula), new_version.general).join(", ")}.
+    EOS
     puts <<~EOS unless args.no_pull_requests?
       Open pull requests:       #{open_pull_requests || "none"}
       Closed pull requests:     #{closed_pull_requests || "none"}
@@ -496,5 +500,39 @@ module Homebrew
     bump_cask_pr_args << "--force" if args.force?
 
     system HOMEBREW_BREW_FILE, *bump_cask_pr_args
+  end
+
+  sig { params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Boolean) }
+  def synced_with_other_formulae?(formula_or_cask)
+    return false if formula_or_cask.is_a?(Cask)
+
+    synced_versions_formulae_file = "#{formula_or_cask.tap.path}/synced_versions_formulae.json"
+    return false unless File.exist?(synced_versions_formulae_file)
+
+    synced_versions_formulae = JSON.parse(File.read(synced_versions_formulae_file))
+    synced_versions_formulae.any? { |synced_formulae| synced_formulae.include?(formula_or_cask.name) }
+  end
+
+  sig {
+    params(
+      formula:     Formula,
+      new_version: T.nilable(T.any(Version, Cask::DSL::Version)),
+    ).returns(T::Array[String])
+  }
+  def synced_with(formula, new_version)
+    synced_with = []
+
+    JSON.parse(File.read("#{T.must(formula.tap).path}/synced_versions_formulae.json")).each do |synced_formulae|
+      next unless synced_formulae.include?(formula.name)
+
+      synced_formulae.each do |synced_formula|
+        synced_formula = Formulary.factory(synced_formula)
+        next if synced_formula == formula.name
+
+        synced_with << synced_formula.name if synced_formula.version != new_version
+      end
+    end
+
+    synced_with
   end
 end
