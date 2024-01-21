@@ -1,6 +1,7 @@
 ---
 require:
   - ./Homebrew/rubocops.rb
+  - rubocop-md
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
