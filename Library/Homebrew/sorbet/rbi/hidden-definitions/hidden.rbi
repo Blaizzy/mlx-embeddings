@@ -6628,6 +6628,7 @@ class Object
   TEST_SHA256 = ::T.let(nil, ::T.untyped)
   TEST_TMPDIR = ::T.let(nil, ::T.untyped)
   TOPLEVEL_BINDING = ::T.let(nil, ::T.untyped)
+  UPGRADE_REINSTALL_SKIP_DIRECTIVES = ::T.let(nil, ::T.untyped)
 end
 
 class Object
