@@ -1,6 +1,7 @@
+# typed: strict
 # frozen_string_literal: true
 
-require "active_support/core_ext/object/duplicable"
+require "extend/object/duplicable"
 
 class Object
   # Returns a deep copy of object if it's duplicable. If it's
@@ -12,6 +13,7 @@ class Object
   #
   #   object.instance_variable_defined?(:@a) # => false
   #   dup.instance_variable_defined?(:@a)    # => true
+  sig { returns(T.self_type) }
   def deep_dup
     duplicable? ? dup : self
   end
@@ -26,8 +28,9 @@ class Array
   #
   #   array[1][2] # => nil
   #   dup[1][2]   # => 4
+  sig { returns(T.self_type) }
   def deep_dup
-    map(&:deep_dup)
+    T.unsafe(self).map(&:deep_dup)
   end
 end
 
@@ -40,16 +43,35 @@ class Hash
   #
   #   hash[:a][:c] # => nil
   #   dup[:a][:c]  # => "c"
+  sig { returns(T.self_type) }
   def deep_dup
     hash = dup
     each_pair do |key, value|
-      if (::String === key && key.frozen?) || ::Symbol === key
-        hash[key] = value.deep_dup
+      case key
+      when ::String, ::Symbol
+        hash[key] = T.unsafe(value).deep_dup
       else
         hash.delete(key)
-        hash[key.deep_dup] = value.deep_dup
+        hash[T.unsafe(key).deep_dup] = T.unsafe(value).deep_dup
       end
     end
     hash
+  end
+end
+
+class Module
+  # Returns a copy of module or class if it's anonymous. If it's
+  # named, returns +self+.
+  #
+  #   Object.deep_dup == Object # => true
+  #   klass = Class.new
+  #   klass.deep_dup == klass # => false
+  sig { returns(T.self_type) }
+  def deep_dup
+    if name.nil?
+      super
+    else
+      self
+    end
   end
 end

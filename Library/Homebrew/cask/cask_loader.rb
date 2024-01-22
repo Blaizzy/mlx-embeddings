@@ -5,6 +5,7 @@ require "cask/cache"
 require "cask/cask"
 require "uri"
 require "utils/curl"
+require "extend/hash/keys"
 
 module Cask
   # Loads a cask from various sources.

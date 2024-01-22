@@ -10,14 +10,10 @@ require "json/add/exception"
 require "forwardable"
 require "set"
 
-# Only require "core_ext" here to ensure we're only requiring the minimum of
-# what we need.
-require "active_support/core_ext/array/access"
-require "active_support/core_ext/enumerable"
-require "active_support/core_ext/file/atomic"
-require "active_support/core_ext/hash/deep_merge"
-require "active_support/core_ext/hash/keys"
-require "active_support/core_ext/string/exclude"
+require "extend/array"
+require "extend/blank"
+require "extend/enumerable"
+require "extend/string"
 
 HOMEBREW_API_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_API_DEFAULT_DOMAIN").freeze
 HOMEBREW_BOTTLE_DEFAULT_DOMAIN = ENV.fetch("HOMEBREW_BOTTLE_DEFAULT_DOMAIN").freeze
@@ -70,8 +66,6 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})]
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/
 
-require "extend/module"
-require "extend/blank"
 require "env_config"
 require "macos_version"
 require "os"
@@ -130,7 +124,6 @@ module Homebrew
 end
 
 require "context"
-require "extend/array"
 require "git_repository"
 require "extend/pathname"
 require "cli/args"

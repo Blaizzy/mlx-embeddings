@@ -5,6 +5,7 @@ require "plist"
 
 require "utils/user"
 require "cask/artifact/abstract_artifact"
+require "extend/hash/keys"
 
 module Cask
   module Artifact

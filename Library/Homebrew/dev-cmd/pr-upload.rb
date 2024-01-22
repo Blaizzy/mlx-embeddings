@@ -5,6 +5,7 @@ require "cli/parser"
 require "formula"
 require "github_packages"
 require "github_releases"
+require "extend/hash/deep_merge"
 
 module Homebrew
   module_function

@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "delegate"
+require "extend/hash/keys"
 
 module Cask
   class DSL

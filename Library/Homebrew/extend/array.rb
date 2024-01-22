@@ -1,7 +1,27 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 class Array
+  # Equal to <tt>self[1]</tt>.
+  #
+  #   %w( a b c d e ).second # => "b"
+  def second = self[1]
+
+  # Equal to <tt>self[2]</tt>.
+  #
+  #   %w( a b c d e ).third # => "c"
+  def third = self[2]
+
+  # Equal to <tt>self[3]</tt>.
+  #
+  #   %w( a b c d e ).fourth # => "d"
+  def fourth = self[3]
+
+  # Equal to <tt>self[4]</tt>.
+  #
+  #   %w( a b c d e ).fifth # => "e"
+  def fifth = self[4]
+
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
@@ -48,6 +68,7 @@ class Array
   # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
   # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
   # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  sig { params(words_connector: String, two_words_connector: String, last_word_connector: String).returns(String) }
   def to_sentence(words_connector: ", ", two_words_connector: " and ", last_word_connector: " and ")
     case length
     when 0

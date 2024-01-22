@@ -1,3 +1,4 @@
+# typed: strict
 # frozen_string_literal: true
 
 class String
@@ -7,7 +8,6 @@ class String
   #   "hello".exclude? "lo" # => false
   #   "hello".exclude? "ol" # => true
   #   "hello".exclude? ?h   # => false
-  def exclude?(string)
-    !include?(string)
-  end
+  sig { params(string: String).returns(T::Boolean) }
+  def exclude?(string) = !include?(string)
 end

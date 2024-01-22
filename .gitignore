@@ -53,25 +53,6 @@
 !**/vendor/bundle/ruby/*/gems/*/lib
 !**/vendor/bundle/ruby/*/gems/addressable-*/data
 !**/vendor/bundle/ruby/*/gems/public_suffix-*/data
-!**/vendor/bundle/ruby/*/gems/rubocop-performance-*/config
-!**/vendor/bundle/ruby/*/gems/rubocop-rails-*/config
-!**/vendor/bundle/ruby/*/gems/rubocop-rspec-*/config
-!**/vendor/bundle/ruby/*/gems/rubocop-sorbet-*/config
-
-# Ignore activesupport, except the ones we need.
-**/vendor/bundle/ruby/*/gems/activesupport-*/lib/**/*
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/*/
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/array/access.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/enumerable.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/file/atomic.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/deep_merge.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/deep_transform_values.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/hash/keys.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/deep_dup.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/object/duplicable.rb
-!**/vendor/bundle/ruby/*/gems/activesupport-*/lib/active_support/core_ext/string/exclude.rb
 
 # Ignore partially included gems where we don't need all files
 **/vendor/gems/mechanize-*/.*
@@ -89,6 +70,7 @@
 **/vendor/gems/mechanize-*/test/
 
 # Ignore dependencies we don't wish to vendor
+**/vendor/bundle/ruby/*/gems/activesupport-*/
 **/vendor/bundle/ruby/*/gems/ast-*/
 **/vendor/bundle/ruby/*/gems/bootsnap-*/
 **/vendor/bundle/ruby/*/gems/bundler-*/

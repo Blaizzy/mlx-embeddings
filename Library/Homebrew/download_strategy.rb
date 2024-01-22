@@ -360,7 +360,7 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
       end
 
       if search_query && (uri_query = uri.query.presence)
-        components[:query] = URI.decode_www_form(uri_query).map(&:second)
+        components[:query] = URI.decode_www_form(uri_query).map { _2 }
       end
     else
       components[:path] = [url]

@@ -1,3 +1,4 @@
+# typed: strict
 # frozen_string_literal: true
 
 #--
@@ -23,27 +24,34 @@ class Object
   #
   # False for method objects;
   # true otherwise.
-  def duplicable?
-    true
-  end
+  sig { returns(T::Boolean) }
+  def duplicable? = true
 end
 
 class Method
   # Methods are not duplicable:
   #
-  #  method(:puts).duplicable? # => false
-  #  method(:puts).dup         # => TypeError: allocator undefined for Method
-  def duplicable?
-    false
-  end
+  #   method(:puts).duplicable? # => false
+  #   method(:puts).dup         # => TypeError: allocator undefined for Method
+  sig { returns(FalseClass) }
+  def duplicable? = false
 end
 
 class UnboundMethod
   # Unbound methods are not duplicable:
   #
-  #  method(:puts).unbind.duplicable? # => false
-  #  method(:puts).unbind.dup         # => TypeError: allocator undefined for UnboundMethod
-  def duplicable?
-    false
-  end
+  #   method(:puts).unbind.duplicable? # => false
+  #   method(:puts).unbind.dup         # => TypeError: allocator undefined for UnboundMethod
+  sig { returns(FalseClass) }
+  def duplicable? = false
+end
+
+require "singleton"
+
+module Singleton
+  # Singleton instances are not duplicable:
+  #
+  #   Class.new.include(Singleton).instance.dup # TypeError (can't dup instance of singleton
+  sig { returns(FalseClass) }
+  def duplicable? = false
 end

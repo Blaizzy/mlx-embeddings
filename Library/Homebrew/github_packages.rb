@@ -4,6 +4,7 @@
 require "utils/curl"
 require "json"
 require "zlib"
+require "extend/hash/keys"
 
 # GitHub Packages client.
 #

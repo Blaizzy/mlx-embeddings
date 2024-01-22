@@ -5,6 +5,7 @@ require "json"
 
 require "lazy_object"
 require "locale"
+require "extend/hash/keys"
 
 module Cask
   # Configuration for installing casks.
