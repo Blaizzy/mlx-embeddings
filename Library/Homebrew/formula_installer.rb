@@ -565,8 +565,8 @@ on_request: installed_on_request?, options: options)
   def expand_requirements
     unsatisfied_reqs = Hash.new { |h, k| h[k] = [] }
     formulae = [formula]
-    formula_deps_map = formula.recursive_dependencies
-                              .index_by(&:name)
+    formula_deps_map = {}
+    formula.recursive_dependencies.each { |dep| formula_deps_map[dep.name] = dep }
 
     while (f = formulae.pop)
       runtime_requirements = runtime_requirements(f)
@@ -1206,10 +1206,11 @@ on_request: installed_on_request?, options: options)
   def fetch_bottle_tab
     @fetch_bottle_tab ||= begin
       formula.fetch_bottle_tab
-      @bottle_tab_runtime_dependencies = formula.bottle_tab_attributes
-                                                .fetch("runtime_dependencies", [])
-                                                .index_by { |dep| dep["full_name"] }
-                                                .freeze
+      @bottle_tab_runtime_dependencies = {}
+      formula.bottle_tab_attributes
+             .fetch("runtime_dependencies", [])
+             .each { |dep| @bottle_tab_runtime_dependencies[dep["full_name"]] = dep }
+      @bottle_tab_runtime_dependencies.freeze
       true
     rescue DownloadError, ArgumentError
       @fetch_bottle_tab = true
