@@ -637,10 +637,11 @@ EOS
       then
         UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
         UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
-      elif [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://(([^:@]+)(:([^@]+))?@)?github.com/(.*)$ ]]
+      elif [[ "${DIR}" != "${HOMEBREW_REPOSITORY}" ]] &&
+           [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://([[:alnum:]_:]+)@github.com/(.*)$ ]]
       then
-        UPSTREAM_REPOSITORY="${BASH_REMATCH[5]%.git}"
-        UPSTREAM_REPOSITORY_TOKEN="${BASH_REMATCH[4]:-${BASH_REMATCH[2]}}"
+        UPSTREAM_REPOSITORY="${BASH_REMATCH[2]%.git}"
+        UPSTREAM_REPOSITORY_TOKEN="${BASH_REMATCH[1]#*:}"
       fi
 
       if [[ -n "${UPSTREAM_REPOSITORY}" ]]
