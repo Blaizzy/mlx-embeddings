@@ -271,7 +271,7 @@ And install any bins, and munge their shebang lines, with:
 
 ```ruby
 bin.install libexec/"bin/<bin>"
-bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV["GEM_HOME"])
+bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV.fetch("GEM_HOME", nil))
 ```
 
 ### Python dependencies
@@ -730,7 +730,7 @@ class MyDownloadStrategy < SomeHomebrewDownloadStrategy
 end
 
 class Foo < Formula
-  url "something", :using => MyDownloadStrategy
+  url "something", using: MyDownloadStrategy
 end
 ```
 
@@ -874,7 +874,7 @@ bin.write_jar_script libexec/jar_file, "jarfile", java_version: "11"
 
   ```ruby
 (bin/"package").write_env_script libexec/"package", PACKAGE_ROOT: libexec
-bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
+bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV.fetch("PERL5LIB", nil))
   ```
 
 ### Rewriting a script shebang

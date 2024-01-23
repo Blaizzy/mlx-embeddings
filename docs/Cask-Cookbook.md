@@ -1076,7 +1076,7 @@ we can use:
 
 ```ruby
 version "1.2.3"
-url "https://example.com/file-version-#{version.delete('.')}.dmg"
+url "https://example.com/file-version-#{version.delete(".")}.dmg"
 ```
 
 We can also leverage the power of regular expressions. So instead of:
@@ -1090,7 +1090,7 @@ we can use:
 
 ```ruby
 version "1.2.3build4"
-url "https://example.com/#{version.sub(%r{build\d+}, '')}/file-version-#{version}.dmg"
+url "https://example.com/#{version.sub(/build\d+/, "")}/file-version-#{version}.dmg"
 ```
 
 #### `version` methods
