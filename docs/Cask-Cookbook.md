@@ -1261,11 +1261,11 @@ cask "myapp" do
     end
   end
 
-  name "MyApp"
   version "1.0"
   sha256 "a32565cdb1673f4071593d4cc9e1c26bc884218b62fef8abc450daa47ba8fa92"
 
   url "https://#{Utils.arbitrary_method}"
+  name "MyApp"
   homepage "https://www.example.com/"
   # ...
 end

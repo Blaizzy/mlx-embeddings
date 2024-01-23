@@ -145,14 +145,14 @@ Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be 
 
 ```ruby
 class Foo < Formula
-  depends_on "pkg-config"
-  depends_on "jpeg"
-  depends_on "gtk+" => :optional
-  depends_on "readline" => :recommended
   depends_on "httpd" => [:build, :test]
-  depends_on arch: :x86_64
-  depends_on macos: :high_sierra
   depends_on xcode: ["9.3", :build]
+  depends_on arch: :x86_64
+  depends_on "jpeg"
+  depends_on macos: :high_sierra
+  depends_on "pkg-config"
+  depends_on "readline" => :recommended
+  depends_on "gtk+" => :optional
 end
 ```
 
@@ -495,7 +495,7 @@ inreplace "path", before, after
 
 ```ruby
 inreplace "path" do |s|
-  s.gsub!(/foo/, "bar")
+  s.gsub!("foo", "bar")
   s.gsub! "123", "456"
 end
 ```
@@ -686,6 +686,7 @@ When parsing a download URL, Homebrew auto-detects the resource type it points t
 ```ruby
 class Foo < Formula
   homepage "https://github.com/some/package"
+  description "Some package"
   url "https://github.com/some/package.git",
       tag:      "v1.6.2",
       revision: "344cd2ee3463abab4c16ac0f9529a846314932a2"
@@ -697,6 +698,7 @@ If not inferable, specify which of Homebrew’s built-in download strategies to 
 ```ruby
 class Nginx < Formula
   homepage "https://nginx.org/"
+  description "Some package"
   url "https://nginx.org/download/nginx-1.23.2.tar.gz", using: :homebrew_curl
   sha256 "a80cc272d3d72aaee70aa8b517b4862a635c0256790434dbfc4d618a999b0b46"
   head "https://hg.nginx.org/nginx/", using: :hg
@@ -731,6 +733,7 @@ end
 
 class Foo < Formula
   url "something", using: MyDownloadStrategy
+  description "Some package"
 end
 ```
 
@@ -895,8 +898,8 @@ class Yourformula < Formula
   option "with-ham", "Description of the option"
   option "without-spam", "Another description"
 
-  depends_on "foo" => :optional # automatically adds a with-foo option
-  depends_on "bar" => :recommended # automatically adds a without-bar option
+  depends_on "bar" => :recommended
+  depends_on "foo" => :optional # automatically adds a with-foo option # automatically adds a without-bar option
   # ...
 end
 ```
