@@ -3870,6 +3870,11 @@ module Enumerable
   def compact(); end
 end
 
+module Enumerable
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 class Enumerator
   def +(arg); end
 
@@ -8032,6 +8037,10 @@ module RSpec::Core::HashImitatable
 
   def deep_transform_keys!(*args, &block); end
 
+  def deep_transform_values(*args, &block); end
+
+  def deep_transform_values!(*args, &block); end
+
   def exclude?(*args, &block); end
 
   def excluding(*args, &block); end
@@ -8993,11 +9002,7 @@ module RuboCop::AST::CollectionNode
 
   def fifth(*args, **arg, &block); end
 
-  def forty_two(*args, **arg, &block); end
-
   def fourth(*args, **arg, &block); end
-
-  def from(*args, **arg, &block); end
 
   def including(*args, **arg, &block); end
 
@@ -9015,13 +9020,7 @@ module RuboCop::AST::CollectionNode
 
   def second(*args, **arg, &block); end
 
-  def second_to_last(*args, **arg, &block); end
-
   def third(*args, **arg, &block); end
-
-  def third_to_last(*args, **arg, &block); end
-
-  def to(*args, **arg, &block); end
 
   def to_default_s(*args, **arg, &block); end
 
@@ -9576,6 +9575,8 @@ module Singleton::SingletonClassMethods
 end
 
 module Singleton
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
   def self.__init__(klass); end
 end
 
