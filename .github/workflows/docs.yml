@@ -42,7 +42,7 @@ jobs:
 
       - name: Check code blocks conform to our Ruby style guide
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
-        run: brew style -- *.md
+        run: brew style .
 
       - name: Build the site and check for broken links
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs

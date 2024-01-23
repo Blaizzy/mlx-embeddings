@@ -1,0 +1,25 @@
+inherit_from: ../Library/.rubocop.yml
+
+AllCops:
+  Exclude:
+  - Gemfile
+  - ".mdl*.rb"
+  - Rakefile
+  - "_site/**/*"
+
+# These are included in docs deliberately to show what
+# `brew create` does and what the user should replace.
+FormulaAudit/Comments:
+  Enabled: false
+
+# The bottle block line length is long in its full form.
+Layout/LineLength:
+  Max: 123
+
+# Apparently Casks are allowed to have constant definitions in blocks and we document this.
+Lint/ConstantDefinitionInBlock:
+  Enabled: false
+
+# A fake regexp is deliberately documented for `inreplace` in the Formula Cookbook.
+Style/RedundantRegexpArgument:
+  Enabled: false
