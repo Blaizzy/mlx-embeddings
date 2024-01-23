@@ -460,10 +460,14 @@ module Homebrew
       Latest livecheck version: #{new_versions}
       Latest Repology version:  #{repology_latest}
     EOS
-    puts <<~EOS if synced_with_other_formulae?(formula_or_cask)
-      Version syncing:          #{title_name} version should be kept in sync with
-                                #{synced_with(T.cast(formula_or_cask, Formula), new_version.general).join(", ")}.
-    EOS
+    if formula_or_cask.is_a?(Formula)
+      require "formula_auditor"
+      auditor = FormulaAuditor.new(formula_or_cask)
+      puts <<~EOS if T.must(auditor).synced_with_other_formulae?
+        Version syncing:          #{title_name} version should be kept in sync with
+                                  #{synced_with(T.must(auditor), formula_or_cask, new_version.general).join(", ")}.
+      EOS
+    end
     puts <<~EOS unless args.no_pull_requests?
       Open pull requests:       #{open_pull_requests || "none"}
       Closed pull requests:     #{closed_pull_requests || "none"}
@@ -502,27 +506,17 @@ module Homebrew
     system HOMEBREW_BREW_FILE, *bump_cask_pr_args
   end
 
-  sig { params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Boolean) }
-  def synced_with_other_formulae?(formula_or_cask)
-    return false if formula_or_cask.is_a?(Cask)
-
-    synced_versions_formulae_file = "#{formula_or_cask.tap.path}/synced_versions_formulae.json"
-    return false unless File.exist?(synced_versions_formulae_file)
-
-    synced_versions_formulae = JSON.parse(File.read(synced_versions_formulae_file))
-    synced_versions_formulae.any? { |synced_formulae| synced_formulae.include?(formula_or_cask.name) }
-  end
-
   sig {
     params(
+      auditor:     FormulaAuditor,
       formula:     Formula,
       new_version: T.nilable(T.any(Version, Cask::DSL::Version)),
     ).returns(T::Array[String])
   }
-  def synced_with(formula, new_version)
+  def synced_with(auditor, formula, new_version)
     synced_with = []
 
-    JSON.parse(File.read("#{T.must(formula.tap).path}/synced_versions_formulae.json")).each do |synced_formulae|
+    auditor.synced_versions_formulae_json.each do |synced_formulae|
       next unless synced_formulae.include?(formula.name)
 
       synced_formulae.each do |synced_formula|
