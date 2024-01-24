@@ -2078,12 +2078,12 @@ _brew_upgrade() {
     '--verbose[Print the verification and post-install steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
-    - outdated_formula \
+    - installed_formula \
     '(--casks --skip-cask-deps --greedy --greedy-latest --greedy-auto-updates --binaries --require-sha --quarantine --appdir --keyboard-layoutdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae]' \
-    '*::outdated_formula:__brew_outdated_formulae' \
-    - outdated_cask \
+    '*::installed_formula:__brew_installed_formulae' \
+    - installed_cask \
     '(--formulae --build-from-source --interactive --force-bottle --fetch-HEAD --ignore-pinned --keep-tmp --debug-symbols --display-times)--cask[Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks]' \
-    '*::outdated_cask:__brew_outdated_casks'
+    '*::installed_cask:__brew_installed_casks'
 }
 
 # brew uses

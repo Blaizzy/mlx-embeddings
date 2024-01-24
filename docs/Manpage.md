@@ -770,7 +770,7 @@ Fetch and reset Homebrew and all tap repositories (or any specified *`repository
 
 *Note:* this will destroy all your uncommitted or committed changes.
 
-### `upgrade` [*`options`*] [*`outdated_formula`*|*`outdated_cask`* ...]
+### `upgrade` [*`options`*] [*`installed_formula`*|*`installed_cask`* ...]
 
 Upgrade outdated casks and outdated, unpinned formulae using the same options they were originally
 installed with, plus any appended brew formula options. If *`cask`* or *`formula`* are specified,

@@ -2588,8 +2588,8 @@ _brew_upgrade() {
       ;;
     *) ;;
   esac
-  __brew_complete_outdated_formulae
-  __brew_complete_outdated_casks
+  __brew_complete_installed_formulae
+  __brew_complete_installed_casks
 }
 
 _brew_uses() {
