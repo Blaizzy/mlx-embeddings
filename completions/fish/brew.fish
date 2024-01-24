@@ -1690,8 +1690,8 @@ __fish_brew_complete_arg 'upgrade' -l skip-cask-deps -d 'Skip installing cask de
 __fish_brew_complete_arg 'upgrade' -l verbose -d 'Print the verification and post-install steps'
 __fish_brew_complete_arg 'upgrade' -l vst-plugindir -d 'Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)'
 __fish_brew_complete_arg 'upgrade' -l vst3-plugindir -d 'Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)'
-__fish_brew_complete_arg 'upgrade; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_outdated)'
-__fish_brew_complete_arg 'upgrade; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_outdated)'
+__fish_brew_complete_arg 'upgrade; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_installed)'
+__fish_brew_complete_arg 'upgrade; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_installed)'
 
 
 __fish_brew_complete_cmd 'uses' 'Show formulae and casks that specify formula as a dependency; that is, show dependents of formula'
