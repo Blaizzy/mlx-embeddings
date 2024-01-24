@@ -5007,7 +5007,7 @@ class RuboCop::Cop::Corrector < ::Parser::Source::TreeRewriter
 
   # Legacy
   #
-  # source://parser/3.3.0.4/lib/parser/source/tree_rewriter.rb#252
+  # source://parser/3.3.0.5/lib/parser/source/tree_rewriter.rb#252
   def rewrite; end
 
   # Swaps sources at the given ranges.
@@ -14115,17 +14115,17 @@ class RuboCop::Cop::Layout::RedundantLineBreak < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#121
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#125
   def comment_within?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#91
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#95
   def configured_to_not_be_inspected?(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#115
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#119
   def convertible_block?(node); end
 
   # @return [Boolean]
@@ -14133,7 +14133,12 @@ class RuboCop::Cop::Layout::RedundantLineBreak < ::RuboCop::Cop::Base
   # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#69
   def end_with_percent_blank_string?(processed_source); end
 
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#143
+  # @return [Boolean]
+  #
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#91
+  def index_access_call_chained?(node); end
+
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#147
   def max_line_length; end
 
   # @return [Boolean]
@@ -14143,7 +14148,7 @@ class RuboCop::Cop::Layout::RedundantLineBreak < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#98
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#102
   def other_cop_takes_precedence?(node); end
 
   # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#79
@@ -14151,20 +14156,20 @@ class RuboCop::Cop::Layout::RedundantLineBreak < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#104
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#108
   def single_line_block_chain_enabled?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#108
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#112
   def suitable_as_single_line?(node); end
 
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#134
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#138
   def to_single_line(source); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#129
+  # source://rubocop//lib/rubocop/cop/layout/redundant_line_break.rb#133
   def too_long?(node); end
 end
 
@@ -30942,7 +30947,7 @@ RuboCop::Cop::Style::AndOr::MSG = T.let(T.unsafe(nil), String)
 # Names not on this list are likely to be meaningful and are allowed by default.
 #
 # @example RedundantBlockArgumentNames: ['blk', 'block', 'proc'] (default)
-#   # bad
+#   # bad - But it is good with `EnforcedStyle: explicit` set for `Naming/BlockForwarding`.
 #   def foo(&block)
 #   bar(&block)
 #   end
@@ -31061,6 +31066,11 @@ class RuboCop::Cop::Style::ArgumentsForwarding < ::RuboCop::Cop::Base
 
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#227
   def classify_send_nodes(def_node, send_nodes, referenced_lvars, forwardable_args); end
+
+  # @return [Boolean]
+  #
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#473
+  def explicit_block_name?; end
 
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#159
   def extract_forwardable_args(args); end
@@ -37493,19 +37503,22 @@ class RuboCop::Cop::Style::HashEachMethods < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::Lint::UnusedArgument
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#50
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#74
+  def check_unused_block_args(node, key, value); end
+
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#51
   def each_arguments(param0 = T.unsafe(nil)); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#45
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#46
   def kv_each(param0 = T.unsafe(nil)); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#55
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#56
   def kv_each_with_block_pass(param0 = T.unsafe(nil)); end
 
   # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#60
   def on_block(node); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#85
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#95
   def on_block_pass(node); end
 
   # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#60
@@ -37513,54 +37526,62 @@ class RuboCop::Cop::Style::HashEachMethods < ::RuboCop::Cop::Base
 
   private
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#159
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#180
   def check_argument(variable); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#183
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#204
   def correct_args(node, corrector); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#169
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#190
   def correct_implicit(node, corrector, method_name); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#174
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#195
   def correct_key_value_each(node, corrector); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#155
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#176
   def format_message(method_name, current); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#93
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#103
   def handleable?(node); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#190
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#211
   def kv_range(outer_node); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#122
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#133
   def message(prefer, method_name, unused_code); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#128
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#139
   def register_each_args_offense(node, message, prefer, unused_range); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#99
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#110
   def register_kv_offense(target, method); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#135
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#146
   def register_kv_with_block_pass_offense(node, target, method); end
 
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#146
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#167
   def root_receiver(node); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#110
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#121
   def unused_block_arg_exist?(node, block_arg); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#165
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#157
+  def use_array_converter_method_as_preceding?(node); end
+
+  # @return [Boolean]
+  #
+  # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#186
   def used?(arg); end
 end
+
+# source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#43
+RuboCop::Cop::Style::HashEachMethods::ARRAY_CONVERTER_METHODS = T.let(T.unsafe(nil), Array)
 
 # source://rubocop//lib/rubocop/cop/style/hash_each_methods.rb#41
 RuboCop::Cop::Style::HashEachMethods::MSG = T.let(T.unsafe(nil), String)
