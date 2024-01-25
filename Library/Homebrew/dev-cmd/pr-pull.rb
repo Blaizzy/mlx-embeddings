@@ -506,7 +506,12 @@ module Homebrew
         end
       ensure
         if args.retain_bottle_dir?
-          puts "::set-output name=bottle_path::#{dir}"
+          ohai "Bottle files retained at:", dir
+          return unless ENV["GITHUB_ACTIONS"]
+
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |f|
+            f.puts "bottle_path=#{dir}"
+          end
         else
           FileUtils.remove_entry dir
         end
