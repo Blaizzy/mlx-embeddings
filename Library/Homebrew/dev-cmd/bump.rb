@@ -463,9 +463,9 @@ module Homebrew
     if formula_or_cask.is_a?(Formula)
       require "formula_auditor"
       auditor = FormulaAuditor.new(formula_or_cask)
-      puts <<~EOS if T.must(auditor).synced_with_other_formulae?
+      puts <<~EOS if auditor.synced_with_other_formulae?
         Version syncing:          #{title_name} version should be kept in sync with
-                                  #{synced_with(T.must(auditor), formula_or_cask, new_version.general).join(", ")}.
+                                  #{synced_with(auditor, formula_or_cask, new_version.general).join(", ")}.
       EOS
     end
     puts <<~EOS unless args.no_pull_requests?
