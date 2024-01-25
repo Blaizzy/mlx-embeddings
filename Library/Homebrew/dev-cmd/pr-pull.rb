@@ -43,6 +43,8 @@ module Homebrew
       switch "--warn-on-upload-failure",
              description: "Warn instead of raising an error if the bottle upload fails. " \
                           "Useful for repairing bottle uploads that previously failed."
+      switch "--retain-bottle-dir",
+             description: "Does not clean up the tmp directory for the bottle so it can be used later."
       flag   "--committer=",
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--message=",
@@ -444,7 +446,8 @@ module Homebrew
       pr_check_conflicts("#{user}/#{repo}", pr)
 
       ohai "Fetching #{tap} pull request ##{pr}"
-      Dir.mktmpdir pr do |dir|
+      dir = Dir.mktmpdir pr
+      begin
         cd dir do
           current_branch_head = ENV["GITHUB_SHA"] || tap.git_head
           original_commit = if args.no_cherry_pick?
@@ -500,6 +503,12 @@ module Homebrew
           upload_args << "--root-url=#{args.root_url}" if args.root_url
           upload_args << "--root-url-using=#{args.root_url_using}" if args.root_url_using
           safe_system HOMEBREW_BREW_FILE, *upload_args
+        end
+      ensure
+        if args.retain_bottle_dir?
+          puts "::set-output name=bottle_path::#{dir}"
+        else
+          FileUtils.remove_entry dir
         end
       end
     end
