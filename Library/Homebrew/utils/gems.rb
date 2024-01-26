@@ -14,7 +14,7 @@ module Homebrew
 
   # Bump this whenever a committed vendored gem is later added to or exclusion removed from gitignore.
   # This will trigger it to reinstall properly if `brew install-bundler-gems` needs it.
-  VENDOR_VERSION = 5
+  VENDOR_VERSION = 6
   private_constant :VENDOR_VERSION
 
   RUBY_BUNDLE_VENDOR_DIRECTORY = (HOMEBREW_LIBRARY_PATH/"vendor/bundle/ruby").freeze

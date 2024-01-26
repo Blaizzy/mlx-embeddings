@@ -43,7 +43,6 @@ end
 group :style, optional: true do
   gem "rubocop", require: false
   gem "rubocop-performance", require: false
-  gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
   gem "rubocop-sorbet", require: false
 end
@@ -72,7 +71,6 @@ group :audit, :bump_unversioned_casks, :livecheck, optional: true do
 end
 
 # vendored gems (no group)
-gem "activesupport", "<7" # we're actively working to remove this: https://github.com/Homebrew/brew/issues/16190
 gem "addressable"
 gem "patchelf"
 gem "plist"
