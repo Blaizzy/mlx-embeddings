@@ -75,7 +75,7 @@ module RuboCop
             ordered.each_with_index do |dep, pos|
               idx = pos+1
               match_nodes = build_with_dependency_name(dep)
-              next if !match_nodes || match_nodes.empty?
+              next if match_nodes.blank?
 
               idx1 = pos
               ordered.drop(idx1+1).each_with_index do |dep2, pos2|
