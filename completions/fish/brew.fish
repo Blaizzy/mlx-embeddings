@@ -1206,6 +1206,7 @@ __fish_brew_complete_arg 'pr-pull' -l no-commit -d 'Do not generate a new commit
 __fish_brew_complete_arg 'pr-pull' -l no-upload -d 'Download the bottles but don\'t upload them'
 __fish_brew_complete_arg 'pr-pull' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'pr-pull' -l resolve -d 'When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting'
+__fish_brew_complete_arg 'pr-pull' -l retain-bottle-dir -d 'Does not clean up the tmp directory for the bottle so it can be used later'
 __fish_brew_complete_arg 'pr-pull' -l root-url -d 'Use the specified URL as the root of the bottle\'s URL instead of Homebrew\'s default'
 __fish_brew_complete_arg 'pr-pull' -l root-url-using -d 'Use the specified download strategy class for downloading the bottle\'s URL instead of Homebrew\'s default'
 __fish_brew_complete_arg 'pr-pull' -l tap -d 'Target tap repository (default: `homebrew/core`)'

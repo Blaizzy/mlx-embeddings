@@ -1432,6 +1432,8 @@ Requires write access to the repository.
   When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting.
 * `--warn-on-upload-failure`:
   Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed.
+* `--retain-bottle-dir`:
+  Does not clean up the tmp directory for the bottle so it can be used later.
 * `--committer`:
   Specify a committer name and email in `git`'s standard author format.
 * `--message`:

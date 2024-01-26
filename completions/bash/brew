@@ -1772,6 +1772,7 @@ _brew_pr_pull() {
       --no-upload
       --quiet
       --resolve
+      --retain-bottle-dir
       --root-url
       --root-url-using
       --tap

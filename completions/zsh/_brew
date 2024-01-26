@@ -1493,6 +1493,7 @@ _brew_pr_pull() {
     '--no-upload[Download the bottles but don'\''t upload them]' \
     '--quiet[Make some output more quiet]' \
     '--resolve[When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting]' \
+    '--retain-bottle-dir[Does not clean up the tmp directory for the bottle so it can be used later]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--root-url-using[Use the specified download strategy class for downloading the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
