@@ -33,12 +33,6 @@ brew info --json=v1 tig | jq .
 To show full JSON information about all installed formulae:
 
 ```sh
-brew info --json=v1 --eval-all | jq "map(select(.installed != []))"
-```
-
-You'll note that processing all formulae can be slow; it's quicker to let `brew` do this:
-
-```sh
 brew info --json=v1 --installed
 ```
 
