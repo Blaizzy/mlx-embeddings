@@ -64,6 +64,12 @@ Homebrew/CompactBlank:
 Homebrew/MoveToExtendOS:
   Enabled: false
 
+Homebrew/NegateInclude:
+  Exclude:
+    # `exclude?` is not available here:
+    - "Homebrew/standalone/init.rb"
+    - "Homebrew/rubocops/**/*"
+
 # `system` is a special case and aligns on second argument, so allow this for formulae.
 Layout/ArgumentAlignment:
   Exclude:
@@ -339,13 +345,8 @@ Style/HashAsLastArrayItem:
     - "**/Formula/**/*.rb"
 
 Style/InverseMethods:
-  Exclude:
-    # Core extensions are not available here:
-    - "Homebrew/standalone/init.rb"
-    - "Homebrew/rubocops/**/*"
   InverseMethods:
     :blank?: :present?
-    :exclude?: :include?
 
 Style/InvertibleUnlessCondition:
   Enabled: true
