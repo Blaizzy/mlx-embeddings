@@ -2,9 +2,7 @@
 
 require "rubocops/present"
 
-describe RuboCop::Cop::Homebrew::Present do
-  subject(:cop) { described_class.new }
-
+describe RuboCop::Cop::Homebrew::Present, :config do
   shared_examples "offense" do |source, correction, message|
     it "registers an offense and corrects" do
       expect_offense(<<~RUBY, source: source, message: message)
@@ -36,59 +34,59 @@ describe RuboCop::Cop::Homebrew::Present do
 
   it_behaves_like "offense", "foo && !foo.empty?",
                   "foo.present?",
-                  "Homebrew/Present: Use `foo.present?` instead of `foo && !foo.empty?`."
+                  "Use `foo.present?` instead of `foo && !foo.empty?`."
   it_behaves_like "offense", "!foo.nil? && !foo.empty?",
                   "foo.present?",
-                  "Homebrew/Present: Use `foo.present?` instead of `!foo.nil? && !foo.empty?`."
+                  "Use `foo.present?` instead of `!foo.nil? && !foo.empty?`."
   it_behaves_like "offense", "!nil? && !empty?", "present?",
-                  "Homebrew/Present: Use `present?` instead of `!nil? && !empty?`."
+                  "Use `present?` instead of `!nil? && !empty?`."
   it_behaves_like "offense", "foo != nil && !foo.empty?",
                   "foo.present?",
-                  "Homebrew/Present: Use `foo.present?` instead of `foo != nil && !foo.empty?`."
+                  "Use `foo.present?` instead of `foo != nil && !foo.empty?`."
   it_behaves_like "offense", "!!foo && !foo.empty?",
                   "foo.present?",
-                  "Homebrew/Present: Use `foo.present?` instead of `!!foo && !foo.empty?`."
+                  "Use `foo.present?` instead of `!!foo && !foo.empty?`."
 
   context "when checking all variable types" do
     it_behaves_like "offense", "!foo.nil? && !foo.empty?",
                     "foo.present?",
-                    "Homebrew/Present: Use `foo.present?` instead of " \
+                    "Use `foo.present?` instead of " \
                     "`!foo.nil? && !foo.empty?`."
     it_behaves_like "offense", "!foo.bar.nil? && !foo.bar.empty?",
                     "foo.bar.present?",
-                    "Homebrew/Present: Use `foo.bar.present?` instead of " \
+                    "Use `foo.bar.present?` instead of " \
                     "`!foo.bar.nil? && !foo.bar.empty?`."
     it_behaves_like "offense", "!FOO.nil? && !FOO.empty?",
                     "FOO.present?",
-                    "Homebrew/Present: Use `FOO.present?` instead of " \
+                    "Use `FOO.present?` instead of " \
                     "`!FOO.nil? && !FOO.empty?`."
     it_behaves_like "offense", "!Foo.nil? && !Foo.empty?",
                     "Foo.present?",
-                    "Homebrew/Present: Use `Foo.present?` instead of " \
+                    "Use `Foo.present?` instead of " \
                     "`!Foo.nil? && !Foo.empty?`."
     it_behaves_like "offense", "!@foo.nil? && !@foo.empty?",
                     "@foo.present?",
-                    "Homebrew/Present: Use `@foo.present?` instead of " \
+                    "Use `@foo.present?` instead of " \
                     "`!@foo.nil? && !@foo.empty?`."
     it_behaves_like "offense", "!$foo.nil? && !$foo.empty?",
                     "$foo.present?",
-                    "Homebrew/Present: Use `$foo.present?` instead of " \
+                    "Use `$foo.present?` instead of " \
                     "`!$foo.nil? && !$foo.empty?`."
     it_behaves_like "offense", "!@@foo.nil? && !@@foo.empty?",
                     "@@foo.present?",
-                    "Homebrew/Present: Use `@@foo.present?` instead of " \
+                    "Use `@@foo.present?` instead of " \
                     "`!@@foo.nil? && !@@foo.empty?`."
     it_behaves_like "offense", "!foo[bar].nil? && !foo[bar].empty?",
                     "foo[bar].present?",
-                    "Homebrew/Present: Use `foo[bar].present?` instead of " \
+                    "Use `foo[bar].present?` instead of " \
                     "`!foo[bar].nil? && !foo[bar].empty?`."
     it_behaves_like "offense", "!Foo::Bar.nil? && !Foo::Bar.empty?",
                     "Foo::Bar.present?",
-                    "Homebrew/Present: Use `Foo::Bar.present?` instead of " \
+                    "Use `Foo::Bar.present?` instead of " \
                     "`!Foo::Bar.nil? && !Foo::Bar.empty?`."
     it_behaves_like "offense", "!foo(bar).nil? && !foo(bar).empty?",
                     "foo(bar).present?",
-                    "Homebrew/Present: Use `foo(bar).present?` instead of " \
+                    "Use `foo(bar).present?` instead of " \
                     "`!foo(bar).nil? && !foo(bar).empty?`."
   end
 end

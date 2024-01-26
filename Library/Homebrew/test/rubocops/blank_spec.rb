@@ -2,9 +2,7 @@
 
 require "rubocops/blank"
 
-describe RuboCop::Cop::Homebrew::Blank do
-  subject(:cop) { described_class.new }
-
+describe RuboCop::Cop::Homebrew::Blank, :config do
   shared_examples "offense" do |source, correction, message|
     it "registers an offense and corrects" do
       expect_offense(<<~RUBY, source: source, message: message)
@@ -47,62 +45,62 @@ describe RuboCop::Cop::Homebrew::Blank do
   context "when nil or empty" do
     it_behaves_like "offense", "foo.nil? || foo.empty?",
                     "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of `foo.nil? || foo.empty?`."
-    it_behaves_like "offense", "nil? || empty?", "blank?", "Homebrew/Blank: Use `blank?` instead of `nil? || empty?`."
+                    "Use `foo.blank?` instead of `foo.nil? || foo.empty?`."
+    it_behaves_like "offense", "nil? || empty?", "blank?", "Use `blank?` instead of `nil? || empty?`."
     it_behaves_like "offense", "foo == nil || foo.empty?",
                     "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of `foo == nil || foo.empty?`."
+                    "Use `foo.blank?` instead of `foo == nil || foo.empty?`."
     it_behaves_like "offense", "nil == foo || foo.empty?",
                     "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of `nil == foo || foo.empty?`."
+                    "Use `foo.blank?` instead of `nil == foo || foo.empty?`."
     it_behaves_like "offense", "!foo || foo.empty?", "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of `!foo || foo.empty?`."
+                    "Use `foo.blank?` instead of `!foo || foo.empty?`."
 
     it_behaves_like "offense", "foo.nil? || !!foo.empty?",
                     "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of `foo.nil? || !!foo.empty?`."
+                    "Use `foo.blank?` instead of `foo.nil? || !!foo.empty?`."
     it_behaves_like "offense", "foo == nil || !!foo.empty?",
                     "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of " \
+                    "Use `foo.blank?` instead of " \
                     "`foo == nil || !!foo.empty?`."
     it_behaves_like "offense", "nil == foo || !!foo.empty?",
                     "foo.blank?",
-                    "Homebrew/Blank: Use `foo.blank?` instead of " \
+                    "Use `foo.blank?` instead of " \
                     "`nil == foo || !!foo.empty?`."
   end
 
   context "when checking all variable types" do
     it_behaves_like "offense", "foo.bar.nil? || foo.bar.empty?",
                     "foo.bar.blank?",
-                    "Homebrew/Blank: Use `foo.bar.blank?` instead of " \
+                    "Use `foo.bar.blank?` instead of " \
                     "`foo.bar.nil? || foo.bar.empty?`."
     it_behaves_like "offense", "FOO.nil? || FOO.empty?",
                     "FOO.blank?",
-                    "Homebrew/Blank: Use `FOO.blank?` instead of `FOO.nil? || FOO.empty?`."
+                    "Use `FOO.blank?` instead of `FOO.nil? || FOO.empty?`."
     it_behaves_like "offense", "Foo.nil? || Foo.empty?",
                     "Foo.blank?",
-                    "Homebrew/Blank: Use `Foo.blank?` instead of `Foo.nil? || Foo.empty?`."
+                    "Use `Foo.blank?` instead of `Foo.nil? || Foo.empty?`."
     it_behaves_like "offense", "Foo::Bar.nil? || Foo::Bar.empty?",
                     "Foo::Bar.blank?",
-                    "Homebrew/Blank: Use `Foo::Bar.blank?` instead of " \
+                    "Use `Foo::Bar.blank?` instead of " \
                     "`Foo::Bar.nil? || Foo::Bar.empty?`."
     it_behaves_like "offense", "@foo.nil? || @foo.empty?",
                     "@foo.blank?",
-                    "Homebrew/Blank: Use `@foo.blank?` instead of `@foo.nil? || @foo.empty?`."
+                    "Use `@foo.blank?` instead of `@foo.nil? || @foo.empty?`."
     it_behaves_like "offense", "$foo.nil? || $foo.empty?",
                     "$foo.blank?",
-                    "Homebrew/Blank: Use `$foo.blank?` instead of `$foo.nil? || $foo.empty?`."
+                    "Use `$foo.blank?` instead of `$foo.nil? || $foo.empty?`."
     it_behaves_like "offense", "@@foo.nil? || @@foo.empty?",
                     "@@foo.blank?",
-                    "Homebrew/Blank: Use `@@foo.blank?` instead of " \
+                    "Use `@@foo.blank?` instead of " \
                     "`@@foo.nil? || @@foo.empty?`."
     it_behaves_like "offense", "foo[bar].nil? || foo[bar].empty?",
                     "foo[bar].blank?",
-                    "Homebrew/Blank: Use `foo[bar].blank?` instead of " \
+                    "Use `foo[bar].blank?` instead of " \
                     "`foo[bar].nil? || foo[bar].empty?`."
     it_behaves_like "offense", "foo(bar).nil? || foo(bar).empty?",
                     "foo(bar).blank?",
-                    "Homebrew/Blank: Use `foo(bar).blank?` instead of " \
+                    "Use `foo(bar).blank?` instead of " \
                     "`foo(bar).nil? || foo(bar).empty?`."
   end
 end

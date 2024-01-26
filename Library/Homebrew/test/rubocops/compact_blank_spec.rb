@@ -2,13 +2,11 @@
 
 require "rubocops/compact_blank"
 
-RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
-  subject(:cop) { described_class.new }
-
+RSpec.describe RuboCop::Cop::Homebrew::CompactBlank, :config do
   it "registers and corrects an offense when using `reject { |e| e.blank? }`" do
     expect_offense(<<~RUBY)
       collection.reject { |e| e.blank? }
-                 ^^^^^^^^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank` instead.
+                 ^^^^^^^^^^^^^^^^^^^^^^^ Use `compact_blank` instead.
     RUBY
 
     expect_correction(<<~RUBY)
@@ -19,7 +17,7 @@ RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
   it "registers and corrects an offense when using `reject(&:blank?)`" do
     expect_offense(<<~RUBY)
       collection.reject(&:blank?)
-                 ^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank` instead.
+                 ^^^^^^^^^^^^^^^^ Use `compact_blank` instead.
     RUBY
 
     expect_correction(<<~RUBY)
@@ -30,7 +28,7 @@ RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
   it "registers and corrects an offense when using `delete_if { |e| e.blank? }`" do
     expect_offense(<<~RUBY)
       collection.delete_if { |e| e.blank? }
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank!` instead.
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ Use `compact_blank!` instead.
     RUBY
 
     expect_correction(<<~RUBY)
@@ -41,7 +39,7 @@ RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
   it "registers and corrects an offense when using `delete_if(&:blank?)`" do
     expect_offense(<<~RUBY)
       collection.delete_if(&:blank?)
-                 ^^^^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank!` instead.
+                 ^^^^^^^^^^^^^^^^^^^ Use `compact_blank!` instead.
     RUBY
 
     expect_correction(<<~RUBY)
@@ -52,7 +50,7 @@ RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
   it "registers and corrects an offense when using `reject! { |e| e.blank? }`" do
     expect_offense(<<~RUBY)
       collection.reject! { |e| e.blank? }
-                 ^^^^^^^^^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank!` instead.
+                 ^^^^^^^^^^^^^^^^^^^^^^^^ Use `compact_blank!` instead.
     RUBY
 
     expect_correction(<<~RUBY)
@@ -63,7 +61,7 @@ RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
   it "registers and corrects an offense when using `reject!(&:blank?)`" do
     expect_offense(<<~RUBY)
       collection.reject!(&:blank?)
-                 ^^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank!` instead.
+                 ^^^^^^^^^^^^^^^^^ Use `compact_blank!` instead.
     RUBY
 
     expect_correction(<<~RUBY)
@@ -74,7 +72,7 @@ RSpec.describe RuboCop::Cop::Homebrew::CompactBlank do
   it "registers and corrects an offense when using `reject(&:blank?)` in block" do
     expect_offense(<<~RUBY)
       hash.transform_values { |value| value.reject(&:blank?) }
-                                            ^^^^^^^^^^^^^^^^ Homebrew/CompactBlank: Use `compact_blank` instead.
+                                            ^^^^^^^^^^^^^^^^ Use `compact_blank` instead.
     RUBY
 
     expect_correction(<<~RUBY)

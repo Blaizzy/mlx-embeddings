@@ -6,6 +6,7 @@ require_relative "blank"
 require_relative "compact_blank"
 require_relative "io_read"
 require_relative "move_to_extend_os"
+require_relative "presence"
 require_relative "present"
 require_relative "shell_commands"
 

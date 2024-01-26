@@ -220,8 +220,6 @@ Rails:
     - "Homebrew/rubocops/**/*"
 
 # These relate to ActiveSupport and not other parts of Rails.
-Rails/Presence:
-  Enabled: true
 Rails/SafeNavigationWithBlank:
   Enabled: true
 
