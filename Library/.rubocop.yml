@@ -56,6 +56,10 @@ Homebrew/Blank:
     # Core extensions are not available here:
     - "Homebrew/rubocops/**/*"
     - "Homebrew/startup/bootsnap.rb"
+Homebrew/CompactBlank:
+  Exclude:
+    # `blank?` is not necessarily available here:
+    - "Homebrew/extend/enumerable.rb"
 
 # only used internally
 Homebrew/MoveToExtendOS:
@@ -216,8 +220,6 @@ Rails:
     - "Homebrew/rubocops/**/*"
 
 # These relate to ActiveSupport and not other parts of Rails.
-Rails/CompactBlank:
-  Enabled: true
 Rails/Presence:
   Enabled: true
 Rails/SafeNavigationWithBlank:
