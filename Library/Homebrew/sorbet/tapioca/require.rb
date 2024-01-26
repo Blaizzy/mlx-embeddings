@@ -3,8 +3,7 @@
 
 # This should not be made a constant or Tapioca will think it is part of a gem.
 dependency_require_map = {
-  "activesupport" => "active_support/all",
-  "ruby-macho"    => "macho",
+  "ruby-macho" => "macho",
 }.freeze
 
 # Freeze lockfile

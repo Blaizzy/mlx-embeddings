@@ -12,7 +12,6 @@ inherit_mode:
 
 AllCops:
   TargetRubyVersion: 3.1
-  ActiveSupportExtensionsEnabled: true
   NewCops: enable
   Include:
     - "**/*.rbi"
