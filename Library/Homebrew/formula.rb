@@ -2219,9 +2219,6 @@ class Formula
       [sym, send(sym)&.declared_deps]
     end
     dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
-    requirements = self.class.spec_syms.to_h do |sym|
-      [sym, send(sym)&.requirements]
-    end
 
     hsh = {
       "name"                     => name,
@@ -2254,7 +2251,7 @@ class Formula
       "optional_dependencies"    => [],
       "uses_from_macos"          => [],
       "uses_from_macos_bounds"   => [],
-      "requirements"             => [],
+      "requirements"             => serialized_requirements,
       "conflicts_with"           => conflicts.map(&:name),
       "conflicts_with_reasons"   => conflicts.map(&:reason),
       "link_overwrite"           => self.class.link_overwrite_paths.to_a,
@@ -2331,25 +2328,6 @@ class Formula
       dep_hash["uses_from_macos_bounds"] = uses_from_macos_deps.map(&:bounds)
     end
 
-    hsh["requirements"] = merge_spec_dependables(requirements).map do |data|
-      req = data[:dependable]
-      req_name = req.name.dup
-      req_name.prepend("maximum_") if req.respond_to?(:comparator) && req.comparator == "<="
-      req_version = if req.respond_to?(:version)
-        req.version
-      elsif req.respond_to?(:arch)
-        req.arch
-      end
-      {
-        "name"     => req_name,
-        "cask"     => req.cask,
-        "download" => req.download,
-        "version"  => req_version,
-        "contexts" => req.tags,
-        "specs"    => data[:specs],
-      }
-    end
-
     hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
       tab = Tab.for_keg keg
       {
@@ -2385,7 +2363,6 @@ class Formula
       "test_dependencies"      => [],
       "uses_from_macos"        => [],
       "uses_from_macos_bounds" => [],
-      "requirements"           => [],
       "post_install_defined"   => post_install_defined?,
       "ruby_source_path"       => ruby_source_path,
       "ruby_source_checksum"   => { "sha256" => ruby_source_checksum&.hexdigest },
@@ -2407,6 +2384,10 @@ class Formula
     if (versioned_formulae_list = versioned_formulae.presence)
       # Could we just use `versioned_formulae_names` here instead?
       api_hash["versioned_formulae"] = versioned_formulae_list.map(&:name)
+    end
+
+    if (requirements_array = serialized_requirements.presence)
+      api_hash["requirements"] = requirements_array
     end
 
     if conflicts.present?
@@ -2541,6 +2522,32 @@ class Formula
     end
 
     hash
+  end
+
+  # @private
+  def serialized_requirements
+    requirements = self.class.spec_syms.to_h do |sym|
+      [sym, send(sym)&.requirements]
+    end
+
+    merge_spec_dependables(requirements).map do |data|
+      req = data[:dependable]
+      req_name = req.name.dup
+      req_name.prepend("maximum_") if req.respond_to?(:comparator) && req.comparator == "<="
+      req_version = if req.respond_to?(:version)
+        req.version
+      elsif req.respond_to?(:arch)
+        req.arch
+      end
+      {
+        "name"     => req_name,
+        "cask"     => req.cask,
+        "download" => req.download,
+        "version"  => req_version,
+        "contexts" => req.tags,
+        "specs"    => data[:specs],
+      }
+    end
   end
 
   # @private
