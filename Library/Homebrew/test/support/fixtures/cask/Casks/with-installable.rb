@@ -7,9 +7,9 @@ cask "with-installable" do
 
   pkg "MyFancyPkg/Fancy.pkg"
 
-  uninstall script:     { executable: "MyFancyPkg/FancyUninstaller.tool", args: ["--please"] },
-            quit:       "my.fancy.package.app",
+  uninstall quit:       "my.fancy.package.app",
             login_item: "Fancy",
+            script:     { executable: "MyFancyPkg/FancyUninstaller.tool", args: ["--please"] },
             delete:     [
               "#{TEST_TMPDIR}/absolute_path",
               "#{TEST_TMPDIR}/glob_path*",
