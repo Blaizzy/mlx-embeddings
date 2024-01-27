@@ -74,7 +74,7 @@ __brew_outdated_formulae() {
   [[ -prefix '-' ]] && return 0
 
   local -a formulae
-  formulae=($(brew outdated --formula))
+  formulae=($(HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --formula))
   _describe -t formulae 'outdated formulae' formulae
 }
 
@@ -106,7 +106,7 @@ __brew_outdated_casks() {
   [[ -prefix '-' ]] && return 0
 
   local -a casks
-  casks=($(brew outdated --cask 2>/dev/null))
+  casks=($(HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --cask 2>/dev/null))
   _describe -t casks 'outdated casks' casks
 }
 
