@@ -12,9 +12,9 @@ AllCops:
 FormulaAudit/Comments:
   Enabled: false
 
-# The bottle block line length is long in its full form.
 Layout/LineLength:
-  Max: 123
+  Exclude:
+  - Bottles.md # The bottle block line length is long in its full form.
 
 # Apparently Casks are allowed to have constant definitions in blocks and we document this.
 Lint/ConstantDefinitionInBlock:
