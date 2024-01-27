@@ -1,7 +1,11 @@
 # typed: true
 # frozen_string_literal: true
 
+require "system_command"
+
 class Keg
+  include SystemCommand::Mixin
+
   GENERIC_KEG_LINK_DIRECTORIES = (remove_const :KEG_LINK_DIRECTORIES).freeze
   KEG_LINK_DIRECTORIES = (GENERIC_KEG_LINK_DIRECTORIES + ["Frameworks"]).freeze
   GENERIC_MUST_EXIST_SUBDIRECTORIES = (remove_const :MUST_EXIST_SUBDIRECTORIES).freeze

@@ -137,7 +137,6 @@ rescue
   nil
 end.compact.freeze
 
-require "system_command"
 require "exceptions"
 require "utils"
 

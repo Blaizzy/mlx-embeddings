@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "system_command"
 require "tempfile"
 require "utils/shell"
 require "utils/formatter"
@@ -32,6 +33,8 @@ module GitHub
   #
   # @api private
   module API
+    extend SystemCommand::Mixin
+
     # Generic API error.
     class Error < RuntimeError
       attr_reader :github_message

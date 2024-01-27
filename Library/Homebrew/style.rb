@@ -3,12 +3,15 @@
 
 require "shellwords"
 require "source_location"
+require "system_command"
 
 module Homebrew
   # Helper module for running RuboCop.
   #
   # @api private
   module Style
+    extend SystemCommand::Mixin
+
     # Checks style for a list of files, printing simple RuboCop output.
     # Returns true if violations were found, false otherwise.
     def self.check_style_and_print(files, **options)

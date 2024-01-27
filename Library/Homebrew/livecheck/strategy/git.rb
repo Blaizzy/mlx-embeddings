@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "open3"
+require "system_command"
 
 module Homebrew
   module Livecheck
@@ -24,6 +25,8 @@ module Homebrew
       #
       # @api public
       class Git
+        extend SystemCommand::Mixin
+
         # The priority of the strategy on an informal scale of 1 to 10 (from
         # lowest to highest).
         PRIORITY = 8

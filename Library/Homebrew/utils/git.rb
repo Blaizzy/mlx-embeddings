@@ -1,12 +1,16 @@
 # typed: true
 # frozen_string_literal: true
 
+require "system_command"
+
 module Utils
   # Helper functions for querying Git information.
   #
   # @see GitRepository
   # @api private
   module Git
+    extend SystemCommand::Mixin
+
     def self.available?
       version.present?
     end

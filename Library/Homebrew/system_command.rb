@@ -6,6 +6,7 @@ require "open3"
 require "plist"
 require "shellwords"
 
+require "context"
 require "extend/io"
 require "utils/timer"
 
@@ -405,7 +406,3 @@ class SystemCommand
     private :warn_plist_garbage
   end
 end
-
-# Make `system_command` available everywhere.
-# FIXME: Include this explicitly only where it is needed.
-include SystemCommand::Mixin # rubocop:disable Style/MixinUsage

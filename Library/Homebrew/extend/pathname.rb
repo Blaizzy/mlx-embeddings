@@ -5,6 +5,7 @@ require "context"
 require "resource"
 require "metafiles"
 require "extend/file/atomic"
+require "system_command"
 
 module DiskUsageExtension
   sig { returns(Integer) }
@@ -77,6 +78,7 @@ end
 # Homebrew extends Ruby's `Pathname` to make our code more readable.
 # @see https://ruby-doc.org/stdlib-2.6.3/libdoc/pathname/rdoc/Pathname.html Ruby's Pathname API
 class Pathname
+  include SystemCommand::Mixin
   include DiskUsageExtension
 
   # Moves a file from the original location to the {Pathname}'s.

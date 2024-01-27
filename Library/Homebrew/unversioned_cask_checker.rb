@@ -4,6 +4,7 @@
 require "bundle_version"
 require "cask/cask"
 require "cask/installer"
+require "system_command"
 
 module Homebrew
   # Check unversioned casks for updates by extracting their
@@ -11,6 +12,8 @@ module Homebrew
   #
   # @api private
   class UnversionedCaskChecker
+    include SystemCommand::Mixin
+
     sig { returns(Cask::Cask) }
     attr_reader :cask
 

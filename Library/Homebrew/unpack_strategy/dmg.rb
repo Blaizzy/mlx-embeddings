@@ -2,14 +2,18 @@
 # frozen_string_literal: true
 
 require "tempfile"
+require "system_command"
 
 module UnpackStrategy
   # Strategy for unpacking disk images.
   class Dmg
+    extend SystemCommand::Mixin
     include UnpackStrategy
 
     # Helper module for listing the contents of a volume mounted from a disk image.
     module Bom
+      extend SystemCommand::Mixin
+
       DMG_METADATA = Set.new(%w[
         .background
         .com.apple.timemachine.donotpresent

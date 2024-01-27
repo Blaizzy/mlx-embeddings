@@ -11,7 +11,7 @@ require "system_command"
 #
 # @api private
 module GitHub
-  include SystemCommand::Mixin
+  extend SystemCommand::Mixin
 
   def self.check_runs(repo: nil, commit: nil, pull_request: nil)
     if pull_request

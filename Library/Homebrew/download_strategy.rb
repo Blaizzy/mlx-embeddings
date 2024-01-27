@@ -7,6 +7,7 @@ require "unpack_strategy"
 require "lazy_object"
 require "cgi"
 require "lock_file"
+require "system_command"
 
 # Need to define this before requiring Mechanize to avoid:
 #   uninitialized constant Mechanize
@@ -28,6 +29,7 @@ class AbstractDownloadStrategy
   extend Forwardable
   include FileUtils
   include Context
+  include SystemCommand::Mixin
 
   # Extension for bottle downloads.
   #
