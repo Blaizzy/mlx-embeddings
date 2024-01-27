@@ -14,13 +14,6 @@ module RuboCop
         sig { overridable.params(cask_stanza_block: RuboCop::Cask::AST::StanzaBlock).void }
         def on_cask_stanza_block(cask_stanza_block); end
 
-        # FIXME: Workaround until https://github.com/rubocop/rubocop/pull/11858 is released.
-        def find_end_line(node)
-          return node.loc.end.line if node.block_type? || node.numblock_type?
-
-          super
-        end
-
         sig { params(block_node: RuboCop::AST::BlockNode).void }
         def on_block(block_node)
           super if defined? super
