@@ -92,7 +92,7 @@ require "language/node"
 
 class Foo < Formula
   desc "Description"
-  homepage "..."
+  homepage "https://example.com"
   url "https://registry.npmjs.org/foo/-/foo-1.4.2.tgz"
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
 
@@ -106,7 +106,8 @@ class Foo < Formula
   end
 
   test do
-    # add a meaningful test here
+    # add a meaningful test here, version isn't usually meaningful
+    assert_match version.to_s, shell_output("#{bin}/foo --version")
   end
 end
 ```

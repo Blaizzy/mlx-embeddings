@@ -175,13 +175,13 @@ This will open `EDITOR` with a template for your new cask, to be stored in the f
 
 ```ruby
 cask "my-new-cask" do
-  version ""
-  sha256 ""
+  version "fill in the version here"
+  sha256 "fill in the sha256 here"
 
   url "download-url"
-  name ""
-  desc ""
-  homepage ""
+  name "fill in the name"
+  desc "Fill in the description here"
+  homepage "fill in the homepage here"
 
   livecheck do
     url ""

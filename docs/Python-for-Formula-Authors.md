@@ -74,8 +74,8 @@ class Foo < Formula
   name "foo"
   desc "Bar"
   homepage "https://example.com"
-  url "..."
-  sha256 "abc123"
+  url "https://example.com/foo-1.0.tar.gz"
+  sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
 
   def install
     # Create a virtualenv in `libexec`. If your app needs Python 3, make sure that
@@ -101,6 +101,8 @@ Installing a formula with dependencies will look like this:
 class Foo < Formula
   include Language::Python::Virtualenv
 
+  desc "Description"
+  homepage "https://example.com"
   url "..."
 
   resource "six" do
@@ -125,6 +127,8 @@ You can also use the more verbose form and request that specific resources be in
 class Foo < Formula
   include Language::Python::Virtualenv
 
+  desc "Description"
+  homepage "https://example.com"
   url "..."
 
   def install
