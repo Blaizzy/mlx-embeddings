@@ -2239,7 +2239,7 @@ class Formula
         "head"   => head&.version&.to_s,
         "bottle" => bottle_defined?,
       },
-      "urls"                     => {},
+      "urls"                     => urls_hash,
       "revision"                 => revision,
       "version_scheme"           => version_scheme,
       "bottle"                   => {},
@@ -2277,26 +2277,7 @@ class Formula
       "ruby_source_checksum"     => {},
     }
 
-    if stable
-      stable_spec = T.must(stable)
-      hsh["urls"]["stable"] = {
-        "url"      => stable_spec.url,
-        "tag"      => stable_spec.specs[:tag],
-        "revision" => stable_spec.specs[:revision],
-        "using"    => (stable_spec.using if stable_spec.using.is_a?(Symbol)),
-        "checksum" => stable_spec.checksum&.to_s,
-      }
-
-      hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
-    end
-
-    if head
-      hsh["urls"]["head"] = {
-        "url"    => T.must(head).url,
-        "branch" => T.must(head).specs[:branch],
-        "using"  => (T.must(head).using if T.must(head).using.is_a?(Symbol)),
-      }
-    end
+    hsh["bottle"]["stable"] = bottle_hash if stable && bottle_defined?
 
     hsh["options"] = options.map do |opt|
       { "option" => opt.flag, "description" => opt.description }
@@ -2393,8 +2374,82 @@ class Formula
   end
 
   # @private
-  def to_hash_with_variations
-    hash = to_hash
+  def to_api_hash
+    api_hash = {
+      "desc"                   => desc,
+      "license"                => SPDX.license_expression_to_string(license),
+      "homepage"               => homepage,
+      "urls"                   => urls_hash.transform_values(&:compact),
+      "build_dependencies"     => [],
+      "dependencies"           => [],
+      "test_dependencies"      => [],
+      "uses_from_macos"        => [],
+      "uses_from_macos_bounds" => [],
+      "requirements"           => [],
+      "post_install_defined"   => post_install_defined?,
+      "ruby_source_path"       => ruby_source_path,
+      "ruby_source_checksum"   => { "sha256" => ruby_source_checksum&.hexdigest },
+    }
+
+    # Exclude default values.
+    api_hash["revision"] = revision unless revision.zero?
+    api_hash["version_scheme"] = version_scheme unless version_scheme.zero?
+
+    api_hash["key_only_reason"] = keg_only_reason.to_hash if keg_only_reason
+    api_hash["pour_bottle_only_if"] = self.class.pour_bottle_only_if.to_s if self.class.pour_bottle_only_if
+    api_hash["link_overwrite"] = self.class.link_overwrite_paths.to_a if self.class.link_overwrite_paths.present?
+
+    if stable
+      api_hash["versions"] = { "stable" => stable&.version&.to_s }
+      api_hash["bottle"] = { "stable" => bottle_hash(compact_for_api: true) } if bottle_defined?
+    end
+
+    if (versioned_formulae_list = versioned_formulae.presence)
+      # Could we just use `versioned_formulae_names` here instead?
+      api_hash["versioned_formulae"] = versioned_formulae_list.map(&:name)
+    end
+
+    if conflicts.present?
+      api_hash["conflicts_with"] = conflicts.map(&:name)
+      api_hash["conflicts_with_reasons"] = conflicts.map(&:reason)
+    end
+
+    if deprecation_date
+      api_hash["deprecation_date"] = deprecation_date
+      api_hash["deprecation_reason"] = deprecation_reason # this might need to be checked too
+    end
+
+    if disable_date
+      api_hash["disable_date"] = disable_date
+      api_hash["disable_reason"] = disable_reason # this might need to be checked too
+    end
+
+    if (caveats_string = caveats)
+      api_hash["caveats"] = caveats_string.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
+                                          .gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER)
+    end
+
+    api_hash["service"] = service.serialize if service?
+
+    api_hash
+  end
+
+  # @private
+  def to_hash_with_variations(hash_method: :to_hash)
+    if loaded_from_api? && hash_method == :to_api_hash
+      raise ArgumentError, "API Hash must be generated from Ruby source files"
+    end
+
+    namespace_prefix = case hash_method
+    when :to_hash
+      "Variations"
+    when :to_api_hash
+      "APIVariations"
+    else
+      raise ArgumentError, "Unknown hash method #{hash_method.inspect}"
+    end
+
+    hash = public_send(hash_method)
 
     # Take from API, merging in local install status.
     if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
@@ -2413,13 +2468,13 @@ class Formula
         next unless bottle_tag.valid_combination?
 
         Homebrew::SimulateSystem.with os: os, arch: arch do
-          variations_namespace = Formulary.class_s("Variations#{bottle_tag.to_sym.capitalize}")
+          variations_namespace = Formulary.class_s("#{namespace_prefix}#{bottle_tag.to_sym.capitalize}")
           variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
                                                             flags: self.class.build_flags, ignore_errors: true)
           variations_formula = variations_formula_class.new(name, path, :stable,
                                                             alias_path: alias_path, force_bottle: force_bottle)
 
-          variations_formula.to_hash.each do |key, value|
+          variations_formula.public_send(hash_method).each do |key, value|
             next if value.to_s == hash[key].to_s
 
             variations[bottle_tag.to_sym] ||= {}
@@ -2434,29 +2489,57 @@ class Formula
   end
 
   # Returns the bottle information for a formula.
-  def bottle_hash
+  def bottle_hash(compact_for_api: false)
     bottle_spec = T.must(stable).bottle_specification
-    hash = {
-      "rebuild"  => bottle_spec.rebuild,
-      "root_url" => bottle_spec.root_url,
-      "files"    => {},
-    }
+
+    hash = {}
+    hash["rebuild"] = bottle_spec.rebuild if !compact_for_api || !bottle_spec.rebuild.zero?
+    hash["root_url"] = bottle_spec.root_url unless compact_for_api
+    hash["files"] = {}
+
     bottle_spec.collector.each_tag do |tag|
       tag_spec = bottle_spec.collector.specification_for(tag, no_older_versions: true)
       os_cellar = tag_spec.cellar
       os_cellar = os_cellar.inspect if os_cellar.is_a?(Symbol)
-
       checksum = tag_spec.checksum.hexdigest
-      filename = Bottle::Filename.create(self, tag, bottle_spec.rebuild)
-      path, = Utils::Bottles.path_resolved_basename(bottle_spec.root_url, name, checksum, filename)
-      url = "#{bottle_spec.root_url}/#{path}"
 
-      hash["files"][tag.to_sym] = {
-        "cellar" => os_cellar,
-        "url"    => url,
-        "sha256" => checksum,
+      file_hash = {}
+      file_hash["cellar"] = os_cellar
+      unless compact_for_api
+        filename = Bottle::Filename.create(self, tag, bottle_spec.rebuild)
+        path, = Utils::Bottles.path_resolved_basename(bottle_spec.root_url, name, checksum, filename)
+        file_hash["url"] = "#{bottle_spec.root_url}/#{path}"
+      end
+      file_hash["sha256"] = checksum
+
+      hash["files"][tag.to_sym] = file_hash
+    end
+    hash
+  end
+
+  # @private
+  def urls_hash
+    hash = {}
+
+    if stable
+      stable_spec = T.must(stable)
+      hash["stable"] = {
+        "url"      => stable_spec.url,
+        "tag"      => stable_spec.specs[:tag],
+        "revision" => stable_spec.specs[:revision],
+        "using"    => (stable_spec.using if stable_spec.using.is_a?(Symbol)),
+        "checksum" => stable_spec.checksum&.to_s,
       }
     end
+
+    if head
+      hash["head"] = {
+        "url"    => T.must(head).url,
+        "branch" => T.must(head).specs[:branch],
+        "using"  => (T.must(head).using if T.must(head).using.is_a?(Symbol)),
+      }
+    end
+
     hash
   end
 
