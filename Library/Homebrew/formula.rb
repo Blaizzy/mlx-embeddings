@@ -2214,118 +2214,58 @@ class Formula
 
   # @private
   def to_hash
-    # Create a hash of spec names (stable/head) to the list of dependencies under each
-    dependencies = self.class.spec_syms.to_h do |sym|
-      [sym, send(sym)&.declared_deps]
-    end
-    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
-
     hsh = {
-      "name"                     => name,
-      "full_name"                => full_name,
-      "tap"                      => tap&.name,
-      "oldname"                  => oldnames.first, # deprecated
-      "oldnames"                 => oldnames,
-      "aliases"                  => aliases.sort,
-      "versioned_formulae"       => versioned_formulae.map(&:name),
-      "desc"                     => desc,
-      "license"                  => SPDX.license_expression_to_string(license),
-      "homepage"                 => homepage,
-      "versions"                 => {
+      "name"                   => name,
+      "full_name"              => full_name,
+      "tap"                    => tap&.name,
+      "oldname"                => oldnames.first, # deprecated
+      "oldnames"               => oldnames,
+      "aliases"                => aliases.sort,
+      "versioned_formulae"     => versioned_formulae.map(&:name),
+      "desc"                   => desc,
+      "license"                => SPDX.license_expression_to_string(license),
+      "homepage"               => homepage,
+      "versions"               => {
         "stable" => stable&.version&.to_s,
         "head"   => head&.version&.to_s,
         "bottle" => bottle_defined?,
       },
-      "urls"                     => urls_hash,
-      "revision"                 => revision,
-      "version_scheme"           => version_scheme,
-      "bottle"                   => {},
-      "pour_bottle_only_if"      => self.class.pour_bottle_only_if&.to_s,
-      "keg_only"                 => keg_only?,
-      "keg_only_reason"          => keg_only_reason&.to_hash,
-      "options"                  => [],
-      "build_dependencies"       => [],
-      "dependencies"             => [],
-      "test_dependencies"        => [],
-      "recommended_dependencies" => [],
-      "optional_dependencies"    => [],
-      "uses_from_macos"          => [],
-      "uses_from_macos_bounds"   => [],
-      "requirements"             => serialized_requirements,
-      "conflicts_with"           => conflicts.map(&:name),
-      "conflicts_with_reasons"   => conflicts.map(&:reason),
-      "link_overwrite"           => self.class.link_overwrite_paths.to_a,
-      "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
-                                           &.gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER),
-      "installed"                => [],
-      "linked_keg"               => linked_version&.to_s,
-      "pinned"                   => pinned?,
-      "outdated"                 => outdated?,
-      "deprecated"               => deprecated?,
-      "deprecation_date"         => deprecation_date,
-      "deprecation_reason"       => deprecation_reason,
-      "disabled"                 => disabled?,
-      "disable_date"             => disable_date,
-      "disable_reason"           => disable_reason,
-      "post_install_defined"     => post_install_defined?,
-      "service"                  => (service.serialize if service?),
-      "tap_git_head"             => tap_git_head,
-      "ruby_source_path"         => ruby_source_path,
-      "ruby_source_checksum"     => {},
+      "urls"                   => urls_hash,
+      "revision"               => revision,
+      "version_scheme"         => version_scheme,
+      "bottle"                 => {},
+      "pour_bottle_only_if"    => self.class.pour_bottle_only_if&.to_s,
+      "keg_only"               => keg_only?,
+      "keg_only_reason"        => keg_only_reason&.to_hash,
+      "options"                => [],
+      **dependencies_hash,
+      "requirements"           => serialized_requirements,
+      "conflicts_with"         => conflicts.map(&:name),
+      "conflicts_with_reasons" => conflicts.map(&:reason),
+      "link_overwrite"         => self.class.link_overwrite_paths.to_a,
+      "caveats"                => caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
+                                         &.gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER),
+      "installed"              => [],
+      "linked_keg"             => linked_version&.to_s,
+      "pinned"                 => pinned?,
+      "outdated"               => outdated?,
+      "deprecated"             => deprecated?,
+      "deprecation_date"       => deprecation_date,
+      "deprecation_reason"     => deprecation_reason,
+      "disabled"               => disabled?,
+      "disable_date"           => disable_date,
+      "disable_reason"         => disable_reason,
+      "post_install_defined"   => post_install_defined?,
+      "service"                => (service.serialize if service?),
+      "tap_git_head"           => tap_git_head,
+      "ruby_source_path"       => ruby_source_path,
+      "ruby_source_checksum"   => {},
     }
 
     hsh["bottle"]["stable"] = bottle_hash if stable && bottle_defined?
 
     hsh["options"] = options.map do |opt|
       { "option" => opt.flag, "description" => opt.description }
-    end
-
-    dependencies.each do |spec_sym, spec_deps|
-      next if spec_deps.nil?
-
-      dep_hash = if spec_sym == :stable
-        hsh
-      else
-        next if spec_deps == dependencies[:stable]
-
-        hsh["#{spec_sym}_dependencies"] ||= {}
-      end
-
-      dep_hash["build_dependencies"] = spec_deps.select(&:build?)
-                                                .reject(&:uses_from_macos?)
-                                                .map(&:name)
-                                                .uniq
-      dep_hash["dependencies"] = spec_deps.reject(&:optional?)
-                                          .reject(&:recommended?)
-                                          .reject(&:build?)
-                                          .reject(&:test?)
-                                          .reject(&:uses_from_macos?)
-                                          .map(&:name)
-                                          .uniq
-      dep_hash["test_dependencies"] = spec_deps.select(&:test?)
-                                               .reject(&:uses_from_macos?)
-                                               .map(&:name)
-                                               .uniq
-      dep_hash["recommended_dependencies"] = spec_deps.select(&:recommended?)
-                                                      .reject(&:uses_from_macos?)
-                                                      .map(&:name)
-                                                      .uniq
-      dep_hash["optional_dependencies"] = spec_deps.select(&:optional?)
-                                                   .reject(&:uses_from_macos?)
-                                                   .map(&:name)
-                                                   .uniq
-
-      uses_from_macos_deps = spec_deps.select(&:uses_from_macos?).uniq
-      dep_hash["uses_from_macos"] = uses_from_macos_deps.map do |dep|
-        if dep.tags.length >= 2
-          { dep.name => dep.tags }
-        elsif dep.tags.present?
-          { dep.name => dep.tags.first }
-        else
-          dep.name
-        end
-      end
-      dep_hash["uses_from_macos_bounds"] = uses_from_macos_deps.map(&:bounds)
     end
 
     hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
@@ -2354,19 +2294,21 @@ class Formula
   # @private
   def to_api_hash
     api_hash = {
-      "desc"                   => desc,
-      "license"                => SPDX.license_expression_to_string(license),
-      "homepage"               => homepage,
-      "urls"                   => urls_hash.transform_values(&:compact),
-      "build_dependencies"     => [],
-      "dependencies"           => [],
-      "test_dependencies"      => [],
-      "uses_from_macos"        => [],
-      "uses_from_macos_bounds" => [],
-      "post_install_defined"   => post_install_defined?,
-      "ruby_source_path"       => ruby_source_path,
-      "ruby_source_checksum"   => { "sha256" => ruby_source_checksum&.hexdigest },
+      "desc"                 => desc,
+      "license"              => SPDX.license_expression_to_string(license),
+      "homepage"             => homepage,
+      "urls"                 => urls_hash.transform_values(&:compact),
+      "post_install_defined" => post_install_defined?,
+      "ruby_source_path"     => ruby_source_path,
+      "ruby_source_checksum" => { "sha256" => ruby_source_checksum&.hexdigest },
     }
+
+    dep_hash = dependencies_hash
+               .except("recommended_dependencies", "optional_dependencies")
+               .transform_values(&:presence)
+               .compact
+
+    api_hash.merge(dep_hash)
 
     # Exclude default values.
     api_hash["revision"] = revision unless revision.zero?
@@ -2548,6 +2490,67 @@ class Formula
         "specs"    => data[:specs],
       }
     end
+  end
+
+  # @private
+  def dependencies_hash
+    # Create a hash of spec names (stable/head) to the list of dependencies under each
+    dependencies = self.class.spec_syms.to_h do |sym|
+      [sym, send(sym)&.declared_deps]
+    end
+    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
+
+    hash = {}
+
+    dependencies.each do |spec_sym, spec_deps|
+      next if spec_deps.nil?
+
+      dep_hash = if spec_sym == :stable
+        hash
+      else
+        next if spec_deps == dependencies[:stable]
+
+        hash["#{spec_sym}_dependencies"] ||= {}
+      end
+
+      dep_hash["build_dependencies"] = spec_deps.select(&:build?)
+                                                .reject(&:uses_from_macos?)
+                                                .map(&:name)
+                                                .uniq
+      dep_hash["dependencies"] = spec_deps.reject(&:optional?)
+                                          .reject(&:recommended?)
+                                          .reject(&:build?)
+                                          .reject(&:test?)
+                                          .reject(&:uses_from_macos?)
+                                          .map(&:name)
+                                          .uniq
+      dep_hash["test_dependencies"] = spec_deps.select(&:test?)
+                                               .reject(&:uses_from_macos?)
+                                               .map(&:name)
+                                               .uniq
+      dep_hash["recommended_dependencies"] = spec_deps.select(&:recommended?)
+                                                      .reject(&:uses_from_macos?)
+                                                      .map(&:name)
+                                                      .uniq
+      dep_hash["optional_dependencies"] = spec_deps.select(&:optional?)
+                                                   .reject(&:uses_from_macos?)
+                                                   .map(&:name)
+                                                   .uniq
+
+      uses_from_macos_deps = spec_deps.select(&:uses_from_macos?).uniq
+      dep_hash["uses_from_macos"] = uses_from_macos_deps.map do |dep|
+        if dep.tags.length >= 2
+          { dep.name => dep.tags }
+        elsif dep.tags.present?
+          { dep.name => dep.tags.first }
+        else
+          dep.name
+        end
+      end
+      dep_hash["uses_from_macos_bounds"] = uses_from_macos_deps.map(&:bounds)
+    end
+
+    hash
   end
 
   # @private
