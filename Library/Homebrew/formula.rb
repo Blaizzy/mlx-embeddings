@@ -2407,7 +2407,7 @@ class Formula
       end
     end
 
-    hash["variations"] = variations
+    hash["variations"] = variations if hash_method != :to_api_hash || variations.present?
     hash
   end
 
