@@ -7,67 +7,6 @@ require "formulary"
 require "software_spec"
 require "tap"
 
-def with_monkey_patch
-  # Since `method_defined?` is not a supported type guard, the use of `alias_method` below is not typesafe:
-  BottleSpecification.class_eval do
-    T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
-    define_method(:method_missing) do |*|
-      # do nothing
-    end
-  end
-
-  Module.class_eval do
-    T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
-    define_method(:method_missing) do |*|
-      # do nothing
-    end
-  end
-
-  Resource.class_eval do
-    T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
-    define_method(:method_missing) do |*|
-      # do nothing
-    end
-  end
-
-  DependencyCollector.class_eval do
-    T.unsafe(self).alias_method :old_parse_symbol_spec, :parse_symbol_spec if method_defined?(:parse_symbol_spec)
-    define_method(:parse_symbol_spec) do |*|
-      # do nothing
-    end
-  end
-
-  yield
-ensure
-  BottleSpecification.class_eval do
-    if method_defined?(:old_method_missing)
-      T.unsafe(self).alias_method :method_missing, :old_method_missing
-      undef :old_method_missing
-    end
-  end
-
-  Module.class_eval do
-    if method_defined?(:old_method_missing)
-      T.unsafe(self).alias_method :method_missing, :old_method_missing
-      undef :old_method_missing
-    end
-  end
-
-  Resource.class_eval do
-    if method_defined?(:old_method_missing)
-      T.unsafe(self).alias_method :method_missing, :old_method_missing
-      undef :old_method_missing
-    end
-  end
-
-  DependencyCollector.class_eval do
-    if method_defined?(:old_parse_symbol_spec)
-      T.unsafe(self).alias_method :parse_symbol_spec, :old_parse_symbol_spec
-      undef :old_parse_symbol_spec
-    end
-  end
-end
-
 module Homebrew
   BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m
 
@@ -221,5 +160,66 @@ module Homebrew
     contents.gsub!("require 'brewkit'", "require 'formula'")
     contents.sub!(BOTTLE_BLOCK_REGEX, "")
     with_monkey_patch { Formulary.from_contents(name, file, contents, ignore_errors: true) }
+  end
+
+  private_class_method def self.with_monkey_patch
+    # Since `method_defined?` is not a supported type guard, the use of `alias_method` below is not typesafe:
+    BottleSpecification.class_eval do
+      T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
+      define_method(:method_missing) do |*|
+        # do nothing
+      end
+    end
+
+    Module.class_eval do
+      T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
+      define_method(:method_missing) do |*|
+        # do nothing
+      end
+    end
+
+    Resource.class_eval do
+      T.unsafe(self).alias_method :old_method_missing, :method_missing if method_defined?(:method_missing)
+      define_method(:method_missing) do |*|
+        # do nothing
+      end
+    end
+
+    DependencyCollector.class_eval do
+      T.unsafe(self).alias_method :old_parse_symbol_spec, :parse_symbol_spec if method_defined?(:parse_symbol_spec)
+      define_method(:parse_symbol_spec) do |*|
+        # do nothing
+      end
+    end
+
+    yield
+  ensure
+    BottleSpecification.class_eval do
+      if method_defined?(:old_method_missing)
+        T.unsafe(self).alias_method :method_missing, :old_method_missing
+        undef :old_method_missing
+      end
+    end
+
+    Module.class_eval do
+      if method_defined?(:old_method_missing)
+        T.unsafe(self).alias_method :method_missing, :old_method_missing
+        undef :old_method_missing
+      end
+    end
+
+    Resource.class_eval do
+      if method_defined?(:old_method_missing)
+        T.unsafe(self).alias_method :method_missing, :old_method_missing
+        undef :old_method_missing
+      end
+    end
+
+    DependencyCollector.class_eval do
+      if method_defined?(:old_parse_symbol_spec)
+        T.unsafe(self).alias_method :parse_symbol_spec, :old_parse_symbol_spec
+        undef :old_parse_symbol_spec
+      end
+    end
   end
 end

@@ -432,6 +432,11 @@ Style/SymbolArray:
 Style/TernaryParentheses:
   EnforcedStyle: require_parentheses_when_complex
 
+Style/TopLevelMethodDefinition:
+  Enabled: true
+  Exclude:
+    - "Taps/**/*.rb"
+
 # Trailing commas make diffs nicer.
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma

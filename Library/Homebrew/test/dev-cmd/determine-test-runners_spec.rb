@@ -4,6 +4,14 @@ require "dev-cmd/determine-test-runners"
 require "cmd/shared_examples/args_parse"
 
 describe "brew determine-test-runners" do
+  def get_runners(file)
+    runner_line = File.open(file).first
+    json_text = runner_line[/runners=(.*)/, 1]
+    runner_hash = JSON.parse(json_text)
+    runner_hash.map { |item| item["runner"].delete_suffix(ephemeral_suffix) }
+               .sort
+  end
+
   after do
     FileUtils.rm_f github_output
   end
@@ -46,14 +54,6 @@ describe "brew determine-test-runners" do
     expect(File.read(github_output)).not_to be_empty
     expect(get_runners(github_output).sort).to eq(all_runners.sort)
   end
-end
-
-def get_runners(file)
-  runner_line = File.open(file).first
-  json_text = runner_line[/runners=(.*)/, 1]
-  runner_hash = JSON.parse(json_text)
-  runner_hash.map { |item| item["runner"].delete_suffix(ephemeral_suffix) }
-             .sort
 end
 
 class DetermineRunnerTestHelper

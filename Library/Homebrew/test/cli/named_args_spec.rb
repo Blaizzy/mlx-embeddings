@@ -2,20 +2,20 @@
 
 require "cli/named_args"
 
-def setup_unredable_formula(name)
-  error = FormulaUnreadableError.new(name, RuntimeError.new("testing"))
-  allow(Formulary).to receive(:factory).with(name, any_args).and_raise(error)
-end
-
-def setup_unredable_cask(name)
-  error = Cask::CaskUnreadableError.new(name, "testing")
-  allow(Cask::CaskLoader).to receive(:load).with(name, any_args).and_raise(error)
-
-  config = instance_double(Cask::Config)
-  allow(Cask::Config).to receive(:from_args).and_return(config)
-end
-
 describe Homebrew::CLI::NamedArgs do
+  def setup_unredable_formula(name)
+    error = FormulaUnreadableError.new(name, RuntimeError.new("testing"))
+    allow(Formulary).to receive(:factory).with(name, any_args).and_raise(error)
+  end
+
+  def setup_unredable_cask(name)
+    error = Cask::CaskUnreadableError.new(name, "testing")
+    allow(Cask::CaskLoader).to receive(:load).with(name, any_args).and_raise(error)
+
+    config = instance_double(Cask::Config)
+    allow(Cask::Config).to receive(:from_args).and_return(config)
+  end
+
   let(:foo) do
     formula "foo" do
       url "https://brew.sh"

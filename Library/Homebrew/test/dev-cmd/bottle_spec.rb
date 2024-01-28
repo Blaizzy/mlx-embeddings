@@ -4,6 +4,32 @@ require "cmd/shared_examples/args_parse"
 require "dev-cmd/bottle"
 
 describe "brew bottle" do
+  def stub_hash(parameters)
+    <<~EOS
+      {
+        "#{parameters[:name]}":{
+           "formula":{
+              "pkg_version":"#{parameters[:version]}",
+              "path":"#{parameters[:path]}"
+           },
+           "bottle":{
+              "root_url":"#{parameters[:root_url] || HOMEBREW_BOTTLE_DEFAULT_DOMAIN}",
+              "prefix":"/usr/local",
+              "cellar":"#{parameters[:cellar]}",
+              "rebuild":0,
+              "tags":{
+                 "#{parameters[:os]}":{
+                    "filename":"#{parameters[:filename]}",
+                    "local_filename":"#{parameters[:local_filename]}",
+                    "sha256":"#{parameters[:sha256]}"
+                 }
+              }
+           }
+        }
+      }
+    EOS
+  end
+
   it_behaves_like "parseable arguments"
 
   it "builds a bottle for the given Formula", :integration_test do
@@ -537,30 +563,4 @@ describe "brew bottle" do
       end
     end
   end
-end
-
-def stub_hash(parameters)
-  <<~EOS
-    {
-      "#{parameters[:name]}":{
-         "formula":{
-            "pkg_version":"#{parameters[:version]}",
-            "path":"#{parameters[:path]}"
-         },
-         "bottle":{
-            "root_url":"#{parameters[:root_url] || HOMEBREW_BOTTLE_DEFAULT_DOMAIN}",
-            "prefix":"/usr/local",
-            "cellar":"#{parameters[:cellar]}",
-            "rebuild":0,
-            "tags":{
-               "#{parameters[:os]}":{
-                  "filename":"#{parameters[:filename]}",
-                  "local_filename":"#{parameters[:local_filename]}",
-                  "sha256":"#{parameters[:sha256]}"
-               }
-            }
-         }
-      }
-    }
-  EOS
 end
