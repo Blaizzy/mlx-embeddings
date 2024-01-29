@@ -91,7 +91,7 @@ Installing a standard Node module based formula would look like this:
 require "language/node"
 
 class Foo < Formula
-  desc "Description"
+  desc "An example formula"
   homepage "https://example.com"
   url "https://registry.npmjs.org/foo/-/foo-1.4.2.tgz"
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
