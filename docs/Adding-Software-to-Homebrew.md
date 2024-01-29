@@ -165,36 +165,13 @@ If the `generate_cask_token` script does not work for you, see [Cask Token Detai
 
 #### Creating the cask file
 
-Once you know the token, create your cask with the handy-dandy `brew create --cask` command:
+Once you know the token, create your cask with the `brew create --cask` command:
 
 ```bash
 brew create --cask download-url --set-name my-new-cask
 ```
 
-This will open `EDITOR` with a template for your new cask, to be stored in the file `my-new-cask.rb`. Running the `create` command above will get you a template that looks like this:
-
-```ruby
-cask "my-new-cask" do
-  version "fill in the version here"
-  sha256 "fill in the sha256 here"
-
-  url "download-url"
-  name "fill in the name"
-  desc "Fill in the description here"
-  homepage "fill in the homepage here"
-
-  livecheck do
-    url ""
-    strategy ""
-  end
-
-  depends_on macos: ""
-
-  app ""
-
-  zap trash: ""
-end
-```
+This will open `EDITOR` with a template for your new cask, to be stored in the file `my-new-cask.rb`.
 
 #### Cask stanzas
 

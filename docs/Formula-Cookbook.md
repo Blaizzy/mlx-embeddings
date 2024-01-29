@@ -60,32 +60,9 @@ Run `brew create` with a URL to the source tarball:
 brew create https://example.com/foo-0.1.tar.gz
 ```
 
+This creates `$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/f/foo.rb` and opens it in your `EDITOR`.
+
 Passing in `--ruby` or `--python` will populate various defaults commonly useful for projects written in those languages.
-
-This creates `$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/f/foo.rb` and opens it in your `EDITOR`. If run without any options to customize the output for specific build systems (check `brew create --help` to see which are available) it'll look something like:
-
-```ruby
-class Foo < Formula
-  desc "Fill in a one-line description of your formula"
-  homepage "https://your.homepage/"
-  url "https://example.com/foo-0.1.tar.gz"
-  sha256 "85cc828a96735bdafcf29eb6291ca91bac846579bcef7308536e0c875d6c81d7"
-  license "Fill in a license identifier"
-
-  # depends_on "cmake" => :build
-
-  def install
-    # ENV.deparallelize
-    system "./configure", *std_configure_args, "--disable-silent-rules"
-    # system "cmake", "-S", ".", "-B", "build", *std_cmake_args
-    system "make", "install"
-  end
-
-  test do
-    system "false"
-  end
-end
-```
 
 If `brew` said `Warning: Version cannot be determined from URL` when doing the `create` step, you’ll need to explicitly add the correct [`version`](https://rubydoc.brew.sh/Formula#version-class_method) to the formula and then save the formula.
 
