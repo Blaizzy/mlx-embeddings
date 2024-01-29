@@ -28,8 +28,6 @@
       "uninstall": [
         {
           "launchctl": "com.every.thing.agent",
-          "delete": "/Library/EverythingHelperTools",
-          "kext": "com.every.thing.driver",
           "signal": [
             [
               "TERM",
@@ -39,7 +37,9 @@
               "TERM",
               "com.every.thing.bin"
             ]
-          ]
+          ],
+          "kext": "com.every.thing.driver",
+          "delete": "/Library/EverythingHelperTools"
         }
       ]
     },
@@ -101,6 +101,6 @@
   ],
   "ruby_source_path": "Casks/everything.rb",
   "ruby_source_checksum": {
-    "sha256": "0c4af571cce1632fc6a3dcf3e75ba82a3283077ef12399428192c26f9d6f779b"
+    "sha256": "d8d0d6b2e5ff65388eccb82236fd3aa157b4a29bb043a1f72b97f0e9b70e8320"
   }
 }

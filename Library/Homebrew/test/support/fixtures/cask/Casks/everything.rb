@@ -32,12 +32,12 @@ cask "everything" do
   }
 
   uninstall launchctl: "com.every.thing.agent",
-            delete:    "/Library/EverythingHelperTools",
-            kext:      "com.every.thing.driver",
             signal:    [
               ["TERM", "com.every.thing.controller#{version.major}"],
               ["TERM", "com.every.thing.bin"],
-            ]
+            ],
+            kext:      "com.every.thing.driver",
+            delete:    "/Library/EverythingHelperTools"
 
   zap trash: [
     "~/.everything",
