@@ -116,7 +116,14 @@ module Utils
           tab_json = bottle_hash[formula.full_name]["bottle"]["tags"][tag]["tab"].to_json
           Tab.from_file_content(tab_json, tabfile)
         else
-          Tab.for_keg(keg)
+          tab = Tab.for_keg(keg)
+
+          if tab.runtime_dependencies.nil?
+            f_runtime_deps = formula.runtime_dependencies(read_from_tab: false)
+            tab.runtime_dependencies = Tab.runtime_deps_hash(formula, f_runtime_deps)
+          end
+
+          tab
         end
       end
 
