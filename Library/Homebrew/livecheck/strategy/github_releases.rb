@@ -105,7 +105,7 @@ module Homebrew
           end
 
           content = [content] unless content.is_a?(Array)
-          content.reject(&:blank?).map do |release|
+          content.compact_blank.map do |release|
             next if release["draft"] || release["prerelease"]
 
             value = T.let(nil, T.untyped)

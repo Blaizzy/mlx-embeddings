@@ -5339,24 +5339,19 @@ RuboCop::Cop::EndKeywordAlignment::MSG = T.let(T.unsafe(nil), String)
 module RuboCop::Cop::EnforceSuperclass
   # @api private
   #
-  # source://rubocop-rails/2.23.1/lib/rubocop/cop/mixin/enforce_superclass.rb#19
+  # source://rubocop//lib/rubocop/cop/mixin/enforce_superclass.rb#35
   def on_class(node); end
 
   # @api private
   #
-  # source://rubocop-rails/2.23.1/lib/rubocop/cop/mixin/enforce_superclass.rb#25
+  # source://rubocop//lib/rubocop/cop/mixin/enforce_superclass.rb#39
   def on_send(node); end
-
-  private
-
-  # source://rubocop-rails/2.23.1/lib/rubocop/cop/mixin/enforce_superclass.rb#33
-  def register_offense(offense_node); end
 
   class << self
     # @api private
     # @private
     #
-    # source://rubocop-rails/2.23.1/lib/rubocop/cop/mixin/enforce_superclass.rb#7
+    # source://rubocop//lib/rubocop/cop/mixin/enforce_superclass.rb#16
     def included(base); end
   end
 end
@@ -38899,7 +38894,7 @@ class RuboCop::Cop::Style::InverseMethods < ::RuboCop::Cop::Base
   def remove_end_parenthesis(corrector, node, method, method_call); end
 
   class << self
-    # source://rubocop-rails/2.23.1/lib/rubocop-rails.rb#22
+    # source://rubocop//lib/rubocop/cop/style/inverse_methods.rb#56
     def autocorrect_incompatible_with; end
   end
 end
@@ -39940,7 +39935,7 @@ class RuboCop::Cop::Style::MethodCallWithArgsParentheses < ::RuboCop::Cop::Base
   def args_parenthesized?(node); end
 
   class << self
-    # source://rubocop-rails/2.23.1/lib/rubocop-rails.rb#30
+    # source://rubocop//lib/rubocop/cop/style/method_call_with_args_parentheses.rb#213
     def autocorrect_incompatible_with; end
   end
 end
@@ -46496,7 +46491,7 @@ class RuboCop::Cop::Style::RedundantSelf < ::RuboCop::Cop::Base
   def regular_method_call?(node); end
 
   class << self
-    # source://rubocop-rails/2.23.1/lib/rubocop-rails.rb#38
+    # source://rubocop//lib/rubocop/cop/style/redundant_self.rb#56
     def autocorrect_incompatible_with; end
   end
 end
@@ -55094,10 +55089,10 @@ RuboCop::Formatter::PacmanFormatter::FALLBACK_TERMINAL_WIDTH = T.let(T.unsafe(ni
 RuboCop::Formatter::PacmanFormatter::GHOST = T.let(T.unsafe(nil), String)
 
 # source://rubocop//lib/rubocop/formatter/pacman_formatter.rb#17
-RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::NullPresenter)
+RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::Presenter)
 
 # source://rubocop//lib/rubocop/formatter/pacman_formatter.rb#16
-RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::NullPresenter)
+RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::Presenter)
 
 # This formatter display dots for files with no offenses and
 # letters for files with problems in the them. In the end it
@@ -57374,4 +57369,18 @@ end
 # source://rubocop//lib/rubocop/core_ext/string.rb#4
 class String
   include ::Comparable
+
+  # Checks whether a string is blank. A string is considered blank if it
+  # is either empty or contains only whitespace characters.
+  #
+  # @example
+  #   ''.blank? #=> true
+  # @example
+  #   '    '.blank? #=> true
+  # @example
+  #   '  test'.blank? #=> false
+  # @return [Boolean] true is the string is blank, false otherwise
+  #
+  # source://rubocop//lib/rubocop/core_ext/string.rb#19
+  def blank?; end
 end

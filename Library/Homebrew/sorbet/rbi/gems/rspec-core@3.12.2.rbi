@@ -6270,12 +6270,6 @@ module RSpec::Core::HashImitatable
   def deconstruct_keys(*args, &block); end
 
   # source://rspec-core//lib/rspec/core/metadata.rb#367
-  def deep_merge(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/metadata.rb#367
-  def deep_merge!(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/metadata.rb#367
   def default(*args, &block); end
 
   # source://rspec-core//lib/rspec/core/metadata.rb#367
@@ -6340,12 +6334,6 @@ module RSpec::Core::HashImitatable
 
   # source://rspec-core//lib/rspec/core/metadata.rb#367
   def except(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/metadata.rb#367
-  def except!(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/metadata.rb#367
-  def extract!(*args, &block); end
 
   # source://rspec-core//lib/rspec/core/metadata.rb#367
   def fetch(*args, &block); end
@@ -6496,9 +6484,6 @@ module RSpec::Core::HashImitatable
 
   # source://rspec-core//lib/rspec/core/metadata.rb#367
   def slice(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/metadata.rb#367
-  def slice!(*args, &block); end
 
   # source://rspec-core//lib/rspec/core/metadata.rb#367
   def slice_after(*args, &block); end
@@ -9336,15 +9321,6 @@ class RSpec::Core::OutputWrapper
 
   # source://rspec-core//lib/rspec/core/output_wrapper.rb#23
   def noecho(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/output_wrapper.rb#23
-  def nonblock(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/output_wrapper.rb#23
-  def nonblock=(*args, &block); end
-
-  # source://rspec-core//lib/rspec/core/output_wrapper.rb#23
-  def nonblock?(*args, &block); end
 
   # source://rspec-core//lib/rspec/core/output_wrapper.rb#23
   def nread(*args, &block); end

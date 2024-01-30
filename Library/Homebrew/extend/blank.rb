@@ -19,9 +19,7 @@ class Object
 
   # An object is present if it's not blank.
   sig { returns(T::Boolean) }
-  def present?
-    !blank?
-  end
+  def present? = !blank?
 
   # Returns the receiver if it's present otherwise returns +nil+.
   # <tt>object.presence</tt> is equivalent to
@@ -48,14 +46,10 @@ class NilClass
   #
   #   nil.blank? # => true
   sig { returns(TrueClass) }
-  def blank?
-    true
-  end
+  def blank? = true
 
   sig { returns(FalseClass) }
-  def present? # :nodoc:
-    false
-  end
+  def present? = false # :nodoc:
 end
 
 class FalseClass
@@ -63,14 +57,10 @@ class FalseClass
   #
   #   false.blank? # => true
   sig { returns(TrueClass) }
-  def blank?
-    true
-  end
+  def blank? = true
 
   sig { returns(FalseClass) }
-  def present? # :nodoc:
-    false
-  end
+  def present? = false # :nodoc:
 end
 
 class TrueClass
@@ -78,14 +68,10 @@ class TrueClass
   #
   #   true.blank? # => false
   sig { returns(FalseClass) }
-  def blank?
-    false
-  end
+  def blank? = false
 
   sig { returns(TrueClass) }
-  def present? # :nodoc:
-    true
-  end
+  def present? = true # :nodoc:
 end
 
 class Array
@@ -98,9 +84,7 @@ class Array
   alias blank? empty?
 
   sig { returns(T::Boolean) }
-  def present? # :nodoc:
-    !empty?
-  end
+  def present? = !empty? # :nodoc:
 end
 
 class Hash
@@ -113,9 +97,7 @@ class Hash
   alias blank? empty?
 
   sig { returns(T::Boolean) }
-  def present? # :nodoc:
-    !empty?
-  end
+  def present? = !empty? # :nodoc:
 end
 
 class Symbol
@@ -126,9 +108,7 @@ class Symbol
   alias blank? empty?
 
   sig { returns(T::Boolean) }
-  def present? # :nodoc:
-    !empty?
-  end
+  def present? = !empty? # :nodoc:
 end
 
 class String
@@ -164,9 +144,7 @@ class String
   end
 
   sig { returns(T::Boolean) }
-  def present? # :nodoc:
-    !blank?
-  end
+  def present? = !blank? # :nodoc:
 end
 
 class Numeric # :nodoc:
@@ -175,14 +153,10 @@ class Numeric # :nodoc:
   #   1.blank? # => false
   #   0.blank? # => false
   sig { returns(FalseClass) }
-  def blank?
-    false
-  end
+  def blank? = false
 
   sig { returns(TrueClass) }
-  def present?
-    true
-  end
+  def present? = true
 end
 
 class Time # :nodoc:
@@ -190,12 +164,8 @@ class Time # :nodoc:
   #
   #   Time.now.blank? # => false
   sig { returns(FalseClass) }
-  def blank?
-    false
-  end
+  def blank? = false
 
   sig { returns(TrueClass) }
-  def present?
-    true
-  end
+  def present? = true
 end

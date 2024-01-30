@@ -1743,8 +1743,6 @@ end
 #
 # source://hpricot//lib/hpricot/blankslate.rb#37
 module Kernel
-  include ::ActiveSupport::ForkTracker::CoreExt
-
   class << self
     # Detect method additions to Kernel and remove them in the
     # BlankSlate class.
@@ -1756,7 +1754,6 @@ end
 
 # source://hpricot//lib/hpricot/blankslate.rb#51
 class Object < ::BasicObject
-  include ::ActiveSupport::ForkTracker::CoreExt
   include ::Kernel
   include ::PP::ObjectMixin
 

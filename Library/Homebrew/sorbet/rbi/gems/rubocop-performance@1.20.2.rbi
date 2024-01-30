@@ -13,28 +13,28 @@ module RuboCop::Cop; end
 module RuboCop::Cop::Lint; end
 
 class RuboCop::Cop::Lint::UnusedMethodArgument < ::RuboCop::Cop::Base
-  # source://rubocop/1.59.0/lib/rubocop/cop/lint/unused_method_argument.rb#66
+  # source://rubocop/1.60.2/lib/rubocop/cop/lint/unused_method_argument.rb#66
   def not_implemented?(param0 = T.unsafe(nil)); end
 
   private
 
-  # source://rubocop/1.59.0/lib/rubocop/cop/lint/unused_method_argument.rb#81
+  # source://rubocop/1.60.2/lib/rubocop/cop/lint/unused_method_argument.rb#81
   def autocorrect(corrector, node); end
 
-  # source://rubocop/1.59.0/lib/rubocop/cop/lint/unused_method_argument.rb#85
+  # source://rubocop/1.60.2/lib/rubocop/cop/lint/unused_method_argument.rb#85
   def check_argument(variable); end
 
-  # source://rubocop/1.59.0/lib/rubocop/cop/lint/unused_method_argument.rb#93
+  # source://rubocop/1.60.2/lib/rubocop/cop/lint/unused_method_argument.rb#93
   def ignored_method?(body); end
 
-  # source://rubocop/1.59.0/lib/rubocop/cop/lint/unused_method_argument.rb#98
+  # source://rubocop/1.60.2/lib/rubocop/cop/lint/unused_method_argument.rb#98
   def message(variable); end
 
   class << self
     # source://rubocop-performance//lib/rubocop-performance.rb#15
     def autocorrect_incompatible_with; end
 
-    # source://rubocop/1.59.0/lib/rubocop/cop/lint/unused_method_argument.rb#75
+    # source://rubocop/1.60.2/lib/rubocop/cop/lint/unused_method_argument.rb#75
     def joining_forces; end
   end
 end

@@ -5,15 +5,7 @@
 # Please instead update this file by running `bin/tapioca gem ruby-prof`.
 
 # source://ruby-prof//lib/ruby-prof/rack.rb#4
-module Rack
-  class << self
-    # source://rack/3.0.8/lib/rack/version.rb#31
-    def release; end
-
-    # source://rack/3.0.8/lib/rack/version.rb#23
-    def version; end
-  end
-end
+module Rack; end
 
 # source://ruby-prof//lib/ruby-prof/rack.rb#5
 class Rack::RubyProf

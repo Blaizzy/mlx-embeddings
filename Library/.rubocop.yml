@@ -2,7 +2,6 @@
 require:
   - ./Homebrew/rubocops.rb
   - rubocop-performance
-  - rubocop-rails
   - rubocop-rspec
   - rubocop-sorbet
 
@@ -13,7 +12,6 @@ inherit_mode:
 
 AllCops:
   TargetRubyVersion: 3.1
-  ActiveSupportExtensionsEnabled: true
   NewCops: enable
   Include:
     - "**/*.rbi"
@@ -51,9 +49,25 @@ FormulaAuditStrict:
 Homebrew:
   Enabled: true
 
+Homebrew/Blank:
+  Exclude:
+    # Core extensions are not available here:
+    - "Homebrew/startup/bootsnap.rb"
+
+Homebrew/CompactBlank:
+  Exclude:
+    # `blank?` is not necessarily available here:
+    - "Homebrew/extend/enumerable.rb"
+
 # only used internally
 Homebrew/MoveToExtendOS:
   Enabled: false
+
+Homebrew/NegateInclude:
+  Exclude:
+    # `exclude?` is not available here:
+    - "Homebrew/standalone/init.rb"
+    - "Homebrew/rubocops/**/*"
 
 # `system` is a special case and aligns on second argument, so allow this for formulae.
 Layout/ArgumentAlignment:
@@ -200,32 +214,6 @@ Performance/CaseWhenSplat:
 Performance/MethodObjectAsBlock:
   Enabled: false
 
-Rails:
-  # Selectively enable what we want.
-  Enabled: false
-  Exclude:
-    # This file is loaded before any extra methods are defined.
-    - "Homebrew/standalone/init.rb"
-    # Do not use ActiveSupport in RuboCops.
-    - "Homebrew/rubocops/**/*"
-
-# These relate to ActiveSupport and not other parts of Rails.
-Rails/Blank:
-  Enabled: true
-Rails/CompactBlank:
-  Enabled: true
-Rails/NegateInclude:
-  Enabled: true
-Rails/Presence:
-  Enabled: true
-Rails/Present:
-  Enabled: true
-  Exclude:
-    # `present?` is defined as `!blank?` wihin this file
-    - "Homebrew/extend/blank.rb"
-Rails/SafeNavigationWithBlank:
-  Enabled: true
-
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
   Enabled: false
@@ -355,6 +343,10 @@ Style/HashAsLastArrayItem:
     - "/**/Formula/**/*.rb"
     - "**/Formula/**/*.rb"
 
+Style/InverseMethods:
+  InverseMethods:
+    :blank?: :present?
+
 Style/InvertibleUnlessCondition:
   Enabled: true
   InverseMethods:
@@ -362,8 +354,7 @@ Style/InvertibleUnlessCondition:
     :==: :!=
     # Unset this (prefer `unless a.zero?` over `if a.nonzero?`)
     :zero?:
-    # Don't require non-standard `exclude?` (for now at least) - it's not available in every file
-    :include?:
+    :blank?: :present?
 
 Style/MutableConstant:
   # would rather freeze too much than too little
