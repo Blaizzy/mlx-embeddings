@@ -17,11 +17,9 @@ require "vendor/gems/mechanize/lib/mechanize/http/content_disposition_parser"
 
 require "utils/curl"
 require "utils/github"
+require "utils/timer"
 
 require "github_packages"
-
-require "extend/time"
-using TimeRemaining
 
 # @abstract Abstract superclass for all download strategies.
 #
@@ -427,7 +425,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       use_cached_location = false if version.respond_to?(:latest?) && version.latest?
 
       resolved_url, _, last_modified, _, is_redirection = begin
-        resolve_url_basename_time_file_size(url, timeout: end_time&.remaining!)
+        resolve_url_basename_time_file_size(url, timeout: Utils::Timer.remaining!(end_time))
       rescue ErrorDuringExecution
         raise unless use_cached_location
       end
@@ -442,7 +440,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
         puts "Already downloaded: #{cached_location}"
       else
         begin
-          _fetch(url: url, resolved_url: resolved_url, timeout: end_time&.remaining!)
+          _fetch(url: url, resolved_url: resolved_url, timeout: Utils::Timer.remaining!(end_time))
         rescue ErrorDuringExecution
           raise CurlDownloadStrategyError, url
         end
@@ -802,9 +800,9 @@ class SubversionDownloadStrategy < VCSDownloadStrategy
     args.concat Utils::Svn.invalid_cert_flags if meta[:trust_cert] == true
 
     if target.directory?
-      command! "svn", args: ["update", *args], chdir: target.to_s, timeout: timeout&.remaining
+      command! "svn", args: ["update", *args], chdir: target.to_s, timeout: Utils::Timer.remaining(timeout)
     else
-      command! "svn", args: ["checkout", url, target, *args], timeout: timeout&.remaining
+      command! "svn", args: ["checkout", url, target, *args], timeout: Utils::Timer.remaining(timeout)
     end
   end
 
@@ -998,23 +996,23 @@ class GitDownloadStrategy < VCSDownloadStrategy
       command! "git",
                args:    ["fetch", "origin", "--unshallow"],
                chdir:   cached_location,
-               timeout: timeout&.remaining
+               timeout: Utils::Timer.remaining(timeout)
     else
       command! "git",
                args:    ["fetch", "origin"],
                chdir:   cached_location,
-               timeout: timeout&.remaining
+               timeout: Utils::Timer.remaining(timeout)
     end
   end
 
   sig { params(timeout: T.nilable(Time)).void }
   def clone_repo(timeout: nil)
-    command! "git", args: clone_args, timeout: timeout&.remaining
+    command! "git", args: clone_args, timeout: Utils::Timer.remaining(timeout)
 
     command! "git",
              args:    ["config", "homebrew.cacheversion", cache_version],
              chdir:   cached_location,
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
 
     configure_sparse_checkout if partial_clone_sparse_checkout?
 
@@ -1025,7 +1023,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
   sig { params(timeout: T.nilable(Time)).void }
   def checkout(timeout: nil)
     ohai "Checking out #{@ref_type} #{@ref}" if @ref_type && @ref
-    command! "git", args: ["checkout", "-f", @ref, "--"], chdir: cached_location, timeout: timeout&.remaining
+    command! "git", args: ["checkout", "-f", @ref, "--"], chdir: cached_location,
+                    timeout: Utils::Timer.remaining(timeout)
   end
 
   sig { void }
@@ -1047,11 +1046,11 @@ class GitDownloadStrategy < VCSDownloadStrategy
     command! "git",
              args:    ["submodule", "foreach", "--recursive", "git submodule sync"],
              chdir:   cached_location,
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
     command! "git",
              args:    ["submodule", "update", "--init", "--recursive"],
              chdir:   cached_location,
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
     fix_absolute_submodule_gitdir_references!
   end
 
@@ -1214,12 +1213,15 @@ class CVSDownloadStrategy < VCSDownloadStrategy
   sig { params(timeout: T.nilable(Time)).void }
   def clone_repo(timeout: nil)
     # Login is only needed (and allowed) with pserver; skip for anoncvs.
-    command! "cvs", args: [*quiet_flag, "-d", @url, "login"], timeout: timeout&.remaining if @url.include? "pserver"
+    if @url.include? "pserver"
+      command! "cvs", args:    [*quiet_flag, "-d", @url, "login"],
+                      timeout: Utils::Timer.remaining(timeout)
+    end
 
     command! "cvs",
              args:    [*quiet_flag, "-d", @url, "checkout", "-d", cached_location.basename, @module],
              chdir:   cached_location.dirname,
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
   end
 
   sig { params(timeout: T.nilable(Time)).void }
@@ -1227,7 +1229,7 @@ class CVSDownloadStrategy < VCSDownloadStrategy
     command! "cvs",
              args:    [*quiet_flag, "update"],
              chdir:   cached_location,
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
   end
 
   def split_url(in_url)
@@ -1292,7 +1294,7 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
     end
 
     clone_args << @url << cached_location.to_s
-    command! "hg", args: clone_args, timeout: timeout&.remaining
+    command! "hg", args: clone_args, timeout: Utils::Timer.remaining(timeout)
   end
 
   sig { params(timeout: T.nilable(Time)).void }
@@ -1306,7 +1308,7 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
       pull_args << "--rev" << @ref
     end
 
-    command! "hg", args: ["--cwd", cached_location, *pull_args], timeout: timeout&.remaining
+    command! "hg", args: ["--cwd", cached_location, *pull_args], timeout: Utils::Timer.remaining(timeout)
 
     update_args = %w[update --clean]
     update_args << if @ref_type && @ref
@@ -1316,7 +1318,7 @@ class MercurialDownloadStrategy < VCSDownloadStrategy
       "default"
     end
 
-    command! "hg", args: ["--cwd", cached_location, *update_args], timeout: timeout&.remaining
+    command! "hg", args: ["--cwd", cached_location, *update_args], timeout: Utils::Timer.remaining(timeout)
   end
 
   def current_revision
@@ -1376,7 +1378,7 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
     # "lightweight" means history-less
     command! "bzr",
              args:    ["checkout", "--lightweight", @url, cached_location],
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
   end
 
   sig { params(timeout: T.nilable(Time)).void }
@@ -1384,7 +1386,7 @@ class BazaarDownloadStrategy < VCSDownloadStrategy
     command! "bzr",
              args:    ["update"],
              chdir:   cached_location,
-             timeout: timeout&.remaining
+             timeout: Utils::Timer.remaining(timeout)
   end
 end
 
@@ -1430,12 +1432,12 @@ class FossilDownloadStrategy < VCSDownloadStrategy
 
   sig { params(timeout: T.nilable(Time)).void }
   def clone_repo(timeout: nil)
-    command! "fossil", args: ["clone", @url, cached_location], timeout: timeout&.remaining
+    command! "fossil", args: ["clone", @url, cached_location], timeout: Utils::Timer.remaining(timeout)
   end
 
   sig { params(timeout: T.nilable(Time)).void }
   def update(timeout: nil)
-    command! "fossil", args: ["pull", "-R", cached_location], timeout: timeout&.remaining
+    command! "fossil", args: ["pull", "-R", cached_location], timeout: Utils::Timer.remaining(timeout)
   end
 end
 

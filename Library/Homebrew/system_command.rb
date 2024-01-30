@@ -7,14 +7,12 @@ require "plist"
 require "shellwords"
 
 require "extend/io"
-require "extend/time"
+require "utils/timer"
 
 # Class for running sub-processes and capturing their output and exit status.
 #
 # @api private
 class SystemCommand
-  using TimeRemaining
-
   # Helper functions for calling {SystemCommand.run}.
   module Mixin
     def system_command(executable, **options)
@@ -259,7 +257,7 @@ class SystemCommand
     end
 
     end_time = Time.now + @timeout if @timeout
-    raise Timeout::Error if raw_wait_thr.join(end_time&.remaining).nil?
+    raise Timeout::Error if raw_wait_thr.join(Utils::Timer.remaining(end_time)).nil?
 
     @status = raw_wait_thr.value
 
