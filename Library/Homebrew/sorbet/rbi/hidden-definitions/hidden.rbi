@@ -10225,6 +10225,11 @@ module Utils::Svn
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
+module Utils::Timer
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
 module Utils
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
