@@ -118,9 +118,9 @@ module Utils
         else
           tab = Tab.for_keg(keg)
 
-          if tab.runtime_dependencies.nil?
+          tab.runtime_dependencies = begin
             f_runtime_deps = formula.runtime_dependencies(read_from_tab: false)
-            tab.runtime_dependencies = Tab.runtime_deps_hash(formula, f_runtime_deps)
+            Tab.runtime_deps_hash(formula, f_runtime_deps)
           end
 
           tab
