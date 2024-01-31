@@ -32,7 +32,7 @@ homebrew-shellenv() {
       echo "set -gx HOMEBREW_PREFIX \"${HOMEBREW_PREFIX}\";"
       echo "set -gx HOMEBREW_CELLAR \"${HOMEBREW_CELLAR}\";"
       echo "set -gx HOMEBREW_REPOSITORY \"${HOMEBREW_REPOSITORY}\";"
-      echo "! set -q PATH; and set PATH ''; fish_add_path -g \"${HOMEBREW_PREFIX}/bin\" \"${HOMEBREW_PREFIX}/sbin\";"
+      echo "! set -q PATH; and set PATH ''; fish_add_path -gP \"${HOMEBREW_PREFIX}/bin\" \"${HOMEBREW_PREFIX}/sbin\";"
       echo "! set -q MANPATH; and set MANPATH ''; set -gx MANPATH \"${HOMEBREW_PREFIX}/share/man\" \$MANPATH;"
       echo "! set -q INFOPATH; and set INFOPATH ''; set -gx INFOPATH \"${HOMEBREW_PREFIX}/share/info\" \$INFOPATH;"
       ;;
