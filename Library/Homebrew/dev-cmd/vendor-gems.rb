@@ -61,6 +61,9 @@ module Homebrew
         %w[
           mechanize
         ].each do |gem|
+          (HOMEBREW_LIBRARY_PATH/"vendor/gems").cd do
+            Pathname.glob("#{gem}-*/").each { |path| FileUtils.rm_r(path) }
+          end
           ohai "gem install #{gem}"
           safe_system "gem", "install", gem, "--install-dir", "vendor",
                       "--no-document", "--no-wrappers", "--ignore-dependencies", "--force"
