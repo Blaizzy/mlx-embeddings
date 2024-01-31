@@ -5,12 +5,14 @@ require "utils/curl"
 require "json"
 require "zlib"
 require "extend/hash/keys"
+require "system_command"
 
 # GitHub Packages client.
 #
 # @api private
 class GitHubPackages
   include Context
+  include SystemCommand::Mixin
 
   URL_DOMAIN = "ghcr.io"
   URL_PREFIX = "https://#{URL_DOMAIN}/v2/".freeze

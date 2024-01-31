@@ -9,6 +9,8 @@ module Utils
   # @api private
   module Tar
     class << self
+      include SystemCommand::Mixin
+
       TAR_FILE_EXTENSIONS = %w[.tar .tb2 .tbz .tbz2 .tgz .tlz .txz .tZ].freeze
 
       def available?

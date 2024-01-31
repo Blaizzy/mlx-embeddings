@@ -3,12 +3,15 @@
 
 require "development_tools"
 require "cask/exceptions"
+require "system_command"
 
 module Cask
   # Helper module for quarantining files.
   #
   # @api private
   module Quarantine
+    extend SystemCommand::Mixin
+
     QUARANTINE_ATTRIBUTE = "com.apple.quarantine"
 
     QUARANTINE_SCRIPT = (HOMEBREW_LIBRARY_PATH/"cask/utils/quarantine.swift").freeze

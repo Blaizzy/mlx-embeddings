@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "system_command"
+
 describe SystemCommand do
   describe "#initialize" do
     subject(:command) do
@@ -284,7 +286,7 @@ describe SystemCommand do
 
     it 'does not format `stderr` when it starts with \r' do
       expect do
-        system_command \
+        Class.new.extend(SystemCommand::Mixin).system_command \
           "bash",
           args: [
             "-c",
@@ -308,7 +310,7 @@ describe SystemCommand do
       end
 
       it "does not interpret the executable as a shell line" do
-        expect(system_command(executable)).to be_a_success
+        expect(Class.new.extend(SystemCommand::Mixin).system_command(executable)).to be_a_success
       end
     end
 

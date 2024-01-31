@@ -4,12 +4,16 @@
 require "open3"
 
 require "utils/timer"
+require "system_command"
 
 module Utils
   # Helper function for interacting with `curl`.
   #
   # @api private
   module Curl
+    include SystemCommand::Mixin
+    extend SystemCommand::Mixin
+
     # This regex is used to extract the part of an ETag within quotation marks,
     # ignoring any leading weak validator indicator (`W/`). This simplifies
     # ETag comparison in `#curl_check_http_content`.

@@ -11,6 +11,7 @@ require "utils/shell"
 require "system_config"
 require "cask/caskroom"
 require "cask/quarantine"
+require "system_command"
 
 module Homebrew
   # Module containing diagnostic checks.
@@ -48,6 +49,8 @@ module Homebrew
 
     # Diagnostic checks.
     class Checks
+      include SystemCommand::Mixin
+
       def initialize(verbose: true)
         @verbose = verbose
       end

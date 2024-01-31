@@ -17,6 +17,7 @@ module Cask
   #
   # @api private
   class Audit
+    include SystemCommand::Mixin
     include ::Utils::Curl
     extend Attrable
 

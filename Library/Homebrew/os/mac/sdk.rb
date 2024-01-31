@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "system_command"
+
 module OS
   module Mac
     # Class representing a macOS SDK.
@@ -32,6 +34,7 @@ module OS
     # @api private
     class BaseSDKLocator
       extend T::Helpers
+      include SystemCommand::Mixin
 
       abstract!
 
