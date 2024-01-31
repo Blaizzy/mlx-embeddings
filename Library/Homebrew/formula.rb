@@ -2243,8 +2243,7 @@ class Formula
       "conflicts_with"         => conflicts.map(&:name),
       "conflicts_with_reasons" => conflicts.map(&:reason),
       "link_overwrite"         => self.class.link_overwrite_paths.to_a,
-      "caveats"                => caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
-                                         &.gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER),
+      "caveats"                => caveats_with_placeholders,
       "installed"              => [],
       "linked_keg"             => linked_version&.to_s,
       "pinned"                 => pinned?,
@@ -2300,7 +2299,7 @@ class Formula
       "urls"                 => urls_hash.transform_values(&:compact),
       "post_install_defined" => post_install_defined?,
       "ruby_source_path"     => ruby_source_path,
-      "ruby_source_checksum" => { "sha256" => ruby_source_checksum&.hexdigest },
+      "ruby_source_sha256"   => ruby_source_checksum&.hexdigest,
     }
 
     dep_hash = dependencies_hash
@@ -2314,13 +2313,16 @@ class Formula
     api_hash["revision"] = revision unless revision.zero?
     api_hash["version_scheme"] = version_scheme unless version_scheme.zero?
 
-    api_hash["key_only_reason"] = keg_only_reason.to_hash if keg_only_reason
+    # Optional values.
+    api_hash["keg_only_reason"] = keg_only_reason.to_hash if keg_only_reason
     api_hash["pour_bottle_only_if"] = self.class.pour_bottle_only_if.to_s if self.class.pour_bottle_only_if
     api_hash["link_overwrite"] = self.class.link_overwrite_paths.to_a if self.class.link_overwrite_paths.present?
+    api_hash["caveats"] = caveats_with_placeholders if caveats
+    api_hash["service"] = service.serialize if service?
 
     if stable
-      api_hash["versions"] = { "stable" => stable&.version&.to_s }
-      api_hash["bottle"] = { "stable" => bottle_hash(compact_for_api: true) } if bottle_defined?
+      api_hash["version"] = stable&.version&.to_s
+      api_hash["bottle"] = bottle_hash(compact_for_api: true) if bottle_defined?
     end
 
     if (versioned_formulae_list = versioned_formulae.presence)
@@ -2339,20 +2341,13 @@ class Formula
 
     if deprecation_date
       api_hash["deprecation_date"] = deprecation_date
-      api_hash["deprecation_reason"] = deprecation_reason # this might need to be checked too
+      api_hash["deprecation_reason"] = deprecation_reason
     end
 
     if disable_date
       api_hash["disable_date"] = disable_date
-      api_hash["disable_reason"] = disable_reason # this might need to be checked too
+      api_hash["disable_reason"] = disable_reason
     end
-
-    if (caveats_string = caveats)
-      api_hash["caveats"] = caveats_string.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
-                                          .gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER)
-    end
-
-    api_hash["service"] = service.serialize if service?
 
     api_hash
   end
@@ -2490,6 +2485,12 @@ class Formula
         "specs"    => data[:specs],
       }
     end
+  end
+
+  # @private
+  def caveats_with_placeholders
+    caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
+           &.gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER)
   end
 
   # @private
