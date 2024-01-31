@@ -738,7 +738,7 @@ describe Formula do
         url "https://brew.sh/test-1.0.tbz"
       end
 
-      expect(f.service.serialize).to eq({})
+      expect(f.service.to_hash).to eq({})
     end
 
     specify "service complicated" do
@@ -754,7 +754,7 @@ describe Formula do
           keep_alive true
         end
       end
-      expect(f.service.serialize.keys)
+      expect(f.service.to_hash.keys)
         .to contain_exactly(:run, :run_type, :error_log_path, :log_path, :working_dir, :keep_alive)
     end
 
@@ -766,7 +766,7 @@ describe Formula do
         end
       end
 
-      expect(f.service.serialize.keys).to contain_exactly(:run, :run_type)
+      expect(f.service.to_hash.keys).to contain_exactly(:run, :run_type)
     end
 
     specify "service with only custom names" do
@@ -779,7 +779,7 @@ describe Formula do
 
       expect(f.plist_name).to eq("custom.macos.beanstalkd")
       expect(f.service_name).to eq("custom.linux.beanstalkd")
-      expect(f.service.serialize.keys).to contain_exactly(:name)
+      expect(f.service.to_hash.keys).to contain_exactly(:name)
     end
 
     specify "service helpers return data" do

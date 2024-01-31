@@ -515,7 +515,7 @@ module Homebrew
 
     # Prepare the service hash for inclusion in the formula API JSON.
     sig { returns(Hash) }
-    def serialize
+    def to_hash
       name_params = {
         macos: (plist_name if plist_name != default_plist_name),
         linux: (service_name if service_name != default_service_name),
@@ -568,7 +568,7 @@ module Homebrew
 
     # Turn the service API hash values back into what is expected by the formula DSL.
     sig { params(api_hash: Hash).returns(Hash) }
-    def self.deserialize(api_hash)
+    def self.from_hash(api_hash)
       hash = {}
       hash[:name] = api_hash["name"].transform_keys(&:to_sym) if api_hash.key?("name")
 

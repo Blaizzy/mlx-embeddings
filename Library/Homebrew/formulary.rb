@@ -341,7 +341,7 @@ module Formulary
       end
 
       if (service_hash = json_formula["service"].presence)
-        service_hash = Homebrew::Service.deserialize(service_hash)
+        service_hash = Homebrew::Service.from_hash(service_hash)
         service do
           T.bind(self, Homebrew::Service)
 

@@ -2255,7 +2255,7 @@ class Formula
       "disable_date"           => disable_date,
       "disable_reason"         => disable_reason,
       "post_install_defined"   => post_install_defined?,
-      "service"                => (service.serialize if service?),
+      "service"                => (service.to_hash if service?),
       "tap_git_head"           => tap_git_head,
       "ruby_source_path"       => ruby_source_path,
       "ruby_source_checksum"   => {},
@@ -2318,7 +2318,7 @@ class Formula
     api_hash["pour_bottle_only_if"] = self.class.pour_bottle_only_if.to_s if self.class.pour_bottle_only_if
     api_hash["link_overwrite"] = self.class.link_overwrite_paths.to_a if self.class.link_overwrite_paths.present?
     api_hash["caveats"] = caveats_with_placeholders if caveats
-    api_hash["service"] = service.serialize if service?
+    api_hash["service"] = service.to_hash if service?
 
     if stable
       api_hash["version"] = stable&.version&.to_s
