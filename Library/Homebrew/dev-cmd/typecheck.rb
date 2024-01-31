@@ -45,6 +45,7 @@ module Homebrew
 
     HOMEBREW_LIBRARY_PATH.cd do
       if update
+        safe_system "bundle", "exec", "tapioca", "dsl"
         excluded_gems = [
           "json", # RBI file is already provided by Sorbet
         ]

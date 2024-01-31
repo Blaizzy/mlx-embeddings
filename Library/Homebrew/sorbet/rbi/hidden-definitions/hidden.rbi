@@ -5035,6 +5035,14 @@ end
 module Homebrew
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
+  extend ::FileUtils::StreamUtils_
+end
+
+module HostEnvironmentSimulatorHelper
+  def in_its_own_process_with(*files); end
+end
+
+module HostEnvironmentSimulatorHelper
 end
 
 class IO
@@ -8431,26 +8439,6 @@ module RuboCop::AST::CollectionNode
   def to_sentence(*args, **arg, &block); end
 end
 
-class RuboCop::AST::Node
-  def arch_variable?(param0=T.unsafe(nil)); end
-
-  def begin_block?(param0=T.unsafe(nil)); end
-
-  def block_args(param0=T.unsafe(nil)); end
-
-  def block_body(param0=T.unsafe(nil)); end
-
-  def cask_block?(param0=T.unsafe(nil)); end
-
-  def key_node(param0=T.unsafe(nil)); end
-
-  def method_node(param0=T.unsafe(nil)); end
-
-  def on_system_block?(param0=T.unsafe(nil)); end
-
-  def val_node(param0=T.unsafe(nil)); end
-end
-
 module RuboCop::AST::NodePattern::Sets
   SET_ARM_INTEL = ::T.let(nil, ::T.untyped)
   SET_BASH_COMPLETION_ZSH_COMPLETION_FISH_COMPLETION = ::T.let(nil, ::T.untyped)
@@ -8637,7 +8625,12 @@ end
 
 class RuboCop::Cop::Cask::Variables
   include ::RuboCop::Cop::CommentsHelp
-  def variable_assignment(param0); end
+end
+
+class RuboCop::Cop::Cop
+  def highlights(); end
+
+  def messages(); end
 end
 
 class RuboCop::Cop::FormulaAudit::ComponentsOrder
@@ -8789,6 +8782,56 @@ module RuboCop::Cop::OnSystemConditionalsHelper
   def on_macos_version_method_call(param0=T.unsafe(nil), on_method:); end
 
   def on_system_method_call(param0=T.unsafe(nil)); end
+end
+
+module RuboCop::RSpec::ExpectOffense
+  def expect_correction(correction, loop: T.unsafe(nil), source: T.unsafe(nil)); end
+
+  def expect_no_corrections(); end
+
+  def expect_no_offenses(source, file=T.unsafe(nil)); end
+
+  def expect_offense(source, file=T.unsafe(nil), severity: T.unsafe(nil), chomp: T.unsafe(nil), **replacements); end
+
+  def format_offense(source, **replacements); end
+
+  def parse_annotations(source, raise_error: T.unsafe(nil), **replacements); end
+
+  def parse_processed_source(source, file=T.unsafe(nil)); end
+
+  def set_formatter_options(); end
+end
+
+class RuboCop::RSpec::ExpectOffense::AnnotatedSource
+  def ==(other); end
+
+  def annotations(); end
+
+  def initialize(lines, annotations); end
+
+  def lines(); end
+
+  def match_annotations?(other); end
+
+  def plain_source(); end
+
+  def with_offense_annotations(offenses); end
+  ABBREV = ::T.let(nil, ::T.untyped)
+  ANNOTATION_PATTERN = ::T.let(nil, ::T.untyped)
+end
+
+class RuboCop::RSpec::ExpectOffense::AnnotatedSource
+  def self.parse(annotated_source); end
+end
+
+module RuboCop::RSpec::ExpectOffense
+end
+
+class RuboCop::RSpec::ParallelFormatter
+  def dump_pending(*arg); end
+end
+
+class RuboCop::RSpec::ParallelFormatter
 end
 
 class RubyLex
