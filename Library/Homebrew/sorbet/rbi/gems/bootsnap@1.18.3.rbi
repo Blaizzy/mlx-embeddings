@@ -14,39 +14,42 @@ module Bootsnap
   def bundler?; end
 
   class << self
-    # source://bootsnap//lib/bootsnap.rb#34
+    # source://bootsnap//lib/bootsnap.rb#44
     def _instrument(event, path); end
 
-    # source://bootsnap//lib/bootsnap.rb#122
+    # source://bootsnap//lib/bootsnap.rb#136
     def absolute_path?(path); end
 
-    # source://bootsnap//lib/bootsnap.rb#70
+    # source://bootsnap//lib/bootsnap.rb#82
     def default_setup; end
 
-    # source://bootsnap//lib/bootsnap.rb#27
+    # source://bootsnap//lib/bootsnap.rb#37
     def instrumentation=(callback); end
 
-    # source://bootsnap//lib/bootsnap.rb#14
+    # source://bootsnap//lib/bootsnap.rb#24
     def log!; end
+
+    # source://bootsnap//lib/bootsnap.rb#14
+    def log_stats!; end
 
     # Returns the value of attribute logger.
     #
     # source://bootsnap//lib/bootsnap.rb#12
     def logger; end
 
-    # source://bootsnap//lib/bootsnap.rb#18
+    # source://bootsnap//lib/bootsnap.rb#28
     def logger=(logger); end
 
     # Allow the C extension to redefine `rb_get_path` without warning.
     # Allow the C extension to redefine `rb_get_path` without warning.
     #
-    # source://bootsnap//lib/bootsnap.rb#130
+    # source://bootsnap//lib/bootsnap.rb#144
     def rb_get_path(fname); end
 
-    # source://bootsnap//lib/bootsnap.rb#38
-    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), ignore_directories: T.unsafe(nil), readonly: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
+    # source://bootsnap//lib/bootsnap.rb#48
+    def setup(cache_dir:, development_mode: T.unsafe(nil), load_path_cache: T.unsafe(nil), ignore_directories: T.unsafe(nil), readonly: T.unsafe(nil), revalidation: T.unsafe(nil), compile_cache_iseq: T.unsafe(nil), compile_cache_yaml: T.unsafe(nil), compile_cache_json: T.unsafe(nil)); end
 
-    # source://bootsnap//lib/bootsnap.rb#66
+    # source://bootsnap//lib/bootsnap.rb#78
     def unload_cache!; end
   end
 end
@@ -55,11 +58,11 @@ end
 module Bootsnap::CompileCache
   class << self
     # source://bootsnap//lib/bootsnap/compile_cache.rb#12
-    def setup(cache_dir:, iseq:, yaml:, json:, readonly: T.unsafe(nil)); end
+    def setup(cache_dir:, iseq:, yaml:, json:, readonly: T.unsafe(nil), revalidation: T.unsafe(nil)); end
 
     # @return [Boolean]
     #
-    # source://bootsnap//lib/bootsnap/compile_cache.rb#45
+    # source://bootsnap//lib/bootsnap/compile_cache.rb#46
     def supported?; end
   end
 end
