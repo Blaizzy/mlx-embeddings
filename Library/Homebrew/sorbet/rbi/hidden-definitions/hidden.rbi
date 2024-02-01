@@ -7,10 +7,6 @@ class AbstractCoreTap
   extend ::T::Private::Abstract::Hooks
 end
 
-class AbstractDownloadStrategy
-  include ::FileUtils::StreamUtils_
-end
-
 class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
@@ -3205,21 +3201,6 @@ module Cask::Cache
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Cask::CaskLoader::AbstractContentLoader
-  extend ::T::Private::Abstract::Hooks
-end
-
-module Cask::CaskLoader::ILoader
-  extend ::T::Private::Abstract::Hooks
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Cask::Caskroom
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Cask::Config
   def appdir(); end
 
@@ -3282,127 +3263,6 @@ class Cask::Config
   def vst_plugindir=(path); end
 end
 
-class Cask::DSL
-  def app(*args, **kwargs); end
-
-  def artifact(*args, **kwargs); end
-
-  def audio_unit_plugin(*args, **kwargs); end
-
-  def binary(*args, **kwargs); end
-
-  def colorpicker(*args, **kwargs); end
-
-  def dictionary(*args, **kwargs); end
-
-  def font(*args, **kwargs); end
-
-  def input_method(*args, **kwargs); end
-
-  def installer(*args, **kwargs); end
-
-  def internet_plugin(*args, **kwargs); end
-
-  def keyboard_layout(*args, **kwargs); end
-
-  def manpage(*args, **kwargs); end
-
-  def mdimporter(*args, **kwargs); end
-
-  def on_arch_conditional(arm: T.unsafe(nil), intel: T.unsafe(nil)); end
-
-  def on_arm(&block); end
-
-  def on_big_sur(or_condition=T.unsafe(nil), &block); end
-
-  def on_catalina(or_condition=T.unsafe(nil), &block); end
-
-  def on_el_capitan(or_condition=T.unsafe(nil), &block); end
-
-  def on_high_sierra(or_condition=T.unsafe(nil), &block); end
-
-  def on_intel(&block); end
-
-  def on_mojave(or_condition=T.unsafe(nil), &block); end
-
-  def on_monterey(or_condition=T.unsafe(nil), &block); end
-
-  def on_sierra(or_condition=T.unsafe(nil), &block); end
-
-  def on_sonoma(or_condition=T.unsafe(nil), &block); end
-
-  def on_ventura(or_condition=T.unsafe(nil), &block); end
-
-  def pkg(*args, **kwargs); end
-
-  def postflight(&block); end
-
-  def preflight(&block); end
-
-  def prefpane(*args, **kwargs); end
-
-  def qlplugin(*args, **kwargs); end
-
-  def screen_saver(*args, **kwargs); end
-
-  def service(*args, **kwargs); end
-
-  def stage_only(*args, **kwargs); end
-
-  def suite(*args, **kwargs); end
-
-  def uninstall(*args, **kwargs); end
-
-  def uninstall_postflight(&block); end
-
-  def uninstall_preflight(&block); end
-
-  def vst3_plugin(*args, **kwargs); end
-
-  def vst_plugin(*args, **kwargs); end
-
-  def zap(*args, **kwargs); end
-end
-
-class Cask::DSL::Caveats
-  def depends_on_java(*args); end
-
-  def discontinued(*args); end
-
-  def files_in_usr_local(*args); end
-
-  def free_license(*args); end
-
-  def kext(*args); end
-
-  def license(*args); end
-
-  def logout(*args); end
-
-  def path_environment_variable(*args); end
-
-  def reboot(*args); end
-
-  def requires_rosetta(*args); end
-
-  def unsigned_accessibility(*args); end
-
-  def zsh_path_helper(*args); end
-end
-
-class Cask::DSL::ConflictsWith
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
-end
-
-class Cask::DSL::DependsOn
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
-end
-
-class Cask::DSL::DependsOn
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 class Cask::DSL::Version
   def dots_to_hyphens(); end
 
@@ -3424,35 +3284,6 @@ class Cask::DSL::Version
 end
 
 module Cask::Denylist
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Cask::Quarantine
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Cask::Staged
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::URL
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
-end
-
-module Cask::URL::BlockDSL::PageWithURL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class Cask::URL
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Cask::Utils
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -3678,10 +3509,6 @@ end
 
 class Dir
   def self.exists?(arg); end
-end
-
-class Downloadable
-  extend ::T::Private::Abstract::Hooks
 end
 
 class ELFTools::LazyArray
@@ -5116,17 +4943,7 @@ module Gem
   def self.solaris_platform?(); end
 end
 
-module GitHub::API
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module GitHub::Actions
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module GitHub
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -5156,19 +4973,6 @@ class Hash
 end
 
 module Homebrew::API::Analytics
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::API::Cask
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::API::Formula
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Homebrew::API
-  extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
@@ -5223,63 +5027,6 @@ module Homebrew::Livecheck::SkipConditions
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class Homebrew::Livecheck::Strategy::Sparkle::Item
-  def bundle_version(); end
-
-  def bundle_version=(_); end
-
-  def channel(); end
-
-  def channel=(_); end
-
-  def link(); end
-
-  def link=(_); end
-
-  def minimum_system_version(); end
-
-  def minimum_system_version=(_); end
-
-  def nice_version(*args, **arg, &block); end
-
-  def os(); end
-
-  def os=(_); end
-
-  def pub_date(); end
-
-  def pub_date=(_); end
-
-  def release_notes_link(); end
-
-  def release_notes_link=(_); end
-
-  def short_version(*args, **arg, &block); end
-
-  def title(); end
-
-  def title=(_); end
-
-  def url(); end
-
-  def url=(_); end
-
-  def version(*args, **arg, &block); end
-end
-
-class Homebrew::Livecheck::Strategy::Sparkle::Item
-  def self.[](*arg); end
-
-  def self.keyword_init?(); end
-
-  def self.members(); end
-end
-
-module Homebrew::Livecheck::Strategy
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Homebrew::Parlour
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -5320,7 +5067,6 @@ end
 module Homebrew
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
-  extend ::FileUtils::StreamUtils_
 end
 
 module HostEnvironmentSimulatorHelper
@@ -6010,70 +5756,6 @@ class MatchData
   def match_length(arg); end
 end
 
-class Mechanize::HTTP
-end
-
-class Mechanize::HTTP::ContentDisposition
-  def creation_date(); end
-
-  def creation_date=(_); end
-
-  def filename(); end
-
-  def filename=(_); end
-
-  def modification_date(); end
-
-  def modification_date=(_); end
-
-  def parameters(); end
-
-  def parameters=(_); end
-
-  def read_date(); end
-
-  def read_date=(_); end
-
-  def size=(_); end
-
-  def type(); end
-
-  def type=(_); end
-end
-
-class Mechanize::HTTP::ContentDisposition
-  def self.[](*arg); end
-
-  def self.keyword_init?(); end
-
-  def self.members(); end
-end
-
-class Mechanize::HTTP::ContentDispositionParser
-  def parse(content_disposition, header=T.unsafe(nil)); end
-
-  def parse_parameters(); end
-
-  def rfc_2045_quoted_string(); end
-
-  def rfc_2045_token(); end
-
-  def rfc_2045_value(); end
-
-  def scanner(); end
-
-  def scanner=(scanner); end
-
-  def spaces(); end
-end
-
-class Mechanize::HTTP::ContentDispositionParser
-  def self.parse(content_disposition); end
-end
-
-class Mechanize::HTTP
-end
-
 class MessagePack::ExtensionValue
   def self.keyword_init?(); end
 end
@@ -6284,8 +5966,6 @@ end
 class Net::HTTPRangeNotSatisfiable
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 Net::HTTPRedirectionCode = Net::HTTPRedirection
 
 Net::HTTPRequestURITooLarge = Net::HTTPURITooLong
@@ -6316,9 +5996,13 @@ Net::HTTPServerErrorCode = Net::HTTPServerError
 
 Net::HTTPSession = Net::HTTP
 
-Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
+class Net::HTTPSuccess
+end
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPURITooLong
   HAS_BODY = ::T.let(nil, ::T.untyped)
@@ -6382,21 +6066,12 @@ module OS::Linux::Kernel
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
-class OS::Mac::BaseSDKLocator
-  extend ::T::Private::Abstract::Hooks
-end
-
 module OS::Mac::CLT
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 module OS::Mac::Xcode
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module OS::Mac
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -6408,7 +6083,6 @@ end
 
 class Object
   include ::JSON::Ext::Generator::GeneratorMethods::Object
-  include ::SystemCommand::Mixin
   def __send(*arg); end
 
   def __send!(*arg); end
@@ -6416,7 +6090,6 @@ class Object
   def to_yaml(options=T.unsafe(nil)); end
   ARGF = ::T.let(nil, ::T.untyped)
   ARGV = ::T.let(nil, ::T.untyped)
-  BUG_REPORTS_URL = ::T.let(nil, ::T.untyped)
   CROSS_COMPILING = ::T.let(nil, ::T.untyped)
   DEPRECATED_OFFICIAL_TAPS = ::T.let(nil, ::T.untyped)
   ENV = ::T.let(nil, ::T.untyped)
@@ -6511,7 +6184,6 @@ class Object
   TEST_SHA256 = ::T.let(nil, ::T.untyped)
   TEST_TMPDIR = ::T.let(nil, ::T.untyped)
   TOPLEVEL_BINDING = ::T.let(nil, ::T.untyped)
-  UPGRADE_REINSTALL_SKIP_DIRECTIVES = ::T.let(nil, ::T.untyped)
 end
 
 class Object
@@ -8233,59 +7905,6 @@ class Resolv::IPv6
   Regex_CompressedHexLinkLocal = ::T.let(nil, ::T.untyped)
 end
 
-class Resource
-  include ::FileUtils::StreamUtils_
-  def on_arch_conditional(arm: T.unsafe(nil), intel: T.unsafe(nil)); end
-
-  def on_arm(&block); end
-
-  def on_big_sur(or_condition=T.unsafe(nil), &block); end
-
-  def on_catalina(or_condition=T.unsafe(nil), &block); end
-
-  def on_el_capitan(or_condition=T.unsafe(nil), &block); end
-
-  def on_high_sierra(or_condition=T.unsafe(nil), &block); end
-
-  def on_intel(&block); end
-
-  def on_linux(&block); end
-
-  def on_macos(&block); end
-
-  def on_mojave(or_condition=T.unsafe(nil), &block); end
-
-  def on_monterey(or_condition=T.unsafe(nil), &block); end
-
-  def on_sierra(or_condition=T.unsafe(nil), &block); end
-
-  def on_sonoma(or_condition=T.unsafe(nil), &block); end
-
-  def on_system(linux, macos:, &block); end
-
-  def on_system_conditional(macos: T.unsafe(nil), linux: T.unsafe(nil)); end
-
-  def on_ventura(or_condition=T.unsafe(nil), &block); end
-end
-
-class Resource::Partial
-  def files(); end
-
-  def files=(_); end
-
-  def resource(); end
-
-  def resource=(_); end
-end
-
-class Resource::Partial
-  def self.[](*arg); end
-
-  def self.keyword_init?(); end
-
-  def self.members(); end
-end
-
 class Ripper
   def column(); end
 
@@ -9966,35 +9585,6 @@ end
 module UnicodeNormalize
 end
 
-module UnpackStrategy::Dmg::Bom
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class UnpackStrategy::Zip
-  include ::UnpackStrategy::Zip::MacOSZipExtension
-end
-
-module UnpackStrategy::Zip::MacOSZipExtension
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module UnpackStrategy
-  extend ::T::Private::Abstract::Hooks
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-class User
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
-end
-
-class User
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
 module Utils::AST
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
@@ -10005,16 +9595,6 @@ module Utils::Autoremove
 end
 
 module Utils::Backtrace
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Utils::Curl
-  extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Utils::Git
   extend ::T::Private::Methods::MethodHooks
   extend ::T::Private::Methods::SingletonMethodHooks
 end
@@ -10041,10 +9621,6 @@ end
 
 module Utils::Shell
   extend ::T::Private::Methods::MethodHooks
-  extend ::T::Private::Methods::SingletonMethodHooks
-end
-
-module Utils::Svn
   extend ::T::Private::Methods::SingletonMethodHooks
 end
 
