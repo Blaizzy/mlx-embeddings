@@ -1990,6 +1990,8 @@ Only supports GitHub Actions as a CI provider. This is because Homebrew uses Git
   Don't test livecheck.
 * `--skip-recursive-dependents`:
   Only test the direct dependents.
+* `--skip-checksum-only-audit`:
+  Don't audit checksum-only changes.
 * `--skip-stable-version-audit`:
   Don't audit the stable version.
 * `--skip-revision-audit`:
