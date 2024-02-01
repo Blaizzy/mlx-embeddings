@@ -3,12 +3,13 @@
 
 require "cli/parser"
 require "fileutils"
+require "system_command"
 
 module Homebrew
-  module_function
+  extend SystemCommand::Mixin
 
   sig { returns(CLI::Parser) }
-  def tests_args
+  def self.tests_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Run Homebrew's unit and integration tests.
@@ -40,7 +41,7 @@ module Homebrew
     end
   end
 
-  def use_buildpulse?
+  def self.use_buildpulse?
     return @use_buildpulse if defined?(@use_buildpulse)
 
     @use_buildpulse = ENV["HOMEBREW_BUILDPULSE_ACCESS_KEY_ID"].present? &&
@@ -49,7 +50,7 @@ module Homebrew
                       ENV["HOMEBREW_BUILDPULSE_REPOSITORY_ID"].present?
   end
 
-  def run_buildpulse
+  def self.run_buildpulse
     require "formula"
 
     with_env(HOMEBREW_NO_AUTO_UPDATE: "1", HOMEBREW_NO_BOOTSNAP: "1") do
@@ -70,7 +71,7 @@ module Homebrew
                    ]
   end
 
-  def changed_test_files
+  def self.changed_test_files
     changed_files = Utils.popen_read("git", "diff", "--name-only", "master")
 
     raise UsageError, "No files have been changed from the master branch!" if changed_files.blank?
@@ -87,7 +88,7 @@ module Homebrew
     end.compact.select(&:exist?)
   end
 
-  def tests
+  def self.tests
     args = tests_args.parse
 
     # Given we might be testing various commands, we probably want everything (except sorbet-static)
@@ -206,7 +207,7 @@ module Homebrew
     end
   end
 
-  def setup_environment!(args)
+  def self.setup_environment!(args)
     # Cleanup any unwanted user configuration.
     allowed_test_env = %w[
       HOMEBREW_GITHUB_API_TOKEN
