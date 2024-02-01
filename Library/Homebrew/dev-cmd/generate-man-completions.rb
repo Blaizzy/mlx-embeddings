@@ -4,12 +4,13 @@
 require "formula"
 require "completions"
 require "manpages"
+require "system_command"
 
 module Homebrew
-  module_function
+  extend SystemCommand::Mixin
 
   sig { returns(CLI::Parser) }
-  def generate_man_completions_args
+  def self.generate_man_completions_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Generate Homebrew's manpages and shell completions.
@@ -18,7 +19,7 @@ module Homebrew
     end
   end
 
-  def generate_man_completions
+  def self.generate_man_completions
     args = generate_man_completions_args.parse
 
     Commands.rebuild_internal_commands_completion_list

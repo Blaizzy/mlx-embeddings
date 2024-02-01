@@ -5,12 +5,13 @@ require "metafiles"
 require "formula"
 require "cli/parser"
 require "cask/list"
+require "system_command"
 
 module Homebrew
-  module_function
+  extend SystemCommand::Mixin
 
   sig { returns(CLI::Parser) }
-  def list_args
+  def self.list_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         List all installed formulae and casks.
@@ -64,7 +65,7 @@ module Homebrew
     end
   end
 
-  def list
+  def self.list
     args = list_args.parse
 
     if args.full_name?
@@ -121,7 +122,7 @@ module Homebrew
     end
   end
 
-  def filtered_list(args:)
+  def self.filtered_list(args:)
     names = if args.no_named?
       Formula.racks
     else
@@ -150,7 +151,7 @@ module Homebrew
     end
   end
 
-  def list_casks(args:)
+  def self.list_casks(args:)
     casks = if args.no_named?
       Cask::Caskroom.casks
     else

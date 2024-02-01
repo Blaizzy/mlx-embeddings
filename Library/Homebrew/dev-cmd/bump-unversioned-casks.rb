@@ -6,6 +6,7 @@ require "cask/download"
 require "cask/installer"
 require "cask/cask_loader"
 require "cli/parser"
+require "system_command"
 require "tap"
 require "unversioned_cask_checker"
 

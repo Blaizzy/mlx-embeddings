@@ -4,12 +4,13 @@
 require "cli/parser"
 require "utils/github"
 require "manpages"
+require "system_command"
 
 module Homebrew
-  module_function
+  extend SystemCommand::Mixin
 
   sig { returns(CLI::Parser) }
-  def update_maintainers_args
+  def self.update_maintainers_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Update the list of maintainers in the `Homebrew/brew` README.
@@ -19,7 +20,7 @@ module Homebrew
     end
   end
 
-  def update_maintainers
+  def self.update_maintainers
     update_maintainers_args.parse
 
     # We assume that only public members wish to be included in the README
