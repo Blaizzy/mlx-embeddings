@@ -6,12 +6,10 @@ require "utils/spdx"
 require "system_command"
 
 module Homebrew
-  include SystemCommand::Mixin
-
-  module_function
+  extend SystemCommand::Mixin
 
   sig { returns(CLI::Parser) }
-  def update_license_data_args
+  def self.update_license_data_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Update SPDX license data in the Homebrew repository.
@@ -20,7 +18,7 @@ module Homebrew
     end
   end
 
-  def update_license_data
+  def self.update_license_data
     update_license_data_args.parse
 
     SPDX.download_latest_license_data!

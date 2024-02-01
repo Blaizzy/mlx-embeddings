@@ -3,15 +3,16 @@
 
 require "cli/parser"
 require "utils/github"
+require "system_command"
 
 module Homebrew
-  module_function
+  extend SystemCommand::Mixin
 
   NAMED_MONTHLY_AMOUNT = 100
   URL_MONTHLY_AMOUNT = 1000
 
   sig { returns(CLI::Parser) }
-  def update_sponsors_args
+  def self.update_sponsors_args
     Homebrew::CLI::Parser.new do
       description <<~EOS
         Update the list of GitHub Sponsors in the `Homebrew/brew` README.
@@ -21,19 +22,19 @@ module Homebrew
     end
   end
 
-  def sponsor_name(sponsor)
+  def self.sponsor_name(sponsor)
     sponsor[:name] || sponsor[:login]
   end
 
-  def sponsor_logo(sponsor)
+  def self.sponsor_logo(sponsor)
     "https://github.com/#{sponsor[:login]}.png?size=64"
   end
 
-  def sponsor_url(sponsor)
+  def self.sponsor_url(sponsor)
     "https://github.com/#{sponsor[:login]}"
   end
 
-  def update_sponsors
+  def self.update_sponsors
     update_sponsors_args.parse
 
     named_sponsors = []
