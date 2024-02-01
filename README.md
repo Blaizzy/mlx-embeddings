@@ -27,6 +27,8 @@ Homebrew is a non-profit project run entirely by unpaid volunteers. We need your
 
 Please consider a regular donation through [GitHub Sponsors](https://github.com/sponsors/Homebrew), [Open Collective](https://opencollective.com/homebrew) or [Patreon](https://www.patreon.com/homebrew). Homebrew is fiscally hosted by the [Open Source Collective](https://opencollective.com/opensource).
 
+For questions about donations, including corporate giving, please email the Homebrew PLC at [plc@brew.sh](mailto:plc@brew.sh).
+
 ## Community
 
 - [Homebrew/discussions (forum)](https://github.com/orgs/Homebrew/discussions)
