@@ -17,8 +17,6 @@ class Array
 
   def deconstruct(); end
 
-  def shelljoin(); end
-
   def to_h(); end
 end
 
@@ -3904,16 +3902,6 @@ class Etc::Passwd
   def self.members(); end
 end
 
-class Exception
-  def as_json(*arg); end
-
-  def to_json(*args); end
-end
-
-class Exception
-  def self.json_create(object); end
-end
-
 class ExitCalledError
 end
 
@@ -3969,7 +3957,6 @@ module Fiddle
   TYPE_INT32_T = ::T.let(nil, ::T.untyped)
   TYPE_INT64_T = ::T.let(nil, ::T.untyped)
   TYPE_INT8_T = ::T.let(nil, ::T.untyped)
-  TYPE_VARIADIC = ::T.let(nil, ::T.untyped)
   VERSION = ::T.let(nil, ::T.untyped)
   WINDOWS = ::T.let(nil, ::T.untyped)
 end
@@ -5867,12 +5854,16 @@ class Net::HTTP
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
+Net::HTTP::ProxyMod = Net::HTTP::ProxyDelta
+
 class Net::HTTPAlreadyReported
   HAS_BODY = ::T.let(nil, ::T.untyped)
 end
 
 class Net::HTTPAlreadyReported
 end
+
+Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPClientException
 
 Net::HTTPClientErrorCode = Net::HTTPClientError
 
@@ -5958,6 +5949,8 @@ end
 Net::HTTPResponseReceiver = Net::HTTPResponse
 
 Net::HTTPRetriableCode = Net::HTTPRedirection
+
+Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
 
 Net::HTTPServerErrorCode = Net::HTTPServerError
 
@@ -7707,12 +7700,6 @@ module Reline
   VERSION = ::T.let(nil, ::T.untyped)
 end
 
-class Reline::ANSI
-  CAPNAME_KEY_BINDINGS = ::T.let(nil, ::T.untyped)
-  END_BRACKETED_PASTE = ::T.let(nil, ::T.untyped)
-  START_BRACKETED_PASTE = ::T.let(nil, ::T.untyped)
-end
-
 class Reline::Config
   KEYSEQ_PATTERN = ::T.let(nil, ::T.untyped)
   VARIABLE_NAMES = ::T.let(nil, ::T.untyped)
@@ -7723,7 +7710,7 @@ class Reline::Core
   ATTR_READER_NAMES = ::T.let(nil, ::T.untyped)
 end
 
-Reline::IOGate = Reline::ANSI
+Reline::IOGate = Reline::GeneralIO
 
 Reline::Key = Struct::Key
 
@@ -8889,6 +8876,21 @@ module RubyVM::MJIT
   def self.resume(); end
 end
 
+module RubyVM::YJIT
+end
+
+module RubyVM::YJIT
+  def self.enabled?(); end
+
+  def self.reset_stats!(); end
+
+  def self.runtime_stats(); end
+
+  def self.simulate_oom!(); end
+
+  def self.stats_enabled?(); end
+end
+
 class RubyVM
   def self.keep_script_lines(); end
 
@@ -8970,7 +8972,6 @@ class Socket
   AF_PUP = ::T.let(nil, ::T.untyped)
   AF_SIP = ::T.let(nil, ::T.untyped)
   AF_SYSTEM = ::T.let(nil, ::T.untyped)
-  AF_VSOCK = ::T.let(nil, ::T.untyped)
   AI_DEFAULT = ::T.let(nil, ::T.untyped)
   AI_MASK = ::T.let(nil, ::T.untyped)
   AI_V4MAPPED_CFG = ::T.let(nil, ::T.untyped)
@@ -8993,7 +8994,6 @@ class Socket
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
-  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -9028,7 +9028,6 @@ class Socket
   PF_RTIP = ::T.let(nil, ::T.untyped)
   PF_SIP = ::T.let(nil, ::T.untyped)
   PF_SYSTEM = ::T.let(nil, ::T.untyped)
-  PF_VSOCK = ::T.let(nil, ::T.untyped)
   PF_XTP = ::T.let(nil, ::T.untyped)
   SCM_CREDS = ::T.let(nil, ::T.untyped)
   SO_DONTTRUNC = ::T.let(nil, ::T.untyped)
@@ -9066,7 +9065,6 @@ module Socket::Constants
   AF_PUP = ::T.let(nil, ::T.untyped)
   AF_SIP = ::T.let(nil, ::T.untyped)
   AF_SYSTEM = ::T.let(nil, ::T.untyped)
-  AF_VSOCK = ::T.let(nil, ::T.untyped)
   AI_DEFAULT = ::T.let(nil, ::T.untyped)
   AI_MASK = ::T.let(nil, ::T.untyped)
   AI_V4MAPPED_CFG = ::T.let(nil, ::T.untyped)
@@ -9089,7 +9087,6 @@ module Socket::Constants
   IPV6_PATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_RECVPATHMTU = ::T.let(nil, ::T.untyped)
   IPV6_USE_MIN_MTU = ::T.let(nil, ::T.untyped)
-  IP_DONTFRAG = ::T.let(nil, ::T.untyped)
   IP_PORTRANGE = ::T.let(nil, ::T.untyped)
   IP_RECVDSTADDR = ::T.let(nil, ::T.untyped)
   IP_RECVIF = ::T.let(nil, ::T.untyped)
@@ -9124,7 +9121,6 @@ module Socket::Constants
   PF_RTIP = ::T.let(nil, ::T.untyped)
   PF_SIP = ::T.let(nil, ::T.untyped)
   PF_SYSTEM = ::T.let(nil, ::T.untyped)
-  PF_VSOCK = ::T.let(nil, ::T.untyped)
   PF_XTP = ::T.let(nil, ::T.untyped)
   SCM_CREDS = ::T.let(nil, ::T.untyped)
   SO_DONTTRUNC = ::T.let(nil, ::T.untyped)
@@ -9246,10 +9242,6 @@ end
 class String
   include ::JSON::Ext::Generator::GeneratorMethods::String
   def fast_xs(); end
-
-  def shellescape(); end
-
-  def shellsplit(); end
 
   def to_nfc(); end
 
