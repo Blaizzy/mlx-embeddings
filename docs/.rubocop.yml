@@ -6,6 +6,7 @@ AllCops:
   - ".mdl*.rb"
   - Rakefile
   - "_site/**/*"
+  - Manpage.md
 
 # These are included in docs deliberately to show what
 # `brew create` does and what the user should replace.
