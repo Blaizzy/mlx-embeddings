@@ -13,6 +13,12 @@ AllCops:
 FormulaAudit/Comments:
   Enabled: false
 
+# This forces us to use dummy descriptions/homepages in example formulae which we don't need to clutter the docs with.
+FormulaAudit/Desc:
+  Enabled: false
+FormulaAudit/Homepage:
+  Enabled: false
+
 Layout/LineLength:
   Exclude:
   - Bottles.md # The bottle block line length is long in its full form.

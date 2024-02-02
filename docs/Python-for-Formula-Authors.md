@@ -54,8 +54,7 @@ class Foo < Formula
   include Language::Python::Virtualenv
 
   name "foo"
-  desc "Bar"
-  homepage "https://example.com"
+  # ...
   url "..."
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
 
@@ -72,8 +71,7 @@ class Foo < Formula
   include Language::Python::Virtualenv
 
   name "foo"
-  desc "Bar"
-  homepage "https://example.com"
+  # ...
   url "https://example.com/foo-1.0.tar.gz"
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
 

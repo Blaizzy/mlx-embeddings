@@ -122,8 +122,7 @@ Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be 
 
 ```ruby
 class Foo < Formula
-  desc "Example formula"
-  homepage "https://example.com"
+  # ...
 
   depends_on "httpd" => [:build, :test]
   depends_on xcode: ["9.3", :build]
@@ -266,8 +265,7 @@ If all else fails, you'll want to use [`resource`](https://rubydoc.brew.sh/Formu
 
 ```ruby
 class Foo < Formula
-  desc "Example formula"
-  homepage "https://example.com"
+  # ...
   url "https://example.com/foo-1.0.tar.gz"
 
   resource "pycrypto" do
@@ -648,9 +646,7 @@ Formulae can specify an alternate download for the upstream project’s developm
 
 ```ruby
 class Foo < Formula
-  desc "Description"
-  homepage "https://example.com"
-
+  # ...
   head "https://github.com/some/package.git", branch: "main" # the default is "master"
 end
 ```
@@ -659,8 +655,7 @@ You can also bundle the URL and any `head`-specific dependencies and resources i
 
 ```ruby
 class Foo < Formula
-  desc "Description"
-  homepage "https://example.com"
+  # ...
 
   head do
     url "https://svn.code.sf.net/p/project/code/trunk"
@@ -677,8 +672,7 @@ When parsing a download URL, Homebrew auto-detects the resource type it points t
 
 ```ruby
 class Foo < Formula
-  desc "Some package"
-  homepage "https://github.com/some/package"
+  # ...
   url "https://github.com/some/package.git",
       tag:      "v1.6.2",
       revision: "344cd2ee3463abab4c16ac0f9529a846314932a2"
@@ -724,8 +718,6 @@ class MyDownloadStrategy < SomeHomebrewDownloadStrategy
 end
 
 class Foo < Formula
-  desc "Some package"
-  homepage "https://example.com"
   url "something", using: MyDownloadStrategy
 end
 ```
@@ -887,8 +879,7 @@ If you want to add an [`option`](https://rubydoc.brew.sh/Formula#option-class_me
 
 ```ruby
 class Yourformula < Formula
-  desc "Description"
-  homepage "https://example.com"
+  # ...
   url "https://example.com/yourformula-1.0.tar.gz"
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
   # ...
@@ -923,8 +914,7 @@ Any initialization steps that aren't necessarily part of the install process can
 
 ```ruby
 class Foo < Formula
-  desc "Description"
-  homepage "https://example.com"
+  # ...
   url "https://example.com/foo-1.0.tar.gz"
 
   def post_install
