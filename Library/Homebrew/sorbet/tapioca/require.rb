@@ -1,9 +1,13 @@
 # typed: strict
 # frozen_string_literal: true
 
-# This should not be made a constant or Tapioca will think it is part of a gem.
+# These should not be made constants or Tapioca will think they are part of a gem.
 dependency_require_map = {
   "ruby-macho" => "macho",
+}.freeze
+
+additional_requires_map = {
+  "rubocop" => ["rubocop/rspec/support"],
 }.freeze
 
 # Freeze lockfile
@@ -19,8 +23,8 @@ definition.resolve.for(definition.current_dependencies).each do |spec|
   next if name == "sorbet-static-and-runtime"
 
   name = dependency_require_map[name] if dependency_require_map.key?(name)
-
   require name
+  additional_requires_map[name]&.each { require(_1) }
 rescue LoadError
   raise unless name.include?("-")
 
