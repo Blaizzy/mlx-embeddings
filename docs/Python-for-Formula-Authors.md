@@ -50,26 +50,44 @@ Homebrew provides helper methods for instantiating and populating virtualenvs. Y
 For most applications, all you will need to write is:
 
 ```ruby
-def install
-  virtualenv_install_with_resources
+class Foo < Formula
+  include Language::Python::Virtualenv
+
+  name "foo"
+  # ...
+  url "..."
+  sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
+
+  def install
+    virtualenv_install_with_resources
+  end
 end
 ```
 
 This is exactly the same as writing:
 
 ```ruby
-def install
-  # Create a virtualenv in `libexec`. If your app needs Python 3, make sure that
-  # `depends_on "python"` is declared, and use `virtualenv_create(libexec, "python3")`.
-  venv = virtualenv_create(libexec)
-  # Install all of the resources declared on the formula into the virtualenv.
-  venv.pip_install resources
-  # `pip_install_and_link` takes a look at the virtualenv's bin directory
-  # before and after installing its argument. New scripts will be symlinked
-  # into `bin`. `pip_install_and_link buildpath` will install the package
-  # that the formula points to, because buildpath is the location where the
-  # formula's tarball was unpacked.
-  venv.pip_install_and_link buildpath
+class Foo < Formula
+  include Language::Python::Virtualenv
+
+  name "foo"
+  # ...
+  url "https://example.com/foo-1.0.tar.gz"
+  sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
+
+  def install
+    # Create a virtualenv in `libexec`. If your app needs Python 3, make sure that
+    # `depends_on "python"` is declared, and use `virtualenv_create(libexec, "python3")`.
+    venv = virtualenv_create(libexec)
+    # Install all of the resources declared on the formula into the virtualenv.
+    venv.pip_install resources
+    # `pip_install_and_link` takes a look at the virtualenv's bin directory
+    # before and after installing its argument. New scripts will be symlinked
+    # into `bin`. `pip_install_and_link buildpath` will install the package
+    # that the formula points to, because buildpath is the location where the
+    # formula's tarball was unpacked.
+    venv.pip_install_and_link buildpath
+  end
 end
 ```
 
@@ -81,6 +99,8 @@ Installing a formula with dependencies will look like this:
 class Foo < Formula
   include Language::Python::Virtualenv
 
+  desc "Description"
+  homepage "https://example.com"
   url "..."
 
   resource "six" do
@@ -102,12 +122,20 @@ end
 You can also use the more verbose form and request that specific resources be installed:
 
 ```ruby
-def install
-  venv = virtualenv_create(libexec)
-  %w[six parsedatetime].each do |r|
-    venv.pip_install resource(r)
+class Foo < Formula
+  include Language::Python::Virtualenv
+
+  desc "Description"
+  homepage "https://example.com"
+  url "..."
+
+  def install
+    venv = virtualenv_create(libexec)
+    %w[six parsedatetime].each do |r|
+      venv.pip_install resource(r)
+    end
+    venv.pip_install_and_link buildpath
   end
-  venv.pip_install_and_link buildpath
 end
 ```
 

@@ -60,32 +60,9 @@ Run `brew create` with a URL to the source tarball:
 brew create https://example.com/foo-0.1.tar.gz
 ```
 
+This creates `$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/f/foo.rb` and opens it in your `EDITOR`.
+
 Passing in `--ruby` or `--python` will populate various defaults commonly useful for projects written in those languages.
-
-This creates `$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/f/foo.rb` and opens it in your `EDITOR`. If run without any options to customize the output for specific build systems (check `brew create --help` to see which are available) it'll look something like:
-
-```ruby
-class Foo < Formula
-  desc ""
-  homepage ""
-  url "https://example.com/foo-0.1.tar.gz"
-  sha256 "85cc828a96735bdafcf29eb6291ca91bac846579bcef7308536e0c875d6c81d7"
-  license ""
-
-  # depends_on "cmake" => :build
-
-  def install
-    # ENV.deparallelize
-    system "./configure", *std_configure_args, "--disable-silent-rules"
-    # system "cmake", "-S", ".", "-B", "build", *std_cmake_args
-    system "make", "install"
-  end
-
-  test do
-    system "false"
-  end
-end
-```
 
 If `brew` said `Warning: Version cannot be determined from URL` when doing the `create` step, you’ll need to explicitly add the correct [`version`](https://rubydoc.brew.sh/Formula#version-class_method) to the formula and then save the formula.
 
@@ -145,14 +122,18 @@ Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be 
 
 ```ruby
 class Foo < Formula
-  depends_on "pkg-config"
-  depends_on "jpeg"
-  depends_on "gtk+" => :optional
-  depends_on "readline" => :recommended
+  # ...
+
   depends_on "httpd" => [:build, :test]
-  depends_on arch: :x86_64
-  depends_on macos: :high_sierra
   depends_on xcode: ["9.3", :build]
+  depends_on arch: :x86_64
+  depends_on "jpeg"
+  depends_on macos: :high_sierra
+  depends_on "pkg-config"
+  depends_on "readline" => :recommended
+  depends_on "gtk+" => :optional
+
+  # ...
 end
 ```
 
@@ -168,8 +149,8 @@ A `Hash` (e.g. `=>`) adds information to a dependency. Given a string or symbol,
 * `:recommended` (not allowed in `Homebrew/homebrew-core`) generates an implicit `without-foo` option, meaning that the dependency is enabled by default and the user must pass `--without-foo` to disable this dependency. The default description can be overridden using the [`option`](https://rubydoc.brew.sh/Formula#option-class_method) syntax (in this case, the [`option` declaration](#adding-optional-steps) must precede the dependency):
 
   ```ruby
-  option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
-  depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
+option "with-foo", "Compile with foo bindings" # This overrides the generated description if you want to
+depends_on "foo" => :optional # Generated description would otherwise be "Build with foo support"
   ```
 
 * `"<option-name>"` (not allowed in `Homebrew/homebrew-core`) requires a dependency to have been built with the specified option.
@@ -271,7 +252,7 @@ And install any bins, and munge their shebang lines, with:
 
 ```ruby
 bin.install libexec/"bin/<bin>"
-bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV["GEM_HOME"])
+bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV.fetch("GEM_HOME", nil))
 ```
 
 ### Python dependencies
@@ -284,6 +265,9 @@ If all else fails, you'll want to use [`resource`](https://rubydoc.brew.sh/Formu
 
 ```ruby
 class Foo < Formula
+  # ...
+  url "https://example.com/foo-1.0.tar.gz"
+
   resource "pycrypto" do
     url "https://files.pythonhosted.org/packages/60/db/645aa9af249f059cc3a368b118de33889219e0362141e75d4eaf6f80f163/pycrypto-2.6.1.tar.gz"
     sha256 "f2ce1e989b272cfcb677616763e0a2e7ec659effa67a88aa92b3a65528f60a3c"
@@ -546,7 +530,7 @@ end
 
 ```ruby
 stable do
-  # some other things...
+  # ...
 
   patch do
     url "https://example.com/example_patch.diff"
@@ -662,6 +646,7 @@ Formulae can specify an alternate download for the upstream project’s developm
 
 ```ruby
 class Foo < Formula
+  # ...
   head "https://github.com/some/package.git", branch: "main" # the default is "master"
 end
 ```
@@ -670,6 +655,8 @@ You can also bundle the URL and any `head`-specific dependencies and resources i
 
 ```ruby
 class Foo < Formula
+  # ...
+
   head do
     url "https://svn.code.sf.net/p/project/code/trunk"
     depends_on "pkg-config" => :build
@@ -685,7 +672,7 @@ When parsing a download URL, Homebrew auto-detects the resource type it points t
 
 ```ruby
 class Foo < Formula
-  homepage "https://github.com/some/package"
+  # ...
   url "https://github.com/some/package.git",
       tag:      "v1.6.2",
       revision: "344cd2ee3463abab4c16ac0f9529a846314932a2"
@@ -696,10 +683,12 @@ If not inferable, specify which of Homebrew’s built-in download strategies to 
 
 ```ruby
 class Nginx < Formula
+  desc "HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server"
   homepage "https://nginx.org/"
   url "https://nginx.org/download/nginx-1.23.2.tar.gz", using: :homebrew_curl
   sha256 "a80cc272d3d72aaee70aa8b517b4862a635c0256790434dbfc4d618a999b0b46"
   head "https://hg.nginx.org/nginx/", using: :hg
+end
 ```
 
 Homebrew offers these anonymous download strategies.
@@ -729,7 +718,7 @@ class MyDownloadStrategy < SomeHomebrewDownloadStrategy
 end
 
 class Foo < Formula
-  url "something", :using => MyDownloadStrategy
+  url "something", using: MyDownloadStrategy
 end
 ```
 
@@ -855,25 +844,25 @@ Several other utilities for Ruby's [`Pathname`](https://rubydoc.brew.sh/Pathname
 * To perform several operations within a directory, enclose them within a  [`cd <path> do`](https://rubydoc.brew.sh/Pathname#cd-instance_method) block:
 
   ```ruby
-  cd "src" do
-    system "./configure",  "--disable-debug", "--prefix=#{prefix}"
-    system "make", "install"
-  end
+cd "src" do
+  system "./configure", "--disable-debug", "--prefix=#{prefix}"
+  system "make", "install"
+end
   ```
 
 * To surface one or more binaries buried in `libexec` or a macOS `.app` package, use [`write_exec_script`](https://rubydoc.brew.sh/Pathname#write_exec_script-instance_method) or [`write_jar_script`](https://rubydoc.brew.sh/Pathname#write_jar_script-instance_method):
 
   ```ruby
-  bin.write_exec_script (libexec/"bin").children
-  bin.write_exec_script prefix/"Package.app/Contents/MacOS/package"
-  bin.write_jar_script libexec/jar_file, "jarfile", java_version: "11"
+bin.write_exec_script (libexec/"bin").children
+bin.write_exec_script prefix/"Package.app/Contents/MacOS/package"
+bin.write_jar_script libexec/jar_file, "jarfile", java_version: "11"
   ```
 
 * For binaries that require setting one or more environment variables to function properly, use [`write_env_script`](https://rubydoc.brew.sh/Pathname#write_env_script-instance_method) or [`env_script_all_files`](https://rubydoc.brew.sh/Pathname#env_script_all_files-instance_method):
 
   ```ruby
-  (bin/"package").write_env_script libexec/"package", PACKAGE_ROOT: libexec
-  bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
+(bin/"package").write_env_script libexec/"package", PACKAGE_ROOT: libexec
+bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV.fetch("PERL5LIB", nil))
   ```
 
 ### Rewriting a script shebang
@@ -890,13 +879,17 @@ If you want to add an [`option`](https://rubydoc.brew.sh/Formula#option-class_me
 
 ```ruby
 class Yourformula < Formula
-  ...
+  # ...
+  url "https://example.com/yourformula-1.0.tar.gz"
+  sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
+  # ...
   option "with-ham", "Description of the option"
   option "without-spam", "Another description"
 
-  depends_on "foo" => :optional  # automatically adds a with-foo option
-  depends_on "bar" => :recommended  # automatically adds a without-bar option
-  ...
+  depends_on "bar" => :recommended
+  depends_on "foo" => :optional # automatically adds a with-foo option # automatically adds a without-bar option
+  # ...
+end
 ```
 
 And then to define the effects the [`option`](https://rubydoc.brew.sh/Formula#option-class_method)s have:
@@ -920,9 +913,15 @@ end
 Any initialization steps that aren't necessarily part of the install process can be located in a `post_install` block, such as setup commands or data directory creation. This block can be re-run separately with `brew postinstall <formula>`.
 
 ```ruby
-def post_install
-  rm_f pkgetc/"cert.pem"
-  pkgetc.install_symlink Formula["ca-certificates"].pkgetc/"cert.pem"
+class Foo < Formula
+  # ...
+  url "https://example.com/foo-1.0.tar.gz"
+
+  def post_install
+    rm_f pkgetc/"cert.pem"
+    pkgetc.install_symlink Formula["ca-certificates"].pkgetc/"cert.pem"
+  end
+  # ...
 end
 ```
 
@@ -941,10 +940,10 @@ There are two ways to add `launchd` plists and `systemd` services to a formula, 
 1. If the package already provides a service file the formula can reference it by name:
 
    ```ruby
-   service do
-     name macos: "custom.launchd.name",
-          linux: "custom.systemd.name"
-   end
+service do
+  name macos: "custom.launchd.name",
+       linux: "custom.systemd.name"
+end
    ```
 
    To find the file we append `.plist` to the `launchd` service name and `.service` to the `systemd` service name internally.
@@ -953,20 +952,20 @@ There are two ways to add `launchd` plists and `systemd` services to a formula, 
 
    ```ruby
    # 1. An individual command
-   service do
-     run opt_bin/"script"
-   end
+service do
+  run opt_bin/"script"
+end
 
    # 2. A command with arguments
-   service do
-     run [opt_bin/"script", "--config", etc/"dir/config.yml"]
-   end
+service do
+  run [opt_bin/"script", "--config", etc/"dir/config.yml"]
+end
 
    # 3. OS specific commands (If you omit one, the service file won't get generated for that OS.)
-   service do
-     run macos: [opt_bin/"macos_script", "standalone"],
-         linux: var/"special_linux_script"
-   end
+service do
+  run macos: [opt_bin/"macos_script", "standalone"],
+      linux: var/"special_linux_script"
+end
    ```
 
 #### Service block methods
@@ -1157,7 +1156,7 @@ If a project's makefile will not run in parallel, try to deparallelize by adding
 
 ```ruby
 ENV.deparallelize
-system "make"  # separate compilation and installation steps
+system "make" # separate compilation and installation steps
 system "make", "install"
 ```
 

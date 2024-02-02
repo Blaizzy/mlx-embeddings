@@ -12,8 +12,6 @@ The `sig` method is used to annotate method signatures. Here's a simple example:
 
 ```ruby
 class MyClass
-  extend T::Sig
-
   sig { params(name: String).returns(String) }
   def my_method(name)
     "Hello, #{name}!"

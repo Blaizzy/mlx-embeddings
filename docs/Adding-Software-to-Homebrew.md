@@ -165,36 +165,13 @@ If the `generate_cask_token` script does not work for you, see [Cask Token Detai
 
 #### Creating the cask file
 
-Once you know the token, create your cask with the handy-dandy `brew create --cask` command:
+Once you know the token, create your cask with the `brew create --cask` command:
 
 ```bash
 brew create --cask download-url --set-name my-new-cask
 ```
 
-This will open `EDITOR` with a template for your new cask, to be stored in the file `my-new-cask.rb`. Running the `create` command above will get you a template that looks like this:
-
-```ruby
-cask "my-new-cask" do
-  version ""
-  sha256 ""
-
-  url "download-url"
-  name ""
-  desc ""
-  homepage ""
-
-  livecheck do
-    url ""
-    strategy ""
-  end
-
-  depends_on macos: ""
-
-  app ""
-
-  zap trash: ""
-end
-```
+This will open `EDITOR` with a template for your new cask, to be stored in the file `my-new-cask.rb`.
 
 #### Cask stanzas
 
@@ -242,7 +219,7 @@ Example:
 1. So, the `app` stanza should include the subfolder as a relative path:
 
    ```ruby
-   app "Simple Floating Clock/SimpleFloatingClock.app"
+app "Simple Floating Clock/SimpleFloatingClock.app"
    ```
 
 ### Testing and auditing the cask

@@ -68,8 +68,8 @@ These expressions can be nested as needed:
 license any_of: [
   "MIT",
   :public_domain,
-  all_of: ["0BSD", "Zlib", "Artistic-1.0+"],
-  "Apache-2.0" => { with: "LLVM-exception" },
+  { all_of: ["0BSD", "Zlib", "Artistic-1.0+"],
+  "Apache-2.0" => { with: "LLVM-exception" } },
 ]
 ```
 

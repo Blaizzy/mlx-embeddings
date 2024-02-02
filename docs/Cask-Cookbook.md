@@ -29,13 +29,7 @@ Exception: `do` blocks such as `postflight` may enclose a block of pure Ruby cod
 
 ## Header line details
 
-The first non-comment line in a cask follows the form:
-
-```ruby
-cask "<cask-token>" do
-```
-
-[`<cask-token>`](#token-reference) should match the cask filename, without the `.rb` extension, enclosed in double quotes.
+The Cask name ([`<cask-token>`](#token-reference)) on the header line `cask <cask-token> do` should match the cask filename, without the `.rb` extension, enclosed in double quotes.
 
 There are currently some arbitrary limitations on cask tokens which are in the process of being removed. GitHub Actions will catch any errors during the transition.
 
@@ -852,12 +846,12 @@ An example, with commonly used signals in ascending order of severity:
 
 ```ruby
 uninstall signal: [
-            ["TERM", "fr.madrau.switchresx.daemon"],
-            ["QUIT", "fr.madrau.switchresx.daemon"],
-            ["INT",  "fr.madrau.switchresx.daemon"],
-            ["HUP",  "fr.madrau.switchresx.daemon"],
-            ["KILL", "fr.madrau.switchresx.daemon"],
-          ]
+  ["TERM", "fr.madrau.switchresx.daemon"],
+  ["QUIT", "fr.madrau.switchresx.daemon"],
+  ["INT",  "fr.madrau.switchresx.daemon"],
+  ["HUP",  "fr.madrau.switchresx.daemon"],
+  ["KILL", "fr.madrau.switchresx.daemon"],
+]
 ```
 
 Note that when multiple running processes match the given bundle ID, all matching processes will be signaled.
@@ -1082,7 +1076,7 @@ we can use:
 
 ```ruby
 version "1.2.3"
-url "https://example.com/file-version-#{version.delete('.')}.dmg"
+url "https://example.com/file-version-#{version.delete(".")}.dmg"
 ```
 
 We can also leverage the power of regular expressions. So instead of:
@@ -1096,7 +1090,7 @@ we can use:
 
 ```ruby
 version "1.2.3build4"
-url "https://example.com/#{version.sub(%r{build\d+}, '')}/file-version-#{version}.dmg"
+url "https://example.com/#{version.sub(/build\d+/, "")}/file-version-#{version}.dmg"
 ```
 
 #### `version` methods
@@ -1197,6 +1191,7 @@ cask "libreoffice" do
 
   url "https://download.documentfoundation.org/libreoffice/stable/#{version}/mac/#{folder}/LibreOffice_#{version}_MacOS_#{arch}.dmg",
       verified: "download.documentfoundation.org/libreoffice/stable/"
+end
 ```
 
 If the version number is different for each architecture, locate the unique `version` and (if checked) `sha256` stanzas within `on_arm` and `on_intel` blocks. Example (from [inkscape.rb](https://github.com/Homebrew/homebrew-cask/blob/11f6966bf17628b98895d64a61a4fb0bc1bb31bf/Casks/i/inkscape.rb#L1-L13)):
@@ -1215,6 +1210,7 @@ cask "inkscape" do
   end
 
   url "https://inkscape.org/gallery/item/#{version.csv.second}/Inkscape-#{version.csv.first}_#{arch}.dmg"
+end
 ```
 
 To adjust the installed version depending on the current macOS release, use a series of `on_<system>` blocks that cover the range of supported releases. Each block can contain stanzas that set which version to download and customize installation/uninstallation and livecheck behaviour for one or more releases. Example (from [calibre.rb](https://github.com/Homebrew/homebrew-cask/blob/482c34e950da8d649705f4aaea7b760dcb4b5402/Casks/c/calibre.rb#L1-L34)):
@@ -1244,6 +1240,7 @@ cask "calibre" do
       strategy :github_latest
     end
   end
+end
 ```
 
 Such `on_<system>` blocks can be nested and contain other stanzas not listed here. Examples: [calhash.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/c/calhash.rb), [openzfs.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/o/openzfs.rb), [r.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/r/r.rb), [wireshark.rb](https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/w/wireshark.rb)
@@ -1260,17 +1257,17 @@ In the exceptional case that the cask DSL is insufficient, it is possible to def
 cask "myapp" do
   module Utils
     def self.arbitrary_method
-      ...
+      # ...
     end
   end
 
-  name "MyApp"
   version "1.0"
   sha256 "a32565cdb1673f4071593d4cc9e1c26bc884218b62fef8abc450daa47ba8fa92"
 
   url "https://#{Utils.arbitrary_method}"
+  name "MyApp"
   homepage "https://www.example.com/"
-  ...
+  # ...
 end
 ```
 
