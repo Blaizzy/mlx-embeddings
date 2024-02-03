@@ -11,7 +11,7 @@ module Cask
     class Qlplugin < Moved
       sig { returns(String) }
       def self.english_name
-        "QuickLook Plugin"
+        "Quick Look Plugin"
       end
 
       def install_phase(**options)
