@@ -373,7 +373,7 @@ Style/NumericLiterals:
 
 Style/OpenStructUse:
   Exclude:
-    - "Taps/**/*.rb"
+    - "Taps/**/*"
     # TODO: This is a pre-existing violation and should be corrected
     #   to define methods so that call sites can be type-checked.
     - "Homebrew/cli/args.rb"
@@ -426,7 +426,7 @@ Style/TernaryParentheses:
 Style/TopLevelMethodDefinition:
   Enabled: true
   Exclude:
-    - "Taps/**/*.rb"
+    - "Taps/**/*"
 
 # Trailing commas make diffs nicer.
 Style/TrailingCommaInArguments:
