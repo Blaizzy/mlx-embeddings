@@ -2215,50 +2215,56 @@ class Formula
   # @private
   def to_hash
     hsh = {
-      "name"                   => name,
-      "full_name"              => full_name,
-      "tap"                    => tap&.name,
-      "oldname"                => oldnames.first, # deprecated
-      "oldnames"               => oldnames,
-      "aliases"                => aliases.sort,
-      "versioned_formulae"     => versioned_formulae.map(&:name),
-      "desc"                   => desc,
-      "license"                => SPDX.license_expression_to_string(license),
-      "homepage"               => homepage,
-      "versions"               => {
+      "name"                     => name,
+      "full_name"                => full_name,
+      "tap"                      => tap&.name,
+      "oldname"                  => oldnames.first, # deprecated
+      "oldnames"                 => oldnames,
+      "aliases"                  => aliases.sort,
+      "versioned_formulae"       => versioned_formulae.map(&:name),
+      "desc"                     => desc,
+      "license"                  => SPDX.license_expression_to_string(license),
+      "homepage"                 => homepage,
+      "versions"                 => {
         "stable" => stable&.version&.to_s,
         "head"   => head&.version&.to_s,
         "bottle" => bottle_defined?,
       },
-      "urls"                   => urls_hash,
-      "revision"               => revision,
-      "version_scheme"         => version_scheme,
-      "bottle"                 => {},
-      "pour_bottle_only_if"    => self.class.pour_bottle_only_if&.to_s,
-      "keg_only"               => keg_only?,
-      "keg_only_reason"        => keg_only_reason&.to_hash,
-      "options"                => [],
-      **dependencies_hash,
-      "requirements"           => serialized_requirements,
-      "conflicts_with"         => conflicts.map(&:name),
-      "conflicts_with_reasons" => conflicts.map(&:reason),
-      "link_overwrite"         => self.class.link_overwrite_paths.to_a,
-      "caveats"                => caveats_with_placeholders,
-      "installed"              => [],
-      "linked_keg"             => linked_version&.to_s,
-      "pinned"                 => pinned?,
-      "outdated"               => outdated?,
-      "deprecated"             => deprecated?,
-      "deprecation_date"       => deprecation_date,
-      "deprecation_reason"     => deprecation_reason,
-      "disabled"               => disabled?,
-      "disable_date"           => disable_date,
-      "disable_reason"         => disable_reason,
-      "post_install_defined"   => post_install_defined?,
-      "service"                => (service.to_hash if service?),
-      "tap_git_head"           => tap_git_head,
-      "ruby_source_path"       => ruby_source_path,
-      "ruby_source_checksum"   => {},
+      "urls"                     => urls_hash,
+      "revision"                 => revision,
+      "version_scheme"           => version_scheme,
+      "bottle"                   => {},
+      "pour_bottle_only_if"      => self.class.pour_bottle_only_if&.to_s,
+      "keg_only"                 => keg_only?,
+      "keg_only_reason"          => keg_only_reason&.to_hash,
+      "options"                  => [],
+      "build_dependencies"       => [],
+      "dependencies"             => [],
+      "test_dependencies"        => [],
+      "recommended_dependencies" => [],
+      "optional_dependencies"    => [],
+      "uses_from_macos"          => [],
+      "uses_from_macos_bounds"   => [],
+      "requirements"             => serialized_requirements,
+      "conflicts_with"           => conflicts.map(&:name),
+      "conflicts_with_reasons"   => conflicts.map(&:reason),
+      "link_overwrite"           => self.class.link_overwrite_paths.to_a,
+      "caveats"                  => caveats_with_placeholders,
+      "installed"                => [],
+      "linked_keg"               => linked_version&.to_s,
+      "pinned"                   => pinned?,
+      "outdated"                 => outdated?,
+      "deprecated"               => deprecated?,
+      "deprecation_date"         => deprecation_date,
+      "deprecation_reason"       => deprecation_reason,
+      "disabled"                 => disabled?,
+      "disable_date"             => disable_date,
+      "disable_reason"           => disable_reason,
+      "post_install_defined"     => post_install_defined?,
+      "service"                  => (service.to_hash if service?),
+      "tap_git_head"             => tap_git_head,
+      "ruby_source_path"         => ruby_source_path,
+      "ruby_source_checksum"     => {},
     }
 
     hsh["bottle"]["stable"] = bottle_hash if stable && bottle_defined?
@@ -2266,6 +2272,8 @@ class Formula
     hsh["options"] = options.map do |opt|
       { "option" => opt.flag, "description" => opt.description }
     end
+
+    hsh.merge!(dependencies_hash)
 
     hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
       tab = Tab.for_keg keg
@@ -2307,7 +2315,7 @@ class Formula
                .transform_values(&:presence)
                .compact
 
-    api_hash.merge(dep_hash)
+    api_hash.merge!(dep_hash)
 
     # Exclude default values.
     api_hash["revision"] = revision unless revision.zero?
