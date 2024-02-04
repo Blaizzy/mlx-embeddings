@@ -21,7 +21,7 @@ permissions:
 jobs:
   tapioca:
     if: github.repository == 'Homebrew/brew'
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
