@@ -18,7 +18,6 @@ AllCops:
     - "**/*.rbi"
   Exclude:
     - "Homebrew/sorbet/rbi/gems/**/*.rbi"
-    - "Homebrew/sorbet/rbi/hidden-definitions/*.rbi"
     - "Homebrew/bin/*"
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"

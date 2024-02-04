@@ -60,18 +60,6 @@ module Homebrew
         safe_system "bundle", "exec", "tapioca", "gem", *tapioca_args
         safe_system "bundle", "exec", "parlour"
 
-        safe_system({ "RUBYLIB" => "#{HOMEBREW_LIBRARY_PATH}/sorbet/hidden_definitions_hacks" },
-                    "bundle", "exec", "srb", "rbi", "hidden-definitions")
-        # HACK: we'll phase out hidden-definitions soon
-        tmp_file = "sorbet/rbi/hidden-definitions/hidden.rbi.tmp"
-        orig_file = "sorbet/rbi/hidden-definitions/hidden.rbi"
-        File.open(tmp_file, "w") do |out_file|
-          File.foreach(orig_file) do |line|
-            out_file.puts line unless line.include?("def self.new(*args, **arg, &blk); end")
-          end
-        end
-        File.rename(tmp_file, orig_file)
-
         if args.suggest_typed?
           ohai "Bumping Sorbet `typed` sigils..."
           # --sorbet needed because of https://github.com/Shopify/spoom/issues/488
