@@ -142,7 +142,7 @@ module SharedAudits
     metadata = JSON.parse(out)
     return if metadata.nil?
 
-    return "Uses deprecated mercurial support in Bitbucket" if metadata["scm"] == "hg"
+    return "Uses deprecated Mercurial support in Bitbucket" if metadata["scm"] == "hg"
 
     return "Bitbucket fork (not canonical repository)" unless metadata["parent"].nil?
 
