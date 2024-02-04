@@ -48,7 +48,7 @@ module Homebrew
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:prefpanedir]}`).",
           }],
           [:flag, "--qlplugindir=", {
-            description: "Target location for QuickLook Plugins " \
+            description: "Target location for Quick Look Plugins " \
                          "(default: `#{Cask::Config::DEFAULT_DIRS[:qlplugindir]}`).",
           }],
           [:flag, "--mdimporterdir=", {
