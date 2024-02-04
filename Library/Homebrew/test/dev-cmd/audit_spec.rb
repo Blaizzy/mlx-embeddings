@@ -415,7 +415,7 @@ module Homebrew
         EOS
       end
 
-      it "checks online and verifies that a standard license id is in the same exempted license group" \
+      it "checks online and verifies that a standard license id is in the same exempted license group " \
          "as what is indicated on its GitHub repo", :needs_network do
         fa = formula_auditor "cask", <<~RUBY, spdx_license_data: spdx_license_data, online: true, new_formula: true
           class Cask < Formula
@@ -429,7 +429,7 @@ module Homebrew
         expect(fa.problems).to be_empty
       end
 
-      it "checks online and verifies that a standard license array is in the same exempted license group" \
+      it "checks online and verifies that a standard license array is in the same exempted license group " \
          "as what is indicated on its GitHub repo", :needs_network do
         fa = formula_auditor "cask", <<~RUBY, spdx_license_data: spdx_license_data, online: true, new_formula: true
           class Cask < Formula

@@ -36,15 +36,15 @@ module Homebrew
       HOMEBREW_API_AUTO_UPDATE_SECS:             {
         description: "Check Homebrew's API for new formulae or cask data every " \
                      "`HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update " \
-                     "checks entirely with HOMEBREW_NO_AUTO_UPDATE.",
+                     "checks entirely with `HOMEBREW_NO_AUTO_UPDATE`.",
         default:     450,
       },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
         description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
                       "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
                       "disable auto-update entirely with `HOMEBREW_NO_AUTO_UPDATE`.",
-        default_text: "86400 (24 hours), 3600 (1 hour) if a developer command has been run " \
-                      "or 300 (5 minutes) if `HOMEBREW_NO_INSTALL_FROM_API` is set.",
+        default_text: "`86400` (24 hours), `3600` (1 hour) if a developer command has been run " \
+                      "or `300` (5 minutes) if `HOMEBREW_NO_INSTALL_FROM_API` is set.",
       },
       HOMEBREW_AUTOREMOVE:                       {
         description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
@@ -178,7 +178,7 @@ module Homebrew
       },
       HOMEBREW_EVAL_ALL:                         {
         description: "If set, `brew` commands evaluate all formulae and casks, executing their arbitrary code, by " \
-                     "default without requiring --eval-all. Required to cache formula and cask descriptions.",
+                     "default without requiring `--eval-all`. Required to cache formula and cask descriptions.",
         boolean:     true,
       },
       HOMEBREW_FAIL_LOG_LINES:                   {
@@ -356,7 +356,7 @@ module Homebrew
       },
       HOMEBREW_SORBET_RUNTIME:                   {
         description: "If set, enable runtime typechecking using Sorbet. " \
-                     "Set by default for HOMEBREW_DEVELOPER or when running some developer commands.",
+                     "Set by default for `HOMEBREW_DEVELOPER` or when running some developer commands.",
         boolean:     true,
       },
       HOMEBREW_SSH_CONFIG_PATH:                  {

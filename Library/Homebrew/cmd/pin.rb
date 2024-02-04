@@ -14,7 +14,7 @@ module Homebrew
         Pin the specified <formula>, preventing them from being upgraded when
         issuing the `brew upgrade` <formula> command. See also `unpin`.
 
-        Note: Other packages which depend on newer versions of a pinned formula
+        *Note:* Other packages which depend on newer versions of a pinned formula
         might not install or run correctly.
       EOS
 

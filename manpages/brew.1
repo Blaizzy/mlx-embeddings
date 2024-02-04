@@ -551,7 +551,7 @@ Disable/enable quarantining of downloads (default: enabled)\.
 .
 .TP
 \fB\-\-adopt\fR
-Adopt existing artifacts in the destination that are identical to those being installed\. Cannot be combined with \-\-force\.
+Adopt existing artifacts in the destination that are identical to those being installed\. Cannot be combined with \fB\-\-force\fR\.
 .
 .TP
 \fB\-\-skip\-cask\-deps\fR
@@ -759,7 +759,7 @@ Also include outdated casks including those with \fBauto_updates true\fR\.
 Pin the specified \fIformula\fR, preventing them from being upgraded when issuing the \fBbrew upgrade\fR \fIformula\fR command\. See also \fBunpin\fR\.
 .
 .P
-Note: Other packages which depend on newer versions of a pinned formula might not install or run correctly\.
+\fINote:\fR Other packages which depend on newer versions of a pinned formula might not install or run correctly\.
 .
 .SS "\fBpostinstall\fR, \fBpost_install\fR \fIinstalled_formula\fR [\.\.\.]"
 Rerun the post\-install steps for \fIformula\fR\.
@@ -874,7 +874,7 @@ Disable/enable quarantining of downloads (default: enabled)\.
 .
 .TP
 \fB\-\-adopt\fR
-Adopt existing artifacts in the destination that are identical to those being installed\. Cannot be combined with \-\-force\.
+Adopt existing artifacts in the destination that are identical to those being installed\. Cannot be combined with \fB\-\-force\fR\.
 .
 .TP
 \fB\-\-skip\-cask\-deps\fR
@@ -3021,7 +3021,7 @@ Prefix all download URLs, including those for bottles, with this value\. For exa
 \fBHOMEBREW_API_AUTO_UPDATE_SECS\fR
 .
 .br
-Check Homebrew\'s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_UPDATE_SECS\fR seconds\. Alternatively, disable API auto\-update checks entirely with HOMEBREW_NO_AUTO_UPDATE\.
+Check Homebrew\'s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_UPDATE_SECS\fR seconds\. Alternatively, disable API auto\-update checks entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fR\.
 .
 .IP
 \fIDefault:\fR \fB450\fR\.
@@ -3033,7 +3033,7 @@ Check Homebrew\'s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_U
 Run \fBbrew update\fR once every \fBHOMEBREW_AUTO_UPDATE_SECS\fR seconds before some commands, e\.g\. \fBbrew install\fR, \fBbrew upgrade\fR and \fBbrew tap\fR\. Alternatively, disable auto\-update entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fR\.
 .
 .IP
-\fIDefault:\fR 86400 (24 hours), 3600 (1 hour) if a developer command has been run or 300 (5 minutes) if \fBHOMEBREW_NO_INSTALL_FROM_API\fR is set\.
+\fIDefault:\fR \fB86400\fR (24 hours), \fB3600\fR (1 hour) if a developer command has been run or \fB300\fR (5 minutes) if \fBHOMEBREW_NO_INSTALL_FROM_API\fR is set\.
 .
 .TP
 \fBHOMEBREW_AUTOREMOVE\fR
@@ -3240,7 +3240,7 @@ Use this editor when editing a single formula, or several formulae in the same d
 \fBHOMEBREW_EVAL_ALL\fR
 .
 .br
-If set, \fBbrew\fR commands evaluate all formulae and casks, executing their arbitrary code, by default without requiring \-\-eval\-all\. Required to cache formula and cask descriptions\.
+If set, \fBbrew\fR commands evaluate all formulae and casks, executing their arbitrary code, by default without requiring \fB\-\-eval\-all\fR\. Required to cache formula and cask descriptions\.
 .
 .TP
 \fBHOMEBREW_FAIL_LOG_LINES\fR
@@ -3486,7 +3486,7 @@ If set along with \fBHOMEBREW_DEVELOPER\fR, do not use bottles from older versio
 \fBHOMEBREW_SORBET_RUNTIME\fR
 .
 .br
-If set, enable runtime typechecking using Sorbet\. Set by default for HOMEBREW_DEVELOPER or when running some developer commands\.
+If set, enable runtime typechecking using Sorbet\. Set by default for \fBHOMEBREW_DEVELOPER\fR or when running some developer commands\.
 .
 .TP
 \fBHOMEBREW_SSH_CONFIG_PATH\fR
