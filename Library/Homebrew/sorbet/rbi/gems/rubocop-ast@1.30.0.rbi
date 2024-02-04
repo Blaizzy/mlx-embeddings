@@ -6027,6 +6027,9 @@ class RuboCop::AST::ProcessedSource
   # source://rubocop-ast//lib/rubocop/ast/processed_source.rb#49
   def lines; end
 
+  # source://rubocop-md/1.2.2/lib/rubocop/markdown/rubocop_ext.rb#95
+  def parse(src, *args); end
+
   # Returns the value of attribute parser_error.
   #
   # source://rubocop-ast//lib/rubocop/ast/processed_source.rb#18
@@ -6088,9 +6091,6 @@ class RuboCop::AST::ProcessedSource
 
   # source://rubocop-ast//lib/rubocop/ast/processed_source.rb#299
   def last_token_index(range_or_node); end
-
-  # source://rubocop-ast//lib/rubocop/ast/processed_source.rb#196
-  def parse(source, ruby_version); end
 
   # source://rubocop-ast//lib/rubocop/ast/processed_source.rb#230
   def parser_class(ruby_version); end
