@@ -355,11 +355,11 @@ module FormulaCellarChecks
     else
       true
     end
-    return if mismatches.empty? && universal_binaries_expected
+    return if T.must(mismatches).empty? && universal_binaries_expected
 
     mismatches_expected = formula.tap.blank? ||
                           formula.tap.audit_exception(:mismatched_binary_allowlist, formula.name)
-    return if compatible_universal_binaries.empty? && mismatches_expected
+    return if T.must(compatible_universal_binaries).empty? && mismatches_expected
 
     return if universal_binaries_expected && mismatches_expected
 

@@ -63,7 +63,7 @@ module SharedEnvExtension
   sig { returns(T::Hash[String, String]) }
   def remove_cc_etc
     keys = %w[CC CXX OBJC OBJCXX LD CPP CFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS LDFLAGS CPPFLAGS]
-    keys.to_h { |key| [key, delete(key)] }
+    keys.to_h { |key| [key, T.must(delete(key))] }
   end
 
   sig { params(newflags: String).void }

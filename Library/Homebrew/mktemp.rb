@@ -68,7 +68,7 @@ class Mktemp
     begin
       chown(nil, group_id, @tmpdir)
     rescue Errno::EPERM
-      opoo "Failed setting group \"#{T.must(Etc.getgrgid(group_id)).name}\" on #{@tmpdir}"
+      opoo "Failed setting group \"#{T.unsafe(Etc.getgrgid(group_id)).name}\" on #{@tmpdir}"
     end
 
     begin

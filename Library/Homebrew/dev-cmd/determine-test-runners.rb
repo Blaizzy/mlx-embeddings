@@ -55,7 +55,7 @@ module Homebrew
 
     github_output = ENV.fetch("GITHUB_OUTPUT")
     File.open(github_output, "a") do |f|
-      f.puts("runners=#{runners.to_json}")
+      f.puts("runners=#{T.unsafe(runners).to_json}")
       f.puts("runners_present=#{runners.present?}")
     end
   end

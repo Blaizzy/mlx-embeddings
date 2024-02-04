@@ -192,7 +192,7 @@ class SoftwareSpec
   def uses_from_macos(deps, bounds = {})
     if deps.is_a?(Hash)
       bounds = deps.dup
-      deps = [bounds.shift].to_h
+      deps = [T.unsafe(bounds).shift].to_h
     end
 
     spec, tags = deps.is_a?(Hash) ? deps.first : deps
