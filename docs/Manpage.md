@@ -392,7 +392,7 @@ is already installed but outdated.
 * `--[no-]quarantine`:
   Disable/enable quarantining of downloads (default: enabled).
 * `--adopt`:
-  Adopt existing artifacts in the destination that are identical to those being installed. Cannot be combined with --force.
+  Adopt existing artifacts in the destination that are identical to those being installed. Cannot be combined with `--force`.
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 * `--zap`:
@@ -541,7 +541,7 @@ information is displayed in interactive shells, and suppressed otherwise.
 Pin the specified *`formula`*, preventing them from being upgraded when
 issuing the `brew upgrade` *`formula`* command. See also `unpin`.
 
-Note: Other packages which depend on newer versions of a pinned formula
+*Note:* Other packages which depend on newer versions of a pinned formula
 might not install or run correctly.
 
 ### `postinstall`, `post_install` *`installed_formula`* [...]
@@ -624,7 +624,7 @@ reinstalled formulae or, every 30 days, for all formulae.
 * `--[no-]quarantine`:
   Disable/enable quarantining of downloads (default: enabled).
 * `--adopt`:
-  Adopt existing artifacts in the destination that are identical to those being installed. Cannot be combined with --force.
+  Adopt existing artifacts in the destination that are identical to those being installed. Cannot be combined with `--force`.
 * `--skip-cask-deps`:
   Skip installing cask dependencies.
 * `--zap`:
@@ -2122,14 +2122,14 @@ command execution e.g. `$(cat file)`.
   <br>Prefix all download URLs, including those for bottles, with this value. For example, `HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a formula with the URL `https://example.com/foo.tar.gz` to instead download from `http://localhost:8080/https://example.com/foo.tar.gz`. Bottle URLs however, have their domain replaced with this prefix. This results in e.g. `https://ghcr.io/v2/homebrew/core/gettext/manifests/0.21` to instead be downloaded from `http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`
 
 - `HOMEBREW_API_AUTO_UPDATE_SECS`
-  <br>Check Homebrew's API for new formulae or cask data every `HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update checks entirely with HOMEBREW_NO_AUTO_UPDATE.
+  <br>Check Homebrew's API for new formulae or cask data every `HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update checks entirely with `HOMEBREW_NO_AUTO_UPDATE`.
 
   *Default:* `450`.
 
 - `HOMEBREW_AUTO_UPDATE_SECS`
   <br>Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, disable auto-update entirely with `HOMEBREW_NO_AUTO_UPDATE`.
 
-  *Default:* 86400 (24 hours), 3600 (1 hour) if a developer command has been run or 300 (5 minutes) if `HOMEBREW_NO_INSTALL_FROM_API` is set.
+  *Default:* `86400` (24 hours), `3600` (1 hour) if a developer command has been run or `300` (5 minutes) if `HOMEBREW_NO_INSTALL_FROM_API` is set.
 
 - `HOMEBREW_AUTOREMOVE`
   <br>If set, calls to `brew cleanup` and `brew uninstall` will automatically remove unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set, `brew cleanup` will start running `brew autoremove` periodically.
@@ -2240,7 +2240,7 @@ command execution e.g. `$(cat file)`.
   *Default:* `$EDITOR` or `$VISUAL`.
 
 - `HOMEBREW_EVAL_ALL`
-  <br>If set, `brew` commands evaluate all formulae and casks, executing their arbitrary code, by default without requiring --eval-all. Required to cache formula and cask descriptions.
+  <br>If set, `brew` commands evaluate all formulae and casks, executing their arbitrary code, by default without requiring `--eval-all`. Required to cache formula and cask descriptions.
 
 - `HOMEBREW_FAIL_LOG_LINES`
   <br>Output this many lines of output on formula `system` failures.
@@ -2368,7 +2368,7 @@ command execution e.g. `$(cat file)`.
   <br>If set along with `HOMEBREW_DEVELOPER`, do not use bottles from older versions of macOS. This is useful in development on new macOS versions.
 
 - `HOMEBREW_SORBET_RUNTIME`
-  <br>If set, enable runtime typechecking using Sorbet. Set by default for HOMEBREW_DEVELOPER or when running some developer commands.
+  <br>If set, enable runtime typechecking using Sorbet. Set by default for `HOMEBREW_DEVELOPER` or when running some developer commands.
 
 - `HOMEBREW_SSH_CONFIG_PATH`
   <br>If set, Homebrew will use the given config file instead of `~/.ssh/config` when fetching Git repositories over SSH.

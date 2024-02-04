@@ -1933,7 +1933,7 @@ class Formula
   # @private
   def self.all(eval_all: false)
     if !eval_all && !Homebrew::EnvConfig.eval_all?
-      raise ArgumentError, "Formula#all without --eval-all or HOMEBREW_EVAL_ALL"
+      raise ArgumentError, "Formula#all without `--eval-all` or HOMEBREW_EVAL_ALL"
     end
 
     (core_names + tap_files).map do |name_or_file|

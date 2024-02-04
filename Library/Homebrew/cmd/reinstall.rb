@@ -86,7 +86,7 @@ module Homebrew
         }],
         [:switch, "--adopt", {
           description: "Adopt existing artifacts in the destination that are identical to those being installed. " \
-                       "Cannot be combined with --force.",
+                       "Cannot be combined with `--force`.",
         }],
         [:switch, "--skip-cask-deps", {
           description: "Skip installing cask dependencies.",

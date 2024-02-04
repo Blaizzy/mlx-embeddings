@@ -28,7 +28,7 @@ module Utils
       return if @print_backtrace_message
 
       opoo "Removed Sorbet lines from backtrace!"
-      puts "Rerun with --verbose to see the original backtrace" unless Homebrew::EnvConfig.no_env_hints?
+      puts "Rerun with `--verbose` to see the original backtrace" unless Homebrew::EnvConfig.no_env_hints?
 
       @print_backtrace_message = true
     end

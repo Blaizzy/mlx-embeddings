@@ -326,7 +326,7 @@ module Homebrew
         return ofail "Formula not installed or up-to-date: #{formula.full_name}"
       end
       unless Utils::Bottles.built_as? formula
-        return ofail "Formula was not installed with --build-bottle: #{formula.full_name}"
+        return ofail "Formula was not installed with `--build-bottle`: #{formula.full_name}"
       end
     end
 
