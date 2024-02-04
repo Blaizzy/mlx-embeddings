@@ -8,22 +8,23 @@ module RuboCop
         extend AutoCorrector
 
         def on_send(node)
-          return unless node.method_name == :zap
+          return if node.method_name != :zap
 
           node.each_descendant(:pair).each do |pair|
             symbols = pair.children.select(&:sym_type?).map(&:value)
             next unless symbols.include?(:trash)
 
             pair.each_descendant(:array).each do |array|
-
               regex = /sfl\d"$/
+              message = "Use a glob (*) instead of a specific version (ie. sfl2) for trashing Shared File List paths"
 
               array.children.each do |item|
-               next unless item.source.match?(regex)
+                next unless item.source.match?(regex)
 
-               corrected_item = item.source.sub(/sfl\d"$/, "sfl*\"")
+                corrected_item = item.source.sub(/sfl\d"$/, "sfl*\"")
 
-               add_offense(item, message: "Use a glob (*) instead of a specific version (ie. sfl2) for trashing Shared File List paths") do |corrector|
+                add_offense(item,
+                            message: message) do |corrector|
                   corrector.replace(item, corrected_item)
                 end
               end
