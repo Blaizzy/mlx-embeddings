@@ -1719,7 +1719,7 @@ These options are applicable to the `install`, `reinstall`, and `upgrade` subcom
   Target location for Preference Panes (default: `~/Library/PreferencePanes`).
 
 * `--qlplugindir`:
-  Target location for QuickLook Plugins (default: `~/Library/QuickLook`).
+  Target location for Quick Look Plugins (default: `~/Library/QuickLook`).
 
 * `--mdimporterdir`:
   Target location for Spotlight Plugins (default: `~/Library/Spotlight`).

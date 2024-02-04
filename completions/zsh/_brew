@@ -1061,7 +1061,7 @@ _brew_instal() {
     '(--cask --ignore-dependencies)--only-dependencies[Install the dependencies with specified options but do not install the formula itself]' \
     '(--cask)--overwrite[Delete files that already exist in the prefix while linking]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
-    '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
+    '(--formula)--qlplugindir[Target location for Quick Look Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quiet[Make some output more quiet]' \
     '(--formula)--require-sha[Require all casks to have a checksum]' \
@@ -1119,7 +1119,7 @@ _brew_install() {
     '(--cask --ignore-dependencies)--only-dependencies[Install the dependencies with specified options but do not install the formula itself]' \
     '(--cask)--overwrite[Delete files that already exist in the prefix while linking]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
-    '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
+    '(--formula)--qlplugindir[Target location for Quick Look Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quiet[Make some output more quiet]' \
     '(--formula)--require-sha[Require all casks to have a checksum]' \
@@ -1594,7 +1594,7 @@ _brew_reinstall() {
     '--no-binaries[Disable/enable linking of helper executables (default: enabled)]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
-    '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
+    '(--formula)--qlplugindir[Target location for Quick Look Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quiet[Make some output more quiet]' \
     '(--formula)--require-sha[Require all casks to have a checksum]' \
@@ -2069,7 +2069,7 @@ _brew_upgrade() {
     '--no-binaries[Disable/enable linking of helper executables (default: enabled)]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
-    '(--formula)--qlplugindir[Target location for QuickLook Plugins (default: `~/Library/QuickLook`)]' \
+    '(--formula)--qlplugindir[Target location for Quick Look Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
     '--quiet[Make some output more quiet]' \
     '(--formula)--require-sha[Require all casks to have a checksum]' \
