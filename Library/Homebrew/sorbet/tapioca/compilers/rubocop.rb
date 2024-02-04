@@ -3,7 +3,6 @@
 
 require "method_source"
 require "rubocop"
-require_relative "../../../extend/string" # placate rubocop
 require_relative "../../../rubocops"
 
 module Tapioca
@@ -23,7 +22,7 @@ module Tapioca
 
           path = T.must(Object.const_source_location(klass.to_s)).fetch(0).to_s
           # exclude vendored code, to avoid contradicting their RBI files
-          path.exclude?("/vendor/bundle/ruby/") &&
+          !path.include?("/vendor/bundle/ruby/") &&
             # exclude source code that already has an RBI file
             !Pathname("#{path}i").exist? &&
             # exclude source code that doesn't use the DSLs
