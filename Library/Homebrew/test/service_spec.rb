@@ -1044,7 +1044,7 @@ describe Homebrew::Service do
     end
   end
 
-  describe "#serialize" do
+  describe "#to_hash" do
     let(:serialized_hash) do
       {
         environment_variables: {
@@ -1072,12 +1072,12 @@ describe Homebrew::Service do
       end
 
       Formula.generating_hash!
-      expect(f.service.serialize).to eq(serialized_hash)
+      expect(f.service.to_hash).to eq(serialized_hash)
       Formula.generated_hash!
     end
   end
 
-  describe ".deserialize" do
+  describe ".from_hash" do
     let(:serialized_hash) do
       {
         "name"                  => {
@@ -1111,12 +1111,12 @@ describe Homebrew::Service do
     end
 
     it "replaces placeholders with local paths" do
-      expect(described_class.deserialize(serialized_hash)).to eq(deserialized_hash)
+      expect(described_class.from_hash(serialized_hash)).to eq(deserialized_hash)
     end
 
     describe "run command" do
       it "handles String argument correctly" do
-        expect(described_class.deserialize({
+        expect(described_class.from_hash({
           "run" => "$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd",
         })).to eq({
           run: "#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd",
@@ -1124,7 +1124,7 @@ describe Homebrew::Service do
       end
 
       it "handles Array argument correctly" do
-        expect(described_class.deserialize({
+        expect(described_class.from_hash({
           "run" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "--option"],
         })).to eq({
           run: ["#{HOMEBREW_PREFIX}/opt/formula_name/bin/beanstalkd", "--option"],
@@ -1132,7 +1132,7 @@ describe Homebrew::Service do
       end
 
       it "handles Hash argument correctly" do
-        expect(described_class.deserialize({
+        expect(described_class.from_hash({
           "run" => {
             "linux" => "$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd",
             "macos" => ["$HOMEBREW_PREFIX/opt/formula_name/bin/beanstalkd", "--option"],

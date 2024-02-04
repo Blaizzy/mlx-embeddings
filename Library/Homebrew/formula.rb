@@ -2214,15 +2214,6 @@ class Formula
 
   # @private
   def to_hash
-    # Create a hash of spec names (stable/head) to the list of dependencies under each
-    dependencies = self.class.spec_syms.to_h do |sym|
-      [sym, send(sym)&.declared_deps]
-    end
-    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
-    requirements = self.class.spec_syms.to_h do |sym|
-      [sym, send(sym)&.requirements]
-    end
-
     hsh = {
       "name"                     => name,
       "full_name"                => full_name,
@@ -2239,7 +2230,7 @@ class Formula
         "head"   => head&.version&.to_s,
         "bottle" => bottle_defined?,
       },
-      "urls"                     => {},
+      "urls"                     => urls_hash,
       "revision"                 => revision,
       "version_scheme"           => version_scheme,
       "bottle"                   => {},
@@ -2254,12 +2245,11 @@ class Formula
       "optional_dependencies"    => [],
       "uses_from_macos"          => [],
       "uses_from_macos_bounds"   => [],
-      "requirements"             => [],
+      "requirements"             => serialized_requirements,
       "conflicts_with"           => conflicts.map(&:name),
       "conflicts_with_reasons"   => conflicts.map(&:reason),
       "link_overwrite"           => self.class.link_overwrite_paths.to_a,
-      "caveats"                  => caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
-                                           &.gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER),
+      "caveats"                  => caveats_with_placeholders,
       "installed"                => [],
       "linked_keg"               => linked_version&.to_s,
       "pinned"                   => pinned?,
@@ -2271,46 +2261,265 @@ class Formula
       "disable_date"             => disable_date,
       "disable_reason"           => disable_reason,
       "post_install_defined"     => post_install_defined?,
-      "service"                  => (service.serialize if service?),
+      "service"                  => (service.to_hash if service?),
       "tap_git_head"             => tap_git_head,
       "ruby_source_path"         => ruby_source_path,
       "ruby_source_checksum"     => {},
     }
 
+    hsh["bottle"]["stable"] = bottle_hash if stable && bottle_defined?
+
+    hsh["options"] = options.map do |opt|
+      { "option" => opt.flag, "description" => opt.description }
+    end
+
+    hsh.merge!(dependencies_hash)
+
+    hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
+      tab = Tab.for_keg keg
+      {
+        "version"                 => keg.version.to_s,
+        "used_options"            => tab.used_options.as_flags,
+        "built_as_bottle"         => tab.built_as_bottle,
+        "poured_from_bottle"      => tab.poured_from_bottle,
+        "time"                    => tab.time,
+        "runtime_dependencies"    => tab.runtime_dependencies,
+        "installed_as_dependency" => tab.installed_as_dependency,
+        "installed_on_request"    => tab.installed_on_request,
+      }
+    end
+
+    if (source_checksum = ruby_source_checksum)
+      hsh["ruby_source_checksum"] = {
+        "sha256" => source_checksum.hexdigest,
+      }
+    end
+
+    hsh
+  end
+
+  # @private
+  def to_api_hash
+    api_hash = {
+      "desc"                 => desc,
+      "license"              => SPDX.license_expression_to_string(license),
+      "homepage"             => homepage,
+      "urls"                 => urls_hash.transform_values(&:compact),
+      "post_install_defined" => post_install_defined?,
+      "ruby_source_path"     => ruby_source_path,
+      "ruby_source_sha256"   => ruby_source_checksum&.hexdigest,
+    }
+
+    dep_hash = dependencies_hash
+               .except("recommended_dependencies", "optional_dependencies")
+               .transform_values(&:presence)
+               .compact
+
+    api_hash.merge!(dep_hash)
+
+    # Exclude default values.
+    api_hash["revision"] = revision unless revision.zero?
+    api_hash["version_scheme"] = version_scheme unless version_scheme.zero?
+
+    # Optional values.
+    api_hash["keg_only_reason"] = keg_only_reason.to_hash if keg_only_reason
+    api_hash["pour_bottle_only_if"] = self.class.pour_bottle_only_if.to_s if self.class.pour_bottle_only_if
+    api_hash["link_overwrite"] = self.class.link_overwrite_paths.to_a if self.class.link_overwrite_paths.present?
+    api_hash["caveats"] = caveats_with_placeholders if caveats
+    api_hash["service"] = service.to_hash if service?
+
+    if stable
+      api_hash["version"] = stable&.version&.to_s
+      api_hash["bottle"] = bottle_hash(compact_for_api: true) if bottle_defined?
+    end
+
+    if (versioned_formulae_list = versioned_formulae.presence)
+      # Could we just use `versioned_formulae_names` here instead?
+      api_hash["versioned_formulae"] = versioned_formulae_list.map(&:name)
+    end
+
+    if (requirements_array = serialized_requirements.presence)
+      api_hash["requirements"] = requirements_array
+    end
+
+    if conflicts.present?
+      api_hash["conflicts_with"] = conflicts.map(&:name)
+      api_hash["conflicts_with_reasons"] = conflicts.map(&:reason)
+    end
+
+    if deprecation_date
+      api_hash["deprecation_date"] = deprecation_date
+      api_hash["deprecation_reason"] = deprecation_reason
+    end
+
+    if disable_date
+      api_hash["disable_date"] = disable_date
+      api_hash["disable_reason"] = disable_reason
+    end
+
+    api_hash
+  end
+
+  # @private
+  def to_hash_with_variations(hash_method: :to_hash)
+    if loaded_from_api? && hash_method == :to_api_hash
+      raise ArgumentError, "API Hash must be generated from Ruby source files"
+    end
+
+    namespace_prefix = case hash_method
+    when :to_hash
+      "Variations"
+    when :to_api_hash
+      "APIVariations"
+    else
+      raise ArgumentError, "Unknown hash method #{hash_method.inspect}"
+    end
+
+    hash = public_send(hash_method)
+
+    # Take from API, merging in local install status.
+    if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
+      json_formula = Homebrew::API::Formula.all_formulae[name].dup
+      return json_formula.merge(
+        hash.slice("name", "installed", "linked_keg", "pinned", "outdated"),
+      )
+    end
+
+    variations = {}
+
+    if path.exist? && on_system_blocks_exist?
+      formula_contents = path.read
+      OnSystem::ALL_OS_ARCH_COMBINATIONS.each do |os, arch|
+        bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
+        next unless bottle_tag.valid_combination?
+
+        Homebrew::SimulateSystem.with os: os, arch: arch do
+          variations_namespace = Formulary.class_s("#{namespace_prefix}#{bottle_tag.to_sym.capitalize}")
+          variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
+                                                            flags: self.class.build_flags, ignore_errors: true)
+          variations_formula = variations_formula_class.new(name, path, :stable,
+                                                            alias_path: alias_path, force_bottle: force_bottle)
+
+          variations_formula.public_send(hash_method).each do |key, value|
+            next if value.to_s == hash[key].to_s
+
+            variations[bottle_tag.to_sym] ||= {}
+            variations[bottle_tag.to_sym][key] = value
+          end
+        end
+      end
+    end
+
+    hash["variations"] = variations if hash_method != :to_api_hash || variations.present?
+    hash
+  end
+
+  # Returns the bottle information for a formula.
+  def bottle_hash(compact_for_api: false)
+    bottle_spec = T.must(stable).bottle_specification
+
+    hash = {}
+    hash["rebuild"] = bottle_spec.rebuild if !compact_for_api || !bottle_spec.rebuild.zero?
+    hash["root_url"] = bottle_spec.root_url unless compact_for_api
+    hash["files"] = {}
+
+    bottle_spec.collector.each_tag do |tag|
+      tag_spec = bottle_spec.collector.specification_for(tag, no_older_versions: true)
+      os_cellar = tag_spec.cellar
+      os_cellar = os_cellar.inspect if os_cellar.is_a?(Symbol)
+      checksum = tag_spec.checksum.hexdigest
+
+      file_hash = {}
+      file_hash["cellar"] = os_cellar
+      unless compact_for_api
+        filename = Bottle::Filename.create(self, tag, bottle_spec.rebuild)
+        path, = Utils::Bottles.path_resolved_basename(bottle_spec.root_url, name, checksum, filename)
+        file_hash["url"] = "#{bottle_spec.root_url}/#{path}"
+      end
+      file_hash["sha256"] = checksum
+
+      hash["files"][tag.to_sym] = file_hash
+    end
+    hash
+  end
+
+  # @private
+  def urls_hash
+    hash = {}
+
     if stable
       stable_spec = T.must(stable)
-      hsh["urls"]["stable"] = {
+      hash["stable"] = {
         "url"      => stable_spec.url,
         "tag"      => stable_spec.specs[:tag],
         "revision" => stable_spec.specs[:revision],
         "using"    => (stable_spec.using if stable_spec.using.is_a?(Symbol)),
         "checksum" => stable_spec.checksum&.to_s,
       }
-
-      hsh["bottle"]["stable"] = bottle_hash if bottle_defined?
     end
 
     if head
-      hsh["urls"]["head"] = {
+      hash["head"] = {
         "url"    => T.must(head).url,
         "branch" => T.must(head).specs[:branch],
         "using"  => (T.must(head).using if T.must(head).using.is_a?(Symbol)),
       }
     end
 
-    hsh["options"] = options.map do |opt|
-      { "option" => opt.flag, "description" => opt.description }
+    hash
+  end
+
+  # @private
+  def serialized_requirements
+    requirements = self.class.spec_syms.to_h do |sym|
+      [sym, send(sym)&.requirements]
     end
+
+    merge_spec_dependables(requirements).map do |data|
+      req = data[:dependable]
+      req_name = req.name.dup
+      req_name.prepend("maximum_") if req.respond_to?(:comparator) && req.comparator == "<="
+      req_version = if req.respond_to?(:version)
+        req.version
+      elsif req.respond_to?(:arch)
+        req.arch
+      end
+      {
+        "name"     => req_name,
+        "cask"     => req.cask,
+        "download" => req.download,
+        "version"  => req_version,
+        "contexts" => req.tags,
+        "specs"    => data[:specs],
+      }
+    end
+  end
+
+  # @private
+  def caveats_with_placeholders
+    caveats&.gsub(HOMEBREW_PREFIX, HOMEBREW_PREFIX_PLACEHOLDER)
+           &.gsub(HOMEBREW_CELLAR, HOMEBREW_CELLAR_PLACEHOLDER)
+  end
+
+  # @private
+  def dependencies_hash
+    # Create a hash of spec names (stable/head) to the list of dependencies under each
+    dependencies = self.class.spec_syms.to_h do |sym|
+      [sym, send(sym)&.declared_deps]
+    end
+    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
+
+    hash = {}
 
     dependencies.each do |spec_sym, spec_deps|
       next if spec_deps.nil?
 
       dep_hash = if spec_sym == :stable
-        hsh
+        hash
       else
         next if spec_deps == dependencies[:stable]
 
-        hsh["#{spec_sym}_dependencies"] ||= {}
+        hash["#{spec_sym}_dependencies"] ||= {}
       end
 
       dep_hash["build_dependencies"] = spec_deps.select(&:build?)
@@ -2350,113 +2559,6 @@ class Formula
       dep_hash["uses_from_macos_bounds"] = uses_from_macos_deps.map(&:bounds)
     end
 
-    hsh["requirements"] = merge_spec_dependables(requirements).map do |data|
-      req = data[:dependable]
-      req_name = req.name.dup
-      req_name.prepend("maximum_") if req.respond_to?(:comparator) && req.comparator == "<="
-      req_version = if req.respond_to?(:version)
-        req.version
-      elsif req.respond_to?(:arch)
-        req.arch
-      end
-      {
-        "name"     => req_name,
-        "cask"     => req.cask,
-        "download" => req.download,
-        "version"  => req_version,
-        "contexts" => req.tags,
-        "specs"    => data[:specs],
-      }
-    end
-
-    hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
-      tab = Tab.for_keg keg
-      {
-        "version"                 => keg.version.to_s,
-        "used_options"            => tab.used_options.as_flags,
-        "built_as_bottle"         => tab.built_as_bottle,
-        "poured_from_bottle"      => tab.poured_from_bottle,
-        "time"                    => tab.time,
-        "runtime_dependencies"    => tab.runtime_dependencies,
-        "installed_as_dependency" => tab.installed_as_dependency,
-        "installed_on_request"    => tab.installed_on_request,
-      }
-    end
-
-    if (source_checksum = ruby_source_checksum)
-      hsh["ruby_source_checksum"] = {
-        "sha256" => source_checksum.hexdigest,
-      }
-    end
-
-    hsh
-  end
-
-  # @private
-  def to_hash_with_variations
-    hash = to_hash
-
-    # Take from API, merging in local install status.
-    if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
-      json_formula = Homebrew::API::Formula.all_formulae[name].dup
-      return json_formula.merge(
-        hash.slice("name", "installed", "linked_keg", "pinned", "outdated"),
-      )
-    end
-
-    variations = {}
-
-    if path.exist? && on_system_blocks_exist?
-      formula_contents = path.read
-      OnSystem::ALL_OS_ARCH_COMBINATIONS.each do |os, arch|
-        bottle_tag = Utils::Bottles::Tag.new(system: os, arch: arch)
-        next unless bottle_tag.valid_combination?
-
-        Homebrew::SimulateSystem.with os: os, arch: arch do
-          variations_namespace = Formulary.class_s("Variations#{bottle_tag.to_sym.capitalize}")
-          variations_formula_class = Formulary.load_formula(name, path, formula_contents, variations_namespace,
-                                                            flags: self.class.build_flags, ignore_errors: true)
-          variations_formula = variations_formula_class.new(name, path, :stable,
-                                                            alias_path: alias_path, force_bottle: force_bottle)
-
-          variations_formula.to_hash.each do |key, value|
-            next if value.to_s == hash[key].to_s
-
-            variations[bottle_tag.to_sym] ||= {}
-            variations[bottle_tag.to_sym][key] = value
-          end
-        end
-      end
-    end
-
-    hash["variations"] = variations
-    hash
-  end
-
-  # Returns the bottle information for a formula.
-  def bottle_hash
-    bottle_spec = T.must(stable).bottle_specification
-    hash = {
-      "rebuild"  => bottle_spec.rebuild,
-      "root_url" => bottle_spec.root_url,
-      "files"    => {},
-    }
-    bottle_spec.collector.each_tag do |tag|
-      tag_spec = bottle_spec.collector.specification_for(tag, no_older_versions: true)
-      os_cellar = tag_spec.cellar
-      os_cellar = os_cellar.inspect if os_cellar.is_a?(Symbol)
-
-      checksum = tag_spec.checksum.hexdigest
-      filename = Bottle::Filename.create(self, tag, bottle_spec.rebuild)
-      path, = Utils::Bottles.path_resolved_basename(bottle_spec.root_url, name, checksum, filename)
-      url = "#{bottle_spec.root_url}/#{path}"
-
-      hash["files"][tag.to_sym] = {
-        "cellar" => os_cellar,
-        "url"    => url,
-        "sha256" => checksum,
-      }
-    end
     hash
   end
 
