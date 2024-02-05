@@ -25,7 +25,7 @@ For most PRs that make formula modifications, you can simply approve the PR and 
 
 Certain PRs may not be merged automatically by [@BrewTestBot](https://github.com/BrewTestBot), even after they've been approved. This includes PRs with the `new formula`, `automerge-skip`, and `linux-only` labels. To trigger a merge for these PRs, run `brew pr-publish`.
 
-PRs modifying formulae that don't need bottles or making changes that don't require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows. See the [table below](#how-to-merge-without-bottles) for more details.
+PRs modifying formulae that don't need bottles or making changes that don't require new bottles to be pulled should use GitHub's squash & merge or rebase & merge workflows.
 
 Otherwise, you should use `brew pr-pull` (or `rebase`/`cherry-pick` contributions).
 
@@ -34,10 +34,6 @@ Don’t `rebase` until you finally `push`. Once `master` is pushed, you can’t 
 Cherry-picking changes the date of the commit, which kind of sucks.
 
 Don’t `merge` unclean branches. So if someone is still learning `git` and their branch is filled with nonsensical merges, then `rebase` and squash the commits. Our main branch history should be useful to other people, not confusing.
-
-Here’s a flowchart for managing a PR which is ready to merge:
-
-![Flowchart for managing pull requests](assets/img/docs/managing-pull-requests.drawio.svg)
 
 Only one maintainer is necessary to approve and merge the addition of a new or updated formula which passes CI. However, if the formula addition or update proves controversial the maintainer who adds it will be expected to answer requests and fix problems that arise with it in future.
 
