@@ -4521,7 +4521,7 @@ class RSpec::Matchers::BuiltIn::Compound < ::RSpec::Matchers::BuiltIn::BaseMatch
   def evaluator; end
 
   # @api private
-  # @return [RSpec::Matchers::ExpectedsForMultipleDiffs]
+  # @return [RSpec::Matchers::MultiMatcherDiff]
   #
   # source://rspec-expectations//lib/rspec/matchers/built_in/compound.rb#55
   def expected; end
@@ -7979,91 +7979,6 @@ module RSpec::Matchers::EnglishPhrasing
   end
 end
 
-# Handles list of expected values when there is a need to render
-# multiple diffs. Also can handle one value.
-#
-# @api private
-#
-# source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#6
-class RSpec::Matchers::ExpectedsForMultipleDiffs
-  # @api private
-  # @return [ExpectedsForMultipleDiffs] a new instance of ExpectedsForMultipleDiffs
-  #
-  # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#16
-  def initialize(expected_list); end
-
-  # Returns message with diff(s) appended for provided differ
-  # factory and actual value if there are any
-  #
-  # @api private
-  # @param message [String] original failure message
-  # @param differ [Proc]
-  # @param actual [Any] value
-  # @return [String]
-  #
-  # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#47
-  def message_with_diff(message, differ, actual); end
-
-  private
-
-  # @api private
-  #
-  # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#68
-  def diffs(differ, actual); end
-
-  class << self
-    # Wraps provided matcher list in instance of
-    # ExpectedForMultipleDiffs.
-    #
-    # @api private
-    # @param matchers [Array<Any>] list of matchers to wrap
-    # @return [RSpec::Matchers::ExpectedsForMultipleDiffs]
-    #
-    # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#36
-    def for_many_matchers(matchers); end
-
-    # Wraps provided expected value in instance of
-    # ExpectedForMultipleDiffs. If provided value is already an
-    # ExpectedForMultipleDiffs then it just returns it.
-    #
-    # @api private
-    # @param expected [Any] value to be wrapped
-    # @return [RSpec::Matchers::ExpectedsForMultipleDiffs]
-    #
-    # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#26
-    def from(expected); end
-
-    private
-
-    # @api private
-    #
-    # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#58
-    def diff_label_for(matcher); end
-
-    # @api private
-    #
-    # source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#62
-    def truncated(description); end
-  end
-end
-
-# Default diff label when there is only one matcher in diff
-# output
-#
-# @api private
-# @private
-#
-# source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#10
-RSpec::Matchers::ExpectedsForMultipleDiffs::DEFAULT_DIFF_LABEL = T.let(T.unsafe(nil), String)
-
-# Maximum readable matcher description length
-#
-# @api private
-# @private
-#
-# source://rspec-expectations//lib/rspec/matchers/expecteds_for_multiple_diffs.rb#14
-RSpec::Matchers::ExpectedsForMultipleDiffs::DESCRIPTION_MAX_LENGTH = T.let(T.unsafe(nil), Integer)
-
 # source://rspec-expectations//lib/rspec/matchers.rb#958
 RSpec::Matchers::HAS_REGEX = T.let(T.unsafe(nil), Regexp)
 
@@ -8098,3 +8013,88 @@ class RSpec::Matchers::MatcherDelegator
   # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#18
   def respond_to_missing?(name, include_all = T.unsafe(nil)); end
 end
+
+# Handles list of expected and actual value pairs when there is a need
+# to render multiple diffs. Also can handle one pair.
+#
+# @api private
+#
+# source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#6
+class RSpec::Matchers::MultiMatcherDiff
+  # @api private
+  # @return [MultiMatcherDiff] a new instance of MultiMatcherDiff
+  #
+  # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#16
+  def initialize(expected_list); end
+
+  # Returns message with diff(s) appended for provided differ
+  # factory and actual value if there are any
+  #
+  # @api private
+  # @param message [String] original failure message
+  # @param differ [Proc]
+  # @return [String]
+  #
+  # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#47
+  def message_with_diff(message, differ); end
+
+  private
+
+  # @api private
+  #
+  # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#68
+  def diffs(differ); end
+
+  class << self
+    # Wraps provided matcher list in instance of
+    # MultiMatcherDiff.
+    #
+    # @api private
+    # @param matchers [Array<Any>] list of matchers to wrap
+    # @return [RSpec::Matchers::MultiMatcherDiff]
+    #
+    # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#37
+    def for_many_matchers(matchers); end
+
+    # Wraps provided expected value in instance of
+    # MultiMatcherDiff. If provided value is already an
+    # MultiMatcherDiff then it just returns it.
+    #
+    # @api private
+    # @param expected [Any] value to be wrapped
+    # @param actual [Any] value
+    # @return [RSpec::Matchers::MultiMatcherDiff]
+    #
+    # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#27
+    def from(expected, actual); end
+
+    private
+
+    # @api private
+    #
+    # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#58
+    def diff_label_for(matcher); end
+
+    # @api private
+    #
+    # source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#62
+    def truncated(description); end
+  end
+end
+
+# Default diff label when there is only one matcher in diff
+# output
+#
+# @api private
+# @private
+#
+# source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#10
+RSpec::Matchers::MultiMatcherDiff::DEFAULT_DIFF_LABEL = T.let(T.unsafe(nil), String)
+
+# Maximum readable matcher description length
+#
+# @api private
+# @private
+#
+# source://rspec-expectations//lib/rspec/matchers/multi_matcher_diff.rb#14
+RSpec::Matchers::MultiMatcherDiff::DESCRIPTION_MAX_LENGTH = T.let(T.unsafe(nil), Integer)
