@@ -424,6 +424,33 @@ module Cask
       self.for(ref, warn: warn).load(config: config)
     end
 
+    def self.tap_cask_token_type(tapped_token, warn:)
+      user, repo, token = tapped_token.split("/", 3).map(&:downcase)
+      tap = Tap.fetch(user, repo)
+      type = nil
+
+      if (new_token = tap.cask_renames[token].presence)
+        old_token = token
+        token = new_token
+        new_token = tap.core_cask_tap? ? token : "#{tap}/#{token}"
+        type = :rename
+      elsif (new_tap_name = tap.tap_migrations[token].presence)
+        new_tap_user, new_tap_repo, = new_tap_name.split("/")
+        new_tap_name = "#{new_tap_user}/#{new_tap_repo}"
+        new_tap = Tap.fetch(new_tap_name)
+        new_tap.ensure_installed!
+        new_tapped_token = "#{new_tap_name}/#{token}"
+        token, tap, = tap_cask_token_type(new_tapped_token, warn: false)
+        old_token = tapped_token
+        new_token = new_tap.core_cask_tap? ? token : new_tapped_token
+        type = :migration
+      end
+
+      opoo "Cask #{old_token} was renamed to #{new_token}." if warn && old_token && new_token
+
+      [token, tap, type]
+    end
+
     def self.for(ref, need_path: false, warn: true)
       [
         FromInstanceLoader,
@@ -435,10 +462,16 @@ module Cask
         FromPathLoader,
         FromDefaultTapPathLoader,
       ].each do |loader_class|
-        if loader_class.can_load?(ref)
-          $stderr.puts "#{$PROGRAM_NAME} (#{loader_class}): loading #{ref}" if debug?
-          return loader_class.new(ref)
+        next unless loader_class.can_load?(ref)
+
+        $stderr.puts "#{$PROGRAM_NAME} (#{loader_class}): loading #{ref}" if debug?
+
+        if [FromAPILoader, FromTapLoader].include?(loader_class)
+          token, tap, = tap_cask_token_type(ref, warn: warn)
+          return loader_class.new("#{tap}/#{token}")
         end
+
+        return loader_class.new(ref)
       end
 
       case (possible_tap_casks = tap_paths(ref, warn: warn)).count
