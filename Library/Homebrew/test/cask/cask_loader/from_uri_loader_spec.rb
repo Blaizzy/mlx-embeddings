@@ -1,19 +1,17 @@
 # frozen_string_literal: true
 
 describe Cask::CaskLoader::FromURILoader do
-  alias_matcher :be_able_to_load, :be_can_load
-
-  describe "::can_load?" do
-    it "returns true when given an URI" do
-      expect(described_class).to be_able_to_load(URI("https://brew.sh/"))
+  describe "::try_new" do
+    it "returns a loader when given an URI" do
+      expect(described_class.try_new(URI("https://brew.sh/"))).not_to be_nil
     end
 
-    it "returns true when given a String which can be parsed to a URI" do
-      expect(described_class).to be_able_to_load("https://brew.sh/")
+    it "returns a loader when given a string which can be parsed to a URI" do
+      expect(described_class.try_new("https://brew.sh/")).not_to be_nil
     end
 
-    it "returns false when given a String with Cask contents containing a URL" do
-      expect(described_class).not_to be_able_to_load <<~RUBY
+    it "returns nil when given a string with Cask contents containing a URL" do
+      expect(described_class.try_new(<<~RUBY)).to be_nil
         cask 'token' do
           url 'https://brew.sh/'
         end

@@ -18,11 +18,6 @@ module Cask
       extend T::Helpers
       interface!
 
-      sig { overridable.params(_ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(_ref)
-        false
-      end
-
       sig { abstract.params(config: Config).returns(Cask) }
       def load(config:); end
     end
@@ -55,8 +50,7 @@ module Cask
 
     # Loads a cask from a string.
     class FromContentLoader < AbstractContentLoader
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
+      def self.try_new(ref, warn: false)
         return false unless ref.respond_to?(:to_str)
 
         content = T.unsafe(ref).to_str
@@ -69,14 +63,16 @@ module Cask
           /\A\s*cask(?:#{curly.source}|#{do_end.source})\s*\Z/m
         end
 
-        content.match?(@regex)
+        return unless content.match?(@regex)
+
+        new(content)
       end
 
       sig { params(content: String, tap: Tap).void }
       def initialize(content, tap: T.unsafe(nil))
         super()
 
-        @content = content.force_encoding("UTF-8")
+        @content = content.dup.force_encoding("UTF-8")
         @tap = tap
       end
 
@@ -89,13 +85,20 @@ module Cask
 
     # Loads a cask from a path.
     class FromPathLoader < AbstractContentLoader
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
         ref = Pathname(ref) if ref.is_a?(String)
-        return false unless ref.is_a?(Pathname)
+        return unless ref.is_a?(Pathname)
 
         path = ref
-        %w[.rb .json].include?(path.extname) && path.expand_path.exist?
+
+        return if %w[.rb .json].exclude?(path.extname)
+        return unless path.expand_path.exist?
+
+        new(path)
       end
 
       attr_reader :token, :path
@@ -146,8 +149,11 @@ module Cask
 
     # Loads a cask from a URI.
     class FromURILoader < FromPathLoader
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
         # Cache compiled regex
         @uri_regex ||= begin
           uri_regex = ::URI::DEFAULT_PARSER.make_regexp
@@ -155,12 +161,12 @@ module Cask
         end
 
         uri = ref.to_s
-        return false unless uri.match?(@uri_regex)
+        return unless uri.match?(@uri_regex)
 
         uri = URI(uri)
-        return false unless uri.path
+        return unless uri.path
 
-        true
+        new(uri)
       end
 
       attr_reader :url
@@ -187,9 +193,14 @@ module Cask
 
     # Loads a cask from a tap path.
     class FromTapPathLoader < FromPathLoader
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
-        super && !Tap.from_path(ref).nil?
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        return unless (loader = super)
+
+        loader unless Tap.from_path(ref).nil?
       end
 
       sig { params(path: T.any(Pathname, String)).void }
@@ -201,9 +212,17 @@ module Cask
 
     # Loads a cask from a specific tap.
     class FromTapLoader < FromTapPathLoader
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
-        ref.to_s.match?(HOMEBREW_TAP_CASK_REGEX)
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        ref = ref.to_s
+
+        return unless ref.match?(HOMEBREW_TAP_CASK_REGEX)
+
+        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
+        new("#{tap}/#{token}")
       end
 
       sig { params(tapped_name: String).void }
@@ -223,13 +242,11 @@ module Cask
 
     # Loads a cask from the default tap path.
     class FromDefaultTapPathLoader < FromTapPathLoader
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
-        super CaskLoader.default_path(ref)
-      end
-
-      sig { params(ref: String).void }
-      def initialize(ref)
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
         super CaskLoader.default_path(ref)
       end
     end
@@ -238,9 +255,14 @@ module Cask
     class FromInstanceLoader
       include ILoader
 
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
-        ref.is_a?(Cask)
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        return unless ref.is_a?(Cask)
+
+        new(ref)
       end
 
       sig { params(cask: Cask).void }
@@ -262,15 +284,24 @@ module Cask
       sig { returns(T.nilable(Hash)) }
       attr_reader :from_json
 
-      sig { params(ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(ref)
-        return false if Homebrew::EnvConfig.no_install_from_api?
-        return false unless ref.is_a?(String)
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        return if Homebrew::EnvConfig.no_install_from_api?
+        return unless ref.is_a?(String)
 
-        return false unless (match = ref.match(HOMEBREW_MAIN_TAP_CASK_REGEX))
+        return unless (match = ref.match(HOMEBREW_MAIN_TAP_CASK_REGEX))
 
         token = match[:token]
-        Homebrew::API::Cask.all_casks.key?(token)
+
+        return unless Homebrew::API::Cask.all_casks.key?(token)
+
+        ref = "#{CoreCaskTap.instance}/#{token}"
+
+        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
+        new("#{tap}/#{token}")
       end
 
       sig { params(token: String, from_json: Hash).void }
@@ -429,11 +460,41 @@ module Cask
       end
     end
 
+    # Loader which tries loading casks from tap paths, failing
+    # if the same token exists in multiple taps.
+    class FromAmbiguousTapPathLoader < FromTapPathLoader
+      def self.try_new(ref, warn: false)
+        case (possible_tap_casks = CaskLoader.tap_paths(ref, warn: warn)).count
+        when 1
+          new(possible_tap_casks.first)
+        when 2..Float::INFINITY
+          loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
+          raise TapCaskAmbiguityError.new(ref, loaders)
+        end
+      end
+    end
+
+    # Loader which loads a cask from the installed cask file.
+    class FromInstalledPathLoader < FromPathLoader
+      def self.try_new(ref, warn: false)
+        possible_installed_cask = Cask.new(ref)
+        return unless (installed_caskfile = possible_installed_cask.installed_caskfile)
+
+        new(installed_caskfile)
+      end
+    end
+
     # Pseudo-loader which raises an error when trying to load the corresponding cask.
     class NullLoader < FromPathLoader
-      sig { params(_ref: T.any(String, Pathname, Cask, URI::Generic)).returns(T::Boolean) }
-      def self.can_load?(_ref)
-        true
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        return if ref.is_a?(Cask)
+        return if ref.is_a?(URI::Generic)
+
+        new(ref)
       end
 
       sig { params(ref: T.any(String, Pathname)).void }
@@ -492,35 +553,14 @@ module Cask
         FromTapPathLoader,
         FromPathLoader,
         FromDefaultTapPathLoader,
+        FromAmbiguousTapPathLoader,
+        FromInstalledPathLoader,
+        NullLoader,
       ].each do |loader_class|
-        next unless loader_class.can_load?(ref)
-
-        $stderr.puts "#{$PROGRAM_NAME} (#{loader_class}): loading #{ref}" if debug?
-
-        if [FromAPILoader, FromTapLoader].include?(loader_class)
-          ref = "#{CoreCaskTap.instance}/#{ref}" if CoreCaskTap.instance.cask_renames.key?(ref)
-          token, tap, = tap_cask_token_type(ref, warn: warn)
-          loader_class = T.cast(loader_class, T.any(T.class_of(FromAPILoader), T.class_of(FromTapLoader)))
-          return loader_class.new("#{tap}/#{token}")
+        if (loader = loader_class.try_new(ref, warn: warn))
+          return loader
         end
-
-        return loader_class.new(ref)
       end
-
-      case (possible_tap_casks = tap_paths(ref, warn: warn)).count
-      when 1
-        return FromTapPathLoader.new(possible_tap_casks.first)
-      when 2..Float::INFINITY
-        loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
-        raise TapCaskAmbiguityError.new(ref, loaders)
-      end
-
-      possible_installed_cask = Cask.new(ref)
-      if (installed_caskfile = possible_installed_cask.installed_caskfile)
-        return FromPathLoader.new(installed_caskfile)
-      end
-
-      NullLoader.new(ref)
     end
 
     def self.default_path(token)

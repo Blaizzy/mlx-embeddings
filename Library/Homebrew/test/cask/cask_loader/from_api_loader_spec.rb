@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 describe Cask::CaskLoader::FromAPILoader, :cask do
-  alias_matcher :be_able_to_load, :be_can_load
-
   shared_context "with API setup" do |new_token|
     let(:token) { new_token }
     let(:cask_from_source) { Cask::CaskLoader.load(token) }
@@ -30,7 +28,7 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
       end
 
       it "returns false" do
-        expect(described_class).not_to be_able_to_load(token)
+        expect(described_class.try_new(token)).to be_nil
       end
     end
 
@@ -39,16 +37,16 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
         ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
       end
 
-      it "returns true for valid token" do
-        expect(described_class).to be_able_to_load(token)
+      it "returns a loader for valid token" do
+        expect(described_class.try_new(token)).not_to be_nil
       end
 
-      it "returns true for valid full name" do
-        expect(described_class).to be_able_to_load("homebrew/cask/#{token}")
+      it "returns a loader for valid full name" do
+        expect(described_class.try_new("homebrew/cask/#{token}")).not_to be_nil
       end
 
-      it "returns false for full name with invalid tap" do
-        expect(described_class).not_to be_able_to_load("homebrew/cask-versions/#{token}")
+      it "returns nil for full name with invalid tap" do
+        expect(described_class.try_new("homebrew/cask-versions/#{token}")).to be_nil
       end
     end
   end
