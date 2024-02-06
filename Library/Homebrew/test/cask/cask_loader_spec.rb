@@ -35,9 +35,15 @@ describe Cask::CaskLoader, :cask do
           ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
         end
 
-        it "warns" do
+        it "warns when using the short token" do
           expect do
             expect(described_class.for("version-newest")).to be_a Cask::CaskLoader::FromTapPathLoader
+          end.to output(/version-newest was renamed to version-latest/).to_stderr
+        end
+
+        it "warns when using the full token" do
+          expect do
+            expect(described_class.for("homebrew/cask/version-newest")).to be_a Cask::CaskLoader::FromTapPathLoader
           end.to output(/version-newest was renamed to version-latest/).to_stderr
         end
       end
@@ -47,9 +53,15 @@ describe Cask::CaskLoader, :cask do
           ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
         end
 
-        it "warns" do
+        it "warns when using the short token" do
           expect do
             expect(described_class.for("version-newest")).to be_a Cask::CaskLoader::FromAPILoader
+          end.to output(/version-newest was renamed to version-latest/).to_stderr
+        end
+
+        it "warns when using the full token" do
+          expect do
+            expect(described_class.for("homebrew/cask/version-newest")).to be_a Cask::CaskLoader::FromAPILoader
           end.to output(/version-newest was renamed to version-latest/).to_stderr
         end
       end
