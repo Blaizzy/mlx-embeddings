@@ -10,70 +10,70 @@
 # source://rspec-expectations//lib/rspec/matchers/english_phrasing.rb#1
 module RSpec
   class << self
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#70
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#70
     def clear_examples; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#85
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#85
     def configuration; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#49
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#49
     def configuration=(_arg0); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#97
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#97
     def configure; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#194
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#194
     def const_missing(name); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def context(*args, &example_group_block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#122
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#122
     def current_example; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#128
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#128
     def current_example=(example); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#154
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#154
     def current_scope; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#134
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#134
     def current_scope=(scope); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def describe(*args, &example_group_block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def example_group(*args, &example_group_block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def fcontext(*args, &example_group_block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def fdescribe(*args, &example_group_block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#58
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#58
     def reset; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/shared_example_group.rb#110
+    # source://rspec-core/3.13.0/lib/rspec/core/shared_example_group.rb#110
     def shared_context(name, *args, &block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/shared_example_group.rb#110
+    # source://rspec-core/3.13.0/lib/rspec/core/shared_example_group.rb#110
     def shared_examples(name, *args, &block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/shared_example_group.rb#110
+    # source://rspec-core/3.13.0/lib/rspec/core/shared_example_group.rb#110
     def shared_examples_for(name, *args, &block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#160
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#160
     def world; end
 
-    # source://rspec-core/3.12.2/lib/rspec/core.rb#49
+    # source://rspec-core/3.13.0/lib/rspec/core.rb#49
     def world=(_arg0); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def xcontext(*args, &example_group_block); end
 
-    # source://rspec-core/3.12.2/lib/rspec/core/dsl.rb#42
+    # source://rspec-core/3.13.0/lib/rspec/core/dsl.rb#42
     def xdescribe(*args, &example_group_block); end
   end
 end
@@ -3362,6 +3362,18 @@ RSpec::Matchers::AliasedNegatedMatcher::DefaultFailureMessages = RSpec::Matchers
 # source://rspec-expectations//lib/rspec/matchers.rb#957
 RSpec::Matchers::BE_PREDICATE_REGEX = T.let(T.unsafe(nil), Regexp)
 
+# Provides a base class with as little methods as possible, so that
+# most methods can be delegated via `method_missing`.
+#
+# On Ruby 2.0+ BasicObject could be used for this purpose, but it
+# introduce some extra complexity with constant resolution, so the
+# BlankSlate pattern was prefered.
+#
+# @private
+#
+# source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#10
+class RSpec::Matchers::BaseDelegator; end
+
 # Container module for all built-in matchers. The matcher classes are here
 # (rather than directly under `RSpec::Matchers`) in order to prevent name
 # collisions, since `RSpec::Matchers` gets included into the user's namespace.
@@ -3472,6 +3484,7 @@ end
 class RSpec::Matchers::BuiltIn::BaseMatcher
   include ::RSpec::Matchers::Composable
   include ::RSpec::Matchers::BuiltIn::BaseMatcher::HashFormatting
+  include ::RSpec::Matchers::BuiltIn::BaseMatcher::StringEncodingFormatting
   include ::RSpec::Matchers::BuiltIn::BaseMatcher::DefaultFailureMessages
 
   # @api private
@@ -3618,7 +3631,7 @@ end
 #
 # @api private
 #
-# source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#166
+# source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#207
 module RSpec::Matchers::BuiltIn::BaseMatcher::DefaultFailureMessages
   # Provides a good generic failure message. Based on `description`.
   # When subclassing, if you are not satisfied with this failure message
@@ -3627,7 +3640,7 @@ module RSpec::Matchers::BuiltIn::BaseMatcher::DefaultFailureMessages
   # @api private
   # @return [String]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#172
+  # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#213
   def failure_message; end
 
   # Provides a good generic negative failure message. Based on `description`.
@@ -3637,7 +3650,7 @@ module RSpec::Matchers::BuiltIn::BaseMatcher::DefaultFailureMessages
   # @api private
   # @return [String]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#181
+  # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#222
   def failure_message_when_negated; end
 
   class << self
@@ -3645,7 +3658,7 @@ module RSpec::Matchers::BuiltIn::BaseMatcher::DefaultFailureMessages
     # @private
     # @return [Boolean]
     #
-    # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#186
+    # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#227
     def has_default_failure_messages?(matcher); end
   end
 end
@@ -3687,6 +3700,46 @@ module RSpec::Matchers::BuiltIn::BaseMatcher::HashFormatting
     #
     # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#156
     def improve_hash_formatting(inspect_string); end
+  end
+end
+
+# @api private
+# @private
+#
+# source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#165
+module RSpec::Matchers::BuiltIn::BaseMatcher::StringEncodingFormatting
+  private
+
+  # Formats a String's encoding as a human readable string
+  #
+  # @api private
+  # @param _value [String]
+  # @return [nil] nil as the curent Ruby version does not support String encoding
+  #
+  # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#188
+  def format_encoding(value); end
+
+  # @api private
+  # @return [Boolean] False always as the curent Ruby version does not support String encoding
+  #
+  # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#171
+  def string_encoding_differs?; end
+
+  class << self
+    # Formats a String's encoding as a human readable string
+    #
+    # @api private
+    # @param _value [String]
+    # @return [nil] nil as the curent Ruby version does not support String encoding
+    #
+    # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#188
+    def format_encoding(value); end
+
+    # @api private
+    # @return [Boolean] False always as the curent Ruby version does not support String encoding
+    #
+    # source://rspec-expectations//lib/rspec/matchers/built_in/base_matcher.rb#171
+    def string_encoding_differs?; end
   end
 end
 
@@ -5382,13 +5435,13 @@ class RSpec::Matchers::BuiltIn::Eq < ::RSpec::Matchers::BuiltIn::BaseMatcher
   # @api private
   # @return [String]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#22
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#26
   def description; end
 
   # @api private
   # @return [Boolean]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#28
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#32
   def diffable?; end
 
   # @api private
@@ -5400,14 +5453,14 @@ class RSpec::Matchers::BuiltIn::Eq < ::RSpec::Matchers::BuiltIn::BaseMatcher
   # @api private
   # @return [String]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#16
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#20
   def failure_message_when_negated; end
 
   private
 
   # @api private
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#34
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eq.rb#38
   def match(expected, actual); end
 end
 
@@ -5421,7 +5474,7 @@ class RSpec::Matchers::BuiltIn::Eql < ::RSpec::Matchers::BuiltIn::BaseMatcher
   # @api private
   # @return [Boolean]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eql.rb#22
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eql.rb#26
   def diffable?; end
 
   # @api private
@@ -5433,14 +5486,14 @@ class RSpec::Matchers::BuiltIn::Eql < ::RSpec::Matchers::BuiltIn::BaseMatcher
   # @api private
   # @return [String]
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eql.rb#16
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eql.rb#20
   def failure_message_when_negated; end
 
   private
 
   # @api private
   #
-  # source://rspec-expectations//lib/rspec/matchers/built_in/eql.rb#28
+  # source://rspec-expectations//lib/rspec/matchers/built_in/eql.rb#32
   def match(expected, actual); end
 end
 
@@ -7986,31 +8039,31 @@ RSpec::Matchers::HAS_REGEX = T.let(T.unsafe(nil), Regexp)
 #
 # @private
 #
-# source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#5
-class RSpec::Matchers::MatcherDelegator
+# source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#31
+class RSpec::Matchers::MatcherDelegator < ::RSpec::Matchers::BaseDelegator
   include ::RSpec::Matchers::Composable
 
   # @return [MatcherDelegator] a new instance of MatcherDelegator
   #
-  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#9
+  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#35
   def initialize(base_matcher); end
 
   # Returns the value of attribute base_matcher.
   #
-  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#7
+  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#33
   def base_matcher; end
 
-  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#13
+  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#39
   def method_missing(*args, &block); end
 
   private
 
-  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#29
+  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#55
   def initialize_copy(other); end
 
   # @return [Boolean]
   #
-  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#18
+  # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#44
   def respond_to_missing?(name, include_all = T.unsafe(nil)); end
 end
 
