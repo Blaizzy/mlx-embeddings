@@ -307,6 +307,7 @@ module PyPI
     found_packages.sort.each do |package|
       if exclude_packages.include? package
         ohai "Excluding \"#{package}\"" if show_info
+        exclude_packages.delete package
         next
       end
 
@@ -330,6 +331,10 @@ module PyPI
   end
 
       EOS
+    end
+
+    unless exclude_packages.empty?
+      odie "Excluded superfluous packages: #{", ".join(exclude_packages)}"
     end
 
     if print_only
