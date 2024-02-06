@@ -498,6 +498,7 @@ module Cask
         $stderr.puts "#{$PROGRAM_NAME} (#{loader_class}): loading #{ref}" if debug?
 
         if [FromAPILoader, FromTapLoader].include?(loader_class)
+          ref = "#{CoreCaskTap.instance}/#{ref}" if CoreCaskTap.instance.cask_renames.key?(ref)
           token, tap, = tap_cask_token_type(ref, warn: warn)
           loader_class = T.cast(loader_class, T.any(T.class_of(FromAPILoader), T.class_of(FromTapLoader)))
           return loader_class.new("#{tap}/#{token}")
@@ -511,7 +512,6 @@ module Cask
         return FromTapPathLoader.new(possible_tap_casks.first)
       when 2..Float::INFINITY
         loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
-
         raise TapCaskAmbiguityError.new(ref, loaders)
       end
 
