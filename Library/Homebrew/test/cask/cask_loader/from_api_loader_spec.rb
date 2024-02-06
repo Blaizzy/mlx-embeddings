@@ -26,9 +26,7 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
 
     context "when not using the API" do
       before do
-        allow(Homebrew::EnvConfig)
-          .to receive(:no_install_from_api?)
-          .and_return(true)
+        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
       end
 
       it "returns false" do
@@ -38,9 +36,7 @@ describe Cask::CaskLoader::FromAPILoader, :cask do
 
     context "when using the API" do
       before do
-        allow(Homebrew::EnvConfig)
-          .to receive(:no_install_from_api?)
-          .and_return(false)
+        ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
       end
 
       it "returns true for valid token" do
