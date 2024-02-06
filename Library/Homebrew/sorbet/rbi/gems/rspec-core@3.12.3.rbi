@@ -1710,15 +1710,15 @@ class RSpec::Core::Configuration
   # source://rspec-core//lib/rspec/core/configuration.rb#503
   def loaded_spec_files; end
 
-  # Maximum count of failed source lines to display in the failure reports.
-  # (default `10`).
+  # Maximum count of failed source lines to display in the failure reports
+  # (defaults to `10`).
   # return [Integer]
   #
   # source://rspec-core//lib/rspec/core/configuration.rb#66
   def max_displayed_failure_line_count; end
 
-  # Maximum count of failed source lines to display in the failure reports.
-  # (default `10`).
+  # Maximum count of failed source lines to display in the failure reports
+  # (defaults to `10`).
   # return [Integer]
   #
   # source://rspec-core//lib/rspec/core/configuration.rb#89
@@ -9931,7 +9931,7 @@ class RSpec::Core::Runner
 
   # @private
   #
-  # source://rspec-core//lib/rspec/core/runner.rb#190
+  # source://rspec-core//lib/rspec/core/runner.rb#194
   def exit_code(examples_passed = T.unsafe(nil)); end
 
   # @attr_reader
@@ -9974,7 +9974,7 @@ class RSpec::Core::Runner
 
   private
 
-  # source://rspec-core//lib/rspec/core/runner.rb#199
+  # source://rspec-core//lib/rspec/core/runner.rb#203
   def persist_example_statuses; end
 
   class << self
