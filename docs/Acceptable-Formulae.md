@@ -19,6 +19,17 @@ We now accept stuff that comes with macOS as long as it uses `keg_only :provided
 
 We now accept versioned formulae as long as they [meet the requirements](Versions.md).
 
+### Not a fork (usually)
+
+We will not add new formulae using forks unless at least one of the following is true:
+
+* the fork has been designated the official successor in the original source repository (e.g. in the README) or in a publicly verifiable way by the original author (e.g. in an an issue or pull request comment)
+* the fork has been used as the replacement by at least two other major distributions (e.g. Debian, Fedora, Arch, Gentoo, not smaller Linux distributions that are not widely used)
+
+The fork must still meet all the other acceptable formulae requirements (including those of e.g. popularity and self-submission).
+
+An alternative to the fork replacing the original formula is a new formula. For example, if `MikeMcQuaid` forked `curl` and it was very popular: a `curl-mikemcquaid` formula might make sense.
+
 ### We don’t like tools that upgrade themselves
 
 Software that can upgrade itself does not integrate well with Homebrew formulae's own upgrade functionality. The self-update functionality should be disabled (while minimising complication to the formula). It's fine (and well-supported) for Casks.

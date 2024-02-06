@@ -18,11 +18,13 @@ A formula should be deprecated to indicate to users that the formula should not 
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
-Formulae with dependents may be deprecated only if at least one of the following are true:
+Formulae should only be be deprecated if at least one of the following are true:
 
-- its dependents are all deprecated
 - the formula does not build on any of our supported macOS versions and on Linux
 - the formula has outstanding CVEs
+- the formula has [zero installs in the last 90 days](https://formulae.brew.sh/analytics/install/90d/)
+
+Formulae with dependents should not be deprecated until or when all dependents are also deprecated.
 
 To deprecate a formula, add a `deprecate!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
 
@@ -30,7 +32,7 @@ To deprecate a formula, add a `deprecate!` call. This call should include a depr
 deprecate! date: "YYYY-MM-DD", because: :reason
 ```
 
-The `date` parameter should be set to the date that the project or version became (or will become) deprecated. If there is no clear date but the formula needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the formula will not become deprecated until that date. This can be useful if the upstream developers have indicated a date when the project or version will stop being supported.
+The `date` parameter should be set to the date that the project or version became (or will become) deprecated. If there is no clear date but the formula needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the formula will not become deprecated until that date. This can be useful if the upstream developers have indicated a date when the project or version will stop being supported. Do not backdate the `date` parameter as it causes confusion for users and maintainers.
 
 The `because` parameter can be a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
 
@@ -42,16 +44,17 @@ A formula should be disabled to indicate to users that the formula cannot be use
 
 The most common reasons for disabling a formula are:
 
-- it cannot be built from source (meaning no bottles can be built)
+- it cannot be built from source (meaning no new bottles can be built)
 - it has been deprecated for a long time
 - the upstream repository has been removed
 - the project has no license
 
-Formulae should not be disabled without a deprecation period of at least three months unless the circumstances are exceptional (e.g. the formula does not build on any supported macOS version or Linux). Popular formulae should have longer deprecation periods. The popularity of a formula should be based on our analytics data.
+Popular formulae (e.g. have more than 1000 [analytics installs in the last 90 days](https://formulae.brew.sh/analytics/install/90d/)) should not be disabled without a deprecation period of at least six months even if e.g. they do not build from source and do not have a license.
 
-**Note: disabled formulae in `homebrew/core` will be automatically removed one year after their disable date.**
+Unpopular formulae (e.g. have fewer than 1000 [analytics installs in the last 90 days](https://formulae.brew.sh/analytics/install/90d/)) can be disabled immediately for any of the reasons above e.g. they cannot be built from source on any supported macOS version or Linux.
+They can be manually removed three months after their disable date.
 
-To disable a formula, add a `disable!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
+To disable a formula, add a `disable!` call. This call should include a deprecation date in the ISO 8601 format and a deprecation reason:
 
 ```ruby
 disable! date: "YYYY-MM-DD", because: :reason
@@ -65,21 +68,23 @@ The `because` parameter can be a preset reason (using a symbol) or a custom reas
 
 A formula should be removed if it does not meet our criteria for [acceptable formulae](Acceptable-Formulae.md) or [versioned formulae](Versions.md), has a non-open-source license, or has been disabled for over a year.
 
+**Note: disabled formulae in `homebrew/core` will be automatically removed one year after their disable date.**
+
 ## Deprecate and Disable Reasons
 
 When a formula is deprecated or disabled, a reason explaining the action must be provided.
 
 There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are listed below and can be found in the [`DeprecateDisable` module](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/deprecate_disable.rb):
 
-- `:does_not_build`: the formula cannot be built from source
-- `:no_license`: the formula does not have a license
-- `:repo_archived`: the upstream repository has been archived
-- `:repo_removed`: the upstream repository has been removed
-- `:unmaintained`: the project appears to be abandoned
+- `:does_not_build`: the formula cannot be built from source on any supported macOS version or Linux.
+- `:no_license`: we cannot identify a license for the formula
+- `:repo_archived`: the upstream repository has been archived and no replacement is pointed to that we can use
+- `:repo_removed`: the upstream repository has been removed and no replacement is mentioned on the homepage that we can use
+- `:unmaintained`: the project appears to be abandoned i.e. it has had no commits for at least a year and has critical bugs or CVE that have been reported and gone resolved longer. Note: some software is "done"; a lack of activity does not imply a need for removal.
 - `:unsupported`: Homebrew's compilation of the software is not supported by the upstream developers (e.g. upstream only supports macOS versions older than 10.15)
-- `:deprecated_upstream`: the project is deprecated upstream
-- `:versioned_formula`: the formula is a versioned formula
-- `:checksum_mismatch`: the checksum of the source for the formula's current version has changed since bottles were built
+- `:deprecated_upstream`: the project is deprecated upstream and no replacement is pointed to that we can use
+- `:versioned_formula`: the formula is a versioned formula and no longer [meets the requirements](Versions.md).
+- `:checksum_mismatch`: the checksum of the source for the formula's current version has changed since bottles were built and we cannot find a reputable source or statement justifying this
 
 These reasons can be specified by their symbols (the comments show the message that will be displayed to users):
 
