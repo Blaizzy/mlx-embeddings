@@ -577,6 +577,7 @@ module Cask
         NullLoader,
       ].each do |loader_class|
         if (loader = loader_class.try_new(ref, warn: warn))
+          $stderr.puts "#{$PROGRAM_NAME} (#{loader.class}): loading #{ref}" if debug?
           return loader
         end
       end
