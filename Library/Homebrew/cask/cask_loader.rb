@@ -240,6 +240,26 @@ module Cask
       end
     end
 
+    # Load a cask from the default tap, using either a full or short token.
+    class FromDefaultTapLoader < FromTapLoader
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        ref = ref.to_s
+
+        return unless (match = ref.match(HOMEBREW_MAIN_TAP_CASK_REGEX))
+
+        token = match[:token]
+
+        ref = "#{CoreCaskTap.instance}/#{token}"
+
+        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
+        new("#{tap}/#{token}")
+      end
+    end
+
     # Loads a cask from the default tap path.
     class FromDefaultTapPathLoader < FromTapPathLoader
       sig {
@@ -554,6 +574,7 @@ module Cask
         FromPathLoader,
         FromDefaultTapPathLoader,
         FromAmbiguousTapPathLoader,
+        FromDefaultTapLoader,
         FromInstalledPathLoader,
         NullLoader,
       ].each do |loader_class|
@@ -570,11 +591,7 @@ module Cask
     def self.tap_paths(token, warn: true)
       token = token.to_s.downcase
 
-      Tap.map do |tap|
-        new_token = tap.cask_renames[token]
-        opoo "Cask #{token} was renamed to #{new_token}." if new_token && warn
-        find_cask_in_tap(new_token || token, tap)
-      end.select(&:exist?)
+      Tap.map { |tap| find_cask_in_tap(token, tap) }.select(&:exist?)
     end
 
     def self.find_cask_in_tap(token, tap)
