@@ -280,9 +280,7 @@ module Cask
           .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
-        return unless ref.is_a?(Cask)
-
-        new(ref)
+        new(ref) if ref.is_a?(Cask)
       end
 
       sig { params(cask: Cask).void }
