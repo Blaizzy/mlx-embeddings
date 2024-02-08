@@ -248,8 +248,8 @@ livecheck do
   url :stable
   strategy :crate do |json, regex|
     json["versions"]&.map do |version|
-      next if version["yanked"] == true
-      next if (match = version["num"]&.match(regex)).blank?
+      next if version["yanked"]
+      next unless (match = version["num"]&.match(regex))
 
       match[1]
     end

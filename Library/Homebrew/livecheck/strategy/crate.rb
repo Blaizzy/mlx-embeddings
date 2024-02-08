@@ -25,10 +25,8 @@ module Homebrew
         # a `strategy` block isn't provided.
         DEFAULT_BLOCK = proc do |json, regex|
           json["versions"]&.map do |version|
-            next if version["yanked"] == true
-
-            match = version["num"]&.match(regex)
-            next if match.blank?
+            next if version["yanked"]
+            next unless (match = version["num"]&.match(regex))
 
             match[1]
           end
@@ -58,9 +56,7 @@ module Homebrew
         sig { params(url: String).returns(T::Hash[Symbol, T.untyped]) }
         def self.generate_input_values(url)
           values = {}
-
-          match = url.match(URL_MATCH_REGEX)
-          return values if match.blank?
+          return values unless (match = url.match(URL_MATCH_REGEX))
 
           values[:url] = "https://crates.io/api/v1/crates/#{match[:package]}/versions"
 
@@ -95,13 +91,13 @@ module Homebrew
 
           match_data[:url] = generated[:url]
 
-          content = if provided_content.is_a?(String)
+          content = if provided_content
             provided_content
           else
             match_data.merge!(Strategy.page_content(match_data[:url], homebrew_curl: homebrew_curl))
             match_data[:content]
           end
-          return match_data if content.blank?
+          return match_data unless content
 
           Json.versions_from_content(content, regex || DEFAULT_REGEX, &block || DEFAULT_BLOCK).each do |match_text|
             match_data[:matches][match_text] = Version.new(match_text)
