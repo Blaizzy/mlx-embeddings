@@ -15,7 +15,7 @@ module RuboCop
             next unless symbols.include?(:trash)
 
             pair.each_descendant(:array).each do |array|
-              regex = /sfl\d"$/
+              regex = /\.sfl\d"$/
               message = "Use a glob (*) instead of a specific version (ie. sfl2) for trashing Shared File List paths"
 
               array.children.each do |item|
