@@ -521,7 +521,6 @@ module Formulary
     private
 
     def load_file(flags:, ignore_errors:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if debug?
       raise FormulaUnavailableError, name unless path.file?
 
       Formulary.load_formula_from_path(name, path, flags: flags, ignore_errors: ignore_errors)
@@ -840,7 +839,6 @@ module Formulary
     end
 
     def klass(flags:, ignore_errors:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if debug?
       namespace = "FormulaNamespace#{Digest::MD5.hexdigest(contents.to_s)}"
       Formulary.load_formula(name, path, contents, namespace, flags: flags, ignore_errors: ignore_errors)
     end
@@ -896,8 +894,6 @@ module Formulary
     private
 
     def load_from_api(flags:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{name} from API" if debug?
-
       Formulary.load_formula_from_api(name, flags: flags)
     end
   end
