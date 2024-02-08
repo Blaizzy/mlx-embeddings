@@ -225,9 +225,9 @@ module Cask
         new("#{tap}/#{token}")
       end
 
-      sig { params(tapped_name: String).void }
-      def initialize(tapped_name)
-        user, repo, token = tapped_name.split("/", 3)
+      sig { params(tapped_token: String).void }
+      def initialize(tapped_token)
+        user, repo, token = tapped_token.split("/", 3)
         tap = Tap.fetch(user, repo)
         cask = CaskLoader.find_cask_in_tap(token, tap)
         super cask
