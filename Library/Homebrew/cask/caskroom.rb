@@ -56,7 +56,7 @@ module Cask
         CaskLoader.load(token, config: config)
       rescue TapCaskAmbiguityError
         tap_path = CaskLoader.tap_paths(token).first
-        CaskLoader::FromTapPathLoader.new(tap_path).load(config: config)
+        CaskLoader::FromPathLoader.new(tap_path).load(config: config)
       rescue
         # Don't blow up because of a single unavailable cask.
         nil

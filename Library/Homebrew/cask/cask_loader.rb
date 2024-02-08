@@ -114,9 +114,8 @@ module Cask
         path = Pathname(path).expand_path
 
         @token = path.basename(path.extname).to_s
-
         @path = path
-        @tap = Homebrew::API.tap_from_source_download(path)
+        @tap = Tap.from_path(path) || Homebrew::API.tap_from_source_download(path)
       end
 
       def load(config:)
@@ -195,27 +194,8 @@ module Cask
       end
     end
 
-    # Loads a cask from a tap path.
-    class FromTapPathLoader < FromPathLoader
-      sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
-      }
-      def self.try_new(ref, warn: false)
-        return unless (loader = super)
-
-        loader unless Tap.from_path(ref).nil?
-      end
-
-      sig { params(path: T.any(Pathname, String)).void }
-      def initialize(path)
-        super(path)
-        @tap = Tap.from_path(path)
-      end
-    end
-
     # Loads a cask from a specific tap.
-    class FromTapLoader < FromTapPathLoader
+    class FromTapLoader < FromPathLoader
       sig {
         params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
           .returns(T.nilable(T.attached_class))
@@ -265,7 +245,7 @@ module Cask
     end
 
     # Loads a cask from the default tap path.
-    class FromDefaultTapPathLoader < FromTapPathLoader
+    class FromDefaultTapPathLoader < FromPathLoader
       sig {
         params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
           .returns(T.nilable(T.attached_class))
@@ -484,13 +464,13 @@ module Cask
 
     # Loader which tries loading casks from tap paths, failing
     # if the same token exists in multiple taps.
-    class FromAmbiguousTapPathLoader < FromTapPathLoader
+    class FromAmbiguousTapPathLoader < FromPathLoader
       def self.try_new(ref, warn: false)
         case (possible_tap_casks = CaskLoader.tap_paths(ref)).count
         when 1
           new(possible_tap_casks.first)
         when 2..Float::INFINITY
-          loaders = possible_tap_casks.map(&FromTapPathLoader.method(:new))
+          loaders = possible_tap_casks.map(&FromPathLoader.method(:new))
           raise TapCaskAmbiguityError.new(ref, loaders)
         end
       end
@@ -572,7 +552,6 @@ module Cask
         FromURILoader,
         FromAPILoader,
         FromTapLoader,
-        FromTapPathLoader,
         FromPathLoader,
         FromDefaultTapPathLoader,
         FromAmbiguousTapPathLoader,
