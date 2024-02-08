@@ -859,7 +859,9 @@ module Formulary
       return unless (match = ref.match(HOMEBREW_DEFAULT_TAP_FORMULA_REGEX))
 
       name = alias_name = T.cast(match[:name], String)
-      unless Homebrew::API::Formula.all_formulae.key?(name) || Homebrew::API::Formula.all_aliases.key?(name) || Homebrew::API::Formula.all_renames.key?(name)
+      if !Homebrew::API::Formula.all_formulae.key?(name) &&
+         !Homebrew::API::Formula.all_aliases.key?(name) &&
+         !Homebrew::API::Formula.all_renames.key?(name)
         return
       end
 
