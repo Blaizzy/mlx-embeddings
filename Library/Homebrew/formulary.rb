@@ -1172,6 +1172,18 @@ module Formulary
     find_formula_in_tap(name.to_s.downcase, CoreTap.instance)
   end
 
+  def self.tap_paths(name)
+    name = name.to_s.downcase
+    Tap.map do |tap|
+      formula_path = find_formula_in_tap(name, tap)
+
+      alias_path = tap.alias_dir/name
+      next alias_path if !formula_path.exist? && alias_path.exist?
+
+      formula_path
+    end.select(&:file?)
+  end
+
   sig { params(name: String, tap: Tap).returns(Pathname) }
   def self.find_formula_in_tap(name, tap)
     filename = if name.end_with?(".rb")
