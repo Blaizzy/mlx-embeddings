@@ -90,10 +90,14 @@ module Cask
           .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
-        ref = Pathname(ref) if ref.is_a?(String)
-        return unless ref.is_a?(Pathname)
-
-        path = ref
+        path = case ref
+        when String
+          Pathname(ref)
+        when Pathname
+          ref
+        else
+          return
+        end
 
         return if %w[.rb .json].exclude?(path.extname)
         return unless path.expand_path.exist?
