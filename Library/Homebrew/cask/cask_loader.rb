@@ -482,7 +482,7 @@ module Cask
     # if the same token exists in multiple taps.
     class FromAmbiguousTapPathLoader < FromTapPathLoader
       def self.try_new(ref, warn: false)
-        case (possible_tap_casks = CaskLoader.tap_paths(ref, warn: warn)).count
+        case (possible_tap_casks = CaskLoader.tap_paths(ref)).count
         when 1
           new(possible_tap_casks.first)
         when 2..Float::INFINITY
@@ -587,7 +587,7 @@ module Cask
       find_cask_in_tap(token.to_s.downcase, CoreCaskTap.instance)
     end
 
-    def self.tap_paths(token, warn: true)
+    def self.tap_paths(token)
       token = token.to_s.downcase
 
       Tap.map { |tap| find_cask_in_tap(token, tap) }.select(&:exist?)
