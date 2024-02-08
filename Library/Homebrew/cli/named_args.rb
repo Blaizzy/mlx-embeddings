@@ -256,11 +256,11 @@ module Homebrew
               paths = []
 
               if formula_path.exist? ||
-                 (!CoreTap.instance.installed? && Homebrew::API::Formula.all_formulae.key?(path.basename))
+                 (!CoreTap.instance.installed? && Homebrew::API::Formula.all_formulae.key?(path.basename.to_s))
                 paths << formula_path
               end
               if cask_path.exist? ||
-                 (!CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(path.basename))
+                 (!CoreCaskTap.instance.installed? && Homebrew::API::Cask.all_casks.key?(path.basename.to_s))
                 paths << cask_path
               end
 

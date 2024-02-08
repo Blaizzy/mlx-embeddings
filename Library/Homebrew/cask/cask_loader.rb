@@ -281,7 +281,11 @@ module Cask
     class FromAPILoader
       include ILoader
 
-      attr_reader :token, :path
+      sig { returns(String) }
+      attr_reader :token
+
+      sig { returns(Pathname) }
+      attr_reader :path
 
       sig { returns(T.nilable(Hash)) }
       attr_reader :from_json
@@ -296,7 +300,7 @@ module Cask
 
         return unless (match = ref.match(HOMEBREW_MAIN_TAP_CASK_REGEX))
 
-        token = match[:token]
+        token = T.cast(match[:token], String)
         return if !Homebrew::API::Cask.all_casks.key?(token) && !Homebrew::API::Cask.all_renames.key?(token)
 
         ref = "#{CoreCaskTap.instance}/#{token}"
@@ -313,7 +317,7 @@ module Cask
       end
 
       def load(config:)
-        json_cask = from_json || Homebrew::API::Cask.all_casks[token]
+        json_cask = from_json || Homebrew::API::Cask.all_casks.fetch(token)
 
         cask_options = {
           loaded_from_api: true,
