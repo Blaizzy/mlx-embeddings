@@ -297,8 +297,7 @@ module Cask
         return unless (match = ref.match(HOMEBREW_MAIN_TAP_CASK_REGEX))
 
         token = match[:token]
-
-        return unless Homebrew::API::Cask.all_casks.key?(token)
+        return if !Homebrew::API::Cask.all_casks.key?(token) && !Homebrew::API::Cask.all_renames.key?(token)
 
         ref = "#{CoreCaskTap.instance}/#{token}"
 
