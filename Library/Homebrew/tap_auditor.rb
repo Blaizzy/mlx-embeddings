@@ -6,7 +6,7 @@ module Homebrew
   #
   # @api private
   class TapAuditor
-    attr_reader :name, :path, :formula_names, :formula_aliases, :cask_tokens,
+    attr_reader :name, :path, :formula_names, :formula_aliases, :formula_renames, :cask_tokens,
                 :tap_audit_exceptions, :tap_style_exceptions, :tap_pypi_formula_mappings, :problems
 
     sig { params(tap: Tap, strict: T.nilable(T::Boolean)).void }
@@ -23,6 +23,7 @@ module Homebrew
         @formula_aliases = tap.aliases.map do |formula_alias|
           formula_alias.split("/").last
         end
+        @formula_renames = tap.formula_renames
         @formula_names = tap.formula_names.map do |formula_name|
           formula_name.split("/").last
         end
@@ -33,6 +34,7 @@ module Homebrew
     def audit
       audit_json_files
       audit_tap_formula_lists
+      audit_aliases_renames_duplicates
     end
 
     sig { void }
@@ -50,6 +52,14 @@ module Homebrew
       check_formula_list_directory "audit_exceptions", @tap_audit_exceptions
       check_formula_list_directory "style_exceptions", @tap_style_exceptions
       check_formula_list "pypi_formula_mappings", @tap_pypi_formula_mappings
+    end
+
+    sig { void }
+    def audit_aliases_renames_duplicates
+      duplicates = formula_aliases & formula_renames.keys
+      return if duplicates.none?
+
+      problem "The following should either be an alias or a rename, not both: #{duplicates.to_sentence}"
     end
 
     sig { params(message: String).void }
