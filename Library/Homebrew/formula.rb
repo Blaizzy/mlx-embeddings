@@ -540,8 +540,8 @@ class Formula
   # Old names for the formula.
   sig { returns(T::Array[String]) }
   def oldnames
-    @oldnames ||= if tap
-      T.must(tap).formula_oldnames.fetch(name, [])
+    @oldnames ||= if (tap = self.tap)
+      tap.formula_oldnames.fetch(name, [])
     else
       []
     end
@@ -550,8 +550,8 @@ class Formula
   # All aliases for the formula.
   sig { returns(T::Array[String]) }
   def aliases
-    @aliases ||= if tap
-      T.must(tap).alias_reverse_table[full_name].to_a.map do |a|
+    @aliases ||= if (tap = self.tap)
+      tap.alias_reverse_table[full_name].to_a.map do |a|
         a.split("/").last
       end
     else
