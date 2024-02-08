@@ -111,7 +111,7 @@ describe Formulary do
       it "raises an error" do
         expect do
           described_class.factory(formula_name)
-        end.to raise_error(FormulaClassUnavailableError)
+        end.to raise_error(TapFormulaClassUnavailableError)
       end
     end
 
@@ -139,12 +139,13 @@ describe Formulary do
     context "when given an alias" do
       subject(:formula) { described_class.factory("foo") }
 
-      let(:alias_dir) { CoreTap.instance.alias_dir.tap(&:mkpath) }
+      let(:alias_dir) { CoreTap.instance.alias_dir }
       let(:alias_path) { alias_dir/"foo" }
 
       before do
         alias_dir.mkpath
         FileUtils.ln_s formula_path, alias_path
+        CoreTap.instance.clear_cache
       end
 
       it "returns a Formula" do
@@ -152,7 +153,7 @@ describe Formulary do
       end
 
       it "calling #alias_path on the returned Formula returns the alias path" do
-        expect(formula.alias_path).to eq(alias_path.to_s)
+        expect(formula.alias_path).to eq(alias_path)
       end
     end
 
@@ -231,16 +232,22 @@ describe Formulary do
       let(:tap) { Tap.new("homebrew", "foo") }
       let(:another_tap) { Tap.new("homebrew", "bar") }
       let(:formula_path) { tap.path/"Formula/#{formula_name}.rb" }
+      let(:alias_name) { "bar" }
+      let(:alias_dir) { tap.alias_dir }
+      let(:alias_path) { alias_dir/alias_name }
+
+      before do
+        alias_dir.mkpath
+        FileUtils.ln_s formula_path, alias_path
+        tap.clear_cache
+      end
 
       it "returns a Formula when given a name" do
         expect(described_class.factory(formula_name)).to be_a(Formula)
       end
 
       it "returns a Formula from an Alias path" do
-        alias_dir = tap.path/"Aliases"
-        alias_dir.mkpath
-        FileUtils.ln_s formula_path, alias_dir/"bar"
-        expect(described_class.factory("bar")).to be_a(Formula)
+        expect(described_class.factory(alias_name)).to be_a(Formula)
       end
 
       it "returns a Formula from a fully qualified Alias path" do
@@ -378,7 +385,7 @@ describe Formulary do
       end
 
       before do
-        allow(described_class).to receive(:loader_for).and_return(described_class::FormulaAPILoader.new(formula_name))
+        allow(described_class).to receive(:loader_for).and_return(described_class::FromAPILoader.new(formula_name))
 
         # don't try to load/fetch gcc/glibc
         allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)

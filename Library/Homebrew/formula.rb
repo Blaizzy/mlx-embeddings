@@ -77,7 +77,7 @@ class Formula
 
   # The path to the alias that was used to identify this {Formula}.
   # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Aliases/another-name-for-this-formula`
-  sig { returns(T.any(NilClass, Pathname, String)) }
+  sig { returns(T.nilable(Pathname)) }
   attr_reader :alias_path
 
   # The name of the alias that was used to identify this {Formula}.
@@ -199,7 +199,7 @@ class Formula
 
   # @private
   sig {
-    params(name: String, path: Pathname, spec: Symbol, alias_path: T.any(NilClass, Pathname, String),
+    params(name: String, path: Pathname, spec: Symbol, alias_path: T.nilable(Pathname),
            tap: T.nilable(Tap), force_bottle: T::Boolean).void
   }
   def initialize(name, path, spec, alias_path: nil, tap: nil, force_bottle: false)
@@ -326,18 +326,22 @@ class Formula
   # The alias path that was used to install this formula, if it exists.
   # Can differ from {#alias_path}, which is the alias used to find the formula,
   # and is specified to this instance.
+  sig { returns(T.nilable(Pathname)) }
   def installed_alias_path
     build_tab = build
     path = build_tab.source["path"] if build_tab.is_a?(Tab)
+
     return unless path&.match?(%r{#{HOMEBREW_TAP_DIR_REGEX}/Aliases}o)
-    return unless File.symlink?(path)
+
+    path = Pathname(path)
+    return unless path.symlink?
 
     path
   end
 
   sig { returns(T.nilable(String)) }
   def installed_alias_name
-    File.basename(installed_alias_path) if installed_alias_path
+    installed_alias_path&.basename&.to_s
   end
 
   def full_installed_alias_name
@@ -346,14 +350,13 @@ class Formula
 
   # The path that was specified to find this formula.
   def specified_path
-    alias_pathname = Pathname(T.must(alias_path)) if alias_path.present?
-    return alias_pathname if alias_pathname&.exist?
+    return alias_path if alias_path&.exist?
 
     return @unresolved_path if @unresolved_path.exist?
 
     return local_bottle_path if local_bottle_path.presence&.exist?
 
-    alias_pathname || @unresolved_path
+    alias_path || @unresolved_path
   end
 
   # The name specified to find this formula.
@@ -2362,7 +2365,7 @@ class Formula
 
     # Take from API, merging in local install status.
     if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
-      json_formula = Homebrew::API::Formula.all_formulae[name].dup
+      json_formula = Homebrew::API::Formula.all_formulae.fetch(name).dup
       return json_formula.merge(
         hash.slice("name", "installed", "linked_keg", "pinned", "outdated"),
       )

@@ -259,19 +259,19 @@ end
 
 # Raised when a formula with the same name is found in multiple taps.
 class TapFormulaAmbiguityError < RuntimeError
-  attr_reader :name, :paths, :formulae
+  attr_reader :name, :taps
 
-  def initialize(name, paths)
+  def initialize(name, taps)
     @name = name
-    @paths = paths
-    @formulae = paths.map do |path|
-      "#{Tap.from_path(path).name}/#{path.basename(".rb")}"
-    end
+    @taps = taps
+
+    formulae = taps.map { |tap| "#{tap}/#{name}" }
+    formula_list = formulae.map { |f| "\n       * #{f}" }.join
 
     super <<~EOS
-      Formulae found in multiple taps: #{formulae.map { |f| "\n       * #{f}" }.join}
+      Formulae found in multiple taps:#{formula_list}
 
-      Please use the fully-qualified name (e.g. #{formulae.first}) to refer to the formula.
+      Please use the fully-qualified name (e.g. #{formulae.first}) to refer to a specific formula.
     EOS
   end
 end
