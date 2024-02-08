@@ -937,7 +937,8 @@ module Formulary
 
     if tap.core_tap? && !Homebrew::EnvConfig.no_install_from_api?
       if type == :alias
-        return AliasAPILoader.new(name)
+        alias_name = tapped_name[HOMEBREW_TAP_FORMULA_REGEX, 3]
+        return AliasAPILoader.new(alias_name)
       elsif Homebrew::API::Formula.all_formulae.key?(name)
         return FormulaAPILoader.new(name)
       end
