@@ -11,7 +11,7 @@ cask "livecheck-deprecated-reference" do
   homepage "http://localhost/homebrew/test/cask/audit/livecheck/deprecated"
 
   livecheck do
-    cask "livecheck/livecheck-deprecated"
+    cask "livecheck-deprecated"
   end
 
   app "TestCask.app"

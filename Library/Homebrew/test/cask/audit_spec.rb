@@ -518,61 +518,61 @@ describe Cask::Audit, :cask do
       let(:message) { /Version '[^']*' differs from '[^']*' retrieved by livecheck\./ }
 
       context "when the Cask has a livecheck block using skip" do
-        let(:cask_token) { "livecheck/livecheck-skip" }
+        let(:cask_token) { "livecheck-skip" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a Cask using skip" do
-        let(:cask_token) { "livecheck/livecheck-skip-reference" }
+        let(:cask_token) { "livecheck-skip-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask is deprecated" do
-        let(:cask_token) { "livecheck/livecheck-deprecated" }
+        let(:cask_token) { "livecheck-deprecated" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a deprecated Cask" do
-        let(:cask_token) { "livecheck/livecheck-deprecated-reference" }
+        let(:cask_token) { "livecheck-deprecated-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask is disabled" do
-        let(:cask_token) { "livecheck/livecheck-disabled" }
+        let(:cask_token) { "livecheck-disabled" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a disabled Cask" do
-        let(:cask_token) { "livecheck/livecheck-disabled-reference" }
+        let(:cask_token) { "livecheck-disabled-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when version is :latest" do
-        let(:cask_token) { "livecheck/livecheck-version-latest" }
+        let(:cask_token) { "livecheck-version-latest" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a Cask where version is :latest" do
-        let(:cask_token) { "livecheck/livecheck-version-latest-reference" }
+        let(:cask_token) { "livecheck-version-latest-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when url is unversioned" do
-        let(:cask_token) { "livecheck/livecheck-url-unversioned" }
+        let(:cask_token) { "livecheck-url-unversioned" }
 
         it { is_expected.not_to error_with(message) }
       end
 
       context "when the Cask has a livecheck block referencing a Cask with an unversioned url" do
-        let(:cask_token) { "livecheck/livecheck-url-unversioned-reference" }
+        let(:cask_token) { "livecheck-url-unversioned-reference" }
 
         it { is_expected.not_to error_with(message) }
       end
