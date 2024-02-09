@@ -232,10 +232,7 @@ module Cask
       }
       def self.try_new(ref, warn: false)
         ref = ref.to_s
-
-        return unless (match = ref.match(HOMEBREW_DEFAULT_TAP_CASK_REGEX))
-
-        token = match[:token]
+        return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
 
         ref = "#{CoreCaskTap.instance}/#{token}"
 
@@ -298,7 +295,10 @@ module Cask
         return if Homebrew::EnvConfig.no_install_from_api?
         return unless ref.is_a?(String)
         return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
-        return if !Homebrew::API::Cask.all_casks.key?(token) && !Homebrew::API::Cask.all_renames.key?(token)
+        if !Homebrew::API::Cask.all_casks.key?(token) &&
+           !Homebrew::API::Cask.all_renames.key?(token)
+          return
+        end
 
         ref = "#{CoreCaskTap.instance}/#{token}"
 
