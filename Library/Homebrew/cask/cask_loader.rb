@@ -196,6 +196,9 @@ module Cask
 
     # Loads a cask from a specific tap.
     class FromTapLoader < FromPathLoader
+      sig { returns(Tap) }
+      attr_reader :tap
+
       sig {
         params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
           .returns(T.nilable(T.attached_class))
@@ -221,34 +224,6 @@ module Cask
         raise TapCaskUnavailableError.new(tap, token) unless T.must(tap).installed?
 
         super
-      end
-    end
-
-    # Load a cask from the default tap, using either a full or short token.
-    class FromDefaultTapLoader < FromTapLoader
-      sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
-      }
-      def self.try_new(ref, warn: false)
-        ref = ref.to_s
-        return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
-
-        ref = "#{CoreCaskTap.instance}/#{token}"
-
-        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
-        new("#{tap}/#{token}")
-      end
-    end
-
-    # Loads a cask from the default tap path.
-    class FromDefaultTapPathLoader < FromPathLoader
-      sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
-      }
-      def self.try_new(ref, warn: false)
-        super CaskLoader.default_path(ref)
       end
     end
 
@@ -464,14 +439,34 @@ module Cask
 
     # Loader which tries loading casks from tap paths, failing
     # if the same token exists in multiple taps.
-    class FromAmbiguousTapPathLoader < FromPathLoader
+    class FromNameLoader < FromPathLoader
       def self.try_new(ref, warn: false)
-        case (possible_tap_casks = CaskLoader.tap_paths(ref)).count
+        return unless ref.is_a?(String)
+        return if ref.include?("/")
+
+        token = ref
+
+        loaders = Tap.map { |tap| FromTapLoader.try_new("#{tap}/#{token}", warn: warn) }
+                     .compact
+                     .select { _1.path.exist? }
+
+        case loaders.count
         when 1
-          new(possible_tap_casks.first)
+          loaders.first
         when 2..Float::INFINITY
-          loaders = possible_tap_casks.map(&FromPathLoader.method(:new))
-          raise TapCaskAmbiguityError.new(ref, loaders)
+          default_tap_loaders, other_loaders = *loaders.partition { _1.tap.core_cask_tap? }
+          default_tap_loader = default_tap_loaders.first if default_tap_loaders.count
+
+          # Put default tap last so that the error message always recommends
+          # using the fully-qualified name for non-default taps.
+          taps = other_loaders.map(&:tap) + default_tap_loaders.map(&:tap)
+
+          error = TapCaskAmbiguityError.new(token, taps)
+
+          raise error unless default_tap_loader
+
+          opoo error if warn
+          default_tap_loader
         end
       end
     end
@@ -557,10 +552,8 @@ module Cask
         FromURILoader,
         FromAPILoader,
         FromTapLoader,
+        FromNameLoader,
         FromPathLoader,
-        FromDefaultTapPathLoader,
-        FromAmbiguousTapPathLoader,
-        FromDefaultTapLoader,
         FromInstalledPathLoader,
         NullLoader,
       ].each do |loader_class|
