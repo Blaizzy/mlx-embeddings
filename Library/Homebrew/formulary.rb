@@ -694,9 +694,9 @@ module Formulary
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       ref = ref.to_s
-      return unless (match = ref.match(HOMEBREW_TAP_FORMULA_REGEX))
+      return unless (name = ref[HOMEBREW_TAP_FORMULA_REGEX, :name])
 
-      alias_name = T.cast(match[:name], String)
+      alias_name = name
 
       name, tap, type = Formulary.tap_formula_name_type(ref, warn: warn)
       path = Formulary.find_formula_in_tap(name, tap)
@@ -853,15 +853,14 @@ module Formulary
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       return if Homebrew::EnvConfig.no_install_from_api?
       return unless ref.is_a?(String)
-
-      return unless (match = ref.match(HOMEBREW_DEFAULT_TAP_FORMULA_REGEX))
-
-      name = alias_name = T.cast(match[:name], String)
+      return unless (name = ref[HOMEBREW_DEFAULT_TAP_FORMULA_REGEX, :name])
       if !Homebrew::API::Formula.all_formulae.key?(name) &&
          !Homebrew::API::Formula.all_aliases.key?(name) &&
          !Homebrew::API::Formula.all_renames.key?(name)
         return
       end
+
+      alias_name = name
 
       ref = "#{CoreTap.instance}/#{name}"
 
