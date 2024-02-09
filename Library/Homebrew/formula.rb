@@ -546,7 +546,7 @@ class Formula
   # All aliases for the formula.
   sig { returns(T::Array[String]) }
   def aliases
-    @aliases ||= tap&.alias_reverse_table&.dig(full_name)&.map { |a| a.split("/").last } || []
+    @aliases ||= tap&.alias_reverse_table&.dig(full_name)&.map { _1.split("/").last } || []
   end
 
   # The {Resource}s for the currently active {SoftwareSpec}.
