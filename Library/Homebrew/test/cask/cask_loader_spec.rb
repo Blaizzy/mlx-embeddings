@@ -37,13 +37,13 @@ describe Cask::CaskLoader, :cask do
 
         it "warns when using the short token" do
           expect do
-            expect(described_class.for("version-newest")).to be_a Cask::CaskLoader::FromTapPathLoader
+            expect(described_class.for("version-newest")).to be_a Cask::CaskLoader::FromPathLoader
           end.to output(/version-newest was renamed to version-latest/).to_stderr
         end
 
         it "warns when using the full token" do
           expect do
-            expect(described_class.for("homebrew/cask/version-newest")).to be_a Cask::CaskLoader::FromTapPathLoader
+            expect(described_class.for("homebrew/cask/version-newest")).to be_a Cask::CaskLoader::FromPathLoader
           end.to output(/version-newest was renamed to version-latest/).to_stderr
         end
       end

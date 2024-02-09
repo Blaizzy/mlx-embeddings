@@ -60,7 +60,7 @@ module Homebrew
         end
         private :download_and_cache_data!
 
-        sig { returns(Hash) }
+        sig { returns(T::Hash[String, Hash]) }
         def all_casks
           unless cache.key?("casks")
             json_updated = download_and_cache_data!
