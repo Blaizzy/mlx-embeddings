@@ -540,23 +540,13 @@ class Formula
   # Old names for the formula.
   sig { returns(T::Array[String]) }
   def oldnames
-    @oldnames ||= if (tap = self.tap)
-      tap.formula_oldnames.fetch(name, [])
-    else
-      []
-    end
+    @oldnames ||= tap&.formula_oldnames&.dig(name) || []
   end
 
   # All aliases for the formula.
   sig { returns(T::Array[String]) }
   def aliases
-    @aliases ||= if (tap = self.tap)
-      tap.alias_reverse_table[full_name].to_a.map do |a|
-        a.split("/").last
-      end
-    else
-      []
-    end
+    @aliases ||= tap&.alias_reverse_table&.dig(full_name)&.map { |a| a.split("/").last } || []
   end
 
   # The {Resource}s for the currently active {SoftwareSpec}.
