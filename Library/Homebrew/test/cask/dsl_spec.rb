@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Cask::DSL, :cask do
-  let(:cask) { Cask::CaskLoader.load(cask_path(token.to_s)) }
+  let(:cask) { Cask::CaskLoader.load(cask_path(token)) }
   let(:token) { "basic-cask" }
 
   describe "stanzas" do
