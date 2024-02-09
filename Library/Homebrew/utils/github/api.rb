@@ -208,7 +208,7 @@ module GitHub
         Your #{what} credentials do not have sufficient scope!
         Scopes required: #{needed_scopes}
         Scopes present:  #{credentials_scopes}
-        #{GitHub.pat_blurb}
+        #{GitHub.pat_blurb(needed_scopes.split(", "))}
       EOS
     end
 
