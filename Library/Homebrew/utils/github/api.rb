@@ -197,6 +197,8 @@ module GitHub
 
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
       needed_scopes = Set.new(scopes || needed_scopes)
+      github_permission_link = GitHub.pat_blurb(needed_scopes)
+
       credentials_scopes = response_headers["x-oauth-scopes"]
       return if needed_scopes.subset?(Set.new(credentials_scopes.to_s.split(", ")))
 
@@ -208,7 +210,7 @@ module GitHub
         Your #{what} credentials do not have sufficient scope!
         Scopes required: #{needed_scopes}
         Scopes present:  #{credentials_scopes}
-        #{GitHub.pat_blurb(needed_scopes.split(", "))}
+        #{github_permission_link}
       EOS
     end
 
