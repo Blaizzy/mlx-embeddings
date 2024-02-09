@@ -50,11 +50,15 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do # rubocop:disable RSpec/Co
           cask_dir = (tap.cask_dir/relative_cask_path.dirname).tap(&:mkpath)
           FileUtils.ln_sf fixture_cask_path, cask_dir
         end
+
+        tap.clear_cache
       end
 
       third_party_tap.tap do |tap|
         tap.path.parent.mkpath
         FileUtils.ln_sf TEST_FIXTURE_DIR/"third-party", tap.path
+
+        tap.clear_cache
       end
 
       example.run
