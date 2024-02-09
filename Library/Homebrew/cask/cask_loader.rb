@@ -297,10 +297,7 @@ module Cask
       def self.try_new(ref, warn: false)
         return if Homebrew::EnvConfig.no_install_from_api?
         return unless ref.is_a?(String)
-
-        return unless (match = ref.match(HOMEBREW_DEFAULT_TAP_CASK_REGEX))
-
-        token = T.cast(match[:token], String)
+        return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
         return if !Homebrew::API::Cask.all_casks.key?(token) && !Homebrew::API::Cask.all_renames.key?(token)
 
         ref = "#{CoreCaskTap.instance}/#{token}"
