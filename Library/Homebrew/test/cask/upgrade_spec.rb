@@ -21,6 +21,15 @@ describe Cask::Upgrade, :cask do
   let(:renamed_app_new_path) { renamed_app.config.appdir.join("NewApp.app") }
   let(:args) { Homebrew::CLI::Args.new }
 
+  before do
+    installed.each do |cask|
+      Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install
+    end
+    FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
+
+    allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
+  end
+
   context "when the upgrade is successful" do
     let(:installed) do
       [
@@ -30,13 +39,6 @@ describe Cask::Upgrade, :cask do
         "outdated/version-latest",
         "outdated/renamed-app",
       ]
-    end
-
-    before do
-      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
-      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
-
-      allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
 
     describe 'without --greedy it ignores the Casks with "version latest" or "auto_updates true"' do
@@ -226,13 +228,6 @@ describe Cask::Upgrade, :cask do
       ]
     end
 
-    before do
-      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
-      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
-
-      allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
-    end
-
     describe 'without --greedy it ignores the Casks with "version latest" or "auto_updates true"' do
       it "would update all the installed Casks when no token is provided" do
         expect(described_class).not_to receive(:upgrade_cask)
@@ -412,13 +407,6 @@ describe Cask::Upgrade, :cask do
       ]
     end
 
-    before do
-      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
-      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
-
-      allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
-    end
-
     output_reverted = Regexp.new <<~EOS
       Warning: Reverting upgrade for Cask .*
     EOS
@@ -467,13 +455,6 @@ describe Cask::Upgrade, :cask do
         "outdated/local-transmission",
         "outdated/bad-checksum2",
       ]
-    end
-
-    before do
-      installed.each { |cask| Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install }
-      FileUtils.rm_rf CoreCaskTap.instance.cask_dir/"outdated"
-
-      allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
     end
 
     it "does not end the upgrade process" do
