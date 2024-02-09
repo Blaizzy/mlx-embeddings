@@ -2012,18 +2012,6 @@ class Formula
     @alias_full_names ||= core_aliases + tap_aliases
   end
 
-  # a table mapping core alias to formula name
-  # @private
-  def self.core_alias_table
-    CoreTap.instance.alias_table
-  end
-
-  # a table mapping core formula name to aliases
-  # @private
-  def self.core_alias_reverse_table
-    CoreTap.instance.alias_reverse_table
-  end
-
   # Returns a list of approximately matching formula names, but not the complete match
   # @private
   def self.fuzzy_search(name)
