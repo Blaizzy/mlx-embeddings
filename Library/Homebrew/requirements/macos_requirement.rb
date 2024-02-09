@@ -118,8 +118,8 @@ class MacOSRequirement < Requirement
 
   def to_json(options)
     comp = @comparator.to_s
-    return T.unsafe({ comp => @version.map(&:to_s) }).to_json(options) if @version.is_a?(Array)
+    return { comp => @version.map(&:to_s) }.to_json(options) if @version.is_a?(Array)
 
-    T.unsafe({ comp => [@version.to_s] }).to_json(options)
+    { comp => [@version.to_s] }.to_json(options)
   end
 end

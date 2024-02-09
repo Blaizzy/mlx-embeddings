@@ -3,6 +3,14 @@
 # This file contains temporary definitions for fixes that have
 # been submitted upstream to https://github.com/sorbet/sorbet.
 
+# https://github.com/sorbet/sorbet/pull/7682
+class Array
+  include JSON::Ext::Generator::GeneratorMethods::Array
+end
+class Hash
+  include JSON::Ext::Generator::GeneratorMethods::Hash
+end
+
 # https://github.com/sorbet/sorbet/pull/7650
 class Etc::Group < Struct
   sig { returns(Integer) }
