@@ -921,10 +921,15 @@ module Formulary
       new_tap = Tap.fetch new_tap_name
       new_tap.ensure_installed!
       new_tapped_name = "#{new_tap_name}/#{name}"
-      name, tap, = Formulary.tap_formula_name_type(new_tapped_name, warn: false)
-      old_name = tapped_name
-      new_name = new_tap.core_tap? ? name : new_tapped_name
-      type = :migration
+
+      if tapped_name == new_tapped_name
+        opoo "Tap migration for #{tapped_name} points to itself, stopping recursion."
+      else
+        name, tap, = tap_formula_name_type(new_tapped_name, warn: false)
+        old_name = tapped_name
+        new_name = new_tap.core_tap? ? name : new_tapped_name
+        type = :migration
+      end
     end
 
     opoo "Formula #{old_name} was renamed to #{new_name}." if warn && old_name && new_name
