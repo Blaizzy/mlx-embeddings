@@ -11,7 +11,7 @@ cask "livecheck-disabled-reference" do
   homepage "http://localhost/homebrew/test/cask/audit/livecheck/disabled"
 
   livecheck do
-    cask "livecheck/livecheck-disabled"
+    cask "livecheck-disabled"
   end
 
   app "TestCask.app"

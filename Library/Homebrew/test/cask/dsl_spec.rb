@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Cask::DSL, :cask do
-  let(:cask) { Cask::CaskLoader.load(cask_path(token.to_s)) }
+  let(:cask) { Cask::CaskLoader.load(token) }
   let(:token) { "basic-cask" }
 
   describe "stanzas" do
@@ -43,7 +43,7 @@ describe Cask::DSL, :cask do
 
   describe "header line" do
     context "when invalid" do
-      let(:token) { "invalid/invalid-header-format" }
+      let(:token) { "invalid-header-format" }
 
       it "raises an error" do
         expect { cask }.to raise_error(Cask::CaskUnreadableError)
@@ -51,7 +51,7 @@ describe Cask::DSL, :cask do
     end
 
     context "when token does not match the file name" do
-      let(:token) { "invalid/invalid-header-token-mismatch" }
+      let(:token) { "invalid-header-token-mismatch" }
 
       it "raises an error" do
         expect do
@@ -309,7 +309,7 @@ describe Cask::DSL, :cask do
   end
 
   describe "url stanza" do
-    let(:token) { "invalid/invalid-two-url" }
+    let(:token) { "invalid-two-url" }
 
     it "prevents defining multiple urls" do
       expect { cask }.to raise_error(Cask::CaskInvalidError, /'url' stanza may only appear once/)
@@ -317,7 +317,7 @@ describe Cask::DSL, :cask do
   end
 
   describe "homepage stanza" do
-    let(:token) { "invalid/invalid-two-homepage" }
+    let(:token) { "invalid-two-homepage" }
 
     it "prevents defining multiple homepages" do
       expect { cask }.to raise_error(Cask::CaskInvalidError, /'homepage' stanza may only appear once/)
@@ -325,7 +325,7 @@ describe Cask::DSL, :cask do
   end
 
   describe "version stanza" do
-    let(:token) { "invalid/invalid-two-version" }
+    let(:token) { "invalid-two-version" }
 
     it "prevents defining multiple versions" do
       expect { cask }.to raise_error(Cask::CaskInvalidError, /'version' stanza may only appear once/)
@@ -333,7 +333,7 @@ describe Cask::DSL, :cask do
   end
 
   describe "arch stanza" do
-    let(:token) { "invalid/invalid-two-arch" }
+    let(:token) { "invalid-two-arch" }
 
     it "prevents defining multiple arches" do
       expect { cask }.to raise_error(Cask::CaskInvalidError, /'arch' stanza may only appear once/)
@@ -365,7 +365,7 @@ describe Cask::DSL, :cask do
   end
 
   describe "depends_on stanza" do
-    let(:token) { "invalid/invalid-depends-on-key" }
+    let(:token) { "invalid-depends-on-key" }
 
     it "refuses to load with an invalid depends_on key" do
       expect { cask }.to raise_error(Cask::CaskInvalidError)
@@ -410,7 +410,7 @@ describe Cask::DSL, :cask do
 
   describe "depends_on macos" do
     context "when the depends_on macos value is invalid" do
-      let(:token) { "invalid/invalid-depends-on-macos-bad-release" }
+      let(:token) { "invalid-depends-on-macos-bad-release" }
 
       it "refuses to load" do
         expect { cask }.to raise_error(Cask::CaskInvalidError)
@@ -418,7 +418,7 @@ describe Cask::DSL, :cask do
     end
 
     context "when there are conflicting depends_on macos forms" do
-      let(:token) { "invalid/invalid-depends-on-macos-conflicting-forms" }
+      let(:token) { "invalid-depends-on-macos-conflicting-forms" }
 
       it "refuses to load" do
         expect { cask }.to raise_error(Cask::CaskInvalidError)
@@ -436,7 +436,7 @@ describe Cask::DSL, :cask do
     end
 
     context "with invalid depends_on arch value" do
-      let(:token) { "invalid/invalid-depends-on-arch-value" }
+      let(:token) { "invalid-depends-on-arch-value" }
 
       it "refuses to load" do
         expect { cask }.to raise_error(Cask::CaskInvalidError)
@@ -454,7 +454,7 @@ describe Cask::DSL, :cask do
     end
 
     context "with invalid conflicts_with key" do
-      let(:token) { "invalid/invalid-conflicts-with-key" }
+      let(:token) { "invalid-conflicts-with-key" }
 
       it "refuses to load invalid conflicts_with key" do
         expect { cask }.to raise_error(Cask::CaskInvalidError)
@@ -495,7 +495,7 @@ describe Cask::DSL, :cask do
     end
 
     context "when there is are activatable artifacts" do
-      let(:token) { "invalid/invalid-stage-only-conflict" }
+      let(:token) { "invalid-stage-only-conflict" }
 
       it "prevents specifying stage_only" do
         expect { cask }.to raise_error(Cask::CaskInvalidError, /'stage_only' must be the only activatable artifact/)

@@ -21,7 +21,7 @@ describe Cask::Artifact::Artifact, :cask do
   context "without target" do
     it "fails to load" do
       expect do
-        Cask::CaskLoader.load(cask_path("invalid/invalid-generic-artifact-no-target"))
+        Cask::CaskLoader.load("invalid-generic-artifact-no-target")
       end.to raise_error(Cask::CaskInvalidError, /Generic Artifact.*requires.*target/)
     end
   end
@@ -29,7 +29,7 @@ describe Cask::Artifact::Artifact, :cask do
   context "with relative target" do
     it "does not fail to load" do
       expect do
-        Cask::CaskLoader.load(cask_path("generic-artifact-relative-target"))
+        Cask::CaskLoader.load("generic-artifact-relative-target")
       end.not_to raise_error
     end
   end
@@ -37,7 +37,7 @@ describe Cask::Artifact::Artifact, :cask do
   context "with user-relative target" do
     it "does not fail to load" do
       expect do
-        Cask::CaskLoader.load(cask_path("generic-artifact-user-relative-target"))
+        Cask::CaskLoader.load("generic-artifact-user-relative-target")
       end.not_to raise_error
     end
   end

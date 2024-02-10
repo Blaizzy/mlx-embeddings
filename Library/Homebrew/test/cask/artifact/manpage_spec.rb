@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 describe Cask::Artifact::Manpage, :cask do
-  let(:cask) { Cask::CaskLoader.load(cask_path(cask_token)) }
+  let(:cask) { Cask::CaskLoader.load(cask_token) }
 
   context "without section" do
-    let(:cask_token) { "invalid/invalid-manpage-no-section" }
+    let(:cask_token) { "invalid-manpage-no-section" }
 
     it "fails to load a cask without section" do
       expect { cask }.to raise_error(Cask::CaskInvalidError, /is not a valid man page name/)

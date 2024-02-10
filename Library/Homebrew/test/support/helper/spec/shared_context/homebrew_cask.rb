@@ -39,15 +39,26 @@ RSpec.shared_context "Homebrew Cask", :needs_macos do # rubocop:disable RSpec/Co
       Cask::Config::DEFAULT_DIRS_PATHNAMES.each_value(&:mkpath)
 
       CoreCaskTap.instance.tap do |tap|
-        tap.cask_dir.mkpath
-        (TEST_FIXTURE_DIR/"cask/Casks").children.each do |casks_path|
-          FileUtils.ln_sf casks_path, tap.cask_dir
+        fixture_cask_dir = TEST_FIXTURE_DIR/"cask/Casks"
+        fixture_cask_dir.glob("**/*.rb").each do |fixture_cask_path|
+          relative_cask_path = fixture_cask_path.relative_path_from(fixture_cask_dir)
+
+          # These are only used manually in tests since they
+          # would otherwise conflict with other casks.
+          next if relative_cask_path.dirname.basename.to_s == "outdated"
+
+          cask_dir = (tap.cask_dir/relative_cask_path.dirname).tap(&:mkpath)
+          FileUtils.ln_sf fixture_cask_path, cask_dir
         end
+
+        tap.clear_cache
       end
 
       third_party_tap.tap do |tap|
         tap.path.parent.mkpath
         FileUtils.ln_sf TEST_FIXTURE_DIR/"third-party", tap.path
+
+        tap.clear_cache
       end
 
       example.run

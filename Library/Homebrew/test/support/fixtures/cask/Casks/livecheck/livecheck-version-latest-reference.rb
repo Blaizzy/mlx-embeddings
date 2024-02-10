@@ -11,7 +11,7 @@ cask "livecheck-version-latest-reference" do
   homepage "http://localhost/homebrew/test/cask/audit/livecheck/version-latest"
 
   livecheck do
-    cask "livecheck/livecheck-version-latest"
+    cask "livecheck-version-latest"
   end
 
   app "TestCask.app"

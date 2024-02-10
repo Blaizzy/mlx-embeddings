@@ -11,7 +11,7 @@ cask "livecheck-url-unversioned-reference" do
   homepage "http://localhost/homebrew/test/cask/audit/livecheck/url-unversioned"
 
   livecheck do
-    cask "livecheck/livecheck-url-unversioned"
+    cask "livecheck-url-unversioned"
   end
 
   app "TestCask.app"

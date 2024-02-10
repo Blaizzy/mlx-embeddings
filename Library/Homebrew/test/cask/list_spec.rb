@@ -59,15 +59,23 @@ describe Cask::List, :cask do
   end
 
   describe "lists versions" do
-    let!(:casks) do
-      ["local-caffeine",
-       "local-transmission"].map(&Cask::CaskLoader.method(:load)).each(&InstallHelper.method(:install_with_caskfile))
+    let(:casks) do
+      [
+        "local-caffeine",
+        "local-transmission",
+      ].map { |token| Cask::CaskLoader.load(token) }
     end
     let(:expected_output) do
       <<~EOS
         local-caffeine 1.2.3
         local-transmission 2.61
       EOS
+    end
+
+    before do
+      casks.each do |cask|
+        InstallHelper.install_with_caskfile(cask)
+      end
     end
 
     it "of all installed Casks" do
