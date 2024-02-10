@@ -534,10 +534,15 @@ module Cask
         new_tap = Tap.fetch(new_tap_name)
         new_tap.ensure_installed!
         new_tapped_token = "#{new_tap_name}/#{token}"
-        token, tap, = tap_cask_token_type(new_tapped_token, warn: false)
-        old_token = tapped_token
-        new_token = new_tap.core_cask_tap? ? token : new_tapped_token
-        type = :migration
+
+        if tapped_token == new_tapped_token
+          opoo "Tap migration for #{tapped_token} points to itself, stopping recursion."
+        else
+          token, tap, = tap_cask_token_type(new_tapped_token, warn: false)
+          old_token = tapped_token
+          new_token = new_tap.core_cask_tap? ? token : new_tapped_token
+          type = :migration
+        end
       end
 
       opoo "Cask #{old_token} was renamed to #{new_token}." if warn && old_token && new_token
