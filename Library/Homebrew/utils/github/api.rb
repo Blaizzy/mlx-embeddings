@@ -197,11 +197,11 @@ module GitHub
 
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
       needed_scopes = Set.new(scopes || needed_scopes)
-      github_permission_link = GitHub.pat_blurb(needed_scopes)
 
       credentials_scopes = response_headers["x-oauth-scopes"]
       return if needed_scopes.subset?(Set.new(credentials_scopes.to_s.split(", ")))
 
+      github_permission_link = GitHub.pat_blurb(needed_scopes.to_a)
       needed_scopes = needed_scopes.to_a.join(", ").presence || "none"
       credentials_scopes = "none" if credentials_scopes.blank?
 
