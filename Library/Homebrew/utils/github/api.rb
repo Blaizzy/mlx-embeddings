@@ -197,7 +197,6 @@ module GitHub
 
       scopes = response_headers["x-accepted-oauth-scopes"].to_s.split(", ")
       needed_scopes = Set.new(scopes || needed_scopes)
-
       credentials_scopes = response_headers["x-oauth-scopes"]
       return if needed_scopes.subset?(Set.new(credentials_scopes.to_s.split(", ")))
 
