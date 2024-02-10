@@ -24,9 +24,9 @@ module Tapioca
           # exclude vendored code, to avoid contradicting their RBI files
           !path.include?("/vendor/bundle/ruby/") &&
             # exclude source code that already has an RBI file
-            !Pathname("#{path}i").exist? &&
+            !File.exist?("#{path}i") &&
             # exclude source code that doesn't use the DSLs
-            File.readlines(path).grep(/def_node_/).any?
+            File.readlines(path).any?(/def_node_/)
         end
       end
 
@@ -40,7 +40,8 @@ module Tapioca
             #   https://github.com/rubocop/rubocop-ast/blob/master/lib/rubocop/ast/node_pattern.rb
             #   https://github.com/rubocop/rubocop-ast/blob/master/lib/rubocop/ast/node_pattern/method_definer.rb
             # The type signatures below could maybe be stronger, but I only wanted to avoid errors:
-            if source.start_with?("def_node_matcher")
+            case source
+            when /\Adef_node_matcher/
               # https://github.com/Shopify/tapioca/blob/3341a9b/lib/tapioca/rbi_ext/model.rb#L89
               klass.create_method(
                 method_name.to_s,
@@ -51,7 +52,7 @@ module Tapioca
                 ],
                 return_type: "T.untyped",
               )
-            elsif source.start_with?("def_node_search")
+            when /\Adef_node_search/
               klass.create_method(
                 method_name.to_s,
                 parameters:  [
