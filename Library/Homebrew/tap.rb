@@ -1101,6 +1101,8 @@ class CoreTap < AbstractCoreTap
     @tap_migrations ||= if Homebrew::EnvConfig.no_install_from_api?
       ensure_installed!
       super
+    elsif Homebrew::API.internal_json_v3?
+      Homebrew::API::Formula.tap_migrations
     else
       migrations, = Homebrew::API.fetch_json_api_file "formula_tap_migrations.jws.json",
                                                       stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
