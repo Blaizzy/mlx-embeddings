@@ -909,7 +909,7 @@ module Formulary
     alias_name = tap.core_tap? ? name : "#{tap}/#{name}"
 
     if (possible_alias = tap.alias_table[alias_name].presence)
-      name = possible_alias
+      name = possible_alias.split("/").last
       type = :alias
     elsif (new_name = tap.formula_renames[name].presence)
       old_name = name
@@ -943,14 +943,12 @@ module Formulary
 
     if tap.core_tap? && !Homebrew::EnvConfig.no_install_from_api?
       if type == :alias
-        alias_name = tapped_name[HOMEBREW_TAP_FORMULA_REGEX, 3]
-        return AliasAPILoader.new(alias_name)
+        return AliasAPILoader.new(name)
       elsif Homebrew::API::Formula.all_formulae.key?(name)
         return FormulaAPILoader.new(name)
       end
     end
 
-    name = name.split("/").last if name != :nil && type == :alias
     path = find_formula_in_tap(name, tap)
     TapLoader.new(name, path, tap: tap)
   end

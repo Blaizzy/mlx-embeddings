@@ -243,6 +243,13 @@ describe Formulary do
         expect(described_class.factory("bar")).to be_a(Formula)
       end
 
+      it "returns a Formula from a fully qualified Alias path" do
+        alias_dir = tap.path/"Aliases"
+        alias_dir.mkpath
+        FileUtils.ln_s formula_path, alias_dir/"bar"
+        expect(described_class.factory("#{tap}/bar")).to be_a(Formula)
+      end
+
       it "raises an error when the Formula cannot be found" do
         expect do
           described_class.factory("#{tap}/not_existed_formula")
