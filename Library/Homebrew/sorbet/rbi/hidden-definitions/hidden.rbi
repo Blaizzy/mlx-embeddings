@@ -5515,6 +5515,7 @@ class IRB::ReadlineInputMethod
 end
 
 class IRB::ReidlineInputMethod
+  include ::Reline
   def auto_indent(&block); end
 
   def check_termination(&block); end
