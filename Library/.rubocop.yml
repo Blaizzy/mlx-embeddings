@@ -215,6 +215,10 @@ Performance/CaseWhenSplat:
 Performance/MethodObjectAsBlock:
   Enabled: false
 
+RSpec:
+  Include:
+    - 'Homebrew/test/**/*'
+
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
   Enabled: false
