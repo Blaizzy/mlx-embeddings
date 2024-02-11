@@ -7,12 +7,8 @@ shared_examples Cask::Staged do
   let(:non_existent_path) { Pathname("/path/to/file/that/does/not/exist") }
 
   before do
-    allow(existing_path).to receive(:exist?).and_return(true)
-    allow(existing_path).to receive(:expand_path)
-      .and_return(existing_path)
-    allow(non_existent_path).to receive(:exist?).and_return(false)
-    allow(non_existent_path).to receive(:expand_path)
-      .and_return(non_existent_path)
+    allow(existing_path).to receive_messages(exist?: true, expand_path: existing_path)
+    allow(non_existent_path).to receive_messages(exist?: false, expand_path: non_existent_path)
   end
 
   it "can run system commands with list-form arguments" do

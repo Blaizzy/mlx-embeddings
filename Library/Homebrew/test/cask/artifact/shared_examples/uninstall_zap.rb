@@ -185,15 +185,15 @@ shared_examples "#uninstall_phase or #zap_phase" do
     it "is supported" do
       allow(subject).to receive(:system_command!)
         .with("/usr/sbin/kextstat", args: ["-l", "-b", kext_id], sudo: true, sudo_as_root: true)
-        .and_return(instance_double("SystemCommand::Result", stdout: "loaded"))
+        .and_return(instance_double(SystemCommand::Result, stdout: "loaded"))
 
       expect(subject).to receive(:system_command!)
         .with("/sbin/kextunload", args: ["-b", kext_id], sudo: true, sudo_as_root: true)
-        .and_return(instance_double("SystemCommand::Result"))
+        .and_return(instance_double(SystemCommand::Result))
 
       expect(subject).to receive(:system_command!)
         .with("/usr/sbin/kextfind", args: ["-b", kext_id], sudo: true, sudo_as_root: true)
-        .and_return(instance_double("SystemCommand::Result", stdout: "/Library/Extensions/FancyPackage.kext\n"))
+        .and_return(instance_double(SystemCommand::Result, stdout: "/Library/Extensions/FancyPackage.kext\n"))
 
       expect(subject).to receive(:system_command!)
         .with("/bin/rm", args: ["-rf", "/Library/Extensions/FancyPackage.kext"], sudo: true, sudo_as_root: true)
@@ -220,7 +220,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
 
       expect(subject).to receive(:running?).with(bundle_id).ordered.and_return(true)
       expect(subject).to receive(:quit).with(bundle_id)
-                                       .and_return(instance_double("SystemCommand::Result", success?: true))
+                                       .and_return(instance_double(SystemCommand::Result, success?: true))
       expect(subject).to receive(:running?).with(bundle_id).ordered.and_return(false)
 
       expect do
@@ -247,7 +247,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
 
       allow(subject).to receive(:running?).with(bundle_id).and_return(true)
       allow(subject).to receive(:quit).with(bundle_id)
-                                      .and_return(instance_double("SystemCommand::Result", success?: false))
+                                      .and_return(instance_double(SystemCommand::Result, success?: false))
 
       time = Benchmark.measure do
         expect do
@@ -369,7 +369,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
           "osascript",
           args: ["-e", 'tell application "System Events" to delete every login item whose name is "Fancy"'],
         )
-        .and_return(instance_double("SystemCommand::Result", success?: true))
+        .and_return(instance_double(SystemCommand::Result, success?: true))
 
       subject.public_send(:"#{artifact_dsl_key}_phase", command: fake_system_command)
     end
