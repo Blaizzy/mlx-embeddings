@@ -950,7 +950,6 @@ module Formulary
     end
 
     path = find_formula_in_tap(name, tap)
-
     TapLoader.new(name, path, tap: tap)
   end
 
