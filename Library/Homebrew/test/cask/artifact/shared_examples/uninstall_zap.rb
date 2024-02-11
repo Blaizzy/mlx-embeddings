@@ -9,7 +9,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
   let(:artifact) { cask.artifacts.find { |a| a.is_a?(described_class) } }
   let(:fake_system_command) { class_double(SystemCommand) }
 
-  context "using :launchctl" do
+  context "when using :launchctl" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-launchctl")) }
     let(:launchctl_list_cmd) { %w[/bin/launchctl list my.fancy.package.service] }
     let(:launchctl_remove_cmd) { %w[/bin/launchctl remove my.fancy.package.service] }
@@ -84,7 +84,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :launchctl with regex wildcard" do
+  context "when using :launchctl with regex wildcard" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-launchctl-wildcard")) }
     let(:launchctl_regex) { "my.fancy.package.service.*" }
     let(:unknown_response) { "launchctl list returned unknown response\n" }
@@ -154,7 +154,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :pkgutil" do
+  context "when using :pkgutil" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-pkgutil")) }
 
     let(:main_pkg_id) { "my.fancy.package.main" }
@@ -178,7 +178,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :kext" do
+  context "when using :kext" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-kext")) }
     let(:kext_id) { "my.fancy.package.kernelextension" }
 
@@ -202,7 +202,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :quit" do
+  context "when using :quit" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-quit")) }
     let(:bundle_id) { "my.fancy.package.app" }
 
@@ -236,10 +236,8 @@ shared_examples "#uninstall_phase or #zap_phase" do
       expect(subject).not_to receive(:running?)
       expect(subject).not_to receive(:quit)
 
-      expect do
-        subject.public_send(:"#{artifact_dsl_key}_phase", upgrade: true, command: fake_system_command)
-        subject.public_send(:"#{artifact_dsl_key}_phase", reinstall: true, command: fake_system_command)
-      end
+      subject.public_send(:"#{artifact_dsl_key}_phase", upgrade: true, command: fake_system_command)
+      subject.public_send(:"#{artifact_dsl_key}_phase", reinstall: true, command: fake_system_command)
     end
 
     it "tries to quit the application for 10 seconds" do
@@ -259,7 +257,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :signal" do
+  context "when using :signal" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-signal")) }
     let(:bundle_id) { "my.fancy.package.app" }
     let(:signals) { %w[TERM KILL] }
@@ -294,13 +292,13 @@ shared_examples "#uninstall_phase or #zap_phase" do
   [:delete, :trash].each do |directive|
     next if directive == :trash && ENV["HOMEBREW_TESTS_COVERAGE"].nil?
 
-    context "using :#{directive}" do
+    context "when using :#{directive}" do
       let(:dir) { TEST_TMPDIR }
       let(:absolute_path) { Pathname.new("#{dir}/absolute_path") }
       let(:path_with_tilde) { Pathname.new("#{dir}/path_with_tilde") }
-      let(:glob_path1) { Pathname.new("#{dir}/glob_path1") }
-      let(:glob_path2) { Pathname.new("#{dir}/glob_path2") }
-      let(:paths) { [absolute_path, path_with_tilde, glob_path1, glob_path2] }
+      let(:glob_path) { Pathname.new("#{dir}/glob_path") }
+      let(:glob_path_alt) { Pathname.new("#{dir}/glob_path_alt") }
+      let(:paths) { [absolute_path, path_with_tilde, glob_path, glob_path_alt] }
       let(:fake_system_command) { NeverSudoSystemCommand }
       let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-#{directive}")) }
 
@@ -336,7 +334,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
   end
 
   [:script, :early_script].each do |script_type|
-    context "using #{script_type.inspect}" do
+    context "when using #{script_type.inspect}" do
       let(:fake_system_command) { NeverSudoSystemCommand }
       let(:token) { "with-#{artifact_dsl_key}-#{script_type}".tr("_", "-") }
       let(:cask) { Cask::CaskLoader.load(cask_path(token.to_s)) }
@@ -360,7 +358,7 @@ shared_examples "#uninstall_phase or #zap_phase" do
     end
   end
 
-  context "using :login_item" do
+  context "when using :login_item" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-#{artifact_dsl_key}-login-item")) }
 
     it "is supported" do

@@ -41,6 +41,7 @@ shared_examples Cask::Staged do
   it "cannot set the permissions of a file that does not exist" do
     fake_pathname = non_existent_path
     allow(staged).to receive(:Pathname).and_return(fake_pathname)
+    expect(fake_system_command).not_to receive(:run!)
     staged.set_permissions(fake_pathname.to_s, "777")
   end
 
@@ -91,7 +92,7 @@ shared_examples Cask::Staged do
     allow(User).to receive(:current).and_return(User.new("fake_user"))
     fake_pathname = non_existent_path
     allow(staged).to receive(:Pathname).and_return(fake_pathname)
-
+    expect(fake_system_command).not_to receive(:run!)
     staged.set_ownership(fake_pathname.to_s)
   end
 end
