@@ -7,12 +7,8 @@ shared_examples Cask::Staged do
   let(:non_existent_path) { Pathname("/path/to/file/that/does/not/exist") }
 
   before do
-    allow(existing_path).to receive(:exist?).and_return(true)
-    allow(existing_path).to receive(:expand_path)
-      .and_return(existing_path)
-    allow(non_existent_path).to receive(:exist?).and_return(false)
-    allow(non_existent_path).to receive(:expand_path)
-      .and_return(non_existent_path)
+    allow(existing_path).to receive_messages(exist?: true, expand_path: existing_path)
+    allow(non_existent_path).to receive_messages(exist?: false, expand_path: non_existent_path)
   end
 
   it "can run system commands with list-form arguments" do
@@ -45,6 +41,7 @@ shared_examples Cask::Staged do
   it "cannot set the permissions of a file that does not exist" do
     fake_pathname = non_existent_path
     allow(staged).to receive(:Pathname).and_return(fake_pathname)
+    expect(fake_system_command).not_to receive(:run!)
     staged.set_permissions(fake_pathname.to_s, "777")
   end
 
@@ -95,7 +92,7 @@ shared_examples Cask::Staged do
     allow(User).to receive(:current).and_return(User.new("fake_user"))
     fake_pathname = non_existent_path
     allow(staged).to receive(:Pathname).and_return(fake_pathname)
-
+    expect(fake_system_command).not_to receive(:run!)
     staged.set_ownership(fake_pathname.to_s)
   end
 end
