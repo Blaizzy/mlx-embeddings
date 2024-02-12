@@ -186,16 +186,23 @@ class SoftwareSpec
     add_dep_option(dep) if dep
   end
 
-  def uses_from_macos(deps, bounds = {})
-    if deps.is_a?(Hash)
-      bounds = deps.dup
-      deps = [T.unsafe(bounds).shift].to_h
+  sig {
+    params(
+      dep:    String,
+      bounds: T.any(Symbol, T::Array[Symbol]),
+    ).void
+  }
+  def uses_from_macos(dep = T.unsafe(nil), **bounds)
+    bounds = bounds.dup
+
+    if dep
+      tags = []
+    else
+      dep, tags = bounds.shift
+      tags = [*tags]
     end
 
-    spec, tags = deps.is_a?(Hash) ? deps.first : deps
-    raise TypeError, "Dependency name must be a string!" unless spec.is_a?(String)
-
-    depends_on UsesFromMacOSDependency.new(spec, Array(tags), bounds: bounds)
+    depends_on UsesFromMacOSDependency.new(dep, tags, bounds: bounds)
   end
 
   # @deprecated

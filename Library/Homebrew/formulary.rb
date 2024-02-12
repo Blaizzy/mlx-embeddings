@@ -234,12 +234,13 @@ module Formulary
       dep_json["uses_from_macos"]&.each_with_index do |dep, index|
         bounds = dep_json.fetch("uses_from_macos_bounds", [])[index].dup || {}
         bounds.deep_transform_keys!(&:to_sym)
-        bounds.deep_transform_values! { |val| val.is_a?(String) ? val.to_sym : val }
+        bounds.deep_transform_values!(&:to_sym)
 
         if dep.is_a?(Hash)
-          uses_from_macos dep.deep_transform_values(&:to_sym).merge(bounds)
+          dep.deep_transform_values!(&:to_sym)
+          uses_from_macos(**T.unsafe(dep.merge(bounds)))
         else
-          uses_from_macos dep, bounds
+          uses_from_macos dep, **bounds
         end
       end
     end
