@@ -266,6 +266,7 @@ end
 require_relative "strategy/apache"
 require_relative "strategy/bitbucket"
 require_relative "strategy/cpan"
+require_relative "strategy/crate"
 require_relative "strategy/electron_builder"
 require_relative "strategy/extract_plist"
 require_relative "strategy/git"

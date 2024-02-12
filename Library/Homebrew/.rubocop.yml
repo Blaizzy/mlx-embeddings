@@ -40,6 +40,7 @@ Style/Documentation:
     - livecheck/strategy/apache.rb
     - livecheck/strategy/bitbucket.rb
     - livecheck/strategy/cpan.rb
+    - livecheck/strategy/crate.rb
     - livecheck/strategy/extract_plist.rb
     - livecheck/strategy/git.rb
     - livecheck/strategy/github_latest.rb

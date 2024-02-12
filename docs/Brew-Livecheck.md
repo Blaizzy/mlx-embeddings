@@ -239,6 +239,24 @@ end
 
 You can find more information on the response JSON from this API endpoint in the related [GitHub REST API documentation](https://docs.github.com/en/rest/releases/releases?apiVersion=latest#list-releases).
 
+#### `Crate` `strategy` block
+
+A `strategy` block for `Crate` receives parsed JSON data from the registry API's `versions` endpoint and either the provided or default strategy regex. The strategy uses the following logic by default, so this `strategy` block may be a good starting point for a modified approach:
+
+```ruby
+livecheck do
+  url :stable
+  strategy :crate do |json, regex|
+    json["versions"]&.map do |version|
+      next if version["yanked"]
+      next unless (match = version["num"]&.match(regex))
+
+      match[1]
+    end
+  end
+end
+```
+
 #### `ElectronBuilder` `strategy` block
 
 A `strategy` block for `ElectronBuilder` fetches content at a URL and parses it as an electron-builder appcast in YAML format. It's used for casks of macOS applications built using the Electron framework.
