@@ -333,7 +333,7 @@ module PyPI
       EOS
     end
 
-    odie "Excluded superfluous packages: #{", ".join(exclude_packages)}" if exclude_packages.any?
+    odie "Excluded superfluous packages: #{exclude_packages.join(", ")}" if exclude_packages.any?
 
     if print_only
       puts new_resource_blocks.chomp
