@@ -6,8 +6,8 @@
 
 class RuboCop::Cop::Homebrew::CompactBlank
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def reject_with_block?(*node, **kwargs, &block); end
+  def reject_with_block?(node, **kwargs, &block); end
 
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def reject_with_block_pass?(*node, **kwargs, &block); end
+  def reject_with_block_pass?(node, **kwargs, &block); end
 end

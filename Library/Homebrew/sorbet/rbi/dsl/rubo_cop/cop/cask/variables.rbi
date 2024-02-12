@@ -5,6 +5,13 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::Cask::Variables`.
 
 class RuboCop::Cop::Cask::Variables
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def variable_assignment(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def variable_assignment(node, *pattern, **kwargs, &block); end
 end

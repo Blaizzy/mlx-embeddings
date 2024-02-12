@@ -5,18 +5,39 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::Miscellaneous`.
 
 class RuboCop::Cop::FormulaAudit::Miscellaneous
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def conditional_dependencies(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def conditional_dependencies(node, *pattern, **kwargs, &block); end
 
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def destructure_hash(*node, **kwargs, &block); end
+  def destructure_hash(node, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def formula_path_strings(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def formula_path_strings(node, *pattern, **kwargs, &block); end
 
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def hash_dep(*node, **kwargs, &block); end
+  def hash_dep(node, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def languageNodeModule?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def languageNodeModule?(node, *pattern, **kwargs, &block); end
 end

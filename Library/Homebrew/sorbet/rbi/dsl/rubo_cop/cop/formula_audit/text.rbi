@@ -5,6 +5,13 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::Text`.
 
 class RuboCop::Cop::FormulaAudit::Text
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def prefix_path(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def prefix_path(node, *pattern, **kwargs, &block); end
 end

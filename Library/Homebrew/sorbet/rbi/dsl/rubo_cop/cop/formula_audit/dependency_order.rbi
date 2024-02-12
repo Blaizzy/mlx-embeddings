@@ -5,30 +5,79 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::DependencyOrder`.
 
 class RuboCop::Cop::FormulaAudit::DependencyOrder
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def build_with_dependency_node(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def build_with_dependency_node(node, *pattern, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def buildtime_dependency?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def buildtime_dependency?(node, *pattern, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def dependency_name_node(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def dependency_name_node(node, *pattern, **kwargs, &block); end
 
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def depends_on_node?(*node, **kwargs, &block); end
+  def depends_on_node?(node, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def negate_normal_dependency?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def negate_normal_dependency?(node, *pattern, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def optional_dependency?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def optional_dependency?(node, *pattern, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def recommended_dependency?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def recommended_dependency?(node, *pattern, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def test_dependency?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def test_dependency?(node, *pattern, **kwargs, &block); end
 
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def uses_from_macos_node?(*node, **kwargs, &block); end
+  def uses_from_macos_node?(node, **kwargs, &block); end
 end

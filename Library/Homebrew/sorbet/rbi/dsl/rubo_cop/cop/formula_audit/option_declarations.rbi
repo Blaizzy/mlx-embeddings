@@ -5,6 +5,13 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::OptionDeclarations`.
 
 class RuboCop::Cop::FormulaAudit::OptionDeclarations
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def depends_on_build_with(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def depends_on_build_with(node, *pattern, **kwargs, &block); end
 end

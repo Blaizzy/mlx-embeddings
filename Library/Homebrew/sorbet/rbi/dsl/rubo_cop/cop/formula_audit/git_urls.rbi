@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::FormulaAudit::GitUrls
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def url_has_revision?(*node, **kwargs, &block); end
+  def url_has_revision?(node, **kwargs, &block); end
 end

@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::Homebrew::NegateInclude
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def negate_include_call?(*node, **kwargs, &block); end
+  def negate_include_call?(node, **kwargs, &block); end
 end

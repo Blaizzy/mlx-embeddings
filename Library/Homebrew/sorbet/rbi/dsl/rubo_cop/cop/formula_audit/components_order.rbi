@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::FormulaAudit::ComponentsOrder
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def depends_on_node?(*node, **kwargs, &block); end
+  def depends_on_node?(node, **kwargs, &block); end
 end

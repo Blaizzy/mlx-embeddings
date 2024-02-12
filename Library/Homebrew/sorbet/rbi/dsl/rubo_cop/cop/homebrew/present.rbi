@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::Homebrew::Present
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def exists_and_not_empty?(*node, **kwargs, &block); end
+  def exists_and_not_empty?(node, **kwargs, &block); end
 end

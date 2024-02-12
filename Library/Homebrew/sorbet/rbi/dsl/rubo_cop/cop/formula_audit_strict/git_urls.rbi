@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::FormulaAuditStrict::GitUrls
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def url_has_tag?(*node, **kwargs, &block); end
+  def url_has_tag?(node, **kwargs, &block); end
 end

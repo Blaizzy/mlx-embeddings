@@ -46,7 +46,7 @@ module Tapioca
               klass.create_method(
                 method_name.to_s,
                 parameters:  [
-                  create_rest_param("node", type: "RuboCop::AST::Node"),
+                  create_param("node", type: "RuboCop::AST::Node"),
                   create_kw_rest_param("kwargs", type: "T.untyped"),
                   create_block_param("block", type: "T.untyped"),
                 ],
@@ -56,7 +56,9 @@ module Tapioca
               klass.create_method(
                 method_name.to_s,
                 parameters:  [
-                  create_rest_param("node", type: "T.untyped"),
+                  create_param("node", type: "RuboCop::AST::Node"),
+                  create_rest_param("pattern", type: "T.any(String, Symbol)"),
+                  create_kw_rest_param("kwargs", type: "T.untyped"),
                   create_block_param("block", type: "T.untyped"),
                 ],
                 return_type: method_name.to_s.end_with?("?") ? "T::Boolean" : "T.untyped",

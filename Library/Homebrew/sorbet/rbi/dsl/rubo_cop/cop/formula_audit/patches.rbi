@@ -5,6 +5,13 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::Patches`.
 
 class RuboCop::Cop::FormulaAudit::Patches
-  sig { params(node: T.untyped, block: T.untyped).returns(T::Boolean) }
-  def patch_data?(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T::Boolean)
+  end
+  def patch_data?(node, *pattern, **kwargs, &block); end
 end

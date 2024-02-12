@@ -5,9 +5,23 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::GenerateCompletionsDSL`.
 
 class RuboCop::Cop::FormulaAudit::GenerateCompletionsDSL
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def correctable_shell_completion_node(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def correctable_shell_completion_node(node, *pattern, **kwargs, &block); end
 
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def shell_completion_node(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def shell_completion_node(node, *pattern, **kwargs, &block); end
 end

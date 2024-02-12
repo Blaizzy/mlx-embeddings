@@ -5,6 +5,13 @@
 # Please instead update this file by running `bin/tapioca dsl RuboCop::Cop::FormulaAudit::Test`.
 
 class RuboCop::Cop::FormulaAudit::Test
-  sig { params(node: T.untyped, block: T.untyped).returns(T.untyped) }
-  def test_calls(*node, &block); end
+  sig do
+    params(
+      node: RuboCop::AST::Node,
+      pattern: T.any(String, Symbol),
+      kwargs: T.untyped,
+      block: T.untyped
+    ).returns(T.untyped)
+  end
+  def test_calls(node, *pattern, **kwargs, &block); end
 end

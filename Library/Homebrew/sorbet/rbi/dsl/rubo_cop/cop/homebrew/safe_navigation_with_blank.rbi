@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::Homebrew::SafeNavigationWithBlank
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def safe_navigation_blank_in_conditional?(*node, **kwargs, &block); end
+  def safe_navigation_blank_in_conditional?(node, **kwargs, &block); end
 end

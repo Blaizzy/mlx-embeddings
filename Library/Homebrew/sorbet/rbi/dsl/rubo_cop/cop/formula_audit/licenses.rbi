@@ -6,5 +6,5 @@
 
 class RuboCop::Cop::FormulaAudit::Licenses
   sig { params(node: RuboCop::AST::Node, kwargs: T.untyped, block: T.untyped).returns(T.untyped) }
-  def license_exception?(*node, **kwargs, &block); end
+  def license_exception?(node, **kwargs, &block); end
 end
