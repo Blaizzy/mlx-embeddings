@@ -758,19 +758,12 @@ module Formulary
       when 1
         loaders.first
       when 2..Float::INFINITY
-        default_tap_loaders, other_loaders = *loaders.partition { _1.tap.core_tap? }
-        default_tap_loader = default_tap_loaders.first if default_tap_loaders.count
+        # Always prefer the default tap, i.e. behave the same as if loading from the API.
+        if (default_tap_loader = loaders.find { _1.tap.core_tap? })
+          return default_tap_loader
+        end
 
-        # Put default tap last so that the error message always recommends
-        # using the fully-qualified name for non-default taps.
-        taps = other_loaders.map(&:tap) + default_tap_loaders.map(&:tap)
-
-        error = TapFormulaAmbiguityError.new(name, taps)
-
-        raise error unless default_tap_loader
-
-        opoo error if warn
-        default_tap_loader
+        raise TapFormulaAmbiguityError.new(name, loaders.map(&:tap))
       end
     end
   end
