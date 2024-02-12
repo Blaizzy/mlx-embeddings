@@ -237,10 +237,9 @@ module Formulary
         bounds.deep_transform_values!(&:to_sym)
 
         if dep.is_a?(Hash)
-          dep.deep_transform_values!(&:to_sym)
-          uses_from_macos(**T.unsafe(dep.merge(bounds)))
+          uses_from_macos dep.deep_transform_values(&:to_sym).merge(bounds)
         else
-          uses_from_macos dep, **bounds
+          uses_from_macos dep, bounds
         end
       end
     end

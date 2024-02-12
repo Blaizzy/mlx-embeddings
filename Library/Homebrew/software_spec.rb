@@ -188,18 +188,19 @@ class SoftwareSpec
 
   sig {
     params(
-      dep:    String,
-      bounds: T.any(Symbol, T::Array[Symbol]),
+      dep:    T.any(String, T::Hash[T.any(String, Symbol), T.any(Symbol, T::Array[Symbol])]),
+      bounds: T::Hash[Symbol, Symbol],
     ).void
   }
-  def uses_from_macos(dep = T.unsafe(nil), **bounds)
-    bounds = bounds.dup
-
-    if dep
-      tags = []
-    else
+  def uses_from_macos(dep, bounds = {})
+    if dep.is_a?(Hash)
+      bounds = dep.dup
       dep, tags = bounds.shift
+      dep = T.cast(dep, String)
       tags = [*tags]
+      bounds = T.cast(bounds, T::Hash[Symbol, Symbol])
+    else
+      tags = []
     end
 
     depends_on UsesFromMacOSDependency.new(dep, tags, bounds: bounds)

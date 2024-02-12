@@ -3371,12 +3371,12 @@ class Formula
     # On Linux this will act as {.depends_on}.
     sig {
       params(
-        dep:    String,
-        bounds: T.any(Symbol, T::Array[Symbol]),
+        dep:    T.any(String, T::Hash[T.any(String, Symbol), T.any(Symbol, T::Array[Symbol])]),
+        bounds: T::Hash[Symbol, Symbol],
       ).void
     }
-    def uses_from_macos(dep = T.unsafe(nil), **bounds)
-      specs.each { |spec| spec.uses_from_macos(*dep, **bounds) }
+    def uses_from_macos(dep, bounds = {})
+      specs.each { |spec| spec.uses_from_macos(dep, bounds) }
     end
 
     # @!attribute [w] option
