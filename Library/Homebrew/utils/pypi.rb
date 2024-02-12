@@ -333,7 +333,7 @@ module PyPI
       EOS
     end
 
-    unless exclude_packages.empty?
+    if exclude_packages.any?
       odie "Excluded superfluous packages: #{", ".join(exclude_packages)}"
     end
 
