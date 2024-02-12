@@ -176,6 +176,7 @@ DEPENDENCIES
   bootsnap
   byebug
   json_schemer
+  method_source
   minitest
   parallel_tests
   parlour

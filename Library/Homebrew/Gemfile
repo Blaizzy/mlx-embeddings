@@ -60,6 +60,7 @@ group :tests, optional: true do
   gem "simplecov-cobertura", require: false
 end
 group :typecheck, optional: true do
+  gem "method_source", require: false
   gem "parlour", require: false
   gem "sorbet-static-and-runtime", require: false
   gem "spoom", require: false

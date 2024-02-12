@@ -6,7 +6,7 @@ module RuboCop
     module Cask
       # Common functionality for cops checking casks.
       module CaskHelp
-        prepend CommentsHelp
+        prepend CommentsHelp # Update the rbi file if changing this: https://github.com/sorbet/sorbet/issues/259
 
         sig { overridable.params(cask_block: RuboCop::Cask::AST::CaskBlock).void }
         def on_cask(cask_block); end

@@ -18,7 +18,6 @@ AllCops:
     - "**/*.rbi"
   Exclude:
     - "Homebrew/sorbet/rbi/gems/**/*.rbi"
-    - "Homebrew/sorbet/rbi/hidden-definitions/*.rbi"
     - "Homebrew/bin/*"
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"
@@ -69,6 +68,7 @@ Homebrew/NegateInclude:
     # `exclude?` is not available here:
     - "Homebrew/standalone/init.rb"
     - "Homebrew/rubocops/**/*"
+    - "Homebrew/sorbet/tapioca/**/*"
 
 # `system` is a special case and aligns on second argument, so allow this for formulae.
 Layout/ArgumentAlignment:

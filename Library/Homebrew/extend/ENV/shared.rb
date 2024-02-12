@@ -60,7 +60,7 @@ module SharedEnvExtension
   end
   private :reset
 
-  sig { returns(T::Hash[String, String]) }
+  sig { returns(T::Hash[String, T.nilable(String)]) }
   def remove_cc_etc
     keys = %w[CC CXX OBJC OBJCXX LD CPP CFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS LDFLAGS CPPFLAGS]
     keys.to_h { |key| [key, delete(key)] }
