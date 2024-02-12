@@ -60,7 +60,7 @@ class Keg
           brew link --overwrite #{keg.name}
 
         To list all files that would be deleted:
-          brew link --overwrite --dry-run #{keg.name}
+          brew link --overwrite #{keg.name} --dry-run
       EOS
       s.join("\n")
     end
