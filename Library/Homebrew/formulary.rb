@@ -1104,11 +1104,7 @@ module Formulary
     type = nil
 
     # FIXME: Remove the need to do this here.
-    alias_table_key = if tap.core_tap?
-      name
-    else
-      "#{tap}/#{name}"
-    end
+    alias_table_key = tap.core_tap? ? name : "#{tap}/#{name}"
 
     if (possible_alias = tap.alias_table[alias_table_key].presence)
       # FIXME: Remove the need to split the name and instead make
