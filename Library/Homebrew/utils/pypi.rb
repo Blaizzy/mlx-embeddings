@@ -307,6 +307,7 @@ module PyPI
     found_packages.sort.each do |package|
       if exclude_packages.include? package
         ohai "Excluding \"#{package}\"" if show_info
+        exclude_packages.delete package
         next
       end
 
@@ -331,6 +332,8 @@ module PyPI
 
       EOS
     end
+
+    odie "Excluded superfluous packages: #{exclude_packages.join(", ")}" if exclude_packages.any?
 
     if print_only
       puts new_resource_blocks.chomp
