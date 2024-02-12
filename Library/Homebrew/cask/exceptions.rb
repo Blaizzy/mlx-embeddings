@@ -131,10 +131,14 @@ module Cask
   #
   # @api private
   class TapCaskAmbiguityError < CaskError
-    def initialize(ref, loaders)
+    def initialize(token, taps)
+      casks = taps.map { |tap| "#{tap}/#{token}" }
+      cask_list = casks.sort.map { |f| "\n       * #{f}" }.join
+
       super <<~EOS
-        Cask #{ref} exists in multiple taps:
-        #{loaders.map { |loader| "  #{loader.tap}/#{loader.token}" }.join("\n")}
+        Cask #{token} exists in multiple taps:#{cask_list}
+
+        Please use the fully-qualified name (e.g. #{casks.first}) to refer to a specific Cask.
       EOS
     end
   end

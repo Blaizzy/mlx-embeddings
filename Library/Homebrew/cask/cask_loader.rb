@@ -196,6 +196,9 @@ module Cask
 
     # Loads a cask from a specific tap.
     class FromTapLoader < FromPathLoader
+      sig { returns(Tap) }
+      attr_reader :tap
+
       sig {
         params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
           .returns(T.nilable(T.attached_class))
@@ -221,37 +224,6 @@ module Cask
         raise TapCaskUnavailableError.new(tap, token) unless T.must(tap).installed?
 
         super
-      end
-    end
-
-    # Load a cask from the default tap, using either a full or short token.
-    class FromDefaultTapLoader < FromTapLoader
-      sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
-      }
-      def self.try_new(ref, warn: false)
-        ref = ref.to_s
-
-        return unless (match = ref.match(HOMEBREW_DEFAULT_TAP_CASK_REGEX))
-
-        token = match[:token]
-
-        ref = "#{CoreCaskTap.instance}/#{token}"
-
-        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
-        new("#{tap}/#{token}")
-      end
-    end
-
-    # Loads a cask from the default tap path.
-    class FromDefaultTapPathLoader < FromPathLoader
-      sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
-      }
-      def self.try_new(ref, warn: false)
-        super CaskLoader.default_path(ref)
       end
     end
 
@@ -298,7 +270,10 @@ module Cask
         return if Homebrew::EnvConfig.no_install_from_api?
         return unless ref.is_a?(String)
         return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
-        return if !Homebrew::API::Cask.all_casks.key?(token) && !Homebrew::API::Cask.all_renames.key?(token)
+        if !Homebrew::API::Cask.all_casks.key?(token) &&
+           !Homebrew::API::Cask.all_renames.key?(token)
+          return
+        end
 
         ref = "#{CoreCaskTap.instance}/#{token}"
 
@@ -464,21 +439,44 @@ module Cask
 
     # Loader which tries loading casks from tap paths, failing
     # if the same token exists in multiple taps.
-    class FromAmbiguousTapPathLoader < FromPathLoader
+    class FromNameLoader < FromTapLoader
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
       def self.try_new(ref, warn: false)
-        case (possible_tap_casks = CaskLoader.tap_paths(ref)).count
+        return unless ref.is_a?(String)
+        return if ref.include?("/")
+
+        token = ref
+
+        loaders = Tap.map { |tap| super("#{tap}/#{token}", warn: warn) }
+                     .compact
+                     .select { _1.path.exist? }
+
+        case loaders.count
         when 1
-          new(possible_tap_casks.first)
+          loaders.first
         when 2..Float::INFINITY
-          loaders = possible_tap_casks.map(&FromPathLoader.method(:new))
-          raise TapCaskAmbiguityError.new(ref, loaders)
+          # Always prefer the default tap, i.e. behave the same as if loading from the API.
+          if (default_tap_loader = loaders.find { _1.tap.core_cask_tap? })
+            return default_tap_loader
+          end
+
+          raise TapCaskAmbiguityError.new(token, loaders.map(&:tap))
         end
       end
     end
 
     # Loader which loads a cask from the installed cask file.
     class FromInstalledPathLoader < FromPathLoader
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
       def self.try_new(ref, warn: false)
+        return unless ref.is_a?(String)
+
         possible_installed_cask = Cask.new(ref)
         return unless (installed_caskfile = possible_installed_cask.installed_caskfile)
 
@@ -557,10 +555,8 @@ module Cask
         FromURILoader,
         FromAPILoader,
         FromTapLoader,
+        FromNameLoader,
         FromPathLoader,
-        FromDefaultTapPathLoader,
-        FromAmbiguousTapPathLoader,
-        FromDefaultTapLoader,
         FromInstalledPathLoader,
         NullLoader,
       ].each do |loader_class|
