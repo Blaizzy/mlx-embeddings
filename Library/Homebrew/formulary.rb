@@ -500,7 +500,7 @@ module Formulary
     def initialize(name, path, alias_path: T.unsafe(nil), tap: T.unsafe(nil))
       @name = name
       @path = path
-      @alias_path = alias_path if alias_path
+      @alias_path = alias_path
       @tap = tap
     end
 
