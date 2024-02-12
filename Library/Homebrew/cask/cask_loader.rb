@@ -439,10 +439,10 @@ module Cask
 
     # Loader which tries loading casks from tap paths, failing
     # if the same token exists in multiple taps.
-    module FromNameLoader
+    class FromNameLoader < FromTapLoader
       sig {
         params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(FromTapLoader))
+          .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
         return unless ref.is_a?(String)
@@ -450,7 +450,7 @@ module Cask
 
         token = ref
 
-        loaders = Tap.map { |tap| FromTapLoader.try_new("#{tap}/#{token}", warn: warn) }
+        loaders = Tap.map { |tap| super("#{tap}/#{token}", warn: warn) }
                      .compact
                      .select { _1.path.exist? }
 
