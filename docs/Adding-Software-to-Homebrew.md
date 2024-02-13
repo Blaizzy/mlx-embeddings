@@ -28,7 +28,7 @@ If you're stuck, ask for help on GitHub or the [Homebrew discussion forum](https
 
 ### Testing and auditing the formula
 
-1. Run `brew audit --strict --new-formula --online <formula>` with your formula. If any errors occur, correct your formula and run the audit again. The audit should finish without any errors by the end of this step.
+1. Run `brew audit --strict --new --online <formula>` with your formula. If any errors occur, correct your formula and run the audit again. The audit should finish without any errors by the end of this step.
 
 1. Run your formula's test using `brew test <formula>`. The test should finish without any errors.
 
