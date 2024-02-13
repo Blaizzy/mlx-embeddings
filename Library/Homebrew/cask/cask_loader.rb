@@ -445,10 +445,10 @@ module Cask
       }
       def self.try_new(ref, warn: false)
         return unless ref.is_a?(String)
-        return if ref.include?("/")
+        return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
         return unless (tap = CoreCaskTap.instance).installed?
 
-        return unless (loader = super("#{tap}/#{ref}", warn: warn))
+        return unless (loader = super("#{tap}/#{token}", warn: warn))
 
         loader if loader.path.exist?
       end
