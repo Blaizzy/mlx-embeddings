@@ -522,23 +522,23 @@ module Cask
       type = nil
 
       if (new_token = tap.cask_renames[token].presence)
-        old_token = token
+        old_token = tap.core_cask_tap? ? token : tapped_token
         token = new_token
         new_token = tap.core_cask_tap? ? token : "#{tap}/#{token}"
         type = :rename
       elsif (new_tap_name = tap.tap_migrations[token].presence)
-        new_tap_user, new_tap_repo, = new_tap_name.split("/")
-        new_tap_name = "#{new_tap_user}/#{new_tap_repo}"
-        new_tap = Tap.fetch(new_tap_name)
+        new_tap_user, new_tap_repo, new_token = new_tap_name.split("/", 3)
+        new_token ||= token
+        new_tap = Tap.fetch(new_tap_user, new_tap_repo)
         new_tap.ensure_installed!
-        new_tapped_token = "#{new_tap_name}/#{token}"
+        new_tapped_token = "#{new_tap}/#{new_token}"
 
         if tapped_token == new_tapped_token
           opoo "Tap migration for #{tapped_token} points to itself, stopping recursion."
         else
+          old_token = tap.core_cask_tap? ? token : tapped_token
           token, tap, = tap_cask_token_type(new_tapped_token, warn: false)
-          old_token = tapped_token
-          new_token = new_tap.core_cask_tap? ? token : new_tapped_token
+          new_token = new_tap.core_cask_tap? ? token : "#{tap}/#{token}"
           type = :migration
         end
       end
