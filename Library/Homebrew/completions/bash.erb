@@ -81,14 +81,14 @@ __brew_complete_installed_casks() {
 __brew_complete_outdated_formulae() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_formulae
-  outdated_formulae="$(brew outdated --formula --quiet)"
+  outdated_formulae="$(HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --formula --quiet)"
   while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${outdated_formulae}" -- "${cur}")
 }
 
 __brew_complete_outdated_casks() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local outdated_casks
-  outdated_casks="$(brew outdated --cask --quiet 2>/dev/null)"
+  outdated_casks="$(HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --cask --quiet 2>/dev/null)"
   while read -r line; do COMPREPLY+=("${line}"); done < <(compgen -W "${outdated_casks}" -- "${cur}")
 }
 

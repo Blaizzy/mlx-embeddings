@@ -95,7 +95,7 @@ end
 
 
 function __fish_brew_suggest_formulae_outdated -d "List of outdated formulae with the information about potential upgrade"
-    brew outdated --formula --verbose \
+    HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --formula --verbose 2>/dev/null \
         # replace first space with tab to make the following a description in the completions list:
         | string replace -r '\s' '\t'
 end
@@ -121,7 +121,7 @@ function __fish_brew_suggest_casks_installed -d "Lists installed casks"
 end
 
 function __fish_brew_suggest_casks_outdated -d "Lists outdated casks with the information about potential upgrade"
-    brew outdated --cask --verbose 2>/dev/null \
+    HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --cask --verbose 2>/dev/null \
         # replace first space with tab to make the following a description in the completions list:
         | string replace -r '\s' '\t'
 end
@@ -144,13 +144,10 @@ function __fish_brew_suggest_diagnostic_checks -d "List available diagnostic che
     brew doctor --list-checks
 end
 
-# TODO: any better way to list available services?
 function __fish_brew_suggest_services -d "Lists available services"
-    set -l list (brew services list)
-    set -e list[1] # Header
-    for line in $list
-        echo (string split ' ' $line)[1]
-    end
+    command find (brew --cellar) -mindepth 3 -maxdepth 3 -name '*.service' \
+      | awk -F'homebrew.|.service' '{print $3}' \
+      | sort -d
 end
 
 
