@@ -301,28 +301,34 @@ describe Caveats do
       let(:caveats) { described_class.new(f).caveats }
       let(:path) { f.prefix.resolved_path }
 
+      let(:bash_completion_dir) { path/"etc/bash_completion.d" }
+      let(:fish_vendor_completions) { path/"share/fish/vendor_completions.d" }
+      let(:zsh_site_functions) { path/"share/zsh/site-functions" }
+
       before do
         # don't try to load/fetch gcc/glibc
         allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
 
-        allow_any_instance_of(Pathname).to receive(:children).and_return([Pathname.new("child")])
         allow_any_instance_of(Object).to receive(:which).with(any_args).and_return(Pathname.new("shell"))
         allow(Utils::Shell).to receive_messages(preferred: nil, parent: nil)
       end
 
-      it "gives dir where Bash completions have been installed" do
-        (path/"etc/bash_completion.d").mkpath
+      it "includes where Bash completions have been installed to" do
+        bash_completion_dir.mkpath
+        FileUtils.touch bash_completion_dir/f.name
         expect(caveats).to include(HOMEBREW_PREFIX/"etc/bash_completion.d")
       end
 
-      it "gives dir where zsh completions have been installed" do
-        (path/"share/zsh/site-functions").mkpath
-        expect(caveats).to include(HOMEBREW_PREFIX/"share/zsh/site-functions")
+      it "includes where fish completions have been installed to" do
+        fish_vendor_completions.mkpath
+        FileUtils.touch fish_vendor_completions/f.name
+        expect(caveats).to include(HOMEBREW_PREFIX/"share/fish/vendor_completions.d")
       end
 
-      it "gives dir where fish completions have been installed" do
-        (path/"share/fish/vendor_completions.d").mkpath
-        expect(caveats).to include(HOMEBREW_PREFIX/"share/fish/vendor_completions.d")
+      it "includes where zsh completions have been installed to" do
+        zsh_site_functions.mkpath
+        FileUtils.touch zsh_site_functions/f.name
+        expect(caveats).to include(HOMEBREW_PREFIX/"share/zsh/site-functions")
       end
     end
   end

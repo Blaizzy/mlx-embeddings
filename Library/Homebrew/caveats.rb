@@ -129,16 +129,16 @@ class Caveats
         Bash completion has been installed to:
           #{root_dir}/etc/bash_completion.d
       EOS
-    when :zsh
-      <<~EOS
-        zsh #{installed.join(" and ")} have been installed to:
-          #{root_dir}/share/zsh/site-functions
-      EOS
     when :fish
       fish_caveats = +"fish #{installed.join(" and ")} have been installed to:"
       fish_caveats << "\n  #{root_dir}/share/fish/vendor_completions.d" if completion_installed
       fish_caveats << "\n  #{root_dir}/share/fish/vendor_functions.d" if functions_installed
       fish_caveats.freeze
+    when :zsh
+      <<~EOS
+        zsh #{installed.join(" and ")} have been installed to:
+          #{root_dir}/share/zsh/site-functions
+      EOS
     end
   end
 
