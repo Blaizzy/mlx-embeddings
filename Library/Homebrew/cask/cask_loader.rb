@@ -437,6 +437,23 @@ module Cask
       end
     end
 
+    # Loader which tries loading casks from the default tap.
+    class FromDefaultNameLoader < FromTapLoader
+      sig {
+        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.attached_class))
+      }
+      def self.try_new(ref, warn: false)
+        return unless ref.is_a?(String)
+        return if ref.include?("/")
+        return unless (tap = CoreCaskTap.instance).installed?
+
+        return unless (loader = super("#{tap}/#{ref}", warn: warn))
+
+        loader if loader.path.exist?
+      end
+    end
+
     # Loader which tries loading casks from tap paths, failing
     # if the same token exists in multiple taps.
     class FromNameLoader < FromTapLoader
@@ -458,11 +475,6 @@ module Cask
         when 1
           loaders.first
         when 2..Float::INFINITY
-          # Always prefer the default tap, i.e. behave the same as if loading from the API.
-          if (default_tap_loader = loaders.find { _1.tap.core_cask_tap? })
-            return default_tap_loader
-          end
-
           raise TapCaskAmbiguityError.new(token, loaders.map(&:tap))
         end
       end
@@ -555,6 +567,7 @@ module Cask
         FromURILoader,
         FromAPILoader,
         FromTapLoader,
+        FromDefaultNameLoader,
         FromNameLoader,
         FromPathLoader,
         FromInstalledPathLoader,
