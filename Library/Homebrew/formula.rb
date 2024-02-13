@@ -3374,6 +3374,12 @@ class Formula
     # On macOS this is a no-op (as we use the provided system libraries) unless
     # `:since` specifies a minimum macOS version.
     # On Linux this will act as {.depends_on}.
+    sig {
+      params(
+        dep:    T.any(String, T::Hash[T.any(String, Symbol), T.any(Symbol, T::Array[Symbol])]),
+        bounds: T::Hash[Symbol, Symbol],
+      ).void
+    }
     def uses_from_macos(dep, bounds = {})
       specs.each { |spec| spec.uses_from_macos(dep, bounds) }
     end

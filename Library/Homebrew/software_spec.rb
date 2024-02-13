@@ -46,7 +46,6 @@ class SoftwareSpec
     @deprecated_options = []
     @build = BuildOptions.new(Options.create(@flags), options)
     @compiler_failures = []
-    @uses_from_macos_elements = []
   end
 
   def initialize_dup(other)
@@ -62,7 +61,6 @@ class SoftwareSpec
     @deprecated_options = @deprecated_options.dup
     @build = @build.dup
     @compiler_failures = @compiler_failures.dup
-    @uses_from_macos_elements = @uses_from_macos_elements.dup
   end
 
   def freeze
@@ -77,7 +75,6 @@ class SoftwareSpec
     @deprecated_options.freeze
     @build.freeze
     @compiler_failures.freeze
-    @uses_from_macos_elements.freeze
     super
   end
 
@@ -189,33 +186,36 @@ class SoftwareSpec
     add_dep_option(dep) if dep
   end
 
-  def uses_from_macos(deps, bounds = {})
-    if deps.is_a?(Hash)
-      bounds = deps.dup
-      deps = [T.unsafe(bounds).shift].to_h
+  sig {
+    params(
+      dep:    T.any(String, T::Hash[T.any(String, Symbol), T.any(Symbol, T::Array[Symbol])]),
+      bounds: T::Hash[Symbol, Symbol],
+    ).void
+  }
+  def uses_from_macos(dep, bounds = {})
+    if dep.is_a?(Hash)
+      bounds = dep.dup
+      dep, tags = bounds.shift
+      dep = T.cast(dep, String)
+      tags = [*tags]
+      bounds = T.cast(bounds, T::Hash[Symbol, Symbol])
+    else
+      tags = []
     end
 
-    spec, tags = deps.is_a?(Hash) ? deps.first : deps
-    raise TypeError, "Dependency name must be a string!" unless spec.is_a?(String)
-
-    @uses_from_macos_elements << deps
-
-    depends_on UsesFromMacOSDependency.new(spec, Array(tags), bounds: bounds)
+    depends_on UsesFromMacOSDependency.new(dep, tags, bounds: bounds)
   end
 
   # @deprecated
   def uses_from_macos_elements
-    # TODO: remove all @uses_from_macos_elements when removing this method
-    # Also remember to remove the delegate from formula.rb
+    # TODO: Remember to remove the delegate from `Formula`.
     odisabled "#uses_from_macos_elements", "#declared_deps"
-    @uses_from_macos_elements
   end
 
   # @deprecated
   def uses_from_macos_names
-    # TODO: Remember to remove the delegate from formula.rb
+    # TODO: Remember to remove the delegate from `Formula`.
     odisabled "#uses_from_macos_names", "#declared_deps"
-    uses_from_macos_elements.flat_map { |e| e.is_a?(Hash) ? e.keys : e }
   end
 
   def deps

@@ -230,6 +230,7 @@ end
 class UsesFromMacOSDependency < Dependency
   attr_reader :bounds
 
+  sig { params(name: String, tags: T::Array[Symbol], bounds: T::Hash[Symbol, Symbol]).void }
   def initialize(name, tags = [], bounds:)
     super(name, tags)
 
