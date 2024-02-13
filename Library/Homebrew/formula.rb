@@ -540,7 +540,12 @@ class Formula
   # Old names for the formula.
   sig { returns(T::Array[String]) }
   def oldnames
-    @oldnames ||= tap&.formula_oldnames&.dig(name) || []
+    @oldnames ||= if (tap = self.tap)
+      Tap.reverse_tap_migrations_renames.fetch("#{tap}/#{name}", []) +
+        tap.formula_reverse_renames.fetch(name, [])
+    else
+      []
+    end
   end
 
   # All aliases for the formula.

@@ -758,6 +758,15 @@ class Tap
     end
   end
 
+  # Hash with tap formula old names. Reverse of {#formula_renames}.
+  sig { returns(T::Hash[String, T::Array[String]]) }
+  def reverse_cask_renames
+    @reverse_cask_renames ||= cask_renames.each_with_object({}) do |(old_name, new_name), hash|
+      hash[new_name] ||= []
+      hash[new_name] << old_name
+    end
+  end
+
   # Hash with tap formula renames.
   sig { returns(T::Hash[String, String]) }
   def formula_renames
@@ -770,15 +779,30 @@ class Tap
 
   # Hash with tap formula old names. Reverse of {#formula_renames}.
   sig { returns(T::Hash[String, T::Array[String]]) }
-  def formula_oldnames
-    @formula_oldnames ||= formula_renames.each_with_object({}) do |(old_name, new_name), hash|
+  def formula_reverse_renames
+    @formula_reverse_renames ||= formula_renames.each_with_object({}) do |(old_name, new_name), hash|
       hash[new_name] ||= []
       hash[new_name] << old_name
     end
   end
 
+  sig { returns(T::Hash[String, T::Array[String]]) }
+  def self.reverse_tap_migrations_renames
+    Tap.each_with_object({}) do |tap, hash|
+      tap.tap_migrations.each do |old_name, new_name|
+        new_tap_user, new_tap_repo, new_name = new_name.split("/", 3)
+        next unless new_name
+
+        new_tap = Tap.fetch(new_tap_user, new_tap_repo)
+
+        hash["#{new_tap}/#{new_name}"] ||= []
+        hash["#{new_tap}/#{new_name}"] << old_name
+      end
+    end
+  end
+
   # Hash with tap migrations.
-  sig { returns(Hash) }
+  sig { returns(T::Hash[String, String]) }
   def tap_migrations
     @tap_migrations ||= if (migration_file = path/HOMEBREW_TAP_MIGRATIONS_FILE).file?
       JSON.parse(migration_file.read)

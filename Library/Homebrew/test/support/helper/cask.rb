@@ -8,8 +8,8 @@ module Test
       def stub_cask_loader(cask, ref = cask.token, call_original: false)
         allow(::Cask::CaskLoader).to receive(:for).and_call_original if call_original
 
-        loader = ::Cask::CaskLoader::FromInstanceLoader.new cask
-        allow(::Cask::CaskLoader).to receive(:for).with(ref, warn: true).and_return(loader)
+        loader = ::Cask::CaskLoader::FromInstanceLoader.new(cask)
+        allow(::Cask::CaskLoader).to receive(:for).with(ref, any_args).and_return(loader)
       end
     end
   end

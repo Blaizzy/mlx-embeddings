@@ -85,9 +85,9 @@ module Cask
     # An old name for the cask.
     sig { returns(T::Array[String]) }
     def old_tokens
-      @old_tokens ||= if tap
-        tap.cask_renames
-           .flat_map { |old_token, new_token| (new_token == token) ? old_token : [] }
+      @old_tokens ||= if (tap = self.tap)
+        Tap.reverse_tap_migrations_renames.fetch("#{tap}/#{token}", []) +
+          tap.reverse_cask_renames.fetch(token, [])
       else
         []
       end
