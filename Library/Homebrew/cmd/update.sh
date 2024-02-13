@@ -511,15 +511,6 @@ EOS
     CURL_DISABLE_CURLRC_ARGS=()
   fi
 
-  # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
-  # shellcheck disable=SC2153
-  if [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
-  then
-    CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
-  else
-    CURL_GITHUB_API_ARGS=()
-  fi
-
   # only allow one instance of brew update
   lock update
 
@@ -637,6 +628,8 @@ EOS
     # the refspec ensures that the default upstream branch gets updated
     (
       UPSTREAM_REPOSITORY_URL="$(git config remote.origin.url)"
+      unset UPSTREAM_REPOSITORY
+      unset UPSTREAM_REPOSITORY_TOKEN
 
       # HOMEBREW_UPDATE_FORCE and HOMEBREW_UPDATE_AUTO aren't modified here so ignore subshell warning.
       # shellcheck disable=SC2030
@@ -644,6 +637,27 @@ EOS
       then
         UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY_URL#https://github.com/}"
         UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY%.git}"
+      elif [[ "${DIR}" != "${HOMEBREW_REPOSITORY}" ]] &&
+           [[ "${UPSTREAM_REPOSITORY_URL}" =~ https://([[:alnum:]_:]+)@github.com/(.*)$ ]]
+      then
+        UPSTREAM_REPOSITORY="${BASH_REMATCH[2]%.git}"
+        UPSTREAM_REPOSITORY_TOKEN="${BASH_REMATCH[1]#*:}"
+      fi
+
+      if [[ -n "${UPSTREAM_REPOSITORY}" ]]
+      then
+        # UPSTREAM_REPOSITORY_TOKEN is parsed (if exists) from UPSTREAM_REPOSITORY_URL
+        # HOMEBREW_GITHUB_API_TOKEN is optionally defined in the user environment.
+        # shellcheck disable=SC2153
+        if [[ -n "${UPSTREAM_REPOSITORY_TOKEN}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${UPSTREAM_REPOSITORY_TOKEN}")
+        elif [[ -n "${HOMEBREW_GITHUB_API_TOKEN}" ]]
+        then
+          CURL_GITHUB_API_ARGS=("--header" "Authorization: token ${HOMEBREW_GITHUB_API_TOKEN}")
+        else
+          CURL_GITHUB_API_ARGS=()
+        fi
 
         if [[ "${DIR}" == "${HOMEBREW_REPOSITORY}" && -n "${HOMEBREW_UPDATE_TO_TAG}" ]]
         then
