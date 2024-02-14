@@ -18,7 +18,7 @@ A cask should be deprecated to indicate to users that the cask should not be use
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained or archived.
 
-Casks should only be be deprecated if at least one of the following are true:
+Casks should only be deprecated if at least one of the following are true:
 
 - the software installed by the cask cannot be run on any of our supported macOS versions
 - the cask has outstanding CVEs
