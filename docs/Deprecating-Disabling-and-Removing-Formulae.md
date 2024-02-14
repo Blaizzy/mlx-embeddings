@@ -23,6 +23,7 @@ Formulae should only be deprecated if at least one of the following are true:
 - the formula does not build on any of our supported macOS versions and on Linux
 - the formula has outstanding CVEs
 - the formula has [zero installs in the last 90 days](https://formulae.brew.sh/analytics/install/90d/)
+- the software installed by the formula has been discontinued or abandoned upstream
 
 Formulae with dependents should not be deprecated until or when all dependents are also deprecated.
 
