@@ -66,5 +66,45 @@ describe Cask::CaskLoader, :cask do
         end
       end
     end
+
+    context "when not using the API" do
+      before do
+        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
+      end
+
+      context "when a cask is migrated to the default tap" do
+        let(:token) { "local-caffeine" }
+        let(:tap_migrations) do
+          {
+            token => default_tap.name,
+          }
+        end
+        let(:old_tap) { CoreTap.instance }
+        let(:default_tap) { CoreCaskTap.instance }
+
+        before do
+          (old_tap.path/"tap_migrations.json").write tap_migrations.to_json
+          old_tap.clear_cache
+        end
+
+        it "does not warn when loading the short token" do
+          expect do
+            described_class.for(token)
+          end.not_to output.to_stderr
+        end
+
+        it "does not warn when loading the full token in the default tap" do
+          expect do
+            described_class.for("#{default_tap}/#{token}")
+          end.not_to output.to_stderr
+        end
+
+        it "warns when loading the full token in the old tap" do
+          expect do
+            described_class.for("#{old_tap}/#{token}")
+          end.to output(%r{Cask #{old_tap}/#{token} was renamed to #{token}\.}).to_stderr
+        end
+      end
+    end
   end
 end
