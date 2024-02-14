@@ -30,7 +30,7 @@ To deprecate a cask, add a `deprecate!` call. This call should include a depreca
 deprecate! date: "YYYY-MM-DD", because: :reason
 ```
 
-The `date` parameter should be set to the date that the project or version became (or will become) deprecated. If there is no clear date but the cask needs to be deprecated, use today's date. If the `date` parameter is set to a date in the future, the cask will not become deprecated until that date. This can be useful if the upstream developers have indicated a date when the project or version will stop being supported. Do not backdate the `date` parameter as it causes confusion for users and maintainers.
+The `date` parameter should be set to the date that the deprecation period should begin, which is usually today's date. If the `date` parameter is set to a date in the future, the cask will not become deprecated until that date. This can be useful if the upstream developers have indicated a date when the project or version will stop being supported. Do not backdate the `date` parameter as it causes confusion for users and maintainers.
 
 The `because` parameter can be a preset reason (using a symbol) or a custom reason. See the [Deprecate and Disable Reasons](#deprecate-and-disable-reasons) section below for more details about the `because` parameter.
 
@@ -46,9 +46,9 @@ The most common reasons for disabling a cask are:
 - it has been deprecated for a long time
 - the upstream URL has been removed
 
-Popular casks (e.g. have more than 300 [analytics installs in the last 90 days](https://formulae.brew.sh/analytics/cask-install/90d/)) should not be disabled without a deprecation period of at least six months even if e.g. they do not install on all macOS versions.
+Popular casks (e.g. have more than 300 [analytics installs in the last 90 days](https://formulae.brew.sh/analytics/cask-install/90d/)) should not be disabled without a deprecation period of at least six months unless they cannot be installed on all macOS versions and issue is unable be fixed (e.g. download URL no longer works and a mirror cannot be sourced).
 
-Unpopular casks (e.g. have fewer than 300 [analytics installs in the last 90 days](https://formulae.brew.sh/analytics/cask-install/90d/)) can be disabled immediately for any of the reasons above e.g. they cannot be installed.
+Unpopular casks (e.g. have fewer than 300 [analytics installs in the last 90 days](https://formulae.brew.sh/analytics/cask-install/90d/)) can be disabled immediately for any of the reasons above.
 They can be manually removed three months after their disable date.
 
 To disable a cask, add a `disable!` call. This call should include a deprecation date (in the ISO 8601 format) and a deprecation reason:
@@ -63,7 +63,7 @@ The `because` parameter can be a preset reason (using a symbol) or a custom reas
 
 ## Removal
 
-A cask should be removed if it does not meet our criteria for [acceptable casks](Acceptable-Casks.md), does not install, or has been disabled for over a year.
+A cask should be removed if it does not meet our criteria for [acceptable casks](Acceptable-Casks.md) or has been disabled for over a year.
 
 **Note: disabled casks in `homebrew/cask` will be automatically removed one year after their disable date.**
 
