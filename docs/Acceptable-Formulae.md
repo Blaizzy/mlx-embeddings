@@ -76,7 +76,7 @@ We're a package manager so we want to do things like resolve dependencies and se
 ### Shared vs. static libraries
 
 In general, if formulae have to ship either shared or static libraries: they should ship shared ones.
-If there is interest in a static library they can ship both.
+If there is interest in static libraries they can ship both.
 Shipping only static libraries should be avoided when possible, particularly when the formula is depended on by other formulae since these dependents cannot be updated without a rebuild.
 
 ### Stuff that requires vendored versions of Homebrew formulae
