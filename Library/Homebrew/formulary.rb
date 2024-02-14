@@ -738,8 +738,22 @@ module Formulary
     end
   end
 
+  class FromDefaultNameLoader < FromTapLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(FromTapLoader))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      return unless ref.is_a?(String)
+      return unless (name = ref[HOMEBREW_DEFAULT_TAP_FORMULA_REGEX, :name])
+      return unless (tap = CoreTap.instance).installed?
+
+      super("#{tap}/#{name}")
+    end
+  end
+
   # Loads a formula from a name, as long as it exists only in a single tap.
-  module FromNameLoader
+  class FromNameLoader < FromTapLoader
     sig {
       params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
         .returns(T.nilable(FromTapLoader))
@@ -750,7 +764,7 @@ module Formulary
 
       name = ref
 
-      loaders = Tap.map { |tap| FromTapLoader.try_new("#{tap}/#{name}") }
+      loaders = Tap.map { |tap| super("#{tap}/#{name}") }
                    .compact
                    .select { _1.path.exist? }
 
@@ -758,11 +772,6 @@ module Formulary
       when 1
         loaders.first
       when 2..Float::INFINITY
-        # Always prefer the default tap, i.e. behave the same as if loading from the API.
-        if (default_tap_loader = loaders.find { _1.tap.core_tap? })
-          return default_tap_loader
-        end
-
         raise TapFormulaAmbiguityError.new(name, loaders.map(&:tap))
       end
     end
@@ -1140,6 +1149,7 @@ module Formulary
       FromAPILoader,
       FromTapLoader,
       FromPathLoader,
+      FromDefaultNameLoader,
       FromNameLoader,
       FromKegLoader,
       FromCacheLoader,
