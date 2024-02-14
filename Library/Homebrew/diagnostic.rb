@@ -733,8 +733,7 @@ module Homebrew
         rescue FormulaUnreadableError, FormulaClassUnavailableError,
                TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
           formula_unavailable_exceptions << e
-        rescue FormulaUnavailableError,
-               TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+        rescue FormulaUnavailableError, TapFormulaAmbiguityError
           nil
         end
         return if formula_unavailable_exceptions.empty?
@@ -752,7 +751,7 @@ module Homebrew
           else
             begin
               Formulary.from_rack(rack).keg_only?
-            rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+            rescue FormulaUnavailableError, TapFormulaAmbiguityError
               false
             end
           end

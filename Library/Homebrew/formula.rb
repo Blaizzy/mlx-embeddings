@@ -1318,7 +1318,7 @@ class Formula
         f = Formulary.factory(keg.name)
       rescue FormulaUnavailableError
         # formula for this keg is deleted, so defer to allowlist
-      rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+      rescue TapFormulaAmbiguityError
         return false # this keg belongs to another formula
       else
         # this keg belongs to another unrelated formula

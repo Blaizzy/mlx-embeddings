@@ -277,27 +277,6 @@ class TapFormulaAmbiguityError < RuntimeError
   end
 end
 
-# Raised when a formula's old name in a specific tap is found in multiple taps.
-class TapFormulaWithOldnameAmbiguityError < RuntimeError
-  attr_reader :name, :possible_tap_newname_formulae, :taps
-
-  def initialize(name, possible_tap_newname_formulae)
-    @name = name
-    @possible_tap_newname_formulae = possible_tap_newname_formulae
-
-    @taps = possible_tap_newname_formulae.map do |newname|
-      newname =~ HOMEBREW_TAP_FORMULA_REGEX
-      "#{Regexp.last_match(1)}/#{Regexp.last_match(2)}"
-    end
-
-    super <<~EOS
-      Formulae with '#{name}' old name found in multiple taps: #{taps.map { |t| "\n       * #{t}" }.join}
-
-      Please use the fully-qualified name (e.g. #{taps.first}/#{name}) to refer to the formula or use its new name.
-    EOS
-  end
-end
-
 # Raised when a tap is unavailable.
 class TapUnavailableError < RuntimeError
   attr_reader :name

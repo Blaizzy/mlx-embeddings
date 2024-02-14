@@ -990,7 +990,7 @@ module Formulary
   # Return whether given rack is keg-only.
   def self.keg_only?(rack)
     Formulary.from_rack(rack).keg_only?
-  rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+  rescue FormulaUnavailableError, TapFormulaAmbiguityError
     false
   end
 
