@@ -43,7 +43,7 @@ A cask should be disabled to indicate to users that the cask cannot be used and 
 
 The most common reasons for disabling a cask are:
 
-- it cannot be installed
+- it cannot be installed on any of our supported macOS versions
 - it has been deprecated for a long time
 - the upstream URL has been removed
 
