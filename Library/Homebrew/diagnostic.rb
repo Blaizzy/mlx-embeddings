@@ -841,7 +841,13 @@ module Homebrew
             Formulary::FromAPILoader,
             Formulary::FromNameLoader,
           ].any? do |loader_class|
-            if (loader = loader_class.try_new(keg.name, warn: false))
+            loader = begin
+              loader_class.try_new(keg.name, warn: false)
+            rescue TapFormulaAmbiguityError => e
+              e.loaders.first
+            end
+
+            if loader
               # If we know the tap, ignore all other taps.
               next false if tap && loader.tap != tap
 

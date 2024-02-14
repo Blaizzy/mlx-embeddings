@@ -772,7 +772,7 @@ module Formulary
       when 1
         loaders.first
       when 2..Float::INFINITY
-        raise TapFormulaAmbiguityError.new(name, loaders.map(&:tap))
+        raise TapFormulaAmbiguityError.new(name, loaders)
       end
     end
   end

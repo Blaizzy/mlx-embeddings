@@ -259,11 +259,12 @@ end
 
 # Raised when a formula with the same name is found in multiple taps.
 class TapFormulaAmbiguityError < RuntimeError
-  attr_reader :name, :taps
+  attr_reader :name, :taps, :loaders
 
-  def initialize(name, taps)
+  def initialize(name, loaders)
     @name = name
-    @taps = taps
+    @loaders = loaders
+    @taps = loaders.map(&:tap)
 
     formulae = taps.map { |tap| "#{tap}/#{name}" }
     formula_list = formulae.map { |f| "\n       * #{f}" }.join
