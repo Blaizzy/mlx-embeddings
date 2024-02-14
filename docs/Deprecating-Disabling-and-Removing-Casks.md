@@ -20,9 +20,10 @@ The most common reasons for deprecation are when the upstream project is depreca
 
 Casks should only be be deprecated if at least one of the following are true:
 
-- the cask does not install on any of our supported macOS versions
+- the software installed by the cask cannot be run on any of our supported macOS versions
 - the cask has outstanding CVEs
 - the cask has [zero installs in the last 90 days](https://formulae.brew.sh/analytics/cask-install/90d/)
+- the software installed by the cask has been discontinued upstream
 
 To deprecate a cask, add a `deprecate!` call. This call should include a deprecation date in the ISO 8601 format and a deprecation reason:
 
