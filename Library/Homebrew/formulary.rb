@@ -624,7 +624,6 @@ module Formulary
       options = {
         alias_path: (alias_path if alias_dir == tap&.alias_dir),
         tap:        tap,
-
       }.compact
 
       super(name, path, **options)
