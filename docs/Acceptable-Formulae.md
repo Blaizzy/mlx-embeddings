@@ -23,7 +23,7 @@ We now accept versioned formulae as long as they [meet the requirements](Version
 
 We will not add new formulae using forks unless at least one of the following is true:
 
-* the fork has been designated the official successor in the original source repository (e.g. in the README) or in a publicly verifiable way by the original author (e.g. in an an issue or pull request comment)
+* the fork has been designated the official successor in the original source repository (e.g. in the README) or in a publicly verifiable way by the original author (e.g. in an issue or pull request comment)
 * the fork has been used as the replacement by at least two other major distributions (e.g. Debian, Fedora, Arch, Gentoo, not smaller Linux distributions that are not widely used)
 
 The fork must still meet all the other acceptable formulae requirements (including those of e.g. popularity and self-submission).
