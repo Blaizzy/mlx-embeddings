@@ -18,7 +18,7 @@ A formula should be deprecated to indicate to users that the formula should not 
 
 The most common reasons for deprecation are when the upstream project is deprecated, unmaintained, or archived.
 
-Formulae should only be be deprecated if at least one of the following are true:
+Formulae should only be deprecated if at least one of the following are true:
 
 - the formula does not build on any of our supported macOS versions and on Linux
 - the formula has outstanding CVEs
