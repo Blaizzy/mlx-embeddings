@@ -73,11 +73,11 @@ Clang is the default C/C++ compiler on macOS (and has been for a long time). Sof
 
 We're a package manager so we want to do things like resolve dependencies and set up applications for our users. If things require too much manual intervention then they aren't useful in a package manager.
 
-### Static libraries
+### Shared vs. static libraries
 
-In general, formulae should not ship static libraries since these cannot be updated without a rebuild of the dependant software.
-If a formula gets a lot of requests to install static libraries, they may be installed by the formula.
-Applications in homebrew/core linking against libraries should link against shared libraries not static versions.
+In general, if formulae have to ship either shared or static libraries: they should ship shared ones.
+If there is interest in static libraries they can ship both.
+Shipping only static libraries should be avoided when possible, particularly when the formula is depended on by other formulae since these dependents cannot be updated without a rebuild.
 
 ### Stuff that requires vendored versions of Homebrew formulae
 
