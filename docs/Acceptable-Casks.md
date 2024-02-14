@@ -26,7 +26,7 @@ We maintain separate taps for different types of binaries. Our nomenclature is:
 
 Stable versions live in the main repository at [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-cask). They should run on the latest release of macOS or the previous point release (Monterey and Ventura as of late 2022).
 
-#### But there is no Stable version!
+#### But there is no Stable version
 
 When software is only available as a beta, development, or unstable version, its cask can go in the main `homebrew/cask` repository. When stable versions become available, only those will be accepted as subsequent updates.
 
@@ -82,6 +82,17 @@ Casks which do not reach a minimum notability threshold (see [Rejected Casks](#r
 3. A piece of software that was recently released to great fanfare—everyone is talking about it on Twitter and Hacker News and we’ve even gotten multiple premature submissions for it. That’d be a clear case of an app that will reach the threshold in no time so that’s a PR we won’t close immediately (but may wait to merge).
 
 Note that none of these exceptions is a guarantee for inclusion, but examples of situations where we may take a second look.
+
+## Not a fork (usually)
+
+We will not add new casks using forks unless at least one of the following is true:
+
+* the fork has been designated the official successor in the original source repository (e.g. in the README) or in a publicly verifiable way by the original author (e.g. in an issue or pull request comment)
+* the fork has been used as the replacement by at least two other major distributions (e.g. Debian, Fedora, Arch, Gentoo, not smaller Linux distributions that are not widely used)
+
+The fork should still meet all the other acceptable casks requirements (including those of e.g. popularity and self-submission).
+
+An alternative to the fork replacing the original cask is a new cask. For example, if `MikeMcQuaid` forked `google-chrome` and it was very popular: a `mikemcquaid-google-chrome` cask might make sense.
 
 ## Homebrew Cask is not a discoverability service
 
