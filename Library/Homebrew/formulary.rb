@@ -747,7 +747,9 @@ module Formulary
       return unless (name = ref[HOMEBREW_DEFAULT_TAP_FORMULA_REGEX, :name])
       return unless (tap = CoreTap.instance).installed?
 
-      super("#{tap}/#{name}")
+      return unless (loader = super("#{tap}/#{name}", warn: warn))
+
+      loader if loader.path.exist?
     end
   end
 
