@@ -741,7 +741,7 @@ module Formulary
   class FromDefaultNameLoader < FromTapLoader
     sig {
       params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
-        .returns(T.nilable(FromTapLoader))
+        .returns(T.nilable(T.attached_class))
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       return unless ref.is_a?(String)
@@ -756,7 +756,7 @@ module Formulary
   class FromNameLoader < FromTapLoader
     sig {
       params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
-        .returns(T.nilable(FromTapLoader))
+        .returns(T.nilable(T.attached_class))
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       return unless ref.is_a?(String)
