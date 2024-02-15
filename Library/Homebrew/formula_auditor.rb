@@ -279,10 +279,10 @@ module Homebrew
             # Don't complain about missing cross-tap dependencies
             next
           rescue FormulaUnavailableError
-            problem "Can't find dependency '#{dep.name.inspect}'."
+            problem "Can't find dependency '#{dep.name}'."
             next
           rescue TapFormulaAmbiguityError
-            problem "Ambiguous dependency '#{dep.name.inspect}'."
+            problem "Ambiguous dependency '#{dep.name}'."
             next
           end
 
