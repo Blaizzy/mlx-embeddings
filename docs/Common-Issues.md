@@ -133,6 +133,41 @@ xcode-select --install
 brew upgrade
 ```
 
+## Unintentional dual Homebrew installations
+
+When using tools such as Apple's _Migration Assistant_ (MA), it's possible to have two Homebrew installations unintentionally.
+This most commonly results in MA copying `/usr/local` and `/Applications` from an Intel-based Mac to these same paths on an AS-based Mac.
+This is problematic because `/Applications` may contain x86_64-only apps, especially common terminal emulators such as iTerm2.
+Using an x86_64 terminal emulator will cause the shell to use the `/usr/local` installation of Homebrew
+instead of a new installation in `/opt/homebrew`, which is the correct path for an arm64 Homebrew installation on macOS.
+
+Continuing with this setup will cause problems eventually, so it's best to migrate your Homebrew installation.
+Or, really, reinstall it.
+Follow these steps to do this.
+
+1. Run `arch -x86_64 /usr/local/bin/brew bundle dump --global` to dump your current installed formulae list to `~/.Brewfile`.
+1. Review the contents of `~/.Brewfile` to remove things you no longer want to have installed.
+1. Verify that your terminal emulator is running in arm64 mode by checking that the output of `arch` is `arm64`.
+    * If it is not, use a different terminal emulator, such as Apple's Terminal.app, that will run in `arm64` mode.
+1. [Reinstall Homebrew](https://brew.sh/) under the correct prefix (`/opt/homebrew`),
+   which will happen by default when the terminal is running in arm64 mode.
+   
+   * **Follow the _Next Steps_ instructions** listed at the end of the installation process;
+     failing to adjust your shell configuration accordingly could break your Homebrew installation.
+1. Run `/opt/homebrew/bin/brew bundle install --global` to replicate your original formulae installation using your new Homebrew installation in `/opt/homebrew`.
+
+Note that if it's been a long time since you ran `brew upgrade`, you may encounter some package renaming that will require manual resolution.
+Expect errors.
+Expect to spend some time [searching Homebrew's formulae and cask list](https://formulae.brew.sh/)
+for replacements for deprecated, disabled, and just plain _missing_ formulae.
+
+Once you are satisfied with the state of your new `/opt/homebrew` Homebrew installation, you can uninstall the old `/usr/local` installation with these next steps.
+
+1. Download the uninstaller script: `curl -fsSL -o /tmp/uninstall.sh https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh`
+1. Run `bash /tmp/uninstall.sh --path=/usr/local`
+
+For more information, see [this discussion](https://github.com/orgs/Homebrew/discussions/4397#discussioncomment-5567441).
+
 ## Homebrew Cask issues
 
 ### Cask - cURL error
