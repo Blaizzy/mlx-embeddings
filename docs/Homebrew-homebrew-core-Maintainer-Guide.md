@@ -21,7 +21,7 @@ Homebrew is about Unix software. Stuff that builds to an `.app` should be in Hom
 
 ## Merging, rebasing, cherry-picking
 
-For most PRs that make formula modifications, you can simply approve the PR and an automatic merge (with bottles) will be performed by [@BrewTestBot](https://github.com/BrewTestBot). See [Brew Test Bot for Maintainers](Brew-Test-Bot-For-Core-Contributors.md) for more information.
+For most PRs that make formula modifications, you can simply approve the PR and an automatic merge (with bottles) will be performed by [@BrewTestBot](https://github.com/BrewTestBot). See [BrewTestBot for Maintainers](BrewTestBot-For-Maintainers.md) for more information.
 
 Certain PRs may not be merged automatically by [@BrewTestBot](https://github.com/BrewTestBot), even after they've been approved. This includes PRs with the `new formula`, `automerge-skip`, and `linux-only` labels. To trigger a merge for these PRs, run `brew pr-publish`.
 

@@ -67,7 +67,7 @@
 - [Homebrew/homebrew-core Maintainer Guide](Homebrew-homebrew-core-Maintainer-Guide.md)
 - [Homebrew/homebrew-cask Maintainer Guide](Homebrew-homebrew-cask-Maintainer-Guide.md)
 
-- [Brew Test Bot for Maintainers](Brew-Test-Bot-For-Core-Contributors.md)
+- [BrewTestBot for Maintainers](BrewTestBot-For-Maintainers.md)
 - [Common Issues for Maintainers](Common-Issues-for-Core-Contributors.md)
 - [Releases](Releases.md)
 
