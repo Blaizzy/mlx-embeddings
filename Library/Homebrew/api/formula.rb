@@ -59,7 +59,7 @@ module Homebrew
         end
         private :download_and_cache_data!
 
-        sig { returns(Hash) }
+        sig { returns(T::Hash[String, Hash]) }
         def all_formulae
           unless cache.key?("formulae")
             json_updated = download_and_cache_data!
@@ -69,7 +69,7 @@ module Homebrew
           cache["formulae"]
         end
 
-        sig { returns(Hash) }
+        sig { returns(T::Hash[String, String]) }
         def all_aliases
           unless cache.key?("aliases")
             json_updated = download_and_cache_data!

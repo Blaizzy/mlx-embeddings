@@ -28,7 +28,7 @@ describe Formula do
     let(:path) { Formulary.core_path(name) }
     let(:spec) { :stable }
     let(:alias_name) { "baz@1" }
-    let(:alias_path) { (CoreTap.instance.alias_dir/alias_name).to_s }
+    let(:alias_path) { CoreTap.instance.alias_dir/alias_name }
     let(:f) { klass.new(name, path, spec) }
     let(:f_alias) { klass.new(name, path, spec, alias_path: alias_path) }
 
@@ -190,11 +190,11 @@ describe Formula do
     end
 
     alias_name = "bar"
-    alias_path = "#{CoreTap.instance.alias_dir}/#{alias_name}"
+    alias_path = CoreTap.instance.alias_dir/alias_name
     CoreTap.instance.alias_dir.mkpath
     FileUtils.ln_sf f.path, alias_path
 
-    f.build = Tab.new(source: { "path" => alias_path })
+    f.build = Tab.new(source: { "path" => alias_path.to_s })
 
     expect(f.installed_alias_path).to eq(alias_path)
     expect(f.installed_alias_name).to eq(alias_name)
@@ -225,12 +225,12 @@ describe Formula do
     end
 
     alias_name = "bar"
+    alias_path = tap.alias_dir/alias_name
     full_alias_name = "#{tap.user}/#{tap.repo}/#{alias_name}"
-    alias_path = "#{tap.alias_dir}/#{alias_name}"
     tap.alias_dir.mkpath
     FileUtils.ln_sf f.path, alias_path
 
-    f.build = Tab.new(source: { "path" => alias_path })
+    f.build = Tab.new(source: { "path" => alias_path.to_s })
 
     expect(f.installed_alias_path).to eq(alias_path)
     expect(f.installed_alias_name).to eq(alias_name)
@@ -451,7 +451,7 @@ describe Formula do
       FileUtils.ln_sf f.path, source_path
 
       expect(f.alias_path).to eq(alias_path)
-      expect(f.installed_alias_path).to eq(source_path.to_s)
+      expect(f.installed_alias_path).to eq(source_path)
     end
   end
 
@@ -491,14 +491,14 @@ describe Formula do
     end
 
     specify "with alias path with a path" do
-      alias_path = "#{CoreTap.instance.alias_dir}/alias"
-      different_alias_path = "#{CoreTap.instance.alias_dir}/another_alias"
+      alias_path = CoreTap.instance.alias_dir/"alias"
+      different_alias_path = CoreTap.instance.alias_dir/"another_alias"
 
       formula_with_alias = formula "foo" do
         url "foo-1.0"
       end
       formula_with_alias.build = Tab.empty
-      formula_with_alias.build.source["path"] = alias_path
+      formula_with_alias.build.source["path"] = alias_path.to_s
 
       formula_without_alias = formula "bar" do
         url "bar-1.0"
@@ -510,7 +510,7 @@ describe Formula do
         url "baz-1.0"
       end
       formula_with_different_alias.build = Tab.empty
-      formula_with_different_alias.build.source["path"] = different_alias_path
+      formula_with_different_alias.build.source["path"] = different_alias_path.to_s
 
       formulae = [
         formula_with_alias,
@@ -1239,8 +1239,8 @@ describe Formula do
     end
 
     let(:tab) { Tab.empty }
-    let(:alias_path) { "#{CoreTap.instance.alias_dir}/bar" }
     let(:alias_name) { "bar" }
+    let(:alias_path) { CoreTap.instance.alias_dir/alias_name }
 
     before do
       allow(described_class).to receive(:installed).and_return([f])
@@ -1261,7 +1261,7 @@ describe Formula do
     end
 
     specify "alias changes when not changed" do
-      tab.source["path"] = alias_path
+      tab.source["path"] = alias_path.to_s
       stub_formula_loader(f, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
@@ -1276,7 +1276,7 @@ describe Formula do
     end
 
     specify "alias changes when new alias target" do
-      tab.source["path"] = alias_path
+      tab.source["path"] = alias_path.to_s
       stub_formula_loader(new_formula, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
@@ -1291,7 +1291,7 @@ describe Formula do
     end
 
     specify "alias changes when old formulae installed" do
-      tab.source["path"] = alias_path
+      tab.source["path"] = alias_path.to_s
       stub_formula_loader(new_formula, alias_name)
 
       CoreTap.instance.alias_dir.mkpath
@@ -1332,8 +1332,8 @@ describe Formula do
       end
     end
 
-    let(:alias_path) { "#{f.tap.alias_dir}/bar" }
     let(:alias_name) { "bar" }
+    let(:alias_path) { f.tap.alias_dir/alias_name }
 
     def setup_tab_for_prefix(prefix, options = {})
       prefix.mkpath
