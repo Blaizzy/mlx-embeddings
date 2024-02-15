@@ -1,6 +1,13 @@
+---
+logo: /assets/img/brewtestbot.png
+image: /assets/img/brewtestbot.png
+redirect_from:
+  - /Brew-Test-Bot-For-Core-Contributors
+---
+
 # BrewTestBot for Maintainers
 
-`brew test-bot` is the command our CI runs to test and build bottles for formulae.
+[`brew test-bot`](Manpage.md#test-bot-options-formula) is the command our [CI](https://github.com/BrewTestBot) runs to test and build bottles for formulae.
 
 ## Publishing Bottles
 

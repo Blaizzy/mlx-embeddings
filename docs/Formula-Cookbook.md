@@ -114,7 +114,7 @@ There are plenty of others; check `/usr/lib` for them.
 
 We generally try not to duplicate system libraries and complicated tools in core Homebrew but we do duplicate some commonly used tools.
 
-Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be built using Homebrew’s shipped equivalent and our Brew Test Bot's post-install `audit` will warn if it detects you haven't done this.
+Special exceptions are OpenSSL and LibreSSL. Things that use either *should* be built using Homebrew’s shipped equivalent and our BrewTestBot's post-install `audit` will warn if it detects you haven't done this.
 
 **Important:** `$(brew --prefix)/bin` is NOT in the `PATH` during formula installation. If you have dependencies at build time, you must specify them and `brew` will add them to the `PATH` or create a [`Requirement`](https://rubydoc.brew.sh/Requirement).
 
@@ -377,7 +377,7 @@ Add aliases by creating symlinks in an `Aliases` directory in the tap root.
 
 You can run `brew audit --strict --online` to test formulae for adherence to Homebrew house style, which is loosely based on the [Ruby Style Guide](https://github.com/rubocop-hq/ruby-style-guide#the-ruby-style-guide). The `audit` command includes warnings for trailing whitespace, preferred URLs for certain source hosts, and many other style issues. Fixing these warnings before committing will make the process a lot quicker for everyone.
 
-New formulae being submitted to Homebrew should run `brew audit --new --formula foo`. This command is performed by Brew Test Bot on new submissions as part of the automated build and test process, and highlights more potential issues than the standard audit.
+New formulae being submitted to Homebrew should run `brew audit --new --formula foo`. This command is performed by BrewTestBot on new submissions as part of the automated build and test process, and highlights more potential issues than the standard audit.
 
 Use `brew info` and check if the version guessed by Homebrew from the URL is correct. Add an explicit [`version`](https://rubydoc.brew.sh/Formula#version-class_method) if not.
 
