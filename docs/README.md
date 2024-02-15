@@ -50,7 +50,7 @@
 - [Renaming a Formula](Rename-A-Formula.md)
 - [Building Against Non-Homebrew Dependencies](Building-Against-Non-Homebrew-Dependencies.md)
 - [How to Create and Maintain a Tap](How-to-Create-and-Maintain-a-Tap.md)
-- [Brew Test Bot](Brew-Test-Bot.md)
+- [BrewTestBot](BrewTestBot.md)
 - [Prose Style Guidelines](Prose-Style-Guidelines.md)
 - [Type Checking with Sorbet](Typechecking.md)
 - [Reproducible Builds](Reproducible-Builds.md)
