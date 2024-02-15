@@ -465,7 +465,6 @@ _brew_bump_cask_pr() {
       --commit
       --debug
       --dry-run
-      --force
       --fork-org
       --help
       --message
