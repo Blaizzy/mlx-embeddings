@@ -2,15 +2,12 @@
 
 This page describes how Python is handled in Homebrew for users. See [Python for Formula Authors](Python-for-Formula-Authors.md) for advice on writing formulae to install packages written in Python.
 
-Homebrew should work with any [CPython](https://stackoverflow.com/questions/2324208/is-there-any-difference-between-cpython-and-python) and defaults to the macOS system Python.
+Homebrew will install the necessary Python 3 version that is needed to make your packages work. Python 2 (or 1) is not supported.
 
-Homebrew provides formulae to brew Python 3.y. A `python@2` formula was provided until the end of 2019, at which point it was removed due to the Python 2 deprecation.
+## Python 3
 
-**Important:** If you choose to use a Python which isn't either of these two (system Python or brewed Python), the Homebrew team cannot support any breakage that may occur.
-
-## Python 3.y
-
-Homebrew provides formulae for maintained releases of Python 3.y (`python@3.y`).
+Homebrew provides formulae for the newest and maintained releases of Python 3 (`python@3.y`) (https://devguide.python.org/versions/).
+We keep older `python@3.y` versions according to our [versioned formulae guidelines](https://docs.brew.sh/Versions).
 
 **Important:** Python may be upgraded to a newer version at any time. Consider using a version
 manager such as `pyenv` if you require stability of minor or patch versions for virtual environments.
@@ -26,11 +23,13 @@ Unversioned symlinks for `python`, `python-config`, `pip` etc. are installed her
 $(brew --prefix python)/libexec/bin
 ```
 
+**Warning!** The executables do not always point to the latest Python 3 version, as there is always a delay between the newest Python 3 release and the homebrew-core repository switching to the newest version.
+
 ## Setuptools, pip, etc.
 
 The Python formulae install [pip](https://pip.pypa.io/) (as `pip3`) and [Setuptools](https://pypi.org/project/setuptools/).
 
-Setuptools can be updated via `pip`, without having to re-brew Python:
+Setuptools can be updated via `pip`, without having to reinstall brewed Python:
 
 ```sh
 python3 -m pip install --upgrade setuptools
@@ -73,6 +72,8 @@ Some formulae provide Python bindings.
 
 These should be installed via `pip install <package>`. To discover, you can use <https://pypi.org/search>.
 
+Starting with Python 3.12, we highly recommend you to use a separate virtualenv for this (see the section about [PEP 668](https://peps.python.org/pep-0668/#marking-an-interpreter-as-using-an-external-package-manager) below).
+
 **Note:** macOS's system Python does not provide `pip`. Follow the [pip documentation](https://pip.pypa.io/en/stable/installation/) to install it for your system Python if you would like it.
 
 ## Brewed Python modules
@@ -85,13 +86,22 @@ Since the system Python may not know which compiler flags to set when building b
 CFLAGS="-I$(brew --prefix)/include" LDFLAGS="-L$(brew --prefix)/lib" pip install <package>
 ```
 
-## Virtualenv
-
 **Warning!** When you `brew install` formulae that provide Python bindings, you should **not be in an active virtual environment.**
 
-Activate the virtualenv *after* you've brewed, or brew in a fresh terminal window. This will ensure Python modules are installed into Homebrew's `site-packages` and *not* into that of the virtual environment.
+Activate the virtualenv *after* you have installed your package with brew, or install brew's packages in a fresh terminal window. This will ensure Python modules are installed into Homebrew's `site-packages` and *not* into that of the virtual environment.
 
-Virtualenv has a `--system-site-packages` switch to allow "global" (i.e. Homebrew's) `site-packages` to be accessible from within the virtualenv.
+## PEP 668 (Python@3.12) and virtualenvs
+
+Starting with Python@3.12, Homebrew follows [PEP 668](https://peps.python.org/pep-0668/#marking-an-interpreter-as-using-an-external-package-manager).
+
+If you wish to install a non-brew-packaged Python package (from PyPI for example):
+
+* create a virtual environment using `python3 -m venv path/to/venv`. Then use `path/to/venv/bin/python` and `path/to/venv/bin/pip`.
+* or use `pipx install xyz`, which will manage a virtual environment for you.
+  You can install `pipx` by running `brew install pipx`.
+  When you use `pipx` to install a Python application, it will always use a virtual environment for you.
+
+It is possible to install some Python packages as formulae, by using `brew install xyz`. We do not recommend using these formulae and recommend you install them with pip using a virtualenv. These syste-wide Hombrew Python formulae are often Homebrew-specific formulae that are useful as dependencies for other Homebrew formulae. It is not recommended to rely on them.
 
 ## Why is Homebrew's Python being installed as a dependency?
 
