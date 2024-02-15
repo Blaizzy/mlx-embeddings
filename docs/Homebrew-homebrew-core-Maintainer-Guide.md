@@ -60,7 +60,7 @@ We now accept versioned formulae as long as they [meet the requirements](Version
 
 ## Testing
 
-We need to at least check that it builds. Use [Brew Test Bot](Brew-Test-Bot.md) for this.
+We need to at least check that it builds. Use [BrewTestBot](BrewTestBot.md) for this.
 
 Verify the formula works if possible. If you can’t tell (e.g. if it’s a library) trust the original contributor; it worked for them, so chances are it is fine. If you aren’t an expert in the tool in question, you can’t really gauge if the formula installed the program correctly. At some point an expert will come along, cry blue murder that it doesn’t work, and fix it. This is how open source works. Ideally, request a `test do` block to test that functionality is consistently available.
 
