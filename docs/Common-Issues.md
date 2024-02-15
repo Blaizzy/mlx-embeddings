@@ -148,10 +148,10 @@ Follow these steps to do this.
 1. Run `arch -x86_64 /usr/local/bin/brew bundle dump --global` to dump your current installed formulae list to `~/.Brewfile`.
 1. Review the contents of `~/.Brewfile` to remove things you no longer want to have installed.
 1. Verify that your terminal emulator is running in arm64 mode by checking that the output of `arch` is `arm64`.
-    * If it is not, use a different terminal emulator, such as Apple's Terminal.app, that will run in `arm64` mode.
+   * If it is not, use a different terminal emulator, such as Apple's Terminal.app, that will run in `arm64` mode.
 1. [Reinstall Homebrew](https://brew.sh/) under the correct prefix (`/opt/homebrew`),
    which will happen by default when the terminal is running in arm64 mode.
-   
+
    * **Follow the _Next Steps_ instructions** listed at the end of the installation process;
      failing to adjust your shell configuration accordingly could break your Homebrew installation.
 1. Run `/opt/homebrew/bin/brew bundle install --global` to replicate your original formulae installation using your new Homebrew installation in `/opt/homebrew`.
