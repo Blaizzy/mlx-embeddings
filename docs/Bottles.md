@@ -16,7 +16,7 @@ Bottles will not be used if:
 
 ## Creation
 
-Bottles for `homebrew/core` formulae are created by [BrewTestBot](BrewTestBot.md) when a pull request is submitted. If the formula builds successfully on each supported platform and a maintainer approves the change, Brew Test Bot updates its `bottle do` block and uploads each bottle to [GitHub Packages](https://github.com/orgs/Homebrew/packages).
+Bottles for `homebrew/core` formulae are created by [BrewTestBot](BrewTestBot.md) when a pull request is submitted. If the formula builds successfully on each supported platform and a maintainer approves the change, BrewTestBot updates its `bottle do` block and uploads each bottle to [GitHub Packages](https://github.com/orgs/Homebrew/packages).
 
 By default, bottles will be built for the oldest CPU supported by the OS/architecture you're building for (Core 2 for 64-bit x86 operating systems). This ensures that bottles are compatible with all computers you might distribute them to. If you *really* want your bottles to be optimised for something else, you can pass the `--bottle-arch=` option to build for another architecture; for example, `brew install foo --build-bottle --bottle-arch=penryn`. Just remember that if you build for a newer architecture, some of your users might get binaries they can't run and that would be sad!
 
@@ -62,7 +62,7 @@ By default this is omitted and Homebrew's default bottle URL root is used. This 
 
 Optionally contains the value of `HOMEBREW_CELLAR` in which the bottles were built.
 
-Most compiled software contains references to its compiled location, preventing it from being simply relocated anywhere on disk. A value of `:any` or `:any_skip_relocation` means that the bottle can be safely installed in any Cellar as it did not contain any references to the Cellar in which it was originally built. This can be omitted if the bottle was compiled for the given OS/architecture's default `HOMEBREW_CELLAR`, as is done for all bottles built by Brew Test Bot.
+Most compiled software contains references to its compiled location, preventing it from being simply relocated anywhere on disk. A value of `:any` or `:any_skip_relocation` means that the bottle can be safely installed in any Cellar as it did not contain any references to the Cellar in which it was originally built. This can be omitted if the bottle was compiled for the given OS/architecture's default `HOMEBREW_CELLAR`, as is done for all bottles built by BrewTestBot.
 
 ### Rebuild version (`rebuild`)
 

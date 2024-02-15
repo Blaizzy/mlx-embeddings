@@ -101,7 +101,7 @@ If you wish to install a non-brew-packaged Python package (from PyPI for example
   You can install `pipx` by running `brew install pipx`.
   When you use `pipx` to install a Python application, it will always use a virtual environment for you.
 
-It is possible to install some Python packages as formulae, by using `brew install xyz`. We do not recommend using these formulae and recommend you install them with pip using a virtualenv. These syste-wide Hombrew Python formulae are often Homebrew-specific formulae that are useful as dependencies for other Homebrew formulae. It is not recommended to rely on them.
+It is possible to install some Python packages as formulae by using `brew install xyz`. We do not recommend using these formulae and instead recommend you install them with pip inside a virtualenv. These system-wide Homebrew Python formulae are often Homebrew-specific formulae that are useful as dependencies for other Homebrew formulae. It is not recommended to rely on them.
 
 ## Why is Homebrew's Python being installed as a dependency?
 
