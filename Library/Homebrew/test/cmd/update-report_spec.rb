@@ -15,8 +15,8 @@ RSpec.describe "brew update-report" do
         def initialize(tap)
           @tap = tap
 
-          ENV["HOMEBREW_UPDATE_BEFORE#{tap.repo_var}"] = "12345678"
-          ENV["HOMEBREW_UPDATE_AFTER#{tap.repo_var}"] = "abcdef00"
+          ENV["HOMEBREW_UPDATE_BEFORE#{tap.repo_var_suffix}"] = "12345678"
+          ENV["HOMEBREW_UPDATE_AFTER#{tap.repo_var_suffix}"] = "abcdef00"
 
           super(tap)
         end

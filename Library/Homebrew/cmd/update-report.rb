@@ -428,11 +428,11 @@ class Reporter
       @api_names_before_txt = api_names_before_txt
       @api_dir_prefix = api_dir_prefix
     else
-      initial_revision_var = "HOMEBREW_UPDATE_BEFORE#{tap.repo_var}"
+      initial_revision_var = "HOMEBREW_UPDATE_BEFORE#{tap.repo_var_suffix}"
       @initial_revision = ENV[initial_revision_var].to_s
       raise ReporterRevisionUnsetError, initial_revision_var if @initial_revision.empty?
 
-      current_revision_var = "HOMEBREW_UPDATE_AFTER#{tap.repo_var}"
+      current_revision_var = "HOMEBREW_UPDATE_AFTER#{tap.repo_var_suffix}"
       @current_revision = ENV[current_revision_var].to_s
       raise ReporterRevisionUnsetError, current_revision_var if @current_revision.empty?
     end
