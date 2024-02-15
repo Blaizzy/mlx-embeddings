@@ -1,9 +1,11 @@
 ---
 logo: /assets/img/brewtestbot.png
 image: /assets/img/brewtestbot.png
+redirect_from:
+  - /Brew-Test-Bot
 ---
 
-# Brew Test Bot
+# BrewTestBot
 
 [`brew test-bot`](Manpage.md#test-bot-options-formula) is what runs the automated review and testing system funded by [our Kickstarter in 2013](https://www.kickstarter.com/projects/homebrew/brew-test-bot).
 

@@ -10,7 +10,7 @@ A detailed checklist can be found [below](#detailed-merge-checklist). This is al
 - Ensure it is not a library that can be installed with [gem](https://en.wikipedia.org/wiki/RubyGems), [cpan](https://en.wikipedia.org/wiki/Cpan) or [pip](https://pip.pypa.io/en/stable/).
 - Ensure that any dependencies are accurate and minimal. We don't need to support every possible optional feature for the software.
 - When bottles aren't required or affected, use the GitHub squash & merge workflow for a single-formula PR or rebase & merge workflow for a multiple-formulae PR. See the [How to merge without bottles](#how-to-merge-without-bottles) section below for more details.
-- Use `brew pr-publish` or `brew pr-pull` otherwise, which adds messages to auto-close pull requests and pull bottles built by Brew Test Bot.
+- Use `brew pr-publish` or `brew pr-pull` otherwise, which adds messages to auto-close pull requests and pull bottles built by BrewTestBot.
 - Thank people for contributing.
 
 Checking dependencies is important, because they will probably stick around forever. Nobody really checks if they are necessary or not.
