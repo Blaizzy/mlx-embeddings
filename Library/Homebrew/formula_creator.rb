@@ -56,10 +56,8 @@ module Homebrew
       when %r{github\.com/(\S+)/(\S+)\.git}
         @user = Regexp.last_match(1)
         @head = true
-        @github = true
       when %r{github\.com/(\S+)/(\S+)/(archive|releases)/}
         @user = Regexp.last_match(1)
-        @github = true
       end
     end
 
