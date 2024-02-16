@@ -54,10 +54,14 @@ module Homebrew
 
       case @url
       when %r{github\.com/(\S+)/(\S+)\.git}
-        @user = Regexp.last_match(1)
         @head = true
+        user = Regexp.last_match(1)
+        repo = Regexp.last_match(2)
+        @github = GitHub.repository(user, repo) if @fetch
       when %r{github\.com/(\S+)/(\S+)/(archive|releases)/}
-        @user = Regexp.last_match(1)
+        user = Regexp.last_match(1)
+        repo = Regexp.last_match(2)
+        @github = GitHub.repository(user, repo) if @fetch
       end
     end
 
@@ -70,26 +74,20 @@ module Homebrew
 
       if @version.nil? || @version.null?
         odie "Version cannot be determined from URL. Explicitly set the version with `--set-version` instead."
-      elsif @fetch
+      end
+
+      if @fetch
         unless @head
           r = Resource.new
           r.url(@url)
-          r.version(@version)
           r.owner = self
           @sha256 = r.fetch.sha256 if r.download_strategy == CurlDownloadStrategy
         end
 
-        if @user && @name
-          begin
-            metadata = GitHub.repository(@user, @name)
-            @desc = metadata["description"]
-            @homepage = metadata["homepage"]
-            @license = metadata["license"]["spdx_id"] if metadata["license"]
-          rescue GitHub::API::HTTPNotFoundError
-            # If there was no repository found assume the network connection is at
-            # fault rather than the input URL.
-            nil
-          end
+        if @github
+          @desc = @github["description"]
+          @homepage = @github["homepage"]
+          @license = @github["license"]["spdx_id"] if @github["license"]
         end
       end
 
