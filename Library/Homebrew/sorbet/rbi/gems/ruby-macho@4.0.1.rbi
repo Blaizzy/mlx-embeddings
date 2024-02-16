@@ -3123,12 +3123,17 @@ class MachO::MachOFile
   def delete_command(lc, options = T.unsafe(nil)); end
 
   # Delete the given runtime path from the Mach-O.
-  # instance (by offset) of the requested path. Incompatible with :uniq.
   #
   # @example
-  #   file.rpaths # => ["/lib"]
-  #   file.delete_rpath("/lib")
-  #   file.rpaths # => []
+  #   file1.rpaths # => ["/lib", "/usr/lib", "/lib"]
+  #   file1.delete_rpath("/lib")
+  #   file1.rpaths # => ["/usr/lib", "/lib"]
+  #   file2.rpaths # => ["foo", "foo"]
+  #   file2.delete_rpath("foo", :uniq => true)
+  #   file2.rpaths # => []
+  #   file3.rpaths # => ["foo", "bar", "foo"]
+  #   file3.delete_rpath("foo", :last => true)
+  #   file3.rpaths # => ["foo", "bar"]
   # @option options
   # @option options
   # @param options [Hash]
@@ -3137,7 +3142,7 @@ class MachO::MachOFile
   # @raise [ArgumentError] if both :uniq and :last are true
   # @return void
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#428
+  # source://ruby-macho//lib/macho/macho_file.rb#434
   def delete_rpath(path, options = T.unsafe(nil)); end
 
   # @return [Boolean] whether or not the file is of type `MH_DSYM`
@@ -3369,7 +3374,7 @@ class MachO::MachOFile
 
   # @return [Hash] a hash representation of this {MachOFile}
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#463
+  # source://ruby-macho//lib/macho/macho_file.rb#469
   def to_h; end
 
   # Write all Mach-O data to the given filename.
@@ -3377,7 +3382,7 @@ class MachO::MachOFile
   # @param filename [String] the file to write to
   # @return [void]
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#448
+  # source://ruby-macho//lib/macho/macho_file.rb#454
   def write(filename); end
 
   # Write all Mach-O data to the file used to initialize the instance.
@@ -3386,7 +3391,7 @@ class MachO::MachOFile
   # @raise [MachOError] if the instance was initialized without a file
   # @return [void]
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#456
+  # source://ruby-macho//lib/macho/macho_file.rb#462
   def write!; end
 
   private
@@ -3397,7 +3402,7 @@ class MachO::MachOFile
   # @param cpusubtype [Integer] the CPU subtype
   # @raise [CPUSubtypeError] if the CPU sub-type is unknown
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#565
+  # source://ruby-macho//lib/macho/macho_file.rb#571
   def check_cpusubtype(cputype, cpusubtype); end
 
   # Check the file's CPU type.
@@ -3406,7 +3411,7 @@ class MachO::MachOFile
   # @param cputype [Integer] the CPU type
   # @raise [CPUTypeError] if the CPU type is unknown
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#557
+  # source://ruby-macho//lib/macho/macho_file.rb#563
   def check_cputype(cputype); end
 
   # Check the file's type.
@@ -3415,7 +3420,7 @@ class MachO::MachOFile
   # @param filetype [Integer] the file type
   # @raise [FiletypeError] if the file type is unknown
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#574
+  # source://ruby-macho//lib/macho/macho_file.rb#580
   def check_filetype(filetype); end
 
   # Attempt to decompress a Mach-O file from the data specified in a prelinked kernel header.
@@ -3426,7 +3431,7 @@ class MachO::MachOFile
   # @raise [DecompressionError] if decompression is impossible or fails
   # @return [void]
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#518
+  # source://ruby-macho//lib/macho/macho_file.rb#524
   def decompress_macho_lzvn; end
 
   # The low file offset (offset to first section data).
@@ -3434,7 +3439,7 @@ class MachO::MachOFile
   # @api private
   # @return [Integer] the offset
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#615
+  # source://ruby-macho//lib/macho/macho_file.rb#621
   def low_fileoff; end
 
   # Read just the file's magic number and check its validity.
@@ -3444,7 +3449,7 @@ class MachO::MachOFile
   # @raise [FatBinaryError] if the magic is for a Fat file
   # @return [Integer] the magic
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#542
+  # source://ruby-macho//lib/macho/macho_file.rb#548
   def populate_and_check_magic; end
 
   # All load commands in the file.
@@ -3453,7 +3458,7 @@ class MachO::MachOFile
   # @raise [LoadCommandError] if an unknown load command is encountered
   # @return [Array<LoadCommands::LoadCommand>] an array of load commands
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#582
+  # source://ruby-macho//lib/macho/macho_file.rb#588
   def populate_load_commands; end
 
   # The file's Mach-O header structure.
@@ -3463,7 +3468,7 @@ class MachO::MachOFile
   # @return [Headers::MachHeader] if the Mach-O is 32-bit
   # @return [Headers::MachHeader64] if the Mach-O is 64-bit
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#477
+  # source://ruby-macho//lib/macho/macho_file.rb#483
   def populate_mach_header; end
 
   # Read a compressed Mach-O header and check its validity, as well as whether we're able
@@ -3474,7 +3479,7 @@ class MachO::MachOFile
   # @raise [DecompressionError] if decompression is impossible or fails
   # @return [void]
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#501
+  # source://ruby-macho//lib/macho/macho_file.rb#507
   def populate_prelinked_kernel_header; end
 
   # Updates the number of load commands in the raw data.
@@ -3483,7 +3488,7 @@ class MachO::MachOFile
   # @param ncmds [Integer] the new number of commands
   # @return [void]
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#636
+  # source://ruby-macho//lib/macho/macho_file.rb#642
   def update_ncmds(ncmds); end
 
   # Updates the size of all load commands in the raw data.
@@ -3492,7 +3497,7 @@ class MachO::MachOFile
   # @param size [Integer] the new size, in bytes
   # @return [void]
   #
-  # source://ruby-macho//lib/macho/macho_file.rb#646
+  # source://ruby-macho//lib/macho/macho_file.rb#652
   def update_sizeofcmds(size); end
 
   class << self
@@ -3605,7 +3610,7 @@ class MachO::MachOStructure
     # @api private
     # @param name [Symbol] name of internal field
     # @param idx [Integer] the index of the field value in the @values array
-    # @param unpack [String] the format code used for futher binary unpacking
+    # @param unpack [String] the format code used for further binary unpacking
     #
     # source://ruby-macho//lib/macho/structure.rb#241
     def def_unpack_reader(name, idx, unpack); end
@@ -3622,7 +3627,7 @@ class MachO::MachOStructure
     # @api private
     # @param name [Symbol] name of internal field
     # @param type [Symbol] type of field in terms of binary size
-    # @param options [Hash] set of additonal options
+    # @param options [Hash] set of additional options
     # @raise [ArgumentError]
     #
     # source://ruby-macho//lib/macho/structure.rb#144
