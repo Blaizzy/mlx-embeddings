@@ -225,7 +225,7 @@ module Homebrew
     end
     PyPI.update_python_resources! formula, ignore_non_pypi_packages: true if args.python?
 
-    puts "Please run `brew audit --new #{fc.name}` before submitting, thanks."
+    puts "Please run `HOMEBREW_NO_INSTALL_FROM_API=1 brew audit --new #{fc.name}` before submitting, thanks."
     path
   end
 
