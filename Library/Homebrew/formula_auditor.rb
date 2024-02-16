@@ -64,7 +64,8 @@ module Homebrew
 
         unversioned_formula = begin
           Formulary.factory(full_name).path
-        rescue FormulaUnavailableError, TapFormulaAmbiguityError
+        rescue FormulaUnavailableError, TapFormulaAmbiguityError,
+               TapFormulaWithOldnameAmbiguityError
           Pathname.new formula.path.to_s.gsub(/@.*\.rb$/, ".rb")
         end
         unless unversioned_formula.exist?
@@ -284,6 +285,9 @@ module Homebrew
           rescue TapFormulaAmbiguityError
             problem "Ambiguous dependency '#{dep.name}'."
             next
+          rescue TapFormulaWithOldnameAmbiguityError
+            problem "Ambiguous oldname dependency '#{dep.name.inspect}'."
+            next
           end
 
           if dep_f.oldnames.include?(dep.name.split("/").last)
@@ -457,7 +461,7 @@ module Homebrew
         next
       rescue FormulaUnavailableError
         problem "Can't find conflicting formula #{conflict.name.inspect}."
-      rescue TapFormulaAmbiguityError
+      rescue TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
         problem "Ambiguous conflicting formula #{conflict.name.inspect}."
       end
     end

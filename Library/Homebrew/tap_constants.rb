@@ -1,42 +1,22 @@
 # typed: strict
 # frozen_string_literal: true
 
-# Match a formula name.
-HOMEBREW_TAP_FORMULA_NAME_REGEX = T.let(/(?<name>[\w+\-.@]+)/, Regexp)
-# Match taps' formulae, e.g. `someuser/sometap/someformula`.
-HOMEBREW_TAP_FORMULA_REGEX = T.let(
-  %r{\A(?<user>[\w-]+)/(?<repo>[\w-]+)/#{HOMEBREW_TAP_FORMULA_NAME_REGEX.source}\Z},
-  Regexp,
-)
-# Match default formula taps' formulae, e.g. `homebrew/core/someformula` or `someformula`.
-HOMEBREW_DEFAULT_TAP_FORMULA_REGEX = T.let(
-  %r{\A(?:[Hh]omebrew/(?:homebrew-)?core/)?(?<name>#{HOMEBREW_TAP_FORMULA_NAME_REGEX.source})\Z},
-  Regexp,
-)
-
-# Match a cask token.
-HOMEBREW_TAP_CASK_TOKEN_REGEX = T.let(/(?<token>[a-z0-9\-_]+(?:@[a-z0-9\-_.]+)?)/, Regexp)
-# Match taps' casks, e.g. `someuser/sometap/somecask`.
-HOMEBREW_TAP_CASK_REGEX = T.let(
-  %r{\A(?<user>[\w-]+)/(?<repo>[\w-]+)/#{HOMEBREW_TAP_CASK_TOKEN_REGEX.source}\Z},
-  Regexp,
-)
-# Match default cask taps' casks, e.g. `homebrew/cask/somecask` or `somecask`.
+# Match taps' formulae, e.g. `someuser/sometap/someformula`
+HOMEBREW_TAP_FORMULA_REGEX = T.let(%r{^([\w-]+)/([\w-]+)/([\w+-.@]+)$}, Regexp)
+# Match taps' casks, e.g. `someuser/sometap/somecask`
+HOMEBREW_TAP_CASK_REGEX = T.let(%r{^([\w-]+)/([\w-]+)/([a-z0-9\-_]+)$}, Regexp)
+# Match default cask taps' casks, e.g. `homebrew/cask/somecask` or `somecask`
 HOMEBREW_DEFAULT_TAP_CASK_REGEX = T.let(
-  %r{\A(?:[Hh]omebrew/(?:homebrew-)?cask/)?#{HOMEBREW_TAP_CASK_TOKEN_REGEX.source}\Z},
-  Regexp,
+  %r{^(?:[Hh]omebrew/(?:homebrew-)?cask/)?(?<token>[a-z0-9\-_]+)$}, Regexp
 )
-
-# Match taps' directory paths, e.g. `HOMEBREW_LIBRARY/Taps/someuser/sometap`.
+# Match taps' directory paths, e.g. `HOMEBREW_LIBRARY/Taps/someuser/sometap`
 HOMEBREW_TAP_DIR_REGEX = T.let(
-  %r{#{Regexp.escape(HOMEBREW_LIBRARY.to_s)}/Taps/(?<user>[\w-]+)/(?<repo>[\w-]+)},
-  Regexp,
+  %r{#{Regexp.escape(HOMEBREW_LIBRARY.to_s)}/Taps/(?<user>[\w-]+)/(?<repo>[\w-]+)}, Regexp
 )
-# Match taps' formula paths, e.g. `HOMEBREW_LIBRARY/Taps/someuser/sometap/someformula`.
-HOMEBREW_TAP_PATH_REGEX = T.let(Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + %r{(?:/.*)?\Z}.source).freeze, Regexp)
-# Match official taps' casks, e.g. `homebrew/cask/somecask or homebrew/cask-versions/somecask`.
-HOMEBREW_CASK_TAP_CASK_REGEX = T.let(
-  %r{\A(?:([Cc]askroom)/(cask|versions)|([Hh]omebrew)/(?:homebrew-)?(cask|cask-[\w-]+))/([\w+-.]+)\Z},
-  Regexp,
-)
-HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = T.let(/\A(home|linux)brew-/, Regexp)
+# Match taps' formula paths, e.g. `HOMEBREW_LIBRARY/Taps/someuser/sometap/someformula`
+HOMEBREW_TAP_PATH_REGEX = T.let(Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + %r{(?:/.*)?$}.source).freeze, Regexp)
+# Match official taps' casks, e.g. `homebrew/cask/somecask or homebrew/cask-versions/somecask`
+HOMEBREW_CASK_TAP_CASK_REGEX =
+  T.let(%r{^(?:([Cc]askroom)/(cask|versions)|([Hh]omebrew)/(?:homebrew-)?(cask|cask-[\w-]+))/([\w+-.]+)$},
+        Regexp)
+HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX = T.let(/^(home|linux)brew-/, Regexp)
