@@ -259,40 +259,20 @@ end
 
 # Raised when a formula with the same name is found in multiple taps.
 class TapFormulaAmbiguityError < RuntimeError
-  attr_reader :name, :paths, :formulae
+  attr_reader :name, :taps, :loaders
 
-  def initialize(name, paths)
+  def initialize(name, loaders)
     @name = name
-    @paths = paths
-    @formulae = paths.map do |path|
-      "#{Tap.from_path(path).name}/#{path.basename(".rb")}"
-    end
+    @loaders = loaders
+    @taps = loaders.map(&:tap)
+
+    formulae = taps.map { |tap| "#{tap}/#{name}" }
+    formula_list = formulae.map { |f| "\n       * #{f}" }.join
 
     super <<~EOS
-      Formulae found in multiple taps: #{formulae.map { |f| "\n       * #{f}" }.join}
+      Formulae found in multiple taps:#{formula_list}
 
-      Please use the fully-qualified name (e.g. #{formulae.first}) to refer to the formula.
-    EOS
-  end
-end
-
-# Raised when a formula's old name in a specific tap is found in multiple taps.
-class TapFormulaWithOldnameAmbiguityError < RuntimeError
-  attr_reader :name, :possible_tap_newname_formulae, :taps
-
-  def initialize(name, possible_tap_newname_formulae)
-    @name = name
-    @possible_tap_newname_formulae = possible_tap_newname_formulae
-
-    @taps = possible_tap_newname_formulae.map do |newname|
-      newname =~ HOMEBREW_TAP_FORMULA_REGEX
-      "#{Regexp.last_match(1)}/#{Regexp.last_match(2)}"
-    end
-
-    super <<~EOS
-      Formulae with '#{name}' old name found in multiple taps: #{taps.map { |t| "\n       * #{t}" }.join}
-
-      Please use the fully-qualified name (e.g. #{taps.first}/#{name}) to refer to the formula or use its new name.
+      Please use the fully-qualified name (e.g. #{formulae.first}) to refer to a specific formula.
     EOS
   end
 end
