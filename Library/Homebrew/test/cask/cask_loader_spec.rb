@@ -104,6 +104,21 @@ describe Cask::CaskLoader, :cask do
             described_class.for("#{old_tap}/#{token}")
           end.to output(%r{Cask #{old_tap}/#{token} was renamed to #{token}\.}).to_stderr
         end
+
+        context "when there is an infinite tap migration loop" do
+          before do
+            (default_tap.path/"tap_migrations.json").write({
+              token => old_tap.name,
+            }.to_json)
+            default_tap.clear_cache
+          end
+
+          it "stops recursing" do
+            expect do
+              described_class.for("#{default_tap}/#{token}")
+            end.not_to output.to_stderr
+          end
+        end
       end
     end
   end
