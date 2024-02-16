@@ -157,12 +157,12 @@ module Homebrew
 
         <% end %>
           def install
-            # ENV.deparallelize  # if your formula fails when building in parallel
         <% if @mode == :cmake %>
             system "cmake", "-S", ".", "-B", "build", *std_cmake_args
             system "cmake", "--build", "build"
             system "cmake", "--install", "build"
         <% elsif @mode == :autotools %>
+            # ENV.deparallelize  # if your formula fails when building in parallel
             # Remove unrecognized options if they cause configure to fail
             # https://rubydoc.brew.sh/Formula.html#std_configure_args-instance_method
             system "./configure", "--disable-silent-rules", *std_configure_args
