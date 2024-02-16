@@ -71,7 +71,7 @@ module Homebrew
              description: "Specify the new commit <revision> corresponding to the specified git <tag> " \
                           "or specified <version>."
       switch "-f", "--force",
-             description: "Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified."
+             description: "Remove all mirrors if `--mirror` was not specified."
       flag   "--python-package-name=",
              description: "Use the specified <package-name> when finding Python resources for <formula>. " \
                           "If no package name is specified, it will be inferred from the formula's stable URL."
@@ -433,7 +433,7 @@ module Homebrew
     GitHub.check_for_duplicate_pull_requests(formula.name, tap_remote_repo,
                                              state: "open",
                                              file:  formula.path.relative_path_from(formula.tap.path).to_s,
-                                             args:  args)
+                                             quiet: args.quiet?)
   end
 
   def check_new_version(formula, tap_remote_repo, args:, version: nil, url: nil, tag: nil)
@@ -464,7 +464,7 @@ module Homebrew
                                              version: version,
                                              state:   "closed",
                                              file:    formula.path.relative_path_from(formula.tap.path).to_s,
-                                             args:    args)
+                                             quiet:   args.quiet?)
   end
 
   def alias_update_pair(formula, new_formula_version)

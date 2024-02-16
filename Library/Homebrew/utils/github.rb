@@ -553,7 +553,7 @@ module GitHub
     @open_pull_requests[cache_key].select { |pr| regex.match?(pr["title"]) }
   end
 
-  def self.check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, args:, version: nil)
+  def self.check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, quiet:, version: nil)
     # `fetch_open_pull_requests` is more reliable but *really* slow, so let's use it only in CI.
     pull_requests = if state == "open" && ENV["CI"].present?
       fetch_open_pull_requests(name, tap_remote_repo, version: version)
@@ -568,16 +568,20 @@ module GitHub
     end
     return if pull_requests.blank?
 
+    force = ENV.fetch("HOMEBREW_TEST_BOT_AUTOBUMP", nil).present?
     duplicates_message = <<~EOS
       These #{state} pull requests may be duplicates:
       #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
     EOS
-    error_message = "Duplicate PRs should not be opened. Use `--force` to override this error."
-    if args.force? && !args.quiet?
+    error_message = <<~EOS
+      Duplicate PRs should not be opened.
+      Manually open these PRs if you are sure that they are not duplicates.
+    EOS
+    if force && !quiet
       opoo duplicates_message
-    elsif !args.force? && args.quiet?
+    elsif !force && quiet
       odie error_message
-    elsif !args.force?
+    elsif !force
       odie <<~EOS
         #{duplicates_message.chomp}
         #{error_message}

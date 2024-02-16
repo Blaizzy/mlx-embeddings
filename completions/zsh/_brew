@@ -517,7 +517,6 @@ _brew_bump_cask_pr() {
     '--commit[When passed with `--write-only`, generate a new commit after writing changes to the cask file]' \
     '--debug[Display any debugging information]' \
     '(--write)--dry-run[Print what would be done rather than doing it]' \
-    '--force[Ignore duplicate open PRs]' \
     '--fork-org[Use the specified GitHub organization for forking]' \
     '--help[Show this message]' \
     '--message[Prepend message to the default pull request message]' \
@@ -543,7 +542,7 @@ _brew_bump_formula_pr() {
     '--commit[When passed with `--write-only`, generate a new commit after writing changes to the formula file]' \
     '--debug[Display any debugging information]' \
     '(--write-only)--dry-run[Print what would be done rather than doing it]' \
-    '--force[Ignore duplicate open PRs. Remove all mirrors if `--mirror` was not specified]' \
+    '--force[Remove all mirrors if `--mirror` was not specified]' \
     '--fork-org[Use the specified GitHub organization for forking]' \
     '--help[Show this message]' \
     '--message[Prepend message to the default pull request message]' \

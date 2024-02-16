@@ -44,7 +44,6 @@ module Homebrew
       flag   "--start-with=",
              description: "Letter or word that the list of package results should alphabetically follow."
       switch "-f", "--force",
-             description: "Ignore duplicate open PRs.",
              hidden:      true
 
       conflicts "--cask", "--formula"
@@ -63,6 +62,8 @@ module Homebrew
     if args.limit.present? && !args.formula? && !args.cask?
       raise UsageError, "`--limit` must be used with either `--formula` or `--cask`."
     end
+
+    odisabled "brew bump --force" if args.force?
 
     Homebrew.with_no_api_env do
       formulae_and_casks = if args.installed?
@@ -492,7 +493,7 @@ module Homebrew
       return
     end
 
-    return if !args.force? && (open_pull_requests.present? || closed_pull_requests.present?)
+    return if open_pull_requests.present? || closed_pull_requests.present?
 
     version_args = if version_info.multiple_versions
       %W[--version-arm=#{new_version.arm} --version-intel=#{new_version.intel}]
@@ -507,7 +508,6 @@ module Homebrew
       "--no-browse",
       "--message=Created by `brew bump`",
     ]
-    bump_cask_pr_args << "--force" if args.force?
 
     system HOMEBREW_BREW_FILE, *bump_cask_pr_args
   end

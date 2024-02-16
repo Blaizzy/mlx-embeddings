@@ -52,7 +52,7 @@ module Homebrew
       flag   "--fork-org=",
              description: "Use the specified GitHub organization for forking."
       switch "-f", "--force",
-             description: "Ignore duplicate open PRs."
+             hidden: true
 
       conflicts "--dry-run", "--write"
       conflicts "--no-audit", "--online"
@@ -68,6 +68,7 @@ module Homebrew
     args = bump_cask_pr_args.parse
 
     odeprecated "brew bump-cask-pr --online" if args.online?
+    odisabled "brew bump-cask-pr --force" if args.force?
 
     # This will be run by `brew audit` or `brew style` later so run it first to
     # not start spamming during normal output.
@@ -252,7 +253,7 @@ module Homebrew
                                              state:   "open",
                                              version: nil,
                                              file:    cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
-                                             args:    args)
+                                             quiet:   args.quiet?)
 
     # if we haven't already found open requests, try for an exact match across closed requests
     new_version.instance_variables.each do |version_type|
@@ -265,7 +266,7 @@ module Homebrew
         state:   "closed",
         version: shortened_version(version, cask: cask),
         file:    cask.sourcefile_path.relative_path_from(cask.tap.path).to_s,
-        args:    args,
+        quiet:   args.quiet?,
       )
     end
   end
