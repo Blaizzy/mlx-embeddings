@@ -15,7 +15,7 @@ AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
   Include:
-    - "**/*.rbi"
+    - "Homebrew/**/*.rbi"
   Exclude:
     - "Homebrew/sorbet/rbi/gems/**/*.rbi"
     - "Homebrew/bin/*"
