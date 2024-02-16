@@ -131,7 +131,7 @@ module MachO
 
       # @param name [Symbol] name of internal field
       # @param type [Symbol] type of field in terms of binary size
-      # @param options [Hash] set of additonal options
+      # @param options [Hash] set of additional options
       # Expected options
       #   :size [Integer] size in bytes
       #   :mask [Integer] bitmask
@@ -236,7 +236,7 @@ module MachO
       # Generates a reader method for fields that need further unpacking.
       # @param name [Symbol] name of internal field
       # @param idx [Integer] the index of the field value in the @values array
-      # @param unpack [String] the format code used for futher binary unpacking
+      # @param unpack [String] the format code used for further binary unpacking
       # @api private
       def def_unpack_reader(name, idx, unpack)
         define_method(name) do

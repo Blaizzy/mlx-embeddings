@@ -411,9 +411,15 @@ module MachO
 
     # Delete the given runtime path from the Mach-O.
     # @example
-    #  file.rpaths # => ["/lib"]
-    #  file.delete_rpath("/lib")
-    #  file.rpaths # => []
+    #  file1.rpaths # => ["/lib", "/usr/lib", "/lib"]
+    #  file1.delete_rpath("/lib")
+    #  file1.rpaths # => ["/usr/lib", "/lib"]
+    #  file2.rpaths # => ["foo", "foo"]
+    #  file2.delete_rpath("foo", :uniq => true)
+    #  file2.rpaths # => []
+    #  file3.rpaths # => ["foo", "bar", "foo"]
+    #  file3.delete_rpath("foo", :last => true)
+    #  file3.rpaths # => ["foo", "bar"]
     # @param path [String] the runtime path to delete
     # @param options [Hash]
     # @option options [Boolean] :uniq (false) if true, also delete
@@ -421,7 +427,7 @@ module MachO
     #  instance (by offset) of the requested path, unless :last is true.
     #  Incompatible with :last.
     # @option options [Boolean] :last (false) if true, delete the last
-    # instance (by offset) of the requested path. Incompatible with :uniq.
+    #  instance (by offset) of the requested path. Incompatible with :uniq.
     # @return void
     # @raise [RpathUnknownError] if no such runtime path exists
     # @raise [ArgumentError] if both :uniq and :last are true
