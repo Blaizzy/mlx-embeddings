@@ -148,25 +148,22 @@ Follow these steps to do this.
 1. Review the contents of `~/.Brewfile` to remove things you no longer want to have installed.
 1. Verify that your terminal emulator is running in arm64 mode by checking that the output of `arch` is `arm64`.
 
-   * If it is not, use a different terminal emulator, such as Apple's Terminal.app, that will run in `arm64` mode.
+   If it is not, use a different terminal emulator, such as Apple's Terminal.app, that will run in `arm64` mode.
 
-1. Reinstall Homebrew under the correct prefix (`/opt/homebrew`),
+1. Install Homebrew under the correct prefix (`/opt/homebrew`),
    which will happen by default when the terminal is running in arm64 mode.
 
-   * **Follow the _Next Steps_ instructions** listed at the end of the installation process;
+   **Follow the _Next Steps_ instructions** listed at the end of the installation process;
     failing to adjust your shell configuration accordingly could break your Homebrew installation.
 
 1. Run `/opt/homebrew/bin/brew bundle install --global` to replicate your original formulae installation using your new Homebrew installation in `/opt/homebrew`.
 
-Note that if it's been a long time since you ran `brew upgrade`, you may encounter some package renaming that will require manual resolution.
-Expect errors.
 Expect to spend some time [searching Homebrew's formulae and cask list](https://formulae.brew.sh/)
 for replacements for deprecated, disabled, or removed formulae.
 
 Once you are satisfied with the state of your new `/opt/homebrew` Homebrew installation, you can uninstall the old `/usr/local` installation with these next steps.
 
-1. Download the uninstaller script: `curl -fsSL -o /tmp/uninstall.sh https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh`
-1. Run `bash /tmp/uninstall.sh --path=/usr/local`
+1. Download and run [the uninstaller](https://github.com/Homebrew/install/#uninstall-homebrew) script: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)" -- --path=/usr/local`
 
 For more information, see [this discussion](https://github.com/orgs/Homebrew/discussions/4397#discussioncomment-5567441).
 
