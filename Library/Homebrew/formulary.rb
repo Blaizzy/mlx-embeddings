@@ -599,27 +599,41 @@ module Formulary
 
       return unless path.expand_path.exist?
 
-      options = if path.symlink?
-        alias_path = path
-      path = alias_path.resolved_path
-        { alias_path: alias_path }
+      options = if (tap = Tap.from_path(path))
+        # Only treat symlinks in taps as aliases.
+        if path.symlink?
+          alias_path = path
+          path = alias_path.resolved_path
+
+          {
+            alias_path: alias_path,
+            tap:        tap,
+          }
+        else
+          {
+            tap: tap,
+          }
+        end
+      elsif (tap = Homebrew::API.tap_from_source_download(path))
+        # Don't treat cache symlinks as aliases.
+        {
+          tap: tap,
+        }
       else
         {}
-    end
+      end
 
       return if path.extname != ".rb"
 
       new(path, **options)
-  end
+    end
 
-    sig { params(path: T.any(Pathname, String), alias_path: Pathname).void }
-    def initialize(path, alias_path: T.unsafe(nil))
+    sig { params(path: T.any(Pathname, String), alias_path: Pathname, tap: Tap).void }
+    def initialize(path, alias_path: T.unsafe(nil), tap: T.unsafe(nil))
       path = Pathname(path).expand_path
       name = path.basename(".rb").to_s
       alias_path = alias_path&.expand_path
       alias_dir = alias_path&.dirname
-
-      tap = Tap.from_path(path) || Homebrew::API.tap_from_source_download(path)
 
       options = {
         alias_path: (alias_path if alias_dir == tap&.alias_dir),
