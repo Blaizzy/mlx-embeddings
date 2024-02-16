@@ -1,0 +1,7 @@
+---
+# see https://github.com/Shopify/tapioca?tab=readme-ov-file#configuration
+gem:
+  exclude:
+    - json
+    - msgpack
+  prerequire: sorbet/tapioca/prerequire.rb

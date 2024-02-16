@@ -46,13 +46,8 @@ module Homebrew
     HOMEBREW_LIBRARY_PATH.cd do
       if update
         safe_system "bundle", "exec", "tapioca", "dsl"
-        # RBI files already provided by Sorbet:
-        excluded_gems = [
-          "json",
-          "msgpack",
-        ]
-        tapioca_args = ["--exclude", *excluded_gems, "--pre", "sorbet/tapioca/prerequire.rb"]
-        tapioca_args << "--all" if args.update_all?
+        # Prefer adding args here: Library/Homebrew/sorbet/tapioca/config.yml
+        tapioca_args = args.update_all? ? ["--all"] : []
 
         ohai "Updating homegrown RBI files..."
         safe_system "bundle", "exec", "ruby", "sorbet/custom_generators/tty.rb"
